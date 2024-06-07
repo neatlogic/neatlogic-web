@@ -1,6 +1,7 @@
 {
   "compact": false,
   "sourceType": "unambiguous",
-  "presets": ["@vue/cli-plugin-babel/preset"],
+  "presets": ["@vue/cli-plugin-babel/preset","@babel/preset-env"],
+  "plugins": ["@babel/plugin-transform-runtime"],
   "env": { "development": { "plugins": ["dynamic-import-node"] } }
 }

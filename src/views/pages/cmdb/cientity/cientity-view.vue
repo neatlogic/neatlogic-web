@@ -52,7 +52,9 @@
               <span>{{ $t('term.cmdb.basicattribute') }}</span>
             </div>
           </div>
-          <Divider v-if="relGroupList" orientation="start" style="margin: 3px 0px; font-size: 13px">{{ $t('page.relation') }}</Divider>
+          <div class="pl-md pr-lg">
+            <Divider v-if="relGroupList" orientation="start" style="margin: 3px 0px; font-size: 12px">{{ $t('page.relation') }}</Divider>
+          </div>
           <div v-for="(group, index) in relGroupList" :key="index" class="margin-sm">
             <div v-if="group.name" class="text-type border-color mb-sm">
               <span class="text-grey">{{ group.name }}</span>
@@ -77,7 +79,9 @@
               </div>
             </div>
           </div>
-          <Divider v-if="customViewList && customViewList.length > 0" orientation="start" style="margin: 3px 0px; font-size: 13px">{{ $t('term.cmdb.customview') }}</Divider>
+          <div class="pl-md pr-lg">
+            <Divider v-if="customViewList && customViewList.length > 0" orientation="start" style="margin: 3px 0px; font-size: 12px">{{ $t('term.cmdb.customview') }}</Divider>
+          </div>
           <div class="margin-sm">
             <div
               v-for="(customView, index) in customViewList"
@@ -167,8 +171,8 @@
                       <div v-if="relList && relList.length > 0">
                         <div v-for="(rel, index) in relList" :key="index">
                           <div v-if="activedPanel == 'rel' + rel.direction + '_' + rel.id || (activedPanel == '' && ciEntityData && ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id] && ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id]['valueList'])" class="rel-block border-color">
-                            <Divider v-if="rel.direction == 'from'" plain orientation="start">{{ rel.toLabel }}</Divider>
-                            <Divider v-else-if="rel.direction == 'to'" plain orientation="start">{{ rel.fromLabel }}</Divider>
+                            <Divider v-if="rel.direction == 'from'" plain orientation="left">{{ rel.toLabel }}</Divider>
+                            <Divider v-else-if="rel.direction == 'to'" plain orientation="left">{{ rel.fromLabel }}</Divider>
                             <div v-if="ciEntityData && ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id] && ciEntityData.relEntityData['rel' + rel.direction + '_' + rel.id]['valueList']" class="rel-item">
                               <div v-if="rel.direction == 'from'">
                                 <SubCiEntityList
@@ -247,12 +251,12 @@ export default {
   components: {
     AttrViewer,
     SubCiEntityList,
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    CustomViewDetailData: resolve => require(['@/views/pages/cmdb/customview/view-detail-data.vue'], resolve),
-    CustomViewDialog: resolve => require(['./ci-customview-dialog.vue'], resolve),
-    HistoryList: resolve => require(['./history-list.vue'], resolve),
-    CiEntityTopo: resolve => require(['./cientity-topo.vue'], resolve),
-    TransactionDialog: resolve => require(['./transaction-dialog.vue'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    CustomViewDetailData: () => import('@/views/pages/cmdb/customview/view-detail-data.vue'),
+    CustomViewDialog: () => import('./ci-customview-dialog.vue'),
+    HistoryList: () => import('./history-list.vue'),
+    CiEntityTopo: () => import('./cientity-topo.vue'),
+    TransactionDialog: () => import('./transaction-dialog.vue')
   },
   props: {
     propCiId: { type: Number },
@@ -290,13 +294,16 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
+  async mounted() {
     this.ciId = Math.floor(this.$route.params['ciId']) || this.propCiId;
     this.ciEntityId = Math.floor(this.$route.params['id']) || this.propCiEntityId;
-    this.getCiEntityById();
+    this.showContent = this.$route.query['show'] || this.showContent;
+    await this.getCiEntityById();
     this.getAttrByCiId();
     this.getRelByCiId();
-    this.getGlobalAttr();
+    if (!this.ciEntityData.isVirtual) {
+      this.getGlobalAttr();
+    }
     this.getConstList();
     this.getCustomViewList();
     this.getUnCommitTransactionCount();
@@ -407,14 +414,14 @@ export default {
       return relEntityData.map(d => d.ciEntityId);
     },
     getConstList() {
-      this.$api.cmdb.ci.getViewConstList(this.ciId, 'detail').then(res => {
+      this.$api.cmdb.ci.getViewConstList(this.ciId, { showType: 'detail', needAlias: 1 }).then(res => {
         this.constList = res.Return;
       });
     },
-    getCiEntityById() {
+    async getCiEntityById() {
       if (this.ciEntityId) {
         this.isLoading = true;
-        this.$api.cmdb.cientity
+        await this.$api.cmdb.cientity
           .getCiEntityById(this.ciId, this.ciEntityId, true, true, true)
           .then(res => {
             this.ciEntityData = res.Return;
@@ -433,13 +440,13 @@ export default {
       }
     },
     getGlobalAttr() {
-      this.$api.cmdb.globalattr.getCiEntityGlobalAttr(this.ciEntityId).then(res => {
+      this.$api.cmdb.globalattr.getCiEntityGlobalAttr(this.ciEntityId, { showType: 'detail', needAlias: 1 }).then(res => {
         this.globalAttrList = res.Return;
       });
     },
     getAttrByCiId() {
       if (this.ciId) {
-        this.$api.cmdb.ci.getAttrByCiId(this.ciId, { showType: 'detail' }).then(res => {
+        this.$api.cmdb.ci.getAttrByCiId(this.ciId, { showType: 'detail', needAlias: 1 }).then(res => {
           this.attrList = res.Return;
           this.attrGroupList = [];
           if (this.attrList && this.attrList.length > 0) {
@@ -454,7 +461,7 @@ export default {
     },
     getRelByCiId() {
       if (this.ciId) {
-        this.$api.cmdb.ci.getRelByCiId(this.ciId, {needAction: false, showType: 'detail'}).then(res => {
+        this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAction: false, showType: 'detail', needAlias: 1 }).then(res => {
           this.relList = res.Return;
         });
       }
@@ -623,7 +630,7 @@ export default {
   }
 }
 .rel-block {
-  padding: 0px 16px 10px 16px;
+  padding: 0px 0px 10px 0px;
   .rel-title {
     margin-bottom: 4px;
   }

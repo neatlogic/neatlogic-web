@@ -9,7 +9,7 @@
       @scroll="scroll"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/action-manage')">{{ $getFromPage('router.autoexec.combinationtool') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft><span>{{ $t('term.autoexec.addjob') }}</span></template>
       <template v-if="!id" v-slot:topRight>
@@ -28,6 +28,7 @@
               type="primary"
               icon="tsfont tsfont-run"
               :disabled="(!dataConfig.isActive || !dataConfig.executable) && source == 'combop'"
+              :loading="isCreating"
               @click="openExecuteSetting"
             >{{ $t('term.autoexec.immediateexecution') }}</Button>
           </span>
@@ -69,6 +70,29 @@
                 v-bind="roundCountForm"
               ></TsFormSelect>
             </TsFormItem>
+          </div>
+        </div>
+        <div>
+          <Divider orientation="start">{{ $t('term.deploy.actuatorgroup') }}</Divider>
+          <div v-if="dataConfig.existRunnerOrSqlExecMode && runnerGroup && runnerGroup.mappingMode==='runtimeparam'">
+            <RunnerGroupSetting
+              ref="runnerGroup"
+              :config="runnerGroup"
+              :readonly="true"
+              :runtimeParamList="runtimeParamList"
+            ></RunnerGroupSetting>
+          </div>
+          <div v-if="dataConfig.existRunnerOrSqlExecMode && runnerGroup && runnerGroup.mappingMode==='constant'">
+            <RunnerGroupSetting
+              ref="runnerGroup"
+              :config="runnerGroup"
+              :runtimeParamList="runtimeParamList"
+              :isCreateJob="true"
+              :disabled="false"
+            ></RunnerGroupSetting>
+          </div>
+          <div v-if="!dataConfig.existRunnerOrSqlExecMode" class="box-block text-tip">
+            {{ $t('message.autoexec.norunnerphaserunnergrouptips') }}
           </div>
         </div>
         <div>
@@ -183,6 +207,7 @@
   </div>
 </template>
 <script>
+import { mutations } from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   provide() {
@@ -191,18 +216,19 @@ export default {
     };
   },
   components: {
-    AddTarget: resolve => require(['./runnerDetail/add-target.vue'], resolve),
-    StepList: resolve => require(['./actionDetail/step/step-list.vue'], resolve),
-    StepConfig: resolve => require(['./actionDetail/step/step-config.vue'], resolve),
-    SetParam: resolve => require(['./runnerDetail/param.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    SaveSetting: resolve => require(['./runnerDetail/save-setting.vue'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    ExpiredReasonAlert: resolve => require(['./expired-reason-alert'], resolve),
-    ExecuteuserSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'], resolve)
+    AddTarget: () => import('./runnerDetail/add-target.vue'),
+    StepList: () => import('./actionDetail/step/step-list.vue'),
+    StepConfig: () => import('./actionDetail/step/step-config.vue'),
+    SetParam: () => import('./runnerDetail/param.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    SaveSetting: () => import('./runnerDetail/save-setting.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    ExpiredReasonAlert: () => import('./expired-reason-alert'),
+    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
+    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue')
   },
   filters: {},
   props: {
@@ -230,6 +256,7 @@ export default {
   data() {
     let _this = this;
     return {
+      isCreating: false,
       actionId: null,
       versionId: null,
       source: 'combop',
@@ -287,6 +314,10 @@ export default {
           value: ''
         }
       },
+      runnerGroup: {
+        mappingMode: 'constant',
+        value: '-1'
+      },
       needExecuteNode: false, //组合工具的执行目标
       needExecuteUser: false, //组合工具的执行用户
       needProtocol: false, //组合工具的连接协议
@@ -340,7 +371,7 @@ export default {
   },
   async beforeMount() {
     await this.getParamsTypeLit();
-    await this.getExecModeList();    
+    await this.getExecModeList();
   },
   mounted() {},
   beforeUpdate() {},
@@ -397,7 +428,9 @@ export default {
             this.needProtocol = this.dataConfig.needProtocol;
             this.needRoundCount = this.dataConfig.needRoundCount;
             this.executeConfig = this.dataConfig.config.executeConfig || {};
+            this.runnerGroup = this.executeConfig.runnerGroup || this.runnerGroup;
             this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
+            mutations.setOpType(this.dataConfig.opType);
             if (this.jobId) {
               this.setJobParams(this.jobConfig);
             } else {
@@ -429,13 +462,13 @@ export default {
               // 执行目标回显
               if (this.isEdit && !this.$utils.isEmpty(this.config)) {
                 // 处理定时任务编辑回显
-                this.setJobParams(this.config); 
+                this.setJobParams(this.config);
                 if (this.executeConfig.whenToSpecify) {
                   this.$set(this.executeConfig, 'whenToSpecify', 'runtime');
-                } 
+                }
               }
             }
-            
+
             // this.showExecuteData = this.stepList instanceof Array ? this.stepList.find(item => item.execMode != 'runner') : false;//如果阶段执行方式都是runner 则不用显示执行方面的信息
             if (this.needExecuteNode || this.needExecuteUser || this.needProtocol) { //接口返回是否需要展示：执行目标，连接协议，执行用户
               this.showExecuteData = true;
@@ -468,6 +501,7 @@ export default {
       isValid = this.$refs.executeForm ? this.$refs.executeForm.valid() && isValid : isValid;
       isValid = this.$refs.nameForm ? this.$refs.nameForm.valid() && isValid : isValid;
       isValid = this.$refs.roundCountForm ? this.$refs.roundCountForm.valid() && isValid : isValid;
+      isValid = this.$refs.runnerGroup ? this.$refs.runnerGroup.valid() && isValid : isValid;
       return isValid;
     },
     openExecuteSetting() {
@@ -487,6 +521,7 @@ export default {
         combopVersionId: this.versionId,
         name: this.nameForm.itemList.name.value
       }, this.getCombopParams());
+      this.isCreating = true;
       this.$api.autoexec.action.executeAction(val).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
@@ -495,6 +530,8 @@ export default {
             query: {id: res.Return.jobId}
           });
         }
+      }).finally(e => {
+        this.isCreating = false;
       });
     },
     scroll(top) {
@@ -578,6 +615,13 @@ export default {
         }
       } else if (this.config && this.config.executeConfig) {
         data = this.config; // 解决返回列表页面，数据对比不对问题
+      }
+      if (this.$refs.runnerGroup) {
+        this.$set(this, 'runnerGroup', this.$refs.runnerGroup.save());
+      }
+      //补充runnerGroup
+      if (this.dataConfig.existRunnerOrSqlExecMode) {
+        this.$set(data, 'runnerGroup', this.runnerGroup);
       }
       return data;
     },

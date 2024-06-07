@@ -9,6 +9,7 @@
       :transfer="true"
       :extendCondition="{ projectId: projectId }"
       :groupList="groupList"
+      :border="border"
       :includeList="['common#loginuser']"
       :excludeList="['common#alluser']"
       @change="
@@ -26,7 +27,7 @@ import { AttrBase } from '@/views/pages/rdm/project/attr-handler/base-privateatt
 export default {
   name: '',
   components: {
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   extends: AttrBase,
   props: {},

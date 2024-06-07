@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div>
     <TsDialog
@@ -32,7 +18,7 @@
 export default {
   name: 'ToolCatalogEditDialog', // 目录工具(添加-编辑)
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue')
   },
   filters: {},
   props: {
@@ -67,9 +53,9 @@ export default {
           label: this.$t('page.name'),
           maxlength: 50,
           validateList: [
-            'required', 
+            'required',
             'name-special',
-            { 
+            {
               name: 'searchUrl', // 字段必须，不能更改
               url: '/api/rest/autoexec/catalog/save',
               key: 'name', // key值
@@ -120,7 +106,7 @@ export default {
         if (res.Status == 'OK') {
           if (!this.$utils.isEmpty(this.nodeData) && !this.$utils.isEmpty(this.nodeData.value) && !this.$utils.isEmpty(this.nodeData.value.id)) {
             // 重命名
-            this.nodeData.node.name = params.name; 
+            this.nodeData.node.name = params.name;
           } else if (!this.$utils.isEmpty(this.nodeData) && !this.$utils.isEmpty(this.nodeData.value) && this.$utils.isEmpty(this.nodeData.value.id)) {
             // 添加下级目录
             const newNode = {

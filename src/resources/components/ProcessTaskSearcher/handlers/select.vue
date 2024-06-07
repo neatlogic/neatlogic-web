@@ -14,6 +14,7 @@
       border="border"
       :value="conditionData && conditionData.valueList"
       :validateList="[{ name: 'required', message: ' ' }]"
+      :isCustomValue="isCustomValue"
       @change="change"
     ></TsFormSelect>
   </div>
@@ -22,8 +23,8 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree')
   },
   props: {
     mode: {
@@ -31,10 +32,14 @@ export default {
       default: 'simple'
     },
     condition: { type: Object },
-    conditionData: {type: Object}//当前组件在工单中心配置中的数据
+    conditionData: {type: Object}, //当前组件在工单中心配置中的数据
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
+      type: Boolean,
+      default: false
+    }
   },
   data() {
-    const _this = this;
     return {
       config: this.condition.config,
       matrixConfig: {
@@ -46,8 +51,7 @@ export default {
   beforeCreate() {},
   created() { this.mergeMatrixConfig(); },
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -73,7 +77,7 @@ export default {
           needPage: false
         };
         Object.assign(this.config, this.matrixConfig);
-      } 
+      }
     },
     change(val, option) {
       let text = '';

@@ -30,9 +30,11 @@
             idKey="uuid"
             :nodes="nodeList"
             :hoverDomList="hoverDomList"
+            :beforeClick="beforeClick"
             :onClick="clickNode"
             :onDrop="onDrop"
-            :value="currentCatalogId"
+            :value="treeUuid"
+            :beforeDrop="beforeDrop"
           ></TsZtree>
         </div>
       </template>
@@ -41,7 +43,8 @@
           <component
             :is="catalogTypeName"
             :ref="catalogTypeName"
-            :uuid="currentCatalogId"
+            :uuid="currentUuid"
+            :processUuid="processUuid"
             @save="saveEdit"
             @updateName="updateName"
           ></component>
@@ -54,16 +57,19 @@
 export default {
   name: 'CatalogManage',
   components: {
-    TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    catalog: resolve => require(['./catalog/edit/catalog.vue'], resolve),
-    channel: resolve => require(['./catalog/edit/channel.vue'], resolve)
+    TsZtree: () => import('@/resources/plugins/TsZtree/TsZtree.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    catalog: () => import('./catalog/edit/catalog.vue'),
+    channel: () => import('./catalog/edit/channel.vue')
   },
   directives: {},
   props: [''],
   data() {
-    return { 
-      currentCatalogId: null,
+    return {
+      isCancelSelected: false, // 从流程管理跳转过来选中对应节点，再次选中，取消从流程管理跳转过来节点
+      firstTreeUuid: '', // 用于从流程编辑跳转到服务目录，新增服务，需要默认选中第一个目录，但是打开新增服务的页面
+      currentUuid: null,
+      treeUuid: null,
       isSiderHide: false,
       catalogTypeName: 'catalog', // 类型,默认目录表单
       catalogName: this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') }), //表单标题
@@ -88,7 +94,7 @@ export default {
         search: true,
         dynamicUrl: '/api/rest/process/catalog/channel/search',
         rootName: 'treeList',
-        valueName: 'uuid',
+        valueName: 'typeAndUuid',
         textName: 'name',
         onChange: this.treeSelected,
         placeholder: this.$t('page.search'),
@@ -127,7 +133,7 @@ export default {
             }
           },
           clickFn: (treeNode) => {
-            this.addChannel(treeNode);
+            this.addChannel(treeNode?.uuid);
           }
         },
         {
@@ -149,8 +155,7 @@ export default {
     };
   },
   created() {
-    let {parentUuid = '', processUuid = '', uuid = ''} = this.$route.query || {};
-    this.parentUuid = parentUuid;
+    let {processUuid = '', uuid = ''} = this.$route.query || {};
     this.processUuid = processUuid;
     this.uuid = uuid;
   },
@@ -159,23 +164,26 @@ export default {
     this.getTreeList(true);
   },
   methods: {
-    verticals() {
-      this.isSiderHide = !this.isSiderHide;
-    },
     //获取服务目录服务树
     getTreeList(isFirst) {
       this.$api.process.service.searchTree().then(res => {
         if (res.Status == 'OK') {
           this.nodeList = res.Return || [];
           if (!isFirst) {
-            this.currentCatalogId = this.selectSaveUuid;
-          } else if (this.parentUuid != '') {
-            this.currentCatalogId = this.parentUuid;
-            this.addChannel(this.parentUuid);
-          } else if (this.uuid != '') {
-            this.currentCatalogId = this.uuid;
+            this.currentUuid = this.selectSaveUuid;
+            this.treeUuid = this.selectSaveUuid;
+          } else if (this.uuid) {
+            this.currentUuid = this.uuid;
+            this.treeUuid = this.uuid;
+            this.catalogTypeName = 'channel';//服务
+            this.firstTreeUuid = this.uuid;
+          } else if (this.processUuid) {
+            this.treeUuid = !this.$utils.isEmpty(this.nodeList) ? this.nodeList[0]?.uuid : null;
+            this.firstTreeUuid = this.treeUuid;
+            this.catalogTypeName = 'channel';//服务
           } else if (!this.$utils.isEmpty(this.nodeList)) {
-            this.currentCatalogId = this.nodeList[0]?.uuid || null;
+            this.currentUuid = this.nodeList[0]?.uuid || null;
+            this.treeUuid = this.nodeList[0]?.uuid || null;
           } else {
             this.addRoot();
           }
@@ -183,21 +191,63 @@ export default {
         }
       });
     },
+    beforeClick(zTreeObj, node) {
+      if (!this.isCancelSelected) {
+        this.isCancelSelected = true;
+      } else {
+        this.processUuid = null;
+        this.uuid = null;
+        this.firstTreeUuid = null;
+      }
+      if (!this.currentUuid || this.currentUuid != node.uuid) {
+        zTreeObj.cancelSelectedNode();
+        return true;
+      } else {
+        return false;
+      }
+    },
     clickNode(tree, node) {
       // 节点选中
+      if (node?.uuid && this.firstTreeUuid == node.uuid) {
+        // 从流程管理跳转到服务目录，有目录列表就打开新增服务的页面，没有就新增根目录
+        if (this.$utils.isEmpty(this.nodeList)) {
+          this.addRoot();
+        } else {
+          if (this.processUuid) {
+            this.addChannel(node.uuid);// 新加服务
+          } else if (this.uuid) {
+            this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('term.process.catalog')});
+            this.channelData.parentUuid = node.parentUuid; // 编辑服务
+            this.channelData.uuid = node.uuid;
+          }
+        }
+        return false;
+      }
       this.catalogTypeName = node?.type;
       if (this.catalogTypeName) {
         let {uuid = '', parentUuid = null, childrenCount = null, type = ''} = node || {};
-        this.catalogName = this.$t('dialog.title.edittarget', { target: type == 'channel' ? this.$t('term.process.catalog') : this.$t('page.catalogue') });
         this.childrenCount = childrenCount;
-        this.currentCatalogId = uuid;
-        this.$set(this.channelData, 'uuid', uuid);
-        this.$set(this.channelData, 'parentUuid', parentUuid);
+        this.currentUuid = uuid;
+        this.treeUuid = uuid;
+        if (type == 'catalog') {
+          // 编辑目录
+          this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') });
+          this.$set(this.catalogData, 'uuid', uuid);
+          this.$set(this.catalogData, 'parentUuid', parentUuid);
+        } else if (type == 'channel') {
+          // 编辑服务
+          this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('term.process.catalog')});
+          this.$set(this.channelData, 'uuid', uuid);
+          this.$set(this.channelData, 'parentUuid', parentUuid);
+        }
       }
     },
-    treeSelected(uuid) {
+    treeSelected(typeAndUuid) {
+      let arr = typeAndUuid.split('#');
+      let uuid = arr[1];
       //树select选择中
-      this.currentCatalogId = uuid;
+      this.currentUuid = uuid;
+      this.treeUuid = uuid;
     },
     //添加根目录按钮
     addRoot() {
@@ -205,11 +255,24 @@ export default {
       this.catalogName = this.$t('dialog.title.addtarget', { target: this.$t('page.rootdirectory') });
       this.catalogData.parentUuid = '0';
       this.catalogData.uuid = '';
-      this.currentCatalogId = null;
+      this.currentUuid = null;
     },
     //搜索服务点击
-    selectChannel(uuid) {
-      this.$set(this.channelData, 'uuid', uuid);
+    selectChannel(typeAndUuid) {
+      let arr = typeAndUuid.split('#');
+      let type = arr[0];
+      let uuid = arr[1];
+      if (type == 'catalog') {
+        // 编辑目录
+        this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') });
+        this.catalogTypeName = type;
+        this.$set(this.catalogData, 'uuid', uuid);
+      } else if (type == 'channel') {
+        // 编辑服务
+        this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('term.process.catalog')});
+        this.catalogTypeName = type;
+        this.$set(this.channelData, 'uuid', uuid);
+      }
     },
     handleSave() {
       if (this.disabledConfig.saving) {
@@ -230,34 +293,51 @@ export default {
           this.disabledConfig.saving = false;
         });
     },
-    onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
-      if (targetNode == null) {
-        return;
+    beforeDrop(tree, treeNodes, targetNode, moveType) {
+      const firstTreeNode = treeNodes && treeNodes[0];
+      const isTargetNodeService = targetNode && targetNode.type === 'channel';
+      const isFirstTreeNodeService = firstTreeNode && firstTreeNode.type === 'channel';
+      const isTargetNodeCatalog = targetNode && targetNode.type === 'catalog';
+      if (
+        (targetNode == null && isFirstTreeNodeService) ||
+        (isTargetNodeService && isFirstTreeNodeService && moveType === 'inner') ||
+        (isTargetNodeCatalog && isFirstTreeNodeService && moveType === 'prev') ||
+        (isTargetNodeCatalog && isFirstTreeNodeService && moveType === 'next')
+      ) {
+        // 不能将服务拖拽成为根节点, 不能将服务拖拽到服务，不能将服务拖拽到目录节点前面，不能将服务拖拽到目录节点后面
+        return false;
       }
+    },
+    onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
       let treeNode = treeNodes[0];
       let parentId = null;
       let keyId = 'uuid';
-      parentId = moveType == 'inner' ? targetNode[keyId] : targetNode.getParentNode() == null ? 0 : targetNode.getParentNode()[keyId];
+      if (moveType === 'inner') {
+        parentId = targetNode?.[keyId] || 0;
+      } else {
+        parentId = targetNode && targetNode.getParentNode() === null ? 0 : (targetNode?.getParentNode()?.[keyId] || 0);
+      }
       let data = {
         uuid: treeNode.uuid,
         moveType: moveType,
         parentUuid: parentId,
-        targetUuid: targetNode.uuid
+        targetUuid: targetNode?.uuid || 0
       };
+
       if (moveType != null) {
-        let typeConfig = {
-          catalog: this.$api.process.service.moveCatalog(data),
-          channel: this.$api.process.service.moveChannel(data)
-        };
-        typeConfig[typeConfig].then(res => {
-          if (res) {
-            if (res.Status == 'OK') {
+        if (treeNode.type == 'catalog') {
+          this.$api.process.service.moveCatalog(data).then(res => {
+            if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.executesuccess'));
             }
-          }
-        }).finally(() => {
-          this.getTreeList();
-        });
+          });
+        } else if (treeNode.type == 'channel') {
+          this.$api.process.service.moveChannel(data).then(res => {
+            if (res && res.Status == 'OK') {
+              this.$Message.success(this.$t('message.executesuccess'));
+            }
+          });
+        }
       }
     },
     handleDelete() {
@@ -291,7 +371,7 @@ export default {
     //树节点删除
     nodeDelete(treeNode) {
       let {uuid = null, name = '', type = '', childrenCount = 0} = treeNode || {};
-      if (childrenCount > 0 && !type) {
+      if (childrenCount > 0 || !type) {
         return false;
       }
       let apiFunc = type == 'catalog' ? this.$api.process.service.deleteCatalog({uuid: uuid}) : this.$api.process.service.deleteChannel({uuid: uuid});
@@ -317,18 +397,18 @@ export default {
       this.catalogTypeName = 'catalog';
       this.catalogData.parentUuid = treeNode.uuid;
       this.catalogData.uuid = '';
-      this.currentCatalogId = null;
+      this.currentUuid = null;
     },
     //添加服务
-    addChannel(treeNode) {
+    addChannel(uuid) {
       this.catalogName = this.$t('dialog.title.addtarget', { target: this.$t('term.process.catalog') });
       this.catalogTypeName = 'channel';
-      this.channelData.parentUuid = treeNode.uuid;
+      this.channelData.parentUuid = uuid;
       this.channelData.uuid = '';
-      if (this.processUuid != '') {
+      if (this.processUuid) {
         this.channelData.processUuid = this.processUuid;
       }
-      this.currentCatalogId = null;
+      this.currentUuid = null;
     },
     saveEdit(data) {
       //底部保存按钮

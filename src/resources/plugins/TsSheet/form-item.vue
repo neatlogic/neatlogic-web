@@ -12,7 +12,7 @@
         word-wrap
         width="350"
         trigger="hover"
-        title="异常"
+        :title="$t('page.exception')"
         transfer
       >
         <span class="text-error tsfont-warning-s"></span>
@@ -47,26 +47,52 @@
     ></div>
     <div v-if="mode == 'edit' && formItem.config && formItem.config.isHide" class="corner-bottom-icon text-grey tsfont-eye-off"></div>
     <div v-if="needLabel" class="mb-xs">{{ formItem.label }}</div>
-    <component
-      :is="formItem.handler"
-      v-if="showComponent(formItem) && (!formItem.type || formItem.type === 'form')"
-      ref="formItem"
-      :style="{ width: mode != 'defaultvalue'?(formItem.config && formItem.config.width) || '100%':'100%' }"
-      :formItem="formItem"
-      :formItemList="formItemList"
-      :value="formItemValue"
-      :mode="mode"
-      :filter="filter"
-      :readonly="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isReadOnly:false) || readonly"
-      :disabled="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isDisabled:false) || disabled"
-      :required="(mode != 'defaultvalue'?formItem.config && formItem.config.isRequired:false)"
-      :formData="formData"
-      :readonlyTextIsHighlight="readonlyTextIsHighlight"
-      :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
-      @setValue="setValue"
-      @resize="$emit('resize')"
-      @select="selectFormItem"
-    ></component>
+    <template v-if="showComponent(formItem) && (!formItem.type || formItem.type === 'form')">
+      <component
+        :is="formItem.handler"
+        v-if="isExistComponent(formItem.handler)"
+        ref="formItem"
+        :style="{ width: mode != 'defaultvalue'?(formItem.config && formItem.config.width) || '100%':'100%' }"
+        :formItem="formItem"
+        :formItemList="formItemList"
+        :value="formItemValue"
+        :mode="mode"
+        :filter="filter"
+        :readonly="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isReadOnly:false) || readonly"
+        :disabled="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isDisabled:false) || disabled"
+        :required="(mode != 'defaultvalue'?formItem.config && formItem.config.isRequired:false)"
+        :formData="formData"
+        :readonlyTextIsHighlight="readonlyTextIsHighlight"
+        :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
+        :isCustomValue="isCustomValue"
+        @setValue="setValue"
+        @resize="$emit('resize')"
+        @select="selectFormItem"
+      ></component>
+      <component
+        :is="formItem.customName"
+        v-else-if="formItem.handler === 'formcustom' && isExistComponent(formItem.customName)"
+        ref="formItem"
+        :style="{ width: mode != 'defaultvalue'?(formItem.config && formItem.config.width) || '100%':'100%' }"
+        :formItem="formItem"
+        :formItemList="formItemList"
+        :value="formItemValue"
+        :mode="mode"
+        :filter="filter"
+        :readonly="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isReadOnly:false) || readonly"
+        :disabled="((mode != 'defaultvalue' && mode != 'condition') ? formItem.config && formItem.config.isDisabled:false) || disabled"
+        :required="(mode != 'defaultvalue'?formItem.config && formItem.config.isRequired:false)"
+        :formData="formData"
+        :readonlyTextIsHighlight="readonlyTextIsHighlight"
+        :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
+        :isCustomValue="isCustomValue"
+        @setValue="setValue"
+        @resize="$emit('resize')"
+        @select="selectFormItem"
+        @setExtendValue="setExtendValue"
+      ></component>
+      <div v-else class="text-warning">{{ $t('page.commercialcomponent') }}</div>
+    </template>
     <CustomItem
       v-else-if="showComponent(formItem) && formItem.type === 'custom'"
       ref="formItem"
@@ -88,13 +114,13 @@
   </div>
 </template>
 <script>
-import * as formItems from './form/component/index.js';
+import formItems from './form/component/index.js';
 import conditionMixin from './form/conditionexpression/condition-mixin.js';
 export default {
   name: '',
   components: {
     ...formItems,
-    CustomItem: resolve => require(['./form/component/customitem.vue'], resolve)
+    CustomItem: () => import('./form/component/customitem.vue')
   },
   mixins: [conditionMixin],
   props: {
@@ -125,6 +151,15 @@ export default {
       // 默认值对应不上下列列表时，是否需要清空默认值
       type: Boolean,
       default: false
+    },
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
+      type: Boolean,
+      default: false
+    },
+    formExtendData: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -197,7 +232,7 @@ export default {
     },
     //根据联动配置初始化watch
     initReactionWatch() {
-      if (this.mode === 'read') {
+      if (this.mode === 'read' || this.mode === 'readSubform') {
         let needWatch = false;
         if (this.formItem.reaction) {
           for (let key in this.formItem.reaction) {
@@ -269,57 +304,60 @@ export default {
                   } else if (action === 'setvalue') {
                     const result = this.executeReaction(reaction, newVal, oldVal);
                     if (result) {
-                      if ((!reaction.isFirstLoad && (!this.formData.hasOwnProperty(this.formItem.uuid) || !this.formData[this.formItem.uuid])) || (reaction.isFirstLoad && !this.executeCount['setvalue'])) {
+                      let value = reaction.value;
+                      if (reaction.type == 'dynamic' && !this.$utils.isEmpty(reaction.value)) {
+                        const uuidList = reaction.value.split('#');
+                        const formItemUuid = uuidList[0];
+                        const formItemAttrUuid = uuidList[1] || 'value';
+                        let dynamicVal = this.$utils.deepClone(this.formData[formItemUuid]);
+                        if (!Array.isArray(dynamicVal)) {
+                          if (!this.$utils.isEmpty(dynamicVal)) {
+                            value = dynamicVal[formItemAttrUuid];
+                          } else {
+                            value = null;
+                          }
+                        } else {
+                          let list = [];
+                          dynamicVal.forEach(v => {
+                            if (!this.$utils.isEmpty(v[formItemAttrUuid])) {
+                              list.push(v[formItemAttrUuid]);
+                            }
+                          });
+                          value = list.join(',');
+                        }
+                      }
+                      if ((!reaction.isFirstLoad && (!this.formData.hasOwnProperty(this.formItem.uuid) || !this.formData[this.formItem.uuid]) || (this.formData[this.formItem.uuid] && !this.$utils.isSame(value, this.formData[this.formItem.uuid]))) || (reaction.isFirstLoad && !this.executeCount['setvalue'])) {
                         this.addExecuteCount('setvalue');
-                        this.$set(this.formData, this.formItem.uuid, reaction.value);
-                        this.$emit('change', reaction.value);
+                        this.$set(this.formData, this.formItem.uuid, value);
+                        this.$emit('change', value);
                       }
                     }
                   } else if (action === 'filter') {
                     this.filter = [];
                     if (!this.$utils.isEmpty(reaction.ruleList)) {
                       reaction.ruleList.forEach(r => {
-                        let formItem = this.formItemList.find(d => d.uuid === r.formItemUuid);
+                        let list = r.formItemUuid.split('#');
+                        let formItemUuid = list[0];
+                        let column = list[1] ? list[1] : 'value';
+                        let formItem = this.formItemList.find(d => d.uuid === formItemUuid);
                         if (formItem && formItem.config) {
                           let valueList = [];
                           let textList = [];
-                          if (this.formData[r.formItemUuid] instanceof Array) {
-                            this.formData[r.formItemUuid].forEach(value => {
-                              if (typeof value === 'string') {
-                                if (value.includes('&=&')) {
-                                  valueList.push(value.split('&=&')[0]); //只取value部分
-                                  textList.push(value.split('&=&')[1]); //只取text部分
-                                } else {
-                                  valueList.push(value);
-                                  if (!this.$utils.isEmpty(formItem.config.dataList)) {
-                                    let findData = formItem.config.dataList.find(f => f.value === value);
-                                    textList.push(findData.text);
-                                  } else {
-                                    textList.push(value);
-                                  }
-                                }
-                              }
+                          let currentFormData = this.formData[formItemUuid];
+                          if (currentFormData instanceof Array) {
+                            this.formData[formItemUuid].forEach(value => {
+                              const { text, value: tmpValue } = this.handleFilterValue(value, column, formItem);  
+                              valueList.push(tmpValue);  
+                              textList.push(text); 
                             });
-                          } else {
-                            let value = this.formData[r.formItemUuid];
-                            if (value) {
-                              if (value.includes('&=&')) {
-                                valueList.push(value.split('&=&')[0]); //只取value部分
-                                textList.push(value.split('&=&')[1]); //只取text部分,用于矩阵搜索回显
-                              } else {
-                                valueList.push(value);
-                                if (!this.$utils.isEmpty(formItem.config.dataList)) {
-                                  const findData = formItem.config.dataList.find(f => f.value === value);
-                                  textList.push(findData.text);
-                                } else {
-                                  textList.push(value);
-                                }
-                              }
-                            }
+                          } else if (!this.$utils.isEmpty(currentFormData)) {
+                            const { text, value: tmpValue } = this.handleFilterValue(currentFormData, column, formItem);  
+                            valueList.push(tmpValue);  
+                            textList.push(text); 
                           }
                           if (valueList.length > 0) {
                             this.filter.push({ uuid: r.matrixAttrUuid,
-                              valueList: valueList, 
+                              valueList: valueList,
                               textList: textList
                             });
                           }
@@ -358,6 +396,49 @@ export default {
         }
       }
     },
+    handleFilterValue(value, column, formItem = {}) {
+      let tmpText, tmpValue;
+      let {handler = '', config = {}} = formItem || {};
+      let {dataList = []} = config;
+      if (typeof value === 'string') {  
+        tmpText = tmpValue = value;
+        if (handler == 'formuserselect') {
+          tmpText = tmpValue = this.handleUserSelectValue(value);
+        } else if (!this.$utils.isEmpty(dataList)) {  
+          const findData = dataList.find(f => f.value === value);  
+          tmpText = findData ? findData.text : value;  
+        }  
+      } else if (typeof value === 'object') {  
+        tmpText = value.text;  
+        tmpValue = value[column];
+        if (handler == 'formuserselect') {
+          tmpText = this.handleUserSelectValue(tmpText);
+          tmpValue = this.handleUserSelectValue(tmpValue);
+        } else if (!this.$utils.isEmpty(dataList) && tmpValue) {  
+          const findData = dataList.find(f => f[column] === tmpValue);  
+          tmpText = findData ? findData.text : tmpText;  
+        }  
+      }
+      return { text: tmpText, value: tmpValue };  
+    },
+    handleUserSelectValue(value) {
+      // 处理用户下拉组件的值，去掉前缀
+      let prefixList = ['user#', 'team#', 'role#'];
+      let currentValue = this.$utils.deepClone(value);
+      let uuid = '';
+      let parts = [];
+      prefixList.some((v) => {
+        if (!this.$utils.isEmpty(currentValue) && currentValue.includes(v)) {
+          parts = currentValue.split(v) || [];
+          if (parts.length > 1) {
+            uuid = parts[1] || '';
+            return true;
+          }
+        }
+        return false;
+      });
+      return uuid;
+    },
     //检查条件涉及的值是否发生变化，如果没变化则不触发联动
     isConditionDataChange(action, reaction, newFormData, oldFormData, formItemUuid) {
       if (!newFormData) {
@@ -376,7 +457,9 @@ export default {
               if (conditionList && conditionList.length > 0) {
                 for (let j = 0; j < conditionList.length; j++) {
                   const condition = conditionList[j];
-                  if (newFormData[condition['formItemUuid']] != oldFormData[condition['formItemUuid']]) {
+                  const uuidList = condition['formItemUuid'].split('#');
+                  const formItemUuid = uuidList[0];
+                  if (newFormData[formItemUuid] != oldFormData[formItemUuid]) {
                     return true;
                   } else if (this.isFirstLoad) {
                     this.isFirstLoad = false;
@@ -408,7 +491,9 @@ export default {
           if (ruleList && ruleList.length > 0) {
             for (let i = 0; i < reaction['ruleList'].length; i++) {
               const rule = reaction['ruleList'][i];
-              if (newFormData[rule['formItemUuid']] != oldFormData[rule['formItemUuid']]) {
+              let list = rule['formItemUuid'].split('#');
+              let ruleFormItemUuid = list[0];
+              if (!this.$utils.isSame(newFormData[ruleFormItemUuid], oldFormData[ruleFormItemUuid])) {
                 return true;
               } else if (this.isFirstLoad) {
                 this.isFirstLoad = false;
@@ -461,6 +546,18 @@ export default {
         this.executeCount[action] = 0;
       }
       this.executeCount[action] = this.executeCount[action] + 1;
+    },
+    saveFormExtendConfig() {
+      let list = [];
+      if (this.$refs['formItem'] && this.$refs['formItem'].saveFormExtendConfig) {
+        list = this.$refs['formItem'].saveFormExtendConfig();
+      }
+      return list;
+    },
+    setExtendValue(val) {
+      if (this.formExtendData) {
+        this.$set(this.formExtendData, this.formItem.uuid, val);
+      }
     }
   },
   filter: {},
@@ -480,7 +577,7 @@ export default {
               reaction.conditionGroupList.forEach(cg => {
                 if (cg.conditionList) {
                   cg.conditionList.forEach(c => {
-                    conditionData[c.uuid] = c.valueList;
+                    conditionData[c.uuid] = c;
                   });
                 }
               });
@@ -519,7 +616,7 @@ export default {
     showComponent() {
       return formItem => {
         let isShow = true;
-        if ((this.mode === 'read' && formItem.config && formItem.config.isHide) || formItem.isEditing ||
+        if (((this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing ||
          (formItem.override_config && formItem.override_config.isHide)
         ) {
           isShow = false;
@@ -534,6 +631,15 @@ export default {
         readonlyTextIsHighlight = true;
       }
       return readonlyTextIsHighlight;
+    },
+    isExistComponent() {
+      return (handler) => {
+        let component = true;
+        if (!formItems[handler]) {
+          component = false;
+        }
+        return component;
+      };
     }
   },
   watch: {}

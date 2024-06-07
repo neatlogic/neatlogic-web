@@ -11,7 +11,7 @@
           </Col>
           <Col span="12">
             <TsFormSelect
-              v-model="workerPolicyConfig.executeMode"              
+              v-model="workerPolicyConfig.executeMode"
               :dataList="executeModeList"
               :clearable="false"
               border="border"
@@ -201,7 +201,19 @@
                         </div>
                       </div>
                     </div>
-                    <div v-if="automaticDeal.length > 0" class="text-list">
+                    <CmdbDispatcher
+                      v-if="getDispatcherName(item.config.handler) == 'CmdbDispatcher'"
+                      ref="cmdbDispatcher"
+                      v-model="item.config.handlerConfig"
+                      :allFormitemList="allFormitemList"
+                    ></CmdbDispatcher>
+                    <RegionDispatcher
+                      v-if="getDispatcherName(item.config.handler) == 'RegionDispatcher'"
+                      ref="regionDispatcher"
+                      v-model="item.config.handlerConfig"
+                      :allFormitemList="allFormitemList"
+                    ></RegionDispatcher>
+                    <div v-else-if="automaticDeal.length > 0" class="text-list">
                       <div v-for="automatic in automaticDeal" :key="automatic.name">
                         <div class="title text-left require-label overflow text-tip form-label" :title="automatic.label">{{ automatic.label }}</div>
                         <div class="text custom-select">
@@ -209,6 +221,7 @@
                             <div
                               v-if="automatic.type == 'formselect'"
                             >
+                              <!-- 配置项表单分派器 -->
                               <TsFormSelect
                                 ref="dealValue"
                                 v-model="item.config.handlerConfig[automatic.name]"
@@ -319,9 +332,11 @@ export default {
   name: 'AssignSetting',
   components: {
     vuedraggable,
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    CmdbDispatcher: () => import('./dispatcher/cmdb-dispatcher'),
+    RegionDispatcher: () => import('./dispatcher/region-dispatcher')
   },
   props: {
     prevNodes: {
@@ -530,6 +545,14 @@ export default {
         if (item.type == 'form') {
           item.config.attributeUuidList = this.policyListAttributeUuidList;
         }
+        if (item.type == 'automatic' && item.config && this.getDispatcherName(item.config.handler) == 'CmdbDispatcher') {
+          // cmdb分派器，单独处理值
+          item.config.handlerConfig = this.$refs.cmdbDispatcher && this.$refs.cmdbDispatcher[0] && this.$refs.cmdbDispatcher[0].saveData() || {};
+        }
+        if (item.type == 'automatic' && item.config && this.getDispatcherName(item.config.handler) == 'RegionDispatcher') {
+          // 地域分派器，单独处理值
+          item.config.handlerConfig = this.$refs.regionDispatcher && this.$refs.regionDispatcher[0] && this.$refs.regionDispatcher[0].saveData() || {};
+        }
       });
       this.$set(data, 'policyList', this.policyList);
       this.assignValid();
@@ -549,13 +572,14 @@ export default {
         this.isValid = false;
       }
       this.$refs.defaultWorker && this.$refs.defaultWorker.valid();
+      this.$refs.cmdbDispatcher && this.$refs.cmdbDispatcher[0] && this.$refs.cmdbDispatcher[0].valid(); // 由于policyList是v-for循环，导致获取节点也是数组，所以this.$refs.cmdbDispatcher[0]取第一个数组值
+      this.$refs.regionDispatcher && this.$refs.regionDispatcher[0] && this.$refs.regionDispatcher[0].valid(); 
     },
     selectAutomatic(handler, type) {
       //选择分派器
       let automaticObj = this.policyList.find(p => p.type === 'automatic');
       if (handler) {
-        var newObj = this.automaticList.find(d => d.handler === handler);
-
+        let newObj = this.automaticList.find(d => d.handler === handler);
         if (!newObj) {
           this.policyList.map(p => {
             if (p.type == 'automatic') {
@@ -565,8 +589,7 @@ export default {
             return p;
           });
         } else if (newObj && newObj.config) {
-          let config = newObj.config;
-          this.automaticDeal = newObj.config;
+          this.automaticDeal = this.getDispatcherName(handler) == 'CmdbDispatcher' ? [] : newObj.config;
           if (type != 'init') {
             this.$set(automaticObj.config, 'handlerConfig', {});
             this.automaticDeal.forEach(item => {
@@ -640,6 +663,13 @@ export default {
           handler = 'TsFormInput';
         }
         return handler;
+      };
+    },
+    getDispatcherName() {
+      // 获取分派器名称
+      return (handlerDispatcher) => {
+        const arr = handlerDispatcher && handlerDispatcher.split('.') || [];
+        return arr[arr.length - 1];
       };
     }
   },

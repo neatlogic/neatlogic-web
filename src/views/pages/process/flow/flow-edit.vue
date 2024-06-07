@@ -2,7 +2,7 @@
   <div class="flow-edit">
     <TsContain :rightWidth="340" border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/flow-overview')">{{ $getFromPage('router.process.flowmanage') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span>{{ processConfig.name }}</span>
@@ -58,7 +58,7 @@
             </Card>
             <div ref="topo" style="height:100%"></div>
           </div>
-         
+
         </div>
       </template>
       <template v-slot:right>
@@ -66,54 +66,54 @@
           <!-- 20200213_zqp_调整:value为v-model实现数据双向绑定以监听activeTab的变化-->
           <Tabs v-model="activeTab" class="block-tabs" :animated="false">
             <TabPane :label="$t('term.process.flowsetting')" name="flowsetting">
-              <FlowSetting 
-                v-if="isInit" 
+              <FlowSetting
+                v-if="isInit"
                 ref="flowSetting"
-                :formUuid.sync="formConfig.uuid" 
-                :uuid="processConfig.uuid" 
-                :name="processConfig.name" 
-                :formConfig="formConfig" 
+                :formUuid.sync="formConfig.uuid"
+                :uuid="processConfig.uuid"
+                :name="processConfig.name"
+                :formConfig="formConfig"
                 :stepList="stepList"
                 :processConfig="processConfig"
                 @changeFlowName="changeFlowName"
                 @updateformitemList="updateformitemList"
                 @changeRelateForm="changeRelateForm"
               >
-              </FlowSetting>            
+              </FlowSetting>
             </TabPane>
             <TabPane :label="$t('term.process.effectivenesstimesetting')" name="tacticssetting">
-              <TacticsSetting 
+              <TacticsSetting
                 ref="slaSetting"
-                :slaListPorps="slaList" 
-                :canvasNodeList="stepList" 
-                :formConfig="formConfig" 
-                :startNodeuuid="startNodeuuid" 
-                @slaIn="nodesHighlight" 
+                :slaListPorps="slaList"
+                :canvasNodeList="stepList"
+                :formConfig="formConfig"
+                :startNodeuuid="startNodeuuid"
+                @slaIn="nodesHighlight"
                 @slaOut="nodesHighlight([])"
               ></TacticsSetting>
             </TabPane>
             <TabPane :label="$t('term.process.scoresetting')" name="scoresetting" class="tab-content">
-              <ScoreSetting 
-                ref="scoreSetting" 
-                :scoreConfig="scoreConfig" 
+              <ScoreSetting
+                ref="scoreSetting"
+                :scoreConfig="scoreConfig"
                 :canvasNodeList="stepList"
               ></ScoreSetting>
             </TabPane>
             <TabPane v-if="nodeConfig" :label="$t('term.process.nodesetting')" name="nodesetting">
-              <FlownodeSetting 
-                :key="nodeConfig.uuid" 
-                ref="nodeSetting" 
+              <FlownodeSetting
+                :key="nodeConfig.uuid"
+                ref="nodeSetting"
                 :formhandlerList="formhandlerList"
-                :prevNodes="prevNodes" 
-                :allPrevNodes="allPrevNodes" 
-                :isStart="isNodeStart" 
-                :nodeChildren="nodeChildren" 
-                :nodeConfig="nodeConfig" 
-                :formConfig="formConfig" 
+                :prevNodes="prevNodes"
+                :allPrevNodes="allPrevNodes"
+                :isStart="isNodeStart"
+                :nodeChildren="nodeChildren"
+                :nodeConfig="nodeConfig"
+                :formConfig="formConfig"
                 :stepList="stepList"
                 :nodeAllLinksList="nodeAllLinksList"
                 @toFlowSetting="toFlowSetting"
-                @setNodeName="setNodeName" 
+                @setNodeName="setNodeName"
                 @updateNode="updateNode"
               ></FlownodeSetting>
             </TabPane>
@@ -124,7 +124,7 @@
         </div>
       </template>
     </TsContain>
-   
+
     <!-- 关联服务弹窗 -->
     <RelationService :isShow="relevanceModel" :processUuid="processUuid" @close="closeService"></RelationService>
     <!-- 关联服务end -->
@@ -197,7 +197,7 @@ let viewOpts = {
         Vm.removeAuthconfig(item);
         Vm.stepList.splice(ni, 1);
         return true;
-      } 
+      }
       return false;
     });
     if (!Vm.$topoVm.getSelected().length) {
@@ -207,10 +207,12 @@ let viewOpts = {
   'link.removeFn': (link) => { // 删除线之后的回调函数
     Vm.setPrevNodes();
     vm.setNodeAllLinksList();
+    vm.setNodeChildren();
   },
   'link.addafter': (link) => { // 新建连线之后回调函数
     Vm.setPrevNodes();
     vm.setNodeAllLinksList();
+    vm.setNodeChildren();
   }
 };
 // 起始节点和结束节点
@@ -218,7 +220,7 @@ let startEndNode = [
   {
     type: 'start',
     handler: 'start',
-    icon: '#ts-circle-fill', // 字体图标取的是 tsfont.js
+    icon: '#ts-circle-fill', // 字体图标取的是 tsIconfont.js
     iconColor: 'RGBA(129, 213, 83, 1)',
     x: 200,
     y: 360,
@@ -229,7 +231,7 @@ let startEndNode = [
   {
     type: 'end',
     handler: 'end',
-    icon: '#ts-circle-fill', // 字体图标取的是 tsfont.js
+    icon: '#ts-circle-fill', // 字体图标取的是 tsIconfont.js
     iconColor: 'RGBA(255, 98, 90, 1)',
     x: 600,
     y: 360,
@@ -341,8 +343,8 @@ export default {
     FlowLinkSetting,
     ScoreSetting,
     LeftNode,
-    RelationService: resolve => require(['./flowedit/relation-service.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    RelationService: () => import('./flowedit/relation-service.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {},
   props: [''],
@@ -418,16 +420,16 @@ export default {
   async mounted() {
     // 初始化
     window.vm = Vm = this;
-    let config = Object.assign(viewOpts, { 
+    let config = Object.assign(viewOpts, {
       'canvas.autoadjust': true, //显示辅助线
       'anchor.size': 4 //连接点大小
     });
     TopoVm = this.$topoVm = new Topo(this.$refs.topo, config, this);
     this.$topoVm.draw();
-     
+
     // 获取节点列表数据
     await this.getNodeList();
-    
+
     await this.initFlow('init');
     this.getWorkerdispatcher();
     this.selectNodeByStepUuid();
@@ -593,6 +595,7 @@ export default {
                 let data = res.Return.config && (typeof res.Return.config == 'string') ? JSON.parse(res.Return.config) : res.Return.config;
                 this.referenceCount = res.Return.referenceCount;
                 Object.assign(this.processConfig, data.process.processConfig);
+                this.processConfig.uuid = res.Return.uuid;
                 this.processConfig.name = res.Return.name;
                 this.initTopo(data, action);
               } else {
@@ -721,7 +724,7 @@ export default {
         type: d.dirType || d.type || 'forward'
       })) : [];
       if (this.activeTab === 'nodesetting') { //跟新节点对应的表单数据
-        this.setNodeSetting(); 
+        this.setNodeSetting();
       } else if (this.activeTab == 'flowsetting') { //跟新流程对应的表单数据
         processConfig = this.$refs.flowSetting ? this.$refs.flowSetting.getJsonValue(action) : {};
         this.formConfig = this.$refs.flowSetting ? processConfig.formConfig : this.formConfig;
@@ -752,7 +755,7 @@ export default {
         referenceCount: this.referenceCount,
         config: flowFinallConfig
       };
-      
+
       return data;
     },
     async flowSave(isGoFlow) {
@@ -772,7 +775,6 @@ export default {
       saveData.config && saveData.config.process && saveData.config.process.stepList.length > 0 && saveData.config.process.stepList.forEach((item) => {
         if (item && item.stepConfig && item.stepConfig.hasOwnProperty('formSceneUuid') && item.stepConfig.formSceneUuid) {
           // 如果某些步骤节点，找不到匹配的场景名称时，回填失败，表单场景下拉框处为空
-          item.stepConfig['formSceneName'] = !this.formSceneUuidList.includes(item.stepConfig.formSceneUuid) ? '' : item.stepConfig.formSceneName;
           item.stepConfig['formSceneUuid'] = !this.formSceneUuidList.includes(item.stepConfig.formSceneUuid) ? '' : item.stepConfig.formSceneUuid;
         }
       });
@@ -782,6 +784,7 @@ export default {
           this.portData = saveData;
           this.draftPrevData = this.$utils.deepClone(saveData);
 
+          this.$route.meta.isSkip = true;
           if (!isGoFlow) {
             this.$router.push({
               path: '/flow-edit',
@@ -941,7 +944,7 @@ export default {
     },
     draftOk() {
       // 草稿列表确认
-      
+
       this.draftModel = false;
       Vm.$api.process.process
         .processDraftGet({
@@ -1004,7 +1007,7 @@ export default {
         });
     },
     goCreatecatalog() {
-      window.open(HOME + '/process.html#/catalog-manage?parentUuid=1&processUuid=' + this.processConfig.uuid, '_blank');
+      window.open(HOME + '/process.html#/catalog-manage?processUuid=' + this.processConfig.uuid, '_blank');
     },
     removeAuthconfig(node) {
       if (node && node.uuid) {
@@ -1082,7 +1085,6 @@ export default {
     },
     //获取分派器下拉列表
     getWorkerdispatcher() {
-      let _this = this;
       let data = {};
       this.$api.process.process
         .workerdispatcher(data)
@@ -1121,12 +1123,13 @@ export default {
     changeRelateForm(formUuid) {
       // 关联表单值改变
       // 默认给所有步骤节点，选上【默认场景】，删除关联表单，清空表单场景值
-      let noFormSceneNodeList = ['start', 'end', 'distributary', 'condition', 'timer']; // 不需要表单场景节点列表 
+      let noFormSceneNodeList = ['start', 'end', 'distributary', 'condition', 'timer']; // 不需要表单场景节点列表
       if (formUuid) {
         this.$api.framework.form.getFormByVersionUuid({uuid: formUuid}).then(res => {
           if (res.Status == 'OK') {
             try {
               let formConfig = res.Return.formConfig || {};
+              let defaultSceneUuid = formConfig.defaultSceneUuid || formConfig.uuid;
               formConfig.sceneList && formConfig.sceneList.forEach((item) => {
                 if (item.uuid) {
                   this.formSceneUuidList.push(item.uuid);
@@ -1137,8 +1140,7 @@ export default {
               }
               this.stepList && !this.$utils.isEmpty(this.stepList) && this.stepList.forEach((item) => {
                 if (item && item.handler && !noFormSceneNodeList.includes(item.handler) && item.stepConfig) {
-                  this.$set(item.stepConfig, 'formSceneUuid', (formConfig && formConfig.uuid) ? formConfig.uuid : '');
-                  this.$set(item.stepConfig, 'formSceneName', (formConfig && formConfig.name) ? formConfig.name : '');
+                  this.$set(item.stepConfig, 'formSceneUuid', (formConfig && formConfig.uuid) ? defaultSceneUuid : '');
                 }
               });
             } catch (error) {
@@ -1150,9 +1152,17 @@ export default {
         this.stepList && !this.$utils.isEmpty(this.stepList) && this.stepList.forEach((item) => {
           if (item && item.handler && !noFormSceneNodeList.includes(item.handler) && item.stepConfig) {
             this.$set(item.stepConfig, 'formSceneUuid', '');
-            this.$set(item.stepConfig, 'formSceneName', '');
           }
         });
+      }
+    },
+    setNodeChildren() {
+      //更新选中节点的子节点
+      if (this.nodeConfig) {
+        this.nodeChildren.splice(0);
+        let nodeVm = this.$topoVm.getNodeByUuid(this.nodeConfig.uuid);
+        let nodeChildren = nodeVm.getNextNodes().map(d => this.stepList.find(item => item.uuid == d.getUuid()));
+        this.nodeChildren.push(...nodeChildren);
       }
     }
   },
@@ -1170,7 +1180,7 @@ export default {
       if (oldValue == 'nodesetting') {
         //从节点tab页切走时 保存节点数据
         this.setNodeSetting();
-      } else 
+      } else
       if (oldValue == 'flowsetting') {
         //从流程设置切走的时候，保存表单id
         let formConfig = this.$refs.flowSetting && this.$refs.flowSetting.getJsonValue().formConfig ? this.$refs.flowSetting.getJsonValue().formConfig : null;
@@ -1201,7 +1211,7 @@ export default {
         this.$utils.jumpDialog.call(this, {
           save: {//保存数据
             fn: async(vnode) => {
-              return await _this.flowSave(true); 
+              return await _this.flowSave(true);
             }
           },
           noSave: {//存草稿

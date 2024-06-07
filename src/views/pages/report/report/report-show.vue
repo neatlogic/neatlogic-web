@@ -6,8 +6,8 @@
           v-if="$hasBack()"
           v-auth="'REPORT_MODIFY'"
           class="tsfont-left text-action"
-          @click="$back('/report-manage')"
-        >{{ $getFromPage($t('page.templatelist')) }}</span>
+          @click="$back()"
+        >{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span v-auth="'REPORT_MODIFY'">{{ reportData.name }}</span>
@@ -68,9 +68,9 @@ export default {
   name: '',
   components: {
     TsFormItem,
-    ReportMain: resolve => require(['../component/report-main.vue'], resolve), 
+    ReportMain: () => import('../component/report-main.vue'),
     ...paramhandler
-  }, 
+  },
   directives: {download},
   props: {},
   data() {
@@ -174,23 +174,9 @@ export default {
           }
           this.reportData = d;
         });
-      } 
+      }
     },
     setParam: function(paramName, paramValue) {
-      if (Array.isArray(paramValue)) {
-        let _paramValue = [];
-        paramValue.forEach((element) => {
-          if (element.indexOf('&=&') > -1) {
-            let item = element.split('&=&')[0];
-            _paramValue.push(item);
-          }
-        }); 
-        paramValue = _paramValue;
-      } else {
-        if (paramValue && paramValue.indexOf('&=&') > -1) {
-          paramValue = paramValue.split('&=&')[0];
-        }
-      }
       let obj = {};
       obj[paramName] = paramValue;
       this.searchParam = Object.assign({}, this.searchParam, obj);

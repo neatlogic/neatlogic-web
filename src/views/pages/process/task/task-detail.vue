@@ -9,8 +9,8 @@
     </div>
     <div v-if="pocesstaskview">
       <nodeDetail
-        :is="handler"
-        v-if="!loadingShow"
+        :is="handlerType(handler)"
+        v-if="!loadingShow && processTask"
         ref="nodeDatas"
         :isShowTaskList="isShowTaskList"
         :defaultStartList="defaultStartList"
@@ -132,8 +132,8 @@ export default {
   },
   components: {
     ...nodeDetail,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    ActionReasonDialog: resolve => require(['@/views/pages/process/task/processdetail/workorder/actiondialog/actionreason.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    ActionReasonDialog: () => import('@/views/pages/process/task/processdetail/workorder/actiondialog/actionreason.vue')
   },
   props: {},
   data() {
@@ -313,7 +313,7 @@ export default {
         this.$createDialog({
           title: this.$t('page.tip'),
           content: this.$t('message.notsavedataupdateredirecttip'),
-          btnList: [   
+          btnList: [
             {
               text: this.$t('page.cancel'),
               fn: vnode => {
@@ -376,6 +376,17 @@ export default {
         const time = expireTime - nowDate; //时效：截止时间减去当前时间
         return time;
       };
+    },
+    handlerType() {
+      return (handler) => {
+        let type = '';
+        if (!nodeDetail[handler]) {
+          type = 'omnipotent';
+        } else {
+          type = handler;
+        }
+        return type;
+      };
     }
   },
   watch: {
@@ -431,12 +442,12 @@ export default {
       top: 0;
       left: 0;
       position: absolute;
-      background: url('~img-module/img/common/taskLading-default.gif') no-repeat center center;
+      background: url('@img-module/img/common/taskLading-default.gif') no-repeat center center;
       background-size: auto 100%;
     }
     .theme-dark & {
       &::before{
-        background-image: url('~publics/img/common/taskLading-dark.gif');
+        background-image: url('@img-module/img/common/taskLading-dark.gif');
       }
     }
   }

@@ -213,7 +213,7 @@ function cellComponent(data, td, row, col) {
               if (!h1) h1 = hotSetting.rowHeights;
               if (h1 < h) {
                 manual.setManualSize(row, h < 42 ? 42 : h);
-              } 
+              }
               Vm.$hot.setDataAtCell(row, col, this.allconfig);
               // else {
               // manual.setManualSize(row, h < 42 ? 42 : h);
@@ -625,7 +625,7 @@ export default {
   components: {
     // HotTable,
     FormEdit,
-    FormcomEdit: resolve => require(['./edit/formedit-content.vue'], resolve),
+    FormcomEdit: () => import('./edit/formedit-content.vue'),
     SheetStylesetting
   },
   props: {
@@ -954,7 +954,7 @@ export default {
         handler: config.handler,
         label: (config.label || _this.$labelName[config.handler]) + '_' + (this.controllerList.length + 1),
         type: config.type || 'form',
-        config: Object.assign(config.config || {}, _this.getComponentsetting(config.handler)) 
+        config: Object.assign(config.config || {}, _this.getComponentsetting(config.handler))
         // isValid:true
       };
       this.controllerList.push(newComponent);
@@ -963,10 +963,10 @@ export default {
       // 删除组件，20200202由于最终数据结构不以uuid为每个组件数组的键名，需遍历组件数组里uuid等于当前组件(并且组件类型一致)的再删除这个下标
       let index = null;
       this.formeditContent && this.formeditContent.uuid == uuid ? this.formeditContent = null : '';
-      const item = this.controllerList.find((d, i) => { 
+      const item = this.controllerList.find((d, i) => {
         if (d.uuid === uuid) {
-          index = i; 
-          return d.uuid === uuid; 
+          index = i;
+          return d.uuid === uuid;
         }
         return false;
       });
@@ -1253,7 +1253,7 @@ export default {
         '#F5F6FA': 'color-picker-',
         '#E5E5E5': 'color-picker-border-',
         '#A1A1A1': 'color-picker-tip-',
-        '#212121': 'color-picker-text-', 
+        '#212121': 'color-picker-text-',
         '#1670F0': 'color-picker-info-',
         '#FFBA5A': 'color-picker-warning-',
         '#25B864': 'color-picker-success-',
@@ -1354,7 +1354,7 @@ export default {
                   }
                   cellData.className = className;
                 }
-               
+
                 cellsData.push([i, j, cellData, 'style', 'className']);
               } else {
                 const o = {
@@ -1363,8 +1363,8 @@ export default {
                   content: cellData,
                   style: JSON.parse(JSON.stringify(newValue))
                 };
-                /* 
-                 cellData 单元格值，newValue 默认样式值，没有设置值，取得是newValue 
+                /*
+                 cellData 单元格值，newValue 默认样式值，没有设置值，取得是newValue
                  有背景颜色+(有字体颜色或者无字体颜色）
                  有字体颜色+(有背景颜色或无背景颜色)
                 */
@@ -1470,10 +1470,10 @@ export default {
     >span{
       height: 25px;
       line-height: 25px;
-      font-size: 12px; 
+      font-size: 12px;
       display: inline-block;
       width: 100%;
-      text-align: center;  
+      text-align: center;
     }
     >.tsfont-danger-s{
       position: absolute;

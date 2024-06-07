@@ -1,4 +1,3 @@
-/* * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved. * * Licensed under the Apache License, Version 2.0 (the "License"); * you may not use this file except in compliance with the License. * You may obtain a copy of the License at * * http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by applicable law or agreed to in writing, software * distributed under the License is distributed on an "AS IS" BASIS, * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. * See the License for the specific language governing permissions and * limitations under the License. */
 <template>
   <div>
     <loading :loadingShow="loadingShow" type="fix"></loading>
@@ -6,8 +5,8 @@
       <template v-slot:topLeft>
         <div class="action-group">
           <span v-if="treeData && treeData.length > 0 && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item tsfont-setting" @click="editTree()">{{ $t('page.setting') }}</span>
-          <span v-if="resourceIdList.length > 0" class="action-item">
-            <Dropdown v-auth="['RESOURCECENTER_MODIFY']" trigger="click" placement="bottom-start">
+          <span v-if="resourceIdList.length > 0 && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item">
+            <Dropdown trigger="click" placement="bottom-start">
               <div>
                 <span>{{ $t('page.batchoperation') }}</span>
                 <span class="tsfont-down"></span>
@@ -31,12 +30,7 @@
               </DropdownMenu>
             </Dropdown>
           </span>
-          <span
-            v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0"
-            v-auth="['RESOURCECENTER_MODIFY']"
-            class="action-item tsfont-plus"
-            @click="addAsset"
-          >
+          <span v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0 && ciData.authData && ciData.authData.cientityinsert" class="action-item tsfont-plus" @click="addAsset">
             {{ $t('dialog.title.addtarget', { target: $t('page.assets') }) }}
           </span>
           <span v-if="tableConfig && tableConfig.tbodyList && tableConfig.tbodyList.length > 0" class="action-item tsfont-export" @click="openExportDialog">{{ $t('page.export') }}</span>
@@ -49,14 +43,22 @@
             ref="combineSearcher"
             v-model="searchVal"
             v-bind="searchConfig"
-            @confirm="changeCombineSearcher"
-            @change-label="changeLabelCombineSearcher"
+            @change="changeCombineSearcher"
             @switchMode="switchMode"
           >
-            <template v-slot:batchSearchList="{ valueConfig }">
+            <template v-slot:batchSearchList="{ valueConfig, textConfig }">
               <div>
                 <TsFormItem :label="$t('page.batchsearch')" :tooltip="$t('term.cmdb.resourcebatchsearchtooltip')" labelPosition="left">
-                  <TsFormRadio v-model="valueConfig.searchField" :dataList="searchFieldRadioDataList"></TsFormRadio>
+                  <TsFormRadio
+                    v-model="valueConfig.searchField"
+                    :dataList="searchFieldRadioDataList"
+                    @change="
+                      () => {
+                        $set(valueConfig, 'batchSearchList', '');
+                        $delete(textConfig, 'batchSearchList');
+                      }
+                    "
+                  ></TsFormRadio>
                 </TsFormItem>
                 <TsFormItem :label="$t('page.batchsearchvalue')" labelWidth="0px" labelPosition="left">
                   <TsFormInput
@@ -64,6 +66,16 @@
                     type="textarea"
                     :placeholder="'192.168.0.1\n192.168.0.2\n192.168.0.*'"
                     :autoSize="{ minRows: 4 }"
+                    @change="
+                      val => {
+                        if (val) {
+                          $set(textConfig, 'batchSearchList', val.split('\n'));
+                        } else {
+                          $delete(textConfig, 'batchSearchList');
+                          $delete(valueConfig, 'batchSearchList');
+                        }
+                      }
+                    "
                   ></TsFormInput>
                 </TsFormItem>
               </div>
@@ -76,13 +88,12 @@
             :searchList="searchList"
             @search="advancedModeSearch"
             @switchMode="switchMode"
-          >
-          </AdvancedModeSearch>
+          ></AdvancedModeSearch>
         </div>
       </template>
       <template v-slot:sider>
         <span v-if="$utils.isEmpty(treeData) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="text-href" @click="editTree()">{{ $t('term.cmdb.resourcetypetreesettingdesc') }}</span>
-        <Tree 
+        <Tree
           v-if="!$utils.isEmpty(treeData)"
           :data="treeData"
           :render="renderContent"
@@ -162,12 +173,12 @@
           </template>
           <template v-slot:action="{ row }">
             <!-- 是否是巡检页面 -->
-            <div v-auth="'RESOURCECENTER_MODIFY'" class="tstable-action">
+            <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-label" @click="tagEdit(row)">{{ $t('page.tagmanage') }}</li>
-                <li class="tsfont-userinfo" @click="editAccount(row)">{{ $t('page.accountsmanage') }}</li>
-                <li class="tsfont-edit" @click="editAsset(row)">{{ $t('dialog.title.edittarget', { target: $t('page.assets') }) }}</li>
-                <li class="tsfont-trash-o" @click="deleteAsset(row)">{{ $t('dialog.title.deletetarget', { target: $t('page.assets') }) }}</li>
+                <li v-auth="'RESOURCECENTER_MODIFY'" class="tsfont-label" @click="tagEdit(row)">{{ $t('page.tagmanage') }}</li>
+                <li v-auth="'RESOURCECENTER_MODIFY'" class="tsfont-userinfo" @click="editAccount(row)">{{ $t('page.accountsmanage') }}</li>
+                <li v-if="row.isCanEdit" class="tsfont-edit" @click="editAsset(row)">{{ $t('dialog.title.edittarget', { target: $t('page.assets') }) }}</li>
+                <li v-if="row.isCanDelete" class="tsfont-trash-o" @click="deleteAsset(row)">{{ $t('dialog.title.deletetarget', { target: $t('page.assets') }) }}</li>
               </ul>
             </div>
           </template>
@@ -217,31 +228,27 @@
       :exportCondition="searchVal"
       @close="isExportAssetDialog = false"
     ></ExportAsset>
-    <TreeEdit 
-      v-if="isShowTreeEdit"
-      :ciId="treeTypeRootCiId"
-      @close="closeTreeEdit"
-    ></TreeEdit>
+    <TreeEdit v-if="isShowTreeEdit" :ciId="treeTypeRootCiId" @close="closeTreeEdit"></TreeEdit>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    GroupList: resolve => require(['@/resources/components/GroupList/GroupList.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    AcountEdit: resolve => require(['./components/acount-edit'], resolve),
-    DeleteCiEntityDialog: resolve => require(['../cientity/cientity-delete-dialog.vue'], resolve),
-    AssetEdit: resolve => require(['./asset-edit-dialog.vue'], resolve),
-    TagEdit: resolve => require(['./components/tag-edit'], resolve),
-    TreeEdit: resolve => require(['./components/tree-edit'], resolve),
-    ExportAsset: resolve => require(['./export-asset-dialog.vue'], resolve),
-    AccountEditDialog: resolve => require(['./components/account-edit-dialog'], resolve),
-    AdvancedModeSearch: resolve => require(['./advanced-mode-search'], resolve) // 高级模式搜索
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    GroupList: () => import('@/resources/components/GroupList/GroupList.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    AcountEdit: () => import('./components/acount-edit'),
+    DeleteCiEntityDialog: () => import('../cientity/cientity-delete-dialog.vue'),
+    AssetEdit: () => import('./asset-edit-dialog.vue'),
+    TagEdit: () => import('./components/tag-edit'),
+    TreeEdit: () => import('./components/tree-edit'),
+    ExportAsset: () => import('./export-asset-dialog.vue'),
+    AccountEditDialog: () => import('./components/account-edit-dialog'),
+    AdvancedModeSearch: () => import('./advanced-mode-search') // 高级模式搜索
   },
   filters: {},
   data() {
@@ -507,7 +514,8 @@ export default {
         keyName: 'id',
         tbodyList: [],
         currentPage: 1,
-        pageSize: 20
+        pageSize: 20,
+        rowNum: 0
       },
       settingConfig: {
         tagList: []
@@ -549,7 +557,7 @@ export default {
           multiple: true,
           dealDataByUrl: 'getAppForselect',
           dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           name: 'appModuleIdList',
@@ -562,7 +570,7 @@ export default {
           multiple: true,
           dealDataByUrl: 'getAppForselect',
           dynamicUrl: '/api/rest/resourcecenter/appmodule/list',
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           name: 'envIdList',
@@ -577,7 +585,7 @@ export default {
           multiple: true,
           className: 'block-span',
           url: '/api/rest/resourcecenter/appenv/list/forselect',
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           type: 'checkbox',
@@ -592,14 +600,14 @@ export default {
           name: 'ip',
           type: 'input',
           label: this.$t('page.ip'),
-          validateList: [{name: 'required', message: ''}],
+          validateList: [{ name: 'required', message: '' }],
           maxlength: 256
         },
         {
           name: 'name',
           type: 'input',
           label: this.$t('page.name'),
-          validateList: [{name: 'required', message: ''}],
+          validateList: [{ name: 'required', message: '' }],
           maxlength: 256
         },
         {
@@ -617,7 +625,7 @@ export default {
           params: {
             needPage: false
           },
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           name: 'tagIdList',
@@ -631,7 +639,7 @@ export default {
           rootName: 'tbodyList',
           multiple: true,
           dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           name: 'protocolIdList',
@@ -645,7 +653,7 @@ export default {
           dealDataByUrl: 'getProtocolDataList',
           className: 'block-span',
           dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
-          validateList: [{name: 'required', message: ''}]
+          validateList: [{ name: 'required', message: '' }]
         },
         {
           name: 'stateIdList',
@@ -660,18 +668,19 @@ export default {
           multiple: true,
           className: 'block-span',
           params: {
-            'needPage': false
+            needPage: false
           },
           url: '/api/rest/resourcecenter/state/list/forselect',
-          validateList: [{name: 'required', message: ''}]
-        }]
+          validateList: [{ name: 'required', message: '' }]
+        }
+      ]
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   async mounted() {
-    let {resourceId = ''} = this.$route.query || {};
+    let { resourceId = '' } = this.$route.query || {};
     this.defaultValue = resourceId ? [parseInt(resourceId)] : [];
     await this.getTreeType();
     await this.initData();
@@ -704,12 +713,20 @@ export default {
     },
     changeCurrent(currentPage = 1) {
       this.tableConfig.currentPage = currentPage;
-      this.searchAssetData();
+      if (this.isSimpleMode) {
+        this.searchAssetData();
+      } else {
+        this.advancedModeSearch(this.searchVal);
+      }
     },
     changePageSize(pageSize) {
       this.tableConfig.currentPage = 1;
       this.tableConfig.pageSize = pageSize;
-      this.searchAssetData();
+      if (this.isSimpleMode) {
+        this.searchAssetData();
+      } else {
+        this.advancedModeSearch(this.searchVal);
+      }
     },
     formatTime(time) {
       let data = '-';
@@ -746,6 +763,7 @@ export default {
       this.selectList = [];
       if (needRefresh) {
         this.tableConfig.currentPage = 1;
+        this.tableConfig.rowNum = 0;
         this.searchAssetData(true);
       }
     },
@@ -795,12 +813,16 @@ export default {
       if (!this.selectType.typeId) {
         return;
       }
+      if (this.tableConfig.currentPage == 1) {
+        this.tableConfig.rowNum = 0;
+      }
       let params = {
-        batchSearchList: [],
         currentPage: this.tableConfig.currentPage,
         pageSize: this.tableConfig.pageSize,
+        rowNum: this.tableConfig.rowNum,
         ...this.searchVal,
-        ...this.selectType
+        ...this.selectType,
+        batchSearchList: this.searchVal.batchSearchList ? this.searchVal.batchSearchList : []
       };
       if (!this.$utils.isEmpty(params.batchSearchList)) {
         params.batchSearchList = params.batchSearchList.split('\n');
@@ -813,6 +835,7 @@ export default {
       this.$addHistoryData('selectType', this.selectType);
       this.$addHistoryData('currentPage', params.currentPage);
       this.$addHistoryData('pageSize', params.pageSize);
+      this.$addHistoryData('rowNum', params.rowNum);
       return this.$api.cmdb.asset
         .getResourceList(params)
         .then(res => {
@@ -852,7 +875,7 @@ export default {
       }
     },
     getCiById(ciId) {
-      this.$api.cmdb.ci.getCiById(ciId).then(res => {
+      this.$api.cmdb.ci.getCiById(ciId, { needAction: true }).then(res => {
         this.ciData = res.Return;
       });
     },
@@ -903,11 +926,12 @@ export default {
       this.isDeleteDialogShow = true;
     },
     delSelectedAsset() {
-      this.ciEntityList = this.selectedCiEntityList?.map((item) => ({
-        ciId: item.typeId,
-        ciEntityId: item.id, 
-        ciEntityName: item.name
-      })) || [];
+      this.ciEntityList =
+        this.selectedCiEntityList?.map(item => ({
+          ciId: item.typeId,
+          ciEntityId: item.id,
+          ciEntityName: item.name
+        })) || [];
       this.ciEntityId = null;
       this.isDeleteDialogShow = true;
     },
@@ -1013,6 +1037,7 @@ export default {
       this.selectType = historyData['selectType'];
       this.tableConfig.currentPage = historyData['currentPage'];
       this.tableConfig.pageSize = historyData['pageSize'];
+      this.tableConfig.rowNum = historyData['rowNum'];
       this.defaultValue = historyData['defaultValue'];
     },
     openExportDialog() {
@@ -1023,11 +1048,6 @@ export default {
         this.$set(this.searchVal, 'searchField', 'ip');
       }
       this.changeCurrent();
-    },
-    changeLabelCombineSearcher(val) {
-      if (!this.$utils.isEmpty(this.searchVal.batchSearchList)) {
-        this.$set(val, 'batchSearchList', this.searchVal.batchSearchList.split('\n'));
-      }
     },
     editTree() {
       this.isShowTreeEdit = true;
@@ -1048,23 +1068,32 @@ export default {
       this.$nextTick(() => {
         this.$refs.combineSearcher && this.$refs.combineSearcher.handleToggleOpen(); // 打开简单模式面板
       });
+      this.tableConfig.currentPage = 1; // 切换不同搜索模式时，页码设置为初始值
+      this.tableConfig.pageSize = 20;
     },
     advancedModeSearch(searchVal) {
+      if (this.tableConfig.currentPage == 1) {
+        this.tableConfig.rowNum = 0;
+      }
       // 复杂模式搜索
       let params = {
-        currentPage: 1,
-        pageSize: 20,
+        currentPage: this.tableConfig.currentPage || 1,
+        pageSize: this.tableConfig.pageSize || 20,
+        rowNum: this.tableConfig.rowNum || 0,
         typeId: this.selectType.typeId,
         ...searchVal
       };
       this.loadingShow = true;
-      this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
-        if (res.Status == 'OK') {
-          this.tableConfig = Object.assign(this.tableConfig, res.Return || {});
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
+      this.$api.autoexec.action
+        .searchResourceCustomList(params)
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.tableConfig = Object.assign(this.tableConfig, res.Return || {});
+          }
+        })
+        .finally(() => {
+          this.loadingShow = false;
+        });
     }
   },
   computed: {

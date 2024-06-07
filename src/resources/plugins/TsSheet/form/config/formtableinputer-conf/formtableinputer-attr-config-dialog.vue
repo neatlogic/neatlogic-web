@@ -36,93 +36,119 @@
                 ref="formitem_datasource"
                 v-model="propertyLocal.config.dataSource"
                 :validateList="validateList"
-                :dataList="dataSourceList"
+                :dataList="getDataSourceList(propertyLocal.handler)"
                 transfer
                 border="border"
+                @on-change="(val)=>{
+                  changeDataSource(val);
+                }"
               ></TsFormSelect>
             </TsFormItem>
             <TsFormItem v-if="propertyLocal.config.dataSource === 'static'" :label="$t('page.dropdownoption')">
               <StaticDataEditor v-model="propertyLocal.config.dataList"></StaticDataEditor>
             </TsFormItem>
-            <TsFormItem v-if="propertyLocal.config.dataSource === 'matrix'" :label="$t('page.matrix')">
-              <TsFormSelect
-                ref="formitem_matrixuuid"
-                v-model="propertyLocal.config.matrixUuid"
-                :validateList="validateList"
-                dynamicUrl="/api/rest/matrix/search"
-                rootName="tbodyList"
-                textName="name"
-                valueName="uuid"
-                transfer
-                @on-change="(val)=>{
-                  changeMatrixUuid(val);
-                }"
-              ></TsFormSelect>
-            </TsFormItem>
-            <TsFormItem v-if="propertyLocal.config.dataSource === 'matrix' && propertyLocal.config.matrixUuid && mappingDataList.length > 0" :label="$t('page.fieldmapping')">
-              <div class="bg-block padding-md radius-md">
-                <Row :gutter="10">
-                  <Col span="12">
-                    <label class="text-grey require-label">{{ $t('page.value') }}</label>
-                    <div class="formsetting-text">
-                      <TsFormSelect
-                        ref="formitem_value"
-                        v-model="propertyLocal.config.mapping.value"
-                        :validateList="validateList"
-                        :dataList="mappingDataList"
-                        valueName="uuid"
-                        textName="name"
-                        :transfer="true"
-                      ></TsFormSelect>
-                    </div>
-                  </Col>
-                  <Col span="12">
-                    <label class="text-grey require-label">{{ $t('page.displaytext') }}</label>
-                    <div class="formsetting-text">
-                      <TsFormSelect
-                        ref="formitem_text"
-                        v-model="propertyLocal.config.mapping.text"
-                        :validateList="validateList"
-                        valueName="uuid"
-                        :dataList="mappingDataList"
-                        textName="name"
-                        :transfer="true"
-                      ></TsFormSelect>
-                    </div>
-                  </Col>
-                </Row>
-              </div>
-            </TsFormItem>
-            <TsFormItem v-if="propertyLocal.config.dataSource === 'matrix' && propertyLocal.config.matrixUuid && tableMatrixColumnList.length > 0" :label="$t('page.filtercondition')">
-              <div class="bg-block padding-md radius-md">
-                <div v-if="propertyLocal.config.sourceColumnList && propertyLocal.config.sourceColumnList.length > 0">
-                  <Row
-                    v-for="(sourceColumn, index) in propertyLocal.config.sourceColumnList"
-                    :key="index"
-                    :gutter="10"
-                    class="mb-xs"
-                  >
-                    <Col span="10">
-                      <TsFormSelect
-                        v-model="sourceColumn.column"
-                        :dataList="extraPropertyMatrixColumnList"
-                        transfer
-                        border="border"
-                      ></TsFormSelect>
+            <template v-else-if="propertyLocal.config.dataSource === 'matrix'">
+              <TsFormItem :label="$t('page.matrix')" required>
+                <TsFormSelect
+                  ref="formitem_matrixuuid"
+                  v-model="propertyLocal.config.matrixUuid"
+                  :validateList="validateList"
+                  dynamicUrl="/api/rest/matrix/search"
+                  rootName="tbodyList"
+                  textName="name"
+                  valueName="uuid"
+                  transfer
+                  @on-change="(val)=>{
+                    changeMatrixUuid(val);
+                  }"
+                ></TsFormSelect>
+              </TsFormItem>
+              <TsFormItem v-if="propertyLocal.config.matrixUuid && mappingDataList.length > 0" :label="$t('page.fieldmapping')">
+                <div class="bg-block padding-md radius-md">
+                  <Row :gutter="10">
+                    <Col span="12">
+                      <label class="text-grey require-label">{{ $t('page.value') }}</label>
+                      <div class="formsetting-text">
+                        <TsFormSelect
+                          ref="formitem_value"
+                          v-model="propertyLocal.config.mapping.value"
+                          :validateList="validateList"
+                          :dataList="mappingDataList"
+                          valueName="uuid"
+                          textName="name"
+                          :transfer="true"
+                        ></TsFormSelect>
+                      </div>
                     </Col>
-                    <Col span="2" style="text-align:center" class="text-grey">{{ $t('term.expression.eq') }}</Col>
-                    <Col span="10"><TsFormSelect
-                      v-model="sourceColumn.valueColumn"
-                      :dataList="tableMatrixColumnList"
-                      transfer
-                      border="border"
-                    ></TsFormSelect></Col>
-                    <Col span="2" style="text-align:center"><span class="tsfont-trash-o text-action" @click="removeSourceColumn(index)"></span></Col>
+                    <Col span="12">
+                      <label class="text-grey require-label">{{ $t('page.displaytext') }}</label>
+                      <div class="formsetting-text">
+                        <TsFormSelect
+                          ref="formitem_text"
+                          v-model="propertyLocal.config.mapping.text"
+                          :validateList="validateList"
+                          valueName="uuid"
+                          :dataList="mappingDataList"
+                          textName="name"
+                          :transfer="true"
+                        ></TsFormSelect>
+                      </div>
+                    </Col>
                   </Row>
                 </div>
-                <Button @click="addSourceColumn"><span class="tsfont-plus">{{ $t('page.filtercondition') }}</span></Button>
-              </div>
-            </TsFormItem>
+              </TsFormItem>
+              <TsFormItem :label="$t('page.hiddenattr')">
+                <TsFormSelect
+                  ref="hiddenFieldList"
+                  :value="propertyLocal.config.hiddenFieldList || []"
+                  :dataList="getAttrList(mappingDataList,propertyLocal.config.mapping.value)"
+                  :transfer="true"
+                  multiple
+                  isCustomValue
+                  @change="(val)=>{
+                    $set(propertyLocal.config, 'hiddenFieldList', val);
+                  }"
+                ></TsFormSelect>
+              </TsFormItem>
+              <TsFormItem v-if="propertyLocal.config.matrixUuid && tableMatrixColumnList.length > 0" :label="$t('page.filtercondition')">
+                <div class="bg-block padding-md radius-md">
+                  <div v-if="propertyLocal.config.sourceColumnList && propertyLocal.config.sourceColumnList.length > 0">
+                    <Row
+                      v-for="(sourceColumn, index) in propertyLocal.config.sourceColumnList"
+                      :key="index"
+                      :gutter="10"
+                      class="mb-xs"
+                    >
+                      <Col span="10">
+                        <TsFormSelect
+                          v-model="sourceColumn.column"
+                          :dataList="extraPropertyMatrixColumnList"
+                          transfer
+                          border="border"
+                        ></TsFormSelect>
+                      </Col>
+                      <Col span="2" style="text-align:center" class="text-grey">{{ $t('term.expression.eq') }}</Col>
+                      <Col span="10"><TsFormSelect
+                        v-model="sourceColumn.valueColumn"
+                        :dataList="tableMatrixColumnList"
+                        transfer
+                        border="border"
+                      ></TsFormSelect></Col>
+                      <Col span="2" style="text-align:center"><span class="tsfont-trash-o text-action" @click="removeSourceColumn(index)"></span></Col>
+                    </Row>
+                  </div>
+                  <Button @click="addSourceColumn"><span class="tsfont-plus">{{ $t('page.filtercondition') }}</span></Button>
+                </div>
+              </TsFormItem>
+            </template>
+            <template v-else-if="propertyLocal.config.dataSource === 'formtableinputer'">
+              <FormtableinputDataSource
+                ref="formitem_formtableinputsource"
+                :propertyLocal="propertyLocal"
+                :formItemUuid="formItemUuid"
+                :formItemList="formItemList"
+              ></FormtableinputDataSource>
+            </template>
             <TsFormItem v-if="propertyLocal.handler === 'formselect'" :label="$t('page.inputtip')">
               <TsFormInput v-model="propertyLocal.config.placeholder" :maxlength="50"></TsFormInput>
             </TsFormItem>
@@ -131,6 +157,7 @@
                 <TsFormSelect
                   v-model="propertyLocal.config.defaultValue"
                   v-bind="defaultValueSetting"
+                  :isCustomValue="true"
                   search
                   transfer
                 ></TsFormSelect>
@@ -196,7 +223,7 @@
                   v-if="key !== 'filter'"
                   :ref="'condition_' + key"
                   :value="r"
-                  :formItemList="formItemList"
+                  :formItemList="allFormItemList"
                   :formItem="propertyLocal"
                   @input="
                     rule => {
@@ -205,14 +232,43 @@
                   "
                 ></ConditionGroup>
                 <div v-if="key === 'setvalue' && !$utils.isEmpty(r)">
-                  <div class="mt-sm mb-sm text-grey">{{ $t('term.framework.assignment') }}</div>
+                  <div class="mt-sm text-grey">{{ $t('term.framework.assignment') }}</div>
+                  <!--isDynamicValue: 是否可以动态赋值  -->
+                  <div v-if="propertyLocal.isDynamicValue" class="pb-sm">
+                    <TsFormRadio
+                      :value="r.type || 'static'"
+                      :dataList="typeDataList"
+                      @change="
+                        val => {
+                          $set(r, 'type', val);
+                          $set(r, 'value', null);
+                        }
+                      "
+                    ></TsFormRadio>
+                  </div>
+                  <!--dynamic:动态赋值  -->
+                  <TsFormSelect
+                    v-if="r.type === 'dynamic'"
+                    :value="r.value"
+                    :dataList="hasValueFormItemList"
+                    valueName="uuid"
+                    textName="label"
+                    border="border"
+                    transfer
+                    @on-change="
+                      val => {
+                        $set(r, 'value', val);
+                      }
+                    "
+                  ></TsFormSelect>
                   <FormItem
-                    v-if="!$utils.isEmpty(r)"
+                    v-else
                     ref="assignmentValue"
                     :formItem="assignmentValueConfig"
                     :value="r.value"
                     mode="defaultvalue"
                     :showStatusIcon="false"
+                    isCustomValue
                     @change="
                       val => {
                         $set(r, 'value', val);
@@ -226,7 +282,7 @@
                     :value="r"
                     :martixAttrList="mappingDataList"
                     :formItem="propertyLocal"
-                    :formItemList="formItemList"
+                    :formItemList="allFormItemList"
                     @input="
                       rule => {
                         setReaction(key, rule);
@@ -250,17 +306,19 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    StaticDataEditor: resolve => require(['../common/static-data-editor.vue'], resolve),
-    ConditionGroup: resolve => require(['@/resources/plugins/TsSheet/form/config/common/condition-group.vue'], resolve),
-    TableConfig: resolve => require(['./formtableinputer-table-config.vue'], resolve),
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve),
-    ReactionFilter: resolve => require(['@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    StaticDataEditor: () => import('../common/static-data-editor.vue'),
+    ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
+    TableConfig: () => import('./formtableinputer-table-config.vue'),
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
+    ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
+    FormtableinputDataSource: () => import('./formtableinput-data-source.vue')
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -273,13 +331,20 @@ export default {
       type: Boolean,
       default: true
     },
+<<<<<<< HEAD
     customItemList: {
       type: Array,
       default: () => []
     }
+=======
+    formItemList: { //表格外部的组件
+      type: Array,
+      default: () => []
+    },
+    formItemUuid: String
+>>>>>>> 0059be9eb2e324a95c084af58c1ac7eac33c1bb9
   },
   data() {
-    const _this = this;
     return {
       propertyLocal: null,
       reactionName: {
@@ -303,9 +368,26 @@ export default {
       },
       dataSourceList: [
         { value: 'static', text: this.$t('page.staticdatasource') },
-        { value: 'matrix', text: this.$t('page.matrix') }
+        { value: 'matrix', text: this.$t('page.matrix') },
+        { value: 'formtableinputer', text: this.$t('term.framework.formtableinputercomponent') }
       ],
       formConfig: [
+        {
+          type: 'text',
+          name: 'key',
+          label: this.$t('page.englishname'),
+          maxlength: 50,
+          validateList: ['required',
+            {
+              name: 'regex',
+              pattern: /^[A-Za-z\d_]+$/,
+              message: this.$t('message.plugin.enName')
+            }
+          ],
+          onChange: (val) => {
+            this.valieKey();
+          }
+        },
         {
           name: 'label',
           label: this.$t('page.name'),
@@ -392,7 +474,18 @@ export default {
           text: 'URL',
           value: 'url'
         }
-      ]
+      ],
+      typeDataList: [
+        {
+          text: this.$t('term.autoexec.static'),
+          value: 'static'
+        },
+        {
+          text: this.$t('page.dynamicvalue'),
+          value: 'dynamic'
+        }
+      ],
+      filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
     };
   },
   beforeCreate() {},
@@ -418,11 +511,35 @@ export default {
           isHide: false
         });
       }
+      if (this.propertyLocal.handler === 'formselect') {
+        const config = this.propertyLocal.config;
+        if (config.dataSource === 'formtableinputer') {
+          //选择表单输入组件
+          let findItem = this.formItemList.find(item => item.uuid === config.formtableinputerUuid);
+          if (!findItem) {
+            this.$set(config, 'formtableinputerUuid', null);
+            this.$set(config, 'mapping', {});
+          } else {
+            if (findItem.config && findItem.config.dataConfig) {
+              if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.value)) {
+                this.$set(config.mapping, 'value', null);
+              }
+              if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.text)) {
+                this.$set(config.mapping, 'text', null);
+              }
+            }
+          }
+        }
+      }
+
       if (!this.propertyLocal.reaction) {
         this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
       }
       if (this.isNeedTable) {
-        this.formConfig[1].dataList.push({ text: 'table', value: 'formtable' });
+        let findFormItem = this.formConfig.find(item => item.name === 'handler');
+        if (findFormItem) {
+          findFormItem.dataList.push({ text: 'table', value: 'formtable' });
+        }
       }
       if (this.propertyLocal.handler != 'formtable') {
         this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
@@ -518,10 +635,20 @@ export default {
       this.$nextTick(() => {
         this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
         this.$set(this.propertyLocal, 'value', null);
+<<<<<<< HEAD
         let findCustomItem = this.customItemList.find(c => c.name === val);
         if (findCustomItem) {
           this.$set(this.propertyLocal, 'type', 'custom');
         } else if (val != 'formtable') {
+=======
+        if (val === 'formtext' || val === 'formtextarea') {
+          // 联动规则(赋值)：是否可以动态赋值
+          this.$set(this.propertyLocal, 'isDynamicValue', true);
+        } else {
+          this.$set(this.propertyLocal, 'isDynamicValue', false);
+        }
+        if (val != 'formtable') {
+>>>>>>> 0059be9eb2e324a95c084af58c1ac7eac33c1bb9
           this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
           this.$set(this.propertyLocal.reaction, 'setvalue', {});
         } else {
@@ -532,18 +659,42 @@ export default {
     },
     changeMatrixUuid(val) {
       this.$set(this.propertyLocal.config, 'defaultValue', null);
+      this.$set(this.propertyLocal.config, 'mapping', {});
       if (val) {
         this.$set(this.propertyLocal.reaction, 'filter', {});
       } else {
         this.$delete(this.propertyLocal.reaction, 'filter');
       }
+    },
+    changeDataSource() {
+      this.$set(this.propertyLocal.config, 'matrixUuid', null);
+      this.$set(this.propertyLocal.config, 'formtableinputerUuid', null);
+      this.$set(this.propertyLocal.config, 'mapping', {});
+      this.$delete(this.propertyLocal.reaction, 'filter');
+    },
+    valieKey() { //校验英文名称唯一
+      let isValid = true;
+      if (this.propertyLocal && this.propertyLocal.key) {
+        let findKeyItem = this.formItemConfig.dataConfig.find(item => item.uuid != this.propertyLocal.uuid && item.key === this.propertyLocal.key);
+        this.formConfig.forEach(item => {
+          if (item.name === 'key') {
+            if (findKeyItem) {
+              this.$set(item, 'errorMessage', this.$t('message.targetisexists', {'target': this.$t('term.framework.compkeyname')}));
+              isValid = false;
+            } else {
+              this.$set(item, 'errorMessage', '');
+            }
+          } 
+        });
+      }
+      return isValid;
     }
   },
   filter: {},
   computed: {
-    formItemList() {
-      //所有表单组件列表
-      return this.formItemConfig.dataConfig;
+    allFormItemList() {
+      //表格输入组件和表格外组件
+      return this.formItemConfig.dataConfig.concat(this.formItemList);
     },
     //表格选择组件矩阵的字段
     tableMatrixColumnList() {
@@ -590,6 +741,57 @@ export default {
         this.$set(item.config, 'isRequired', false);
       }
       return item;
+    },
+    getAttrList() {
+      return (mappingDataList, value) => {
+        let list = [];
+        if (!this.$utils.isEmpty(mappingDataList)) {
+          list = mappingDataList.map(i => {
+            return {
+              value: i.uuid,
+              text: i.name,
+              uuid: i.uuid,
+              name: i.name,
+              uniqueIdentifier: i.uniqueIdentifier,
+              label: i.label
+            };
+          });
+        }
+        return list;
+      };
+    },
+    hasValueFormItemList() {
+      let list = this.allFormItemList.filter(d => d.hasValue && (!this.propertyLocal || (this.propertyLocal && d.uuid != this.propertyLocal.uuid)) && !this.filterComponentList.includes(d.handler));
+      let newList = [];
+      list.forEach(item => {
+        let obj = {
+          label: item.label,
+          uuid: item.uuid
+        };
+        let children = [];
+        if (!this.$utils.isEmpty(item.config.hiddenFieldList)) {
+          item.config.hiddenFieldList.forEach(a => {
+            children.push({
+              label: item.label + '.' + a.text,
+              uuid: item.uuid + '#' + a.value
+            });
+          });
+        }
+        newList.push(obj);
+        if (!this.$utils.isEmpty(children)) {
+          newList.push(...children);
+        }
+      });
+      return newList;
+    },
+    getDataSourceList() {
+      return (handler) => {
+        let list = this.$utils.deepClone(this.dataSourceList);
+        if (handler && handler != 'formselect') {
+          list = list.filter(item => item.value != 'formtableinputer');
+        }
+        return list;
+      };
     }
   },
   watch: {
@@ -608,7 +810,7 @@ export default {
     },
     'propertyLocal.config.dataSource': {
       handler: function(val) {
-        if (val === 'matrix') {
+        if (val === 'matrix' || val === 'formtableinputer') {
           if (!this.propertyLocal.config.mapping) {
             this.$set(this.propertyLocal.config, 'mapping', {});
           }

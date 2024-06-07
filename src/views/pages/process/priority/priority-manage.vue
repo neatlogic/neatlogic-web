@@ -95,7 +95,7 @@ export default {
     TsTable,
     TsForm,
     TsFormSelect,
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   filters: {},
   props: [],
@@ -341,8 +341,6 @@ export default {
           if (res.Status === 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
           } else throw res;
-        }).finally(() => {
-          this.getTableDataSearch(1);
         });
     }
   },

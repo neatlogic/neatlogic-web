@@ -92,10 +92,10 @@ export default {
   name: 'BatchDispatchManage',
   directives: { download },
   components: {
-    TsformSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsformSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
 
   data() {

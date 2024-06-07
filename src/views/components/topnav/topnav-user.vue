@@ -14,7 +14,6 @@
           :size="24"
           class="user-avatar"
         ></TsAvatar>
-        <span>{{ userInfo.userName }}</span>
         <i class="tsfont-down" :class="{'arrow-dropdown':isDropdown}"></i>
       </div>
       <DropdownMenu slot="list" class="dropdown-menu" style="width:180px;">
@@ -67,7 +66,6 @@ export default {
   mounted() {
     this.initLanguage();
     this.initTheme();
-    // this.env = process.env.NODE_ENV;
   },
   methods: {
     initLanguage() {
@@ -156,15 +154,11 @@ export default {
     cursor: pointer;
     text-align: center;
     position: relative;
-
-    .user-avatar {
-      margin-right: 4px;
-      margin-left: 4px;
-    }
+    width: 64px;
 
     .tsfont-down {
       margin-left: 5px;
-      margin-right: 24px;
+      margin-right: 16px;
       .transition(300ms);
 
       &.arrow-dropdown {

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <TsContain siderPosition="right" :siderWidth="200" :isSiderHide="isSiderHideHistory">
+    <TsContain :rightWidth="200" :isRightSiderHide="isSiderHideHistory">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/configfile-manage')">{{ $getFromPage($t('page.back')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span>
@@ -23,7 +23,7 @@
           <span class="action-item tsfont-history" @click="openHistory">{{ $t('page.hisversions') }}</span>
         </div>
       </template>
-      <template v-slot:sider>
+      <template v-slot:right>
         <div class="list-main pl-nm">
           <Tabs class="block-tabs2" :animated="false">
             <TabPane :label="$t('term.inspect.changerecord')" name="changeRecord">
@@ -80,8 +80,8 @@
 export default {
   name: '',
   components: {
-    ComparisonDetail: resolve => require(['./components/comparison-dialog'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    ComparisonDetail: () => import('./components/comparison-dialog'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {},
   data() {

@@ -73,7 +73,7 @@
 export default {
   name: '',
   components: {
-    // SearchInputer: resolve => require(['./search-inputer.vue'], resolve)
+    // SearchInputer:()=>import('./search-inputer.vue')
   },
   props: {
     readonly: { type: Boolean, default: false },

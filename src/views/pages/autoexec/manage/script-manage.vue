@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div class="script-manage">
     <!-- <Loading :loadingShow="loading" type="fix"></Loading> -->
@@ -55,7 +41,7 @@
         ></Tree>
       </template>
       <template v-slot:content>
-        <Tabs 
+        <Tabs
           v-model="versionStatus"
           class="block-tabs"
           :animated="false"
@@ -126,7 +112,7 @@
       :isShow="showEdit"
       @close="close"
     ></ScriptEdit>
-    <UploadDialog 
+    <UploadDialog
       ref="uploadDialog"
       :actionUrl="actionUrl"
       :formatList="formatList"
@@ -151,8 +137,8 @@ export default {
   components: {
     CombineSearcher,
     ScriptEdit,
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue')
   },
   filters: {
   },
@@ -231,7 +217,7 @@ export default {
           {
             key: 'name',
             title: this.$t('page.name')
-          
+
           }, {
             key: 'parser',
             title: this.$t('term.autoexec.scriptparser')
@@ -247,7 +233,7 @@ export default {
           }, {
             key: 'riskVo',
             title: this.$t('term.autoexec.operationlevel')
-          
+
           }, {
             key: 'catalogName',
             title: this.$t('term.autoexec.directorytool')
@@ -278,7 +264,7 @@ export default {
           fn: () => this.cancelImport()
         },
         {
-          text: this.$t('page.replace'), 
+          text: this.$t('page.replace'),
           class: ' bg-op',
           size: 'small',
           fn: (data, fileList) => this.replaceImport(data, fileList)
@@ -466,7 +452,7 @@ export default {
             vnode.isShow = false;
           });
         }
-      });    
+      });
     },
     publishRow(item, row) {
       if (item.disabled) {
@@ -536,7 +522,7 @@ export default {
                 'font-size': '12px',
                 'padding-left': '4px'
               }
-            },   
+            },
             tab.count
           )
         ]);
@@ -613,7 +599,7 @@ export default {
             vnode.isShow = false;
           });
         }
-      });  
+      });
     },
     cancelImport() {
       this.$refs.uploadDialog.hideDialog();
@@ -651,7 +637,7 @@ export default {
       return function(type, item) {
         let className = this.actionIcons[type] || 'tsfont-tool';
         if (item.disabled) {
-          className += ' disable'; 
+          className += ' disable';
         }
         return className;
       };

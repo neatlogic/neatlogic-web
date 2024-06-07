@@ -74,7 +74,7 @@
 export default {
   name: '',
   components: {
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue')
   },
   props: {
     type: { type: String }
@@ -91,7 +91,7 @@ export default {
       currentApp: {},
       allIssueCount: 0,
       currentProjectTab: null, //历史当前项目
-      currentAppTab: null//历史当前应用
+      currentAppTab: null //历史当前应用
     };
   },
   beforeCreate() {},
@@ -123,7 +123,7 @@ export default {
       }
     },
     getPrivateAttrList() {
-      this.$api.rdm.attr.getPrivateAttrList(1).then(res => {
+      this.$api.rdm.attr.getPrivateAttrList({ needSystemAttr: 1 }).then(res => {
         this.attrList = res.Return;
         this.isReady = true;
       });
@@ -149,9 +149,10 @@ export default {
           }
         });
     },
-    async refresh(id) { //刷新列表统计数
+    async refresh(id) {
+      //刷新列表统计数
       try {
-        await this.getAppByProjectId();
+        await this.getAppByProjectId(true);
       } catch (e) {
         console.error(e);
       }
@@ -170,33 +171,40 @@ export default {
         this.getProjectList();
       }
     },
-    getAppByProjectId() {
+    getAppByProjectId(muted) {
       if (!this.currentProjectId) {
         return;
       }
-      this.isReady = false;
-      return this.$api.rdm.project.getAppByProjectId(this.currentProjectId, {
-        isActive: 1,
-        needSystemAttr: 1,
-        needIssueCount: 1,
-        isMine: this.isMine,
-        isMyCreated: this.isMyCreated,
-        isProcessed: this.isProcessed,
-        isEnd: this.isEnd,
-        isFavorite: this.isFavorite
-      }).then(res => {
-        this.appList = res.Return;
-        this.allIssueCount = 0;
-        if (this.appList && this.appList.length > 0) {
-          this.appList.forEach(app => {
-            this.allIssueCount += app.issueCount;
-          });
-        }
-      }).finally(() => {
-        this.$nextTick(() => {
-          this.isReady = true;
+      if (!muted) {
+        this.isReady = false;
+      }
+      return this.$api.rdm.project
+        .getAppByProjectId(this.currentProjectId, {
+          isActive: 1,
+          needSystemAttr: 1,
+          needIssueCount: 1,
+          isMine: this.isMine,
+          isMyCreated: this.isMyCreated,
+          isProcessed: this.isProcessed,
+          isEnd: this.isEnd,
+          isFavorite: this.isFavorite
+        })
+        .then(res => {
+          this.appList = res.Return;
+          this.allIssueCount = 0;
+          if (this.appList && this.appList.length > 0) {
+            this.appList.forEach(app => {
+              this.allIssueCount += app.issueCount;
+            });
+          }
+        })
+        .finally(() => {
+          if (!muted) {
+            this.$nextTick(() => {
+              this.isReady = true;
+            });
+          }
         });
-      });
     }
   },
   filter: {},
@@ -228,7 +236,7 @@ export default {
     isEnd() {
       if (this.type === 'doing') {
         return 0;
-      } 
+      }
       return null;
     },
     currentProjectId() {

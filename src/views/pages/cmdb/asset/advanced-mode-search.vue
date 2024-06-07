@@ -198,7 +198,7 @@
           </DropdownMenu>
         </Dropdown>
       </div>
-      <span v-if="isShowDeleteAllBtn && (disabledUuidList.length == 0)" class="btn-remove tsfont-close-o" @click="deleteAllCondition"></span>
+      <span v-if="isShowDeleteAllBtn && (disabledUuidList.length == 0)" class="btn-remove tsfont-close-o cursor" @click="deleteAllCondition"></span>
       <span class="btn-filter tsfont-filter cursor" @click="openDropdown"></span>
     </div>
   </div>
@@ -207,10 +207,10 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   model: {
     prop: 'value',
@@ -339,11 +339,11 @@ export default {
                 selectedItem.config['dealDataByUrl'] = dealDataByUrlObj[selectedItem.config.dealDataByUrl];
               }
               this.$set(conditionList, index, {
-                name: 'attributeValue', 
-                placeholder: (selectedItem.config && selectedItem.config.type) == 'input' ? this.$t('form.placeholder.pleaseinput', {target: ''}) : this.$t('form.placeholder.pleaseselect', {target: ''}), 
+                name: 'attributeValue',
+                placeholder: (selectedItem.config && selectedItem.config.type) == 'input' ? this.$t('form.placeholder.pleaseinput', {target: ''}) : this.$t('form.placeholder.pleaseselect', {target: ''}),
                 transfer: true,
                 multiple: true,
-                ...selectedItem.config, 
+                ...selectedItem.config,
                 value: isReplace ? value : (selectedItem.config.type == 'input' ? '' : []),
                 validateList: [{name: 'required', message: ''}]
               });
@@ -353,10 +353,10 @@ export default {
           conditionList.forEach((v, index) => {
             if (v && v.name == 'attributeValue') {
               this.$set(conditionList, index, {
-                name: 'attributeValue', 
+                name: 'attributeValue',
                 placeholder: this.$t('form.placeholder.pleaseselect', {target: ''}),
                 multiple: true,
-                transfer: true, 
+                transfer: true,
                 value: '',
                 validateList: [{name: 'required', message: ''}]
               });
@@ -435,7 +435,7 @@ export default {
           conditionList: [
             {
               conditionList: this.$utils.deepClone(this.defaultConditionList),
-              joinType: 'or', 
+              joinType: 'or',
               uuid: this.$utils.setUuid()
             }
           ]});
@@ -606,7 +606,7 @@ export default {
               conditionRelList: conditionRelList
             });
           }
-         
+
           // 组与组之间的关系
           if (this.searchConditionList && this.searchConditionList.length > 1 && this.searchConditionList[tIndex] && this.searchConditionList[tIndex + 1]) {
             searchConditionConfig.conditionGroupRelList.push({
@@ -666,9 +666,9 @@ export default {
                 let childJoinType = v.conditionRelList && v.conditionRelList.find((item) => item.from == uu.uuid);
                 conditionList.push({
                   label: uu.label,
-                  text: (uu.expression == 'is-null' ? this.$t('term.expression.notempty') : (uu.expression == 'is-not-null' ? this.$t('term.expression.notempty') : '')) || (uu.text),
+                  text: (uu.expression == 'is-null' ? this.$t('term.expression.empty') : (uu.expression == 'is-not-null' ? this.$t('term.expression.notempty') : '')) || (uu.text),
                   childJoinType: (childJoinType ? childJoinType.joinType : 'or') || 'or',
-                  childUuid: uu.uuid 
+                  childUuid: uu.uuid
                 });
               });
               this.searchConditionList.push({
@@ -890,14 +890,15 @@ export default {
   }
   .btn-remove {
     position: absolute;
-    top: 0px;
+    top: 9px;
     right: 30px;
-    cursor: pointer;
+    line-height: 32px;
   }
   .btn-filter {
     position: absolute;
-    top: 1px;
+    top: 9px;
     right: 10px;
+    line-height: 32px;
   }
   .tag-item-sperate{
     text-align: center;

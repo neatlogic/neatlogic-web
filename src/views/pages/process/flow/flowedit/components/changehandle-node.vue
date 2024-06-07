@@ -2,7 +2,7 @@
   <div class="changehandleNode">
     <!-- 表单场景 -->
     <FormsceneSetting
-      v-model="configData.stepConfig"
+      :value="configData.stepConfig"
       :formConfig="formConfig"
       :toSetting="toSetting"
       @updateScene="updateScene"
@@ -146,16 +146,16 @@ import itemmixin from './itemmixin.js';
 export default {
   name: '',
   components: {
-    // StrategySetting: resolve => require(['./nodesetting/strategy-setting.vue'], resolve),
-    AuthoritySetting: resolve => require(['./nodesetting/authority-setting.vue'], resolve),
-    NoticeSetting: resolve => require(['./nodesetting/notice-setting.vue'], resolve),
-    ActionSetting: resolve => require(['./nodesetting/action-setting.vue'], resolve),
-    ButtonSetting: resolve => require(['./nodesetting/button-setting.vue'], resolve),
+    // StrategySetting:()=>import('./nodesetting/strategy-setting.vue'),
+    AuthoritySetting: () => import('./nodesetting/authority-setting.vue'),
+    NoticeSetting: () => import('./nodesetting/notice-setting.vue'),
+    ActionSetting: () => import('./nodesetting/action-setting.vue'),
+    ButtonSetting: () => import('./nodesetting/button-setting.vue'),
     TsFormSelect,
-    ExtendAuth: resolve => require(['./nodesetting/extend/extendauth.vue'], resolve),
-    ReplySetting: resolve => require(['./nodesetting/reply-setting.vue'], resolve),
-    TagSetting: resolve => require(['./nodesetting/tag-setting.vue'], resolve),
-    FormsceneSetting: resolve => require(['./nodesetting/formscene-setting'], resolve) // 表单场景
+    ExtendAuth: () => import('./nodesetting/extend/extendauth.vue'),
+    ReplySetting: () => import('./nodesetting/reply-setting.vue'),
+    TagSetting: () => import('./nodesetting/tag-setting.vue'),
+    FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
   },
   mixins: [nodemixin, itemmixin],
   props: {},

@@ -1,5 +1,5 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
-const page404 = () => import('@/views/pages/common/404.vue');
+const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 //const taskOverview = () => import('./task/task-overview.vue');
 const catalogOverview = () => import('./catalog/catalog-overview.vue');
@@ -25,9 +25,11 @@ const subtaskTypeManage = () => import('./subtask/subtasktype-manage.vue');
 const flowDemo = () => import('./flowdemo/flow-demo.vue');
 const replyManage = () => import('./replytemplate/reply-manage.vue');
 const ProcessTaskManage = () => import('./task/processtask-manage.vue');
-import {$t} from '@/resources/init.js';
 
-let routerArr = [
+import { $t } from '@/resources/init.js';
+import { config } from './config.js';
+
+let routerList = [
   {
     path: '/',
     beforeEnter: (to, from, next) => {
@@ -55,9 +57,9 @@ let routerArr = [
     component: refresh
   },
   {
-    path: '/404',
-    name: '404',
-    component: page404,
+    path: '/no-authority',
+    name: 'no-authority',
+    component: noAuthority,
     meta: {
       title: $t('page.pagenotvalid')
     }
@@ -107,7 +109,6 @@ let routerArr = [
       icon: 'tsfont-star',
       authority: 'PROCESS_BASE',
       type: 'catalog'
-      
     }
   },
   {
@@ -325,13 +326,13 @@ let routerArr = [
       type: 'others'
     }
   },
-  
+
   {
     path: '/flow-demo',
     name: 'flow-demo',
     component: flowDemo,
     meta: {
-      title: $t('touter.process.flowdemo'),
+      title: '流程图demo',
       ismenu: false
     }
   },
@@ -348,5 +349,17 @@ let routerArr = [
     }
   }
 ];
-
-export default routerArr;
+let importRouterList = [];
+try {
+  // 导入自定义路由
+  const routerContext = require.context('@/commercial-module', true, /router.js$/);
+  routerContext.keys().forEach(filePath => {
+    const moduleName = filePath?.split('/')[1]?.split('-')?.pop() || filePath?.split('/')[1];
+    if (moduleName && config?.module && moduleName == config.module) {
+      importRouterList = routerContext(filePath).default || [];
+    }
+  });
+} catch (error) {
+  // 捕获异常
+}
+export default [...routerList, ...importRouterList];

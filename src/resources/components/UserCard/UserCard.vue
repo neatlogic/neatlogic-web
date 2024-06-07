@@ -37,7 +37,12 @@
               :isDelete="isDelete || config.isDelete"
             />
             <template v-if="!hideName">
-              <span :class="hideAvatar && getUserStatus ? 'text-grey' : ''" style="position: relative;">  
+              <span
+                :class="[hideAvatar && getUserStatus ? 'text-grey' : '', alignMode == 'vertical' ? 'overflow' : '']"
+                :title="alignMode == 'vertical' ? showName() : ''"
+                :style="alignMode == 'vertical' ? {width: `${iconSize + 8}px`,display: 'inline-block'} : {}"
+                style="position: relative;"
+              >
                 {{ showName() }}
                 <UserStatus
                   v-if="hideAvatar && !hideStatusIcon"
@@ -152,7 +157,7 @@ export default {
   components: {
     UserInfo,
     TsAvatar,
-    UserStatus: resolve => require(['./user-status'], resolve)
+    UserStatus: () => import('./user-status')
   },
   inheritAttrs: false, //去掉多余的属性
   props: {

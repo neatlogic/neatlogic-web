@@ -19,7 +19,7 @@
                   <span class="ci-label">{{ viewData.name }}</span>
                 </div>
                 <div v-if="viewData.description" class="ci-description overflow text-grey" :title="viewData.description">{{ viewData.description }}</div>
-                <div v-else class="text-grey">{{ $t('page.nodata') }}</div>
+                <div v-else class="text-grey">{{ $t('page.nocommon') }}</div>
               </div>
             </div>
             <div class="right-block bg-block  radius-lg pl-nm pr-nm pb-nm">
@@ -41,17 +41,15 @@
 export default {
   name: '',
   components: {
-    ViewDataList: resolve => require(['./view-data-list.vue'], resolve),
-    CustomTemplate: resolve => require(['./custom-template.vue'], resolve)
+    ViewDataList: () => import('./view-data-list.vue'),
+    CustomTemplate: () => import('./custom-template.vue')
   },
   props: {
     customViewId: { type: Number }
   },
   data() {
-    const _this = this;
     return {
-      id: _this.$route.params['id'] ? parseInt(_this.$route.params['id']) : this.customViewId,
-      leftWidth: 200,
+      id: this.$route.params['id'] ? parseInt(this.$route.params['id']) : this.customViewId,
       scrollHeight: 800,
       loadingShow: false,
       isSiderHide: false,

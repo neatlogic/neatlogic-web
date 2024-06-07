@@ -2,7 +2,7 @@
   <div class="reportinstance-show-wrap">
     <TsContain border="border">
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back('/reportinstance-manage')">{{ $getFromPage($t('term.report.report')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span>{{ reportInstanceData.name }}</span>
@@ -70,7 +70,7 @@ export default {
   components: {
     TsFormItem,
     ...paramhandler,
-    ReportMain: resolve => require(['../component/report-main.vue'], resolve)
+    ReportMain: () => import('../component/report-main.vue')
 
   },
   directives: { download },
@@ -170,20 +170,6 @@ export default {
       }
     },
     setParam(paramName, paramValue) {
-      if (Array.isArray(paramValue)) {
-        let _paramValue = [];
-        paramValue.forEach((element) => {
-          if (element.indexOf('&=&') > -1) {
-            let item = element.split('&=&')[0];
-            _paramValue.push(item);
-          }
-        }); 
-        paramValue = _paramValue;
-      } else {
-        if (paramValue && paramValue.indexOf('&=&') > -1) {
-          paramValue = paramValue.split('&=&')[0];
-        }
-      }
       let obj = {};
       obj[paramName] = paramValue;
       this.searchParam = Object.assign({}, this.searchParam, obj);

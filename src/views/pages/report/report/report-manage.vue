@@ -19,7 +19,7 @@
         <div>
           <InputSearcher
             v-model="keyword"
-            @change="searchReport()"
+            @change="() => updatePagesize()"
           ></InputSearcher>
         </div>
       </template>
@@ -40,6 +40,7 @@
         <TsTable
           v-if="reportData"
           v-bind="reportData"
+          :theadList="theadList"
           selectedRemain
           keyName="id"
           :canSelectRow="true"
@@ -85,7 +86,7 @@
       :isCopy="isCopy"
       @close="close"
     ></ReportEdit>
-    <UploadDialog 
+    <UploadDialog
       ref="uploadDialog"
       :actionUrl="actionUrl"
       :formatList="formatList"
@@ -100,17 +101,16 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    ReportEdit: resolve => require(['./report-edit.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsUlList: resolve => require(['@/resources/components/TsUlList/TsUlList.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
+    ReportEdit: () => import('./report-edit.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsUlList: () => import('@/resources/components/TsUlList/TsUlList.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue')
   },
   directives: { download },
   props: {},
   data() {
-    let _this = this;
     return {
       keyword: '',
       actionUrl: BASEURLPREFIX + '/api/binary/report/import', //导入地址
@@ -202,27 +202,19 @@ export default {
       };
       this.$api.report.report.searchReport(params).then(res => {
         this.reportData = res.Return;
-        this.reportData.theadList = this.theadList;
       });
     },
     addReport: function() {
       this.reportId = null;
       this.reportDislogShow = true;
     },
-    updatePagesize: function(pageSize) {
-      if (pageSize) {
-        this.searchParam.pageSize = pageSize;
-      } else {
-        this.searchParam.pageSize = 20;
-      }
+    updatePagesize(pageSize) {
+      this.searchParam.currentPage = 1;
+      this.searchParam.pageSize = pageSize || 20;
       this.searchReport();
     },
-    updatePage: function(currentPage) {
-      if (currentPage) {
-        this.searchParam.currentPage = currentPage;
-      } else {
-        this.searchParam.currentPage = 1;
-      }
+    updatePage(currentPage) {
+      this.searchParam.currentPage = currentPage || 1;
       this.searchReport();
     },
     toggleReportActive: function(report) {
@@ -284,6 +276,7 @@ export default {
       } else {
         this.searchParam.type = name;
       }
+      this.selectList = [];
       this.searchReport();
     },
     showReport: function(id) {

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <TsContain siderPosition="right" :isSiderHide="isHistoryHide" :siderWidth="180">
+    <TsContain :isRightSiderHide="isHistoryHide" :rightWidth="180">
       <template v-slot:navigation>
-        <span class="text-action tsfont-left" @click="$back('/assets-inspection-manage')">{{ $getFromPage($t('page.back')) }}</span>
+        <span v-if="$hasBack()" class="text-action tsfont-left" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="action-group">
@@ -40,7 +40,7 @@
           </Dropdown>
         </div>
       </template>
-      <template v-slot:sider>
+      <template v-slot:right>
         <div ref="historyList">
           <HistoryList
             :id="searchParam.id"
@@ -145,10 +145,10 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    //HistoryDialog: resolve => require(['./history-dialog.vue'], resolve),
-    HistoryList: resolve => require(['./history-list.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    //HistoryDialog:()=>import('./history-dialog.vue'),
+    HistoryList: () => import('./history-list.vue')
   },
   directives: { download },
   props: {},
@@ -408,7 +408,7 @@ export default {
                 .replace(/\]/g, ''),
               ruleName: alert['ruleName'],
               fieldValue: alert['fieldValue'],
-              flag: this.handleRule(alert).ruleFlag, 
+              flag: this.handleRule(alert).ruleFlag,
               ruleSeq: alert['ruleSeq'],
               ruleId: this.handleRule(alert).ruleId,
               ruleBelongtoApp: this.handleRule(alert).ruleFlag == 'appRule' ? (alert['ruleSeq'] && alert['ruleSeq'].split('#') ? alert['ruleSeq'].split('#')[0] : '-') : '-', // 规则所属应用

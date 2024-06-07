@@ -3,15 +3,14 @@
     <TsDialog v-if="ciTypeData" v-bind="ciTypeDialogConfig" @on-close="close">
       <template v-slot>
         <TsForm ref="ciTypeForm" :item-list="ciTypeFormConfig">
-          <template v-slot:isMenu>
+          <!--<template v-slot:isMenu>
             <div>
               <i-switch v-model="ciTypeData.isMenu" :true-value="1" :false-value="0"></i-switch>
-              <!-- <span class="actionText" v-html="ciTypeData.isMenu == 1 ? '是' : '否'"></span> -->
               <div class="text-grey">
-                {{ $t('message.cmdb.keytype') }}
+                {{ $t('message.cmdb.keylevel') }}
               </div>
             </div>
-          </template>
+          </template>-->
           <template v-slot:isShowInTopo>
             <div>
               <i-switch v-model="ciTypeData.isShowInTopo" :true-value="1" :false-value="0"></i-switch>
@@ -45,7 +44,7 @@ export default {
     const _this = this;
     return {
       ciTypeDialogConfig: {
-        title: this.id ? this.$t('dialog.title.edittarget', {target: this.$t('page.type')}) : this.$t('dialog.title.addtarget', {target: this.$t('page.type')}),
+        title: this.id ? this.$t('dialog.title.edittarget', {target: this.$t('page.hierarchy')}) : this.$t('dialog.title.addtarget', {target: this.$t('page.hierarchy')}),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -69,11 +68,11 @@ export default {
             _this.ciTypeData.name = name;
           }
         },
-        {
+        /* {
           name: 'isMenu',
           type: 'slot',
-          label: this.$t('term.cmdb.keytype')
-        },
+          label: this.$t('term.cmdb.keylevel')
+        },*/
         {
           name: 'isShowInTopo',
           type: 'slot',

@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div class="argument-box">
     <div class="pt-nm pb-sm text-title tips"><span>{{ $t('term.autoexec.freeparameter') }}</span></div>
@@ -71,9 +57,9 @@
               ></TsFormSelect>
             </Col>
             <Col v-else-if="configParamList[lindex].mappingMode.indexOf('prenode')==0" span="17">
-              <PrenodeSelect 
-                :value="configParamList[lindex].value" 
-                :dataList="getPrevList(prevList)" 
+              <PrenodeSelect
+                :value="configParamList[lindex].value"
+                :dataList="getPrevList(prevList)"
                 :disabled="!canEdit"
                 :validateList="validateList"
                 @updateVal="(val)=>{changeValue(val,lindex,'prenode')}"
@@ -89,8 +75,8 @@
               <div class="overflow">
                 <template v-if="configParamList[lindex].mappingMode.indexOf('prenode')==0">
                   <TsFormCascader
-                    :value="configParamList[lindex].value" 
-                    :dataList="getPrevList(prevList)" 
+                    :value="configParamList[lindex].value"
+                    :dataList="getPrevList(prevList)"
                     :format="format"
                     readonly
                   ></TsFormCascader>
@@ -128,10 +114,10 @@ export default {
   components: {
     TsFormSelect,
     ...items,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    Globalparam: resolve => require(['./globalparam.vue'], resolve),
-    PrenodeSelect: resolve => require(['./prenode-select.vue'], resolve),
-    TsFormCascader: resolve => require(['@/resources/plugins/TsForm/TsFormCascader'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    Globalparam: () => import('./globalparam.vue'),
+    PrenodeSelect: () => import('./prenode-select.vue'),
+    TsFormCascader: () => import('@/resources/plugins/TsForm/TsFormCascader')
   },
   filters: {
   },
@@ -346,7 +332,7 @@ export default {
               };
             });
           } else {
-            let obj = { 
+            let obj = {
               mappingMode: 'constant',
               value: this.$utils.deepClone(this.config ? this.config.defaultValue : ''),
               component: val.type,
@@ -403,7 +389,7 @@ export default {
     }
   }
   .delete-btn{
-    display: none; 
+    display: none;
     position: absolute;
     right: 8px;
     top: 8px;

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="needCondition">
+    <div v-if="needCondition && !ciEntityData.error">
       <div class="clearfix mb-nm">
         <div v-if="needAction && ciEntityData && ciEntityData.tbodyList && ciEntityData.tbodyList.length > 0" class="batch">
           <Dropdown trigger="click">
@@ -36,8 +36,8 @@
       </div>
       <div v-if="isAdvancedSearch">
         <Tabs v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb')" v-model="advencedSearchMode">
-          <TabPane label="综合条件" name="condition"></TabPane>
-          <TabPane label="表达式" name="dsl"></TabPane>
+          <TabPane :label="$t('term.cmdb.condition')" name="condition"></TabPane>
+          <TabPane label="表达式(beta)" name="dsl"></TabPane>
         </Tabs>
         <Card
           v-if="advencedSearchMode == 'condition'"
@@ -48,7 +48,7 @@
           <TsRow style="max-height: 250px; overflow-y: auto; overflow-x: hidden">
             <Col span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey">{{ $t('term.cmdb.group') }}</Col>
+                <Col span="6" class="search-label text-grey overflow">{{ $t('term.cmdb.group') }}</Col>
                 <Col span="18" class="search-condition">
                   <TsFormSelect
                     :transfer="true"
@@ -67,7 +67,7 @@
             </Col>
             <Col v-for="attr in commonAttrList" :key="attr.name" span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey">{{ attr.label }}</Col>
+                <Col span="6" class="search-label text-grey overflow">{{ attr.label }}</Col>
                 <Col span="18" class="search-condition">
                   <div v-if="attr.name == 'id'">
                     <TsFormInput
@@ -100,7 +100,9 @@
             </Col>
             <Col v-for="attr in globalAttrList" :key="attr.id" span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey"><span class="tsfont-internet">{{ attr.label }}</span></Col>
+                <Col span="6" class="search-label text-grey tsfont-internet overflow">
+                  {{ attr.label }}
+                </Col>
                 <Col span="6" class="search-expression">
                   <TsFormSelect
                     :transfer="true"
@@ -133,7 +135,7 @@
             </Col>
             <Col v-for="attr in searchAttrList" :key="attr.id" span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey">{{ attr.label }}</Col>
+                <Col span="6" class="search-label text-grey overflow">{{ attr.label }}</Col>
                 <Col span="6" class="search-expression">
                   <TsFormSelect
                     :transfer="true"
@@ -162,7 +164,7 @@
             </Col>
             <Col v-for="rel in relList" :key="rel.id + '_' + rel.direction" span="12">
               <TsRow class="search-item">
-                <Col span="6" class="search-label text-grey">{{ rel.direction == 'from' ? rel.toLabel : rel.fromLabel }}</Col>
+                <Col span="6" class="search-label text-grey overflow">{{ rel.direction == 'from' ? rel.toLabel : rel.fromLabel }}</Col>
                 <Col span="6" class="search-expression">
                   <TsFormSelect
                     :transfer="true"
@@ -208,7 +210,7 @@
           </div>
         </Card>
         <div v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb') && advencedSearchMode === 'dsl'" class="pb-md">
-          <DslEditor :suggestList="suggestList"></DslEditor>
+          <DslEditor v-model="searchParam.dsl" :suggestList="suggestList"></DslEditor>
           <div style="text-align: right" class="mt-md">
             <Button
               type="primary"
@@ -345,8 +347,11 @@
     <div v-if="!ciEntityData.error && (!ciEntityData.tbodyList || ciEntityData.tbodyList.length == 0)">
       <NoData v-if="!isLoading"></NoData>
     </div>
-    <div v-else-if="ciEntityData.error" class="text-grey">
-      {{ ciEntityData.error }}
+    <div v-else-if="ciEntityData.error">
+      <Alert show-icon type="error">
+        {{ $t('page.exception') }}
+        <span slot="desc">{{ ciEntityData.error }}</span>
+      </Alert>
     </div>
     <RelCiEntityDialog
       v-if="isRelCientityDialogShow"
@@ -412,17 +417,17 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    /*CiEntityListRelCondition: resolve => require(['./cientity-list-relcondition.vue'], resolve),*/
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    AttrSearcher: resolve => require(['./attr-searcher.vue'], resolve),
-    AttrViewer: resolve => require(['./attr-viewer.vue'], resolve),
-    RelCiEntityDialog: resolve => require(['./rel-cientity-dialog.vue'], resolve),
-    DeleteCiEntityDialog: resolve => require(['./cientity-delete-dialog.vue'], resolve),
-    BatchEditCiEntityDialog: resolve => require(['./cientity-edit-batch.vue'], resolve),
-    DslEditor: resolve => require(['@/resources/plugins/DslEditor/dsl-editor.vue'], resolve),
-    AccountEditDialog: resolve => require(['@/views/pages/cmdb/asset/components/account-edit-dialog'], resolve) // 帐户管理
+    /*CiEntityListRelCondition:()=>import('./cientity-list-relcondition.vue'),*/
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    AttrSearcher: () => import('./attr-searcher.vue'),
+    AttrViewer: () => import('./attr-viewer.vue'),
+    RelCiEntityDialog: () => import('./rel-cientity-dialog.vue'),
+    DeleteCiEntityDialog: () => import('./cientity-delete-dialog.vue'),
+    BatchEditCiEntityDialog: () => import('./cientity-edit-batch.vue'),
+    DslEditor: () => import('@/resources/plugins/DslEditor/dsl-editor.vue'),
+    AccountEditDialog: () => import('@/views/pages/cmdb/asset/components/account-edit-dialog') // 帐户管理
   },
   directives: { download },
   props: {
@@ -479,11 +484,11 @@ export default {
       globalAttrExpressionList: [
         {
           value: 'like',
-          text: '包含'
+          text: this.$t('term.expression.like')
         },
-        { value: 'notlike', text: '不包含' },
-        { value: 'is-null', text: '为空' },
-        { value: 'is-not-null', text: '不为空' }
+        { value: 'notlike', text: this.$t('term.expression.notlike') },
+        { value: 'is-null', text: this.$t('term.expression.empty') },
+        { value: 'is-not-null', text: this.$t('term.expression.notempty') }
       ],
       isOnlyExportSelected: false, //只导出选中数据开关
       // 点击展开
@@ -730,6 +735,7 @@ export default {
           searchParam.relFilterList.push(obj);
         }
       }
+      searchParam.globalAttrStrictMode = true;
       return {
         url: 'api/binary/cmdb/cientity/export',
         params: searchParam,
@@ -801,6 +807,7 @@ export default {
       this.$addHistoryData('sortConfig', this.sortConfig);
       this.$addHistoryData('attrConditionHideData', this.attrConditionHideData);
       this.$addHistoryData('globalAttrConditionHideData', this.globalAttrConditionHideData);
+      this.searchParam['globalAttrStrictMode'] = true;
 
       await this.$api.cmdb.cientity.searchCiEntity(this.searchParam).then(res => {
         this.searchParam.currentPage = res.Return.currentPage;
@@ -819,31 +826,40 @@ export default {
             }
           });
         }
+        if (!this.$utils.isEmpty(this.ciEntityData.tbodyList)) {
+          this.ciEntityData.tbodyList.forEach(element => {
+            if (element.actionType == 'delete') {
+              this.$set(element, '_expander', false);
+            }
+          });
+        }
+        
         //补充选中状态
         if (this.selectedData && this.selectedData.length > 0) {
           this.selectedIndexList = this.$utils.deepClone(this.selectedData);
         }
-        this.isLoading = false;
         this.selectedCiEntityList = [];
+      }).finally(() => {
+        this.isLoading = false;
       });
     },
     async getGlobalAttrList() {
-      await this.$api.cmdb.globalattr.searchGlobalAttr({isActive: 1}).then(res => {
-        this.globalAttrList = res.Return.tbodyList;
+      await this.$api.cmdb.ci.getGlobalAttrByCiId(this.ciId, { isActive: 1, needAlias: 1 }).then(res => {
+        this.globalAttrList = res.Return;
       });
     },
     async getAttrByCiId() {
-      await this.$api.cmdb.ci.getAttrByCiId(this.ciId).then(res => {
+      await this.$api.cmdb.ci.getAttrByCiId(this.ciId, { needAlias: 1 }).then(res => {
         this.attrList = res.Return;
         if (this.attrList && this.attrList.length > 0) {
           this.attrList.forEach(attr => {
-            this.suggestList.push(attr.name);
+            this.suggestList.push({ value: attr.name, text: attr.name + '·' + attr.label });
           });
         }
       });
     },
     async getRelByCiId() {
-      await this.$api.cmdb.ci.getRelByCiId(this.ciId).then(res => {
+      await this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAlias: 1 }).then(res => {
         this.relList = res.Return;
       });
     },
@@ -1200,7 +1216,7 @@ export default {
       }
       return list;
     },
-    finalHeaderList: function() {
+    finalHeaderList() {
       let finalList = [];
       if (this.ciEntityData && this.ciEntityData.theadList && this.ciEntityData.theadList.length > 0) {
         this.ciEntityData.theadList.forEach(element => {
@@ -1211,11 +1227,9 @@ export default {
       }
       return finalList;
     },
-    searchAttrList: function() {
+    searchAttrList() {
       if (this.attrList && this.attrList.length > 0) {
-        return this.attrList.filter(attr => {
-          return attr.canSearch == 1;
-        });
+        return this.attrList.filter(attr => attr.canSearch && attr.isSearchAble);
       } else {
         return null;
       }
@@ -1303,9 +1317,30 @@ export default {
           this.searchParam['filterCiEntityId'] = null;
           this.searchParam['filterCiId'] = null;
           this.searchParam['groupId'] = null;
+          this.searchParam['dsl'] = null;
           this.searchCiEntity();
         } else {
           this.$set(this.searchParam, 'keyword', '');
+        }
+      }
+    },
+    advencedSearchMode: {
+      handler: function(val) {
+        if (val === 'condition') {
+          this.searchParam.dsl = null;
+          this.searchCiEntity();
+        } else {
+          if (this.attrList && this.attrList.length > 0) {
+            this.attrList.forEach(element => {
+              element.expression = null;
+            });
+          }
+          this.attrFilterList = [];
+          this.relFilterList = [];
+          this.searchParam['filterCiEntityId'] = null;
+          this.searchParam['filterCiId'] = null;
+          this.searchParam['groupId'] = null;
+          this.searchCiEntity();
         }
       }
     }

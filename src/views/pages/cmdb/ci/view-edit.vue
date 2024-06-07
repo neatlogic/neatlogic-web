@@ -2,7 +2,44 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot>
-        <div>
+        <TsTable
+          :fixedHeader="true"
+          :tbodyList="attrRelList"
+          :theadList="theadList"
+          :canDrag="true"
+          @updateRowSort="updateSort"
+        >
+          <template v-slot:alias="{ row }">
+            <TsFormInput
+              v-model="row.alias"
+              :maxlength="50"
+              border="border"
+            ></TsFormInput>
+          </template>
+          <template v-slot:showType="{ row }">
+            <TsFormSelect
+              v-model="row.showType"
+              :dataList="showTypeList"
+              :width="100"
+              border="border"
+              :clearable="false"
+              :transfer="true"
+            ></TsFormSelect>
+          </template>
+          <template v-slot:allowEdit="{ row }">
+            <TsFormRadio
+              v-if="row.type != 'const'"
+              v-model="row.allowEdit"
+              :dataList="[
+                { value: 1, text: $t('page.yes') },
+                { value: 0, text: $t('page.no') }
+              ]"
+            ></TsFormRadio>
+            <div v-else></div>
+          </template>
+        </TsTable>
+
+        <!--<div>
           <div class="card-head">
             <div class="block-handler text-grey">{{ $t('page.sort') }}</div>
             <div class="block-name text-grey">{{ $t('term.cmdb.fieldname') }}</div>
@@ -51,7 +88,7 @@
               </div>
             </div>
           </draggable>
-        </div>
+        </div>-->
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
@@ -61,13 +98,15 @@
   </div>
 </template>
 <script>
-import draggable from 'vuedraggable';
-import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
+//import draggable from 'vuedraggable';
 export default {
   name: '',
   components: {
-    draggable,
-    TsFormSelect
+    //draggable,
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
     ciId: {
@@ -84,6 +123,13 @@ export default {
         isShow: true,
         width: this.isVirtual ? 'small' : 'medium'
       },
+      theadList: [
+        { key: 'itemLabel', title: this.$t('page.field') },
+        { key: 'alias', title: this.$t('page.alias') },
+        { key: 'typeText', title: this.$t('page.type') },
+        { key: 'showType', title: this.$t('term.cmdb.displaytype') },
+        { key: 'allowEdit', title: this.$t('page.allowedit') }
+      ],
       dragOptions: {
         animation: 150,
         scroll: true,
@@ -109,8 +155,17 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    setAlias(val, row) {
+      this.$set(row, 'alias', val);
+      console.log(JSON.stringify(row, null, 2));
+      console.log(JSON.stringify(this.attrRelList, null, 2));
+    },
     moveStart() {},
     moveEnd() {},
+    updateSort(event, attrRelList) {
+      this.attrRelList = attrRelList;
+      //console.log('change sort');
+    },
     getShowTypeList() {
       this.$api.cmdb.ci.getShowTypeList().then(res => {
         this.showTypeList = res.Return;

@@ -17,46 +17,54 @@
       <div v-if="item.paramList && item.paramList.length > 0" class="pb-nm">
         <TsTable :fixedHeader="false" :theadList="paramTheadList" :tbodyList="item.paramList">
           <template v-slot:value="{ row }">
-            <Poptip
-              word-wrap
-              width="500"
-              trigger="hover"
-              transfer
-              :disabled="isDisabledPoptipContent(row)"
-            >
-              <div slot="content" style="max-height: 350px;overflow: auto;">
-                <span v-if="!isJson(row.value)">{{ row.value }}</span>
-                <JsonViewer
-                  v-else
-                  class="popTipContent"
-                  copyable
-                  :expand-depth="5"
-                  :value="JSON.parse(row.value)"
-                ></JsonViewer>
-              </div>
-              <span v-if="row.value && (row.type == 'filepath' || row.type == 'file')" v-download="downloadFile(row, row.value)" class="cursor">
-                <span v-if="row.isDownloadFileLoding" class="action-item disable" :title="$t('page.downloadloadingtip')">
-                  <Icon type="ios-loading" size="18" class="loading"></Icon>
-                  {{ $t('page.downloading') }}
-                </span>
-                <span v-else class="text-href">{{ JSON.stringify(row.value).length > 40 ? JSON.stringify(row.value).substring(0, 40) + '...' : row.value }}</span>
+            <span v-if="row.value && (row.type == 'filepath' || row.type == 'file')" class="cursor">
+              <span v-if="row.isDownloadFileLoding" class="action-item disable" :title="$t('page.downloadloadingtip')">
+                <Icon type="ios-loading" size="18" class="loading"></Icon>
+                {{ $t('page.downloading') }}
               </span>
-              <div v-else-if="row.value && row.type == 'userselect'">
-                <span v-for="(user,uindex) in JSON.parse(row.value)" :key="uindex">
-                  <UserCard v-bind="getConfig(user)"></UserCard>
-                  <span v-if="JSON.parse(row.value).length-1 > uindex">、</span>
+              <span v-if="row.value && Array.isArray(row.value)">
+                <span v-for="(file, findex) in row.value" :key="findex">
+                  <span v-if="!row.isDownloadFileLoding" v-download="downloadFile(row, file)" class="text-href">{{ file }}</span>
+                  <br />
                 </span>
-              </div>
-              <div v-else-if="row.value" style="max-width: 500px" class="overflow">
+              </span>
+              <span v-else>
+                <span v-if="!row.isDownloadFileLoding" v-download="downloadFile(row, row.value)" class="text-href">{{ row.value }}</span>
+              </span>
+            </span>
+            <div v-else-if="row.value && row.type == 'userselect'">
+              <span v-for="(user,uindex) in JSON.parse(row.value)" :key="uindex">
+                <UserCard v-bind="getConfig(user)"></UserCard>
+                <span v-if="JSON.parse(row.value).length-1 > uindex">、</span>
+              </span>
+            </div>
+            <div v-else-if="row.value" style="max-width: 500px" class="overflow">
+              <Poptip
+                word-wrap
+                width="500"
+                trigger="hover"
+                transfer
+                :disabled="isDisabledPoptipContent(row)"
+              >
+                <div slot="content" style="max-height: 350px;overflow: auto;">
+                  <span v-if="!isJson(row.value)">{{ row.value }}</span>
+                  <JsonViewer
+                    v-else
+                    class="popTipContent"
+                    copyable
+                    :expand-depth="5"
+                    :value="JSON.parse(row.value)"
+                  ></JsonViewer>
+                </div>
                 {{ JSON.stringify(row.value).length > 40 ? JSON.stringify(row.value).substring(0, 40) + '...' : row.value }}
-              </div>
-            </Poptip>
+              </Poptip>
+            </div>
           </template>
         </TsTable>
       </div>
 
       <div v-if="!$utils.isEmptyObj(item.argument) && item.argument.valueList&& item.argument.valueList.length>0" class="extrainfo-detail bg-op padding radius-lg">
-        <div class="pb-sm"><span style="font-weight:bold">{{ $t('term.autoexec.freeparameter') }}</span><span class="pl-sm text-grey">{{ item.argument.description }}</span></div>  
+        <div class="pb-sm"><span style="font-weight:bold">{{ $t('term.autoexec.freeparameter') }}</span><span class="pl-sm text-grey">{{ item.argument.description }}</span></div>
         <div class="content-grid">
           <div class="item">
             <div class="content">
@@ -77,9 +85,9 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    JsonViewer: resolve => require(['vue-json-viewer'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    JsonViewer: () => import('vue-json-viewer'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   directives: { download },
   filters: {},
@@ -193,9 +201,10 @@ export default {
           jobId: this.jobId,
           jobPhaseId: this.jobPhaseId,
           resourceId: this.resourceId,
+          type: this.type,
           path: path
         };
-        return {url: 'api/binary/autoexec/job/node/' + this.type + '/file/download', params: data, method: 'post', changeStatus: status => {
+        return {url: 'api/binary/autoexec/job/node/output/file/download', params: data, method: 'post', changeStatus: status => {
           if (status == 'start') {
             this.$set(row, 'isDownloadFileLoding', true);
           } else if (status == 'success' || status == 'error') {
@@ -224,7 +233,7 @@ export default {
           }
         } else if (row.value && row.value instanceof Object && (Object.values(row.value).join('') + Object.keys(row.value).join('')).length < 40) {
           isDisabled = true;
-        } 
+        }
         return isDisabled;
       };
     },

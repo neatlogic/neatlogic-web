@@ -38,9 +38,9 @@
   "clearsuccess": "Purge succeeded",
   "clearupsuccess": "Cleanup succeeded",
   "cmdb": {
-    "keytype": "The key type will be displayed in the leftmost menu",
-    "topotype": "This type will be displayed in the topology map after it is turned on",
-    "editrelpath": "Click on the model to edit the relationship path",
+    "keylevel": "The key level will be displayed in the leftmost menu",
+    "topotype": "This level will be displayed in the topology map after it is turned on",
+    "editrelpath": "Click the blue node to set whether the data of this node is displayed.",
     "selectci": "Please select the associated model",
     "topoerror": "The current model data cannot use {target} to generate a topology map, please change to another layout.",
     "notopo": "The topology map cannot be displayed, please check whether the model type of the current configuration item allows displaying the topology.",
@@ -95,7 +95,6 @@
     "cannotnodelist": "Failed to obtain node list data!",
     "notsaveflow": "The flow has not been saved yet!",
     "notinitdata": "Initialization failed to obtain data!",
-    "timernodenobacklink": "The timer node cannot be connected to the backlink!",
     "timerhasonelink": "The timer node can only have one line connected!",
     "nodeorphaned": "Node is orphaned",
     "nodenofrontnode": "Node has no front node",
@@ -109,7 +108,11 @@
     "recreatenewjobtip": "After the process is rolled back, when it flows back to the current step, recreate the automated job and execute it",
     "batchcreatejobpolicyvalid": "Batch creation of jobs, table components must be referenced by automation job parameters at least once",
     "batchjobpolicytip": "Loop through list data to create multiple jobs",
-    "jobpolicycolumn": "Loop through list data and merge into an array"
+    "jobpolicycolumn": "Loop through list data and merge into an array",
+    "eoahasonelink": "Approval nodes can only have one line connected!",
+    "eoanodenobacklink": "Approval nodes can only be rolled back to one node",
+    "eoalinkouttip": "At most, the approval node can only be connected by two lines",
+    "nodenobacklink": "Cannot connect fallback line"
   },
   "autoexec": {
     "savedeadlinenolimit": "No setting means unlimited storage period",
@@ -119,7 +122,8 @@
     "emptyfiltervalue": "Not within filter range",
     "notfoundsys": "The corresponding asset was not found in the system",
     "executerunnertip": "The combination tool only includes the runner or SQL execution method, and there is no need to set the execution target",
-    "notsetexecutertip": "In the combination tool, each execution stage has preset execution goals, so there is no need to set execution goals here"
+    "notsetexecutertip": "In the combination tool, each execution stage has preset execution goals, so there is no need to set execution goals here",
+    "norunnerphaserunnergrouptips": "The combination tool does not include a runner or SQL execution method, and there is no need to set an executor group"
   },
   "knowledge": {
     "notcatalog": "No text catalog",
@@ -195,8 +199,8 @@
     "pastecelltip": "The current cell is not empty. Are you sure to replace the current content with the copied content?",
     "replacenewcomp": "The current cell is not empty. Do you want to replace it with a new component?",
     "clearcelltip": "Merging cells will clear the following components",
-    "cusscenecomptip": "Customized scenarios only support selecting components from existing components in [default scenario]",
-    "defultscenetip": "Customize the form scene, which can modify the form layout, hide, disable components, or modify component data sources based on the default scene components. Form scenarios can be associated with process nodes to achieve the same process, and the processing pages of different nodes display different form layouts. The viewing page of the work order uniformly displays the default scenario of the form.",
+    "cusscenecomptip": "Customized scenarios only support selecting components from existing components in [main scenario]",
+    "defultscenetip": "Customize the form scene, which can modify the form layout, hide, disable components, or modify component data sources based on the main scene components. Form scenarios can be associated with process nodes to achieve the same process, and the processing pages of different nodes display different form layouts. The viewing page of the work order uniformly displays the main scenario of the form.",
     "notdelscenetip": "The current form scene has been referenced and cannot be deleted",
     "forminputdatatip": "Help: Input data to test whether the form processes the data properly. The input data supports two formats: 1. Directly use the output data. 2. Simplified format: {ComponentUuid1: value1, ComponentUuid2: value2}",
     "formcostomhelp": "The template needs to comply with the Vue template syntax specification and must specify a root label, usually div, which supports all iView components and also supports the following internal components",
@@ -206,7 +210,14 @@
     "leastoneselectattr": "Please select at least one inherent attribute of the matrix",
     "staticrepeat": "There is duplicate data in the static data option, please edit again",
     "syncsceneattrtip": "The default scene contains attributes A, B, and C, and the current scene does not contain A, B, and C. Add the A, B, and C attributes to the current scene",
-    "editwechattouser": "To be consistent with the user account in the user management of the enterprise WeChat backend"
+    "editwechattouser": "To be consistent with the user account in the user management of the enterprise WeChat backend",
+    "regex": "Regular verification",
+    "regextip": "Customize regular expressions to verify the validity of text box input; Do not verify when not filled in",
+    "regularexpression": "regular expression",
+    "regexvalidtip": "After the input verification fails, the user can re-enter according to this verification prompt",
+    "regexvalidplaceholder": "The specific meaning of regular expressions, such as containing only numbers",
+    "validtip": "Verification prompt",
+    "datasourceselectmessage": "The referenced table input component has been deleted. Please reconfigure the attribute data source"
   },
   "dashboard": {
     "templatehelp": "The template needs to comply with the vue template syntax specification, and must specify a root tag, typically a div, that supports all iView components. The data source results are returned in the form of an array, and the root attribute is: dataList. When accessing data, please directly iterate over the dataList to obtain the required data.",
@@ -261,7 +272,9 @@
     "donotinput": "Please do not enter&lt; &gt; &quot; &apos; Equal special symbols",
     "supporttype1": "Only Chinese characters, letters, numbers, and special characters (. _ -) are supported",
     "supporttype2": "Only letters, numbers, and special characters (. _ -) are supported",
-    "supporttype3": "Only letters, numbers, slashes, and underscores are supported"
+    "supporttype3": "Only letters, numbers, slashes, and underscores are supported",
+    "highriskcode": "There are high-risk codes present",
+    "enName": "Only supports letters, numbers, and underscores"
   },
   "incorrectformat": "Incorrect format",
   "accordingformat": "Please input according to the format requirements",
@@ -274,6 +287,16 @@
   "syncsuccess": "Sync successful",
   "downloadsuccessful": "Download successful",
   "diagram": {
-    "versionchecking": "The current version is currently under review and cannot be edited"
-  }
+    "versionchecking": "The current version is currently under review and cannot be edited",
+    "deletetemplateconfirm": "The current template is an automatically filled template. After deletion, the corresponding directory or configuration item will no longer automatically generate relevant architecture diagrams. Are you sure you want to delete it?",
+    "deletetemplateanddiagramconfirm": "The current template is an automatically filled template with modification records. After deletion, the corresponding directory or configuration item will no longer automatically generate relevant architecture diagrams, and the modification records will also be deleted. Are you sure you want to delete it?",
+    "deletecatalogconfirm": "After deleting the directory, all architecture diagrams and modification records under the directory will also be deleted. Are you sure?",
+    "lockmessage": "The diagram is locked by {user} at {time}",
+    "lockdiagramconfirm": "Are you sure to lock the current architecture diagram and enter editing mode?",
+    "editingversionnotfound": "The current architecture diagram does not have a editing version",
+    "noauthtoedit": "You do not have permission to edit the current architecture diagram",
+    "isactivenotfound": "The current architecture diagram does not have an activated version",
+    "editingversionirregular": "The current version is in a non editing state and cannot be edited"
+  },
+  "runsuccess": "Execution successful"
 }

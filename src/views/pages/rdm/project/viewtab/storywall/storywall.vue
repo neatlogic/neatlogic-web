@@ -62,8 +62,8 @@ import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
 export default {
   name: '',
   components: {
-    AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    AppTab: () => import('@/views/pages/rdm/project/viewtab/components/app-tab.vue'),
+    IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue')
   },
   mixins: [mixins],
   props: {
@@ -95,29 +95,31 @@ export default {
   destroyed() {},
   methods: {
     getPrivateAttrList() {
-      this.$api.rdm.attr.getPrivateAttrList(1).then(res => {
+      this.$api.rdm.attr.getPrivateAttrList({ needSystemAttr: 1 }).then(res => {
         this.attrList = res.Return;
       });
     },
     getAppList() {
       this.isReady = false;
-      this.$api.rdm.project.getAppByProjectId(this.projectId, {
-        isActive: 1,
-        needSystemAttr: 1,
-        needIssueCount: 1,
-        isMine: this.isMine,
-        isMyCreated: this.isMyCreated,
-        isEnd: this.isEnd,
-        isFavorite: this.isFavorite
-      }).then(res => {
-        this.appList = res.Return;
-        this.allIssueCount = 0;
-        if (this.appList && this.appList.length > 0) {
-          this.appList.forEach(app => {
-            this.allIssueCount += app.issueCount;
-          });
-        }
-      });
+      this.$api.rdm.project
+        .getAppByProjectId(this.projectId, {
+          isActive: 1,
+          needSystemAttr: 1,
+          needIssueCount: 1,
+          isMine: this.isMine,
+          isMyCreated: this.isMyCreated,
+          isEnd: this.isEnd,
+          isFavorite: this.isFavorite
+        })
+        .then(res => {
+          this.appList = res.Return;
+          this.allIssueCount = 0;
+          if (this.appList && this.appList.length > 0) {
+            this.appList.forEach(app => {
+              this.allIssueCount += app.issueCount;
+            });
+          }
+        });
       this.$nextTick(() => {
         this.isReady = true;
       });
@@ -158,8 +160,7 @@ export default {
       return [];
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less"></style>

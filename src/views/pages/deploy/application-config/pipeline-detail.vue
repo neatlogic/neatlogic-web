@@ -101,7 +101,7 @@
             </div>
             <div class="base-config">
               <Tabs
-                v-model="tabValue" 
+                v-model="tabValue"
                 class="block-tabs"
                 :animated="false"
               >
@@ -242,17 +242,17 @@ export default {
   },
   directives: { download },
   components: {
-    StepList: resolve => require(['./pipeline/step/step-list'], resolve),
-    StepGroup: resolve => require(['./pipeline/step-group'], resolve),
-    ProfileSetting: resolve => require(['./pipeline/profile-setting'], resolve),
-    ScenarioSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/scenario-setting'], resolve),
-    StepTopo: resolve => require(['./pipeline/step/step-topo'], resolve),
-    RuntimeParamsSetting: resolve => require(['./pipeline/runtime-params-setting.vue'], resolve),
-    AppConfigTree: resolve => require(['./config/app/app-config-tree'], resolve),
-    PipelineValid: resolve => require(['./pipeline/pipeline-valid'], resolve),
-    ExecuteSetting: resolve => require(['./pipeline/execute-setting'], resolve),
-    AppConfigStatus: resolve => require(['./config/app/app-config-status'], resolve),
-    ImportPipelineConfigDialog: resolve => require(['pages/deploy/application-config/import-pipeline-config-dialog'], resolve) // 导入流水线配置
+    StepList: () => import('./pipeline/step/step-list'),
+    StepGroup: () => import('./pipeline/step-group'),
+    ProfileSetting: () => import('./pipeline/profile-setting'),
+    ScenarioSetting: () => import('@/views/pages/autoexec/detail/actionDetail/scenario-setting'),
+    StepTopo: () => import('./pipeline/step/step-topo'),
+    RuntimeParamsSetting: () => import('./pipeline/runtime-params-setting.vue'),
+    AppConfigTree: () => import('./config/app/app-config-tree'),
+    PipelineValid: () => import('./pipeline/pipeline-valid'),
+    ExecuteSetting: () => import('./pipeline/execute-setting'),
+    AppConfigStatus: () => import('./config/app/app-config-status'),
+    ImportPipelineConfigDialog: () => import('pages/deploy/application-config/import-pipeline-config-dialog') // 导入流水线配置
   },
   props: {},
   data() {
@@ -465,7 +465,7 @@ export default {
           id: l.id || null //阶段id
         };
         //模块层和环境层需要：source(继承)、override(重载)、isActive(启用),
-        if (l.hasOwnProperty('source')) { 
+        if (l.hasOwnProperty('source')) {
           this.$set(obj, 'source', l.source);
         }
         if (l.hasOwnProperty('override')) {
@@ -496,7 +496,7 @@ export default {
           let userData = await this.$api.common.getUser({userUuid: this.pipelineDraftData.lcu});
           this.editTitle = this.$t('term.deploy.userhasnosavedraft', {username: userData.name, userid: userData.userId});
         }
-        this.showDialog = true; 
+        this.showDialog = true;
       } else {
         this.canEdit = true;
       }
@@ -544,7 +544,7 @@ export default {
         delete item.isShow;
         delete item.scriptLength;
         item.config &&
-            item.config.phaseOperationList && 
+            item.config.phaseOperationList &&
             this.$set(item.config, 'phaseOperationList', this.savePhaseOperationList(item.config.phaseOperationList));
         this.combopGroupList.forEach(c => {
           if (c.policy == 'grayScale' && c.uuid == item.groupUuid) {
@@ -635,7 +635,7 @@ export default {
       }
     },
     updatedCombopGroupList(stepList) { //更新组列表
-      let newList = []; 
+      let newList = [];
       stepList.forEach(item => {
         let findItem = this.combopGroupList.find(c => c.uuid == item.groupUuid);
         if (findItem) {
@@ -863,7 +863,7 @@ export default {
             list.push(item);
           }
         });
-      } 
+      }
       return list;
     },
     jumpToStep(step) { //流程图定位阶段
@@ -1031,14 +1031,14 @@ export default {
             this.hasEditAuth = true;
           } else {
             this.$router.push({
-              path: '/404',
+              path: '/no-authority',
               query: {des: this.$t('term.deploy.noappviewauth', {abbrname: authInfo.abbrName || ''})}
             });
           }
         }
       });
     },
-    validScenario() { 
+    validScenario() {
       //在模块层和环境层需要校验每个场景的中至少存在一个激活的阶段
       let validList = [];
       if (this.appModuleId || this.envId) {
@@ -1053,9 +1053,9 @@ export default {
           }
           if (!isValid) {
             validList.push({
-              text: item.scenarioName + '：' + this.$t('term.deploy.scenariosteperror'), 
+              text: item.scenarioName + '：' + this.$t('term.deploy.scenariosteperror'),
               type: 'error',
-              component: 'scenario' 
+              component: 'scenario'
             });
           }
         });
@@ -1080,7 +1080,7 @@ export default {
         if (this.appModuleId || this.envId) {
           isEdit = false;
         }
-        return isEdit; 
+        return isEdit;
       };
     },
     getAppSystemAbbrNameAppSystemName() {

@@ -7,15 +7,15 @@
 <script>
 export default {
   name: '',
-  components: { 
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+  components: {
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
-  props: { 
+  props: {
     config: {type: Object}
   },
   data() {
     const _this = this;
-    return { 
+    return {
       myConfig: {},
       formConfig: {
         format: {
@@ -23,7 +23,7 @@ export default {
           label: '格式',
           dataList: [
             {value: 'yyyy-MM-dd', text: 'yyyy-MM-dd'},
-            {value: 'yyyy-MM', text: 'yyyy-MM'}, 
+            {value: 'yyyy-MM', text: 'yyyy-MM'},
             {value: 'yyyy', text: 'yyyy'}],
           transfer: true,
           onChange: (val) => {
@@ -52,7 +52,7 @@ export default {
     myConfig: {
       handler: function(val) {
         this.$emit('setConfig', val);
-      }, 
+      },
       deep: true
     },
     config: {

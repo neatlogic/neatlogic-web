@@ -51,8 +51,8 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree')
   },
   props: {
     item: Object
@@ -79,7 +79,7 @@ export default {
         }
       ],
       attrConfig: {
-        url: '/api/rest/cmdb/ci/listattr',
+        url: '/api/rest/cmdb/ci/listattr/forview',
         validateList: ['required'],
         valueName: 'name',
         textName: 'label',

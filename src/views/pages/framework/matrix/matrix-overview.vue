@@ -88,9 +88,9 @@
         </div>
         <div v-show="modeType == 'list'">
           <TsTable
-            v-if="matrixTableList"
-            v-bind="matrixTableList"
+            v-bind="matrixTableConfig"
             keyName="uuid"
+            :theadList="matrixTableThead"
             @operation="operation"
             @changeCurrent="getPagedata"
             @changePageSize="changePageSize"
@@ -223,7 +223,7 @@
                 <Poptip
                   trigger="hover"
                   placement="right"
-                  width="500"
+                  width="800"
                   :transfer="true"
                 >
                   <a href="javascript:void(0)">{{ $t('page.viewexample') }}</a>
@@ -232,25 +232,40 @@
 &lt;view&gt;
    &lt;!--{{ $t('message.framework.viewmatrixsql') }}--&gt;
   &lt;attrs&gt;
-    &lt;attr name="user_id" label="{{ $t('page.userid') }}" /&gt;
-    &lt;attr name="user_name" label="{{ $t('page.username') }}" /&gt;
-    &lt;attr name="teamName" label="{{ $t('page.group') }}" /&gt;
+    &lt;attr name="id" label="ID" /&gt;
+    &lt;attr name="xuqiu" label="需求" /&gt;
+    &lt;attr name="moduleName" label="名称" /&gt;
+    &lt;attr name="midver" label="版本" /&gt;
+    &lt;attr name="type" label="架构类型" /&gt;
+    &lt;attr name="serviceName" label="中间件服务名" /&gt;
+    &lt;attr name="port" label="端口" /&gt;
+    &lt;attr name="app" label="应用基架资源规格" /&gt;
   &lt;/attrs&gt;
   &lt;sql&gt;
     SELECT
     &lt;!--{{ $t('message.framework.reqid') }}--&gt;
-    `u`.`id` AS id,
+    a.cientity_id  AS id,
     &lt;!--{{ $t('message.framework.requuid') }}--&gt;
- `u`.`uuid` AS uuid,
+    REPLACE(UUID(),'-','') AS UUID,
     &lt;!--{{ $t('message.framework.reqattrs') }}--&gt;
-    `u`.`user_name` AS name,
-    `u`.`user_id` as user_id,
-    `u`.`user_name` as user_name,
-    group_concat( `t`.`name`) AS teamName
-    FROM `user` `u`
-    LEFT JOIN `user_team` `ut` ON `u`.`uuid` = `ut`.`user_uuid`
-    LEFT JOIN `team` `t` ON `t`.`uuid` = `ut`.`team_uuid`
-    GROUP BY u.`uuid`
+    b.`name`  AS moduleName,
+    a.midver AS midver,
+    a.xuqiu AS xuqiu,
+    a.baseline AS baseline,
+    a.type AS type,
+    e.name AS serviceName,
+    d.`port` AS port,
+    f.`name` AS app
+    FROM @{DATA_SCHEMA}.ci_inframid_line a
+    JOIN @{DATA_SCHEMA}.`ci_ciroot` b ON a.cientity_id = b.`cientity_id`
+    LEFT JOIN `cmdb_rel` cr0 ON cr0.`from_name` = 'inframid_line' AND cr0.`to_name` = 'cfgfw'
+    LEFT JOIN cmdb_relentity cr ON cr.`from_cientity_id` = a.cientity_id AND  cr.`rel_id` = cr0.`id`
+    LEFT JOIN @{DATA_SCHEMA}.ci_cfgfw d ON d.cientity_id = cr.to_cientity_id
+    LEFT JOIN @{DATA_SCHEMA}.`ci_ciroot` e ON e.cientity_id = d.`cientity_id`
+
+    LEFT JOIN cmdb_rel cr2 ON cr2.`from_name` = 'infrabase_line' AND cr2.`to_name` = 'inframid_line'
+    LEFT JOIN cmdb_relentity cr1 ON cr1.`to_cientity_id` = a.cientity_id AND  cr1.`rel_id` = cr2.`id`
+    LEFT JOIN @{DATA_SCHEMA}.`ci_ciroot` f ON f.cientity_id = cr1.from_cientity_id
   &lt;/sql&gt;
 &lt;/view&gt;
                     </pre>
@@ -259,6 +274,40 @@
               </div>
             </div>
             <div v-if="showFileError" class="form-error-tip">{{ $t('term.framework.upconfigfile') }}</div>
+          </div>
+        </template>
+        <template v-slot:attributeMappingList>
+          <div v-for="(conItem, conIdex) in addAtrixForm.attributeMappingList.value" :key="conIdex" class="pb-sm">
+            <TsRow :gutter="0">
+              <Col span="10">
+                <div class="pr-sm">
+                  <TsFormSelect
+                    v-model="conItem.label"
+                    :dataList="getDataList(conItem.label)"
+                    search
+                    transfer
+                    :validateList="['required']"
+                  ></TsFormSelect>
+                </div>
+              </Col>
+              <Col span="10">
+                <div class="pr-sm">
+                  <TsFormInput
+                    v-model="conItem.uniqueIdentifier"
+                    :maxlength="50"
+                    type="text"
+                    :placeholder="$t('page.uniquekey')"
+                    :validateList="['required', 'key-special']"
+                  ></TsFormInput>
+                </div>
+              </Col>
+              <Col span="2">
+                <div class="btn-group text-tip">
+                  <span class="tsfont-plus" style="padding-right:8px;" @click="addAttr(conItem, conIdex)"></span>
+                  <span v-if="addAtrixForm.attributeMappingList.value.length > 1" class="tsfont-minus" @click="delAttr(conItem, conIdex)"></span>
+                </div>
+              </Col>
+            </TsRow>
           </div>
         </template>
       </TsForm>
@@ -270,15 +319,16 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    UploadDialog: resolve => require(['./components/UploadDialog.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    UploadDialog: () => import('./components/UploadDialog.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: [''],
   data() {
@@ -323,27 +373,6 @@ export default {
           label: this.$t('page.uniquekey'),
           validateList: ['required', 'char', { name: 'searchUrl', url: 'api/rest/matrix/save', message: this.$t('message.targetisexists', {'target': this.$t('term.framework.matrixuniquekey')}), key: 'label' }]
         },
-        // cmdbId: {
-        //   type: 'radio',
-        //   label: '视图类型',
-        //   value: null,
-        //   transfer: true,
-        //   dataList: [{text: '视图', value: 1}, {text: '模型', value: 2}],
-        //   width: '100%',
-        //   validateList: ['required'],
-        //   onChange: val => {
-        //     let name = '';
-        //     if (val == 1) {
-        //       name = '视图数据源';
-        //       _this.customviewList();
-        //     } else {
-        //       name = '模型数据源';
-        //       _this.cmdbList();
-        //     }
-        //     _this.addAtrixForm.externalId.isHidden = false;
-        //     _this.addAtrixForm.externalId.label = name;
-        //   }
-        // },        
         type: {
           type: 'radio',
           label: this.$t('page.type'),
@@ -399,24 +428,51 @@ export default {
           width: '100%',
           validateList: ['required'],
           onChange: val => {
-            _this.addAtrixForm.showAttributeLabelList.value = [];
+            let emptyRow = {
+              label: '',
+              uniqueIdentifier: ''
+            };
+            let newList = [];
+            newList.push(emptyRow);
+            _this.addAtrixForm.attributeMappingList.value = newList;
             if (val) {
-              _this.showAttribute(val);
-            } else {
-              _this.addAtrixForm.showAttributeLabelList.dataList = [];
+              let data = {
+                'matrixUuid': null,
+                'type': 'cmdbci',
+                'ciId': val
+              };
+              _this.showAttribute(data);
             }
           }
         },
-        showAttributeLabelList: {
+        customViewId: {
           type: 'select',
-          label: this.$t('term.pbc.modelattribute'),
-          value: [],
-          multiple: true,
+          label: this.$t('term.cmdb.customview'),
+          value: null,
           transfer: true,
           isHidden: true,
           dataList: [],
           width: '100%',
-          validateList: ['required']
+          validateList: [
+            'required'
+          ],
+          onChange: val => {
+            let emptyRow = {
+              label: '',
+              uniqueIdentifier: ''
+            };
+            let newList = [];
+            newList.push(emptyRow);
+            _this.addAtrixForm.attributeMappingList.value = newList;
+            if (val) {
+              let data = {
+                'matrixUuid': null,
+                'type': 'cmdbcustomview',
+                'customViewId': val
+              };
+              _this.showAttribute(data);
+            }
+          }
         },
         fileId: {
           type: 'slot',
@@ -430,21 +486,16 @@ export default {
           validateList: [
             'required'
           ]
+        },
+        attributeMappingList: {
+          type: 'slot',
+          label: this.$t('page.attribute'),
+          value: [],
+          transfer: true,
+          isHidden: true,
+          width: '100%',
+          validateList: ['required']
         }
-        // customViewId: {
-        //   type: 'select',
-        //   label: '自定义视图',
-        //   value: null,
-        //   transfer: true,
-        //   isHidden: true,
-        //   dataList: [],
-        //   width: '100%',
-        //   // valueName: 'id',
-        //   // textName: 'name',
-        //   validateList: [
-        //     'required'
-        //   ]
-        // }
       },
       matrixList: [], //矩阵列表
       matrixCardData: {
@@ -454,7 +505,12 @@ export default {
         pageSize: 24,
         pageCount: 1
       },
-      matrixTableList: [],
+      matrixTableConfig: {
+        currentPage: 1,
+        pageSize: 20,
+        rowNum: 0,
+        tbodyList: []
+      },
       matrixTableThead: [
         {
           title: 'ID',
@@ -500,12 +556,10 @@ export default {
       currentPage: 1, //当前页数
       pageCount: 1, //总页数
       modeType: 'block', //显示方式
-      tablePageSize: 20
+      cmdbCiEntityAttrList: []
     };
   },
-
   beforeCreate() {},
-
   created() {
     if (this.$route.query.atrixFormDialogShow) {
       //跳转到这个页面时，需要进行新增
@@ -514,9 +568,7 @@ export default {
     this.policyList();
     // this.cmdbList();
   },
-
   beforeMount() {},
-
   mounted() {
     if (this.modeType == 'block') {
       this.getMatrixList();
@@ -524,19 +576,12 @@ export default {
       this.getPagedata();
     }
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     allHidden(val) {
       let _this = this;
@@ -547,6 +592,9 @@ export default {
           newVal = v.key;
         }
       });
+      this.addAtrixForm.ciId.value = null;
+      this.addAtrixForm.customViewId.value = null;
+      this.cmdbCiEntityAttrList = [];
       Object.keys(_this.addAtrixForm).forEach(v => {
         if ((_this.addAtrixForm[v].isHidden == false || _this.addAtrixForm[v].isHidden == true) && val != 'custom') {
           if (_this.addAtrixForm[v].name == newVal) {
@@ -563,34 +611,44 @@ export default {
 
       _this.$nextTick(() => {
         if (newVal == 'ciId') {
-          _this.addAtrixForm.showAttributeLabelList.isHidden = false;
+          let emptyRow = {
+            label: '',
+            uniqueIdentifier: ''
+          };
+          let newList = [];
+          newList.push(emptyRow);
+          _this.addAtrixForm.attributeMappingList.value = newList;
+          _this.addAtrixForm.attributeMappingList.isHidden = false;
           _this.cmdbList();
+        } else if (newVal == 'customViewId') {
+          let emptyRow = {
+            label: '',
+            uniqueIdentifier: ''
+          };
+          let newList = [];
+          newList.push(emptyRow);
+          _this.addAtrixForm.attributeMappingList.value = newList;
+          _this.addAtrixForm.attributeMappingList.isHidden = false;
+          _this.cmdbCustomViewList();
         } else {
-          _this.addAtrixForm.showAttributeLabelList.isHidden = true;
+          _this.addAtrixForm.attributeMappingList.isHidden = true;
         }
       });
     },
-    showAttribute(val) {
-      let data = {
-        'matrixUuid': null,
-        'type': 'cmdbci',
-        'ciId': val
-      };
+    showAttribute(data) {
       this.$api.framework.matrix
         .getMatrixAttributeByUuid(data)
         .then(res => {
           if (res.Status == 'OK') {
-            let resData = res.Return.tbodyList;
-            let newData = [];
-            resData.forEach(v => {
-              newData.push({text: v.name, value: v.label});
+            let tbodyList = res.Return.tbodyList || [];
+            let dataList = [];
+            tbodyList.forEach(v => {
+              if (v.label) {
+                dataList.push({text: v.name, value: v.label});
+              }
             });
-            // console.log(resData);
-            this.addAtrixForm.showAttributeLabelList.dataList = newData;
-            // console.log(this.addAtrixForm);
+            this.cmdbCiEntityAttrList = dataList;
           }
-        })
-        .catch(error => {
         });
     },
     setFile: function(fileList) {
@@ -598,7 +656,7 @@ export default {
       this.showFileError = true;
     },
     selectFile: function(fileList) {
-      let fileObj = {}; 
+      let fileObj = {};
       fileObj['id'] = fileList[0].id;
       fileObj['name'] = fileList[0].name;
       this.defaultFileList.push(fileObj);
@@ -628,30 +686,30 @@ export default {
         }
       });
     },
-    async customviewList() {
-      let data = {
-        currentPage: 1,
-        isPrivate: 0    
-      };
-      await this.$https.post('/api/rest/cmdb/customview/public/search', data).then(res => {
+    async cmdbCustomViewList() {
+      await this.$https.post('/api/rest/cmdb/customview/search', {}).then(res => {
         if (res.Status == 'OK') {
           let resData = res.Return.tbodyList;
           let newData = [];
-          resData.forEach(j => {
-            newData.push({text: j.name, value: j.id});
+          resData.forEach(v => {
+            newData.push({text: v.name, value: v.id});
           });
-          this.addAtrixForm.externalId.dataList = newData;
+          this.addAtrixForm.customViewId.dataList = newData;
         }
       });
     },
     //数据源矩阵检索
-    getMatrixList: function(page) {
+    getMatrixList: function(currentPage) {
       let data = {
         keyword: this.keyword,
         pageSize: this.matrixCardData.pageSize,
-        currentPage: page || this.currentPage
+        currentPage: currentPage || this.matrixCardData.currentPage
       };
       this.loadingShow = true;
+      this.$addHistoryData('modeType', this.modeType);
+      this.$addHistoryData('keyword', this.keyword);
+      this.$addHistoryData('currentPage', data.currentPage);
+      this.$addHistoryData('pageSize', data.pageSize);
       this.$api.framework.matrix.getMatrixList(data).then(res => {
         if (res.Status == 'OK') {
           const { tbodyList: cardList, currentPage, pageSize, pageCount, rowNum } = res.Return;
@@ -667,14 +725,14 @@ export default {
               {name: this.$t('page.reference'), value: 'ReferenceSelect', icon: '', type: 'ReferenceSelect', calleeType: 'matrix'},
               {name: this.$t('page.delete'), value: 'del', type: 'del', icon: 'tsfont-trash-o', disable: true, text: v.type === 'private' ? this.$t('message.framework.privatematrixtip') : this.$t('message.framework.delmatrixtip'), key: 'disable'}
             ];
-            
+
             if (v.type == 'custom') {
               v.btnList.push(
-                {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr: 
+                {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr:
                   [
-                    {name: this.$t('page.copy'), value: 'copy', type: 'text'}, 
-                    {name: this.$t('term.pbc.exportdata'), value: 'exportData', type: 'download'}, 
-                    {name: this.$t('term.pbc.exporttemplate'), value: 'exportAttr', type: 'text'}, 
+                    {name: this.$t('page.copy'), value: 'copy', type: 'text'},
+                    {name: this.$t('term.pbc.exportdata'), value: 'exportData', type: 'download'},
+                    {name: this.$t('term.pbc.exporttemplate'), value: 'exportAttr', type: 'text'},
                     {name: this.$t('page.export'), value: 'export', type: 'download'}
                   ],
                 upload: true, actionUrl: this.actionUrl
@@ -682,9 +740,9 @@ export default {
               );
             } else if (v.type == 'view' || v.type == 'external' || v.type == 'cmdbci') {
               v.btnList.push(
-                {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr: 
+                {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr:
                   [
-                    {name: this.$t('term.pbc.exportdata'), value: 'exportData', type: 'download'}, 
+                    {name: this.$t('term.pbc.exportdata'), value: 'exportData', type: 'download'},
                     {name: this.$t('page.export'), value: 'export', type: 'download'}
                   ]
                 }
@@ -696,6 +754,18 @@ export default {
           this.loadingShow = false;
         }, 200);
       });
+    },
+    restoreHistory(historyData) {
+      let modeType = historyData['modeType'];
+      this.keyword = historyData['keyword'];
+      if (this.modeType == 'block') {
+        this.matrixCardData.currentPage = historyData['currentPage'];
+        this.matrixCardData.pageSize = historyData['pageSize'];
+      } else {
+        this.matrixTableConfig.currentPage = historyData['currentPage'];
+        this.matrixTableConfig.pageSize = historyData['pageSize'];
+      }
+      this.modeType = modeType;
     },
     action(row, value) {
       if (value == 'del') {
@@ -714,38 +784,35 @@ export default {
       }
     },
     //表格形式展示数据
-    getMatrixTableList: function(param) {
-      let data = param || {};
+    getMatrixTableList(currentPage, pageSize) {
       this.loadingShow = true;
-      this.$api.framework.matrix.getMatrixList(data).then(res => {
+      this.$addHistoryData('modeType', this.modeType);
+      this.$addHistoryData('keyword', this.keyword);
+      this.$addHistoryData('currentPage', currentPage);
+      this.$addHistoryData('pageSize', pageSize);
+      this.$api.framework.matrix.getMatrixList({
+        keyword: this.keyword,
+        currentPage: currentPage,
+        pageSize: pageSize
+      }).then(res => {
         if (res.Status == 'OK') {
-          this.matrixTableList = res.Return;
-          this.matrixTableList.theadList = this.matrixTableThead;
+          this.matrixTableConfig = Object.assign(this.matrixTableConfig, res.Return || {});
           setTimeout(() => {
             this.loadingShow = false;
           }, 200);
         }
       });
     },
-    getPagedata(current) {
+    getPagedata(current = 1) {
       if (current) {
-        this.matrixTableList.currentPage = current;
+        this.matrixTableConfig.currentPage = current;
+        this.matrixTableConfig.pageSize = 20;
       }
-      let param = {
-        keyword: this.keyword,
-        pageSize: this.tablePageSize,
-        currentPage: this.matrixTableList.currentPage ? this.matrixTableList.currentPage : 1
-      };
-      this.getMatrixTableList(param);
+      this.getMatrixTableList(this.matrixTableConfig.currentPage, this.matrixTableConfig.pageSize);
     },
-    changePageSize(size) {
-      this.tablePageSize = size;
-      let param = {
-        keyword: this.keyword,
-        pageSize: this.tablePageSize,
-        currentPage: 1
-      };
-      this.getMatrixTableList(param);
+    changePageSize(pageSize = 20) {
+      this.matrixTableConfig.pageSize = pageSize;
+      this.getMatrixTableList(1, this.matrixTableConfig.pageSize);
     },
     //新建矩阵
     addMatrix: function() {
@@ -762,12 +829,7 @@ export default {
     //搜索矩阵
     searchMatrix: function() {
       this.getMatrixList();
-      let data = {
-        keyword: this.keyword,
-        pageSize: this.tablePageSize,
-        currentPage: 1
-      };
-      this.getMatrixTableList(data);
+      this.getMatrixTableList(1, 20);
     },
     //删除矩阵
     delMatrix(row) {
@@ -785,7 +847,6 @@ export default {
           this.$api.framework.matrix.deleteMatrix(data).then(res => {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
-              this.currentPage = 1;
               this.searchMatrix();
               vnode.isShow = false;
             }
@@ -815,18 +876,44 @@ export default {
           this.showFileError = true;
           return false;
         } else if (data.type == 'view' && this.defaultFileList.length > 0) {
-          data.fileId = this.defaultFileList[0].id;  
+          data.fileId = this.defaultFileList[0].id;
         }
       } else {
         //校验未通过
         return;
       }
-      if (data.ciId) {
+      if (data.ciId || data.customViewId) {
+        if (data.attributeMappingList && data.attributeMappingList.length > 0) {
+          let attributeMappingList = data.attributeMappingList;
+          for (let i = 0; i < attributeMappingList.length; i++) {
+            let attributeMapping = attributeMappingList[i];
+            if (!attributeMapping.label) {
+              this.$Notice.error({
+                title: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.attribute') }),
+                duration: 1.5
+              });
+              return;
+            }
+            if (!attributeMapping.uniqueIdentifier) {
+              this.$Notice.error({
+                title: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.uniquekey')}),
+                duration: 1.5
+              });
+              return;
+            }
+          }
+        } else {
+          this.$Notice.error({
+            title: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.attribute') }),
+            duration: 1.5
+          });
+          return;
+        }
         data.config = {
-          showAttributeLabelList: data.showAttributeLabelList
+          attributeMappingList: data.attributeMappingList
         };
       }
-      
+
       if (this.isCopy) {
         delete data.type;
         data.uuid = this.uuid;
@@ -1042,14 +1129,36 @@ export default {
     operation(item, type) {
       if (type && type === 'view') {
         this.trClick(item);
-      } 
+      }
+    },
+    addAttr(conItem, conIdex) {
+      let emptyRow = {
+        label: '',
+        uniqueIdentifier: ''
+      };
+      this.addAtrixForm.attributeMappingList.value.splice(conIdex + 1, 0, emptyRow);
+    },
+    delAttr(conItem, conIdex) {
+      this.$delete(this.addAtrixForm.attributeMappingList.value, conIdex);
     }
   },
-
   filter: {},
-
-  computed: {},
-
+  computed: {
+    getDataList() {
+      return (label) => {
+        let list = this.$utils.deepClone(this.cmdbCiEntityAttrList);
+        list.forEach(item => {
+          let find = this.addAtrixForm.attributeMappingList.value.find(v => v.label === item.value && v.label !== label);
+          if (find) {
+            this.$set(item, '_disabled', true);
+          } else {
+            this.$set(item, '_disabled', false);
+          }
+        });
+        return list;
+      };
+    }
+  },
   watch: {
     modeType: {
       handler: function(val) {

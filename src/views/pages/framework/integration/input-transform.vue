@@ -38,13 +38,10 @@
 </template>
 <script>
 export default {
-  components: { 
-    TransformTest: resolve =>
-      require(['./transform-test.vue'], resolve),
-    TsCodemirror: resolve =>
-      require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve),
-    JavascriptHelp: resolve =>
-      require(['./javascript-help.vue'], resolve) },
+  components: {
+    TransformTest: () => import('./transform-test.vue'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue'),
+    JavascriptHelp: () => import('./javascript-help.vue') },
   props: {
     integration: { type: Object },
     handlerPattern: { type: Array },
@@ -71,7 +68,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-   
+
   },
   filter: {},
   computed: {

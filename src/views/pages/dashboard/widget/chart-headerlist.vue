@@ -13,7 +13,7 @@
 <script>
 import Vue from 'vue';
 
-Vue.component('dashboardTreeItem', {
+Vue.component('DashboardTreeItem', {
   components: {},
   props: ['itemdata'],
   methods: {

@@ -6,7 +6,7 @@
       <InputSearcher
         v-model="keyword"
         :placeholder="$t('term.documentonline.problemdes')"
-        :width="600"
+        width="70%"
         @change="searchDocument"
       ></InputSearcher>
     </div>
@@ -30,7 +30,7 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
 
   },
   props: {},
@@ -100,7 +100,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .search-main{
-  padding: 0 16px;
+  padding: 0 16px 1px;
   .top {
     font-size: 30px;
     font-weight: bold;
@@ -119,6 +119,6 @@ export default {
       }
     }
   }
-   
+
 }
 </style>

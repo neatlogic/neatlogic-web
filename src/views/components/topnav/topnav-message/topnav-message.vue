@@ -31,8 +31,8 @@ export default {
   name: 'TopnavMessage',
   directives: { ClickOutside },
   components: {
-    Message: resolve => require(['./message'], resolve),
-    Notice: resolve => require(['./notice'], resolve)
+    Message: () => import('./message'),
+    Notice: () => import('./notice')
   },
   data() {
     return {
@@ -53,7 +53,7 @@ export default {
       // 若事件冒泡所经元素的类名包含以下列表其中之一，那么消息中心抽屉不关闭
       const preventCloseClassList = [
         'carosel-img',
-        'message-bell', 
+        'message-bell',
         'message-title-tooltip',
         'notice-popup-dialog',
         'ivu-notice'

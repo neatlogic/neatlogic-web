@@ -69,10 +69,10 @@ import Items from '@/views/pages/autoexec/components/param/edit';
 export default {
   name: '', // 适配文件适配
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    PoptipSelect: resolve => require(['@/resources/components/PoptipSelect/PoptipSelect.vue'], resolve),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect.vue'),
     ...Items
   },
   props: {
@@ -84,6 +84,15 @@ export default {
       type: Object,
       default: function() {
         return {};
+      }
+    },
+    tableData: {
+      type: Object,
+      default: function() {
+        return {
+          hideAction: false,
+          tbodyList: []
+        }; //配置文件适配的变量
       }
     }
   },
@@ -98,8 +107,9 @@ export default {
       },
       paramsTypeList: [],
       typeList: [
-        'text',         
-        'password'
+        'text',
+        'password',
+        'textarea'
       ],
       formValue: {},
       theadList: [
@@ -124,20 +134,13 @@ export default {
           title: '',
           key: 'delOperation'
         }
-      ],
-      tableData: {
-        hideAction: false,
-        tbodyList: []
-      }
+      ]
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   mounted() {
-    if (this.isEdit) {
-      this.getAutoConfigList();
-    }
     this.getParamsTypeLit();
   },
   beforeUpdate() {},
@@ -195,37 +198,15 @@ export default {
           type: item.type === '' ? null : item.type,
           value: item.value
         });
-      }); 
+      });
       let params = {
         ...this.params,
         keyValueList: keyValueList
       };
-      this.$api.deploy.applicationConfig.saveEnvAutoConfig(params).then((res) => {
-        if (res && res.Status == 'OK') {
-          this.$Message.success(this.$t('message.savesuccess'));
-          this.closeDialog(true);
-        }
-      });
+      this.$emit('save', params);
     },
     closeDialog(needRefresh = false) {
       this.$emit('close', needRefresh);
-    },
-    getAutoConfigList() {
-      this.$api.deploy.applicationConfig.getEnvInfo(this.params).then((res) => {
-        if (res && res.Status == 'OK') {
-          let returnData = res.Return;
-          this.tableData.tbodyList = [];
-          returnData.envAutoConfigList && returnData.envAutoConfigList.forEach((v) => {
-            this.tableData.tbodyList.push({
-              key: v.key,
-              type: v.type,
-              value: v.hasOwnProperty('value') ? v.value : '',
-              isEmpty: (!v.hasOwnProperty('value') || (v.value == '')) ? 1 : 0, // 没有value的属性，或者为空字符串，设为空打开
-              delOperation: ''
-            });
-          });
-        }
-      });
     },
     switchChange(row, value, index) {
       if (value) {

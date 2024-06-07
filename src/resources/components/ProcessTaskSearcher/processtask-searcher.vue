@@ -10,7 +10,7 @@
           type="primary"
           ghost
           :disabled="$utils.isEmpty(selectedWorkList)"
-          @click.native="handleOpen"
+          @click.native="handleToggle"
         >
           {{ $t('page.batchoperation') }}
           <span class="tsfont-down"></span>
@@ -18,9 +18,9 @@
         <DropdownMenu v-if="visible" slot="list">
           <DropdownItem @click.native="batchAction('batchAbort')">{{ $t('page.cancel') }}</DropdownItem>
           <DropdownItem @click.native="batchAction('batchUrge')">{{ $t('page.urge') }}</DropdownItem>
-          <DropdownItem @click.native="batchAction('batchHide')">{{ $t('page.hide') }}</DropdownItem>
+          <DropdownItem v-if="$AuthUtils.hasRole('PROCESSTASK_MODIFY')" @click.native="batchAction('batchHide')">{{ $t('page.hide') }}</DropdownItem>
           <DropdownItem @click.native="batchAction('batchPause')">{{ $t('page.pause') }}</DropdownItem>
-          <DropdownItem @click.native="batchAction('batchDelete')">{{ $t('page.delete') }}</DropdownItem>
+          <DropdownItem v-if="$AuthUtils.hasRole('PROCESSTASK_MODIFY') || getIsDraft" @click.native="batchAction('batchDelete')">{{ $t('page.delete') }}</DropdownItem>
         </DropdownMenu>
       </Dropdown>
       <!--我的待办-->
@@ -122,7 +122,7 @@
                 </div>
                 <div v-if="workcenterData.type!='factory'" class="action-item">
                   <Button
-                   
+
                     ghost
                     type="primary"
                     @click="saveWorkcenter"
@@ -144,19 +144,20 @@
 export default {
   name: '',
   components: {
-    SimplePanel: resolve => require(['./simple-panel.vue'], resolve),
-    CustomPanel: resolve => require(['./custom-panel.vue'], resolve),
-    ConditionViewer: resolve => require(['./condition-viewer.vue'], resolve),
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    WorkcenterTypeEdit: resolve => require(['./workcenter-type-edit.vue'], resolve)
+    SimplePanel: () => import('./simple-panel.vue'),
+    CustomPanel: () => import('./custom-panel.vue'),
+    ConditionViewer: () => import('./condition-viewer.vue'),
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    WorkcenterTypeEdit: () => import('./workcenter-type-edit.vue')
   },
   props: {
     workcenterData: { type: Object },
     selectedWorkList: {
       type: Array,
       default: () => []
-    }
+    },
+    workcenterUuid: String
   },
   data() {
     return {
@@ -213,8 +214,12 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    handleOpen() {
-      this.visible = true;
+    handleToggle() {
+      if (this.visible) {
+        this.visible = false;
+      } else {
+        this.visible = true;
+      }
     },
     closeTypeEditDialog(needRefresh) {
       this.isTypeDialogShow = false;
@@ -483,6 +488,13 @@ export default {
         return this.workcenterData.isMine;
       }
       return false;
+    },
+    getIsDraft() {
+      if (this.workcenterUuid === 'draftProcessTask') {
+        return true;
+      } else {
+        return false;
+      }
     }
   },
   watch: {

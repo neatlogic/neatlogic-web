@@ -10,6 +10,7 @@
       style="margin-left: 88px"
       :readonly="true"
       :value="formConfig"
+      :formSceneUuid="formSceneUuid || 'defaultSceneUuid'"
       :data="formData"
       :formHighlightData="formHighlightData"
     ></TsSheet>
@@ -19,17 +20,23 @@
 export default {
   name: '',
   components: {
-    TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve)
+    TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue')
   },
   filters: {},
+  mixins: [],
   props: {
     config: Object,
-    formConfig: {
+    formConfig: { //主表单
       type: Object,
       default: function() {
         return {};
       }
-    }
+    },
+    processTaskStepId: {
+      type: Number,
+      default: null
+    },
+    formSceneUuid: String
   },
   data() {
     return {

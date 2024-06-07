@@ -39,9 +39,9 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue')
   },
   directives: { download },
   props: {
@@ -117,7 +117,7 @@ export default {
       this.$api.autoexec.job.getNodeRecord(this.searchParam).then(res => {
         this.tableConfig = res.Return;
       }).finally(() => {
-        this.isLoading = false; 
+        this.isLoading = false;
       });
     }
   },

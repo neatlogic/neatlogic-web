@@ -45,6 +45,7 @@
             :hoverDomList="hoverDomList"
             :onClick="clickNode"
             :onDrop="onDrop"
+            :beforeDrop="beforeDrop"
             :value="selectedTreeId"
           ></TsZtree>
         </div>
@@ -72,10 +73,10 @@
 export default {
   name: 'CatalogManage',
   components: {
-    TsZtree: resolve => require(['@/resources/plugins/TsZtree/TsZtree.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    catalog: resolve => require(['./catalog.vue'], resolve),
-    service: resolve => require(['./service.vue'], resolve)
+    TsZtree: () => import('@/resources/plugins/TsZtree/TsZtree.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    catalog: () => import('./catalog.vue'),
+    service: () => import('./service.vue')
   },
   directives: {},
   props: {},
@@ -280,20 +281,32 @@ export default {
           this.disabledConfig.saving = false;
         });
     },
-    onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
-      if (targetNode == null && moveType == null) {
-        return;
+    beforeDrop(treeId, treeNodes, targetNode, moveType, isCopy) {
+      const firstTreeNode = treeNodes && treeNodes[0];
+      const isTargetNodeService = targetNode && targetNode.type === 'service';
+      const isFirstTreeNodeService = firstTreeNode && firstTreeNode.type === 'service';
+      const isTargetNodeCatalog = targetNode && targetNode.type === 'catalog';
+      if (
+        (targetNode == null && isFirstTreeNodeService) ||
+        (isTargetNodeService && isFirstTreeNodeService && moveType === 'inner') ||
+        (isTargetNodeCatalog && isFirstTreeNodeService && moveType === 'prev') ||
+        (isTargetNodeCatalog && isFirstTreeNodeService && moveType === 'next')
+      ) {
+        // 不能将服务拖拽成为根节点, 不能将服务拖拽到服务，不能将服务拖拽到目录节点前面，不能将服务拖拽到目录节点后面
+        return false;
       }
+    },
+    onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
+      // treeNodes 被拖拽json集合
       let {id = null} = treeNodes[0] || {};
       let data = {
         id: id,
         moveType: moveType,
-        targetId: targetNode.id
+        targetId: this.$utils.isEmpty(targetNode) ? 0 : targetNode.id // 将目录拖拽到根目录时，目标为0
       };
       this.$api.autoexec.catalogManage.moveCatalog(data).then(res => {
         if (res?.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
-          this.getTreeList();
         }
       });
     },

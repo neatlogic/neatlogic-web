@@ -3,7 +3,7 @@
     <TsContain border="border">
       <template v-slot:navigation>
         <template v-if="canBack">
-          <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+          <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
         </template>
         <template v-else>
           <span>{{ prevsetting.name }}</span>
@@ -181,13 +181,13 @@
           <i class="tsfont-check-s text-success"></i>{{ $t('term.deploy.createsuccess') }}
         </div>
         <div class="submit-btn-list">
-          <Button size="large" type="primary" @click="$back(), saveProfile('backuserlist')">{{ $t('term.framework.backtouserlist') }}</Button>
+          <Button size="large" type="primary" @click="backUserManage(); saveProfile('backuserlist')">{{ $t('term.framework.backtouserlist') }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Button size="large" @click="continueCreate(), saveProfile('keeponcreate')">{{ $t('term.framework.continuecreate') }}</Button>
+          <Button size="large" @click="continueCreate(); saveProfile('keeponcreate')">{{ $t('term.framework.continuecreate') }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Button size="large" @click="editCrrentUser(), saveProfile('edituser')">{{ $t('dialog.title.edittarget', {target: $t('page.user')}) }}</Button>
+          <Button size="large" @click="editCrrentUser(); saveProfile('edituser')">{{ $t('dialog.title.edittarget', {target: $t('page.user')}) }}</Button>
         </div>
         <div class="submit-btn-list">
           <Checkbox v-model="submitMessage">{{ $t('term.framework.notips') }} <i class="tsfont-question-o" :title="$t('term.framework.editinsetting')"></i></Checkbox>
@@ -201,9 +201,9 @@ import CommonAuth from './common/common-auth.vue';
 export default {
   name: 'UserAddview',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     CommonAuth,
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve)
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue')
   },
   props: [''],
   data() {
@@ -550,7 +550,7 @@ export default {
                 switch (value) {
                   //返回用户列表
                   case 'backuserlist':
-                    this.$back();
+                    this.backUserManage();
                     break;
                   //编辑用户
                   case 'edituser':
@@ -633,7 +633,8 @@ export default {
       }
       this.formShow = true;
       let data = {
-        userUuid: id
+        userUuid: id,
+        isRuleRole: false
       };
       this.$api.common.getUser(data).then(res => {
         if (res.Status == 'OK') {
@@ -863,6 +864,11 @@ export default {
           this.userToken = res.Return;
           this.$Message.success(this.$t('message.executesuccess'));
         }
+      });
+    },
+    backUserManage() {
+      this.$router.push({
+        path: '/user-manage'
       });
     }
   },

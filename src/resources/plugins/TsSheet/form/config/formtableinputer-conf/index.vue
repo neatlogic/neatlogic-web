@@ -66,7 +66,18 @@
                 </td>
                 <td class="text-grey overflow" :title="data.label">
                   <div class="overflow" style="width: 80px" :title="data.label">
-                    {{ data.label }}
+                    <Poptip
+                      width="350"
+                      trigger="hover"
+                      :title="$t('page.exception')"
+                      :disabled="!!data.key"
+                      transfer
+                    >
+                      <span :class="!data.key? 'text-error' : ''"> {{ data.label }}</span>
+                      <div slot="content">
+                        {{ $t('form.validate.required',{'target':$t('page.englishname')}) }}
+                      </div>
+                    </Poptip>
                   </div>
                 </td>
                 <td>
@@ -106,7 +117,12 @@
       v-if="isAttrConfigDialogShow && currentProperty"
       :formItemConfig="config"
       :property="currentProperty"
+<<<<<<< HEAD
       :customItemList="customItemList"
+=======
+      :formItemList="formItemList"
+      :formItemUuid="formItem.uuid"
+>>>>>>> 0059be9eb2e324a95c084af58c1ac7eac33c1bb9
       @close="closeAttrConfigDialog"
     ></AttrConfigDialog>
   </div>
@@ -119,10 +135,10 @@ export default {
   name: '',
   components: {
     draggable,
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    AttrConfigDialog: resolve => require(['./formtableinputer-attr-config-dialog.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    AttrConfigDialog: () => import('./formtableinputer-attr-config-dialog.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: base,
   props: {},
@@ -181,6 +197,7 @@ export default {
         handler: 'formtext',
         isExtra: true,
         hasValue: true,
+        isDynamicValue: true,
         config: {
           isRequired: true
         }
@@ -199,17 +216,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-    componentList() {
-      const componentList = [];
-      this.formItemList.forEach(d => {
-        if (d.uuid != this.formItem.uuid && (d.handler === 'formselect' || d.handler === 'formradio' || d.handler === 'checkbox')) {
-          componentList.push({ value: d.uuid, text: d.label });
-        }
-      });
-      return componentList;
-    }
-  },
+  computed: {},
   watch: {
   }
 };

@@ -1,24 +1,25 @@
 <template>
   <div>
     <TsContain :enableCollapse="true" :siderWidth="260">
-      <template v-if="formDataQueue.length <=1" v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/form-overview')">{{ $getFromPage($t('router.framework.formmanage')) }}</span>
+      <template v-if="formDataQueue.length <= 1" v-slot:navigation>
+        <span class="tsfont-left text-action" @click="back()">{{ $t('router.framework.formmanage') }}</span>
       </template>
       <template v-slot:topLeft>
-        <TsRow v-if="formDataQueue.length <=1">
-          <Col span="12">
-            <TsFormInput
-              ref="formName"
-              v-model="formData.name"
-              :placeholder="$t('form.placeholder.name')"
-              maxlength="30"
-              border="border"
-              :validateList="nameValidateList"
-            ></TsFormInput>
-          </Col>
-          <Col span="12">
+        <div :class="formDataQueue.length <= 1 ? 'flex-between' : 'flex-end'">
+          <div v-if="formDataQueue.length <= 1" class="flex-start">
+            <div class="pr-sm">
+              <TsFormInput
+                ref="formName"
+                v-model="formData.name"
+                :placeholder="$t('form.placeholder.name')"
+                maxlength="30"
+                border="border"
+                :validateList="nameValidateList"
+                style="width: 200px"
+              ></TsFormInput>
+            </div>
             <div v-if="currentVersion.uuid">
-              <Dropdown trigger="hover" placement="bottom-start" style="line-height: 30px;cursor: pointer;">
+              <Dropdown trigger="hover" placement="bottom-start" style="line-height: 30px; cursor: pointer">
                 <span class="btn-green-op">
                   {{ currentVersion.text }}
                   <Icon type="ios-arrow-down"></Icon>
@@ -54,91 +55,108 @@
                 </DropdownMenu>
               </Dropdown>
             </div>
-          </Col>
-        </TsRow>
-      </template>
-      <template v-slot:topRight>
-        <div class="action-group">
-          <div v-if="formDataQueue.length <=1" class="action-item">
-            <Poptip
-              v-model="isShowValidList"
-              word-wrap
-              width="350"
-              :title="$t('page.exception')"
-              transfer
-              :disabled="$utils.isEmpty(errorData)"
-            >
-              <span class="tsfont-xitongpeizhi" @click="formValid()">{{ $t('page.validate') }}</span>
-              <div slot="content">
-                <div v-for="(key) of Object.keys(errorData)" :key="key">
-                  <div
-                    v-for="(item, index) in errorData[key]"
-                    :key="index"
-                    class="ovewflow text-action pb-sm valid-list"
-                    @click="jumpToItem(key, item)"
+          </div>
+          <div class="action-group">
+            <div v-if="formDataQueue.length <= 1" class="action-item">
+              <div class="flex-start">
+                <span>
+                  <Poptip
+                    word-wrap
+                    width="350"
+                    transfer
+                    :content="$t('term.framework.globalreadonlytip')"
                   >
-                    {{ item.error }}
-                    <span class="text-error tsfont-close-o valid-icon"></span>
+                    <span>{{ $t('term.framework.globalreadonly') }}</span>
+                    <span class="text-href tsfont-info-o"></span>
+                  </Poptip>
+                </span>
+                <TsFormSwitch
+                  v-model="readOnly"
+                  :falseValue="false"
+                  :trueValue="true"
+                  @on-change="val => changeReadOnly(val)"
+                ></TsFormSwitch>
+              </div>
+            </div>
+            <div v-if="formDataQueue.length <= 1" class="action-item">
+              <Poptip
+                v-model="isShowValidList"
+                word-wrap
+                width="350"
+                :title="$t('page.exception')"
+                transfer
+                :disabled="$utils.isEmpty(errorData)"
+              >
+                <span class="tsfont-xitongpeizhi" @click="formValid()">{{ $t('page.validate') }}</span>
+                <div slot="content">
+                  <div v-for="key of Object.keys(errorData)" :key="key">
+                    <div
+                      v-for="(item, index) in errorData[key]"
+                      :key="index"
+                      class="ovewflow text-action pb-sm valid-list"
+                      @click="jumpToItem(key, item)"
+                    >{{ item.error }}<span class="text-error tsfont-close-o valid-icon"></span>
+                    </div>
                   </div>
                 </div>
+              </Poptip>
+            </div>
+            <div class="action-item text-action tsfont-lightning" @click="openReactionDialog()">{{ $t('term.framework.rowreaction') }}</div>
+            <template v-if="formDataQueue.length <= 1">
+              <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('term.framework.formwidth') }}</div>
+              <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
+              <div class="action-item text-action tsfont-circulation-s" @click="previewForm()">{{ $t('page.preview') }}</div>
+              <div class="action-item">
+                <Dropdown trigger="click">
+                  <span class="tsfont-option-horizontal click-btn"></span>
+                  <DropdownMenu slot="list" class="dropdown">
+                    <DropdownItem v-if="currentVersion.uuid && referenceCount > 0" @click.native.stop="quoteList(1)">
+                      <div class="tsfont-formstaticlist referenceCount">{{ $t('page.referencelist') }}[{{ referenceCount }}]</div>
+                    </DropdownItem>
+                    <DropdownItem v-else-if="currentVersion.uuid">
+                      <div class="action-item tsfont-formstaticlist referenceCount disable">{{ $t('page.referencelist') }}</div>
+                    </DropdownItem>
+                    <DropdownItem @click.native="$refs.uploadDialog.showDialog">
+                      <span class="tsfont-import">{{ $t('page.import') }}</span>
+                      <UploadDialog
+                        ref="uploadDialog"
+                        :beforeUpload="beforeUpload"
+                        :actionUrl="importUrl + (formUuid || null)"
+                        :formatList="formatList"
+                        @on-success="uploadSuccess"
+                      />
+                    </DropdownItem>
+                    <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
+                      <div class="tsfont-export">{{ $t('page.export') }}</div>
+                    </DropdownItem>
+                    <DropdownItem>
+                      <div
+                        :title="showActiveTooltip ? $t('message.framework.activedversiontip') : ''"
+                        class="action-item tsfont-check-square-o"
+                        :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''"
+                        @click="activeFormVersion(currentVersion.uuid)"
+                        @mouseenter="haveChangeData"
+                      >{{ $t('page.enable') }}</div>
+                    </DropdownItem>
+                    <DropdownItem>
+                      <span class="action-item tsfont-trash-o" :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''" @click="delVersionModal(currentVersion.uuid, currentVersion.text)">{{ $t('page.delete') }}</span>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
               </div>
-            </Poptip>
+              <div class="action-item">
+                <Button type="primary" ghost @click.stop="saveForm('saveother')">{{ $t('term.framework.saveothernewversion') }}</Button>
+              </div>
+              <div class="action-item last">
+                <Button type="primary" @click.stop="handleSaveForm()">{{ $t('page.save') }}</Button>
+              </div>
+            </template>
+            <template v-else>
+              <div class="action-item last">
+                <Button type="primary" @click="backPreFormData(formDataQueue[formDataQueue.length - 2])">{{ $t('page.confirm') }}</Button>
+              </div>
+            </template>
           </div>
-          <div class="action-item text-action tsfont-lightning" @click="openReactionDialog()">{{ $t('term.framework.rowreaction') }}</div>
-          <template v-if="formDataQueue.length <=1">
-            <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('term.framework.formwidth') }}</div>
-            <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
-            <div class="action-item text-action tsfont-circulation-s" @click="previewForm()">{{ $t('page.preview') }}</div>
-            <div class="action-item">
-              <Dropdown trigger="click">
-                <span class="tsfont-option-horizontal click-btn"></span>
-                <DropdownMenu slot="list" class="dropdown">
-                  <DropdownItem v-if="currentVersion.uuid && referenceCount > 0" @click.native.stop="quoteList(1)">
-                    <div class="tsfont-formstaticlist referenceCount">{{ $t('page.referencelist') }}[{{ referenceCount }}]</div>
-                  </DropdownItem>
-                  <DropdownItem v-else-if="currentVersion.uuid">
-                    <div class="action-item tsfont-formstaticlist referenceCount disable">{{ $t('page.referencelist') }}</div>
-                  </DropdownItem>
-                  <DropdownItem @click.native="$refs.uploadDialog.showDialog">
-                    <span class="tsfont-import">{{ $t('page.import') }}</span>
-                    <UploadDialog
-                      ref="uploadDialog"
-                      :beforeUpload="beforeUpload"
-                      :actionUrl="importUrl + (formUuid || null)"
-                      :formatList="formatList"
-                      @on-success="uploadSuccess"
-                    />
-                  </DropdownItem>
-                  <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
-                    <div class="tsfont-export">{{ $t('page.export') }}</div>
-                  </DropdownItem>
-                  <DropdownItem>
-                    <div
-                      :title="showActiveTooltip ? $t('message.framework.activedversiontip') : ''"
-                      class="action-item tsfont-check-square-o"
-                      :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''"
-                      @click="activeFormVersion(currentVersion.uuid)"
-                      @mouseenter="haveChangeData"
-                    >{{ $t('page.enable') }}</div>
-                  </DropdownItem>
-                  <DropdownItem>
-                    <span class="action-item tsfont-trash-o" :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''" @click="delVersionModal(currentVersion.uuid, currentVersion.text)">{{ $t('page.delete') }}</span>
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-            <div class="action-item">
-              <Button type="primary" ghost @click="saveForm('saveother')">{{ $t('term.framework.saveothernewversion') }}</Button>
-            </div>
-            <div class="action-item last">
-              <Button type="primary" @click="handleSaveForm()">{{ $t('page.save') }}</Button>
-            </div>
-          </template>
-          <template v-else>
-            <div class="action-item last">
-              <Button type="primary" @click="backPreFormData(formDataQueue[formDataQueue.length-2])">确认</Button>
-            </div>
-          </template>
         </div>
       </template>
       <template v-slot:sider>
@@ -172,7 +190,7 @@
                         }
                       "
                     >
-                      <div :class="item.icon" style="font-size:24px"></div>
+                      <div :class="item.icon" style="font-size: 24px"></div>
                       <div class="item-text overflow" :title="item.label">{{ item.label }}</div>
                     </div>
                   </Col>
@@ -185,8 +203,8 @@
                 <TsRow :gutter="8">
                   <Col :span="8" class="form-item mt-md custom-formitem">
                     <div class="text-href" @click="addCustomItem()">
-                      <div class="tsfont-plus" style="font-size:24px"></div>
-                      <div class="item-text">{{ $t('dialog.title.addtarget',{'target':$t('page.component')}) }}</div>
+                      <div class="tsfont-plus" style="font-size: 24px"></div>
+                      <div class="item-text">{{ $t('dialog.title.addtarget', { target: $t('page.component') }) }}</div>
                     </div>
                   </Col>
                   <Col
@@ -195,8 +213,8 @@
                     :span="8"
                     class="form-item mt-md custom-formitem"
                   >
-                    <span style="right:15px;" class="text-action customitem-btn cursor tsfont-edit" @click.stop="editCustomItem(item)"></span>
-                    <span style="right:0px;" class="text-action customitem-btn cursor tsfont-trash-o" @click.stop="removeCustomItem(item)"></span>
+                    <span style="right: 15px" class="text-action customitem-btn cursor tsfont-edit" @click.stop="editCustomItem(item)"></span>
+                    <span style="right: 0px" class="text-action customitem-btn cursor tsfont-trash-o" @click.stop="removeCustomItem(item)"></span>
                     <div
                       draggable="true"
                       @ondrop="
@@ -215,7 +233,7 @@
                         }
                       "
                     >
-                      <div :class="item.icon" style="font-size:24px"></div>
+                      <div :class="item.icon" style="font-size: 24px"></div>
                       <div class="item-text overflow" :title="item.label">{{ item.label }}</div>
                     </div>
                   </Col>
@@ -226,22 +244,18 @@
         </div>
       </template>
       <template v-slot:content>
-        <div v-if="isFormLoaded" style="position:relative">
+        <div v-if="isFormLoaded" style="position: relative">
           <div v-if="formDataQueue && formDataQueue.length > 1" class="pb-sm">
             <Breadcrumb separator="<span class='tsfont-arrow-right'></span>">
-              <BreadcrumbItem
-                v-for="(item,index) in formDataQueue"
-                :key="index"
-              ><span
-                :class="index == formDataQueue.length - 2?'text-href':index != formDataQueue.length - 1?'text-tip':''"
-                @click="backPreFormData(item,index)"
-              >{{ item.label }}</span>
+              <BreadcrumbItem v-for="(item, index) in formDataQueue" :key="index">
+                <span :class="index == formDataQueue.length - 2 ? 'text-href' : index != formDataQueue.length - 1 ? 'text-tip' : ''" @click="backPreFormData(item, index)">{{ item.label }}</span>
               </BreadcrumbItem>
             </Breadcrumb>
           </div>
           <TsSheet
             ref="sheet"
             v-model="formData.formConfig"
+            :readonly="readOnly"
             @selectCell="selectCell"
             @removeComponent="removeComponent"
             @updateResize="updateResize"
@@ -297,6 +311,8 @@
       :sceneUuid="sceneUuid"
       @close="closeScene"
       @deleteScene="deleteScene"
+      @updateDefaultSceneUuid="updateDefaultSceneUuid"
+      @updateSceneReadOnly="updateSceneReadOnly"
     ></FormSceneDialog>
   </div>
 </template>
@@ -310,16 +326,17 @@ import { FORMITEMS, FORMITEM_CATEGORY } from './form/formitem-list.js';
 export default {
   name: '',
   components: {
-    FormItemConfig: resolve => require(['./form-item-config.vue'], resolve),
-    TsSheet: resolve => require(['./TsSheet.vue'], resolve),
-    FormPreview: resolve => require(['./form-preview.vue'], resolve),
-    ReactionDialog: resolve => require(['./form-row-reaction-dialog.vue'], resolve),
-    CustomItemDialog: resolve => require(['./customitem-edit-dialog.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    FormReferenceDialog: resolve => require(['./form-reference-dialog.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
-    FormWidthDialog: resolve => require(['./form-width-dialog.vue'], resolve),
-    FormSceneDialog: resolve => require(['./form-scene-dialog.vue'], resolve)
+    FormItemConfig: () => import('./form-item-config.vue'),
+    TsSheet: () => import('./TsSheet.vue'),
+    FormPreview: () => import('./form-preview.vue'),
+    ReactionDialog: () => import('./form-row-reaction-dialog.vue'),
+    CustomItemDialog: () => import('./customitem-edit-dialog.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    FormReferenceDialog: () => import('./form-reference-dialog.vue'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
+    FormWidthDialog: () => import('./form-width-dialog.vue'),
+    FormSceneDialog: () => import('./form-scene-dialog.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   extends: subformconfig,
   mixins: [download],
@@ -350,7 +367,7 @@ export default {
             if (isValid) {
               this.nameMsg = '';
             } else {
-              this.nameMsg = this.$t('form.validate.repeat', {'target': this.$t('page.formname')});
+              this.nameMsg = this.$t('form.validate.repeat', { target: this.$t('page.formname') });
             }
           }
         }
@@ -376,7 +393,8 @@ export default {
       isShowEditFormWidth: false, //表单宽度设置
       formGroup: ['basic', 'layout', 'autoexec', 'cmdb', 'custom'],
       isFormSceneDialog: false,
-      sceneUuid: null
+      sceneUuid: null,
+      readOnly: false //设置全局只读
     };
   },
   beforeCreate() {},
@@ -399,6 +417,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    back() {
+      this.$router.push({
+        path: '/form-overview'
+      });
+    },
     beforeLeaveCompare(oldData) {
       // 离开当前页面，数据对比
       let newData = this.$refs.sheet.getFormConfig();
@@ -408,7 +431,8 @@ export default {
       //离开页面，二次弹窗，点击'确认按钮'，存储数据,
       return await this.saveForm('back');
     },
-    compareData(oldData, newData) { //对比数据
+    compareData(oldData, newData) {
+      //对比数据
       let isSame = true;
       let oldLefterList = this.$utils.deepClone(oldData.lefterList);
       let newLefterList = this.$utils.deepClone(newData.lefterList);
@@ -430,27 +454,28 @@ export default {
       }
       return isSame;
     },
-    filterFormData(data) { //删除不需要对比的数据
+    filterFormData(data) {
+      //删除不需要对比的数据
       this.$delete(data, 'lefterList');
       this.$delete(data, 'headerList');
       this.$delete(data, 'lcd');
       this.$delete(data, 'lcu');
       data.tableList.forEach(item => {
         if (item.component && item.component.formData && item.component.formData.formConfig) {
-          this.filterFormData(item.component.formData.formConfig); 
+          this.filterFormData(item.component.formData.formConfig);
         }
       });
     },
     contrastError(oldData, newData, type) {
       let isSame = true;
-      let num = 10;//对比：误差高度在5px内可忽略
+      let num = 10; //对比：误差高度在5px内可忽略
       if (oldData && newData) {
         for (let i = 0; i < newData.length; i++) {
           let oldNum = 0;
           if (oldData && oldData[i] && oldData[i][type]) {
-            oldNum = oldData[i][type] + num; 
+            oldNum = oldData[i][type] + num;
           }
-          if (newData[i] && (newData[i][type] > oldNum)) { 
+          if (newData[i] && newData[i][type] > oldNum) {
             isSame = false;
             break;
           }
@@ -475,7 +500,7 @@ export default {
     removeCustomItem(customItem) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: customItem.label}),
+        content: this.$t('dialog.content.deleteconfirm', { target: customItem.label }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.form.deleteCustomItem(customItem.id).then(res => {
@@ -540,6 +565,8 @@ export default {
         !formConfig.uuid && (formConfig.uuid = this.$utils.setUuid());
         !formConfig.name && (formConfig.name = this.$t('page.mainscene'));
         this.$set(formConfig, 'sceneList', this.initFormConfig.sceneList || []);
+        this.$set(formConfig, 'defaultSceneUuid', this.initFormConfig.defaultSceneUuid || formConfig.uuid);
+        this.$set(formConfig, 'readOnly', this.readOnly);
         if (type === 'saveother') {
           this.$set(formConfig, 'uuid', this.$utils.setUuid());
           formConfig.sceneList.forEach(item => {
@@ -556,7 +583,11 @@ export default {
             }
           });
         });
+        // 自定义组件，消费配置
+        let formExtendConfig = this.$refs.sheet.getFormExtendConfig();
+        this.$set(formConfig, 'formExtendConfig', formExtendConfig);
         this.$set(data, 'formConfig', formConfig);
+
         await this.$api.framework.form.saveForm(data).then(res => {
           if (res.Status == 'OK') {
             isSuccess = true;
@@ -586,7 +617,7 @@ export default {
             }
             this.$addWatchData(formConfig);
             this.$Message.success(this.$t('message.savesuccess'));
-            if (type != 'back' && ((res.Return.uuid != this.$route.query.uuid) || (res.Return.currentVersionUuid != this.$route.query.currentVersionUuid))) {
+            if (type != 'back' && (res.Return.uuid != this.$route.query.uuid || res.Return.currentVersionUuid != this.$route.query.currentVersionUuid)) {
               this.$router.replace({
                 path: '/form-edit',
                 query: {
@@ -605,6 +636,7 @@ export default {
     previewForm() {
       const sheet = this.$refs['sheet'];
       const data = sheet.getFormConfig();
+      this.$set(data, 'readOnly', this.readOnly);
       this.previewFormData = data;
       this.isPreviewShow = true;
     },
@@ -654,10 +686,12 @@ export default {
         this.currentFormItem = null;
         const formConfig = {};
         this.$set(this.formData, 'formConfig', formConfig);
-        this.formDataQueue = [{
-          ...this.formData,
-          label: this.formData.name
-        }];
+        this.formDataQueue = [
+          {
+            ...this.formData,
+            label: this.formData.name
+          }
+        ];
         this.isFormLoaded = true;
         this.$addWatchData(formConfig);
         return false;
@@ -678,6 +712,7 @@ export default {
             this.versionList = res.Return.versionList || [];
             let formConfig = res.Return.formConfig || {};
             this.sceneUuid = formConfig.uuid;
+            this.readOnly = formConfig.readOnly || false;
             this.$set(this.formData, 'name', res.Return.name);
             if (this.versionList.length > 0) {
               this.versionList.forEach(item => {
@@ -695,10 +730,12 @@ export default {
 
             this.$set(this.formData, 'formConfig', formConfig);
             this.initFormConfig = this.$utils.deepClone(formConfig);
-            this.formDataQueue = [{
-              ...this.formData,
-              label: this.formData.name
-            }];
+            this.formDataQueue = [
+              {
+                ...this.formData,
+                label: this.formData.name
+              }
+            ];
             this.currentFormData = {
               ...this.formData
             };
@@ -820,7 +857,7 @@ export default {
 
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: version + this.$t('page.versions')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: version + this.$t('page.versions') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.form.delFormVersion({ uuid: uuid }).then(res => {
@@ -930,31 +967,35 @@ export default {
     },
     formValid() {
       if (this.valid()) {
-        this.$Notice.success({title: this.$t('message.validatesuccess') });
+        this.$Notice.success({ title: this.$t('message.validatesuccess') });
+        this.isShowValidList = false;
       }
     },
-    valid() { //整个表单校验
+    valid() {
+      //整个表单校验
       this.errorData = {};
       const sheet = this.$refs['sheet'];
       let isValid = this.$refs['formName'].valid();
       if (!isValid || this.nameMsg) {
-        this.$set(this.errorData, 'form', [{
-          field: 'name',
-          error: !isValid ? this.$t('page.formname') + '：' + this.$t('form.validate.requiredname') : this.nameMsg
-        }]);
+        this.$set(this.errorData, 'form', [
+          {
+            field: 'name',
+            error: !isValid ? this.$t('page.formname') + '：' + this.$t('form.validate.requiredname') : this.nameMsg
+          }
+        ]);
         this.$nextTick(() => {
           this.$refs.formName.focus();
         });
       } else {
         this.errorData.form && this.$delete(this.errorData, 'form');
       }
-      this.errorData = Object.assign(this.errorData, sheet.validConfig()); 
+      this.errorData = Object.assign(this.errorData, sheet.validConfig());
       if (isValid && !this.$utils.isEmpty(this.errorData)) {
         isValid = false;
       }
       return isValid;
     },
-    jumpToItem(uuid) {
+    jumpToItem(uuid, item) {
       this.currentFormItem = null;
       this.$nextTick(() => {
         this.formData.formConfig.tableList.forEach(d => {
@@ -962,6 +1003,13 @@ export default {
           if (!this.$utils.isEmpty(component) && component.uuid === uuid) {
             this.currentFormItem = component;
             this.$refs.sheet.selectCell(d);
+            if (item.uuid && !this.$utils.isEmpty(this.currentFormItem.component)) {
+              this.currentFormItem.component.forEach(c => {
+                if (c.uuid === item.uuid) {
+                  this.currentFormItem = c;
+                }
+              });
+            }
           }
         });
       });
@@ -992,6 +1040,38 @@ export default {
       this.$nextTick(() => {
         this.isFormLoaded = true;
       });
+    },
+    updateDefaultSceneUuid(uuid) {
+      this.$set(this.initFormConfig, 'defaultSceneUuid', uuid);
+    },
+    updateSceneReadOnly(readOnly, sceneUuid) {
+      if (sceneUuid === this.initFormConfig.uuid) {
+        this.$set(this.initFormConfig, 'readOnly', readOnly);
+        this.readOnly = readOnly;
+      } else {
+        this.initFormConfig.sceneList.forEach(item => {
+          if (item.uuid === sceneUuid) {
+            this.$set(item, 'readOnly', readOnly);
+          }
+        });
+      }
+    },
+    changeReadOnly(readOnly) {
+      if (!this.currentVersion.uuid) {
+        return;
+      }
+      this.$api.framework.form
+        .saveFormSceneReadonly({
+          versionUuid: this.currentVersion.uuid,
+          sceneUuid: this.sceneUuid,
+          readOnly: readOnly
+        })
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+            this.$set(this.initFormConfig, 'readOnly', readOnly);
+          }
+        });
     }
   },
   filter: {},
@@ -1022,7 +1102,7 @@ export default {
       return formItemList;
     },
     getFormCategoryList() {
-      return (category) => {
+      return category => {
         return this.formItemList.filter(d => d.category === category);
       };
     }

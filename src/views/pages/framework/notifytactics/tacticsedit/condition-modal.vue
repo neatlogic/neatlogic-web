@@ -165,11 +165,11 @@ import Items from '@/resources/components/FormItems';
 export default {
   name: '',
   components: {
-    // TsForm: resolve => require(["@/resources/plugins/TsForm/TsForm"], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve),
+    // TsForm:()=>import("@/resources/plugins/TsForm/TsForm"),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
     ...Items
   },
   inject: {

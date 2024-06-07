@@ -57,7 +57,7 @@
           </div>
         </div>
         <div v-show="matrixAttributeList.length > 0" class="item-right">
-          <TsForm ref="attributeDialogForm" :item-list="attributeDialogForm" :label-width="52"></TsForm>
+          <TsForm ref="attributeDialogForm" :item-list="attributeDialogForm" :label-width="70"></TsForm>
           <div v-if="matrixAttributeSelectData && matrixAttributeSelectData.type == 'select'" class="dataList">
             <!-- start_静态数据源 -->
             <div class="static-main bg-op">
@@ -113,6 +113,38 @@
             </div>
             <!-- end_静态数据源 -->
           </div>
+          <div v-if="matrixAttributeSelectData && matrixAttributeSelectData.type == 'cmdbci'" class="mt-nm">
+            <TsFormItem
+              :label="$t('page.model')"
+              required
+              labelPosition="right"
+              labelWidth="70"
+            > 
+              <TsFormSelect
+                ref="cmdbci"
+                v-model="cmdbCi.ciId"
+                v-bind="cmdbCiConfig"
+                :validateList="validateList"
+                @on-change="cmdbCiChange"
+              >
+              </TsFormSelect>
+            </TsFormItem>
+            <TsFormItem
+              v-if="cmdbCi.ciId"
+              :label="$t('page.attribute')"
+              required
+              labelPosition="right"
+              labelWidth="70"
+            > 
+              <TsFormSelect
+                ref="cmdbciattr"
+                v-model="cmdbCi.label"
+                v-bind="cmdbCiAttrConfig"
+                :validateList="validateList"
+              >
+              </TsFormSelect>
+            </TsFormItem>
+          </div>
         </div>
       </div>
     </template>
@@ -122,9 +154,11 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    vuedraggable: resolve => require(['vuedraggable'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    vuedraggable: () => import('vuedraggable'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     matrixUuid: { type: String }
@@ -132,9 +166,11 @@ export default {
   data() {
     const _this = this;
     return {
+      cmdbCi: {ciId: null, label: null},
       dataList: [{ value: '', text: '' }],
       validJson: ['required'],
       matrixAttributeSelectData: [], //选中矩阵属性数据
+      validateList: [{ name: 'required'}],
       dialogConfig: {
         title: this.$t('page.attrsmanage'),
         type: 'modal',
@@ -152,12 +188,21 @@ export default {
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.name')}) }, { name: 'name-special' }]
         },
         {
+          type: 'text',
+          name: 'uniqueIdentifier',
+          label: this.$t('page.uniquekey'),
+          maxlength: 50,
+          width: '100%',
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.name')}) }, { name: 'key-special' }]
+        },
+        {
           type: 'select',
           name: 'type',
           label: this.$t('page.type'),
           width: '100%',
-          url: '/api/rest/universal/enum/get?enumClass=neatlogic.framework.matrix.constvalue.MatrixAttributeType',
+          url: '/api/rest/universal/enum/get?enumClass=neatlogic.framework.matrix.constvalue.IMatrixAttributeType',
           transfer: true,
+          dealDataByUrl: this.dealDataByUrl,
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.type')}) }, { name: 'name-special' }],
           onChange() {
             _this.dataList = [{ value: '', text: '' }];
@@ -170,7 +215,30 @@ export default {
         //   value: "0",
         // }
       ],
-      matrixAttributeList: []
+      matrixAttributeList: [],
+      cmdbCiConfig: {
+        url: 'api/rest/cmdb/ci/list',
+        search: true,
+        params: {
+          isVirtual: 0
+        },
+        validateList: ['required'],
+        transfer: true,
+        border: 'border'
+      },
+      cmdbCiAttrConfig: {
+        url: 'api/rest/matrix/attribute/search',
+        search: true,
+        params: {
+          type: 'cmdbci'
+        },
+        rootName: 'tbodyList',
+        validateList: ['required'],
+        transfer: true,
+        textName: 'name',
+        valueName: 'label',
+        border: 'border'
+      }
     };
   },
   beforeCreate() {},
@@ -296,6 +364,11 @@ export default {
           this.matrixAttributeList = res.Return.tbodyList;
           this.matrixAttributeList &&
             this.matrixAttributeList.forEach(async item => {
+              if (item.uniqueIdentifier && item.uniqueIdentifier.length > 0) {
+                this.$set(item, 'isNewUniqueIdentifier', false);
+              } else {
+                this.$set(item, 'isNewUniqueIdentifier', true);
+              }
               // 补充是否被表单引用
               let isDisabledDependency = await this.$frameworkUtils.isDependency(item.uuid, 'matrixattr');
               if (isDisabledDependency) {
@@ -358,10 +431,13 @@ export default {
           matrixUuid: this.matrixUuid,
           name: '',
           uuid: this.$utils.setUuid(),
-          isDeletable: 1
+          isDeletable: 1,
+          isNewLabel: true,
+          isNewUniqueIdentifier: true
           // isRequired:0
         };
         this.dataList = [{ value: '', text: '' }];
+        this.cmdbCi = {ciId: null, label: null};
         this.matrixAttributeList.push(data);
         this.matrixAttributeSelectData = data;
         this.formSetValue(data);
@@ -383,13 +459,26 @@ export default {
     //表单赋值
     formSetValue(val) {
       if (this.matrixAttributeList.length > 0) {
-        this.attributeDialogForm.forEach(item => {
+        this.attributeDialogForm.forEach((item, index) => {
           switch (item.name) {
             case 'name':
-              item.value = val.name;
+              this.$set(this.attributeDialogForm[index], 'value', val.name);
+              break;
+            case 'uniqueIdentifier':
+              this.$set(this.attributeDialogForm[index], 'value', val.uniqueIdentifier);
+              if (val.isNewUniqueIdentifier) {
+                item.disabled = false;
+              } else {
+                item.disabled = true;
+              }
               break;
             case 'type':
-              item.value = val.type;
+              this.$set(this.attributeDialogForm[index], 'value', val.type);
+              if (val.isNewLabel) {
+                item.disabled = false;
+              } else {
+                item.disabled = true;
+              }
               break;
             // case 'isRequired':
             //   item.value = val.isRequired
@@ -403,7 +492,23 @@ export default {
             this.dataList = val.config.dataList;
           }
         }
+        if (val.type === 'cmdbci' && val.config != undefined) {
+          if (typeof val.config == 'string') {
+            this.cmdbCi = JSON.parse(val.config).cmdbCi;
+          } else {
+            this.cmdbCi = val.config.cmdbCi;
+          }
+        }
       }
+    },
+    cmdbCiChange() {
+      this.$set(this.cmdbCiAttrConfig, 'params', {ciId: this.cmdbCi.ciId});
+    },
+    dealDataByUrl(list) {
+      list.sort(function(a, b) {
+        return a.sort - b.sort;
+      });
+      return list;
     }
   },
   filter: {},
@@ -420,6 +525,20 @@ export default {
       },
       deep: true
     },
+    cmdbCi: {
+      handler: function(newVal, oldVal) {
+        this.matrixAttributeList.forEach(item => {
+          if (item.uuid === this.matrixAttributeSelectData.uuid && item.type == 'cmdbci') {
+            item.config = {};
+            item.config.cmdbCi = JSON.parse(JSON.stringify(newVal));
+          }
+          if (newVal.ciId != oldVal.ciId) {
+            this.$set(this.cmdbCiAttrConfig, 'params', {ciId: newVal.ciId, type: 'cmdbci'});
+          }
+        });
+      },
+      deep: true
+    },
     attributeDialogForm: {
       handler: function(newVal) {
         let obj = this.matrixAttributeList.find(d => d.uuid == this.matrixAttributeSelectData.uuid);
@@ -427,6 +546,8 @@ export default {
           newVal.forEach(item => {
             if (item.name == 'name') {
               obj.name = item.value;
+            } else if (item.name == 'uniqueIdentifier') {
+              obj.uniqueIdentifier = item.value;
             } else if (item.name == 'type') {
               obj.type = item.value;
             }

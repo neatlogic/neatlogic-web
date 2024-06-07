@@ -50,8 +50,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: [],
   data() {
@@ -66,8 +66,8 @@ export default {
         pageSize: 20
       },
       theadList: [
-        { title: this.$t('term.framework.rolename'), key: 'name' },
-        { title: this.$t('term.framework.roledesc'), key: 'description' },
+        { title: 'ID', key: 'name' },
+        { title: this.$t('term.framework.rolename'), key: 'description' },
         { title: this.$t('term.framework.usercount'), key: 'userCount' },
         { title: this.$t('term.framework.teamcount'), key: 'teamCount' },
         { title: ' ', key: 'action'}

@@ -112,17 +112,17 @@
 export default {
   name: '',
   components: {
-    CiTopo: resolve => require(['../ci/ci-topo.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    CiTopo: () => import('../ci/ci-topo.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {},
   data() {
     const _this = this;
     return {
-      showMode: 'card',
+      showMode: this.$localStore.get('showMode') || 'card',
       theadList: [
         { key: 'name', title: this.$t('page.name') },
         { key: 'typeName', title: this.$t('page.classify') },
@@ -237,15 +237,19 @@ export default {
       });
     },
     searchCiTypeCi: function() {
+      this.ciTypeList = [];
       this.isLoading = true;
       this.$addHistoryData('searchParam', this.searchParam);
       this.$api.cmdb.ci.searchCiTypeCi(this.searchParam).then(res => {
         if (res.Status == 'OK') {
-          this.ciTypeList = res.Return;
           this.isLoading = false;
-          this.ciTypeList.forEach(citype => {
-            citype.cardList = citype.ciList;
-          });
+          let ciTypeList = res.Return || [];
+          this.ciTypeList = ciTypeList
+            .filter(citype => citype && !this.$utils.isEmpty(citype.ciList))
+            .map(citype => ({
+              ...citype,
+              cardList: citype.ciList
+            }));
         }
       });
     },
@@ -297,6 +301,7 @@ export default {
   watch: { showMode: {
     handler: function(val) {
       this.$addHistoryData('showMode', val);
+      this.$localStore.set('showMode', val);
     }
   }}
 };

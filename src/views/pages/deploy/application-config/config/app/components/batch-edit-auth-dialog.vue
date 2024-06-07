@@ -22,31 +22,31 @@
                     <div class="text-grey auth-text">{{ $t('term.deploy.operationauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.operationAuthList"
-                      :appSystemId="params.appSystemId"
                       :isEdit="isEdit"
                       operationType="operation"
+                      :authSetting="authSetting"
                     ></AuthEdit>
                   </div>
                 </li>
-                <li class="bg-op radius-sm mb-nm">
+                <li v-if="canShowEnvScenario" class="bg-op radius-sm mb-nm">
                   <div class="padding">
                     <div class="text-grey auth-text">{{ $t('term.deploy.envauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.envAuthList"
-                      :appSystemId="params.appSystemId"
                       :isEdit="isEdit"
                       operationType="env"
+                      :authSetting="authSetting"
                     ></AuthEdit>
                   </div>
                 </li>
-                <li class="bg-op radius-sm mb-nm">
+                <li v-if="canShowEnvScenario" class="bg-op radius-sm mb-nm">
                   <div class="padding">
                     <div class="text-grey auth-text">{{ $t('term.deploy.scenarioauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.scenarioAuthList"
-                      :appSystemId="params.appSystemId"
                       :isEdit="isEdit"
                       operationType="scenario"
+                      :authSetting="authSetting"
                     ></AuthEdit>
                   </div>
                 </li>
@@ -63,8 +63,8 @@
 export default {
   name: '', // 批量编辑权限
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    AuthEdit: resolve => require(['./auth-edit'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    AuthEdit: () => import('./auth-edit')
   },
   props: {
     params: {
@@ -72,6 +72,11 @@ export default {
       default: function() {
         return {};
       }
+    },
+    hideFucntionExcludeAppModuleRunner: {
+      //  codehub新增应用配置入口，为了维护应用和模块，应用权限以及模块对应的runner组,发布其他功能全部屏蔽
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -85,6 +90,7 @@ export default {
         envAuthList: [],
         scenarioAuthList: []
       },
+      authSetting: {},
       dialogSetting: {
         type: 'slider',
         title: this.$t('term.deploy.batcheditpermission'),
@@ -113,8 +119,8 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-    this.getAuthList();
+  async mounted() {
+    await this.getAuthList();
     this.getAuthInfoById();
   },
   beforeUpdate() {},
@@ -138,7 +144,8 @@ export default {
         authorityStrList,
         appSystemId: this.params.appSystemId,
         isEdit: this.isEdit,
-        actionList: this.handleActionList(this.authConfig)
+        actionList: this.handleActionList(this.authConfig),
+        includeActionList: this.canShowEnvScenario ? [] : ['view', 'edit']
       };
       this.$api.deploy.applicationConfig.saveAppConfigAuth(params).then((res) => {
         if (res && res.Status == 'OK') {
@@ -215,8 +222,9 @@ export default {
       });
     },
     getAuthList() {
-      this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId}).then((res) => {
+      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId, includeActionList: this.canShowEnvScenario ? [] : ['view', 'edit']}).then((res) => {
         if (res && res.Status == 'OK') {
+          this.authSetting = res.Return || {};
           for (let key in res.Return) {
             if (key && res.Return[key]) {
               res.Return[key].forEach((item) => {
@@ -229,7 +237,12 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    canShowEnvScenario() {
+      // 显示环境场景
+      return !this.hideFucntionExcludeAppModuleRunner;
+    }
+  },
   watch: {}
 };
 </script>

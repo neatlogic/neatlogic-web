@@ -4,11 +4,11 @@
     <TsContain border="border">
       <template slot="topLeft">
         <div class="action-group">
-          <div class="action-item tsfont-plus" @click="addCi()">{{ $t('term.cmdb.ci') }}</div>
-          <div class="action-item tsfont-plus" @click="addCiType()">{{ $t('page.type') }}</div>
+          <div class="action-item tsfont-plus" @click="addCi()">{{ $t('page.model') }}</div>
           <div class="action-item tsfont-upload" @click="importCi()">{{ $t('term.cmdb.importci') }}</div>
           <div class="action-item tsfont-export" @click="exportCi()">{{ $t('term.cmdb.exportci') }}</div>
-          <div class="action-item tsfont-edit" @click="editCiType()">{{ $t('term.cmdb.typesetting') }}</div>
+          <div class="action-item tsfont-plus" @click="addCiType()">{{ $t('page.hierarchy') }}</div>
+          <div class="action-item tsfont-edit" @click="editCiType()">{{ $t('page.hierarchy') }}</div>
           <div class="action-item">
             <TsFormSwitch
               v-model="isCiTopoShow"
@@ -40,7 +40,7 @@
             <div v-if="showMode === 'card'">
               <div v-for="(ciType, index) in ciTypeList" :key="index" class="type-main">
                 <div v-if="ciType && ciType.cardList && ciType.cardList.length > 0" class="title text-title ci-title-text">
-                  <span class="text-grey" :class="ciType.isMenu == 1 ? 'tsfont-formstaticlist' : ''">{{ ciType.name }}</span>
+                  <span class="text-grey">{{ ciType.name }}</span>
                 </div>
                 <div>
                   <TsCard
@@ -126,22 +126,22 @@
 export default {
   name: '',
   components: {
-    CiTypeEdit: resolve => require(['../citype/citype-edit.vue'], resolve),
-    CiTypeManage: resolve => require(['../citype/citype-manage.vue'], resolve),
-    CiEdit: resolve => require(['./ci-edit.vue'], resolve),
-    CiTopo: resolve => require(['./ci-topo.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    CiImportDialog: resolve => require(['./ci-import-dialog.vue'], resolve),
-    CiExportDialog: resolve => require(['./ci-export-dialog.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CiTypeEdit: () => import('../citype/citype-edit.vue'),
+    CiTypeManage: () => import('../citype/citype-manage.vue'),
+    CiEdit: () => import('./ci-edit.vue'),
+    CiTopo: () => import('./ci-topo.vue'),
+    CiImportDialog: () => import('./ci-import-dialog.vue'),
+    CiExportDialog: () => import('./ci-export-dialog.vue')
   },
   props: {},
   data() {
     const _this = this;
     return {
-      showMode: 'card',
+      showMode: this.$localStore.get('showMode') || 'card',
       theadList: [
         { key: 'name', title: this.$t('page.name') },
         { key: 'typeName', title: this.$t('page.type') },
@@ -163,7 +163,7 @@ export default {
             valueName: 'id',
             textName: 'name',
             url: '/api/rest/cmdb/citype/list',
-            label: this.$t('page.type'),
+            label: this.$t('page.hierarchy'),
             multiple: true,
             transfer: true
           },
@@ -375,6 +375,7 @@ export default {
     showMode: {
       handler: function(val) {
         this.$addHistoryData('showMode', val);
+        this.$localStore.set('showMode', val);
       }
     }
   }

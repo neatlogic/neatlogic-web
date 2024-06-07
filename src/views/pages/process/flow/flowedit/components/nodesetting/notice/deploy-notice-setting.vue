@@ -9,13 +9,31 @@
           class="tip text-tip pr-xs"
         >{{ isActive == 1 ? $t('page.custom'): $t('term.framework.defaultpolicy') }}</span>
         <i-switch
+          v-if="hasEditConfigAuth"
           v-model="isActive"
           :true-value="1"
           :false-value="0"
           @on-change="changeSwitch"
         ></i-switch>
-        <span v-if="isActive" class="text-href pl-sm" @click="openNoticePolicyDialog">{{ $t('page.edit') }}</span>
-        <span v-else class="text-href pl-sm" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
+        <Tooltip
+          max-width="400"
+          placement="right"
+          transfer
+        >
+          <i-switch
+            v-if="!hasEditConfigAuth"
+            v-model="isActive"
+            disabled
+            :true-value="1"
+            :false-value="0"
+            @on-change="changeSwitch"
+          ></i-switch>
+          <ul slot="content">
+            <li><span>{{ $t('term.deploy.noconfigauthtip') }}</span></li>
+          </ul>
+        </Tooltip>
+        <span v-if="hasEditConfigAuth && isActive" class="text-href pl-sm" @click="openNoticePolicyDialog">{{ $t('page.edit') }}</span>
+        <span v-if="hasEditConfigAuth && !isActive" class="text-href pl-sm" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
       </li>
       <li v-if="policyName" class="mt-sm">
         <span class="text-tip pr-sm">{{ $t('page.notificationstrategy') }}</span>
@@ -35,6 +53,9 @@
       :appSystemId="appSystemId"
       @close="closeDeployNoticeEditDialog"
     ></DeployNoticeEditDialog>
+    <Modal v-model="isShowNoticeTip" footer-hide title="Fullscreen Modal">
+      <div>This is a fullscreen modal</div>
+    </Modal>
   </div>
 </template>
 <script>
@@ -42,19 +63,25 @@
 export default {
   name: '',
   components: {
-    PersonSettingsDialog: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice/person-settings-dialog.vue'], resolve), // 个性设置
-    DeployNoticeEditDialog: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice/deploy-notice-edit-dialog.vue'], resolve) // 编辑自定义通知策略
+    PersonSettingsDialog: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice/person-settings-dialog.vue'), // 个性设置
+    DeployNoticeEditDialog: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice/deploy-notice-edit-dialog.vue') // 编辑自定义通知策略
 
   },
   props: {
     appSystemId: {
       type: Number,
       default: null
+    },
+    hasEditConfigAuth: {
+      // 是否有编辑配置权限
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       isActive: 1,
+      isShowNoticeTip: false,
       policyName: '',
       isEditNoticePolicy: false,
       defaultPolicyId: null,
@@ -178,8 +205,10 @@ export default {
       } else if (!isActive) {
         // 为空时，需要设置默认参数值
         this.$set(this.notifyPolicyConfig, 'policyId', this.defaultPolicyId);
-        this.$set(this.notifyPolicyConfig, 'paramMappingList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.paramMappingList : []);
-        this.$set(this.notifyPolicyConfig, 'excludeTriggerList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.excludeTriggerList : []);
+        if (this.defaultDeepCloneConfig) {
+          this.$set(this.notifyPolicyConfig, 'paramMappingList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.paramMappingList : []);
+          this.$set(this.notifyPolicyConfig, 'excludeTriggerList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.excludeTriggerList : []);
+        }
         this.$set(this.notifyPolicyConfig, 'policyName', this.defaultPolicyName);
         this.policyName = '';
       }

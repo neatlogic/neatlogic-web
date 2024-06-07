@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div class="radius-sm padding" :class="{'bg-op':bgOp}">
     <template v-if="readonly">
@@ -63,13 +49,14 @@
 </template>
 <script>
 import FilterSearch from '../filter-search.vue';
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
     FilterSearch,
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
-    
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+
   },
   filters: {
   },
@@ -158,6 +145,7 @@ export default {
       if (!this.$utils.isEmpty(this.defaultSearchValue)) {
         Object.assign(data, this.defaultSearchValue);
       }
+      data.cmdbGroupType = this.opType;
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -189,6 +177,7 @@ export default {
     advancedModeSearch(searchVal) {
       // 复杂模式搜索
       let params = Object.assign({currentPage: 1, pageSize: 10}, searchVal);
+      params.cmdbGroupType = this.opType;
       this.complexModeSearchValue = searchVal;
       this.loadingShow = true;
       this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
@@ -201,7 +190,11 @@ export default {
       });
     }
   },
-  computed: {},
+  computed: {
+    opType() {
+      return mutations.getOpType();
+    }
+  },
   watch: {
     defaultValue: {
       handler(val) {

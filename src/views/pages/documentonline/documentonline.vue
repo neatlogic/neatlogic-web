@@ -4,7 +4,7 @@
       <TopNav></TopNav>
       <div class="centermain">
         <div>
-          <router-view v-if="isRouterAlive" :key="$route.fullPath" style="height:100%;overflow: auto;"></router-view>
+          <router-view v-if="isRouterAlive" :key="$route.fullPath"></router-view>
         </div>
       </div>
       <LicenseValidator></LicenseValidator>
@@ -20,8 +20,8 @@ export default {
     };
   },
   components: {
-    TopNav: resolve => require(['./topnav/topnav.vue'], resolve),
-    LicenseValidator: resolve => require(['@/views/components/license/license-validator.vue'], resolve)
+    TopNav: () => import('./topnav/topnav.vue'),
+    LicenseValidator: () => import('@/views/components/license/license-validator.vue')
   },
   data() {
     return {
@@ -39,7 +39,7 @@ export default {
       this.$store.dispatch('getModuleList');
       this.$nextTick(() => {
         this.isRouterAlive = true;
-        location.reload(); 
+        location.reload();
       });
     }
   },
@@ -48,7 +48,6 @@ export default {
 </script>
 <style lang="less" scoped>
 .centermain {
- max-width: 1100px;
- margin: 0 auto;
+  padding: 0 20%;
 }
 </style>

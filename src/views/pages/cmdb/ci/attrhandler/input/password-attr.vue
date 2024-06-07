@@ -13,7 +13,7 @@
 <script>
 export default {
   name: '',
-  components: { TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve) },
+  components: { TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput') },
   props: {
     disabled: {type: Boolean, default: false},
     attrEntity: {type: Object},
@@ -29,7 +29,7 @@ export default {
   beforeCreate() {},
   created() {
     if (this.attrData) {
-      if (this.attrData.isRequired === 1) {
+      if (this.attrData.isRequired || this.attrData.isCiUnique) {
         this.validateList.push('required');
       }
     }
@@ -41,7 +41,7 @@ export default {
       } else {
         this.value = this.valueList[0];
       }
-    } 
+    }
   },
   beforeMount() {},
   mounted() {},

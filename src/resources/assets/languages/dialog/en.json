@@ -36,9 +36,14 @@
     "openconfirm": "Open Confirmation",
     "batchconfirm": "Batch execution confirmation",
     "passconfirm": "By confirming",
-    "rejectconfirm": "Rejection confirmation"
+    "rejectconfirm": "Rejection confirmation",
+    "actionconfirm": "Operation confirmation",
+    "editconfirm": "Edit confirmation",
+    "canceleditconfirm": "Exit editing confirmation",
+    "lockconfirm": "Lock Confirmation"
   },
   "content": {
+    "startconfirm": "Are you sure to start {target}？",
     "revocatetargetconfirm": "Are you sure to recall of the {target}?",
     "passtargetconfirm": "Are you sure to pass {target}？",
     "rejecttargetconfirm": "Are you sure to reject {target}？",
@@ -76,6 +81,8 @@
     "updateformflowtip": "The current form has been referenced by an unfinished work order. Modifying the form may prevent the normal input of form information during the work order flow. Do you want to continue?",
     "unlinkconfirm": "Are you sure to dissolve the current association?",
     "closecomfirm": "Are you sure to close this {target}?",
-    "opencomfirm": "Are you sure to open this {target}?"
+    "opencomfirm": "Are you sure to open this {target}?",
+    "canceleditconfirm": "Are you sure to exit editing and unlock the current schema diagram?",
+    "lockconfirm": "Are you sure you want to lock the current {target}?"
   }
 }

@@ -1,10 +1,12 @@
 <template>
   <div>
-    <TsDialog :is-show="isShow" v-bind="dialogConfig" @on-close="close">
+    <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
         {{ $t('page.detail') }}
       </template>
-      <template v-slot><pre>{{ contentFormated }}</pre></template>
+      <template v-slot>
+        <pre class="overflow" style="word-break: break-all; white-space: normal">{{ contentFormated }}</pre>
+      </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
         <Button v-if="hasMore" v-download="auditDetailDownloadParams" type="primary">{{ $t('page.download') }}</Button>
@@ -16,10 +18,9 @@
 import download from '@/resources/directives/download.js';
 export default {
   name: '',
-  directives: {download},
-  components: {
-  },
-  props: { filePath: {type: String}},
+  directives: { download },
+  components: {},
+  props: { filePath: { type: String } },
   data() {
     return {
       isShow: false,
@@ -28,12 +29,15 @@ export default {
       dialogConfig: {
         type: 'modal',
         maskClose: true,
-        isShow: false,
-        width: '600px'
-      }};
+        isShow: true,
+        width: 'small'
+      }
+    };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getAuditDetail();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -43,17 +47,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getAuditDetail: function() {
-      this.$api.framework.integration.getIntegrationAuditDetail({filePath: this.filePath}).then(res => {
+    getAuditDetail() {
+      this.$api.framework.integration.getIntegrationAuditDetail({ filePath: this.filePath }).then(res => {
         if (res.Status == 'OK') {
           this.content = res.Return.content;
           this.hasMore = res.Return.hasMore;
-          this.isShow = true;
         }
       });
     },
-    close: function() {
-      this.isShow = false;
+    close() {
       this.$emit('close');
     }
   },
@@ -76,14 +78,7 @@ export default {
       };
     }
   },
-  watch: {
-    filePath: {handler: function(val) {
-      if (val) {
-        this.getAuditDetail();
-      }
-    }}
-  }
+  watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

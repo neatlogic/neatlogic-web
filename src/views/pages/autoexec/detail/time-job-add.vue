@@ -61,7 +61,7 @@ export default {
   name: 'TimeJobAdd',
   components: {
     runnerDetail,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue')
   },
   props: {},
   data() {

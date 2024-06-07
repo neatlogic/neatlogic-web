@@ -76,12 +76,12 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ClearFileDialog: resolve => require(['./components/clear-file-dialog.vue'], resolve),
-    ComparisonDetail: resolve => require(['./components/comparison-dialog'], resolve)
-    
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    ClearFileDialog: () => import('./components/clear-file-dialog.vue'),
+    ComparisonDetail: () => import('./components/comparison-dialog')
+
   },
   props: {},
   data() {
@@ -106,7 +106,7 @@ export default {
           title: this.$t('term.inspect.assetname'),
           key: 'resourceName'
         },
-       
+
         {
           title: this.$t('term.inspect.assettype'),
           key: 'resourceTypeLabel'

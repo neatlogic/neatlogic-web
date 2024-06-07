@@ -78,12 +78,23 @@
                 class="ivu-input search-input"
                 @input="filterNode($event)"
               />
-              <span
-                v-else
-                class="overflow empty-placeholder single-span"
-                :class="[disabled ? 'empty-placeholder-disable' : '']"
-                :placeholder="placeholder"
-              >{{ searchKeyWord }}</span>
+              <template v-else>
+                <Tooltip
+                  placement="top-start"
+                  max-width="300"
+                  transfer
+                  theme="light"
+                  style="width: 100%"
+                  :content="searchKeyWord"
+                  :disabled="$utils.isEmpty(searchKeyWord)"
+                >
+                  <div
+                    class="overflow empty-placeholder single-span"
+                    :class="[disabled ? 'empty-placeholder-disable' : '']"
+                    :placeholder="placeholder"
+                  >{{ searchKeyWord }}</div>
+                </Tooltip>
+              </template>
             </template>
             <i class="ivu-icon tsfont-down ivu-select-arrow"></i>
             <i v-if="getClearable" class="clearBtn text-icon ivu-icon tsfont-close-s bg-op" @click.stop="clearValue"></i>
@@ -355,10 +366,7 @@ export default {
     renderContent: function(h, { root, node, data }) {
       let _this = this;
       return h('span', {
-        class: {
-          // 'select-li': true,
-          // 'selected': data.selected
-        },
+        class: data.className,
         props: {
           data: data
         },
@@ -689,8 +697,6 @@ function setWidth($contain, $target, transfer) {
       text-align: left;
       .single-span {
         width: 100%;
-        display: inline-block;
-        vertical-align: top;
       }
       .search-input {
         height: 28px;
@@ -753,6 +759,13 @@ function setWidth($contain, $target, transfer) {
             background: transparent;
             cursor: default;
           }
+      }
+      .ivu-icon-ios-arrow-forward:before {
+        font-family: 'tsfont';
+        content: '\e899'; // tsfont-drop-right字体图标
+      }
+      .ivu-tree-arrow i {
+        vertical-align: baseline; // 修复向下/向左箭头图标和文案不对齐问题
       }
     }
 }

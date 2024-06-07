@@ -347,7 +347,7 @@ export default {
     TBody,
     ColGroup,
     // UserCard,
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
     // Liquid
   },
   directives: { scrollHidden },
@@ -506,7 +506,7 @@ export default {
     styleType: {
       //table样式类型,支持多个类型空格隔开的字符串。跟type的区别是type针对排版块状还是列表，styleType针对普通的table常用的样式比如线条还是斑马支持多个字符串  [border,stripe]
       type: String,
-      default: process.env.VUE_APP_TABLESTRYLE || 'border'
+      default: GLOBAL_TABLESTRYLE || 'border'
     },
     loading: {
       type: Boolean,
@@ -596,7 +596,7 @@ export default {
         selectItem && selectedList.push(selectItem);
       });
       this.selectedItemList = selectedList;
-     
+
       this.$emit('getSelected', this.value, selectedList);
     }*/
     if (this.height) {
@@ -1157,7 +1157,7 @@ export default {
           thList.push({ key: 'columnWidth' });
         }
         if (this.canDrag) {
-          thList.push({ key: 'dragWidth', width: 40 });
+          thList.push({ key: 'dragWidth', width: 30 });
         }
         if (list && list.length > 0) {
           showList = list.filter(th => {
@@ -1166,7 +1166,7 @@ export default {
         }
         if (showList && showList.length) {
           showList.forEach(s => {
-            thList.push({ key: s.key + 'Width', width: s.width && s.width > 10 ? s.width : s.key == 'selection' ? 40 : null });
+            thList.push({ key: s.key + 'Width', width: s.width && s.width > 1 ? s.width : s.key == 'selection' ? 40 : null });
           });
         }
         return thList;
@@ -1347,8 +1347,8 @@ export default {
   height: 100%;
 }
 .drag-container {
-  width: 40px;
-  min-width: 30px;
+  width: 30px;
+  min-width: 20px;
   text-align: center;
   padding-left: 0 !important;
   padding-right: 0 !important;

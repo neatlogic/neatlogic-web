@@ -20,8 +20,8 @@ export default {
     };
   },
   components: {
-    TopNav: resolve => require(['@/views/components/topnav/topnav.vue'], resolve),
-    LicenseValidator: resolve => require(['@/views/components/license/license-validator.vue'], resolve)
+    TopNav: () => import('@/views/components/topnav/topnav.vue'),
+    LicenseValidator: () => import('@/views/components/license/license-validator.vue')
   },
   data() {
     return {
@@ -40,7 +40,7 @@ export default {
       this.$store.dispatch('getModuleList');
       this.$nextTick(() => {
         this.isRouterAlive = true;
-        location.reload(); 
+        location.reload();
       });
     }
   },

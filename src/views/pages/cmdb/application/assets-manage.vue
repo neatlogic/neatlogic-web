@@ -26,6 +26,7 @@
       <div v-for="(item, index) in tableList" :key="index">
         <div class="h3 padding-sm">{{ item.type.label }}</div>
         <TsTable
+          :fixedHeader="false"
           :theadList="theadList"
           v-bind="filterTypeFields(item)"
           @changeCurrent="(currentPage) => changeCurrent(currentPage, item, index)"
@@ -55,7 +56,7 @@
               <span :class="[row.inspectStatusJson.cssClass, {'background-FATAL': row.inspectStatusJson.value== 'FATAL'}]" class="vertical cursor" @click="toInspectStatusDetail(row)">{{ row.inspectStatusJson.text }} </span>
               <span class="text-title">
                 {{ handleTimes(row.inspectTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
-              </span> 
+              </span>
             </span>
             <span v-else>-</span>
           </template>
@@ -79,8 +80,8 @@
 export default {
   name: '',
   components: {
-    GroupList: resolve => require(['@/resources/components/GroupList/GroupList.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    GroupList: () => import('@/resources/components/GroupList/GroupList.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {},
   props: {

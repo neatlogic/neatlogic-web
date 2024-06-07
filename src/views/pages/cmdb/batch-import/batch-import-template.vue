@@ -1,10 +1,10 @@
 <template>
   <div>
-    <TsContain hideHeader :siderWidth="168" :hasContentPadding="false">
+    <TsContain hideHeader :siderWidth="200" :hasContentPadding="false">
       <template slot="sider">
-        <ciTypeList :ciId="ciId" @click="getTemplate"></ciTypeList>
+        <ciTypeList :ciId="ciId" :toggleable="false" @click="getTemplate"></ciTypeList>
       </template>
-      <template slot="content" class="content flex-start">
+      <template slot="content">
         <Loading :loadingShow="isLoading" type="fix"></Loading>
         <TsTable
           class="table"
@@ -14,7 +14,7 @@
           multiple
           @getSelected="getSelected"
         >
-          <template v-slot:isRequired="{row}">
+          <template v-slot:isRequired="{ row }">
             <span v-if="row.isRequired" class="text-success">{{ $t('page.yes') }}</span>
             <span v-else class="text-grey">{{ $t('page.no') }}</span>
           </template>
@@ -28,46 +28,54 @@
 export default {
   name: 'ImportTemplate',
   components: {
-    ciTypeList: resolve => require(['../components/ci/ci-type-list.vue'], resolve),
-    TsTable: resolve => require(['components/TsTable/TsTable'], resolve)
+    ciTypeList: () => import('../components/ci/ci-type-list.vue'),
+    TsTable: () => import('components/TsTable/TsTable')
   },
   data() {
     return {
       isLoading: false,
       ciId: null,
       theadList: [
-        {title: '', key: 'selection'},
-        {title: this.$t('page.uniquekey'), key: 'name'},
-        {title: this.$t('term.cmdb.fieldname'), key: 'label'},
-        {title: this.$t('page.type'), key: 'typeText'},
-        {title: this.$t('page.require'), key: 'isRequired'}
+        { title: '', key: 'selection' },
+        { title: this.$t('page.uniquekey'), key: 'name' },
+        { title: this.$t('term.cmdb.fieldname'), key: 'label' },
+        { title: this.$t('page.type'), key: 'typeText' },
+        { title: this.$t('page.require'), key: 'isRequired' }
       ],
-      tbodyList: [] 
+      tbodyList: []
     };
   },
-  created() {
-  },
+  created() {},
   methods: {
-    async getTemplate(ciType, ci) {
-      this.ciId = ci.id;
+    async getTemplate(ci) {
+      console.log('ci', ci);
+      if (ci) {
+        this.ciId = ci.id;
+      } else {
+        this.ciId = null;
+      }
       this.isLoading = true;
-      const res = await this.$api.cmdb.batchImport.getImportFieldList(ci.id);
+      const res = await this.$api.cmdb.batchImport.getImportFieldList(this.ciId);
       this.isLoading = false;
-      const {attrList, relList} = res.Return;
+      const { attrList, relList, globalAttrList } = res.Return;
+      const glbalTbodyList = globalAttrList.map(attr => {
+        const { id, name, label } = attr;
+        return { id, name, label, typeText: this.$t('term.cmdb.globalattr'), isRequired: 0, rowType: 'global' };
+      });
       const attrTbodyList = attrList.map(attr => {
-        const {id, name, label, type, typeText, isRequired} = attr;
-        return {id, name, label, type, typeText, isRequired, rowType: 'attr'};
+        const { id, name, label, type, typeText, isRequired } = attr;
+        return { id, name, label, type, typeText, isRequired, rowType: 'attr' };
       });
       const relTbodyList = relList.map(rel => {
         if (rel.direction === 'from') {
-          const {id, toName: name, toLabel: label, toRule: rule, toIsRequired: isRequired } = rel;
-          return {id, name, label, typeText: '关系', isRequired, rowType: 'rel'};
+          const { id, toName: name, toLabel: label, toRule: rule, toIsRequired: isRequired } = rel;
+          return { id, name, label, typeText: this.$t('page.relation'), isRequired, rowType: 'rel' };
         } else if (rel.direction === 'to') {
-          const {id, toName: name, fromLabel: label, fromRule: rule, fromIsRequired: isRequired} = rel;
-          return {id, name, label, typeText: '关系', isRequired, rowType: 'rel'};
+          const { id, fromName: name, fromLabel: label, fromRule: rule, fromIsRequired: isRequired } = rel;
+          return { id, name, label, typeText: this.$t('page.relation'), isRequired, rowType: 'rel' };
         }
       });
-      this.tbodyList = [...attrTbodyList, ...relTbodyList];
+      this.tbodyList = [...glbalTbodyList, ...attrTbodyList, ...relTbodyList];
       this.$emit('on-template-change', this.ciId, []);
     },
     getSelected(indexList, itemList) {
@@ -75,9 +83,9 @@ export default {
     },
     renderTreeNode(h, { root, node, data }) {
       if (data.nodeType === 'ciType') {
-        return h('span', {class: ['text-disabled']}, data.title);
+        return h('span', { class: ['text-disabled'] }, data.title);
       }
-      return h('span', {class: [data.icon, 'tree-node-title', 'text-action', {'text-primary': data.selected}]}, data.title);
+      return h('span', { class: [data.icon, 'tree-node-title', 'text-action', { 'text-primary': data.selected }] }, data.title);
     }
   }
 };
@@ -87,19 +95,19 @@ export default {
 @import (reference) '~@/resources/assets/css/variable.less';
 .batch-import-template {
   // padding-right: 16px;
-  /deep/.ivu-layout-content{
+  /deep/.ivu-layout-content {
     padding-left: 32px;
     padding-top: 11px;
   }
-  /deep/.tscontain-body{
-    padding-left: 0!important;
-    padding-right: 0!important;
-    .tscontain-sider{
-      margin-left: 0px!important;
+  /deep/.tscontain-body {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    .tscontain-sider {
+      margin-left: 0px !important;
     }
   }
-  .padt16{
-    padding-top:10px;
+  .padt16 {
+    padding-top: 10px;
   }
   // /deep/.radius-lg{
   //   margin-top: 16px;

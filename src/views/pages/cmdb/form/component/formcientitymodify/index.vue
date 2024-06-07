@@ -61,8 +61,8 @@ import CiEntityList from '@/views/pages/cmdb/cientity/cientity-list.vue';
 export default {
   name: '',
   components: {
-    EditCi: resolve => require(['./edit-ci.vue'], resolve),
-    EditCiEntity: resolve => require(['./edit-cientity.vue'], resolve),
+    EditCi: () => import('./edit-ci.vue'),
+    EditCiEntity: () => import('./edit-cientity.vue'),
     CiEntityList
     //CiEntityList: resolve => require(['@/views/pages/cmdb/cientity/cientity-list.vue', resolve])
   },
@@ -90,7 +90,7 @@ export default {
   beforeMount() {},
   mounted() {
     this.getCiList();
-    this.init(); 
+    this.init();
   },
   beforeUpdate() {},
   updated() {},

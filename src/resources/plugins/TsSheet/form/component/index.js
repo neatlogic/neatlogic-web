@@ -1,30 +1,72 @@
-export { default as formlabel } from './formlabel.vue';
-export { default as formtext } from './formtext.vue';
-export { default as formtextarea } from './formtextarea.vue';
-export { default as formckeditor } from './formckeditor.vue';
-export { default as formnumber } from './formnumber.vue';
-export { default as formpassword } from './formpassword.vue';
-export { default as formselect } from './formselect.vue';
-export { default as formcascader } from './formcascader.vue';
-export { default as formradio } from './formradio.vue';
-export { default as formcheckbox } from './formcheckbox.vue';
-export { default as formtableselector } from './formtableselector';
-export { default as formtableinputer } from './formtableinputer';
-export { default as formdate } from './formdate.vue';
-export { default as formtime } from './formtime.vue';
-export { default as formlink } from './formlink.vue';
-export { default as formrate } from './formrate.vue';
-export { default as formuserselect } from './formuserselect.vue';
-export { default as formtreeselect } from './formtreeselect.vue';
-export { default as formaccounts } from './formaccounts';
-export { default as formupload } from './formupload.vue';
-export { default as formdivider } from './formdivider';
-export { default as formcube } from './formcube.vue';
-export { default as formtab } from './formtab.vue';
-export { default as formcollapse } from './formcollapse.vue';
-export { default as formtable } from './formtable.vue';
+import formlabel from './formlabel.vue';
+import formtext from './formtext.vue';
+import formtextarea from './formtextarea.vue';
+import formckeditor from './formckeditor.vue';
+import formnumber from './formnumber.vue';
+import formpassword from './formpassword.vue';
+import formselect from './formselect.vue';
+import formcascader from './formcascader.vue';
+import formradio from './formradio.vue';
+import formcheckbox from './formcheckbox.vue';
+import formtableselector from './formtableselector';
+import formtableinputer from './formtableinputer';
+import formdate from './formdate.vue';
+import formtime from './formtime.vue';
+import formlink from './formlink.vue';
+import formrate from './formrate.vue';
+import formuserselect from './formuserselect.vue';
+import formtreeselect from './formtreeselect.vue';
+import formaccounts from './formaccounts';
+import formupload from './formupload.vue';
+import formdivider from './formdivider';
+import formcube from './formcube.vue';
+import formtab from './formtab.vue';
+import formcollapse from './formcollapse.vue';
+import formtable from './formtable.vue';
 
-export * from '@/views/pages/cmdb/form/component';
-export * from '@/views/pages/autoexec/form/component';
+import * as cmdbComponent from '@/views/pages/cmdb/form/component';
+import * as autoexecComponent from '@/views/pages/autoexec/form/component';
 
-export { default as formsubassembly } from './formsubassembly.vue';
+let importComponentConfig = {};
+try {
+  // 导入自定义组件
+  const componentConfig = require.context('@/commercial-module', true, /formcomponent.js$/);
+  componentConfig
+    .keys()
+    .forEach(path => {
+      importComponentConfig = Object.assign(importComponentConfig, componentConfig(path).default || {});
+    });
+} catch (error) {
+  console.error('form/component/index.js异常', error);
+}
+
+export default {
+  formlabel,
+  formtext,
+  formtextarea,
+  formckeditor,
+  formnumber,
+  formpassword,
+  formselect,
+  formcascader,
+  formradio,
+  formcheckbox,
+  formtableselector,
+  formtableinputer,
+  formdate,
+  formtime,
+  formlink,
+  formrate,
+  formuserselect,
+  formtreeselect,
+  formaccounts,
+  formupload,
+  formdivider,
+  formcube,
+  formtab,
+  formcollapse,
+  formtable,
+  ...cmdbComponent,
+  ...autoexecComponent,
+  ...importComponentConfig
+};

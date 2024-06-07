@@ -6,22 +6,27 @@
           <span class="action-item tsfont-plus" @click="addIntegration()">{{ $t('page.config') }}</span>
           <span class="action-item tsfont-upload" @click="uploadAction()">{{ $t('page.import') }}</span>
           <span
+            v-if="!isExportIntegration"
             :class="{'text-disabled':!selectList || selectList.length == 0}"
-            class="action-item tsfont-download "
+            class="action-item tsfont-download"
             @click="exportList()"
           >{{ $t('page.export') }}</span>
+          <span v-else class="action-item">
+            <Icon type="ios-loading" size="16" class="loading"></Icon>
+          </span>
           <span v-auth="['ADMIN']" class="action-item"><AuditConfig auditName="INTEGRATION-AUDIT"></AuditConfig></span>
         </div>
       </template>
       <template slot="topRight">
         <InputSearcher
           v-model="searchParam.keyword"
-          @change="searchIntegration(1)"
+          @change="() => updatePagesize()"
         ></InputSearcher>
       </template>
       <div slot="content" ref="maintable">
         <TsTable
           v-if="integrationData"
+          :theadList="theadList"
           v-bind="integrationData"
           @getSelected="getSelected"
           @changeCurrent="updatePage"
@@ -90,16 +95,16 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    IntegrationEdit: resolve => require(['./integration-edit.vue'], resolve),
-    IntegrationHelp: resolve => require(['./integration-help.vue'], resolve),
-    IntegrationAudit: resolve => require(['./integration-audit.vue'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve)
+    TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    IntegrationEdit: () => import('./integration-edit.vue'),
+    IntegrationHelp: () => import('./integration-help.vue'),
+    IntegrationAudit: () => import('./integration-audit.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   mixins: [download],
   props: {},
@@ -151,7 +156,8 @@ export default {
       formatList: ['pak'], //导入文件格式
       exportType: '', //导出类型
       selectList: [],
-      isCopy: false 
+      isCopy: false,
+      isExportIntegration: false
     };
   },
   beforeCreate() {},
@@ -200,11 +206,8 @@ export default {
       this.isCopy = false;
     },
     updatePagesize(pageSize) {
-      if (pageSize) {
-        this.searchParam.pageSize = pageSize;
-      } else {
-        this.searchParam.pageSize = 20;
-      }
+      this.searchParam.currentPage = 1;
+      this.searchParam.pageSize = pageSize || 20;
       this.searchIntegration();
     },
     updatePage(currentPage) {
@@ -219,7 +222,6 @@ export default {
       this.$api.framework.integration.searchIntegration(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.integrationData = res.Return;
-          this.integrationData.theadList = this.theadList;
         }
       });
     },
@@ -285,6 +287,13 @@ export default {
         url: 'api/binary/integration/export',
         params: {
           uuidList: this.selectList
+        },
+        changeStatus: status => {
+          if (status == 'start') {
+            this.isExportIntegration = true;
+          } else if (status == 'success' || status == 'error') {
+            this.isExportIntegration = false;
+          }
         }
       };
       this.download(param);

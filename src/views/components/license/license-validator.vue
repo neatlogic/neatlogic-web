@@ -37,7 +37,7 @@ export default {
     },
     checkTenant() {
       this.$api.common.checkTenant().then(res => {
-        this.licenseData = res.license;
+        this.licenseData = res?.license;
       });
     }
   },

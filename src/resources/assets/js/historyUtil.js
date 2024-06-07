@@ -29,22 +29,20 @@ HistoryUtil.install = function (Vue, options) {
     return false;
   };
   Vue.prototype.$hasBack = function () {
-    return !!(this.$route.meta.fromPageList && this.$route.meta.fromPageList.length > 0 && this.$route.meta.fromPageList.filter(d => d.path !== this.$route.path).length > 0);
-  };
-  Vue.prototype.$back = function (defaultPath) {
-    const fromPageList = this.$route.meta.fromPageList;
-    let backPath = defaultPath;
-    let index = fromPageList.length - 1;
-    if (fromPageList && fromPageList.length > 0) {
-      while (index >= 0) {
-        if (this.$route.path != fromPageList[index].path) {
-          backPath = fromPageList[index].fullPath;
-          break;
-        }
-        index -= 1;
-      }
+    let moduleFromPage = sessionStorage.getItem('moduleFromPage') ? JSON.parse(sessionStorage.getItem('moduleFromPage')) : {};
+    let fromPageList = []; //历史页面记录
+    if (moduleFromPage && moduleFromPage[MODULEID]) {
+      fromPageList = moduleFromPage[MODULEID] || [];
     }
-    //const backPath = this.$route.meta.fromPage && this.$route.meta.fromPage.path && this.$route.meta.fromPage.path != '/' ? this.$route.meta.fromPage.path : defaultPath;
+    return fromPageList && fromPageList.length > 0;
+  };
+  Vue.prototype.$back = function () {
+    let moduleFromPage = sessionStorage.getItem('moduleFromPage') ? JSON.parse(sessionStorage.getItem('moduleFromPage')) : {};
+    let fromPageList = []; //历史页面记录
+    if (moduleFromPage && moduleFromPage[MODULEID]) {
+      fromPageList = moduleFromPage[MODULEID] || [];
+    }
+    let backPath = fromPageList.length > 0 && fromPageList[fromPageList.length - 1].fullPath;
     if (backPath) {
       this.$router.push({
         path: backPath,
@@ -62,31 +60,27 @@ HistoryUtil.install = function (Vue, options) {
       query: { isBack: true }
     });
   };
-  Vue.prototype.$getFromPage = function (defaultName, aliasName) {
-    let name = defaultName;
-    let hasBack = false;
-    const fromPageList = this.$route.meta.fromPageList;
-    let index = fromPageList.length - 1;
-    if (fromPageList && fromPageList.length > 0) {
-      while (index >= 0) {
-        if (this.$route.path != fromPageList[index].path) {
-          name = fromPageList[index].title;
-          hasBack = true;
-          break;
-        }
-        index -= 1;
-      }
+  Vue.prototype.$getFromPage = function () {
+    let moduleFromPage = sessionStorage.getItem('moduleFromPage') ? JSON.parse(sessionStorage.getItem('moduleFromPage')) : {};
+    let fromPageList = []; //历史页面记录
+    if (moduleFromPage && moduleFromPage[MODULEID]) {
+      fromPageList = moduleFromPage[MODULEID] || [];
     }
-    if (hasBack && aliasName) {
-      //有回退历史却设置了别名，则直接使用别名
-      name = aliasName;
-    }
-    return $t(name);
+    let title = fromPageList.length > 0 && fromPageList[fromPageList.length - 1].title;
+    return title;
   };
   Vue.prototype.$setHistory = function (historyData) {
     if (historyData && this.$vnode && this.$vnode.tag) {
       Storage[this.$vnode.tag] = historyData;
       sessionStorage.setItem('routeStorage', JSON.stringify(Storage));
+    }
+  };
+  Vue.prototype.$removeHistoryData = function (key) {
+    if (key && this.$vnode && this.$vnode.tag) {
+      if (Storage[this.$vnode.tag] && Storage[this.$vnode.tag][key]) {
+        delete Storage[this.$vnode.tag][key];
+        sessionStorage.setItem('routeStorage', JSON.stringify(Storage));
+      }
     }
   };
   Vue.prototype.$addHistoryData = function (key, value) {

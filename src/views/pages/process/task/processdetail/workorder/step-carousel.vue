@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div v-if="isShow" class="information-box">
     <div class="bg-op padding radius-lg">
@@ -70,7 +56,7 @@
                   <div class="infor-left text-grey overflow">{{ item.title }}</div>
                   <div class="infor-right">{{ item.textConfig }}</div>
                 </template>
-              </div>          
+              </div>
               <div v-for="(sla, slaIndex) in slaTimeList" :key="slaIndex" class="information-list">
                 <div class="infor-left text-grey overflow" :title="sla.name.length > 6 ? sla.name : ''">{{ sla.name }}</div>
                 <div class="infor-right">
@@ -116,7 +102,7 @@
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   filters: {},
   props: {},

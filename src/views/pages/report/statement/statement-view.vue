@@ -2,7 +2,7 @@
   <div>
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/statement-manage')">{{ $getFromPage($t('term.report.screenmanage')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft><span>{{ reportData.name }}</span></template>
       <template slot="topRight">
@@ -48,7 +48,7 @@ import screenfull from '@/resources/assets/js/screenfull.js';
 export default {
   name: '',
   components: {
-    Widget: resolve => require(['./widgets/widget-handler.vue'], resolve)
+    Widget: () => import('./widgets/widget-handler.vue')
   },
   props: {},
   data() {
@@ -121,7 +121,7 @@ export default {
       let fullDiv = this.$refs.canvasContainer;
       if (screenfull.isEnabled) {
         screenfull.request(fullDiv);
-      } 
+      }
     },
     getReportById() {
       if (this.id) {
@@ -164,7 +164,7 @@ export default {
         this.containerWidth = rect.width;
         this.containerHeight = rect.height;
         this.isShowGrid = true;
-      } 
+      }
     },
     stopMove() {
       if (!this.isGrabbing) {
@@ -201,7 +201,7 @@ export default {
         } else if (this.containerHeight && this.containerHeight - this.reportData.height >= this.canvasY) {
           this.canvasY = this.containerHeight - this.reportData.height;
         }
-      } 
+      }
       this.mouseX = x;
       this.mouseY = y;
     },
@@ -236,7 +236,9 @@ export default {
         'on-ok': vnode => {
           this.$api.report.statement.deleteStatement(this.id).then(res => {
             vnode.isShow = false;
-            this.$back('/statement-manage');
+            this.$router.push({
+              path: '/statement-manage'
+            });
           });
         }
       });

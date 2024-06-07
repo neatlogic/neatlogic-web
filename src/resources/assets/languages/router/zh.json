@@ -52,7 +52,8 @@
     "customview": "自定义视图",
     "resourcecenter": "资源中心",
     "discovery": "自动发现",
-    "cmdbmanage": "系统管理"
+    "cmdbmanage": "系统管理",
+    "objmanage": "对象管理"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -75,7 +76,9 @@
     "flowedit": "流程编辑",
     "slamanage": "时效管理",
     "eventsolutionedit": "编辑事件解决方案",
-    "changeedit": "变更编辑"
+    "changeedit": "变更编辑",
+    "eoatemplate": "EOA模板",
+    "eoatemplateedit": "EOA模板编辑"
   },
   "autoexec": {
     "detail": "自动化明显",
@@ -140,7 +143,7 @@
     "thememanage": "主题配置",
     "batchupgrade": "批量升级",
     "packagemanage": "安装包管理",
-    "tagentadd": "执行器组管理",
+    "runnergroupmanage": "执行器组管理",
     "runnermanage": "Runner管理",
     "apimanage": "接口管理",
     "auditmanage": "操作审计",
@@ -163,7 +166,8 @@
     "job": "定时作业",
     "others": "基础服务",
     "healthcheck": "健康检查",
-    "license": "许可管理"
+    "license": "许可管理",
+    "extramenu": "菜单管理"
   },
   "knowledge": {
     "knowledgedetail": "词条详情",

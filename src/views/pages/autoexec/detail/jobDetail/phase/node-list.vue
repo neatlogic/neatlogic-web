@@ -158,16 +158,17 @@
   </div>
 </template>
 <script>
+import {store, mutations} from '../../jobDetailState.js';
 import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ResetDialog: resolve => require(['../reset-dialog.vue'], resolve),
-    RefirePhaseDialog: resolve => require(['../refire-phase-dialog.vue'], resolve),
-    IgnoreDialog: resolve => require(['../ignore-dialog.vue'], resolve),
-    NodeDialog: resolve => require(['../node-dialog.vue'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    ResetDialog: () => import('../reset-dialog.vue'),
+    RefirePhaseDialog: () => import('../refire-phase-dialog.vue'),
+    IgnoreDialog: () => import('../ignore-dialog.vue'),
+    NodeDialog: () => import('../node-dialog.vue')
   },
   filters: {},
   directives: { download },
@@ -284,6 +285,9 @@ export default {
     if (this.jobData.isCanExecute) {
       this.theadList.unshift({ key: 'selection' });
       this.theadList.push({ key: 'action' });
+    }
+    if (!this.$utils.isEmpty(mutations.getSearchParam())) {
+      this.searchParam = mutations.getSearchParam();
     }
     this.searchNode();
   },
@@ -448,6 +452,7 @@ export default {
         this.searchParam.currentPage = currentPage;
         this.searchParam.nodeIdList = [];
       }
+      mutations.setSearchParam(this.searchParam);
       this.$api.autoexec.job.searchPhaseNode(this.searchParam).then(res => {
         this.nodeData = res.Return;
         const nodeList = res.Return.tbodyList;
@@ -519,7 +524,7 @@ export default {
     canExportNode() {
       let phaseList = ['runner', 'sqlfile']; // 非runner阶段、非sqlfile阶段，才有导出节点
       if (this.phaseData && !phaseList.includes(this.phaseData.execMode)) {
-        return true; 
+        return true;
       } else {
         return false;
       }

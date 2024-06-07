@@ -29,8 +29,8 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    AppTreeEdit: resolve => require(['./components/app-tree-edit'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    AppTreeEdit: () => import('./components/app-tree-edit')
   },
   props: {
     height: {
@@ -123,7 +123,7 @@ export default {
     if (!this.height) {
       setTimeout(() => {
         this.calcScrollHeight();
-      }, 300); 
+      }, 300);
     }
   },
   beforeUpdate() {},
@@ -280,9 +280,9 @@ export default {
     },
     renderContent(h, { root, node, data }) {
       if (this.readonly) {
-        return h('span', 
+        return h('span',
           {
-            class: 'overflow', 
+            class: 'overflow',
             style: {display: 'inline-block', width: '180px'},
             attrs: {
               title: data.title
@@ -303,9 +303,9 @@ export default {
             }
           },
           [
-            h('span', 
+            h('span',
               {
-                class: 'overflow', 
+                class: 'overflow',
                 style: {display: 'inline-block', width: '180px'},
                 attrs: {
                   title: data.title,
@@ -621,6 +621,9 @@ export default {
   /deep/ .ivu-tree-arrow {
     padding-top: 5px;
   }
-  
+  /deep/ .ivu-icon-ios-arrow-forward:before {
+    font-family: 'tsfont';
+    content: '\e899'; // tsfont-drop-right字体图标
+  }
 }
 </style>

@@ -3,7 +3,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/schedule-job-manage')">{{ $getFromPage('term.autoexec.timingjob') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>{{ $t('dialog.title.edittarget', {target: $t('term.autoexec.timingjob')}) }}</template>
       <template v-slot:topRight>
@@ -11,7 +11,7 @@
       </template>
       <template v-slot:content>
         <div v-if="!loadingShow">
-          <Tabs 
+          <Tabs
             v-model="current"
             class="block-tabs2"
             name="content"
@@ -55,9 +55,9 @@
 export default {
   name: 'ScheduleJobEdit',
   components: {
-    JobBaseInfo: resolve => require(['./components/job-base-info.vue'], resolve),
-    JobParams: resolve => require(['./components/job-params.vue'], resolve),
-    PublishingValid: resolve => require(['@/views/pages/deploy/job/publishing/publishing-valid'], resolve)
+    JobBaseInfo: () => import('./components/job-base-info.vue'),
+    JobParams: () => import('./components/job-params.vue'),
+    PublishingValid: () => import('@/views/pages/deploy/job/publishing/publishing-valid')
   },
   props: {},
   data() {

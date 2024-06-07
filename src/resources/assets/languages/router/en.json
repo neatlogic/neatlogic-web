@@ -52,7 +52,8 @@
     "customview": "Custom View",
     "resourcecenter": "Resource Center",
     "discovery": "Auto Discovery",
-    "cmdbmanage": "System Management"
+    "cmdbmanage": "System Management",
+    "objmanage": "Object Management"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -75,7 +76,9 @@
     "flowedit": "Flow Edit",
     "slamanage": "SLA Sets",
     "eventsolutionedit": "Edit Event Solution",
-    "changeedit": "Change Edit"
+    "changeedit": "Change Edit",
+    "eoatemplate": "EOA template",
+    "eoatemplateedit": "EOA template editing"
   },
   "autoexec": {
     "detail": "Automation is obvious",
@@ -140,7 +143,7 @@
     "thememanage": "Themes",
     "batchupgrade": "Batch Upgrade",
     "packagemanage": "Install package management",
-    "tagentadd": "Tagent Groups",
+    "runnergroupmanage": "Tagent Groups",
     "runnermanage": "Runner Management",
     "apimanage": "Interfaces",
     "auditmanage": "Audit",
@@ -163,7 +166,8 @@
     "job": "Timed job",
     "others": "Basic Services",
     "healthcheck": "Health Check",
-    "license": "License Management"
+    "license": "License Management",
+    "extramenu": "Menu management"
   },
   "knowledge": {
     "knowledgedetail": "entry details",

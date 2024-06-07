@@ -14,8 +14,8 @@
         <template v-slot:dimensionList>
           <ul class="dimension-list">
             <li v-for="(item,index) in scoreTemplate.dimensionList" :key="index" class="dimension-item">
-              <TsFormInput 
-                class="name" 
+              <TsFormInput
+                class="name"
                 :placeholder="$t('form.placeholder.required',{target: $t('page.name')})"
                 clearable
                 :maxlength="50"
@@ -34,7 +34,7 @@
               <div :title="$t('page.dimension', {target: $t('page.add')})" class="add-item text-action" @click="addItem(index)"><i class="tsfont-plus"></i></div>
               <div
                 :title="$t('page.dimension', {target: $t('page.delete')})"
-                class="remove-item text-action" 
+                class="remove-item text-action"
                 :class="{'not-allowed': scoreTemplate.dimensionList.length === 1}"
                 @click="removeItem(index)"
               ><i class="tsfont-minus"></i></div>
@@ -55,9 +55,9 @@
       @on-close="$emit('update:visiable', false)"
     >
       <Loading :loadingShow="isLoading" type="fix"></Loading>
-      <TsTable 
+      <TsTable
         v-bind="processListConfig"
-        @changeCurrent="currentPage => listProcess({currentPage})" 
+        @changeCurrent="currentPage => listProcess({currentPage})"
         @changePageSize="pageSize => listProcess({pageSize})"
         @operation="toProcessEditPage"
       />
@@ -69,21 +69,21 @@
 export default {
   name: 'ScoreTemplateDialog',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsTable: resolve => require(['components/TsTable/TsTable'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsTable: () => import('components/TsTable/TsTable')
   },
   props: {
     visiable: { type: Boolean, default: false},
     name: {type: String },
     id: {type: Number, default: null},
     operation: {
-      type: String, 
-      required: true, 
+      type: String,
+      required: true,
       validator(value) {
         return ['add', 'edit', 'list'].includes(value);
       }
-    } 
+    }
   },
   data() {
     const vm = this;
@@ -106,6 +106,7 @@ export default {
           type: 'switch',
           label: this.$t('page.enable'),
           value: 1,
+          disabled: false,
           onChange(isActive) {
             vm.scoreTemplate.isActive = isActive;
           }
@@ -120,7 +121,7 @@ export default {
           validateList: ['required', 'name-special', { name: 'searchUrl', url: 'api/rest/score/template/save', params: () => ({id: this.scoreTemplate.id}) }],
           onChange(name) {
             vm.scoreTemplate.name = name;
-          }					
+          }
         },
         dimensionList: {
           name: 'dimensionList',
@@ -148,9 +149,11 @@ export default {
         .get(params)
         .then(res => {
           if (res.Status === 'OK') {
+            let {name = '', isActive = 0, processCount = 0} = res.Return || {};
             this.scoreTemplate = res.Return;
-            this.formConfig.isActive.value = res.Return.isActive;
-            this.formConfig.name.value = res.Return.name;
+            this.formConfig.isActive.value = isActive;
+            this.formConfig.isActive.disabled = processCount > 0;
+            this.formConfig.name.value = name;
           }
         });
     },

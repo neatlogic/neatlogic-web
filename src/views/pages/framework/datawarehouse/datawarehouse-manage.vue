@@ -5,7 +5,15 @@
         <div class="action-group">
           <span class="action-item tsfont-plus" @click="addReportDataSource()">{{ $t('page.datasource') }}</span>
           <span class="tsfont-upload action-item" @click="uploadAction()">{{ $t('page.import') }}</span>
-          <span :class="{ 'text-disabled': !selectList || selectList.length == 0 }" class="tsfont-download action-item" @click="exportList()">{{ $t('page.export') }}</span>
+          <span
+            v-if="!isExportDataWareHouse"
+            :class="{ 'text-disabled': !selectList || selectList.length == 0 }"
+            class="tsfont-download action-item"
+            @click="exportList()"
+          >{{ $t('page.export') }}</span>
+          <span v-else class="action-item">
+            <Icon type="ios-loading" size="16" class="loading">{{ $t('term.codehub.exporting') }}</Icon>
+          </span>
           <span v-auth="['ADMIN']" class="action-item"><AuditConfig :title="$t('term.framework.saveexpire')" auditName="DATAWAREHOUSE-AUDIT"></AuditConfig></span>
         </div>
       </template>
@@ -21,7 +29,7 @@
           keyName="id"
           selectedRemain
           @getSelected="getSelected"
-          @changeCurrent="updatePage"
+          @changeCurrent="changePage"
           @changePageSize="updatePagesize"
         >
           <template v-slot:isActive="{ row }">
@@ -80,21 +88,22 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    //DataWarehouseEdit: resolve => require(['./datawarehouse-edit.vue'], resolve),
-    DataWarehouseConditionEdit: resolve => require(['./datawarehouse-condition-edit.vue'], resolve),
-    DataWarehouseEdit: resolve => require(['./datawarehouse-edit.vue'], resolve),
-    DataWarehouseAudit: resolve => require(['./datawarehouse-audit.vue'], resolve),
-    DataWarehouseData: resolve => require(['./datawarehouse-data.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    //DataWarehouseEdit:()=>import('./datawarehouse-edit.vue'),
+    DataWarehouseConditionEdit: () => import('./datawarehouse-condition-edit.vue'),
+    DataWarehouseEdit: () => import('./datawarehouse-edit.vue'),
+    DataWarehouseAudit: () => import('./datawarehouse-audit.vue'),
+    DataWarehouseData: () => import('./datawarehouse-data.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue')
   },
   mixins: [download],
   props: {},
   data() {
     return {
+      isExportDataWareHouse: false,
       doingIdList: [],
       currentDataSourceId: null,
       reportDataSourceData: {},
@@ -188,12 +197,15 @@ export default {
         this.timer = null;
       }
     },
-    searchReportDataSource(currentPage) {
+    changePage(currentPage) {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       } else {
         this.searchParam.currentPage = 1;
       }
+      this.searchReportDataSource();
+    },
+    searchReportDataSource() {
       this.$api.framework.datawarehouse.searchDataSource(this.searchParam).then(res => {
         this.reportDataSourceData = res.Return;
         this.reportDataSourceData.tbodyList.forEach(element => {
@@ -239,11 +251,9 @@ export default {
         }
       });
     },
-    updatePage(currentPage) {
-      this.searchReportDataSource(currentPage);
-    },
     updatePagesize(pageSize) {
       this.searchParam.pageSize = pageSize;
+      this.searchParam.currentPage = 1;
       this.searchReportDataSource();
     },
     closeEditDialog(needRefresh) {
@@ -278,6 +288,13 @@ export default {
         url: 'api/binary/datawarehouse/datasource/export',
         params: {
           idList: this.selectList
+        },
+        changeStatus: status => {
+          if (status == 'start') {
+            this.isExportDataWareHouse = true;
+          } else if (status == 'success' || status == 'error') {
+            this.isExportDataWareHouse = false;
+          }
         }
       };
       this.download(param);

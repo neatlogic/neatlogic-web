@@ -19,16 +19,16 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue')
   },
   props: {
     id: { type: Number }
   },
   data() {
     const _this = this;
-    return { 
-      dialogConfig: { 
+    return {
+      dialogConfig: {
         title: this.$t('page.test'),
         type: 'slide',
         maskClose: false,

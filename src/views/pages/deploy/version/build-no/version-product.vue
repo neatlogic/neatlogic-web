@@ -4,7 +4,7 @@
       <div :class="[hasAllAuth ? 'left-box' : 'left-content-box']">
         <Breadcrumb separator=">">
           <BreadcrumbItem v-for="(item, index) in pathList" :key="index">
-            <Icon v-if="item.name == 'HOME'" type="ios-home-outline"></Icon> 
+            <Icon v-if="item.name == 'HOME'" type="ios-home-outline"></Icon>
             <span class="text-action" @click="breadCrumbsClick(index)">{{ item.name }}</span>
           </BreadcrumbItem>
         </Breadcrumb>
@@ -94,11 +94,11 @@ import clipboard from '@/resources/directives/clipboard.js';
 export default {
   name: '', // 版本制品
   components: {
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    RenameEditDialog: resolve => require(['./version-product/rename-edit-dialog'], resolve), // 重命名文件夹
-    AuthEditDialog: resolve => require(['./version-product/auth-edit-dialog'], resolve),
-    CopyDialog: resolve => require(['./version-product/copy-dialog'], resolve)
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    RenameEditDialog: () => import('./version-product/rename-edit-dialog'), // 重命名文件夹
+    AuthEditDialog: () => import('./version-product/auth-edit-dialog'),
+    CopyDialog: () => import('./version-product/copy-dialog')
   },
   directives: { download, clipboard },
   props: {
@@ -241,8 +241,8 @@ export default {
     },
     openAuthEditDialog(row) {
       this.authEditParams = {
-        ...this.params, 
-        name: row.name, 
+        ...this.params,
+        name: row.name,
         path: this.path,
         permission: row.permission
       };
@@ -360,7 +360,7 @@ export default {
       let k = 1024;
       let sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
       let i = Math.floor(Math.log(bytes) / Math.log(k));
-      return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i]; 
+      return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
     },
     copyDownloadPackUrl() {
       let params = {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @keydown.stop>
     <div class="padding" style="position:relative">
       <span class="h3">{{ $t('dialog.title.edittarget',{'target':$t('page.component')}) }}</span>
       <div class="btn-closeedit tsfont-close text-tip-active" @click="closeEdit"></div>
@@ -20,6 +20,7 @@
       </TsFormItem>
       <TsForm labelPosition="top" :item-list="formConfig">
         <template v-slot:customConfig>
+<<<<<<< HEAD
           <component
             :is="formItem.handler"
             v-if="formItem.type === 'form'"
@@ -32,6 +33,37 @@
             class="mb-sm"
             @editSubForm="editSubForm"
           ></component>
+=======
+          <template v-if="formItem.type === 'form'">
+            <component
+              :is="formItem.handler"
+              v-if="isExistComponent(formItem.handler)"
+              :error="error"
+              :formItem="formItem"
+              :formItemList="formItemList"
+              :disabled="!!formItem.inherit || disabled"
+              :initFormItemList="initFormItemList"
+              class="mb-sm"
+              @editSubForm="editSubForm"
+            ></component>
+            <component
+              :is="formItem.customName"
+              v-else-if="formItem.handler === 'formcustom' && isExistComponent(formItem.customName)"
+              :error="error"
+              :formItem="formItem"
+              :formItemList="formItemList"
+              :disabled="!!formItem.inherit || disabled"
+              :initFormItemList="initFormItemList"
+              class="mb-sm"
+              @editSubForm="editSubForm"
+            ></component>
+            <div v-else>
+              <Alert show-icon>
+                {{ $t('page.commercialcomponenttip') }}
+              </Alert>
+            </div>
+          </template>
+>>>>>>> 0059be9eb2e324a95c084af58c1ac7eac33c1bb9
           <FormCustomItemConfig
             v-else-if="formItem.type === 'custom'"
             :error="error"
@@ -49,6 +81,7 @@
               mode="defaultvalue"
               :value="formItem.config.defaultValue"
               :disabled="!!formItem.inherit || disabled"
+              :isCustomValue="true"
               @change="
                 val => {
                   setConfig('defaultValue', val);
@@ -81,19 +114,19 @@
   </div>
 </template>
 <script>
-import * as formItemConfig from './form/config/index.js';
+import formItemConfig from './form/config/index.js';
 import { FORMITEMS } from './form/formitem-list.js';
 
 export default {
   name: '',
   components: {
     ...formItemConfig,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    ReactionDialog: resolve => require(['./form-item-reaction-dialog.vue'], resolve),
-    FormCustomItemConfig: resolve => require(['./form/config/customitem-config.vue'], resolve),
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    ReactionDialog: () => import('./form-item-reaction-dialog.vue'),
+    FormCustomItemConfig: () => import('./form/config/customitem-config.vue'),
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     error: { type: Array }, //异常列表
@@ -116,12 +149,30 @@ export default {
       formConfig: [
         {
           type: 'text',
+          name: 'key',
+          label: this.$t('page.englishname'),
+          validateList: ['required',
+            {
+              name: 'regex',
+              pattern: /^[A-Za-z\d_]+$/,
+              message: this.$t('message.plugin.enName')
+            }
+          ],
+          value: this.formItem.key,
+          maxlength: 50,
+          disabled: this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit,
+          onChange: val => {
+            this.$set(this.formItem, 'key', val);
+          }
+        },
+        {
+          type: 'text',
           name: 'label',
           label: this.$t('page.name'),
           validateList: ['required'],
           value: this.formItem.label,
           maxlength: 50,
-          disabled: !!this.formItem.inherit,
+          disabled: this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit,
           onChange: val => {
             this.$set(this.formItem, 'label', val);
           }
@@ -261,7 +312,8 @@ export default {
           name: 'defaultValue'
         }
       ],
-      isReactionShow: false
+      isReactionShow: false,
+      keyBlacklist: ['formlabel', 'formtab', 'formcollapse', 'formdivider'] //不用设置英文名称的组件
     };
   },
   beforeCreate() {},
@@ -285,7 +337,11 @@ export default {
           if (element.name === 'defaultValue') {
             if (!this.formItem.hasValue || this.formItem.config.disableDefaultValue) {
               this.formConfig.splice(i, 1);
-            } 
+            }
+          } else if (element.name === 'key') {
+            if (this.keyBlacklist.includes(this.formItem.handler)) {
+              this.formConfig.splice(i, 1);
+            }
           } else {
             const configName = element.name.replace('config.', '');
             if (this.formItem.config.hasOwnProperty(configName)) {
@@ -368,9 +424,14 @@ export default {
     closeEdit() {
       this.$emit('close');
     },
-    changeInherit(val) { 
+    changeInherit(val) {
       this.formConfig.forEach(item => {
-        this.$set(item, 'disabled', !!val);
+        //编辑场景时，组件的中、英文名称不可改
+        if (item.name === 'key' || item.name === 'label') {
+          this.$set(item, 'disabled', true);
+        } else {
+          this.$set(item, 'disabled', !!val);
+        }
       });
       if (val) {
         this.$emit('inheritFormItem', this.formItem.uuid);
@@ -397,6 +458,15 @@ export default {
     needConfig() {
       return attr => {
         return this.formItem.config.hasOwnProperty(attr);
+      };
+    },
+    isExistComponent() { //判断是否存在
+      return (handler) => {
+        let component = true;
+        if (!formItemConfig[handler]) {
+          component = false;
+        }
+        return component;
       };
     }
   },

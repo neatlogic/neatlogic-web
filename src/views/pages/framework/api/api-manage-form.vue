@@ -119,9 +119,9 @@
 export default {
   name: 'ApiForm',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     isShow: { type: Boolean, required: true },
@@ -161,9 +161,9 @@ export default {
           label: this.$t('page.name'),
           validateList: [
             'required', 'non-special',
-            { 
+            {
               name: 'searchUrl',
-              url: 'api/rest/apimanage/save', 
+              url: 'api/rest/apimanage/save',
               message: this.$t('message.targetisexists', {'target': this.$t('page.name')}),
               params: () => ({token: this.rowData.token})
             }
@@ -247,7 +247,7 @@ export default {
           width: 400,
           label: this.$t('page.password'),
           isHidden: true,
-          validateList: ['required',            
+          validateList: ['required',
             {
               name: 'passcode',
               message: this.$t('message.passcode')

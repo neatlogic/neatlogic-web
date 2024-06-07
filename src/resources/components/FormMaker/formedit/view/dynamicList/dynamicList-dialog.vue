@@ -42,7 +42,7 @@
                     :isReadonly="isReadonly"
                     @on-updata="updateCellValue(arguments, th.key, tr[uuidColumn].value)"
                   ></CellComponent>
-                  <TdComponent   
+                  <TdComponent
                     v-else
                     :isReadonly="isReadonly"
                     v-bind="getConfig(tr,th.key)"
@@ -80,10 +80,10 @@ import AddDataDialog from './add-data-dialog.vue';
 import viewmixin from '../viewmixin.js';
 export default {
   name: 'FormdynamicList',
-  components: { 
-    AddDataDialog, 
+  components: {
+    AddDataDialog,
     TdComponent,
-    CellComponent: resolve => require(['./components.vue'], resolve)
+    CellComponent: () => import('./components.vue')
   },
   mixins: [viewmixin],
   props: {
@@ -395,7 +395,7 @@ export default {
       }
     },
     //扩展属性
-    getAttributeTable(type) { 
+    getAttributeTable(type) {
       let _this = this;
       if (_this.setting.config.attributeList && _this.setting.config.attributeList.length > 0) {
         _this.setting.config.attributeList.forEach(item => {
@@ -435,7 +435,7 @@ export default {
     getDataConfig() { //二次编辑
       let _this = this;
       let dataConfig = this.setting.config.dataConfig && this.setting.config.dataConfig.length > 0 ? this.setting.config.dataConfig : [];
-      if (dataConfig.length > 0) { 
+      if (dataConfig.length > 0) {
         this.tableData.tbodyList && this.tableData.tbodyList.forEach(item => {
           let key = item[_this.uuidColumn].value;
           dataConfig.forEach(d => {

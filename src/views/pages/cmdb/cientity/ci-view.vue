@@ -5,14 +5,14 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topRight>
-        <div v-if="ciData.authData" class="dashboard-action action-group" style="text-align:right">
+        <div v-if="ciData.authData" class="dashboard-action action-group" style="text-align: right">
           <span v-if="ciData.authData['cimanage']" class="action-item tsfont-edit" @click="editCi()">{{ $t('term.cmdb.editci') }}</span>
           <span v-if="!ciData.isVirtual && !ciData.isAbstract && ciData.authData['cientityinsert']" class="action-item tsfont-plus pad0" @click="addCiEntity()">{{ $t('term.cmdb.cientity') }}</span>
         </div>
       </template>
       <template v-slot:sider>
         <div>
-          <ciTypeList :ciId="ciId && parseInt(ciId)" @click="switchCi"></ciTypeList>
+          <ciTypeList :ciId="ciId && parseInt(ciId)" :toggleable="false" @click="switchCi"></ciTypeList>
         </div>
       </template>
       <div slot="content" class="ci-content border-color">
@@ -30,10 +30,39 @@
               <div class="fz10 text-grey">{{ ciData.id }}</div>
               <div class="text-grey fz10">
                 <span v-if="ciData.isVirtual">{{ $t('term.cmdb.virtualci') }}</span>
-                <span v-else-if="ciData.isAbstract">{{ $t('term.cmdb.abstractci') }}</span>
-                <span v-else-if="ciData.parentCiId">
+                <span v-if="ciData.isAbstract">{{ $t('term.cmdb.abstractci') }}</span>
+                <Divider v-if="ciData.isAbstract && ciData.parentCiId" type="vertical" />
+                <span v-if="ciData.parentCiId">
                   {{ $t('term.cmdb.extendto') }}
                   <a href="javascript:void(0)" @click="toParentCi(ciData.parentCiId)">{{ ciData.parentCiLabel }}</a>
+                </span>
+                <Divider v-if="childrenList && childrenList.length > 0" type="vertical" />
+                <span v-if="childrenList && childrenList.length > 0">
+                  {{ $t('term.cmdb.subci') }}
+                  <a
+                    v-for="(child, cindex) in childrenList"
+                    :key="cindex"
+                    class="mr-xs"
+                    @click="toParentCi(child.id)"
+                  >{{ child.label }}</a>
+                  <Poptip
+                    v-if="childrenList.length < ciData.children.length"
+                    word-wrap
+                    width="500"
+                    placement="bottom"
+                    :transform="true"
+                    trigger="hover"
+                  >
+                    <a class="tsfont-option-horizontal"></a>
+                    <div slot="content" class="api">
+                      <a
+                        v-for="(child, cindex) in ciData.children.slice(3)"
+                        :key="cindex"
+                        class="mr-xs"
+                        @click="toParentCi(child.id)"
+                      >{{ child.label }}</a>
+                    </div>
+                  </Poptip>
                 </span>
               </div>
               <div v-if="ciData.description" class="ci-description text-grey overflow fz10" :title="ciData.description">{{ ciData.description }}</div>
@@ -46,8 +75,9 @@
                   v-if="currentTab == 'cientity'"
                   ref="CiEntityList"
                   :needCheck="true"
-                  :needDsl="false"
-                  class="padding"
+                  :needDsl="true"
+                  class="pt-nm pl-nm pr-nm"
+                  :fixedHeader="false"
                   :ciId="ciData.id"
                   :needExport="true"
                 ></CiEntityList>
@@ -55,7 +85,7 @@
               <TabPane v-if="!ciData.isVirtual && ciData.authData && (ciData.authData['transactionmanage'] || ciData.authData['cimanage'])" :label="$t('term.cmdb.uncommittransaction')" name="transaction">
                 <TransactionList
                   v-if="currentTab == 'transaction'"
-                  class="padding bg-op border8"
+                  class="pt-nm pl-nm pr-nm bg-op border8"
                   :needCheck="true"
                   :needAction="true"
                   :ciId="ciData.id"
@@ -64,7 +94,7 @@
               <TabPane v-if="!ciData.isVirtual && ciData.authData && (ciData.authData['cientityrecover'] || ciData.authData['cimanage'])" :label="$t('page.deleteaudit')" name="deletecientity">
                 <DeleteCiEntityList
                   v-if="currentTab == 'deletecientity'"
-                  class="padding bg-op border8"
+                  class="pt-nm pl-nm pr-nm bg-op border8"
                   :ciId="ciData.id"
                   @toCiEntity="switchCi"
                 ></DeleteCiEntityList>
@@ -90,7 +120,7 @@
                   <IllegalCiEntityList
                     v-if="currentTab == 'illegal_' + illegal.id"
                     :legalValidId="illegal.id"
-                    class="padding bg-op border8"
+                    class="pt-nm pl-nm pr-nm bg-op border8"
                     :ciId="ciData.id"
                   ></IllegalCiEntityList>
                 </TabPane>
@@ -106,11 +136,11 @@
 export default {
   name: '',
   components: {
-    CiEntityList: resolve => require(['./cientity-list.vue'], resolve),
-    ciTypeList: resolve => require(['../components/ci/ci-type-list.vue'], resolve),
-    TransactionList: resolve => require(['./transaction-list.vue'], resolve),
-    DeleteCiEntityList: resolve => require(['./delete-cientity-list.vue'], resolve),
-    IllegalCiEntityList: resolve => require(['./illegal-cientity-list.vue'], resolve)
+    CiEntityList: () => import('./cientity-list.vue'),
+    ciTypeList: () => import('@/views/pages/cmdb/components/ci/ci-type-list.vue'),
+    TransactionList: () => import('./transaction-list.vue'),
+    DeleteCiEntityList: () => import('./delete-cientity-list.vue'),
+    IllegalCiEntityList: () => import('./illegal-cientity-list.vue')
   },
   props: {},
   data() {
@@ -164,10 +194,10 @@ export default {
     },
     toParentCi(ciId) {
       const ci = { id: ciId };
-      this.switchCi(null, ci);
+      this.switchCi(ci);
     },
-    switchCi(data, ciId) {
-      this.ciId = String(ciId.id);
+    switchCi(ci) {
+      this.ciId = String(ci.id);
       this.init();
     },
     addCiEntity() {
@@ -184,7 +214,7 @@ export default {
       }, 500);
     },
     async getCiById() {
-      await this.$api.cmdb.ci.getCiById(this.ciId, true).then(res => {
+      await this.$api.cmdb.ci.getCiById(this.ciId, { needAction: true, needChildren: true }).then(res => {
         if (res.Status == 'OK') {
           this.ciData = res.Return;
           this.isLoading = false;
@@ -197,7 +227,7 @@ export default {
     restoreHistory(historyData) {
       if (historyData.ciId && this.ciId != historyData.ciId) {
         const ci = { id: historyData.ciId };
-        this.switchCi(null, ci);
+        this.switchCi(ci);
       }
     }
   },
@@ -205,6 +235,12 @@ export default {
   computed: {
     fromPageName() {
       return this.$route.meta.fromPage && this.$route.meta.fromPage.title ? this.$route.meta.fromPage.title : '模型列表';
+    },
+    childrenList() {
+      if (this.ciData && this.ciData.children && this.ciData.children.length > 0) {
+        return this.ciData.children.length > 3 ? this.ciData.children.slice(0, 3) : this.ciData.children;
+      }
+      return [];
     }
   },
   watch: {},

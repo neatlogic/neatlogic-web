@@ -2,12 +2,12 @@
   <div class="taskdetail-autoexec">
     <Loading :loadingShow="taskLoading" type="fix"></Loading>
     <TsContain
-      :leftWidth="260"
+      :siderWidth="260"
       :isSiderHide="!isOrderLeft"
       :sessionName="sessionName"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back(prevPath.router)">{{ $getFromPage(prevPath.name) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="taskdetail-top">
@@ -20,9 +20,8 @@
             @isTslayout="isTslayout"
             @editTitle="editTitle"
             @changeTitle="changeTitle"
-            @toPrevpath="toPrevpath"
           ></NavTop>
-     
+
           <div class="toolbar-right">
             <div class="action-group">
               <!-- 开始_start -->
@@ -129,15 +128,12 @@
                       {{ actionConfig.copyprocesstask }}
                     </DropdownItem>
                     <!-- 复制上报 -->
-                    <DropdownItem v-if="knowledgeConfig && knowledgeConfig.isTransferKnowledge == 1" @click.native="createKnowledge">
-                      转为知识文档
-                    </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </span>
               <!-- 回退s -->
               <span v-if="actionConfig.back && backStepList.length > 1" class="action-item">
-                <Button 
+                <Button
                   icon="tsfont tsfont-reply"
                   @click="backTask"
                 >{{ actionConfig.back }}</Button>
@@ -200,7 +196,7 @@
           </div>
         </div>
       </template>
-      <template v-slot:left>
+      <template v-slot:sider>
         <slot></slot>
       </template>
       <template v-slot:content>
@@ -213,8 +209,7 @@
             :rightWidth="290"
             :hasContentPadding="false"
             hideHeader
-            :isSiderHide="!isOrderRight"
-            siderPosition="right"
+            :isRightSiderHide="!isOrderRight"
             :rightBtn="true"
             @rightSiderToggle="rightSiderToggle"
           >
@@ -227,6 +222,7 @@
               >
                 <CenterDetail
                   ref="TaskCenterDetail"
+                  :slotList="[{ name: 'autoexec', label: '自动化' }]"
                   :actionConfig="actionConfig"
                   :formConfig="formConfig"
                   :processTaskConfig="processTaskConfig"
@@ -276,7 +272,6 @@
                 :actionConfig="actionConfig"
                 :addAssist="addAssist"
                 :processTaskConfig="processTaskConfig"
-                :knowledgeConfig="knowledgeConfig"
                 :replaceableTextConfig="replaceableTextConfig"
                 :isOrderRight="isOrderRight"
                 :priorityList="priorityList"
@@ -472,7 +467,6 @@
     <!-- 转报 -->
     <RanferreportDialog v-if="actionConfig.tranferreport" :isShow.sync="ranferreportModel" :processTaskConfig="processTaskConfig"></RanferreportDialog>
     <RedoDialog :isShow.sync="redoModel" :processTaskConfig="processTaskConfig"></RedoDialog>
-    <KnowledgeDialog :isShow.sync="knowledgeModel" :processTaskConfig="processTaskConfig"></KnowledgeDialog>
   </div>
 </template>
 
@@ -490,18 +484,18 @@ export default {
   name: '',
   tagComponent: 'taskDeal', //主要用来标识是上报页面，为表单修改优先级做标志
   components: {
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    CenterDetail: resolve => require(['./workorder/CenterDetail.vue'], resolve),
-    LookSitemapDialog: resolve => require(['./workorder/actiondialog/lookSitemap.vue'], resolve),
-    RightSetting: resolve => require(['./workorder/RightSetting.vue'], resolve),
-    NavTop: resolve => require(['./navTop.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem.vue'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    CenterDetail: () => import('./workorder/CenterDetail.vue'),
+    LookSitemapDialog: () => import('./workorder/actiondialog/lookSitemap.vue'),
+    RightSetting: () => import('./workorder/RightSetting.vue'),
+    NavTop: () => import('./navTop.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem.vue'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
     ...itemDialog,
-    TaskAlert: resolve => require(['@/views/pages/process/task/processdetail/workorder/alert/top-alert.vue'], resolve),
-    JobDetail: resolve => require(['@/views/pages/process/task/processdetail/workorder/autoexec/job-detail.vue'], resolve),
-    StepSelect: resolve => require(['@/views/pages/process/task/processdetail/workorder/common/step-select.vue'], resolve),
+    TaskAlert: () => import('@/views/pages/process/task/processdetail/workorder/alert/top-alert.vue'),
+    JobDetail: () => import('@/views/pages/process/task/processdetail/workorder/autoexec/job-detail.vue'),
+    StepSelect: () => import('@/views/pages/process/task/processdetail/workorder/common/step-select.vue'),
     FooterOperationBtn
   },
   provide() {
@@ -518,8 +512,6 @@ export default {
     return {
       ranferreportModel: false, // 转报弹框
       redoModel: false, //评分工单回退
-      knowledgeModel: false,
-      knowledgeConfig: null,
       transferStepList: [], //转交步骤列表
       transferId: null,
       handlerStepInfo: null,
@@ -527,14 +519,13 @@ export default {
       completeErrorText: this.$t('term.process.autoexeccompleteerror'),
       taskAlertHeight: 0 // taskAlert高度
       // taskForm: null, //工单表单查看权限
-    
+
     };
   },
   created() {
   },
   mounted() {
     this.getAllData();
-    this.getKnowledgeDetail(); //转知识权限
     Vm = this;
   },
   beforeDestroy() {
@@ -542,7 +533,7 @@ export default {
     this.timer = null;
   },
   methods: {
-    getMessage() { 
+    getMessage() {
       //初始化当前步骤:自动化
       if (this.processTaskStepConfig) {
         this.handlerStepInfo = this.processTaskStepConfig.handlerStepInfo || null;
@@ -664,28 +655,6 @@ export default {
     //评分前回退
     redoTask() {
       this.redoModel = true;
-    },
-    createKnowledge() {
-      //创建知识
-      this.knowledgeModel = true;
-    },
-    getKnowledgeDetail() {
-      //获取工单知识信息
-      let moduleList = JSON.parse(localStorage.getItem('moduleList'));
-      let find = moduleList.find(d => d.moduleId == 'knowledge');
-      if (find && (this.processTask.status == 'succeed' || this.processTask.status == 'scored')) {
-        //工单：完成或者评分状态时，都需要调知识接口
-        let data = {
-          invokeId: this.processTaskId,
-          source: 'processtask'
-        };
-        this.$api.process.processtask.knowledgeDetail(data).then(res => {
-          if (res.Status == 'OK') {
-            let obj = res.Return;
-            this.knowledgeConfig = obj;
-          }
-        });
-      }
     }
   },
   computed: {
@@ -693,7 +662,7 @@ export default {
       //更多操作按钮
       let actionConfig = this.actionConfig;
       let moreAction = false;
-      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask || (this.knowledgeConfig && this.knowledgeConfig.isTransferKnowledge == 1)) {
+      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
         moreAction = true;
       }
       return moreAction;

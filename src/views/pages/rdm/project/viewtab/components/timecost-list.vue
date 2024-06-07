@@ -34,8 +34,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TimeCostEdit: resolve => require(['@/views/pages/rdm/project/viewtab/components/timecost-edit-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TimeCostEdit: () => import('@/views/pages/rdm/project/viewtab/components/timecost-edit-dialog.vue')
   },
   props: {
     issueData: { type: Object }

@@ -87,7 +87,7 @@ export default {
   name: '',
   components: {
     draggable,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     needCopyValue: {type: Boolean, default: true}, //默认需要复制数据，避免内部修改影响原数据，cascader则不能复制，使用复制模式继承关系会断裂

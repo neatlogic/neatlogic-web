@@ -5,11 +5,22 @@ import distributary from './distributary-node';
 import changecreate from './changecreate-node';
 import changehandle from './changehandle-node';
 import event from './event-node';
-import autoexec from './autoexec-node';
+import autoexec from './autoexec/index.vue';
 import timer from './timer-node';
-//cmdb
-import cmdb from '@/views/pages/cmdb/flow/node/index.js';
+import cmdb from '@/views/pages/cmdb/flow/node/index.js'; //cmdb
 
+let importComponentConfig = {};
+try {
+  // 导入自定义组件
+  const componentConfig = require.context('@/commercial-module', true, /flowNode.js$/);
+  componentConfig
+    .keys()
+    .forEach(path => {
+      importComponentConfig = Object.assign(importComponentConfig, componentConfig(path).default || {});
+    });
+} catch (error) {
+  console.error('form/component/index.js异常', error);
+}
 export default {
   condition,
   omnipotent,
@@ -20,5 +31,6 @@ export default {
   event,
   autoexec,
   ...cmdb,
-  timer
+  timer,
+  ...importComponentConfig  
 };

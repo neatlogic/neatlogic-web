@@ -139,7 +139,7 @@
                     </template>
                   </TsForm>
                 </div>
-              </div> 
+              </div>
             </Col>
             <Col span="8">
               <div class="right border-color">
@@ -244,15 +244,15 @@ import freemarkerHelp from './freemarker-help';
 export default {
   name: 'SettingTemplate',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue'),
     freemarkerHelp,
-    EditParam: resolve => require(['./edit-param.vue'], resolve),
-    DelItme: resolve => require(['./del-item.vue'], resolve),
-    TemplateHelp: resolve => require(['./template-help.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    EditParam: () => import('./edit-param.vue'),
+    DelItme: () => import('./del-item.vue'),
+    TemplateHelp: () => import('./template-help.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   filters: {},
   props: {
@@ -283,7 +283,7 @@ export default {
     },
     triggerList: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   data() {

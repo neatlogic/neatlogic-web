@@ -23,7 +23,7 @@
 export default {
   name: '', // 日志详情
   components: {
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   props: {
     filePath: {

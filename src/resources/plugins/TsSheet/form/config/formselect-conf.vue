@@ -16,12 +16,22 @@
         @change="changDataSource"
       ></TsFormRadio>
     </TsFormItem>
-    <TsFormItem v-if="config.dataSource === 'static'" :label="$t('page.dropdownoption')" labelPosition="top">
+    <TsFormItem
+      v-if="config.dataSource === 'static'"
+      :label="$t('page.dropdownoption')"
+      labelPosition="top"
+      required
+    >
       <div class="radius-sm padding-md" :class="validClass('dataList')">
         <StaticDataEditor v-model="config.dataList" :disabled="disabled"></StaticDataEditor>
       </div>
     </TsFormItem>
-    <TsFormItem v-if="config.dataSource === 'matrix'" :label="$t('page.matrix')" labelPosition="top">
+    <TsFormItem
+      v-if="config.dataSource === 'matrix'"
+      :label="$t('page.matrix')"
+      labelPosition="top"
+      required
+    >
       <div class="radius-sm padding-md" :class="validClass('matrixUuid')">
         <TsFormSelect
           v-model="config.matrixUuid"
@@ -46,45 +56,64 @@
         </div>
       </div>
     </TsFormItem>
-    <TsFormItem v-if="config.dataSource === 'matrix' && config.matrixUuid && mappingDataList.length > 0" labelPosition="top" :label="$t('page.fieldmapping')">
-      <div class="padding-md radius-md" :class="validClass('mapping')">
-        <Row :gutter="10">
-          <Col span="12">
-            <label class="text-grey require-label">{{ $t('page.value') }}</label>
-            <div class="formsetting-text">
-              <TsFormSelect
-                ref="mappingValue"
-                v-model="config.mapping.value"
-                type="text"
-                :validateList="['required']"
-                :dataList="mappingDataList"
-                valueName="uuid"
-                textName="name"
-                :transfer="true"
-                :disabled="disabled"
-              ></TsFormSelect>
-            </div>
-          </Col>
-          <Col span="12">
-            <label class="text-grey require-label">{{ $t('page.displaytext') }}</label>
-            <div class="formsetting-text">
-              <TsFormSelect
-                ref="mappingText"
-                v-model="config.mapping.text"
-                type="text"
-                :validateList="['required']"
-                valueName="uuid"
-                :dataList="mappingDataList"
-                textName="name"
-                :transfer="true"
-                :disabled="disabled"
-              ></TsFormSelect>
-            </div>
-          </Col>
-        </Row>
-      </div>
-    </TsFormItem>
-    <TsFormItem v-if="config.matrixUuid && config.dataSource === 'matrix' && selectMatrixConfig" labelPosition="top" :label="$t('page.filtercondition')">
+    <template v-if="config.dataSource === 'matrix' && config.matrixUuid">
+      <TsFormItem labelPosition="top" :label="$t('page.fieldmapping')">
+        <div class="padding-md radius-md" :class="validClass('mapping')">
+          <Row :gutter="10">
+            <Col span="12">
+              <label class="text-grey require-label">{{ $t('page.value') }}</label>
+              <div class="formsetting-text">
+                <TsFormSelect
+                  ref="mappingValue"
+                  v-model="config.mapping.value"
+                  type="text"
+                  :validateList="['required']"
+                  :dataList="mappingDataList"
+                  valueName="uuid"
+                  textName="name"
+                  :transfer="true"
+                  :disabled="disabled"
+                  @on-change="(val)=>{
+                    changeMappingValue(val);
+                  }"
+                ></TsFormSelect>
+              </div>
+            </Col>
+            <Col span="12">
+              <label class="text-grey require-label">{{ $t('page.displaytext') }}</label>
+              <div class="formsetting-text">
+                <TsFormSelect
+                  ref="mappingText"
+                  v-model="config.mapping.text"
+                  type="text"
+                  :validateList="['required']"
+                  valueName="uuid"
+                  :dataList="mappingDataList"
+                  textName="name"
+                  :transfer="true"
+                  :disabled="disabled"
+                ></TsFormSelect>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      </TsFormItem>
+      <TsFormItem :label="$t('page.hiddenattr')" labelPosition="top">
+        <TsFormSelect
+          ref="hiddenFieldList"
+          :value="config.hiddenFieldList || []"
+          :dataList="getAttrList(mappingDataList,config.mapping.value)"
+          :transfer="true"
+          :disabled="disabled"
+          multiple
+          isCustomValue
+          @change="(val)=>{
+            $set(config, 'hiddenFieldList', val);
+          }"
+        ></TsFormSelect>
+      </TsFormItem>
+    </template>
+    <TsFormItem v-if="config.matrixUuid && config.dataSource === 'matrix' && selectMatrixConfig && mappingDataList.length > 0" labelPosition="top" :label="$t('page.filtercondition')">
       <div class="bg-block padding-md radius-md" :class="validClass('sourceColumnList')">
         <DataSourceFilter
           v-model="config.sourceColumnList"
@@ -114,13 +143,13 @@ import base from './base-config.vue';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    StaticDataEditor: resolve => require(['./common/static-data-editor.vue'], resolve),
-    DataSourceFilter: resolve => require(['./common/data-source-filter.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    StaticDataEditor: () => import('./common/static-data-editor.vue'),
+    DataSourceFilter: () => import('./common/data-source-filter.vue')
   },
   extends: base,
   props: {},
@@ -170,28 +199,23 @@ export default {
         });
       }
     },
-    addSourceColumn() {
-      if (!this.config.sourceColumnList) {
-        this.$set(this.config, 'sourceColumnList', []);
-      }
-      this.config.sourceColumnList.push({ uuid: '', valueList: '' });
-    },
     removeSourceColumn(index) {
       this.config.sourceColumnList.splice(index, 1);
     },
     changDataSource() {
-      this.$set(this.config, 'defaultValue', '');
-      this.$set(this.config, 'dataList', []);
       this.$set(this.config, 'matrixUuid', '');
-      this.$set(this.config.mapping, 'value', '');
-      this.$set(this.config.mapping, 'text', '');
-      this.$set(this.config, 'sourceColumnList', []);
+      this.clearConfigData();
     },
     changeMatrixUuid() {
-      this.$set(this.config, 'defaultValue', null);
+      this.clearConfigData();
+    },
+    clearConfigData() {
+      this.$set(this.config, 'dataList', []);
       this.$set(this.config.mapping, 'value', '');
       this.$set(this.config.mapping, 'text', '');
       this.$set(this.config, 'sourceColumnList', []);
+      this.$set(this.config, 'hiddenFieldList', []);
+      this.$set(this.config, 'defaultValue', null);
     },
     getFilterList(val) {
       let filterList = [];
@@ -208,6 +232,13 @@ export default {
       }
       if (filterList.length > 0) {
         this.$set(this.config, 'defaultValue', null);
+      }
+    },
+    changeMappingValue(val) {
+      if (this.config.hiddenFieldList) {
+        this.config.hiddenFieldList = this.config.hiddenFieldList.filter(item => {
+          return item.uuid != val;
+        });
       }
     }
   },
@@ -270,6 +301,24 @@ export default {
         }
       });
       return componentList;
+    },
+    getAttrList() {
+      return (mappingDataList, value) => {
+        let list = [];
+        if (!this.$utils.isEmpty(mappingDataList)) {
+          list = mappingDataList.map(i => {
+            return {
+              value: i.uuid,
+              text: i.name,
+              uuid: i.uuid,
+              name: i.name,
+              uniqueIdentifier: i.uniqueIdentifier,
+              label: i.label
+            };
+          });
+        }
+        return list;
+      };
     }
   },
   watch: {
@@ -280,6 +329,7 @@ export default {
             this.config.mapping.value = '';
             this.config.mapping.text = '';
           }
+          this.mappingDataList = [];
           this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: newVal }).then(res => {
             if (res.Status == 'OK') {
               this.mappingDataList = res.Return.tbodyList;

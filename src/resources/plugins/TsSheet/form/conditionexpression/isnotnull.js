@@ -1,6 +1,6 @@
-export default (currentValue, oldValue, conditionValue) => {
+export default (currentValue, oldValue, condition) => {
   let isNotNull = false;
-  if (currentValue != null && currentValue != '' && currentValue != []) {
+  if (currentValue != null && currentValue != '' && currentValue != [] && JSON.stringify(currentValue) != '{}') {
     isNotNull = true;
   } 
   return isNotNull;

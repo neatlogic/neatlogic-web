@@ -1,5 +1,5 @@
 <template>
-  <TsDialog v-bind="dialogConfig" @close="close">
+  <TsDialog v-bind="dialogConfig" @on-close="close">
     <template v-slot>
       <TsForm ref="form" v-model="statusData" :item-list="formConfig">
         <template v-slot:color>
@@ -23,7 +23,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     id: {
@@ -37,7 +37,7 @@ export default {
     return {
       statusData: { appId: this.appId },
       dialogConfig: {
-        title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('page.attribute')}) : this.$t('dialog.title.addtarget', {'target': this.$t('page.attribute')}),
+        title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('page.status')}) : this.$t('dialog.title.addtarget', {'target': this.$t('page.status')}),
         isShow: true,
         width: 'small',
         type: 'modal',

@@ -59,8 +59,8 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    CiEntityList: resolve => require(['../cientity/cientity-list.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    CiEntityList: () => import('../cientity/cientity-list.vue')
   },
   props: {},
   data() {

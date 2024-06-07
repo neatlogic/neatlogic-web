@@ -2,7 +2,7 @@
   <div class="matrix-external-edit">
     <TsContain border="none">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$backTo('/matrix-overview')">{{ $getFromPage($t('router.framework.matrixmanage')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <div slot="topLeft">
         <navTopLeft
@@ -38,15 +38,25 @@
       </template>
     </TsContain>
     <CmdbEdit
-      v-if="isShow"
+      v-if="editTsDialogCmdb.isShow"
       :ciId="ciId"
       :typeView="typeView"
       :fileObj="fileObj"
-      :showAttributeLabelList="showAttributeLabelList"
       :modelAttributeList="modelAttributeList"
+      :attributeMappingList="attributeMappingList"
       :editTsDialogCmdb="editTsDialogCmdb"
       @isOk="isOk"
     ></CmdbEdit>
+    <CmdbCustomViewEdit
+      v-if="editTsDialogCmdbCustomView.isShow"
+      :customViewId="customViewId"
+      :typeView="typeView"
+      :fileObj="fileObj"
+      :modelAttributeList="modelAttributeList"
+      :attributeMappingList="attributeMappingList"
+      :editTsDialogCmdbCustomView="editTsDialogCmdbCustomView"
+      @isOk="isOk"
+    ></CmdbCustomViewEdit>
     <ExternalEditDialog
       v-if="isShowExternalEditDialog"
       :matrixUuid="matrixUuid"
@@ -67,23 +77,24 @@ import download from '@/resources/directives/download.js';
 export default {
   name: 'MatrixExternal',
   components: {
-    CmdbEdit: resolve => require(['./components/cmdb-edit'], resolve),
-    navTopLeft: resolve => require(['./components/navTopLeft'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    ExternalEditDialog: resolve => require(['./components/external-edit-dialog'], resolve), // 外部数据源
-    ViewEditDialog: resolve => require(['./components/view-edit-dialog'], resolve) // 视图数据源
+    CmdbEdit: () => import('./components/cmdb-edit'),
+    CmdbCustomViewEdit: () => import('./components/cmdb-customview-edit'),
+    navTopLeft: () => import('./components/navTopLeft'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    ExternalEditDialog: () => import('./components/external-edit-dialog'), // 外部数据源
+    ViewEditDialog: () => import('./components/view-edit-dialog') // 视图数据源
   },
   directives: { download },
   props: [''],
   data() {
     return {
       ciId: '',
+      customViewId: '',
       title: '',
-      showAttributeLabelList: [],
+      attributeMappingList: [],
       modelAttributeList: [], // 模型属性列表
       fileObj: {},
-      isShow: false,
       isShowExternalEditDialog: false,
       isShowViewEditDialog: false,
       viewEditDialogTitle: '',
@@ -91,7 +102,14 @@ export default {
         type: 'modal',
         title: '',
         maskClose: false,
-        isShow: true,
+        isShow: false,
+        width: 'medium'
+      },
+      editTsDialogCmdbCustomView: {
+        type: 'modal',
+        title: '',
+        maskClose: false,
+        isShow: false,
         width: 'medium'
       },
       typeView: '',
@@ -99,7 +117,7 @@ export default {
       validJson: ['required'],
       nameValidateList: ['required', {
         name: 'searchUrl',
-        url: 'api/rest/matrix/save', 
+        url: 'api/rest/matrix/save',
         message: this.$t('message.targetisexists', {'target': this.$t('page.matrixname')}),
         key: 'name',
         params: () => ({uuid: this.matrixUuid})
@@ -120,7 +138,7 @@ export default {
     this.matrixUuid = this.$route.query.uuid || null;
     this.matrixType = this.$route.query.type || null;
     if (this.$route.query.isAddMatrix) {
-      if (this.matrixType != 'cmdbci') {
+      if (this.matrixType == 'custom') {
         this.editMatrix();
       }
       this.viewEditDialogTitle = '';
@@ -139,7 +157,6 @@ export default {
   destroyed() {},
   methods: {
     isOk() {
-      this.isShow = false;
       this.searchMatrixView();
     },
     //返回矩阵列表
@@ -182,11 +199,21 @@ export default {
               let dataInfo = res.Return;
               this.ciId = dataInfo.ciId;
               this.typeView = dataInfo.type;
-              this.isShow = true;
               this.editTsDialogCmdb.isShow = true;
               this.editTsDialogCmdb.title = this.$t('dialog.title.edittarget', {'target': this.matrixName});
               if (res.Return.config) {
-                this.showAttributeLabelList = res.Return.config.showAttributeLabelList;
+                this.attributeMappingList = res.Return.config.attributeMappingList;
+                this.modelAttributeList = res.Return.config.showAttributeList || [];
+              }
+              this.fileObj = JSON.parse(JSON.stringify(res.Return));
+            } else if (type == 'cmdbcustomview') {
+              let dataInfo = res.Return;
+              this.customViewId = dataInfo.customViewId;
+              this.typeView = dataInfo.type;
+              this.editTsDialogCmdbCustomView.isShow = true;
+              this.editTsDialogCmdbCustomView.title = this.$t('dialog.title.edittarget', {'target': this.matrixName});
+              if (res.Return.config) {
+                this.attributeMappingList = res.Return.config.attributeMappingList;
                 this.modelAttributeList = res.Return.config.showAttributeList || [];
               }
               this.fileObj = JSON.parse(JSON.stringify(res.Return));

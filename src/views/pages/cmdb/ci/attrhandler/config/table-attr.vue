@@ -2,7 +2,7 @@
   <div>
     <TsForm :item-list="formConfig">
       <template v-slot:attrList>
-        <div>   
+        <div>
           <div>
             <draggable
               :animation="150"
@@ -35,8 +35,7 @@ export default {
   name: '',
   components: {
     draggable,
-    TsForm: resolve =>
-      require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     config: {type: Object},
@@ -70,7 +69,7 @@ export default {
           onChange: val => {
             this.$set(this.myConfig, 'mode', val);
           }
-        }, 
+        },
         isMultiple: {
           type: 'slot',
           label: '多选'

@@ -83,10 +83,10 @@ import AddIntegrationDialog from './add-integration-dialog.vue';
 import viewmixin from '../viewmixin.js';
 export default {
   name: 'FormdynamicList',
-  components: { 
+  components: {
     AddIntegrationDialog,
-    TdFormitem: resolve => require(['../integration/td-formitem.vue'], resolve) 
-   
+    TdFormitem: () => import('../integration/td-formitem.vue')
+
   },
   mixins: [viewmixin],
   props: {

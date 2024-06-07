@@ -30,7 +30,8 @@ export default {
       routerConfig: {},
       classifiedList: [],
       currentValue: {},
-      fileIndex: null
+      fileIndex: null,
+      whiteList: ['welcome', 'no-authority', 'refresh']
     };
   },
   beforeCreate() {},
@@ -81,29 +82,43 @@ export default {
       this.$emit('selectTreeNode', this.moduleMenuList[0]);
       this.getClassifiedList(moduleList);
     },
+    getIsMenu(m, name) {
+      let findItem = this.routerConfig[m.group] && this.routerConfig[m.group].find((v) => v.name == name);
+      return findItem && findItem.ismenu ? 'tsfont-bar icon-right' : 'tsfont-ITfuwu icon-right';
+    },
     getRouterConfig() {
-      const requireRouter = require.context('@/views/pages', true, /router.js$/);
-      return requireRouter.keys().reduce((routerConfig, routerPath) => {
+      let routerConfig = {};
+      let routerJsPathList = [];
+      const communityConfig = require.context('@/views/pages', true, /\/router\.js$/);
+      const commercialConfig = require.context('@/commercial-module', true, /\/router\.js$/);
+      const commercialRouterPathList = commercialConfig.keys() || [];
+      const communityRouterPathList = communityConfig.keys() || [];
+      let uniqueToCommercialList = commercialRouterPathList.filter(item => !communityRouterPathList.includes(item));// 过滤不存在社区版的模块
+      routerJsPathList.push(...communityRouterPathList, ...uniqueToCommercialList);
+      routerJsPathList.forEach(routerPath => {
         const moduleId = routerPath.split('/')[1];
-        const routeList = requireRouter(routerPath).default || [];
-        let menuList = [];
-        if (routeList && routeList.length) {
-          routeList.forEach(item => {
-            if (item.meta && item.meta.ismenu) {
-              menuList.push({
-                name: item.meta.title,
-                moduleGroup: moduleId,
-                menu: item.name,
-                configFathList: [moduleId, item.name],
-                children: [],
-                loading: false
-              });
-            }
-          });
+        let routeList = [];
+        if (!this.$utils.isEmpty(uniqueToCommercialList) && uniqueToCommercialList.indexOf(routerPath) != -1) {
+          routeList = [...(communityRouterPathList.indexOf(routerPath) != -1 ? communityConfig(routerPath).default : []), ...(commercialConfig(routerPath) ? commercialConfig(routerPath).default : [])];
+        } else {
+          routeList = (communityConfig(routerPath).default || []);
         }
-        routerConfig[moduleId] = menuList;
-        return routerConfig;
-      }, {});
+        const menuList = routeList  
+          .filter(item => item.name && item.meta && item.meta.title && !this.whiteList.includes(item.name))  
+          .map(item => ({  
+            name: item.meta && item.meta.title ? (item.name ? `${item.meta.title}(${item.name})` : item.meta.title) : '',  
+            moduleGroup: moduleId,  
+            menu: item.name,  
+            configFathList: [moduleId, item.name],  
+            children: [],  
+            loading: false,
+            ismenu: item.meta?.ismenu || false
+          }));
+        if (menuList.length) {  
+          routerConfig[moduleId] = menuList;  
+        }  
+      });
+      return routerConfig;
     },
     getClassifiedList(moduleList) {
       this.classifiedList = [];
@@ -118,7 +133,7 @@ export default {
           if (m.group && this.routerConfig[m.group]) {
             module.children = this.routerConfig[m.group].map(item => {
               const { name, moduleGroup, menu, configFathList } = item;
-              const config = { name, moduleGroup, menu, configFath: configFathList.join('/') };
+              const config = { name, moduleGroup, menu, configFath: configFathList.join('/'), className: this.getIsMenu(m, name) };
               return config;
             });
           }
@@ -130,7 +145,7 @@ export default {
     renderContent(h, { root, node, data }) {
       //渲染树的lable名称
       return h('span', {
-        class: data.isFile ? 'tsfont-file-single' : data.nodata ? 'text-tip' : '',
+        class: data.isFile ? 'tsfont-file-single icon-right' : (data.ismenu ? 'tsfont-bar icon-right' : (data.ismenu == false ? 'tsfont-ITfuwu icon-right' : (data.nodata ? 'text-tip' : ''))),
         domProps: {
           innerHTML: this.$t(data.name)
         }

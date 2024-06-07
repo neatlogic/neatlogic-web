@@ -17,8 +17,7 @@
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   props: {
     disabled: {type: Boolean, default: false},
@@ -33,12 +32,16 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.attrData) {
+      if (this.attrData.isRequired || this.attrData.isCiUnique) {
+        this.validateList.push('required');
+      }
+    }
+  },
   beforeMount() {},
   mounted() {
-    if (this.attrData && this.attrData.isRequired == 1) {
-      this.validateList.push('required');
-    }
+
   },
   beforeUpdate() {},
   updated() {},
@@ -77,11 +80,11 @@ export default {
             console.error('日期区间值：' + this.valueList[0] + '转换异常');
           }
         }
-      } 
+      }
       return null;
     }},
   watch: {
-    attrData: {
+    /*attrData: {
       handler: function() {
         if (this.attrData) {
           if (this.attrData.isRequired == 1) {
@@ -91,7 +94,7 @@ export default {
       },
       deep: true,
       immediate: true
-    }
+    }*/
   }
 };
 </script>

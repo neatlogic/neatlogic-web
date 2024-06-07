@@ -104,12 +104,12 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    AppModuleList: resolve => require(['../application-config/config/app/app-module-list.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    ListDeployJobDialog: resolve => require(['@/views/pages/deploy/pipeline/list-deployjob-dialog.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    AppModuleList: () => import('../application-config/config/app/app-module-list.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    ListDeployJobDialog: () => import('@/views/pages/deploy/pipeline/list-deployjob-dialog.vue')
   },
   props: {},
   data() {
@@ -164,7 +164,7 @@ export default {
           key: 'lcd',
           type: 'time'
         },
-        { key: 'action' }   
+        { key: 'action' }
       ],
       isListDeployJobDialogShow: false,
       invokeIdList: []
@@ -239,7 +239,7 @@ export default {
           this.$api.deploy.schedule.deleteSchedule(params).then(res => {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
-              this.searchSchedule(); 
+              this.searchSchedule();
             }
           }).finally(() => {
             vnode.isShow = false;

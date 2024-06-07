@@ -13,7 +13,7 @@
             :search="true"
             :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.keyword') })"
             clearable
-            @on-enter="searchCollectionData"
+            @on-enter="searchCollectionData()"
           ></TsFormInput>
         </div>
       </template>
@@ -41,23 +41,35 @@
               v-for="(value, key) in collectionData.subTheadData"
               :slot="key"
               slot-scope="{ row }"
-              style="vertical-align:top"
+              style="vertical-align: top"
             >
               <table v-if="row[key] && row[key].length > 0" :key="key" class="table table-color">
-                <thead v-if="collectionData.subTheadData[key].length > 1">
-                  <!--表头超过一个值代表是对象类型-->
+                <thead v-if="collectionData.subTheadData[key].length > 0">
                   <tr>
                     <th v-for="(thead, index) in collectionData.subTheadData[key]" :key="index">{{ thead.title }}</th>
                   </tr>
                 </thead>
-                <tbody v-if="collectionData.subTheadData[key].length > 1 || (collectionData.subTheadData[key].length == 1 && collectionData.subTheadData[key][0]['key'])">
+                <thead v-else>
+                  <tr>
+                    <th>{{ $t('page.value') }}</th>
+                  </tr>
+                </thead>
+                <tbody v-if="collectionData.subTheadData[key].length > 0">
                   <tr v-for="(tbody, tindex) in row[key]" :key="tindex" class="t1">
-                    <td v-for="(thead, index) in collectionData.subTheadData[key]" :key="index">
-                      {{ tbody[thead.key] || '-' }}
+                    <td v-for="(thead, index) in collectionData.subTheadData[key]" :key="index" style="vertical-align: top">
+                      <div v-if="typeof tbody === 'object' && tbody[thead.key]">
+                        <div v-if="typeof tbody[thead.key] === 'object'">
+                          <JsonViewer v-if="(!Array.isArray(tbody[thead.key]) && Object.keys(tbody[thead.key]).length) || (Array.isArray(tbody[thead.key]) && tbody[thead.key].length > 0)" :show-array-index="false" :value="tbody[thead.key]"></JsonViewer>
+                          <div v-else>-</div>
+                        </div>
+                        <div v-else>{{ tbody[thead.key] }}</div>
+                      </div>
+                      <div v-else-if="tbody">{{ tbody }}</div>
+                      <div v-else>-</div>
                     </td>
                   </tr>
                 </tbody>
-                <tbody v-else-if="collectionData.subTheadData[key].length == 1 && !collectionData.subTheadData[key][0]['key']">
+                <tbody v-else>
                   <tr v-for="(tbody, tindex) in row[key]" :key="tindex" class="t2">
                     <td>
                       {{ tbody }}
@@ -67,27 +79,39 @@
               </table>
               <div v-if="!row[key] || row[key].length == 0" :key="key"></div>
             </template>
+            <template v-slot:action="{ row }">
+              <div class="tstable-action">
+                <ul class="tstable-action-ul">
+                  <li class="tsfont-edit" @click="viewData(row)">{{ $t('page.detail') }}</li>
+                </ul>
+              </div>
+            </template>
           </TsTable>
           <NoData v-else></NoData>
         </div>
       </template>
     </TsContain>
+    <DiscoveryDataDetail v-if="isDetailShow" :data="currentData" @close="closeDetail"></DiscoveryDataDetail>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    CollectionTypeList: resolve => require(['./collection-type-list.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    CollectionTypeList: () => import('./collection-type-list.vue'),
+    DiscoveryDataDetail: () => import('./discovery-data-detail.vue'),
+    JsonViewer: () => import('vue-json-viewer')
   },
   props: {},
   data() {
     return {
       collectionKeyword: '',
       searchParam: {},
+      isDetailShow: false,
       collectionData: {},
+      currentData: null,
       dialogConfig: {
         type: 'modal',
         maskClose: true,
@@ -111,6 +135,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    closeDetail() {
+      this.currentData = null;
+      this.isDetailShow = false;
+    },
+    viewData(row) {
+      this.currentData = row;
+      this.isDetailShow = true;
+    },
     checkshow(theadList, val) {
       this.$set(this.collectionData, 'theadList', theadList);
     },
@@ -136,6 +168,7 @@ export default {
             element.isShow = 1;
           }
         });
+        this.collectionData.theadList.push({ key: 'action' });
       });
     },
     changePageSize(pageSize) {
@@ -171,6 +204,12 @@ export default {
   font-size: 12px;
   border-width: 1px;
   border-style: solid;
+}
+/deep/.jv-light {
+  background: transparent !important;
+}
+/deep/.jv-code {
+  padding: 0px !important;
 }
 /deep/.top {
   vertical-align: top !important;

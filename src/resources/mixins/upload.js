@@ -7,7 +7,19 @@ export default {
       const formData = new FormData();
       if (params && typeof params === 'object') {
         for (let k in params) {
-          formData.append(k, params[k]);
+          if (params[k] instanceof Array) {
+            if (params[k].length > 0) {
+              if (params[k][0] instanceof File) {
+                for (let i = 0; i < params[k].length; i++) {
+                  formData.append(k, params[k][i]);
+                }
+              } else {
+                formData.append(k, params[k]);
+              }
+            }
+          } else {
+            formData.append(k, params[k]);
+          }
         }
       }
       if (startFn && typeof startFn == 'function') {

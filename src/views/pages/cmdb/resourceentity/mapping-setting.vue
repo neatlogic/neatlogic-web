@@ -40,8 +40,8 @@ export default {
   name: '',
   components: {
     ...Items,
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree')
   },
   props: {
     data: Object,
@@ -66,6 +66,14 @@ export default {
         {
           text: this.$t('page.relation'),
           value: 'rel'
+        },
+        {
+          text: this.$t('term.cmdb.globalattr'),
+          value: 'globalAttr'
+        },
+        {
+          text: this.$t('term.expression.empty'),
+          value: 'empty'
         }
       ],
       validateList: ['required'],

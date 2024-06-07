@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!loadingShow">
     <div v-if="!disabled && !readonly" class="mb-sm action-group">
       <div v-if="canAdd" class="action-item">
         <Button @click="addData()">{{ $t('dialog.title.addtarget',{'target':$t('page.data')}) }}</Button>
@@ -7,7 +7,7 @@
       <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tableData.tbodyList)" class="action-item">
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget',{'target':$t('page.data')}) }}</Button>
       </div>
-     
+
       <span v-if="isShowExportExcelTemplate" class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
       <span v-else class="action-item">
         <Icon
@@ -48,6 +48,7 @@
     <TsTable
       v-if="hasColumn"
       v-bind="tableData"
+      :loading="loading"
       :multiple="true"
       :fixedHeader="false"
       :canDrag="!disabled && !readonly && config.isCanDrag"
@@ -55,7 +56,10 @@
       @updateRowSort="updateRowSort"
       @getSelected="getSelectedItem"
     >
-      <template v-if="config.isShowNumber" v-slot:number="{ index}">
+      <template v-slot:delete="{ row }">
+        <span class="tsfont-close-o text-action" @click.stop="deleteItem(row)"></span>
+      </template>
+      <template v-if="config.isShowNumber" v-slot:number="{ index }">
         {{ index+1 }}
       </template>
       <template v-for="extra in extraList" :slot="extra.uuid" slot-scope="{ row, index }">
@@ -64,23 +68,17 @@
             :ref="'formitem_' + extra.uuid + '_' + index"
             :formItem="getExtraFormItem(extra, row)"
             :value="getDefaultValue(extra.uuid, row)"
-            :formData="row"
-            :formItemList="$utils.deepClone(extraList)"
+            :formData="{...$utils.deepClone(formData || {}), ...row}"
+            :formItemList="$utils.deepClone(extraList.concat(formItemList))"
             :showStatusIcon="false"
             mode="read"
             :readonly="readonly"
             :disabled="disabled"
             :isClearEchoFailedDefaultValue="true"
+            :isCustomValue="true"
             style="min-width:130px"
-            @change="changeRow(row,index)"
+            @change="(val)=>changeRow(val,extra.uuid,row)"
           ></FormItem>
-        </div>
-      </template>
-      <template v-slot:action="{ row }">
-        <div class="tstable-action">
-          <ul class="tstable-action-ul">
-            <li class="tsfont-trash-o" @click="deleteItem(row)">{{ $t('page.delete') }}</li>
-          </ul>
         </div>
       </template>
     </TsTable>
@@ -98,7 +96,7 @@ export default {
   name: '',
   components: {
     TsTable,
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
   extends: base,
   mixins: [validmixin],
@@ -108,21 +106,33 @@ export default {
   },
   data() {
     return {
+      loadingShow: true,
       isTableSelectorDialogShow: false,
       selectedIndexList: [],
       tableData: { theadList: [], tbodyList: [] },
       rowFormItem: {}, //保存每行的定义数据，避免每次都deepClone新数据，导致reaction失效
       maxSize: 1024 * 10,
       isShowExportExcelTemplate: true,
-      isShowExportExcel: true
+      isShowExportExcel: true,
+      loading: false,
+      conditionFormItemUuidList: [], //外部组件参与联动条件的uuid列表
+      filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'], //过滤不参与规则的组件
+      initExternalData: {}, //用于对比外部组件值变换
+      initFormData: this.$utils.deepClone(this.formData)
     };
   },
   beforeCreate() {},
   created() {
     this.init();
+    this.getConditionFormItemList();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => {
+      //避免初始化数据，联动过滤清空表格内数据
+      this.loadingShow = false;
+    });
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -154,12 +164,8 @@ export default {
         }
         if (value.length > 0) {
           this.tableData.tbodyList.push(...value);
-          if (!this.$utils.isSame(this.value, value)) {
-            //如果值发生变化，则重新设置值
-            this.setValue(value);
-          }
         }
-      } else if (this.config.lineNumber) { 
+      } else if (this.config.lineNumber) {
         //默认展示行
         for (let i = 0; i < this.config.lineNumber; i++) {
           this.addData();
@@ -197,6 +203,7 @@ export default {
           data[d.uuid] = (d.config && d.config.defaultValue) || null;
         }
       });
+      Object.assign(data, this.initExternalData);
       this.tableData.tbodyList.push(data);
     },
     //从表格选择列表行数据中获取指定字段作为扩展字段的过滤值
@@ -218,9 +225,8 @@ export default {
           }
         });
       }
-      if (this.disabled || this.readonly) {
-        this.$set(formItem.config, 'isDisabled', true);
-      }
+      this.$set(formItem.config, 'isDisabled', this.disabled || false);
+      this.$set(formItem.config, 'isReadOnly', this.readonly || false);
       return formItem;
     },
     validConfig() {
@@ -228,8 +234,12 @@ export default {
       if (!this.config.dataConfig || this.config.dataConfig.length == 0) {
         errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseadd', {'target': this.$t('page.thead')}) });
       } else {
+        let isKey = true;
         this.config.dataConfig.forEach(element => {
           const config = element.config;
+          if (this.$utils.isEmpty(element.key)) {
+            isKey = false;
+          }
           if (['formselect', 'formradio', 'formcheckbox'].includes(element.handler)) {
             if (config.dataSource === 'static' && (!config.dataList || config.dataList.filter(d => d.value).length === 0)) {
               errorList.push({ field: 'dataConfig', error: this.$t('form.validate.leastonetarget', {'target': this.$t('page.staticdatasource')}) });
@@ -243,6 +253,25 @@ export default {
               if (!config.mapping.text) {
                 errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.framework.showtextfieldmapping')}) });
               }
+            } else if (config.dataSource === 'formtableinputer') {
+              //选择表单输入组件
+              let findItem = this.formItemList.find(item => item.uuid === config.formtableinputerUuid);
+              if (!findItem) {
+                errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('message.framework.datasourceselectmessage')});
+              } else {
+                if (findItem.config && findItem.config.dataConfig) {
+                  let isValidMapping = true;
+                  if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.value)) {
+                    isValidMapping = false;
+                  }
+                  if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.text)) {
+                    isValidMapping = false;
+                  }
+                  if (!isValidMapping) {
+                    errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.fieldmapping')}) });
+                  }
+                }
+              }
             }
           } else if (['formdate', 'formtime'].includes(element.handler)) {
             if (!config.format) {
@@ -250,6 +279,9 @@ export default {
             }
           }
         });
+        if (!isKey) {
+          errorList.push({ field: 'dataConfig', error: this.$t('form.validate.required', {'target': this.$t('term.framework.compkeyname')}) });
+        }
       }
       return errorList;
     },
@@ -277,8 +309,8 @@ export default {
       }
       return errorList;
     },
-    changeRow(row, index) {
-      this.$set(this.tableData.tbodyList, index, row);
+    changeRow(val, uuid, row) {
+      this.$set(row, uuid, val);
     },
     updateRowSort(event) {
       let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
@@ -403,8 +435,8 @@ export default {
               let {dataSource = '', isMultiple = false} = config;
               if (handler == 'formtable') {
                 this.$set(item, [key], null);
-              } else if (dataSource == 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox')) {
-                // 矩阵数据源并且是多选，需要处理值去掉&=&
+              } else if (dataSource == 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox' || handler == 'formselect')) {
+                // 矩阵数据源并且是多选
                 this.$set(item, [key], this.handleSpecialValue(item[key]));
               } else if (dataSource == 'static' && (isMultiple || handler == 'formcheckbox')) {
                 // 静态数据源并且是多选
@@ -506,9 +538,11 @@ export default {
     handleSpecialValue(value) {
       let valueList = [];
       if (typeof value == 'string') {
-        return value?.split('&=&')?.[1] || value;
+        return value;
+      } else if (typeof value == 'object' && value?.['text']) {
+        return value['text'];
       } else if (Array.isArray(value)) {
-        valueList = value.map((item) => item?.split('&=&')?.[1] || item).filter(Boolean);
+        valueList = value.map((item) => item['text']).filter(Boolean);
       }
       return valueList.join(',');
     },
@@ -524,20 +558,22 @@ export default {
         desc: `${file.name}`
       });
     },
-    async handleBeforeUpload(file) {
+    handleBeforeUpload(file) {
       const workbook = new ExcelJS.Workbook();
       workbook.xlsx.load(file).then((workbook) => {
         workbook?.eachSheet((sheet, id) => {
-          sheet?.eachRow((row, rowIndex) => {
+          sheet?.eachRow(async(row, rowIndex) => {
             if (rowIndex != 1) {
               let rowValue = {};
               let rowValuesList = this.$utils.deepClone(row.values);
               rowValuesList.splice(0, 1); // 删除excel第一列的序号
-              this.tableData.theadList.forEach((item, tIndex) => {
-                if (item.key != 'selection' && item.key != 'number') {
-                  this.$set(rowValue, [item.key], this.byComponentTypeSetValue(item.key, rowValuesList[tIndex - 2]));
+              for (let tIndex = 0; tIndex < this.tableData.theadList.length; tIndex++) {
+                if (this.tableData.theadList[tIndex] && this.tableData.theadList[tIndex].key != 'selection' && this.tableData.theadList[tIndex].key != 'number') {
+                  let value = await this.byComponentTypeSetValue(this.tableData.theadList[tIndex].key, rowValuesList[tIndex - 2]);
+                  this.loading = false;
+                  this.$set(rowValue, [this.tableData.theadList[tIndex].key], value);
                 }
-              });
+              }
               let item = {...(this.tableData.tbodyList[rowIndex - 2] || {}), ...rowValue};
               if (!this.$utils.isEmpty(this.tableData.tbodyList[rowIndex - 2])) {
                 // 不为空时，修改数组对象里面的值
@@ -549,29 +585,40 @@ export default {
             }
           });
         });
-        this.$Message.success(this.$t('message.importsuccess'));
       });
     },
-    byComponentTypeSetValue(uuid, value) {
+    async byComponentTypeSetValue(uuid, value) {
       // 根据组件的类型，设置回显值
       let resultValue;
       let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == uuid);
       let {config = {}, handler = ''} = selectedItem || {};
       if (!this.$utils.isEmpty(value)) {
-        let {dataSource = '', isMultiple = false} = config || {};
+        let {dataSource = '', isMultiple = false, matrixUuid = '', mapping = {}} = config || {};
         if (dataSource === 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox')) {
         // 矩阵
           resultValue = [];
-          let valueList = [];
-          if (typeof value == 'string') {
-            valueList = value.split(',');
-            valueList.forEach((valueItem) => {
-              if (valueItem) {
-                resultValue.push(valueItem.indexOf('&=&') != -1 ? valueItem : `${valueItem}&=&${valueItem}`);
+          if (matrixUuid && !this.$utils.isEmpty(mapping) && mapping.text && mapping.value) {
+            this.loading = true;
+            let params = {
+              searchParamList: [
+                {
+                  matrixUuid: matrixUuid,
+                  textField: mapping.text,
+                  valueField: mapping.value,
+                  defaultValue: value instanceof Array ? value : typeof value == 'string' ? value.split(',') : [value] // 逗号处理多个选项时传递的值
+                }
+              ]
+            };
+            await this.$api.framework.form.searchMatrixColumnData(params).then((res) => {
+              if (res && res.Status == 'OK') {
+                let tbodyList = res.Return && res.Return.tbodyList || [];
+                tbodyList.forEach((item) => {
+                  if (item && item.dataList) {
+                    resultValue.push(...item.dataList);
+                  }
+                });
               }
             });
-          } else {
-            resultValue.push(valueItem.indexOf('&=&') != -1 ? valueItem : `${value}&=&${value}`);
           }
         } else if (dataSource == 'static' && (isMultiple || (handler == 'formcheckbox'))) {
           resultValue = [];
@@ -581,12 +628,40 @@ export default {
         }
       }
       return resultValue;
+    },
+    getConditionFormItemList() { //获取外部可以作为联动的条件的组件
+      this.conditionFormItemUuidList = [];
+      let allFormItem = this.formItemList.concat(this.formItem.config.dataConfig);
+      let formItemList = allFormItem.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
+      if (formItemList && formItemList.length > 0) {
+        this.conditionFormItemUuidList = this.$utils.mapArray(formItemList, 'uuid');
+      }
+      this.conditionFormItemUuidList.push('uuid');
+    },
+    updateConditionData() {
+      let obj = {};
+      Object.keys(this.formDataForWatch).forEach(key => {
+        if (this.conditionFormItemUuidList.includes(key)) {
+          obj[key] = this.formDataForWatch[key];
+        }
+      });
+      if (!this.$utils.isSame(obj, this.initExternalData)) {
+        this.initExternalData = this.$utils.deepClone(obj);
+        this.tableData.tbodyList.forEach(item => {
+          Object.keys(item).forEach(key => {
+            if (!this.conditionFormItemUuidList.includes(key) && key !== 'uuid') { //uuid作为每一行的唯一标识，不能删除
+              this.$delete(item, key);
+            }
+          });
+          Object.assign(item, obj);
+        });
+      }
     }
   },
   filter: {},
   computed: {
     hasColumn() {
-      if (this.mode != 'edit' && this.config.dataConfig && this.config.dataConfig.length > 0) {
+      if (this.mode != 'edit' && (this.mode != 'editSubform') && this.config.dataConfig && this.config.dataConfig.length > 0) {
         return true;
       }
       return false;
@@ -602,24 +677,26 @@ export default {
           if (valueItem) {
             dataConfig = valueItem;
           }
-        } 
+        }
         if (!dataConfig) {
           dataConfig = this.config.dataConfig.find(d => d.uuid === uuid);
         }
-        if (dataConfig && dataConfig.config) {
-          const defaultValue = dataConfig.config.defaultValue;
-          if (dataConfig.config.defaultValueType === 'custom') {
-            return defaultValue;
-          } else if (dataConfig.config.defaultValueType === 'matrix') {
-            if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
-              const defaultValueField = dataConfig.config.defaultValueField;
-              const defaultTextField = dataConfig.config.defaultTextField;
-              return row[defaultValueField] + '&=&' + row[defaultTextField];
+        if (dataConfig) {
+          if (dataConfig.config) {
+            const defaultValue = dataConfig.config.defaultValue;
+            if (dataConfig.config.defaultValueType === 'custom') {
+              return defaultValue;
+            } else if (dataConfig.config.defaultValueType === 'matrix') {
+              if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
+                const defaultValueField = dataConfig.config.defaultValueField;
+                const defaultTextField = dataConfig.config.defaultTextField;
+                return {text: row[defaultValueField], value: row[defaultTextField]};
+              } else {
+                return row[defaultValue];
+              }
             } else {
-              return row[defaultValue];
+              return defaultValue;
             }
-          } else {
-            return defaultValue;
           }
         }
         return null;
@@ -627,6 +704,9 @@ export default {
     },
     canAdd() {
       return !this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd;
+    },
+    formDataForWatch() {
+      return JSON.parse(JSON.stringify(this.formData));
     }
   },
   watch: {
@@ -635,6 +715,7 @@ export default {
         this.tableData.theadList = [];
         if (!this.disabled && !this.readonly) {
           if (!this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd) {
+            this.tableData.theadList.push({ key: 'delete', width: 20 });
             this.tableData.theadList.push({ key: 'selection' });
           }
         }
@@ -644,8 +725,8 @@ export default {
         this.config.dataConfig.forEach(d => {
           if (d.isPC) {
             let item = {
-              key: d.uuid, 
-              title: d.label 
+              key: d.uuid,
+              title: d.label
             };
             if (d.config && d.config.isRequired) {
               this.$set(item, 'isRequired', true);
@@ -653,11 +734,6 @@ export default {
             this.tableData.theadList.push(item);
           }
         });
-        if (!this.disabled && !this.readonly) {
-          if (!this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd) {
-            this.tableData.theadList.push({ key: 'action' });
-          }
-        }
         this.$emit('resize');
       },
       deep: true,
@@ -666,6 +742,16 @@ export default {
     'tableData.tbodyList': {
       handler: function(val) {
         this.setValue(val);
+      },
+      deep: true,
+      immediate: true
+    },
+    formDataForWatch: {
+      handler(val) {
+        if (this.mode != 'edit' && this.mode != 'editSubform' && !this.$utils.isSame(val, this.initFormData)) {
+          this.initFormData = this.$utils.deepClone(val);
+          this.updateConditionData();
+        }
       },
       deep: true,
       immediate: true

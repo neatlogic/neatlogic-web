@@ -28,11 +28,12 @@ export default {
       processTaskStepId: null, //步骤id
       processTaskConfig: {}, //所有基本信息
       processTaskStepConfig: null, //步骤基本信息
-      formConfig: {}, //表单数据
+      formConfig: {}, //场景表单数据
       sitemapTitle: this.$t('term.process.viewflowchart'), //流程图弹框名称
       processConfig: null, //流程图数据
       lookSitemapModel: false, //流程图显示隐藏
-      tsDialoglookSitemap: {//流程图显示隐藏
+      tsDialoglookSitemap: {
+        //流程图显示隐藏
         type: 'modal',
         maskClose: false,
         isShow: false
@@ -52,7 +53,6 @@ export default {
       isStepRequired: 0, //回复是否必填
       stepDialogClass: 'task-step', //弹框样式
       timer: null, //定时器
-      leftWidth: 280,
       isOrderRight: false, //是否展示右侧基本信息（接口控制isShowBaseInfo：1展示，0不展示）
       isOrderLeft: false,
       transferModal: false, //转交弹框
@@ -151,6 +151,7 @@ export default {
           validateList: ['required']
         }
       ],
+      //可以迁移到retrest-dialog.vue？
       retreatConfig: [
         {
           //撤回步骤
@@ -171,7 +172,7 @@ export default {
         }
       ],
       retreatList: null, //可撤回步骤列表
-      retreatId: '', //撤回步骤id
+      retreatId: '', //撤回步骤id(迁移到retrest-dialog.vue)
       formEdit: false, //表单是否有编辑权限，查看模式肯定没有
       showActive: false,
       actionConfig: {
@@ -199,7 +200,8 @@ export default {
         reapproval: null, // 重审
         createtask: null //创建任务（新的子任务）
       },
-      disabledConfig: { //禁止按钮连续调用接口
+      disabledConfig: {
+        //禁止按钮连续调用接口
         starting: false, //开始
         accepting: false,
         saving: false, //暂存
@@ -247,13 +249,19 @@ export default {
       };
     }
   },
-  destroyed() {
- 
-  },
-  beforeDestroy() { 
+  destroyed() {},
+  beforeDestroy() {
     sessionStorage.removeItem('taskdetailPrev');
   },
   methods: {
+    //button-bar调用本地函数
+    doAction(actionName, ...args) {
+      if (typeof this[actionName] === 'function') {
+        this[actionName](...args);
+      } else {
+        console.error(`Method ${actionName} not found`);
+      }
+    },
     //初始化数据
     getAllData() {
       this.getTaskActionObj();
@@ -273,7 +281,8 @@ export default {
         this.pocesstaskview = true;
       }
     },
-    getConmmonData() { //获取工单和步骤信息接口
+    getConmmonData() {
+      //获取工单和步骤信息接口
       this.processTaskConfig = this.processTask;
       if (this.processTaskConfig.hasOwnProperty('isShowBaseInfo')) {
         //默认是否展示基本信息
@@ -283,12 +292,7 @@ export default {
         }
       }
       if (this.processTaskConfig.formConfig) {
-        let formSceneUuid = this.processTaskConfig.currentProcessTaskStep ? this.processTaskConfig.currentProcessTaskStep.formSceneUuid : null;
-        let formConfig = this.processTaskConfig.formConfig;
-        this.formConfig = formConfig;
-        if (this.formConfig._type == 'new') {
-          this.formConfig = this.initNewFormConfig(formSceneUuid, this.formConfig);
-        }
+        this.formConfig = this.processTaskConfig.formConfig; //主表单
       }
       if (this.processTaskConfig.startProcessTaskStep) {
         this.startProcessTaskStep = this.processTaskConfig.startProcessTaskStep;
@@ -312,7 +316,7 @@ export default {
             });
           }
         }
-    
+
         if (this.processTaskStepConfig.forwardNextStepList) {
           // 流转步骤
           this.nextStepList = this.processTaskStepConfig.forwardNextStepList;
@@ -338,15 +342,6 @@ export default {
         this.medium = '100%';
       } else {
         this.medium = 'medium';
-      }
-    },
-    toPrevpath() {
-      if (!sessionStorage.getItem('taskdetailPrev')) {
-        this.$router.push({
-          path: this.prevPath.router
-        });        
-      } else {
-        this.$router.back();
       }
     },
     toTask(taskId, taskStepId) {
@@ -399,7 +394,8 @@ export default {
     editTitle() {
       this.isEditTitle = true;
     },
-    changeTitle(val) { //标题与上报页保持一致，只校验不为空（客户要求）
+    changeTitle(val) {
+      //标题与上报页保持一致，只校验不为空（客户要求）
       if (val != '' && this.processTaskConfig.title != val) {
         let data = {
           processTaskId: this.processTaskId,
@@ -439,7 +435,8 @@ export default {
       this.sitemapFullscreen = false;
       if (data.Status == 'OK') {
         this.processConfig = data.Return.config;
-        // this.sitemapTitle = '流程图';// + this.processConfig.process.processConfig.name;
+        this.sitemapTitle = this.processConfig.process.processConfig.name;
+        this.tsDialoglookSitemap.flowUuid = this.processConfig.process.processConfig.uuid;
         this.initTopo(data.Return);
       }
     },
@@ -468,7 +465,7 @@ export default {
         'node.deleteable': false,
         'node.connectable': false,
         'node.mouseenterFn': function(vm) {
-          let top = Vm.$topoVm.positionTransform({x: vm.getX() + vm.getWidth() + 20, y: vm.getY()}, 'apply');
+          let top = Vm.$topoVm.positionTransform({ x: vm.getX() + vm.getWidth() + 20, y: vm.getY() }, 'apply');
           Vm.stepTooltip = vm.stepDate;
           if (!vm.stepDate) return;
           Vm.stepTooltip.className = 'tipright';
@@ -484,13 +481,16 @@ export default {
         this.$topoVm = new Topo(this.$refs.isLookSitemap.$refs.topo, viewOpts);
         // this.$topoVm = new Topo(this.$refs.topo, viewOpts);
         this.$topoVm.draw();
-        topodata.links.forEach(link => { link.type = link.dirType || link.type; });
+        topodata.links.forEach(link => {
+          link.type = link.dirType || link.type;
+        });
         this.$topoVm.fromJson(JSON.parse(JSON.stringify(topodata)));
         this.$topoVm.center(0);
         this.changeNodeStatus(data.processTaskStepList, data.processTaskStepRelList);
       });
     },
-    changeNodeStatus(stepList, relList) { //改变节点和连线的颜色状态
+    changeNodeStatus(stepList, relList) {
+      //改变节点和连线的颜色状态
       //节点的改变
       let allNodes = this.$topoVm.getNodes();
       stepList.forEach(d => {
@@ -498,33 +498,37 @@ export default {
         if (d.handler == 'end' || d.handler == 'start') {
           return;
         }
-        if (d.status != 'running') {
-          node.setFill(d.statusVo.color);
-          node.setStroke(d.statusVo.color);
-          node.setIconcolor('#fff');
-        } else {
-          node.setFill(d.statusVo.color);
-          node.setLoadingcolor('#fff');
+        if (node) {
+          if (d.status != 'running') {
+            node.setFill(d.statusVo.color);
+            node.setStroke(d.statusVo.color);
+            node.setIconcolor('#fff');
+          } else {
+            node.setFill(d.statusVo.color);
+            node.setLoadingcolor('#fff');
+          }
+          node.stepDate = d;
         }
-        node.stepDate = d;
       });
 
       //连线的颜色改变 ，开始节点的连线需要额外操作，因为接口不返回对应的连线信息
       let allLinks = this.$topoVm.links;
       let startNodeUuid = allNodes.find(a => a.getType() === 'start');
-      startNodeUuid = startNodeUuid ? startNodeUuid.getUuid() : null;  
-      startNodeUuid && allLinks.find(item => { 
-        if (item.getSource() == startNodeUuid) {
-          item.setClass('linkPath success');
-          return true;
-        }
-        return false;
-      });
+      startNodeUuid = startNodeUuid ? startNodeUuid.getUuid() : null;
+      startNodeUuid &&
+        allLinks.find(item => {
+          if (item.getSource() == startNodeUuid) {
+            item.setClass('linkPath success');
+            return true;
+          }
+          return false;
+        });
       relList.forEach(rel => {
         if (rel.isHit > 0) {
           let link = this.$topoVm.getLinkByUuid(rel.processStepRelUuid);
           link && link.setClass('linkPath success');
-        } else if (rel.isHit < 0) { //不会激活的节点
+        } else if (rel.isHit < 0) {
+          //不会激活的节点
           let errorLink = this.$topoVm.getLinkByUuid(rel.processStepRelUuid);
           errorLink && errorLink.setClass('linkPath error');
         }
@@ -535,28 +539,52 @@ export default {
         this.draftData = this.$utils.deepClone(data);
       }
     },
-    isDraftData(to, from, next, url) { //路由跳转比较对比  父组件beforeRouterLeave调用
-      let _this = this;
-      if (_this.actionConfig.save && _this.$refs.TaskCenterDetail) {
-        let draftData = _this.$refs.TaskCenterDetail.getData();
-        let isSame = _this.$utils.isSame(_this.draftData, draftData);
-        if (isSame || _this.draftData == '') {
+    getData() {
+      let data = this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.getData() || {};
+      //检查子组件是否有myGetData方法
+      if (this.$options.mixins && this.$options.mixins.length > 0) {
+        for (let i = 0; i < this.$options.mixins.length; i++) {
+          const mixin = this.$options.mixins[i];
+          if (mixin !== this && mixin.methods && mixin.methods.myGetData) {
+            const myData = mixin.methods.myGetData.call(this);
+            Object.assign(data, myData);
+          }
+        }
+      }
+      return data;
+    },
+    isDraftData(to, from, next, url) {
+      //路由跳转比较对比  父组件beforeRouterLeave调用
+      if (this.actionConfig.save && this.$refs.TaskCenterDetail) {
+        let draftData = this.getData();
+        let isSame = this.$utils.isSame(this.draftData, draftData);
+        if (isSame || this.draftData == '') {
           // 没有改变
           url ? this.$utils.gotoHref(url) : next();
         } else {
-          this.$utils.jumpDialog.call(this, {
-            save: {//保存数据
-              fn: async(vnode) => {
-                return await _this.saveTaskData(true);
+          let _this = this;
+          this.$utils.jumpDialog.call(
+            this,
+            {
+              save: {
+                //保存数据
+                fn: async vnode => {
+                  return await _this.saveTaskData(true);
+                }
               }
-            }
-          }, to, from, next, url);
+            },
+            to,
+            from,
+            next,
+            url
+          );
         }
       } else {
         url ? this.$utils.gotoHref(url) : next();
       }
     },
-    isDataChangeSwitchTsak() { // 切换任务列表时，对比数据是否变化
+    isDataChangeSwitchTsak() {
+      // 切换任务列表时，对比数据是否变化
       let draftData = this.$refs.TaskCenterDetail ? this.$refs.TaskCenterDetail.getData() : '';
       let isSame = this.$utils.isSame(this.draftData, draftData);
       let isDataChange = false;
@@ -571,31 +599,25 @@ export default {
       this.wipeData();
       this.getAllData();
     },
+    
     saveTask(val) {
       //暂存 数据对比
-      let _this = this;
-      if (_this.$refs.TaskCenterDetail) {
-        let draftData = _this.$refs.TaskCenterDetail.getData();
-        let isSame = this.$utils.isSame(_this.draftData, draftData);
+      if (this.$refs.TaskCenterDetail) {
+        let draftData = this.$refs.TaskCenterDetail.getData();
+        let isSame = this.$utils.isSame(this.draftData, draftData);
         if (!isSame) {
           // 有改变
-          _this.saveTaskData(val);
-          _this.draftData = _this.$utils.deepClone(draftData);
+          this.saveTaskData(val);
+          this.draftData = this.$utils.deepClone(draftData);
         }
       }
     },
     saveTaskData(val) {
       //暂存 保存
       let _this = this;
-      let data = _this.$refs.TaskCenterDetail.getData();
+      let data = this.getData();
       return new Promise((resolve, reject) => {
         let isTime = val || false;
-        if (_this.$refs.eventConfig) {
-          let eventConfig = _this.$refs.eventConfig.getEventData();
-          _this.$set(data, 'content', eventConfig.content);
-          _this.$set(data, 'fileIdList', eventConfig.fileIdList);
-          _this.$set(data, 'handlerStepInfo', eventConfig.handlerStepInfo);
-        }
         if (_this.startHandler != 'changecreate' && _this.handler == 'changecreate') {
           let handlerStepInfo = {};
           if (_this.$refs.changecreateData) {
@@ -610,19 +632,22 @@ export default {
         }
         if (!_this.disabledConfig.saving) {
           _this.disabledConfig.saving = true;
-          this.$api.process.processtask.saveTaskDetail(data).then(res => {
-            _this.disabledConfig.saving = false;
-            if (res.Status == 'OK') {
-              _this.draftData = _this.$utils.deepClone(data);
-              _this.auditId = res.Return;
-              if (!isTime) {
-                this.$Message.success(this.$t('page.saved', { target: _this.$utils.getCurrenttime('HH:mm:ss') }));
+          this.$api.process.processtask
+            .saveTaskDetail(data)
+            .then(res => {
+              _this.disabledConfig.saving = false;
+              if (res.Status == 'OK') {
+                _this.draftData = _this.$utils.deepClone(data);
+                _this.auditId = res.Return;
+                if (!isTime) {
+                  this.$Message.success(this.$t('page.saved', { target: _this.$utils.getCurrenttime('HH:mm:ss') }));
+                }
+                resolve(res);
               }
-              resolve(res);
-            }
-          }).catch(error => {
-            _this.disabledConfig.saving = false;
-          });
+            })
+            .catch(error => {
+              _this.disabledConfig.saving = false;
+            });
         }
       });
     },
@@ -632,7 +657,7 @@ export default {
         if (this.assignableWorkerStepList[i].isRequired == 1 && !this.assignableWorkerStepList[i].value.length) {
           isSave = false;
           this.$Notice.error({
-            title: this.$t('form.placeholder.pleaseselect', {target: this.$t('term.process.stepuser')}),
+            title: this.$t('form.placeholder.pleaseselect', { target: this.$t('term.process.stepuser') }),
             duration: 1.5
           });
           break;
@@ -671,16 +696,19 @@ export default {
             content: obj.content,
             action: 'back'
           };
-          this.$api.process.processtask.complete(data).then(res => {
-            this.disabledConfig.backing = false;
-            if (res.Status == 'OK') {
-              this.$Message.success(this.$t('message.executesuccess'));
-              this.backModal = false;
-              this.toTask(this.processTaskId);
-            }
-          }).catch(error => {
-            this.disabledConfig.backing = false;
-          });
+          this.$api.process.processtask
+            .complete(data)
+            .then(res => {
+              this.disabledConfig.backing = false;
+              if (res.Status == 'OK') {
+                this.$Message.success(this.$t('message.executesuccess'));
+                this.backModal = false;
+                this.toTask(this.processTaskId);
+              }
+            })
+            .catch(error => {
+              this.disabledConfig.backing = false;
+            });
         }
       }
     },
@@ -701,17 +729,20 @@ export default {
           processTaskId: this.processTaskId,
           isFocus: this.processTaskConfig.isFocus
         };
-        this.$api.process.processtask.updateFocus(params).then(res => {
-          this.disabledConfig.focusing = false;
-          if (res.Status === 'OK') {
-            this.processTaskConfig.isFocus = res.Return.isFocus;
-            this.$Message.success(this.$t('message.executesuccess'));
-            this.updateFocusUser();
-          }
-        }).catch(error => {
-          this.disabledConfig.focusing = false;
-          this.processTaskConfig.isFocus = this.processTaskConfig.isFocus ? 0 : 1;
-        });
+        this.$api.process.processtask
+          .updateFocus(params)
+          .then(res => {
+            this.disabledConfig.focusing = false;
+            if (res.Status === 'OK') {
+              this.processTaskConfig.isFocus = res.Return.isFocus;
+              this.$Message.success(this.$t('message.executesuccess'));
+              this.updateFocusUser();
+            }
+          })
+          .catch(error => {
+            this.disabledConfig.focusing = false;
+            this.processTaskConfig.isFocus = this.processTaskConfig.isFocus ? 0 : 1;
+          });
       }
     },
     addAssist(obj, isEdit) {
@@ -747,28 +778,34 @@ export default {
           let assistList = assistForm.getFormValue();
           if (_this.isEdit) {
             _this.$set(assistList, 'processTaskStepSubtaskId', _this.processTaskStepSubtaskId);
-            this.$api.process.processtask.subEditable(assistList).then(res => {
-              _this.disabledConfig.subtasking = false;
-              if (res.Status == 'OK') {
-                _this.isEdit = false;
-                _this.assistList.forEach(item => {
-                  item.value = '';
-                });
-                _this.toTask(_this.processTaskId, _this.processTaskStepId);
-              }
-            }).catch(error => {
-              _this.disabledConfig.subtasking = false;
-            });
+            this.$api.process.processtask
+              .subEditable(assistList)
+              .then(res => {
+                _this.disabledConfig.subtasking = false;
+                if (res.Status == 'OK') {
+                  _this.isEdit = false;
+                  _this.assistList.forEach(item => {
+                    item.value = '';
+                  });
+                  _this.toTask(_this.processTaskId, _this.processTaskStepId);
+                }
+              })
+              .catch(error => {
+                _this.disabledConfig.subtasking = false;
+              });
           } else {
             _this.$set(assistList, 'processTaskStepId', _this.processTaskStepId);
-            this.$api.process.processtask.createSubtask(assistList).then(res => {
-              _this.disabledConfig.subtasking = false;
-              if (res.Status == 'OK') {
-                _this.toTask(_this.processTaskId, _this.processTaskStepId);
-              }
-            }).catch(error => {
-              _this.disabledConfig.subtasking = false;
-            });
+            this.$api.process.processtask
+              .createSubtask(assistList)
+              .then(res => {
+                _this.disabledConfig.subtasking = false;
+                if (res.Status == 'OK') {
+                  _this.toTask(_this.processTaskId, _this.processTaskStepId);
+                }
+              })
+              .catch(error => {
+                _this.disabledConfig.subtasking = false;
+              });
           }
           _this.assistModal = false;
         }
@@ -800,27 +837,35 @@ export default {
           this.$set(formList, 'processTaskStepId', this.retreatId);
           this.$set(formList, 'processTaskId', this.processTaskId);
           this.disabledConfig.retreating = true;
-          this.$api.process.processtask.retreatTask(formList).then(res => {
-            this.disabledConfig.retreating = false;
-            if (res.Status == 'OK') {
-              this.toTask(this.processTaskId);
-              this.retreatModal = false;
-            }
-          }).catch(error => {
-            this.disabledConfig.retreating = false;
-          });
+          this.$api.process.processtask
+            .retreatTask(formList)
+            .then(res => {
+              this.disabledConfig.retreating = false;
+              if (res.Status == 'OK') {
+                this.toTask(this.processTaskId);
+                this.retreatModal = false;
+              }
+            })
+            .catch(error => {
+              this.disabledConfig.retreating = false;
+            });
         }
       }
     },
+    //迁移到retreat-dialog.vue
     retreatStep(item) {
       //选择撤回步骤
       this.retreatId = item.id;
     },
     validItemClick(selector, tabValue) {
-      this.$refs.TaskCenterDetail.tabValue = tabValue;
-      selector && selector == '#form' && (this.$refs.TaskCenterDetail.isShowForm = true);
+      if (tabValue != this.$refs.TaskCenterDetail.tabValue) {
+        this.$refs.TaskCenterDetail.tabValue = tabValue || 'report';
+        if (tabValue === 'report') {
+          this.$refs.TaskCenterDetail.clickTabValue(tabValue);
+        }
+      }
       if (this.$el.querySelector(selector)) {
-        // document.querySelector(selector).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' }); 
+        // document.querySelector(selector).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
         document.querySelector(selector).scrollIntoView();
       } else if (selector == '#priority') {
         this.isOrderLeft = false;
@@ -847,14 +892,17 @@ export default {
           processTaskStepId: this.processTaskStepId,
           action: type
         };
-        this.$api.process.processtask.startTask(data).then(res => {
-          this.disabledConfig[disableType] = false;
-          if (res.Status == 'OK') {
-            this.toTask(this.processTaskId, this.processTaskStepId);
-          }
-        }).catch(error => {
-          this.disabledConfig[disableType] = false;
-        });
+        this.$api.process.processtask
+          .startTask(data)
+          .then(res => {
+            this.disabledConfig[disableType] = false;
+            if (res.Status == 'OK') {
+              this.toTask(this.processTaskId, this.processTaskStepId);
+            }
+          })
+          .catch(error => {
+            this.disabledConfig[disableType] = false;
+          });
       }
     },
     initStartList() {
@@ -919,9 +967,11 @@ export default {
       let userList = arr;
       let textList = [];
       userList.forEach(item => {
-        if (type == 'minorUser') { //处理人
+        if (type == 'minorUser') {
+          //处理人
           textList.push(item.userVo.name);
-        } else if (type == 'worker') { //待处理人
+        } else if (type == 'worker') {
+          //待处理人
           textList.push(item.name);
         }
       });
@@ -940,11 +990,13 @@ export default {
         _this.actionConfig[index] = null;
       }
     },
-    updateFocusUser() { //更新工单关注人
+    updateFocusUser() {
+      //更新工单关注人
       this.getCurrentFocususerList();
       return this.$refs.TaskCenterDetail.getActivityList();
     },
-    selecStep(obj, type) { //选择步骤
+    selecStep(obj, type) {
+      //选择步骤
       this.assignableWorkerStepList = [];
       if (type && type == 'back') {
         this.selectBackConfig = obj;
@@ -958,6 +1010,7 @@ export default {
         }
       }
     },
+    //此方法迁到button-bar
     async completeStep(obj) {
       //单个节点流转
       this.nestStepId = obj.id;
@@ -980,14 +1033,17 @@ export default {
         let data = {
           processTaskId: this.processTaskId
         };
-        this.$api.process.processtask.urgeProcesssTask(data).then(res => {
-          this.disabledConfig.urging = false;
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.executesuccess'));
-          }
-        }).catch(error => {
-          this.disabledConfig.urging = false;
-        });
+        this.$api.process.processtask
+          .urgeProcesssTask(data)
+          .then(res => {
+            this.disabledConfig.urging = false;
+            if (res.Status == 'OK') {
+              this.$Message.success(this.$t('message.executesuccess'));
+            }
+          })
+          .catch(error => {
+            this.disabledConfig.urging = false;
+          });
       }
     },
     pauseStep() {
@@ -1025,13 +1081,15 @@ export default {
       if (item && item.priority) {
         this.$set(this.processTaskConfig, 'priority', item.priority);
       }
-      if (item && item == 'updateFocusUser') { //关注人
+      if (item && item == 'updateFocusUser') {
+        //关注人
         this.updateFocusUser();
       }
       //更新活动和步骤
       this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.updateStepActive();
     },
-    async reapprovalTask() { //重审
+    async reapprovalTask() {
+      //重审
       if (!this.disabledConfig.reapproval) {
         let isValid = this.taskValid();
         if (isValid) {
@@ -1040,15 +1098,17 @@ export default {
           let data = {
             processTaskId: this.processTaskId,
             processTaskStepId: this.processTaskStepId
-
           };
-          this.$api.process.processtask.reapprovalTask(data).then(res => {
-            if (res.Status == 'OK') {
-              this.toTask(this.processTaskId);
-            }
-          }).catch(error => {
-            this.disabledConfig.reapproval = false;
-          });
+          this.$api.process.processtask
+            .reapprovalTask(data)
+            .then(res => {
+              if (res.Status == 'OK') {
+                this.toTask(this.processTaskId);
+              }
+            })
+            .catch(error => {
+              this.disabledConfig.reapproval = false;
+            });
         }
       }
     },
@@ -1061,12 +1121,26 @@ export default {
     },
     // 校验
     async taskValid() {
+      let isComplete = true;
+      //先检查子组件是否有自定义校验方法，有得话先调用
+      if (this.$options.mixins && this.$options.mixins.length > 0) {
+        for (let i = 0; i < this.$options.mixins.length; i++) {
+          const mixin = this.$options.mixins[i];
+          if (mixin !== this && mixin.methods && mixin.methods.myValidTask) {
+            const isValid = await mixin.methods.myValidTask.call(this);
+            if (!isValid) {
+              isComplete = false;
+            }
+          }
+        }
+      }
       this.validList = [];
       this.validCardOpen = false;
-      let isComplete = true;
+     
       if (this.handler == 'changecreate') {
         let changeValidList = [];
-        if (this.startHandler == 'changecreate') { //如果上报节点是变更创建，则校验上报信息
+        if (this.startHandler == 'changecreate') {
+          //如果上报节点是变更创建，则校验上报信息
           changeValidList = this.$refs.TaskCenterDetail.changeValid();
         } else {
           changeValidList = this.changeValid();
@@ -1074,7 +1148,7 @@ export default {
         if (changeValidList.length == 0) {
           let o = Object.assign({}, this.validTypeList[0]);
           o.focus = '#changeInfo';
-          o.msg = this.$t('message.process.success', { target: this.$t('term.process.changeinfor')});
+          o.msg = this.$t('message.process.success', { target: this.$t('term.process.changeinfor') });
           this.validList.push(o);
         } else {
           let o = Object.assign({}, this.validTypeList[1]);
@@ -1129,7 +1203,8 @@ export default {
           isComplete = false;
         } else if (!taskContent && this.processTaskStepConfig.commentList.length) {
           let valid = false;
-          if (this.processTaskStepConfig.commentList.length) { //考虑回退的场景
+          if (this.processTaskStepConfig.commentList.length) {
+            //考虑回退的场景
             let startTime = this.processTaskStepConfig.startTime;
             let lcd = this.processTaskStepConfig.commentList[0].lcd;
             startTime > lcd && (valid = true);
@@ -1144,10 +1219,11 @@ export default {
       this.completeValid();
       return isComplete;
     },
-    completeValid() { //流转时定位必填项
+    completeValid() {
+      //流转时定位必填项
       for (let i = 0; i < this.validList.length; i++) {
         if (this.validList[i].type == 'error') {
-          this.validItemClick(this.validList[i].focus);
+          this.validItemClick(this.validList[i].focus, this.validList[i].tabValue);
           break;
         }
       }
@@ -1164,12 +1240,13 @@ export default {
         }
       });
     },
-    updateFormWidth() { //更新表单宽度
+    updateFormWidth() {
+      //更新表单宽度
       setTimeout(() => {
         if (this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.$el && this.$refs.TaskCenterDetail.$el.__vue__.$refs.formSheet) {
           this.$refs.TaskCenterDetail.$el.__vue__.$refs.formSheet.initContainerWidth();
         }
-      }, 300);//动画有延迟
+      }, 300); //动画有延迟
     },
     comment() {
       this.$refs.TaskCenterDetail.comment();

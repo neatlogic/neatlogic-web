@@ -8,6 +8,7 @@
         :workcenterConditionData="workcenterConditionData"
         :conditionData="getWorkcenterConditionData(condition.handler)"
         :mode="mode"
+        :isCustomValue="isCustomValue"
         @change="change"
         @changeWithCondition="changeWithCondition"
       ></component>
@@ -19,6 +20,7 @@
         :condition="condition"
         :conditionData="conditionData || getWorkcenterConditionData(condition.handler)"
         :mode="mode"
+        :isCustomValue="isCustomPanel && isCustomValue"
         @change="change"
       ></component>
     </div>
@@ -44,13 +46,22 @@ export default {
   name: '',
   components: {
     ...handlers,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     mode: { type: String, default: 'simple' },
     workcenterConditionData: { type: Object }, //全量的工单中心条件数据，主要提供给channelselect.vue使用，其他组件不需要用的此数据
     condition: { type: Object }, //默认条件
-    conditionData: { type: Object } //工单中心组件条件数据
+    conditionData: { type: Object }, //工单中心组件条件数据
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
+      type: Boolean,
+      default: false
+    },
+    isCustomPanel: { // 用于简单模式下，表单过滤属性按钮打开之后，表单属性下拉框需要是{text:1,value:1}或者[{text:1,value:1}]
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {

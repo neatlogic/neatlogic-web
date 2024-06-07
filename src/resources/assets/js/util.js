@@ -610,6 +610,15 @@ const methods =  {
       });
     return columlist;
   },
+  getRunnerGroupList(list) {
+    let columlist = [];
+    columlist.push({ text: $t('page.autoexecradomrunnergroup'), value: -1, config: {} });
+    list &&
+    list.forEach(v => {
+      columlist.push({ text: v.name, value: v.id, config: v });
+    });
+    return columlist;
+  },
   getAppForselect(nodeList) {
     //系统和模块下拉数据（资源中心）
     let columlist = [];
@@ -878,7 +887,8 @@ const methods =  {
   },
   validParamValue(val, validateList) {
     //参数校验规则：判断值是否满足正则规则
-    const validtorJson = require('@/resources/plugins/TsForm/TsValidtor'); // 解决TsValidtor.js加载最快，导致拿不到$t，弹窗校验出不来的问题
+    const validtorConfig = require('@/resources/plugins/TsForm/TsValidtor'); // 解决TsValidtor.js加载最快，导致拿不到$t，弹窗校验出不来的问题
+    const validtorJson = validtorConfig.default; //require引入TsValidtor的默认为'export default validtor'，会包一层default
     let _this = this;
     let resultValidtorJson = [];
     let isValid = true;
@@ -985,18 +995,11 @@ const methods =  {
     return text;
   },
   handleTopoImagePath(nodesString) {
-    /**
-     * 处理cmdb拓补图图片路径，本地开发环境，图片路径需带上租户，否则图片显示不出来
-     * 获取image=最后一个/后的值，然后拼接resource/img/topo静态资源文件路径
-     */
     if (!nodesString) {
       return '';
     }
-    let regex = /image="(?:\/resource\/img\/icons\/|\/)([^\/"]+)"/g; // 正则匹配 image="/resource/img/icons/xxxxx.xxx.png" 或者 image="/xxxx.xxxx.png" 取最后一个/后的值
-    let newNodesString = nodesString.replace(regex, (match, imageName) => {
-      let imagePath = `resource/img/topo/${imageName}`;
-      let newImagePath = process.env.NODE_ENV === 'development' ? `${process.env.VUE_APP_TENANT}/${imagePath}` : `${imagePath}`;
-      return `image="/${newImagePath}"`;
+    let newNodesString = nodesString.replace(/image="(?:\/resource\/img\/icons\/|\/)([^\/"]+)"/g, (match, imageName) => {
+      return `image="/resource/img/topo/${imageName}"`;
     });
     return newNodesString;
   },

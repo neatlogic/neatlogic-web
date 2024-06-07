@@ -3,83 +3,70 @@
     <TsDialog v-if="historyData" v-bind="dialogConfig" @on-close="close">
       <template v-slot>
         <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
-        <div v-if="transactionData.inputFrom" class="mb-md" style="text-align:right">
+        <div v-if="transactionData.inputFrom" class="mb-md" style="text-align: right">
           <span class="text-grey">{{ $t('page.updatefrom') }}：</span>
           <span>{{ transactionData.inputFromText }}</span>
         </div>
-        <div class="bg-op radius-md bg-table-header">
-          <div class="historyTable">
-            <div class="cell border-color"></div>
-            <div class="cell border-color">{{ $t('page.type') }}</div>
-            <div class="cell border-color diffHeader">
-              <div>{{ $t('page.beforeedit') }}</div>
-              <div>{{ $t('page.afteredit') }}</div>
+        <TsTable :fixedHeader="false" :tbodyList="historyData.tbodyList" :theadList="theadList">
+          <template v-slot:type="{ row }">
+            <span v-if="row.type === 'attr'">{{ $t('page.attribute') }}</span>
+            <span v-else-if="row.type === 'rel'">{{ $t('page.relation') }}</span>
+            <span v-else-if="row.type === 'globalattr'">{{ $t('term.cmdb.globalattr') }}</span>
+          </template>
+          <template v-slot:oldValueList="{ row }">
+            <div v-if="row.type === 'attr'">
+              <AttrViewer v-if="row.oldValue" :handler="row.oldValue.type" :attrEntity="row.oldValue"></AttrViewer>
+              <span v-else class="text-grey">-</span>
             </div>
-          </div>
-          <div v-for="(row, index) in historyData.tbodyList" :key="index" class="historyTable bg-table-body">
-            <div class="cell border-color">{{ row.label }}</div>
-            <div class="cell border-color">
-              <span v-if="row.type === 'attr'">{{ $t('page.attribute') }}</span>
-              <span v-else-if="(row.type === 'rel')">{{ $t('page.relation') }}</span>
-              <span v-else-if="(row.type === 'globalattr')">{{ $t('term.cmdb.globalattr') }}</span>
-            </div>
-            <div class="cell diffContent border-color">
-              <div>
-                <div v-if="row.type === 'attr' && row.oldValue">
-                  <AttrViewer :handler="row.oldValue.type" :attrEntity="row.oldValue"></AttrViewer>
-                </div>
-                <div v-else-if="row.type === 'rel'">
-                  <Tag
-                    v-for="(relentity, rindex) in row.oldValue"
-                    :key="rindex"
-                    color="primary"
-                    type="dot"
-                    style="cursor:pointer"
-                  >
-                    <span @click="toCiEntity(relentity.ciEntityId, relentity.ciId)">{{ relentity.ciEntityName }}</span>
-                  </Tag>
-                </div>
-                <div v-else-if="row.type === 'globalattr'">
-                  <div v-if="row.oldValue && row.oldValue.length > 0">
-                    <Tag
-                      v-for="(attr, aindex) in row.oldValue"
-                      :key="aindex"
-                    >{{ attr.value }}
-                    </Tag>
-                  </div>
-                </div>
+            <div v-else-if="row.type === 'rel'">
+              <div v-if="row.oldValue && row.oldValue.length > 0">
+                <Tag
+                  v-for="(relentity, rindex) in row.oldValue"
+                  :key="rindex"
+                  color="primary"
+                  type="dot"
+                  style="cursor: pointer"
+                >
+                  <span @click="toCiEntity(relentity.ciEntityId, relentity.ciId)">{{ relentity.ciEntityName }}</span>
+                </Tag>
               </div>
-              <div>
-                <div v-if="row.type == 'attr'">
-                  <AttrViewer v-if="row.newValue" :handler="row.newValue.type" :attrEntity="row.newValue"></AttrViewer>
-                  <span v-if="!row.newValue" class="text-grey">-</span>
-                </div>
-                <div v-else-if="row.type == 'rel'">
-                  <div v-if="row.newValue">
-                    <Tag
-                      v-for="(relentity, rindex) in row.newValue"
-                      :key="rindex"
-                      :color="relentity.action == 'insert' ? 'success' : 'primary'"
-                      type="dot"
-                    >
-                      <span v-if="relentity.ciEntityId && relentity.ciId" style="cursor:pointer" @click="toCiEntity(relentity.ciEntityId, relentity.ciId)">{{ relentity.ciEntityName }}</span>
-                      <span v-else>{{ relentity.ciEntityName }}</span>
-                      <span style="margin-left:3px;font-size:12px" class="text-grey">{{ relentity.actionText }}</span>
-                    </Tag>
-                  </div>
-                  <div v-if="!row.newValue" class="text-grey">-</div>
-                </div>
-                <div v-else-if="row.type==='globalattr'">
-                  <Tag
-                    v-for="(attr, aindex) in row.newValue"
-                    :key="aindex"
-                  >{{ attr.value }}
-                  </Tag>
-                </div>
-              </div>
+              <div v-else class="text-grey">-</div>
             </div>
-          </div>
-        </div>
+            <div v-else-if="row.type === 'globalattr'">
+              <div v-if="row.oldValue && row.oldValue.length > 0">
+                <Tag v-for="(attr, aindex) in row.oldValue" :key="aindex">{{ attr.value }}</Tag>
+              </div>
+              <span v-else class="text-grey">-</span>
+            </div>
+          </template>
+          <template v-slot:newValueList="{ row }">
+            <div v-if="row.type == 'attr'">
+              <AttrViewer v-if="row.newValue" :handler="row.newValue.type" :attrEntity="row.newValue"></AttrViewer>
+              <span v-else class="text-grey">-</span>
+            </div>
+            <div v-else-if="row.type == 'rel'">
+              <div v-if="row.newValue && row.newValue.length > 0">
+                <Tag
+                  v-for="(relentity, rindex) in row.newValue"
+                  :key="rindex"
+                  :color="relentity.action == 'insert' ? 'success' : 'primary'"
+                  type="dot"
+                >
+                  <span v-if="relentity.ciEntityId && relentity.ciId" style="cursor: pointer" @click="toCiEntity(relentity.ciEntityId, relentity.ciId)">{{ relentity.ciEntityName }}</span>
+                  <span v-else>{{ relentity.ciEntityName }}</span>
+                  <span style="margin-left: 3px; font-size: 12px" class="text-grey">{{ relentity.actionText }}</span>
+                </Tag>
+              </div>
+              <span v-else class="text-grey">-</span>
+            </div>
+            <div v-else-if="row.type === 'globalattr'">
+              <div v-if="row.newValue && row.newValue.length > 0">
+                <Tag v-for="(attr, aindex) in row.newValue" :key="aindex">{{ attr.value }}</Tag>
+              </div>
+              <span v-else class="text-grey">-</span>
+            </div>
+          </template>
+        </TsTable>
         <Divider v-if="transactionData.description" orientation="left">{{ $t('page.memo') }}</Divider>
         <div v-if="transactionData.description" class="fz10 text-grey">{{ transactionData.description }}</div>
       </template>
@@ -90,15 +77,16 @@
 export default {
   name: '',
   components: {
-    // TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AttrViewer: resolve => require(['./attr-viewer.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AttrViewer: () => import('./attr-viewer.vue')
   },
   props: {
     transactionId: { type: Number },
     ciId: { type: Number },
     ciEntityId: { type: Number },
     isShow: { type: Boolean },
-    isOpenNewPage: { //是否需要打开新窗口查看详情
+    isOpenNewPage: {
+      //是否需要打开新窗口查看详情
       type: Boolean,
       default: false
     }
@@ -138,11 +126,13 @@ export default {
         },
         {
           key: 'oldValueList',
-          title: this.$t('page.beforeedit')
+          title: this.$t('page.beforeedit'),
+          width: 320
         },
         {
           key: 'newValueList',
-          title: this.$t('page.afteredit')
+          title: this.$t('page.afteredit'),
+          width: 320
         }
       ])
     };
@@ -177,7 +167,7 @@ export default {
       }
       let content = this.$t('dialog.content.recoverconfirm', { target: this.$t('term.cmdb.cientity') });
       if (brotherTransactionCount > 0) {
-        content = this.$t('dialog.content.invokerecoverconfirm', {count: brotherTransactionCount});
+        content = this.$t('dialog.content.invokerecoverconfirm', { count: brotherTransactionCount });
       }
       this.$createDialog({
         title: this.$t('dialog.title.recoverconfirm'),

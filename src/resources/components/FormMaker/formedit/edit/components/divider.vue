@@ -3,7 +3,7 @@
     <!-- start_颜色 -->
     <div class="formsetting-block">
       <label class="formsetting-label text-grey label-pickeer">
-        颜色 
+        颜色
         <span>
           <Tooltip
             placement="bottom"
@@ -54,7 +54,7 @@
 export default {
   name: 'Formdivider',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     setting: Object

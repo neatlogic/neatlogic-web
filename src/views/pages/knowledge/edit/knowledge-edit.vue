@@ -40,7 +40,7 @@
             @initData="initDefaultData"
           ></EditMain>
         </div>
-        
+
       </template>
     </TsContain>
     <!-- 提交审核 -->
@@ -61,10 +61,10 @@ export default {
   name: 'KnowledgeEdit',
   components: {
     EditMain,
-    ReviewDialog: resolve => require(['./main/review-dialog.vue'], resolve),
-    ActivityOverview: resolve => require(['@/views/pages/knowledge/common/activity-detail.vue'], resolve),
-    SaveOverview: resolve => require(['./main/save-overview'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    ReviewDialog: () => import('./main/review-dialog.vue'),
+    ActivityOverview: () => import('@/views/pages/knowledge/common/activity-detail.vue'),
+    SaveOverview: () => import('./main/save-overview'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   filters: {},
   props: [''],
@@ -222,7 +222,7 @@ export default {
       // let data = {
       //   knowledgeDocumentVersionId: this.knowledgeDocumentVersionId
       // };
-      // this.$api.knowledge.knowledge.submitDraftDocument(data).then(res => { 
+      // this.$api.knowledge.knowledge.submitDraftDocument(data).then(res => {
       //   if (res.Status == 'OK') {
       //     this.$Notice.success({ title: '提交成功', duration: 1.5 });
       //     let isReviewable = res.Return.isReviewable;

@@ -19,7 +19,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     propertyUid: { type: Number },
@@ -88,7 +88,7 @@ export default {
         {
           type: 'select',
           name: 'valueRange',
-          label: this.$t('term.pbc.valuerange'), 
+          label: this.$t('term.pbc.valuerange'),
           transfer: true,
           url: '/api/rest/pbc/interface/property/valuerange/list'
         },

@@ -6,6 +6,7 @@
     v-bind="issueData"
     :sortOrder="sortData"
     :sortList="sortList"
+    :fixedHeader="fixedHeader"
     multiple
     @changeCurrent="searchIssue"
     @changePageSize="changePageSize"
@@ -66,11 +67,11 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    AttrViewer: resolve => require(['@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    AttrViewer: () => import('@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue')
   },
   props: {
     issueData: { type: Object },
@@ -83,7 +84,11 @@ export default {
     canAction: { type: Boolean, default: false },
     parentId: { type: Number }, //父任务id，传入parentId代表这里显示的是子任务
     fromId: { type: Number }, //来源任务id
-    toId: { type: Number } //目标任务id
+    toId: { type: Number }, //目标任务id
+    fixedHeader: { // 固定表头，默认true
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {};

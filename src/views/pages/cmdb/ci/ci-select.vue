@@ -38,7 +38,7 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     isShow: {type: Boolean},
@@ -63,7 +63,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-   
+
   },
   beforeUpdate() {},
   updated() {},
@@ -99,7 +99,7 @@ export default {
     }
   },
   filter: {},
-  computed: { 
+  computed: {
     filterCiTypeList() {
       if (!this.keyword) {
         return this.ciTypeList;

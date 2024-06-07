@@ -1,25 +1,10 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div class="tool-detail">
     <Loading :loadingShow="isLoading" type="fix"></Loading>
     <TsContain
       v-if="toolConfig"
-      siderPosition="right"
-      :siderWidth="204"
+      :rightWidth="204"
       :clearStyle="true"
       border="border"
     >
@@ -66,7 +51,7 @@
           </template>
         </div>
       </template>
-      <template v-slot:sider>
+      <template v-slot:right>
         <BasicDetail :config="toolConfig" operationType="tool"></BasicDetail>
       </template>
       <template v-slot:content>
@@ -131,9 +116,9 @@ export default {
   name: '',
   components: {
     ParamsReadonly,
-    BasicDetail: resolve => require(['./scriptDetail/edit/basic-detail'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    BasicDetail: () => import('./scriptDetail/edit/basic-detail'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   filters: {},
   directives: { download },
@@ -265,12 +250,12 @@ export default {
         .generateAction(data)
         .then(res => {
           if (res.Status == 'OK' && res.Return) {
-            this.$router.push({ 
+            this.$router.push({
               path: '/action-detail',
-              query: { 
+              query: {
                 id: res.Return,
                 versionStatus: 'passed'
- 
+
               }
             });
           }

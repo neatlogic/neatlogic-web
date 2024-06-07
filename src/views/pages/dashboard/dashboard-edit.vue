@@ -3,7 +3,7 @@
   <div class="dashboard-edit-container">
     <TsContain :enableCollapse="true" :siderWidth="260" :rightWidth="300">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/dashboard-manage')">{{ $getFromPage('router.dashboard.dashboardmanage') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <TsFormInput
@@ -184,12 +184,12 @@ export default {
   components: {
     GridLayout: VueGridLayout.GridLayout,
     GridItem: VueGridLayout.GridItem,
-    DashboardConfig: resolve => require(['./dashboard-config.vue'], resolve),
-    WidgetConfig: resolve => require(['./widget/configs/widget-config.vue'], resolve),
-    DataConfig: resolve => require(['./dashboard-data-config.vue'], resolve),
-    LayoutConfig: resolve => require(['./dashboard-layout-config.vue'], resolve),
-    DashboardWidget: resolve => require(['./widget/dashboard-widget.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    DashboardConfig: () => import('./dashboard-config.vue'),
+    WidgetConfig: () => import('./widget/configs/widget-config.vue'),
+    DataConfig: () => import('./dashboard-data-config.vue'),
+    LayoutConfig: () => import('./dashboard-layout-config.vue'),
+    DashboardWidget: () => import('./widget/dashboard-widget.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue')
   },
   props: [],
   data() {
@@ -214,7 +214,7 @@ export default {
   beforeCreate() {},
   beforeDestroy() {
     window.removeEventListener('resize', this.resizeWindow);
-    if (screenfull.isEnabled) {    
+    if (screenfull.isEnabled) {
       screenfull.off('change', this.screenfullChange);
     }
   },

@@ -49,7 +49,7 @@ export default {
   name: '',
   components: {
     draggable,
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: { projectId: { type: Number }, appId: { type: Number } },
   data() {

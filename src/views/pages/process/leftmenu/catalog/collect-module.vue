@@ -61,7 +61,7 @@
 export default {
   name: '', // 收藏模块
   components: {
-    SeeMore: resolve => require(['./see-more.vue'], resolve) // 查看更多
+    SeeMore: () => import('./see-more.vue') // 查看更多
   },
   props: {
     favoriteData: {

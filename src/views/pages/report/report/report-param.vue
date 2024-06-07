@@ -111,10 +111,10 @@ import * as configs from './paramconfig';
 export default {
   name: '',
   components: {
-    TsFormInput, 
+    TsFormInput,
     TsFormSelect,
     ...configs,
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     paramList: {
@@ -125,7 +125,6 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
       myParamList: [],
       controllerTypeList: [
@@ -208,13 +207,13 @@ export default {
       let _this = this;
       this.myParamList.push(
         {
-          name: '', 
-          label: '', 
-          type: '', 
+          name: '',
+          label: '',
+          type: '',
           config: {
-            isRequired: 0, 
-            tsFormDatePickerType: '', 
-            tsFormDatePickerFormat: '', 
+            isRequired: 0,
+            tsFormDatePickerType: '',
+            tsFormDatePickerFormat: '',
             tsFormDateFormat: '',
             datePickerTypeList: _this.datePickerTypeList,
             dateFormatList: []

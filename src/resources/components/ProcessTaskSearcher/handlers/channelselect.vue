@@ -36,7 +36,8 @@
         :validateList="['required']"
         @change="changeFormAttribute"
       ></TsFormSelect>
-      <div v-for="(formcondition, index) in workcenterFormConditionList" :key="index">
+      <!-- 解决index作为key，导致删除对应属性，属性对应配置信息还是上一个的问题 -->
+      <div v-for="(formcondition) in workcenterFormConditionList" :key="formcondition.uuid">
         <div v-if="getFormConditionByName(formcondition.name)">
           <label class="text-grey">{{ getFormConditionByName(formcondition.name).handlerName }}</label>
           <div>
@@ -44,6 +45,8 @@
               mode="simple"
               :condition="getFormConditionByName(formcondition.name)"
               :workcenterConditionData="workcenterConditionData"
+              :isCustomValue="isCustomValue"
+              :isCustomPanel="true"
               @change="changeFromCondition"
             ></SearchInputer>
           </div>
@@ -57,15 +60,20 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    SearchInputer: resolve => require(['../search-inputer.vue'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    SearchInputer: () => import('../search-inputer.vue')
   },
   props: {
     mode: { type: String, default: 'simple' },
     conditionData: { type: Object }, //当前组件在工单中心配置中的数据
     condition: { type: Object },
-    workcenterConditionData: { type: Object } //工单中心所有条件数据
+    workcenterConditionData: { type: Object }, //工单中心所有条件数据
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -164,7 +172,7 @@ export default {
               newD['formHandler'] = d.handler; //ex:formselect
               newD['type'] = 'form';
               try {
-                newD['config'] = JSON.parse(d.config);
+                newD['config'] = d.config;
               } catch (e) {
                 console.error(e);
               }

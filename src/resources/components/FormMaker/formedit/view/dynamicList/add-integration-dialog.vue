@@ -86,9 +86,9 @@ import Search from './search';
 import filtermixin from './filtermixin';
 export default {
   name: 'FormdynamicList',
-  components: { 
-    Search, 
-    TdFormitem: resolve => require(['../integration/td-formitem.vue'], resolve)
+  components: {
+    Search,
+    TdFormitem: () => import('../integration/td-formitem.vue')
   },
   mixins: [filtermixin],
   props: {
@@ -156,7 +156,7 @@ export default {
           }
         });
       !isSelect && this.currentSelectUuidList[uuid] && delete this.currentSelectUuidList[uuid];
-      selectNum == this.editModalJson.tbodyList.length ? (this.editModalJson.isSelectAll = true) : (this.editModalJson.isSelectAll = false);  
+      selectNum == this.editModalJson.tbodyList.length ? (this.editModalJson.isSelectAll = true) : (this.editModalJson.isSelectAll = false);
       //扩展
       _this.editModalJson.theadList.forEach(th => {
         let item = _this.editModalJson.tbodyList[index][th.key] || {};
@@ -326,7 +326,7 @@ export default {
           resultJson.dataList = this.$utils.deepClone(dataList);
         }
       }
-      
+
       return resultJson;
     }
   },

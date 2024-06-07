@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div id="taskReport" class="report-detail">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
@@ -23,9 +9,9 @@
         <template v-if="dataConfig.content || (dataConfig.fileList && dataConfig.fileList.length > 0)">
           <div v-if="dataConfig.content && isNeedContent" class="report-content pb10">
             <div class="text-grey fz10 pb-xs">{{ $t('page.description') }}</div>
-            <div class="content-bg bg-tip-grey radius-sm">
+            <div class="pt-md">
               <div v-imgViewer class="content-detail" :style="{'height':maxheight}">
-                <div ref="getheight" v-html="dataConfig.content"></div>
+                <div ref="getheight" v-dompurify-html="dataConfig.content"></div>
               </div>
               <div
                 v-if="isView"
@@ -90,7 +76,7 @@
                 <div class="text-grey comment-title fz10">
                   {{ $t('term.process.changecontent') }}
                 </div>
-                <div class="content-bg bg-tip-grey radius-sm">
+                <div class="pt-md">
                   <div v-imgViewer class="content-detail" :style="{'height':maxheight}">
                     <div ref="getheight" v-html="handlerStepInfo.content"></div>
                   </div>
@@ -101,7 +87,7 @@
                     v-text="maxheight=='200px'?$t('page.viewmore'):$t('page.clickandputaway')"
                   ></div>
                 </div>
-       
+
               </div>
               <div v-if="handlerStepInfo.fileList.length > 0" class="report-content pt16">
                 <div class="text-grey pb10 fz10">{{ $t('page.accessory') }}</div>
@@ -187,12 +173,12 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    // TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    // TsFormSwitch:()=>import('@/resources/plugins/TsForm/TsFormSwitch'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   directives: {imgViewer, download},
   filters: {
@@ -360,7 +346,7 @@ export default {
       this.isNeedContent = startProcessTaskStep.hasOwnProperty('isNeedContent') ? !!startProcessTaskStep.isNeedContent : true;
       this.$set(this.omnipotentForm.content, 'isHidden', !this.isNeedContent);
       this.$set(this.changecreateForm.content, 'isHidden', !this.isNeedContent);
-      
+
       //流程上报可配置隐藏上传文件组件
       this.isShowUploadFile = startProcessTaskStep.hasOwnProperty('isNeedUploadFile') ? !!startProcessTaskStep.isNeedUploadFile : true;
       //变更上报

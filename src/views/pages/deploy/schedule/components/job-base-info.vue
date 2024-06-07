@@ -29,7 +29,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     labelWidth: {
@@ -42,7 +42,7 @@ export default {
     },
     defaultParams: Object,
     disabled: {
-      type: Boolean, 
+      type: Boolean,
       default: false
     }
   },
@@ -300,7 +300,7 @@ export default {
             this.$set(this.generalFormConfig.appModuleId, 'value', this.baseParams.appModuleId);
             this.$set(this.generalFormConfig.appSystemId, 'disabled', true);
             this.$set(this.generalFormConfig.appModuleId, 'disabled', true);
-          } else if (this.baseParams.type == 'pipeline') {        
+          } else if (this.baseParams.type == 'pipeline') {
             this.$set(this.pipelineFormConfig.pipelineType, 'value', this.baseParams.pipelineType);
             this.$set(this.pipelineFormConfig.pipelineId, 'value', this.baseParams.pipelineId);
             this.$set(this.pipelineFormConfig.pipelineType, 'disabled', true);

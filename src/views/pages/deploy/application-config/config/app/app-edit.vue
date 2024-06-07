@@ -26,29 +26,29 @@
                     <div class="text-grey auth-text">{{ $t('term.deploy.operationauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.operationAuthList"
-                      :appSystemId="params.appSystemId"
+                      :authSetting="authSetting"
                       :isEdit="isEdit"
                       operationType="operation"
                     ></AuthEdit>
                   </div>
                 </li>
-                <li class="bg-op radius-sm mb-nm">
+                <li v-if="canShowEnvScenario" class="bg-op radius-sm mb-nm">
                   <div class="padding">
                     <div class="text-grey auth-text">{{ $t('term.deploy.envauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.envAuthList"
-                      :appSystemId="params.appSystemId"
+                      :authSetting="authSetting"
                       :isEdit="isEdit"
                       operationType="env"
                     ></AuthEdit>
                   </div>
                 </li>
-                <li class="bg-op radius-sm mb-nm">
+                <li v-if="canShowEnvScenario" class="bg-op radius-sm mb-nm">
                   <div class="padding">
                     <div class="text-grey auth-text">{{ $t('term.deploy.scenarioauth') }}</div>
                     <AuthEdit
                       v-model="authConfig.scenarioAuthList"
-                      :appSystemId="params.appSystemId"
+                      :authSetting="authSetting"
                       :isEdit="isEdit"
                       operationType="scenario"
                     ></AuthEdit>
@@ -67,8 +67,8 @@
 export default {
   name: '', // 应用权限编辑
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    AuthEdit: resolve => require(['./components/auth-edit'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    AuthEdit: () => import('./components/auth-edit')
   },
   props: {
     params: {
@@ -77,7 +77,12 @@ export default {
         return {};
       }
     },
-    isEdit: Number // 是否是编辑：0否 1是
+    isEdit: Number, // 是否是编辑：0否 1是
+    hideFucntionExcludeAppModuleRunner: {
+      //  codehub新增应用配置入口，为了维护应用和模块，应用权限以及模块对应的runner组,发布其他功能全部屏蔽
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -93,6 +98,7 @@ export default {
         scenarioAuthList: [], // 场景权限列表
         envAuthList: [] // 环境权限列表
       },
+      authSetting: {},
       authRequired: false, // 权限必填
       loadingShow: true,
       defaultoperationAuthList: [], // 权限列表，用户回显操作
@@ -118,17 +124,14 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-    this.loadingShow = true; 
-    this.getAuthList().then(() => {
-      if (this.isEdit) {
-        this.getAuthInfoById();
-      } else {
-        this.loadingShow = false;
-      }
-    }).catch(() => {
+  async mounted() {
+    this.loadingShow = true;
+    await this.getAuthList();
+    if (this.isEdit) {
+      this.getAuthInfoById();
+    } else {
       this.loadingShow = false;
-    });
+    }
   },
   beforeUpdate() {},
   updated() {},
@@ -151,7 +154,8 @@ export default {
         authorityStrList,
         appSystemId: this.params.appSystemId,
         isEdit: this.isEdit,
-        actionList: this.handleActionList(this.authConfig)
+        actionList: this.handleActionList(this.authConfig),
+        includeActionList: this.canShowEnvScenario ? [] : ['view', 'edit']
       };
       this.$api.deploy.applicationConfig.saveAppConfigAuth(params).then((res) => {
         if (res && res.Status == 'OK') {
@@ -210,6 +214,7 @@ export default {
     },
     getAuthInfoById() {
       let params = {
+        authorityStrList: ['user#' + this.$AuthUtils.getCurrentUser().uuid],
         ...this.params
       };
       this.loadingShow = true;
@@ -217,19 +222,21 @@ export default {
         if (res && res.Status == 'OK') {
           if (res.Return && res.Return.tbodyList) {
             let authInfo = res.Return.tbodyList[0];
-            this.authConfig.authorityStrList = authInfo ? [`${authInfo['authType']}#${authInfo['authUuid']}`] : [];
-            for (let key in authInfo) {
-              if (key && this.defaultoperationAuthList.includes(key)) {
-                this.authConfig.operationAuthList.push(key);
-              } else if (key && this.defaultscenarioAuthList.includes(parseInt(key))) {
-                this.authConfig.scenarioAuthList.push(parseInt(key));
-              } else if (key && this.defaultenvAuthList.includes(parseInt(key))) {
-                this.authConfig.envAuthList.push(parseInt(key));
+            if (!this.$utils.isEmpty(authInfo)) {
+              this.authConfig.authorityStrList = authInfo ? [`${authInfo['authType']}#${authInfo['authUuid']}`] : [];
+              for (let key in authInfo) {
+                if (key && this.defaultoperationAuthList.includes(key)) {
+                  this.authConfig.operationAuthList.push(key);
+                } else if (key && this.defaultscenarioAuthList.includes(parseInt(key))) {
+                  this.authConfig.scenarioAuthList.push(parseInt(key));
+                } else if (key && this.defaultenvAuthList.includes(parseInt(key))) {
+                  this.authConfig.envAuthList.push(parseInt(key));
+                }
               }
-            }
-            for (let key in this.formConfig) {
-              if (key == 'authorityStrList') {
-                this.$set(this.formConfig[key], 'disabled', true);
+              for (let key in this.formConfig) {
+                if (key == 'authorityStrList') {
+                  this.$set(this.formConfig[key], 'disabled', true);
+                }
               }
             }
           }
@@ -238,9 +245,10 @@ export default {
         this.loadingShow = false;
       });
     },
-    async getAuthList() {
-      await this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId}).then((res) => {
+    getAuthList() {
+      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId, includeActionList: this.canShowEnvScenario ? [] : ['view', 'edit']}).then((res) => {
         if (res && res.Status == 'OK') {
+          this.authSetting = res.Return || {};
           for (let key in res.Return) {
             if (key && res.Return[key]) {
               res.Return[key].forEach((item) => {
@@ -253,7 +261,12 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    canShowEnvScenario() {
+      // 显示环境场景
+      return !this.hideFucntionExcludeAppModuleRunner;
+    }
+  },
   watch: {}
 };
 </script>

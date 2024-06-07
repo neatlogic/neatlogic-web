@@ -3,7 +3,11 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template v-slot:navigation>
-        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage('', 'term.deploy.configurationlist') }}</span>
+        <span
+          v-if="$hasBack()"
+          class="tsfont-left text-action"
+          @click="$back()"
+        >{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span class="tsfont-question-s text-action" @click="openConfigAddHelpDialog">{{ $t('page.help') }}</span>
@@ -85,11 +89,11 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    BatchAddJob: resolve => require(['./batch-add-job'], resolve), // 批量作业作业
-    SingleAddJob: resolve => require(['./single-add-job'], resolve), // 单个创建作业
-    PoptipSelect: resolve => require(['@/resources/components/PoptipSelect/PoptipSelect.vue'], resolve),
-    ConfigAddHelpDialog: resolve => require(['./config-add-help-dialog'], resolve) // 帮助
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    BatchAddJob: () => import('./batch-add-job'), // 批量作业作业
+    SingleAddJob: () => import('./single-add-job'), // 单个创建作业
+    PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect.vue'),
+    ConfigAddHelpDialog: () => import('./config-add-help-dialog') // 帮助
   },
   props: {},
   data() {
@@ -380,7 +384,9 @@ export default {
       this.$api.deploy.integrated.saveConfig(this.getConfigData()).then(res => {
         if (res && res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
-          this.$back(); // 保存成功，返回列表页面
+          this.$router.push({
+            path: '/application-config-manage'
+          });
         }
       });
     },

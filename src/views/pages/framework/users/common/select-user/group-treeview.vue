@@ -5,7 +5,7 @@
       :key="cd.uuid"
       :index="index"
       class="dataSource-ul"
-    > 
+    >
       <span class="sub-line"></span>
       <p class="team-check bg-check">
         <Checkbox :value="cd.checked?true:false" @on-change="changeCheckbox(cd,...arguments)"></Checkbox>
@@ -26,8 +26,7 @@
           </Tooltip>
         </span>
         <!-- 复选框选中，子节点按钮才显示 -->
-       
-        <span v-if="cd.checked" class="selectNode">
+        <span v-if="isNeedChildren&&cd.checked" class="selectNode">
           <TsFormSwitch v-model="cd.checkedChildren" @on-change="changeSwitch(cd,...arguments)" />
         </span>
       </div>
@@ -35,6 +34,7 @@
       <GroupTreeView
         v-else
         :children="cd.children"
+        :isNeedChildren="isNeedChildren"
         class="item-sub"
       ></GroupTreeView>
     </div>
@@ -46,11 +46,15 @@ export default {
   inject: ['$parent'],
   name: 'GroupTreeView',
   components: {
-    GroupTreeView: resolve => require(['./group-treeview'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    GroupTreeView: () => import('./group-treeview'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
 
   },
   props: {
+    isNeedChildren: {
+      type: Boolean,
+      default: true
+    },
     children: {
       required: true,
       type: Array,

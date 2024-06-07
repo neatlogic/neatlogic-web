@@ -5,7 +5,7 @@
         <div v-if="comboData">
           <div v-if="comboData.isHasBindCombop">
             <div v-if="ciEntityData">
-              <div class="mb-nm">      
+              <div class="mb-nm">
                 <span v-html="$t('term.inspect.assetinspectconfirm', {target: ciEntityData.name})"></span>
               </div>
               <div v-if="getInsoectionToolName(comboData)">
@@ -63,7 +63,7 @@
 export default {
   name: '',
   components: {
-    InspectToolSetting: resolve => require(['@/views/pages/inspect/definition/components/inspect-tool-setting'], resolve)
+    InspectToolSetting: () => import('@/views/pages/inspect/definition/components/inspect-tool-setting')
   },
   filters: {},
   props: {

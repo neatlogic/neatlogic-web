@@ -7,8 +7,8 @@
           <span v-if="select && select.length > 0" class="action-item tsfont-trash-o" @click="deleteData(select)">{{ $t('page.batchdelete') }}</span>
         </div>
       </template>
-      <div slot="topCenter" style="text-align:right" class="pr-md">
-        <Button :type="vipLevel?'primary':'default'" @click="changeVipLevel">VIP</Button>
+      <div slot="topCenter" class="pr-md text-right">
+        <Button v-if="$AuthUtils.hasRole('VIP_VIEW')" :type="vipLevel?'primary':'default'" @click="changeVipLevel">VIP</Button>
       </div>
       <template slot="topRight">
         <InputSearcher
@@ -122,10 +122,10 @@
 export default {
   name: 'UserManage',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    CommonAuth: resolve => require(['./common/common-auth.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    CommonAuth: () => import('./common/common-auth.vue')
   },
   props: [],
   data() {
@@ -219,7 +219,7 @@ export default {
       this.loadingShow = true;
       let data = {
         keyword: this.keyword,
-        vipLevel: this.vipLevel,
+        vipLevel: this.$AuthUtils.hasRole('VIP_VIEW') ? this.vipLevel : 0,
         currentPage: this.searchParams.currentPage,
         pageSize: this.searchParams.pageSize
       };

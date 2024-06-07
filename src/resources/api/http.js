@@ -1,24 +1,8 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import Vue from 'vue';
 import axios from 'axios';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import utils from '@/resources/assets/js/util';
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 
 Vue.prototype.$axios = axios;
 const tip = (msg, onClose, name, title, type = 'error') => {
@@ -56,8 +40,8 @@ instance.defaults.headers.post['Content-Type'] = 'application/json'; //post请�
 instance.defaults.baseURL = BASEURLPREFIX; //默认接口前缀
 instance.CancelToken = axios.CancelToken;
 
-if (SSOTICKETKEY && SSOTICKETVALUE) {
-  instance.defaults.headers.post['AuthType'] = SSOTICKETKEY; //post请求头
+if ((AUTHTYPE || SSOTICKETKEY) && SSOTICKETVALUE) {
+  instance.defaults.headers.post['AuthType'] = AUTHTYPE || SSOTICKETKEY; //post请求头
   instance.defaults.headers.post['AuthValue'] = SSOTICKETVALUE; //post请求头
 }
 
@@ -66,18 +50,31 @@ if (SSOTICKETKEY && SSOTICKETVALUE) {
  * 跳转登录页
  * 携带当前页面路由，以期在登录页面完成登录后返回当前页面
  */
-const toLogin = url => {
+const toLogin = (url, status) => {
+  let splitParam = '';
+  let queryParam = '';
+  if (status) {
+    splitParam = `&httpresponsestatuscode=${status}`;
+    queryParam = `?httpresponsestatuscode=${status}`;
+  }
   if (url) {
-    window.location.href = url;
+    window.location.href = handleUrl(url, splitParam, queryParam);
   } else {
     try {
       let path = Vue.prototype.$tsrouter.currentRoute.fullPath == '/' ? window.location.href.split(MODULEID + '.html#')[1] : Vue.prototype.$tsrouter.currentRoute.fullPath;
-      window.location.href = HOME + '/login.html#?tenant=' + TENANT + '&redirect=' + MODULEID + '.html#' + path;
+      window.location.href = HOME + '/login.html#?tenant=' + TENANT + splitParam + '&redirect=' + MODULEID + '.html#' + path;
     } catch (e) {
       console.log(e);
-      window.location.href = HOME + '/login.html#?tenant=' + TENANT;
+      window.location.href = HOME + '/login.html#?tenant=' + TENANT + splitParam;
     }
   }
+};
+const handleUrl = (url, splitParam, queryParam) => {
+  // 处理url后面带？还有不带？的情况
+  if (splitParam && url) {
+    return `${url}${url.includes('?') ? splitParam : queryParam}`;
+  }
+  return url;
 };
 //调用接口
 instance.interceptors.request.use(config => {
@@ -99,7 +96,7 @@ instance.interceptors.request.use(config => {
 
 //返回数据
 instance.interceptors.response.use(
-  function(response) {
+  response => {
     // 对响应数据做点什么
     // const token = utils.getCookie('neatlogic_authorization');
     // if (!token || token == null) {
@@ -108,14 +105,14 @@ instance.interceptors.response.use(
     let res = response.request.responseType ? response : response.data;
     return Promise.resolve(res);
   },
-  function(error) {
+  error => {
     if (error && error.response) {
       if (error.response.config && error.response.config.headers.unConsole) {
         //请求时多携带{unConsole: 1}默认为异常不需要用通用类的异常抛出
         //console.log(error.response.data.Message || error.response.data);
       } else if (error.response.data instanceof Blob) {
         const reader = new FileReader();
-        reader.onload = function() {
+        reader.onload = () => {
           const data = JSON.parse(reader.result);
           errorHandle({ ...error.response, data });
         };
@@ -153,7 +150,7 @@ const errorHandle = res => {
       toLogin();
       break;
     case 403:
-      tip($t('message.sessionexpired'), function() {
+      tip($t('message.sessionexpired'), () => {
         Vue.prototype.$utils.removeCookie('neatlogic_authorization');
         toLogin();
       });
@@ -161,6 +158,10 @@ const errorHandle = res => {
     case 404:
       console.log($t('message.urlnotfound', { target: res.config.url }));
       break;
+    case 429:
+      // 接口设置访问次数限制
+      tip(rejectSource, null, res.config.url, '提示', 'info');
+      throw rejectSource;
     case 500:
       //未知的接口问题
       tip('服务器错误');
@@ -171,58 +172,40 @@ const errorHandle = res => {
       window.location.href = '/500.html';
       // 跳到服务器错误页面
       break;
-    case 520:
-      //已知的接口问题
-      tip(other, null, res.config.url, '提示', 'info');
-      throw res.data.Message; //把后端返回的错误信息抛出到页面中，这样页面可以catch这些错误做一些处理
     case 521:
       //租户问题，需要跳出系统重新输入租户
       Vue.prototype.$utils.removeCookie('neatlogic_authorization');
       window.location.href = '/404.html';
       break;
     case 522:
-      //用户接口认证有问题,重新登录
+      // 认证类型失败
       Vue.prototype.$utils.removeCookie('neatlogic_authorization');
-      toLogin(res.data && res.data.directUrl ? res.data.directUrl : null);
+      toLogin(res.data && res.data.directUrl ? res.data.directUrl : null, status);
       break;
+    case 523: // 没有资源权限
+    case 526: // 对象不存在
+      //用户权限不足，跳回每一个路由的404页面提示无访问权限
+      Vue.prototype.$tsrouter.replace({
+        path: '/no-authority',
+        query: {
+          des: res.data && res.data.Message ? res.data.Message : $t('message.noauth')
+        }
+      });
+      break;
+    case 520: // 运行已知错误
+    case 524: // 重复提交表单
+    case 525: // 认证类型不存在
+    case 550: // license 认证失败
+      tip(other, null, res.config.url, '提示', 'info');
+      throw res;
     case 527:
       //会话已超时或已被终止,重新登录
       Vue.prototype.$utils.removeCookie('neatlogic_authorization');
       toLogin(res.data && res.data.directUrl ? res.data.directUrl : null);
       break;
-    case 523:
-      //用户权限不足，跳回每一个路由的404页面提示无访问权限
-      Vue.prototype.$tsrouter.replace({
-        path: '/404',
-        query: {
-          des: res.data && res.data.Message ? res.data.Message : $t('message.noauth')
-        }
-      });
-      break;
-    case 526:
-      //用户权限不足，跳回每一个路由的404页面提示无访问权限
-      Vue.prototype.$tsrouter.replace({
-        path: '/404',
-        query: {
-          des: res.data && res.data.Message ? res.data.Message : $t('message.noauth')
-        }
-      });
-      break;
-    case 524:
-      //重复提交表单
-      tip(other, null, res.config.url, '提示', 'info');
-      throw res;
-    case 525:
-      //认证失败
-      tip(other, null, res.config.url, '提示', 'info');
-      throw res;
     case 530:
       //接口参数不符合规范
       throw res.data.Message; //把后端返回的校验信息抛出到页面中
-    case 429:
-      // 接口设置访问次数限制
-      tip(rejectSource, null, res.config.url, '提示', 'info');
-      throw rejectSource;
     default:
       console.error($t('message.urlnotfound', { target: res.config.url }) + '，原因：' + (res.data.Message ? res.data.Message : res.data));
   }

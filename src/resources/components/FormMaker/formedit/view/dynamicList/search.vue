@@ -73,7 +73,7 @@
                       v-bind="valueConfig(search.uuid)"
                     ></TsFormSelect>
                   </template>
-              
+
                 </div>
                 <div v-else :title="getAllTitle(searchValueList[index].defaultValue)">
                   {{ getAllTitle(searchValueList[index].defaultValue) }}
@@ -101,7 +101,7 @@ export default {
     TsFormSelect,
     TsFormDatePicker,
     UserSelect,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   filters: {
   },
@@ -160,7 +160,7 @@ export default {
       }
       return allTitle;
     },
-    dealDataByUrl(nodeList, value) { 
+    dealDataByUrl(nodeList, value) {
       let columlist = [];
       if (nodeList && nodeList.length > 0) {
         nodeList.forEach(item => {
@@ -222,7 +222,7 @@ export default {
         if (value) {
           return {
             dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
-            params: { 
+            params: {
               matrixUuid: this.config.matrixUuid,
               keywordColumn: value,
               valueField: value,
@@ -232,7 +232,7 @@ export default {
             multiple: true,
             sperateText: ',',
             readonly: true,
-            transfer: true 
+            transfer: true
           };
         } else {
           return {};
@@ -253,7 +253,7 @@ export default {
       return (value) => {
         let config = {
           dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
-          params: { 
+          params: {
             matrixUuid: this.config.matrixUuid,
             keywordColumn: value,
             valueField: value,
@@ -263,7 +263,7 @@ export default {
           multiple: true,
           sperateText: ',',
           readonly: true,
-          transfer: true 
+          transfer: true
         };
         let itemConfig = this.getFilterConfig(value);
         if (itemConfig && itemConfig.config.dataSource == 'matrix') {
@@ -273,7 +273,7 @@ export default {
             dataList: itemConfig.config.dataList,
             multiple: true,
             sperateText: ',',
-            readonly: true 
+            readonly: true
           };
         }
       };

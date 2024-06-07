@@ -32,7 +32,7 @@
             @getHeadings="getHeadings"
           ></DocumentonlineContent>
         </div>
-       
+
         <!-- 文档列表 -->
         <DocumentonlineList v-else-if="!loadingShow" :upwardNameList="upwardNameList" @getDetail="getDetail"></DocumentonlineList>
       </template>
@@ -74,10 +74,10 @@
 export default {
   name: '',
   components: {
-    DocumentonlineTree: resolve => require(['./documentonline-tree.vue'], resolve),
-    DocumentonlineNav: resolve => require(['./documentonline-nav.vue'], resolve),
-    DocumentonlineContent: resolve => require(['./documentonline-content.vue'], resolve),
-    DocumentonlineList: resolve => require(['./documentonline-list.vue'], resolve)
+    DocumentonlineTree: () => import('./documentonline-tree.vue'),
+    DocumentonlineNav: () => import('./documentonline-nav.vue'),
+    DocumentonlineContent: () => import('./documentonline-content.vue'),
+    DocumentonlineList: () => import('./documentonline-list.vue')
   },
   props: {},
   data() {
@@ -140,7 +140,7 @@ export default {
       };
       return this.$api.documentonline.getDocumentDetail(data).then(res => {
         if (res.Status === 'OK') {
-          this.content = res.Return.content; 
+          this.content = res.Return.content;
           this.upwardNameList = res.Return.upwardNameList || [];
           this.preUpwardNameList = this.upwardNameList.slice(0, this.upwardNameList.length - 1);
         }

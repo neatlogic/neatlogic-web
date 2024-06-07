@@ -21,7 +21,7 @@
               </div>
               <div>
                 <a href="javascript:void(0)" class="tsfont-plus" @click="addCron">
-                  定时策略
+                  {{ $t('term.pbc.cromexpression') }}
                 </a>
               </div>
             </div>
@@ -57,7 +57,7 @@
             </TsTable>
             <div>
               <span class="pl-md mr-md">
-                   
+
                 <a v-if="!isTesting" href="javascript:void(0)" @click="testCondition()">测试筛选条件</a>
                 <span v-else class="text-grey">
                   <span>测试中...</span><span class="text-loading bg-info ml-xs"></span>
@@ -85,11 +85,11 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
     id: {

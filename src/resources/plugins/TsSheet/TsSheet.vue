@@ -116,7 +116,7 @@
       ref="tableContainer"
       :class="{ editmode: mode === 'edit' }"
       style="position:relative;overflow:auto;width:100%"
-      :style="{ height: mode === 'edit'?containerHeight:'100%' }"
+      :style="{ height: mode === 'edit'?containerHeight:mode === 'editSubform' ?'auto':'100%' }"
       @scroll="
         event => {
           scrollContainer(event);
@@ -235,7 +235,7 @@
             <td
               v-for="(cell, cindex) in rowCells(left.index)"
               :key="cindex"
-              :class="{ read: mode !== 'edit', selected: !!cell._selected || dropCell === cell, handler: !!cell._isHandler, ...cell.class }"
+              :class="{ read: mode !== 'edit' && mode !== 'editSubform', selected: (mode === 'edit' || mode === 'editSubform') && (!!cell._selected || dropCell === cell), handler: !!cell._isHandler, ...cell.class }"
               :colspan="cell.colspan"
               :rowspan="getActualRowSpan(cell)"
               :style="cell.style"
@@ -279,7 +279,7 @@
             >
               <div
                 v-if="mode === 'edit' && !$utils.isEmpty(cell.component)"
-                style="position:absolute;top:0px;left:0px;z-index:2;font-size:12px"
+                style="position:absolute;top:0px;left:0px;z-index:10;font-size:12px"
                 class="text-grey"
                 :class="cell.component.icon"
               ></div>
@@ -296,8 +296,10 @@
                   :formItemList="formItemList"
                   :mode="mode"
                   :disabled="disabled"
-                  :readonly="readonly"
+                  :readonly="readonly || config.readOnly"
                   :formHighlightData="formHighlightData"
+                  :isCustomValue="true"
+                  :formExtendData="formExtendData"
                   class="padding-xs"
                   @changeConfig="addHistory()"
                   @change="resizeCell(cell.row, cell.col, true)"
@@ -379,7 +381,7 @@ import conditionMixin from './form/conditionexpression/condition-mixin.js';
 export default {
   name: '',
   components: {
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
   mixins: [conditionMixin],
   props: {
@@ -415,7 +417,8 @@ export default {
     isFormSubassembly: { //是否是子表单组件引用
       type: Boolean,
       default: false
-    }
+    },
+    formSceneUuid: [String, Number] //表单场景uuid（工单详情页，必须给默认值，展示对应场景）
   },
   data() {
     return {
@@ -445,7 +448,8 @@ export default {
         { value: '16px', text: this.$t('page.big') },
         { value: '18px', text: this.$t('page.maximum') }
       ],
-      colorList: ['color-picker-th-', 'color-picker-', 'color-picker-border-', 'color-picker-tip-', 'color-picker-text-', 'color-picker-info-', 'color-picker-warning-', 'color-picker-success-', 'color-picker-error-', 'color-picker-info-grey-', 'color-picker-warning-grey-', 'color-picker-success-grey-', 'color-picker-error-grey-', 'color-picker-form-sheet-style-setting-']
+      colorList: ['color-picker-th-', 'color-picker-', 'color-picker-border-', 'color-picker-tip-', 'color-picker-text-', 'color-picker-info-', 'color-picker-warning-', 'color-picker-success-', 'color-picker-error-', 'color-picker-info-grey-', 'color-picker-warning-grey-', 'color-picker-success-grey-', 'color-picker-error-grey-', 'color-picker-form-sheet-style-setting-'],
+      formExtendData: {} //自定义组件消费数据
     };
   },
   beforeCreate() {},
@@ -458,7 +462,7 @@ export default {
     this.$nextTick(() => {
       this.calcContainerHeight();
     });
-   
+
     window.addEventListener('resize', this.calcContainerHeight);
     window.addEventListener('keydown', this.windowKeypress);
   },
@@ -559,7 +563,11 @@ export default {
          * 只读模式下，采用深度拷贝，避免表单渲染过程中数据变化导致外部数据也产生变化。
          **/
         if (this.mode !== 'edit') {
-          this.config = this.$utils.deepClone(this.value);
+          if (this.formSceneUuid) {
+            this.config = this.setFormSceneConfig(this.formSceneUuid, this.value);
+          } else {
+            this.config = this.$utils.deepClone(this.value);
+          }
         } else {
           this.config = this.value;
         }
@@ -665,12 +673,15 @@ export default {
     //校验表单内所有组件的数据，返回异常数据
     async validData(validConifg) {
       const errorMap = {};
-      for (let i = 0; i < this.componentCells.length; i++) {
-        const component = this.componentCells[i].component;
-        if (component && component.uuid) {
-          const es = this.$refs['formitem_' + component.uuid] && this.$refs['formitem_' + component.uuid][0] ? await this.$refs['formitem_' + component.uuid][0].validData(validConifg) : null;
-          if (es && es.length > 0) {
-            errorMap[component.uuid] = es;
+      //表单只读或者禁用,所有组件跳过校验
+      if (!this.disabled && !this.readonly && !this.config.readOnly) {
+        for (let i = 0; i < this.componentCells.length; i++) {
+          const component = this.componentCells[i].component;
+          if (component && component.uuid) {
+            const es = this.$refs['formitem_' + component.uuid] && this.$refs['formitem_' + component.uuid][0] ? await this.$refs['formitem_' + component.uuid][0].validData(validConifg) : null;
+            if (es && es.length > 0) {
+              errorMap[component.uuid] = es;
+            }
           }
         }
       }
@@ -761,16 +772,19 @@ export default {
           width = rect.width;
         }
       }
-      if (this.value && !this.$utils.isEmpty(this.value.formWidth)) {
-        if (this.value.formWidth.type === 'inherit') {
-          this.containerWidth = this.tableSize.width;
-        } else if (this.value.formWidth.type === '%') {
-          this.containerWidth = width * this.value.formWidth.width / 100;
-        } else if (this.value.formWidth.type === 'px') {
-          this.containerWidth = this.value.formWidth.width;
+      //如果宽度为0，代表表单可能处于隐藏状态，这时不修改宽度
+      if (width) {
+        if (this.value && !this.$utils.isEmpty(this.value.formWidth)) {
+          if (this.value.formWidth.type === 'inherit') {
+            this.containerWidth = this.tableSize.width;
+          } else if (this.value.formWidth.type === '%') {
+            this.containerWidth = width * this.value.formWidth.width / 100;
+          } else if (this.value.formWidth.type === 'px') {
+            this.containerWidth = this.value.formWidth.width;
+          }
+        } else {
+          this.containerWidth = width;
         }
-      } else {
-        this.containerWidth = width;
       }
     },
     scrollContainer(event) {
@@ -859,11 +873,48 @@ export default {
       for (let key in this.formData) {
         const formitem = this.formItemList.find(d => d.uuid === key);
         if (formitem) {
+          this.clearFormInputTableAttr(formitem, this.formData[key]);
+          this.clearPrivateAttr(this.formData[key]);
           formItemList.push({ attributeUuid: key, handler: formitem.handler, dataList: this.formData[key] });
         }
       }
       // console.log(JSON.stringify(formItemList, null, 2));
       return formItemList;
+    },
+    clearPrivateAttr(value) { //清除私有属性
+      if (!this.$utils.isEmpty(value)) {
+        if (Array.isArray(value)) {
+          value.forEach(fitem => {
+            if (!this.$utils.isEmpty(fitem)) {
+              for (let k in fitem) {
+                if (k.startsWith('_')) {
+                  delete fitem[k];
+                } else {
+                  this.clearPrivateAttr(fitem[k]);
+                }
+              }
+            }
+          });
+        } else if (typeof value === 'object') {
+          Object.keys(value).forEach(key => {
+            if (key.startsWith('_')) {
+              delete value[key];
+            }
+          });
+        }
+      }
+    },
+    clearFormInputTableAttr(formitem, valueList) { //清除表单输入组件非表头属性
+      if (formitem.handler === 'formtableinputer' && !this.$utils.isEmpty(valueList)) {
+        let uuidList = formitem.config && formitem.config.dataConfig && this.$utils.mapArray(formitem.config.dataConfig, 'uuid');
+        valueList.forEach(item => {
+          Object.keys(item).forEach(key => {
+            if (uuidList && !uuidList.includes(key) && key !== 'uuid') { //uuid作为每一行的唯一标识，不能删除
+              delete item[key];
+            }
+          });
+        });
+      }
     },
     //是否包含class
     hasClass(classname) {
@@ -1155,7 +1206,7 @@ export default {
           rindex = this.handlerCell.row + (this.handlerCell.rowspan || 1);
         }
         if (rindex >= 0) {
-          this.config.lefterList.push({ height: this.minHeight });
+          this.config.lefterList.splice(rindex, 0, { height: this.minHeight });
           this.config.tableList.forEach(cell => {
             if (cell.row >= rindex) {
               cell.row = cell.row + 1;
@@ -1556,11 +1607,16 @@ export default {
       let hiddenComponentList = [];
       if (this.config.tableList && this.config.tableList.length > 0) {
         this.config.tableList.forEach(item => {
-          if (item.component && item.component.hasValue && !hiddenComponentList.includes(item.component.uuid)) {
-            if (!this.$refs['formitem_' + item.component.uuid]) {
+          if (item.component && item.component.hasValue) {
+            if (this.disabled || this.readonly || this.config.readOnly) {
+              //表单只读或者禁用,所有组件uuid传到后台跳过接口校验
               hiddenComponentList.push(item.component.uuid);
-            } else if (this.config.hiddenRowList.includes(item.row) || (item.component.config && item.component.config.isHide)) {
-              hiddenComponentList.push(item.component.uuid);
+            } else if (!hiddenComponentList.includes(item.component.uuid)) {
+              if (!this.$refs['formitem_' + item.component.uuid]) {
+                hiddenComponentList.push(item.component.uuid);
+              } else if (this.config.hiddenRowList.includes(item.row) || (item.component.config && item.component.config.isHide)) {
+                hiddenComponentList.push(item.component.uuid);
+              }
             }
           }
         });
@@ -1606,6 +1662,64 @@ export default {
           this.cutCell();
         }
       }
+    },
+    getFormExtendConfig() { //保存消费表单配置
+      let data = {
+        attributeList: []
+      };
+      this.config.tableList.forEach(cell => {
+        if (cell.component) {
+          let component = cell.component;
+          if (!this.$utils.isEmpty(component) && this.$refs['formitem_' + component.uuid] && this.$refs['formitem_' + component.uuid][0] && this.$refs['formitem_' + component.uuid][0].saveFormExtendConfig) {
+            let changeConfig = this.$refs['formitem_' + component.uuid][0].saveFormExtendConfig();
+            if (!this.$utils.isEmpty(changeConfig)) {
+              data.attributeList.push(...changeConfig);
+            }
+          }
+        }
+      });
+      return data;
+    },
+    getFormExtendData() { //提供外部使用，返回表单多场景消费数据
+      let list = [];
+      Object.keys(this.formExtendData).forEach(key => {
+        if (!this.$utils.isEmpty(this.formExtendData[key])) {
+          list.push(...this.formExtendData[key]);
+        }
+      });
+      return list;
+    },
+    setFormSceneConfig(formSceneUuid, formConfig) {
+      let data = this.$utils.deepClone(formConfig);//主表单
+      let formItemList = [];
+      if (formSceneUuid != formConfig.uuid && !this.$utils.isEmpty(formConfig.sceneList)) {
+        let sceneConfig = formConfig.sceneList.find(item => item.uuid === formSceneUuid); //流程场景
+        if (!sceneConfig) {
+          //流程场景不存在，用表单默认场景
+          sceneConfig = formConfig.sceneList.find(item => item.uuid === formConfig.defaultSceneUuid);
+        }
+        if (sceneConfig) {
+          //场景表单，继承组件替换
+          if (formConfig.tableList) {
+            formConfig.tableList.forEach(item => {
+              if (item.component) {
+                formItemList.push(item.component);
+              }
+            });
+          }
+          sceneConfig.tableList.forEach(item => {
+            if (item.component && item.component.inherit) {
+              let component = formItemList.find(c => c.uuid === item.component.uuid);
+              if (component) {
+                this.$set(item, 'component', component);
+              }
+            }
+          });
+          this.$set(sceneConfig, 'formWidth', formConfig.formWidth);
+          data = sceneConfig;
+        }
+      }
+      return data;
     }
   },
   filter: {},
@@ -1646,7 +1760,7 @@ export default {
                   reaction.conditionGroupList.forEach(cg => {
                     if (cg.conditionList) {
                       cg.conditionList.forEach(c => {
-                        conditionData[c.uuid] = c.valueList;
+                        conditionData[c.uuid] = c;
                       });
                     }
                   });
@@ -1919,7 +2033,7 @@ export default {
             width += this.config.headerList[cell.col + i].width;
           }
           width -= 2;
-        } 
+        }
         return (width / this.tableSize.width * this.containerWidth) + 'px';
       };
     }
@@ -1976,7 +2090,7 @@ export default {
     },
     formData: {
       handler: function(newVal, oldVal) {
-        this.$emit('setValue', newVal);
+        this.$emit('setValue', this.$utils.deepClone(newVal));
         // console.log(JSON.stringify(newVal, null, 2));
       },
       deep: true

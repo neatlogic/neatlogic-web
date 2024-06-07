@@ -103,7 +103,7 @@
                 </Progress>
               </div>
             </template>
-            <template v-slot:sql="{ row }">
+            <template v-slot:sql="{ row, index }">
               <Poptip
                 v-if="row.sql"
                 trigger="hover"
@@ -115,13 +115,13 @@
               >
                 <span class="tsfont-zirenwu" style="cursor:pointer"></span>
                 <div
-                  
+
                   slot="content"
                   class="fz10 scroll"
                   style="max-height:500px"
                 >
-                  <div :id="'sql_' + row.id.replace(/\./ig,'_')">{{ row.sql }}</div>
-                  <div style="text-align:right"><Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_'))">{{ $t('page.copy') }}</Button></div>
+                  <div :id="'sql_' + row.id.replace(/\./ig,'_') + '_' + index">{{ row.sql }}</div>
+                  <div style="text-align:right"><Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_') + '_' + index)">{{ $t('page.copy') }}</Button></div>
                 </div>
               </Poptip>
             </template>
@@ -137,11 +137,11 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    SqlDumpEdit: resolve => require(['./sqldump-edit.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    StatusDialog: resolve => require(['./status-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    SqlDumpEdit: () => import('./sqldump-edit.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    StatusDialog: () => import('./status-dialog.vue')
   },
   props: {},
   data() {
@@ -166,7 +166,6 @@ export default {
       ],
       fromPath: '',
       leftHeight: 0,
-      leftWidth: 200,
       maxTimeCost: 0
     };
   },
@@ -190,6 +189,7 @@ export default {
   destroyed() {},
   methods: {
     copySql(id) {
+      console.log(id, 'id');
       this.$utils.copyText(id);
     },
     openStatusDialog() {

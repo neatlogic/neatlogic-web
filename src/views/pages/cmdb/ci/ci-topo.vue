@@ -21,8 +21,8 @@
 </template>
 <script>
 import * as d3 from 'd3-selection';
-import '@/resources/assets/font/tsfont.js';
-import '@/resources/assets/font/iconfont.js';
+import '@/resources/assets/font/tsfonts/tsfont.js';
+import '@/resources/assets/font/tsIconfont.js';
 import { graphviz } from 'd3-graphviz';
 import { addEvent } from '@/resources/assets/js/event.js';
 export default {
@@ -90,7 +90,6 @@ export default {
       d3.select('#graph')
         .selectWithoutDataPropagation('svg')
         .transition()
-        .duration(700)
         .attr('width', graphEl.offsetWidth - 10)
         .attr('height', window.innerHeight - 30 - this.getGraphTop(graphEl).y);
     },
@@ -102,12 +101,18 @@ export default {
           .on('dblclick.zoom', null)
           .on('wheel.zoom', null)
           .on('mousewheel.zoom', null);
+        if (!graph.graphviz) {
+          graph.graphviz = graphviz;
+        }
         this.graph.graphviz = graph
           .graphviz()
           .height(window.innerHeight - 30 - this.getGraphTop(graphEl).y)
           .width(graphEl.offsetWidth - 10)
           .zoom(true)
           .fit(true)
+          .tweenShapes(false)
+          .tweenPaths(false)
+          .convertEqualSidedPolygons(false)
           .attributer(function(d) {
             if (d.attributes.class === 'edge') {
               let keys = d.key.split('->');

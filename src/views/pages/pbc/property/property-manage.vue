@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsContain> 
+    <TsContain>
       <template slot="topLeft">
         <div class="action-group">
           <div class="action-item tsfont-plus" @click="addProperty">{{ $t('page.attribute') }}</div>
@@ -74,11 +74,11 @@
 export default {
   name: '',
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    EnumEdit: resolve => require(['./enum-edit-dialog.vue'], resolve),
-    PropertyEdit: resolve => require(['./property-edit.vue'], resolve),
-    PropertyRelEdit: resolve => require(['./property-edit-rel.vue'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    EnumEdit: () => import('./enum-edit-dialog.vue'),
+    PropertyEdit: () => import('./property-edit.vue'),
+    PropertyRelEdit: () => import('./property-edit-rel.vue')
   },
   props: {},
   data() {
@@ -199,7 +199,7 @@ export default {
             this.searchProperty();
           });
         },
-        'on-cancel': vnode => { 
+        'on-cancel': vnode => {
           vnode.isShow = false;
         }
       });

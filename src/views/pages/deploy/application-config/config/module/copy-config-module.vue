@@ -22,7 +22,7 @@ import handleTimeMixin from '../app/components/handleTimeMixin.js';
 export default {
   name: '', // 复制配置
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   mixins: [handleTimeMixin],
   props: {

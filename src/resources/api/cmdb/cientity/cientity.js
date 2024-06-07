@@ -20,6 +20,10 @@ const cientity = {
   batchUpdateCiEntity(params) {
     return axios.post('/api/rest/cmdb/cientity/batchupdate', params);
   },
+  //批量检查配置项
+  batchValidateCiEntity(params) {
+    return axios.post('/api/rest/cmdb/cientity/batchvalidate', params);
+  },
   //保存配置项信息
   /*saveCiEntity(params) {
     return axios.post('/api/rest/cmdb/cientity/save', params);
@@ -42,6 +46,9 @@ const cientity = {
   },
   getCiEntityAuthById(ciEntityId, ciId, authList) {
     return axios.post('/api/rest/cmdb/cientity/auth/get', { ciEntityId: ciEntityId, ciId: ciId, authList: authList });
+  },
+  getCiEntityBaseInfoById(id) {
+    return axios.post('/api/rest/cmdb/cientity/baseinfo/get', { id: id });
   },
   getCiEntityById(ciId, ciEntityId, needAction, limitRelEntity, limitAttrEntity, showAttrRelList) {
     const param = {};

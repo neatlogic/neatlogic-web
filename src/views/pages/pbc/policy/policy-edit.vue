@@ -93,11 +93,11 @@ export default {
   name: '',
   components: {
     draggable,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsQuartz: resolve => require(['@/resources/plugins/TsQuartz/TsQuartz.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    PolicyConfig: resolve => require(['./policy-config.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    PolicyConfig: () => import('./policy-config.vue')
   },
   props: {
     id: { type: Number }
@@ -236,7 +236,7 @@ export default {
             }
           }
         });
-      } 
+      }
     },
     removePhase(phase) {
       const index = this.activedPhaseList.findIndex(d => d === phase);

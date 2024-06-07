@@ -161,9 +161,9 @@ export default {
     TsFormSelect,
     TsCkeditor,
     TranferreportSetting,
-    ViewProcess: resolve => require(['../catalog-viewprocess.vue'], resolve),
-    IconEdit: resolve => require(['./icon-edit.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch.vue'], resolve)
+    ViewProcess: () => import('../catalog-viewprocess.vue'),
+    IconEdit: () => import('./icon-edit.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch.vue')
   },
   filters: {},
   mixins: [editmixin],
@@ -360,7 +360,7 @@ export default {
       ],
       initValue: {
         name: '',
-        processUuid: '', //工作流uuid
+        processUuid: this.processUuid, //工作流uuid
         isActive: 1,
         authorityList: ['common#alluser'],
         worktimeUuid: '', //工作时间窗口uuid
@@ -433,6 +433,7 @@ export default {
           itemValue.desc = this.escape2Html(itemValue.desc);
           this.channelValue = {
             name: itemValue.name || '',
+            parentUuid: itemValue.parentUuid || '',
             processUuid: itemValue.processUuid || '',
             isActive: itemValue.isActive || 0,
             authorityList: itemValue.authorityList,
@@ -576,6 +577,13 @@ export default {
     },
     selectPriority(val) {
       this.priority(val);
+    },
+    processUuid: {
+      handler(newValue, oldValue) {
+        this.$set(this.initValue, 'processUuid', newValue);
+        this.getData(true);
+      },
+      deep: true
     }
   }
 };

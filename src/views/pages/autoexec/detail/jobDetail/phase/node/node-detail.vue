@@ -1,19 +1,3 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 <template>
   <div class="content-main">
     <Tabs
@@ -154,7 +138,7 @@
                   <div v-if="step.description" class="stepType overflow description-pl">
                     <span class="text-tip fz10 tips" :title="step.description">{{ step.description }}</span>
                   </div>
-                 
+
                 </div>
               </div>
             </div>
@@ -216,7 +200,7 @@
         name="inputParameters"
         style="paddint-top:0px"
       >
-        <Param
+        <NodeParam
           v-if="tabValue == 'inputParameters'"
           :id="nodeData.id"
           :jobPhaseId="phaseData.id"
@@ -224,7 +208,7 @@
           :sqlName="nodeData.sqlFile"
           :jobId="jobData.id"
           :type="'input'"
-        ></Param>
+        ></NodeParam>
       </TabPane>
       <TabPane
         :label="$t('page.outputparam')"
@@ -233,7 +217,7 @@
         name="outputParameters"
         style="paddint-top:0px"
       >
-        <Param
+        <NodeParam
           v-if="tabValue == 'outputParameters'"
           :id="nodeData.id"
           :jobPhaseId="phaseData.id"
@@ -241,7 +225,7 @@
           :sqlName="nodeData.sqlFile"
           :jobId="jobData.id"
           :type="'output'"
-        ></Param>
+        ></NodeParam>
       </TabPane>
       <TabPane
         :label="$t('term.autoexec.runrecord')"
@@ -259,7 +243,7 @@
           :name="'customTemplate_'+t.operationId"
           class="padding"
           :class="getTabDetailClass()"
-        > 
+        >
           <CustomTemplateViewer
             v-if="tabValue == 'customTemplate_'+t.operationId && !isCustomTemplateShow"
             :config="t.config"
@@ -281,12 +265,12 @@
 export default {
   name: '',
   components: {
-    NodeLog: resolve => require(['@/views/pages/autoexec/detail/logcomponents/node-log.vue'], resolve),
-    Record: resolve => require(['./record.vue'], resolve),
-    Param: resolve => require(['./param.vue'], resolve),
-    SqlContent: resolve => require(['@/views/pages/autoexec/detail/logcomponents/sql-content.vue'], resolve), // 脚本内容
-    ScriptContentDialog: resolve => require(['@/views/pages/autoexec/detail/script-content-dialog.vue'], resolve),
-    CustomTemplateViewer: resolve => require(['@/resources/components/customtemplate/customtemplate-viewer.vue'], resolve)
+    NodeLog: () => import('@/views/pages/autoexec/detail/logcomponents/node-log.vue'),
+    Record: () => import('./record.vue'),
+    NodeParam: () => import('./param.vue'),
+    SqlContent: () => import('@/views/pages/autoexec/detail/logcomponents/sql-content.vue'), // 脚本内容
+    ScriptContentDialog: () => import('@/views/pages/autoexec/detail/script-content-dialog.vue'),
+    CustomTemplateViewer: () => import('@/resources/components/customtemplate/customtemplate-viewer.vue')
   },
   filters: {},
   directives: {},
@@ -406,7 +390,7 @@ export default {
     },
     getOperationName(step) {
       if (step.name) {
-        return step.name; 
+        return step.name;
       } else {
         return '-';
       }
@@ -433,7 +417,7 @@ export default {
           if ((this.nodeData && this.nodeData.status === 'running') || this.phaseData.status === 'running') {
             this.customTemplateTimmer = setTimeout(() => {
               this.getJobCustomdata(operationId);
-            }, 3000); 
+            }, 3000);
           }
         }
       }).finally(() => {
@@ -447,7 +431,7 @@ export default {
       }
       this.isCustomTemplateShow = true;
       if (name.includes('customTemplate')) {
-        let operationId = parseInt(name.split('_')[1]); 
+        let operationId = parseInt(name.split('_')[1]);
         this.getJobCustomdata(operationId);
       }
     },
@@ -460,7 +444,7 @@ export default {
         }
       } else if (this.mode === 'dialog') {
         return 'tab-detail-dialog';
-      } 
+      }
     }
   },
   computed: {
@@ -487,7 +471,7 @@ export default {
 .step-item {
   width: 212px;
   position: relative;
-  
+
 }
 .page-tabs {
   /deep/ .ivu-tabs-bar {

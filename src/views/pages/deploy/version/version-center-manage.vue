@@ -20,7 +20,7 @@
           >
             <span class="tsfont-plus text-disabled action-item">{{ $t('page.versions') }}</span>
             <ul slot="content">
-              <li v-if="!canEdit">{{ $t('term.deploy.noconfigauthtip') }}</li>
+              <li v-if="!hasAuth">{{ $t('term.deploy.notversionproductauth') }}</li>
             </ul>
           </Tooltip>
           <span v-else-if="appModuleData && appModuleData.appId" class="action-item tsfont-plus" @click="addVersion">{{ $t('page.versions') }}</span>
@@ -37,6 +37,7 @@
       <template v-slot:content>
         <TsTable
           :theadList="theadList"
+          :loading="loading"
           :canEdit="true"
           v-bind="versionData"
           @changeCurrent="changeCurrent"
@@ -183,19 +184,20 @@ import versionCenterMixin from './versionCenterMixin.js';
 export default {
   name: '', // 版本中心
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    AppModuleList: resolve => require(['../application-config/config/app/app-module-list.vue'], resolve),
-    VersionAddDialog: resolve => require(['./version-add-dialog'], resolve), // 新增版本
-    BuildNoDialog: resolve => require(['./build-no/build-no-dialog'], resolve), // build-no
-    EnvDialog: resolve => require(['./env-dialog'], resolve), // env
-    ProjectDirectoryDialog: resolve => require(['./project-directory-dialog'], resolve) // 工程目录
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    AppModuleList: () => import('../application-config/config/app/app-module-list.vue'),
+    VersionAddDialog: () => import('./version-add-dialog'), // 新增版本
+    BuildNoDialog: () => import('./build-no/build-no-dialog'), // build-no
+    EnvDialog: () => import('./env-dialog'), // env
+    ProjectDirectoryDialog: () => import('./project-directory-dialog') // 工程目录
   },
   mixins: [versionCenterMixin],
   props: {},
   data() {
     return {
+      loading: true,
       appModuleData: {},
       isShowVersionAddDialog: false,
       isShowBuildNoDialog: false,
@@ -368,10 +370,13 @@ export default {
       }
     },
     searchVersion() {
+      this.loading = true;
       this.$api.deploy.version.searchVersion(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.versionData = res.Return;
         }
+      }).finally(() => {
+        this.loading = false;
       });
     },
     changeCurrent(currentPage = 1) {
@@ -420,8 +425,8 @@ export default {
         let { appSystemAbbrName, appModuleAbbrName, version, id, isFreeze } = row;
         this.$router.push({
           path: './version-detail',
-          query: { 
-            versionId: id, 
+          query: {
+            versionId: id,
             title: appSystemAbbrName ? (appModuleAbbrName ? `${appSystemAbbrName}/${appModuleAbbrName}/V${version}` : `${appSystemAbbrName}/V${version}`) : `V${version}`,
             versionName: version,
             isFreeze: isFreeze,
@@ -533,13 +538,6 @@ export default {
   },
   filter: {},
   computed: {
-    canEdit() {
-      // [编辑配置]权限
-      if ((this.selectedApp && this.selectedApp.isHasAllAuthority) || this.authList.includes('operation#edit') || this.authList.includes('operation#all') || this.authList.length == 0) {
-        return true;
-      }
-      return false;
-    },
     hasAuth() {
       // [版本&制品管理]权限
       if ((this.selectedApp && this.selectedApp.isHasAllAuthority) || this.authList.includes('operation#versionAndProductManager') || this.authList.includes('operation#all') || this.authList.length == 0) {

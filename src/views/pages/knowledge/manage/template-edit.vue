@@ -2,7 +2,7 @@
   <div class="template-edit">
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/template-manage')">{{ $getFromPage($t('term.report.templatemanage')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <TsFormInput
@@ -82,8 +82,8 @@ class Node {
 export default {
   name: 'TemplateEdit',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    TsTree: resolve => require(['components/TsTree/TsTree.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    TsTree: () => import('components/TsTree/TsTree.vue')
   },
   data() {
     this.keyConfig = {name: 'content', id: 'uuid'};
@@ -96,7 +96,7 @@ export default {
       treeDepth: 2,
       isLoading: false,
       nameValidateList: ['required', 'name-special', {
-        name: 'searchUrl', 
+        name: 'searchUrl',
         url: 'api/rest/knowledge/template/save',
         key: 'name',
         params: () => ({id: this.rootNode.uuid})
@@ -126,8 +126,8 @@ export default {
       if (this.$route.query.operation === 'add') {
         document.title = this.$t('dialog.title.addtarget', {target: this.$t('page.template')});
         this.rootNode = new Node({
-          handler: 'h0', 
-          content: this.$route.query.name, 
+          handler: 'h0',
+          content: this.$route.query.name,
           children: [new Node()]
         });
         this.initialTemplate = this.$utils.deepClone(this.rootNode);
@@ -142,17 +142,17 @@ export default {
           if (this.$route.query.operation === 'edit') {
             document.title = this.$t('dialog.title.edittarget', {target: this.$t('page.template')});
             this.rootNode = new Node({
-              handler: 'h0', 
+              handler: 'h0',
               uuid: id,
-              content: name, 
+              content: name,
               children
             });
           } else if (this.$route.query.operation === 'copy') {
             document.title = this.$t('dialog.title.copytarget', {target: this.$t('page.template')});
             this.rootNode = new Node({
-              handler: 'h0', 
+              handler: 'h0',
               uuid: null,
-              content: name + '_copy', 
+              content: name + '_copy',
               children
             });
           }
@@ -182,7 +182,7 @@ export default {
         node.handler = 'h1';
       } else if (parentNode.handler === 'h1') {
         node.handler = 'h2';
-      } 
+      }
     },
     async saveTemplate(stay = true) {
       const list = this.forest2list(this.rootNode.children);

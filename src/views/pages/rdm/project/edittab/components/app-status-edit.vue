@@ -126,10 +126,10 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    StatusEditDialog: resolve => require(['@/views/pages/rdm/project/edittab/components/app-status-edit-dialog.vue'], resolve),
-    AppStatusRelConfigDialog: resolve => require(['@/views/pages/rdm/project/edittab/components/app-statusrel-config-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    StatusEditDialog: () => import('@/views/pages/rdm/project/edittab/components/app-status-edit-dialog.vue'),
+    AppStatusRelConfigDialog: () => import('@/views/pages/rdm/project/edittab/components/app-statusrel-config-dialog.vue')
   },
   props: {
     projectId: { type: Number },

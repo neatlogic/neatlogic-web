@@ -3,7 +3,7 @@
     <Loading :loading-show="loadingShow" type="fix"></Loading>
     <TsContain border="none">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$backTo('/matrix-overview')">{{ $getFromPage($t('router.framework.matrixmanage')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <div slot="topLeft">
         <navTopLeft
@@ -91,6 +91,7 @@
             <div class="tstable-action">
               <ul class="tstable-action-ul">
                 <li class="tsfont-edit icon" @click.stop="editMatrixData(row)">{{ $t('page.edit') }}</li>
+                <li class="tsfont-copy icon" @click.stop="copyMatrixData(row)">{{ $t('page.copy') }}</li>
                 <li class="tsfont-trash-o icon" @click.stop="deleteMatrixData(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
@@ -102,6 +103,7 @@
       v-if="matrixDataDialog"
       :data="currentData"
       :matrixUuid="matrixUuid"
+      :isCopy="isCopy"
       @close="closeDataDialog"
     ></RowEdit>
     <ColumnEdit v-if="attributeDialog" :matrixUuid="matrixUuid" @close="closeAttributeDialog"></ColumnEdit>
@@ -113,13 +115,13 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    navTopLeft: resolve => require(['./components/navTopLeft'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    ColumnEdit: resolve => require(['./components/column-edit.vue'], resolve),
-    RowEdit: resolve => require(['./components/row-edit.vue'], resolve)
-    // UserSelect: resolve => require(["@/resources/components/UserSelect/UserSelect.vue"], resolve)
+    navTopLeft: () => import('./components/navTopLeft'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    ColumnEdit: () => import('./components/column-edit.vue'),
+    RowEdit: () => import('./components/row-edit.vue')
+    // UserSelect:()=>import("@/resources/components/UserSelect/UserSelect.vue")
   },
   directives: { download },
   props: [''],
@@ -127,6 +129,7 @@ export default {
     let _this = this;
     return {
       currentData: null, //当前编辑行
+      isCopy: false,
       actionUrl: BASEURLPREFIX + '/api/binary/matrix/data/import',
       formatList: ['xls', 'xlsx'], //导入文件格式
       loadingShow: true,
@@ -142,7 +145,7 @@ export default {
       matrixAttributeList: [], //矩阵属性
       nameValidateList: ['required', {
         name: 'searchUrl',
-        url: 'api/rest/matrix/save', 
+        url: 'api/rest/matrix/save',
         message: this.$t('message.targetisexists', {'target': this.$t('page.matrixname')}),
         key: 'name',
         params: () => ({uuid: this.matrixUuid})
@@ -194,7 +197,7 @@ export default {
         currentPage: this.tabledata.currentPage ? this.tabledata.currentPage : 1,
         matrixUuid: this.matrixUuid
       };
-     
+
       this.getMatrixData(param);
     },
     //改变页数
@@ -213,8 +216,8 @@ export default {
       }).then(res => {
         if (res.Status == 'OK') {
           this.processMatrixAttributeList = res.Return.tbodyList;
-        } 
-      }); 
+        }
+      });
     },
     //获取矩阵数据
     getMatrixData: function(param) {
@@ -403,6 +406,12 @@ export default {
       //this.matrixDataDialogTitle = '编辑行';
       this.matrixDataDialog = true;
       this.currentData = val || null;
+      this.isCopy = false;
+    },
+    copyMatrixData(val) {
+      this.matrixDataDialog = true;
+      this.currentData = val || null;
+      this.isCopy = true;
     },
     closeAttributeDialog(needRefresh) {
       this.attributeDialog = false;
@@ -426,7 +435,7 @@ export default {
       let toUuid = tbodyList[newIndex].uuid.value;
       const param = {
         matrixUuid: this.matrixUuid,
-        uuid: uuid, 
+        uuid: uuid,
         toUuid: toUuid
       };
       this.$api.framework.matrix.moveMatrixData(param)

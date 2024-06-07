@@ -2,7 +2,7 @@
   <div>
     <Tabs v-model="currentTab">
       <TabPane :label="$t('term.rdm.attributesetting')" name="attr" class="pl-md">
-        <AttrEdit v-if="currentTab === 'attr'" :attrList="appType.config && appType.config.attrList"></AttrEdit>
+        <AttrEdit v-if="currentTab === 'attr'" :appType="appType"></AttrEdit>
       </TabPane>
       <TabPane :label="$t('term.rdm.statussets')" name="objectstatus" class="pl-md">
         <AppStatus v-if="currentTab === 'objectstatus'" :statusList="appType.config && appType.config.statusList" :statusRelList="appType.config && appType.config.statusRelList"></AppStatus>
@@ -14,8 +14,8 @@
 export default {
   name: '',
   components: {
-    AttrEdit: resolve => require(['@/views/pages/rdm/template/edittab/components/attr-edit.vue'], resolve),
-    AppStatus: resolve => require(['@/views/pages/rdm/template/edittab/components/app-status-edit.vue'], resolve)
+    AttrEdit: () => import('@/views/pages/rdm/template/edittab/components/attr-edit.vue'),
+    AppStatus: () => import('@/views/pages/rdm/template/edittab/components/app-status-edit.vue')
   },
   props: {
     appType: { type: Object }
@@ -39,7 +39,7 @@ export default {
   filter: {},
   computed: {},
   watch: {
-    
+
   }
 };
 </script>

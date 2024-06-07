@@ -32,6 +32,8 @@ import databaseview from './databaseview/databaseview';//重建数据库视图
 import tenantconfig from './tenantconfig/tenantconfig';//租户配置信息
 import server from './server/server';// 服务器
 import wechat from './wechat/wechat';// 企业微信
+import extramenu from './extramenu/extramenu'; //附加菜单
+import region from './region/region';//地域管理
 
 export default {
   role,
@@ -66,5 +68,7 @@ export default {
   databaseview,
   tenantconfig,
   server,
-  wechat
+  wechat,
+  extramenu,
+  region
 };

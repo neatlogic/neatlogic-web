@@ -98,7 +98,7 @@
             </div>
             <div class="base-config">
               <Tabs
-                v-model="tabValue" 
+                v-model="tabValue"
                 class="block-tabs"
                 :animated="false"
               >
@@ -196,15 +196,15 @@
 export default {
   name: '',
   components: {
-    StepList: resolve => require(['./step/step-list'], resolve),
-    StepGroup: resolve => require(['./step-group'], resolve),
-    ProfileSetting: resolve => require(['./profile-setting'], resolve),
-    ScenarioSetting: resolve => require(['@/views/pages/autoexec/detail/actionDetail/scenario-setting'], resolve),
-    StepTopo: resolve => require(['./step/step-topo'], resolve),
-    RuntimeParamsSetting: resolve => require(['./runtime-params-setting.vue'], resolve),
-    AppConfigTree: resolve => require(['../config/app/app-config-tree'], resolve),
-    PipelineValid: resolve => require(['./pipeline-valid'], resolve)
-   
+    StepList: () => import('./step/step-list'),
+    StepGroup: () => import('./step-group'),
+    ProfileSetting: () => import('./profile-setting'),
+    ScenarioSetting: () => import('@/views/pages/autoexec/detail/actionDetail/scenario-setting'),
+    StepTopo: () => import('./step/step-topo'),
+    RuntimeParamsSetting: () => import('./runtime-params-setting.vue'),
+    AppConfigTree: () => import('../config/app/app-config-tree'),
+    PipelineValid: () => import('./pipeline-valid')
+
   },
   props: {
     appSystemId: Number, //应用id
@@ -389,7 +389,7 @@ export default {
           id: l.id || null //阶段id
         };
         //模块层和环境层需要：source(继承)、override(重载)、isActive(启用),
-        if (l.hasOwnProperty('source')) { 
+        if (l.hasOwnProperty('source')) {
           this.$set(obj, 'source', l.source);
         }
         if (l.hasOwnProperty('override')) {
@@ -417,7 +417,7 @@ export default {
           let userData = await this.$api.common.getUser({userUuid: this.pipelineDraftData.lcu});
           this.editTitle = this.$t('term.deploy.userhasnosavedraft', {username: userData.name, userid: userData.userId});
         }
-        this.showDialog = true; 
+        this.showDialog = true;
       } else {
         this.canEdit = true;
       }
@@ -499,7 +499,7 @@ export default {
       }
     },
     updatedCombopGroupList(stepList) { //更新组列表
-      let newList = []; 
+      let newList = [];
       stepList.forEach(item => {
         let findItem = this.combopGroupList.find(c => c.uuid == item.groupUuid);
         if (findItem) {
@@ -716,7 +716,7 @@ export default {
             list.push(item);
           }
         });
-      } 
+      }
       return list;
     },
     jumpToStep(step) { //流程图定位阶段
@@ -849,7 +849,7 @@ export default {
         if (this.appModuleId || this.envId) {
           isEdit = false;
         }
-        return isEdit; 
+        return isEdit;
       };
     }
   },

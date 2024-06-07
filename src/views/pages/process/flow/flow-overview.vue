@@ -8,13 +8,13 @@
       <template slot="topLeft">
         <div class="action-group">
           <span class="action-item tsfont-plus" @click="addFlow">{{ $t('term.process.flow') }}</span>
-          <span class="action-item tsfont-upload" @click.self="$refs.uploadDialog.showDialog">{{ $t('page.import') }}</span>
-          <UploadDialog
+          <div class="action-item tsfont-upload" @click.self="$refs.uploadDialog.showDialog">{{ $t('page.import') }}</div>
+          <ComplexUploadDialog
             ref="uploadDialog"
-            :actionUrl="actionUrl"
-            :formatList="formatList"
-            @on-all-upload="searchFlow"
-          />
+            targetType="process"
+            url="/api/binary/common/import"
+            @close="closeComplexUploadDialog"
+          ></ComplexUploadDialog>
         </div>
       </template>
       <template slot="topRight">
@@ -99,27 +99,25 @@
 </template>
 
 <script>
-import download from '@/resources/directives/download.js';
+import download from '@/resources/mixins/download.js';
 export default {
   name: 'FlowOverview',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
-    RelationService: resolve => require(['./flowedit/relation-service.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    ComplexUploadDialog: () => import('@/resources/components/ComplexUploadDialog/complexUploadDialog.vue'),
+    RelationService: () => import('./flowedit/relation-service.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {},
-  directives: { download },
+  mixins: [download],
   props: [''],
   data() {
     let _this = this;
     return {
       loadingShow: true,
-      actionUrl: BASEURLPREFIX + '/api/binary/process/import', //流程导入地址
-      formatList: ['process'], //导入文件格式
       isCreator: 0, //搜索我创建的
       keyword: null, //关键字
       pageSize: 24, //每页条数
@@ -210,7 +208,7 @@ export default {
               v.btnList = [
                 {name: this.$t('term.process.relcatalog'), value: 'referenceCount', icon: 'tsfont-tool', type: 'referenceCount', key: 'referenceCount'},
                 {name: this.$t('page.delete'), value: 'del', type: 'del', icon: 'tsfont-trash-o', disable: true, text: this.$t('term.process.flowcannotdelete'), key: 'referenceCount'},
-                {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr: [{name: this.$t('page.copy'), value: 'copy', type: 'text'}, 
+                {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr: [{name: this.$t('page.copy'), value: 'copy', type: 'text'},
                   {name: this.$t('page.export'), value: 'export', type: 'download'}]
                 }
               ];
@@ -229,8 +227,6 @@ export default {
       } else if (value == 'copy') {
         this.copy(row.uuid, row.name);
       } else if (value == 'export') {
-        let data = {url: '/api/binary/process/export', params: {uuid: row.uuid}, method: 'post'};
-        // this.download(data);
         this.btnExport(row.uuid, row.name);
       }
       // console.log(row, value, '====');
@@ -344,10 +340,7 @@ export default {
       this.addModel = true;
     },
     btnExport: function(uuid, name) {
-      //导出流程
-      let data = {};
-      let url = '/api/binary/process/export?uuid=' + uuid;
-      this.$utils.download(this, url, data, 'get');
+      this.download({url: '/api/binary/common/export', params: { primaryKey: uuid, type: 'process'}});
     },
     refreshFlow: function() {
       //刷新服务
@@ -411,6 +404,11 @@ export default {
       this.keyword = historyData['keyword'] || '';
       this.isCreator = historyData['isCreator'] || 0;
       this.currentPage = historyData['currentPage'] || 1;
+    },
+    closeComplexUploadDialog(isSuccess) {
+      if (isSuccess) {
+        this.searchFlow();
+      }
     }
   },
   computed: {

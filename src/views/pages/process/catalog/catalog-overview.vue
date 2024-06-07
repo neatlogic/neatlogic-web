@@ -58,6 +58,7 @@
                               transfer
                               placement="bottom-start"
                               max-width="300"
+                              :disabled="!item.desc"
                               theme="light"
                             >
                               <div slot="content" class="tooltip-content" v-html="item.desc ? removeHTMLTag(escape2Html(item.desc)) : ''"></div>
@@ -140,13 +141,14 @@ export default {
   //服务目录
   name: '',
   components: {
-    ServiceRoute: resolve => require(['./catalog/ServiceRoute.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    ServiceRoute: () => import('./catalog/ServiceRoute.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: [''],
   data() {
     return {
+      catalogUuid: null,
       loadingShow: false,
       loadingList: null,
       serviceDilog: 'serviceDilog',
@@ -154,7 +156,6 @@ export default {
       isreload: false,
       modal: false,
       type: 'modal',
-      leftWidth: 0,
       selectValue: [],
       moreList: [], //查看更多
       moreUuid: null,
@@ -177,7 +178,12 @@ export default {
   created() {
     this.getAllService();
     this.getFavorite(1); //默认第一页
-    this.getCalalogroute(1); //默认第一页
+    this.catalogUuid = this.$route.query.catalogUuid;
+    if (this.catalogUuid) {
+      this.selectValue.push(this.catalogUuid);
+    } else {
+      this.getCalalogroute(1);//默认第一页
+    }
   },
 
   beforeMount() {},

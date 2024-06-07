@@ -6,7 +6,7 @@
     <Drawer
       v-model="isDrawerShow"
       :title="$t('page.help')"
-      width="350"
+      width="550"
       className="help-drawer"
     >
       <template v-slot:header>
@@ -61,8 +61,8 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    DocumentonlineContent: resolve => require(['@/views/pages/documentonline/document/documentonline-content.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    DocumentonlineContent: () => import('@/views/pages/documentonline/document/documentonline-content.vue')
   },
   props: {},
   data() {
@@ -222,7 +222,7 @@ export default {
     }
   }
   .help-center{
-    width: 320px;
+    width: 550px;
     position: fixed;
     bottom: 0;
     padding: 8px 0;

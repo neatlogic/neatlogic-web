@@ -32,7 +32,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue')
   },
   props: {},
   data() {
@@ -113,7 +113,7 @@ export default {
             });
           }
         }
-      }); 
+      });
     },
     test() {
       this.isShow = true;

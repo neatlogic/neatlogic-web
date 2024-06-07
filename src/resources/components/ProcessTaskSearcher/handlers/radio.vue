@@ -6,6 +6,7 @@
       className="block-span"
       :value="conditionData && conditionData.valueList"
       :validateList="[{ name: 'required', message: ' ' }]"
+      :isCustomValue="isCustomValue"
       @on-change="change"
     ></TsFormCheckbox>
   </div>
@@ -16,7 +17,7 @@ import matrixMinxis from './matrixMinxis.js';
 export default {
   name: '',
   components: {
-    TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve)
+    TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox')
   },
   mixins: [matrixMinxis],
   props: {
@@ -29,7 +30,7 @@ export default {
     conditionData: {type: Object}//当前组件在工单中心配置中的数据
   },
   data() {
-    return { 
+    return {
       config: this.condition.config,
       matrixConfig: {
         dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
@@ -54,7 +55,7 @@ export default {
       if (this.$refs['searchInputer']) {
         return this.$refs['searchInputer'].valid();
       }
-      return true; 
+      return true;
     },
     change(val, option) {
       let text = '';

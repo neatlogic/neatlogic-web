@@ -65,7 +65,7 @@
           <Col :xs="8" class="rigth">
             <div class="content border-color">
               <template v-if="templateData">
-                <Menu :menuList="dataList"></Menu>
+                <MainLeft :menuList="dataList"></MainLeft>
               </template>
             </div>
           </Col>
@@ -81,12 +81,12 @@
 </template>
 
 <script>
-import Menu from './main-left.vue';
+import MainLeft from './main-left.vue';
 export default {
   name: '',
-  components: { 
-    Menu,
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+  components: {
+    MainLeft,
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: ['hasTemplateAuth'],
   data() {

@@ -1,5 +1,5 @@
 <template>
-  <div class="form-li" :class="borderClass">
+  <div class="form-li" :class="borderClass" @keydown.stop>
     <!-- <input v-if="type == 'password'" type="text" class="hidden" />
     <input v-if="type == 'password'" type="password" class="hidden" /> -->
     <span v-if="readonly" :class="[readonlyClass, readonlyTextHighlightClass]" :title="readonlyTitle">{{ currentValue || currentValue === 0 ? currentValue : '-' }}</span>
@@ -189,7 +189,7 @@ export default {
           this.valid(this.currentValue);
         }
       } else {
-        this.validMesage = '';
+        // this.validMesage = '';  // enter键回车会清空校验提示信息
         this.isValidPass = true;
       }
     },
@@ -287,7 +287,7 @@ export default {
           return;
         }
         this.currentValue = newValue !== null && newValue !== undefined ? newValue : '';
-        this.validMesage = '';
+        // this.validMesage = ''; //值改变时会使校验信息消失，先屏蔽
         this.isValidPass = true;
         this.$emit('change-label', this.currentValue, {text: this.currentValue, value: this.currentValue});
       }

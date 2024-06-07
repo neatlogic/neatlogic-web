@@ -7,8 +7,7 @@
 <script>
 export default {
   name: '',
-  components: { TsForm: resolve =>
-    require(['@/resources/plugins/TsForm/TsForm'], resolve)
+  components: { TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     config: {
@@ -16,14 +15,13 @@ export default {
     }
   },
   data() {
-    const _this = this;
     return {
       myConfig: {length: '', defaultValue: ''},
       formConfig: {
         defaultValue: {
           type: 'text',
           label: this.$t('page.defaultvalue')
-        }, 
+        },
         length: {
           type: 'text',
           label: this.$t('page.length')

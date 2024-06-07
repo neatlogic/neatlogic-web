@@ -15,22 +15,39 @@ export default {
       // 是否清空回显失败默认值
       type: Boolean,
       default: false
+    },
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      validateList: []
+      validateList: [],
+      keyBlacklist: ['formlabel', 'formtab', 'formcollapse', 'formdivider'] //不用设置英文名称的组件
     };
   },
   created() {
     //在非条件模式下，用默认值替换空的value值
-    if (this.mode === 'read' && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
+    if ((this.mode === 'read' || this.mode === 'readSubform') && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
       this.setValue(this.config['defaultValue']);
     }
   },
   methods: {
     validConfigBase() {
       const errorList = [];
+      if (!this.keyBlacklist.includes(this.formItem.handler)) {
+        if (!this.formItem.key) {
+          errorList.push({ field: 'key', error: this.$t('form.validate.required', {'target': this.$t('term.framework.compkeyname')}) });
+        } else {
+          let findKeyItem = this.formItemList.find(item => item.uuid != this.formItem.uuid && item.key === this.formItem.key);
+          if (findKeyItem) {
+            errorList.push({ field: 'key', error: this.$t('message.targetisexists', {'target': this.$t('term.framework.compkeyname')}) });
+          }
+        }
+      }
+     
       if (!this.formItem.label) {
         errorList.push({ field: 'label', error: this.$t('form.validate.required', {'target': this.$t('term.dashboard.widgetname')}) });
       } else {
@@ -45,6 +62,14 @@ export default {
           subErrorList.forEach(e => {
             if (e.field && e.error) {
               errorList.push(e);
+            } else if (!this.$utils.isEmpty(e.errorList)) { 
+              //选项卡和折叠面板校验
+              e.errorList.forEach(s => {
+                errorList.push({
+                  uuid: e.uuid,
+                  ...s
+                });
+              });
             }
           });
         }
@@ -102,6 +127,9 @@ export default {
           this.formItem.component.splice(index, 1);
         }
       }
+    },
+    saveFormExtendConfig() { //保存数据转换组件配置
+      return [];
     }
   },
   computed: {
@@ -121,7 +149,7 @@ export default {
     required: {
       handler(val) {
         this.validateList = [];
-        if (this.mode === 'read' && val) {
+        if ((this.mode === 'read' || this.mode === 'readSubform') && val) {
           this.validateList.push({name: 'required', message: ' '});
         }
       },

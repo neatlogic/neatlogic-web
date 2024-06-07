@@ -45,6 +45,10 @@
         <div v-if="row.isRequired" class="text-success">{{ $t('page.yes') }}</div>
         <div v-else class="text-grey">{{ $t('page.no') }}</div>
       </template>
+      <template v-slot:isSearchAble="{ row }">
+        <div v-if="row.isSearchAble" class="text-success">{{ $t('page.yes') }}</div>
+        <div v-else class="text-grey">{{ $t('page.no') }}</div>
+      </template>
       <template slot="inputType" slot-scope="{ row }">
         <div v-if="row.inputType=='at'" class="text-success">{{ $t('page.yes') }}</div>
         <div v-else class="text-grey">{{ $t('page.no') }}</div>
@@ -100,7 +104,7 @@ export default {
   },
   filter: {},
   computed: {
-    attrDataList: function() {
+    attrDataList() {
       let tmp = this.attrData;
       tmp.theadList = [{
         title: this.$t('page.uniquekey'),
@@ -109,6 +113,10 @@ export default {
       {
         title: this.$t('page.name'),
         key: 'label'
+      },
+      {
+        title: this.$t('page.alias'),
+        key: 'alias'
       },
       {
         title: this.$t('page.type'),
@@ -125,6 +133,10 @@ export default {
       {
         title: this.$t('page.isunique'),
         key: 'isUnique'
+      },
+      {
+        title: this.$t('term.cmdb.searchable'),
+        key: 'isSearchAble'
       },
       {
         title: this.$t('page.autocollect'),

@@ -24,7 +24,7 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   directives: {download},
   props: {
@@ -60,7 +60,7 @@ export default {
       fileTable: {}, //所有的附件
       searchParams: {
         processTaskId: this.processTaskId
-      } 
+      }
     };
   },
   beforeCreate() {},

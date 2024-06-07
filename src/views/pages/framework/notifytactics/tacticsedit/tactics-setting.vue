@@ -17,9 +17,9 @@
 export default {
   name: '',
   components: {
-    SettingParameter: resolve => require(['./setting/setting-parameter'], resolve),
-    SettingTemplate: resolve => require(['./setting/setting-template'], resolve),
-    SettingOther: resolve => require(['./setting/setting-other'], resolve)
+    SettingParameter: () => import('./setting/setting-parameter'),
+    SettingTemplate: () => import('./setting/setting-template'),
+    SettingOther: () => import('./setting/setting-other')
   },
   props: {
     rightWidth: {

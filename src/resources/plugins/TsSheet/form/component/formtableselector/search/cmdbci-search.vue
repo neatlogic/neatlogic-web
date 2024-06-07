@@ -33,7 +33,7 @@
       <div
         v-for="attr in attrSearchList"
         :key="attr.uuid"
-        
+
         class="search-list"
       >
         <div class="text-grey text-right overflow" :title="attr.name">{{ attr.name }}</div>
@@ -84,7 +84,7 @@
       <div
         v-for="rel in relSearchList"
         :key="rel.uuid"
-        
+
         class="search-list"
       >
         <div class="text-grey text-right overflow" :title="rel.name">{{ rel.name }}</div>
@@ -144,10 +144,10 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    SearchHandler: resolve => require(['@/resources/components/FormMaker/formedit/edit/components/dataSource/dataFilter/search-handler.vue'], resolve),
-    SelectAttr: resolve => require(['./view/select-attr.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    SearchHandler: () => import('@/resources/components/FormMaker/formedit/edit/components/dataSource/dataFilter/search-handler.vue'),
+    SelectAttr: () => import('./view/select-attr.vue')
   },
   props: {
     searchColumnDetailList: {
@@ -418,7 +418,7 @@ export default {
       },
       deep: true,
       immediate: true
-    } 
+    }
   }
 };
 </script>

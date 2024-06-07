@@ -1,5 +1,5 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
-const page404 = () => import('@/views/pages/common/404.vue');
+const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const userManage = () => import('./users/user-manage.vue');
 const roleManage = () => import('./users/role-manage.vue');
@@ -36,10 +36,10 @@ const mqOverview = () => import('./mq/mq-overview.vue');
 const fullTextIndexManage = () => import('./fulltextindex/fulltextindex-manage.vue');
 
 const tagentManage = () => import('./tagent/tagent-manage.vue'); // tagent 管理
-const tagentAdd = () => import('./tagent/tagent-add.vue'); // tagent组管理
+const runnerGroupManage = () => import('./runner/runnergroup-manage.vue'); // tagent组管理
 const BatchUpgrade = () => import('./tagent/tagent/batch-upgrade.vue'); // tagent管理/批量升级
 const InstallationPackage = () => import('./tagent/tagent/installation-package.vue'); // tagent管理/安装包管理
-const runnerManage = () => import('./tagent/runner/runner-manage.vue'); // runner管理
+const runnerManage = () => import('./runner/runner-manage.vue'); // runner管理
 
 const threaddump = () => import('./healthcheck/threaddump.vue');
 const sqldump = () => import('./healthcheck/sqldump.vue');
@@ -56,10 +56,13 @@ const batchOperation = () => import('./tagent/tagent/batch-operation.vue'); // �
 const databaseViewManage = () => import('./databaseview/databaseview-manage.vue'); //重建视图
 const tenantConfigManage = () => import('./tenantconfig/tenantconfig-manage.vue'); // 租户配置信息管理
 const serverManage = () => import('./server/server-manage.vue'); // 服务器管理
+const extramenuManage = () => import('./extramenu/extramenu-manage.vue'); //菜单管理
+const regionManage = () => import('./region/region-manage.vue');//地域管理
 
 import { $t } from '@/resources/init.js';
+import { config } from './config.js';
 
-export default [
+let routerList = [
   {
     path: '/',
     beforeEnter: (to, from, next) => {
@@ -87,9 +90,9 @@ export default [
     component: refresh
   },
   {
-    path: '/404',
-    name: '404',
-    component: page404,
+    path: '/no-authority',
+    name: 'no-authority',
+    component: noAuthority,
     meta: {
       title: $t('page.pagenotvalid')
     }
@@ -149,6 +152,18 @@ export default [
       authority: 'AUTHORITY_MODIFY',
       type: 'user',
       isBack: false
+    }
+  },
+  {
+    path: '/region-manage',
+    name: 'region-manage',
+    component: regionManage,
+    meta: {
+      title: '地域管理',
+      ismenu: true,
+      icon: 'tsfont-location-o',
+      authority: 'REGION_MODIFY',
+      type: 'user'
     }
   },
   {
@@ -499,11 +514,11 @@ export default [
     }
   },
   {
-    path: '/tagent-add',
-    name: 'tagentAdd',
-    component: tagentAdd,
+    path: '/runnergroup-manage',
+    name: 'runnerGroupManage',
+    component: runnerGroupManage,
     meta: {
-      title: $t('router.framework.tagentadd'),
+      title: $t('router.framework.runnergroupmanage'),
       ismenu: true,
       icon: 'tsfont-ip-object',
       authority: 'RUNNER_MODIFY',
@@ -626,7 +641,7 @@ export default [
     meta: {
       title: $t('router.framework.servermanage'),
       ismenu: true,
-      icon: 'tsfont-config',
+      icon: 'tsfont-adapter',
       authority: 'ADMIN',
       type: 'others'
     }
@@ -675,7 +690,7 @@ export default [
       title: $t('router.framework.licensemanage'),
       ismenu: true,
       icon: 'tsfont-plugin',
-      authority: 'ADMIN',
+      authority: 'LICENSE_MODIFY',
       type: 'license'
     }
   },
@@ -690,5 +705,31 @@ export default [
       authority: 'TAGENT_BASE',
       type: 'others'
     }
+  },
+  {
+    path: '/extramenu-manage',
+    name: 'extramenuManage',
+    component: extramenuManage,
+    meta: {
+      title: $t('router.framework.extramenu'),
+      ismenu: true,
+      icon: 'tsfont-list',
+      authority: 'EXTRA_MENU_MODIFY',
+      type: 'others'
+    }
   }
 ];
+let importRouterList = [];
+try {
+  // 导入自定义路由
+  const routerContext = require.context('@/commercial-module', true, /router.js$/);
+  routerContext.keys().forEach(filePath => {
+    const moduleName = filePath?.split('/')[1]?.split('-')?.pop() || filePath?.split('/')[1];
+    if (moduleName && config?.module && moduleName == config.module) {
+      importRouterList = routerContext(filePath).default || [];
+    }
+  });
+} catch (error) {
+  // 捕获异常
+}
+export default [...routerList, ...importRouterList];

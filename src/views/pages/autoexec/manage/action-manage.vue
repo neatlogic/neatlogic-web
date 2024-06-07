@@ -156,13 +156,13 @@ export default {
   name: 'ActionManage',
   components: {
     TimeJobClickText,
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     CombineSearcher,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    RecordList: resolve => require(['./action/record-list'], resolve),
-    NoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'], resolve),
-    SingleUploadDialog: resolve => require(['./action/single-upload-dialog.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    RecordList: () => import('./action/record-list'),
+    NoticeSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'),
+    SingleUploadDialog: () => import('./action/single-upload-dialog.vue')
   },
   directives: { download },
   filters: {},
@@ -217,6 +217,13 @@ export default {
           maxlength: 50,
           label: this.$t('page.name'),
           validateList: ['required', 'name-special', { name: 'searchUrl', url: 'api/rest/autoexec/combop/basic/info/save', key: 'name' }]
+        },
+        opType: {
+          type: 'radio',
+          label: this.$t('page.actiontype'),
+          value: '',
+          dataList: [],
+          validateList: ['required']
         },
         typeId: {
           type: 'select',
@@ -346,6 +353,7 @@ export default {
       this.$set(this.searchVal, 'typeId', typeId);
     }
     this.searchAction();
+    this.getOpType();
   },
   beforeMount() {},
   mounted() {},
@@ -370,8 +378,8 @@ export default {
       this.$set(data, 'versionStatus', this.versionStatus);
       this.$api.autoexec.action.searchActionList(data).then(res => {
         if (res.Status == 'OK') {
-          this.getTheadList(this.versionStatus);
           this.tableData = res.Return;
+          this.getTheadList(this.versionStatus);
           this.$set(this.tableData, 'theadList', this.theadList);
           let versionStatusCountMap = res.Return.versionStatusCountMap;
           if (versionStatusCountMap) {
@@ -409,6 +417,7 @@ export default {
     initActionConfig() {
       return {
         name: '',
+        opType: 'readonly',
         typeId: '',
         viewAuthorityList: ['common#alluser'],
         editAuthorityList: ['common#alluser'],
@@ -462,7 +471,7 @@ export default {
           if (res.Status == 'OK') {
             this.$router.push({
               path: '/action-detail',
-              query: { 
+              query: {
                 id: res.Return,
                 versionStatus: 'passed'
               }
@@ -573,7 +582,10 @@ export default {
         this.theadList[index++] = { key: 'selection', multiple: true };
       }
       this.theadList[index++] = { title: this.$t('page.name'), key: 'name' };
-      this.theadList[index++] = { title: this.$t('page.type'), key: 'typeName' };
+      this.theadList[index++] = { title: this.$t('page.autoexeccomboptype'), key: 'typeName' };
+      if (this.tableData.isResourcecenterAuth === '1') {
+        this.theadList[index++] = { title: this.$t('page.actiontype'), key: 'opTypeName' };
+      }
       if (versionStatus == 'passed') {
         this.theadList[index++] = { title: this.$t('page.status'), key: 'isActive' };
       }
@@ -581,6 +593,14 @@ export default {
       if (versionStatus == 'passed') {
         this.theadList[index++] = { title: ' ', key: 'action', align: 'right', width: 10 };
       }
+    },
+    getOpType() {
+      let data = { enumClass: 'neatlogic.framework.autoexec.constvalue.AutoexecCombopOpType' };
+      this.$api.autoexec.action.getParamsTypeLit(data).then(res => {
+        if (res.Status == 'OK') {
+          this.addActionForm.opType.dataList = res.Return;
+        }
+      });
     }
   },
   computed: {

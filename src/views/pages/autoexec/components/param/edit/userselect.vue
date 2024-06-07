@@ -19,7 +19,7 @@
       v-if="showDialog"
       :config="defaultConfig"
       @close="close"
-    ></UserSource> 
+    ></UserSource>
   </div>
 </template>
 <script>
@@ -27,9 +27,9 @@ import comMixin from './editmixin.js';
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    UserSource: resolve => require(['./dataSource/userSource.vue'], resolve)
-  
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    UserSource: () => import('./dataSource/userSource.vue')
+
   },
   filters: {},
   mixins: [comMixin],

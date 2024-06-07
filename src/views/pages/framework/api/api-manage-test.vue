@@ -116,10 +116,10 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: 'ApiTest',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    JsonViewer: resolve => require(['vue-json-viewer'], resolve),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    JsonViewer: () => import('vue-json-viewer'),
     ...authHandler
   },
   mixins: [download],
@@ -135,7 +135,7 @@ export default {
         title: this.$t('term.framework.apitest'),
         type: 'slider',
         isShow: true,
-        maskClose: true,
+        maskClose: false,
         width: 'large',
         hasFooter: false
       },
@@ -207,15 +207,16 @@ export default {
     },
     setJsonValue(value) {
       let j = null;
-      try {
-        j = JSON.parse(value);
-      } catch (e) {
-        e;
-      }
-      if (j) {
-        for (const k in j) {
-          this.$set(this.testData.param, k, j[k]);
+      if (this.rowData.type !== 'raw') {
+        try {
+          j = JSON.parse(value);
+          this.$set(this.testData, 'param', j);
+          this.$forceUpdate();
+        } catch (e) {
+          e;
         }
+      } else {
+        this.$set(this.testData, 'param', value);
         this.$forceUpdate();
       }
     },
@@ -263,7 +264,7 @@ export default {
             aLink.download = fileName;
             document.body.appendChild(aLink);
             aLink.click();
-            aLink.remove();  
+            aLink.remove();
           }
         }
       });
@@ -272,7 +273,7 @@ export default {
       this.testData.authData = authData;
     },
     async executeTest() {
-      let header = null;
+      let header = {};
       if (this.rowData.apiType == 'custom') {
         //如果是公共接口，需要将认证信息送进后台生成认证Header才能调用测试接口
         const res = await this.$api.framework.apiManage.getAuthHeader(this.rowData.authtype, this.testData.authData);
@@ -283,6 +284,9 @@ export default {
         if (this.testData.authData.method == 'get') {
           header.type = 'get';
         }
+      }
+      if (this.rowData.type === 'raw') {
+        header['Content-Type'] = 'text/plain';
       }
       this.$api.framework.apiManage
         .test(this.testData.token, this.testData.param, header)

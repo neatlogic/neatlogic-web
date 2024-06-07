@@ -43,6 +43,7 @@
           :params="paramMode.output"
           :paramText="$t('page.outputparam')"
           :isEdit="isEdit"
+          :isNeedDefaultValue="false"
         ></ParamDetail>
       </div>
       <div v-if="!isEdit && versionVo.outputParamList.length == 0" class="line-2 text-tip">{{ $t('page.notarget', {target: $t('page.outputparam')}) }}</div>
@@ -102,7 +103,7 @@
         </Poptip>
       </div>
       <div v-if="isShow" class="line-box">
-        <div v-if="versionVo.parser == 'package'"> 
+        <div v-if="versionVo.parser == 'package'">
           <TsUpLoad
             data-type="autoexec"
             styleType="button"
@@ -142,11 +143,11 @@ export default {
   components: {
     TsFormSelect,
     ParamDetail,
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror.vue'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
     ParamsReadonly,
-    ArgumentEdit: resolve => require(['./argument/argument-edit'], resolve),
-    ArgumentView: resolve => require(['./argument/argument-view'], resolve)
+    ArgumentEdit: () => import('./argument/argument-edit'),
+    ArgumentView: () => import('./argument/argument-view')
   },
   filters: {
   },
@@ -232,8 +233,8 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {     
-    this.isShow = true;  
+  mounted() {
+    this.isShow = true;
     // 在切换草稿的时候，要把TsCodemirror模板重新渲染一遍,不然高亮会不显示,TsCodemirror 里面的方法 refresh 不起作用
   },
   beforeUpdate() {},
@@ -278,7 +279,7 @@ export default {
       }
     },
     codemirrorValInit() {
-      let lineList = this.versionVo.lineList;      
+      let lineList = this.versionVo.lineList;
       // 兼容老数据
       if (lineList && lineList.length) {
         let temList = [];
@@ -288,7 +289,7 @@ export default {
             content += '\n';
           }
           temList.push(content);
-        });   
+        });
         this.versionVo.codeValue = temList.join('');
       }
     },
@@ -324,8 +325,8 @@ export default {
         return newList;
       }
     },
-    initData(config) {     
-      this.getScriptParser();      
+    initData(config) {
+      this.getScriptParser();
       if (config) {
         Object.keys(config).forEach(key => {
           let i = config[key];
@@ -367,7 +368,7 @@ export default {
             if (index != -1) {
               parserList.splice(index, 1);
             }
-          } 
+          }
           this.parserConfig.dataList = parserList;
           this.codemirrorValInit();
         }
@@ -397,7 +398,7 @@ export default {
       }
       if (this.$refs.argument && !this.$refs.argument.valid()) {
         validList.push({focus: '#argument', text: this.$t('term.autoexec.inputfreeparam'), type: 'error'});
-      } 
+      }
       // let lineValid = await this.validCheck(); //接口未完成，之后补
       this.$emit('updateValidList', validList);
       return validList;

@@ -11,7 +11,7 @@
             :key="item.uuid"
             :index="index"
             class="group-ul"
-          > 
+          >
             <li class="bg-op radius-lg mb-md pr-nm pl-nm group-li">
               <span>{{ item.upwardNamePath }} </span>
               <div class="operation-wrap">
@@ -44,7 +44,7 @@
       v-if="isDialogShow"
       ref="groupList"
       :roleUuid="roleUuid"
-      :selectNum="tableData.tbodyList.length" 
+      :selectNum="tableData.tbodyList.length"
       :value="teamList"
       @on-ok="addSave"
     ></groupList>
@@ -55,8 +55,8 @@ export default {
   name: '',
   tagName: 'addgroup',
   components: {
-    groupList: resolve => require(['./select-user/group-list'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    groupList: () => import('./select-user/group-list'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   filters: {},
   props: {},
@@ -68,7 +68,7 @@ export default {
         tbodyList: [],
         pageSize: 10,
         currentPage: 1
-      },  
+      },
 
       isDialogShow: false,
       teamList: [], //角色分组集合
@@ -101,7 +101,7 @@ export default {
       } else {
         this.tableData.currentPage = 1;
       }
-      let params = { 
+      let params = {
         roleUuid: this.roleUuid,
         currentPage: this.tableData.currentPage,
         pageSize: this.tableData.pageSize

@@ -22,7 +22,7 @@
             :loading="donwloadLoading"
             icon="md-cloud-download"
             type="default"
-          >{{ $t('page.export') }}</Button> 
+          >{{ $t('page.export') }}</Button>
         </span>
       </div> -->
           </div>
@@ -92,13 +92,13 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect.vue'], resolve),
-    TsCodemirror: resolve => require(['@/resources/plugins/TsCodemirror/TsCodemirror'], resolve)
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect.vue'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   directives: { download },
   mixins: [],
   props: {
-    moduleId: { 
+    moduleId: {
       type: String,
       require: true
     }

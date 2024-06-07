@@ -17,7 +17,7 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    // TsFormCheckbox: resolve => require(['@/resources/plugins/TsForm/TsFormCheckbox'], resolve)
+    // TsFormCheckbox:()=>import('@/resources/plugins/TsForm/TsFormCheckbox')
   },
   directives: { download },
   filters: {},

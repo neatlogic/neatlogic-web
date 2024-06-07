@@ -54,11 +54,9 @@
 </template>
 <script>
 import LeftMenu from '@/views/components/leftmenu/leftmenu';
-
 export default {
   name: 'CmdbMenu',
   extends: LeftMenu,
-
   data: function() {
     return {
       customViewList: [],

@@ -36,7 +36,7 @@
           <span v-else>
             <TsFormInput
               ref="port"
-              v-model="row.port"              
+              v-model="row.port"
             ></TsFormInput>
           </span>
         </template>
@@ -61,7 +61,7 @@ import TsFormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsFormInput
   },
   filters: {},

@@ -64,7 +64,7 @@ export default {
       default: 'top-start'
     },
     itemList: { type: [Array, Object], required: true },
-    dataConfig: { 
+    dataConfig: {
       type: [Object, String, Boolean]
     }, //格式{name1:value1,name2:value2}
     labelWidth: {
@@ -92,9 +92,14 @@ export default {
       type: Boolean,
       default: false
     },
-    filterEmpty: {//当属性对应的值胃口时是否需要把属性从dataConfig中移除
+    isHidden: {
       type: Boolean,
-      default: false      
+      default: false
+    },
+    filterEmpty: {
+      //当属性对应的值胃口时是否需要把属性从dataConfig中移除
+      type: Boolean,
+      default: false
     },
     theme: Object //主题
   },
@@ -109,8 +114,7 @@ export default {
       valueConfig: {}
     };
   },
-  created() {
-  },
+  created() {},
   methods: {
     getFormSetting: function(itemList, isRest) {
       let _this = this;
@@ -142,7 +146,7 @@ export default {
       for (let key in _this.itemList) {
         let item = _this.itemList[key];
         let keyName = isArray ? item.name : key;
-        if ((keyName == name)) {
+        if (keyName == name) {
           resultJson = item;
           return false;
         }
@@ -176,7 +180,7 @@ export default {
       let messageList = [];
       this.$children.forEach(item => {
         item.$children.forEach(component => {
-          let message = {label: item.label};
+          let message = { label: item.label };
           if (component.$options.tagComponent == 'TsForm' && component.valid) {
             if (!component.valid(null, true)) {
               isValid = false;
@@ -209,6 +213,7 @@ export default {
         this.$emit('update:textConfig', val);
       },
       deep: true
+      // immediate: true // 影响只读回显值
     },
     dataConfig: {
       handler(currentval) {
@@ -232,9 +237,9 @@ export default {
                   _this.$set(item, 'value', []);
                 } else {
                   _this.$set(item, 'value', null);
-                }              
+                }
               }
-            }            
+            }
           } else {
             for (let key in _this.itemList) {
               let item = _this.itemList[key];
@@ -243,7 +248,7 @@ export default {
                 _this.$set(item, 'value', []);
               } else {
                 _this.$set(item, 'value', null);
-              }              
+              }
             }
           }
         }
@@ -259,7 +264,7 @@ export default {
           this.$emit('change', val);
         }
       },
-      deep: true      
+      deep: true
     }
   },
   render(h, cx) {
@@ -285,10 +290,12 @@ export default {
       }
       if (item.type == 'slot') {
         //卡槽类型的判断
-        $handler = (_this.$scopedSlots[item.name] ? _this.$scopedSlots[item.name]({
-          valueConfig: _this.valueConfig,
-          textConfig: _this.textConfig
-        }) : null);
+        $handler = _this.$scopedSlots[item.name]
+          ? _this.$scopedSlots[item.name]({
+            valueConfig: _this.valueConfig,
+            textConfig: _this.textConfig
+          })
+          : null;
       } else if (item.type == 'textspan') {
         //纯文本的显示
         $handler = h('div', { domProps: { innerHTML: item.value } });
@@ -302,7 +309,7 @@ export default {
           on: {
             change(val) {
               //实现v-model功能
-              let isRemove = false;//如果是空的需要从值的数组里移除
+              let isRemove = false; //如果是空的需要从值的数组里移除
               if ((!val && typeof val != 'number' && typeof val != 'boolean') || (typeof val == 'object' && !val.length)) {
                 isRemove = true;
               }
@@ -324,13 +331,13 @@ export default {
                 }
               } else {
                 _this.$set(_this.valueConfig, item.name, val);
-                _this.textConfig && _this.$set(_this.textConfig, item.name, val);       
+                _this.textConfig && _this.$set(_this.textConfig, item.name, val);
               }
 
               item.value = val;
             },
             'change-label'(val) {
-              let isRemove = false;//如果是空的需要从值的数组里移除
+              let isRemove = false; //如果是空的需要从值的数组里移除
               if ((!val && typeof value != 'number' && typeof value != 'boolean') || (typeof val == 'object' && !val.length)) {
                 isRemove = true;
               }
@@ -343,7 +350,7 @@ export default {
               } else {
                 _this.$set(_this.textConfig, item.name, val);
               }
-            }       
+            }
           }
         });
       }
@@ -365,7 +372,8 @@ export default {
             labelWidth: item.labelWidth || _this.labelWidth,
             name: item.name,
             readonly: item.hasOwnProperty('readonly') ? item.readonly : _this.readonly,
-            disabled: item.hasOwnProperty('disabled') ? item.disabled : _this.disabled 
+            disabled: item.hasOwnProperty('disabled') ? item.disabled : _this.disabled,
+            isHidden: item.hasOwnProperty('isHidden') ? item.isHidden : _this.isHidden
           }
         },
         [$handler]

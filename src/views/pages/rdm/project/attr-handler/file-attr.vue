@@ -26,8 +26,8 @@ import { AttrBase } from './base-attr.js';
 export default {
   name: '',
   components: {
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   extends: AttrBase,
   props: {},
@@ -59,7 +59,7 @@ export default {
         } else {
           return true;
         }
-      } 
+      }
       return true;
     },
     changeHasFile(val) {

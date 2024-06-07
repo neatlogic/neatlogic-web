@@ -8,7 +8,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {},
   props: {
@@ -228,14 +228,14 @@ export default {
         this.$api.cmdb.accountManage.getAccountById(this.accountId).then(res => {
           this.tableData = res.Return;
           for (let key in this.formConfig) {
-            this.$set(this.formValue, [key], this.tableData[key]);            
+            this.$set(this.formValue, [key], this.tableData[key]);
           }
           if (this.tableData.tagList && this.tableData.tagList.length > 0) {
             let idList = [];
             this.tableData.tagList.forEach(v => {
               idList.push(v.id);
             });
-            this.$set(this.formValue, 'tagIdList', idList);   
+            this.$set(this.formValue, 'tagIdList', idList);
           }
         });
       }

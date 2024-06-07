@@ -38,7 +38,12 @@
         </template>
       </TsTable>
     </div>
-    <ModuleEdit v-if="isShowModuleInfoEdit" :params="params" @close="closeModuleInfoEdit">
+    <ModuleEdit
+      v-if="isShowModuleInfoEdit"
+      :runnerId="runnerId"
+      :params="params"
+      @close="closeModuleInfoEdit"
+    >
     </ModuleEdit>
   </div>
 </template>
@@ -46,9 +51,9 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ModuleEdit: resolve => require(['./module/module-edit'], resolve),
-    ModuleInfo: resolve => require(['./module/module-info'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    ModuleEdit: () => import('./module/module-edit'),
+    ModuleInfo: () => import('./module/module-info')
   },
   props: {
     params: {
@@ -70,29 +75,30 @@ export default {
       moduleInfo: {},
       runnerGroupInfo: {},
       tableConfig: {},
+      runnerId: null,
       theadList: [
         {
-          key: 'name', 
+          key: 'name',
           title: this.$t('page.name')
         },
         {
-          key: 'authType', 
+          key: 'authType',
           title: this.$t('term.deploy.connectionmode')
         },
         {
-          key: 'host', 
+          key: 'host',
           title: this.$t('page.ip')
         },
         {
-          key: 'protocol', 
+          key: 'protocol',
           title: this.$t('page.protocol')
         },
         {
-          key: 'port', 
+          key: 'port',
           title: this.$t('term.deploy.commandport')
         },
         {
-          key: 'nettyPort', 
+          key: 'nettyPort',
           title: this.$t('term.deploy.heartbeatport')
         }
       ]
@@ -113,6 +119,7 @@ export default {
   destroyed() {},
   methods: {
     openModuleInfoEdit() {
+      this.runnerId = this.runnerGroupInfo?.id;
       this.isShowModuleInfoEdit = true;
     },
     closeModuleInfoEdit(needRefresh) {

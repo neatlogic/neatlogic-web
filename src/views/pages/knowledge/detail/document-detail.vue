@@ -73,7 +73,7 @@ import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
   name: '',
   components: {
-    TagList: resolve => require(['@/views/pages/knowledge/common/tag-list.vue'], resolve),
+    TagList: () => import('@/views/pages/knowledge/common/tag-list.vue'),
     LeftNav,
     ...items
   },
@@ -139,7 +139,7 @@ export default {
         }
       });
     },
-    togoItem(item) { 
+    togoItem(item) {
       if (item) {
         this.navUuid = item.uuid;
         this.config.lineList.forEach(i => {

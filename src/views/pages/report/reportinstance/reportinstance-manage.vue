@@ -6,9 +6,11 @@
       </template>
       <template slot="topRight">
         <TsRow>
-          <Col :span="8"><TsFormSelect v-model="searchParam.reportId" v-bind="reportSelectConfig"></TsFormSelect></Col>
+          <Col :span="8">
+            <TsFormSelect v-model="searchParam.reportId" v-bind="reportSelectConfig" @change="searchReportInstance()"></TsFormSelect>
+          </Col>
           <Col :span="16">
-            <InputSearcher v-model="searchParam.keyword" @change="searchReportInstance()"></InputSearcher>
+            <InputSearcher v-model="searchParam.keyword" @change="() => updatePagesize()"></InputSearcher>
           </Col>
         </TsRow>
       </template>
@@ -16,6 +18,7 @@
         <TsTable
           v-if="reportInstanceData"
           v-bind="reportInstanceData"
+          :theadList="theadList"
           @changeCurrent="updatePage"
           @changePageSize="updatePagesize"
         >
@@ -53,21 +56,19 @@
 export default {
   name: '',
   components: {
-    TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ReportInstanceEdit: resolve => require(['./reportinstance-edit.vue'], resolve)
+    TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ReportInstanceEdit: () => import('./reportinstance-edit.vue')
   },
   props: {},
   data() {
-    let _this = this;
     return {
       reportInstanceDialogShow: false,
       reportInstanceId: null,
       searchParam: {},
-      searchTimmer: null,
       reportInstanceData: {},
       reportSelectConfig: {
         search: true,
@@ -109,7 +110,6 @@ export default {
   beforeMount() {},
   mounted() {
     this.searchReportInstance();
-    //this.getReportList();
   },
   beforeUpdate() {},
   updated() {},
@@ -118,38 +118,22 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getReportList: function() {
-      //这里是获取报表模版分类下拉的
-      this.$api.report.report.getReportDatalist({ needPage: false }).then(res => {
-        if (res.Status == 'OK') {
-          this.reportSelectConfig.dataList = res.Return.tbodyList;
-        }
-      });
-    },
     searchReportInstance: function() {
       this.$api.report.report.searchReportInstance(this.searchParam).then(res => {
         this.reportInstanceData = res.Return;
-        this.reportInstanceData.theadList = this.theadList;
       });
     },
     addReportInstance: function() {
       this.reportInstanceId = null;
       this.reportInstanceDialogShow = true;
     },
-    updatePagesize: function(pageSize) {
-      if (pageSize) {
-        this.searchParam.pageSize = pageSize;
-      } else {
-        this.searchParam.pageSize = 20;
-      }
+    updatePagesize(pageSize) {
+      this.searchParam.currentPage = 1;
+      this.searchParam.pageSize = pageSize || 20;
       this.searchReportInstance();
     },
-    updatePage: function(currentPage) {
-      if (currentPage) {
-        this.searchParam.currentPage = currentPage;
-      } else {
-        this.searchParam.currentPage = 1;
-      }
+    updatePage(currentPage = 1) {
+      this.searchParam.currentPage = currentPage;
       this.searchReportInstance();
     },
     toggleReportInstanceActive: function(report) {

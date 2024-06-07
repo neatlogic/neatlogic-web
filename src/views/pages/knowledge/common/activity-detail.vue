@@ -35,7 +35,7 @@
 export default {
   name: 'ActivityDetail',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   filters: {},
   props: {

@@ -1,5 +1,5 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
-//const page404 = () => import('@/views/pages/common/404.vue');
+const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const ciDetail = () => import('./ci/ci-detail.vue');
 //const ciEdit = () => import('./ci/ci-edit.vue');
@@ -43,7 +43,8 @@ const inspectStatusDetail = () => import('./application/inspect-status-detail.vu
 const graphEdit = () => import('./graph/graph-edit.vue');
 const graphData = () => import('./graph/graph-data.vue');
 const alertLevelManage = () => import('./alertlevel/alertlevel-manage.vue');
-import {$t} from '@/resources/init.js';
+const objManage = () => import('./discovery/obj-manage.vue');
+import { $t } from '@/resources/init.js';
 let routerArr = [
   {
     path: '/',
@@ -74,6 +75,14 @@ let routerArr = [
     path: '/refresh',
     name: 'refresh',
     component: refresh
+  },
+  {
+    path: '/no-authority',
+    name: 'no-authority',
+    component: noAuthority,
+    meta: {
+      title: $t('router.common.pagenoexist')
+    }
   },
   {
     path: '/global-search',
@@ -132,7 +141,7 @@ let routerArr = [
       title: $t('router.cmdb.applicationlist'),
       ismenu: true,
       icon: 'tsfont-app',
-      authority: 'RESOURCECENTER_BASE'
+      authority: ['AUTOEXEC_BASE', 'DEPLOY_BASE', 'INSPECT_BASE', 'DR_BASE'] //只有cmdb模块权限不显示
     }
   },
   {
@@ -144,7 +153,7 @@ let routerArr = [
       ismenu: true,
       type: 'resourceCenter',
       icon: 'tsfont-ip-list',
-      authority: 'RESOURCECENTER_BASE'
+      authority: ['AUTOEXEC_BASE', 'DEPLOY_BASE', 'INSPECT_BASE', 'DR_BASE'] //只有cmdb模块权限不显示
     }
   },
   {
@@ -204,6 +213,18 @@ let routerArr = [
       ismenu: true,
       type: 'discovery',
       icon: 'tsfont-cluster',
+      authority: 'SYNC_MODIFY'
+    }
+  },
+  {
+    path: '/obj-manage',
+    name: 'obj-manage',
+    component: objManage,
+    meta: {
+      title: $t('router.cmdb.objmanage'),
+      ismenu: true,
+      type: 'discovery',
+      icon: 'tsfont-block',
       authority: 'SYNC_MODIFY'
     }
   },

@@ -16,7 +16,7 @@ import comMixin from './editmixin.js';
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   mixins: [comMixin],
   model: {

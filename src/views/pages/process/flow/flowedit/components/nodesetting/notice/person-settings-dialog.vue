@@ -88,9 +88,9 @@
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TimeSelect: resolve => require(['@/resources/components/TimeSelect/TimeSelect'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect')
   },
   props: {
     policyId: {
@@ -156,7 +156,7 @@ export default {
             name: citem.name,
             value: citem.value || '',
             type: 'constant'
-          }; 
+          };
           let paramItem = this.paramTypeConfig[citem.paramType] ? this.paramTypeConfig[citem.paramType].find(cc => cc.value == citem.value) : null;
           data.type = paramItem ? (paramItem.type || data.type) : data.type;
           if (citem.paramType == 'date' && !this.$utils.isEmpty(citem.value)) { //判断值为空的情况
@@ -233,7 +233,7 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" >
+<style lang="less">
    .status-list {
     display: flex;
     width: 100%;

@@ -8,19 +8,21 @@
       <template v-slot>
         <TsForm ref="integrationForm" :item-list="integrationFormConfig">
           <template v-slot:target>
-            <TsRow :gutter="0">
-              <Col span="4">
-                <TsFormSelect
-                  v-model="integrationData.method"
-                  :data-list="methodList"
-                  :name="'method'"
-                  style="margin-right:5px"
-                ></TsFormSelect>
-              </Col>
-              <Col span="20" style="padding-left:8px;">
-                <TsFormInput v-model="integrationData.url" type="text" :name="'url'" />
-              </Col>
-            </TsRow>
+            <div>
+              <TsRow :gutter="0">
+                <Col span="4">
+                  <TsFormSelect
+                    v-model="integrationData.method"
+                    :data-list="methodList"
+                    :name="'method'"
+                    style="margin-right: 5px"
+                  ></TsFormSelect>
+                </Col>
+                <Col span="20" style="padding-left: 8px">
+                  <TsFormInput v-model="integrationData.url" type="text" :name="'url'" />
+                </Col>
+              </TsRow>
+            </div>
           </template>
           <template v-slot:config>
             <Tabs v-model="activedTab" name="integrationEditTabs">
@@ -28,15 +30,15 @@
                 <Authentication :integration="integrationData" @setAuthentication="setAuthentication"></Authentication>
               </TabPane>
               <TabPane :label="$t('page.paramdesc')" name="param" tab="integrationEditTabs">
-                <Param
+                <ParamEdit
                   :allow-edit-param="allowEditParam"
                   :integration="integrationData"
                   :handler-pattern="handlerPattern"
                   @setParam="setParam"
-                ></Param>
+                ></ParamEdit>
               </TabPane>
               <TabPane :label="$t('term.framework.head')" name="head" tab="integrationEditTabs">
-                <Header :integration="integrationData" @setHead="setHead"></Header>
+                <HeaderEdit :integration="integrationData" @setHead="setHead"></HeaderEdit>
               </TabPane>
               <TabPane :label="$t('term.framework.inputtrans')" name="input" tab="integrationEditTabs">
                 <InputTransform
@@ -85,12 +87,12 @@ import TsForm from '@/resources/plugins/TsForm/TsForm';
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 import Authentication from './authentication-edit.vue';
-import Header from './head-edit.vue';
+import HeaderEdit from './head-edit.vue';
 import Other from './other-edit.vue';
 import OutputTransform from './output-transform.vue';
 import InputTransform from './input-transform.vue';
 import Test from './integration-test.vue';
-import Param from './param-edit.vue';
+import ParamEdit from './param-edit.vue';
 
 export default {
   components: {
@@ -100,10 +102,10 @@ export default {
     OutputTransform,
     InputTransform,
     Authentication,
-    Header,
+    HeaderEdit,
     Other,
     Test,
-    Param
+    ParamEdit
   },
   props: {
     uuid: { type: String },

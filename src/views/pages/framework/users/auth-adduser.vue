@@ -2,7 +2,7 @@
   <div class="auth-adduser">
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span>{{ $t('page.editauthority') }}</span>
@@ -61,7 +61,7 @@
 export default {
   name: '',
   components: {
-    CommonAdduser: resolve => require(['./common/common-adduser.vue'], resolve)
+    CommonAdduser: () => import('./common/common-adduser.vue')
   },
   props: [''],
   data() {
@@ -218,11 +218,8 @@ export default {
       }
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

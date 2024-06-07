@@ -3,7 +3,7 @@
     <TsContain>
       <template v-slot:navigation>
         <template v-if="canBack">
-          <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+          <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
         </template>
         <template v-else>
           <span>{{ $t('term.framework.grouplist') }}</span>
@@ -106,13 +106,13 @@
           <Icon type="i-icon tsfont-check" size="30" class="text-op" />{{ $t('term.deploy.createsuccess') }}
         </div>
         <div class="submit-btn-list">
-          <Button size="large" type="primary" @click="$back(),saveProfile('backteamlist')">{{ $t('term.framework.returntogrouplist') }}</Button>
+          <Button size="large" type="primary" @click="backTeamManage(); saveProfile('backteamlist')">{{ $t('term.framework.returntogrouplist') }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Button size="large" @click="continueCreate(),saveProfile('keeponcreate')">{{ $t('term.framework.continuecreate') }}</Button>
+          <Button size="large" @click="continueCreate(); saveProfile('keeponcreate')">{{ $t('term.framework.continuecreate') }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Button size="large" @click="editCrrentTeam(),saveProfile('editteam')">{{ $t('dialog.title.edittarget',{'target':$t('page.group')}) }}</Button>
+          <Button size="large" @click="editCrrentTeam(); saveProfile('editteam')">{{ $t('dialog.title.edittarget',{'target':$t('page.group')}) }}</Button>
         </div>
         <div class="submit-btn-list">
           <Checkbox v-model="submitMessage">{{ $t('term.framework.notips') }}</Checkbox>
@@ -139,7 +139,7 @@ export default {
   name: '',
   components: {
     BaseDetail,
-    CommonAdduser: resolve => require(['./common/common-adduser.vue'], resolve)
+    CommonAdduser: () => import('./common/common-adduser.vue')
   },
   props: [],
   data() {
@@ -411,9 +411,9 @@ export default {
             let data = this.convenienceDetail.userProfileOperateList.find(d => d.checked == '1');
             let value = data.value;
             switch (value) {
-              //返回用户列表
+              //返回分组
               case 'backteamlist':
-                this.$back();
+                this.backTeamManage();
                 break;
                 //编辑用户
               case 'editteam':
@@ -510,6 +510,11 @@ export default {
         }
       }
       return dataObj;
+    },
+    backTeamManage() {
+      this.$router.push({
+        path: '/team-manage'
+      });
     }
   },
   filter: {},

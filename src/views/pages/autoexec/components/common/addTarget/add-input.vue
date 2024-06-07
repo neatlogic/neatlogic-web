@@ -9,7 +9,7 @@
                 <span class="tsfont-question-o input-dec"></span>
                 {{ $t('term.autoexec.ipformattip') }}
               </div>
-              <Input 
+              <Input
                 v-model="value"
                 type="textarea"
                 :autosize="{minRows: 9,maxRows: 9}"
@@ -37,7 +37,7 @@
                 </div>
               </div>
             </div>
-          </Col>  
+          </Col>
           <Col :span="13">
             <div class="bg-op node-show radius-sm">
               <div v-if="currentDataList.length>0" class="text-href clear-btn" @click="clearAll">{{ $t('page.clear') }}</div>
@@ -67,23 +67,25 @@
           :isReadonly="!canEdit"
           :dataList="currentDataList"
           @on-ok="onOk"
-        ></MoreTarget>  
+        ></MoreTarget>
       </div>
     </div>
   </div>
-  
+
 </template>
 <script>
 import addtargetmixin from './addtargetmixin.js';
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
-    MoreTarget: resolve => require(['@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'], resolve),
-    NodeView: resolve => require(['../targetView/node-view'], resolve)
+    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'),
+    NodeView: () => import('../targetView/node-view')
   },
   filtes: {},
   mixins: [addtargetmixin],
-  props: {},
+  props: {
+  },
   data() {
     return {
       showNumber: 15,
@@ -118,7 +120,7 @@ export default {
       this.messageConfig = { error: '', info: '', succee: 0};
       if (!this.value.trim()) {
         return false;
-      } 
+      }
       //前端校验
       let _this = this;
       let errorList = [];
@@ -157,7 +159,7 @@ export default {
         if (name) {
           this.$set(arr, 'name', name.trim());
         }
-        
+
         if (_this.currentDataList.find(c => c.port && !c.name ? str == c.ip + ':' + c.port : c.port && c.name ? str == c.ip + ':' + c.port + '/' + c.name : str == c.ip)) {
           repeatList.push(str);
         } else {
@@ -198,7 +200,8 @@ export default {
     validinputnodelist(list) {
       let data = {
         filter: this.defaultSearchValue,
-        inputNodeList: list
+        inputNodeList: list,
+        cmdbGroupType: this.opType
       };
       return this.$api.autoexec.action.validinputnodelist(data).then(res => {
         if (res.Status == 'OK') {
@@ -219,7 +222,11 @@ export default {
       return textList.join('、');
     }
   },
-  computed: {},
+  computed: {
+    opType() {
+      return mutations.getOpType();
+    }
+  },
   watch: {
     defaultValue: {
       handler(val) {

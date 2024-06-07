@@ -30,7 +30,7 @@ import appEditAttrList from '../appEditAttrList.js';
 export default {
   name: '', // 编辑模块
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   mixins: [handleTimeMixin, appEditAttrList],
   props: {
@@ -60,20 +60,19 @@ export default {
           label: 'id',
           name: 'id',
           isHidden: true
-        }   
+        }
       ]
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
+    await this.getAppModuleCiAttrList();
     if (this.appModuleId) {
       this.getAppModueInfoById(this.appModuleId);
     }
   },
   beforeMount() {},
-  mounted() {
-    this.getAppModuleCiAttrList();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -88,7 +87,7 @@ export default {
       };
       // 获取应用模块模型属性列表
       //此接口查询的属性列表里的控件，现在from控件大部分都支持，有不支持，如 附件、表格、表达式、超链接
-      this.$api.deploy.applicationConfig.getAppModuleCiAttrList(params).then((res) => {
+      return this.$api.deploy.applicationConfig.getAppModuleCiAttrList(params).then((res) => {
         if (res.Status == 'OK') {
           this.formConfig = this.formConfig.concat(this.getAppCiAttrList(res.Return, this.attrNameList, 'APP'));
         }
@@ -123,8 +122,8 @@ export default {
     getAppModueInfoById(id) {
       this.$api.deploy.applicationConfig.getAppModue(id).then((res) => {
         if (res && res.Status == 'OK') {
-          let dataInfo = res.Return;
-          if (dataInfo && !this.$utils.isEmptyObj(dataInfo)) {
+          let dataInfo = res.Return || {};
+          if (dataInfo && !this.$utils.isEmpty(dataInfo)) {
             this.formConfig && this.formConfig.forEach((item) => {
               if (dataInfo[item.name]) {
                 this.$set(this.formValue, item.name, item.name == 'maintenanceWindow' ? this.handleMaintenanceWindowValue(dataInfo[item.name]) : dataInfo[item.name]);

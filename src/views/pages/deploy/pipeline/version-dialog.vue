@@ -23,7 +23,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     jobTemplateData: {type: Object}
@@ -42,11 +42,11 @@ export default {
           name: 'version',
           maxlength: 50,
           validateList: [
-            'required', 
+            'required',
             'key-special',
-            { 
-              name: 'searchUrl', 
-              url: '/api/rest/deploy/version/save', 
+            {
+              name: 'searchUrl',
+              url: '/api/rest/deploy/version/save',
               key: 'version',
               params: {
                 appModuleId: this.jobTemplateData.appModuleId,

@@ -128,7 +128,7 @@ var ADDPARENTUUID = '';
 export default {
   name: 'ChangeTreeview',
   components: {
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
     ChangeTreeview,
     UserSelect,
     TsUpLoad,

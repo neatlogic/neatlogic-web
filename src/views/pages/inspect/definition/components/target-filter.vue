@@ -26,7 +26,7 @@
 export default {
   name: '', // 指标过滤
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
     inspectName: {
@@ -38,7 +38,7 @@ export default {
     return {
       isShowDialog: true,
       selectedList: [],
-      defaultFieldsList: [], 
+      defaultFieldsList: [],
       tableConfig: {
         keyName: 'name',
         showPager: false,
@@ -50,15 +50,15 @@ export default {
             multiple: true
           },
           {
-            key: 'name', 
+            key: 'name',
             title: this.$t('page.name')
           },
           {
-            key: 'desc', 
+            key: 'desc',
             title: this.$t('page.description')
           },
           {
-            key: 'type', 
+            key: 'type',
             title: this.$t('term.autoexec.valuetype')
           }
         ]
@@ -136,10 +136,10 @@ export default {
           'on-ok': vnode => {
             vnode.isShow = false;
           },
-          'on-close': () => { 
+          'on-close': () => {
             this.selectedList.push(currentRow.name);
           }
-        }); 
+        });
       }
     },
     closeDialog(needRefresh = false) {

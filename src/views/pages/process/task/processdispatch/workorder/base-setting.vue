@@ -55,6 +55,14 @@
             <div class="infor-left text-title overflow">{{ $t('term.process.usernumber') }}</div>
             <div class="infor-right">{{ userDetail.userId ||'-' }}</div>
           </div>
+          <div class="infor-left text-title overflow">{{ $t('term.process.region') }}</div>
+          <div class="infor-right">
+            <TsFormSelect
+              ref="region"
+              v-model="dispatch.regionId"
+              v-bind="getRegionSetting"
+            ></TsFormSelect>
+          </div>
         </div>
         <!-- <div class="information-list">
           <div class="infor-left text-title overflow">{{ $t('page.phone') }}</div>
@@ -116,11 +124,11 @@
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsAvatar: resolve => require(['@/resources/components/TsAvatar/TsAvatar'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    WorkLabel: resolve => require(['@/views/pages/process/task/processdetail/workorder/label/label.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsAvatar: () => import('@/resources/components/TsAvatar/TsAvatar'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    WorkLabel: () => import('@/views/pages/process/task/processdetail/workorder/label/label.vue')
   },
   props: {
     draftData: Object,
@@ -145,7 +153,19 @@ export default {
       knowledgeList: [],
       showRelateKnowledge: true,
       showBasic: true,
-      showInformant: true
+      showInformant: true,
+      regionSelectConfig: {
+        dynamicUrl: '/api/rest/region/search',
+        rootName: 'tbodyList',
+        valueName: 'id',
+        textName: 'name',
+        search: true,
+        transfer: true,
+        border: 'border',
+        width: '100%',
+        firstSelect: true,
+        validateList: ['required']
+      }
     };
   },
   beforeCreate() {},
@@ -181,7 +201,7 @@ export default {
           this.isNeedPriority = !!this.draftData.isNeedPriority;
         }
         if (this.isNeedPriority) {
-          this.dispatch.priorityUuid = this.draftData.priorityUuid; 
+          this.dispatch.priorityUuid = this.draftData.priorityUuid;
         }
       }
     },
@@ -198,7 +218,7 @@ export default {
         let data = {
           userUuid: userId
         };
-        return this.$api.framework.user.getUserCopy(data).then(res => {
+        return this.$api.framework.user.getUser(data).then(res => {
           if (res.Status == 'OK') {
             this.userDetail = res.Return;
           }
@@ -261,8 +281,8 @@ export default {
     },
     goToKnowledge(knowledge) {
       let {knowledgeDocumentId, knowledgeDocumentTypeUuid, knowledgeDocumentVersionId, status} = knowledge;
-      const url = 
-      `${HOME}/knowledge.html#/knowledge-detail?` + 
+      const url =
+      `${HOME}/knowledge.html#/knowledge-detail?` +
       `knowledgeDocumentId=${knowledgeDocumentId}&` +
       `knowledgeDocumentTypeUuid=${knowledgeDocumentTypeUuid}&` +
       `knowledgeDocumentVersionId=${knowledgeDocumentVersionId}&` +
@@ -271,7 +291,12 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getRegionSetting() {
+      this.$set(this.regionSelectConfig, 'params', {owner: this.dispatch.owner});
+      return this.regionSelectConfig;
+    }
+  },
   watch: {
     defaultPriorityConfig: {
       handler(val) {

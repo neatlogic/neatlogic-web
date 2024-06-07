@@ -81,28 +81,28 @@ export default {
     height: 130px;
   }
   .download-success-bg {
-    background: url('~img-module/img/common/download-success-default.png') no-repeat center center;
+    background: url('@img-module/img/common/download-success-default.png') no-repeat center center;
     background-size: 100%;
   }
   .download-fail-bg {
-    background: url('~img-module/img/common/download-fail-default.png') no-repeat center center;
+    background: url('@img-module/img/common/download-fail-default.png') no-repeat center center;
     background-size: 100%;
   }
   .downloading-bg {
-    background: url('~img-module/img/common/downloading-default.png') no-repeat center center;
+    background: url('@img-module/img/common/downloading-default.png') no-repeat center center;
     background-size: 100%;
   }
   .theme-dark & {
       .download-success-bg {
-        background: url('~img-module/img/common/download-success-dark.png') no-repeat center center;
+        background: url('@img-module/img/common/download-success-dark.png') no-repeat center center;
         background-size: 100%;
     }
     .download-fail-bg {
-      background: url('~img-module/img/common/download-fail-dark.png') no-repeat center center;
+      background: url('@img-module/img/common/download-fail-dark.png') no-repeat center center;
       background-size: 100%;
     }
     .downloading-bg {
-      background: url('~img-module/img/common/downloading-dark.png') no-repeat center center;
+      background: url('@img-module/img/common/downloading-dark.png') no-repeat center center;
       background-size: 100%;
     }
   }

@@ -134,8 +134,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    SetParam: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/param.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    SetParam: () => import('@/views/pages/autoexec/detail/runnerDetail/param.vue')
   },
   props: {
     appSystemId: {
@@ -497,7 +497,7 @@ export default {
       return (scenarioId) => {
         if ((this.authInfo && this.authInfo.isHasAllAuthority) || (scenarioId && this.authList.includes(`scenario#${scenarioId}`)) || this.authList.includes('scenario#all')) {
           return true;
-        } 
+        }
         return false;
       };
     },
@@ -506,7 +506,7 @@ export default {
       return (envId) => {
         if ((this.authInfo && this.authInfo.isHasAllAuthority) || (envId && this.authList.includes(`env#${envId}`)) || this.authList.includes('env#all')) {
           return true;
-        } 
+        }
         return false;
       };
     }

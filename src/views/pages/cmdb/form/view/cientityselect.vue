@@ -62,8 +62,8 @@ import CiEntityList from '@/views/pages/cmdb/cientity/cientity-list.vue';
 export default {
   name: '',
   components: {
-    EditCi: resolve => require(['./component/edit-ci.vue'], resolve),
-    EditCiEntity: resolve => require(['./component/edit-cientity.vue'], resolve),
+    EditCi: () => import('./component/edit-ci.vue'),
+    EditCiEntity: () => import('./component/edit-cientity.vue'),
     CiEntityList
   },
   filters: {},
@@ -183,7 +183,7 @@ export default {
             cientity['_expander'] = false;//隐藏展开按钮
           } else if (cientity['actionType'] == 'update') {
             cientity['_expander'] = true;//展示展开按钮
-          } 
+          }
           if (index > -1) {
             this.$set(this.entityList, index, cientity);
           } else {
@@ -201,7 +201,7 @@ export default {
           if (ciEntity.actionType == 'update') {
             this.dataConfig.forEach(v => {
               if (v.isEdit) {
-                ciEntity.editableAttrRelIdList.push(v.key);             
+                ciEntity.editableAttrRelIdList.push(v.key);
               }
             });
           }

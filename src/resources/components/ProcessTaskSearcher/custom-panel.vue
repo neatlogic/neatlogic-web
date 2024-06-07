@@ -6,7 +6,7 @@
         <div class="bg-grey padding radius-md">
           <div v-for="(conditionData, cindex) in conditionGroup.conditionList" :key="conditionData.uuid">
             <div class="condition-grid">
-              <div>{{ getConditionConfigByConditionData(conditionGroup, conditionData).handlerName }}：</div>
+              <div class="overflow" :title="getConditionConfigByConditionData(conditionGroup, conditionData).handlerName">{{ getConditionConfigByConditionData(conditionGroup, conditionData).handlerName }}：</div>
               <div>
                 <TsFormSelect
                   ref="expressionList"
@@ -32,6 +32,8 @@
                   mode="custom"
                   :condition="getConditionConfigByConditionData(conditionGroup, conditionData)"
                   :conditionData="conditionData"
+                  :isCustomValue="true"
+                  :isCustomPanel="true"
                   @change="
                     (conditionConfig, val, textStr) => {
                       change(conditionData, 'valueList', val);
@@ -102,9 +104,9 @@
 export default {
   name: '',
   components: {
-    ConditionGroupDialog: resolve => require(['./conditiongroup-dialog.vue'], resolve),
-    SearchInputer: resolve => require(['./search-inputer.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    ConditionGroupDialog: () => import('./conditiongroup-dialog.vue'),
+    SearchInputer: () => import('./search-inputer.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     workcenterConditionData: { type: Object },
@@ -172,7 +174,7 @@ export default {
               newD['type'] = 'form';
               newD['expressionList'] = d.expressionList;
               try {
-                newD['config'] = JSON.parse(d.config);
+                newD['config'] = d.config;
               } catch (e) {
                 console.error(e);
               }
@@ -240,6 +242,7 @@ export default {
         }
       }
       this.$set(condition, type, val);
+      this.$forceUpdate(); // 强制更新视图，切换表达式：为空或者不为空，表达式值没有更新，导致后面的文本框没有隐藏
     },
     changeJoinType(obj, val) {
       this.$set(obj, 'joinType', val);
@@ -283,7 +286,7 @@ export default {
         let newConditionGroup = null;
         if (conditionGroupUuid) {
           newConditionGroup = this.workcenterConditionDataLocal.conditionGroupList.find(d => d.uuid == conditionGroupUuid);
-        } 
+        }
         if (!newConditionGroup) {
           newConditionGroup = {};
           newConditionGroup['uuid'] = this.$utils.setUuid();
@@ -360,7 +363,7 @@ export default {
 .condition-grid {
   display: grid;
   width: 100%;
-  grid-gap: 12px;
+  grid-gap: 10px;
   grid-template-columns: 120px 150px auto 50px;
 }
 </style>

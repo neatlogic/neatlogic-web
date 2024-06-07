@@ -13,9 +13,15 @@ var BASELANGUAGES = getCookie('neatlogic_language') || 'zh';
 var MODULEID = '';
 var MENULIST = [];
 var MENUTYPE = {};
+var AUTHTYPE = ''; // 授权类型
 var SSOTICKETKEY = ''; // 单点登录key值
 var SSOTICKETVALUE = ''; // 单点登录value值
+var ISNEEDAUTH = false; //是否需要免登录认证。如果需要，则页面会在第一个接口请求走myAuth认证后，才请求后续的接口。
 const COMMERCIAL_MODULES = []; //已激活的商业模块
+var HTTP_RESPONSE_STATUS_CODE = ''; // http返回状态码，用于错误回显
+var GLOBAL_PAGELIST = '';
+var GLOBAL_TABLESTRYLE = '';
+var GLOBAL_LOGINTITLE = 'welcome';
 
 var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
 var isIE = userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1; //判断是否IE<11浏览器
@@ -62,68 +68,108 @@ function getCookie(name) {
 function removeCookie(name) {
   setCookie(name, ' ', new Date(0).toUTCString());
 }
+function handleUrl(url, httpresponsestatuscode) {
+  // 处理url是否带有参数
+  if (url) {
+    return url.indexOf('?') != -1 ? '&httpresponsestatuscode=' + httpresponsestatuscode : '?httpresponsestatuscode=' + httpresponsestatuscode;
+  }
+  return url;
+}
 
-function getDirectUrl() {
-  // 获取页面重定向地址
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', BASEURLPREFIX + '/api/rest/init/config/get', false);
-  //浏览器URL显示传递参数
-  if (SSOTICKETKEY && SSOTICKETVALUE) {
-    xhr.setRequestHeader('AuthType', SSOTICKETKEY);
-    xhr.setRequestHeader('AuthValue', SSOTICKETVALUE);
-  }
-  //从其他已登录的系统跳转过来，浏览器URL不带任何参数的时候
-  if (!SSOTICKETVALUE) {
-    SSOTICKETVALUE = getCookie(SSOTICKETKEY);
-    xhr.setRequestHeader('AuthType', SSOTICKETKEY);
-    xhr.setRequestHeader('AuthValue', SSOTICKETVALUE);
-  }
-  xhr.send();
-  if (xhr.readyState == 4) {
-    if (xhr.status == 522) {
-      var responseText = xhr.responseText ? JSON.parse(xhr.responseText) : '';
-      removeCookie('neatlogic_authorization');
-      if (responseText && responseText.Status == 'FAILED' && responseText.DirectUrl) {
-        if (responseText.DirectUrl.indexOf('http://') == -1 || responseText.DirectUrl.indexOf('https://') == -1) {
-          window.open('http://' + responseText.DirectUrl, '_self');
-        } else {
-          window.open(responseText.DirectUrl, '_self');
-        }
-      }
-    } else if (xhr.status == 200) {
-      try {
-        const data = JSON.parse(xhr.responseText);
-        if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
-          COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
-        }
-      } catch (e) {}
+//获取url上所有参数
+function getUrlParams(url) {
+  const params = {};
+  const urlParts = url.split('?');
+
+  if (urlParts.length > 1) {
+    const queryString = urlParts[1];
+    const pairs = queryString.split('&');
+    for (const pair of pairs) {
+      const keyValue = pair.split('=');
+      const key = decodeURIComponent(keyValue[0]);
+      const value = keyValue.length > 1 ? decodeURIComponent(keyValue[1]) : '';
+      params[key] = value;
     }
   }
+
+  return params;
 }
-function getSsoTokenKey() {
-  // 获取ssoTokenKey
-  var currentUrl = location.href;
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', BASEURLPREFIX + '/tenant/check', false);
-  xhr.send();
-  if (xhr.readyState == 4) {
-    if (xhr.status == 200) {
-      var responseText = xhr.responseText ? JSON.parse(xhr.responseText) : '';
-      if (responseText && responseText.Status == 'OK' && responseText.ssoTicketKey) {
-        SSOTICKETKEY = responseText.ssoTicketKey || '';
-        if (SSOTICKETKEY && currentUrl && currentUrl.split(SSOTICKETKEY + '=')) {
-          var token = currentUrl.split(SSOTICKETKEY + '=')[1];
-          if (token) {
-            SSOTICKETVALUE = token.split('&')[0]; //post请求头
+
+//用于后端认证，确保同步等接口返回即认证结束才执行发起后续请求
+function getDirectUrl() {
+  try {
+    const currentUrl = location.href;
+    const hashParams = getUrlParams(currentUrl);
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', BASEURLPREFIX + '/api/rest/init/config/get', false);
+    //将参数设置进header，因为referer不靠谱，不支持url带#号，会导致后面的参数都取不到，所以都塞header里
+    for (const key in hashParams) {
+      xhr.setRequestHeader(key, hashParams[key]);
+    }
+    if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
+      SSOTICKETVALUE = hashParams[SSOTICKETKEY];
+    }
+    xhr.setRequestHeader('AuthType', AUTHTYPE || SSOTICKETKEY);
+    xhr.setRequestHeader('AuthValue', SSOTICKETVALUE || getCookie(SSOTICKETKEY));
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        const responseText = xhr.responseText;
+        if (responseText) {
+          // 空判断，判断字符串是否为空
+          try {
+            const data = JSON.parse(responseText);
+            if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
+              COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
+            }
+          } catch (error) {
+            console.error('JSON 解析出错:', error.message);
           }
         }
-      } else if (responseText && responseText.Status != 'OK') {
+      } else if (xhr.status === 522) {
+        const responseText = JSON.parse(xhr.responseText);
+        removeCookie('neatlogic_authorization');
+        if (responseText.Status === 'FAILED' && responseText.DirectUrl) {
+          HTTP_RESPONSE_STATUS_CODE = '522';
+          const directUrl = responseText.DirectUrl.startsWith('http') ? responseText.DirectUrl : 'http://' + responseText.DirectUrl;
+          window.open(directUrl, '_self');
+        }
+      }
+    };
+
+    xhr.send();
+  } catch (error) {
+    console.error('JSON解析出错', error);
+  }
+}
+
+async function getSsoTokenKey() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', BASEURLPREFIX + '/tenant/check', false); // 第三个参数设置为 false 表示同步请求
+  xhr.send();
+  if (xhr.status === 200) {
+    try {
+      const responseText = JSON.parse(xhr.responseText);
+      if (responseText && responseText.Status === 'OK') {
+        SSOTICKETKEY = responseText.ssoTicketKey || '';
+        AUTHTYPE = responseText.authType || '';
+        ISNEEDAUTH = responseText.isNeedAuth || false;
+        if (responseText.commercialModuleSet && responseText.commercialModuleSet.length > 0) {
+          COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
+        }
+        if (ISNEEDAUTH) {
+          getDirectUrl();
+        }
+      } else if (responseText && responseText.Status !== 'OK') {
         window.location.href = '/404.html';
       }
-    } else if (xhr.status == 500) {
-      window.location.href = '/404.html';
+    } catch (error) {
+      console.error('configjs', error);
     }
+  } else if (xhr.status === 500) {
+    window.location.href = '/404.html';
+  } else {
+    console.error(xhr.status + ' ' + xhr.statusText);
   }
 }
 getSsoTokenKey();
-getDirectUrl();

@@ -1,48 +1,90 @@
-<template>
-  <div class="item-container">
-    <div v-if="expressionData.type === 'expression' && expressionData.attr" class="item-container">
-      <div class="item text-warning attr">
-        <Poptip :transfer="true">
+<template v-if="expressionData">
+  <span v-if="expressionData">
+    <span v-if="expressionData.type === 'expression' && expressionData.attr">
+      <span class="item text-warning attr">
+        <i class="text-href">{{ expressionData.attr }}</i>
+        <!--<Poptip :transfer="true">
           <a>{{ expressionData.attr }}</a>
           <div slot="title"><i>Custom title</i></div>
           <div slot="content">asdfasdfasfasfafdas</div>
-        </Poptip>
-      </div>
-      <div class="item text-grey expression">
+        </Poptip>-->
+      </span>
+      <span class="item text-grey expression">
         <b>{{ expressionData.connector }}</b>
-      </div>
-      <div class="item" :class="getValueClass(expressionData.valuetype)">{{ expressionData.value }}</div>
-    </div>
-    <div v-else-if="expressionData.type === 'join' && expressionData.left && expressionData.right && isValid(expressionData.left) && isValid(expressionData.right)" class="item-container">
-      <DslExpression v-if="expressionData.left" :expressionData="expressionData.left"></DslExpression>
-      <div class="item text-grey expression">
+      </span>
+      <span class="item" :class="getValueClass(expressionData.valuetype)">{{ expressionData.value }}</span>
+      <span v-show="isNeedInputer" class="item">
+        <input
+          ref="focusinputer"
+          class="inputer"
+          type="text"
+          @keydown="backspace"
+          @input="input"
+        />
+      </span>
+    </span>
+    <span v-else-if="expressionData.type === 'join' && expressionData.left && expressionData.right && isValid(expressionData.left) && isValid(expressionData.right)">
+      <DslExpression v-if="expressionData.left" :needInputer="false" :expressionData="expressionData.left"></DslExpression>
+      <span class="item text-grey expression">
         <b>{{ expressionData.connector }}</b>
-      </div>
-      <DslExpression v-if="expressionData.right" :expressionData="expressionData.right"></DslExpression>
-    </div>
-    <div v-else-if="expressionData.type === 'group' && expressionData.children && expressionData.children.length > 0" class="item-container">
-      <div class="item text-grey expression"><b>(</b></div>
-      <DslExpression v-for="(child, index) in expressionData.children" :key="index" :expressionData="child"></DslExpression>
-      <div class="item text-grey expression"><b>)</b></div>
-    </div>
-  </div>
+      </span>
+      <DslExpression
+        v-if="expressionData.right"
+        :ref="nextNeedInputer ? 'focusinputer' : 'inputer'"
+        :needInputer="nextNeedInputer"
+        :expressionData="expressionData.right"
+        @input="input"
+        @backspace="backspace"
+      ></DslExpression>
+    </span>
+    <span v-else-if="expressionData.type === 'group' && expressionData.children && expressionData.children.length > 0">
+      <span class="item text-grey expression"><b>(</b></span>
+      <DslExpression
+        v-for="(child, index) in expressionData.children"
+        :key="index"
+        :ref="nextNeedInputer ? 'focusinputer' : 'inputer'"
+        :needInputer="nextNeedInputer"
+        :expressionData="child"
+        @input="input"
+        @backspace="backspace"
+      ></DslExpression>
+      <span class="item text-grey expression"><b>)</b></span>
+      <span v-show="isNeedInputer" class="item">
+        <input
+          ref="focusinputer"
+          class="inputer"
+          type="text"
+          @keydown="backspace"
+          @input="input"
+        />
+      </span>
+    </span>
+  </span>
 </template>
 <script>
+
 export default {
   name: '',
   components: {
-    DslExpression: resolve => require(['@/resources/plugins/DslEditor/dsl-expression.vue'], resolve)
+    DslExpression: () => import('@/resources/plugins/DslEditor/dsl-expression.vue')
   },
   props: {
+    needInputer: { type: Boolean, default: false },
     expressionData: { type: Object }
   },
   data() {
-    return {};
+    return {
+      nextNeedInputer: false //用户传递到下层dslexpression
+    };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    if (this.needInputer && this.expressionData && this.expressionData.type === 'join') {
+      this.nextNeedInputer = true;
+    }
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -50,17 +92,42 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    focus() {
+      const input = this.$refs['focusinputer'];
+      input && input.focus();
+    },
+    backspace(e) {
+      if (!e || e.keyCode == 8 || e.keyCode == 46) {
+        this.$emit('backspace');
+      }
+    },
+    input(e) {
+      let v = '';
+      if (e.data) {
+        v += e.data;
+      } else if (e.inputType === 'insertFromPaste') {
+        v += e.target.value;
+      } else {
+        v += e;
+      }
+      if (e.target) {
+        e.target.value = '';
+      }
+      this.$emit('input', v);
+    },
     isValid(expressionData) {
-      if (expressionData.type === 'expression') {
-        if (expressionData.attr) {
+      if (expressionData) {
+        if (expressionData.type === 'expression') {
+          if (expressionData.attr) {
+            return true;
+          }
+        } else if (expressionData.type === 'join') {
+          if (expressionData.left && expressionData.right) {
+            return true;
+          }
+        } else if (expressionData.type === 'group') {
           return true;
         }
-      } else if (expressionData.type === 'join') {
-        if (expressionData.left && expressionData.right) {
-          return true;
-        }
-      } else if (expressionData.type === 'group') {
-        return true;
       }
       return false;
     },
@@ -75,11 +142,25 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    isNeedInputer() {
+      if (this.needInputer && this.expressionData && ['expression', 'group'].includes(this.expressionData.type)) {
+        return true;
+      }
+      return false;
+    }
+  },
   watch: {}
 };
 </script>
 <style lang="less" scoped>
+.inputer {
+  outline: none;
+  width: 20px;
+  border: 0px;
+  height: 100%;
+  background: transparent;
+}
 .item-container {
   display: inline-block;
 }

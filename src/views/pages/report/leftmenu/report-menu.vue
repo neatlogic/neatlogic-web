@@ -12,14 +12,11 @@
 </template>
 <script>
 import LeftMenu from '@/views/components/leftmenu/leftmenu';
-
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   extends: LeftMenu,
-  props: {
-  },
+  props: {},
   data() {
     return {
       isSlider: true,

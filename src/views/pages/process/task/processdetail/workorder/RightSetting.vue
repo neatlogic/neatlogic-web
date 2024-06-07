@@ -1,20 +1,6 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
-  <div v-if="isOrderRight" class="process-right pt-nm">
+  <div class="process-right pt-nm">
     <Loading :loadingShow="rightLoading" type="fix"></Loading>
     <div v-if="processTaskConfig.statusVo" class="task-status">
       <CommonStatus
@@ -205,7 +191,7 @@
           </div>
           <div v-show="showScore">
             <ScoreDisplay :scoreConfig="JSON.parse(processTaskConfig.scoreInfo)"></ScoreDisplay>
-          </div> 
+          </div>
         </div>
       </div>
     </div>
@@ -217,12 +203,12 @@ import StepCarousel from './step-carousel.vue';
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    WorkLabel: resolve => require(['./label/label'], resolve),
-    UserSelect: resolve => require(['components/UserSelect/UserSelect.vue'], resolve),
-    ScoreDisplay: resolve => require(['./score/score-display.vue'], resolve),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    WorkLabel: () => import('./label/label'),
+    UserSelect: () => import('components/UserSelect/UserSelect.vue'),
+    ScoreDisplay: () => import('./score/score-display.vue'),
     StepCarousel
   },
   directives: {

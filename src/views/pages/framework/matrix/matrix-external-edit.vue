@@ -2,7 +2,7 @@
   <div class="matrix-external-edit">
     <TsContain border="none">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$backTo('/matrix-overview')">{{ $getFromPage($t('router.framework.matrixmanage')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <div slot="topLeft">
         <navTopLeft
@@ -47,10 +47,10 @@
 export default {
   name: 'MatrixExternal',
   components: {
-    navTopLeft: resolve => require(['./components/navTopLeft'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    ReferenceSelect: resolve => require(['@/resources/components/ReferenceSelect/ReferenceSelect.vue'], resolve),
-    ExternalEditDialog: resolve => require(['./components/external-edit-dialog'], resolve) // 编辑外部数据源矩阵
+    navTopLeft: () => import('./components/navTopLeft'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    ExternalEditDialog: () => import('./components/external-edit-dialog') // 编辑外部数据源矩阵
   },
   props: [''],
   data() {

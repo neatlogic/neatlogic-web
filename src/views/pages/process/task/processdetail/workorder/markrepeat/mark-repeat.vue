@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div class="task-markrepeat">
     <div v-if="actionConfig.markrepeat" class="add-top">
@@ -30,7 +16,7 @@
               {{ $t('page.workordernumber') }}
             </span>
             <span class="item-serialNumber overflow">
-              <span class="text-href" @click="toTaskdetail(item.id)">{{ item.serialNumber }}</span> 
+              <span class="text-href" @click="toTaskdetail(item.id)">{{ item.serialNumber }}</span>
               <i v-clipboard="item.serialNumber" v-clipboard:success="clipboardSuc" class="tsfont-copy text-action"></i>
             </span>
           </div>
@@ -125,9 +111,9 @@ import clipboard from '@/resources/directives/clipboard.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   directives: {clipboard},
   filters: {

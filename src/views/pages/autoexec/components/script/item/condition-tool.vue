@@ -55,7 +55,7 @@
       :paramList="paramList"
       :paramsTypeList="paramsTypeList"
       :failPolicyOption="failPolicyOption"
-      :inputTypeList="inputTypeList" 
+      :inputTypeList="inputTypeList"
       :execMode="execMode"
       class="condition-tool-param"
       @changeOperation="(list)=>{changeOperation(list,'else')}"
@@ -67,9 +67,9 @@ import itemmixin from './itemmixin.js';
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    Tool: resolve => require(['./condition/tool'], resolve),
-    ConditionHelp: resolve => require(['./condition/condition-help'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    Tool: () => import('./condition/tool'),
+    ConditionHelp: () => import('./condition/condition-help')
 
   },
   mixins: [itemmixin],
@@ -86,7 +86,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-   
+
   },
   beforeUpdate() {},
   updated() {},
@@ -130,13 +130,13 @@ export default {
         }
       },
       deep: true,
-      immediate: true      
+      immediate: true
     }
   }
 };
 </script>
 <style lang="less" scoped>
-.condition-tool { 
+.condition-tool {
   padding: 0 16px;
 }
 </style>

@@ -12,11 +12,12 @@ import multiselectHandler from './select';
 import radioHandler from './radio';
 import checkboxHandler from './checkbox';
 import accountHandler from '../edit/account';
-import textareaHandler from '../edit/textarea';
+import textareaHandler from '../edit/text'; //text和textarea的校验信息调整一致
 import phaseHandler from './phase';
 import switchHandler from '../edit/switch.vue';
 import filepathHandler from '../edit/filepath.vue'; 
 import userselectHandler from './userselect.vue'; 
+import runnergroupHandler from '../edit/runnergroup';
 export default {
   defaultInput,
   textHandler,
@@ -36,5 +37,6 @@ export default {
   phaseHandler,
   switchHandler,
   filepathHandler,
-  userselectHandler
+  userselectHandler,
+  runnergroupHandler
 };

@@ -42,10 +42,10 @@ export default {
   name: 'StepConfig',
   components: {
     ScriptList,
-    AddOperation: resolve => require(['./edit/operation-add.vue'], resolve)
+    AddOperation: () => import('./edit/operation-add.vue')
   },
   filters: {},
-  props: { 
+  props: {
     canEdit: {//是否可以编辑 ，允许改变顺序、编辑修改、新增
       type: [Boolean],
       default: true
@@ -69,13 +69,13 @@ export default {
     },
     isRunner: {
       type: [Boolean],
-      default: false      
+      default: false
     },
     execModeList: {
       type: Array,
       default() {
         return [];
-      }      
+      }
     },
     operationType: { //组合工具类型不是combop时，只能修改输入参数，预设参数、自由参数，不可对阶段信息进行修改
       type: String,
@@ -187,10 +187,10 @@ export default {
           this.phaseOperationList.push(item);
           this.$nextTick(() => {
             this.$refs.list.updateList(this.phaseOperationList);
-          });  
+          });
         });
       }
-    }, 
+    },
     getOperationList() {
       if (this.phaseOperationList && this.phaseOperationList.length) {
         return this.phaseOperationList;
@@ -280,9 +280,9 @@ export default {
           let allPrevOutputList = [];
           if (list && list.length) {
             list.forEach(l => {
-              if (l.config && l.config.phaseOperationList && l.config.phaseOperationList.length) {
+              if (l.config && l.config.phaseOperationList && l.config.phaseOperationList.length > 0) {
                 l.config.phaseOperationList.forEach(p => {
-                  if (p.operation.outputParamList && p.operation.outputParamList.length) {
+                  if (p.operation.outputParamList && p.operation.outputParamList.length > 0) {
                     let item = p.operation.outputParamList;
                     item.forEach(i => {
                       allPrevOutputList.push({
@@ -297,6 +297,51 @@ export default {
                         operationDes: p.description
                       });
                     });
+                  } else if (p.operationName == 'native/IF-Block') {
+                    if (p.config) {
+                      if (p.config.ifList && p.config.ifList.length > 0) {
+                        let ifList = p.config.ifList;
+                        ifList.forEach(ifItem => {
+                          if (ifItem.operation.outputParamList && ifItem.operation.outputParamList.length > 0) {
+                            let item = ifItem.operation.outputParamList;
+                            item.forEach(i => {
+                              allPrevOutputList.push({
+                                ...i,
+                                combopName: l.name,
+                                combopId: l.id,
+                                combopUuid: l.uuid,
+                                operationId: ifItem.operationId,
+                                operationName: ifItem.operationName,
+                                operationUuid: ifItem.uuid,
+                                operationLetter: ifItem.letter || null,
+                                operationDes: ifItem.description
+                              });
+                            });
+                          }
+                        });
+                      }
+                      if (p.config.elseList && p.config.elseList.length > 0) {
+                        let elseList = p.config.elseList;
+                        elseList.forEach(elseItem => {
+                          if (elseItem.operation.outputParamList && elseItem.operation.outputParamList.length > 0) {
+                            let item = elseItem.operation.outputParamList;
+                            item.forEach(i => {
+                              allPrevOutputList.push({
+                                ...i,
+                                combopName: l.name,
+                                combopId: l.id,
+                                combopUuid: l.uuid,
+                                operationId: elseItem.operationId,
+                                operationName: elseItem.operationName,
+                                operationUuid: elseItem.uuid,
+                                operationLetter: elseItem.letter || null,
+                                operationDes: elseItem.description
+                              });
+                            });
+                          }
+                        });
+                      }
+                    }
                   }
                 });
               }

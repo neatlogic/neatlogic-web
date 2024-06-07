@@ -43,7 +43,7 @@
         <div v-else class="text-tip">{{ $t('page.notarget',{target:$t('page.inputparam')}) }}</div>
       </div>
     </div>
-    <ToolProfileEdit 
+    <ToolProfileEdit
       v-if="isShow"
       :toolProfileId="id"
       @close="closeDialog"
@@ -57,8 +57,8 @@ export default {
   name: '',
   components: {
     ...Items,
-    ToolProfileEdit: resolve => require(['@/views/pages/autoexec/config/profile/component/tool-profile-edit.vue'], resolve),
-    Globalparam: resolve => require(['@/views/pages/autoexec/components/script/item/param/globalparam.vue'], resolve)
+    ToolProfileEdit: () => import('@/views/pages/autoexec/config/profile/component/tool-profile-edit.vue'),
+    Globalparam: () => import('@/views/pages/autoexec/components/script/item/param/globalparam.vue')
   },
   props: {
     profileList: Array

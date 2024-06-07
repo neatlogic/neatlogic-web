@@ -95,10 +95,10 @@
 export default {
   name: 'SettingParameter',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    EditParam: resolve => require(['./edit-param.vue'], resolve),
-    DelItme: resolve => require(['./del-item.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    EditParam: () => import('./edit-param.vue'),
+    DelItme: () => import('./del-item.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     isShow: {

@@ -32,7 +32,7 @@ import Item from './index';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     ...Item
   },
   filters: {},
@@ -61,7 +61,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.getParamList(); 
+    this.getParamList();
   },
   beforeUpdate() {},
   updated() {},
@@ -91,7 +91,7 @@ export default {
       this.itemConfig = {};
       this.valueConfig = {};
       this.dataList instanceof Array && this.dataList.forEach(data => {
-        let config = this.$utils.deepClone(Object.assign({}, data.config ? data.config : data));  
+        let config = this.$utils.deepClone(Object.assign({}, data.config ? data.config : data));
         config.validateList = data.isRequired ? ['required'] : [];
         config.desc = data.description;
         if (config && config.type) {

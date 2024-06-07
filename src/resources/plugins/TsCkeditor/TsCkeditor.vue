@@ -1,13 +1,10 @@
 <template>
   <div class="form-li" id="new_ckeditor" :class="{ toggle: toggle }">
-     <div
-      v-if="readonly"
-      v-imgViewer
-      :class="readonlyTextIsHighlight ? 'text-warning' : ''"
-      v-html="currentValue?currentValue:'-'"
-    ></div> 
+    <div v-if="readonly" v-imgViewer :class="readonlyTextIsHighlight ? 'text-warning' : ''"
+      v-html="currentValue ? currentValue : '-'"></div>
     <div v-else :class="getClass" :style="getStyle">
-      <ckeditor  ref="tsckeditor" @ready="$emit('ready')" v-model="currentValue" :editor="editor" :config="editorConfig" tag-name="textarea" :disabled="disabled" :placeholder="placeholder" @blur="onBlur"></ckeditor>
+      <ckeditor ref="tsckeditor" @ready="$emit('ready')" v-model="currentValue" :editor="editor" :config="editorConfig"
+        tag-name="textarea" :disabled="disabled" :placeholder="placeholder" @blur="onBlur"></ckeditor>
       <!-- <i class="ck-expandedbtn tsfont-up text-action" @click="isHidebar = !isHidebar;"></i> -->
       <div v-if="desc && !descType" class="text-tip tips">{{ desc }}</div>
       <Alert v-else-if="desc && descType" :type="descType">{{ desc }}</Alert>
@@ -16,13 +13,15 @@
           <span v-if="validMesage != ''" class="form-error-tip" :title="validMesage" v-html="validMesage"></span>
         </slot>
       </transition>
-      <span v-if="showIconToggle" class="isToolbar" :class="[{ 'tsfont-collapse': toggle }, { 'tsfont-expand': !toggle }]" @click="toggleIcon"></span>
+      <span v-if="showIconToggle" class="isToolbar"
+        :class="[{ 'tsfont-collapse': toggle }, { 'tsfont-expand': !toggle }]" @click="toggleIcon"></span>
     </div>
   </div>
 </template>
 <script>
 import imgViewer from '@/resources/directives/img-viewer.js';
 import './js/translations/zh-cn';
+import './js/translations/en-gb'; // 英文-英国
 import ClassicEditor from './js/ckeditor.js';
 import CKEditor from './js/ckeditor-vue.js';
 import formMixins from '@/resources/mixins/formMixins.js';
@@ -68,16 +67,15 @@ export default {
     }, //初始数据
     placeholder: {
       type: String,
-      default(){
-       return ''
+      default() {
+        return '';
       }
     },
     onChange: Function, //改变时触发
     toolbar: {
+      // 基础工具栏外的工具栏，例如：知识库工具栏
       type: Array,
-      default: function() {
-        return ['Bold', 'Italic', 'Underline', 'Strikethrough', 'NumberedList', 'BulletedList', 'Outdent', 'Indent', 'Blockquote', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', 'Link', 'Unlink', 'Image', 'Table', 'HorizontalRule', 'Font', 'FontSize', 'TextColor', 'BGColor', 'Maximize', 'RemoveFormat', 'Undo', 'Redo'];
-      }
+      default: () => []
     },
     removePlugins: {
       type: Array,
@@ -85,19 +83,20 @@ export default {
     }
   },
   data() {
-    let _this = this;
+    let baseToolBar = ['undo', 'redo', '|', 'heading', '|', 'fontSize', 'fontColor', 'fontBackgroundColor', '|', 'bold', 'italic', 'strikethrough', 'code', 'link', 'blockQuote', '|', 'uploadImage', '|', 'insertTable', '|', 'bulletedList', 'numberedList', 'outdent', 'indent', '|'];
     return {
       editor: ClassicEditor, //引用类型，基础模式
       editorConfig: {
         //基本配置
-        language: 'zh-cn',
-        removePlugins: this.$AuthUtils.hasRole('KNOWLEDGE_BASE')? this.removePlugins.concat('MediaEmbed'): this.removePlugins.concat(['KnowledgeSelect','MediaEmbed']),//用户没有知识库基础权限时，需要禁用关联知识按钮
+        language: BASELANGUAGES == 'zh' ? 'zh-cn' : 'en-gb',
+        removePlugins: this.removePlugins,
         ckfinder: {
           uploadUrl: BASEURLPREFIX + '/api/binary/image/upload'
         },
-        knowledgeSelect: { //选择知识库插件配置
+        knowledgeSelect: {
+          //选择知识库插件配置
           url: BASEURLPREFIX + '/api/rest/knowledge/document/search',
-           params: {
+          params: {
             knowledgeType: 'all',
             statusList: ['passed'],
             type: 'document'
@@ -105,20 +104,18 @@ export default {
           textName: 'title',
           valueName: 'knowledgeDocumentId',
           rootName: 'dataList',
-          router:{
+          router: {
             url: BASEURLPREFIX + '/knowledge.html#/knowledge-detail',
-            params:[
-              'knowledgeDocumentId'
-            ]
-          },
+            params: ['knowledgeDocumentId']
+          }
+        },
+        toolbar: {
+          items: [...baseToolBar, ...this.toolbar]
         }
-        // ckeditor  是5.0版本的
-        // toolbarCanCollapse: true,
-        // toolbarStartupExpanded: false
       },
-      toggle: _this.showIconToggle,
+      toggle: this.showIconToggle,
       validMesage: '',
-      currentValue: _this.value || '',
+      currentValue: this.value || '',
       currentValidList: this.validateList,
       isHidebar: true
     };
@@ -138,7 +135,7 @@ export default {
     },
     valid() {
       if (!this.currentValue && this.validateList && this.validateList.length > 0 && this.validateList[0] == 'required') {
-        this.validMesage = this.$t('form.placeholder.pleaseinput', {target: this.$t('page.content')});
+        this.validMesage = this.$t('form.placeholder.pleaseinput', { target: this.$t('page.content') });
         return false;
       } else {
         this.validMesage = '';
@@ -159,10 +156,10 @@ export default {
     }
   },
   watch: {
-    value: function(val) {
+    value: function (val) {
       this.currentValue = val || '';
     },
-    currentValue: function(newValue, oldValue) {
+    currentValue: function (newValue, oldValue) {
       //当值改变时触发的方法
       if (newValue != oldValue) {
         this.valid();

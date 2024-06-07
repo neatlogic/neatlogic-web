@@ -13,6 +13,7 @@
       ref="formSheet"
       mode="read"
       :value="formConfig"
+      :formSceneUuid="formSceneUuid"
       :data="formAttributeDataMap"
       @emit="formSheetEmitData"
     ></TsSheet>
@@ -23,8 +24,8 @@ import dealFormMix from '@/views/pages/process/task/taskcommon/dealNewFormData.j
 export default {
   name: '',
   components: {
-    FormPreview: resolve => require(['@/resources/components/FormMaker/formview/form-view.vue'], resolve),
-    TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve)
+    FormPreview: () => import('@/resources/components/FormMaker/formview/form-view.vue'),
+    TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue')
   },
   mixins: [dealFormMix],
   props: {
@@ -37,7 +38,8 @@ export default {
       formAttributeDataMap: null,
       formAttributeHideList: [], //表单组件的权限（隐藏列表）
       stephidetrList: [], //当前步骤需要隐藏的行
-      stepreadtrList: [] //当前步骤需要只读的行
+      stepreadtrList: [], //当前步骤需要只读的行
+      formSceneUuid: 'defaultSceneUuid'
     };
   },
   beforeCreate() {},
@@ -61,11 +63,11 @@ export default {
   methods: {
     init() {
       if (this.draftData) {
-        this.formConfig = this.draftData.formConfig; 
+        this.formConfig = this.draftData.formConfig;
         this.formAttributeDataMap = this.draftData.formAttributeDataMap || null;
         if (this.formConfig) {
           if (this.draftData.formConfig._type == 'new') {
-            this.formConfig = this.initNewFormConfig(this.draftData.startProcessTaskStep.formSceneUuid, this.formConfig);
+            this.formSceneUuid = this.draftData.startProcessTaskStep.formSceneUuid || 'defaultSceneUuid';
           } else {
             this.getStepformauth(this.draftData);
           }
@@ -195,7 +197,19 @@ export default {
                 list.push(item);
               }
             } if (Array.isArray(data.changePriority)) {
-              if (data.changePriority.join('/').includes(item.name)) {
+              let changePriority = [];
+              data.changePriority.forEach(c => {
+                if (typeof c === 'string') {
+                  changePriority.push(c);
+                } else if (typeof c === 'object' && !this.$utils.isEmpty(c.value)) {
+                  changePriority.push(c.value);
+                }
+              });
+              if (changePriority.includes(item.name)) {
+                list.push(item);
+              }
+            } else if (typeof data.changePriority === 'object') {
+              if (!this.$utils.isEmpty(data.changePriority.value) && data.changePriority.value.includes(item.name)) {
                 list.push(item);
               }
             }
@@ -216,7 +230,8 @@ export default {
       let formData = {
         formAttributeDataList: [],
         hidecomponentList: [],
-        readcomponentList: []
+        readcomponentList: [],
+        formExtendAttributeDataList: []
       };
       if (this.$refs.FormPreview) {
         formData.formAttributeDataList = this.$refs.FormPreview.getFormvalNovalid();
@@ -226,6 +241,7 @@ export default {
         formData.formAttributeDataList = this.$refs.formSheet.getFormData();
         formData.hidecomponentList = this.$refs.formSheet.getHiddenComponents();
         formData.readcomponentList = this.$refs.formSheet.getReadComponents();
+        formData.formExtendAttributeDataList = this.$refs.formSheet.getFormExtendData();
       }
       return formData;
     },

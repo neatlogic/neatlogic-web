@@ -42,6 +42,7 @@
         class="block-tabs"
         :animated="false"
         name="tab1"
+        @on-click="clickTabValue"
       >
         <TabPane
           v-if="hasForm"
@@ -51,18 +52,22 @@
           tab="tab1"
         >
           <!-- 内容详情 -->
-          <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig) && (!tabValue || tabValue == 'report')" class="pt-nm pb-nm">
+          <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig)" class="pt-nm pb-nm">
             <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
-              <template v-if="formConfig._type == 'new'">
+              <template v-if="processTaskConfig.formConfig._type == 'new'">
                 <TsSheet
+                  v-if="isShowForm"
                   ref="formSheet"
                   mode="read"
                   :value="formConfig"
+                  :formSceneUuid="formSceneUuid"
                   :data="processTaskConfig.formAttributeDataMap"
                   :readonly="!actionConfig.save || !formEdit"
                   class="pl-sm pr-sm"
+                  style="width: 100%"
                   @emit="formSheetEmitData"
                   @updateHiddenComponentList="updateHiddenComponentList"
+                  @setValue="setFormAttributeDataMap"
                 ></TsSheet>
               </template>
               <template v-else>
@@ -88,6 +93,18 @@
           </div>
         </TabPane>
         <TabPane
+          v-for="s in unfixedSlotList"
+          :key="s.name"
+          :name="s.name"
+          class="tab-content"
+          tab="tab1"
+          :label="render => renderTabPaneLabel(render, s.name, s.label)"
+        >
+          <div class="padding">
+            <slot :name="s.name"></slot>
+          </div>
+        </TabPane>
+        <TabPane
           v-if="fixedPageTab.changeDetails && ($slots.changecreate || $slots.changehandle)"
           :label="render => renderTabPaneLabel(render, 'changeDetails', $t('term.process.changedetail'))"
           name="changeDetails"
@@ -101,45 +118,6 @@
             <!-- 变更处理s -->
             <slot name="changehandle"></slot>
             <!-- 变更处理end -->
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.autoexec && $slots.autoexec"
-          :label="render => renderTabPaneLabel(render, 'autoexec', $t('page.autoexec'))"
-          name="autoexec"
-          class="tab-content"
-          tab="tab1"
-        >
-          <div class="padding">
-            <!-- 自动化节点s -->
-            <slot name="autoexec"></slot>
-            <!-- 自动化节点end -->
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.automatic && $slots.automatic"
-          :label="render => renderTabPaneLabel(render, 'automatic', $t('term.process.automaticprocessing'))"
-          name="automatic"
-          class="tab-content"
-          tab="tab1"
-        >
-          <div class="padding">
-            <!--  auto回调 -->
-            <slot name="automatic"></slot>
-            <!--  auto回调 -->
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.cmdbsync && $slots.cmdbsync"
-          :label="render => renderTabPaneLabel(render, 'cmdbsync', 'cmdb')"
-          name="cmdbsync"
-          class="tab-content"
-          tab="tab1"
-        >
-          <div class="padding">
-            <!--cmdb同步s -->
-            <slot name="cmdbsync"></slot>
-            <!-- cmdb同步end -->
           </div>
         </TabPane>
         <template v-for="subStep in taskConfigList">
@@ -189,7 +167,7 @@
           tab="tab1"
         >
           <!-- 时间线 -->
-          <ActivityOverview :defaultActiveData="activeData" :formConfig="formConfig"></ActivityOverview>
+          <ActivityOverview :defaultActiveData="activeData" :formConfig="processTaskConfig.formConfig"></ActivityOverview>
         </TabPane>
         <TabPane
           v-if="showRelationDetail(actionConfig.tranferreport, processTaskConfig.processTaskRelationCount) && fixedPageTab.relevance"
@@ -260,6 +238,7 @@
                 ref="formSheet"
                 mode="read"
                 :value="formConfig"
+                :formSceneUuid="formSceneUuid"
                 :data="processTaskConfig.formAttributeDataMap"
                 :readonly="!actionConfig.save || !formEdit"
                 class="pl-sm pr-sm"
@@ -301,6 +280,15 @@
           @getStepList="getStepList"
         ></StrategyDetail>
       </template>
+      <template v-else-if="slotList.find(d => d.name === item.tabValue)">
+        <div class="mb-xs">
+          <span>{{ item.label }}</span>
+          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+        </div>
+        <div class="padding">
+          <slot :name="item.tabValue"></slot>
+        </div>
+      </template>
       <template v-else-if="item.tabValue == 'changeDetails'">
         <div class="mb-xs">
           <span>{{ item.label }}</span>
@@ -313,24 +301,6 @@
           <!-- 变更处理s -->
           <slot name="changehandle"></slot>
           <!-- 变更处理end -->
-        </div>
-      </template>
-      <template v-else-if="item.tabValue == 'automatic'">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <div class="padding">
-          <slot name="automatic"></slot>
-        </div>
-      </template>
-      <template v-else-if="item.tabValue == 'cmdbsync'">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <div class="padding">
-          <slot name="cmdbsync"></slot>
         </div>
       </template>
       <template v-else>
@@ -402,22 +372,25 @@ export default {
     FormPreviewHtml,
     Report,
     ...Component,
-    TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve),
-    ActivityOverview: resolve => require(['./activity/activity-overview.vue'], resolve),
-    StepOverview: resolve => require(['./taskstep/step-overview.vue'], resolve),
-    StrategyDetail: resolve => require(['./strategy/strategy-detail.vue'], resolve),
-    RelationDetail: resolve => require(['./relation/relation-detail.vue'], resolve),
-    ChangeDetail: resolve => require(['./change/change-detail.vue'], resolve),
-    ChangecreateStep: resolve => require(['./change/changecreate-detail'], resolve),
-    ScoreEdit: resolve => require(['./score/score-edit.vue'], resolve),
-    MarkRepeat: resolve => require(['./markrepeat/mark-repeat.vue'], resolve),
-    AccessoriesList: resolve => require(['./CenterDetailComponent/accessories-list'], resolve), // 附件清单
-    ReplyContent: resolve => require(['./CenterDetailComponent/reply-content'], resolve), // 回复内容
-    ReportingHistory: resolve => require(['./CenterDetailComponent/reporting-history'], resolve) // 上报历史
+    TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue'),
+    ActivityOverview: () => import('./activity/activity-overview.vue'),
+    StepOverview: () => import('./taskstep/step-overview.vue'),
+    StrategyDetail: () => import('./strategy/strategy-detail.vue'),
+    RelationDetail: () => import('./relation/relation-detail.vue'),
+    ChangeDetail: () => import('./change/change-detail.vue'),
+    ChangecreateStep: () => import('./change/changecreate-detail'),
+    ScoreEdit: () => import('./score/score-edit.vue'),
+    MarkRepeat: () => import('./markrepeat/mark-repeat.vue'),
+    AccessoriesList: () => import('./CenterDetailComponent/accessories-list'), // 附件清单
+    ReplyContent: () => import('./CenterDetailComponent/reply-content'), // 回复内容
+    ReportingHistory: () => import('./CenterDetailComponent/reporting-history') // 上报历史
   },
   directives: { imgViewer, scrollHidden, download },
   mixins: [dealFormMix],
   props: {
+    slotList: {
+      type: Array
+    },
     defaultProcessTaskId: {
       type: [String, Number],
       default: null
@@ -464,10 +437,7 @@ export default {
         markrepeat: true,
         file: true,
         reportingHistory: true,
-        changeDetails: true,
-        autoexec: true,
-        automatic: true, // 自动处理节点
-        cmdbsync: true
+        changeDetails: true
       },
       loadingShow: false, // 解决固定页面之后，tab的顺序改变了，不是渲染前的顺序
       fixedPageList: [],
@@ -490,8 +460,6 @@ export default {
         content: null,
         fileList: null
       },
-      fileIdList: null, //回复文件上传列表
-      taskFileUuidList: null, //工单文件上传
       processTaskId: this.defaultProcessTaskId, //工单id
       processTaskStepId: this.defaultProcessTaskStepId, //步骤id
       auditId: null, //活动id
@@ -525,7 +493,9 @@ export default {
       stepSortIcon: false, // 步骤排序(true正序，false倒序)
       taskConfigList: [], //子任务策略
       autoexechandlerStepInfo: null, // 自动化信息
-      lastFormConfig: null
+      lastFormConfig: null,
+      isShowForm: true,
+      formSceneUuid: 'defaultSceneUuid'
     };
   },
   created() {
@@ -534,6 +504,16 @@ export default {
     }
     if (!this.formConfig._type == 'new') {
       this.setStepform();
+    }
+    //场景表单：步骤进行中展示设置的节点场景或者默认场景
+    if (this.processTaskStepConfig && this.processTaskStepConfig.formSceneUuid) {
+      this.formSceneUuid = this.processTaskStepConfig.formSceneUuid;
+    }
+    //补充动态slot进fixedPageTab
+    if (this.slotList && this.slotList.length > 0) {
+      this.slotList.forEach(d => {
+        this.fixedPageTab[d.name] = true;
+      });
     }
   },
   mounted() {
@@ -574,7 +554,7 @@ export default {
     filterCustommergeprocess(formConfig) {
       // 过滤银行定制批量合并上报组件
       let data = this.$utils.deepClone(formConfig);
-      if (formConfig && formConfig.controllerList instanceof Array && formConfig.controllerList.length > 0 && process.env.VUE_APP_LOGINTITLE == 'neatlogic') {
+      if (formConfig && formConfig.controllerList instanceof Array && formConfig.controllerList.length > 0 && GLOBAL_LOGINTITLE && GLOBAL_LOGINTITLE == 'neatlogic') {
         let arr = formConfig.controllerList.filter(val => {
           return val.handler != 'custommergeprocess';
         });
@@ -588,7 +568,8 @@ export default {
       //更新初始化数据,主要是 用来对比，因为使用require加载的vue 模块，需要特殊的处理
       this.setTimeUpdata && clearTimeout(this.setTimeUpdata);
       this.setTimeUpdata = setTimeout(() => {
-        this.$nextTick(() => { // 确保子组件渲染完成，否则第一次拿不到formdata的值，导致返回上一层页面，路由数据对比有问题
+        this.$nextTick(() => {
+          // 确保子组件渲染完成，否则第一次拿不到formdata的值，导致返回上一层页面，路由数据对比有问题
           let allData = this.getData();
           this.$emit('update', allData);
         });
@@ -733,6 +714,7 @@ export default {
       let hidecomponentList = [];
       let readcomponentList = [];
       let handlerStepInfo = {};
+      let formExtendAttributeDataList = []; //自定义组件对外消费数据
       if (this.$refs.FormPreview) {
         formData = this.$refs.FormPreview.getFormvalNovalid();
         hidecomponentList = this.$refs.FormPreview.getHidecomponent();
@@ -741,7 +723,9 @@ export default {
         formData = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getFormData() : this.$refs.formSheet.getFormData(); // 解决固定tab页面时，v-for 和 ref 一起使用时，ref返回的是数组
         hidecomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getHiddenComponents() : this.$refs.formSheet.getHiddenComponents();
         readcomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getReadComponents() : this.$refs.formSheet.getReadComponents();
-      } else if (this.formConfig && !this.$utils.isEmpty(this.processTaskConfig.formAttributeDataMap)) { //表单组件未渲染且表单值不为空的情况
+        formExtendAttributeDataList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getFormExtendData() : this.$refs.formSheet.getFormExtendData();
+      } else if (this.formConfig && !this.$utils.isEmpty(this.processTaskConfig.formAttributeDataMap)) {
+        //表单组件未渲染且表单值不为空的情况
         Object.keys(this.processTaskConfig.formAttributeDataMap).forEach(key => {
           let find = this.formConfig.tableList.find(i => i.component && i.component.uuid === key);
           if (find) {
@@ -760,9 +744,19 @@ export default {
           formAttributeDataList: formData,
           hidecomponentList: hidecomponentList || [],
           content: this.commentObj.content || '',
-          fileIdList: this.fileIdList,
+          fileIdList: [],
           readcomponentList: readcomponentList || []
         };
+
+        if (!this.$utils.isEmpty(formExtendAttributeDataList)) {
+          this.$set(data, 'formExtendAttributeDataList', formExtendAttributeDataList);
+        }
+        if (!this.$utils.isEmpty(this.commentObj.fileList)) {
+          let fileIdList = this.commentObj.fileList.map(item => {
+            return item.id;
+          });
+          this.$set(data, 'fileIdList', fileIdList);
+        }
         if (this.handler == 'changecreate') {
           if (this.$refs.taskReport) {
             let changecreateInfo = this.$refs.taskReport.getChangecreateData();
@@ -773,7 +767,13 @@ export default {
             Object.assign(handlerStepInfo, stepData);
           }
           this.$set(data, 'handlerStepInfo', handlerStepInfo);
+        } else if (this.handler == 'event') {
+          if (this.$refs.replyContent) {
+            let eventConfig = this.$refs.replyContent.getEventData();
+            Object.assign(data, eventConfig);
+          }
         }
+
         this.rightsettingVue = this.rightsettingVue || getParent(this);
         this.rightsettingVue && (data.priorityUuid = this.rightsettingVue.$refs.RightSetting ? this.rightsettingVue.$refs.RightSetting.priorityUuid : this.processTaskConfig.priorityUuid);
         return data;
@@ -824,7 +824,6 @@ export default {
             this.$refs.replyContent && this.$refs.replyContent.clearReplyValue();
             this.$set(this.commentObj, 'content', '');
             this.$set(this.commentObj, 'fileList', []);
-            this.fileIdList = [];
             this.isDisableCommet = true;
             resolve(this.isDisableCommet);
           }
@@ -846,7 +845,8 @@ export default {
           icon: 'tsfont-close-o',
           iconColor: '#FF625A',
           msg: this.$t('message.process.complete', { target: this.$t('page.form') }),
-          type: 'error'
+          type: 'error',
+          tabValue: 'report'
         });
       }
       this.rightsettingVue = this.rightsettingVue || getParent(this);
@@ -1071,14 +1071,17 @@ export default {
         tabValue: tabValue,
         label: labelName
       });
-      if (tabValue && this.fixedPageTab.hasOwnProperty(tabValue)) {
+      /*if (tabValue && this.fixedPageTab.hasOwnProperty(tabValue)) {
         this.fixedPageTab[tabValue] = false;
+      }*/
+      if (tabValue) {
+        this.$set(this.fixedPageTab, tabValue, false);
       }
       this.$nextTick(() => {
         if (this.tabValue == tabValue) {
           this.tabValue = ''; // 当前选中tab是高亮tab时，固定页面后，设置默认选中第一个tab
         }
-        this.loadingShow = false; 
+        this.loadingShow = false;
       });
     },
     cancelFixedPage(tabValue) {
@@ -1089,8 +1092,9 @@ export default {
           this.fixedPageList.splice(index, 1);
           this.$nextTick(() => {
             this.loadingShow = false; // 取消固定页面时，调整tab顺序为初始化时的顺序
-            if (tabValue && this.fixedPageTab.hasOwnProperty(tabValue)) {
-              this.fixedPageTab[tabValue] = true;
+            if (tabValue /*&& this.fixedPageTab.hasOwnProperty(tabValue)*/) {
+              //this.fixedPageTab[tabValue] = true;
+              this.$set(this.fixedPageTab, tabValue, true);
             }
           });
         }
@@ -1179,9 +1183,20 @@ export default {
               if (data.changePriority.includes(item.name)) {
                 list.push(item);
               }
-            }
-            if (Array.isArray(data.changePriority)) {
-              if (data.changePriority.join('/').includes(item.name)) {
+            } else if (Array.isArray(data.changePriority)) {
+              let changePriority = [];
+              data.changePriority.forEach(c => {
+                if (typeof c === 'string') {
+                  changePriority.push(c);
+                } else if (typeof c === 'object' && !this.$utils.isEmpty(c.value)) {
+                  changePriority.push(c.value);
+                }
+              });
+              if (changePriority.includes(item.name)) {
+                list.push(item);
+              }
+            } else if (typeof data.changePriority === 'object') {
+              if (!this.$utils.isEmpty(data.changePriority.value) && data.changePriority.value.includes(item.name)) {
                 list.push(item);
               }
             }
@@ -1216,9 +1231,37 @@ export default {
         formValue: formValue,
         hidecomponentList: hidecomponentList
       };
+    },
+    setFormAttributeDataMap(val) {
+      //表单改变时更新formAttributeDataMap
+      if (!this.$utils.isSame(val, this.processTaskConfig.formAttributeDataMap)) {
+        this.processTaskConfig.formAttributeDataMap = this.$utils.deepClone(val);
+      }
+    },
+    clickTabValue(name) {
+      if (name === 'report') {
+        if (this.hasForm) {
+          //重现渲染表单组件（重新计算），避免表单宽度为0
+          this.isShowForm = false;
+          this.$nextTick(() => {
+            this.isShowForm = true;
+            this.$nextTick(async() => {
+              if (this.$refs.formSheet) {
+                await this.formValid(this.processTaskConfig);
+              }
+            });
+          });
+        }
+      }
     }
   },
   computed: {
+    unfixedSlotList() {
+      if (this.slotList && this.slotList.length > 0 && !this.loadingShow) {
+        return this.slotList.filter(d => this.fixedPageTab[d.name]);
+      }
+      return [];
+    },
     getStrategyConfig() {
       // 根据子任务id获取子任务配置信息
       let config = {};
@@ -1289,7 +1332,7 @@ export default {
       return !!(this.fixedPageTab.report && this.haveProcessTask(this.haveComment, this.startHandler, this.formConfig, this.processTaskConfig) && !this.$utils.isEmpty(this.formConfig));
     },
     hasFormRequiredTask() {
-      /* 【内容详情】tab，表单有处理必填的字段，需要高亮【内容详情tab】 
+      /* 【内容详情】tab，表单有处理必填的字段，需要高亮【内容详情tab】
           拿到表单所有必填的组件，过滤掉被隐藏必填的组件，并且必填字段为空时，需要高亮【内容详情tab】
       */
       let hasFormRequired = false;
@@ -1409,9 +1452,9 @@ function getParent(node) {
 }
 </style>
 <style lang="less" scoped>
-/deep/.ivu-tabs-bar {
-  margin-bottom: 0px !important;
-}
+// /deep/.ivu-tabs-bar {
+//   margin-bottom: 0px !important;
+// }
 /deep/ .subTask-label {
   font-size: 12px;
   margin-left: 4px;

@@ -2,33 +2,96 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot>
-        <div>
+        <div ref="main">
           <TsForm :itemList="formConfig">
-            <template v-slot:icon>
-              <div class="logo bg-block border-color text-primary" @click="isIconDialogShow = true">
-                <i class="logo-icon" :class="ciData.icon"></i>
-              </div>
-            </template>
             <template v-slot:file>
               <TsUpLoad
                 styleType="button"
                 className="smallUpload"
                 :format="['model']"
+                :multiple="true"
                 :beforeUpload="
                   file => {
-                    $set(ciData, 'file', file);
+                    addFile(file);
                     return false;
                   }
                 "
               ></TsUpLoad>
-              <div v-if="ciData.file">{{ ciData.file.name }}</div>
+              <div class="text-grey">{{ $t('term.cmdb.supportmultimodelfile') }}</div>
+              <div v-if="ciData.fileList.length > 0">
+                <Tag
+                  v-for="(file, index) in ciData.fileList"
+                  :key="index"
+                  closable
+                  @on-close="removeFile(file)"
+                >{{ file.name }}</Tag>
+              </div>
+            </template>
+            <template v-slot:result>
+              <div>
+                <Card v-for="(ci, index) in resultData" :key="index" class="mt-sm">
+                  <div slot="title" class="grid">
+                    <div>
+                      <span>{{ ci.label }}</span>
+                      <span class="text-grey">({{ ci.name }})</span>
+                    </div>
+                    <div>
+                      <span v-if="ci._action === 'insert'" class="text-success">{{ $t('page.new') }}</span>
+                      <span v-else class="text-warning">{{ $t('page.revise') }}</span>
+                    </div>
+                  </div>
+                  <ul v-if="ci.error.length > 0" class="text-error error-info">
+                    <li v-for="(error, eindex) in ci.error" :key="eindex">{{ error }}</li>
+                  </ul>
+                  <TsTable
+                    v-if="(ci.attrList && ci.attrList.length > 0) || (ci.relList && ci.relList.length > 0)"
+                    border="all"
+                    :fixedHeader="false"
+                    :theadList="theadList"
+                    :tbodyList="getAttrRelList(ci)"
+                  >
+                    <template v-slot:type="{ row }">
+                      <div>
+                        <span v-if="row.type === 'attr'">{{ $t('page.attribute') }}</span>
+                        <span v-else>{{ $t('page.relation') }}</span>
+                      </div>
+                    </template>
+                    <template v-slot:fullname="{ row }">
+                      <div v-if="row.type === 'attr'">
+                        <span>{{ row.label }}</span>
+                        <span class="text-grey">({{ row.name }})</span>
+                      </div>
+                      <div v-else>
+                        <span :class="{ 'text-primary': row.direction === 'from' }">{{ row.fromCiLabel }}</span>
+                        <span class="text-grey">({{ row.fromCiName }})</span>
+                        <span class="tsfont-arrow-right"></span>
+                        <span :class="{ 'text-primary': row.direction === 'to' }">{{ row.toCiLabel }}</span>
+                        <span class="text-grey">({{ row.toCiName }})</span>
+                      </div>
+                    </template>
+                    <template v-slot:_action="{ row }">
+                      <div>
+                        <span v-if="row._action === 'insert'" class="text-success">{{ $t('page.new') }}</span>
+                        <span v-else class="text-warning">{{ $t('page.revise') }}</span>
+                      </div>
+                    </template>
+                    <template v-slot:error="{ row }">
+                      <ul v-if="row.error.length > 0" class="text-error error-info">
+                        <li v-for="(error, eindex) in row.error" :key="eindex">{{ error }}</li>
+                      </ul>
+                      <div v-else></div>
+                    </template>
+                  </TsTable>
+                </Card>
+              </div>
             </template>
           </TsForm>
         </div>
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" @click="importCi()">{{ $t('page.import') }}</Button>
+        <Button v-if="!allowImport" type="primary" @click="validateCi()">{{ $t('page.preview') }}</Button>
+        <Button v-else type="success" @click="importCi()">{{ $t('page.import') }}</Button>
       </template>
     </TsDialog>
     <IconDialog
@@ -44,16 +107,19 @@ import upload from '@/resources/mixins/upload.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    IconDialog: resolve => require(['../common/icon-dialog.vue'], resolve)
-  }, mixins: [upload],
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    IconDialog: () => import('../common/icon-dialog.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+  },
+  mixins: [upload],
   props: {},
   data() {
     return {
+      allowImport: false,
       currentIcon: 'tsfont-ci',
       isIconDialogShow: false,
-      ciData: { icon: 'tsfont-ci-o', name: '', label: '', file: null },
+      ciData: { fileList: [] },
       dialogConfig: {
         title: this.$t('term.cmdb.importci'),
         type: 'modal',
@@ -61,51 +127,17 @@ export default {
         maskClose: false,
         width: 'medium'
       },
-      formConfig: [
-        {
-          name: 'icon',
-          type: 'slot',
-          label: this.$t('page.icon')
-        },
-        {
-          name: 'typeId',
-          type: 'select',
-          label: this.$t('page.type'),
-          width: '100%',
-          maxlength: 50,
-          url: '/api/rest/cmdb/ci/citype/search',
-          validateList: ['required'],
-          valueName: 'id',
-          textName: 'name',
-          onChange: (name) => {
-            this.$set(this.ciData, 'typeId', name);
-          }
-        },
-        {
-          name: 'name',
-          type: 'text',
-          label: this.$t('page.uniquekey'),
-          width: '100%',
-          desc: this.$t('message.cmdb.noedit'),
-          maxlength: 25,
-          validateList: ['required', 'key-special'],
-          onChange: (name) => {
-            this.$set(this.ciData, 'name', name);
-          }
-        },
-        {
-          name: 'label',
-          type: 'text',
-          width: '100%',
-          label: this.$t('page.name'),
-          maxlength: 50,
-          validateList: ['required'],
-          onChange: (name) => {
-            this.$set(this.ciData, 'label', name);
-          }
-        },
-        { type: 'slot', name: 'file', label: this.$t('term.cmdb.cifile') }
-      ]
+      resultData: null,
+      theadList: [
+        { key: 'type', title: this.$t('page.type') },
+        { key: 'fullname', title: this.$t('page.name') },
+        { key: '_action', title: this.$t('page.action') },
+        { key: 'error', title: this.$t('page.exception') }
+      ],
+      formConfig: {
+        file: { type: 'slot', name: 'file', label: this.$t('term.cmdb.cifile') },
+        result: { type: 'slot', name: 'result', label: this.$t('page.preview'), isHidden: true }
+      }
     };
   },
   beforeCreate() {},
@@ -119,6 +151,33 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getAttrRelList(ci) {
+      const list = [];
+      if (ci.attrList && ci.attrList.length > 0) {
+        ci.attrList.forEach(attr => {
+          list.push({ type: 'attr', ...attr });
+        });
+      }
+      if (ci.relList && ci.relList.length > 0) {
+        ci.relList.forEach(rel => {
+          list.push({ type: 'rel', ...rel });
+        });
+      }
+      return list;
+    },
+    addFile(file) {
+      if (!this.ciData.fileList.find(d => d.name === file.name)) {
+        this.ciData.fileList.push(file);
+      }
+      this.allowImport = false;
+    },
+    removeFile(file) {
+      const index = this.ciData.fileList.findIndex(d => d.name === file.name);
+      if (index >= 0) {
+        this.$delete(this.ciData.fileList, index);
+        this.allowImport = false;
+      }
+    },
     selectIcon(icon) {
       this.isIconDialogShow = false;
       this.$nextTick(() => {
@@ -128,21 +187,64 @@ export default {
     close(needRefresh) {
       this.$emit('close', needRefresh);
     },
-    importCi() {
-      this.upload('/api/binary/cmdb/ci/import', this.ciData, {},
-        res => {
-          this.$Message.success(this.$t('message.importsuccess'));
-          this.close(true);
-        },
-        error => {
-          this.$Notice.error({
-            title: this.$t('message.importfailed'),
-            desc: error.Message
-          });
+    async validateCi() {
+      if (this.ciData.fileList.length > 0) {
+        await this.upload('/api/binary/cmdb/ci/importvalidate', this.ciData, {}, res => {
+          this.resultData = res.Return;
+          this.$set(this.formConfig.result, 'isHidden', false);
+          if (this.resultData && this.resultData.length > 0) {
+            let isValid = true;
+            this.resultData.forEach(ci => {
+              if (ci.error && ci.error.length > 0) {
+                isValid = false;
+              }
+              if (ci.attrList && ci.attrList.length > 0) {
+                ci.attrList.forEach(attr => {
+                  if (attr.error && attr.error.length > 0) {
+                    isValid = false;
+                  }
+                });
+              }
+              if (ci.relList && ci.relList.length > 0) {
+                ci.relList.forEach(rel => {
+                  if (rel.error && rel.error.length > 0) {
+                    isValid = false;
+                  }
+                });
+              }
+            });
+            this.allowImport = isValid;
+            if (!isValid) {
+              this.$nextTick(() => {
+                this.$utils.jumpTo('.error-info', 'smooth', this.$refs['main']);
+              });
+            }
+          } else {
+            this.allowImport = false;
+          }
         });
+      } else {
+        this.allowImport = false;
+      }
     },
-    uploadSuccess(data) {
-      console.log(data);
+    async importCi() {
+      if (this.allowImport) {
+        this.upload(
+          '/api/binary/cmdb/ci/import',
+          this.ciData,
+          {},
+          res => {
+            this.$Message.success(this.$t('message.importsuccess'));
+            this.close(true);
+          },
+          error => {
+            this.$Notice.error({
+              title: this.$t('message.importfailed'),
+              desc: error.Message
+            });
+          }
+        );
+      }
     }
   },
   filter: {},
@@ -170,5 +272,10 @@ export default {
     position: absolute;
     top: 2px;
   }
+}
+.grid {
+  display: grid;
+  grid-template-columns: auto 40px;
+  grid-gap: 10px;
 }
 </style>

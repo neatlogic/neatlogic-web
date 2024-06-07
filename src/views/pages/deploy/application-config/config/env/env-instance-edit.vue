@@ -28,7 +28,7 @@ import appEditAttrList from '../app/appEditAttrList.js';
 export default {
   name: '', // 环境/实例列表
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   mixins: [handleTimeMixin, appEditAttrList],
   props: {

@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div>
     <TsDialog
@@ -37,6 +23,14 @@
                 :runtimeParamList="runtimeParamList"
               ></ExecuteuserSetting>
             </template>
+            <template v-slot:runnerGroup>
+              <RunnerGroupSetting
+                ref="runnerGroup"
+                :config="settingConfig.runnerGroup"
+                :disabled="!isEditSetting"
+                :runtimeParamList="runtimeParamList"
+              ></RunnerGroupSetting>
+            </template>
           </TsForm>
         </div>
         <div v-if="settingConfig.whenToSpecify == 'now'" class="execute-main">
@@ -48,23 +42,28 @@
               :canEdit="isEditSetting"
               :type="settingConfig.whenToSpecify"
               :required="true"
+              :labelWidth="113"
             ></TargetDetail>
           </div>
         </div>
         <div v-else-if="settingConfig.whenToSpecify == 'runtime'" class="execute-main">
           <div class="target-detail">
-            <Filters ref="runtimeFilter" :tipText="$t('term.autoexec.setfilterexecutelimitdesc')" :defaultValue="runtimeFilter"></Filters>
+            <Filters
+              ref="runtimeFilter"
+              :tipText="$t('term.autoexec.setfilterexecutelimitdesc')"
+              :defaultValue="runtimeFilter"
+            ></Filters>
           </div>
         </div>
         <div v-else-if="settingConfig.whenToSpecify == 'runtimeparam'" class="execute-main">
           <div class="target-detail">
-            <Param
+            <ExecutionModeParam
               :id="id"
               ref="runtimeparam"
               :defaultValue="settingConfig.executeNodeConfig.paramList"
               :paramList="nodeTypeParamList"
               :canEdit="isEditSetting"
-            ></Param>
+            ></ExecutionModeParam>
           </div>
         </div>
       </div>
@@ -92,12 +91,13 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TargetDetail: resolve => require(['@/views/pages/autoexec/components/common/addTarget/target-detail'], resolve),
-    Param: resolve => require(['@/views/pages/autoexec/components/common/executionMode/param'], resolve),
-    Filters: resolve => require(['@/views/pages/autoexec/components/common/executionMode/filters'], resolve),
-    TargetValid: resolve => require(['@/views/pages/autoexec/components/common/targetView/target-valid.vue'], resolve),
-    ExecuteuserSetting: resolve => require(['./executeuser-setting.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TargetDetail: () => import('@/views/pages/autoexec/components/common/addTarget/target-detail'),
+    ExecutionModeParam: () => import('@/views/pages/autoexec/components/common/executionMode/param'),
+    Filters: () => import('@/views/pages/autoexec/components/common/executionMode/filters'),
+    TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
+    ExecuteuserSetting: () => import('./executeuser-setting.vue'),
+    RunnerGroupSetting: () => import('./runnergroup-setting.vue')
   },
   filters: {},
   props: {
@@ -131,11 +131,19 @@ export default {
           dealDataByUrl: this.$utils.getProtocolDataList,
           placeholder: this.$t('page.pleaseselect'),
           disabled: !_this.isEditSetting,
-          transfer: true
+          transfer: true,
+          labelWidth: '113'
         },
         executeUser: {
           type: 'slot',
-          label: this.$t('page.executeuser')
+          label: this.$t('page.executeuser'),
+          labelWidth: '113'
+        },
+        runnerGroup: {
+          type: 'slot',
+          label: this.$t('page.autoexeccomboprunnergrouplabel'),
+          labelWidth: '113',
+          tooltip: this.$t('page.autoexeccomboprunnergrouptips')
         },
         roundCount: {
           type: 'select',
@@ -144,7 +152,8 @@ export default {
           disabled: !_this.isEditSetting,
           label: this.$t('term.autoexec.batchquantity'),
           desc: this.$t('term.autoexec.batchcountdisabledesc'),
-          dataList: this.$utils.getRoundCountList()
+          dataList: this.$utils.getRoundCountList(),
+          labelWidth: '113'
         },
         whenToSpecify: {
           type: 'radio',
@@ -152,6 +161,7 @@ export default {
           value: '',
           dataList: [],
           disabled: !_this.isEditSetting,
+          labelWidth: '113',
           onChange: (val) => {
             _this.changeWhenToSpecify(val);
           }
@@ -161,6 +171,7 @@ export default {
         combopId: _this.id,
         protocolId: '',
         executeUser: null,
+        runnerGroup: null,
         roundCount: null,
         whenToSpecify: 'runtime',
         executeNodeConfig: {}
@@ -217,6 +228,7 @@ export default {
     },
     okSetting() {
       this.$set(this.settingConfig, 'executeUser', this.$refs.executeUser.save());
+      this.$set(this.settingConfig, 'runnerGroup', this.$refs.runnerGroup.save());
       this.settingConfig.executeNodeConfig = {};
       if (this.settingConfig.whenToSpecify == 'now') {
         this.validSetting(true);
@@ -249,7 +261,8 @@ export default {
         executeUser: null,
         filter: executeNodeConfig.filter || {},
         selectNodeList: executeNodeConfig.selectNodeList || [],
-        inputNodeList: executeNodeConfig.inputNodeList || []
+        inputNodeList: executeNodeConfig.inputNodeList || [],
+        cmdbGroupType: this.opType
       };
       if (this.$refs.executeUser) {
         this.$set(this.settingConfig, 'executeUser', this.$refs.executeUser.save());

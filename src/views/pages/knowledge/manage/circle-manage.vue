@@ -19,7 +19,7 @@
           :theadList="theadList"
           v-bind="tableConfig"
           @updateRowSort="handleRowSort"
-          @changeCurrent="currentPage=>search({currentPage})" 
+          @changeCurrent="currentPage=>search({currentPage})"
           @changePageSize="pageSize=>search({pageSize})"
         >
           <!-- 包括审批通过与未审批通过的知识数量 -->
@@ -76,10 +76,10 @@
 export default {
   name: 'CircleManage',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve),
-    Tsform: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    Tsform: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   data() {
     return {
@@ -98,9 +98,9 @@ export default {
         {title: '', key: 'action'}
       ],
       tableConfig: {
-        tbodyList: [], 
-        rowNum: 0, 
-        pageSize: 20, 
+        tbodyList: [],
+        rowNum: 0,
+        pageSize: 20,
         currentPage: 1
       },
       formItemConfig: {

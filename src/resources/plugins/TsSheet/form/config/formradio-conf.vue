@@ -15,12 +15,22 @@
         @change="changDataSource"
       ></TsFormRadio>
     </TsFormItem>
-    <TsFormItem v-if="config.dataSource === 'static'" :label="$t('page.dropdownoption')" labelPosition="top">
+    <TsFormItem
+      v-if="config.dataSource === 'static'"
+      :label="$t('page.dropdownoption')"
+      labelPosition="top"
+      required
+    >
       <div class="radius-sm padding-md" :class="validClass('dataList')">
         <StaticDataEditor v-model="config.dataList" :disabled="disabled"></StaticDataEditor>
       </div>
     </TsFormItem>
-    <TsFormItem v-if="config.dataSource === 'matrix'" :label="$t('page.matrix')" labelPosition="top">
+    <TsFormItem
+      v-if="config.dataSource === 'matrix'"
+      :label="$t('page.matrix')"
+      labelPosition="top"
+      required
+    >
       <div class="radius-sm padding-md" :class="validClass('matrixUuid')">
         <TsFormSelect
           v-model="config.matrixUuid"
@@ -29,7 +39,7 @@
           :disabled="disabled"
           @first="$utils.matrixDataSourceRedirect()"
           @on-change="changeMatrixUuid()"
-        > 
+        >
           <template v-slot:option="{item}">
             <div>{{ item.name }}<span v-if="item.type" class="text-grey cen-align">({{ item.type }})</span></div>
           </template>
@@ -110,11 +120,11 @@ import base from './base-config.vue';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    StaticDataEditor: resolve => require(['./common/static-data-editor.vue'], resolve),
-    DataSourceFilter: resolve => require(['./common/data-source-filter.vue'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    StaticDataEditor: () => import('./common/static-data-editor.vue'),
+    DataSourceFilter: () => import('./common/data-source-filter.vue')
   },
   extends: base,
   props: {},

@@ -1,25 +1,11 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div>
     <TsContain border="border">
       <template v-slot:topLeft>
         <div class="action-group">
           <span class="tsfont-plus icon-right text-action" @click="openPortfolioToolsDialog">{{ $t('term.autoexec.job') }}</span>
-          <span v-auth="['AUTOEXEC_MODIFY']" class="action-item"> 
+          <span v-auth="['AUTOEXEC_MODIFY']" class="action-item">
             <AuditConfig auditName="AUTOEXEC-JOB"></AuditConfig>
           </span>
         </div>
@@ -151,13 +137,13 @@
 export default {
   name: '',
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    PortfolioToolsDialog: resolve => require(['./tool/portfolio-tools-dialog'], resolve), // 创建作业-弹窗
-    Liquid: resolve => require(['@/resources/components/SimpleGraph/Liquid.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    ActionDialog: resolve => require(['./job/action-dialog.vue'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    PortfolioToolsDialog: () => import('./tool/portfolio-tools-dialog'), // 创建作业-弹窗
+    Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    ActionDialog: () => import('./job/action-dialog.vue'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   filters: {},
   props: {},
@@ -287,7 +273,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-   
+
   },
   beforeMount() {},
   mounted() { this.searchJob(1); },

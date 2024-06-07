@@ -81,17 +81,17 @@
                   </Tooltip>
                 </Tag>
                 <span
-                  v-if="selectedList.length <= 0 && !currentSearch"
-                  :placeholder="!currentSearch ? getPlaceholder : ''"
+                  v-if="selectedList.length <= 0 && (!currentSearch || !isShowInput)"
+                  :placeholder="!currentSearch || !isShowInput? getPlaceholder : ''"
                   class="empty-placeholder"
                   :class="[disabled ? 'empty-placeholder-disable' : '']"
                   style="line-height: 30px;"
                 ></span>
               </template>
-              <template v-else-if="disabled || readonly || !currentSearch || (!multiple && currentSearch && !isSquare)">
+              <template v-else-if="disabled || readonly || !currentSearch || !isShowInput || (!multiple && currentSearch && !isSquare)">
                 <span
                   v-if="selectedList[0]"
-                  :placeholder="!currentSearch ? getPlaceholder : ''"
+                  :placeholder="!currentSearch || !isShowInput ? getPlaceholder : ''"
                   class="overflow empty-placeholder"
                   :class="[disabled ? 'empty-placeholder-disable' : '', !(!multiple && currentSearch && !isSquare) ? 'single-span' : '']"
                 >
@@ -121,7 +121,7 @@
                   </Tooltip>
                   <span
                     v-else
-                    :placeholder="!currentSearch ? getPlaceholder : ''"
+                    :placeholder="!currentSearch || !isShowInput ? getPlaceholder : ''"
                     class="empty-placeholder"
                     :class="[disabled ? 'empty-placeholder-disable' : '']"
                   ></span>
@@ -179,13 +179,13 @@
                       :content="typeof node['_disabled'] === 'string' ? node['_disabled'] : disabledHoverTitle"
                       style="width:100%"
                     >
-                      <div class="overflow" v-html="node.showtxt ? node.showtxt : node[showName ? showName : textName]"></div>
+                      <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
                     </Tooltip>
                     <div
                       v-else
                       class="overflow"
-                      :title="dropdownMenuMaxWidth && (node.showtxt ? node.showtxt : node[showName ? showName : textName])"
-                      v-html="node.showtxt ? node.showtxt : node[showName ? showName : textName]"
+                      :title="dropdownMenuMaxWidth && (node._showtxt ? node._showtxt : node[showName ? showName : textName])"
+                      v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"
                     ></div>
                   </slot>
                 </li>
@@ -248,13 +248,13 @@
                           :content="typeof node['_disabled'] === 'string' ? node['_disabled'] : disabledHoverTitle"
                           style="width:100%"
                         >
-                          <div class="overflow" v-html="node.showtxt ? node.showtxt : node[showName ? showName : textName]"></div>
+                          <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
                         </Tooltip>
                         <div
                           v-else
                           class="overflow"
-                          :title="dropdownMenuMaxWidth && (node.showtxt ? node.showtxt : node[showName ? showName : textName])"
-                          v-html="node.showtxt ? node.showtxt : node[showName ? showName : textName]"
+                          :title="dropdownMenuMaxWidth && (node._showtxt ? node._showtxt : node[showName ? showName : textName])"
+                          v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"
                         ></div>
                       </slot>
                     </li>
@@ -314,7 +314,7 @@ export default {
     mode: { type: String, default: 'normal' }, //normal或group，group代表分组下拉框
     value: {
       //默认值
-      type: [String, Number, Array],
+      type: [String, Number, Array, Object],
       default: function() {
         if (this.multiple == true) {
           return new Array();
@@ -511,10 +511,10 @@ export default {
       focussing: false, //是否处于焦点中
       focusIndex: -1, //通过键盘选中列表
       searchKeyWord: '', //搜索对应可以word
-      currentValue: this.multiple ? (this.$utils.isEmpty(this.value) ? [] : [].concat(this.value)) : this.value,
+      currentValue: null,
       isVisible: false, //下拉选项显示
       selectedList: [], //选中的集合{text："",value:""}
-      nodeList: this.url ? [] : JSON.parse(JSON.stringify(this.dataList || [])),
+      nodeList: this.url ? [] : this.$utils.deepClone(this.dataList || []),
       loading: !!this.dynamicUrl,
       validMesage: this.errorMessage || '',
       currentValidList: this.filterValid(this.validateList) || [],
@@ -530,11 +530,13 @@ export default {
         [this.valueName]: 'moreSearchFlag',
         _disabled: true
       },
-      isValidPass: true
+      isValidPass: true,
+      isShowInput: false //是否显示搜索框
     };
   },
   beforeCreate() {},
   created() {
+    this.currentValue = this.handleCurrentValue(this.value);
     this.initDataListByUrl(false);
   },
   mounted() {},
@@ -593,17 +595,20 @@ export default {
       // 暂无数据
       return (this.nodeList.length <= 0 || this.hiddenLength == this.nodeList.length) && !this.allowCreate;
     },
-    handleOpen: function() {
+    handleOpen() {
       if (this.disabled || this.readonly) {
         return;
       }
+      this.isShowInput = true;
       this.currentPage = 1;
       this.reachPage = 0;
       this.focussing = true;
       this.isVisible = !this.isVisible;
-      this.$refs.input && this.$refs.input.focus();
       this.isVisible && this.updatePosition();
       !this.isVisible ? (this.firstOutside = false) : ''; //当下拉框通过点击select框关闭时，需要做标记，在失去焦点时回显正确值
+      this.$nextTick(() => {
+        this.$refs.input && this.$refs.input.focus();
+      });
     },
     async getDataByAjax(params, url, cancel) {
       //调用接口的统一处理
@@ -611,17 +616,15 @@ export default {
       this[cancel] && this[cancel].cancel();
       this[cancel] = this.$https.CancelToken.source();
       let ajaxArr = {};
+      let isCancelToken = false; // 是否取消请求，用于取消请求后，nodeList为空，第二次接口没有返回，页面渲染是暂无数据问题
       if (this.dynamicUrl) {
         // 如果是实时搜索的话，才会用到取消上次请求的接口
         ajaxArr = { method: this.ajaxType, url: url, cancelToken: this[cancel].token };
       } else {
         ajaxArr = { method: this.ajaxType, url: url };
       }
-      // let ajaxArr = { method: this.ajaxType, url: url, cancelToken: this[cancel].token};
-      // 取消上次请求的接口
-      // let ajaxArr = { method: this.ajaxType, url: url, cancelAxios: this[cancel].token};
-      let needdataLi = ['post', 'put'];
-      ArrIndexOf(needdataLi, this.ajaxType) < 0 ? Object.assign(ajaxArr, { params: params }) : Object.assign(ajaxArr, { data: params });
+      let requestMethodList = ['post', 'put'];
+      !requestMethodList.includes(this.ajaxType) ? Object.assign(ajaxArr, { params: params }) : Object.assign(ajaxArr, { data: params });
       let res = await this.$https(ajaxArr);
       let nodeList = [];
       if (res && res.Status == 'OK') {
@@ -637,14 +640,18 @@ export default {
           this.hasLoadMore = false;
         }
       }
-      return nodeList;
+      if (this.$utils.isEmpty(res) && this.dynamicUrl) {
+        // 请求被取消后，res为空，没有收到服务器响应
+        isCancelToken = true;
+      }
+      return {nodeList, isCancelToken};
     },
     setDefaultValue() {
       //默认选中第一个的判断 ,1、defaultValueIsFirst 2、必填且nodeList长度为1
-      if (this.readonly || this.disabled || this.nodeList.length <= 0) {
+      if (this.nodeList.length <= 0) { // 处理禁用(只读)状态下，默认值不生效的问题
         return;
       }
-      if ((this.$utils.isEmpty(this.currentValue) && this.defaultValueIsFirst) || (this.firstSelect && this.$utils.isEmpty(this.currentValue) && this.isRequired && this.nodeList.length == 1)) {
+      if ((this.$utils.isEmpty(this.currentValue) && this.defaultValueIsFirst) || (this.firstSelect && this.$utils.isEmpty(this.currentValue) && this.isRequired && this.nodeList.length == 1 && !this.nodeList[0]._disabled)) {
         if (this.mode == 'normal') {
           this.selectedList = [this.nodeList[0]];
         } /*else {
@@ -673,21 +680,19 @@ export default {
     initDataListByUrl(isSearch) {
       //isSearch: Boolean 如果是value 改变时,不需要从新通过url来获取nodelist
       //初始化数据
-      let _this = this;
       this.hiddenLength = 0;
       if (this.url && !isSearch) {
         //url
         let params = {};
         this.nodeList = [];
-        this.isSingel = !!(this.isSquare && this.currentSearch); // 解决文本占位符显示不出来问题
-
         this.getDataByAjax(params, this.url, 'cancelAxios1').then(res => {
-          _this.nodeList = res;
-          _this.nodeList && _this.nodeList.length > 20 && _this.search === null ? (_this.currentSearch = true) : (_this.currentSearch = _this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
-          _this.setDefaultValue(); //默认选中第一个
-          _this.initValueByNodeList();
+          this.nodeList = res.nodeList || [];
+          this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
+          this.isSingel = !!(this.isSquare && this.currentSearch); // 可搜索时，并且显示tag标签时，才使用tag标签的样式
+          this.setDefaultValue(); //默认选中第一个
+          this.initValueByNodeList();
         });
-      } else if (_this.dynamicUrl) {
+      } else if (this.dynamicUrl) {
         //dynamicUrl
         this.currentSearch = true;
         if (!this.$utils.isEmpty(this.value)) {
@@ -709,29 +714,28 @@ export default {
         this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
         this.setDefaultValue();
         this.initValueByNodeList();
-        this.isSingel = !!(this.isSquare && this.currentSearch); // 解决文本占位符显示不出来问题
+        this.isSingel = !!(this.isSquare && this.currentSearch); // 可搜索并且是tag标签时，才显示tag标签的样式
         this.handleEchoFailedDefaultValue();
       }
     },
     initValueByNodeList() {
       //通过nodeList，初始化selectedList
-      let _this = this;
       this.selectedList = [];
       if (this.$utils.isEmpty(this.currentValue)) {
         this.searchKeyWord = '';
         return;
       }
-      let ary = this.multiple ? this.currentValue : [this.currentValue];
+      let valueList = this.multiple ? this.currentValue : this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
       let selectedList = [];
       if (this.mode == 'normal') {
-        _this.nodeList.forEach(function(item) {
-          ArrIndexOf(ary, item[_this.valueName]) >= 0 && selectedList.push(item);
+        this.nodeList.forEach((item) => {
+          this.ArrIndexOf(valueList, item[this.valueName]) >= 0 && selectedList.push(item);
         });
       } else if (this.mode == 'group') {
         this.nodeList.forEach(pitem => {
           if (pitem[this.childrenName] && pitem[this.childrenName].length > 0) {
             pitem[this.childrenName].forEach(item => {
-              ArrIndexOf(ary, item[this.valueName]) >= 0 && selectedList.push(item);
+              this.ArrIndexOf(valueList, item[this.valueName]) >= 0 && selectedList.push(item);
             });
           }
         });
@@ -741,7 +745,7 @@ export default {
       if (selectedList.length > 1) {
         this.currentValue instanceof Array &&
           this.currentValue.forEach(item => {
-            let findSelect = selectedList.find(sel => sel[this.valueName] == item);
+            let findSelect = selectedList.find(sel => sel[this.valueName] == item || sel[this.valueName] == item[this.valueName]);
             findSelect && list.push(findSelect);
           });
       } else {
@@ -750,7 +754,7 @@ export default {
       this.selectedList = list;
       if (!this.multiple) {
         //单选时需要给searchKeyword赋值
-        if (ary.length > _this.selectedList.length && this.allowCreate) {
+        if (valueList.length > this.selectedList.length && this.allowCreate) {
           //如果不是通过接口调用写死的单独做一次性回显的，在下次初始化时把值回显回去
           this.searchKeyWord = this.currentValue;
           //在下拉列表里面添加用户手动创建的数据，主要是为了回显
@@ -772,7 +776,6 @@ export default {
         this.openOption();
       }
       if (this.dynamicUrl) {
-        let _this = this;
         this.setTimeoutDynaic && clearTimeout(this.setTimeoutDynaic);
         this.setTimeoutDynaic = setTimeout(() => {
           this.currentPage = 1;
@@ -798,7 +801,7 @@ export default {
         this.selectedList.splice(ind, 1);
         if (this.currentValue instanceof Array) {
           // 解决单选时，当前值不是数组时，splice报错问题
-          this.currentValue.splice(ArrIndexOf(this.currentValue, value), 1);
+          this.currentValue.splice(this.ArrIndexOf(this.currentValue, value), 1);
         }
         this.$refs.input && this.$refs.input.focus();
         this.onChangeValue();
@@ -818,9 +821,8 @@ export default {
     },
     filterNodeList(query) {
       //nodeList进行搜索过滤
-      let _this = this;
       this.hiddenLength = 0;
-      _this.liHtml = _this.showName ? _this.showName : _this.textName;
+      this.liHtml = this.showName ? this.showName : this.textName;
       this.nodeList.forEach(item => {
         if (this.mode == 'normal') {
           if (item) {
@@ -836,11 +838,10 @@ export default {
           }
         }
       });
-      _this.updatePosition();
+      this.updatePosition();
     },
     selectMatchItem(query, item) {
-      const _this = this;
-      let searchNameList = _this.$utils.isEmpty(_this.filterName) ? [_this.textName, _this.valueName] : typeof _this.filterName == 'string' ? [_this.filterName] : _this.filterName;
+      let searchNameList = this.$utils.isEmpty(this.filterName) ? [this.textName, this.valueName] : typeof this.filterName == 'string' ? [this.filterName] : this.filterName;
       let filterNode = searchNameList.find(search => {
         if (
           !query ||
@@ -854,28 +855,27 @@ export default {
         }
       });
       if (filterNode) {
-        _this.$set(item, '_isHidden', false);
+        this.$set(item, '_isHidden', false);
         if (query) {
-          let newtext = item[_this.liHtml].replace(new RegExp('(' + query + ')', 'ig'), '<b class="text-primary">$1</b>');
-          _this.$set(item, 'showtxt', newtext);
+          let newtext = item[this.liHtml].replace(new RegExp('(' + query + ')', 'ig'), '<b class="text-primary">$1</b>');
+          this.$set(item, '_showtxt', newtext);
         } else {
-          _this.$set(item, 'showtxt', item[_this.liHtml]);
+          this.$set(item, '_showtxt', item[this.liHtml]);
         }
       } else {
-        _this.$set(item, '_isHidden', true);
-        _this.$set(item, 'showtxt', item[_this.liHtml]);
+        this.$set(item, '_isHidden', true);
+        this.$set(item, '_showtxt', item[this.liHtml]);
         this.hiddenLength++;
       }
     },
     dynamicInit() {
       //通过dynamicurl初始化数据
-      let _this = this;
       this.hiddenLength = 0;
       //不用掉接口初始化text值
       if (this.isEqualValue) {
         this.selectedList = [];
-        let ary = this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
-        ary.forEach(item => {
+        let valueList = this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
+        valueList.forEach(item => {
           let obj = {};
           obj[this.valueName] = obj[this.textName] = item;
           this.selectedList.push(obj);
@@ -885,9 +885,10 @@ export default {
       let params = { defaultValue: this.dynamicDefaultValue };
       params[this.idListName] = this.multiple ? this.currentValue : this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
       this.getDataByAjax(params, this.dynamicUrl, 'cancelAxios1').then(res => {
-        if (((this.multiple && this.currentValue.length) || (!this.multiple && (this.currentValue || ['boolean', 'number'].includes(typeof this.currentValue)))) && res.length) {
-          let selectedList = res.filter(r => {
-            return _this.multiple ? ArrIndexOf(this.currentValue, r[_this.valueName]) > -1 : this.currentValue == r[_this.valueName];
+        let nodeList = res.nodeList || [];
+        if (((this.multiple && !this.$utils.isEmpty(this.currentValue)) || (!this.multiple && (this.currentValue || ['boolean', 'number'].includes(typeof this.currentValue)))) && nodeList.length) {
+          let selectedList = nodeList.filter(r => {
+            return this.multiple ? this.ArrIndexOf(this.currentValue, r[this.valueName]) > -1 : this.handleObjectValue(r[this.valueName]);
           });
           //进行排序，主要是为了显示的text的顺序和value值顺序一样 ,因为接口的数据顺序可能不会根据value来
           let list = [];
@@ -898,48 +899,59 @@ export default {
                 findSelect && list.push(findSelect);
               });
           }
-          this.selectedList = selectedList.length > 1 ? list : selectedList;
+          this.selectedList = selectedList.length > 1 && !this.$utils.isEmpty(list) ? list : selectedList;
           this.handleEchoFailedDefaultValue();
         } else {
-          _this.selectedList = [];
+          this.selectedList = [];
           this.handleEchoFailedDefaultValue();
         }
 
-        if (!_this.multiple) {
+        if (!this.multiple) {
           //是单选,进行赋值处理
-          _this.searchKeyWord = '';
-          _this.isSingel = !!(this.isSquare && this.currentSearch);
+          this.searchKeyWord = '';
+          this.isSingel = !!(this.isSquare && this.currentSearch);
         }
-        if (_this.needCallback) {
+        if (this.needCallback) {
           //成功回调设置为false
-          _this.$emit('update:needCallback', false);
-          _this.$emit('searchCallback');
+          this.$emit('update:needCallback', false);
+          this.$emit('searchCallback');
         }
       });
     },
+    handleObjectValue(valueName) {
+      if (!this.isCustomValue) {
+        return this.currentValue == valueName;
+      }
+      if (this.currentValue instanceof Array) {
+        return this.currentValue.find((item) => item[this.valueName] == valueName);
+      } else if (typeof this.currentValue == 'string') {
+        return this.currentValue == valueName;
+      } else if (typeof this.currentValue == 'object' && this.currentValue) {
+        return this.currentValue[this.valueName];
+      }
+    },
     handleEchoFailedDefaultValue() {
       // 处理回显失败默认值，回显失败清空默认值
-      if (this.isClearEchoFailedDefaultValue && !this.$utils.isEmpty(this.selectedList)) {
-        let selectedList = [];
-        let valueList = this.multiple ? this.currentValue : this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
-        valueList.forEach((item, index) => {
-          if (item && !this.selectedList.find((n) => n[this.valueName] == item)) {
-            selectedList.push(item[this.valueName]);
-            if (this.currentValue instanceof Array) {
-              this.currentValue.splice(index, 1);
-            } else if (this.currentValue) {
-              this.currentValue = null;
-            }
-          }
-        });
-        if (!this.$utils.isEmpty(selectedList)) {
-          this.onChangeValue();
-        }
-      }
+      // if (this.isClearEchoFailedDefaultValue && !this.$utils.isEmpty(this.selectedList)) {
+      //   let selectedList = [];
+      //   let valueList = this.multiple ? this.currentValue : this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
+      //   valueList.forEach((item, index) => {
+      //     if (item && !this.selectedList.find((n) => n[this.valueName] == item)) {
+      //       selectedList.push(item[this.valueName]);
+      //       if (this.currentValue instanceof Array) {
+      //         this.currentValue.splice(index, 1);
+      //       } else if (this.currentValue) {
+      //         this.currentValue = null;
+      //       }
+      //     }
+      //   });
+      //   if (!this.$utils.isEmpty(selectedList)) {
+      //     this.onChangeValue();
+      //   }
+      // }
     },
     dynamicSearch(query, isFirst) {
       //query:搜索的关键字，isFirst 是否第一次初始化下拉值，主要为了必填时只有一个下拉值时默认填充
-      let _this = this;
       this.hiddenLength = 0;
       this.loading = true;
       if (isFirst) {
@@ -951,41 +963,45 @@ export default {
       params[this.keyword] = query ? query.trim() : '';
       this.getDataByAjax(params, this.dynamicUrl, 'cancelAxios')
         .then(res => {
-          if (_this.isReachBottomSearch && this.currentPage > 1 && !this.$utils.isSame(this.nodeList, res)) {
-            if (res && res.length > 0) {
-              for (let i = 0; i < res.length; i++) {
-                _this.nodeList.push(res[i]);
+          let nodeList = res.nodeList || [];
+          let isCancelToken = res.isCancelToken || false;
+          if (this.isReachBottomSearch && this.currentPage > 1 && !this.$utils.isSame(this.nodeList, nodeList)) {
+            if (nodeList && nodeList.length > 0) {
+              for (let i = 0; i < nodeList.length; i++) {
+                this.nodeList.push(nodeList[i]);
               }
-              _this.delMoreSearchTip();
-              if (_this.pageCount > 1) {
-                _this.nodeList.push(_this.moreSearchTip);
+              this.delMoreSearchTip();
+              if (this.pageCount > 1) {
+                this.nodeList.push(this.moreSearchTip);
               }
             }
-            _this.nodeList = _this.$utils.uniqueByField(_this.nodeList, _this.valueName); // 去重
+            this.nodeList = this.$utils.uniqueByField(this.nodeList, this.valueName); // 去重
           } else {
-            _this.nodeList = [];
-            _this.nodeList = res; // 有传递的时候，拿到所有的值
+            this.nodeList = [];
+            this.nodeList = nodeList; // 有传递的时候，拿到所有的值
           }
-          _this.creatNewItem(query);
-          _this.nodeList.splice(0, {});
-          _this.updatePosition();
-          _this.$nextTick(() => {
-            _this.hasLoadMore = this.hasScrollbar();
+          this.creatNewItem(query);
+          this.nodeList.splice(0, {});
+          this.updatePosition();
+          this.$nextTick(() => {
+            this.hasLoadMore = this.hasScrollbar();
           });
 
           if (isFirst) {
             //如果必填或者默认选中第一个，而且下拉值只有一个则默认选中第一个
-            _this.setDefaultValue();
+            this.setDefaultValue();
           }
-          _this.loading = false;
-          if (_this.needCallback) {
+          if (!isCancelToken) {
+            this.loading = false;
+          }
+          if (this.needCallback) {
             //成功回调设置为false
-            _this.$emit('update:needCallback', false);
-            _this.$emit('searchCallback');
+            this.$emit('update:needCallback', false);
+            this.$emit('searchCallback');
           }
         })
-        .finally(() => {
-          _this.loading = false;
+        .catch(() => {
+          this.loading = false;
         });
     },
     delMoreSearchTip() {
@@ -1012,21 +1028,28 @@ export default {
     },
     onChangeValue() {
       let isSame = false;
-      let valueObject = this.selectedList.map(item => {
+      let selectedList = this.selectedList.map(item => {
         return { value: item[this.valueName], text: item[this.textName] };
       });
-      valueObject = this.multiple ? valueObject : valueObject[0] || {};
+      let valueObject = this.multiple ? selectedList : selectedList[0] || {};
       let toValue = this.currentValue; //额外赋值主要是为了避免引用数据导致值的联动
       if (this.multiple) {
         isSame = JSON.stringify(this.value) == JSON.stringify(this.currentValue);
-        toValue = this.currentValue.concat([]);
+        if (this.isCustomValue) {
+          toValue = this.$utils.deepClone(this.selectedList);
+        } else {
+          toValue = [...(this.currentValue || {})];
+        }
+      } else if (this.isCustomValue) {
+        isSame = this.$utils.isSame(this.value, this.currentValue);
+        toValue = this.$utils.isEmpty(valueObject) ? null : valueObject;
       } else if (this.value == this.currentValue) {
         isSame = true;
       }
-      this.$emit('change', toValue, valueObject);
+      let selectItem = this.multiple ? this.selectedList : this.selectedList[0] || {};
+      this.$emit('change', toValue, valueObject, selectItem);
       if (!(!this.isChangeWrite && isSame)) {
         //改变值时出发on-change事件
-        let selectItem = this.multiple ? this.selectedList : this.selectedList[0] || {};
         this.$emit('on-change', toValue, valueObject, selectItem);
         typeof this.onChange == 'function' && this.onChange(toValue, valueObject, selectItem);
         this.multiple && this.updatePosition();
@@ -1040,15 +1063,15 @@ export default {
         this.isValidPass = true;
       }
     },
-    onSelectFocus: function() {
+    onSelectFocus() {
       typeof this.onFocus == 'function' && this.onFocus();
       this.$emit('on-focus');
     },
-    // onFirst: function() {
+    // onFirst() {
     //   typeof this.onFirst == 'function' && this.onFirst();
     //   this.$emit('on-first');
     // },
-    onSelectBlur: function() {
+    onSelectBlur() {
       typeof this.onBlur == 'function' && this.onBlur();
       this.$emit('on-blur');
     },
@@ -1058,11 +1081,14 @@ export default {
         return;
       }
       let value = item[this.valueName];
-      let index = ArrIndexOf(this.currentValue, value);
+      let index = this.ArrIndexOf(this.currentValue, value);
+      if (this.multiple && this.$utils.isEmpty(this.currentValue)) {
+        this.currentValue = [];
+      }
       if (index < 0) {
         //选中
         this.multiple ? this.selectedList.push(item) : (this.selectedList = [item]);
-        this.multiple ? this.currentValue.push(value) : (this.currentValue = value);
+        this.multiple && !this.$utils.isEmpty(value) ? this.currentValue.push(value) : (this.currentValue = value);
       } else if (this.isRequired && !this.multiple) {
         //取消选中  如果必填且单选，则不能取消选中
         return;
@@ -1114,8 +1140,8 @@ export default {
       }
     },
     hideOption(isEnterSearch) {
-      var _this = this;
       this.isVisible = false;
+      this.isShowInput = false;  
       if (!isEnterSearch) {
         !this.multiple ? (this.searchKeyWord = '') : (this.searchKeyWord = '');
       }
@@ -1123,7 +1149,7 @@ export default {
         //如果是单选实时搜索在收起元素时，然后下拉里面的值为当前选中项
         setTimeout(() => {
           // this.dynamicSearch('search', this.selectedList[0][this.textName]);
-          this.selectedList.length > 0 && _this.nodeList && (_this.nodeList = _this.nodeList.filter(item => item[_this.valueName] == _this.selectedList[0][_this.valueName]));
+          this.selectedList.length > 0 && this.nodeList && (this.nodeList = this.nodeList.filter(item => item[this.valueName] == this.selectedList[0][this.valueName]));
         });
       }
     },
@@ -1131,7 +1157,6 @@ export default {
       this.isVisible = true;
     },
     handleKeydown(e) {
-      let _this = this;
       if ((this.nodeList && this.nodeList.length > 0) || e.keyCode == 13) {
         let maxLength = this.nodeList.length;
         let minLength = this.allowCreate ? 0 : 1;
@@ -1150,7 +1175,6 @@ export default {
           let focusItem = this.setFocusItem(minLength, maxLength, 'down');
         } else if (keyCode == '13') {
           // enter
-          let _this = this;
           e.preventDefault();
           if (!this.isVisible) {
             //显示下拉框
@@ -1171,32 +1195,32 @@ export default {
           selectData && this.toggleSelect(selectData);
           //键盘回车，如果val与当前下拉某一个一样的就是选中当前一个，如果是回车新加的继续新加逻辑
           let isExist = false;
-          let keyval = _this.addItem ? _this.addItem[_this.textName] || this.searchKeyWord : this.searchKeyWord;
-          if (keyval && _this.nodeList && _this.nodeList.length > 0) {
-            _this.nodeList.find(no => {
-              if (this.$utils.equalStr(no[_this.valueName], keyval) || this.$utils.equalStr(no[_this.textName], keyval)) {
+          let keyval = this.addItem ? this.addItem[this.textName] || this.searchKeyWord : this.searchKeyWord;
+          if (keyval && this.nodeList && this.nodeList.length > 0) {
+            this.nodeList.find(no => {
+              if (this.$utils.equalStr(no[this.valueName], keyval) || this.$utils.equalStr(no[this.textName], keyval)) {
                 isExist = true;
               }
               return isExist;
             });
           }
-          if (!_this.allowCreate || (_this.allowCreate && isExist)) {
-            _this.$set(_this, 'addItem', null);
+          if (!this.allowCreate || (this.allowCreate && isExist)) {
+            this.$set(this, 'addItem', null);
 
             return;
           } else {
-            _this.nodeList.unshift(_this.addItem);
-            if (_this.$listeners && _this.$listeners['on-create']) {
-              _this.$emit('on-create', keyval);
+            this.nodeList.unshift(this.addItem);
+            if (this.$listeners && this.$listeners['on-create']) {
+              this.$emit('on-create', keyval);
             }
-            _this.toggleSelect(_this.nodeList[0]);
-            _this.$set(_this, 'addItem', null);
+            this.toggleSelect(this.nodeList[0]);
+            this.$set(this, 'addItem', null);
           }
         } else if (keyCode == '8') {
           if (this.multiple && !this.searchKeyWord && this.selectedList.length > 0) {
             let lastLi = this.selectedList.length - 1;
             let lastval = this.selectedList[lastLi][this.valueName];
-            this.currentValue.splice(ArrIndexOf(this.currentValue, lastval), 1);
+            this.currentValue.splice(this.ArrIndexOf(this.currentValue, lastval), 1);
             this.selectedList.splice(lastLi, 1);
             this.onChangeValue();
           }
@@ -1206,14 +1230,13 @@ export default {
     setFocusItem(maxLength, minLength, type) {
       //利用键盘，选中的元素样色
       let length = 0;
-      let _this = this;
       let selectData = null;
       this.nodeList.forEach((item, iindex) => {
-        if (iindex + 1 === _this.focusIndex) {
-          _this.$set(item, '_focusSelect', true);
+        if (iindex + 1 === this.focusIndex) {
+          this.$set(item, '_focusSelect', true);
           selectData = item;
         } else {
-          _this.$set(item, '_focusSelect', false);
+          this.$set(item, '_focusSelect', false);
         }
       });
 
@@ -1221,10 +1244,10 @@ export default {
         this.focusIndex = this.focusIndex == maxLength ? minLength : this.focusIndex + (type == 'up' ? -1 : 1);
         selectData = this.setFocusItem(maxLength, minLength, type);
       } else {
-        this.$nextTick(function() {
+        this.$nextTick(() => {
           //内容的滚动
-          if (_this.$refs.dropdown) {
-            let $scrollContain = _this.$refs.dropdown.$el.parentNode;
+          if (this.$refs.dropdown) {
+            let $scrollContain = this.$refs.dropdown.$el.parentNode;
             let $selected = $scrollContain.querySelector(' .select-li.hover');
             if ($selected) {
               $scrollContain.scrollTop = $selected.offsetTop - 100;
@@ -1238,11 +1261,10 @@ export default {
     checkExist(str) {
       //校验某个字符串是否存在下拉列表里
       let isExist = false;
-      let _this = this;
-      if (str && _this.nodeList && _this.nodeList.length > 0) {
-        _this.nodeList.forEach(no => {
-          let textStr = no[_this.textName].toString();
-          let valueStr = no[_this.valueName].toString();
+      if (str && this.nodeList && this.nodeList.length > 0) {
+        this.nodeList.forEach(no => {
+          let textStr = no[this.textName].toString();
+          let valueStr = no[this.valueName].toString();
           if (textStr === str.toString() || valueStr === str.toString()) {
             isExist = true;
           }
@@ -1259,12 +1281,11 @@ export default {
       }
     },
     watchChange(isChange) {
-      let _this = this;
-      this.initSettime && clearTimeout(_this.initSettime);
+      this.initSettime && clearTimeout(this.initSettime);
       this.initSettime = setTimeout(() => {
-        _this.initSettime = null;
-        _this.loading = !!_this.dynamicUrl;
-        _this.initDataListByUrl(isChange);
+        this.initSettime = null;
+        this.loading = !!this.dynamicUrl;
+        this.initDataListByUrl(isChange);
       }, 10);
     },
     getSelectedList() {
@@ -1276,7 +1297,7 @@ export default {
     },
     scrollTop() {
       if (this.nowrapHead) {
-        this.$nextTick(function() {
+        this.$nextTick(() => {
           this.$refs.topHead && (this.$refs.topHead.scrollLeft = this.$refs.topHead.scrollWidth);
         });
       }
@@ -1298,7 +1319,7 @@ export default {
         return 0;
       }
     },
-    handleReachBottom: function() {
+    handleReachBottom() {
       // 触底滚动加载
       return new Promise(resolve => {
         setTimeout(() => {
@@ -1324,6 +1345,19 @@ export default {
         hasScrollbar = dropdownContain.$el.clientHeight > 200;
       }
       return hasScrollbar;
+    },
+    ArrIndexOf(arr, str) {
+      //重写 数组的indexof功能 主要是为了实现 1 = '1' 的情况
+      let index = -1;
+      if (arr instanceof Array) {
+        arr.find((item, i) => {
+          utils.equalStr(this.isCustomValue && item[this.valueName] ? item[this.valueName] : item, str) && (index = i);
+          return index >= 0;
+        });
+      } else {
+        utils.equalStr(arr, str) && (index = 0);
+      }
+      return index;
     }
   },
   computed: {
@@ -1338,10 +1372,9 @@ export default {
       if (this.nowrapHead && this.multiple) {
         classStr += ' nowrap';
       }
-
       return classStr;
     },
-    getPlaceholder: function() {
+    getPlaceholder() {
       if ((this.selectedList && this.selectedList.length > 0) || this.disabled) {
         return '';
       }
@@ -1353,14 +1386,13 @@ export default {
         return this.$t('form.placeholder.pleaseselect', { target: '' });
       }
     },
-    getClearable: function() {
-      let _this = this;
-      let clearable = _this.clearable;
+    getClearable() {
+      let clearable = this.clearable;
       !clearable &&
-        _this.validateList &&
-        _this.validateList.forEach(item => {
-          typeof item == 'string' && item == 'required' && !_this.multiple && (clearable = false);
-          typeof item == 'object' && item.name == 'required' && !_this.multiple && (clearable = false);
+        this.validateList &&
+        this.validateList.forEach(item => {
+          typeof item == 'string' && item == 'required' && !this.multiple && (clearable = false);
+          typeof item == 'object' && item.name == 'required' && !this.multiple && (clearable = false);
         });
       if (this.disabled || this.readonly || this.selectedList.length == 0) {
         clearable = false;
@@ -1380,15 +1412,14 @@ export default {
       return classNameList;
     },
     setLiClass() {
-      return function(node, index) {
-        let _this = this;
+      return (node, index) => {
         let classtxt = 'select-li ivu-dropdown-item overflow';
-        if (this.multiple && this.currentValue && ArrIndexOf(this.currentValue, node[_this.valueName]) > -1) {
+        if (this.multiple && this.currentValue && this.ArrIndexOf(this.currentValue, node[this.valueName]) > -1) {
           classtxt = classtxt + ' selected';
-        } else if (!this.multiple && this.$utils.equalStr(this.currentValue, node[_this.valueName])) {
+        } else if (!this.multiple && (this.$utils.equalStr(this.currentValue, node[this.valueName]) || this.handleObjectValue(node[this.valueName]))) {
           classtxt = classtxt + ' selected';
         }
-        if (index + 1 == _this.focusIndex || node['_focusSelect']) {
+        if (index + 1 == this.focusIndex || node['_focusSelect']) {
           classtxt = classtxt + ' hover';
         }
         if (node['_disabled']) {
@@ -1398,17 +1429,21 @@ export default {
       };
     },
     setInputwidth() {
-      let _this = this;
-      return function(keyword) {
+      return (keyword) => {
         let style = {};
-        if (!_this.multiple) {
-          if (keyword || _this.getPlaceholder || (_this.isSingel && _this.selectedList.length > 0) || (!_this.multiple && _this.currentSearch && !_this.isSquare)) {
-            Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: _this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
+        if (this.isShowInput) {
+          style.display = 'inline-block';
+        } else {
+          style.display = 'none';
+        }
+        if (!this.multiple) {
+          if (keyword || this.getPlaceholder || (this.isSingel && this.selectedList.length > 0) || (!this.multiple && this.currentSearch && !this.isSquare)) {
+            Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
           } else {
             style.width = '100%';
           }
         } else if (keyword || this.getPlaceholder) {
-          Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: _this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
+          Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
         } else if (this.currentValue && this.currentValue.length > 0) {
           style.width = '14px'; // 将原有的30像素改成14像素，解决输入框宽度过长，导致换行问题
         }
@@ -1425,12 +1460,12 @@ export default {
   watch: {
     value: {
       handler(newValue, oldValue) {
-        let isSame = this.$utils.isSame(newValue, this.currentValue);
+        let isSame = this.$utils.isSame(this.handleCurrentValue(newValue), this.currentValue);
         // if ((this.multiple && JSON.stringify(newValue) == JSON.stringify(this.currentValue)) || (!this.multiple && newValue === this.currentValue)) {
         //   isSame = true;
         // }
         if (!isSame) {
-          this.currentValue = this.multiple ? (this.$utils.isEmpty(newValue) ? [] : [].concat(newValue)) : newValue;
+          this.currentValue = this.handleCurrentValue(newValue);
           this.validMesage = '';
           this.isValidPass = true;
           this.watchChange(!!this.url);
@@ -1441,7 +1476,7 @@ export default {
     dataList: {
       handler: function(newValue, oldValue) {
         if (!this.url) {
-          this.nodeList = JSON.parse(JSON.stringify(this.dataList || []));
+          this.nodeList = this.$utils.deepClone(this.dataList) || [];
           this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
           this.watchChange(true);
         }
@@ -1449,10 +1484,10 @@ export default {
       deep: true
     },
     url(newValue, oldValue) {
-      newValue ? this.watchChange(false) : (this.nodeList = JSON.parse(JSON.stringify(this.dataList || [])));
+      newValue ? this.watchChange(false) : (this.nodeList = this.$utils.deepClone(this.dataList || []));
     },
     dynamicUrl(newValue, oldValue) {
-      newValue ? this.watchChange(false) : (this.nodeList = JSON.parse(JSON.stringify(this.dataList || [])));
+      newValue ? this.watchChange(false) : (this.nodeList = this.$utils.deepClone(this.dataList || []));
     },
     params: {
       handler(newValue, oldValue) {
@@ -1463,11 +1498,10 @@ export default {
       },
       deep: true
     },
-    isVisible: function(val) {
-      let _this = this;
+    isVisible(val) {
       if (val) {
-        this.$nextTick(function() {
-          _this.updatePosition();
+        this.$nextTick(() => {
+          this.updatePosition();
         });
         typeof this.onOpenChange == 'function' && this.onOpenChange(val);
         this.firstOutside = false;
@@ -1479,19 +1513,19 @@ export default {
           }
         }
       }
-      if (!val && _this.nodeList.length > 0) {
-        _this.nodeList.forEach(no => {
+      if (!val && this.nodeList.length > 0) {
+        this.nodeList.forEach(no => {
           no['_focusSelect'] = false;
         });
-        _this.focusIndex = -1;
+        this.focusIndex = -1;
       }
       this.$emit('on-open-change', val);
     },
-    multiple: function(val) {
+    multiple(val) {
       if (this.multiple == true && typeof this.currentValue == 'string') {
         this.currentValue = [this.currentValue];
       } else if (this.multiple == false && typeof this.currentValue == 'object') {
-        this.currentValue = this.currentValue[0] || null;
+        this.currentValue = this.currentValue && this.currentValue[0] || null;
       }
       this.searchKeyWord = '';
     },
@@ -1521,20 +1555,6 @@ function setWidth($contain, $target, transfer) {
     //   $target.parentNode.style.width = 'auto';
     // }
   }
-}
-
-function ArrIndexOf(arr, str) {
-  //重写 数组的indexof功能 主要是为了实现 1 = '1' 的情况
-  let index = -1;
-  if (arr instanceof Array) {
-    arr.find((item, i) => {
-      utils.equalStr(item, str) && (index = i);
-      return index >= 0;
-    });
-  } else {
-    utils.equalStr(arr, str) && (index = 0);
-  }
-  return index;
 }
 </script>
 <style lang="less" scoped>

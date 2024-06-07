@@ -1,4 +1,5 @@
 import defaultHandler from './default-handler'; 
+import titleHandler from './title-handler';
 import priorityHandler from './priority-handler';
 import contentHandler from './content-handler';
 import formHandler from './form-handler';
@@ -18,9 +19,26 @@ import eventinfoHandler from './list-handler';
 import focususerHandler from './focususer-handler';
 import automaticinfoHandler from './automaticinfo-handler';
 import cmdbsyncmessageHandler from './cmdbsyncmessage-handler';
+let importComponentConfig = {};
+try {
+  // 导入自定义组件
+  const componentConfig = require.context('@/commercial-module', true, /processTaskAudit.js$/);
+  componentConfig
+    .keys()
+    .filter(path => {
+      const moduleName = path.split('/')?.[1]?.split('-')?.pop() || path.split('/')?.[1];
+      return moduleName === 'process';
+    })
+    .forEach(path => {
+      importComponentConfig = componentConfig(path).default || {};
+    });
+} catch (error) {
+  console.error('form/component/index.js异常', error);
+}
 
 export default {
   defaultHandler, //默认活动展示
+  titleHandler,
   priorityHandler, //优先级
   contentHandler, //描述/描述
   formHandler, //表单
@@ -39,5 +57,6 @@ export default {
   eventinfoHandler, //事件
   focususerHandler, //修改工单关注人
   automaticinfoHandler,
-  cmdbsyncmessageHandler
+  cmdbsyncmessageHandler,
+  ...importComponentConfig
 };

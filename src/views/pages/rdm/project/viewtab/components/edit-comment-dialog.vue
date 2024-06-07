@@ -15,7 +15,7 @@
 export default {
   name: '',
   components: {
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve)
+    TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue')
   },
   props: {
     comment: {type: Object}

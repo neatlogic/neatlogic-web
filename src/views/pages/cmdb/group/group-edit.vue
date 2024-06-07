@@ -7,7 +7,7 @@
           <TsForm ref="form" :item-list="formConfig"></TsForm>
           <div class="edit-condition">
             <div v-for="(ciGroup, index) in groupData.ciGroupList" :key="index">
-              <Divider plain style="font-size:13px">
+              <Divider plain style="font-size: 13px">
                 <a class="tsfont-minus" href="javascript:void(0)" @click="delCi(index)">{{ $t('page.model') + '#' + (index + 1) }}</a>
               </Divider>
               <TsForm ref="subForm" class="mt-md" :item-list="subFormConfig">
@@ -27,7 +27,9 @@
                 <template v-slot:rule>
                   <div>
                     <div>
-                      <span><a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup(index)">{{ $t('term.cmdb.rulegroup') }}</a></span>
+                      <span>
+                        <a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup(index)">{{ $t('term.cmdb.rulegroup') }}</a>
+                      </span>
                     </div>
                     <div v-for="(conditionGroup, groupIndex) in ciGroup.rule.conditionGroupList" :key="groupIndex" class="group-border">
                       <div class="group-content bg-op radius-md">
@@ -52,7 +54,7 @@
                                   "
                                 >
                                   <template v-slot:option="{ item }">
-                                    <span class="text-grey">{{ item.type == 'attr' ? '属性' : '关系' }}·</span>
+                                    <span class="text-grey">{{ item.typeText }}·</span>
                                     <span>{{ item.label }}</span>
                                     <span class="text-grey">({{ item.name }})</span>
                                   </template>
@@ -76,15 +78,24 @@
                               </div>
                             </Col>
                             <Col v-if="isNeedAttrValue(conItem)" span="8">
+                              <TsFormSelect
+                                v-if="conItem.type === 'global' && getGlobalAttrById(conItem.id)"
+                                v-bind="getGlobalSelectConfig(conItem.id)"
+                                :value="conItem.valueList"
+                                transfer
+                                @change="val=>{
+                                  setAttrValue(conItem, val);
+                                }"
+                              ></TsFormSelect>
                               <AttrSearcher
-                                v-if="conItem.type == 'attr' && getAttrById(conItem.id)"
+                                v-else-if="conItem.type === 'attr' && getAttrById(conItem.id)"
                                 ref="attrHandler"
                                 :valueList="conItem.valueList"
                                 :attrData="getAttrById(conItem.id)"
                                 @setData="setAttrValue(conItem, arguments[0])"
                               ></AttrSearcher>
                               <TsFormSelect
-                                v-if="conItem.type == 'relfrom' || conItem.type == 'relto'"
+                                v-if="conItem.type === 'relfrom' || conItem.type === 'relto'"
                                 v-bind="getRelSelectConfig(conItem.id)"
                                 :value="conItem.valueList"
                                 :transfer="true"
@@ -97,10 +108,10 @@
                             </Col>
                             <Col span="2">
                               <div class="btn-group text-tip">
-                                <span class="tsfont-plus mr-xs" style="cursor:pointer" @click="addCondition(conditionGroup)"></span>
+                                <span class="tsfont-plus mr-xs" style="cursor: pointer" @click="addCondition(conditionGroup)"></span>
                                 <span
                                   v-if="conditionGroup.conditionList.length > 1"
-                                  style="cursor:pointer"
+                                  style="cursor: pointer"
                                   class="tsfont-minus"
                                   @click="delCondition(conditionGroup, conditionIndex)"
                                 ></span>
@@ -154,7 +165,7 @@
               </TsForm>
             </div>
           </div>
-          <Divider v-if="groupData" plain style="font-size:13px">
+          <Divider v-if="groupData" plain style="font-size: 13px">
             <a class="tsfont-plus" href="javascript:void(0)" @click="addCi()">{{ $t('dialog.title.addtarget', { target: $t('page.model') }) }}</a>
           </Divider>
         </div>
@@ -170,9 +181,9 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    AttrSearcher: resolve => require(['../cientity/attr-searcher.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    AttrSearcher: () => import('../cientity/attr-searcher.vue')
   },
   props: {
     id: { type: Number }
@@ -184,6 +195,7 @@ export default {
       ciMap: {},
       attrMap: {},
       relMap: {},
+      globalMap: {},
       joinTypeList: [
         {
           text: this.$t('page.and'),
@@ -240,9 +252,11 @@ export default {
         type: {
           type: 'radio',
           label: this.$t('page.type'),
+          desc: this.$t('term.cmdb.grouptypedescreadonly') + this.$t('term.cmdb.grouptypedescmaintain') + this.$t('term.cmdb.grouptypedescautoexec'),
           dataList: [
             { value: 'readonly', text: this.$t('page.readonly') },
-            { value: 'maintain', text: this.$t('page.maintain') }
+            { value: 'maintain', text: this.$t('page.maintain') },
+            { value: 'autoexec', text: this.$t('term.cmdb.autoexec') }
           ],
           validateList: ['required'],
           onChange: value => {
@@ -296,6 +310,14 @@ export default {
           this.isLoading = false;
           this.groupData = res.Return;
           for (let key in this.formConfig) {
+            //系统配置-》配置信息管理 is.resourcecenter.auth 控制是否显示 “操作类”
+            if (key === 'type' && this.groupData.isResourcecenterAuth !== '1') {
+              var typeDataList = this.formConfig[key].dataList.filter(item => {
+                return item.value !== 'autoexec';
+              });
+              this.formConfig[key].dataList = typeDataList;
+              this.formConfig[key].desc = this.$t('term.cmdb.grouptypedescreadonly') + this.$t('term.cmdb.grouptypedescmaintain');
+            }
             this.formConfig[key].value = this.groupData[key];
           }
           if (this.groupData.ciGroupList && this.groupData.ciGroupList.length > 0) {
@@ -307,6 +329,36 @@ export default {
       } else {
         this.$set(this.groupData, 'ciGroupList', []);
       }
+    },
+    async getGlobalAttrByCiId(ciId) {
+      let globalAttrList;
+      await this.$api.cmdb.ci.getGlobalAttrByCiId(ciId, { isActive: 1 }).then(res => {
+        globalAttrList = res.Return;
+      });
+      globalAttrList.forEach(attr => {
+        attr.expressionList = [
+          {
+            text: this.$t('term.expression.notlike'),
+            value: 'notlike'
+          },
+          {
+            text: this.$t('term.expression.like'),
+            value: 'like'
+          },
+          {
+            text: this.$t('term.expression.empty'),
+            value: 'is-null'
+          },
+          {
+            text: this.$t('term.expression.notempty'),
+            value: 'is-not-null'
+          }
+        ];
+        if (!this.globalMap['global_' + attr.id]) {
+          this.$set(this.globalMap, 'global_' + attr.id, attr);
+        }
+      });
+      return globalAttrList;
     },
     async getAttrByCiId(ciId) {
       if (ciId) {
@@ -325,7 +377,7 @@ export default {
     async getRelByCiId(ciId) {
       if (ciId) {
         let relList;
-        await this.$api.cmdb.ci.getRelByCiId(ciId, {needAction: true}).then(res => {
+        await this.$api.cmdb.ci.getRelByCiId(ciId, { needAction: true }).then(res => {
           relList = res.Return;
         });
         relList.forEach(rel => {
@@ -341,6 +393,8 @@ export default {
         return this.attrMap[condition.id].expressionList;
       } else if ((condition.type == 'relfrom' || condition.type == 'relto') && this.relMap[condition.id]) {
         return this.relMap[condition.id].expressionList;
+      } else if (condition.type === 'global' && this.globalMap[condition.id]) {
+        return this.globalMap[condition.id].expressionList;
       }
       return [];
     },
@@ -366,13 +420,31 @@ export default {
         const elementList = [];
         const attrList = await this.getAttrByCiId(ciId);
         const relList = await this.getRelByCiId(ciId);
+        const globalAttrList = await this.getGlobalAttrByCiId(ciId);
+        globalAttrList.forEach(attr => {
+          elementList.push({
+            typeText: this.$t('term.cmdb.globalattr'),
+            type: 'global',
+            id: 'global_' + attr.id,
+            name: attr.name,
+            label: attr.label,
+            expressionList: attr.expressionList
+          });
+        });
         attrList.forEach(attr => {
-          elementList.push({ type: 'attr', id: 'attr_' + attr.id, name: attr.name, label: attr.label, expressionList: attr.expressionList });
+          elementList.push({
+            typeText: this.$t('page.attribute'),
+            type: 'attr',
+            id: 'attr_' + attr.id,
+            name: attr.name,
+            label: attr.label,
+            expressionList: attr.expressionList
+          });
         });
         relList.forEach(rel => {
           const name = rel.direction == 'from' ? rel.toName : rel.fromName;
           const label = rel.direction == 'from' ? rel.toLabel : rel.fromLabel;
-          elementList.push({ type: 'rel' + rel.direction, id: 'rel' + rel.direction + '_' + rel.id, name: name, label: label, expressionList: rel.expressionList });
+          elementList.push({ typeText: this.$t('page.relation'), type: 'rel' + rel.direction, id: 'rel' + rel.direction + '_' + rel.id, name: name, label: label, expressionList: rel.expressionList });
         });
         this.$set(this.ciMap, 'ci' + ciId, elementList);
       }
@@ -495,6 +567,11 @@ export default {
         return this.ciMap['ci' + ciId];
       };
     },
+    getGlobalAttrById() {
+      return attrId => {
+        return this.globalMap[attrId];
+      };
+    },
     getAttrById() {
       return attrId => {
         return this.attrMap[attrId];
@@ -505,8 +582,22 @@ export default {
         return this.relMap[relId];
       };
     },
+    getGlobalSelectConfig() {
+      return (id) => {
+        const globalAttr = this.getGlobalAttrById(id);
+        if (globalAttr) {
+          return {
+            border: 'border',
+            multiple: true,
+            dataList: globalAttr.itemList,
+            textName: 'value',
+            valueName: 'id'
+          };
+        }
+      };
+    },
     getRelSelectConfig() {
-      return function(id) {
+      return (id) => {
         const rel = this.getRelById(id);
         if (rel) {
           return {

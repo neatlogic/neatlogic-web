@@ -3,7 +3,7 @@
     <TsContain enableCollapse :siderWidth="220">
       <template v-slot:topLeft>
         <div class="action-group">
-          <template v-if="canEditAuth">
+          <template v-if="canExecuteAuth">
             <template v-if="searchParam.appSystemId">
               <template v-if="canAddJob">
                 <span class="tsfont-plus text-action action-item" @click="addJob">{{ $t('term.autoexec.job') }}</span>
@@ -16,23 +16,25 @@
                 >
                   <span class="tsfont-plus text-disabled action-item">{{ $t('term.autoexec.job') }}</span>
                   <ul slot="content">
-                    <li v-if="!selectedApp.isConfig">{{ $t('term.deploy.currentapplynoconfig') }}<span class="text-href" @click="toPipeline()">{{ $t('dialog.title.addtarget', {target: $t('page.config')}) }}</span></li>
-                    <li v-else-if="!selectedApp.isHasModule">{{ $t('term.deploy.applynoconfigmodule') }}<span class="text-href" @click="addModule()">{{ $t('dialog.title.addtarget', {target: $t('page.module')}) }}</span></li>
+                    <li v-if="!selectedApp.isConfig"><span>{{ $t('term.deploy.currentapplynoconfig') }}</span>,<span v-if="canEditAuth" class="text-href" @click="toPipeline()">{{ $t('dialog.title.addtarget', {target: $t('page.config')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.config')})}) }}</span></li>
+                    <li v-else-if="!selectedApp.isHasModule"><span>{{ $t('term.deploy.applynoconfigmodule') }}</span>,<span v-if="canEditAuth" class="text-href" @click="addModule()">{{ $t('dialog.title.addtarget', {target: $t('page.module')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.module')})}) }}</span></li>
                     <li v-else-if="selectedApp.isHasModule && !selectedApp.isHasEnv">
                       <div v-for="item in moduleList" :key="item.id" class="pb-sm">
-                        <span>{{ selectedApp.name }}/{{ item.abbrName }}{{ item.name?'['+item.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>
-                        <span class="text-href" @click="addEnv(item.id)">{{ $t('dialog.title.addtarget', {target: $t('page.environment')}) }}</span>
+                        <span>{{ selectedApp.abbrName }}/{{ item.abbrName }}{{ item.name?'['+item.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>,
+                        <span v-if="canEditAuth" class="text-href" @click="addEnv(item.id)">{{ $t('dialog.title.addtarget', {target: $t('page.environment')}) }}</span>
+                        <span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.environment')})}) }}</span>
                       </div>
                     </li>
                     <li v-else-if="selectedModule && !selectedModule.isHasEnv">
-                      <span>{{ selectedApp.name }}/{{ selectedModule.abbrName }}{{ selectedModule.name?'['+selectedModule.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>
-                      <span class="text-href" @click="addEnv(selectedModule.id)">{{ $t('dialog.title.addtarget', {target: $t('page.environment')}) }}</span>
+                      <span>{{ selectedApp.abbrName }}/{{ selectedModule.abbrName }}{{ selectedModule.name?'['+selectedModule.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>,
+                      <span v-if="canEditAuth" class="text-href" @click="addEnv(selectedModule.id)">{{ $t('dialog.title.addtarget', {target: $t('page.environment')}) }}</span>
+                      <span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.environment')})}) }}</span>
                     </li>
                     <li v-else-if="!hasScenarioAuth">
-                      <div>{{ $t('term.deploy.noconfigscenauth') }}<span class="text-href" @click="openAuthDialog">{{ $t('dialog.title.addtarget', {target: $t('page.auth')}) }}</span></div>
+                      <div><span>{{ $t('term.deploy.noconfigscenauth') }}</span>,<span v-if="canEditAuth" class="text-href" @click="openAuthDialog">{{ $t('dialog.title.addtarget', {target: $t('page.auth')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('page.auth')}) }}</span></div>
                     </li>
                     <li v-else-if="!hasEnvAuth">
-                      <div>{{ $t('term.deploy.noconfigenvauth') }}<span class="text-href" @click="openAuthDialog">{{ $t('dialog.title.addtarget', {target: $t('page.auth')}) }}</span></div>
+                      <div><span>{{ $t('term.deploy.noconfigenvauth') }}</span>,<span v-if="canEditAuth" class="text-href" @click="openAuthDialog">{{ $t('dialog.title.addtarget', {target: $t('page.auth')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('page.auth')}) }}</span></div>
                     </li>
                   </ul>
                 </Tooltip>
@@ -57,7 +59,7 @@
               <span class="tsfont-plus text-disabled action-item">{{ $t('term.autoexec.job') }}</span>
               <ul slot="content">
                 <li v-if="!searchParam.appSystemId">{{ $t('term.deploy.pleaseselectmoduleenvaddjob') }}</li>
-                <li v-else-if="!canEditAuth">{{ $t('term.deploy.noconfigauthtip') }}</li>
+                <li v-else-if="!canEditAuth">{{ $t($t('page.deploynoexecuteconfigauthtip')) }}</li>
               </ul>
             </Tooltip>
           </template>
@@ -221,17 +223,17 @@
 export default {
   name: '',
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    AppModuleList: resolve => require(['../application-config/config/app/app-module-list.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    Liquid: resolve => require(['@/resources/components/SimpleGraph/Liquid.vue'], resolve),
-    // SettingDialog: resolve => require(['./publishing/setting-dialog.vue'], resolve),
-    AppEdit: resolve => require(['@/views/pages/deploy/application-config/config/app/app-edit'], resolve), // 编辑权限
-    ModuleEdit: resolve => require(['@/views/pages/deploy/application-config/config/app/components/module-tree-edit'], resolve), // 编辑模块
-    EnvEdit: resolve => require(['@/views/pages/deploy/application-config/config/app/components/env-tree-edit'], resolve), // 编辑模块
-    LockDialog: resolve => require(['@/views/pages/deploy/job/resourcelock/resourcelock-dialog'], resolve), //资源锁
-    AddBatchJobDialog: resolve => require(['./add-batch-job-dialog.vue'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    AppModuleList: () => import('../application-config/config/app/app-module-list.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue'),
+    // SettingDialog:()=>import('./publishing/setting-dialog.vue'),
+    AppEdit: () => import('@/views/pages/deploy/application-config/config/app/app-edit'), // 编辑权限
+    ModuleEdit: () => import('@/views/pages/deploy/application-config/config/app/components/module-tree-edit'), // 编辑模块
+    EnvEdit: () => import('@/views/pages/deploy/application-config/config/app/components/env-tree-edit'), // 编辑模块
+    LockDialog: () => import('@/views/pages/deploy/job/resourcelock/resourcelock-dialog'), //资源锁
+    AddBatchJobDialog: () => import('./add-batch-job-dialog.vue')
   },
   props: {},
   data() {
@@ -692,6 +694,13 @@ export default {
         return config;
       };
     },
+    canExecuteAuth() {
+      // 编辑执行权限
+      if ((this.selectedApp && this.selectedApp.isHasAllAuthority) || (this.authList.includes('operation#edit') || this.authList.includes('operation#execute') || this.authList.includes('operation#all'))) {
+        return true;
+      }
+      return false;
+    },
     canEditAuth() {
       // 编辑配置权限
       if ((this.selectedApp && this.selectedApp.isHasAllAuthority) || (this.authList.includes('operation#edit') || this.authList.includes('operation#all'))) {
@@ -724,7 +733,7 @@ export default {
       // 创建作业
       // 第一种情况：管理员权限+有模块和环境层
       // 第二种情况：编辑配置权限+环境权限+场景权限+有模块和环境层
-      if (((this.authList.includes('operation#edit') || this.authList.includes('operation#all')) && this.hasEnvAuth && this.hasScenarioAuth && this.hasConfigInfo) || ((this.selectedApp && this.selectedApp.isHasAllAuthority) && this.hasConfigInfo)) {
+      if (((this.authList.includes('operation#execute') || this.authList.includes('operation#edit') || this.authList.includes('operation#all')) && this.hasEnvAuth && this.hasScenarioAuth && this.hasConfigInfo) || ((this.selectedApp && this.selectedApp.isHasAllAuthority) && this.hasConfigInfo)) {
         return true;
       }
       return false;

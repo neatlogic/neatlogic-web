@@ -85,7 +85,8 @@
                   </span>
                 </div>
                 <div class="padding-sm" style="word-break: break-all; white-space: normal">
-                  <span class="tsfont-setting cursor text-href" @click="editStatusRelConfig(statusrel)">{{ $t('page.setting') }}</span>
+                  <!-- 设置先注释，因为属性下拉列表，迭代属性依赖项目Id才能获取数据， 目录属性依赖应用Id才能获取数据-->
+                  <!-- <span class="tsfont-setting cursor text-href" @click="editStatusRelConfig(statusrel)">{{ $t('page.setting') }}</span> -->
                   <span v-if="getRequiredAttrList(statusrel).length > 0">
                     <Divider type="vertical" />
                     <span class="text-grey mr-sm">{{ $t('term.rdm.requiredattribute') }}</span>
@@ -122,13 +123,13 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    StatusEditDialog: resolve => require(['@/views/pages/rdm/template/edittab/components/app-status-edit-dialog.vue'], resolve),
-    AppStatusRelConfigDialog: resolve => require(['@/views/pages/rdm/template/edittab/components/app-statusrel-config-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    StatusEditDialog: () => import('@/views/pages/rdm/template/edittab/components/app-status-edit-dialog.vue'),
+    AppStatusRelConfigDialog: () => import('@/views/pages/rdm/template/edittab/components/app-statusrel-config-dialog.vue')
   },
   props: {
-    statusList: { type: Array },
+    statusList: { type: Array, default: () => { return []; } },
     statusRelList: { type: Array }
   },
   data() {

@@ -3,7 +3,16 @@
     <ul class="pt-nm pl-nm">
       <li v-if="hasAutoConfig && hasEditConfigAuth" class="tsfont-edit text-href" @click="editAutoConfig">{{ $t('page.edit') }}</li>
       <template v-else>
-        <li v-if="!hasEditConfigAuth">{{ $t('term.deploy.noconfigauthtip') }}</li>
+        <Tooltip
+          max-width="400"
+          placement="right"
+          transfer
+        >
+          <span class="tsfont-edit text-disabled action-item">{{ $t('page.edit') }}</span>
+          <ul slot="content">
+            <li>{{ $t('term.deploy.noconfigauthtip') }}</li>
+          </ul>
+        </Tooltip>
       </template>
     </ul>
     <div v-if="hasAutoConfig" :class="hasAutoConfig ? 'padding': ''">
@@ -14,7 +23,8 @@
         @changePageSize="changePageSizeAutoConfig"
       >
         <template slot="value" slot-scope="{row}">
-          <span v-if="row.type==='password'">******</span>
+          <span v-if="row.type==='password' && row.value">******</span>
+          <span v-else-if="row.type==='password' && !row.value">{{ $t('page.settonull') }}</span>
           <span v-else>{{ row.hasOwnProperty('value') && !row.value ? $t('page.settonull') :(row.value || '-') }}</span>
         </template>
       </TsTable>
@@ -57,8 +67,10 @@
     <EnvAutoconfigEdit
       v-if="isShowEnvEdit"
       :isEdit="hasAutoConfig"
+      :tableData="tableData"
       :params="params"
       @close="closeAutoConfigEdit"
+      @save="saveAutoConfig"
     ></EnvAutoconfigEdit>
     <EnvAutoconfigInstanceDifferenceEdit
       v-if="isShowEnvDifferenceEdit"
@@ -72,9 +84,9 @@
 export default {
   name: '', // 配置文件适配列表
   components: {
-    EnvAutoconfigEdit: resolve => require(['./env-autoconfig-edit'], resolve),
-    EnvAutoconfigInstanceDifferenceEdit: resolve => require(['./env-autoconfig-instance-difference-edit'], resolve), // 添加实例差异
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    EnvAutoconfigEdit: () => import('./env-autoconfig-edit'),
+    EnvAutoconfigInstanceDifferenceEdit: () => import('./env-autoconfig-instance-difference-edit'), // 添加实例差异
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
     params: {
@@ -103,7 +115,7 @@ export default {
         {
           title: this.$t('page.variablename'),
           key: 'key'
-        },        
+        },
         {
           title: this.$t('page.type'),
           key: 'typeText'
@@ -112,7 +124,11 @@ export default {
           title: this.$t('page.variablevalue'),
           key: 'value'
         }
-      ]
+      ],
+      tableData: {
+        hideAction: false,
+        tbodyList: []
+      } //配置文件适配的变量
     };
   },
   beforeCreate() {},
@@ -174,6 +190,17 @@ export default {
           } else {
             this.hasAutoConfig = false;
           }
+          //
+          this.tableData.tbodyList = [];
+          returnData.envAutoConfigList && returnData.envAutoConfigList.forEach((v) => {
+            this.tableData.tbodyList.push({
+              key: v.key,
+              type: v.type,
+              value: v.hasOwnProperty('value') ? v.value : '',
+              isEmpty: (!v.hasOwnProperty('value') || (v.value == '')) ? 1 : 0, // 没有value的属性，或者为空字符串，设为空打开
+              delOperation: ''
+            });
+          });
         }
       });
     },
@@ -181,7 +208,7 @@ export default {
       if (item) {
         let params = {
           appSystemId: item.appSystemId,
-          appModuleId: item.appModuleId, 
+          appModuleId: item.appModuleId,
           envId: item.envId,
           instanceId: item.instanceId
         };
@@ -214,6 +241,14 @@ export default {
       if (item) {
         return item.instanceIp ? (item.instancePort ? (item.instanceName ? `${item.instanceIp}:${item.instancePort}[${item.instanceName}]` : `${item.instanceIp}:${item.instancePort}`) : item.instanceIp) : '';
       }
+    },
+    saveAutoConfig(params) {
+      this.$api.deploy.applicationConfig.saveEnvAutoConfig(params).then((res) => {
+        if (res && res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.closeAutoConfigEdit(true);
+        }
+      });
     }
   },
   filter: {},
@@ -229,6 +264,9 @@ export default {
   }
   .autocfg-box {
     height: 148px;
+  }
+  .add-text-box {
+    padding-top: 20px;
   }
 }
 .border-bottom {

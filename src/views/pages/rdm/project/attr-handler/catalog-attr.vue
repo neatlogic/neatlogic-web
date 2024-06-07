@@ -23,7 +23,7 @@ import { AttrBase } from './base-privateattr.js';
 export default {
   name: '',
   components: {
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve)
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree')
   },
   extends: AttrBase,
   props: {},

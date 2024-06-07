@@ -69,6 +69,17 @@
             </div>
           </div>
         </template>
+        <div>
+          <Divider orientation="start">{{ $t('term.deploy.actuatorgroup') }}</Divider>
+          <div>
+            <RunnerGroupSetting
+              ref="runnerGroup"
+              :config="runnerGroup"
+              :isCreateJob="true"
+              :disabled="false"
+            ></RunnerGroupSetting>
+          </div>
+        </div>
       </div>
     </TsContain>
     <Loading v-else></Loading>
@@ -78,12 +89,13 @@
 export default {
   name: '',
   components: {
-    AddTarget: resolve => require(['./runnerDetail/add-target.vue'], resolve),
-    SetParam: resolve => require(['./runnerDetail/param.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    ArgumentParams: resolve => require(['./runnerDetail/argument-params.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
-  
+    AddTarget: () => import('./runnerDetail/add-target.vue'),
+    SetParam: () => import('./runnerDetail/param.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    ArgumentParams: () => import('./runnerDetail/argument-params.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue')
+
   },
   filters: {},
   data() {
@@ -143,7 +155,11 @@ export default {
       jobConfig: {},
       executeNodeConfig: {},
       paramValue: {},
-      tagIdList: null
+      tagIdList: null,
+      runnerGroup: {
+        mappingMode: 'constant',
+        value: '-1'
+      }
     };
   },
   beforeCreate() {
@@ -222,12 +238,14 @@ export default {
       }
     },
     executeAction() {
+      this.$set(this, 'runnerGroup', this.$refs.runnerGroup.save());
       //执行
       let val = {
         operationId: this.id,
         type: this.type,
         param: this.$refs.param.getValue(),
-        name: this.nameForm.itemList.name.value
+        name: this.nameForm.itemList.name.value,
+        runnerGroup: this.runnerGroup
       };
 
       val.executeConfig = this.$refs.executeForm ? this.$refs.executeForm.getFormValue() : {};
@@ -279,7 +297,7 @@ export default {
       await this.$api.cmdb.tagManage.getTag(params).then(res => {
         if (res.Status == 'OK' && res.Return) {
           this.tagIdList = [res.Return.id];
-        } 
+        }
       });
       if (this.$utils.isEmpty(this.tagIdList)) {
         // 如果没有“test”标签，则新建一个“test”标签

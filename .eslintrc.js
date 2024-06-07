@@ -52,7 +52,7 @@ module.exports = {
     'vue/singleline-html-element-content-newline': 'off',
     'vue/multiline-html-element-content-newline': 'off',
     'vue/require-prop-types': 'off',
-    'vue/name-property-casing': ['error', 'PascalCase'],
+    'vue/component-definition-name-casing': ['error', 'PascalCase'],
     'vue/no-v-html': 'off',
     'no-constant-condition': 'off',
     'accessor-pairs': 2,
@@ -270,7 +270,6 @@ module.exports = {
     yoda: [2, 'never'],
     'prefer-const': 0,
     'no-debugger': 0,
-    //'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     'object-curly-spacing': 'off',
     'array-bracket-spacing': [2, 'never']
   }

@@ -64,11 +64,11 @@ export default {
   name: '',
   directives: { imgViewer },
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
-    CommentList: resolve => require(['./comment-list.vue'], resolve),
-    EditCommentDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-comment-dialog.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue'),
+    CommentList: () => import('./comment-list.vue'),
+    EditCommentDialog: () => import('@/views/pages/rdm/project/viewtab/components/edit-comment-dialog.vue')
   },
   props: {
     issueData: { type: Object },
@@ -188,7 +188,7 @@ export default {
 <style lang="less" scoped>
 .comment-grid {
   display: grid;
-  grid-template-columns: 50px auto;
+  grid-template-columns: 50px calc(100% - 50px - 20px); // auto时，由内容撑开，不受父级元素的影响，导致图片没有自适应宽度
   grid-gap: 20px;
 }
 .comment-content {

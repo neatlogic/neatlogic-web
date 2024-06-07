@@ -1,23 +1,9 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div class="tagent-add-wrap">
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span>{{ serviceName }}</span>
@@ -58,8 +44,8 @@
 export default {
   name: '',
   components: {
-    FormServiceEdit: resolve => require(['./form-service-edit.vue'], resolve),
-    NoFormServiceEdit: resolve => require(['./no-form-service-edit.vue'], resolve)
+    FormServiceEdit: () => import('./form-service-edit.vue'),
+    NoFormServiceEdit: () => import('./no-form-service-edit.vue')
   },
   filters: {},
   props: {},

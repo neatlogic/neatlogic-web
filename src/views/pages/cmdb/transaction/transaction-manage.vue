@@ -2,7 +2,7 @@
   <div>
     <TsContain :enableCollapse="true">
       <template v-if="$hasBack()" v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="action-group">
@@ -110,12 +110,12 @@
 export default {
   name: '',
   components: {
-    ciTypeList: resolve => require(['../components/ci/ci-type-list.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    HistoryDetail: resolve => require(['../cientity/history-detail.vue'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve)
+    ciTypeList: () => import('../components/ci/ci-type-list.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    HistoryDetail: () => import('../cientity/history-detail.vue'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   props: {},
   data() {
@@ -240,7 +240,6 @@ export default {
       this.searchTransaction(1);
     },
     async recoverCiEntity(row) {
-      console.log(JSON.stringify(row, null, 2));
       if (!row.authData || !row.authData.cientityrecover) {
         return;
       }
@@ -336,22 +335,22 @@ export default {
           this.isLoading = false;
         });
     },
-    switchCi: function(ciType, ci) {
-      if (this.searchParam.ciId == ci.id) {
+    switchCi(ci) {
+      if (!ci) {
         this.$set(this.searchParam, 'ciId', null);
       } else {
         this.$set(this.searchParam, 'ciId', ci.id);
       }
       this.searchTransaction();
     },
-    getLeftHeight: function() {
+    getLeftHeight() {
       window.setTimeout(() => {
         if (this.$refs.lefter) {
           this.leftHeight = this.$refs.lefter.offsetHeight;
         }
       }, 500);
     },
-    toCiList: function() {
+    toCiList() {
       if (this.fromPath) {
         if (this.fromPath != '/ci-manage' && this.fromPath != '/cientity-manage') {
           this.fromPath = '';

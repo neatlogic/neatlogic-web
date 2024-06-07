@@ -76,13 +76,13 @@
 export default {
   name: '',
   components: {
-    AppInfo: resolve => require(['@/views/pages/deploy/application-config/config/app/app-info.vue'], resolve),
-    ModuleInfo: resolve => require(['@/views/pages/deploy/application-config/config/module/module-info'], resolve),
-    AppEditDialog: resolve => require(['./app-edit-dialog.vue'], resolve),
-    AppModuleEditDialog: resolve => require(['./appmodule-edit-dialog.vue'], resolve),
-    DeleteCiEntityDialog: resolve => require(['../cientity/cientity-delete-dialog.vue'], resolve),
-    AssetsManage: resolve => require(['./assets-manage'], resolve), // 资产清单
-    AppModuleTree: resolve => require(['./app-module-tree'], resolve) // 应用模块树
+    AppInfo: () => import('@/views/pages/deploy/application-config/config/app/app-info.vue'),
+    ModuleInfo: () => import('@/views/pages/deploy/application-config/config/module/module-info'),
+    AppEditDialog: () => import('./app-edit-dialog.vue'),
+    AppModuleEditDialog: () => import('./appmodule-edit-dialog.vue'),
+    DeleteCiEntityDialog: () => import('../cientity/cientity-delete-dialog.vue'),
+    AssetsManage: () => import('./assets-manage'), // 资产清单
+    AppModuleTree: () => import('./app-module-tree') // 应用模块树
   },
   props: {},
   data() {

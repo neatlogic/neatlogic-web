@@ -38,10 +38,10 @@
 export default {
   name: '',
   components: {
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
-    IssueFavorite: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-favorite.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue'),
+    IssueFavorite: () => import('@/views/pages/rdm/project/viewtab/components/issue-favorite.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     issueData: { type: Object },
@@ -50,7 +50,8 @@ export default {
   data() {
     return {
       isEditing: false,
-      issueName: null
+      issueName: null,
+      isSaving: false
     };
   },
   beforeCreate() {},
@@ -78,12 +79,17 @@ export default {
     },
     saveIssue(event) {
       if ((!event || event.keyCode === 13) && this.$refs['input'].valid()) {
-        this.issueData.name = this.issueName;
-        this.$api.rdm.issue.saveIssue(this.issueData).then(res => {
-          if (res.Status === 'OK') {
-            this.isEditing = false;
-          }
-        });
+        if (!this.isSaving) {
+          this.isSaving = true;
+          this.$api.rdm.issue.saveIssue(this.issueData).then(res => {
+            if (res.Status === 'OK') {
+              this.isEditing = false;
+              this.issueData.name = this.issueName;
+            }
+          }).finally(() => {
+            this.isSaving = false;
+          });
+        }
       } else if (event && event.keyCode === 27) {
         this.isEditing = false;
       }

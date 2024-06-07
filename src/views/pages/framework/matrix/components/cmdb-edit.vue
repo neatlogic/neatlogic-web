@@ -13,6 +13,44 @@
           type="type"
           label-postion="right"
         >
+          <template v-slot:attributeMappingList>
+            <div>
+              <div v-for="(conItem, conIdex) in formSetting.attributeMappingList.value" :key="conIdex" class="pb-sm">
+                <TsRow :gutter="0">
+                  <Col span="10">
+                    <div class="pr-sm">
+                      <TsFormSelect
+                        v-model="conItem.label"
+                        :dataList="getDataList(conItem.label)"
+                        :validateList="['required']"
+                        search
+                        transfer
+                        :disabled="!conItem.isNewLabel"
+                      ></TsFormSelect>
+                    </div>
+                  </Col>
+                  <Col span="10">
+                    <div class="pr-sm">
+                      <TsFormInput
+                        v-model="conItem.uniqueIdentifier"
+                        :maxlength="50"
+                        type="text"
+                        :placeholder="$t('page.uniquekey')"
+                        :validateList="['required', 'key-special']"
+                        :disabled="!conItem.isNewUniqueIdentifier"
+                      ></TsFormInput>
+                    </div>
+                  </Col>
+                  <Col span="2">
+                    <div class="btn-group text-tip">
+                      <span class="tsfont-plus" style="padding-right:8px;" @click="addAttr(conItem, conIdex)"></span>
+                      <span v-if="formSetting.attributeMappingList.value.length > 1" class="tsfont-minus" @click="delAttr(conItem, conIdex)"></span>
+                    </div>
+                  </Col>
+                </TsRow>
+              </div>
+            </div>
+          </template>
         </TsForm>
       </div>
     </template>
@@ -22,14 +60,16 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   filters: {},
   props: {
     fileObj: Object,
-    editTsDialogCmdb: Object, 
-    showAttributeLabelList: Array,
+    editTsDialogCmdb: Object,
     modelAttributeList: Array, // 属性
+    attributeMappingList: Array,
     typeView: String,
     ciId: Number
   },
@@ -38,7 +78,7 @@ export default {
     return {
       integrationUuid: null,
       defaultModelAttributeList: _this.$utils.deepClone(_this.modelAttributeList), // 默认模型属性值列表
-      defaultShowAttributeLabelList: _this.$utils.deepClone(_this.showAttributeLabelList), // 默认模型属性选中列表
+      defaultAttributeMappingList: _this.$utils.deepClone(_this.attributeMappingList), // 默认模型属性选中列表
       formSetting: {
         externalId: {
           type: 'select',
@@ -51,29 +91,39 @@ export default {
           disabled: false,
           disabledHoverTitle: '',
           onChange: val => {
-            _this.formSetting.showAttributeLabelList.value = [];
+            let emptyRow = {
+              label: '',
+              uniqueIdentifier: '',
+              isNewLabel: true,
+              isNewUniqueIdentifier: true
+            };
+            let newList = [];
+            newList.push(emptyRow);
+            _this.formSetting.attributeMappingList.value = newList;
             if (val) {
               _this.showAttribute(val);
-            } else {
-              _this.formSetting.showAttributeLabelList.dataList = [];
             }
           }
         },
-        showAttributeLabelList: {
-          type: 'select',
-          label: this.$t('term.pbc.modelattribute'),
-          value: _this.showAttributeLabelList,
-          multiple: true,
+        attributeMappingList: {
+          type: 'slot',
+          label: this.$t('page.attribute'),
+          value: _this.attributeMappingList,
           transfer: true,
-          dataList: [],
           width: '100%',
           validateList: ['required']
         }
-      }
+      },
+      cmdbCiEntityAttrList: []
     };
   },
   beforeCreate() {},
   async created() {
+    this.attributeMappingList.forEach(item => {
+      if (item.uniqueIdentifier.length == 0) {
+        this.$set(item, 'isNewUniqueIdentifier', true);
+      }
+    });
     this.cmdbList();
     if (!this.$utils.isEmptyObj(this.fileObj) && this.fileObj.uuid) {
       let isDisabled = await this.$frameworkUtils.isDependency(this.fileObj.uuid, 'matrix');
@@ -107,9 +157,11 @@ export default {
             let resData = res.Return.tbodyList;
             let newData = [];
             resData.forEach(v => {
-              newData.push({text: v.name, value: v.label});
+              if (v.label) {
+                newData.push({text: v.name, value: v.label});
+              }
             });
-            this.formSetting.showAttributeLabelList.dataList = newData;
+            this.cmdbCiEntityAttrList = newData;
           }
         })
         .catch(error => {
@@ -152,13 +204,15 @@ export default {
       let delAttrList = []; // 删除属性列表
       let delModelAttributeList = []; // 删除模型属性列表
       let ajaxCount = 0;
-      let showAttributeLabelList = this.formSetting.showAttributeLabelList.value || []; // 当前属性模型值
-      delModelAttributeList = showAttributeLabelList && showAttributeLabelList.filter((item) => {
-        return this.defaultShowAttributeLabelList.includes(item);
+      let attributeMappingList = this.formSetting.attributeMappingList.value || []; // 当前属性模型值
+      let defaultAttributeMappingLabelList = this.defaultAttributeMappingList.map(item => item.label);
+      delModelAttributeList = attributeMappingList && attributeMappingList.filter((item) => {
+        return defaultAttributeMappingLabelList.includes(item.label);
       });
-      if (delModelAttributeList.length < this.defaultShowAttributeLabelList.length) {
+      if (delModelAttributeList.length < this.defaultAttributeMappingList.length) {
+        let delModelAttributeLabelList = delModelAttributeList.map(item => item.label);
         delAttrList = this.defaultModelAttributeList && this.defaultModelAttributeList.filter((item) => {
-          return item.label != 'const_id' && !delModelAttributeList.includes(item.label);
+          return item.label != 'const_id' && !delModelAttributeLabelList.includes(item.label);
         });
         return new Promise((resolve, reject) => {
           delAttrList.forEach(async(item) => {
@@ -189,6 +243,32 @@ export default {
     },
     async okEditTsDialog() {
       if (this.$refs.mainForm.valid()) {
+        if (this.formSetting.attributeMappingList.value && this.formSetting.attributeMappingList.value.length > 0) {
+          let attributeMappingList = this.formSetting.attributeMappingList.value;
+          for (let i = 0; i < attributeMappingList.length; i++) {
+            let attributeMapping = attributeMappingList[i];
+            if (!attributeMapping.label) {
+              this.$Notice.error({
+                title: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.attribute') }),
+                duration: 1.5
+              });
+              return false;
+            }
+            if (!attributeMapping.uniqueIdentifier) {
+              this.$Notice.error({
+                title: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.uniquekey')}),
+                duration: 1.5
+              });
+              return false;
+            }
+          }
+        } else {
+          this.$Notice.error({
+            title: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.attribute') }),
+            duration: 1.5
+          });
+          return false;
+        }
         let datas = this.fileObj;
         let data = {
           ciId: null,
@@ -200,13 +280,17 @@ export default {
           name: datas.name,
           uuid: datas.uuid,
           config: {
-            showAttributeLabelList: []
+            attributeMappingList: []
           },
           type: datas.type
         };
         data.ciId = this.formSetting.externalId.value;
+        let attributeMappingList = [];
+        this.formSetting.attributeMappingList.value.forEach(item => {
+          attributeMappingList.push({label: item.label, uniqueIdentifier: item.uniqueIdentifier});
+        });
         data.config = {
-          showAttributeLabelList: this.formSetting.showAttributeLabelList.value
+          attributeMappingList: attributeMappingList
         };
         if (this.formSetting.externalId.disabled) {
           let isDependency = await this.isDependency();
@@ -215,7 +299,7 @@ export default {
             return false;
           }
         }
-       
+
         this.$api.framework.matrix.saveExternal(data).then(res => {
           if (res.Status == 'OK') {
             this.editTsDialogCmdb.isShow = false;
@@ -226,9 +310,36 @@ export default {
           this.$Notice.error({ title: error.data.Message });
         });
       }
+    },
+    addAttr(conItem, conIdex) {
+      let emptyRow = {
+        label: '',
+        uniqueIdentifier: '',
+        isNewLabel: true,
+        isNewUniqueIdentifier: true
+      };
+      this.formSetting.attributeMappingList.value.splice(conIdex + 1, 0, emptyRow);
+    },
+    delAttr(conItem, conIdex) {
+      this.$delete(this.formSetting.attributeMappingList.value, conIdex);
     }
   },
-  computed: {},
+  computed: {
+    getDataList() {
+      return (label) => {
+        let list = this.$utils.deepClone(this.cmdbCiEntityAttrList);
+        list.forEach(item => {
+          let find = this.formSetting.attributeMappingList.value.find(v => v.label === item.value && v.label !== label);
+          if (find) {
+            this.$set(item, '_disabled', true);
+          } else {
+            this.$set(item, '_disabled', false);
+          }
+        });
+        return list;
+      };
+    }
+  },
   watch: {}
 };
 </script>

@@ -36,8 +36,8 @@ import * as handlers from '@/views/pages/rdm/project/attr-config/index.js';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     ...handlers
   },
   props: {
@@ -142,11 +142,14 @@ export default {
     setConfig: function(data) {
       this.$set(this.attrData, 'config', data);
     },
-    changeAttrType(type) {
+    changeAttrType(type, item) {
       if (this.handlers[type + 'attr']) {
         this.formConfig.config.isHidden = false;
       } else {
         this.formConfig.config.isHidden = true;
+      }
+      if (item) {
+        this.attrData.typeText = item.text;
       }
     },
     close() {

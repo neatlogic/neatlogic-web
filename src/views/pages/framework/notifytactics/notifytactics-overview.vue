@@ -2,7 +2,7 @@
   <div class="notifytactics-overview">
     <TsContain v-if="handlerConfig" hideHeader>
       <div slot="content">
-        <Tabs 
+        <Tabs
           :value="handlerConfig.value"
           class="block-tabs"
           :animated="false"
@@ -105,7 +105,7 @@
       </template>
       <TsForm ref="addTacticsForm" :itemList="tacticsForm" type="type"></TsForm>
     </TsDialog>
-    <UploadDialog 
+    <UploadDialog
       ref="uploadDialog"
       :actionUrl="actionUrl"
       :formatList="formatList"
@@ -133,18 +133,18 @@ import TimingTask from './tacticsedit/timing-task';
 export default {
   name: 'NotifytacticsOverview',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     TimingTask
   },
   props: {},
   data() {
     return {
-      handler: null, 
+      handler: null,
       actionUrl: BASEURLPREFIX + '/api/binary/notify/policy/import', //导入地址
       formatList: ['pak'], //导入文件格式
       frameworkShow: true,
@@ -169,7 +169,7 @@ export default {
           maxlength: 50,
           width: '100%',
           label: this.$t('page.name'),
-          validateList: ['required', 'name-special', { 
+          validateList: ['required', 'name-special', {
             name: 'searchUrl',
             url: 'api/rest/notify/policy/save',
             params: (value, rule) => {
@@ -238,7 +238,7 @@ export default {
             if (_this.handler) {
               handlerList.forEach(item => {
                 if (item.children && item.children.length > 0) {
-                  let newObj = item.children.find(d => 
+                  let newObj = item.children.find(d =>
                     d.value == _this.handler
                   );
                   item.children.forEach(j => {
@@ -249,7 +249,7 @@ export default {
                       }
                     }
                   });
-                  
+
                   if (newObj) {
                     _this.handlerConfig = item;
                   }

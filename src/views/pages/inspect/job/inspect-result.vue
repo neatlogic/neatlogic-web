@@ -1,24 +1,10 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div>
     <loading :loadingShow="loadingShow" type="fix"></loading>
     <TsContain
       :isSiderHide="isSiderHide"
-      :enableCollapse="true"  
+      :enableCollapse="true"
       border="border"
     >
       <template v-slot:navigation>
@@ -75,7 +61,7 @@
                 <span :class="[row.monitorStatusJson.cssClass, {'background-FATAL': row.monitorStatusJson.value== 'FATAL'}]" class="vertical">{{ row.monitorStatusJson.text }} </span>
                 <span class="text-title">
                   {{ handleTime(row.monitorTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
-                </span> 
+                </span>
               </span>
             </span>
             <span v-else>
@@ -100,7 +86,7 @@
                 <span :class="[row.inspectStatusJson.cssClass, {'background-FATAL': row.inspectStatusJson.value== 'FATAL'}]" class="vertical">{{ row.inspectStatusJson.text }} </span>
                 <span class="text-title">
                   {{ handleTime(row.inspectTime) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
-                </span> 
+                </span>
               </span>
             </span>
             <span v-else>
@@ -123,13 +109,13 @@
 export default {
   name: 'InspectResult', // 巡检结果
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue')
   },
   filters: {},
-  props: {}, 
+  props: {},
   data() {
     return {
       loadingShow: true, // 加载中动画
@@ -285,7 +271,7 @@ export default {
           {
             title: this.$t('page.name'),
             key: 'name'
-          },          
+          },
           {
             title: this.$t('page.description'),
             key: 'description'
@@ -306,8 +292,8 @@ export default {
             title: this.$t('term.inspect.iplist'),
             key: 'allIp',
             type: 'tag',
-            valueKey: 'ip' 
-          },          
+            valueKey: 'ip'
+          },
           {
             title: this.$t('term.autoexec.subordinatedepartment'),
             key: 'bgList',
@@ -335,7 +321,7 @@ export default {
           {
             title: this.$t('term.deploy.maintenancewindow'),
             key: 'maintenanceWindow'
-          },        
+          },
           {
             title: '',
             key: 'action'
@@ -346,7 +332,7 @@ export default {
         currentPage: 1,
         rowNum: null
       }
-    
+
     };
   },
   beforeCreate() {},

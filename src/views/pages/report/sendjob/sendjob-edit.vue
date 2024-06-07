@@ -193,12 +193,12 @@ import * as widgets from '@/views/pages/report/report/paramhandler';
 export default {
   name: 'SendjobEdit',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    Draggable: resolve => require(['vuedraggable'], resolve),
-    ReportMain: resolve => require(['../component/report-main.vue'], resolve),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    Draggable: () => import('vuedraggable'),
+    ReportMain: () => import('../component/report-main.vue'),
     ...widgets
   },
   data() {
@@ -392,17 +392,6 @@ export default {
       const reportParams = report.paramList.reduce(
         (result, { name, value }) => {
           if (![undefined, null, ''].includes(value)) {
-            if (value.indexOf('&=&') > -1) {
-              value = value.split('&=&')[0];
-            } else if (value instanceof Array) {
-              let valueList = [];
-              value.forEach(item => {
-                if (item.indexOf('&=&') > -1 && item.split('&=&')) {
-                  valueList.push(item.split('&=&')[0]);
-                }
-              });
-              value = valueList && valueList.length > 0 ? valueList : value;
-            }
             result[name] = value;
           }
           return result;
@@ -455,7 +444,7 @@ export default {
         paramList &&
           paramList.forEach(({ name, value }) => {
             formValue[name] = value;
-            condition[name] = this.handleSpecial(value);
+            condition[name] = value;
           });
         return { id, formValue, condition };
       });
@@ -490,22 +479,6 @@ export default {
         this.jobConfig.reportList.push(res.Return);
       });
       this.isAddDialogShow = false;
-    },
-    handleSpecial(value) {
-      // 处理特殊字符 &=&
-      let currentValue = this.$utils.deepClone(value);
-      let valueList = [];
-      if (currentValue && typeof currentValue == 'string' && currentValue.includes('&=&')) {
-        currentValue = currentValue.split('&=&')[0];
-      } else if (currentValue && currentValue instanceof Array) {
-        currentValue.forEach(item => {
-          if (item.indexOf('&=&') > -1 && item.split('&=&')) {
-            valueList.push(item.split('&=&')[0]);
-          }
-        });
-        currentValue = valueList && valueList.length > 0 ? valueList : currentValue;
-      }
-      return currentValue;
     },
     showAddDialog() {
       this.isAddDialogShow = true;

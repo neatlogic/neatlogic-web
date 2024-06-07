@@ -15,7 +15,7 @@
           :label="data[valueName]"
           :disabled="disabled || data.disabled || readonly"
           :class="{ 'tsform-radio-readonly': readonly }"
-          @click.native="cancelRadio(data[valueName])"
+          @click.native="cancelRadio(data[valueName], data.disabled)"
         >
           <span>
             <slot name="label" :node="data" :index="index">{{ data[textName] || '-' }}</slot>
@@ -80,7 +80,7 @@ export default {
       default: 'text'
     },
     value: {
-      type: [String, Number, Boolean],
+      type: [String, Number, Boolean, Object],
       default: ''
     }, 
     url: {
@@ -121,13 +121,14 @@ export default {
   },
   data() {
     return {
-      currentValue: this.value,
+      currentValue: '',
       validMesage: this.errorMessage || '',
       nodeList: this.url ? [] : this.dataList,
       currentValidList: this.filterValid(this.validateList) || []
     };
   },
   created() {
+    this.currentValue = this.handleCurrentValue(this.value);
     this.setSelectList();
     this.initDataListByUrl();
   },
@@ -189,7 +190,7 @@ export default {
       }
     },
     onChangeValue() {
-      let isSame = this.value == this.currentValue;
+      let isSame = this.$utils.isSame(this.value, this.currentValue); // 使用isSame比较两个字符串是否一致，避免 '' == 0 为true情况，导致没有emit on-change方法，form表单获取不到值问题
       let value = this.currentValue;
       //20210129_zqp_新增支持on-change方法第二个参数获取选中的选项的完整数据
       let selectedItem = [];
@@ -197,6 +198,9 @@ export default {
         selectedItem = this.nodeList.find(n => {
           return n[this.valueName] === value;
         });
+      }
+      if (this.isCustomValue) {
+        value = selectedItem || null;
       }
       this.$emit('update:value', value);
       this.$emit('change', value, selectedItem || null);
@@ -229,7 +233,11 @@ export default {
         }, 100);
       }
     },
-    cancelRadio(label) { //取消勾选
+    cancelRadio(label, disabled) { //取消勾选
+      if (disabled || this.disabled) {
+        // 禁用之后按钮不可点击
+        return false;
+      }
       if (this.allowToggle && this.currentValue == label) {
         this.currentValue = null;
         this.$emit('update:value', this.currentValue);
@@ -245,14 +253,15 @@ export default {
       return reslutClass;
     },
     getText() {
-      let node = this.nodeList.find(item => item[this.valueName] == this.value);
+      let node = this.nodeList.find(item => item[this.valueName] == this.currentValue);
       return node && node[this.textName] ? node[this.textName] : '-';
     }
   },
   watch: {
     value(newValue, oldValue) {
-      if (newValue != this.currentValue) {
-        this.currentValue = newValue;
+      let isSame = this.$utils.isSame(this.handleCurrentValue(newValue), this.currentValue);
+      if (!isSame) {
+        this.currentValue = this.handleCurrentValue(newValue);
         this.validMesage = '';
         this.setSelectList();
         this.handleEchoFailedDefaultValue();

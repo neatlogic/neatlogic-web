@@ -10,7 +10,7 @@
             <Tag>{{ row.invokeCount }}</Tag>
           </template>
           <template slot="name" slot-scope="{ row }">
-            <span class="text-href" @click.stop="editRelType(row.id)">{{ row.name }}</span>
+            {{ row.name }}
           </template>
           <template v-slot:isShowInTopo="{ row }">
             <span v-if="row.isShowInTopo" class="text-success">{{ $t('page.yes') }}</span>
@@ -19,6 +19,7 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
+                <li class="tsfont-edit" @click="editRelType(row.id)">{{ $t('page.edit') }}</li>
                 <li
                   class="tsfont-trash-o"
                   :class="row.invokeCount > 0 ? 'disable' : ''"
@@ -38,8 +39,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    RelTypeEdit: resolve => require(['./reltype-edit.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    RelTypeEdit: () => import('./reltype-edit.vue')
   },
   props: {},
   data() {

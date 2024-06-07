@@ -4,11 +4,11 @@
     <TsContain
       v-if="dataConfig"
       :rightWidth="280"
-      :leftWidth="230"
+      :siderWidth="230"
       enableDivider
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/action-manage')">{{ $getFromPage('router.autoexec.combinationtool') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:top>
         <TsRow>
@@ -117,10 +117,10 @@
         </TsRow>
       </template>
       <!-- <template v-slot:topRight>
-    
+
       </template> -->
       <!-- 左侧步骤列表 -->
-      <template v-slot:left>
+      <template v-slot:sider>
         <StepList
           :id="id"
           v-model="currentStep"
@@ -171,6 +171,7 @@
             <div class="setting-main bg-op block-large">
               <BasicInfo
                 :dataConfig="basicInfo"
+                :isResourcecenterAuth="editBasicInfoForm.opType.isHidden"
               ></BasicInfo>
               <!-- 定时作业 -->
               <TimeJobClickText
@@ -310,20 +311,20 @@ export default {
     StepConfig,
     ActionValid,
     TimeJobClickText,
-    // TimeSetting: resolve => require(['./actionDetail/time-setting.vue'], resolve),
-    ParamsSetting: resolve => require(['./actionDetail/params-setting.vue'], resolve),
-    ExecuteSetting: resolve => require(['./actionDetail/execute-setting.vue'], resolve),
-    RecordList: resolve => require(['@/views/pages/autoexec/manage/action/record-list'], resolve),
+    // TimeSetting:()=>import('./actionDetail/time-setting.vue'),
+    ParamsSetting: () => import('./actionDetail/params-setting.vue'),
+    ExecuteSetting: () => import('./actionDetail/execute-setting.vue'),
+    RecordList: () => import('@/views/pages/autoexec/manage/action/record-list'),
     BasicInfo,
-    VersionList: resolve => require(['./actionDetail/version-list.vue'], resolve),
-    NoticeSetting: resolve => require(['@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    StepGroup: resolve => require(['./actionDetail/step-group.vue'], resolve),
-    ScenarioSetting: resolve => require(['./actionDetail/scenario-setting.vue'], resolve),
-    ProfileSetting: resolve => require(['./actionDetail/profile-setting.vue'], resolve),
-    ExpiredReasonAlert: resolve => require(['./expired-reason-alert'], resolve),
-    TestDialog: resolve => require(['./actionDetail/test-dialog.vue'], resolve)
+    VersionList: () => import('./actionDetail/version-list.vue'),
+    NoticeSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    StepGroup: () => import('./actionDetail/step-group.vue'),
+    ScenarioSetting: () => import('./actionDetail/scenario-setting.vue'),
+    ProfileSetting: () => import('./actionDetail/profile-setting.vue'),
+    ExpiredReasonAlert: () => import('./expired-reason-alert'),
+    TestDialog: () => import('./actionDetail/test-dialog.vue')
   },
   filters: {},
   mixins: [actionMixins],
@@ -334,6 +335,7 @@ export default {
       showBasicInfoEditDialog: false,
       editBasicInfo: {
         name: '',
+        opType: 'readonly',
         typeId: '',
         owner: '',
         viewAuthorityList: '',
@@ -357,6 +359,18 @@ export default {
           maxlength: 50,
           label: this.$t('page.name'),
           validateList: ['required', 'name-special', { name: 'searchUrl', url: 'api/rest/autoexec/combop/basic/info/save', key: 'name' }]
+        },
+        opType: {
+          type: 'radio',
+          label: this.$t('page.actiontype'),
+          value: '',
+          dataList: [],
+          validateList: ['required'],
+          onChange: (value, opt) => {
+            _this.opTypeName = opt.text;
+          },
+          tooltip: this.$t('page.autoexeccombopeditinfooptypetip'),
+          isHidden: true
         },
         typeId: {
           type: 'select',
@@ -483,7 +497,8 @@ export default {
       loading: true,
       isShowTestDialog: false,
       configExpired: 0,
-      configExpiredReason: {}
+      configExpiredReason: {},
+      opType: 'readonly' //操作类型
     };
   },
   beforeCreate() {},
@@ -493,7 +508,7 @@ export default {
     }
     if (this.$route.query.versionId) {
       this.versionId = parseInt(this.$route.query.versionId);
-    } 
+    }
     if (!this.versionId) {
       let versionId = sessionStorage.getItem('action_versionId');
       this.versionId = versionId ? parseInt(versionId) : null;
@@ -501,6 +516,7 @@ export default {
     if (this.$route.query.versionStatus) {
       this.versionStatus = this.$route.query.versionStatus;
     }
+    this.getOpType();
   },
   beforeMount() {},
   async mounted() {
@@ -560,8 +576,11 @@ export default {
           this.name = result.name;
           this.isActive = result.isActive;
           this.operationType = result.operationType;
+          this.isResourcecenterAuth = result.isResourcecenterAuth;
+          this.$set(this.editBasicInfoForm.opType, 'isHidden', result.isResourcecenterAuth === '0');
           this.$set(this.basicInfo, 'name', result.name);
           this.$set(this.basicInfo, 'typeName', result.typeName);
+          this.$set(this.basicInfo, 'opTypeName', result.opTypeName);
           this.$set(this.basicInfo, 'owner', result.owner);
           this.$set(this.basicInfo, 'viewAuthorityList', result.viewAuthorityList);
           this.$set(this.basicInfo, 'editAuthorityList', result.editAuthorityList);
@@ -571,6 +590,8 @@ export default {
           this.activeVersionId = result.activeVersionId;
           this.versionName = result.name;
           this.versionId = result.specifyVersionId;
+          this.opType = result.opType;
+          mutations.setOpType(result.opType);
         }
       });
       if (this.versionId != null) {
@@ -719,6 +740,7 @@ export default {
               }
               this.versionId = res.Return.id;
               canSave = true; //保存成功之后才可以进行下一步，在路由那里判断
+              this.$route.meta.isSkip = true;
               this.$router.push({
                 path: '/action-detail',
                 query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
@@ -758,7 +780,7 @@ export default {
         } else {
           title = this.$t('dialog.content.deleteconfirm', {target: _this.version});
         }
-        
+
         content = '';
       } else {
         title = this.$t('dialog.content.deleteconfirm', {target: _this.$t('term.autoexec.customtool')});
@@ -774,7 +796,8 @@ export default {
               this.$Message.success(this.$t('message.deletesuccess'));
               if (versionCount > 1) {
                 this.versionStatus = 'passed';
-                this.$router.replace({
+                this.$route.meta.isSkip = true;
+                this.$router.push({
                   path: '/action-detail',
                   query: { id: this.id, versionStatus: this.versionStatus }
                 });
@@ -826,7 +849,8 @@ export default {
         let data = this.getData();
         if (this.$utils.isSame(this.initData, data)) {
           sessionStorage.setItem('action_versionId', this.versionId);
-          this.$router.replace({
+          this.$route.meta.isSkip = true;
+          this.$router.push({
             path: '/runner-detail',
             query: {
               actionId: this.id,
@@ -849,7 +873,8 @@ export default {
           this.$Message.success(this.$t('message.executesuccess'));
           this.versionStatus = 'rejected';
           this.versionBasicInfo.status = 'rejected';
-          this.$router.replace({
+          this.$route.meta.isSkip = true;
+          this.$router.push({
             path: '/action-detail',
             query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
           });
@@ -858,6 +883,7 @@ export default {
     },
     cancelPassVersionAction() {
       this.showReleaseNewVersionDialog = false;
+      this.$route.meta.isSkip = true;
       this.$router.push({
         path: '/action-detail',
         query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
@@ -877,6 +903,7 @@ export default {
           this.activeVersionId = this.versionId;
           this.versionBasicInfo.status = 'passed';
           this.versionBasicInfo.isActive = 1;
+          this.$route.meta.isSkip = true;
           this.$router.push({
             path: '/action-detail',
             query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
@@ -894,6 +921,7 @@ export default {
           this.$Message.success(this.$t('message.executesuccess'));
           this.versionStatus = 'draft';
           this.versionBasicInfo.status = 'draft';
+          this.$route.meta.isSkip = true;
           this.$router.push({
             path: '/action-detail',
             query: { id: this.id, versionId: this.versionId, timeStamp: Date.now() }
@@ -1365,8 +1393,11 @@ export default {
       this.$api.autoexec.action.getActionBasicInfo(data).then(res => {
         if (res.Status == 'OK') {
           const result = res.Return;
+          this.$set(this.editBasicInfoForm.opType, 'isHidden', result.isResourcecenterAuth === '0');
+          this.$set(this.editBasicInfo, 'name', result.isResourcecenterAuth);
           this.$set(this.editBasicInfo, 'name', result.name);
           this.$set(this.editBasicInfo, 'typeId', result.typeId);
+          this.$set(this.editBasicInfo, 'opType', result.opType);
           this.$set(this.editBasicInfo, 'owner', result.owner);
           this.$set(this.editBasicInfo, 'viewAuthorityList', result.viewAuthorityList);
           this.$set(this.editBasicInfo, 'editAuthorityList', result.editAuthorityList);
@@ -1388,6 +1419,7 @@ export default {
       }
       this.$set(this.editBasicInfo, 'id', this.id);
       this.$set(this.editBasicInfo, 'typeName', this.typeName);
+      this.$set(this.editBasicInfo, 'opTypeName', this.opTypeName);
       const notifyPolicyConfig = noticeSetting.getData();
       if (notifyPolicyConfig?.policyId) {
         this.editBasicInfo.config.invokeNotifyPolicyConfig = notifyPolicyConfig;
@@ -1396,8 +1428,10 @@ export default {
       }
       this.$api.autoexec.action.saveActionBasicInfo(this.editBasicInfo).then(res => {
         if (res.Status == 'OK') {
+          mutations.setOpType(this.editBasicInfo.opType);
           this.$set(this.basicInfo, 'name', this.editBasicInfo.name);
           this.$set(this.basicInfo, 'typeName', this.editBasicInfo.typeName);
+          this.$set(this.basicInfo, 'opTypeName', this.editBasicInfo.opTypeName);
           this.$set(this.basicInfo, 'owner', this.editBasicInfo.owner);
           this.$set(this.basicInfo, 'viewAuthorityList', this.editBasicInfo.viewAuthorityList);
           this.$set(this.basicInfo, 'editAuthorityList', this.editBasicInfo.editAuthorityList);
@@ -1411,6 +1445,7 @@ export default {
     },
     switchVersion(id, type, versionId) {
       this.versionType = type;
+      this.$route.meta.isSkip = true;
       if (type == 'submitted') {
         this.$router.push({
           path: '/action-detail',
@@ -1444,6 +1479,14 @@ export default {
         });
       }
       this.isShowTestDialog = false;
+    },
+    getOpType() {
+      let data = { enumClass: 'neatlogic.framework.autoexec.constvalue.AutoexecCombopOpType' };
+      this.$api.autoexec.action.getParamsTypeLit(data).then(res => {
+        if (res.Status == 'OK') {
+          this.editBasicInfoForm.opType.dataList = res.Return;
+        }
+      });
     }
   },
   computed: {

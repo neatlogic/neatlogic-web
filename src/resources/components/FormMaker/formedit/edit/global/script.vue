@@ -32,9 +32,9 @@
 <script>
 import TsCodemirror from '@/resources/plugins/TsCodemirror/TsCodemirror.vue';
 export default {
-  name: 'Script',
+  name: '',
   components: {
-    ScriptEdit: resolve => require(['./script/script-edit.vue'], resolve),
+    ScriptEdit: () => import('./script/script-edit.vue'),
     TsCodemirror
   },
   props: {
@@ -77,7 +77,7 @@ export default {
 
   },
   changeFn:function(uuid,val,list,ajax,it){
-    
+
   }
 }`;
         this.scriptsConfig = val || defaultvalue;

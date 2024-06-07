@@ -3,6 +3,50 @@
     <TsDialog v-if="ciData" v-bind="ciDialogConfig" @on-close="close">
       <template v-slot>
         <TsForm ref="ciForm" :item-list="ciFormConfig">
+          <template v-slot:viewXml>
+            <Poptip
+              trigger="hover"
+              placement="right"
+              width="650"
+              :transfer="true"
+            >
+              <a href="javascript:void(0)">{{ $t('page.viewexample') }}</a>
+              <div slot="content" class="api">
+                <pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;ci&gt;
+   &lt;!--模型属性定义，需要SQL语句返回对应列--&gt;
+  &lt;attrs&gt;
+    &lt;attr name="user_id" label="用户id"/&gt;
+    &lt;attr name="user_name" label="用户名"/&gt;
+    &lt;attr name="teamName" label="分组"/&gt;
+  &lt;/attrs&gt;
+  &lt;sql&gt;
+    SELECT
+    &lt;!--必须包含id字段，作为配置项主键--&gt;
+    `u`.`id` AS id,
+    &lt;!--必须包含uuid字段，数据类型是char(32)，作为配置项全局主键--&gt;
+    md5(`u`.`id`) AS uuid,
+    &lt;!--必须包含name字段，作为配置项名称--&gt;
+    `u`.`user_name` AS name,
+    &lt;!--属性列需要在上面attrs中定义才生效--&gt;
+    `u`.`user_id` as user_id,
+    `u`.`user_name` as user_name,
+    group_concat( `t`.`name`) AS teamName
+    FROM
+    `user` `u`
+    LEFT JOIN `user_team` `ut`
+    ON `u`.`uuid` = `ut`.`user_uuid`
+    LEFT JOIN `team` `t`
+    ON `t`.`uuid` = `ut`.`team_uuid`
+    GROUP BY u.uuid
+  &lt;/sql&gt;
+&lt;/ci&gt;
+                    </pre>
+              </div>
+            </Poptip>
+            <TsCodemirror v-model="ciData.viewXml" codeMode="xml"></TsCodemirror>
+          </template>
           <template v-slot:file>
             <div>
               <TsUpLoad
@@ -49,9 +93,9 @@
     group_concat( `t`.`name`) AS teamName
     FROM
     `user` `u`
-    LEFT JOIN `user_team` `ut` 
+    LEFT JOIN `user_team` `ut`
     ON `u`.`uuid` = `ut`.`user_uuid`
-    LEFT JOIN `team` `t` 
+    LEFT JOIN `team` `t`
     ON `t`.`uuid` = `ut`.`team_uuid`
     GROUP BY u.uuid
   &lt;/sql&gt;
@@ -60,7 +104,7 @@
                   </div>
                 </Poptip>
               </div>
-              <div v-if="showFileError" class="form-error-tip">{{ $t('form.placeholder.pleaseupload',{'target':$t('term.cmdb.configfile')}) }}</div>
+              <div v-if="showFileError" class="form-error-tip">{{ $t('form.placeholder.pleaseupload', { target: $t('term.cmdb.configfile') }) }}</div>
             </div>
           </template>
           <template v-slot:icon>
@@ -85,15 +129,16 @@
 </template>
 <script>
 import TsForm from '@/resources/plugins/TsForm/TsForm';
-import menuMinix from '../mixins/index';
+//import menuMinix from '../mixins/index';
 export default {
   name: '',
   components: {
     TsForm,
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    IconDialog: resolve => require(['../common/icon-dialog.vue'], resolve)
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    IconDialog: () => import('../common/icon-dialog.vue'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
-  mixins: [menuMinix],
+  //mixins: [menuMinix],
   props: {
     id: {
       type: Number
@@ -133,7 +178,7 @@ export default {
         {
           name: 'typeId',
           type: 'select',
-          label: this.$t('page.type'),
+          label: this.$t('term.cmdb.cilevel'),
           width: '100%',
           maxlength: 50,
           transfer: true,
@@ -145,6 +190,20 @@ export default {
             this.$set(_this.ciData, 'typeId', name);
           }
         },
+        /* {
+          name: 'catalogId',
+          type: 'tree',
+          label: this.$t('term.cmdb.cidirectory'),
+          width: '100%',
+          transfer: true,
+          url: '/api/rest/cmdb/cicatalog/listtree',
+          validateList: ['required'],
+          valueName: 'id',
+          textName: 'name',
+          onChange: id => {
+            this.$set(_this.ciData, 'catalogId', id);
+          }
+        },*/
         {
           name: 'name',
           type: 'text',
@@ -173,28 +232,46 @@ export default {
           type: 'switch',
           label: this.$t('term.cmdb.virtualci'),
           value: 0,
-          onChange: function(name) {
-            _this.$set(_this.ciData, 'isVirtual', name);
+          isHidden: false,
+          onChange: name => {
+            this.$set(_this.ciData, 'isVirtual', name);
+            for (let k in this.ciFormConfig) {
+              if (this.ciFormConfig[k]._belong === 'realci') {
+                this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual === 1);
+              } else if (this.ciFormConfig[k]._belong === 'virtualci') {
+                this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual !== 1);
+              }
+            }
           }
         },
         {
           _belong: 'virtualci',
+          name: 'viewXml',
+          type: 'slot',
+          isHidden: true,
+          label: this.$t('page.config')
+        },
+        /*{
+          _belong: 'virtualci',
           name: 'file',
           type: 'slot',
+          isHidden: false,
           label: this.$t('term.cmdb.configfile')
-        },
+        },*/
         {
           name: 'parentCiId',
           _belong: 'realci',
-          type: 'tree',
+          type: 'select',
           label: this.$t('page.inherit'),
+          desc: this.$t('term.cmdb.abstractciallowextend'),
           width: '100%',
-          url: 'api/rest/cmdb/ci/listtree',
-          params: { ciId: _this.id, isVirtual: 0 },
-          valueName: 'id',
-          textName: 'label',
+          url: 'api/rest/cmdb/ci/list',
+          params: {
+            excludeCiIdList: !_this.id ? [] : [_this.id],
+            isVirtual: 0,
+            isAbstract: 1
+          },
           transfer: true,
-          showPath: true,
           onChange: name => {
             if (name) {
               this.$set(_this.ciData, 'parentCiId', name);
@@ -214,7 +291,7 @@ export default {
             _this.$set(_this.ciData, 'isAbstract', name);
           }
         },
-        {
+        /*{
           name: 'isMenu',
           type: 'switch',
           label: this.$t('term.cmdb.keymodel'),
@@ -223,9 +300,10 @@ export default {
           onChange: function(name) {
             _this.$set(_this.ciData, 'isMenu', name);
           }
-        },
+        },*/
         {
           name: 'expiredDay',
+          _belong: 'realci',
           type: 'number',
           label: this.$t('term.cmdb.activedate'),
           suffix: this.$t('page.day'),
@@ -260,19 +338,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    setFile: function(fileList) {
+    setFile(fileList) {
       this.ciData.fileId = null;
       fileList.forEach(file => {
         this.ciData.fileId = file.id;
       });
     },
-    saveCi: function() {
+    saveCi() {
       const form = this.$refs['ciForm'];
       if (form.valid()) {
-        if (this.ciData.isVirtual == 1 && !this.ciData.fileId) {
-          this.showFileError = true;
-          return false;
-        }
         if (this.needCheckParentCi && !this.ciData.parentCiId) {
           this.$createDialog({
             title: this.$t('page.warning'),
@@ -319,14 +393,26 @@ export default {
               this.needCheckParentCi = true;
             }
             this.currentIcon = this.ciData.icon;
+
             this.ciFormConfig.forEach(element => {
+              if (element._belong === 'realci') {
+                this.$set(element, 'isHidden', this.ciData.isVirtual === 1);
+              } else if (element._belong === 'virtualci') {
+                this.$set(element, 'isHidden', this.ciData.isVirtual !== 1);
+              }
               element.value = this.ciData[element.name];
               //不允许修改唯一标识
-              if (element.name == 'name') {
-                element.disabled = true;
-              } else if (element.name == 'isVirtual' || element.name == 'file') {
+              if (element.name === 'name') {
+                this.$set(element, 'disabled', true);
+              } else if (element.name === 'isVirtual') {
                 //不允许再次上传配置文件和修改是否虚拟模型
-                element.isHidden = true;
+                this.$set(element, 'isHidden', true);
+              } else if ((element.name === 'isAbstract' || element.name === 'parentCiId') && this.ciData.hasData) {
+                //有数据不允许修改是否抽象模型和父模型
+                this.$set(element, 'isHidden', true);
+              } else if (element.name === 'isAbstract' && this.ciData.hasChildren) {
+                //已被继承不允许修改是否抽象模型
+                this.$set(element, 'isHidden', true);
               }
             });
           }
@@ -336,7 +422,6 @@ export default {
         this.ciData.typeId = this.ciTypeId;
         this.currentIcon = 'tsfont-ci';
         this.ciFormConfig.forEach(element => {
-          element.value = this.ciData[element.name];
           //添加时允许修改唯一标识
           if (element.name == 'name') {
             element.disabled = false;
@@ -358,21 +443,7 @@ export default {
       }
     }
   },
-  watch: {
-    ciData: {
-      handler: function(newVal) {
-        for (let k in this.ciFormConfig) {
-          if (this.ciFormConfig[k]._belong === 'realci') {
-            this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual === 1);
-          } else if (this.ciFormConfig[k]._belong === 'virtualci') {
-            this.$set(this.ciFormConfig[k], 'isHidden', this.ciData.isVirtual !== 1);
-          }
-        }
-      },
-      deep: true,
-      immediate: true
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

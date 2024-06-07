@@ -80,14 +80,14 @@
                   ></TsFormTree>
                 </div>
                 <div
-                  v-if="i>0" 
+                  v-if="i>0"
                   class="text-action catalogue text-href"
                   @click="removei(i, index)"
                 ><i class="tsfont-close"></i></div>
               </div>
               <div :title="$t('term.process.catalog')" class="add-item tsfont-plus text-action" @click="addItem(index)">{{ $t('term.process.catalog') }}</div>
               <div
-                v-if="scoreTemplate.dimensionList.length>1" 
+                v-if="scoreTemplate.dimensionList.length>1"
                 class="remove-item text-action text-href"
                 @click="removeItem(index)"
               ><i class="tsfont-trash-o"></i></div>
@@ -106,10 +106,10 @@ import UserSelect from '@/resources/components/UserSelect/UserSelect.vue';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     UserSelect,
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: [],
   data() {
@@ -130,7 +130,7 @@ export default {
         isActive: 1,
         name: '',
         description: '',
-        dimensionList: 
+        dimensionList:
           [{name: [], targetList: [], catalogueList: [{name: []}] }]
       },
       formConfig: {
@@ -148,14 +148,14 @@ export default {
           type: 'datetime',
           label: this.$t('page.starttime'),
           validateList: [{name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.starttime')})}],
-          value: ''					
+          value: ''
         },
         endTime: {
           name: 'endTime',
           type: 'datetime',
           label: this.$t('page.endtime'),
           validateList: [{name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.endtime')})}],
-          value: ''					
+          value: ''
         },
         dimensionList: {
           name: 'dimensionList',
@@ -179,7 +179,7 @@ export default {
     },
     addAuth() {
       this.getAgent();
-      this.authDialog.isShow = true;      
+      this.authDialog.isShow = true;
     },
     upClose() {
 
@@ -204,7 +204,7 @@ export default {
           that.$Message.error(this.$t('term.framework.startlargethanend'));
           return false;
         }
-        dimensionList.forEach(v => {          
+        dimensionList.forEach(v => {
           let catalogueList = [];
           v.catalogueList.forEach(j => {
             let value = j.name[j.name.length - 1];
@@ -235,7 +235,7 @@ export default {
           isTrue = false;
           errorText = this.$t('term.framework.authuserisrepeat');
         }
-        
+
         let temArr = [];
         data.compobList.forEach(v => {
           v.targetList.forEach(j => {
@@ -435,7 +435,7 @@ export default {
       }
     }
     .itemsBox:hover{
-      .catalogue{        
+      .catalogue{
         display: inline-block;
       }
     }
@@ -448,7 +448,7 @@ export default {
     }
   }
   .dimension-item:hover{
-    .remove-item{      
+    .remove-item{
       display: inline-block;
     }
   }

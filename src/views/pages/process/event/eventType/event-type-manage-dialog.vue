@@ -104,9 +104,9 @@
 export default {
   name: 'EventTypeDialog',
   components: {
-    Tsform: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    TsformItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem.vue'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve)
+    Tsform: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    TsformItem: () => import('@/resources/plugins/TsForm/TsFormItem.vue'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   props: {
     params: { type: Object }
@@ -129,9 +129,9 @@ export default {
           className: 'name-input',
           maxlength: 50,
           validateList: [
-            'required', 
+            'required',
             'name-special',
-            { 
+            {
               name: 'searchUrl',
               url: '/api/rest/eventtype/save',
               key: 'name',

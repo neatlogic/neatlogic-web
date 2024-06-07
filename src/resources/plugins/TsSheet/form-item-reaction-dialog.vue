@@ -22,18 +22,49 @@
               "
             ></ConditionGroup>
             <div v-if="key === 'setvalue'">
-              <div v-if="!$utils.isEmpty(r)" class="mt-sm mb-sm text-grey">{{ $t('term.framework.assignment') }}</div>
-              <FormItem
-                v-if="!$utils.isEmpty(r)"
-                :formItem="formItemLocal"
-                :value="r.value"
-                mode="condition"
-                @change="
-                  val => {
-                    $set(r, 'value', val);
-                  }
-                "
-              ></FormItem>
+              <template v-if="!$utils.isEmpty(r)">
+                <div class="mt-sm mb-sm text-grey">{{ $t('term.framework.assignment') }}</div>
+                <!--isDynamicValue: 是否可以动态赋值  -->
+                <div v-if="formItem.isDynamicValue" class="pb-sm">
+                  <TsFormRadio
+                    :value="r.type || 'static'"
+                    :dataList="typeDataList"
+                    @change="
+                      val => {
+                        $set(r, 'type', val);
+                        $set(r, 'value', null);
+                      }
+                    "
+                  ></TsFormRadio>
+                </div>
+                <!--dynamic:动态赋值  -->
+                <TsFormSelect
+                  v-if="r.type === 'dynamic'"
+                  :value="r.value"
+                  :dataList="hasValueFormItemList"
+                  valueName="uuid"
+                  textName="label"
+                  border="border"
+                  transfer
+                  @on-change="
+                    val => {
+                      $set(r, 'value', val);
+                    }
+                  "
+                ></TsFormSelect>
+                <FormItem
+                  v-else
+                  :formItem="formItemLocal"
+                  :value="r.value"
+                  mode="condition"
+                  isCustomValue
+                  @change="
+                    val => {
+                      $set(r, 'value', val);
+                    }
+                  "
+                ></FormItem>
+              </template>
               <!--<div class="mt-sm mb-sm text-grey">初始化时执行</div>
               <TsFormSwitch
                 :trueValue="true"
@@ -72,7 +103,7 @@
                     }else {
                       $delete(r, 'event');
                     }
-                    
+
                   }
                 "
               ></TsFormRadio>
@@ -88,11 +119,11 @@ import { default as emitTypeList } from './form/define/common/emittype.js';
 export default {
   name: '',
   components: {
-    ConditionGroup: resolve => require(['@/resources/plugins/TsSheet/form/config/common/condition-group.vue'], resolve),
-    ReactionFilter: resolve => require(['@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'], resolve),
-    FormItem: resolve => require(['./form-item.vue'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
-    //TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
+    ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
+    FormItem: () => import('./form-item.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     formItem: { type: Object }, //当前表单组件
@@ -124,7 +155,18 @@ export default {
       },
       martixAttrList: [],
       error: {}, //异常信息
-      formItemMatrixAttrMap: {}
+      formItemMatrixAttrMap: {},
+      typeDataList: [
+        {
+          text: this.$t('term.autoexec.static'),
+          value: 'static'
+        },
+        {
+          text: this.$t('page.dynamicvalue'),
+          value: 'dynamic'
+        }
+      ],
+      filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
     };
   },
   beforeCreate() {},
@@ -202,6 +244,30 @@ export default {
   },
   filter: {},
   computed: {
+    hasValueFormItemList() {
+      let list = this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
+      let newList = [];
+      list.forEach(item => {
+        let obj = {
+          label: item.label,
+          uuid: item.uuid
+        };
+        let children = [];
+        if (!this.$utils.isEmpty(item.config.hiddenFieldList)) {
+          item.config.hiddenFieldList.forEach(a => {
+            children.push({
+              label: item.label + '.' + a.text,
+              uuid: item.uuid + '#' + a.value
+            });
+          });
+        }
+        newList.push(obj);
+        if (!this.$utils.isEmpty(children)) {
+          newList.push(...children);
+        }
+      });
+      return newList;
+    }
   },
   watch: {}
 };

@@ -9,6 +9,7 @@
             :canAppend="false"
             :canSearch="true"
             :needSearch="true"
+            :fixedHeader="false"
             :checkedIdList="relIssueIdList"
             :projectId="projectId"
             :app="app"
@@ -27,7 +28,7 @@
 export default {
   name: '',
   components: {
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue')
   },
   props: {
     id: { type: Number },

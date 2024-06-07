@@ -7,7 +7,7 @@
       transfer
       :search="true"
       :params="{ projectId: projectId }"
-      url="/api/rest/rdm/iteration/search"
+      dynamicUrl="/api/rest/rdm/iteration/search"
       :border="border"
       :validateList="validateList"
       :dealDataByUrl="fixData"
@@ -30,7 +30,7 @@ import { AttrBase } from './base-privateattr.js';
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   extends: AttrBase,
   props: {},
@@ -68,11 +68,9 @@ export default {
       return finalDataList;
     },
     isProcessing(iteration) {
-      const now = new Date().getTime();
-      if (now >= iteration.startDate && now <= iteration.endDate) {
-        return true;
-      }
-      return false;
+      const now = new Date();
+      const nowTimestamp = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); // // 创建一个新的 Date 对象，只包含年、月、日信息，其它信息（如时、分、秒、毫秒）默认为 0
+      return nowTimestamp >= iteration.startDate && nowTimestamp <= iteration.endDate;
     }
   },
   filter: {},

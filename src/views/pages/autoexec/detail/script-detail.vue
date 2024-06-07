@@ -1,30 +1,15 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div class="script-detail">
     <Loading :loadingShow="isLoading" type="fix"></Loading>
     <TsContain
       v-if="!isLoading && scriptConfig"
-      siderPosition="right"
-      :siderWidth="204"
+      :rightWidth="204"
       :clearStyle="true"
       border="border"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/script-manage')">{{ $getFromPage('term.autoexec.customtoollibrary') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <template v-if="!isEdit">
@@ -82,10 +67,10 @@
           ></VersionDetail>
         </div>
       </template>
-      <template v-slot:sider>
-        <BasicDetail 
-          :config="scriptConfig" 
-          @updetaScriptName="updetaScriptName" 
+      <template v-slot:right>
+        <BasicDetail
+          :config="scriptConfig"
+          @updetaScriptName="updetaScriptName"
           @updateIsLib="updateIsLib"
         >
         </BasicDetail>
@@ -116,6 +101,24 @@
       :versionId="versionId"
       @saveData="saveUpdate"
     ></DataDialog>
+    <TsDialog
+      :title="$t('page.save') + $t('page.versions')"
+      type="modal"
+      :isShow.sync="isShowVersionDialog"
+      :okText="$t('page.save')"
+      @on-ok="okDialog"
+      @on-close="closeDialog"
+    >
+      <template v-slot>
+        <div>
+          <TsForm
+            ref="versionForm"
+            v-model="versionFormData"
+            :item-list="formConfig"
+          ></TsForm>
+        </div>
+      </template>
+    </TsDialog>
   </div>
 </template>
 <script>
@@ -123,20 +126,26 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: 'ScriptDetail',
   components: {
-    VersionDetail: resolve => require(['./scriptDetail/edit/version-detail'], resolve),
-    BasicDetail: resolve => require(['./scriptDetail/edit/basic-detail'], resolve),
-    VersionStatus: resolve => require(['./scriptDetail/common/version-status.vue'], resolve),
-    ReviewDialog: resolve => require(['./scriptDetail/edit/review-dialog.vue'], resolve),
-    VersionCompare: resolve => require(['./scriptDetail/edit/version-compare'], resolve),
-    VersionValid: resolve => require(['./scriptDetail/common/version-valid'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    DataDialog: resolve => require(['./scriptDetail/common/data-dialog.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    VersionDetail: () => import('./scriptDetail/edit/version-detail'),
+    BasicDetail: () => import('./scriptDetail/edit/basic-detail'),
+    VersionStatus: () => import('./scriptDetail/common/version-status.vue'),
+    ReviewDialog: () => import('./scriptDetail/edit/review-dialog.vue'),
+    VersionCompare: () => import('./scriptDetail/edit/version-compare'),
+    VersionValid: () => import('./scriptDetail/common/version-valid'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    DataDialog: () => import('./scriptDetail/common/data-dialog.vue')
   },
   filters: {},
   mixins: [download],
   props: {},
   data() {
     return {
+      isShowVersionDialog: false,
+      versionFormData: {
+        version: ''
+      },
+      currentBtnConfig: {}, // 选中当前按钮的对象
       fromPath: '',
       isLoading: true,
       scriptId: null,
@@ -207,20 +216,32 @@ export default {
       initData: null, //初始数据，用于对比
       isTipShow: false,
       typeDialog: 'delete',
-      tipText: null
+      tipText: null,
+      formConfig: {
+        version: {
+          type: 'text',
+          label: this.$t('term.framework.pkgversion'),
+          maxlength: 50,
+          validateList: ['required']
+        }
+      }
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   mounted() {
-    this.$route.query.scriptId && (this.scriptId = parseInt(this.$route.query.scriptId));
-    this.$route.query.versionId && (this.versionId = this.$route.query.versionId);
-    this.$route.query.status && (this.versionStatus = this.$route.query.status);
-    if (this.versionId) {
-      this.getDetail(parseInt(this.versionId), 'versionId');
-    } else if (this.scriptId) {
+    const { scriptId = '', versionId = '', status = '' } = this.$route.query || {};
+    if (status) {
+      this.versionStatus = status;
+    }
+    if (scriptId) {
+      this.scriptId = parseInt(scriptId);
       this.getDetail(this.scriptId);
+    }
+    if (versionId) {
+      this.versionId = versionId;
+      this.getDetail(parseInt(this.versionId), 'versionId');
     }
   },
   beforeUpdate() {},
@@ -230,37 +251,45 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    async okDialog() {
+      if (!this.$refs.versionForm.valid()) {
+        return false;
+      }
+      this.isShowVersionDialog = false;
+      if (this.typeDialog == 'save') {
+        this.handleSave(this.currentBtnConfig);
+      } else if (this.typeDialog == 'submit') {
+        this.submitData(this.currentBtnConfig);
+      } else {
+        await this.saveUpdate(this.typeDialog);
+      }
+    },
+    closeDialog() {
+      this.isShowVersionDialog = false;
+    },
     getDetail(id, type) {
       //根据id获取详情
       this.isLoading = true;
       this.scriptConfig = null;
-      let param = {};
-      if (type && type == 'versionId') {
-        param = {
-          versionId: id
-        };
-      } else {
-        param = {
-          id: id,
-          status: this.versionStatus
-        };
-      }
+      let param = type && type === 'versionId' ? { versionId: id } : { id: id, status: this.versionStatus };
       this.$api.autoexec.script
         .getScriptDetail(param)
         .then(res => {
           if (res.Status == 'OK' && res.Return) {
             this.scriptConfig = res.Return.script;
-            this.scriptId = this.scriptConfig.id;
-            this.versionVo = this.scriptConfig.versionVo;
-            this.title = this.versionVo.title || '';
-            this.name = this.scriptConfig.name;
-            this.currentVersionVo = this.scriptConfig.currentVersionVo;
-            this.versionId = this.scriptConfig.versionVo.id;
-            this.versionOperateList = this.scriptConfig.versionVo.operateList || null;
-            this.versionType = this.versionVo.status;
+            const { id = '', versionVo = {}, name = '', currentVersionVo = {}, isLib = ''} = this.scriptConfig || {};
+            const { title = '', status, id: versionId, operateList = null } = versionVo || {};
+            this.scriptId = id;
+            this.versionVo = versionVo;
+            this.title = title;
+            this.name = name;
+            this.currentVersionVo = currentVersionVo;
+            this.versionId = versionId;
+            this.versionOperateList = operateList;
+            this.versionType = status;
 
             //isLib（是否库文件）标识为1时，标识该脚本是库文件，不支持使用测试功能，需要隐藏测试按钮
-            this.updateIsLib(res.Return.script.isLib);
+            this.updateIsLib(isLib);
             this.getDefaultConfig();
           }
         })
@@ -269,6 +298,7 @@ export default {
         });
     },
     doAction(methods, item) {
+      this.currentBtnConfig = item || {};
       this[methods](item);
     },
     edit(item) {
@@ -276,11 +306,15 @@ export default {
         return;
       }
       this.typeDialog = '';
-      this.title = this.name + '_' + this.$utils.getCurrenttime('MMdd');
       this.versionType = 'edit';
       this.$set(this.versionVo, 'status', 'draft');
       this.versionId = null;
       this.isEdit = true;
+      if (this.isEdit) {
+        this.$set(this.initData, 'id', this.scriptId);
+      } else {
+        this.$set(this.initData, 'versionId', this.versionId);
+      }
     },
     cancel() {
       this.isEdit = false;
@@ -292,6 +326,11 @@ export default {
         return;
       }
       this.typeDialog = 'test';
+      if (this.isEdit) {
+        this.isShowVersionDialog = true;
+        this.$set(this.versionFormData, 'version', this.name + '_' + this.$utils.getCurrenttime('MMdd'));
+        return false;
+      }
       let data = this.saveData();
       if (this.$utils.isSame(this.initData, data)) {
         this.$router.push({
@@ -327,7 +366,7 @@ export default {
           typeId: this.scriptConfig.typeId,
           isLib: this.scriptConfig.isLib,
           catalogId: this.scriptConfig.catalogId, // 工具目录
-          title: this.title,
+          title: this.versionFormData.version || this.title,
           ...this.$refs.versionDetail.save()
         };
         //isLib（是否库文件）标识为1时，标识该脚本是库文件，保存时不需要执行方式、风险等级、自定义模板
@@ -343,8 +382,13 @@ export default {
         return data;
       }
     },
-    async save(item, isLeave) {
+    save() {
       //编辑保存
+      this.typeDialog = 'save';
+      this.$set(this.versionFormData, 'version', this.name + '_' + this.$utils.getCurrenttime('MMdd'));
+      this.isShowVersionDialog = true;
+    },
+    async handleSave(item, isLeave) {
       if (item && item.disabled) {
         return;
       }
@@ -360,6 +404,7 @@ export default {
           this.versionId = res.Return.versionId;
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
           if (!isLeave) {
+            this.$route.meta.isSkip = true;
             this.$router.push({
               path: '/script-detail',
               query: {
@@ -370,7 +415,12 @@ export default {
         }
       });
     },
-    async submit(item) {
+    submit() {
+      this.typeDialog = 'submit';
+      this.$set(this.versionFormData, 'version', this.name + '_' + this.$utils.getCurrenttime('MMdd'));
+      this.isShowVersionDialog = true;
+    },
+    async submitData(item) {
       if (item.disabled) {
         return;
       }
@@ -393,21 +443,16 @@ export default {
       this.isReviewShow = true;
     },
     validDelete() {
-      let _this = this;
-      return new Promise((resolve, reject) => {
-        _this.$api.autoexec.script
-          .validDelete({ id: this.scriptId })
-          .then(res => {
-            if (res.Status == 'OK') {
-              _this.tipText = null;
-            }
-            resolve();
-          })
-          .catch(error => {
-            _this.tipText = this.$t('term.autoexec.deletelastversiontip');
-            resolve();
-          });
-      });
+      return this.$api.autoexec.script
+        .validDelete({ id: this.scriptId })
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.tipText = null;
+          }
+        })
+        .catch(() => {
+          this.tipText = this.$t('term.autoexec.deletelastversiontip');
+        });
     },
     async delete(item) {
       if (item.disabled) {
@@ -428,6 +473,7 @@ export default {
           }
         });
       } else {
+        this.$route.meta.isSkip = true;
         this.$router.push({
           path: '/script-detail',
           query: {
@@ -477,7 +523,7 @@ export default {
       this.download(param);
     },
     async saveUpdate(type) {
-      await this.save(null, true);
+      await this.handleSave(null, true);
       if (type == 'compare') {
         let isValid = await this.validate();
         if (!isValid) {
@@ -504,8 +550,14 @@ export default {
       if (item && item.disabled) {
         return;
       }
+      if (this.isEdit) {
+        this.typeDialog = 'compare';
+        this.isShowVersionDialog = true;
+        this.$set(this.versionFormData, 'version', this.name + '_' + this.$utils.getCurrenttime('MMdd'));
+        return false;
+      }
       this.typeDialog = 'compare';
-      let data = this.saveData();
+      let saveData = this.saveData();
       let initData = this.$utils.deepClone(this.initData);
       // 兼容老数据，默认的话，会加一个 \n 所以在比较的时候，要把这个去掉,不然只要一对比就会数据不一样
       initData.lineList.forEach(v => {
@@ -516,7 +568,7 @@ export default {
           }
         }
       });
-      if (!this.isEdit || this.$utils.isSame(initData, data)) {
+      if (!this.isEdit || this.$utils.isSame(initData, saveData)) {
         this.isCompareShow = true;
       } else {
         this.tipText = this.$t('term.autoexec.nosavetip');
@@ -531,6 +583,7 @@ export default {
       this.$api.autoexec.script.switchVersion({ versionId: this.versionId }).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
+          this.$route.meta.isSkip = true;
           this.$router.push({
             path: '/script-detail',
             query: {
@@ -563,6 +616,7 @@ export default {
           query: param
         });
       } else {
+        this.$route.meta.isSkip = true;
         this.$router.push({
           path: '/script-detail',
           query: param
@@ -610,8 +664,10 @@ export default {
         // encoding: this.versionVo.encoding,
         parser: this.versionVo.parser,
         lineList: lineList,
-        catalogId: this.scriptConfig.catalogId // 工具目录Id
-       
+        catalogId: this.scriptConfig.catalogId, // 工具目录Id
+        isLib: this.scriptConfig.isLib,
+        useLib: this.scriptConfig.useLib
+
       };
       //自由参数
       if (this.versionVo.argument && !this.$utils.isEmpty(this.versionVo.argument)) {
@@ -622,11 +678,6 @@ export default {
           description: this.versionVo.argument.description,
           isRequired: this.versionVo.argument.isRequired
         });
-      }
-      if (this.isEdit) {
-        this.$set(initData, 'id', this.scriptId);
-      } else {
-        this.$set(initData, 'versionId', this.versionId);
       }
       this.initData = initData;
     }
@@ -644,18 +695,17 @@ export default {
   },
   watch: {},
   beforeRouteLeave(to, from, next, url) {
-    let data = this.saveData();
-    if (data) {
-      if (!this.isEdit || this.$utils.isSame(this.initData, data) || this.typeDialog == 'delete') {
+    let saveData = this.saveData();
+    if (saveData) {
+      if (!this.isEdit || this.$utils.isSame(this.initData, saveData) || this.typeDialog == 'delete') {
         url ? this.$utils.gotoHref(url) : next(true);
       } else {
-        let _this = this;
         this.$utils.jumpDialog.call(
           this,
           {
             save: {
               fn: async vnode => {
-                return await _this.save(null, true);
+                return await this.handleSave(null, true);
               }
             }
           },

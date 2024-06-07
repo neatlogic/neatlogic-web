@@ -15,7 +15,7 @@
 export default {
   name: '',
   components: {
-    TsSheet: resolve => require(['@/resources/plugins/TsSheet/TsSheet.vue'], resolve)
+    TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue')
   },
   filters: {},
   props: {
@@ -92,7 +92,7 @@ export default {
         return '-';
       } else if (elDom.querySelector('.ivu-tabs') || elDom.querySelector('.ivu-collapse')) {
         // 过滤选项卡组件，折叠面板组件，暂时不显示内容
-        return '-'; 
+        return '-';
       } else if (elDom.querySelector('.upload.smallUpload')) {
         // 处理附件上传组件
         return this.handleUploadValue(elDom);

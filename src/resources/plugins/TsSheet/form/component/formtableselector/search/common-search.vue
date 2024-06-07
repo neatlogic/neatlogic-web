@@ -48,6 +48,21 @@
               transfer
               @on-change="(val) =>{changeValue(val,item.type,index)}"
             ></UserSelect>
+            <TsFormSelect
+              v-else-if="item.type == 'cmdbci'"
+              v-bind="cmdbciConfig"
+              transfer
+              border="border"
+              @on-change="(val) =>{changeValue(val,item.type,index)}"
+            ></TsFormSelect>
+            <TsFormTree
+              v-else-if="item.type == 'region'"
+              v-bind="regionConfig"
+              transfer
+              border="border"
+              @on-change="(val) =>{changeValue(val,item.type,index)}"
+            ></TsFormTree>
+        
             <TsFormInput v-else border="border" @change="(val) =>{changeValue(val,item.type,index)}"></TsFormInput>
           </template>
         </div>
@@ -63,10 +78,11 @@ import expressionConfig from '@/resources/plugins/TsSheet/form/config/common/exp
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree.vue')
   },
   props: {
     searchColumnDetailList: {
@@ -79,13 +95,31 @@ export default {
   data() {
     return {
       searchValueList: [],
-      expressionConfig: expressionConfig
+      expressionConfig: expressionConfig,
+      regionConfig: {
+        type: 'tree',
+        url: '/api/rest/region/tree/search',
+        textName: 'name',
+        valueName: 'id',
+        transfer: true
+      },
+      cmdbciConfig: {
+        type: 'select',
+        dynamicUrl: 'api/rest/cmdb/cientity/data/list/forselect',
+        rootName: 'tbodyList',
+        groupList: ['user'],
+        params: {},
+        maxlength: 50,
+        transfer: true
+      }
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.getCmdbCiParam();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -110,12 +144,21 @@ export default {
       let valueList = [];
       if (val && !this.$utils.isEmpty(val)) {
         if (val instanceof Array) {
-          valueList.push(...val); 
+          valueList.push(...val);
         } else {
           valueList.push(val);
         }
       }
       this.$set(this.searchValueList[index], 'valueList', valueList);
+    },
+    getCmdbCiParam() {
+      let params = {};
+      this.searchColumnDetailList.forEach(column => {
+        if (column.config && column.config.cmdbCi) {
+          params = {ciId: column.config.cmdbCi.ciId, label: column.config.cmdbCi.label};
+        }
+      });
+      this.$set(this.cmdbciConfig, 'params', params);
     }
   },
   filter: {},
@@ -140,7 +183,7 @@ export default {
         if (val && !this.$utils.isSame(val, this.searchValueList)) {
           this.searchValueList = this.$utils.deepClone(val);
         }
-      }, 
+      },
       deep: true,
       immediate: true
     }

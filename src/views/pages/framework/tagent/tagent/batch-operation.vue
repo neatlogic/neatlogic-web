@@ -1,24 +1,10 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div class="batch-operation-wrap">
     <TsContain>
       <Loading :loadingShow="isLoading" type="fix"></Loading>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topRight>
         <Button type="primary" @click="checkTagentNumber">{{ action == 'reload' ? $t('page.restart') : $t('page.updatepwd') }}</Button>
@@ -78,10 +64,10 @@
 export default {
   name: '', // 批量操作
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    BatchOperationDialog: resolve => require(['./batch-operation-dialog'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    BatchOperationDialog: () => import('./batch-operation-dialog')
   },
   filters: {},
   props: {},
@@ -94,7 +80,7 @@ export default {
       tagentNumber: 0,
       itemList: {
         runnerGroupIdList: {
-          type: 'select', 
+          type: 'select',
           label: this.$t('term.framework.runnergroup'),
           labelPosition: 'top',
           dynamicUrl: '/api/rest/runnergroup/search',
@@ -141,7 +127,7 @@ export default {
           {
             networkIp: '',
             mask: '',
-            validateIpList: ['ip'], 
+            validateIpList: ['ip'],
             validateMaskList: ['mask']
           }
         ]
@@ -167,7 +153,7 @@ export default {
     operationRow(type, index) {
       // 添加网段
       if (type == 'add') { // 添加
-        this.tableConfig.tbodyList.splice(index, 0, {networkIp: '', mask: '', validateIpList: ['ip'], validateMaskList: ['mask']}); 
+        this.tableConfig.tbodyList.splice(index, 0, {networkIp: '', mask: '', validateIpList: ['ip'], validateMaskList: ['mask']});
       } else { // 删除
         this.tableConfig.tbodyList.splice(index, 1);
       }
@@ -226,13 +212,13 @@ export default {
       return ipPortList;
     },
     validNetwork() {
-      let networkRef = this.$refs.formNetworkList; 
+      let networkRef = this.$refs.formNetworkList;
       let isValid = true;
       if (networkRef && networkRef.$parent && networkRef.$parent.$children) {
         networkRef.$parent.$children.forEach((val) => {
           if (!val.valid()) {
             isValid = false;
-          } 
+          }
         });
       }
       return isValid;
@@ -272,8 +258,8 @@ export default {
         return false;
       }
       let params = {
-        networkVoList: this.handleNetworkList(), 
-        ipPortList: this.handleIpPortList(), 
+        networkVoList: this.handleNetworkList(),
+        ipPortList: this.handleIpPortList(),
         runnerGroupIdList: form.runnerGroupIdList
       };
       this.isLoading = true;

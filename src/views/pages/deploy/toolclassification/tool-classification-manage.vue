@@ -13,6 +13,7 @@
       </template>
       <template v-slot:content>
         <TsTable
+          :loading="loading"
           v-bind="tableConfig"
           :theadList="theadList"
           @changeCurrent="changeCurrent"
@@ -46,13 +47,14 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {},
   data() {
     return {
+      loading: true,
       keyword: '',
       tableConfig: {
         tbodyList: [],
@@ -113,7 +115,7 @@ export default {
       });
     },
     searchToolClassification() {
-      this.loadingShow = true;
+      this.loading = true;
       let params = {
         keyword: this.keyword,
         currentPage: this.tableConfig.currentPage,
@@ -124,7 +126,7 @@ export default {
           this.tableConfig = res.Return;
         }
       }).finally(() => {
-        this.loadingShow = false;
+        this.loading = false;
       });
     },
     changeSwitch(id, isActive) {

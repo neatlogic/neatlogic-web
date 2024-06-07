@@ -46,7 +46,7 @@ const applicationConfig = {
   },
   getAppInfo(params) {
     // 获取应用层信息
-    return axios.post('/api/rest/deploy/app/config/app/system/info/get', params);
+    return axios.post('/api/rest/app/system/simple/get', params);
   },
   delEnvExample(params) {
     // 删除环境实例差异
@@ -135,6 +135,14 @@ const applicationConfig = {
   getAppSystemNotifyId(params) {
     //获取发布应用的通知策略id
     return axios.post('/api/rest/deploy/job/notify/policy/get', params);
+  },
+  getEnvAttr(params) {
+    // 获取环境层配置信息
+    return axios.post('/api/rest/deploy/app/config/env/attr/list', params);
+  },
+  saveEnvAttr(params) {
+    // 获取环境层配置信息
+    return axios.post('/api/rest/deploy/app/config/env/attr/save', params);
   }
 };
 

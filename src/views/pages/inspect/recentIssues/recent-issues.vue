@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div>
     <TsContain :isSiderHide="isSiderHide" :enableCollapse="true" border="border">
@@ -36,23 +22,41 @@
           ref="combineSearcher"
           v-model="searchVal"
           v-bind="searchConfig"
-          @confirm="searchCondition"
-          @change-label="changeLabelCombineSearcher"
-        >   
-          <template v-slot:batchSearchList="{valueConfig}">
+          @change="searchCondition"
+        >
+          <template v-slot:batchSearchList="{textConfig, valueConfig}">
             <div>
               <TsFormItem :label="$t('page.batchsearch')" :tooltip="$t('term.cmdb.resourcebatchsearchtooltip')" labelPosition="left">
                 <TsFormRadio
                   v-model="valueConfig.searchField"
                   :dataList="[{value: 'ip',text: 'IP'},{value: 'name',text: $t('page.name')}]"
+                  @change="() => {
+                    $delete(valueConfig, 'batchSearchList');
+                    $delete(textConfig, 'batchSearchList');
+                  }"
                 ></TsFormRadio>
               </TsFormItem>
               <TsFormItem :label="$t('page.batchsearchvalue')" labelWidth="0px" labelPosition="left">
+                <!-- change-label主要用于存储的数据回显，value值回显不会触发@change方法 -->
                 <TsFormInput
                   v-model="valueConfig.batchSearchList"
                   type="textarea"
                   :placeholder="'192.168.0.1\n192.168.0.2\n192.168.0.*'"
                   :autoSize="{minRows: 4}"
+                  @change="(val) => {
+                    if(val) {
+                      $set(textConfig, 'batchSearchList', val.split('\n'));
+                    } else {
+                      $delete(textConfig, 'batchSearchList');
+                    }
+                  }"
+                  @change-label="(val) => {
+                    if(val) {
+                      $set(textConfig, 'batchSearchList', val.split('\n'));
+                    } else {
+                      $delete(textConfig, 'batchSearchList');
+                    }
+                  }"
                 >
                 </TsFormInput>
               </TsFormItem>
@@ -192,16 +196,16 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '', // 最新问题
   components: {
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    ExpandTable: resolve => require(['./component/expand-table.vue'], resolve),
-    SendEmail: resolve => require(['./component/send-email.vue'], resolve),
-    RuleOfThresholdDialog: resolve => require(['@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue'], resolve),
-    CategoryEditDialog: resolve => require(['./category-edit-dialog'], resolve)
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    ExpandTable: () => import('./component/expand-table.vue'),
+    SendEmail: () => import('./component/send-email.vue'),
+    RuleOfThresholdDialog: () => import('@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue'),
+    CategoryEditDialog: () => import('./category-edit-dialog')
   },
   directives: { download },
   filters: {},
@@ -485,8 +489,7 @@ export default {
       });
     },
     searchTableData() {
-      this.$refs.combineSearcher.refreshTextConfig();
-      this.closeCombineSearchPanel();
+      this.$refs.combineSearcher.doSearch();
       this.getTableData(1);
     },
     searchCondition(searchVal) {
@@ -497,7 +500,7 @@ export default {
     },
     closeCombineSearchPanel() {
       // 关闭搜索面板
-      this.$refs.combineSearcher.handleToggleOpen(); // 关闭搜索面板
+      this.$refs.combineSearcher.handleCancel(); // 关闭搜索面板
     },
     dealInspectStatusDataByUrl(nodeList) {
       // 处理巡检状态下拉列表数据
@@ -813,11 +816,6 @@ export default {
     },
     closeRuleOfThresholdDialog() {
       this.isShowRuleThresholdDialog = false;
-    },
-    changeLabelCombineSearcher(val) {
-      if (!this.$utils.isEmpty(this.searchVal.batchSearchList)) {
-        this.$set(val, 'batchSearchList', this.searchVal.batchSearchList.split('\n'));
-      }
     },
     gotoAssetManagePage() {
       window.open(HOME + '/cmdb.html#/asset-manage', '_blank');

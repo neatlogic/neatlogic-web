@@ -73,7 +73,7 @@
 export default {
   name: '',
   components: {
-    HistoryDetail: resolve => require(['./history-detail.vue'], resolve)
+    HistoryDetail: () => import('./history-detail.vue')
   },
   props: {
     ciId: { type: Number },

@@ -3,7 +3,7 @@
 ## about
 neatlogic-web is the front-end code of the neatlogic platform, and the front-end codes of all submodules are in neatlogic-web.
 
-neatlogic-web is based on vue2.x, and the UI framework has been adjusted on the basis of iView4.x source code.
+neatlogic-web is based on vue2.7.16, and the UI framework has been adjusted on the basis of iView4.x source code.
 
 ## Build Dependencies
 vue/cli 5.x, webpack 5.x
@@ -24,7 +24,7 @@ npm install
 npm run serve
 ```
 <font color="red">Exception:</font>
-If a large number of unknown errors are found at startup, the possible reason may be that the dependency packages loaded during the `npm install` phase are incomplete. It is suggested to downgrade npm and install again. Currently, tests indicate that npm v14 can install normally, while npm v18+ might cause exceptions. Alternatively, loading dependency packages through `cnpm install` could also work. The cnpm version should not be too high, it's recommended to use v8.2.0.
+If a large number of unknown errors are found at startup, the possible reason may be that the dependency packages loaded during the `npm install` phase are incomplete. It is suggested to downgrade npm and install again. Currently, tests indicate that npm v18 can install normally. Alternatively, loading dependency packages through `cnpm install` could also work. The cnpm version should not be too high, it's recommended to use v8.2.0.
 ```
 sudo npm install -g cnpm@8.2.0 --registry=https://registry.npm.taobao.org
 ```

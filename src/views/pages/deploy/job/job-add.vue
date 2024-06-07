@@ -15,7 +15,12 @@
             :disabled="disabledBtn"
             @click="saveSetting('save')"
           >{{ $t('page.save') }}</Button>
-          <Button type="primary" :disabled="disabledBtn" @click="saveSetting('execute')">{{ $t('term.autoexec.immediateexecution') }}</Button>
+          <Button
+            type="primary"
+            :disabled="disabledBtn"
+            :loading="isCreating"
+            @click="saveSetting('execute')"
+          >{{ $t('term.autoexec.immediateexecution') }}</Button>
         </div>
       </template>
       <template v-slot:content>
@@ -156,18 +161,19 @@
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    ModuleList: resolve => require(['./publishing/module-list'], resolve),
-    SetParam: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/param.vue'], resolve),
-    SaveSetting: resolve => require(['@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'], resolve),
-    ResultDialog: resolve => require(['./publishing/result-dialog'], resolve),
-    PublishingValid: resolve => require(['./publishing/publishing-valid'], resolve),
-    PhaseList: resolve => require(['./publishing/phase-list'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    ModuleList: () => import('./publishing/module-list'),
+    SetParam: () => import('@/views/pages/autoexec/detail/runnerDetail/param.vue'),
+    SaveSetting: () => import('@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'),
+    ResultDialog: () => import('./publishing/result-dialog'),
+    PublishingValid: () => import('./publishing/publishing-valid'),
+    PhaseList: () => import('./publishing/phase-list')
   },
   props: {},
   data() {
     return {
+      isCreating: false,
       loadingShow: true,
       appSystemId: null,
       appModuleId: null,
@@ -283,7 +289,7 @@ export default {
                 } else {
                   this.$set(item, 'isChecked', true);
                 }
-                 
+
                 this.$set(item, 'isSelectInstance', !!item.isSelectInstance);
                 if (item.isSelectInstance && type != 'scenario') { //场景改变时，实例不变
                   this.$set(item, 'loadingShow', true);
@@ -410,10 +416,13 @@ export default {
     executeAction() {
       //执行
       let data = this.saveJobData();
+      this.isCreating = true;
       this.$api.deploy.job.createDeployJob(data).then(res => {
         if (res.Status == 'OK') {
           this.openResultDialog(res.Return);
         }
+      }).finally(e => {
+        this.isCreating = false;
       });
     },
     okSave(val) { //保存
@@ -488,14 +497,14 @@ export default {
       this.paramValue = this.jobConfig.param || {};
       if (this.jobConfig.scenarioId) {
         let findScenario = this.initData.scenarioList.find((item) => item.isEnable == true && item.scenarioId == this.jobConfig.scenarioId);
-        if (findScenario) { 
+        if (findScenario) {
           this.scenarioId = this.jobConfig.scenarioId;
           this.combopPhaseNameList = findScenario.combopPhaseNameList;
         }
       }
       if (this.jobConfig.envId) {
         let findEnv = this.initData.envList.find((item) => item.isEnable == true && item.id == this.jobConfig.envId);
-        if (findEnv) {  
+        if (findEnv) {
           this.envId = this.jobConfig.envId;
           this.envName = findEnv.name;
         }

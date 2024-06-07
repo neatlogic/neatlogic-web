@@ -7,7 +7,7 @@
 <script>
 export default {
   name: '',
-  components: { TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+  components: { TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     config: {

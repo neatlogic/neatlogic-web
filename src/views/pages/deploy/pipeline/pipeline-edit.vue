@@ -70,7 +70,7 @@
                   >
                     <transition-group style="min-height:120px;display: block;">
                       <div v-for="job in group.jobTemplateList" :key="job.id || job.uuid" class="job-container card-hover-shadow radius-sm block-border padding margin-sm">
-                        <span class="cursor tsfont-edit edit-job-btn text-grey" @click="editJob(job)"></span>
+                        <span class="cursor tsfont-edit edit-job-btn text-grey" @click="editJob(job, group)"></span>
                         <span class="cursor tsfont-close-o remove-job-btn text-grey" @click="removeJob(lane, group, job)"></span>
                         <div class="mb-xs">{{ job.envName }}</div>
                         <div class="mb-xs">{{ job.appSystemAbbrName }}</div>
@@ -109,9 +109,9 @@ export default {
   name: '',
   components: {
     draggable,
-    JobTemplateDialog: resolve => require(['./edit-jobtemplate-dialog.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    AuthDialog: resolve => require(['./auth-dialog.vue'], resolve)
+    JobTemplateDialog: () => import('./edit-jobtemplate-dialog.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    AuthDialog: () => import('./auth-dialog.vue')
   },
   props: {},
   data() {
@@ -185,8 +185,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    editJob(job) {
+    editJob(job, group) {
       this.currentJob = job;
+      this.currentGroup = group;
       this.isJobTemplateDialogShow = true;
     },
     editAuth() {
@@ -286,9 +287,13 @@ export default {
     },
     updateJobTemplate(jobTemplateData) {
       console.log(JSON.stringify(jobTemplateData, null, 2));
-      const index = this.currentGroup.jobTemplateList.findIndex(job => { job.id === jobTemplateData.id || job.uuid === jobTemplateData.uuid; });
-      if (index > -1) {
-        this.$set(this.currentGroup.jobTemplateList, index, jobTemplateData);
+      if (!this.$utils.isEmpty(this.currentGroup)) {
+        const index = this.currentGroup.jobTemplateList.findIndex(job => {
+          return job.id === jobTemplateData.id || job.uuid === jobTemplateData.uuid;
+        });
+        if (index > -1) {
+          this.$set(this.currentGroup.jobTemplateList, index, jobTemplateData);
+        }
       }
       this.closeJobTemplateDialog();
     },

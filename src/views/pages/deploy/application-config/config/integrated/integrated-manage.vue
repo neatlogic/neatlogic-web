@@ -2,7 +2,17 @@
   <div class="padding">
     <TsRow class="pb-nm">
       <Col span="12" class="mt-xs">
-        <span class="text-action tsfont-plus" @click="gotoAddConfig">{{ $t('page.config') }}</span>
+        <span v-if="hasEditConfigAuth" class="text-action tsfont-plus" @click="gotoAddConfig">{{ $t('page.config') }}</span>
+        <Tooltip
+          max-width="400"
+          placement="right"
+          transfer
+        >
+          <span v-if="!hasEditConfigAuth" class="text-action text-disabled tsfont-plus" @click="gotoAddConfig">{{ $t('page.config') }}</span>
+          <ul slot="content">
+            <li><span>{{ $t('term.deploy.noconfigauthtip') }}</span></li>
+          </ul>
+        </Tooltip>
       </Col>
       <Col span="12">
         <InputSearcher
@@ -49,15 +59,20 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    ExecuteRecordDialog: resolve => require(['./execute-record-dialog'], resolve) // 执行记录
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ExecuteRecordDialog: () => import('./execute-record-dialog') // 执行记录
   },
   props: {
     appSystemId: {
       type: Number,
       default: null
+    },
+    hasEditConfigAuth: {
+      // 是否有编辑配置权限
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -139,7 +154,7 @@ export default {
       if (id) {
         this.$router.push(
           {
-            path: '/config-add', 
+            path: '/config-add',
             query: {
               appSystemId: this.appSystemId,
               id

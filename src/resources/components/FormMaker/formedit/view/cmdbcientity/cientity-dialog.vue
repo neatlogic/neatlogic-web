@@ -10,7 +10,12 @@
       <Row>
         <Col span="6">
           <div class="ci-left">
-            <CiTypeList :ciFilter="filterCiIdList" :ciId="ciId" @click="changeCi"></CiTypeList>
+            <CiTypeList
+              :toggleable="false"
+              :ciFilter="filterCiIdList"
+              :ciId="ciId"
+              @click="changeCi"
+            ></CiTypeList>
           </div>
         </Col>
         <Col span="18">
@@ -97,7 +102,7 @@ export default {
         }
       });
     },
-    changeCi(ciType, ci) {
+    changeCi(ci) {
       this.ciId = ci.id;
     },
     getCiEntity(itemList, indexList) {

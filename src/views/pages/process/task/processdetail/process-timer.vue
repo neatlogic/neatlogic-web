@@ -1,28 +1,14 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div class="taskdetail-timer">
     <Loading :loadingShow="taskLoading" type="fix"></Loading>
     <TsContain
-      :leftWidth="260"
+      :siderWidth="260"
       :isSiderHide="!isOrderLeft"
       :sessionName="sessionName"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back(prevPath.router)">{{ $getFromPage(prevPath.name) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="taskdetail-top">
@@ -35,9 +21,8 @@
             @isTslayout="isTslayout"
             @editTitle="editTitle"
             @changeTitle="changeTitle"
-            @toPrevpath="toPrevpath"
           ></NavTop>
-    
+
           <div class="toolbar-right">
             <div class="action-group">
               <!-- 开始_start -->
@@ -167,7 +152,7 @@
           </div>
         </div>
       </template>
-      <template v-slot:left>
+      <template v-slot:sider>
         <slot></slot>
       </template>
       <template v-slot:content>
@@ -177,8 +162,7 @@
             :rightWidth="290"
             :hasContentPadding="false"
             hideHeader
-            :isSiderHide="!isOrderRight"
-            siderPosition="right"
+            :isRightSiderHide="!isOrderRight"
             :rightBtn="true"
             @rightSiderToggle="rightSiderToggle"
           >
@@ -304,16 +288,16 @@ export default {
   name: '',
   tagComponent: 'taskDeal', //主要用来标识是上报页面，为表单修改优先级做标志
   components: {
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    CenterDetail: resolve => require(['./workorder/CenterDetail.vue'], resolve),
-    LookSitemapDialog: resolve => require(['./workorder/actiondialog/lookSitemap.vue'], resolve),
-    TransferDialog: resolve => require(['./workorder/actiondialog/transfer.vue'], resolve),
-    RightSetting: resolve => require(['./workorder/RightSetting.vue'], resolve),
-    RanferreportDialog: resolve => require(['./workorder/actiondialog/tranferreport.vue'], resolve),
-    NavTop: resolve => require(['./navTop.vue'], resolve),
-    StepSelect: resolve => require(['@/views/pages/process/task/processdetail/workorder/common/step-select.vue'], resolve),
-    TimterAlert: resolve => require(['@/views/pages/process/task/processdetail/workorder/alert/timer-alert.vue'], resolve)
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    CenterDetail: () => import('./workorder/CenterDetail.vue'),
+    LookSitemapDialog: () => import('./workorder/actiondialog/lookSitemap.vue'),
+    TransferDialog: () => import('./workorder/actiondialog/transfer.vue'),
+    RightSetting: () => import('./workorder/RightSetting.vue'),
+    RanferreportDialog: () => import('./workorder/actiondialog/tranferreport.vue'),
+    NavTop: () => import('./navTop.vue'),
+    StepSelect: () => import('@/views/pages/process/task/processdetail/workorder/common/step-select.vue'),
+    TimterAlert: () => import('@/views/pages/process/task/processdetail/workorder/alert/timer-alert.vue')
   },
   filters: {
   },
@@ -343,7 +327,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getMessage() { 
+    getMessage() {
       //单独处理当前步骤特有信息
     },
     async completeTask() { //定时节点强制流转时：弹框需要填写原因

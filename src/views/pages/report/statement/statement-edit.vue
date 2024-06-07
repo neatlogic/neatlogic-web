@@ -6,7 +6,7 @@
       :rightWidth="300"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/statement-manage')">{{ $getFromPage($t('term.report.screenmanage')) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <TsFormInput
@@ -225,14 +225,14 @@ import screenfull from '@/resources/assets/js/screenfull.js';
 export default {
   name: '',
   components: {
-    StatementDataEdit: resolve => require(['./statement-data-edit.vue'], resolve),
-    StatementLayoutEdit: resolve => require(['./statement-layout-edit.vue'], resolve),
-    Widget: resolve => require(['./widgets/widget-handler.vue'], resolve),
-    WidgetConfig: resolve => require(['./widgetconfigs/widget-config.vue'], resolve),
-    CanvasConfig: resolve => require(['./canvas-config.vue'], resolve),
-    EagleEye: resolve => require(['./eagleeye.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve)
+    StatementDataEdit: () => import('./statement-data-edit.vue'),
+    StatementLayoutEdit: () => import('./statement-layout-edit.vue'),
+    Widget: () => import('./widgets/widget-handler.vue'),
+    WidgetConfig: () => import('./widgetconfigs/widget-config.vue'),
+    CanvasConfig: () => import('./canvas-config.vue'),
+    EagleEye: () => import('./eagleeye.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {},
   data() {
@@ -473,7 +473,7 @@ export default {
         });
       }
     },
-    
+
     getWidgetComponentByType(widget) {
       return WIDGETS.find(d => d.type === widget.type);
     },
@@ -688,7 +688,9 @@ export default {
         'on-ok': vnode => {
           this.$api.report.statement.deleteStatement(this.id).then(res => {
             vnode.isShow = false;
-            this.$back('/statement-manage');
+            this.$router.push({
+              path: '/statement-manage'
+            });
           });
         }
       });

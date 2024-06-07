@@ -85,9 +85,9 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    IntegrationParam: resolve => require(['./component/integration-param'], resolve),
-    WebhookHelpDialog: resolve => require(['./webhook-help-dialog'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    IntegrationParam: () => import('./component/integration-param'),
+    WebhookHelpDialog: () => import('./webhook-help-dialog')
   },
   props: {},
   data() {
@@ -116,14 +116,14 @@ export default {
           type: 'text',
           label: this.$t('page.name'),
           validateList: [
-            'required', 
-            'name-special', 
-            { 
-              name: 'searchUrl', 
-              url: '/api/rest/deploy/job/webhook/save', 
-              key: 'name', 
-              message: this.$t('form.validate.repeat', {target: this.$t('page.name')}), 
-              params: { id: '' } 
+            'required',
+            'name-special',
+            {
+              name: 'searchUrl',
+              url: '/api/rest/deploy/job/webhook/save',
+              key: 'name',
+              message: this.$t('form.validate.repeat', {target: this.$t('page.name')}),
+              params: { id: '' }
             }],
           maxlength: 50
         },
@@ -452,7 +452,7 @@ export default {
       }
       if (repeatNum >= 2) {
         isValid = false;
-      }    
+      }
       return isValid;
     },
     valid() {
@@ -471,7 +471,7 @@ export default {
       });
       return isValid;
     },
-   
+
     handleInputParams() {
       // 处理入参
       let formValue = {};
@@ -541,7 +541,7 @@ export default {
         });
       }
     },
-  
+
     async getWebhookDetailById(id) {
       if (id) {
         this.loadingShow = true;
@@ -666,7 +666,9 @@ export default {
         if (res && res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
           this.$addWatchData(param);
-          this.$back();
+          this.$router.push({
+            path: '/job-webhook-manage'
+          });
         }
       });
     },

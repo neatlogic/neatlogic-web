@@ -24,12 +24,12 @@
 export default {
   name: '',
   components: {
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve)
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue')
   },
   props: {},
   data() {
-    return { 
-      dialogConfig: { 
+    return {
+      dialogConfig: {
         title: this.$t('term.pbc.importclassidentifier'),
         type: 'modal',
         maskClose: false,

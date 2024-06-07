@@ -1,0 +1,248 @@
+<script>
+import Edit from '@/views/pages/autoexec/components/param/view';
+export default {
+  components: {
+    ...Edit,
+    ExecuteNodeReadonly: () => import('@/views/pages/autoexec/form/component/formresoureces/index.vue'),
+    ProtocolReadonly: () => import('../protocol-readonly'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    MappingmodeExpression: () => import('@/views/pages/process/flow/flowedit/components/autoexec/setting/joppolicy/mappingmode-expression.vue')
+  },
+  props: {
+    config: Object,
+    allFormitemList: Array
+  },
+  data() {
+    return {
+      autoexecConfig: {},
+      mappingModeList: [
+        {
+          text: this.$t('page.constant'),
+          value: 'constant'
+        },
+        {
+          text: this.$t('term.process.formcommonitem'),
+          value: 'formCommonComponent'
+        },
+        {
+          text: this.$t('term.process.formtableitem'),
+          value: 'formTableComponent'
+        }
+      ],
+      validateList: ['required'],
+      formDataList: [], //表单赋值：仅支持文本框、文本域类型的控件赋值
+      processTaskParamConfig: {
+        dynamicUrl: '/api/rest/process/condition/list',
+        textName: 'label',
+        valueName: 'name',
+        border: 'border',
+        transfer: true
+      }
+    };
+  },
+  created() {
+    this.autoexecConfig = this.config;
+    if (this.allFormitemList && this.allFormitemList.length > 0) {
+      this.formDataList = this.$utils.deepClone(this.allFormitemList).filter(item => {
+        return item.handler === 'formtext' || item.handler === 'formtextarea';
+      });
+    }
+  },
+  methods: {
+    executeMappingModeList(key) {
+      let list = this.$utils.deepClone(this.mappingModeList);
+      if (key === 'executeNodeConfig') {
+        return list.filter(item => {
+          return item.value != 'constant';
+        });
+      } else {
+        return list.filter(item => {
+          return item.value != 'constant' && item.value != 'formTableComponent';
+        });
+      }
+    },
+    runtimeParamMappingModeList(type) {
+      let dataList = this.$utils.deepClone(this.mappingModeList);
+      dataList.push({
+        text: this.$t('term.process.taskinformation'),
+        value: 'processTaskParam'
+      });
+      if (type === 'text') {
+        dataList.push({
+          text: this.$t('term.cmdb.expression'),
+          value: 'expression'
+        });
+      }
+      return dataList;
+    },
+    getRoundCountText(value) {
+      let text = value;
+      if (value === 0) {
+        text = this.$t('page.fulllist');
+      } else if (value === 1) {
+        text = this.$t('page.allparallel');
+      }
+      return text;
+    },
+    getruntimeParamListText(value) {
+      let findItem = this.autoexecConfig.runtimeParamList.find(item => item.key === value);
+      if (findItem) {
+        return findItem.name;
+      } else {
+        return '';
+      }
+    },
+    changeMappingMode(item, val) {
+      if (this.autoexecConfig.createJobPolicy === 'batch' && val === 'formTableComponent') {
+        this.$set(item, 'value', this.batchJobDataSource.attributeUuid);
+      } else {
+        this.$set(item, 'value', null);
+      }
+      this.$set(item, 'column', null);
+      this.$set(item, 'filterList', []);
+      this.$set(item, 'isActive', false);
+    },
+    addFormParam() {
+      let obj = {
+        key: '',
+        value: ''
+      };
+      this.autoexecConfig.formAttributeList.push(obj);
+      this.changeFormItem();
+    },
+    delFormParam(index) {
+      this.autoexecConfig.formAttributeList.splice(index, 1);
+      this.changeFormItem();
+    },
+    changeFormItem() {
+      this.formDataList.forEach(e => {
+        let find = this.autoexecConfig.formAttributeList.find(f => f.key == e.uuid);
+        if (find) {
+          this.$set(e, '_disabled', true);
+        } else {
+          this.$set(e, '_disabled', false);
+        }
+      });
+    },
+    addFilter(filterList) {
+      filterList.push({
+        'column': '',
+        'expression': 'like',
+        'value': ''
+      });
+    },
+    delFilterItem(filterList, index) {
+      filterList.splice(index, 1);
+    }
+  },
+  computed: {
+    getFormComponent() {
+      return (type) => {
+        let dataList = [];
+        if (this.allFormitemList && this.allFormitemList.length > 0) {
+          if (type === 'formCommonComponent') { //表单普通组件
+            dataList = this.allFormitemList.filter(item => {
+              return item.handler != 'formtableselector' && item.handler != 'formtableinputer' && item.handler != 'formcube';
+            });
+          } else if (type === 'formTableComponent') { //table组件（表格数据组件、表单选择组件）
+            dataList = this.allFormitemList.filter(item => {
+              return item.handler === 'formtableselector' || item.handler === 'formtableinputer';
+            });
+          }
+        }
+        return dataList;
+      };
+    },
+    getAttrList() {
+      return (value, column, filterList) => {
+        let dataList = [];
+        if (this.allFormitemList && this.allFormitemList.length > 0) {
+          let find = this.allFormitemList.find(item => item.uuid === value);
+          if (find && find.config && find.config.dataConfig) {
+            find.config.dataConfig.forEach(d => {
+              dataList.push({
+                text: d.label,
+                value: d.uuid,
+                _disabled: !!(filterList && filterList.find(f => f.column === d.uuid && f.column != column))
+              });
+            });
+          }
+        }
+        return dataList;
+      };
+    },
+    paramType() {
+      return (type, key) => {
+        let handler = type ? type + key : 'text' + key;
+        return handler;
+      };
+    }
+  },
+  watch: {
+    config: {
+      handler: function(val) {
+        this.$emit('update', val);
+      },
+      deep: true
+    }
+  }
+};
+</script>
+<style lang="less" scoped>
+.item-list {
+  line-height: 32px;
+}
+.form-param-list{
+  position: relative;
+  padding-right: 20px;
+  padding-bottom: 10px;
+  .del-btn{
+    position: absolute;
+    right: 0;
+    top: 6px;
+    display: none;
+  }
+  &:hover{
+    .del-btn{
+      display: block;
+    }
+  }
+}
+.tip-eg {
+  display: flex;
+  align-items: center;
+  .center-text {
+    position: relative;
+    border-bottom: 1px solid;
+    margin: 0 16px;
+    min-width: 50px;
+    &:after {
+      font-family: 'tsfont';
+      content: '\e899';
+      position: absolute;
+      bottom: -15px;
+      font-size: 18px;
+      right: -11px;
+    }
+  }
+}
+.filter-top {
+  display: flex;
+  .label {
+    flex: none;
+  }
+}
+.formTableComponent {
+  position: relative;
+  .formTableComponent-tip {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+</style>

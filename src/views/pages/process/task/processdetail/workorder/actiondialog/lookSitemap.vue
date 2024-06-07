@@ -3,14 +3,16 @@
     <TsDialog
       v-bind="tsDialoglookSitemap"
       :isShow.sync="tsDialoglookSitemap.isShow"
-      :title="sitemapTitle"
       :fullscreen="true"
       :hasFooter="false"
-      width="medium"
+      width="large"
       :className="stepDialogClass"
       :bgOp="true"
-      height="600px"
+      height="calc(100vh - 200px)"
     >
+      <template v-slot:header>
+        <span class="text-action" @click="openFlow()">{{ sitemapTitle }}</span>
+      </template>
       <template>
         <div class="topo-box">
           <div ref="topo" class="sitemapMain"></div>
@@ -125,15 +127,10 @@ export default {
       });
       textList = textList.join('、');
       return textList;
+    },
+    openFlow() {
+      window.open(HOME + '/process.html#/flow-edit?uuid=' + this.tsDialoglookSitemap.flowUuid, '_blank');
     }
-    // replaceableText(name, replaceableTextList, textName) { //子任务：文案回显
-    //   let text = textName;
-    //   let obj = replaceableTextList.find(i => i.name == name);
-    //   if (obj) {
-    //     text = obj.value || obj.text;
-    //   }
-    //   return text;
-    // }
   },
   computed: {
   },

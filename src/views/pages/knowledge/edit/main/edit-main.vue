@@ -79,10 +79,10 @@ export default {
   name: 'EditMain',
   tagComponent: 'EditMain',
   components: {
-    LeftSide: resolve => require(['./main-left.vue'], resolve),
-    selectTemplate: resolve => require(['./main-selecttemplate'], resolve),
-    selectType: resolve => require(['./main-select'], resolve),
-    UploadDialog: resolve => require(['@/resources/components/UploadDialog/UploadDialog.vue'], resolve),
+    LeftSide: () => import('./main-left.vue'),
+    selectTemplate: () => import('./main-selecttemplate'),
+    selectType: () => import('./main-select'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
     editorTool,
     editorTip,
     ...items,
@@ -219,7 +219,7 @@ export default {
       this.historyList = this.historyList || [];
       let range = editorUtils.comGetCursor();
       let dataList = list || this.$refs.editorComponet.changeMenuList();
-     
+
       this.historyList.push({ value: dataList, range: { startOffset: range.startOffset, startContainer: findParent(range.startContainer), uuid: this.focusUuid } });
       if (this.historyList.length > 50) {
         //长度不能大于50
@@ -370,7 +370,7 @@ export default {
         if (TITLELIST.indexOf(item.handler) >= 0) { //目录标题的拿取text值
           let copyItem = _this.$utils.deepClone(item);
           if (menuList.length == 0) {
-            menuList.push(copyItem); 
+            menuList.push(copyItem);
           } else if (copyItem.handler == 'h1' || copyItem.handler == menuList[menuList.length - 1].handler) {
             menuList.push(copyItem);
           } else {
@@ -493,7 +493,7 @@ function findParent(node) {
       }
       .top-title {
         border: 1px solid var(--border-color, @border-color-base);
-      } 
+      }
     }
     /deep/.span-add{
       background: @add-bg;

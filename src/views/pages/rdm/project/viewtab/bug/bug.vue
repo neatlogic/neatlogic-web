@@ -57,14 +57,14 @@ import mixins from '@/views/pages/rdm/project/viewtab/issue-mixin.js';
 export default {
   name: '',
   components: {
-    AppTab: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-tab.vue'], resolve),
-    EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
-    AttrSettingDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'], resolve)
+    AppTab: () => import('@/views/pages/rdm/project/viewtab/components/app-tab.vue'),
+    EditIssue: () => import('@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'),
+    IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue'),
+    AttrSettingDialog: () => import('@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue')
   },
   mixins: [mixins],
   props: {
-  
+
   },
   data() {
     return {

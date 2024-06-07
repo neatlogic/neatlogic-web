@@ -31,7 +31,7 @@
 export default {
   name: '',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard'], resolve)
+    TsCard: () => import('@/resources/components/TsCard/TsCard')
   },
   props: {
     formUuid: String

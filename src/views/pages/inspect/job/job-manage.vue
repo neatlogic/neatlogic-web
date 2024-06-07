@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <TsContain border="border">
     <template v-slot:topRight>
@@ -74,10 +60,10 @@
 export default {
   name: 'JobManage', // 巡检作业
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    Liquid: resolve => require(['@/resources/components/SimpleGraph/Liquid.vue'], resolve),
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue'),
+    Status: () => import('@/resources/components/Status/CommonStatus.vue')
   },
   filters: {},
   props: {},
@@ -135,8 +121,8 @@ export default {
           type: 'user',
           uuid: 'uuid'
         },
-        { 
-          key: 'action' 
+        {
+          key: 'action'
         }
       ],
       searchConfig: {
@@ -175,7 +161,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-   
+
   },
   beforeMount() {},
   mounted() { this.searchJob(1); },
@@ -191,7 +177,7 @@ export default {
   },
   destroyed() {},
   methods: {
-    searchJob(currentPage) { 
+    searchJob(currentPage) {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }

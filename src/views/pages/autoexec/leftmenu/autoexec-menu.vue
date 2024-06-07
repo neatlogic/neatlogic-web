@@ -47,7 +47,7 @@ import LeftMenu from '@/views/components/leftmenu/leftmenu';
 export default {
   name: 'LeftMenu',
   components: {
-    PortfolioToolsDialog: resolve => require(['../manage/tool/portfolio-tools-dialog'], resolve) // 创建作业(选择组合工具入口）
+    PortfolioToolsDialog: () => import('../manage/tool/portfolio-tools-dialog') // 创建作业(选择组合工具入口）
   },
   extends: LeftMenu,
   props: ['action'],

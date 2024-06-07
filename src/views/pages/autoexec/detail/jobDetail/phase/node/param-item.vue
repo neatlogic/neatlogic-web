@@ -4,11 +4,11 @@
       <template v-if="config[keyName] && config[keyName].fileList && config[keyName].fileList.length ">
         <span
           v-for="file in config[keyName].fileList"
-          :key="file.id"          
+          :key="file.id"
           class="text-href"
         >
           <span
-            v-if="file.response" 
+            v-if="file.response"
             v-download="{
               url:file.response.Return.url,
               method:'post'
@@ -39,7 +39,7 @@
           <span v-else>
             {{ node.ip }}
           </span>
-          
+
         </span>
       </div>
     </template>
@@ -66,7 +66,7 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   filters: {},
   directives: { download },

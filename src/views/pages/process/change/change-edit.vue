@@ -144,13 +144,13 @@ import draggable from 'vuedraggable';
 export default {
   name: 'ChangeEdit',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve),
-    ChangeSetting: resolve => require(['./change-setting.vue'], resolve),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    ChangeSetting: () => import('./change-setting.vue'),
     draggable,
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    StepView: resolve => require(['./setting/step-view.vue'], resolve)
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    StepView: () => import('./setting/step-view.vue')
   },
   provide() {
     return {
@@ -177,7 +177,7 @@ export default {
       groupList: ['team'],
       nameValidateList: ['required', 'name-special', {
         name: 'searchUrl',
-        url: 'api/rest/change/template/save', 
+        url: 'api/rest/change/template/save',
         key: 'name',
         params: () => ({id: this.changeTemplateId})
       }],

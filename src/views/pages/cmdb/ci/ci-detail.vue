@@ -2,7 +2,7 @@
   <div>
     <TsContain border="border" :enableCollapse="true">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topRight>
         <div v-if="ciData.authData && ciData.authData['cimanage']" class="dashboard-action action-group" style="text-align: right">
@@ -32,7 +32,12 @@
       </template>
       <template v-slot:sider>
         <div>
-          <ciTypeList ref="ciTypeList" :ciId="ciId" @click="switchCi"></ciTypeList>
+          <ciTypeList
+            ref="ciTypeList"
+            :toggleable="false"
+            :ciId="ciId"
+            @click="switchCi"
+          ></ciTypeList>
         </div>
       </template>
       <div slot="content" class="ci-content border-color">
@@ -61,7 +66,7 @@
           </div>
           <div class="mt-nm">
             <Tabs v-model="currentTab" class="block-tabs" :animated="false">
-              <TabPane name="attr" :label="$t('page.attribute')" class="padding">
+              <TabPane name="attr" :label="$t('page.attribute')" class="pt-nm pl-nm pr-nm">
                 <CiDetailAttrList
                   :ciData="ciData"
                   :attrData="attrData"
@@ -71,7 +76,7 @@
                 ></CiDetailAttrList>
                 <Divider v-if="!ciData.isVirtual && attrList && attrList.length > 0" />
                 <TsForm
-                  v-if="!ciData.isVirtual && attrList && attrList.length > 0"
+                  v-if="!ciData.isVirtual && attrList && attrList.length > 0 && !isLoading"
                   ref="formCi"
                   style="margin-top: 10px"
                   :item-list="attrFormConfig"
@@ -88,9 +93,9 @@
                 ></CiDetailRelList>
               </TabPane>
               <TabPane
-                v-if="!ciData.isVirtual && globalAttrData && globalAttrData.tbodyList && globalAttrData.tbodyList.length > 0"
+                v-if="!ciData.isVirtual && globalAttrData && globalAttrData && globalAttrData.length > 0"
                 name="global"
-                class="padding"
+                class="pt-nm pl-nm pr-nm"
                 :label="$t('term.cmdb.globalattr')"
               >
                 <CiDetailGlobalAttrList :attrData="globalAttrData"></CiDetailGlobalAttrList>
@@ -126,27 +131,30 @@
 </template>
 <script>
 import ciTypeList from '../components/ci/ci-type-list.vue';
-import menuMinix from '../mixins/index';
+//import menuMinix from '../mixins/index';
 import TsForm from '@/resources/plugins/TsForm/TsForm';
 import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    CiDetailRelList: resolve => require(['./ci-detail-rellist.vue'], resolve),
-    CiDetailAttrList: resolve => require(['./ci-detail-attrlist.vue'], resolve),
-    CiDetailGlobalAttrList: resolve => require(['./ci-detail-globalattrlist.vue'], resolve),
-    CiEdit: resolve => require(['./ci-edit.vue'], resolve),
-    AttrEdit: resolve => require(['./attr-edit.vue'], resolve),
-    RelEdit: resolve => require(['./rel-edit.vue'], resolve),
-    AuthEdit: resolve => require(['./auth-edit.vue'], resolve),
-    ViewEdit: resolve => require(['./view-edit.vue'], resolve),
-    //SyncEdit: resolve => require(['./syncpolicy-edit.vue'], resolve),
-    LegalValidEdit: resolve => require(['./legalvalid-edit.vue'], resolve),
+    CiDetailRelList: () => import('./ci-detail-rellist.vue'),
+    CiDetailAttrList: () => import('./ci-detail-attrlist.vue'),
+    CiDetailGlobalAttrList: () => import('./ci-detail-globalattrlist.vue'),
+    CiEdit: () => import('./ci-edit.vue'),
+    AttrEdit: () => import('./attr-edit.vue'),
+    RelEdit: () => import('./rel-edit.vue'),
+    AuthEdit: () => import('./auth-edit.vue'),
+    ViewEdit: () => import('./view-edit.vue'),
+    //SyncEdit:()=>import('./syncpolicy-edit.vue'),
+    LegalValidEdit: () => import('./legalvalid-edit.vue'),
     TsForm,
     // HelloWorld,
     ciTypeList
   },
-  mixins: [menuMinix, download],
+  mixins: [
+    //menuMinix,
+    download
+  ],
   props: {},
   data() {
     return {
@@ -166,14 +174,12 @@ export default {
       ciId: parseInt(this.$route.params['id']),
       attrFormConfig: {
         nameAttrId: {
-          name: 'nameAttrId',
           type: 'radio',
           label: this.$t('term.cmdb.nameattribute'),
           tooltip: this.$t('form.help.nameattribute'),
           descType: 'error',
           dataList: [],
           onChange: val => {
-            console.log(val);
             this.updateCiNameAttrId(val);
           }
         },
@@ -195,7 +201,6 @@ export default {
       attrRuleList: [],
       relData: { theadList: [] },
       isLoading: true,
-      leftWidth: 200,
       sessionName: 'civiewbox'
     };
   },
@@ -245,10 +250,13 @@ export default {
         }
       });
     },
-    updateCiNameAttrId: function(attrId) {
+    updateCiNameAttrId(attrId) {
       this.$api.cmdb.ci.updateCiNameAttrId(this.ciId, attrId).then(res => {
-        if (res.Status == 'OK') {
+        if (res.Status === 'OK') {
           this.$set(this.ciData, 'nameAttrId', attrId);
+          this.$set(this.attrFormConfig.nameAttrId, 'value', attrId);
+          //必须要有，否则radio无法更新value
+          this.$refs['formCi'].$forceUpdate();
           this.$Message.success(this.$t('message.savesuccess'));
         }
       });
@@ -276,7 +284,7 @@ export default {
       }, 500);
     },
     async getCiById() {
-      await this.$api.cmdb.ci.getCiById(this.ciId, true).then(res => {
+      await this.$api.cmdb.ci.getCiById(this.ciId, { needAction: true }).then(res => {
         this.ciData = Object.assign({}, res.Return);
         this.attrFormConfig.uniqueRule.value = this.ciData.uniqueAttrIdList;
         this.attrFormConfig.nameAttrId.value = this.ciData.nameAttrId;
@@ -296,7 +304,7 @@ export default {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
               this.$router.push({ path: '/ci-manage' });
-              this.getMenuList();
+              //this.getMenuList();
               vnode.isShow = false;
             }
           });
@@ -304,12 +312,12 @@ export default {
       });
     },
     async getGlobalAttr() {
-      await this.$api.cmdb.globalattr.searchGlobalAttr({ isActive: 1 }).then(res => {
+      await this.$api.cmdb.ci.getGlobalAttrByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
         this.globalAttrData = res.Return;
       });
     },
     async getAttrByCiId() {
-      await this.$api.cmdb.ci.getAttrByCiId(this.ciId).then(res => {
+      await this.$api.cmdb.ci.getAttrByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
         this.$set(this.attrData, 'tbodyList', res.Return);
         this.attrList = res.Return;
         const attrList = res.Return;
@@ -317,7 +325,9 @@ export default {
         this.attrFormConfig.nameAttrId.dataList = [];
         if (attrList && attrList.length > 0) {
           attrList.forEach(attr => {
-            this.attrFormConfig.uniqueRule.dataList.push({ value: attr.id, text: attr.label });
+            if (attr.type !== 'expression') {
+              this.attrFormConfig.uniqueRule.dataList.push({ value: attr.id, text: attr.label });
+            }
             this.attrFormConfig.nameAttrId.dataList.push({ value: attr.id, text: attr.label });
           });
           if (this.$refs['formCi']) {
@@ -327,7 +337,7 @@ export default {
       });
     },
     async getRelByCiId() {
-      await this.$api.cmdb.ci.getRelByCiId(this.ciId).then(res => {
+      await this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
         const relMap = new Map();
         this.$set(
           this.relData,
@@ -339,9 +349,9 @@ export default {
     },
     toParentCi(ciId) {
       const ci = { id: ciId };
-      this.switchCi(null, ci);
+      this.switchCi(ci);
     },
-    switchCi: function(ciType, ci) {
+    switchCi(ci) {
       this.isLoading = true;
       this.ciId = ci.id;
       this.init();
@@ -402,6 +412,7 @@ export default {
         this.getCiById();
         this.getAttrByCiId();
         this.getRelByCiId();
+        this.$refs['ciTypeList'] && this.$refs['ciTypeList'].searchTreeData();
       }
     },
     closeAttrDialog: function(needRefresh) {
@@ -463,9 +474,6 @@ export default {
 </script>
 <style lang="less" scoped>
 @import '../public/common.less';
-/deep/.ivu-tabs-bar {
-  margin-bottom: 0px !important;
-}
 /deep/.ivu-checkbox {
   vertical-align: text-bottom;
 }

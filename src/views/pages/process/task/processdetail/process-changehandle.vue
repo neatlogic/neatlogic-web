@@ -2,12 +2,12 @@
   <div class="taskdetail-changehandle">
     <Loading :loadingShow="taskLoading" type="fix"></Loading>
     <TsContain
-      :leftWidth="260"
+      :siderWidth="260"
       :isSiderHide="!isOrderLeft"
       :sessionName="sessionName"
     >
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back(prevPath.router)">{{ $getFromPage(prevPath.name) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="taskdetail-top">
@@ -20,7 +20,6 @@
             @isTslayout="isTslayout"
             @editTitle="editTitle"
             @changeTitle="changeTitle"
-            @toPrevpath="toPrevpath"
           ></NavTop>
           <div class="toolbar-right">
             <div class="action-group">
@@ -159,13 +158,13 @@
               </span>
               <!-- 回退s -->
               <span v-if="actionConfig.back && backStepList.length > 1" class="action-item">
-                <Button      
+                <Button
                   icon="tsfont tsfont-reply"
                   @click="backTask"
                 >{{ actionConfig.back }}</Button>
               </span>
               <span v-if="actionConfig.back && backStepList.length == 1" class="action-item">
-                <Button           
+                <Button
                   style="max-width:180px"
                   class="overflow"
                   icon="tsfont tsfont-reply"
@@ -174,7 +173,7 @@
                 >{{ actionConfig.back }}</Button>
               </span>
               <!-- 回退_end -->
-              
+
               <!-- 流转_start -->
               <span v-if="actionStepconfig.succeedchange" class="action-item">
                 <Button
@@ -193,7 +192,7 @@
           </div>
         </div>
       </template>
-      <template v-slot:left>
+      <template v-slot:sider>
         <slot></slot>
       </template>
       <template v-slot:content>
@@ -205,8 +204,7 @@
             :rightWidth="290"
             :hasContentPadding="false"
             hideHeader
-            :isSiderHide="!isOrderRight"
-            siderPosition="right"
+            :isRightSiderHide="!isOrderRight"
             :rightBtn="true"
             @rightSiderToggle="rightSiderToggle"
           >
@@ -520,20 +518,20 @@ export default {
   name: '',
   tagComponent: 'taskDeal', //主要用来标识是上报页面，为表单修改优先级做标志
   components: {
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve),
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    CenterDetail: resolve => require(['./workorder/CenterDetail.vue'], resolve),
-    RightSetting: resolve => require(['./workorder/RightSetting.vue'], resolve),
-    LookSitemapDialog: resolve => require(['./workorder/actiondialog/lookSitemap.vue'], resolve),
-    TransferDialog: resolve => require(['./workorder/actiondialog/transfer.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem.vue'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    RanferreportDialog: resolve => require(['./workorder/actiondialog/tranferreport.vue'], resolve),
-    NavTop: resolve => require(['./navTop.vue'], resolve),
-    TaskAlert: resolve => require(['@/views/pages/process/task/processdetail/workorder/alert/top-alert.vue'], resolve),
-    ChangeDispatch: resolve => require(['@/views/pages/process/task/processdetail/workorder/change/change-dispatch.vue'], resolve),
-    ChangeDetail: resolve => require(['@/views/pages/process/task/processdetail/workorder/change/change-detail.vue'], resolve),
-    StepSelect: resolve => require(['@/views/pages/process/task/processdetail/workorder/common/step-select.vue'], resolve),
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    CenterDetail: () => import('./workorder/CenterDetail.vue'),
+    RightSetting: () => import('./workorder/RightSetting.vue'),
+    LookSitemapDialog: () => import('./workorder/actiondialog/lookSitemap.vue'),
+    TransferDialog: () => import('./workorder/actiondialog/transfer.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem.vue'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
+    RanferreportDialog: () => import('./workorder/actiondialog/tranferreport.vue'),
+    NavTop: () => import('./navTop.vue'),
+    TaskAlert: () => import('@/views/pages/process/task/processdetail/workorder/alert/top-alert.vue'),
+    ChangeDispatch: () => import('@/views/pages/process/task/processdetail/workorder/change/change-dispatch.vue'),
+    ChangeDetail: () => import('@/views/pages/process/task/processdetail/workorder/change/change-detail.vue'),
+    StepSelect: () => import('@/views/pages/process/task/processdetail/workorder/common/step-select.vue'),
     FooterOperationBtn
   },
   directives: {
@@ -542,7 +540,7 @@ export default {
   mixins: [detailmixin],
   props: {},
   data() {
-    return {   
+    return {
       // taskForm: null, //工单表单查看权限
       completeDialogtitle: this.$t('term.process.circulation'),
       //变更

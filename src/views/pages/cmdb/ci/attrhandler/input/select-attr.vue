@@ -38,7 +38,7 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     disabled: { type: Boolean, default: false },
@@ -53,7 +53,7 @@ export default {
         border: 'border',
         search: true,
         width: '100%',
-        dynamicUrl: '/api/rest/cmdb/attr/targetci/search?attrId=' + this.attrData.id,
+        dynamicUrl: '/api/rest/cmdb/attr/targetci/search?attrId=' + this.attrData.id + '&pageSize=40',
         textName: 'name',
         valueName: 'id',
         transfer: true,
@@ -70,7 +70,7 @@ export default {
                 returnActualValue.push(opt.text);
               }
             }
-          } 
+          }
           if (this.extraDataList.length > 0) {
             this.extraDataList.forEach(d => {
               returnValue.push(d);
@@ -88,7 +88,13 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.attrData) {
+      if (this.attrData.isRequired || this.attrData.isCiUnique) {
+        this.validateList.push('required');
+      }
+    }
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -104,9 +110,9 @@ export default {
       let isValid = true;
       if (handler) {
         isValid = handler.valid();
-      } 
+      }
       if (isValid) {
-        if (this.attrData && this.attrData.isRequired == 1) {
+        if (this.attrData && (this.attrData.isRequired || this.attrData.isCiUnique)) {
           if (this.selectValueList.length == 0 && this.extraDataList.length == 0) {
             isValid = false;
           }
@@ -173,7 +179,7 @@ export default {
     }
   },
   watch: {
-    attrData: {
+    /*attrData: {
       handler: function() {
         if (this.attrData) {
           if (this.attrData.isRequired == 1) {
@@ -184,6 +190,7 @@ export default {
       deep: true,
       immediate: true
     }
+    */
   }
 };
 </script>

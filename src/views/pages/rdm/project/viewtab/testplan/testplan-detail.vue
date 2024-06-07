@@ -113,16 +113,16 @@ import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base
 export default {
   name: '',
   components: {
-    IssueTitle: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-title.vue'], resolve),
-    //IssueContent: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-content.vue'], resolve),
-    ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
-    AttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-list.vue'], resolve),
-    StatusRequiredAttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue'], resolve),
-    IssueAuditList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve)
+    IssueTitle: () => import('@/views/pages/rdm/project/viewtab/components/issue-title.vue'),
+    //IssueContent:()=>import('@/views/pages/rdm/project/viewtab/components/issue-content.vue'),
+    ContentHandler: () => import('@/views/pages/rdm/project/content-handler/content-handler.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    CommentList: () => import('@/views/pages/rdm/project/viewtab/components/comment-list.vue'),
+    TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue'),
+    AttrList: () => import('@/views/pages/rdm/project/viewtab/components/attr-list.vue'),
+    StatusRequiredAttrList: () => import('@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue'),
+    IssueAuditList: () => import('@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'),
+    IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue')
   },
   extends: IssueDetailBase,
   props: {},

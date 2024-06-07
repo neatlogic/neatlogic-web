@@ -34,8 +34,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    IconDialog: resolve => require(['@/views/pages/common/icon-dialog.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    IconDialog: () => import('@/views/pages/common/icon-dialog.vue')
   },
   props: {
     type: { type: String }

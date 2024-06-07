@@ -24,7 +24,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     params: {
@@ -32,11 +32,17 @@ export default {
       default: function() {
         return {};
       }
+    },
+    runnerId: {
+      type: Number,
+      default: null
     }
   },
   data() {
     return {
-      formValue: {},
+      formValue: {
+        runnerGroupId: this.runnerId
+      },
       formConfig: [
         {
           name: 'runnerGroupId',

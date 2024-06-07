@@ -56,7 +56,7 @@ import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormSelect
   },
   filters: {},
@@ -220,7 +220,7 @@ export default {
           }
         });
       }
-     
+
       this.$emit('success', msg);
     },
     closeDialog: function(needRefresh) {

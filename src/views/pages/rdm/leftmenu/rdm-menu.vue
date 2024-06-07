@@ -37,7 +37,7 @@
 export default {
   name: 'RdmMenu',
   components: {
-    ProjectEditDialog: resolve => require(['@/views/pages/rdm/project/project-add-dialog.vue'], resolve)
+    ProjectEditDialog: () => import('@/views/pages/rdm/project/project-add-dialog.vue')
   },
   data: function() {
     return {
@@ -57,6 +57,7 @@ export default {
       this.$router.push({ path: path });
     },
     toProjectManage(projectId) {
+      this.$route.meta.clearHistory = true; // 激活清理历史标记
       this.$router.push({ path: '/project-edit/' + projectId });
     },
     addProject() {

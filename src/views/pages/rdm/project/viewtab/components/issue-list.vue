@@ -24,7 +24,7 @@
           v-if="canSearch && isShowCombineSearcher"
           v-model="searchValue"
           v-bind="searchConfig"
-          @confirm="searchIssue(1)"
+          @change="searchIssue(1)"
         >
           <template v-slot:createDate="{ valueConfig, textConfig }">
             <TsFormDatePicker
@@ -54,20 +54,24 @@
                 :attrConfig="attr"
                 :value="attr.isPrivate ? valueConfig[attr.name] : valueConfig['attr_' + attr.id]"
                 mode="search"
-                @changeLabel="(text, selectedList) => changeLabel(attr, text, selectedList, textConfig)"
+                @changeLabel="(text) => changeLabel(attr, text, textConfig)"
                 @setValue="
                   (val, text) => {
                     if (attr.isPrivate) {
                       if (val != null) {
                         $set(valueConfig, attr.name, val);
+                        $set(textConfig, attr.name, text);
                       } else {
                         $delete(valueConfig, attr.name);
+                        $delete(textConfig, attr.name);
                       }
                     } else {
                       if (val != null) {
                         $set(valueConfig, 'attr_' + attr.id, val);
+                        $set(textConfig, 'attr_' + attr.id, text);
                       } else {
                         $delete(valueConfig, 'attr_' + attr.id);
+                        $delete(textConfig, 'attr_' + attr.id);
                       }
                     }
                   }
@@ -121,6 +125,7 @@
         <IssueListTable
           v-if="isSearchReady && issueData && issueData.tbodyList && issueData.tbodyList.length > 0"
           :theadList="finalTheadList"
+          :fixedHeader="fixedHeader"
           :sortList="sortList"
           :issueData="issueData"
           :attrList="attrList"
@@ -199,12 +204,7 @@
       :hasFooter="false"
       :isScrollbar="true"
       :hasContentPadding="false"
-      @on-close="
-        isIssueDetailShow = false;
-        currentIssue = null;
-        searchIssue();
-        $emit('refresh');
-      "
+      @on-close="closeIssueDetail"
     >
       <template v-slot>
         <div>
@@ -233,20 +233,20 @@ export default {
   name: '',
   components: {
     ...issueDetailHandler,
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    IssueStatus: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-status.vue'], resolve),
-    AppIcon: resolve => require(['@/views/pages/rdm/project/viewtab/components/app-icon.vue'], resolve),
-    CombineSearcher: resolve => require(['@/resources/components/CombineSearcher/CombineSearcher.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    AttrViewer: resolve => require(['@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'], resolve),
-    AttrHandler: resolve => require(['@/views/pages/rdm/project/attr-handler/attr-handler.vue'], resolve),
-    EditIssue: resolve => require(['@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'], resolve),
-    IssueListDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-dialog.vue'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    BatchExecDialog: resolve => require(['@/views/pages/rdm/project/viewtab/components/batchexecute-issue-dialog.vue'], resolve),
-    IssueListTable: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-table.vue'], resolve),
-    IssueListGantt: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-gantt.vue'], resolve),
-    IssueListStorywall: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list-storywall.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue'),
+    AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AttrViewer: () => import('@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'),
+    AttrHandler: () => import('@/views/pages/rdm/project/attr-handler/attr-handler.vue'),
+    EditIssue: () => import('@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'),
+    IssueListDialog: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-dialog.vue'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    BatchExecDialog: () => import('@/views/pages/rdm/project/viewtab/components/batchexecute-issue-dialog.vue'),
+    IssueListTable: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-table.vue'),
+    IssueListGantt: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-gantt.vue'),
+    IssueListStorywall: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-storywall.vue')
   },
   props: {
     mode: { type: String, default: 'list' }, //显示模式，有level和list两种
@@ -284,7 +284,11 @@ export default {
         return ['story', 'testcase', 'bug', 'task'].includes(value);
       }
     },
-    catalog: { type: Number }
+    catalog: { type: Number },
+    fixedHeader: { // 固定表头，默认true
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
@@ -367,7 +371,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    changeLabel(attr, text, selectedList, textConfig) {
+    closeIssueDetail() {
+      this.isIssueDetailShow = false;
+      this.currentIssue = null;
+      this.searchIssue();
+      this.$emit('refresh');
+    },
+    changeLabel(attr, text, textConfig) {
       if (attr.isPrivate) {
         if (text?.length > 0) {
           this.$set(textConfig, attr.name, text?.length > 0 ? text : '');
@@ -680,7 +690,7 @@ export default {
       this.searchIssueData.isExpired = this.isExpired;
       this.searchIssueData.isFavorite = this.isFavorite;
       this.searchIssueData.isProcessed = this.isProcessed;
-      
+
       if (!this.$utils.isEmpty(this.searchValue)) {
         for (let key in this.searchValue) {
           if (key.startsWith('attr_')) {

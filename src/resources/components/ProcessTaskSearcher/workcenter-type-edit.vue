@@ -15,7 +15,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {},
   data() {
@@ -73,14 +73,14 @@ export default {
           isHidden: true,
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'neatlogic.framework.common.constvalue.DeviceType' }
-        },       
-        authList: { 
+        },
+        authList: {
           type: 'userselect',
           isMultiple: true,
           isHidden: true,
           label: this.$t('page.auth'),
           transfer: true,
-          validateList: [{ name: 'required', message: this.$t('page.authuserroleteam') }], 
+          validateList: [{ name: 'required', message: this.$t('page.authuserroleteam') }],
           groupList: ['user', 'role', 'common']
         },
         isShowTotal: {

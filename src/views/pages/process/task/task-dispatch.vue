@@ -7,6 +7,8 @@
       border="none"
       :siderWidth="246"
       :clearStyle="true"
+      :isSiderHide="hideDispatchTaskList"
+      @toggleSiderHide="toggleSiderHide"
     >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
@@ -26,12 +28,7 @@
             <span class="tsfont-save" @click="save()">{{ $t('term.process.savedraft') }}</span>
           </div>
           <div class="action-item">
-            <Button
-              :disable="disabledConfig.submiting"
-              type="primary"
-              @click="submitForm()"
-            >{{ $t('page.submit') }}
-            </Button>
+            <Button :disable="disabledConfig.submiting" type="primary" @click="submitForm()">{{ $t('page.submit') }}</Button>
           </div>
         </div>
       </template>
@@ -50,12 +47,12 @@
               ></TsFormInput>
             </div>
           </div>
-          <div class="channel-list" style="overflow:auto">
+          <div class="channel-list" style="overflow: auto">
             <ul v-if="channelList && channelList.length > 0" ref="channel">
               <li
                 v-for="(item, index) in channelList"
                 :id="item.uuid"
-                :ref="'id'+item.uuid"
+                :ref="'id' + item.uuid"
                 :key="index"
                 class="li-text radius-sm overflow"
                 :class="item.uuid == channelUuid ? 'bg-grey-select' : 'bg-td-hover'"
@@ -70,7 +67,7 @@
         </div>
       </template>
       <template v-slot:content>
-        <DispatchCommon 
+        <DispatchCommon
           ref="dispatchCommon"
           :handler="handler"
           :draftData="draftData"
@@ -81,37 +78,42 @@
       </template>
     </TsContain>
     <TsDialog :isShow.sync="isShowFlowmap" v-bind="flowmapConfig">
-      <div ref="topo" style="min-height: 480px; height: 100%;"></div>
+      <template v-slot:header>
+        <span class="text-action" @click="openFlow()">{{ flowmapConfig.title }}</span>
+      </template>
+      <div ref="topo" style="min-height: 480px; height: 100%"></div>
     </TsDialog>
     <ValidDialog :isShow.sync="validCardOpen" :validList="validList" @validItem="validItem"></ValidDialog>
     <SubmitDialog
       v-if="submitModel"
       :processTaskId="processTaskId"
       :channelUuid="channelUuid"
-      @close="submitModel=false"
+      @close="submitModel = false"
     ></SubmitDialog>
     <AssignDialog
       v-if="assignModal"
       :nextstepList="nextstepList"
       @selectStep="selectStep"
       @saveStep="saveStep"
-      @close="assignModal=false"
+      @close="assignModal = false"
     ></AssignDialog>
   </div>
 </template>
 <script>
 import '@/views/pages/process/flow/topoComponent/index.js';
-import {store, mutations} from './processdispatch/dispatchState.js';
+import { store, mutations } from './processdispatch/dispatchState.js';
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    DispatchCommon: resolve => require(['./processdispatch/dispatch-common.vue'], resolve),
-    ValidDialog: resolve => require(['./processdispatch/workorder/valid-dialog.vue'], resolve),
-    SubmitDialog: resolve => require(['./processdispatch/workorder/submit-dialog.vue'], resolve),
-    AssignDialog: resolve => require(['./processdispatch/workorder/assign-dialog.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    DispatchCommon: () => import('./processdispatch/dispatch-common.vue'),
+    ValidDialog: () => import('./processdispatch/workorder/valid-dialog.vue'),
+    SubmitDialog: () => import('./processdispatch/workorder/submit-dialog.vue'),
+    AssignDialog: () => import('./processdispatch/workorder/assign-dialog.vue')
   },
-  props: {},
+  props: {
+    propChannelUuid: { type: String }
+  },
   data() {
     return {
       taskLoading: true,
@@ -123,6 +125,7 @@ export default {
       fromProcessTaskId: null, //来源工单id(转报)
       channelTypeRelationId: null, // 关系类型id（转报）
       copyProcessTaskId: null, //复制上报工单
+      parentProcessTaskStepId: null, //父工单步骤id
       draftData: {},
       disabledConfig: {
         submiting: false,
@@ -131,9 +134,8 @@ export default {
       validCardOpen: false,
       isShowFlowmap: false, //展示流程图
       flowmapConfig: {
-        title: this.$t('term.process.viewflowchart'),
-        width: 'medium',
-        height: '600px',
+        width: 'large',
+        height: 'calc(100vh - 200px)',
         fullscreen: true,
         hasFooter: false,
         maskClose: true
@@ -146,23 +148,31 @@ export default {
       assignModal: false,
       convenienceDetail: null,
       nextstepList: [],
-      showDetailConfig: { //内容详情展示/收起
+      showDetailConfig: {
+        //内容详情展示/收起
         title: true,
         form: true,
         content: true,
         file: true,
         handlerStepInfo: true
-      }
+      },
+      hideDispatchTaskList: true //隐藏工单上报页左侧任务列表
     };
   },
   beforeCreate() {},
   async created() {
+    let hideDispatchTaskList = localStorage.getItem('hideDispatchTaskList');
+    if (hideDispatchTaskList) {
+      this.hideDispatchTaskList = JSON.parse(hideDispatchTaskList);
+    }
     await this.getProfile();
-    this.channelUuid = this.$route.query.uuid || null;
+    this.channelUuid = this.propChannelUuid || this.$route.query.uuid || null;
     this.processTaskId = this.$route.query.processTaskId || sessionStorage.getItem('processTaskId') || null;
     this.fromProcessTaskId = this.$route.query.fromProcessTaskId || null;
     this.channelTypeRelationId = this.$route.query.channelTypeRelationId || null;
     this.copyProcessTaskId = this.$route.query.copyProcessTaskId || null;
+    this.parentProcessTaskStepId = this.$route.query.parentProcessTaskStepId || null;
+    this.invoke = this.$route.query.invoke || null;
     await this.getChannel();
     this.getChannelInfo();
     this.$nextTick(() => {
@@ -220,34 +230,50 @@ export default {
       mutations.setShowDetailConfig(this.showDetailConfig);
       let param = {};
       this.taskLoading = true;
-      this.channelUuid && Object.assign(param, {
-        channelUuid: this.channelUuid
-      });
-      this.processTaskId && Object.assign(param, {
-        processTaskId: this.processTaskId
-      });
-      this.fromProcessTaskId && Object.assign(param, {
-        fromProcessTaskId: this.fromProcessTaskId
-      });
-      this.channelTypeRelationId && Object.assign(param, {
-        channelTypeRelationId: this.channelTypeRelationId
-      });
-      this.copyProcessTaskId && Object.assign(param, {
-        copyProcessTaskId: this.copyProcessTaskId
-      });
-      this.$api.process.process.getDraft(param).then(res => {
-        if (res.Status == 'OK') {
-          this.handler = res.Return.startProcessTaskStep.handler;
-          this.draftData = res.Return;
-          this.channelUuid = this.draftData.channelUuid;
-          this.getInitData();
-          if (res.Return.id) {
-            this.autoSaveKey = true;
+      this.channelUuid &&
+        Object.assign(param, {
+          channelUuid: this.channelUuid
+        });
+      this.processTaskId &&
+        Object.assign(param, {
+          processTaskId: this.processTaskId
+        });
+      this.fromProcessTaskId &&
+        Object.assign(param, {
+          fromProcessTaskId: this.fromProcessTaskId
+        });
+      this.channelTypeRelationId &&
+        Object.assign(param, {
+          channelTypeRelationId: this.channelTypeRelationId
+        });
+      this.copyProcessTaskId &&
+        Object.assign(param, {
+          copyProcessTaskId: this.copyProcessTaskId
+        });
+      this.parentProcessTaskStepId &&
+        Object.assign(param, {
+          parentProcessTaskStepId: this.parentProcessTaskStepId
+        });
+      this.invoke &&
+        Object.assign(param, {
+          invoke: this.invoke
+        });
+      this.$api.process.process
+        .getDraft(param)
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.handler = res.Return.startProcessTaskStep.handler;
+            this.draftData = res.Return;
+            this.channelUuid = this.draftData.channelUuid;
+            this.getInitData();
+            if (res.Return.id) {
+              this.autoSaveKey = true;
+            }
           }
-        }
-      }).finally(() => {
-        this.taskLoading = false;
-      });
+        })
+        .finally(() => {
+          this.taskLoading = false;
+        });
     },
     getInitData() {
       this.initData = {
@@ -300,7 +326,8 @@ export default {
       }
       this.$addWatchData(this.initData);
     },
-    getChannel(val) { //获取服务列表
+    getChannel(val) {
+      //获取服务列表
       let key = val || '';
       let data = {
         needPage: false,
@@ -324,11 +351,15 @@ export default {
       this.sitemapFullscreen = false;
       if (data.Status == 'OK') {
         this.processConfig = data.Return.config;
-        // this.flowmapConfig.title = '流程图' + this.processConfig.process.processConfig.name;
+        this.flowmapConfig.title = this.processConfig.process.processConfig.name;
         this.initTopo(data.Return);
       }
     },
-    initTopo(data) { //获取流程图
+    openFlow() {
+      window.open(HOME + '/process.html#/flow-edit?uuid=' + this.processConfig.process.processConfig.uuid, '_blank');
+    },
+    initTopo(data) {
+      //获取流程图
       if (!data) return;
       let viewOpts = {
         'canvas.autoadjust': true, //显示辅助线
@@ -344,13 +375,16 @@ export default {
         var topodata = this.processConfig.topo || { nodes: startEndNode, links: [] };
         this.$topoVm = new Topo(this.$refs.topo, viewOpts);
         this.$topoVm.draw();
-        topodata.links.forEach(link => { link.type = link.dirType || link.type; });
+        topodata.links.forEach(link => {
+          link.type = link.dirType || link.type;
+        });
         this.$topoVm.fromJson(JSON.parse(JSON.stringify(topodata)));
         this.$topoVm.center(0);
         this.changeNodeStatus(data.processTaskStepList, data.processTaskStepRelList);
       });
     },
-    changeNodeStatus(stepList, relList) { //上报：流程图节点状态提示
+    changeNodeStatus(stepList, relList) {
+      //上报：流程图节点状态提示
       let allNodes = this.$topoVm.getNodes();
       let process = this.processConfig.process;
       let startUuid = process.stepList.find(s => s.handler == 'start').uuid;
@@ -363,13 +397,14 @@ export default {
       let allLinks = this.$topoVm.links;
       let startNodeUuid = allNodes.find(a => a.getType() === 'start');
       startNodeUuid = startNodeUuid ? startNodeUuid.getUuid() : null;
-      startNodeUuid && allLinks.find(item => {
-        if (item.getSource() == startNodeUuid) {
-          item.setClass('linkPath success');
-          return true;
-        }
-        return false;
-      });
+      startNodeUuid &&
+        allLinks.find(item => {
+          if (item.getSource() == startNodeUuid) {
+            item.setClass('linkPath success');
+            return true;
+          }
+          return false;
+        });
       relList.forEach(rel => {
         if (rel.isHit > 0) {
           let link = this.$topoVm.getLinkByUuid(rel.processStepRelUuid);
@@ -380,7 +415,8 @@ export default {
     channelClick(item) {
       this.$router.replace({ query: { uuid: item.uuid } });
     },
-    save() { //暂存
+    save() {
+      //暂存
       let _this = this;
       let workdata = this.$refs.dispatchCommon.getData();
       this.initData = this.$utils.deepClone(workdata);
@@ -401,30 +437,45 @@ export default {
       if (this.channelTypeRelationId) {
         this.$set(workdata, 'channelTypeRelationId', this.channelTypeRelationId);
       }
-      
+      if (this.parentProcessTaskStepId) {
+        this.$set(workdata, 'parentProcessTaskStepId', this.parentProcessTaskStepId);
+      }
+      if (this.invoke) {
+        this.$set(workdata, 'invoke', this.invoke);
+      }
+      if (workdata.owner) {
+        let reporter = 'user#' + this.$AuthUtils.getCurrentUser().uuid;
+        if (reporter != workdata.owner) {
+          this.$set(workdata, 'reporter', reporter);
+        }
+      }
       return new Promise((resolve, reject) => {
         if (!this.disabledConfig.saving) {
           this.disabledConfig.saving = true;
-          this.$api.process.processtask.save(workdata).then(res => {
-            this.disabledConfig.saving = false;
-            if (res.Status == 'OK') {
-              let data = res.Return;
-              _this.processTaskId = data.processTaskId;
-              _this.processTaskStepId = data.processTaskStepId;
-              sessionStorage.setItem('processTaskId', _this.processTaskId);
-              resolve(data);
-              _this.$Message.success(this.$t('page.saved', {target: this.$utils.getCurrenttime('HH:mm:ss')}));
-              _this.autoSaveKey = true;
-              _this.initData = _this.$refs.dispatchCommon.getData();
-              _this.$addWatchData(_this.initData);
-            }
-          }).finally(() => {
-            _this.disabledConfig.saving = false;
-          });
+          this.$api.process.processtask
+            .save(workdata)
+            .then(res => {
+              this.disabledConfig.saving = false;
+              if (res.Status == 'OK') {
+                let data = res.Return;
+                _this.processTaskId = data.processTaskId;
+                _this.processTaskStepId = data.processTaskStepId;
+                sessionStorage.setItem('processTaskId', _this.processTaskId);
+                resolve(data);
+                _this.$Message.success(this.$t('page.saved', { target: this.$utils.getCurrenttime('HH:mm:ss') }));
+                _this.autoSaveKey = true;
+                _this.initData = _this.$refs.dispatchCommon.getData();
+                _this.$addWatchData(_this.initData);
+              }
+            })
+            .finally(() => {
+              _this.disabledConfig.saving = false;
+            });
         }
       });
     },
-    async submitForm() { //提交
+    async submitForm() {
+      //提交
       this.validList = await this.$refs.dispatchCommon.valid();
       if (this.$utils.isEmpty(this.validList)) {
         this.startprocess();
@@ -432,7 +483,8 @@ export default {
         this.validCardOpen = true;
       }
     },
-    async startprocess() { //工单上报提交
+    async startprocess() {
+      //工单上报提交
       try {
         var data = await this.save();
         //获取到表单id之后进行工作时间校验
@@ -453,7 +505,8 @@ export default {
         }
       });
     },
-    saveStep(assignWorkerList) { //确定流转提交
+    saveStep(assignWorkerList) {
+      //确定流转提交
       if (!this.disabledConfig.submiting) {
         this.disabledConfig.submiting = true;
         this.disabledConfig.saving = true;
@@ -462,39 +515,42 @@ export default {
           nextStepId: this.nextStepId,
           assignWorkerList: assignWorkerList
         };
-        this.$api.process.processtask.startprocess(data).then(res => {
-          if (res.Status == 'OK') {
-            this.updateMenu();
-            this.assignModal = false;
-            //上报后不再进行定时保存
-            this.clearTimer();
-            if (this.convenienceDetail && this.convenienceDetail.checked == '1') {
-              this.submitModel = true;
-            } else {
-              let data = this.convenienceDetail.userProfileOperateList.find(d => d.checked == '1');
-              let value = data.value;
-              switch (value) {
-                //返回服务目录
-                case 'backcataloglist':
-                  this.$router.push({
-                    path: '/catalog-overview'
-                  });
-                  break;
-                //查看工单
-                case 'viewprocesstaskdetail':
-                  this.viewWork();
-                  break;
-                //继续上报
-                case 'keeponcreatetask':
-                  this.continueSubmit();
-                  break;
+        this.$api.process.processtask
+          .startprocess(data)
+          .then(res => {
+            if (res.Status == 'OK') {
+              this.updateMenu();
+              this.assignModal = false;
+              //上报后不再进行定时保存
+              this.clearTimer();
+              if (this.convenienceDetail && this.convenienceDetail.checked == '1') {
+                this.submitModel = true;
+              } else {
+                let data = this.convenienceDetail.userProfileOperateList.find(d => d.checked == '1');
+                let value = data.value;
+                switch (value) {
+                  //返回服务目录
+                  case 'backcataloglist':
+                    this.$router.push({
+                      path: '/catalog-overview'
+                    });
+                    break;
+                  //查看工单
+                  case 'viewprocesstaskdetail':
+                    this.viewWork();
+                    break;
+                  //继续上报
+                  case 'keeponcreatetask':
+                    this.continueSubmit();
+                    break;
+                }
               }
             }
-          }
-        }).catch((e) => {
-          this.disabledConfig.submiting = false;
-          this.disabledConfig.saving = false;
-        });
+          })
+          .catch(e => {
+            this.disabledConfig.submiting = false;
+            this.disabledConfig.saving = false;
+          });
       }
     },
     viewWork() {
@@ -515,7 +571,8 @@ export default {
         }
       });
     },
-    validItem(selector, item) { //校验：定位到指定位置
+    validItem(selector, item) {
+      //校验：定位到指定位置
       if (item && item.showDetail) {
         this.showDetailConfig[item.showDetail] = true;
         mutations.setShowDetailConfig(this.showDetailConfig);
@@ -537,7 +594,7 @@ export default {
                     throw Error('请完善填写信息');
                   });
                 } catch (err) {
-                // console.log(err);
+                  // console.log(err);
                 }
                 if (offsetp) {
                   offsetp.scrollTo({
@@ -559,9 +616,10 @@ export default {
     },
     rightSiderToggle() {
       this.isOrderRightHide = !this.isOrderRightHide;
+      this.updateFormWidth();
     },
     setTimer() {
-      this.timer = setInterval(() => { 
+      this.timer = setInterval(() => {
         let isSame = this.beforeLeaveCompare(this.initData);
         if (this.autoSaveKey && !isSame) {
           this.save();
@@ -570,42 +628,34 @@ export default {
         }
       }, 30000);
     },
-    clearObservable() { //清空状态管理的数据
-      store.showDetailConfig = {}; 
+    clearObservable() {
+      //清空状态管理的数据
+      store.showDetailConfig = {};
     },
     clearTimer() {
       clearInterval(this.timer);
       this.timer = null;
+    },
+    toggleSiderHide(isSiderHide) {
+      this.updateFormWidth();
+      localStorage.setItem('hideDispatchTaskList', isSiderHide);
+    },
+    updateFormWidth() {
+      //更新表单宽度
+      setTimeout(() => {
+        if (this.$refs.dispatchCommon) {
+          this.$refs.dispatchCommon.updateFormWidth();
+        }
+      }, 300); //动画有延迟
     }
   },
   filter: {},
   computed: {},
-  watch: {},
-  beforeRouteUpdate(to, from, next, url) {
-    if (!this.beforeLeaveCompare(this.initData)) {
-      let _this = this;
-      this.$utils.jumpDialog.call(
-        this,
-        {
-          save: {
-            fn: async vnode => {
-              return await _this.save();
-            }
-          }
-        },
-        to,
-        from,
-        next,
-        url
-      );
-    } else {
-      next();
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
-  @import (reference) '~@/resources/assets/css/variable.less';
+@import (reference) '~@/resources/assets/css/variable.less';
 .dispatch {
   .channel-list {
     position: relative;
@@ -625,5 +675,5 @@ export default {
       cursor: pointer;
     }
   }
-}  
+}
 </style>

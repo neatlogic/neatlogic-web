@@ -55,7 +55,8 @@
               <template slot="action" slot-scope="{ row }">
                 <div class="tstable-action">
                   <ul class="tstable-action-ul">
-                    <li class="icon tsfont-edit" @click.stop="editCustomView(row)">{{ $t('page.edit') }}</li>
+                    <li class="tsfont-edit" @click.stop="editCustomView(row)">{{ $t('page.edit') }}</li>
+                    <li class="tsfont-trash-o" @click.stop="deleteCustomView(row)">{{ $t('page.delete') }}</li>
                   </ul>
                 </div>
               </template>
@@ -92,6 +93,7 @@
                 <div class="tstable-action">
                   <ul class="tstable-action-ul">
                     <li class="icon tsfont-edit" @click.stop="editGraph(row)">{{ $t('page.edit') }}</li>
+                    <li class="tsfont-trash-o" @click.stop="deleteGraph(row)">{{ $t('page.delete') }}</li>
                   </ul>
                 </div>
               </template>
@@ -108,9 +110,9 @@ import UserCard from '@/resources/components/UserCard/UserCard.vue';
 export default {
   name: '',
   components: {
-    TsContain: resolve => require(['@/resources/components/TsContain/TsContain.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
+    TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     UserCard
   },
   props: {},
@@ -164,9 +166,50 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    deleteCustomView(row) {
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.cmdb.view') }),
+        cancelText: this.$t('page.cancel'),
+        btnType: 'error',
+        okText: this.$t('page.confirm'),
+        'on-ok': vnode => {
+          this.$api.cmdb.customview.deleteCustomView(row.id).then(res => {
+            if (res.Status == 'OK') {
+              vnode.isShow = false;
+              this.$store.commit('leftMenu/setCmdbCustomViewCount', 'minus');
+              this.searchCustomView();
+            }
+          });
+        },
+        'on-cancel': vnode => {
+          vnode.isShow = false;
+        }
+      });
+    },
+    deleteGraph(row) {
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.cmdb.view') }),
+        cancelText: this.$t('page.cancel'),
+        btnType: 'error',
+        okText: this.$t('page.confirm'),
+        'on-ok': vnode => {
+          this.$api.cmdb.graph.deleteGraph(row.id).then(res => {
+            if (res.Status == 'OK') {
+              vnode.isShow = false;
+              this.$store.commit('leftMenu/setCmdbCustomViewCount', 'minus');
+              this.searchGraph();
+            }
+          });
+        },
+        'on-cancel': vnode => {
+          vnode.isShow = false;
+        }
+      });
+    },
     restoreHistory(historyData) {
       this.currentTab = historyData['tab'];
-      console.log(this.currentTab);
     },
     doSearch() {
       if (this.currentTab === 'data') {

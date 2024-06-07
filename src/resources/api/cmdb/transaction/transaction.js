@@ -12,6 +12,9 @@ const transaction = {
   searchTransactionCount(params) {
     return axios.post('/api/rest/cmdb/transaction/search/count', params);
   },
+  getCiTransactionByGroupId(transactionGroupId) {
+    return axios.post('/api/rest/cmdb/cientitytransactiongroup/get', { transactionGroupId: transactionGroupId });
+  },
   getCientityTransaction(transactionId, ciId, ciEntityId) {
     return axios.post('/api/rest/cmdb/cientitytransaction/get', { transactionId: transactionId, ciId: ciId, ciEntityId: ciEntityId });
   },
@@ -24,8 +27,8 @@ const transaction = {
   getBrotherTransactionCount(transactionId, transactionGroupId) {
     return axios.post('/api/rest/cmdb/transaction/brothercount', { transactionId: transactionId, transactionGroupId: transactionGroupId });
   },
-  deleteTransaction(transactionId) {
-    return axios.post('/api/rest/cmdb/transaction/delete', { id: transactionId });
+  deleteTransaction(ciId, transactionId) {
+    return axios.post('/api/rest/cmdb/transaction/delete', { ciId: ciId, id: transactionId });
   },
   recoverTransaction(transactionId) {
     return axios.post('/api/rest/cmdb/transaction/recover', { id: transactionId });

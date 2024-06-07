@@ -38,8 +38,8 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     id: { //工具id
@@ -51,7 +51,7 @@ export default {
       default: () => []
     },
     operationType: String
-    
+
   },
   data() {
     return {
@@ -67,10 +67,10 @@ export default {
           label: this.$t('page.name'),
           width: '100%',
           validateList: [
-            'required', 
+            'required',
             'name-special',
             { name: 'searchUrl',
-              url: '/api/rest/autoexec/script/save', 
+              url: '/api/rest/autoexec/script/save',
               params: {id: this.id || this.$route.query.versionId || ''},
               key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('page.name')})
@@ -375,7 +375,7 @@ export default {
       this.$emit('close');
     },
     searchCustomtemplate() {
-      return this.$api.autoexec.customtemplate.searchCustomTemplate({  
+      return this.$api.autoexec.customtemplate.searchCustomTemplate({
         defaultValue: [this.config.customTemplateId]
       }).then(res => {
         if (res.Return && res.Return.tbodyList && res.Return.tbodyList.length) {

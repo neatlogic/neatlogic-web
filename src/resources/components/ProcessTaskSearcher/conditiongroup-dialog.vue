@@ -79,7 +79,7 @@ export default {
   name: '',
   components: {
     draggable,
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     conditionList: { type: Array },
@@ -171,7 +171,7 @@ export default {
                 newD['type'] = 'form';
                 newD['expressionList'] = d.expressionList;
                 try {
-                  newD['config'] = JSON.parse(d.config);
+                  newD['config'] = d.config;
                 } catch (e) {
                   console.error(e);
                 }

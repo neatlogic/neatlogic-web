@@ -61,8 +61,8 @@
 export default {
   inject: ['setIsCheck'],
   name: 'TeamTreeView',
-  components: { 
-    TeamTreeView: resolve => require(['./team-treeview'], resolve)
+  components: {
+    TeamTreeView: () => import('./team-treeview')
   },
   props: {
     children: {

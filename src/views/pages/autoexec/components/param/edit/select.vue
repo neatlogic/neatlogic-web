@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div>
     <div class="source-main">
@@ -35,11 +21,11 @@
           >
           </TsFormSelect>
           <div v-else>{{ $t('term.autoexec.static') }}</div>
-        </div>  
+        </div>
         <div v-if="sourcDefaultValue" class="item-text overflow bg-op border-color">
-          <TsFormSelect 
+          <TsFormSelect
             v-model="sourcDefaultValue"
-            v-bind="defaultValueConfig" 
+            v-bind="defaultValueConfig"
             :multiple="multiple"
             :readonly="true"
             border="border"
@@ -65,7 +51,7 @@
       :multiple="multiple"
       @saveSourc="saveSourc"
       @close="close"
-    ></DataSource> 
+    ></DataSource>
   </div>
 </template>
 <script>
@@ -75,7 +61,7 @@ export default {
   name: '',
   components: {
     TsFormSelect,
-    DataSource: resolve => require(['./dataSource/dataSource.vue'], resolve)
+    DataSource: () => import('./dataSource/dataSource.vue')
   },
   filters: {},
   mixins: [comMixin],
@@ -85,13 +71,12 @@ export default {
   },
   props: {},
   data() {
-    let _this = this;
     return {
       matrixConfig: { //矩阵
-        dynamicUrl: '/api/rest/matrix/search', 
-        rootName: 'tbodyList', 
-        textName: 'name', 
-        valueName: 'uuid', 
+        dynamicUrl: '/api/rest/matrix/search',
+        rootName: 'tbodyList',
+        textName: 'name',
+        valueName: 'uuid',
         multiple: false
       },
       dataSource: 'matrix', //数据源类型：static（静态数据源）、matrix（矩阵）
@@ -100,14 +85,14 @@ export default {
         dataList: []
       },
       matrixconfig: {//矩阵
-        matrixUuid: null, 
+        matrixUuid: null,
         mapping: {text: '', value: ''}
       },
       sourcConfig: {}, //当前展示数据源
       validMesage: '',
       defaultValueConfig: { //矩阵默认值设置
-        dynamicUrl: '/api/rest/matrix/column/data/search/forselect', 
-        rootName: 'dataList', 
+        dynamicUrl: '/api/rest/matrix/column/data/search/forselect',
+        rootName: 'dataList',
         param: null
       },
       sourcDefaultValue: '', //数据源默认值
@@ -194,7 +179,7 @@ export default {
             textField = this.sourcConfig.mapping.text;
             keywordColumn = this.sourcConfig.mapping.text;
           }
-          let param = { matrixUuid: this.config.matrixUuid, keywordColumn: keywordColumn, valueField: valueField, textField: textField };  
+          let param = { matrixUuid: this.config.matrixUuid, keywordColumn: keywordColumn, valueField: valueField, textField: textField };
           if (this.sourcDefaultValue) {
             if (Array.isArray(this.sourcDefaultValue)) {
               this.sourcDefaultValue.length && (param.defaultValue = this.sourcDefaultValue);

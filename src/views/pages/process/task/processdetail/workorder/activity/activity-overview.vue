@@ -32,7 +32,7 @@
               ></UserCard>
               <span v-if="item.originalUserVo">
                 <span style="vertical-align: bottom;">（{{ $t('term.process.act') }}</span>
-                <UserCard v-bind="item.originalUserVo" hideAvatar style="vertical-align: bottom;"></UserCard>
+                <UserCard v-bind="item.originalUserVo" hideAvatar style="vertical-align: middle;"></UserCard>
                 <span style="vertical-align: bottom;">）</span>
               </span>
               <span class="pl-sm pr-sm text-success" v-html="item.description"></span>
@@ -45,7 +45,9 @@
                   :is="handlerType(jitem.type)"
                   :key="jindex"
                   :config="jitem"
-                  :formConfig="formConfigData"
+                  :formSceneUuid="item.formSceneUuid"
+                  :formConfig="$utils.deepClone(formConfig)"
+                  :processTaskStepId="item.processTaskStepId"
                   class="mb-sm"
                 ></component>
               </template>
@@ -64,7 +66,7 @@ import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
   name: 'ActivityOverview',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     ...Item
   },
   directives: {imgViewer},
@@ -73,17 +75,11 @@ export default {
       type: Array,
       default: () => []
     },
-    formConfig: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    }
+    formConfig: Object
   },
   data() {
     return {
-      activeData: [],
-      formConfigData: {}
+      activeData: []
     };
   },
   beforeCreate() {},
@@ -115,13 +111,6 @@ export default {
         if (val && val.length > 0) {
           this.activeData = val;
         }
-      },
-      deep: true,
-      immediate: true
-    },
-    formConfig: {
-      handler(val) {
-        this.formConfigData = val;
       },
       deep: true,
       immediate: true

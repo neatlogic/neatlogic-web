@@ -2,7 +2,7 @@
   <div class="role-addview">
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span class="block-item">{{ uuid==null?$t('dialog.title.createtarget', {target: $t('page.role')}):$t('dialog.title.edittarget', {target: $t('page.role')}) }}</span>
@@ -21,7 +21,12 @@
               >{{ $t('dialog.title.createtarget', {target: $t('page.role')}) }}</Button>
             </div>
             <div v-else>
-              <Button type="primary" :loading="isLoading" @click="editSave()">{{ $t('page.save') }}</Button>
+              <Button
+                v-if="tabsName != 'adduser' && tabsName != 'addgroup'"
+                type="primary"
+                :loading="isLoading"
+                @click="editSave()"
+              >{{ $t('page.save') }}</Button>
             </div>
           </div>
         </div>
@@ -139,13 +144,13 @@
           <Icon type="i-icon tsfont-check" size="30" class="text-op" />{{ $t('term.deploy.createsuccess') }}
         </div>
         <div class="submit-btn-list">
-          <Button size="large" type="primary" @click="$back(),saveProfile('backrolelist')">{{ $t('term.framework.backtorolelist') }}</Button>
+          <Button size="large" type="primary" @click="backRoleManage(); saveProfile('backrolelist')">{{ $t('term.framework.backtorolelist') }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Button size="large" @click="continueCreate(),saveProfile('keeponcreate')">{{ $t('term.framework.continuecreate') }}</Button>
+          <Button size="large" @click="continueCreate(); saveProfile('keeponcreate')">{{ $t('term.framework.continuecreate') }}</Button>
         </div>
         <div class="submit-btn-list">
-          <Button size="large" @click="editCrrentRole(),saveProfile('editrole')">{{ $t('dialog.title.edittarget', {target: $t('page.role')}) }}</Button>
+          <Button size="large" @click="editCrrentRole(); saveProfile('editrole')">{{ $t('dialog.title.edittarget', {target: $t('page.role')}) }}</Button>
         </div>
         <div class="submit-btn-list">
           <Checkbox v-model="submitMessage">{{ $t('term.framework.notips') }} <i class="tsfont-question-o" :title="$t('term.framework.editinsetting')"></i></Checkbox>
@@ -159,11 +164,11 @@
 export default {
   name: 'RoleAddview',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm.vue'], resolve),
-    CommonAuth: resolve => require(['./common/common-auth.vue'], resolve),
-    TsDialog: resolve => require(['@/resources/plugins/TsDialog/TsDialog.vue'], resolve),
-    CommonAdduserRole: resolve => require(['./common/common-adduser-role.vue'], resolve),
-    CommonAddgroup: resolve => require(['./common/common-addgroup.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
+    CommonAuth: () => import('./common/common-auth.vue'),
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    CommonAdduserRole: () => import('./common/common-adduser-role.vue'),
+    CommonAddgroup: () => import('./common/common-addgroup.vue')
   },
   props: [''],
   data() {
@@ -193,7 +198,7 @@ export default {
             _this.formData[1].errorMessage = '';
             _this.allroleList.forEach(item => {
               if (item.name == value) {
-                _this.formData[1].errorMessage = this.$t('message.targetisexists', {target: this.$t('term.framework.roleid')}); 
+                _this.formData[1].errorMessage = this.$t('message.targetisexists', {target: this.$t('term.framework.roleid')});
                 this.roleKey = false;
               }
             });
@@ -207,6 +212,14 @@ export default {
           maxlength: 50,
           label: this.$t('term.framework.rolename'),
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.framework.rolename')}) }, { name: 'name-special' }]
+        },
+        {
+          type: 'textarea',
+          name: 'rule',
+          value: '',
+          placeholder: this.$t('form.placeholder.pleaseinput', {target: this.$t('page.rule')}),
+          label: this.$t('page.rule'),
+          tooltip: this.$t('page.rolerule')
         }
       ],
       uuid: '', //角色uuid
@@ -238,7 +251,7 @@ export default {
       submitModel: false,
       stepList: [
         this.$t('page.basicinfo'),
-        this.$t('dialog.title.addtarget', {target: this.$t('page.member')}), 
+        this.$t('dialog.title.addtarget', {target: this.$t('page.member')}),
         this.$t('dialog.title.addtarget', {target: this.$t('page.group')}),
         this.$t('page.auth')
       ],
@@ -354,9 +367,9 @@ export default {
               let data = this.convenienceDetail.userProfileOperateList.find(d => d.checked == '1');
               let value = data.value;
               switch (value) {
-                //返回用户列表
+                //返回角色列表
                 case 'backrolelist':
-                  this.$back();
+                  this.backRoleManage();
                   break;
                 //编辑用户
                 case 'editrole':
@@ -430,7 +443,7 @@ export default {
     deleteOk() {
       this.saveUserData();
     },
-    
+
     //保存当前用户信息，用于跳转判断
     saveUserData() {
       this.refreshListSetting.isRefreshRoleUserList = false;
@@ -560,7 +573,7 @@ export default {
               this.tabSaveTip = true;
               this.tabsaveModel = true; //打开模态框
             }
-          } 
+          }
         }
       }
       return this.tabSaveTip;
@@ -662,6 +675,11 @@ export default {
           }
         });
       }
+    },
+    backRoleManage() {
+      this.$router.push({
+        path: '/role-manage'
+      });
     }
   },
 

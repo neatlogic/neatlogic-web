@@ -58,7 +58,7 @@
                     </div>
                   </div>
                   <div v-if=" getWarnList(validConfig.failureReasonList) && getWarnList(validConfig.failureReasonList).length > 0 && warnMassage">
-                    {{ warnMassage }} 
+                    {{ warnMassage }}
                     <div v-for="(result, index) in getWarnList(validConfig.failureReasonList)" :key="index">
                       <div class="pb-md">{{ result.warnItem }}</div>
                     </div>
@@ -75,7 +75,7 @@
                             class="ml-sm"
                             @click.native.stop="btnClick(btn, validConfig)"
                           >
-                            {{ btn.text }}  
+                            {{ btn.text }}
                           </Button>
                         </template>
                       </div>
@@ -179,7 +179,7 @@
 import upload from '@/resources/mixins/upload.js';
 export default {
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {
     bytesSize: function(num) {
@@ -453,11 +453,11 @@ export default {
     getWarnList(failList) {
       let list = failList.filter(item => item.isWarn == 1);
       return list;
-    },   
-    btnClick(config, data) {      
+    },
+    btnClick(config, data) {
       config.fn && config.fn(data, this.fileList);
     },
-    goto() { 
+    goto() {
       this.$emit('goto');
     },
     okAction() {
@@ -514,13 +514,13 @@ export default {
       return (ismutiple, formatList) => {
         if (this.$utils.isEmpty(formatList)) {
           if (ismutiple) {
-            return this.$t('message.multiplefilescanbeuploaded'); 
+            return this.$t('message.multiplefilescanbeuploaded');
           } else {
             return this.$t('message.singlefilescanbeuploaded');
           }
         } else {
           if (ismutiple) {
-            return this.$t('message.supportuploadingmultiplefileswithsuffixtarget', {target: formatList.join('、.')}); 
+            return this.$t('message.supportuploadingmultiplefileswithsuffixtarget', {target: formatList.join('、.')});
           } else {
             return this.$t('message.supportuploadingsinglefileswithsuffixtarget', {target: formatList.join('、.')});
           }

@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back('/version-center-manage')">{{ $getFromPage() }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>{{ title }}</template>
       <template v-slot:topRight>
@@ -88,13 +88,13 @@ import ImportComponent from '@/views/components/import-component.js';
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    ProjectDirectoryDialog: resolve => require(['./project-directory-dialog'], resolve), // 工程目录
-    DeployStatusOverview: resolve => require(['./detail/deploy-status-overview'], resolve),
-    UnitTestOverview: resolve => require(['./detail/unit-test-overview'], resolve), // 单元测试
-    CodeScanOverview: resolve => require(['./detail/code-scan-overview'], resolve), // 代码扫描
-    CveLoopholeManage: resolve => require(['./detail/cve-loophole-manage'], resolve), // cve漏洞
-    RelatedIssuesManage: resolve => require(['./detail/related-issues-manage'], resolve), // 关联需求
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    ProjectDirectoryDialog: () => import('./project-directory-dialog'), // 工程目录
+    DeployStatusOverview: () => import('./detail/deploy-status-overview'),
+    UnitTestOverview: () => import('./detail/unit-test-overview'), // 单元测试
+    CodeScanOverview: () => import('./detail/code-scan-overview'), // 代码扫描
+    CveLoopholeManage: () => import('./detail/cve-loophole-manage'), // cve漏洞
+    RelatedIssuesManage: () => import('./detail/related-issues-manage'), // 关联需求
     ...ImportComponent
   },
   mixins: [versionCenterMixin],

@@ -47,6 +47,7 @@
             :showStatusIcon="false"
             mode="read"
             :readonly="readonly"
+            isCustomValue
             @change="changeRow(row)"
           ></FormItem>
         </div>
@@ -61,8 +62,8 @@ import validmixin from '../common/validate-mixin.js';
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
     ...search
   },
   extends: base,
@@ -83,7 +84,7 @@ export default {
       selectedItemList: [],
       loadingShow: true,
       searchConditionValueList: [], //搜索条件的值列表
-      searchConditionConfig: {} 
+      searchConditionConfig: {}
     };
   },
   beforeCreate() {},
@@ -152,7 +153,7 @@ export default {
         //编辑模式下只显示表头
         if (this.mode === 'read') {
           this.matrixData = res.Return;
-          this.matrixData.tbodyList && 
+          this.matrixData.tbodyList &&
           this.matrixData.tbodyList.forEach(d => {
           //矩阵回来的数据包含了text,type,value三个属性，表格显示时只需要text属性
             for (let k in d) {
@@ -277,9 +278,9 @@ export default {
       if (this.config && !this.$utils.isEmpty(this.config.dataConfig)) {
         this.config.dataConfig.forEach(thead => {
           if (thead.isPC) {
-            theadList.push({ 
-              key: thead.uuid, 
-              title: thead.label, 
+            theadList.push({
+              key: thead.uuid,
+              title: thead.label,
               type: thead.config && thead.config.urlAttributeValue ? 'linktext' : '',
               textValue: thead.config && thead.config.urlAttributeValue ? thead.config.urlAttributeValue : '',
               isRequired: !!(thead.config && thead.config.isRequired)
@@ -307,11 +308,11 @@ export default {
           if (this.config && this.config.matrixUuid && this.config.matrixUuid != this.searchParam.matrixUuid) {
             this.searchParam.matrixUuid = this.config.matrixUuid;
             needReload = true;
-          } 
+          }
           if (needReload) {
             if (!this.searchParam.pageSize) {
               this.searchParam.pageSize = this.config.pageSize || 20;
-            } 
+            }
             this.searchMatrixData(1);
           }
         }

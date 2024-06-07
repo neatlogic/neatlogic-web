@@ -94,10 +94,10 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
-    UserAdd: resolve => require(['@/views/pages/rdm/project/edittab/project/user-add.vue'], resolve),
-    UserDelete: resolve => require(['@/views/pages/rdm/project/edittab/project/user-delete.vue'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    UserAdd: () => import('@/views/pages/rdm/project/edittab/project/user-add.vue'),
+    UserDelete: () => import('@/views/pages/rdm/project/edittab/project/user-delete.vue')
   },
   props: {
     id: { type: Number },

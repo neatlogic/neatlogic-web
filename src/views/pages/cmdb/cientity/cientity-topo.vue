@@ -1,62 +1,38 @@
 <template>
   <div>
-    <div class="padding">
-      <div class="grid">
+    <div :class="{ padding: mode === 'window' }">
+      <div v-if="needToolbar" class="grid">
         <div class="action-group">
           <div class="action-item">
-            <TsFormSwitch
-              :trueName="1"
-              :falseName="0"
-              :showStatus="true"
-              :trueText="$t('term.cmdb.onlybackbone')"
-              :falseText="$t('term.cmdb.showallrel')"
-              :value="searchParam.isBackbone"
-              @on-change="changeIsBackbone"
-            ></TsFormSwitch>
-          </div>
-          <div class="action-item">
-            <Dropdown placement="bottom-start" @on-click="changeLevel">
-              <a href="javascript:void(0)">
+            <Dropdown placement="bottom-start">
+              <a v-if="!currentTemplate" href="javascript:void(0)">
                 {{ $t('term.cmdb.extendlevel') }}
-                <b style="margin-left: 3px">{{ searchParam.level }}</b>
-                <Icon type="ios-arrow-down"></Icon>
+                <b class="ml-xs">{{ searchParam.level }}</b>
+                <Icon class="ml-xs" type="ios-arrow-down"></Icon>
+              </a>
+              <a v-else>
+                {{ $t('page.scene') }}
+                <b class="ml-xs">{{ currentTemplate.name }}</b>
+                <Icon class="ml-xs" type="ios-arrow-down"></Icon>
               </a>
               <DropdownMenu slot="list">
+                <DropdownItem v-if="filterCiTopoTemplateList.length > 0" disabled>按场景展开</DropdownItem>
+                <DropdownItem v-for="(topoTemplate) in filterCiTopoTemplateList" :key="topoTemplate.id" :selected="searchParam.templateId === topoTemplate.id">
+                  <span :class="{ 'text-grey': !topoTemplate.isActive }" @click="showTopoTemplate(topoTemplate)">{{ topoTemplate.name }}</span>
+                  <span v-auth="['CI_MODIFY']" class="ml-xs tsfont-edit" @click="editTopoTemplate(topoTemplate)"></span>
+                  <span v-auth="['CI_MODIFY']" class="ml-xs tsfont-trash-o" @click="deleteTopoTemplate(topoTemplate)"></span>
+                </DropdownItem>
+                <DropdownItem v-if="ciTopoTemplateList && ciTopoTemplateList.length > 0" divided disabled>按层数展开</DropdownItem>
                 <DropdownItem
                   v-for="i in maxLevel"
                   :key="i"
                   :name="i"
-                  :selected="searchParam.level == i"
+                  :selected="searchParam.level === i"
+                  @click.native="changeLevel(i)"
                 >{{ $t('term.cmdb.levelnumber', { level: i }) }}</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-          <div v-if="relTypeList && relTypeList.length > 0" class="action-item">
-            <Dropdown placement="bottom-start" :transfer="true" @on-click="changeDisableRel">
-              <a href="javascript:void(0)">
-                {{ $t('term.cmdb.showrel') }}
-                <Icon type="ios-arrow-down"></Icon>
-              </a>
-              <DropdownMenu slot="list">
-                <template v-for="relType in relTypeList">
-                  <DropdownItem :key="relType.id" :name="'reltype_' + relType.id" :selected="isRelTypeSelected(relType)">
-                    <span class="text-grey">{{ relType.name }}</span>
-                  </DropdownItem>
-                  <DropdownItem
-                    v-for="rel in relType.relList"
-                    :key="rel.id"
-                    :name="'rel_' + rel.id"
-                    :selected="!searchParam.disableRelList.includes(rel.id)"
-                  >
-                    <div>
-                      <span>{{ rel.fromCiLabel }}</span>
-                      <span class="text-grey">({{ rel.fromLabel }})</span>
-                      <span class="fz10 text-grey tsfont-arrow-right"></span>
-                      <span>{{ rel.toCiLabel }}</span>
-                      <span class="text-grey">({{ rel.toLabel }})</span>
-                    </div>
-                  </DropdownItem>
-                </template>
+                <DropdownItem :divided="ciTopoTemplateList && ciTopoTemplateList.length > 0" @click.native="editTopoTemplate()">
+                  <span class="tsfont-plus">{{ $t('dialog.title.addtarget', { target: $t('page.scene') }) }}</span>
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -83,6 +59,17 @@
               </DropdownMenu>
             </Dropdown>
           </div>
+          <div v-if="!searchParam.templateId" class="action-item">
+            <TsFormSwitch
+              :trueName="1"
+              :falseName="0"
+              :showStatus="true"
+              :trueText="$t('term.cmdb.onlybackbone')"
+              :falseText="$t('term.cmdb.showallrel')"
+              :value="searchParam.isBackbone"
+              @on-change="changeIsBackbone"
+            ></TsFormSwitch>
+          </div>
         </div>
         <div>
           <TsFormInput
@@ -94,7 +81,7 @@
           ></TsFormInput>
         </div>
       </div>
-      <div v-if="globalAttrList && globalAttrList.length > 0">
+      <div v-if="needToolbar && globalAttrList && globalAttrList.length > 0" class="mb-md">
         <span v-for="(attr, index) in globalAttrList" :key="index" class="mr-md mb-md">
           <span class="mr-md">
             <b class="text-grey">{{ attr.label }}</b>
@@ -111,7 +98,32 @@
         </span>
       </div>
       <div style="position: relative">
-        <div id="graph" class="clearfix home-page"></div>
+        <div v-if="needToolbar && currentTemplate && currentTemplate.config && currentTemplate.config.ciRelList && currentTemplate.config.ciRelList.length > 0" class="mb-md">
+          <span v-for="(p, pindex) in currentTemplate.config.ciRelList" :key="pindex">
+            <span v-if="pindex === 0">
+              <Tag color="success">{{ p.ciLabel }}({{ p.ciName }})</Tag>
+            </span>
+            <span v-if="p.direction === 'from'" class="text-grey fz10 tsfont-minus"></span>
+            <span v-else-if="p.direction === 'to'" class="text-grey fz10 tsfont-arrow-left"></span>
+            <span class="text-grey fz10">
+              {{ p.relLabel }}
+            </span>
+            <span v-if="p.direction === 'from'" class="text-grey fz10 tsfont-arrow-right"></span>
+            <span v-else-if="p.direction === 'to'" class="text-grey fz10 tsfont-minus"></span>
+            <span>
+              <Tag v-if="pindex === currentTemplate.config.ciRelList.length - 1" color="success">{{ p.targetCiLabel }}({{ p.targetCiName }})</Tag>
+              <Tag
+                v-else
+                class="cursor"
+                :color="isRelShow(p) ? 'primary' : 'default'"
+                @click.native="toggleRelShow(p)"
+              >
+                <span :class="!p.isHidden ? 'tsfont-eye' : 'tsfont-eye-off'">{{ p.targetCiLabel }}({{ p.targetCiName }})</span>
+              </Tag>
+            </span>
+          </span>
+        </div>
+        <div ref="graph" class="clearfix graph"></div>
         <D3Tooltip
           v-if="isTooltipShow"
           :width="tooltipWidth"
@@ -129,30 +141,40 @@
         </div>
       </div>
       <Loading :loadingShow="isloading" type="fix"></Loading>
+      <CiTopoTemplateEdit
+        v-if="isCiTopoTemplateEditShow"
+        :id="currentTopoTemplateId"
+        :ciId="ciId"
+        @close="closeTopoTemplateDialog"
+      ></CiTopoTemplateEdit>
     </div>
   </div>
 </template>
 <script>
 import d3 from '../asset/d3';
-import '@/resources/assets/font/tsfont.js';
-import '@/resources/assets/font/iconfont.js';
+import '@/resources/assets/font/tsfonts/tsfont.js';
+import '@/resources/assets/font/tsIconfont.js';
 import { graphviz } from 'd3-graphviz';
 import { addEvent } from './util/event.js';
 export default {
   name: '',
   components: {
-    D3Tooltip: resolve => require(['../asset/d3/d3-tooltip.vue'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput.vue'], resolve)
+    D3Tooltip: () => import('../asset/d3/d3-tooltip.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    CiTopoTemplateEdit: () => import('@/views/pages/cmdb/ci/ci-topo-template-edit-dialog.vue')
   },
   props: {
+    mode: { type: String, default: 'window' }, //window|dialog
+    needToolbar: { type: Boolean, default: true },
     ciEntityId: { type: Number },
-    ciId: { type: Number }
+    ciId: { type: Number },
+    height: { type: Number }
   },
   data() {
     return {
       keyword: '',
-      maxLevel: 10,
+      maxLevel: 5,
       isloading: false,
       currentLayout: 'dot',
       layoutList: [
@@ -171,9 +193,9 @@ export default {
         isBackbone: 1,
         ciEntityId: this.ciEntityId,
         ciId: this.ciId,
-        level: 3,
         disableRelList: [],
-        globalAttrFilterList: []
+        globalAttrFilterList: [],
+        templateConfig: {}
       },
       currentZoomLevelId: [],
       tooltipTop: null,
@@ -188,15 +210,26 @@ export default {
       tooltipCiEntityId: null,
       tooltipTimer: null, //关闭计时器
       nodeNameMap: {},
-      globalAttrList: []
+      globalAttrList: [],
+      ciTopoTemplateList: [],
+      isCiTopoTemplateEditShow: false,
+      currentTopoTemplateId: null
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
+  async mounted() {
     this.searchGlobalAttr();
     this.initGraph();
+    await this.getCiTopoTemplateByCiId();
+    this.$set(this.searchParam, 'level', 3);
+    if (this.ciTopoTemplateList && this.ciTopoTemplateList.length > 0) {
+      const template = this.ciTopoTemplateList.find(d => d.isActive && d.isDefault);
+      if (template) {
+        this.showTopoTemplate(template);
+      }
+    }
   },
   beforeUpdate() {},
   updated() {},
@@ -205,6 +238,78 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toggleRelShow(p) {
+      const relId = p.relId.toString();
+      if (!this.searchParam.templateConfig[relId]) {
+        this.$set(this.searchParam.templateConfig, relId, {});
+      }
+      if (p.isHidden) {
+        this.$set(this.searchParam.templateConfig[relId], 'isShow', !this.searchParam.templateConfig[relId].isShow);
+      } else {
+        this.$set(this.searchParam.templateConfig[relId], 'isHidden', !this.searchParam.templateConfig[relId].isHidden);
+      }
+    },
+    isRelShow(p) {
+      const relId = p.relId.toString();
+      if (p.isHidden && !this.searchParam.templateConfig[relId]?.isShow) {
+        return false;
+      } else if (!p.isHidden && this.searchParam.templateConfig[relId]?.isHidden) {
+        return false;
+      } else {
+        return true;
+      }
+    },
+    showTopoTemplate(template) {
+      this.$set(this.searchParam, 'templateId', template.id);
+      this.$delete(this.searchParam, 'level');
+    },
+    deleteTopoTemplate(template) {
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.scene') }),
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.$api.cmdb.ci.deleteCiTopoTemplateById(template.id).then(res => {
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.getCiTopoTemplateByCiId();
+              if (this.searchParam.templateId) {
+                this.$delete(this.searchParam, 'templateId');
+                this.$set(this.searchParam, 'level', 3);
+              }
+              vnode.isShow = false;
+            }
+          });
+        }
+      });
+    },
+    async closeTopoTemplateDialog(needRefresh) {
+      if (needRefresh) {
+        await this.getCiTopoTemplateByCiId();
+        if (this.currentTemplate) {
+          if (this.currentTemplate.isActive) {
+            this.renderGraph();
+          } else {
+            this.$delete(this.searchParam, 'templateId');
+          }
+        }
+      }
+      this.isCiTopoTemplateEditShow = false;
+      this.currentTopoTemplateId = null;
+    },
+    editTopoTemplate(template) {
+      this.isCiTopoTemplateEditShow = true;
+      if (template) {
+        this.currentTopoTemplateId = template.id;
+      } else {
+        this.currentTopoTemplateId = null;
+      }
+    },
+    async getCiTopoTemplateByCiId() {
+      await this.$api.cmdb.ci.getCiTopoTemplateByCiId(this.ciId).then(res => {
+        this.ciTopoTemplateList = res.Return;
+      });
+    },
     isAttrActive(attr, item) {
       if (!this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id)) {
         return false;
@@ -236,16 +341,6 @@ export default {
       this.$api.cmdb.globalattr.searchGlobalAttr({ isActive: 1 }).then(res => {
         this.globalAttrList = res.Return.tbodyList;
       });
-    },
-    isRelTypeSelected(relType) {
-      let isAllDisabled = true;
-      for (let i = 0; i < relType.relList.length; i++) {
-        if (!this.searchParam.disableRelList.includes(relType.relList[i].id)) {
-          isAllDisabled = false;
-          break;
-        }
-      }
-      return !isAllDisabled;
     },
     findNode() {
       //d3.selectAll('.selectednode').classed('selectednode', false);
@@ -279,41 +374,12 @@ export default {
     changeLayout(layout) {
       this.currentLayout = layout;
     },
-    changeLevel(name) {
-      this.searchParam.level = name;
+    changeLevel(level) {
+      this.$set(this.searchParam, 'level', level);
+      this.$delete(this.searchParam, 'templateId');
     },
     changeIsBackbone(isBackbone) {
       this.searchParam.isBackbone = isBackbone;
-    },
-    changeDisableRel(name) {
-      if (name.startsWith('reltype_')) {
-        name = parseInt(name.replace('reltype_', ''));
-        const relType = this.relTypeList.find(d => d.id == name);
-        if (relType) {
-          if (this.isRelTypeSelected(relType)) {
-            relType.relList.forEach(rel => {
-              if (!this.searchParam.disableRelList.includes(rel.id)) {
-                this.searchParam.disableRelList.push(rel.id);
-              }
-            });
-          } else {
-            relType.relList.forEach(rel => {
-              const index = this.searchParam.disableRelList.findIndex(d => d == rel.id);
-              if (index > -1) {
-                this.searchParam.disableRelList.splice(index, 1);
-              }
-            });
-          }
-        }
-      } else if (name.startsWith('rel_')) {
-        name = parseInt(name.replace('rel_', ''));
-        const index = this.searchParam.disableRelList.findIndex(d => d == name);
-        if (index > -1) {
-          this.searchParam.disableRelList.splice(index, 1);
-        } else {
-          this.searchParam.disableRelList.push(name);
-        }
-      }
     },
     loadImage(nodesString) {
       (nodesString.match(/image=[^,]*(files\/\d*|png)/g) || [])
@@ -335,28 +401,35 @@ export default {
       return offset;
     },
     resizeSVG() {
-      const graphEl = document.getElementById('graph');
+      const graphEl = this.$refs['graph'];
       if (graphEl) {
-        d3.select('#graph')
+        d3.select(graphEl)
           .selectWithoutDataPropagation('svg')
           .transition()
-          .duration(700)
           .attr('width', graphEl.offsetWidth)
-          .attr('height', window.innerHeight - 30 - this.getGraphTop(graphEl).y);
+          .attr('height', this.height || window.innerHeight - 40 - this.getGraphTop(graphEl).y);
       }
     },
     initGraph() {
-      window.setTimeout(() => {
-        const graphEl = document.getElementById('graph');
-        let graph = d3.select('#graph');
+      //window.setTimeout(() => {
+      const graphEl = this.$refs['graph'];
+      if (graphEl) {
+        let graph = d3.select(graphEl);
         const _this = this;
         graph.on('dblclick.zoom', null).on('wheel.zoom', null).on('mousewheel.zoom', null);
+        if (!graph.graphviz) {
+          graph.graphviz = graphviz;
+        }
         this.graph.graphviz = graph
           .graphviz()
-          .height(window.innerHeight - 30 - this.getGraphTop(graphEl).y)
+          .height(this.height || window.innerHeight - 40 - this.getGraphTop(graphEl).y)
           .width(graphEl.offsetWidth - 10)
           .zoom(true)
           .fit(false)
+          .tweenShapes(false)
+          .tweenPaths(false)
+          .convertEqualSidedPolygons(false)
+          .tweenPrecision('30%')
           .attributer(function(d) {
             if (d.attributes.class === 'edge') {
               let keys = d.key.split('->');
@@ -377,61 +450,63 @@ export default {
                 _this.nodeNameMap[d.attributes['xlink:title']] = [d];
               }
             }
-          });
-        this.renderGraph();
+          })
+          .on('end', () => {});
         d3.select(window).on('resize', this.resizeSVG);
-      }, 0);
+      }
+      //}, 0);
     },
     renderGraph() {
-      this.isloading = true;
-      const graphEl = document.getElementById('graph');
-      const param = this.searchParam;
-      param.layout = this.currentLayout;
-      this.$api.cmdb.cientity.getCiEntityTopoData(param).then(res => {
-        if (!this.$utils.isEmpty(res.Return) && res.Return.dot) {
-          this.error = '';
-          const nodesString = this.$utils.handleTopoImagePath(res.Return.dot || '');
-          this.relList = res.Return.relList || [];
-          this.loadImage(nodesString);
-          this.graph.graphviz
-            .transition()
-            .height(window.innerHeight - 30 - this.getGraphTop(graphEl).y)
-            .width(graphEl.offsetWidth - 10)
-            .renderDot(nodesString)
-            .on('end', () => {});
-          //let svg = d3.select('#graph').select('svg');
-          //svg.append('g').lower();
-          addEvent('svg', 'mouseover', e => {
-            this.unColorNode();
-            e.preventDefault();
-            e.stopPropagation();
-          });
-          addEvent('.cinode', 'mouseenter', async e => {
-            e.preventDefault();
-            e.stopPropagation();
-            d3.selectAll('g').attr('cursor', 'pointer');
-            this.g = e.currentTarget;
-            this.nodeName = this.g.firstElementChild.textContent.trim();
-            this.colorNode(this.nodeName);
-            this.showTooltip(e.currentTarget);
-          });
-          addEvent('.cinode', 'mouseleave', async e => {
-            e.preventDefault();
-            e.stopPropagation();
-            this.hideTooltip();
-          });
-          addEvent('.cinode', 'click', async e => {
-            const g = e.currentTarget;
-            const className = d3.select(g).attr('class');
-            if (className) {
-              const ids = className
-                .split(' ')
-                .find(d => d.indexOf('CiEntity_') == 0)
-                .split('_');
-              this.toCiEntityView(ids[1], ids[2]);
-            }
-          });
-          /*const g = d3.select('#CiEntity_431579058937856_459181555458049');
+      if (this.graph) {
+        this.isloading = true;
+        const graphEl = this.$refs['graph'];
+        const param = this.searchParam;
+        param.layout = this.currentLayout;
+        this.$api.cmdb.cientity.getCiEntityTopoData(param).then(res => {
+          if (!this.$utils.isEmpty(res.Return) && res.Return.dot) {
+            this.error = '';
+            const nodesString = this.$utils.handleTopoImagePath(res.Return.dot || '');
+            this.relList = res.Return.relList || [];
+            this.loadImage(nodesString);
+            this.graph.graphviz
+              .transition()
+              .height(this.height || window.innerHeight - 40 - this.getGraphTop(graphEl).y)
+              .width(graphEl.offsetWidth - 10)
+              .renderDot(nodesString);
+
+            //let svg = d3.select('#graph').select('svg');
+            //svg.append('g').lower();
+            addEvent('svg', 'mouseover', e => {
+              this.unColorNode();
+              e.preventDefault();
+              e.stopPropagation();
+            });
+            addEvent('.cinode', 'mouseenter', async e => {
+              e.preventDefault();
+              e.stopPropagation();
+              d3.selectAll('g').attr('cursor', 'pointer');
+              this.g = e.currentTarget;
+              this.nodeName = this.g.firstElementChild.textContent.trim();
+              this.colorNode(this.nodeName);
+              this.showTooltip(e.currentTarget);
+            });
+            addEvent('.cinode', 'mouseleave', async e => {
+              e.preventDefault();
+              e.stopPropagation();
+              this.hideTooltip();
+            });
+            addEvent('.cinode', 'click', async e => {
+              const g = e.currentTarget;
+              const className = d3.select(g).attr('class');
+              if (className) {
+                const ids = className
+                  .split(' ')
+                  .find(d => d.indexOf('CiEntity_') == 0)
+                  .split('_');
+                this.toCiEntityView(ids[1], ids[2]);
+              }
+            });
+            /*const g = d3.select('#CiEntity_431579058937856_459181555458049');
         let x = g.node().getBBox().x;
         let y = g.node().getBBox().y;
         d3.select('#CiEntity_431579058937856_459181555458049')
@@ -440,11 +515,12 @@ export default {
           .attr('x', x)
           .attr('y', y + 10)
           .text('abc');*/
-        } else {
-          this.error = this.$t('message.cmdb.notopo');
-        }
-        this.isloading = false;
-      });
+          } else {
+            this.error = this.$t('message.cmdb.notopo');
+          }
+          this.isloading = false;
+        });
+      }
     },
     clearTooltipTimer() {
       if (this.tooltipTimer) {
@@ -472,7 +548,7 @@ export default {
         const maxHeight = this.tooltipHeight;
         const maxWidth = this.tooltipWidth;
         //由于SVG坐标系和dom的坐标不一致，所以需要使用getBoundingClientRect进行计算
-        const parentRect = document.getElementById('graph').getBoundingClientRect();
+        const parentRect = this.$refs['graph'].getBoundingClientRect();
         const nodeRect = d3.select(node).node().getBoundingClientRect();
 
         //console.log(parentRect);
@@ -526,32 +602,33 @@ export default {
     },
     toCiEntityView(ciId, ciEntityId) {
       if (ciId && ciEntityId) {
-        this.$router.push({
-          path: '/ci/' + ciId + '/cientity-view/' + ciEntityId
-        });
+        if (this.mode === 'window') {
+          this.$router.push({
+            path: '/ci/' + ciId + '/cientity-view/' + ciEntityId
+          });
+        } else {
+          this.$emit('click', ciId, ciEntityId);
+        }
       }
     }
   },
   filter: {},
   computed: {
-    relTypeList() {
-      const relTypeList = [];
-      this.relList.forEach(rel => {
-        const relType = relTypeList.find(d => d.id === rel.typeId);
-        if (relType != null) {
-          relType.relList.push(rel);
+    filterCiTopoTemplateList() {
+      if (this.ciTopoTemplateList) {
+        if (this.$AuthUtils.hasRole('CI_MODIFY')) {
+          return this.ciTopoTemplateList;
         } else {
-          relTypeList.push({ id: rel.typeId, name: rel.typeText, relList: [rel] });
+          return this.ciTopoTemplateList.filter(d => !!d.isActive);
         }
-      });
-      return relTypeList;
-    },
-    showRelList() {
-      if (!this.searchParam.disableRelList || this.searchParam.disableRelList.length == 0) {
-        return this.relList;
-      } else {
-        return this.relList.filter(r => !this.searchParam.includes(r.direction + '_' + r.id));
       }
+      return [];
+    },
+    currentTemplate() {
+      if (this.searchParam.templateId && this.ciTopoTemplateList && this.ciTopoTemplateList.length > 0) {
+        return this.ciTopoTemplateList.find(d => d.id === this.searchParam.templateId);
+      }
+      return null;
     },
     tooltipPosition() {
       let style = '';

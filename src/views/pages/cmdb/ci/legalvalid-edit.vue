@@ -6,9 +6,9 @@
           mode="dialog"
           border="border"
           :hideHeader="true"
-          :leftWidth="150"
+          :siderWidth="150"
         >
-          <div v-if="legalValidList && legalValidList.length > 0" slot="left">
+          <div v-if="legalValidList && legalValidList.length > 0" slot="sider">
             <div class="legalValid">
               <div :class="!id ? 'text-primary' : ''" @click="editLegalValid()">{{ $t('term.cmdb.newrule') }}</div>
               <div
@@ -190,7 +190,7 @@ export default {
     TsForm,
     TsQuartz,
     TsFormSelect,
-    AttrSearcher: resolve => require(['../cientity/attr-searcher.vue'], resolve)
+    AttrSearcher: () => import('../cientity/attr-searcher.vue')
   },
   props: {
     ciId: {

@@ -1,7 +1,7 @@
 <template>
   <div class="workcenterCardUserList" @click="cardclick(row, $event, type)">
     <div v-if="type === 'table'" :style="{height:'100%'}">
-      <div v-if="!row.currentstep.length || !row.currentstep" class="no-current-step">        
+      <div v-if="!row.currentstep.length || !row.currentstep" class="no-current-step">
         <span class="mr-sx" :class="getTsStatus(row.status.value)" :style="{ color: row.status.color }"></span>
         <slot><span :style="{color: row.status.color}">{{ row.status.text }}</span></slot>
       </div>
@@ -13,7 +13,7 @@
           class=""
         >
           <CarouselItem v-for="(item,iindex) in row.currentstep" :key="row.id+'_'+item.id+'_'+iindex" class="mb-xs">
-            <div class="title-top ">
+            <div class="title-top mt-xs">
               <span class="colorText">{{ item.name }}</span>
             </div>
             <Row>
@@ -66,10 +66,10 @@
             </Row>
           </CarouselItem>
         </div>
-        
+
       </Carousel>
     </div>
-    
+
   </div>
 </template>
 
@@ -77,8 +77,8 @@
 export default {
   name: '',
   components: {
-    CommonStatus: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    UserList: resolve => require(['./UserList.vue'], resolve)
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
+    UserList: () => import('./UserList.vue')
   },
   props: ['row', 'type'],
   data() {
@@ -213,10 +213,8 @@ export default {
   }
   &.table-Carousel {
     width: 216px;
-    height: 56px;
     padding: 0 20px;
     .title-top {
-      // margin-bottom: 3px;
       font-size: 12px;
     }
 

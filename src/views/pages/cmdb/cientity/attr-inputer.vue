@@ -1,7 +1,7 @@
 <template>
   <div>
     <component
-      :is="attrData.type+'attr'"
+      :is="attrData.type + 'attr'"
       ref="attrHandler"
       :disabled="disabled"
       :valueList="valueList"
@@ -17,18 +17,18 @@
   </div>
 </template>
 <script>
-import * as handlers from '../ci/attrhandler/input';
+import * as handlers from '@/views/pages/cmdb/ci/attrhandler/input/index.js';
 export default {
   name: '',
   components: {
     ...handlers
   },
   props: {
-    disabled: {type: Boolean, default: false},
-    allowBatchAdd: {type: Boolean, default: true},
+    disabled: { type: Boolean, default: false },
+    allowBatchAdd: { type: Boolean, default: true },
     attrData: { type: Object },
     valueList: { type: Array },
-    attrEntity: {type: Object}
+    attrEntity: { type: Object }
   },
   data() {
     return {};
@@ -38,8 +38,7 @@ export default {
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
-  updated() {
-  },
+  updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {},
@@ -79,9 +78,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

@@ -1,41 +1,36 @@
 <template>
-  <div class="batch-import">
+  <div>
     <TsContain
-      :isSiderHide="isHelpHide"
-      siderPosition="right"
+      :isRightSiderHide="isHelpHide"
       navBorderBottom="none"
-      :class="{helps:!isHelpHide}"
+      :class="{ helps: !isHelpHide }"
     >
-      
       <template v-slot:topLeft>
-        <span class="text-action" :class="tabName == 'upload'?'text-primary tsfont-location-o':''" @click="tabName='upload'">{{ $t('page.importaudit') }}</span>
+        <span class="text-action" :class="tabName == 'upload' ? 'text-primary tsfont-location-o' : ''" @click="tabName = 'upload'">{{ $t('page.importaudit') }}</span>
         <Divider type="vertical" />
-        <span class="text-action" :class="tabName == 'download'?'text-primary tsfont-location-o':''" @click="tabName='download'">{{ $t('term.process.downloadtemp') }}</span>
+        <span class="text-action" :class="tabName == 'download' ? 'text-primary tsfont-location-o' : ''" @click="tabName = 'download'">{{ $t('term.process.downloadtemp') }}</span>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
           <div v-auth="['ADMIN']" class="action-item"><AuditConfig auditName="CIENTITY-IMPORT-AUDIT"></AuditConfig></div>
           <div class="action-item tsfont-question-s" @click="isHelpHide = !isHelpHide">{{ $t('page.help') }}</div>
-          <div v-show="tabName==='upload'" class="action-item">
+          <div v-show="tabName === 'upload'" class="action-item">
             <Button type="primary" @click="openUploadDialog">{{ $t('page.uploadimportfile') }}</Button>
           </div>
-          <div v-show="tabName==='download'" class="action-item">
-            <Button
-              v-download="downloadUrl"
-              v-download:prevent="preventDownload"
-              type="info"
-            >{{ $t('term.process.downloadtemp') }}</Button></div>
+          <div v-show="tabName === 'download'" class="action-item">
+            <Button v-download="downloadUrl" v-download:prevent="preventDownload" type="info">{{ $t('term.process.downloadtemp') }}</Button>
+          </div>
         </div>
       </template>
 
       <template slot="content">
         <div class="">
-          <ImportAudit v-show="tabName==='upload'" ref="audit" />
-          <ImportTemplate v-show="tabName==='download'" ref="template" @on-template-change="getDownloadParams" />
+          <ImportAudit v-show="tabName === 'upload'" ref="audit" />
+          <ImportTemplate v-show="tabName === 'download'" ref="template" @on-template-change="getDownloadParams" />
         </div>
       </template>
 
-      <div slot="sider" class="help-container">
+      <div slot="right" class="help-container">
         <h3 class="help-title text-title">{{ $t('page.help') }}</h3>
         <ul class="help-list">
           <li class="help-item">{{ $t('message.cmdb.importhelp1') }}</li>
@@ -52,22 +47,21 @@
           <li class="help-item">{{ $t('message.cmdb.importhelp12') }}</li>
         </ul>
       </div>
-
     </TsContain>
 
     <!-- 上传对话框 -->
-    <UploadDialog 
+    <UploadDialog
       ref="uploadDialog"
       :actionUrl="actionUrl"
-      :data="{param: 'file', type: 'cmdb'}"
+      :data="{ param: 'file', type: 'cmdb' }"
       :formatList="['xls', 'xlsx']"
       immediatelyUpload
       :showSuccessNotice="false"
-      :defaultFileList.sync="defaultFileList" 
+      :defaultFileList.sync="defaultFileList"
       @on-remove-file="removeFile"
       @on-success="fileUploaded"
     >
-      <div slot="footer" class="flex-between" :style="{margin: '0 8px'}">
+      <div slot="footer" class="flex-between" :style="{ margin: '0 8px' }">
         <div class="flex-start">
           <Checkbox v-model="importParams.editMode" :true-value="'global'" :false-value="'partial'">{{ $t('page.globalupdate') }}</Checkbox>
         </div>
@@ -78,7 +72,6 @@
         </div>
       </div>
     </UploadDialog>
-    
   </div>
 </template>
 
@@ -88,10 +81,10 @@ import download from '@/resources/directives/download.js';
 export default {
   name: 'BatchImport',
   components: {
-    ImportAudit: resolve => require(['./batch-import-audit.vue'], resolve),
-    ImportTemplate: resolve => require(['./batch-import-template.vue'], resolve),
-    UploadDialog: resolve => require(['components/UploadDialog/UploadDialog'], resolve),
-    AuditConfig: resolve => require(['@/views/components/auditconfig/auditconfig.vue'], resolve)
+    ImportAudit: () => import('./batch-import-audit.vue'),
+    ImportTemplate: () => import('./batch-import-template.vue'),
+    UploadDialog: () => import('components/UploadDialog/UploadDialog'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   directives: { download },
   data() {
@@ -103,7 +96,8 @@ export default {
     };
     return {
       auditConfig: null,
-      timeSelectConfig: {//时间选择器的数据
+      timeSelectConfig: {
+        //时间选择器的数据
         border: 'border',
         placement: 'bottom-start',
         clearable: false,
@@ -120,8 +114,8 @@ export default {
         action: null
       },
       downloadParams: {
-        ciId: null, 
-        attrIdList: null, 
+        ciId: null,
+        attrIdList: null,
         relIdList: null
       },
       defaultFileList: [],
@@ -139,8 +133,8 @@ export default {
     async getDefaultFile() {
       const res = await this.$api.cmdb.batchImport.getFile();
       this.fileList = this.defaultFileList = res.Return.list.map(file => {
-        const {id: uuid, name, size} = file;
-        return {uuid, status: 'OK', file: {name, size}, removable: true};
+        const { id: uuid, name, size } = file;
+        return { uuid, status: 'OK', file: { name, size }, removable: true };
       });
     },
     fileUploaded(res, file, fileList) {
@@ -149,7 +143,7 @@ export default {
       this.fileList = fileList;
     },
     async removeFile(file, fileList) {
-      const params = {fileId: file.uuid};
+      const params = { fileId: file.uuid };
       const res = await this.$api.cmdb.batchImport.deleteFile(params);
       this.fileList = fileList;
     },
@@ -158,7 +152,7 @@ export default {
       this.$createDialog({
         title: this.$t('page.tip'),
         content: this.importNotice[action],
-        'on-ok': async vnode => { 
+        'on-ok': async vnode => {
           const res = await this.$api.cmdb.batchImport.startImport(this.importParams);
           this.$Message.success(this.$t('message.executesuccess'));
           vnode.isShow = false;
@@ -169,12 +163,9 @@ export default {
     },
     getDownloadParams(ciId, selectedList = []) {
       this.downloadParams.ciId = ciId;
-      this.downloadParams.attrIdList = selectedList
-        .filter(item => item.rowType === 'attr')
-        .map(item => item.id);
-      this.downloadParams.relIdList = selectedList
-        .filter(item => item.rowType === 'rel')
-        .map(item => item.id);
+      this.downloadParams.attrIdList = selectedList.filter(item => item.rowType === 'attr').map(item => item.id);
+      this.downloadParams.relIdList = selectedList.filter(item => item.rowType === 'rel').map(item => item.id);
+      this.downloadParams.globalAttrIdList = selectedList.filter(item => item.rowType === 'global').map(item => item.id);
     }
   },
   computed: {
@@ -185,7 +176,7 @@ export default {
       };
     },
     preventDownload() {
-      const {ciId, attrIdList, relIdList} = this.downloadParams;
+      const { ciId, attrIdList, relIdList } = this.downloadParams;
       if (!ciId) return true;
       const hasAttr = attrIdList && attrIdList.length > 0;
       const hasRel = relIdList && relIdList.length > 0;
@@ -197,46 +188,20 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import (reference) '~@/resources/assets/css/variable.less';
-.batch-import {
-  // /deep/.ivu-layout-sider,/deep/.ivu-layout-content{
-  //   background-color: @default-op;
-  // }
-  .helps{
-    /deep/ .tscontain-sider{
-      margin-left: 16px;
-    }
+.help-container {
+  padding: 10px 14px;
+  .help-title {
+    font-weight: normal;
+    margin-bottom: 5px;
   }
-  
-  /deep/.ivu-tabs-bar{
-    margin-bottom: 1px;
-  }
-  .border8{
-    border-radius: 0px 8px 8px 8px;
-  }
-  .action-item {
-    user-select: none;
-    margin-right: 0px!important;
-    &::before {
-      padding-right: 0;
-    }
-  }
-
-  .help-container {
-    padding: 10px 14px;
-		.help-title {
-      font-weight: normal;
-      margin-bottom: 5px;
-    }
-    .help-list {
+  .help-list {
+    list-style: unset;
+    .help-item {
       list-style: unset;
-      .help-item {
-        list-style: unset;
-        list-style-position: outside;
-        margin-bottom: 10px;
-        margin-left: 10px;
-      }
+      list-style-position: outside;
+      margin-bottom: 10px;
+      margin-left: 10px;
     }
-	}
+  }
 }
 </style>

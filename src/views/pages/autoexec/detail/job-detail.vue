@@ -2,7 +2,7 @@
   <div class="job-detail border-radius">
     <TsContain :siderWidth="258" :enableCollapse="true">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back(prevPath.router)">{{ $getFromPage(prevPath.name) }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="action-group">
@@ -40,6 +40,11 @@
                 <DropdownItem v-if="jobData.isCanExecute || jobData.isCanTakeOver" @click.native="copyJob()">
                   <div>
                     {{ $t('term.autoexec.copyjob') }}
+                  </div>
+                </DropdownItem>
+                <DropdownItem v-if="jobData.isCanExecute || jobData.isCanTakeOver" @click.native="abortJob()">
+                  <div>
+                    {{ $t('term.autoexec.abortjob') }}
                   </div>
                 </DropdownItem>
               </DropdownMenu>
@@ -97,20 +102,21 @@
   </div>
 </template>
 <script>
+import {store, mutations} from './jobDetailState.js';
 import ContentItem from './jobDetail/phase/index.js';
 import download from '@/resources/directives/download.js';
 export default {
   name: 'ActionDetail',
   components: {
-    RefireJobDialog: resolve => require(['./jobDetail/refire-job-dialog.vue'], resolve),
-    PhaseList: resolve => require(['./jobDetail/job-phase-list.vue'], resolve),
-    ConsoleLogDialog: resolve => require(['./jobDetail/job-console-log-dialog.vue'], resolve),
-    JobParamDialog: resolve => require(['./jobDetail/job-param-dialog.vue'], resolve),
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve),
+    RefireJobDialog: () => import('./jobDetail/refire-job-dialog.vue'),
+    PhaseList: () => import('./jobDetail/job-phase-list.vue'),
+    ConsoleLogDialog: () => import('./jobDetail/job-console-log-dialog.vue'),
+    JobParamDialog: () => import('./jobDetail/job-param-dialog.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     ...ContentItem,
-    Status: resolve => require(['@/resources/components/Status/CommonStatus.vue'], resolve),
-    ExtrainfoDetail: resolve => require(['./jobDetail/extrainfo-detail.vue'], resolve),
-    LockDialog: resolve => require(['@/views/pages/deploy/job/resourcelock/resourcelock-dialog'], resolve) //资源锁
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    ExtrainfoDetail: () => import('./jobDetail/extrainfo-detail.vue'),
+    LockDialog: () => import('@/views/pages/deploy/job/resourcelock/resourcelock-dialog') //资源锁
   },
   filters: {},
   directives: { download },
@@ -129,10 +135,6 @@ export default {
       isShowResourceLockDialog: false, //资源锁弹框默认不弹框
       idList: [],
       isReady: true, //刷新后用于重置组件，让组件可以重新开始所有刷新
-      prevPath: {
-        router: '/job-manage',
-        name: this.$t('router.autoexec.jobmanage')
-      },
       tabsValue: 'jobdetail',
       selectStepId: null,
       isShowJobParam: false, //显示参数弹框
@@ -186,7 +188,7 @@ export default {
           fn: _this.revokeJob
         }
       }, lockSearchParam: {
-        
+
       }
     };
   },
@@ -208,7 +210,9 @@ export default {
   beforeDestroy() {
     this.clearTimmer();
   },
-  destroyed() {},
+  destroyed() {
+    mutations.setSearchParam({});
+  },
   methods: {
     async getJobById() {
       await this.$api.autoexec.job.getJobById(this.jobParam.jobId).then(res => {

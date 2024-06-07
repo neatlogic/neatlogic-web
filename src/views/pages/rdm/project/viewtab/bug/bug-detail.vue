@@ -69,6 +69,11 @@
                 <GitlabList :issueId="issueData.id" :appId="getApp('gitlab').id"></GitlabList>
               </div>
             </TabPane>
+            <TabPane :label="render => renderCostTabLabel(render, issueData.costList && issueData.costList.length)" name="timecost">
+              <div v-if="currentTab == 'timecost'" class="pl-nm pr-nm">
+                <TimeCostList :issueData="issueData"></TimeCostList>
+              </div>
+            </TabPane>
             <TabPane :label="render => renderAuditTabLabel(render, issueData.auditCount)" name="audit">
               <div v-if="currentTab == 'audit'" class="pl-nm pr-nm">
                 <IssueAuditList
@@ -141,18 +146,19 @@ import IssueDetailBase from '@/views/pages/rdm/project/viewtab/issue-detail-base
 export default {
   name: '',
   components: {
-    IssueTitle: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-title.vue'], resolve),
-    ContentHandler: resolve => require(['@/views/pages/rdm/project/content-handler/content-handler.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    CommentList: resolve => require(['@/views/pages/rdm/project/viewtab/components/comment-list.vue'], resolve),
-    TsCkeditor: resolve => require(['@/resources/plugins/TsCkeditor/TsCkeditor.vue'], resolve),
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    AttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/attr-list.vue'], resolve),
-    StatusRequiredAttrList: resolve => require(['@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue'], resolve),
-    IssueAuditList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'], resolve),
-    IssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/issue-list.vue'], resolve),
-    MyDoingIssueList: resolve => require(['@/views/pages/rdm/project/viewtab/components/my-doing-issue-list.vue'], resolve),
-    GitlabList: resolve => require(['@/views/pages/rdm/project/viewtab/components/gitlab-list.vue'], resolve)
+    IssueTitle: () => import('@/views/pages/rdm/project/viewtab/components/issue-title.vue'),
+    ContentHandler: () => import('@/views/pages/rdm/project/content-handler/content-handler.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    CommentList: () => import('@/views/pages/rdm/project/viewtab/components/comment-list.vue'),
+    TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    AttrList: () => import('@/views/pages/rdm/project/viewtab/components/attr-list.vue'),
+    StatusRequiredAttrList: () => import('@/views/pages/rdm/project/viewtab/components/status-requiredattr-list.vue'),
+    IssueAuditList: () => import('@/views/pages/rdm/project/viewtab/components/issueaudit-list.vue'),
+    IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue'),
+    MyDoingIssueList: () => import('@/views/pages/rdm/project/viewtab/components/my-doing-issue-list.vue'),
+    GitlabList: () => import('@/views/pages/rdm/project/viewtab/components/gitlab-list.vue'),
+    TimeCostList: () => import('@/views/pages/rdm/project/viewtab/components/timecost-list.vue')
   },
   extends: IssueDetailBase,
   props: {},

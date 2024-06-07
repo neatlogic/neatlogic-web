@@ -1,23 +1,9 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div>
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="$back()"></span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <span class="action-title-name h4">{{ oldId ? $t('page.copyscript'):$t('page.addscript') }}</span>
@@ -77,9 +63,9 @@ export default {
   name: 'ScriptDetail',
   components: {
     VersionEdit,
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
-    ReviewDialog: resolve => require(['./scriptDetail/edit/review-dialog.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    ReviewDialog: () => import('./scriptDetail/edit/review-dialog.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   filters: {
   },
@@ -111,15 +97,15 @@ export default {
           label: this.$t('page.name'),
           width: '100%',
           validateList: [
-            'required', 
+            'required',
             'name-special',
             { name: 'searchUrl',
-              url: '/api/rest/autoexec/script/save', 
+              url: '/api/rest/autoexec/script/save',
               key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('page.name')})
             }
           ]
-         
+
         },
         {
           type: 'select',
@@ -136,7 +122,7 @@ export default {
           dealDataByUrl: this.$utils.getToolClassificationList,
           transfer: true,
           width: '100%'
-         
+
         },
         {
           type: 'tree',
@@ -152,7 +138,7 @@ export default {
           valueName: 'id',
           transfer: true,
           width: '100%'
-         
+
         },
         {
           name: 'isLib',
@@ -245,13 +231,13 @@ export default {
       isReviewShow: false,
       versionId: null,
       id: null, //新建id
-      versionForm: { 
+      versionForm: {
         value: '',
         width: '50%',
         maxlength: 50,
         border: 'border',
         validateList: ['required', 'name-special']
-      },      
+      },
       versionConfig: {
         title: ''
       },
@@ -347,7 +333,7 @@ export default {
         if (!isValid) {
           return;
         }
-        
+
         this.$nextTick(() => {
           data = Object.assign(data, this.settingConfig, this.versionConfig, this.$refs.versionEdit.save());
           if (this.versionId) {
@@ -412,7 +398,7 @@ export default {
       } else {
         this.userType = 'submit';
       }
-      await this.$api.autoexec.script.submitScript({ versionId: this.versionId}); 
+      await this.$api.autoexec.script.submitScript({ versionId: this.versionId});
       this.isReviewShow = true;
     },
     updateData(status) {
@@ -454,7 +440,7 @@ export default {
 <style lang="less" scoped>
 .step-main{
   padding-top: 20px;
-  .step{ 
+  .step{
     width: 60%;
     margin: 0 auto;
     padding: 40px 0;

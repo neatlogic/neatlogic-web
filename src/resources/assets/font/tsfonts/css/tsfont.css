@@ -134,7 +134,6 @@
 .tsfont-chart-scatterbubble:before { content: '\e85a'; } /* '' */
 .tsfont-chart-stackedcolumn:before { content: '\e85b'; } /* '' */
 .tsfont-chart-table:before { content: '\e85c'; } /* '' */
-.tsfont-chart-wordcloud :before { content: '\e85d'; } /* '' */
 .tsfont-chart-wordcloud:before { content: '\e85e'; } /* '' */
 .tsfont-check-o:before { content: '\e85f'; } /* '' */
 .tsfont-check-s:before { content: '\e860'; } /* '' */
@@ -484,7 +483,6 @@
 .tsfont-taskperson:before { content: '\e9b8'; } /* '' */
 .tsfont-team-s:before { content: '\e9b9'; } /* '' */
 .tsfont-team:before { content: '\e9ba'; } /* '' */
-.tsfont-techsure:before { content: '\e9bb'; } /* '' */
 .tsfont-tencentcloud:before { content: '\e9bc'; } /* '' */
 .tsfont-test:before { content: '\e9bd'; } /* '' */
 .tsfont-text-delete:before { content: '\e9be'; } /* '' */
@@ -611,3 +609,9 @@
 .tsfont-border-right:before { content: '\ea37'; } /* '' */
 .tsfont-border-top:before { content: '\ea38'; } /* '' */
 .tsfont-border-vertical:before { content: '\ea39'; } /* '' */
+.tsfont-bottom:before { content: '\ea3a'; } /* '' */
+.tsfont-double-arrow-down:before { content: '\ea3b'; } /* '' */
+.tsfont-top:before { content: '\ea3c'; } /* '' */
+.tsfont-ts:before { content: '\ea3d'; } /* '' */
+.tsfont-paste:before { content: '\ea3e'; } /* '' */
+.tsfont-dataconversion:before { content: '\ea3f'; } /* '' */

@@ -58,7 +58,7 @@ export default {
   name: '',
   components: {
     draggable,
-    AttrConfigDialog: resolve => require(['./formtableinputer-attr-config-dialog.vue'], resolve)
+    AttrConfigDialog: () => import('./formtableinputer-attr-config-dialog.vue')
   },
   props: {
     config: Object

@@ -16,6 +16,7 @@ import textareaHandler from './textarea';
 import phaseHandler from './text';
 import switchHandler from './switch';
 import userselectHandler from './userselect';
+import runnergroupHandler from './runnergroup';
 export default {
   textHandler, //文本输入
   passwordHandler, //密码
@@ -34,5 +35,6 @@ export default {
   textareaHandler, //文本域
   phaseHandler, //执行阶段
   switchHandler, //开关
-  userselectHandler
+  userselectHandler,
+  runnergroupHandler
 };

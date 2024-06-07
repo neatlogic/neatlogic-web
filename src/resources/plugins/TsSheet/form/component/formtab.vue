@@ -2,9 +2,11 @@
   <div>
     <Tabs
       v-if="tabList.length > 0"
+      :value="currentTab"
       :name="formItem.uuid"
       :type="config.type"
       :animated="false"
+      @on-click="(name)=>{changeTab(name);}"
     >
       <TabPane
         v-for="(tab, tindex) in tabList"
@@ -29,8 +31,8 @@
                 :formData="formData"
                 :formItemList="formItemList"
                 :mode="mode"
-                :disabled="disabled || !!formItem.hasOwnProperty('inherit')"
-                :readonly="readonly"
+                :disabled="disabled || tab.isDisabled"
+                :readonly="readonly || tab.isReadOnly"
                 @resize="$emit('resize')"
                 @emit="
                   val => {
@@ -55,20 +57,27 @@
         </div>
       </TabPane>
     </Tabs>
-    <div v-else class="text-grey">{{ $t('form.placeholder.pleaseadd',{'target':$t('page.tab')}) }}</div>
+    <div v-else-if="mode === 'edit' && mode === 'editSubform'" class="text-grey">{{ $t('form.placeholder.pleaseadd',{'target':$t('page.tab')}) }}</div>
   </div>
 </template>
 <script>
 import base from './base.vue';
 import validmixin from './common/validate-mixin.js';
+import conditionMixin from '@/resources/plugins/TsSheet/form/conditionexpression/condition-mixin.js';
+
 export default {
   name: '',
-  components: { ChildFormItem: resolve => require(['@/resources/plugins/TsSheet/child-form-item.vue'], resolve) },
+  components: { ChildFormItem: () => import('@/resources/plugins/TsSheet/child-form-item.vue') },
   extends: base,
-  mixins: [validmixin],
+  mixins: [validmixin, conditionMixin],
   props: {},
   data() {
-    return {};
+    return {
+      initFormData: this.$utils.deepClone(this.formData),
+      tabReaction: {},
+      currentTab: null,
+      isFirst: true
+    };
   },
   beforeCreate() {},
   created() {},
@@ -82,16 +91,18 @@ export default {
   destroyed() {},
   methods: {
     dropFormItem(event, tab) {
-      if (this.formItem.hasOwnProperty('inherit')) {
-        return false;
-      }
-      const item = JSON.parse(event.dataTransfer.getData('item'));
-      if (tab && item) {
-        if (this.addComponent(item)) {
-          if (!tab.component) {
-            this.$set(tab, 'component', []);
+      if (this.mode === 'edit' || this.mode === 'editSubform') {
+        if (this.formItem.hasOwnProperty('inherit')) {
+          return false;
+        }
+        const item = JSON.parse(event.dataTransfer.getData('item'));
+        if (tab && item) {
+          if (this.addComponent(item)) {
+            if (!tab.component) {
+              this.$set(tab, 'component', []);
+            }
+            tab.component.push(item.uuid);
           }
-          tab.component.push(item.uuid);
         }
       }
     },
@@ -128,20 +139,103 @@ export default {
         }
       }
       return errorList;
+    },
+    changeTab(name) {
+      this.currentTab = name;
+      this.$emit('resize');
+    },
+    validConfig() {
+      const errorList = [];
+      if (this.$refs) {
+        for (let name in this.$refs) {
+          if (this.$refs[name]) {
+            let formitem = this.$refs[name];
+            if (this.$refs[name] instanceof Array) {
+              formitem = this.$refs[name][0];
+            } else {
+              formitem = this.$refs[name];
+            }
+            if (formitem) {
+              const err = formitem.validConfig();
+              if (err && err.length > 0) {
+                errorList.push(...err);
+              }
+            }
+          }
+        }
+      }
+      return errorList;
+    },
+    updatetabList(newVal, oldVal) {
+      //tab内联动规则改变
+      this.config.tabList.forEach(item => {
+        for (let action in item.reaction) {
+          const reaction = item.reaction[action];
+          if (reaction && !this.$utils.isEmpty(reaction)) {
+            this.tabReaction = reaction;
+            if (action === 'hide') {
+              const result = this.executeReaction(reaction, newVal, oldVal);
+              if (result) {
+                this.hideFormItem(item);
+              } else {
+                this.showFormItem(item);
+              }
+            } else if (action === 'display') {
+              const result = this.executeReaction(reaction, newVal, oldVal);
+              if (result) {
+                this.showFormItem(item);
+              } else {
+                this.hideFormItem(item);
+              }
+            } else if (action === 'readonly') {
+              const result = this.executeReaction(reaction, newVal, oldVal);
+              if (result) {
+                this.$set(item, 'isReadOnly', true);
+              } else {
+                this.$set(item, 'isReadOnly', false);
+              }
+            } else if (action === 'disable') {
+              const result = this.executeReaction(reaction, newVal, oldVal);
+              if (result) {
+                this.$set(item, 'isDisabled', true);
+              } else {
+                this.$set(item, 'isDisabled', false);
+              }
+            }
+            this.tabReaction = null;
+          }
+        }
+      });
+    },
+    hideFormItem(item) {
+      this.$set(item, 'isHide', true);
+    },
+    showFormItem(item) {
+      this.$set(item, 'isHide', false);
     }
   },
   filter: {},
   computed: {
     tabList() {
-      let tabList = [];
+      let list = [];
       if (this.config.tabList && this.config.tabList.length > 0) {
         this.config.tabList.forEach(tab => {
           if (tab.value !== '' && tab.text !== '') {
-            tabList.push(tab);
+            if (this.mode != 'edit' && this.mode != 'editSubform') {
+              if (!tab.isHide) {
+                list.push(tab);
+              }
+            } else {
+              list.push(tab);
+            }
           }
         });
       }
-      return tabList;
+      let findTab = list.find(t => t.value === this.currentTab);
+      if (!findTab && !this.$utils.isEmpty(list)) {
+        this.currentTab = list[0].value;
+      }
+      return list;
     },
     tabCompomentList() {
       return uuid => {
@@ -157,9 +251,44 @@ export default {
         }
         return [];
       };
+    },
+    formDataForWatch() {
+      return JSON.parse(JSON.stringify(this.formData));
+    },
+    conditionData() { //tab内规则用到的条件
+      return uuid => {
+        const conditionData = {};
+        if (this.tabReaction) {
+          const reaction = this.tabReaction;
+          if (reaction && !this.$utils.isEmpty(reaction) && reaction.conditionGroupList) {
+            reaction.conditionGroupList.forEach(cg => {
+              if (cg.conditionList) {
+                cg.conditionList.forEach(c => {
+                  conditionData[c.uuid] = c;
+                });
+              }
+            });
+          }
+        }
+        return conditionData[uuid];
+      };
     }
   },
-  watch: {}
+  watch: {
+    formDataForWatch: {
+      handler(val) {
+        if (this.mode != 'edit' && this.mode != 'editSubform') {
+          if (this.isFirst || !this.$utils.isSame(val, this.initFormData)) {
+            this.updatetabList(val, this.initFormData);
+            this.initFormData = this.$utils.deepClone(val);
+            this.isFirst = false;
+          }
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped></style>

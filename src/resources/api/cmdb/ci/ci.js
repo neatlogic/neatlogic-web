@@ -1,6 +1,30 @@
 import axios from '../../http';
 
 const ci = {
+  deleteCiTopoTemplateById(id) {
+    return axios.post('/api/rest/cmdb/ci/topotemplate/delete', {id: id});
+  },
+  saveTopoTemplate(params) {
+    return axios.post('/api/rest/cmdb/ci/topotemplate/save', params);
+  },
+  getCiTopoTemplateById(id, params) {
+    let param = {
+      id: id
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/ci/topotemplate/get', param);
+  },
+  getCiTopoTemplateByCiId(ciId, params) {
+    let param = {
+      ciId: ciId
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/ci/topotemplate/list', param);
+  },
   //保存模型
   saveCi(params) {
     return axios.post('/api/rest/cmdb/ci/save', params);
@@ -48,20 +72,32 @@ const ci = {
   getRelativeRelList(params) {
     return axios.post('/api/rest/cmdb/relative/rel/list', params);
   },
-  getCiById(ciId, needAction) {
-    return axios.post('/api/rest/cmdb/ci/get', { id: ciId, needAction: !!needAction });
+  getCiById(ciId, params) {
+    let param = {
+      id: ciId
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/ci/get', param);
   },
   getCiListForTree() {
-    return axios.post('api/rest/cmdb/ci/listtree', {});
+    return axios.post('/api/rest/cmdb/ci/listtree', {});
   },
   getAttrById(attrId) {
     return axios.post('/api/rest/cmdb/attr/get', { id: attrId });
   },
   getAttrByIdList(attrIdList) {
-    return axios.post('api/rest/cmdb/attr/getlist', { idList: attrIdList });
+    return axios.post('/api/rest/cmdb/attr/getlist', { idList: attrIdList });
   },
-  getViewConstList(ciId, showType) {
-    return axios.post('/api/rest/cmdb/ciview/listconst', { ciId: ciId, showType: showType });
+  getViewConstList(ciId, params) {
+    let param = {
+      ciId: ciId
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/ciview/listconst', param);
   },
   getAttrByCiId(ciId, params) {
     let param = {
@@ -71,6 +107,15 @@ const ci = {
       param = Object.assign(param, params);
     }
     return axios.post('/api/rest/cmdb/ci/listattr', param);
+  },
+  getGlobalAttrByCiId(ciId, params) {
+    let param = {
+      ciId: ciId
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/ci/listglobalattr', param);
   },
   getExpressionAttrRelByCiId(ciId) {
     return axios.post('/api/rest/cmdb/ci/' + ciId + '/listexpressionattrrel', {});
@@ -82,7 +127,6 @@ const ci = {
     return axios.post('/api/rest/cmdb/rel/get', { id: relId });
   },
   getRelByCiId(ciId, params) {
-    //原参数needAction, showType, allowEdit
     let param = {
       ciId: ciId
     };
@@ -150,6 +194,19 @@ const ci = {
   },
   rebuildRelativeRel(relId) {
     return axios.post('/api/rest/cmdb/rel/relative/rebuild', { relId: relId });
+  },
+  getCiTree() {
+    return axios.post('/api/rest/cmdb/ci/tree', {});
+  },
+  saveCiTreeItem(params) {
+    return axios.post('/api/rest/cmdb/ci/tree/save', params);
+  },
+  getCiForprocessmapping(params) {
+    //获取模型信息（流程图cmdb节点关系映射专用）
+    return axios.post('/api/rest/cmdb/ci/get/forprocessmapping', params);
+  },
+  searchCiListAttr(params) {
+    return axios.post('/api/rest/cmdb/ci/listattr', params);
   }
 };
 

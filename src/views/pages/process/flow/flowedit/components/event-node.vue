@@ -2,7 +2,7 @@
   <div class="eventaqNode">
     <!-- 表单场景 -->
     <FormsceneSetting
-      v-model="configData.stepConfig"
+      :value="configData.stepConfig"
       :formConfig="formConfig"
       :toSetting="toSetting"
       @updateScene="updateScene"
@@ -105,16 +105,16 @@ import itemmixin from './itemmixin.js';
 export default {
   name: '',
   components: {
-    StrategySetting: resolve => require(['./nodesetting/strategy-setting.vue'], resolve),
-    AuthoritySetting: resolve => require(['./nodesetting/authority-setting.vue'], resolve),
-    NoticeSetting: resolve => require(['./nodesetting/notice-setting.vue'], resolve),
-    ReapprovalSetting: resolve => require(['./nodesetting/reapproval-setting.vue'], resolve),
-    ActionSetting: resolve => require(['./nodesetting/action-setting.vue'], resolve),
-    ButtonSetting: resolve => require(['./nodesetting/button-setting.vue'], resolve),
+    StrategySetting: () => import('./nodesetting/strategy-setting.vue'),
+    AuthoritySetting: () => import('./nodesetting/authority-setting.vue'),
+    NoticeSetting: () => import('./nodesetting/notice-setting.vue'),
+    ReapprovalSetting: () => import('./nodesetting/reapproval-setting.vue'),
+    ActionSetting: () => import('./nodesetting/action-setting.vue'),
+    ButtonSetting: () => import('./nodesetting/button-setting.vue'),
     AssignSetting,
-    ExtendAuth: resolve => require(['./nodesetting/extend/extendauth.vue'], resolve),
-    TagSetting: resolve => require(['./nodesetting/tag-setting.vue'], resolve),
-    FormsceneSetting: resolve => require(['./nodesetting/formscene-setting'], resolve) // 表单场景
+    ExtendAuth: () => import('./nodesetting/extend/extendauth.vue'),
+    TagSetting: () => import('./nodesetting/tag-setting.vue'),
+    FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
   },
   mixins: [nodemixin, itemmixin],
   props: {},
@@ -141,7 +141,7 @@ export default {
       actionConfig: {}, //动作数据
       taskisStrategy: {
         isStrategy: 0 //子任务节点是否开启，如果说有子任务节点id就开启，没有就关闭
-      },  
+      },
       copyPrevNodes: _this.prevNodes || [], //复制前置步骤
       processStepUuidList: '', //前置步骤值
       previewFormContent: null, //用来预览表单数据

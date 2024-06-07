@@ -9,9 +9,6 @@
       </template>
       <template v-slot:content>
         <TsTable :tbodyList="tbodyList" :theadList="theadList">
-          <template v-slot:name="{ row }">
-            <a @click="editTemplate(row)">{{ row.name }}</a>
-          </template>
           <template v-slot:isActive="{ row }">
             <span v-if="row.isActive" class="text-success">{{ $t('page.yes') }}</span>
             <span v-else class="text-grey">{{ $t('page.no') }}</span>
@@ -19,6 +16,7 @@
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
+                <li class="tsfont-edit" @click="editTemplate(row)">{{ $t('page.edit') }}</li>
                 <li class="tsfont-trash-o" @click="deleteTemplate(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
@@ -32,7 +30,7 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {},
   data() {

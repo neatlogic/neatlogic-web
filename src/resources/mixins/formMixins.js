@@ -45,6 +45,11 @@ export default {
       // 是否清空回显失败默认值
       type: Boolean,
       default: false
+    },
+    isCustomValue: {
+      // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
+      type: Boolean,
+      default: false
     }
   },
   methods: {
@@ -111,7 +116,12 @@ export default {
             let valueList = [];
             value.forEach(v => {
               if (v != false && !this.$utils.isEmpty(v)) {
-                valueList.push(v);
+                if (this.isCustomValue && v[this.valueName]) {
+                  // 数组对象类型
+                  valueList.push(v?.[this.valueName]);
+                } else {
+                  valueList.push(v);
+                }
               }
             });
             value = valueList;
@@ -120,12 +130,19 @@ export default {
               isValid = false;
             }
           } else {
-            value = [value];
+            if (!this.$utils.isEmpty(value)) {
+              // 处理空对象，必填校验红色边框不显示问题
+              value = [value];
+            } else {
+              value = [];
+            }
+            if (value.length == 0 && valid.required) {
+              this.$set(this, 'validMesage', valid.message);
+              isValid = false;
+            }
           }
-
           for (let cindex = 0; cindex < value.length; cindex++) {
             let v = value[cindex];
-
             if (isForm && valid.isSearch) {
               //isSearch: TsForm校验 判断searchUrl 校验
               if (valid.isValid === false) {
@@ -223,6 +240,39 @@ export default {
         className = 'text-warning';
       }
       return className;
+    },
+    handleCurrentValue() {
+      let value;
+      return currentValue => {
+        if (this.multiple || this.$options.name == 'TsFormCheckbox') {
+          if (this.$utils.isEmpty(currentValue)) {
+            value = [];
+          } else {
+            if (this.isCustomValue) {
+              // 返回的是对象处理需要处理成['value1', 'value2']
+              if (currentValue instanceof Array) {
+                value = [];
+                currentValue.forEach(item => {
+                  if (typeof item === 'object' && item[this.valueName]) {
+                    value.push(item[this.valueName]);
+                  } else if (!this.$utils.isEmpty(item)) {
+                    value.push(item);
+                  }
+                });
+              }
+            } else {
+              value = [].concat(currentValue);
+            }
+          }
+        } else {
+          if (this.isCustomValue && currentValue && typeof currentValue === 'object' && currentValue[this.valueName]) {
+            value = currentValue[this.valueName];
+          } else {
+            value = currentValue;
+          }
+        }
+        return value;
+      };
     }
   },
 
@@ -236,13 +286,16 @@ export default {
         this.isValidPass = true;
       }
     },
-    validateList() {
-      this.currentValidList = this.filterValid(this.validateList) || [];
-      if (this.$utils.isEmpty(this.currentValidList)) {
-        // 修复传递errorMessage错误提示文案没有显示问题
-        this.validMesage = '';
-        this.isValidPass = true;
-      }
+    validateList: {
+      handler() {
+        this.currentValidList = this.filterValid(this.validateList) || [];
+        if (this.$utils.isEmpty(this.currentValidList)) {
+          // 修复传递errorMessage错误提示文案没有显示问题
+          this.validMesage = '';
+          this.isValidPass = true;
+        }
+      },
+      deep: true
     }
   }
 };

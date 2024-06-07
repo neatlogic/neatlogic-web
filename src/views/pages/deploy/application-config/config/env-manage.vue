@@ -25,6 +25,15 @@
           @close="close"
         ></EnvInstanceList>
       </TabPane>
+      <TabPane :label="$t('term.deploy.envattr')">
+        <EnvAttr
+          v-if="tabActive == 3"
+          :params="params"
+          :hasEditConfigAuth="hasEditConfigAuth"
+          @close="close"
+        >
+        </EnvAttr>
+      </TabPane>
     </Tabs>
   </div>
 </template>
@@ -32,9 +41,10 @@
 export default {
   name: '',
   components: {
-    EnvInstanceList: resolve => require(['./env/env-instance-list'], resolve), // 实例列表
-    EnvAutoConfigList: resolve => require(['./env/env-autoconfig-list'], resolve), // autoconfig
-    EnvDbConfigList: resolve => require(['./env/env-db-config-list'], resolve) // autoconfig
+    EnvInstanceList: () => import('./env/env-instance-list'), // 实例列表
+    EnvAutoConfigList: () => import('./env/env-autoconfig-list'), // autoconfig
+    EnvDbConfigList: () => import('./env/env-db-config-list'), // autoconfig
+    EnvAttr: () => import('./env/env-attr')
   },
   props: {
     params: {
@@ -77,4 +87,16 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.autoconfig-box {
+  height: calc(100vh - 50px - 50px - 32px - 16px);
+  &.env-autoconfig-radius {
+  border-radius: 0 10px 10px;
+  }
+  .autocfg-box {
+    height: 148px;
+  }
+  .add-text-box {
+    padding-top: 20px;
+  }
+}
 </style>

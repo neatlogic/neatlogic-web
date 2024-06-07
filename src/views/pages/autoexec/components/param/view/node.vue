@@ -46,16 +46,18 @@
       :isReadonly="disabled || readonly"
       :dataList="nodeList"
       @on-ok="okMore"
-    ></MoreTarget> 
+    ></MoreTarget>
   </div>
 </template>
 <script>
 import viewmixin from './viewmixin.js';
+import AddNode from '../edit/node/add-node'; //异步加载报错
 export default {
   name: 'Node',
   components: {
-    AddNode: resolve => require(['../edit/node/add-node'], resolve),
-    MoreTarget: resolve => require(['@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'], resolve)
+    AddNode,
+    // AddNode: () => import('@/views/pages/autoexec/components/param/edit/node/add-node.vue'),
+    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
   },
   filters: {},
   mixins: [viewmixin],

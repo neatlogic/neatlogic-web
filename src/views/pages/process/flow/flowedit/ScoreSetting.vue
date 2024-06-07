@@ -71,8 +71,8 @@
 export default {
   name: 'ScoreSetting',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue')
   },
   props: {
     scoreConfig: {type: Object, required: true},
@@ -105,7 +105,7 @@ export default {
           {value: 'naturalDay', text: this.$t('page.naturalday')},
           {value: 'workDay', text: this.$t('page.weekday')}
         ],
-       
+
         validateList: ['required']
       }
     };

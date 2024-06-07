@@ -16,11 +16,13 @@
       <Col :span="validSetting?14:24">
         <TsFormInput
           ref="item"
+          :type="type"
           :value="value"
           :readonly="readonly"
           :disabled="disabled"
           v-bind="getSetting"
           border="border"
+          :maxlength="config && config.maxlength ?config.maxlength : type==='textarea'? 4096:2048"
           @on-change="updateval"
         ></TsFormInput>
       </Col>
@@ -33,8 +35,8 @@ import comMixin from './editmixin.js';
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   mixins: [comMixin],
   model: {
@@ -86,9 +88,14 @@ export default {
         {
           text: 'URL',
           value: 'url'
+        },
+        {
+          text: this.$t('page.highriskcode'),
+          value: 'highriskcode'
         }
       ],
-      valiDate: null
+      valiDate: null,
+      type: 'text'
     };
   },
 
@@ -133,20 +140,25 @@ export default {
       if (this.setValidComponentsList.includes('text')) {
         isSet = true;
       }
-      return isSet; 
+      return isSet;
     }
   },
 
   watch: {
     config: {
       handler(val) {
-        let validList = ['unique_ident', 'lowercase', 'uppercase', 'number', 'enchar', 'mail', 'phone', 'ip', 'port', 'url'];
-        if (val && !this.$utils.isEmpty(val.validateList)) {
-          val.validateList.forEach(item => {
-            if (validList.includes(item.name)) {
-              this.valiDate = item.name;
-            }
-          });
+        let validList = ['unique_ident', 'lowercase', 'uppercase', 'number', 'enchar', 'mail', 'phone', 'ip', 'port', 'url', 'highriskcode'];
+        if (val) {
+          if (!this.$utils.isEmpty(val.validateList)) {
+            val.validateList.forEach(item => {
+              if (validList.includes(item.name)) {
+                this.valiDate = item.name;
+              }
+            });
+          }
+          if (val.type) {
+            this.type = val.type;
+          }
         }
       },
       deep: true,

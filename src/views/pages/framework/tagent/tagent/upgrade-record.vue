@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div class="upgrade-record-wrap">
     <span class="text-action tsfont-formtime upgrade-record-margin-right" @click="handleUpgradeRecord">{{ $t('term.framework.upgrecord') }}</span>
@@ -86,9 +72,9 @@
 export default {
   name: 'UpgradeRecord', // 升级记录
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {
   },
@@ -161,7 +147,7 @@ export default {
       },
       detailTableConfig: {
         // 详情表格
-        
+
         theadList: [
           {
             title: 'IP',
@@ -203,7 +189,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-   
+
   },
   beforeMount() {},
   mounted() {},
@@ -259,7 +245,7 @@ export default {
       this.detailTableConfig.loading = true;
       this.$api.framework.tagent.getBatchUpgradeDetail(params).then((res) => {
         if (res.Status == 'OK') {
-          if (this.$utils.isEmptyObj(res.Return)) { 
+          if (this.$utils.isEmptyObj(res.Return)) {
             this.$set(this.detailTableConfig, 'tbodyList', []);
             this.detailTableConfig.loading = false;
           } else {

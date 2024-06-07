@@ -82,7 +82,7 @@
                     ref="validValue"
                     v-model="valid.value"
                     type="number"
-                    :validateList="numberValid" 
+                    :validateList="numberValid"
                     border="bottom"
                     :disabled="disabled"
                   />
@@ -200,11 +200,11 @@ import base from './base-config.vue';
 export default {
   name: '',
   components: {
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormDatePicker: resolve => require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: base,
   props: {},
@@ -297,7 +297,7 @@ export default {
         this.nowUnit = 'day';
       }
       this.changeDefaultValue();
-    },       
+    },
     handleNowOpt(format) {
       // 处理，根据显示格式，联动自定义下拉列表
       let timeTypeList = this.$utils.deepClone(this.nowOpt);
@@ -313,7 +313,7 @@ export default {
       } else if (format.indexOf('yyyy') >= 0) {
         timeTypeList.splice(0, 3);
       }
-      return timeTypeList; 
+      return timeTypeList;
     },
     changeFilter(arg, index) {
       let filter = this.config.validValueList[index];
@@ -324,14 +324,14 @@ export default {
       let value = '';
       if (this.nowExpression) {
         value = this.nowExpression;
-      } 
+      }
       if (this.defaultValue) {
         value += '_' + this.defaultValue;
-      } 
+      }
       if (this.nowExpression == 'less-than' || this.nowExpression == 'greater-than') {
         if (!this.$utils.isEmpty(this.nowValue)) {
           value += '_' + this.nowValue;
-        } 
+        }
         if (this.nowUnit) {
           value += '_' + this.nowUnit;
         }

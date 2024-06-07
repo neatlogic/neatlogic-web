@@ -25,8 +25,8 @@
 </template>
 <script>
 import * as d3 from 'd3-selection';
-import '@/resources/assets/font/tsfont.js';
-import '@/resources/assets/font/iconfont.js';
+import '@/resources/assets/font/tsfonts/tsfont.js';
+import '@/resources/assets/font/tsIconfont.js';
 import { graphviz } from 'd3-graphviz';
 import { addEvent } from '@/resources/assets/js/event.js';
 
@@ -116,6 +116,9 @@ export default {
           .on('dblclick.zoom', null)
           .on('wheel.zoom', null)
           .on('mousewheel.zoom', null);
+        if (!graph.graphviz) {
+          graph.graphviz = graphviz;
+        }
         this.graph.graphviz = graph
           .graphviz()
           .height(window.innerHeight - 30 - this.getGraphTop(graphEl).y)

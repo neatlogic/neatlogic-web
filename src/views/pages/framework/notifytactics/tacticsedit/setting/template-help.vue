@@ -63,13 +63,12 @@ export default {
     },
     triggerList: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   data() {
     return {
       sessionName: 'templatehelpbox',
-      leftWidth: '246',
       templateConfig: null,
       helpList: []
     };

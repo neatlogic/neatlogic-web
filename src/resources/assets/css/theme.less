@@ -122,7 +122,7 @@
     color: @default-op;
 
     .topnav-logo {
-      background-image: url('~img-module/img/common/logo_big_dark.png');
+      background-image: url('@img-module/img/common/logo_big_dark.png');
     }
 
     .topnav-menu {
@@ -135,10 +135,10 @@
         a {
           color: @default-top-text;
 
-          &:hover {
-            color: @default-op;
-            background: fade(@top-active, 50%);
-          }
+          // &:hover {
+          //   color: @default-op;
+          //   background: fade(@top-active, 50%);
+          // }
 
           &-active {
             color: @default-op;
@@ -1250,6 +1250,13 @@
       //margin:3px 0px;
       padding: 2px 10px;
       //line-height: 32px;
+      i {
+        vertical-align: baseline; // 修复图标和文案对不齐问题
+      }
+    }
+    .ivu-icon-ios-arrow-forward:before {
+      font-family: 'tsfont';
+      content: '\e899'; // tsfont-drop-right字体图标
     }
   }
 
@@ -1582,6 +1589,12 @@
 
   .border-base-left {
     border-left: 1px solid var(--border-color, @border-color-base) !important;
+  }
+  .border-base-top {
+    border-top: 1px solid var(--border-color, @border-color-base) !important;
+  }
+  .border-base-bottom {
+    border-bottom: 1px solid var(--border-color, @border-color-base) !important;
   }
 
   .border-error {
@@ -3717,7 +3730,7 @@
   }
 
   .module-img {
-    background-image: url('~img-module/img/module/navigation/framework-default.png');
+    background-image: url('@img-module/img/module/navigation/framework-default.png');
   }
 
   //进度条

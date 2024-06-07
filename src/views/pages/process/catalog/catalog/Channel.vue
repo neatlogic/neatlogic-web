@@ -15,6 +15,7 @@
           placement="bottom-start"
           max-width="300"
           theme="light"
+          :disabled="!seritem.desc"
         >
           <div slot="content" class="tooltip-content" v-html="seritem.desc ? removeHTMLTag(escape2Html(seritem.desc)) : ''"></div>
           <div class="desc" v-html="seritem.desc ? removeHTMLTag(escape2Html(seritem.desc)) : '-'"></div>

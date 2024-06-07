@@ -1,18 +1,34 @@
 <template>
   <div style="position: relative">
-    <div class="expression-container pb-xs mb-xs" @click="$refs['input'].focus()">
-      <DslExpression v-if="expressionData" :expressionData="expressionData"></DslExpression>
-      <pre v-else class="expression-original text-grey">{{ value }}</pre>
-      <div class="inputer-container"><input
+    <div class="expression-container pb-xs mb-xs" @click="$refs['input'] && $refs['input'].focus()">
+      <DslExpression
+        v-if="expressionData"
+        ref="input"
+        :expressionData="expressionData"
+        :needInputer="true"
+        @backspace="del"
+        @input="input"
+      ></DslExpression>
+      <!--<pre v-else class="expression-original text-grey">{{ valueLocal }}</pre>-->
+      <textarea
+        v-show="!expressionData"
+        ref="input-textarea"
+        v-model="valueLocal"
+        rows="1"
+        type="textarea"
+        class="text-grey inputer-textarea"
+        @input="resize"
+      />
+      <!--<div v-if="expressionData" class="inputer-container"><input
         ref="input"
         class="inputer"
         type="text"
         @keyup="del"
         @input="input"
-      /></div>
+      /></div>-->
     </div>
-    <div class="text-grey">帮助：输入表达式进行高级搜索，如果需要搜索关系或引用属性字段，可以使用a.b表示，例如env.name == "STG" && (port == 80 || port == 443 )</div>
-    <div>
+    <div class="text-grey" style="line-height: 20px">帮助：输入表达式进行高级搜索，如果需要搜索关系或引用属性字段，可以使用a.b表示，例如env.name == "STG" && (port == 80 || port == 443 )</div>
+    <div style="line-height: 20px">
       <span class="mr-xs text-grey">{{ $t('page.compareexpression') }}:</span>
       <Tag
         v-for="(op, index) in opList"
@@ -21,24 +37,24 @@
         @click.native="chooseAttr(op)"
       >{{ op }}</Tag>
     </div>
-    <div><span class="mr-xs text-grey">{{ $t('page.logicalexpression') }}:</span>
+    <div style="line-height: 20px">
+      <span class="mr-xs text-grey">{{ $t('page.logicalexpression') }}:</span>
       <Tag
         v-for="(op, index) in joinList"
         :key="index"
         class="cursor"
         @click.native="chooseAttr(op)"
-      >{{ op }}</Tag></div>
-    <div v-if="suggestList && suggestList.length > 0">
+      >{{ op }}</Tag>
+    </div>
+    <div v-if="suggestList && suggestList.length > 0" style="line-height: 20px">
       <span class="mr-xs text-grey">{{ $t('term.cmdb.attributelist') }}:</span>
       <Tag
         v-for="(suggest, index) in suggestList"
         :key="index"
         class="cursor"
         @click.native="chooseAttr(suggest)"
-      >{{ suggest }}</Tag>
+      >{{ suggest.text }}</Tag>
     </div>
-  
-    <div></div>
   </div>
 </template>
 <script>
@@ -50,16 +66,17 @@ import ErrorListener from './parser/ErrorListener.js';
 export default {
   name: '',
   components: {
-    DslExpression: resolve => require(['@/resources/plugins/DslEditor/dsl-expression.vue'], resolve)
+    DslExpression: () => import('@/resources/plugins/DslEditor/dsl-expression.vue')
   },
   props: {
+    value: { type: String },
     suggestList: { type: Array }
   },
   data() {
     return {
       opList: ['>', '<', '==', '>=', '<=', 'like', 'not like', 'exclude', 'include'],
       joinList: ['&&', '||'],
-      value: '',
+      valueLocal: this.value || '',
       expressionData: null,
       keyword: {},
       tmpValue: '',
@@ -77,54 +94,54 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    del(e) {
-      if (e.keyCode == 8 || e.keyCode == 46) {
-        if (this.value.length > 0) {
-          this.value = this.value.slice(0, -1);
-        }
+    resize(e) {
+      const textarea = this.$refs['input-textarea'];
+      if (textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
       }
     },
-    input(e) {
-      if (e.data) {
-        this.value += e.data;
-      } else if (e.inputType === 'insertFromPaste') {
-        this.value += e.target.value;
-      }
-      e.target.value = '';
+    del(e) {
+      this.valueLocal = this.valueLocal.slice(0, -1);
+    },
+    input(value) {
+      this.valueLocal += value;
     },
     chooseAttr(op) {
-      console.log(op);
-      if (this.value.endsWith(' ')) {
-        this.value += op;
+      if (this.valueLocal.endsWith(' ')) {
+        this.valueLocal += typeof op === 'object' ? op.value : op;
       } else {
-        this.value += ' ' + op;
+        this.valueLocal += ' ' + (typeof op === 'object' ? op.value : op);
       }
     },
     createAst(input) {
-      console.log('input', input);
-      try {
-        const inputStream = new antlr4.InputStream(input);
-        const lexer = new CmdbDSLLexer(inputStream);
-        const tokenStream = new antlr4.CommonTokenStream(lexer);
-        const parser = new CmdbDSLParser(tokenStream);
-        // 添加自定义的ErrorListener
-        const errorListener = new ErrorListener();
-        parser.removeErrorListeners(); // 移除默认的ErrorListener
-        parser.addErrorListener(errorListener);
-        // 以你的起始规则作为开始
-        const parseTree = parser.expressions();
-        const expressionList = [];
-        const attrList = [];
-        const visitor = new CmdbDSLVisitor(expressionList, attrList);
-        visitor.visit(parseTree);
-        this.expressionData = visitor.getRootExpression() || null;
-        if (this.expressionData) {
-          this.value = this.rewriteValue(this.expressionData);
-          //console.log(this.value);
+      if (input) {
+        try {
+          const inputStream = new antlr4.InputStream(input);
+          const lexer = new CmdbDSLLexer(inputStream);
+          const tokenStream = new antlr4.CommonTokenStream(lexer);
+          const parser = new CmdbDSLParser(tokenStream);
+          // 添加自定义的ErrorListener
+          const errorListener = new ErrorListener();
+          parser.removeErrorListeners(); // 移除默认的ErrorListener
+          parser.addErrorListener(errorListener);
+          // 以你的起始规则作为开始
+          const parseTree = parser.expressions();
+          const expressionList = [];
+          const attrList = [];
+          const visitor = new CmdbDSLVisitor(expressionList, attrList);
+          visitor.visit(parseTree);
+          this.expressionData = visitor.getRootExpression() || null;
+          if (this.expressionData) {
+            this.valueLocal = this.rewriteValue(this.expressionData);
+            this.$emit('input', this.valueLocal);
+          }
+        } catch (e) {
+          this.expressionData = null;
+          //console.error('解释异常', e);
         }
-      } catch (e) {
-        this.expressionData = null;
-        //console.error('解释异常', e);
+      } else {
+        this.$emit('input', '');
       }
     },
     isValid(expressionData) {
@@ -206,12 +223,35 @@ export default {
     }*/
   },
   filter: {},
-  computed: {},
+  computed: {
+    lastToken() {
+      if (!this.expressionData && this.valueLocal) {
+        const tokens = this.valueLocal.split(/\s+/);
+        if (tokens && tokens.length > 0) {
+          return tokens[tokens.length - 1];
+        }
+      }
+      return null;
+    }
+  },
   watch: {
-    value: {
+    valueLocal: {
       handler: function(val) {
         this.createAst(val);
         //this.createKeyword();
+      },
+      immediate: true
+    },
+    expressionData: {
+      handler: function(val) {
+        //需要延迟等待组件重新渲染
+        setTimeout(() => {
+          if (val) {
+            this.$refs['input'] && this.$refs['input'].focus();
+          } else {
+            this.$refs['input-textarea'] && this.$refs['input-textarea'].focus();
+          }
+        }, 200);
       }
     }
   }
@@ -223,11 +263,23 @@ export default {
   width: 20px;
   border: 0px;
   height: 100%;
+  background: transparent;
+}
+.inputer-textarea {
+  outline: none;
+  width: 100%;
+  height: 25px;
+  overflow-y: hidden;
+  resize: none;
+  border-width: 0px !important;
+  background: transparent;
+  padding: 0px;
+  line-height: 1.5 !important;
 }
 .expression-container {
   border-bottom: 1px solid #ccc;
-  height: 30px;
-  white-space: norwap;
+  min-height: 30px;
+  //white-space: norwap;
 }
 .expression-original {
   margin: 0px;
@@ -235,6 +287,8 @@ export default {
   vertical-align: bottom;
   letter-spacing: -1px;
   font-size: 12px;
+  word-break: break-all;
+  white-space: normal;
 }
 .inputer-container {
   display: inline-block;

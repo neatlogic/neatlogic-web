@@ -3,6 +3,7 @@
     <Alert show-icon>
       <div>
         <Poptip
+          v-model="isHelpShow"
           trigger="hover"
           placement="right"
           width="700"
@@ -38,9 +39,12 @@
                 <strong>&amp;apos;</strong>
               </Tag>
             </div>
-            <div style="word-break:break-all;white-space:pre-wrap;">
-              {{ datasourceHelp }}
-            </div>
+            <TsCodemirror
+              ref="datasourceHelp"
+              :value="datasourceHelp"
+              codeMode="xml"
+              :isReadOnly="true"
+            ></TsCodemirror>
           </div>
         </Poptip>
       </div>
@@ -71,20 +75,21 @@ export default {
   },
   data() {
     return {
+      isHelpShow: false,
       sql: this.reportData.sql,
       datasourceHelp: 
         `<mapper>	
           <resultMap id="dataMap" type="java.util.LinkedHashMap">
-            <id column="id" :property="${this.$t('term.report.taskid')}"/>
-            <result column="title" :property="${this.$t('page.title')}"/>
-            <result column="status" :property="${this.$t('page.status')}"/>
-            <result column="start_time" :property="${this.$t('page.reportingtime')}"/>
-            <result column="end_time" :property="${this.$t('page.completetime')}"/>
-            <result column="owner" :property="${this.$t('page.informant')}"/>
-            <result column="serial_number" :property="${this.$t('page.workordernumber')}"/>
+            <id column="id" property="${this.$t('term.report.taskid')}"/>
+            <result column="title" property="${this.$t('page.title')}"/>
+            <result column="status" property="${this.$t('page.status')}"/>
+            <result column="start_time" property="${this.$t('page.reportingtime')}"/>
+            <result column="end_time" property="${this.$t('page.completetime')}"/>
+            <result column="owner" property="${this.$t('page.informant')}"/>
+            <result column="serial_number" property="${this.$t('page.workordernumber')}"/>
             <collection property="stepList" javaType="java.util.List" ofType="java.util.LinkedHashMap">
-              <id column="stepId" :property="${this.$t('term.report.stepid')}"/>
-              <result column="name" :property="${this.$t('term.report.stepname')}"/>
+              <id column="stepId" property="${this.$t('term.report.stepid')}"/>
+              <result column="name" property="${this.$t('term.report.stepname')}"/>
             </collection>
           </resultMap>
           <select id="getProcessTaskList" resultMap="dataMap">
@@ -136,6 +141,16 @@ export default {
   filter: {},
   computed: {},
   watch: {
+    isHelpShow: {
+      handler: function(val) {
+        if (val) {
+          this.$nextTick(() => {
+            const editor = this.$refs['datasourceHelp'];
+            editor && editor.refresh();
+          });
+        }
+      }
+    },
     sql: {
       handler: function(val) {
         this.$emit('setSql', val);

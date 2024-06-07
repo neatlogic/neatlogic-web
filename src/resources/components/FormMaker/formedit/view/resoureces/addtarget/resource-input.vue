@@ -8,7 +8,7 @@
               <span class="tsfont-question-o input-dec"></span>
               主机类目标输入格式为 IP，服务类目标输入格式为IP:PORT，数据库类目标格式为IP:PORT/SID，一行一个目标
             </div>
-            <Input 
+            <Input
               v-model="value"
               type="textarea"
               :autosize="{minRows: 8,maxRows: 8}"
@@ -78,7 +78,7 @@
         v-model="isMoreNode"
         :dataList="currentDataList"
         @on-ok="onOk"
-      ></MoreTarget>  
+      ></MoreTarget>
     </div>
   </div>
 </template>
@@ -87,7 +87,7 @@
 export default {
   name: 'Resourceinput',
   components: {
-    MoreTarget: resolve => require(['@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'], resolve)
+    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
   },
   filtes: {},
   props: {
@@ -132,7 +132,7 @@ export default {
       if (!this.value.trim()) {
         this.messageConfig.succee = '';
         return false;
-      } 
+      }
       //前端校验
       let _this = this;
       let errorList = [];
@@ -200,7 +200,7 @@ export default {
             if (res.Status == 'OK' && res.Return && !res.Return.result) {
               let list = res.Return.list;
               list.length && (this.messageConfig.list = list);
-            } 
+            }
           });
         }
       }

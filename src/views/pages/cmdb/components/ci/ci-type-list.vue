@@ -1,7 +1,6 @@
-/* * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved. * * Licensed under the Apache License, Version 2.0 (the "License"); * you may not use this file except in compliance with the License. * You may obtain a copy of the License at * * http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by applicable law or agreed to in writing, software * distributed under the License is distributed on an "AS IS" BASIS, * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. * See the License for the specific language governing permissions and * limitations under the License. */
 <template>
   <div>
-    <div class="padding">
+    <div class="pt-md pr-md pl-md">
       <TsFormInput
         v-model="keyword"
         border="bottom"
@@ -9,38 +8,129 @@
         :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.keyword') })"
       ></TsFormInput>
     </div>
-    <div style="height:calc(100vh - 205px);overflow-y:auto">
-      <div v-for="item in filterCiTypeList" :key="item.id" class="titlelistBox">
-        <div v-if="item.ciList.length > 0" class="treeTitle ci-label text-title">{{ item.name }}</div>
-        <div v-if="item.ciList.length > 0">
-          <ul>
-            <li
-              v-for="ci in item.ciList"
-              :id="'ci-' + ci.id"
-              :key="ci.id"
-              class="text-default overflow treeList radius-sm pl-sm pr-sm"
-              :class="ci.icon + (ciId == ci.id ? ' bg-selected' : '')"
-              :title="ci.label + '(' + ci.name + ')'"
-              @click="click(item, ci)"
-            >
-              <span>{{ ci.label }}</span>
-              <span style="padding-left:2px" class="text-grey">({{ ci.name }})</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+    <div id="treeheight">
+      <Tabs v-model="mode" :animated="false">
+        <TabPane :label="$t('page.hierarchy')" name="level">
+          <div style="overflow-y: auto" :style="{ height: catalogHeight }">
+            <div v-for="item in filterCiTypeList" :key="item.id" class="titlelistBox">
+              <div v-if="item.ciList.length > 0" class="treeTitle ci-label text-title">{{ item.name }}</div>
+              <div v-if="item.ciList.length > 0">
+                <ul>
+                  <li
+                    v-for="ci in item.ciList"
+                    :id="'ci-' + ci.id"
+                    :key="ci.id"
+                    class="text-default overflow treeList radius-sm pl-sm pr-xs"
+                    :class="ci.icon + (ciId == ci.id ? ' bg-selected' : '')"
+                    :title="ci.label + '(' + ci.name + ')'"
+                    @click="
+                      if (ciId === ci.id) {
+                        if (toggleable) {
+                          click(null);
+                        }
+                      } else {
+                        click(ci);
+                      }
+                    "
+                  >
+                    <span>{{ ci.label }}</span>
+                    <span style="padding-left: 2px" class="text-grey">({{ ci.name }})</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </TabPane>
+        <TabPane
+          :label="
+            h => {
+              const divList = [
+                h('span', $t('page.custom')),
+                h('span', {
+                  class: {
+                    'tsfont-plus-square': !isExpandAll,
+                    'tsfont-minus-square': isExpandAll,
+                    fz10: true
+                  },
+                  on: {
+                    click: () => {
+                      toggleExpand();
+                    }
+                  }
+                })
+              ];
+              if ($AuthUtils.hasRole('CI_MODIFY')) {
+                divList.push(
+                  h('span', [
+                    h(
+                      'Tooltip',
+                      {
+                        props: {
+                          'max-width': 250,
+                          placement: 'right',
+                          transfer: true,
+                          content: $t('term.cmdb.treedraginfo')
+                        }
+                      },
+                      [
+                        h('span', {
+                          class: {
+                            'tsfont-question-o': true,
+                            'text-grey': true
+                          }
+                        })
+                      ]
+                    )
+                  ])
+                );
+              }
+              return h('div', divList);
+            }
+          "
+          name="custom"
+        >
+          <div style="overflow-y: auto" :style="{ height: catalogHeight }">
+            <TsZtree
+              ref="tree"
+              :nodes="filterCiTreeList"
+              idKey="id"
+              pIdKey="parentCiId"
+              :expandAll="false"
+              :value="ciId"
+              :nodeClasses_bak="nodeClasses"
+              :enableToggleClick="toggleable"
+              :beforeDrag="
+                () => {
+                  return !keyword && $AuthUtils.hasRole('CI_MODIFY');
+                }
+              "
+              :renderName="renderName"
+              :onDrop="onDrop"
+              :onClick="
+                (tree, ci) => {
+                  click(ci);
+                }
+              "
+            ></TsZtree>
+          </div>
+        </TabPane>
+      </Tabs>
     </div>
   </div>
 </template>
 <script>
+import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';// 修复使用：()=>import('')懒加载组件，导致输入框显示不出来报错问题 
+import TsZtree from '@/resources/plugins/TsZtree/TsZtree.vue';
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormInput,
+    TsZtree
   },
   filters: {},
   props: {
     ciId: { type: Number },
+    toggleable: { type: Boolean, default: true }, //允许反选
     ciFilter: { type: Array }, //过滤模型列表
     tree: {
       //如果有值就用传过来的,没有就用默认的
@@ -52,23 +142,24 @@ export default {
   data() {
     return {
       ciTypeList: [],
-      keyword: ''
+      ciTreeList: [],
+      keyword: '',
+      treeList: [],
+      ciName: 'ciCatalog',
+      mode: 'level',
+      treeId: '',
+      isExpandAll: false,
+      catalogHeight: `calc(100vh - 80px - 64px - 50px - 20px )` // 默认值高度：160菜单栏+导航栏+底部间隙，64搜索框高度，40tab高度，16底部间距
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.mode = this.$localStore.get('mode') || 'level';
+  },
   beforeMount() {},
   async mounted() {
-    if (this.tree.length === 0) {
-      await this.searchCiTypeCi();
-    } else {
-      this.ciTypeList = JSON.parse(JSON.stringify(this.tree));
-    }
-    if (this.ciId) {
-      this.$nextTick(() => {
-        this.$utils.jumpTo('#ci-' + this.ciId);
-      });
-    }
+    this.searchCiTypeCi();
+    this.getCiTree();
   },
   beforeUpdate() {},
   updated() {},
@@ -77,13 +168,61 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    renderName(name, treeNode) {
+      return '<span class="' + treeNode.icon + '">' + treeNode.label + '</span><span class="text-grey">(' + treeNode.name + ')</span>';
+    },
+    toggleExpand() {
+      this.isExpandAll = !this.isExpandAll;
+      this.$refs['tree'].toggleExpand(this.isExpandAll);
+    },
+    getCiTree() {
+      this.$api.cmdb.ci.getCiTree().then(res => {
+        this.ciTreeList = res.Return;
+      });
+    },
+    flattenTreeNodes(nodeList, treeNodes) {
+      treeNodes.forEach(d => {
+        let { id, parentCiId, icon, name, label, sort, children } = d;
+        const obj = { id, parentCiId, sort, name, icon, label, children };
+        if (obj.parentCiId === null) {
+          this.$delete(obj, 'parentCiId');
+        }
+        if (!d.children) {
+          obj.sort = nodeList.length + 1;
+          nodeList.push(obj);
+        } else {
+          const children = obj.children;
+          this.$delete(obj, 'children');
+          obj.sort = nodeList.length + 1;
+          nodeList.push(obj);
+          this.flattenTreeNodes(nodeList, children);
+        }
+      });
+    },
+    onDrop(tree, treeNodes, targetNode, moveType, isCopy) {
+      const nodes = tree.getNodes();
+      const nodeList = [];
+      this.flattenTreeNodes(nodeList, nodes);
+      const diffList = [];
+      for (let i = 0; i < nodeList.length; i++) {
+        if (!this.$utils.isSame(nodeList[i], this.ciTreeList[i])) {
+          diffList.push(nodeList[i]);
+        }
+      }
+
+      this.ciTreeList = nodeList;
+      this.$api.cmdb.ci.saveCiTreeItem({ nodeList: diffList }).then(res => {});
+    },
+    nodeClasses(treeId, treeNode) {
+      return { add: [treeNode.icon] };
+    },
     restoreHistory(historyData) {
       if (historyData) {
         this.keyword = historyData['keyword'] || '';
       }
     },
-    click(data, nodeData) {
-      this.$emit('click', data, nodeData);
+    click(nodeData) {
+      this.$emit('click', nodeData);
     },
     async searchCiTypeCi() {
       await this.$api.cmdb.ci.searchCiTypeCi().then(res => {
@@ -103,7 +242,7 @@ export default {
           if (this.ciTypeList.length > 0) {
             if (this.ciTypeList[0].ciList.length > 0) {
               //如果没有传入ciId,默认选中第一个模型
-              this.$emit('click', this.ciTypeList[0], this.ciTypeList[0].ciList[0]);
+              this.$emit('click', this.ciTypeList[0].ciList[0]);
             }
           }
         }
@@ -111,6 +250,15 @@ export default {
     }
   },
   computed: {
+    filterCiTreeList() {
+      if (!this.keyword) {
+        return this.ciTreeList;
+      } else {
+        const k = this.keyword.trim().toLowerCase();
+        const filterCiTreeList = this.ciTreeList.filter(ci => ci.label.toLowerCase().indexOf(k) > -1 || ci.name.toLowerCase().indexOf(k) > -1);
+        return filterCiTreeList;
+      }
+    },
     filterCiTypeList() {
       if (!this.keyword) {
         return this.ciTypeList;
@@ -134,6 +282,11 @@ export default {
         }
         this.$addHistoryData('keyword', val);
       }
+    },
+    mode: {
+      handler: function(val) {
+        this.$localStore.set('mode', val);
+      }
     }
   }
 };
@@ -156,14 +309,16 @@ export default {
   height: 32px;
   line-height: 32px;
   cursor: pointer;
-  span {
-    padding-left: 10px;
-  }
 }
 // .bg-block {
 //   border-radius: 6px;
 // }
 .tsbg-block {
   border-radius: 6px;
+}
+/deep/.icon-pr-6 {
+  &::before {
+    padding-right: 6px;
+  }
 }
 </style>

@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <TsDialog
     v-if="isShow"
@@ -29,7 +15,6 @@
           <div class="float-right" style="width:50%">
             <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="getScriptList(1)"></CombineSearcher>
           </div>
-          
         </div>
         <div>
           <TsCard
@@ -37,7 +22,7 @@
             v-bind="cardConfig"
             :currentPage="currentPage"
             :pageSize="pageSize"
-            :loading="loading"            
+            :loading="loading"
             @updatePage="getScriptList"
             @getSelected="getSelected"
           >
@@ -65,7 +50,7 @@ import CombineSearcher from '@/resources/components/CombineSearcher/CombineSearc
 export default {
   name: 'OperationAdd',
   components: {
-    TsCard: resolve => require(['@/resources/components/TsCard/TsCard.vue'], resolve),
+    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
     CombineSearcher
   },
   filters: {},
@@ -142,7 +127,7 @@ export default {
             placeholder: this.$t('page.pleaseselect'),
             search: true,
             multiple: true,
-            params: { 
+            params: {
               isNeedCheckDataAuth: 1
             },
             dynamicUrl: '/api/rest/autoexec/type/search',
@@ -245,9 +230,9 @@ export default {
                   'argument': currentV.argument || null, //自由参数
                   'defaultProfileId': currentV.defaultProfileId || null //默认预置参数集
                 };
-                newList.push(item); 
+                newList.push(item);
               }
-            });          
+            });
             _this.$emit('close', newList);
           }
         });
@@ -330,24 +315,24 @@ export default {
   }
 };
 </script>
-<style lang="less" >
+<style lang="less">
 @import (reference) '~@/resources/assets/css/variable.less';
 .theme(@warning-bg-color,@warning-color,@info-bg-color,@info-color){
   .tscard-container {
     .li-tool {
         // .tscard-body {
-        //   background:@info-bg-color !important; 
+        //   background:@info-bg-color !important;
         // }
         &.li-selected {
           .tscard-body {
-            border: 1px solid @info-color !important; 
+            border: 1px solid @info-color !important;
           }
         }
     }
     .li-script {
       .tscard-inner {
         .tscard-body {
-          // background: @warning-bg-color !important; 
+          // background: @warning-bg-color !important;
           border: 1px solid transparent;
         }
       }
@@ -358,7 +343,7 @@ export default {
           }
         }
       }
-    } 
+    }
   }
 }
 html {

@@ -15,7 +15,7 @@
 export default {
   name: '',
   components: {
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve)
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {
     disabled: {type: Boolean, default: false},
@@ -28,12 +28,16 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.attrData) {
+      if (this.attrData.isRequired || this.attrData.isCiUnique) {
+        this.validateList.push('required');
+      }
+    }
+  },
   beforeMount() {},
   mounted() {
-    if (this.attrData && this.attrData.isRequired == 1) {
-      this.validateList.push('required');
-    }
+
   },
   beforeUpdate() {},
   updated() {},
@@ -76,11 +80,11 @@ export default {
     value: function() {
       if (this.valueList && this.valueList.length > 0) {
         return this.valueList[0];
-      } 
+      }
       return null;
     }},
   watch: {
-    attrData: {
+    /*attrData: {
       handler: function() {
         if (this.attrData) {
           if (this.attrData.isRequired == 1) {
@@ -90,7 +94,7 @@ export default {
       },
       deep: true,
       immediate: true
-    }
+    }*/
   }
 };
 </script>

@@ -32,7 +32,7 @@
 export default {
   name: 'UserList',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable')
   },
   props: {
     keyword: {

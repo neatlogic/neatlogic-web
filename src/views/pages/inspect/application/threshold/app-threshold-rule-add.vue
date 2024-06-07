@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div class="rule-add-wrap" :style="$utils.isEmpty(ruleList) ? 'margin-top: 2px;' : ''">
     <ul v-if="!$utils.isEmpty(ruleList)" class="mb-md">
@@ -72,7 +58,7 @@
 export default {
   name: '',
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve)
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {},
   props: {
@@ -183,9 +169,9 @@ export default {
                 validateList: [
                   'required',
                   {
-                    name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => { 
+                    name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => {
                       return this.validNameUnique(value);
-                    }} 
+                    }}
                 ]
               },
               {
@@ -340,9 +326,9 @@ export default {
               validateList: [
                 'required',
                 {
-                  name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => { 
+                  name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => {
                     return this.validNameUnique(value);
-                  }} 
+                  }}
               ]
             },
             {
@@ -401,9 +387,9 @@ export default {
             validateList: [
               'required',
               {
-                name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => { 
+                name: 'custom', trigger: 'change', message: this.$t('message.cannotrepeat', {target: this.$t('page.name')}), validator: (rule, value) => {
                   return this.validNameUnique(value);
-                }} 
+                }}
             ]
           },
           {

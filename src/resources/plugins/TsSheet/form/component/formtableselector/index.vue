@@ -37,6 +37,7 @@
                 :formData="row"
                 :showStatusIcon="false"
                 mode="read"
+                isCustomValue
                 style="min-width:100px"
               ></FormItem>
             </div>
@@ -87,10 +88,10 @@ export default {
   components: {
     DataList,
     TsTable,
-    DataDialog: resolve => require(['./formtableselector-dialog.vue'], resolve),
-    FormItem: resolve => require(['@/resources/plugins/TsSheet/form-item.vue'], resolve)
+    DataDialog: () => import('./formtableselector-dialog.vue'),
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
-  extends: base,  
+  extends: base,
   mixins: [validmixin],
   props: {
     readonly: { type: Boolean, default: false },
@@ -195,12 +196,16 @@ export default {
       if (!this.config.matrixUuid) {
         errorList.push({ field: 'matrixUuid', error: this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.matrix')}) });
       }
+      let isKey = true;
       if (this.config.dataConfig && this.config.dataConfig.length > 0) {
         let attrUuidList = []; //矩阵固有属性
         this.config.dataConfig.forEach(element => {
           const config = element.config;
           if (element.isPC && !element.isExtra) {
             attrUuidList.push(element.uuid);
+          }
+          if (this.$utils.isEmpty(element.key)) {
+            isKey = false;
           }
           if (['formselect', 'formradio', 'formcheckbox'].includes(element.handler)) {
             if (config.dataSource === 'static' && (!config.dataList || config.dataList.filter(d => d.value).length === 0)) {
@@ -222,6 +227,9 @@ export default {
             }
           }
         });
+        if (!isKey) {
+          errorList.push({ field: 'dataConfig', error: this.$t('form.validate.required', {'target': this.$t('term.framework.compkeyname')}) });
+        }
         if (!attrUuidList.length) {
           errorList.push({ field: 'dataConfig', error: this.$t('message.framework.leastoneselectattr') });
         }
@@ -273,7 +281,7 @@ export default {
           if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
             const defaultValueField = dataConfig.config.defaultValueField;
             const defaultTextField = dataConfig.config.defaultTextField;
-            return row[defaultValueField] + '&=&' + row[defaultTextField];
+            return {text: row[defaultTextField], value: row[defaultValueField]};
           } else {
             return row[defaultValue];
           }
@@ -298,9 +306,9 @@ export default {
       if (this?.config?.dataConfig && this.config.dataConfig.length > 0) {
         this.config.dataConfig.forEach(thead => {
           if (thead.isPC) {
-            theadList.push({ 
-              key: thead.uuid, 
-              title: thead.label, 
+            theadList.push({
+              key: thead.uuid,
+              title: thead.label,
               type: thead.config && thead.config.urlAttributeValue ? 'linktext' : '',
               textValue: thead.config && thead.config.urlAttributeValue ? thead.config.urlAttributeValue : '',
               isRequired: !!(thead.config && thead.config.isRequired)

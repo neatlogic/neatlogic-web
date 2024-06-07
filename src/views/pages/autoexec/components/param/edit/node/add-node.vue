@@ -58,11 +58,12 @@
   </TsDialog>
 </template>
 <script>
+import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.js';
 export default {
   name: '',
   components: {
-    FilterSearch: resolve => require(['@/views/pages/autoexec/components/common/filter-search.vue'], resolve),
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve)
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   model: {
     prop: 'value',
@@ -139,6 +140,7 @@ export default {
     },
     searchNodeList() {
       let data = Object.assign(this.searchParams, this.searchVal);
+      data.cmdbGroupType = this.opType;
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -200,7 +202,11 @@ export default {
     }
 
   },
-  computed: {},
+  computed: {
+    opType() {
+      return mutations.getOpType();
+    }
+  },
   watch: {
     value: {
       handler(val) {

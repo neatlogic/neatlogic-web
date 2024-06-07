@@ -17,6 +17,14 @@
               <span class="text-error tsfont-warning-s"></span>
             </Poptip>
           </template>
+          <template v-slot:statusText="{ row }">
+            <Progress v-if="row.status==='done'" :percent="100">
+              <span>{{ row.statusText }}</span>
+            </Progress>
+            <Progress v-else-if="row.status==='doing'" :percent="99" status="active">
+              <span>{{ row.statusText }}</span>
+            </Progress>
+          </template>
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
@@ -34,8 +42,8 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    FullIndexRebuildDialog: resolve => require(['./fulltextindex-rebuild-dialog.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    FullIndexRebuildDialog: () => import('./fulltextindex-rebuild-dialog.vue')
   },
   props: {},
   data() {
@@ -82,6 +90,16 @@ export default {
     getFullTextIndexRebuildAuditList() {
       this.$api.framework.fulltextindex.getFullTextIndexRebuildAuditList().then(res => {
         this.$set(this.fullTextIndexRebuildAuditData, 'tbodyList', res.Return);
+        res.Return.forEach(element => {
+          if (element.status == 'doing') {
+            this.doingIdList.push(element.type);
+          }
+        });
+        if (this.doingIdList.length > 0) {
+          this.timer = setTimeout(() => {
+            this.checkAuditStatusInterval();
+          }, 3000);
+        }
       });
     },
     checkAuditStatusInterval() {
@@ -94,7 +112,7 @@ export default {
               const oldElement = this.fullTextIndexRebuildAuditData.tbodyList.find(a => a.type == element.type);
               if (element.status == 'doing') {
                 this.doingIdList.push(element.type);
-              } 
+              }
               if (oldElement) {
                 this.$set(oldElement, 'status', element.status);
                 this.$set(oldElement, 'statusText', element.statusText);

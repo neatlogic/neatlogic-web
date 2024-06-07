@@ -241,18 +241,18 @@ import './grapheditor/index.js';
 export default {
   name: '',
   components: {
-    TsUpLoad: resolve => require(['@/resources/components/UpLoad/UpLoad.vue'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsUlList: resolve => require(['@/resources/components/TsUlList/TsUlList.vue'], resolve),
-    IconDialog: resolve => require(['@/views/pages/common/icon-dialog.vue'], resolve),
-    TsFormItem: resolve => require(['@/resources/plugins/TsForm/TsFormItem'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve),
-    TsFormRadio: resolve => require(['@/resources/plugins/TsForm/TsFormRadio'], resolve),
-    GraphConfig: resolve => require(['./graph-config.vue'], resolve),
-    GraphAddDialog: resolve => require(['./graph-add-dialog.vue'], resolve)
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsUlList: () => import('@/resources/components/TsUlList/TsUlList.vue'),
+    IconDialog: () => import('@/views/pages/common/icon-dialog.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    GraphConfig: () => import('./graph-config.vue'),
+    GraphAddDialog: () => import('./graph-add-dialog.vue')
   },
   props: {},
   data() {

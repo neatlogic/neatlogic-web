@@ -13,11 +13,11 @@ export default {
     'width': '100%',
     'isMask': false,
     'isHide': false,
+    'isReadOnly': false,
+    'isDisabled': false,
     'placeholder': $t('form.placeholder.pleaseselect', {'target': $t('page.time')}),
     'format': 'HH:mm:ss',
-    'validValueList': [],
-    'isReadOnly': false,
-    'isDisabled': false
+    'validValueList': []
   },
   'override_config': {},
   'reaction': { 'mask': {}, 'hide': {}, 'display': {}, 'readonly': {}, 'disable': {}, 'setvalue': {}, 'required': {} }

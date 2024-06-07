@@ -60,9 +60,9 @@
 export default {
   name: 'EventTypeManage',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect.vue'], resolve),
-    EventTypeDialog: resolve => require(['./event-type-manage-dialog'], resolve),
-    TsDragTreeTable: resolve => require(['components/TsDragTreeTable/TsDragTreeTable'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    EventTypeDialog: () => import('./event-type-manage-dialog'),
+    TsDragTreeTable: () => import('components/TsDragTreeTable/TsDragTreeTable')
   },
   data() {
     return {

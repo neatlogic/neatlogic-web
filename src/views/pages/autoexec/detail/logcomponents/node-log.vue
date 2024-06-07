@@ -74,7 +74,7 @@ import download from '@/resources/directives/download.js';
 
 export default {
   name: '',
-  components: { Waitinput: resolve => require(['./waitinput.vue'], resolve) },
+  components: { Waitinput: () => import('./waitinput.vue') },
   directives: { download },
   filters: {},
   props: {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!readonly && !disabled">
+    <div v-if="!readonly && !disabled" class="pb-sm">
       <Button icon="tsfont tsfont-plus" @click="addResoureces">{{ $t('term.autoexec.executetarget') }}</Button>
     </div>
     <div v-if="value" class="view-detail">
@@ -57,9 +57,9 @@ import validmixin from '@/resources/plugins/TsSheet/form/component/common/valida
 export default {
   name: '',
   components: {
-    FilterSearch: resolve => require(['@/views/pages/autoexec/components/common/filter-search.vue'], resolve),
-    ResourecesDialog: resolve => require(['./resoureces-dialog'], resolve),
-    ResourecesView: resolve => require(['./resoureces-view'], resolve)
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
+    ResourecesDialog: () => import('./resoureces-dialog'),
+    ResourecesView: () => import('./resoureces-view')
   },
   extends: base,
   mixins: [validmixin],
@@ -117,7 +117,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .view-detail {
-  padding-top: 10px;
+  // padding-top: 10px;
   .filter-text {
     display: inline-block;
   }

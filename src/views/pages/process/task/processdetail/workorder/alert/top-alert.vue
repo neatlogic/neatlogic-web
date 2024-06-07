@@ -1,18 +1,4 @@
-/*
- * Copyright(c) 2023 NeatLogic Co., Ltd. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 <template>
   <div v-if="list.length > 0 || processTaskVo" class="task-alert bg-info-grey radius-sm" :class="(list && list.length > 1) || (list && list.length > 0 && processTaskVo)?'align-start':'align-center'">
     <div class="tsfont-danger-o icon-tip text-primary"></div>
@@ -28,9 +14,14 @@
                 v-bind="item.fcuVo"
                 hideAvatar
               ></UserCard>
-              <span>{{ item.title }}：</span>
+              <span v-if="item.title && item.title.length > 0">{{ item.title }}：</span>
               <span>
-                <Tooltip max-width="600" transfer theme="light">
+                <Tooltip
+                  max-width="600"
+                  transfer
+                  theme="light"
+                  placement="bottom-start"
+                >
                   <span v-html="item.content"></span>
                   <span slot="content">
                     <span v-html="item.content"></span>
@@ -107,7 +98,7 @@ import clipboard from '@/resources/directives/clipboard.js';
 export default {
   name: '',
   components: {
-    UserCard: resolve => require(['@/resources/components/UserCard/UserCard.vue'], resolve)
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   directives: {imgViewer, clipboard},
   filters: {
@@ -135,7 +126,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.$nextTick(() => { 
+    this.$nextTick(() => {
       //使用nextTick为了保证dom元素都已经渲染完毕，确保父组件可以拿到子组件渲染后的高度
       // 工单中心有 【回退，转交，转报等】 时，需要减去提示的高度，确保剩余的内容可以正常显示
       this.$emit('getTaskAlertHeight', this.$el.offsetHeight + 16); // 16 margin-bottom 的高度

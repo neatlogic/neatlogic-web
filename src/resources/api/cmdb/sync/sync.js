@@ -35,25 +35,37 @@ const sync = {
     return axios.post('/api/rest/cmdb/sync/cicollection/delete', { id: id });
   },
   deletePolicy(id) {
-    return axios.post('/api/rest/cmdb/sync/policy/delete', {id: id});
+    return axios.post('/api/rest/cmdb/sync/policy/delete', { id: id });
   },
   deleteSyncAudit(id) {
-    return axios.post('/api/rest/cmdb/syncaudit/delete', {id: id});
+    return axios.post('/api/rest/cmdb/syncaudit/delete', { id: id });
   },
   testCondition(params) {
     return axios.post('/api/rest/cmdb/sync/policy/condition/test', params);
   },
-  launchSyncCiCollection(id) {
-    return axios.post('/api/rest/cmdb/sync/cicollection/launch', {id: id});
+  launchSyncCiCollection(params) {
+    return axios.post('/api/rest/cmdb/sync/cicollection/launch', params);
   },
   launchSyncCiCollectionBatch(idList) {
-    return axios.post('/api/rest/cmdb/sync/cicollection/launch', {idList: idList});
+    return axios.post('/api/rest/cmdb/sync/cicollection/launch', { idList: idList });
   },
   searchCollectionData(params) {
     return axios.post('/api/rest/cmdb/sync/collection/data/search', params);
   },
   deleteUnknowCollectionData(_id) {
-    return axios.post('/api/rest/cmdb/sync/collection/unknown/delete', {'_id': _id});
+    return axios.post('/api/rest/cmdb/sync/collection/unknown/delete', { _id: _id });
+  },
+  searchObject(params) {
+    return axios.post('/api/rest/cmdb/sync/object/search', params);
+  },
+  getObjectById(id) {
+    return axios.post('/api/rest/cmdb/sync/object/get', { id: id });
+  },
+  saveObject(params) {
+    return axios.post('/api/rest/cmdb/sync/object/save', params);
+  },
+  deleteObject(id) {
+    return axios.post('/api/rest/cmdb/sync/object/delete', { id: id });
   }
 };
 

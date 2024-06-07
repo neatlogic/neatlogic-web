@@ -55,15 +55,15 @@
         <NoData :text="$t('term.deploy.appnotsettingenv')"></NoData>
       </div>
     </template>
-    
+
   </div>
 </template>
 <script>
 export default {
   name: '', // 发布状态
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable.vue'], resolve),
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     envId: {
@@ -118,10 +118,10 @@ export default {
     await this.getVersionEnvList();
     if (this.envId) {
       this.selectedEnvId = this.envId;
-      this.changeCurrent();
     } else {
       this.loadingShow = false;
     }
+    this.changeCurrent();
   },
   beforeUpdate() {},
   updated() {},
@@ -131,7 +131,7 @@ export default {
   destroyed() {},
   methods: {
     getVersionEnvList() {
-      this.$api.deploy.version.getVersionEnvList({versionId: this.versionId}).then((res) => {
+      return this.$api.deploy.version.getVersionEnvList({versionId: this.versionId}).then((res) => {
         if (res.Status == 'OK') {
           this.envList = res.Return;
           if (!this.envId) {

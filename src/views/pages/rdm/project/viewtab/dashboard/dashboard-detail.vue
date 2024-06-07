@@ -77,7 +77,7 @@ export default {
   components: {
     GridLayout: VueGridLayout.GridLayout,
     GridItem: VueGridLayout.GridItem,
-    DashboardWidget: resolve => require(['@/views/pages/dashboard/widget/dashboard-widget.vue'], resolve)
+    DashboardWidget: () => import('@/views/pages/dashboard/widget/dashboard-widget.vue')
   },
   extends: IssueDetailBase,
   props: [],

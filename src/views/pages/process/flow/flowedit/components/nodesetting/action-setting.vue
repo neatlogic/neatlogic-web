@@ -1,6 +1,6 @@
 <template>
   <div class="settingList">
-  
+
     <div class="control-box">
       <div class="control-setting">
         <span class="label">
@@ -51,12 +51,12 @@
         </ul>
       </div>
     </div>
-    <ActionEdit 
-      v-if="edittype" 
-      :isShow="showEdit" 
-      :triggerList="triggerList" 
-      :editList="editList" 
-      :type="edittype" 
+    <ActionEdit
+      v-if="edittype"
+      :isShow="showEdit"
+      :triggerList="triggerList"
+      :editList="editList"
+      :type="edittype"
       :integrationHandler="integrationHandler"
       :paraConditionList="paraConditionList"
       @close="updateAction"
@@ -67,7 +67,7 @@
 export default {
   name: 'ActionSetting', // 动作设置
   components: {
-    ActionEdit: resolve => require(['./action/action-edit.vue'], resolve)
+    ActionEdit: () => import('./action/action-edit.vue')
   },
   props: {
     actionList: {

@@ -59,10 +59,10 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormTree: resolve => require(['@/resources/plugins/TsForm/TsFormTree'], resolve),
-    UserSelect: resolve => require(['@/resources/components/UserSelect/UserSelect'], resolve),
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch.vue'], resolve)
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch.vue')
   },
   filters: {},
   props: {

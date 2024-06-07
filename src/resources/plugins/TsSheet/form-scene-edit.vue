@@ -2,7 +2,7 @@
   <div>
     <TsContain>
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="gotoFormEdit()">{{ $t('page.defaultscenario') }}</span>
+        <span class="tsfont-left text-action" @click="gotoFormEdit()">{{ $t('page.mainscene') }}</span>
       </template>
       <template v-slot:topLeft>
         <TsRow>
@@ -21,6 +21,27 @@
       <template v-slot:topRight>
         <div class="action-group">
           <div class="action-item">
+            <div class="flex-start">
+              <span>
+                <Poptip
+                  word-wrap
+                  width="350"
+                  transfer
+                  :content="$t('term.framework.globalreadonlytip')"
+                >
+                  <span>{{ $t('term.framework.globalreadonly') }}</span>
+                  <span class="text-href tsfont-info-o"></span>
+                </Poptip>
+              </span>
+              <TsFormSwitch
+                v-model="readOnly"
+                :falseValue="false"
+                :trueValue="true"
+                @on-change="(val)=>changeReadOnly(val)"
+              ></TsFormSwitch>
+            </div>
+          </div>
+          <div class="action-item">
             <Poptip
               v-model="isShowValidList"
               word-wrap
@@ -37,9 +58,7 @@
                     :key="index"
                     class="ovewflow text-action pb-sm valid-list"
                     @click="jumpToItem(key, item)"
-                  >
-                    {{ item.error }}
-                    <span class="text-error tsfont-close-o valid-icon"></span>
+                  >{{ item.error }}<span class="text-error tsfont-close-o valid-icon"></span>
                   </div>
                 </div>
               </div>
@@ -92,6 +111,7 @@
           <TsSheet
             ref="sheet"
             v-model="formData.formConfig"
+            :readonly="readOnly"
             @selectCell="selectCell"
             @removeComponent="removeComponent"
             @updateItemList="updateItemList"
@@ -107,7 +127,11 @@
             @close="currentFormItem = null"
             @inheritFormItem="inheritFormItem"
           ></FormItemConfig>
-          <FormPreview v-if="isPreviewShow" :data="previewFormData" @close="closePreview"></FormPreview>
+          <FormPreview
+            v-if="isPreviewShow"
+            :data="previewFormData"
+            @close="closePreview"
+          ></FormPreview>
         </div>
       </template>
     </TsContain>
@@ -120,6 +144,8 @@
       :formConfig="initFormConfig"
       @close="closeScene"
       @deleteScene="deleteScene"
+      @updateDefaultSceneUuid="updateDefaultSceneUuid"
+      @updateSceneReadOnly="updateSceneReadOnly"
     ></FormSceneDialog>
     <ReactionDialog
       v-if="isReactionShow"
@@ -134,12 +160,13 @@
 export default {
   name: '',
   components: {
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve),
-    TsSheet: resolve => require(['./TsSheet.vue'], resolve),
-    FormItemConfig: resolve => require(['./form-item-config.vue'], resolve),
-    FormPreview: resolve => require(['./form-preview.vue'], resolve),
-    FormSceneDialog: resolve => require(['./form-scene-dialog.vue'], resolve),
-    ReactionDialog: resolve => require(['./form-row-reaction-dialog.vue'], resolve)
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsSheet: () => import('./TsSheet.vue'),
+    FormItemConfig: () => import('./form-item-config.vue'),
+    FormPreview: () => import('./form-preview.vue'),
+    FormSceneDialog: () => import('./form-scene-dialog.vue'),
+    ReactionDialog: () => import('./form-row-reaction-dialog.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {},
   data() {
@@ -168,7 +195,8 @@ export default {
       isFormSceneDialog: false,
       disabled: false,
       sceneList: [],
-      deleteSceneUuid: ''
+      deleteSceneUuid: '',
+      readOnly: false
     };
   },
   beforeCreate() {},
@@ -229,9 +257,9 @@ export default {
         for (let i = 0; i < newData.length; i++) {
           let oldNum = 0;
           if (oldData && oldData[i] && oldData[i][type]) {
-            oldNum = oldData[i][type] + num; 
+            oldNum = oldData[i][type] + num;
           }
-          if (newData[i] && (newData[i][type] > oldNum)) { 
+          if (newData[i] && (newData[i][type] > oldNum)) {
             isSame = false;
             break;
           }
@@ -303,7 +331,7 @@ export default {
             } else {
               this.sceneName = sceneConfig.name;
             }
-            if (sceneConfig) { 
+            if (sceneConfig) {
               sceneConfig.tableList.forEach(item => {
                 if (item.component && item.component.inherit) {
                   let component = formItemList.find(c => c.uuid === item.component.uuid);
@@ -316,6 +344,7 @@ export default {
                 return !sceneConfig.tableList.find(t => t.component && t.component.uuid === f.uuid);
               });
               this.formData.formConfig = this.$utils.deepClone(sceneConfig);
+              this.readOnly = sceneConfig.readOnly || false;
             }
           }
           this.$addWatchData(this.getCompareData(sceneConfig));
@@ -327,6 +356,7 @@ export default {
     formValid() {
       if (this.valid()) {
         this.$Notice.success({title: this.$t('message.validatesuccess') });
+        this.isShowValidList = false;
       }
     },
     valid() { //整个表单校验
@@ -343,7 +373,7 @@ export default {
         });
       } else {
         let findName = this.sceneList.find(s => s.uuid !== this.sceneUuid && s.name === this.sceneName);
-        if (findName || this.sceneName === this.$t('page.defaultscenario')) {
+        if (findName || this.sceneName === this.$t('page.mainscene')) {
           this.$set(this.errorData, 'scene', [{
             field: 'name',
             error: this.$t('message.cannotrepeat', {'target': this.$t('page.scenarioname')})
@@ -355,7 +385,7 @@ export default {
           this.errorData.scene && this.$delete(this.errorData, 'scene');
         }
       }
-      this.errorData = Object.assign(this.errorData, sheet.validConfig()); 
+      this.errorData = Object.assign(this.errorData, sheet.validConfig());
       if (isValid && !this.$utils.isEmpty(this.errorData)) {
         isValid = false;
       }
@@ -384,6 +414,7 @@ export default {
     openPreview() {
       const data = this.$refs.sheet.getFormConfig();
       this.$set(data, 'formWidth', this.initFormConfig.formWidth);
+      this.$set(data, 'readOnly', this.readOnly);
       this.previewFormData = data;
       this.isPreviewShow = true;
     },
@@ -423,7 +454,7 @@ export default {
           this.initFormItemList.forEach(item => {
             if (!itemUuidList.includes(item.uuid)) {
               newFormItemList.push(item);
-            } 
+            }
           });
           this.formItemList = newFormItemList;
         } else {
@@ -433,7 +464,7 @@ export default {
     },
     selectCell(cell, component) {
       this.disabled = false;
-      if (component && cell.component && cell.component.hasOwnProperty('inherit') && component.uuid !== cell.component.uuid) {
+      if (component && cell.component && cell.component.hasOwnProperty('inherit') && cell.component.inherit && component.uuid !== cell.component.uuid) {
         this.disabled = true;
       }
       if (!component) {
@@ -463,6 +494,11 @@ export default {
       this.currentFormItem = null;
       this.$nextTick(() => {
         this.currentFormItem = this.$utils.deepClone(config);
+        this.formData.formConfig.tableList.forEach(d => {
+          if (d.component && d.component.uuid == uuid) {
+            this.$set(d, 'component', this.currentFormItem);
+          }
+        });
       });
     },
     saveForm(type) {
@@ -478,6 +514,7 @@ export default {
         let formConfig = this.$refs.sheet.getFormConfig();
         this.$set(formConfig, 'name', this.sceneName);
         this.$set(formConfig, 'uuid', this.sceneUuid);
+        this.$set(formConfig, 'readOnly', this.readOnly);
         if (formConfig.tableList) {
           formConfig.tableList.forEach(item => {
             if (item.component && item.component.inherit) {
@@ -542,6 +579,42 @@ export default {
         query: {
           uuid: this.uuid,
           currentVersionUuid: this.currentVersionUuid
+        }
+      });
+    },
+    updateDefaultSceneUuid(uuid) {
+      this.$set(this.initFormConfig, 'defaultSceneUuid', uuid);
+    },
+    updateSceneReadOnly(readOnly, sceneUuid) {
+      if (sceneUuid === this.initFormConfig.uuid) {
+        this.$set(this.initFormConfig, 'readOnly', readOnly);
+      } else {
+        this.initFormConfig.sceneList.forEach(item => {
+          if (item.uuid === sceneUuid) {
+            this.$set(item, 'readOnly', readOnly);
+          }
+        });
+      }
+      if (sceneUuid === this.sceneUuid) {
+        this.readOnly = readOnly;
+      }
+    },
+    changeReadOnly(readOnly) {
+      if (this.type === 'add' || this.type === 'copy') {
+        return;
+      }
+      this.$api.framework.form.saveFormSceneReadonly({
+        versionUuid: this.currentVersionUuid,
+        sceneUuid: this.sceneUuid,
+        readOnly: readOnly
+      }).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.initFormConfig.sceneList.forEach(item => {
+            if (item.uuid === this.sceneUuid) {
+              this.$set(item, 'readOnly', readOnly);
+            }
+          });
         }
       });
     }

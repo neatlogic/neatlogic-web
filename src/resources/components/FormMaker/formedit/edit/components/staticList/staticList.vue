@@ -77,7 +77,7 @@
       </div>
     </div>
     <!-- end_显示格式 -->
-    
+
     <!-- 联动 -->
     <RuleScript v-if="false" :setting="setting"></RuleScript>
 
@@ -118,10 +118,10 @@ import typeList from './staticList.js';
 export default {
   name: 'Formstaticlist',
   components: {
-    DataSetting: resolve => require(['./staticList-setting'], resolve),
-    TypeSetting: resolve => require(['./staticList-type-setting'], resolve),
-    TableSetting: resolve => require(['./staticList-table-setting'], resolve),
-    RuleScript: resolve => require(['./rule/script'], resolve),
+    DataSetting: () => import('./staticList-setting'),
+    TypeSetting: () => import('./staticList-type-setting'),
+    TableSetting: () => import('./staticList-table-setting'),
+    RuleScript: () => import('./rule/script'),
     TsFormSelect,
     draggable,
     TsFormInput

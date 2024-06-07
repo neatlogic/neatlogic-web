@@ -1,25 +1,55 @@
 <template>
   <div>
-    <span class="left-label-text text-grey">{{ $t('term.process.triggertime', {target: setData(config.newContent).triggerText}) }}</span>
+    <span class="left-label-text text-grey">{{ $t('term.process.triggertime', {target: newContentJson.triggerText}) }}</span>
     <div>
-      <span style="padding-right:8px;">{{ setData(config.newContent).integrationName }}</span>
-      <span :class="setData(config.newContent).succeed == true?'text-success':'text-danger'">{{ setData(config.newContent).statusText }}</span>
+      <span style="padding-right:8px;">{{ newContentJson.integrationName }}</span>
+      <span :class="newContentJson.succeed == true?'text-success':'text-danger'">{{ newContentJson.statusText }}</span>
     </div>
+    <div v-if="newContentJson.error">
+      <span v-if="newContentJson.error" class="text-href look-btn" @click="lookFailed(newContentJson.error)">{{ $t('page.failreason') }}</span>
+      <!-- <span><pre>{{ newContentJson.error }}</pre></span> -->
+    </div>
+    
+    <TsDialog
+      type="modal"
+      :isShow.sync="failedModal"
+      :title="$t('page.failreason')"
+      :hasFooter="false"
+      width="large"
+    >
+      <template>
+        <TsCodemirror
+          :value.sync="failedTemlate"
+          height="400px"
+          :disabled="true"
+          codeMode="application/json"
+        ></TsCodemirror>
+      </template>
+    </TsDialog>
   </div>
 </template>
 <script>
+import TsCodemirror from '@/resources/plugins/TsCodemirror/TsCodemirror.vue';
 export default {
   name: '',
-  components: {},
+  components: {
+    TsCodemirror
+  },
   filters: {},
   props: {
     config: Object
   },
   data() {
-    return {};
+    return {
+      failedModal: false,
+      failedTemlate: '',
+      newContentJson: {}
+    };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.newContentJson = JSON.parse(this.config.newContent);
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -29,9 +59,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    setData(str) {
-      let data = JSON.parse(str);
-      return data;
+    lookFailed(result) {
+      if (result) {
+        this.failedTemlate = result;
+      }
+      this.failedModal = true;
     }
   },
   computed: {

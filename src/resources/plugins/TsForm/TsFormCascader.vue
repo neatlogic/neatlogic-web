@@ -3,6 +3,9 @@
     <span v-if="readonly" :class="[readonlyClass, readonlyTextHighlightClass]" :title="renderFormat(labeList,selectedData)">{{ renderFormat(labeList,selectedData) }}</span>
     <div
       v-else
+      v-click-outside:false="onClickOutside"
+      v-click-outside:false.mousedown="onClickOutside"
+      v-click-outside:false.touchstart="onClickOutside"
       :class="borderClass"
       :style="getStyle"
     >
@@ -16,6 +19,7 @@
         :content="labels"
       > -->
       <Cascader
+        ref="cascader"
         v-model="currentValue"
         :data="actualDataList"
         :disabled="disabled"
@@ -49,9 +53,11 @@
 <script>
 import formMixins from '@/resources/mixins/formMixins.js';
 import formScrollMixins from '@/resources/mixins/formScrollMixins.js';
+import { directive as ClickOutside } from '../../directives/v-click-outside-x.js';
 export default {
   name: 'TsFormCascader',
   tagComponent: 'TsForm',
+  directives: { ClickOutside },
   mixins: [formMixins, formScrollMixins],
   model: {
     prop: 'value',
@@ -123,7 +129,7 @@ export default {
       if (!(!this.isChangeWrite && isSame)) {
         //改变值时出发on-change事件
         this.$emit('on-change', value, selectedData);
-        typeof this.onChange == 'function' && this.onChange(value);
+        typeof this.onChange == 'function' && this.onChange(value, selectedData || []);
       }
       if (!isSame) {
         if (this.currentValidList.length > 0) {
@@ -133,6 +139,7 @@ export default {
         this.validMesage = '';
         this.isValidPass = true;
       }
+      this.$emit('change-label', (selectedData || []).filter(obj => obj.__label).map(obj => obj.__label));
     },
     renderFormat(labels, selectedData) {
       let data = labels.join(' / ');
@@ -142,14 +149,13 @@ export default {
       this.labels = data;
       return data;
     },
-    getLabel(i, value, list) {
-      let _this = this;
-      let finditem = list.find(l => l.value == value[i]);
+    getLabel(index, value, list) {
+      let finditem = list.find(l => l.value == value[index]);
       if (finditem) {
-        _this.labeList.push(finditem.label);
-        _this.selectedData.push(finditem);
-        if (i < value.length && !_this.$utils.isEmpty(finditem.children)) {
-          _this.getLabel(i + 1, value, finditem.children);
+        this.labeList.push(finditem.text || finditem.label);
+        this.selectedData.push(finditem);
+        if (index < value.length - 1 && !this.$utils.isEmpty(finditem.children)) {
+          this.getLabel(index + 1, value, finditem.children);
         }
       }
     },
@@ -165,6 +171,26 @@ export default {
         });
       }
       return dataList;
+    },
+    onClickOutside(event) {
+      //点击外部，下拉框消失
+      if (this.$refs.cascader && this.$refs.cascader.visible) {
+        const $contain = this.$refs.cascader ? this.$refs.cascader.$el || null : null;
+        if ((!$contain && $contain === event.target) || $contain.contains(event.target)) {
+          return;
+        }
+        //点击下拉框容器主要是在transfer为true的情况下面
+        const $el = this.$refs.cascader && this.$refs.cascader.$refs.drop ? this.$refs.cascader.$refs.drop.$el || null : null;
+        if (!$el || $el === event.target || $el.contains(event.target)) {
+          return;
+        }
+        this.$refs.cascader.visible = false;
+      }
+    },
+    onScroll(event) {
+      if (this.$refs.cascader && this.$refs.cascader.visible) {
+        this.$refs.cascader.visible = false;
+      }
     }
   },
   computed: {
@@ -193,7 +219,9 @@ export default {
           this.$nextTick(() => {
             this.currentValue = this.$utils.isEmpty(newValue) ? [] : [].concat(newValue);
             if (!this.$utils.isEmpty(this.currentValue) && !this.$utils.isEmpty(this.dataList)) {
+              this.labeList = []; // 切换不同的级联，上一个值没有清空
               this.getLabel(0, this.currentValue, this.dataList);
+              this.$emit('change-label', this.labeList);
             }
           });
         }

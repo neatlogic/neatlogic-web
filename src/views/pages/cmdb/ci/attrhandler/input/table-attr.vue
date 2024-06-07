@@ -71,9 +71,9 @@
 export default {
   name: '',
   components: {
-    TsTable: resolve => require(['@/resources/components/TsTable/TsTable'], resolve), //这里需要保留，为了注入样式
-    AttrViewer: resolve => require(['../../../cientity/attr-viewer.vue'], resolve),
-    CiEntityChoose: resolve => require(['../../../cientity/cientity-choose.vue'], resolve)
+    TsTable: () => import('@/resources/components/TsTable/TsTable'), //这里需要保留，为了注入样式
+    AttrViewer: () => import('../../../cientity/attr-viewer.vue'),
+    CiEntityChoose: () => import('../../../cientity/cientity-choose.vue')
   },
   props: {
     disabled: {type: Boolean, default: false},

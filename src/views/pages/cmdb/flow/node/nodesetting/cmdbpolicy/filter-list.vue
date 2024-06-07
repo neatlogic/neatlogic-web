@@ -4,6 +4,7 @@
       <span class="pr-sm label">{{ $t('term.dashboard.datafilter') }}</span>
       <TsFormSwitch
         v-model="isActive"
+        :disabled="disabled"
         @on-change="changeActive"
       ></TsFormSwitch>
     </div>
@@ -17,6 +18,7 @@
             :validateList="validateList"
             :firstSelect="false"
             transfer
+            :disabled="disabled"
             @change="setConfig()"
           ></TsFormSelect>
         </Col>
@@ -28,6 +30,7 @@
             :validateList="validateList"
             :firstSelect="false"
             transfer
+            :disabled="disabled"
             @change="setConfig()"
           ></TsFormSelect>
         </Col>
@@ -36,6 +39,7 @@
             ref="formValid"
             v-model="f.value"
             :validateList="validateList"
+            :disabled="disabled"
             @change="setConfig()"
           ></TsFormInput>
         </Col>
@@ -47,9 +51,9 @@
 export default {
   name: '',
   components: {
-    TsFormSwitch: resolve => require(['@/resources/plugins/TsForm/TsFormSwitch'], resolve),
-    TsFormSelect: resolve => require(['@/resources/plugins/TsForm/TsFormSelect'], resolve),
-    TsFormInput: resolve => require(['@/resources/plugins/TsForm/TsFormInput'], resolve)
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     dataList: { //属性列表
@@ -59,6 +63,10 @@ export default {
     defaultFilterList: {
       type: Array,
       default: () => []
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -134,7 +142,9 @@ export default {
   watch: {
     defaultFilterList: {
       handler(val) {
-        if (val && !this.$utils.isSame(val, this.filterList)) {
+        this.filterList = [];
+        this.isActive = 0;
+        if (!this.$utils.isEmpty(val) && !this.$utils.isSame(val, this.filterList)) {
           this.filterList = this.$utils.deepClone(val);
           if (this.filterList.length > 0) {
             this.isActive = 1;

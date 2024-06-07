@@ -19,7 +19,7 @@
             @click="selectApp(app)"
           >
             <span v-if="(level === 'module' || level === 'env') && app.isHasModule">
-              <span v-if="!app.isLoading" :class="{ 'tsfont-right': !app.isExpand, 'tsfont-down': !!app.isExpand }" @click.stop="showModule(app)"></span>
+              <span v-if="!app.isLoading" :class="{ 'tsfont-drop-right': !app.isExpand, 'tsfont-drop-down': !!app.isExpand }" @click.stop="showModule(app)"></span>
               <Icon
                 v-else
                 type="ios-loading"
@@ -30,6 +30,7 @@
             <span v-else class="tsfont-dot"></span>
             <Tooltip
               class="tooltip-box"
+              placement="right"
               :content="app.abbrName + '（' + app.name + '）'"
               :transfer="true"
               :max-width="500"
@@ -50,7 +51,7 @@
             <div v-for="module in app.appModuleList" :key="module.id">
               <div class="module-item ml-nm pb-xs pt-xs radius-sm overflow cursor module-flex" :class="{ 'item-selected': !!module.isSelected }" @click="selectModule(app, module)">
                 <span v-if="level === 'env' && module.isHasEnv">
-                  <span v-if="!module.isLoading" :class="{ 'tsfont-right': !module.isExpand, 'tsfont-down': !!module.isExpand }" @click.stop="showEnv(app, module)"></span>
+                  <span v-if="!module.isLoading" :class="{ 'tsfont-drop-right': !module.isExpand, 'tsfont-drop-down': !!module.isExpand }" @click.stop="showEnv(app, module)"></span>
                   <Icon
                     v-else
                     type="ios-loading"
@@ -60,7 +61,12 @@
                 </span>
                 <span v-else-if="level === 'env' && !module.isHasEnv" class="tsfont-dot"></span>
                 <span v-else class="tsfont-application"></span>
-                <Tooltip class="tooltip-box" :content="module.abbrName + (module.name ? '（' + module.name + '）' : '')" :transfer="true">
+                <Tooltip
+                  class="tooltip-box"
+                  :content="module.abbrName + (module.name ? '（' + module.name + '）' : '')"
+                  :transfer="true"
+                  placement="right"
+                >
                   <div style="width: 100%" @contextmenu="newTab($event, module, app.id, module.id, '', !!module.isSelected)">
                     <span class="name-pl overflow" v-html="module.keywordHighlight ? module.keywordHighlight : (module.abbrName +(module.name ? '(' + module.name + ')' : '' ))"></span>
                   </div>
@@ -90,7 +96,7 @@
 export default {
   name: '',
   components: {
-    InputSearcher: resolve => require(['@/resources/components/InputSearcher/InputSearcher.vue'], resolve)
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     offsetTop: {
@@ -543,7 +549,7 @@ export default {
         params = `?appSystemId=${appSystemId}`;
         if (appModuleId) {
           params = `?appSystemId=${appSystemId}&appModuleId=${appModuleId}`;
-        } 
+        }
         if (envId) {
           params = `?appSystemId=${appSystemId}&appModuleId=${appModuleId}&envId=${envId}`;
         }

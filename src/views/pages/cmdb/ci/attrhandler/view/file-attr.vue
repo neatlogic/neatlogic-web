@@ -36,7 +36,9 @@ export default {
       return {
         url: 'api/binary/file/download',
         params: {
-          id: id
+          id: id,
+          ciEntityId: this.attrEntity.ciEntityId,
+          ciId: this.attrEntity.ciId
         }
       };
     }

@@ -20,8 +20,7 @@ import { AttrBase } from './base-privateattr.js';
 export default {
   name: '',
   components: {
-    TsFormDatePicker: resolve =>
-      require(['@/resources/plugins/TsForm/TsFormDatePicker'], resolve)
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   extends: AttrBase,
   props: {},
@@ -52,8 +51,8 @@ export default {
       const year = d.getFullYear();
       const month = d.getMonth() + 1;
       const day = d.getDate();
-      return year + '-' + 
-        (month < 10 ? '0' + month : month) + '-' + 
+      return year + '-' +
+        (month < 10 ? '0' + month : month) + '-' +
         (day < 10 ? '0' + day : day);
     },
     valid() {

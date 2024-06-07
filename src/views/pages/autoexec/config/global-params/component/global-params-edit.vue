@@ -36,7 +36,7 @@ import Components from './edit/index';
 export default {
   name: 'GlobalParamsEdit', // 全局参数-编辑
   components: {
-    TsForm: resolve => require(['@/resources/plugins/TsForm/TsForm'], resolve),
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     ...Components
   },
   props: {
@@ -70,12 +70,12 @@ export default {
           validateList: [
             'required',
             'key-special',
-            { 
-              name: 'searchUrl', 
-              url: '/api/rest/autoexec/global/param/save', 
-              key: 'name', 
-              message: this.$t('message.targetisexists', {target: this.$t('term.autoexec.paramsname')}), 
-              params: { id: '' } 
+            {
+              name: 'searchUrl',
+              url: '/api/rest/autoexec/global/param/save',
+              key: 'name',
+              message: this.$t('message.targetisexists', {target: this.$t('term.autoexec.paramsname')}),
+              params: { id: '' }
             }
           ]
         },
@@ -83,14 +83,14 @@ export default {
           label: this.$t('term.autoexec.displayname'),
           type: 'text',
           maxlength: 50,
-          validateList: ['required', 
-            'name-special', 
-            { 
-              name: 'searchUrl', 
-              url: '/api/rest/autoexec/global/param/save', 
-              key: 'name', 
+          validateList: ['required',
+            'name-special',
+            {
+              name: 'searchUrl',
+              url: '/api/rest/autoexec/global/param/save',
+              key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('term.autoexec.displayname')}),
-              params: { id: '' } 
+              params: { id: '' }
             }
           ]
         },
