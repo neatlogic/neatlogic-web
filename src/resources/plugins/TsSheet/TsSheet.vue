@@ -19,14 +19,22 @@
         <span class="action-item">
           <Dropdown :transfer="true" placement="bottom-start" trigger="click">
             <span class="text-action">
-              <span style="width:50px;display:inline-block">{{ getFontSize() }}</span>
+              <span style="width: 50px; display: inline-block">{{ getFontSize() }}</span>
               <Icon type="ios-arrow-down"></Icon>
             </span>
             <DropdownMenu slot="list">
-              <DropdownItem @click.native="setStyle({ 'font-size': '12px' })"><span style="font-size:12px">{{ $t('page.small') }}</span></DropdownItem>
-              <DropdownItem @click.native="setStyle({ 'font-size': '14px' })"><span style="font-size:14px">{{ $t('page.medium') }}</span></DropdownItem>
-              <DropdownItem @click.native="setStyle({ 'font-size': '16px' })"><span style="font-size:16px">{{ $t('page.big') }}</span></DropdownItem>
-              <DropdownItem @click.native="setStyle({ 'font-size': '18px' })"><span style="font-size:18px">{{ $t('page.maximum') }}</span></DropdownItem>
+              <DropdownItem @click.native="setStyle({ 'font-size': '12px' })">
+                <span style="font-size: 12px">{{ $t('page.small') }}</span>
+              </DropdownItem>
+              <DropdownItem @click.native="setStyle({ 'font-size': '14px' })">
+                <span style="font-size: 14px">{{ $t('page.medium') }}</span>
+              </DropdownItem>
+              <DropdownItem @click.native="setStyle({ 'font-size': '16px' })">
+                <span style="font-size: 16px">{{ $t('page.big') }}</span>
+              </DropdownItem>
+              <DropdownItem @click.native="setStyle({ 'font-size': '18px' })">
+                <span style="font-size: 18px">{{ $t('page.maximum') }}</span>
+              </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </span>
@@ -93,7 +101,7 @@
             :transfer="true"
             width="250"
           >
-            <span class="h3  tsfont-border-clear" :class="getBorder()"></span>
+            <span class="h3 tsfont-border-clear" :class="getBorder()"></span>
             <div slot="content">
               <ul>
                 <li
@@ -115,8 +123,8 @@
     <div
       ref="tableContainer"
       :class="{ editmode: mode === 'edit' }"
-      style="position:relative;overflow:auto;width:100%"
-      :style="{ height: mode === 'edit'?containerHeight:mode === 'editSubform' ?'auto':'100%' }"
+      style="position: relative; overflow: auto; width: 100%"
+      :style="{ height: mode === 'edit' ? containerHeight : mode === 'editSubform' ? 'auto' : '100%' }"
       @scroll="
         event => {
           scrollContainer(event);
@@ -172,7 +180,7 @@
           <tr v-for="(left, rowindex) in shownLefterList" :key="rowindex">
             <th
               class="thead-th"
-              style="position:relative"
+              style="position: relative"
               :class="{ selected: !!left._selected }"
               :style="{ height: left.height + 'px' }"
               @mousedown="
@@ -206,14 +214,14 @@
           </tr>
         </tbody>
       </table>
-      <table class="tssheet-main" :class="{ 'bg-op': mode === 'edit' }" :style="{ width:mode==='edit'? tableSize.width + 'px':isFormSubassembly? 'inherit' : containerWidth + 'px', height: tableSize.height + 'px', margin: mode==='edit'? 0 : '0 auto' }">
+      <table class="tssheet-main" :class="{ 'bg-op': mode === 'edit' }" :style="{ width: mode === 'edit' ? tableSize.width + 'px' : isFormSubassembly ? 'inherit' : containerWidth + 'px', height: tableSize.height + 'px', margin: mode === 'edit' ? 0 : '0 auto' }">
         <colgroup>
           <col v-if="mode === 'edit'" :style="{ width: minWidth + 'px' }" />
           <col
             v-for="(head, index) in config.headerList"
             :ref="'header' + index"
             :key="index"
-            :style="{ width:mode==='edit'? head.width + 'px': tdWidth(head.width) }"
+            :style="{ width: mode === 'edit' ? head.width + 'px' : tdWidth(head.width) }"
           />
         </colgroup>
         <thead v-if="mode === 'edit'">
@@ -247,7 +255,7 @@
               @dragover.prevent
               @drop="
                 event => {
-                  if(mode==='edit') {
+                  if (mode === 'edit') {
                     addComponent(event);
                   }
                 }
@@ -255,8 +263,7 @@
               @dragenter="activeDropContainer(cell)"
               @mouseenter="
                 event => {
-                  if(mode === 'edit' && event.buttons === 1)
-                    multipleSelectCell(cell, event)
+                  if (mode === 'edit' && event.buttons === 1) multipleSelectCell(cell, event);
                 }
               "
               @mousedown="
@@ -279,7 +286,7 @@
             >
               <div
                 v-if="mode === 'edit' && !$utils.isEmpty(cell.component)"
-                style="position:absolute;top:0px;left:0px;z-index:10;font-size:12px"
+                style="position: absolute; top: 0px; left: 0px; z-index: 10; font-size: 12px"
                 class="text-grey"
                 :class="cell.component.icon"
               ></div>
@@ -287,7 +294,7 @@
                 <span v-if="!cell._isEditing">{{ cell.content || '' }}</span>
                 <textarea v-else v-model="cell.content" class="content-inputer"></textarea>
               </div>
-              <div v-else :style="{ width: mode==='edit' || isFormSubassembly? getCellWidth(cell) + 'px':tdWidth(null,cell), overflow: 'auto' }">
+              <div v-else :style="{ width: mode === 'edit' || isFormSubassembly ? getCellWidth(cell) + 'px' : tdWidth(null, cell), overflow: 'auto' }">
                 <FormItem
                   :ref="'formitem_' + cell.component.uuid"
                   :key="cell.row + '-' + cell.col"
@@ -323,10 +330,10 @@
                 ></FormItem>
               </div>
               <div v-if="!cell._isHandler && cell.border">
-                <div style="border-top-width:1px;border-top-style:solid;position:absolute;top:-1px;left:0px;height:1px;width:100%" :class="cell.border"></div>
-                <div style="border-bottom-width:1px;border-bottom-style:solid;position:absolute;bottom:-1px;left:0px;height:1px;width:100%" :class="cell.border"></div>
-                <div style="border-left-width:1px;border-left-style:solid;position:absolute;top:0px;left:-1px;height:100%;width:1px" :class="cell.border"></div>
-                <div style="border-right-width:1px;border-right-style:solid;position:absolute;top:0px;right:-1px;height:100%;width:1px" :class="cell.border"></div>
+                <div style="border-top-width: 1px; border-top-style: solid; position: absolute; top: -1px; left: 0px; height: 1px; width: 100%" :class="cell.border"></div>
+                <div style="border-bottom-width: 1px; border-bottom-style: solid; position: absolute; bottom: -1px; left: 0px; height: 1px; width: 100%" :class="cell.border"></div>
+                <div style="border-left-width: 1px; border-left-style: solid; position: absolute; top: 0px; left: -1px; height: 100%; width: 1px" :class="cell.border"></div>
+                <div style="border-right-width: 1px; border-right-style: solid; position: absolute; top: 0px; right: -1px; height: 100%; width: 1px" :class="cell.border"></div>
               </div>
             </td>
           </tr>
@@ -414,7 +421,8 @@ export default {
         return {};
       }
     },
-    isFormSubassembly: { //是否是子表单组件引用
+    isFormSubassembly: {
+      //是否是子表单组件引用
       type: Boolean,
       default: false
     },
@@ -452,10 +460,16 @@ export default {
       formExtendData: {} //自定义组件消费数据
     };
   },
-  beforeCreate() {},
+  beforeCreate() {
+    //确保created方法执行完毕后，watch中的函数才执行，避免取不到表单设置
+    this.initPromise = new Promise(resolve => {
+      this.initResolve = resolve;
+    });
+  },
   created() {
     this.initSheet();
     this.initReactionWatch();
+    this.initResolve();
   },
   beforeMount() {},
   mounted() {
@@ -728,7 +742,8 @@ export default {
         };
         const component = this.dropCell.component;
         if (!this.$utils.isEmpty(component) || this.dropCell.content) {
-          if (!component.isContainer || (component.isContainer && item.hasOwnProperty('inherit'))) { //isContainer布局组件存在继承属性时，不可继续添加子组件
+          if (!component.isContainer || (component.isContainer && item.hasOwnProperty('inherit'))) {
+            //isContainer布局组件存在继承属性时，不可继续添加子组件
             this.$createDialog({
               title: this.$t('page.tip'),
               content: this.$t('message.framework.replacenewcomp'),
@@ -763,7 +778,8 @@ export default {
         this.initContainerWidth(rect.width);
       }
     },
-    initContainerWidth(val) { //表单宽度
+    initContainerWidth(val) {
+      //表单宽度
       let width = val;
       if (!width) {
         const container = this.$refs.tableContainer;
@@ -778,7 +794,7 @@ export default {
           if (this.value.formWidth.type === 'inherit') {
             this.containerWidth = this.tableSize.width;
           } else if (this.value.formWidth.type === '%') {
-            this.containerWidth = width * this.value.formWidth.width / 100;
+            this.containerWidth = (width * this.value.formWidth.width) / 100;
           } else if (this.value.formWidth.type === 'px') {
             this.containerWidth = this.value.formWidth.width;
           }
@@ -881,7 +897,8 @@ export default {
       // console.log(JSON.stringify(formItemList, null, 2));
       return formItemList;
     },
-    clearPrivateAttr(value) { //清除私有属性
+    clearPrivateAttr(value) {
+      //清除私有属性
       if (!this.$utils.isEmpty(value)) {
         if (Array.isArray(value)) {
           value.forEach(fitem => {
@@ -904,12 +921,14 @@ export default {
         }
       }
     },
-    clearFormInputTableAttr(formitem, valueList) { //清除表单输入组件非表头属性
+    clearFormInputTableAttr(formitem, valueList) {
+      //清除表单输入组件非表头属性
       if (formitem.handler === 'formtableinputer' && !this.$utils.isEmpty(valueList)) {
         let uuidList = formitem.config && formitem.config.dataConfig && this.$utils.mapArray(formitem.config.dataConfig, 'uuid');
         valueList.forEach(item => {
           Object.keys(item).forEach(key => {
-            if (uuidList && !uuidList.includes(key) && key !== 'uuid') { //uuid作为每一行的唯一标识，不能删除
+            if (uuidList && !uuidList.includes(key) && key !== 'uuid') {
+              //uuid作为每一行的唯一标识，不能删除
               delete item[key];
             }
           });
@@ -1104,7 +1123,8 @@ export default {
         this.$set(cell, '_isEditing', true);
       }
     },
-    deleteFormItem(item) { //删除组件
+    deleteFormItem(item) {
+      //删除组件
       if (item.component) {
         this.addHistory();
         this.$emit('removeComponent', item.component.uuid);
@@ -1590,7 +1610,8 @@ export default {
       }
       return false;
     },
-    getReadComponents() { //只读或者禁用的组件uuid需要传到后台，过滤校验
+    getReadComponents() {
+      //只读或者禁用的组件uuid需要传到后台，过滤校验
       //获取只读组件
       let readComponentList = [];
       if (this.config.tableList && this.config.tableList.length > 0) {
@@ -1629,7 +1650,7 @@ export default {
       if (this.config.tableList && this.config.tableList.length > 0) {
         this.config.tableList.forEach(item => {
           if (item.component && item.component.hasValue && item.component.config) {
-            if ((this.config.hiddenRowList.includes(item.row)) || (item.component.config.isHide && item.component.config.isRequired)) {
+            if (this.config.hiddenRowList.includes(item.row) || (item.component.config.isHide && item.component.config.isRequired)) {
               hiddenComponentList.push(item.component.uuid);
             }
           }
@@ -1663,7 +1684,8 @@ export default {
         }
       }
     },
-    getFormExtendConfig() { //保存消费表单配置
+    getFormExtendConfig() {
+      //保存消费表单配置
       let data = {
         attributeList: []
       };
@@ -1680,7 +1702,8 @@ export default {
       });
       return data;
     },
-    getFormExtendData() { //提供外部使用，返回表单多场景消费数据
+    getFormExtendData() {
+      //提供外部使用，返回表单多场景消费数据
       let list = [];
       Object.keys(this.formExtendData).forEach(key => {
         if (!this.$utils.isEmpty(this.formExtendData[key])) {
@@ -1690,7 +1713,7 @@ export default {
       return list;
     },
     setFormSceneConfig(formSceneUuid, formConfig) {
-      let data = this.$utils.deepClone(formConfig);//主表单
+      let data = this.$utils.deepClone(formConfig); //主表单
       let formItemList = [];
       if (formSceneUuid != formConfig.uuid && !this.$utils.isEmpty(formConfig.sceneList)) {
         let sceneConfig = formConfig.sceneList.find(item => item.uuid === formSceneUuid); //流程场景
@@ -1802,7 +1825,7 @@ export default {
       if (this.mode !== 'edit') {
         //只读模式，从下面消除所有没有设置组件的单元格
         for (let i = lefterList.length - 1; i >= 0; i--) {
-          if (!this.config.tableList.find(cell => cell.row === (lefterList[i].index) && (cell.component || cell.content || this.checkCellIsInSpan(cell)))) {
+          if (!this.config.tableList.find(cell => cell.row === lefterList[i].index && (cell.component || cell.content || this.checkCellIsInSpan(cell)))) {
             lefterList.splice(i, 1);
           }
         }
@@ -2034,7 +2057,7 @@ export default {
           }
           width -= 2;
         }
-        return (width / this.tableSize.width * this.containerWidth) + 'px';
+        return (width / this.tableSize.width) * this.containerWidth + 'px';
       };
     }
   },
@@ -2074,12 +2097,20 @@ export default {
       deep: true
     },
     data: {
-      handler: function(val) {
+      handler: async function(val) {
+        await this.initPromise; // 等待初始化完成
         if (val && val instanceof Array) {
           //将后台的数据格式转换回原始的数据格式
           this.formData = {};
           val.forEach(element => {
-            this.$set(this.formData, element.attributeUuid, element.dataList);
+            if (element.attributeUuid) {
+              this.$set(this.formData, element.attributeUuid, element.dataList);
+            } else if (element.key) {
+              const item = this.formItemList.find(d => d.key && d.key === element.key);
+              if (item) {
+                this.$set(this.formData, item.uuid, element.dataList);
+              }
+            }
           });
         } else if (val && val instanceof Object) {
           this.formData = this.$utils.deepClone(val);
