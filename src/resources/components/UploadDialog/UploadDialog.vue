@@ -49,7 +49,7 @@
                 <span v-if="successMassage">{{ successMassage }}</span>
                 <span v-if="btntext" class="text-href" @click="goto()">{{ btntext }}</span>
               </div>
-              <div class="text-danger pb-md"><span class="valid-icon tsfont-close-s"></span>{{ $t('page.failedtoimportitemstarget', {target: validConfig.failureCount}) }}</div>
+              <div class="text-danger pb-md"><span class="valid-icon tsfont-close-s"></span>{{ $t('message.failedtoimportitemstarget', {target: validConfig.failureCount}) }}</div>
               <div>
                 <div v-for="(result, index) in validConfig.failureReasonList" :key="index">
                   <div class="pb-md">{{ result.item }}</div>
@@ -199,7 +199,7 @@ export default {
     return {
       isModalShow: false,
       dialogConfig: {
-        width: '654px',
+        width: '854px',
         height: '367px'
       },
       fileList: [],
@@ -307,6 +307,7 @@ export default {
               this.validConfig[key] += config[key];
             }
           });
+          this.validConfig.failureCount = this.validConfig.failureReasonList.length;
         }
       } else if ((response.Status = 'ERROR')) {
         this.$Notice.error({
@@ -477,7 +478,7 @@ export default {
     }
     .upload-file-list {
       margin-left: 280px;
-      width: 310px;
+      width: 510px;
       height: 100%;
       overflow-y: auto;
       opacity: 0;
@@ -534,7 +535,7 @@ export default {
     position: relative;
     z-index: 9;
     margin-left: 280px;
-    width: 310px;
+    width: 510px;
     height: 100%;
     .valid-icon{
       display: inline-block;

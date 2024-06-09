@@ -33,6 +33,7 @@
                     :actionUrl="`${actionUrl}?matrixUuid=${matrixUuid}`"
                     :formatList="formatList"
                     :multiple="false"
+                    :isValid="true"
                     @on-all-upload="getMatrixData"
                   />
                 </DropdownItem>
