@@ -3,30 +3,27 @@
     <template v-slot>
       <div>
         <div v-if="Object.keys(helpData).length">
-          <TsFormItem :label="$t('page.interface')" labelPosition="left" labelWidth="80">
-            {{ rowData.url }}
+          <TsFormItem :label="$t('page.interface')" :labelWidth="80">
+            <strong>{{ rowData.url }}</strong>
           </TsFormItem>
           <TsFormItem
             v-if="helpData.description"
             :label="$t('page.description')"
-            labelPosition="left"
-            labelWidth="80"
+            :labelWidth="80"
           >
             {{ helpData.description }}
           </TsFormItem>
           <TsFormItem
             v-if="helpData.input"
             :label="$t('page.inputparam')"
-            labelPosition="left"
-            labelWidth="80"
+            :labelWidth="80"
           >
             <Table size="small" :columns="inputColumns" :data="helpData.input"></Table>
           </TsFormItem>
           <TsFormItem
             v-if="helpData.output"
             :label="$t('page.outputparam')"
-            labelPosition="left"
-            labelWidth="80"
+            :labelWidth="80"
           >
             <Table
               size="small"
@@ -38,8 +35,7 @@
           <TsFormItem
             v-if="helpData.example"
             :label="$t('term.report.example')"
-            labelPosition="left"
-            labelWidth="80"
+            :labelWidth="80"
           >
             <JsonViewer boxed copyable :value="helpData.example"></JsonViewer>
           </TsFormItem>

@@ -891,7 +891,12 @@ export default {
         if (formitem) {
           this.clearFormInputTableAttr(formitem, this.formData[key]);
           this.clearPrivateAttr(this.formData[key]);
-          formItemList.push({ attributeUuid: key, handler: formitem.handler, dataList: this.formData[key] });
+          formItemList.push({
+            attributeUuid: key,
+            key: formitem.key,
+            handler: formitem.handler,
+            dataList: this.formData[key]
+          });
         }
       }
       // console.log(JSON.stringify(formItemList, null, 2));

@@ -6,102 +6,107 @@
     <template v-slot>
       <div>
         <div v-if="Object.keys(helpData).length">
-          <Divider orientation="left">{{ $t('page.interface') }}</Divider>
-          <div>{{ rowData.url }}</div>
-          <Divider v-if="helpData.description" orientation="left">{{ $t('page.description') }}</Divider>
-          <div v-if="helpData.description">{{ helpData.description }}</div>
-          <Divider v-if="rowData.apiType == 'custom'" orientation="left">{{ rowData.authtypeName }}</Divider>
-          <component
-            :is="rowData.authtype"
-            v-if="rowData.apiType == 'custom'"
-            ref="authHandler"
-            @setConfig="setAuthConfig"
-          ></component>
-          <Divider v-if="helpData.example" orientation="left">{{ $t('term.report.example') }}</Divider>
-          <div v-if="helpData.example">
+          <TsFormItem :label="$t('page.interface')" :labelWidth="80">
+            <strong>{{ rowData.url }}</strong>
+          </TsFormItem>
+          <TsFormItem v-if="helpData.description" :labelWidth="80" :label="$t('page.description')">
+            {{ helpData.description }}
+          </TsFormItem>
+          <TsFormItem v-if="rowData.apiType == 'custom'" :labelWidth="80" :label="rowData.authtypeName">
+            <component
+              :is="rowData.authtype"
+              v-if="rowData.apiType == 'custom'"
+              ref="authHandler"
+              @setConfig="setAuthConfig"
+            ></component>
+          </TsFormItem>
+          <TsFormItem v-if="helpData.example" :labelWidth="80" label=" $t('term.report.example') ">
             <JsonViewer boxed copyable :value="helpData.example"></JsonViewer>
-          </div>
-          <Divider orientation="left">{{ $t('page.request') }}</Divider>
-          <div class="mb-md"><TsFormRadio v-model="tab" :dataList="requestType"></TsFormRadio></div>
-          <Divider v-if="helpData.input" orientation="left">{{ $t('page.inputparam') }}</Divider>
-          <div v-if="tab == 'form'">
-            <Table
-              v-if="helpData.input"
-              :columns="inputColumns"
-              :data="helpData.input"
-              border
-            >
-              <template v-slot:input="{ row }">
-                <div>
-                  <TsFormInput
-                    v-if="!row.type.startsWith('file')"
-                    :value="testData.param[row.name]"
-                    width="100%"
-                    @on-change="
-                      name => {
-                        setValue(row, name);
-                      }
-                    "
-                  ></TsFormInput>
-                  <div v-else>
-                    <TsUpLoad
-                      styleType="button"
-                      className="smallUpload"
-                      :beforeUpload="
-                        (file) => {
-                          setValue(row, file);
-                          return false;
+          </TsFormItem>
+          <TsFormItem :label=" $t('page.request')" :labelWidth="80">
+            <div class="mb-md"><TsFormRadio v-model="tab" :dataList="requestType"></TsFormRadio></div>
+          </TsFormItem>
+          <TsFormItem v-if="helpData.input" :label="$t('page.inputparam')" :labelWidth="80">
+            <div v-if="tab == 'form'">
+              <Table
+                v-if="helpData.input"
+                :columns="inputColumns"
+                :data="helpData.input"
+                border
+              >
+                <template v-slot:input="{ row }">
+                  <div>
+                    <TsFormInput
+                      v-if="!row.type.startsWith('file')"
+                      :value="testData.param[row.name]"
+                      width="100%"
+                      @on-change="
+                        name => {
+                          setValue(row, name);
                         }
                       "
-                    ></TsUpLoad>
+                    ></TsFormInput>
+                    <div v-else>
+                      <TsUpLoad
+                        styleType="button"
+                        className="smallUpload"
+                        :beforeUpload="
+                          (file) => {
+                            setValue(row, file);
+                            return false;
+                          }
+                        "
+                      ></TsUpLoad>
+                    </div>
                   </div>
-                </div>
-              </template>
-            </Table>
-            <div class="pt-md">
-              <Button
-                v-if="apiType === 'rest'"
-                style="width:100%"
-                type="primary"
-                @click="executeTest"
-              >{{ $t('page.sendrequest') }}</Button>
-              <Button
-                v-if="apiType === 'binary'"
-                style="width:100%"
-                type="primary"
-                @click="executeDownload"
-              >{{ $t('page.sendrequest') }}</Button>
+                </template>
+              </Table>
+              <div class="pt-md">
+                <Button
+                  v-if="apiType === 'rest'"
+                  style="width:100%"
+                  type="primary"
+                  @click="executeTest"
+                >{{ $t('page.sendrequest') }}</Button>
+                <Button
+                  v-if="apiType === 'binary'"
+                  style="width:100%"
+                  type="primary"
+                  @click="executeDownload"
+                >{{ $t('page.sendrequest') }}</Button>
+              </div>
             </div>
-          </div>
-          <div v-else-if="tab == 'json'">
-            <TsFormInput
-              height="400px"
-              type="textarea"
-              :value="JSON.stringify(testData.param, null, 2)"
-              @on-change="setJsonValue"
-            ></TsFormInput>
-            <div class="pt-md">
-              <Button
-                v-if="apiType === 'rest'"
-                style="width:100%"
-                type="primary"
-                @click="executeTest"
-              >{{ $t('page.sendrequest') }}</Button>
-              <Button
-                v-if="apiType === 'binary'"
-                style="width:100%"
-                type="primary"
-                @click="executeDownload"
-              >{{ $t('page.sendrequest') }}</Button>
+            <div v-else-if="tab == 'json'">
+              <TsCodemirror
+                :value="JSON.stringify(testData.param, null, 2)"
+                codeMode="json"
+                @change="setJsonValue"
+              ></TsCodemirror>
+              <div v-if="error" class="pt-md text-error">{{ error }}</div>
+              <div class="pt-md">
+                <Button
+                  v-if="apiType === 'rest'"
+                  style="width:100%"
+                  type="primary"
+                  @click="executeTest"
+                >{{ $t('page.sendrequest') }}</Button>
+                <Button
+                  v-if="apiType === 'binary'"
+                  style="width:100%"
+                  type="primary"
+                  @click="executeDownload"
+                >{{ $t('page.sendrequest') }}</Button>
+              </div>
             </div>
-          </div>
-          <Divider v-if="testData.result" orientation="left">{{ $t('page.outputresults') }}</Divider>
-          <JsonViewer
-            v-if="testData.result"
-            boxed
-            copyable
-            :value="testData.result"
-          ></JsonViewer>
+          </TsFormItem>
+          <TsFormItem v-if="testData.result" :label="$t('page.outputresults')" :labelWidth="80">
+            <JsonViewer
+              v-if="testData.result"
+              boxed
+              copyable
+              :value="testData.result"
+            ></JsonViewer>
+          </TsFormItem>
         </div>
         <div v-else>{{ helpMessage }}</div>
       </div>
@@ -116,10 +121,12 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: 'ApiTest',
   components: {
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
     JsonViewer: () => import('vue-json-viewer'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
     ...authHandler
   },
   mixins: [download],
@@ -147,6 +154,7 @@ export default {
       helpData: {},
       testData: {},
       helpMessage: '',
+      error: '',
       inputColumns: Object.freeze([
         { title: this.$t('page.name'), key: 'name' },
         { title: this.$t('page.explain'), key: 'description' },
@@ -206,6 +214,7 @@ export default {
       this.$forceUpdate();
     },
     setJsonValue(value) {
+      this.error = '';
       let j = null;
       if (this.rowData.type !== 'raw') {
         try {
@@ -213,7 +222,7 @@ export default {
           this.$set(this.testData, 'param', j);
           this.$forceUpdate();
         } catch (e) {
-          e;
+          this.error = e.message;
         }
       } else {
         this.$set(this.testData, 'param', value);
