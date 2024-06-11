@@ -35,6 +35,7 @@ export default {
         isShow: true,
         width: 'medium'
       },
+      isMutiple: !this.data, //只有新增行数据才支持多选
       matrixDataDialogForm: [] //添加编辑行属性表单
     };
   },
@@ -130,7 +131,7 @@ export default {
                   type: 'userselect',
                   groupList: ['user'],
                   maxlength: 50,
-                  multiple: false,
+                  multiple: this.isMutiple,
                   transfer: true
                 };
                 break;
@@ -141,7 +142,7 @@ export default {
                   type: 'userselect',
                   groupList: ['role'],
                   maxlength: 50,
-                  multiple: false,
+                  multiple: this.isMutiple,
                   transfer: true
                 };
                 break;
@@ -152,7 +153,7 @@ export default {
                   type: 'userselect',
                   groupList: ['team'],
                   maxlength: 50,
-                  multiple: false,
+                  multiple: this.isMutiple,
                   transfer: true
                 };
                 break;
@@ -169,7 +170,8 @@ export default {
                   groupList: ['user'],
                   params: params,
                   maxlength: 50,
-                  transfer: true
+                  transfer: true,
+                  multiple: this.isMutiple
                 };
                 break;
               case 'region':
@@ -178,21 +180,11 @@ export default {
                   label: item.name,
                   type: 'tree',
                   url: '/api/rest/region/tree/search',
+                  params: {isActive: 1},
                   textName: 'name',
                   valueName: 'id',
-                  transfer: true
-                };
-                break;
-              case 'processtaskuser':
-                data = {
-                  name: item.uuid,
-                  label: item.name,
-                  type: 'userselect',
-                  groupList: ['processUserType'],
-                  excludeList: ['processUserType#minor', 'processUserType#worker', 'processUserType#reporter'],
-                  maxlength: 50,
-                  multiple: false,
-                  transfer: true
+                  transfer: true,
+                  multiple: this.isMutiple
                 };
                 break;
             }
