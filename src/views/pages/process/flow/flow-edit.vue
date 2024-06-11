@@ -700,7 +700,7 @@ export default {
       if (item.href) {
         this.$nextTick(() => {
           try {
-            document.querySelector(item.href).scrollIntoView(true);
+            document.querySelector(item.href) && document.querySelector(item.href).scrollIntoView(true);
           } catch (e) {
             console.info(e);
           }

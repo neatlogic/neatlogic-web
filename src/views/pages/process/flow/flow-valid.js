@@ -1,16 +1,15 @@
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
+import { FLOW_DISPATCHER_VALID } from '@/resources/_import.js';
 let validConfig = {};
 try {
   // 导入组件校验方法
   const validPath = require.context('@', true, /flowNodeValid.js$/);
-  validPath
-    .keys()
-    .forEach(path => {
-      if (validPath(path).nodeConfigValid) {
-        Object.assign(validConfig, validPath(path).nodeConfigValid);
-      }
-    });
+  validPath.keys().forEach(path => {
+    if (validPath(path).nodeConfigValid) {
+      Object.assign(validConfig, validPath(path).nodeConfigValid);
+    }
+  });
 } catch (error) {
   console.error('flowNodeValid.js异常', error);
 }
@@ -121,7 +120,8 @@ let valid = {
                     if (row.hasOwnProperty(key)) {
                       let val = row[key];
                       let handler = policyList[i].config.handler;
-                      if ((handler.indexOf('CmdbDispatcher') > -1 && this.validCmdbDispatcher(that, handler, key, val)) || (handler.indexOf('RegionDispatcher') > -1 && this.validRegionDispatcher(that, handler, key, val))) {
+                      let dispatcherName = this.handleDispatcherName(handler) || '';
+                      if (!that.$utils.isEmpty(FLOW_DISPATCHER_VALID) && !that.$utils.isEmpty(FLOW_DISPATCHER_VALID[dispatcherName]) && FLOW_DISPATCHER_VALID[dispatcherName](that, handler, key, val)) {
                         isChecked = 0;
                         errorText = $t('term.process.assignconfigvalid');
                         break;
@@ -330,14 +330,14 @@ let valid = {
           href: '#eoaSetting'
         });
       }
-      if (that.$utils.isEmpty(eoaConfig.eoaSucceedToStepUuid) || (!that.$utils.isEmpty(eoaConfig.eoaSucceedToStepUuid) && that.$utils.isEmpty(nodeChildren) || (!that.$utils.isEmpty(nodeChildren) && !nodeChildren.find(item => item.uuid === eoaConfig.eoaSucceedToStepUuid)))) {
+      if (that.$utils.isEmpty(eoaConfig.eoaSucceedToStepUuid) || (!that.$utils.isEmpty(eoaConfig.eoaSucceedToStepUuid) && that.$utils.isEmpty(nodeChildren)) || (!that.$utils.isEmpty(nodeChildren) && !nodeChildren.find(item => item.uuid === eoaConfig.eoaSucceedToStepUuid))) {
         that.$set(eoaConfig, 'eoaSucceedToStepUuid', '');
         validList.push({
           name: $t('form.validate.required', { target: $t('term.process.eoapassedforwardedtonode') }),
           href: '#eoaSetting'
         });
       }
-      if (that.$utils.isEmpty(eoaConfig.eoaFailedToStepUuid) || (!that.$utils.isEmpty(eoaConfig.eoaFailedToStepUuid) && that.$utils.isEmpty(nodeChildren) || (!that.$utils.isEmpty(nodeChildren) && !nodeChildren.find(item => item.uuid === eoaConfig.eoaFailedToStepUuid)))) {
+      if (that.$utils.isEmpty(eoaConfig.eoaFailedToStepUuid) || (!that.$utils.isEmpty(eoaConfig.eoaFailedToStepUuid) && that.$utils.isEmpty(nodeChildren)) || (!that.$utils.isEmpty(nodeChildren) && !nodeChildren.find(item => item.uuid === eoaConfig.eoaFailedToStepUuid))) {
         that.$set(eoaConfig, 'eoaFailedToStepUuid', '');
         validList.push({
           name: $t('form.validate.required', { target: $t('term.process.eoanopassedforwardedtonode') }),
@@ -454,33 +454,8 @@ let valid = {
     // 处理分派器名称 neatlogic.module.cmdb.workerdispatcher.handler.CmdbDispatcher 截取最后一个CmdbDispatcher
     const arr = (dispatcherName && dispatcherName.split('.')) || [];
     return arr[arr.length - 1];
-  },
-  validCmdbDispatcher(that, handler, key, filterList) {
-    if (that.$utils.isEmpty(filterList)) {
-      return true;
-    }
-    // 验证cmdb分派器，匹配映射，两个数组时，有一个为空时，数据校验不通过问题
-    // [{"formAttributeUuid": "ca04365ff49c4c80b39cf802e857eeaa","key": 441733552807936},{key: '441733846409216', formAttributeUuid: ''}]
-    if (key !== 'filterList' || this.handleDispatcherName(handler) !== 'CmdbDispatcher') {
-      return false;
-    }
-    return filterList.some(item => !item.formAttributeUuid || !item.key);
-  },
-  validRegionDispatcher(that, handler, key, value) {
-    if (key !== 'app' && !value) {
-      return true;
-    }
-    if (key === 'regionAttrs') {
-      if (that.$utils.isEmpty(value)) {
-        return true;
-      } else {
-        return value.some(item => !item.value);
-      }
-    }
   }
-
 };
-
 let setInitData = {
   changehandle(nodeConfig, d, that) {
     //变更处理的校验

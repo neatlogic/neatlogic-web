@@ -196,76 +196,19 @@
                             border="border"
                             :validateList="validateSelectList"
                             transfer
-                            @on-change="selectAutomatic(item.config.handler)"
+                            @change="() => changeDispatcher(item.config.handler)"
                           ></TsFormSelect>
                         </div>
                       </div>
                     </div>
-                    <CmdbDispatcher
-                      v-if="getDispatcherName(item.config.handler) == 'CmdbDispatcher'"
-                      ref="cmdbDispatcher"
-                      v-model="item.config.handlerConfig"
+                    <Component
+                      :is="handleComponent(item.config.handler)"
+                      ref="dispatcherForm"
+                      :value="item.config.handlerConfig"
+                      :formConfig="getDispatcherConfig(item.config.handler)"
                       :allFormitemList="allFormitemList"
-                    ></CmdbDispatcher>
-                    <RegionDispatcher
-                      v-if="getDispatcherName(item.config.handler) == 'RegionDispatcher'"
-                      ref="regionDispatcher"
-                      v-model="item.config.handlerConfig"
-                      :allFormitemList="allFormitemList"
-                    ></RegionDispatcher>
-                    <div v-else-if="automaticDeal.length > 0" class="text-list">
-                      <div v-for="automatic in automaticDeal" :key="automatic.name">
-                        <div class="title text-left require-label overflow text-tip form-label" :title="automatic.label">{{ automatic.label }}</div>
-                        <div class="text custom-select">
-                          <div class="input-border">
-                            <div
-                              v-if="automatic.type == 'formselect'"
-                            >
-                              <!-- 配置项表单分派器 -->
-                              <TsFormSelect
-                                ref="dealValue"
-                                v-model="item.config.handlerConfig[automatic.name]"
-                                v-bind="automatic"
-                                :dataList="automaticFormList"
-                                :firstSelect="false"
-                                textName="label"
-                                valueName="uuid"
-                                border="border"
-                                transfer
-                              ></TsFormSelect>
-                              <div v-if="!formUuid" class="text-tip">
-                                {{ $t('term.process.norelformtip') }}
-                                <span class="text-href" @click="toSetting">{{ $t('term.process.flowsetting') }}</span>
-                                {{ $t('term.process.relform') }}
-                              </div>
-                            </div>
-                            <!-- 处理人领导分派器 -->
-                            <div v-else-if="automatic.policy && automatic.policy=='preStepList'">
-                              <TsFormSelect
-                                ref="dealValue"
-                                v-model="item.config.handlerConfig[automatic.name]"
-                                v-bind="automatic"
-                                :dataList="copyPrevNodes"
-                                textName="name"
-                                valueName="uuid"
-                                border="border"
-                                :firstSelect="false"
-                                transfer
-                              ></TsFormSelect>
-                            </div>
-                            <div
-                              :is="getAutomaticType(automatic.type)"
-                              v-else
-                              ref="dealValue"
-                              v-model="item.config.handlerConfig[automatic.name]"
-                              v-bind="automatic"
-                              border="border"
-                              :firstSelect="false"
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    >
+                    </Component>
                   </div>
                 </div>
               </div>
@@ -290,10 +233,7 @@
                         <UserSelect
                           ref="dealValue"
                           v-model="item.config.workerList"
-                          border="border"
-                          :validateList="validateSelectList"
-                          :groupList="workerGroupList"
-                          :excludeList="excludeList"
+                          v-bind="dealwithuserConfig"
                         ></UserSelect>
                       </div>
                     </div>
@@ -328,6 +268,7 @@
 <script>
 import vuedraggable from 'vuedraggable';
 import {store, mutations} from '../../floweditState.js';
+import dispatcherComponent from './dispatcher/index.js';
 export default {
   name: 'AssignSetting',
   components: {
@@ -335,8 +276,7 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    CmdbDispatcher: () => import('./dispatcher/cmdb-dispatcher'),
-    RegionDispatcher: () => import('./dispatcher/region-dispatcher')
+    ...dispatcherComponent
   },
   props: {
     prevNodes: {
@@ -348,13 +288,11 @@ export default {
     defaultWorkerPolicyConfig: { type: Object, default: () => {} }
   },
   data() {
-    let _this = this;
     return {
       groupTeam: ['team'], //分派器分组
       isValid: true, //是否校验通过
       formItemList: [], //表单授权列表
-      automaticDeal: [], //分派器处理组
-      copyPrevNodes: _this.prevNodes || [], //复制前置步骤
+      copyPrevNodes: this.prevNodes || [], //复制前置步骤
       processStepUuidList: '', //前置步骤值
       processStepAssignList: [], //指派步骤
       policyListFormList: [], //表单值列表
@@ -418,7 +356,6 @@ export default {
         }
       ],
       defaultWorker: null, //异常处理人
-      automaticFormList: [], //分派器表单组件列表
       automaticFormValue: [], //分派器表单值
       dataGroupList: [ //指派目标类型
         {
@@ -435,8 +372,18 @@ export default {
         }
       ],
       groupList: ['user', 'role', 'team'],
-      workerGroupList: ['processUserType', 'user', 'team', 'role'],
-      excludeList: ['processUserType#major', 'processUserType#minor', 'processUserType#agent', 'processUserType#defaultworker', 'processUserType#worker']
+      dealwithuserConfig: {
+        border: 'border',
+        validateList: ['required'],
+        groupList: ['user', 'role', 'team'],
+        workerGroupList: ['processUserType', 'user', 'team', 'role'],
+        excludeList: [
+          'processUserType#major',
+          'processUserType#minor',
+          'processUserType#agent',
+          'processUserType#defaultworker',
+          'processUserType#worker']
+      }
     };
   },
   beforeCreate() {},
@@ -454,26 +401,23 @@ export default {
       //获取自定义处理人
       let config = this.$utils.deepClone(obj);
       if (JSON.stringify(config) != '{}') {
+        let {policyList = []} = config || {};
         Object.keys(this.workerPolicyConfig).forEach(key => {
           if (config[key]) {
             this.workerPolicyConfig[key] = config[key];
           }
         });
-        if (config.policyList) {
-          this.policyList = config.policyList;
+        if (policyList) {
+          this.policyList = policyList;
           this.policyList.forEach((item, index) => {
             if (item.type == 'prestepassign') {
               this.processStepAssignList = item.config.processStepUuidList;
-              // item.config.groupList.length > 0 && (this.groupList = item.config.groupList);
             }
             if (item.type == 'copy') {
               this.processStepUuidList = item.config.processStepUuid;
             }
             if (item.type == 'form') {
               this.policyListAttributeUuidList = item.config.attributeUuidList;
-            }
-            if (item.type == 'automatic' && item.config && item.config.handler != '') {
-              this.selectAutomatic(item.config.handler, 'init');
             }
           });
         }
@@ -493,49 +437,31 @@ export default {
       } else if (item.type == 'automatic') {
         item.config.handler = null;
         item.config.handlerConfig = {};
-        this.automaticDeal = [];
       } else if (item.type == 'assign') {
         item.config.workerList = null;
       }
     },
     getFormItem() {
       //获取表单指定版本的数据，渲染表单
-      let _this = this;
-      _this.$set(_this, 'formItemList', []);
-      _this.clearAutomaticForm();
-      let plugin = _this.allFormitemList || [];
+      this.$set(this, 'formItemList', []);
       let formitem = [];
-      if (plugin && plugin.length > 0) {
-        plugin.forEach(plugins => {
-          //只能选择用户选择器、下拉框
-          if (plugins.handler == 'formuserselect' || plugins.handler == 'formselect') {
-            let conf = {
-              value: plugins.uuid,
-              text: plugins.label
-            };
-            formitem.push(conf);
-          }
-        });
-      }
-      _this.$set(_this, 'formItemList', formitem);
+      this.$set(this, 'formItemList', formitem);
       if (this.policyListAttributeUuidList && this.policyListAttributeUuidList.length > 0) {
         let newPolicyListAttributeUuid = [];
-        _this.policyListAttributeUuidList.forEach(item => {
-          let formItem = _this.allFormitemList.find(f => f.uuid == item);
+        this.policyListAttributeUuidList.forEach(item => {
+          let formItem = this.allFormitemList.find(f => f.uuid == item);
           formItem && newPolicyListAttributeUuid.push(item);
         });
         newPolicyListAttributeUuid.length == 0 && (this.policyListAttributeUuidList = []);
         newPolicyListAttributeUuid.length > 0 && (this.policyListAttributeUuidList = newPolicyListAttributeUuid);
       }
-      //分派器表单
-      _this.automaticFormList = _this.$utils.deepClone(plugin);
     },
     saveAssignData() {
       let data = {
         executeMode: this.workerPolicyConfig.executeMode,
         defaultWorker: this.defaultWorker
       };
-      this.policyList.forEach((item, index) => {
+      this.policyList.forEach((item) => {
         if (item.type == 'prestepassign') {
           item.config.processStepUuidList = this.processStepAssignList;
         }
@@ -545,13 +471,8 @@ export default {
         if (item.type == 'form') {
           item.config.attributeUuidList = this.policyListAttributeUuidList;
         }
-        if (item.type == 'automatic' && item.config && this.getDispatcherName(item.config.handler) == 'CmdbDispatcher') {
-          // cmdb分派器，单独处理值
-          item.config.handlerConfig = this.$refs.cmdbDispatcher && this.$refs.cmdbDispatcher[0] && this.$refs.cmdbDispatcher[0].saveData() || {};
-        }
-        if (item.type == 'automatic' && item.config && this.getDispatcherName(item.config.handler) == 'RegionDispatcher') {
-          // 地域分派器，单独处理值
-          item.config.handlerConfig = this.$refs.regionDispatcher && this.$refs.regionDispatcher[0] && this.$refs.regionDispatcher[0].saveData() || {};
+        if (item.type == 'automatic') {
+          item.config.handlerConfig = this.$refs.dispatcherForm && this.$refs.dispatcherForm[0] && this.$refs.dispatcherForm[0].saveData() || {};
         }
       });
       this.$set(data, 'policyList', this.policyList);
@@ -571,55 +492,21 @@ export default {
       } else {
         this.isValid = false;
       }
-      this.$refs.defaultWorker && this.$refs.defaultWorker.valid();
-      this.$refs.cmdbDispatcher && this.$refs.cmdbDispatcher[0] && this.$refs.cmdbDispatcher[0].valid(); // 由于policyList是v-for循环，导致获取节点也是数组，所以this.$refs.cmdbDispatcher[0]取第一个数组值
-      this.$refs.regionDispatcher && this.$refs.regionDispatcher[0] && this.$refs.regionDispatcher[0].valid(); 
-    },
-    selectAutomatic(handler, type) {
-      //选择分派器
-      let automaticObj = this.policyList.find(p => p.type === 'automatic');
-      if (handler) {
-        let newObj = this.automaticList.find(d => d.handler === handler);
-        if (!newObj) {
-          this.policyList.map(p => {
-            if (p.type == 'automatic') {
-              p.config.handler = '';
-              p.config.handlerConfig = {};
-            }
-            return p;
-          });
-        } else if (newObj && newObj.config) {
-          this.automaticDeal = this.getDispatcherName(handler) == 'CmdbDispatcher' ? [] : newObj.config;
-          if (type != 'init') {
-            this.$set(automaticObj.config, 'handlerConfig', {});
-            this.automaticDeal.forEach(item => {
-              if (!automaticObj.config.handlerConfig[item.name]) {
-                this.$set(automaticObj.config.handlerConfig, item.name, null);
-              }
-            });
-            this.clearAutomaticForm();
-          }
+      let dispatcherFormList = this.$refs.dispatcherForm || [];
+      for (let i = 0; i < dispatcherFormList.length; i++) {
+        if (dispatcherFormList[i] && dispatcherFormList[i].valid && !dispatcherFormList[i].valid()) {
+          this.isValid = false;
         }
-      } else {
-        automaticObj.config.handlerConfig = {};
-        this.automaticDeal = [];
       }
+      this.$refs.defaultWorker && this.$refs.defaultWorker.valid();
     },
-    clearAutomaticForm() { //清空分派器选中表单的数据
-      let _this = this;
-      if (this.automaticDeal && this.automaticDeal.length > 0) {
-        this.automaticDeal.forEach(item => {
-          if (item.type == 'formselect') {
-            _this.policyList.forEach(m => {
-              if (m.type == 'automatic' && m.config.handlerConfig && m.config.handlerConfig[item.name]) {
-                let findFormitem = _this.automaticFormList.find(f => f.uuid == m.config.handlerConfig[item.name]);
-                if (!findFormitem) {
-                  m.config.handlerConfig[item.name] = null;
-                }
-              }
-            });
-          }
-        });
+    changeDispatcher() {
+      //选择分派器
+      let findDispatcherItem = this.policyList.find((v) => v.type == 'automatic');
+      let {config = {}} = findDispatcherItem || {};
+      let {handler = ''} = config;
+      if (!this.$utils.isEmpty(findDispatcherItem) && !this.$utils.isEmpty(handler)) {
+        this.$set(findDispatcherItem['config'], 'handlerConfig', {});
       }
     },
     returnNewPrevNodes(prevNodes) { //前置步骤过滤掉定时节点
@@ -632,19 +519,6 @@ export default {
       }
       return newData;
     }
-    // changeGroupList(val) { //改变指派目标
-    //   this.policyList.map(e => {
-    //     if (e.type == 'prestepassign') {
-    //       e.config.rangeList = [];
-    //     }
-    //     return e;
-    //   });
-    //   if (val && val.length > 0) {
-    //     this.groupList = val;
-    //   } else {
-    //     this.groupList = ['user', 'role', 'team'];
-    //   }
-    // }
   },
   filter: {},
   computed: {
@@ -654,22 +528,32 @@ export default {
     automaticList() {
       return store.automaticList;
     },
-    getAutomaticType() {
-      return (type) => {
-        let handler = 'TsFormSelect';
-        if (type == 'userselect') {
-          handler = 'UserSelect';
-        } else if (type == 'text') {
-          handler = 'TsFormInput';
-        }
-        return handler;
-      };
-    },
     getDispatcherName() {
       // 获取分派器名称
       return (handlerDispatcher) => {
         const arr = handlerDispatcher && handlerDispatcher.split('.') || [];
         return arr[arr.length - 1];
+      };
+    },
+    handleComponent() {
+      return (handler) => {
+        let dispatcherName = this.getDispatcherName(handler);
+        let componentList = Object.keys(dispatcherComponent) || [];
+        if (componentList.includes(dispatcherName)) {
+          return dispatcherName;
+        } else {
+          return 'DefaultDispatcher';
+        }
+      };
+    },
+    getDispatcherConfig() {
+      return (handler) => {
+        let findItem = this.automaticList.find((v) => v.handler == handler);
+        if (!this.$utils.isEmpty(findItem)) {
+          return findItem.config;
+        } else {
+          return [];
+        }
       };
     }
   },
