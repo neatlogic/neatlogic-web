@@ -502,7 +502,7 @@ export default {
       }
     },
     cmdbCiChange() {
-      this.$set(this.cmdbCiAttrConfig, 'params', {ciId: this.cmdbCi.ciId});
+      this.$set(this.cmdbCiAttrConfig, 'params', {ciId: this.cmdbCi.ciId, type: 'cmdbci'});
     },
     dealDataByUrl(list) {
       list.sort(function(a, b) {

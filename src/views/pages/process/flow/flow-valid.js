@@ -429,9 +429,21 @@ let valid = {
           href: '#collectionConfig'
         });
       }
-      if (that.$utils.isEmpty(collectionConfig.envField)) {
+      if (that.$utils.isEmpty(collectionConfig.envMatrixUuid)) {
         validList.push({
-          name: '环境关联字段不能为空',
+          name: '环境数据源不能为空',
+          href: '#collectionConfig'
+        });
+      }
+      if (that.$utils.isEmpty(collectionConfig.envValueField)) {
+        validList.push({
+          name: '环境数据源值字段映射不能为空',
+          href: '#collectionConfig'
+        });
+      }
+      if (that.$utils.isEmpty(collectionConfig.envTextField)) {
+        validList.push({
+          name: '环境数据源名称字段映射不能为空',
           href: '#collectionConfig'
         });
       }
