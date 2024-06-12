@@ -146,7 +146,7 @@ export default {
       taskLoading: false, //工单处理流转等待时提示图标
       handler: null,
       loadComplete: false,
-      pocesstaskview: true, //查看权限
+      pocesstaskview: false, //查看权限
       processTaskId: null, //工单id
       processTaskStepId: null, //步骤id
       taskHeight: 1000, //任务列表滚动高度
@@ -193,7 +193,7 @@ export default {
           _this.isMoreStep = false;
           (_this.defaultStartList.length == 1) && (_this.processTaskStepId = _this.defaultStartList[0].id); //判断是否有可处理的步骤
         }
-        _this.getTaskActionObj();
+        await _this.getTaskActionObj();
         _this.getMessage();
         this.taskLoading = false;
       } else {
@@ -207,16 +207,19 @@ export default {
     },
     getTaskActionObj() {
       //操作权限
-      let _this = this;
       if (this.processTaskId) {
         let data = {
           processTaskId: this.processTaskId,
           processTaskStepId: this.processTaskStepId
         };
-        this.$api.process.processtask.getTaskAction(data).then(res => {
+        return this.$api.process.processtask.getTaskAction(data).then(res => {
           if (res.Status == 'OK') {
             let actionList = res.Return;
             this.actionList = actionList;
+            let findItem = actionList.find(item => item.value === 'pocesstaskview');
+            if (findItem) {
+              this.pocesstaskview = true;
+            }
           }
         });
       }
