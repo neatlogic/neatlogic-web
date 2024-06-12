@@ -2682,7 +2682,6 @@
     "confirmandpublish": "Pass and publish",
     "line": "straight line",
     "orth": "orthogonal",
-    "metro": "Intelligent avoidance",
     "startci": "Starting model",
     "endci": "Endpoint model",
     "autofill": "Auto Fill",
@@ -2725,6 +2724,8 @@
     "exportpng": "Export PNG",
     "nootherversion": "There are currently no other versions available",
     "otherversion": "Other versions",
-    "deleteversionconfirm": "Are you sure to delete version: {target}?"
+    "deleteversionconfirm": "Are you sure to delete version: {target}?",
+    "metro": "Subway avoidance",
+    "manhattan": "Orthogonal avoidance"
   }
 }
