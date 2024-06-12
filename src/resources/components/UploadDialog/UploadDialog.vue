@@ -308,6 +308,12 @@ export default {
             }
           });
           this.validConfig.failureCount = this.validConfig.failureReasonList.length;
+          if (config && config.update) {
+            this.validConfig.successCount += config.update;
+          }
+          if (config && config.insert) {
+            this.validConfig.successCount += config.insert;
+          }
         }
       } else if ((response.Status = 'ERROR')) {
         this.$Notice.error({
