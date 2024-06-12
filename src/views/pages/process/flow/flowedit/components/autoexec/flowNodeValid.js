@@ -1,4 +1,5 @@
 import { $t } from '@/resources/init.js';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 const nodeConfigValid = {
   autoexec(nodeConfig, d, that) {
     //自动化节点
@@ -22,4 +23,31 @@ const nodeConfigValid = {
     return validList;
   }
 };
-export { nodeConfigValid };
+const lineConfigValid = {
+  connectBackward: {
+    eoa(handler, that) {
+      let isValid = true;
+      if (handler == 'eoa') {
+        if ((that.getNextNodes('backward') && that.getNextNodes('backward').length > 0) || (that.getNextNodes('forward') && that.getNextNodes('forward').length > 1)) {
+          ViewUI.Message.warning({ content: $t('message.process.eoalinkouttip'), duration: 3, closable: true });
+
+          isValid = false;
+        }
+      }
+      return isValid;
+    }
+  },
+  connectForward: {
+    eoa(handler, that) {
+      let isValid = true;
+      if (handler == 'eoa') {
+        if ((that.getNextNodes('forward') && that.getNextNodes('backward').length > 0) || that.getNextNodes('forward').length > 1) {
+          ViewUI.Message.warning({ content: $t('message.process.eoalinkouttip'), duration: 3, closable: true });
+          isValid = false;
+        }
+      }
+      return isValid;
+    }
+  }
+};
+export { nodeConfigValid, lineConfigValid };

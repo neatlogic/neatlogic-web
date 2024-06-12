@@ -3,14 +3,14 @@ import { $t } from '@/resources/init.js';
 let validConfig = {};
 try {
   // 导入组件校验方法
-  const validPath = require.context('@', true, /\/flow\/flow-node-valid\.js$/); // 查询flow文件夹下flow-node-valid.js文件
+  const validPath = require.context('@', true, /flowNodeValid.js$/);
   validPath.keys().forEach(path => {
     if (validPath(path).lineConfigValid) {
       Object.assign(validConfig, validPath(path).lineConfigValid);
     }
   });
 } catch (error) {
-  console.error('flow-node-valid.js异常', error);
+  console.error('flowNodeValid.js异常', error);
 }
 // eslint-disable-next-line space-before-function-paren
 (function (global, factory) {
@@ -53,7 +53,9 @@ try {
           for (let keyItem of Object.keys(validConfig)) {
             if (keyItem == 'connectBackward' && validConfig[keyItem] && validConfig[keyItem][sourceNode.getConfig().handler]) {
               let isTrue = validConfig[keyItem][sourceNode.getConfig().handler](sourceNode.getConfig().handler, this);
-              return isTrue;
+              if (!isTrue) {
+                return isTrue;
+              }
             }
           }
           const backwardSet = new Set(this.getNextNodes('backward'));
