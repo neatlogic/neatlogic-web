@@ -64,6 +64,7 @@
                         border="border"
                         multiple
                         transfer
+                        @change="()=>changeGroupList(item.config.groupList)"
                       ></TsFormSelect>
                     </div>
                   </div>
@@ -517,6 +518,20 @@ export default {
         }
       }
       return newData;
+    },
+    changeGroupList(val) { 
+      // 由前置步骤处理人指定，根据指派目标，过滤指派范围
+      this.policyList.map(e => {
+        if (e.type == 'prestepassign') {
+          e.config.rangeList = [];
+        }
+        return e;
+      });
+      if (val && val.length > 0) {
+        this.groupList = val;
+      } else {
+        this.groupList = ['user', 'role', 'team'];
+      }
     }
   },
   filter: {},
