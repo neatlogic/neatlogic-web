@@ -375,8 +375,7 @@ export default {
       dealwithuserConfig: {
         border: 'border',
         validateList: ['required'],
-        groupList: ['user', 'role', 'team'],
-        workerGroupList: ['processUserType', 'user', 'team', 'role'],
+        groupList: ['processUserType', 'user', 'team', 'role'],
         excludeList: [
           'processUserType#major',
           'processUserType#minor',
