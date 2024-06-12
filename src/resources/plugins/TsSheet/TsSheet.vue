@@ -296,6 +296,7 @@
               </div>
               <div v-else :style="{ width: mode === 'edit' || isFormSubassembly ? getCellWidth(cell) + 'px' : tdWidth(null, cell), overflow: 'auto' }">
                 <FormItem
+                  v-if="isReady"
                   :ref="'formitem_' + cell.component.uuid"
                   :key="cell.row + '-' + cell.col"
                   :formItem="cell.component"
@@ -430,6 +431,7 @@ export default {
   },
   data() {
     return {
+      isReady: true,
       copyedCell: null, //已复制的单元格，包含component或content
       defaultWidth: 200,
       minWidth: 50,
@@ -637,7 +639,6 @@ export default {
           historyData.isInUse = true;
           this.config = historyData.sheetData;
         }
-        this.isReady = true;
       }
       this.$emit('updateItemList', '', '', this.config);
     },
@@ -2103,6 +2104,7 @@ export default {
     },
     data: {
       handler: async function(val) {
+        this.isReady = false;
         await this.initPromise; // 等待初始化完成
         if (val && val instanceof Array) {
           //将后台的数据格式转换回原始的数据格式
@@ -2120,6 +2122,7 @@ export default {
         } else if (val && val instanceof Object) {
           this.formData = this.$utils.deepClone(val);
         }
+        this.isReady = true;
       },
       deep: true,
       immediate: true
