@@ -5,6 +5,7 @@
     v-bind="dialogConfig"
     :className="stepDialogClass"
     :title="actionConfig.complete"
+    @on-close="close"
     @on-ok="completeOk"
   >
     <template>
@@ -90,6 +91,9 @@ export default {
         let obj = completeForm.getFormValue();
         this.$emit('complete', obj);
       }
+    },
+    close() {
+      this.$emit('close');
     }
   },
   filter: {},

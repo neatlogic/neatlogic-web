@@ -345,7 +345,7 @@ export default {
     FormWidthDialog: () => import('./form-width-dialog.vue'),
     FormSceneDialog: () => import('./form-scene-dialog.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    ExtendConfigDialog: () => import('./extend-config-dialog.vue')
+    ExtendConfigDialog: () => import('./extend/extend-config-dialog.vue')
   },
   extends: subformconfig,
   mixins: [download],

@@ -2681,7 +2681,6 @@
     "confirmandpublish": "通过并发布",
     "line": "直线",
     "orth": "正交",
-    "metro": "智能避让",
     "startci": "起始模型",
     "endci": "终点模型",
     "autofill": "自动填充",
@@ -2725,6 +2724,8 @@
     "exportpng": "导出PNG",
     "nootherversion": "暂无其他版本",
     "otherversion": "其他版本",
-    "deleteversionconfirm": "是否确认删除版本：{target}？"
+    "deleteversionconfirm": "是否确认删除版本：{target}？",
+    "metro": "地铁避让",
+    "manhattan": "正交避让"
   }
 }

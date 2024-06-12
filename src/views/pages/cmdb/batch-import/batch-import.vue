@@ -53,7 +53,7 @@
     <UploadDialog
       ref="uploadDialog"
       :actionUrl="actionUrl"
-      :data="{ param: 'file', type: 'cmdb' }"
+      :data="{ param: 'file', type: 'cientityimport' }"
       :formatList="['xls', 'xlsx']"
       immediatelyUpload
       :showSuccessNotice="false"

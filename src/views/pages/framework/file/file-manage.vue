@@ -2,18 +2,14 @@
   <div>
     <TsContain>
       <template v-slot:topRight>
-        <CombineSearcher
-          v-model="searchParam"
-          v-bind="searchConfig"
-          @change="searchFile(1)"
-        ></CombineSearcher>
+        <CombineSearcher v-model="searchParam" v-bind="searchConfig" @change="searchFile(1)"></CombineSearcher>
       </template>
       <template v-slot:content>
         <TsTable
           v-if="fileData"
           v-bind="fileData"
           :theadList="theadList"
-          :sortList="['uploadTime','size']"
+          :sortList="['uploadTime', 'size']"
           :sortOrder="sortOrder"
           @updateSort="updateSort"
           @changeCurrent="changePage"
@@ -23,7 +19,7 @@
             {{ row.sizeText }}
           </template>
           <template v-slot:name="{ row }">
-            <span v-download="downurl('/api/binary/file/download',row.id)" class="text-href">{{ row.name }}</span>
+            <span v-download="downurl('/api/binary/file/download', row.id)" class="text-href">{{ row.name }}</span>
           </template>
         </TsTable>
       </template>
@@ -43,8 +39,7 @@ export default {
   props: {},
   data() {
     return {
-      sortConfig: {
-      },
+      sortConfig: {},
       searchParam: {
         keyword: ''
       },
@@ -69,12 +64,12 @@ export default {
         ]
       },
       theadList: [
-        {key: 'id', title: '#', width: 150},
-        {key: 'name', title: this.$t('page.name')},
-        {key: 'typeText', title: this.$t('page.type')},
-        {key: 'size', title: this.$t('page.size'), width: 150},
-        {key: 'userUuid', title: this.$t('page.uploaduser'), type: 'user', width: 200},
-        {key: 'uploadTime', title: this.$t('page.uploadtime'), type: 'time', width: 200}
+        { key: 'id', title: '#' },
+        { key: 'name', title: this.$t('page.name') },
+        { key: 'typeText', title: this.$t('page.type') },
+        { key: 'size', title: this.$t('page.size') },
+        { key: 'userUuid', title: this.$t('page.uploaduser'), type: 'user' },
+        { key: 'uploadTime', title: this.$t('page.uploadtime'), type: 'time' }
       ],
       fileData: {}
     };
@@ -113,7 +108,6 @@ export default {
         this.fileData = res.Return;
       });
     }
-
   },
   filter: {},
   computed: {
@@ -149,9 +143,9 @@ export default {
           params: { id: param }
         };
       };
-    } },
+    }
+  },
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

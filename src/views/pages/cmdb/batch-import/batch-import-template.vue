@@ -48,7 +48,6 @@ export default {
   created() {},
   methods: {
     async getTemplate(ci) {
-      console.log('ci', ci);
       if (ci) {
         this.ciId = ci.id;
       } else {
