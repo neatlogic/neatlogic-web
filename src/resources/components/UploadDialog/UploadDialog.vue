@@ -307,7 +307,7 @@ export default {
               this.validConfig[key] += config[key];
             }
           });
-          this.validConfig.failureCount = this.validConfig.failureReasonList.length;
+          this.validConfig.failureCount = config.failed;
           if (config && config.update) {
             this.validConfig.successCount += config.update;
           }
