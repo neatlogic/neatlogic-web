@@ -1,5 +1,5 @@
 <template>
-  <div class="tscodemirror" :class="cmOptions.readOnly ? 'disabled' : ''">
+  <div class="tscodemirror" :class="cmOptions.readOnly ? 'disabled' : ''" @keydown.stop>
     <Loading v-if="isLoading" :text="loadingText" :loadingShow="isLoading" type="fix"></Loading>
     <codemirror ref="myCode" :placeholder="placeholder" v-model="currentValue" :options="getOption" class="tscodemirror-code" :class="[classCodeStyle, !isValidPass ? 'border-color-error' : 'border-color']" :style="setHeight" @blur="onBlur" @focus="onFocus" @cursorActivity="cursorActivity" @scroll="onScroll"></codemirror>
     <transition name="fade">

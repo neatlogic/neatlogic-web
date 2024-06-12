@@ -141,6 +141,9 @@
                     <DropdownItem>
                       <span class="action-item tsfont-trash-o" :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''" @click="delVersionModal(currentVersion.uuid, currentVersion.text)">{{ $t('page.delete') }}</span>
                     </DropdownItem>
+                    <DropdownItem>
+                      <span class="action-item tsfont-chart-table" @click="addExtendConfig()">添加消费数据</span>
+                    </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
               </div>
@@ -313,6 +316,12 @@
       @updateDefaultSceneUuid="updateDefaultSceneUuid"
       @updateSceneReadOnly="updateSceneReadOnly"
     ></FormSceneDialog>
+    <ExtendConfigDialog
+      v-if="isShowExtendConfigDialog"
+      :formItemList="cellFormItemList"
+      :list="extendConfigList"
+      @close="closeExtendConfigDialog"
+    ></ExtendConfigDialog>
   </div>
 </template>
 <script>
@@ -335,7 +344,8 @@ export default {
     UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
     FormWidthDialog: () => import('./form-width-dialog.vue'),
     FormSceneDialog: () => import('./form-scene-dialog.vue'),
-    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    ExtendConfigDialog: () => import('./extend-config-dialog.vue')
   },
   extends: subformconfig,
   mixins: [download],
@@ -393,7 +403,9 @@ export default {
       formGroup: ['basic', 'layout', 'autoexec', 'cmdb', 'custom'],
       isFormSceneDialog: false,
       sceneUuid: null,
-      readOnly: false //设置全局只读
+      readOnly: false, //设置全局只读
+      isShowExtendConfigDialog: false,
+      extendConfigList: []
     };
   },
   beforeCreate() {},
@@ -585,6 +597,10 @@ export default {
         // 自定义组件，消费配置
         let formExtendConfig = this.$refs.sheet.getFormExtendConfig();
         this.$set(formConfig, 'formExtendConfig', formExtendConfig);
+
+        this.$set(formConfig, 'formCustomExtendConfig', {
+          extendConfigList: this.extendConfigList
+        });
         this.$set(data, 'formConfig', formConfig);
 
         await this.$api.framework.form.saveForm(data).then(res => {
@@ -739,6 +755,9 @@ export default {
               ...this.formData
             };
             this.$addWatchData(this.initFormConfig);
+            if (formConfig.formCustomExtendConfig) {
+              this.extendConfigList = formConfig.formCustomExtendConfig.extendConfigList || []; 
+            }
           }
         })
         .finally(() => {
@@ -1071,6 +1090,16 @@ export default {
             this.$set(this.initFormConfig, 'readOnly', readOnly);
           }
         });
+    },
+    addExtendConfig() {
+      this.isShowExtendConfigDialog = true;
+    },
+    closeExtendConfigDialog(list) {
+      this.isShowExtendConfigDialog = false;
+      if (list) {
+        this.extendConfigList = list;
+      }
+      console.log(this.extendConfigList, list);
     }
   },
   filter: {},
