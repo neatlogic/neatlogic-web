@@ -13,7 +13,7 @@ import radioHandler from './select';
 import checkboxHandler from './select';
 import accountHandler from './account';
 import filepathHandler from './filepath';
-import textareaHandler from './textarea';
+import textareaHandler from './text';
 import switchHandler from './switch';
 import userselectHandler from './userselect';
 import runnergroupHandler from './runnergroup';

@@ -68,6 +68,10 @@ const processtask = {
     //开始
     return axios.post('/api/rest/processtask/start', data);
   },
+  ifNecessaryStartTask(data) {
+    //如果需要，开始工单步骤
+    return axios.post('/api/rest/processtask/step/start/ifnecessary', data);
+  },
   commentTask(data) {
     //回复
     return axios.post('/api/rest/processtask/comment', data);

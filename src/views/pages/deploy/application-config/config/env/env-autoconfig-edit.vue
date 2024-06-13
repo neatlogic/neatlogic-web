@@ -46,7 +46,7 @@
                 ref="itemInput"
                 v-model="row.value"
                 :defaultValue="row.value"
-                :config="{...getselectConfig(row.value), errorMessage: row.valueErrorMessage}"
+                :config="{...getselectConfig(row.type), errorMessage: row.valueErrorMessage}"
                 :disabled="(row.isEmpty ? true : false)"
                 :isRequired="row.isEmpty ? false : row.key ? true : false"
                 @getConfig="(config)=>{getParamConfig(index,config)}"
@@ -140,8 +140,8 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-    this.getParamsTypeLit();
+  async mounted() {
+    await this.getParamsTypeLit();
   },
   beforeUpdate() {},
   updated() {},
@@ -165,6 +165,9 @@ export default {
       });
     },
     getselectConfig(type) {
+      if (this.paramsTypeList.find(item => item.value == type) && !this.$utils.isEmpty(this.paramsTypeList.find(item => item.value == type).config)) {
+        return this.paramsTypeList.find(item => item.value == type).config;
+      }
       return this.paramsTypeList.find(item => item.value == type);
     },
     addVariable() {
