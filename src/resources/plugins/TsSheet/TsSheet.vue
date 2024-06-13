@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="isReady"
     ref="container"
     class="tssheet-container"
     :class="{ resizing: !!resizeColumn || !!resizeRow || isDragging }"
@@ -296,7 +297,6 @@
               </div>
               <div v-else :style="{ width: mode === 'edit' || isFormSubassembly ? getCellWidth(cell) + 'px' : tdWidth(null, cell), overflow: 'auto' }">
                 <FormItem
-                  v-if="isReady"
                   :ref="'formitem_' + cell.component.uuid"
                   :key="cell.row + '-' + cell.col"
                   :formItem="cell.component"
@@ -431,7 +431,7 @@ export default {
   },
   data() {
     return {
-      isReady: true,
+      isReady: false,
       copyedCell: null, //已复制的单元格，包含component或content
       defaultWidth: 200,
       minWidth: 50,
@@ -2134,7 +2134,6 @@ export default {
     },
     data: {
       handler: async function(val) {
-        this.isReady = false;
         await this.initPromise; // 等待初始化完成
         if (val && val instanceof Array) {
           //将后台的数据格式转换回原始的数据格式
