@@ -160,7 +160,8 @@ export default {
           path: '/task-detail',
           query: {
             processTaskId: data.config.taskid,
-            processTaskStepId: data.config.stepid
+            processTaskStepId: data.config.stepid,
+            autoStart: 1
           }
         });
       }
