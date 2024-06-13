@@ -1750,7 +1750,6 @@ export default {
             }
           });
           this.$set(sceneConfig, 'formWidth', formConfig.formWidth);
-          console.log('lll', sceneConfig);
           data = sceneConfig;
         }
       }
