@@ -42,18 +42,7 @@
           tab="preview"
         >
           <JsonViewer boxed copyable :value="formData"></JsonViewer>
-        </TabPane>
-        <TabPane
-          label="测试"
-          name="test"
-          tab="preview"
-        >
-          <JsonViewer boxed copyable :value="currentData"></JsonViewer>
-          <TsCodemirror v-model="testData" codeMode="json"></TsCodemirror>
-          <TsCodemirror v-model="testmounted" codeMode="javascript"></TsCodemirror>
-          <Button @click="getTest()">测试</Button>
-          输出：
-          <JsonViewer boxed copyable :value="outinpuData"></JsonViewer>
+          <ExtendTagTest :formData="formData" :extendConfigList="extendConfigList" :formItemList="formItemList"></ExtendTagTest>
         </TabPane>
         <TabPane
           v-if="!$utils.isEmpty(emitData)"
@@ -86,12 +75,14 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
     JsonViewer: () => import('vue-json-viewer'),
-    TsSheet: () => import('./TsSheet.vue')
+    TsSheet: () => import('./TsSheet.vue'),
+    ExtendTagTest: () => import('./extend/extend-tag-test.vue')
   },
   directives: { clipboard },
   props: {
     data: { type: Object },
-    formSceneUuid: [String, Array]
+    formSceneUuid: [String, Array],
+    extendConfigList: Array
   },
   data() {
     return {
@@ -110,42 +101,7 @@ export default {
       inputData: '',
       inputFormData: {},
       formItemList: [],
-      emitData: {},
-      currentData: [
-        {
-          'attributeUuid': '6f894a16a3a044ad860b8c4d77ec735d',
-          'handler': 'formcustom',
-          'dataList': {
-            'systemName': 'TLOP',
-            'systemZhName': '开放平台',
-            'systemNum': '3024',
-            'sysLevel': '重要',
-            'xuqiu': [
-              'XQ20240512-002'
-            ],
-            'env': '测试',
-            'envCode': 'SIT',
-            'os': [
-              {
-                'uuid': 1171687085187082,
-                'name': 'TLOP_三资村行前置机',
-                'osType': 'ECS',
-                'oscfg': '中配[8c16g]',
-                'osver': '麒麟v10',
-                'sysUesr': '22',
-                'netRegion': 'DMZ区域',
-                'netName': '测试DMZ区',
-                'netCode': 'SIT_DMZ',
-                '_selected': false
-              }
-            ]
-          }
-        }
-      ],
-      testData: null,
-      testmounted: '',
-      outinpuData: null,
-      testM: {}
+      emitData: {}
     };
   },
   beforeCreate() {},
@@ -167,15 +123,9 @@ export default {
           let component = d.component;
           while (component && !this.$utils.isEmpty(component)) {
             if (!Array.isArray(component)) {
-              if (component.hasValue) {
-                this.formItemList.push(component);
-              }
+              this.formItemList.push(component);
             } else {
-              component.forEach(c => {
-                if (c.hasValue) {
-                  this.formItemList.push(c);
-                }
-              });
+              this.formItemList.push(...component);
             }
             if (component.isContainer && component.component) {
               component = component.component;
@@ -221,28 +171,6 @@ export default {
         }
         this.isReady = true;
       });
-    },
-    getTest() {
-      console.log(this.testData, JSON.parse(this.testData));
-      let currentConfig = JSON.parse(this.testData);
-      try {
-        if (this.testmounted) {
-          // eslint-disable-next-line no-eval
-          const testmounted = eval('(' + this.testmounted + ')');
-          console.log(testmounted);
-          this.testM = testmounted.methods;
-          let methods = testmounted.methods;
-          Object.keys(methods).forEach(methodsName => {
-            if (typeof methods[methodsName] === 'function' && !this.methodsName) {
-              this[methodsName] = methods[methodsName].bind(this);
-            }
-          });
-
-          this.outinpuData = this.setExtendValue(currentConfig, this.currentData);
-        }
-      } catch (e) {
-        console.error(e);
-      }
     }
   },
   filter: {},

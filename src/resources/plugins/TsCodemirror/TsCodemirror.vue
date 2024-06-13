@@ -1,6 +1,7 @@
 <template>
   <div class="tscodemirror" :class="cmOptions.readOnly ? 'disabled' : ''" @keydown.stop>
     <Loading v-if="isLoading" :text="loadingText" :loadingShow="isLoading" type="fix"></Loading>
+     <i v-if="isCopy && currentValue" v-clipboard="currentValue" v-clipboard:success="clipboardSuccess" class="text-href tscodemirror-copy">copy</i>                
     <codemirror ref="myCode" :placeholder="placeholder" v-model="currentValue" :options="getOption" class="tscodemirror-code" :class="[classCodeStyle, !isValidPass ? 'border-color-error' : 'border-color']" :style="setHeight" @blur="onBlur" @focus="onFocus" @cursorActivity="cursorActivity" @scroll="onScroll"></codemirror>
     <transition name="fade">
       <slot name="validMessage">
@@ -54,10 +55,12 @@ import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/htmlmixed/htmlmixed';
 import 'codemirror/mode/xml/xml';
 import formMixins from '@/resources/mixins/formMixins.js';
+import clipboard from '@/resources/directives/clipboard.js';
 
 export default {
   name: 'TsCodemirror',
   components: { codemirror },
+  directives: {clipboard},
   tagComponent: 'TsForm',
   mixins: [formMixins],
   model: {
@@ -121,6 +124,10 @@ export default {
     },
     placeholder: {
       type: String
+    },
+    isCopy: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -217,7 +224,10 @@ export default {
       this.$nextTick(() => {
         this.$refs.myCode && this.$refs.myCode.refresh();
       });
-    }
+    },
+    clipboardSuccess() {
+      this.$Message.success(this.$t('message.copysuccess'));
+    },
   },
   computed: {
     codemirror() {
@@ -235,6 +245,7 @@ export default {
   watch: {
     currentValue: {
       handler(val) {
+        console.log(val,'lll');
         this.$emit('update:value', val);
         this.$emit('change', val);
         if (!this.$utils.isSame(val, this.value)) {
@@ -284,6 +295,13 @@ export default {
 </script>
 <style lang="less">
 .tscodemirror {
+  position: relative;
+  .tscodemirror-copy {
+    position: absolute;
+    right: 6px;
+    top: 0px;
+    z-index: 1;
+  }
   .tscodemirror-code {
     border: 1px solid;
     border-radius: 6px;

@@ -142,7 +142,7 @@
                       <span class="action-item tsfont-trash-o" :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''" @click="delVersionModal(currentVersion.uuid, currentVersion.text)">{{ $t('page.delete') }}</span>
                     </DropdownItem>
                     <DropdownItem>
-                      <span class="action-item tsfont-chart-table" @click="addExtendConfig()">添加消费数据</span>
+                      <span class="action-item tsfont-chart-table" @click="addExtendConfig()">添加扩展数据</span>
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
@@ -272,7 +272,12 @@
             @close="currentFormItem = null"
             @editSubForm="editSubForm"
           ></FormItemConfig>
-          <FormPreview v-if="isPreviewShow" :data="previewFormData" @close="closePreview"></FormPreview>
+          <FormPreview
+            v-if="isPreviewShow"
+            :data="previewFormData"
+            :extendConfigList="extendConfigList"
+            @close="closePreview"
+          ></FormPreview>
         </div>
       </template>
     </TsContain>
