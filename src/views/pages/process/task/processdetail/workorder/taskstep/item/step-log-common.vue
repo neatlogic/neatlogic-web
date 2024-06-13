@@ -16,7 +16,7 @@
                 ></UserCard>
                 <span v-if="stepItem.operatorRole">({{ stepItem.operatorRole }})</span>
                 <span class="pl-md pr-md">{{ getActionText(item.customButtonList , stepItem.type) }}</span>
-                <span class="text-grey date-text">{{ stepItem.fcd | formatDate }}</span>
+                <span class="text-grey date-text fz10">{{ stepItem.fcd | formatDate }}</span>
                 <span v-show="stepItem.sourceName" class="text-grey pl-nm">{{ $t('page.from') }}{{ stepItem.sourceName }}</span>
               </div>
               <UserCard

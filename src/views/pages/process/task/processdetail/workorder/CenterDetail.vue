@@ -389,7 +389,9 @@ export default {
   mixins: [dealFormMix],
   props: {
     slotList: {
-      type: Array
+      type: Array, default() {
+        return [];
+      }
     },
     defaultProcessTaskId: {
       type: [String, Number],
