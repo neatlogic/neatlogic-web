@@ -3,21 +3,11 @@
     <span class="left-label-text text-grey">{{ config.typeName }}</span>
     <div v-if="textShow(config) && textShow(config) ==$t('page.delete')" class="text-grey">{{ textShow(config) }}</div>
     <div v-if="config.oldContent && setData(config.oldContent).length > 0">
-      <div v-for="(file, flindex) in setData(config.oldContent)" :key="flindex" class="file-list-down">
-        <span v-download="downurl('/api/binary/file/download',file.id)" class="tsfont-attachment text-action">
-          {{ file.name }}
-          <i class="tsfont-download"></i>
-        </span>
-      </div>
+      <ImagePreviewDialog :fileList="setData(config.oldContent)"></ImagePreviewDialog>
     </div>
     <div v-if="textShow(config) && textShow(config) !=$t('page.delete')" class="text-grey">{{ textShow(config) }}</div>
     <div v-if="config.newContent && setData(config.newContent).length > 0">
-      <div v-for="(file, flindex) in setData(config.newContent)" :key="flindex" class="file-list-down">
-        <span v-download="downurl('/api/binary/file/download',file.id)" class="tsfont-attachment text-action">
-          {{ file.name }}
-          <i class="tsfont-download"></i>
-        </span>
-      </div>
+      <ImagePreviewDialog :fileList="setData(config.newContent)"></ImagePreviewDialog>
     </div>
   </div>
 </template>
@@ -25,7 +15,9 @@
 import download from '@/resources/directives/download.js';
 export default {
   name: '',
-  components: {},
+  components: {
+    ImagePreviewDialog: () => import('@/resources/components/Upload/image-preview-dialog.vue')
+  },
   directives: { download },
   filters: {},
   props: {

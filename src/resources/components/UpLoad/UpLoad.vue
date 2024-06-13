@@ -56,7 +56,12 @@
             <span class="file_name overflow">
               <Tooltip :transfer="true" :content="item.name">{{ item.name }}</Tooltip>
             </span>
-            <i v-download="downurl(item)" class="tsfont-download file_down text-action" :title="$t('page.download')"></i>
+            <ImagePreviewDialog
+              :fileData="item"
+              :isShowText="false"
+              :fileDownloadUrl="fileDownurl"
+              :fileDownloadParam="fileDownParam"
+            ></ImagePreviewDialog>
             <i
               v-if="!readonly && !disabled"
               class="tsfont-close file_del text-action"
@@ -81,7 +86,9 @@
 import download from '@/resources/directives/download.js';
 export default {
   name: '',
-  components: {},
+  components: {
+    ImagePreviewDialog: () => import('@/resources/components/Upload/image-preview-dialog.vue')
+  },
   directives: { download },
   props: {
     title: {
@@ -241,17 +248,13 @@ export default {
       }
     };
   },
-
   beforeMount() {},
-
   mounted() {
     this.uploadList = this.$refs.upload.fileList;
     //融合自定义参数，有参数重名的风险，先这样吧
     Object.assign(this.filedata, this.params);
   },
-
   created() {},
-
   methods: {
     FormatError: function(file) {
       this.handleFormatError(file);
@@ -382,7 +385,6 @@ export default {
       this.$refs.upload.fileList.splice(0);
     }
   },
-
   computed: {
     percent() {
       return function(val) {
@@ -398,20 +400,6 @@ export default {
         return null;
       }
       return '.' + this.format.join(',.');
-    },
-    downurl() {
-      return item => {
-        let params = {
-          id: item.id
-        };
-        if (!this.$utils.isEmpty(this.fileDownParam)) {
-          params = this.fileDownParam;
-        }
-        return {
-          url: this.fileDownurl,
-          params: params
-        };
-      };
     }
   },
   watch: {
@@ -511,7 +499,7 @@ export default {
         cursor: pointer;
       }
       .file_del {
-        padding-left: 8%;
+        // padding-left: 8%; // 距离左边间隙过大
         display: none;
         cursor: pointer;
       }
