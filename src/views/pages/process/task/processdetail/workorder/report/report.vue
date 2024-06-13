@@ -22,14 +22,7 @@
           </div>
           <div v-if="dataConfig.fileList.length > 0" class="report-content">
             <div class="text-grey pb10 fz10">{{ $t('page.accessory') }}</div>
-            <div>
-              <div v-for="(file, flindex) in dataConfig.fileList" :key="flindex" class="file-title">
-                <span class="tsfont-attachment">
-                  {{ file.name }}
-                </span>
-                <i v-download="downurl(file.id)" class="tsfont-download text-action text-padding"></i>
-              </div>
-            </div>
+            <ImagePreviewDialog :fileList="dataConfig.fileList"></ImagePreviewDialog>
           </div>
         </template>
         <template v-else>
@@ -87,18 +80,10 @@
                     v-text="maxheight=='200px'?$t('page.viewmore'):$t('page.clickandputaway')"
                   ></div>
                 </div>
-
               </div>
               <div v-if="handlerStepInfo.fileList.length > 0" class="report-content pt16">
                 <div class="text-grey pb10 fz10">{{ $t('page.accessory') }}</div>
-                <div>
-                  <div v-for="(file, flindex) in handlerStepInfo.fileList" :key="flindex" class="file-title">
-                    <span class="tsfont-attachment">
-                      {{ file.name }}
-                    </span>
-                    <i v-download="downurl(file.id)" class="tsfont-download text-action text-padding"></i>
-                  </div>
-                </div>
+                <ImagePreviewDialog :fileList="handlerStepInfo.fileList"></ImagePreviewDialog>
               </div>
             </template>
           </div>
@@ -169,7 +154,6 @@
 </template>
 <script>
 import imgViewer from '@/resources/directives/img-viewer.js';
-import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
@@ -178,9 +162,10 @@ export default {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
     // TsFormSwitch:()=>import('@/resources/plugins/TsForm/TsFormSwitch'),
-    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
   },
-  directives: {imgViewer, download},
+  directives: {imgViewer},
   filters: {
   },
   props: {
@@ -196,7 +181,6 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
       loadingShow: true,
       startHandler: 'omnipotent', //开始节点的类型：omnipotent(普通节点)、changecreate(变更创建)、autoexec(自动化)
@@ -537,18 +521,7 @@ export default {
       }
     }
   },
-  computed: {
-    downurl() {
-      return (id) => {
-        return {
-          url: 'api/binary/file/download',
-          params: {
-            id: id
-          }
-        };
-      };
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>
