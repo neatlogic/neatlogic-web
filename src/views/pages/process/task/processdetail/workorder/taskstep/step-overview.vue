@@ -219,7 +219,7 @@ export default {
     StrategyDetailReadonly: () => import('../strategy/strategy-detail-readonly.vue'),
     JobDetail: () => import('@/views/pages/process/task/processdetail/workorder/autoexec/job-detail.vue'),
     SlaTime: () => import('./sla-time.vue'),
-    ImagePreviewDialog: () => import('@/resources/components/Upload/image-preview-dialog.vue')
+    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
   },
   directives: { download },
   props: {

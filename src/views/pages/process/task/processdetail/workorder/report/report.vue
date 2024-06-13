@@ -163,7 +163,7 @@ export default {
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
     // TsFormSwitch:()=>import('@/resources/plugins/TsForm/TsFormSwitch'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
-    ImagePreviewDialog: () => import('@/resources/components/Upload/image-preview-dialog.vue')
+    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
   },
   directives: {imgViewer},
   filters: {
