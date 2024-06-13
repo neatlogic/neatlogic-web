@@ -167,7 +167,6 @@ export default {
   async mounted() {
     this.$route.query.processTaskId && (this.processTaskId = parseInt(this.$route.query.processTaskId));
     this.$route.query.processTaskStepId && (this.processTaskStepId = parseInt(this.$route.query.processTaskStepId));
-    // this.$route.query.autoStart && (this.autoStart = this.$route.query.autoStart);
     if (this.processTaskStepId && parseInt(this.$route.query.autoStart) == 1) {
       console.log('aaaaaaaaa');
       let param = {
