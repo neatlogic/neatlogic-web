@@ -160,15 +160,7 @@
                         <div class="change-commet">
                           <span class="change-commet-label text-grey pr-sm">{{ $t('page.accessory') }}</span>
                           <div v-if="change.fileList && change.fileList.length>0">
-                            <div
-                              v-for="changeFile in change.fileList"
-                              :key="changeFile.id"
-                              v-download="downurl('/api/binary/file/download',changeFile.id)"
-                              class="text-action"
-                            >
-                              {{ changeFile.name }}
-                              <i class="tsfont-download text-padding"></i>
-                            </div>
+                            <ImagePreviewDialog :fileList="change.fileList"></ImagePreviewDialog>
                           </div>
                           <div v-else>-</div>
                         </div>
@@ -181,7 +173,6 @@
                         </div>
                       </div>
                     </div>
-
                     <div class="ml-40">
                       <Timeline>
                         <TimelineItem
@@ -227,7 +218,8 @@ export default {
     CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
     StrategyDetailReadonly: () => import('../strategy/strategy-detail-readonly.vue'),
     JobDetail: () => import('@/views/pages/process/task/processdetail/workorder/autoexec/job-detail.vue'),
-    SlaTime: () => import('./sla-time.vue')
+    SlaTime: () => import('./sla-time.vue'),
+    ImagePreviewDialog: () => import('@/resources/components/Upload/image-preview-dialog.vue')
   },
   directives: { download },
   props: {

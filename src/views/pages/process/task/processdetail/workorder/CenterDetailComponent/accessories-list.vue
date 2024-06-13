@@ -9,10 +9,9 @@
       <template slot="action" slot-scope="{row}">
         <div class="tstable-action">
           <ul class="tstable-action-ul">
-            <li
-              v-download="downurl(row.id)"
-              class="icon tsfont-download"
-            >{{ $t('page.download') }}</li>
+            <li>
+              <ImagePreviewDialog :fileData="row"></ImagePreviewDialog>
+            </li>
           </ul>
         </div>
       </template>
@@ -24,7 +23,8 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    ImagePreviewDialog: () => import('@/resources/components/Upload/image-preview-dialog.vue')
   },
   directives: {download},
   props: {
