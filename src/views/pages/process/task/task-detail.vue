@@ -168,7 +168,6 @@ export default {
     this.$route.query.processTaskId && (this.processTaskId = parseInt(this.$route.query.processTaskId));
     this.$route.query.processTaskStepId && (this.processTaskStepId = parseInt(this.$route.query.processTaskStepId));
     if (this.processTaskStepId && parseInt(this.$route.query.autoStart) == 1) {
-      console.log('aaaaaaaaa');
       let param = {
         processTaskId: this.processTaskId,
         processTaskStepId: this.processTaskStepId
