@@ -230,7 +230,9 @@
     "cientityid": "Configuration item ID",
     "cientityicon": "Configuration item icon",
     "editablefield": "Editable attributes",
-    "deletecitip": "The current configuration item has been deleted"
+    "deletecitip": "The current configuration item has been deleted",
+    "expandbyscene": "Expand by scene",
+    "expandbylevel": "Expand by layer"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -2726,6 +2728,7 @@
     "otherversion": "Other versions",
     "deleteversionconfirm": "Are you sure to delete version: {target}?",
     "metro": "Subway avoidance",
-    "manhattan": "Orthogonal avoidance"
+    "manhattan": "Orthogonal avoidance",
+    "dynamicwidget": "Dynamic Elements"
   }
 }
