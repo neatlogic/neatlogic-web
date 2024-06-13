@@ -47,7 +47,7 @@
                 :disabled="isDisabledPoptipContent(row)"
               >
                 <div slot="content" style="max-height: 350px;overflow: auto;">
-                  <span v-if="!isJson(row.value)">{{ row.value }}</span>
+                  <span v-if="!isJson(row.value)" :class="row.type === 'textarea'?'pre':''">{{ row.value }}</span>
                   <JsonViewer
                     v-else
                     class="popTipContent"
@@ -56,7 +56,7 @@
                     :value="JSON.parse(row.value)"
                   ></JsonViewer>
                 </div>
-                {{ JSON.stringify(row.value).length > 40 ? JSON.stringify(row.value).substring(0, 40) + '...' : row.value }}
+                <span :class="row.type === 'textarea'?'pre':''">{{ JSON.stringify(row.value).length > 40 ? JSON.stringify(row.value).substring(0, 40) + '...' : row.value }}</span>
               </Poptip>
             </div>
           </template>
