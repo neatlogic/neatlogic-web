@@ -16,7 +16,7 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    ImagePreviewDialog: () => import('@/resources/components/Upload/image-preview-dialog.vue')
+    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
   },
   directives: { download },
   filters: {},

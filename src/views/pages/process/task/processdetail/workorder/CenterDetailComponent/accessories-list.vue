@@ -24,7 +24,7 @@ export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    ImagePreviewDialog: () => import('@/resources/components/Upload/image-preview-dialog.vue')
+    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
   },
   directives: {download},
   props: {

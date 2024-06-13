@@ -69,7 +69,7 @@ export default {
   name: '',
   components: {
     UserCard,
-    ImagePreviewDialog: () => import('@/resources/components/Upload/image-preview-dialog.vue')
+    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
   },
   directives: { download, imgViewer },
   props: {
