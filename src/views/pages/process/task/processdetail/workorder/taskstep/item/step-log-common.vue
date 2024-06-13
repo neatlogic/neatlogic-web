@@ -51,12 +51,7 @@
               <div v-if="stepItem.fileList && stepItem.fileList.length > 0">
                 <div class="content-box">
                   <div class="text-grey mr-md xl-xs title">{{ $t('page.accessory') }}</div>
-                  <div v-for="(file, flindex) in stepItem.fileList" :key="flindex" class="pb-xs filelist-box">
-                    <div v-download="downurl('/api/binary/file/download',file.id)" class="text-action">
-                      <span class="tsfont-attachment">{{ file.name }}</span>
-                      <i class="tsfont-download text-padding"></i>
-                    </div>
-                  </div>
+                  <ImagePreviewDialog :fileList="stepItem.fileList"></ImagePreviewDialog>
                 </div>
               </div>
             </div>
@@ -73,7 +68,8 @@ import UserCard from '@/resources/components/UserCard/UserCard.vue';
 export default {
   name: '',
   components: {
-    UserCard
+    UserCard,
+    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
   },
   directives: { download, imgViewer },
   props: {
@@ -218,11 +214,6 @@ export default {
   .content-box {
     .content-text-padding {
       word-break: break-word;
-    }
-  }
-  .filelist-box {
-    &:last-of-type {
-      padding-bottom: 0;
     }
   }
   .header-box {

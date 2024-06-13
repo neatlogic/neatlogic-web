@@ -16,13 +16,13 @@
                 <Icon class="ml-xs" type="ios-arrow-down"></Icon>
               </a>
               <DropdownMenu slot="list">
-                <DropdownItem v-if="filterCiTopoTemplateList.length > 0" disabled>按场景展开</DropdownItem>
+                <DropdownItem v-if="filterCiTopoTemplateList.length > 0" disabled>{{ $t('term.cmdb.expandbyscene') }}</DropdownItem>
                 <DropdownItem v-for="(topoTemplate) in filterCiTopoTemplateList" :key="topoTemplate.id" :selected="searchParam.templateId === topoTemplate.id">
                   <span :class="{ 'text-grey': !topoTemplate.isActive }" @click="showTopoTemplate(topoTemplate)">{{ topoTemplate.name }}</span>
                   <span v-auth="['CI_MODIFY']" class="ml-xs tsfont-edit" @click="editTopoTemplate(topoTemplate)"></span>
                   <span v-auth="['CI_MODIFY']" class="ml-xs tsfont-trash-o" @click="deleteTopoTemplate(topoTemplate)"></span>
                 </DropdownItem>
-                <DropdownItem v-if="ciTopoTemplateList && ciTopoTemplateList.length > 0" divided disabled>按层数展开</DropdownItem>
+                <DropdownItem v-if="ciTopoTemplateList && ciTopoTemplateList.length > 0" divided disabled>{{ $t('term.cmdb.expandbylevel') }}</DropdownItem>
                 <DropdownItem
                   v-for="i in maxLevel"
                   :key="i"
