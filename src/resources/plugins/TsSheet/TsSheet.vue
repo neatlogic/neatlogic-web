@@ -1716,6 +1716,36 @@ export default {
           list.push(...this.formExtendData[key]);
         }
       });
+      this.getFormCustomexend();
+      return list;
+    },
+    getFormCustomexend() {
+      let list = [];
+      let currentData = this.getFormData();
+      if (this.value && this.value.formCustomExtendConfig && !this.$utils.isEmpty(this.value.formCustomExtendConfig.extendConfigList)) {
+        let extendConfigList = this.value.formCustomExtendConfig.extendConfigList;
+        extendConfigList.forEach(item => {
+          this.$ = {};
+          try {
+            if (item.extendMethods) {
+              // eslint-disable-next-line no-eval
+              const dataMethods = eval('(' + item.extendMethods + ')');
+              Object.keys(dataMethods).forEach(methodsName => {
+                if (typeof dataMethods[methodsName] === 'function' && !this.$.methodsName) {
+                  this.$[methodsName] = dataMethods[methodsName].bind(this);
+                }
+              });
+              if (currentData) {
+                let outinpuData = this.$.main(item.attributeList, currentData);
+                list.push(...outinpuData);
+              }
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        });
+      } 
+      console.log(list);
       return list;
     },
     setFormSceneConfig(formSceneUuid, formConfig) {
