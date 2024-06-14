@@ -333,10 +333,15 @@ export default {
             }
             if (sceneConfig) {
               sceneConfig.tableList.forEach(item => {
-                if (item.component && item.component.inherit) {
+                if (item.component) {
                   let component = formItemList.find(c => c.uuid === item.component.uuid);
                   if (component) {
-                    this.$set(item, 'component', component);
+                    if (component.key && !item.component.key) {
+                      this.$set(item.component, 'key', component.key);
+                    }
+                    if (item.component.inherit) {
+                      this.$set(item, 'component', component);
+                    }
                   }
                 }
               });
