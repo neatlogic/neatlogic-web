@@ -294,7 +294,7 @@ export default {
       const form = this.$refs['form'];
       this.policyData.phase = this.activedPhaseList.map(d => d.phase).join(',');
       if (form.valid()) {
-        if (this.policyData.interfaceList.length == 0) {
+        if (!this.policyData.interfaceList || this.policyData.interfaceList.length == 0) {
           this.$Message.info(this.$t('term.pbc.chooserelevanceinterface'));
           return;
         }
