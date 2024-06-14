@@ -991,5 +991,6 @@
   "deploynoexecuteconfigauthtip": "You do not have the \"execute or edit configuration permissions\" for the current application. Please contact the administrator for authorization",
   "deploy": {
     "contactwithadmin": "Please contact the administrator for authorization"
-  }
+  },
+  "autoexecwaitinputnoauth": "Currently not authorized '{target}', please contact administrator for assistance"
 }

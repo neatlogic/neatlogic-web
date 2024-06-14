@@ -50,11 +50,11 @@
       }"
     >
       <template v-slot>
-        <div class="text-center">
+        <div class="text-center" style="max-height: calc(100vh - 150px);max-width:100%;">
           <img
             v-if="imgId"
             :src="imgId"
-            :style="{width: '100%', textAlign: 'center'}"
+            :style="{textAlign: 'center'}"
           >
         </div>
       </template>

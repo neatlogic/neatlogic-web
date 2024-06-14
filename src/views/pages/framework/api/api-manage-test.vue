@@ -20,7 +20,7 @@
               @setConfig="setAuthConfig"
             ></component>
           </TsFormItem>
-          <TsFormItem v-if="helpData.example" :labelWidth="80" label=" $t('term.report.example') ">
+          <TsFormItem v-if="helpData.example" :labelWidth="80" :label="$t('term.report.example')">
             <JsonViewer boxed copyable :value="helpData.example"></JsonViewer>
           </TsFormItem>
           <TsFormItem :label=" $t('page.request')" :labelWidth="80">

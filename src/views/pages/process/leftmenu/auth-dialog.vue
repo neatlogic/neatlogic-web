@@ -126,7 +126,7 @@ export default {
           this.workcenterData = res.Return;
           this.addFormConfig(this.workcenterData.type);
           for (let key in this.formConfig) {
-            this.$set(this.formConfig[key], 'value', this.workcenterData[this.formConfig[key].name]);
+            this.$set(this.formConfig[key], 'value', this.workcenterData[key]);
           }
         });
       }

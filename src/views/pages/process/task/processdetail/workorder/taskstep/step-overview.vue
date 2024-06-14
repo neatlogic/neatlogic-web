@@ -1,7 +1,7 @@
 <template>
   <div class="step-overview-container">
-    <div class="step-left-margin mb-md" :class="expandAll ? ' pr-nm' : 'pr-18'" @click="expandAll = !expandAll">
-      <span :class="expandAll ? 'tsfont-down' : 'tsfont-right'" class="text-href">{{ expandAll?$t('page.putawayall'):$t('page.expandall') }}</span>
+    <div class="ml-lg mb-md" :class="expandAll ? ' pr-nm' : 'pr-18'" @click="expandAll = !expandAll">
+      <span :class="expandAll ? 'tsfont-drop-down' : 'tsfont-drop-right'" class="text-href">{{ expandAll?$t('page.putawayall'):$t('page.expandall') }}</span>
     </div>
     <div class="activity-step">
       <Timeline>
@@ -20,7 +20,7 @@
                 :title="item.name"
                 @click="expandChange(item, index)"
               >
-                <span :class="item.expand ? 'tsfont-down' : 'tsfont-right'" class="overflow node-name icon-right">{{ item.name }}</span>
+                <span :class="item.expand ? 'tsfont-drop-down' : 'tsfont-drop-right'" class="overflow node-name icon-right">{{ item.name }}</span>
               </div>
               <div class="user-header-wrap ml-sm mr-sm">
                 <UserCard
@@ -39,8 +39,9 @@
                 <span v-if="!hasUnassigned(item)" class="text-tip ml-sm" :class="(item.startTime || item.endTime) ? 'mr-sm' : ''">
                   {{ $t('term.process.unassigned') }}
                 </span>
-                <div v-if="item.startTime || item.endTime" :class="hasUnassigned(item) ? 'ml-sm' : ''">
-                  <span v-if="item.startTime"> {{ item.startTime | formatDate }}&nbsp;-&nbsp;</span>
+                <div v-if="item.startTime || item.endTime" class="text-grey fz10" :class="hasUnassigned(item) ? 'ml-sm' : ''">
+                  <span v-if="item.startTime">{{ item.startTime | formatDate }}</span>
+                  <span v-if="item.startTime" class="ml-xs mr-xs">~</span>
                   <span v-if="item.endTime">{{ item.endTime | formatDate }}</span>
                 </div>
               </div>

@@ -21,6 +21,7 @@
           :readonly="readonly"
           :disabled="disabled"
           v-bind="getSetting"
+          :class="type==='textarea'?'pre':''"
           border="border"
           :maxlength="config && config.maxlength ?config.maxlength : type==='textarea'? 4096:2048"
           @on-change="updateval"
