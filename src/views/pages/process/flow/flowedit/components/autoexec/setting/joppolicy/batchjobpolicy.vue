@@ -54,7 +54,7 @@
             ></TsFormInput>
           </Col>
           <Col span="2">
-            <span class="text-tip-active tsfont-trash-o delete-condition" @click="delFilterItem(r.filterList, findex)"></span>
+            <span class="text-tip-active tsfont-trash-o delete-condition" @click="delFilterItem(filterList, findex)"></span>
           </Col>
         </TsRow>
         <span class="tsfont-plus text-href" @click="addFilter(filterList)">{{ $t('term.pbc.adddata') }}</span>

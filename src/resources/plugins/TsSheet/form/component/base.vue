@@ -44,6 +44,8 @@ export default {
           let findKeyItem = this.formItemList.find(item => item.uuid != this.formItem.uuid && item.key === this.formItem.key);
           if (findKeyItem) {
             errorList.push({ field: 'key', error: this.$t('message.targetisexists', {'target': this.$t('term.framework.compkeyname')}) });
+          } else if (!(/^[A-Za-z\d_]+$/.test(this.formItem.key))) {
+            errorList.push({ field: 'key', error: this.$t('page.englishname') + '：' + this.$t('message.plugin.enName') });
           }
         }
       }

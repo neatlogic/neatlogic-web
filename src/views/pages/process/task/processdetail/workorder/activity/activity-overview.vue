@@ -38,7 +38,7 @@
               <span class="pl-sm pr-sm text-success" v-html="item.description"></span>
               <span v-show="item.sourceName" class="text-grey">{{ $t('page.from') }}{{ item.sourceName }}</span>
             </div>
-            <div class="title child-time">·{{ item.actionTime | formatDate }}</div>
+            <div class="title child-time text-grey fz10">{{ item.actionTime | formatDate }}</div>
             <div v-if="item.auditDetailList && item.auditDetailList.length > 0" class="content-list">
               <template v-for="(jitem, jindex) in item.auditDetailList">
                 <component
