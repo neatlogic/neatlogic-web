@@ -16,6 +16,15 @@
                 ></UserCard>
                 <span v-if="stepItem.operatorRole">({{ stepItem.operatorRole }})</span>
                 <span class="pl-md pr-md">{{ getActionText(item.customButtonList , stepItem.type) }}</span>
+                <span v-if="stepItem.targetList && stepItem.targetList.length > 0" class="pr-md">
+                  <UserCard
+                    v-for="(target, uindex) in stepItem.targetList"
+                    :key="uindex"
+                    v-bind="target"
+                    :iconSize="24"
+                    class="parent"
+                  ></UserCard>
+                </span>
                 <span class="text-grey date-text fz10">{{ stepItem.fcd | formatDate }}</span>
                 <span v-show="stepItem.sourceName" class="text-grey pl-nm">{{ $t('page.from') }}{{ stepItem.sourceName }}</span>
               </div>
@@ -94,6 +103,7 @@ export default {
         retreat: this.$t('page.retreat'),
         save: this.$t('page.staging'),
         transfer: this.$t('page.transfer'),
+        transfercurrentstep: this.$t('page.transfer'),
         comment: this.$t('page.reply'),
         createsubtask: this.$t('term.process.createsubtask'),
         back: this.$t('page.rollback'),
