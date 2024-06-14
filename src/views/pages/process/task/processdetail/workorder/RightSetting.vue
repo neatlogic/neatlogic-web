@@ -71,7 +71,16 @@
           <div v-show="showBasic">
             <div v-for="(item, index) of taskInformationList" :key="index">
               <div class="information-list">
-                <template v-if="item.value == 'serialNumber'">
+                <template v-if="item.value == 'id'">
+                  <div class="infor-left text-grey overflow">{{ item.title }}</div>
+                  <div class="infor-right">
+                    <div v-clipboard="item.textConfig" class="task-id" @click="$Message.success($t('message.copysuccess'))">
+                      {{ item.textConfig }}
+                      <i class="tsfont-copy text-action"></i>
+                    </div>
+                  </div>
+                </template>
+                <template v-else-if="item.value == 'serialNumber'">
                   <div class="infor-left text-grey overflow">{{ item.title }}</div>
                   <div class="infor-right">
                     <div v-clipboard="item.textConfig" class="task-id" @click="$Message.success($t('message.copysuccess'))">
@@ -247,6 +256,11 @@ export default {
       taskInformationList: [], //工单信息（基本信息）
       defaultProcessTask: [
         //基本信息
+        {
+          title: this.$t('term.report.taskid'),
+          value: 'id',
+          textConfig: null
+        },
         {
           title: this.$t('page.workordernumber'),
           value: 'serialNumber',
