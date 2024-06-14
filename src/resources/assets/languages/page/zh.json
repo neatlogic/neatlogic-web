@@ -993,5 +993,6 @@
   "deploynoexecuteconfigauthtip": "您没有当前应用的“执行或编辑配置权限”，请联系管理员授权",
   "deploy": {
     "contactwithadmin": "请联系管理员{target}"
-  }
+  },
+  "autoexecwaitinputnoauth": "当前没有权限，请联系管理员“{target}”处理"
 }

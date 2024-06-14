@@ -1,47 +1,52 @@
 
 <template>
   <div class="mt-sm">
-    <Divider orientation="left">{{ interactData.message }}</Divider>
-    <template v-if="interactData.opType == 'button'">
-      <div v-if="interactData.options && interactData.options.length > 0" class="action-group">
-        <span v-for="btn in interactData.options" :key="btn" class="action-item">
-          <Button size="small" :type="parmaryBtn.includes(btn) ? 'error' : 'info'" @click="doAction(btn)">{{ btn }}</Button>
-        </span>
-      </div>
-    </template>
-    <template v-if="interactData.opType == 'input'">
-      <div class="controller-group">
-        <div>
-          <TsFormInput
-            ref="controller"
-            v-model="value"
-            type="text"
-            class="value-item"
-            :validateList="validateList"
-          ></TsFormInput>
+    <div v-if="!interactData.role || $AuthUtils.hasRole(interactData.role)">
+      <Divider orientation="left">{{ interactData.message }}</Divider>
+      <template v-if="interactData.opType == 'button'">
+        <div v-if="interactData.options && interactData.options.length > 0" class="action-group">
+          <span v-for="btn in interactData.options" :key="btn" class="action-item">
+            <Button size="small" :type="parmaryBtn.includes(btn) ? 'error' : 'info'" @click="doAction(btn)">{{ btn }}</Button>
+          </span>
         </div>
-        <div style="text-align:left">
-          <Button type="primary" @click="doAction()">{{ $t('page.continueexecute') }}</Button>
+      </template>
+      <template v-if="interactData.opType == 'input'">
+        <div class="controller-group">
+          <div>
+            <TsFormInput
+              ref="controller"
+              v-model="value"
+              type="text"
+              class="value-item"
+              :validateList="validateList"
+            ></TsFormInput>
+          </div>
+          <div style="text-align:left">
+            <Button type="primary" @click="doAction()">{{ $t('page.continueexecute') }}</Button>
+          </div>
         </div>
-      </div>
-    </template>
-    <template v-if="interactData.opType == 'select' || interactData.opType == 'mselect'">
-      <div class="controller-group">
-        <div>
-          <TsFormSelect
-            ref="controller"
-            v-model="value"
-            :validateList="validateList"
-            :isEqualValue="true"
-            :multiple="interactData.opType == 'mselect' ? true : false"
-            :dataList="getDataList"
-          ></TsFormSelect>
+      </template>
+      <template v-if="interactData.opType == 'select' || interactData.opType == 'mselect'">
+        <div class="controller-group">
+          <div>
+            <TsFormSelect
+              ref="controller"
+              v-model="value"
+              :validateList="validateList"
+              :isEqualValue="true"
+              :multiple="interactData.opType == 'mselect' ? true : false"
+              :dataList="getDataList"
+            ></TsFormSelect>
+          </div>
+          <div style="text-align:left">
+            <Button type="primary" @click="doAction()">{{ $t('page.continueexecute') }}</Button>
+          </div>
         </div>
-        <div style="text-align:left">
-          <Button type="primary" @click="doAction()">{{ $t('page.continueexecute') }}</Button>
-        </div>
-      </div>
-    </template>
+      </template>
+    </div>
+    <div v-if="interactData.role && !$AuthUtils.hasRole(interactData.role)">
+      <span class="text-warning"> {{ $t('page.autoexecwaitinputnoauth', { target: interactData.role}) }} </span>
+    </div>
   </div>
 </template>
 <script>
