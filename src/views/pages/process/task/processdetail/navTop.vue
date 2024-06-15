@@ -127,6 +127,7 @@ export default {
     UpdateSlaTimeDoing(slaIdList) {
       // 更新sla
       this.slaTimeList = [];
+      let tempSlaTimeList = [];
       if (this.slaUpdateTimer) {
         clearTimeout(this.slaUpdateTimer);
         this.slaUpdateTimer = null;
@@ -144,7 +145,7 @@ export default {
               doingSlaIdList.push(item.slaId);
             }
             if (index == 0) { // 当前步骤关联多个SLA时，仅仅显示最紧迫的一个(默认第一个，后端已排序)
-              this.slaTimeList.push(item);
+              tempSlaTimeList.push(item);
             }
           });
           this.$store.commit('setTaskSlaTimeList', tbodyList); // 设置工单时效
@@ -153,6 +154,7 @@ export default {
           }, 60 * 1000);
         }
       });
+      this.slaTimeList = tempSlaTimeList;
     }
   },
   filter: {},
