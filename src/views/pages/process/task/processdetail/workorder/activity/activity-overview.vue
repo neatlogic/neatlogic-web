@@ -1,5 +1,20 @@
 <template>
   <div class="activity-box">
+    <div v-if="stepDataList && stepDataList.length > 1" class="flex-end pb-nm">
+      <Tooltip trigger="hover" content="按选的步骤 展示步骤内的时间线">
+        <span class="tsfont-info-o text-href"></span>
+      </Tooltip>
+      <TsFormSelect
+        v-model="currentNode"
+        placeholder="步骤"
+        :dataList="stepDataList"
+        textName="name"
+        valueName="id"
+        multiple
+        transfer
+        style="width:200px"
+      ></TsFormSelect>
+    </div>
     <div v-if="activeData && activeData.length > 0" class="activity-show-box bg-block">
       <Timeline>
         <TimelineItem v-for="item of activeData" :key="item.id">
@@ -66,6 +81,8 @@ import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
   name: 'ActivityOverview',
   components: {
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     ...Item
   },
@@ -75,11 +92,16 @@ export default {
       type: Array,
       default: () => []
     },
-    formConfig: Object
+    formConfig: Object,
+    stepDataList: { //步骤日志列表
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
-      activeData: []
+      activeData: [],
+      currentNode: null
     };
   },
   beforeCreate() {},
@@ -111,6 +133,13 @@ export default {
         if (val && val.length > 0) {
           this.activeData = val;
         }
+      },
+      deep: true,
+      immediate: true
+    },
+    currentNode: {
+      handler(val) {
+        this.$emit('updataActive', val);
       },
       deep: true,
       immediate: true
