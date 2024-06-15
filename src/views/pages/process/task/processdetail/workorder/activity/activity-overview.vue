@@ -12,7 +12,7 @@
         valueName="id"
         multiple
         transfer
-        style="width:200px"
+        style="width:300px"
       ></TsFormSelect>
     </div>
     <div v-if="activeData && activeData.length > 0" class="activity-show-box bg-block">
