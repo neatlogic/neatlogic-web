@@ -1,12 +1,12 @@
 <template>
   <div class="activity-box">
     <div v-if="stepDataList && stepDataList.length > 1" class="flex-end pb-nm">
-      <Tooltip trigger="hover" content="按选的步骤 展示步骤内的时间线">
+      <Tooltip trigger="hover" :content="$t('term.process.selectsteptimelinetip')">
         <span class="tsfont-info-o text-href"></span>
       </Tooltip>
       <TsFormSelect
         v-model="currentNode"
-        placeholder="步骤"
+        :placeholder="$t('term.process.step')"
         :dataList="stepDataList"
         textName="name"
         valueName="id"

@@ -593,7 +593,8 @@
     "channel": "通道",
     "saveandstart": "保存并开始",
     "createcollection": "创建集合",
-    "taskinformation": "工单信息"
+    "taskinformation": "工单信息",
+    "selectsteptimelinetip": "按选的步骤，展示步骤内的时间线"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
