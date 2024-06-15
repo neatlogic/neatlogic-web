@@ -167,7 +167,12 @@
           tab="tab1"
         >
           <!-- 时间线 -->
-          <ActivityOverview :defaultActiveData="activeData" :formConfig="processTaskConfig.formConfig"></ActivityOverview>
+          <ActivityOverview
+            :stepDataList="stepData"
+            :defaultActiveData="activeData"
+            :formConfig="processTaskConfig.formConfig"
+            @updataActive="(val)=>updataActive(val)"
+          ></ActivityOverview>
         </TabPane>
         <TabPane
           v-if="showRelationDetail(actionConfig.tranferreport, processTaskConfig.processTaskRelationCount) && fixedPageTab.relevance"
@@ -316,6 +321,7 @@
           :currentStepId="defaultProcessTaskStepId"
           :processTaskConfig="processTaskConfig"
           :defaultActiveData="activeData"
+          :stepDataList="stepData"
           :relationAuth="actionConfig.tranferreport"
           :actionConfig="actionConfig"
           :repeatList="repeatList"
@@ -323,6 +329,7 @@
           :formConfig="formConfig"
           @closeRepeatTab="closeRepeatTab"
           @upActivityList="updateStepActive()"
+          @updataActive="(val)=>updataActive(val)"
         ></Component>
       </template>
     </div>
@@ -660,10 +667,11 @@ export default {
       clearInterval(this.timerForm);
       this.timerForm = null;
     },
-    getActivityList() {
+    getActivityList(processTaskStepIdList) {
       //活动列表
       let data = {
-        processTaskId: this.processTaskId
+        processTaskId: this.processTaskId,
+        processTaskStepIdList: processTaskStepIdList
       };
       this.$api.process.processtask.getAuditList(data).then(res => {
         if (res.Status == 'OK') {
@@ -888,9 +896,9 @@ export default {
       this.timeSortIcon = !this.timeSortIcon;
       this.activeData.reverse();
     },
-    //变更
-    updataActive() {
-      this.getActivityList();
+    //更新活动（时间线）
+    updataActive(processTaskStepIdList) {
+      this.getActivityList(processTaskStepIdList);
     },
     updateStepActive() {
       //更新活动和步骤
