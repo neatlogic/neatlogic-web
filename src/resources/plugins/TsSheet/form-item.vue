@@ -160,6 +160,10 @@ export default {
     formExtendData: {
       type: Object,
       default: () => {}
+    },
+    isEnableDefaultValue: {//默认启用组件赋值(应用在工单详情页，用户无流转权限，设为false)
+      type: Boolean,
+      default: false
     }
   },
   data() {
