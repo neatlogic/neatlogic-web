@@ -13,6 +13,8 @@
 <script>
 import { codemirror } from 'vue-codemirror';
 import 'codemirror/lib/codemirror.css';
+//引入自动刷新
+import 'codemirror/addon/display/autorefresh';
 //主题色
 import 'codemirror/theme/eclipse.css'; //白
 //import "codemirror/theme/abcdef.css";//黑
@@ -147,7 +149,8 @@ export default {
         firstLineNumber: 1, //默认起始行号1
         foldGutter: true, //折叠
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-        lineWrapping: true
+        lineWrapping: true,
+        autoRefresh: true //自动刷新
       },
       event: null,
       myCode: '',
@@ -245,7 +248,6 @@ export default {
   watch: {
     currentValue: {
       handler(val) {
-        console.log(val,'lll');
         this.$emit('update:value', val);
         this.$emit('change', val);
         if (!this.$utils.isSame(val, this.value)) {
@@ -262,6 +264,7 @@ export default {
     value: {
       handler: function (val) {
         this.currentValue = val;
+        this.refresh();
       },
       deep: true,
       immediate: true
@@ -286,7 +289,6 @@ export default {
     disabled: {
       handler(val) {
         this.$set(this.cmOptions, 'readOnly', this.isReadOnly || val);
-        this.refresh();
       },
       immediate: true
     }

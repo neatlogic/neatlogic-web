@@ -32,6 +32,7 @@
                 <Tabs :name="'data' + index" :animated="false" @on-click="(name)=>changeTab(name, item)">
                   <TabPane label="数据配置" :name="'dataConfig' + index" :tab="'data' + index">
                     <div v-if="!item._tab || item._tab === 'dataConfig' + index">
+                      <ConfigHelp></ConfigHelp>
                       <TsCodemirror
                         :id="'code' + index"
                         v-model="item.extendConfig"
@@ -42,6 +43,7 @@
                   </TabPane>
                   <TabPane label="数据转换" :name="'dataChange' + index" :tab="'data' + index">
                     <div v-if="item._tab === 'dataChange' + index">
+                      <MethodsHelp></MethodsHelp>
                       <TsCodemirror v-model="item.extendMethods" :validateList="validateList" isCopy></TsCodemirror>
                     </div>
                   </TabPane>
@@ -69,7 +71,9 @@ export default {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
-    ExtendTest: () => import('./extend-test.vue')
+    ExtendTest: () => import('./extend-test.vue'),
+    ConfigHelp: () => import('./help/config-help.vue'),
+    MethodsHelp: () => import('./help/methods-help.vue')
   },
   filters: {
   },
@@ -80,10 +84,7 @@ export default {
   data() {
     return {
       configList: this.$utils.deepClone(this.list) || [],
-      validateList: ['required'],
-      tagMeathods: {
-        
-      }
+      validateList: ['required']
     };
   },
   beforeCreate() {},
