@@ -593,7 +593,8 @@
     "channel": "passageway",
     "saveandstart": "Save and start",
     "createcollection": "Create Collection",
-    "taskinformation": "Work order information"
+    "taskinformation": "Work order information",
+    "selectsteptimelinetip": "Display the timeline within the selected steps"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

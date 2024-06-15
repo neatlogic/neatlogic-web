@@ -149,8 +149,16 @@ export default {
           lcd: this.formConfig.lcd,
           readOnly: this.formConfig.readOnly || false
         });
-
-        this.defaultSceneUuid = this.formConfig.defaultSceneUuid || this.formConfig.uuid;
+        if (this.formConfig.defaultSceneUuid) {
+          let sceneConfig = this.formConfig.sceneList.find(s => s.uuid === this.formConfig.defaultSceneUuid);
+          if (sceneConfig) {
+            this.defaultSceneUuid = this.formConfig.defaultSceneUuid;
+          } else {
+            this.defaultSceneUuid = this.formConfig.uuid;
+          }
+        } else {
+          this.defaultSceneUuid = this.formConfig.uuid;
+        }
       }
       if (this.formConfig && this.formConfig.sceneList && this.formConfig.sceneList.length > 0) {
         this.formConfig.sceneList.sort((a, b) => { return b.lcd - a.lcd; });
