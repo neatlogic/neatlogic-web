@@ -254,6 +254,7 @@
                 :stephidetrList="stephidetrList"
                 :stepreadtrList="stepreadtrList"
                 :formAttributeHideList="formAttributeHideList"
+                :isEnableDefaultValue="!!actionConfig.complete"
               ></FormPreview>
             </template>
           </div>

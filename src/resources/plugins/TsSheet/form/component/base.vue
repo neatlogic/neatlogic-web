@@ -20,6 +20,10 @@ export default {
       // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
       type: Boolean,
       default: false
+    },
+    isEnableDefaultValue: { //默认启用组件赋值(应用在工单详情页，用户无流转权限，设为false)
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -30,7 +34,7 @@ export default {
   },
   created() {
     //在非条件模式下，用默认值替换空的value值
-    if ((this.mode === 'read' || this.mode === 'readSubform') && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
+    if ((this.mode === 'read' || this.mode === 'readSubform') && this.isEnableDefaultValue && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
       this.setValue(this.config['defaultValue']);
     }
   },
