@@ -1,93 +1,104 @@
-
 <template>
   <div id="taskReport" class="report-detail">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <template v-if="!loadingShow">
-      <div v-if="startHandler!='changecreate' && actionConfig.update" class="tsfont-edit text-action edit-report" @click="edit()"></div>
-      <div v-if="startHandler=='changecreate' && isEditchange" class="tsfont-edit text-action edit-report" @click="edit()"></div>
-      <template v-if="startHandler!='changecreate'">
-        <template v-if="dataConfig.content || (dataConfig.fileList && dataConfig.fileList.length > 0)">
-          <div v-if="dataConfig.content && isNeedContent" class="report-content pb10">
-            <div class="text-grey fz10 pb-xs">{{ $t('page.description') }}</div>
-            <div class="pt-md">
-              <div v-imgViewer class="content-detail" :style="{'height':maxheight}">
-                <div ref="getheight" v-dompurify-html="dataConfig.content"></div>
-              </div>
-              <div
-                v-if="isView"
-                class="text-href pt-xs"
-                @click="viewMoreContent"
-              >{{ maxheight=='200px'?$t('page.viewmore'):$t('page.clickandputaway') }}</div>
+      <div v-if="startHandler == 'changecreate' && isEditchange" class="tsfont-edit text-action edit-report" @click="edit()"></div>
+      <template v-if="startHandler !== 'changecreate'">
+        <TsFormItem
+          v-if="dataConfig.content || (dataConfig.fileList && dataConfig.fileList.length > 0)"
+          :label="$t('page.description')"
+          labelPosition="top"
+          :buttonList="
+            actionConfig.update
+              ? [
+                {
+                  icon: 'tsfont-edit',
+                  name: '',
+                  click: () => {
+                    edit();
+                  }
+                }
+              ]
+              : []
+          "
+        >
+          <div class="padding radius-md bg-op">
+            <div
+              v-if="dataConfig.content"
+              v-imgViewer
+              class="content-detail"
+              style="overflow:hidden"
+              :style="{ height: maxheight }"
+            >
+              <div ref="getheight" v-dompurify-html="dataConfig.content"></div>
+            </div>
+            <div v-if="isView" class="text-href pt-xs" @click="viewMoreContent">{{ maxheight == '200px' ? $t('page.viewmore') : $t('page.clickandputaway') }}</div>
+            <Divider v-if="dataConfig.fileList.length > 0" orientation="start">
+              <span class="text-grey">{{ $t('page.accessory') }}</span>
+            </Divider>
+            <ImagePreviewDialog v-if="dataConfig.fileList.length > 0" class="report-content" :fileList="dataConfig.fileList"></ImagePreviewDialog>
+          </div>
+        </TsFormItem>
+        <div v-else class="padding border-base radius-md" style="text-align: center"><span class="tsfont-plus cursor text-grey" @click="edit()">添加描述</span></div>
+      </template>
+      <template v-else-if="startHandler === 'changecreate'">
+        <TsFormItem v-if="handlerStepInfo" label="变更" labelPosition="top">
+          <div class="padding bg-op radius-md">
+            <div class="change-infor dividing-color">
+              <TsRow>
+                <Col span="8">
+                  <div class="text-grey">
+                    <span>{{ $t('term.process.planStartEndTime') }}</span>
+                    <span><Divider type="vertical" /></span>
+                    <span v-if="handlerStepInfo.autoStart">{{ $t('term.process.autostart') }}</span>
+                  </div>
+                  <div class="change-text">
+                    <template v-if="handlerStepInfo.planStartEndTime && handlerStepInfo.planStartEndTime.length > 0">{{ handlerStepInfo.planStartEndTime[0] }} ~ {{ handlerStepInfo.planStartEndTime[1] }}</template>
+                    <template v-else>-</template>
+                  </div>
+                </Col>
+                <Col span="8">
+                  <div class="text-grey">{{ $t('term.process.startTimeWindow') }}</div>
+                  <div>
+                    <span v-if="handlerStepInfo.startTimeWindow || handlerStepInfo.endTimeWindow">{{ handlerStepInfo.startTimeWindow || '~' }} - {{ handlerStepInfo.endTimeWindow || '~' }}</span>
+                    <span v-else>-</span>
+                  </div>
+                </Col>
+                <Col span="8">
+                  <div class="text-grey">{{ $t('term.process.changeowner') }}</div>
+                  <div>
+                    <UserCard v-if="handlerStepInfo.owner" :uuid="handlerStepInfo.owner"></UserCard>
+                    <span v-else>-</span>
+                  </div>
+                </Col>
+              </TsRow>
+            </div>
+            <div v-if="handlerStepInfo.content || draftFile.length > 0" class="comment-box">
+              <template v-if="handlerStepInfo.content || (handlerStepInfo.fileList && handlerStepInfo.fileList.length > 0)">
+                <div v-if="handlerStepInfo.content" class="report-content">
+                  <div class="text-grey comment-title fz10">
+                    {{ $t('term.process.changecontent') }}
+                  </div>
+                  <div class="pt-md">
+                    <div v-imgViewer class="content-detail" :style="{ height: maxheight }">
+                      <div ref="getheight" v-html="handlerStepInfo.content"></div>
+                    </div>
+                    <div
+                      v-if="isView"
+                      class="text-href pt-xs"
+                      @click="viewMoreContent"
+                      v-text="maxheight == '200px' ? $t('page.viewmore') : $t('page.clickandputaway')"
+                    ></div>
+                  </div>
+                </div>
+                <div v-if="handlerStepInfo.fileList.length > 0" class="report-content pt16">
+                  <div class="text-grey pb10 fz10">{{ $t('page.accessory') }}</div>
+                  <ImagePreviewDialog :fileList="handlerStepInfo.fileList"></ImagePreviewDialog>
+                </div>
+              </template>
             </div>
           </div>
-          <div v-if="dataConfig.fileList.length > 0" class="report-content">
-            <div class="text-grey pb10 fz10">{{ $t('page.accessory') }}</div>
-            <ImagePreviewDialog :fileList="dataConfig.fileList"></ImagePreviewDialog>
-          </div>
-        </template>
-        <template v-else>
-          <div class="text-grey">{{ $t('page.notarget',{target:$t('page.description')}) }}</div>
-        </template>
-      </template>
-      <template v-else-if="startHandler=='changecreate'">
-        <div v-if="handlerStepInfo" class="changeDispatch">
-          <div class="change-infor dividing-color">
-            <TsRow>
-              <Col span="8">
-                <div class="change-tip overflow text-grey fz10">
-                  <div class="require-label">{{ $t('term.process.planStartEndTime') }}</div>
-                  <div v-if="handlerStepInfo.autoStart" class="autoStart border-color">{{ $t('term.process.autostart') }}</div>
-                </div>
-                <div class="change-text">
-                  <template v-if="handlerStepInfo.planStartEndTime &&handlerStepInfo.planStartEndTime.length > 0">
-                    {{ handlerStepInfo.planStartEndTime[0] }} - {{ handlerStepInfo.planStartEndTime[1] }}
-                  </template>
-                  <template v-else>-</template>
-                </div>
-              </Col>
-              <Col span="8">
-                <div class="change-tip text-grey fz10">{{ $t('term.process.startTimeWindow') }}</div>
-                <div class="change-text">
-                  <template v-if="handlerStepInfo.startTimeWindow || handlerStepInfo.endTimeWindow">{{ handlerStepInfo.startTimeWindow || '~' }} - {{ handlerStepInfo.endTimeWindow || '~' }}</template>
-                  <template v-else>-</template>
-                </div>
-              </Col>
-              <Col span="8">
-                <div class="change-tip text-grey require-label fz10">{{ $t('term.process.changeowner') }}</div>
-                <div class="change-text">
-                  <template v-if="handlerStepInfo.owner">
-                    <UserCard :uuid="handlerStepInfo.owner"></UserCard>
-                  </template>
-                  <template v-else>-</template>
-                </div>
-              </Col>
-            </TsRow>
-          </div>
-          <div v-if="handlerStepInfo.content || draftFile.length > 0" class="comment-box">
-            <template v-if="handlerStepInfo.content || (handlerStepInfo.fileList && handlerStepInfo.fileList.length > 0)">
-              <div v-if="handlerStepInfo.content" class="report-content">
-                <div class="text-grey comment-title fz10">
-                  {{ $t('term.process.changecontent') }}
-                </div>
-                <div class="pt-md">
-                  <div v-imgViewer class="content-detail" :style="{'height':maxheight}">
-                    <div ref="getheight" v-html="handlerStepInfo.content"></div>
-                  </div>
-                  <div
-                    v-if="isView"
-                    class="text-href pt-xs"
-                    @click="viewMoreContent"
-                    v-text="maxheight=='200px'?$t('page.viewmore'):$t('page.clickandputaway')"
-                  ></div>
-                </div>
-              </div>
-              <div v-if="handlerStepInfo.fileList.length > 0" class="report-content pt16">
-                <div class="text-grey pb10 fz10">{{ $t('page.accessory') }}</div>
-                <ImagePreviewDialog :fileList="handlerStepInfo.fileList"></ImagePreviewDialog>
-              </div>
-            </template>
-          </div>
-        </div>
+        </TsFormItem>
       </template>
       <slot name="changeStep"></slot>
     </template>
@@ -101,15 +112,14 @@
       <template>
         <div>
           <TsForm
-            v-if="startHandler!='changecreate'"
+            v-if="startHandler != 'changecreate'"
             ref="form"
             v-model="omnipotentConfig"
             :itemList="omnipotentForm"
             labelPosition="top"
-          >
-          </TsForm>
+          ></TsForm>
           <TsForm
-            v-else-if="startHandler=='changecreate'"
+            v-else-if="startHandler == 'changecreate'"
             ref="form"
             v-model="changecreateConfig"
             :itemList="changecreateForm"
@@ -137,7 +147,7 @@
           </TsForm>
           <div v-if="isShowUploadFile" class="file-box">
             <TsUpLoad
-              :dataType="startHandler=='changecreate'?'change':'itsm'"
+              :dataType="startHandler == 'changecreate' ? 'change' : 'itsm'"
               styleType="button"
               className="smallUpload"
               rowSpan="24"
@@ -154,9 +164,11 @@
 </template>
 <script>
 import imgViewer from '@/resources/directives/img-viewer.js';
+import TsFormItem from '@/resources/plugins/TsForm/TsFormItem';
 export default {
   name: '',
   components: {
+    TsFormItem,
     TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
@@ -165,9 +177,8 @@ export default {
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
   },
-  directives: {imgViewer},
-  filters: {
-  },
+  directives: { imgViewer },
+  filters: {},
   props: {
     processTaskConfig: Object,
     actionConfig: Object,
@@ -289,7 +300,8 @@ export default {
   beforeMount() {},
   mounted() {
     this.initData();
-    this.$nextTick(() => { // 页面渲染完成后的回调
+    this.$nextTick(() => {
+      // 页面渲染完成后的回调
       this.getHeight();
     });
   },
@@ -335,7 +347,8 @@ export default {
       this.isShowUploadFile = startProcessTaskStep.hasOwnProperty('isNeedUploadFile') ? !!startProcessTaskStep.isNeedUploadFile : true;
       //变更上报
       let handlerStepInfo = null;
-      if (this.handler == 'changecreate') { //当前节点是变更创建时，拿当前节点的数据
+      if (this.handler == 'changecreate') {
+        //当前节点是变更创建时，拿当前节点的数据
         handlerStepInfo = processTaskStepConfig.handlerStepInfo;
         if (this.actionConfig.complete) {
           this.isEditchange = true;
@@ -365,7 +378,8 @@ export default {
       if (!handlerStepInfo && this.startHandler == 'changecreate') {
         this.getUser();
       }
-      if (this.handler == 'changecreate') { //只有在变更创建节点可以修改变更经理
+      if (this.handler == 'changecreate') {
+        //只有在变更创建节点可以修改变更经理
         this.$set(this.changecreateForm.owner, 'disabled', false);
       }
       this.loadingShow = false;
@@ -379,9 +393,10 @@ export default {
     },
     edit() {
       if (this.startHandler == 'changecreate') {
-        this.handlerStepInfo && Object.keys(this.changecreateConfig).forEach(key => {
-          this.changecreateConfig[key] = this.handlerStepInfo[key];
-        });
+        this.handlerStepInfo &&
+          Object.keys(this.changecreateConfig).forEach(key => {
+            this.changecreateConfig[key] = this.handlerStepInfo[key];
+          });
         this.defaultTaskFileList = this.handlerStepInfo.fileList || [];
         this.draftFile = this.handlerStepInfo.fileList || [];
       } else {
@@ -402,7 +417,8 @@ export default {
     removeTastFile(val) {
       this.draftFile = val;
     },
-    updateWorkData() { //上报：普通节点
+    updateWorkData() {
+      //上报：普通节点
       let data = {
         processTaskId: this.processTaskId,
         processTaskStepId: this.processTaskStepId
@@ -415,7 +431,8 @@ export default {
         }
       });
     },
-    updateChange() { //上报：变更创建节点
+    updateChange() {
+      //上报：变更创建节点
       let data = {
         processTaskStepId: this.processTaskStepId,
         changeId: this.changeId
@@ -480,7 +497,7 @@ export default {
         this.validConfig.planStartEndTime = false;
         let o = {
           focus: '#taskReport',
-          msg: this.$t('form.validate.required', {target: this.$t('term.process.planStartEndTime')})
+          msg: this.$t('form.validate.required', { target: this.$t('term.process.planStartEndTime') })
         };
         validList.push(o);
       } else {
@@ -489,7 +506,7 @@ export default {
       if (!this.changecreateConfig.owner) {
         let o = {
           focus: '#taskReport',
-          msg: this.$t('form.validate.required', {target: this.$t('term.process.changeowner')})
+          msg: this.$t('form.validate.required', { target: this.$t('term.process.changeowner') })
         };
         this.validConfig.ownerChange = false;
         validList.push(o);
@@ -526,43 +543,43 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.report-detail{
+.report-detail {
   position: relative;
-  .pb10{
-      padding-bottom: 10px;
-    }
-  .pt16{
+  .pb10 {
+    padding-bottom: 10px;
+  }
+  .pt16 {
     padding-top: 16px;
   }
-  .edit-report{
+  .edit-report {
     position: absolute;
-    right: -6px;
-    top: 0;
+    right: 6px;
+    top: 6px;
     z-index: 2;
   }
-  .report-content{
+  .report-content {
     .content-bg {
       padding: 10px 16px;
     }
-    .content-detail{
+    .content-detail {
       overflow: hidden;
     }
   }
-  .file-title{
+  .file-title {
     padding-bottom: 6px;
   }
 }
-.file-box{
+.file-box {
   padding-top: 16px;
 }
-.timeWindow{
+.timeWindow {
   display: flex;
   align-items: center;
-  .item-line{
+  .item-line {
     padding: 0 4px;
   }
 }
-/deep/.tsslider-body{
+/deep/.tsslider-body {
   overflow-x: hidden;
 }
 .changeDispatch {
@@ -573,7 +590,7 @@ export default {
       align-items: center;
       line-height: 20px;
       padding-bottom: 10px;
-      .autoStart{
+      .autoStart {
         border-left: 1px solid;
         padding: 0 8px;
         margin-left: 8px;

@@ -3,7 +3,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <!-- 头部描述内容 -->
     <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig)" class="mb-nm">
-      <div class="padding bg-op radius-lg" style="min-height: 100px">
+      <div>
         <Report
           ref="taskReport"
           :processTaskConfig="processTaskConfig"
