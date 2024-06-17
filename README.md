@@ -4,7 +4,7 @@ neatlogic-web是neatlogic平台前端代码，所有子模块的前端代码都�
 
 neatlogic-web基于vue2.7.16，UI框架在iView4.x源码基础上经过调整。
 
-# 构建所有依赖
+# 构建依赖
 vue/cli 5.x,webpack 5.x
 先全局安装vue/cli最新版
 ```
@@ -23,7 +23,7 @@ sudo npm install -g cnpm@8.2.0 --registry=https://registry.npm.taobao.org
 cnpm install
 ```
 
-# 通过cnpm构建打包项目代码
+# 构建打包项目代码
 ```
 cnpm run build
 ```
