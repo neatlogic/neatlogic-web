@@ -70,7 +70,7 @@ let valid = {
       let errorText = $t('form.validate.required', { target: $t('term.process.poliyuser') });
       if (isChecked) {
         let keyConfig = {
-          prestepassign: { value: 'processStepUuidList', text: $t('term.process.prestepassignvalid') }, //由前置步骤处理人指定
+          prestepassign: { value: 'processStepList', text: $t('term.process.prestepassignvalid') }, //由前置步骤处理人指定
           copy: { value: 'processStepUuid', text: $t('term.process.copyworkerpolicyvalid') }, //复制前置步骤处理人
           form: { value: 'attributeUuidList', text: $t('term.process.formworkerpolicyvalid') }, //表单值
           assign: { value: 'workerList', text: $t('term.process.assignworkerpolicyvalid') } //自定义
@@ -94,7 +94,15 @@ let valid = {
                   policyList[i].config.attributeUuidList = [];
                 }
               }
-              if (utils.isEmpty(policyList[i].config[value])) {
+              if (type == 'prestepassign' && !utils.isEmpty(policyList[i].config[value])) {
+                for (let p = 0; p < policyList[i].config[value].length; p++) {
+                  if (!policyList[i].config[value][p].uuid) {
+                    isChecked = 0;
+                    errorText = keyConfig[type].text;
+                    break;
+                  }
+                }
+              } else if (utils.isEmpty(policyList[i].config[value])) {
                 isChecked = 0;
                 errorText = keyConfig[type].text;
                 break;
