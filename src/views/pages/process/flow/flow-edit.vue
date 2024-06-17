@@ -404,7 +404,7 @@ export default {
       formhandlerList: [], //表单控件的数据
       nodeAllLinksList: [], //当前节点的所有连线数据
       formSceneUuidList: [], // 表单场景uuid列表
-      flowObj: { //流程数据，跨组件通信对象
+      flowObj: { //流程数据，跨组件调用
         TopoVm: null,
         stepList: this.stepList
       }
