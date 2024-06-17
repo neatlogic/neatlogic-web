@@ -292,12 +292,14 @@ export default {
                   title: item.funcId,
                   funcId: item.funcId,
                   loading: false,
-                  children: []
+                  children: [],
+                  nodeKey: this.$utils.setUuid() // 解决鬼畜问题：点击当前节点，高亮选中得却是另外的节点
                 }
                 : {
                   moduleGroup,
                   title: item.funcId,
-                  funcId: item.funcId
+                  funcId: item.funcId,
+                  nodeKey: this.$utils.setUuid()
                 };
             });
             children.sort(item => {
@@ -327,12 +329,14 @@ export default {
                 title: item.funcId,
                 funcId: funcId + '/' + item.funcId,
                 loading: false,
-                children: []
+                children: [],
+                nodeKey: this.$utils.setUuid()
               }
               : {
                 moduleGroup,
                 title: item.funcId,
-                funcId: funcId + '/' + item.funcId
+                funcId: funcId + '/' + item.funcId,
+                nodeKey: this.$utils.setUuid()
               };
           });
           children.sort(item => {
