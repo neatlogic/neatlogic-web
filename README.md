@@ -1,22 +1,20 @@
 中文 / [English](README.en.md)
-## 关于
+# 关于
 neatlogic-web是neatlogic平台前端代码，所有子模块的前端代码都在neatlogic-web中。
 
 neatlogic-web基于vue2.7.16，UI框架在iView4.x源码基础上经过调整。
 
-## 构建依赖
+# 构建所有依赖
 vue/cli 5.x,webpack 5.x
 先全局安装vue/cli最新版
 ```
 npm install -g @vue/cli
 ```
 
-## 初始化依赖
+# 初始化依赖
 ```
 npm install --registry=https://registry.npm.taobao.org
 ```
-
-
 
 > 如果启动时发现大量不明报错，可能原因是npm install阶段加载的依赖包不完整导致，可以对npm进行降级再次install，目前测试v18的npm可以正常install。或者通过cnpm install加载依赖包也可以。cnpm版本也不能太高，建议使用v8.2.0。建议使用nvm管理多版本的node，使用v18.x版本的node会比较稳定。
 ```
@@ -25,7 +23,12 @@ sudo npm install -g cnpm@8.2.0 --registry=https://registry.npm.taobao.org
 cnpm install
 ```
 
-## 本地开发环境运行项目
+# 通过cnpm构建打包项目代码
+```
+cnpm run build
+```
+
+# 本地开发环境运行项目
 >需修改apiconfig.json配置文件,将tenantName的值修改为在用的租户（如果使用的是官方提供的用例数据，则租户就是demo），urlPrefix改成neatlogic后端tomcat服务的http://ip:port
 
 ## 通过cnpm启动项目
@@ -33,18 +36,6 @@ cnpm install
 cnpm run serve
 ```
 
-
-## 通过cnpm打包项目代码
-```
-cnpm run build
-```
-
-## 更新某个依赖
-```
-cnpm update 依赖包名字
-
-eg:cnpm update neatlogic-ui
-```
 ## 自动纠正文件里不符合eslint的语法
 ```
 cnpm run lint
@@ -145,4 +136,11 @@ EsLint、vetur、Prettier - Code formatter、i18nhelper(自动进行i18n键值�
 ### npm ERR! request to https://registry.npm.taobao.org/cnpm failed, reason: certificate has expired
 ```
 npm config set strict-ssl false
+```
+# 其他
+## 更新某个依赖
+```
+cnpm update 依赖包名字
+
+eg:cnpm update neatlogic-ui
 ```
