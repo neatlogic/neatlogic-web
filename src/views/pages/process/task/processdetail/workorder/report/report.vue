@@ -39,7 +39,7 @@
             <ImagePreviewDialog v-if="dataConfig.fileList.length > 0" class="report-content" :fileList="dataConfig.fileList"></ImagePreviewDialog>
           </div>
         </TsFormItem>
-        <div v-else class="padding border-base radius-md" style="text-align: center"><span class="tsfont-plus cursor text-grey" @click="edit()">添加描述</span></div>
+        <div v-else-if="actionConfig.update" class="padding border-base radius-md" style="text-align: center"><span class="tsfont-plus cursor text-grey" @click="edit()">添加描述</span></div>
       </template>
       <template v-else-if="startHandler === 'changecreate'">
         <TsFormItem v-if="handlerStepInfo" label="变更" labelPosition="top">
