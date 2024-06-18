@@ -1,20 +1,8 @@
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
-import { FLOW_DISPATCHER_VALID } from '@/resources/_import.js';
-let validConfig = {};
-try {
-  // 导入组件校验方法
-  const validPath = require.context('@', true, /flowNodeValid.js$/);
-  validPath.keys().forEach(path => {
-    if (validPath(path).nodeConfigValid) {
-      Object.assign(validConfig, validPath(path).nodeConfigValid);
-    }
-  });
-} catch (error) {
-  console.error('flowNodeValid.js异常', error);
-}
+import { FLOW_DISPATCHER_VALID, FLOW_NODE_VALID } from '@/resources/import';
 let valid = {
-  ...validConfig,
+  ...FLOW_NODE_VALID,
   common(nodeConfig, d, that) {
     //公共校验方法  校验名称
     let validList = this.poliyUser(nodeConfig, d, that) || [];
