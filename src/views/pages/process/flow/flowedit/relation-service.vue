@@ -1,10 +1,8 @@
 <template>
   <div class="relationService">
     <TsDialog
-      type="modal"
+      v-bind="dialogConfig"
       :isShow.sync="relevanceModel"
-      width="560px"
-      height="400px"
       :hasFooter="false"
       @on-close="close"
     >
@@ -77,6 +75,10 @@ export default {
   },
   data() {
     return {
+      dialogConfig: {
+        type: 'modal',
+        width: 'small'
+      },
       loadingShow: true,
       relevanceModel: false, //关联模态框
       relevanceTitle: this.$t('term.process.relcatalog'),

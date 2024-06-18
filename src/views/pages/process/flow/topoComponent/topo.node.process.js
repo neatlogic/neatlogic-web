@@ -1,17 +1,6 @@
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
-let validConfig = {};
-try {
-  // 导入组件校验方法
-  const validPath = require.context('@', true, /flowNodeValid.js$/);
-  validPath.keys().forEach(path => {
-    if (validPath(path).lineConfigValid) {
-      Object.assign(validConfig, validPath(path).lineConfigValid);
-    }
-  });
-} catch (error) {
-  console.error('flowNodeValid.js异常', error);
-}
+import { FLOW_LINE_VALID } from '@/resources/import';
 // eslint-disable-next-line space-before-function-paren
 (function (global, factory) {
   factory((global.Process = global.Process || {}), global);
@@ -50,9 +39,9 @@ try {
             ViewUI.Message.warning({ content: $t('message.process.nodenobacklink'), duration: 3, closable: true });
             return false;
           }
-          for (let keyItem of Object.keys(validConfig)) {
-            if (keyItem == 'connectBackward' && validConfig[keyItem] && validConfig[keyItem][sourceNode.getConfig().handler]) {
-              let isTrue = validConfig[keyItem][sourceNode.getConfig().handler](sourceNode.getConfig().handler, this);
+          for (let keyItem of Object.keys(FLOW_LINE_VALID)) {
+            if (keyItem == 'connectBackward' && FLOW_LINE_VALID[keyItem] && FLOW_LINE_VALID[keyItem][sourceNode.getConfig().handler]) {
+              let isTrue = FLOW_LINE_VALID[keyItem][sourceNode.getConfig().handler](sourceNode.getConfig().handler, this);
               if (!isTrue) {
                 return isTrue;
               }
@@ -78,9 +67,9 @@ try {
                 ViewUI.Message.warning({ content: $t('message.process.timerhasonelink'), duration: 3, closable: true });
                 return false;
               }
-              for (let keyItem of Object.keys(validConfig)) {
-                if (keyItem == 'connectForward' && validConfig[keyItem] && validConfig[keyItem][sourceNode.getConfig().handler]) {
-                  let isTrue = validConfig[keyItem][sourceNode.getConfig().handler](sourceNode.getConfig().handler, this);
+              for (let keyItem of Object.keys(FLOW_LINE_VALID)) {
+                if (keyItem == 'connectForward' && FLOW_LINE_VALID[keyItem] && FLOW_LINE_VALID[keyItem][sourceNode.getConfig().handler]) {
+                  let isTrue = FLOW_LINE_VALID[keyItem][sourceNode.getConfig().handler](sourceNode.getConfig().handler, this);
                   if (!isTrue) {
                     return isTrue;
                   }

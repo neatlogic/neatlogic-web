@@ -7,6 +7,18 @@
       :title="label.length > 4 ? label : ''"
     >
       <FormSlot>{{ label }}</FormSlot>
+      <div v-if="labelPosition === 'top' && buttonList && buttonList.length > 0" class="ml-xs" style="display: inline-block">
+        <div class="item-group">
+          <div
+            v-for="(btn, index) in buttonList"
+            :key="index"
+            class="cursor"
+            :class="btn.icon"
+            @click="btn.click()"
+          >{{ btn.name }}</div>
+          <div></div>
+        </div>
+      </div>
       <Poptip
         v-if="tooltip"
         :transfer="true"
@@ -15,11 +27,7 @@
         width="300"
       >
         <i class="tsfont-info-o text-tip-active tips" :style="{ 'margin-left': '3px', transform: 'translateY(-1px)' }"></i>
-        <div
-          slot="content"
-          class="tooltip-content"
-          v-html="tooltip"
-        ></div>
+        <div slot="content" class="tooltip-content" v-html="tooltip"></div>
       </Poptip>
       <!-- <Tooltip
         v-if="tooltip"
@@ -124,6 +132,7 @@ export default {
       type: Boolean,
       default: false
     },
+    buttonList: { type: Array },
     theme: Object //主题
   },
   data() {

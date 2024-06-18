@@ -427,7 +427,11 @@ export default {
       type: Boolean,
       default: false
     },
-    formSceneUuid: [String, Number] //表单场景uuid（工单详情页，必须给默认值，展示对应场景）
+    formSceneUuid: [String, Number], //表单场景uuid（工单详情页，必须给默认值，展示对应场景）
+    isEnableDefaultValue: { //默认启用组件赋值(应用在工单详情页，用户无流转权限，设为false)
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {

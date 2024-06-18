@@ -994,5 +994,6 @@
   "deploy": {
     "contactwithadmin": "请联系管理员{target}"
   },
-  "autoexecwaitinputnoauth": "当前用户没有“{target}”权限，请联系管理员处理"
+  "autoexecwaitinputnoauth": "当前用户没有“{target}”权限，请联系管理员处理",
+  "nocomment": "暂无描述"
 }

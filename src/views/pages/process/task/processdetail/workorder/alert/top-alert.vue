@@ -15,7 +15,7 @@
                 hideAvatar
               ></UserCard>
               <span v-if="item.title && item.title.length > 0">{{ item.title }}：</span>
-              <span>
+              <span class="pl-md pr-md">
                 <Tooltip
                   max-width="600"
                   transfer
