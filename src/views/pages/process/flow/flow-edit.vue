@@ -335,6 +335,11 @@ function nodeDataTransform(data) {
 
 export default {
   name: 'FlowEdit',
+  provide() {
+    return {
+      flowObj: this.flowObj
+    };
+  },
   components: {
     FlownodeSetting,
     FlowSetting,
@@ -398,7 +403,12 @@ export default {
       processUuid: '', //流程id
       formhandlerList: [], //表单控件的数据
       nodeAllLinksList: [], //当前节点的所有连线数据
-      formSceneUuidList: [] // 表单场景uuid列表
+      formSceneUuidList: [], // 表单场景uuid列表
+      flowObj: { //流程数据，跨组件调用
+        TopoVm: null,
+        stepList: this.stepList
+      }
+      
     };
   },
   beforeCreate() {},
@@ -433,6 +443,7 @@ export default {
     await this.initFlow('init');
     this.getWorkerdispatcher();
     this.selectNodeByStepUuid();
+    this.flowObj.TopoVm = TopoVm;
   },
   beforeDestroy() {
     this.$topoVm.destroy();//销毁topo里面注册的事件
@@ -662,6 +673,7 @@ export default {
           this.portData = this.$utils.deepClone(data);
         });
       }
+      this.flowObj.stepList = this.stepList;
     },
     flowDataValid(action) {
       let _this = this;
@@ -929,6 +941,7 @@ export default {
       // 添加节点
       // nodeDataTransform(data);
       this.stepList.push(data.config);
+      this.flowObj.stepList = this.stepList;
       let node = this.$topoVm.addNode(data);
       node.select();
     },
