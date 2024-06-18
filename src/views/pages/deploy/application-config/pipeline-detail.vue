@@ -1137,7 +1137,7 @@ export default {
     height: calc(100vh - 100px - 16px);
     .step-config {
       position: relative;
-      width: 50%;
+      width: 60%;
       height: 100%;
       overflow: hidden;
       .step-list {
@@ -1154,7 +1154,7 @@ export default {
       }
     }
     .base-config {
-      width: 50%;
+      width: 40%;
       height: 100%;
       .setting-main{
         width: 100%;
