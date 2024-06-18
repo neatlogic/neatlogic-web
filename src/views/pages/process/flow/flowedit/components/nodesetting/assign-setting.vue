@@ -38,22 +38,37 @@
                 </div>
                 <div v-if="item.isChecked == 1" class="content">
                   <div class="text-list">
-                    <div class="title text-left require-label text-tip form-label">{{ $t('term.process.prestep') }}</div>
-                    <div class="text custom-select">
-                      <div class="input-border">
-                        <TsFormSelect
-                          ref="dealValue"
-                          v-model="processStepAssignList"
-                          multiple
-                          :dataList="returnNewPrevNodes(copyPrevNodes)"
-                          textName="name"
-                          valueName="uuid"
-                          border="border"
-                          :validateList="validateSelectList"
-                          transfer
-                        ></TsFormSelect>
+                    <TsFormItem :label="$t('term.process.prestep')" :labelWidth="70" labelPosition="top">
+                      <div v-if="!$utils.isEmpty(processStepAssignList)">
+                        <div v-for="(p, pindex) in processStepAssignList" :key="pindex" class="controller-group processStepList-grid">
+                          <TsFormSelect
+                            ref="dealValue"
+                            v-model="p.uuid"
+                            :dataList="getPrestepassignNodeList(copyPrevNodes, p.uuid)"
+                            textName="name"
+                            valueName="uuid"
+                            border="border"
+                            :validateList="validateSelectList"
+                            transfer
+                            @on-change="()=>{
+                              $set(p, 'condition', []);
+                            }"
+                          ></TsFormSelect>
+                          <TsFormSelect
+                            v-model="p.condition"
+                            :placeholder="$t('page.condition')"
+                            :dataList="getConditionNodeList(p.uuid)"
+                            textName="name"
+                            valueName="uuid"
+                            border="border"
+                            multiple
+                            transfer
+                          ></TsFormSelect>
+                          <span v-if="processStepAssignList.length > 1" class="text-tip-active tsfont-trash-o processStepList-del" @click="delProcessStepList(pindex)"></span>
+                        </div>
                       </div>
-                    </div>
+                      <span class="tsfont-plus text-href" @click="addProcessStepList()">{{ $t('page.condition') }}</span>
+                    </TsFormItem>
                   </div>
                   <div class="text-list">
                     <div class="title text-left text-tip form-label">{{ $t('term.process.assigngoals') }}</div>
@@ -111,7 +126,7 @@
                       <div class="input-border">
                         <TsFormSelect
                           ref="dealValue"
-                          v-model="processStepUuidList"
+                          v-model="processCopyStepUuidList"
                           :dataList="returnNewPrevNodes(copyPrevNodes)"
                           textName="name"
                           valueName="uuid"
@@ -277,8 +292,10 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     ...dispatcherComponent
   },
+  inject: ['flowObj'],
   props: {
     prevNodes: {
       type: Array,
@@ -294,7 +311,7 @@ export default {
       isValid: true, //是否校验通过
       formItemList: [], //表单授权列表
       copyPrevNodes: this.prevNodes || [], //复制前置步骤
-      processStepUuidList: '', //前置步骤值
+      processCopyStepUuidList: '', //前置步骤值
       processStepAssignList: [], //指派步骤
       policyListFormList: [], //表单值列表
       policyListAttributeUuidList: [], //表单值默认值
@@ -317,7 +334,7 @@ export default {
           isChecked: 0,
           config: {
             isRequired: 0,
-            processStepUuidList: [],
+            processStepList: [],
             rangeList: [],
             groupList: []
           }
@@ -411,10 +428,10 @@ export default {
           this.policyList = policyList;
           this.policyList.forEach((item, index) => {
             if (item.type == 'prestepassign') {
-              this.processStepAssignList = item.config.processStepUuidList;
+              this.processStepAssignList = this.$utils.isEmpty(item.config.processStepList) ? [{uuid: '', condition: []}] : item.config.processStepList;
             }
             if (item.type == 'copy') {
-              this.processStepUuidList = item.config.processStepUuid;
+              this.processCopyStepUuidList = item.config.processStepUuid;
             }
             if (item.type == 'form') {
               this.policyListAttributeUuidList = item.config.attributeUuidList;
@@ -426,12 +443,12 @@ export default {
     },
     changeStep(item) {
       if (item.type == 'prestepassign') {
-        this.processStepAssignList.splice(0);
+        this.processStepAssignList = [{uuid: '', condition: []}];
         item.config.rangeList = [];
         item.config.groupList = [];
         item.config.isRequired = 0;
       } else if (item.type == 'copy') {
-        this.processStepUuidList = null;
+        this.processCopyStepUuidList = null;
       } else if (item.type == 'form') {
         this.policyListAttributeUuidList = [];
       } else if (item.type == 'automatic') {
@@ -463,10 +480,10 @@ export default {
       };
       this.policyList.forEach((item) => {
         if (item.type == 'prestepassign') {
-          item.config.processStepUuidList = this.processStepAssignList;
+          item.config.processStepList = this.processStepAssignList;
         }
         if (item.type == 'copy') {
-          item.config.processStepUuid = this.processStepUuidList;
+          item.config.processStepUuid = this.processCopyStepUuidList;
         }
         if (item.type == 'form') {
           item.config.attributeUuidList = this.policyListAttributeUuidList;
@@ -532,6 +549,15 @@ export default {
       } else {
         this.groupList = ['user', 'role', 'team'];
       }
+    },
+    addProcessStepList() {
+      this.processStepAssignList.push({
+        uuid: '',
+        condition: []
+      });
+    },
+    delProcessStepList(index) {
+      this.processStepAssignList.splice(index, 1);
     }
   },
   filter: {},
@@ -568,6 +594,38 @@ export default {
         } else {
           return [];
         }
+      };
+    },
+    getPrestepassignNodeList() {
+      return (prevNodes, uuid) => {
+        let list = [];
+        if (prevNodes) {
+          list = prevNodes.filter(p => p.handler != 'timer');
+          if (!this.$utils.isEmpty(list)) {
+            list.forEach(item => {
+              if (uuid !== item.uuid && this.processStepAssignList.find(p => p.uuid === item.uuid)) {
+                this.$set(item, '_disabled', true);
+              } else {
+                this.$set(item, '_disabled', false);
+              }
+            });
+          }
+        }
+        return list;
+      };
+    },
+    getConditionNodeList() {
+      return (uuid) => {
+        let list = [];
+        if (uuid && this.flowObj.TopoVm) {
+          let vm = this.flowObj.TopoVm.getNodeByUuid(uuid);
+          let allNextNodes = vm.getNextNodes('forward');
+          if (!this.$utils.isEmpty(this.flowObj.stepList)) {
+            allNextNodes = allNextNodes.map(item => this.flowObj.stepList.find(step => step.uuid == item.getUuid()));
+            list = allNextNodes;
+          }
+        }
+        return list;
       };
     }
   },
@@ -611,5 +669,16 @@ export default {
         line-height: 30px;
       }
     }
+    .processStepList-grid {
+      position: relative;
+      padding-right: 10px;
+      &:not(:last-child) {
+        padding-bottom: 10px;
+      }
+      .processStepList-del {
+        position: absolute;
+        right: -10px;
+      }
+    } 
   }
 </style>
