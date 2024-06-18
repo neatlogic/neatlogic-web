@@ -27,7 +27,7 @@
               v-if="dataConfig.content"
               v-imgViewer
               class="content-detail"
-              style="overflow:hidden"
+              style="overflow: hidden"
               :style="{ height: maxheight }"
             >
               <div ref="getheight" v-dompurify-html="dataConfig.content"></div>
@@ -39,7 +39,10 @@
             <ImagePreviewDialog v-if="dataConfig.fileList.length > 0" class="report-content" :fileList="dataConfig.fileList"></ImagePreviewDialog>
           </div>
         </TsFormItem>
-        <div v-else-if="actionConfig.update" class="padding border-base radius-md" style="text-align: center"><span class="tsfont-plus cursor text-grey" @click="edit()">添加描述</span></div>
+        <div v-else class="padding border-base radius-md" style="border-style: dotted !important; text-align: center">
+          <span v-if="actionConfig.update" class="tsfont-plus cursor text-grey" @click="edit()">{{ $t('dialog.title.addtarget', { target: $t('page.description') }) }}</span>
+          <span v-else class="text-grey">{{ $t('page.nocomment') }}</span>
+        </div>
       </template>
       <template v-else-if="startHandler === 'changecreate'">
         <TsFormItem v-if="handlerStepInfo" label="变更" labelPosition="top">
