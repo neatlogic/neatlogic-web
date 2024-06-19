@@ -92,6 +92,9 @@ const form = {
   getFormItemList(params) {
     // 获取表单组件列表(包含消费数据)
     return axios.post('/api/rest/form/attribute/list', params);
+  },
+  getFormTagList(params) { //获取表单扩展数据标签列表
+    return axios.post('/api/rest/form/tag/list', params);
   }
 };
 export default form;

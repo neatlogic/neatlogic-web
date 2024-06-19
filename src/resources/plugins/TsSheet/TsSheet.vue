@@ -1720,7 +1720,7 @@ export default {
           list.push(...this.formExtendData[key]);
         }
       });
-      this.getFormCustomexend();
+      list.push(...this.getFormCustomexend());
       return list;
     },
     getFormCustomexend() {

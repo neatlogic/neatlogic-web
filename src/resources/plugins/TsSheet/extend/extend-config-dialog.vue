@@ -25,7 +25,8 @@
                   ref="formItem"
                   v-model="item.tag"
                   border="border"
-                  :validateList="validateList"
+                  :maxlength="50"
+                  :validateList="tagValidateList"
                 ></TsFormInput>
               </TsFormItem>
               <TsFormItem label="配置">
@@ -84,6 +85,7 @@ export default {
   data() {
     return {
       configList: this.$utils.deepClone(this.list) || [],
+      tagValidateList: ['required', 'key-special'],
       validateList: ['required']
     };
   },
