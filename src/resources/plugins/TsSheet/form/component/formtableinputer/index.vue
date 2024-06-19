@@ -148,6 +148,11 @@ export default {
           const element = value[i];
           for (let key in element) {
             if (key != 'uuid' && !this.config.dataConfig.find(d => d.uuid === key)) {
+              let findKey = this.config.dataConfig.find(d => d.key === key);
+              if (findKey) {
+                //根据uuid不存在时根据key取值
+                this.$set(element, findKey.uuid, element[key]);
+              } 
               this.$delete(element, key);
             }
           }

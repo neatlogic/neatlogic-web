@@ -16,16 +16,32 @@
         <div class="overflow text-tip">{{ item.profileName }}</div>
         <div class="btn-list">
           <i v-if="canEdit" class="tsfont-edit text-tip-active pr-xs" @click="editProfile(item)"></i>
-          <i class="tsfont-down text-tip-active" @click="toggleshow(item)"></i>
+          <i class="text-tip-active" :class="item.isHide ? 'tsfont-down' : 'tsfont-up'" @click="toggleshow(item)"></i>
         </div>
       </div>
-      <div v-if="!item.isHide" class="params-list pt-md">
+      <div v-show="!item.isHide" class="params-list pt-md">
         <div v-if="item.paramList && item.paramList.length > 0">
           <TsTable
             :theadList="theadList"
             :tbodyList="item.paramList"
             :fixedHeader="false"
           >
+            <template slot="name" slot-scope="{row}">
+              <div class="flex-start" style="width: 140px;">
+                <span>{{ row['name'] }}</span>
+                <Poptip
+                  v-if="row['description']"
+                  trigger="hover"
+                  word-wrap
+                  width="350"
+                  transfer
+                  :content="row['description']"
+                  style="margin-left: 4px;"
+                >
+                  <span class="tsfont-info-o text-grey"></span>
+                </Poptip>
+              </div>
+            </template>
             <template slot="inherit" slot-scope="{row}">
               <Checkbox
                 v-model="row.inherit"
@@ -146,19 +162,17 @@ export default {
       theadList: [
         {
           title: this.$t('page.inherit'),
-          key: 'inherit'
+          key: 'inherit',
+          width: 50
         },
         {
           title: this.$t('term.autoexec.paramsname'),
-          key: 'name'
+          key: 'name',
+          width: 140
         },
         {
           title: this.$t('term.autoexec.paramsvalue'),
           key: 'defaultValue'
-        },
-        {
-          title: this.$t('page.description'),
-          key: 'description'
         },
         {
           key: 'action'
@@ -177,14 +191,17 @@ export default {
           }
         ],
         tbodyList: []
-
       },
       isVisible: false,
-      isHideAll: false
+      isHideAll: true
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.profileList.forEach((item) => {
+      this.$set(item, 'isHide', this.isHideAll);
+    });
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -216,6 +233,8 @@ export default {
       } else {
         this.$set(item, 'isHide', true);
       }
+      let isAnyExpand = this.profileList.some(item => !item.isHide);
+      this.isHideAll = !isAnyExpand;
     },
     getReferenceList(val, row, item) {
       if (!val) {

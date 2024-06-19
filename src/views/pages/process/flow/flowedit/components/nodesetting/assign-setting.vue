@@ -38,9 +38,12 @@
                 </div>
                 <div v-if="item.isChecked == 1" class="content">
                   <div class="text-list">
-                    <TsFormItem :label="$t('term.process.prestep')" :labelWidth="70" labelPosition="top">
+                    <TsFormItem
+                      :label="$t('term.process.prestep')"
+                      :labelWidth="70"
+                    >
                       <div v-if="!$utils.isEmpty(processStepAssignList)">
-                        <div v-for="(p, pindex) in processStepAssignList" :key="pindex" class="controller-group processStepList-grid">
+                        <div v-for="(p, pindex) in processStepAssignList" :key="pindex" class="processStepList-grid flex-start">
                           <TsFormSelect
                             ref="dealValue"
                             v-model="p.uuid"
@@ -50,25 +53,23 @@
                             border="border"
                             :validateList="validateSelectList"
                             transfer
+                            style="flex:1;"
                             @on-change="()=>{
                               $set(p, 'condition', []);
                             }"
                           ></TsFormSelect>
-                          <TsFormSelect
-                            v-model="p.condition"
-                            :placeholder="$t('page.condition')"
-                            :dataList="getConditionNodeList(p.uuid)"
-                            textName="name"
-                            valueName="uuid"
-                            border="border"
-                            multiple
-                            transfer
-                          ></TsFormSelect>
+                          <span class="tsfont-setting" :class="!$utils.isEmpty(p.condition)? 'text-primary text-tip-active': 'text-tip-active'" @click="addStepAssignSetting(p)"></span>
                           <span v-if="processStepAssignList.length > 1" class="text-tip-active tsfont-trash-o processStepList-del" @click="delProcessStepList(pindex)"></span>
                         </div>
                       </div>
-                      <span class="tsfont-plus text-href" @click="addProcessStepList()">{{ $t('page.condition') }}</span>
+                      <span class="tsfont-plus text-href" @click="addProcessStepList()">{{ $t('term.process.step') }}</span>
                     </TsFormItem>
+                    <PrestepassignDialog
+                      v-if="isShowPreCondition"
+                      :config="curProcessStepAssign"
+                      :conditionNodeList="getConditionNodeList(curProcessStepAssign.uuid)"
+                      @close="closeStepAssignSetting"
+                    ></PrestepassignDialog>
                   </div>
                   <div class="text-list">
                     <div class="title text-left text-tip form-label">{{ $t('term.process.assigngoals') }}</div>
@@ -293,6 +294,7 @@ export default {
     UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    PrestepassignDialog: () => import('./assign/prestepassign-dialog.vue'),
     ...dispatcherComponent
   },
   inject: ['flowObj'],
@@ -400,7 +402,9 @@ export default {
           'processUserType#agent',
           'processUserType#defaultworker',
           'processUserType#worker']
-      }
+      },
+      isShowPreCondition: false,
+      curProcessStepAssign: {}
     };
   },
   beforeCreate() {},
@@ -558,6 +562,19 @@ export default {
     },
     delProcessStepList(index) {
       this.processStepAssignList.splice(index, 1);
+    },
+    addStepAssignSetting(item) {
+      this.isShowPreCondition = true;
+      this.curProcessStepAssign = item || {};
+    },
+    closeStepAssignSetting(uuid) {
+      this.isShowPreCondition = false;
+      this.processStepAssignList.forEach(item => {
+        if (item.uuid === this.curProcessStepAssign.uuid) {
+          this.$set(item, 'condition', uuid);
+        }
+      });
+      this.curProcessStepAssign = {};
     }
   },
   filter: {},
