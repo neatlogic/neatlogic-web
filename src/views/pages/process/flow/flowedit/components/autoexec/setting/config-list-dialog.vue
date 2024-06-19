@@ -22,7 +22,9 @@
           <div v-show="item.isShow" class="autoexec-content border-color padding">
             <AutoexecConfig
               ref="autoexecConfig"
-              :allFormitemList="allFormitemList"
+              :formUuid="formUuid"
+              :defaultAllFormitemList="allFormitemList"
+              :formTagList="formTagList"
               :config="item"
               @update="(config)=>{setConfig(item, config,index)}"
             ></AutoexecConfig>
@@ -51,7 +53,8 @@ export default {
       loadingShow: true,
       configList: [],
       isValid: true,
-      allFormitemList: []
+      allFormitemList: [],
+      formTagList: []
     };
   },
   beforeCreate() {},
@@ -59,6 +62,7 @@ export default {
   beforeMount() {},
   async mounted() {
     await this.getFormItemList();
+    this.getFormTagList();
     this.init();
   },
   beforeUpdate() {},
@@ -145,6 +149,24 @@ export default {
     },
     setConfig(currentItem, config = {}, index) {
       this.$set(this.configList, index, Object.assign(currentItem, config)); // 采用浅拷贝，解决config缺少isShow字段，导致选中组合工具后，组合工具被隐藏的问题
+    },
+    getFormTagList() {
+      this.formTagList = [];
+      if (this.formUuid) {
+        this.$api.framework.form.getFormTagList({formUuid: this.formUuid}).then(res => {
+          if (res.Return) {
+            let tbodyList = res.Return.tbodyList || [];
+            if (!this.$utils.isEmpty(tbodyList)) {
+              this.formTagList = tbodyList.map(item => {
+                return {
+                  text: item,
+                  value: item
+                };
+              });
+            }
+          }
+        });
+      }
     }
   },
   filter: {},
