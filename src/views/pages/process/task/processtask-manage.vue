@@ -395,13 +395,11 @@ export default {
         if (newTh) {
           th.isShow = newTh.isShow;
           th.sort = newTh.sort;
-          console.log(newTh);
         }
       });
       this.tableConfig.theadList.sort((a, b) => { 
         return a.sort - b.sort;
       });
-      console.log(this.tableConfig.theadList);
       // 大数据分页
       this.tableConfig.endPage = data.endPage; //结束页
       this.tableConfig.processingOfMineCount = data.processingOfMineCount;
