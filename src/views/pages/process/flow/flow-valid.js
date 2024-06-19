@@ -1,20 +1,8 @@
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
-import { FLOW_DISPATCHER_VALID } from '@/resources/_import.js';
-let validConfig = {};
-try {
-  // 导入组件校验方法
-  const validPath = require.context('@', true, /flowNodeValid.js$/);
-  validPath.keys().forEach(path => {
-    if (validPath(path).nodeConfigValid) {
-      Object.assign(validConfig, validPath(path).nodeConfigValid);
-    }
-  });
-} catch (error) {
-  console.error('flowNodeValid.js异常', error);
-}
+import { FLOW_DISPATCHER_VALID, FLOW_NODE_VALID } from '@/resources/import';
 let valid = {
-  ...validConfig,
+  ...FLOW_NODE_VALID,
   common(nodeConfig, d, that) {
     //公共校验方法  校验名称
     let validList = this.poliyUser(nodeConfig, d, that) || [];
@@ -70,7 +58,7 @@ let valid = {
       let errorText = $t('form.validate.required', { target: $t('term.process.poliyuser') });
       if (isChecked) {
         let keyConfig = {
-          prestepassign: { value: 'processStepUuidList', text: $t('term.process.prestepassignvalid') }, //由前置步骤处理人指定
+          prestepassign: { value: 'processStepList', text: $t('term.process.prestepassignvalid') }, //由前置步骤处理人指定
           copy: { value: 'processStepUuid', text: $t('term.process.copyworkerpolicyvalid') }, //复制前置步骤处理人
           form: { value: 'attributeUuidList', text: $t('term.process.formworkerpolicyvalid') }, //表单值
           assign: { value: 'workerList', text: $t('term.process.assignworkerpolicyvalid') } //自定义
@@ -94,7 +82,15 @@ let valid = {
                   policyList[i].config.attributeUuidList = [];
                 }
               }
-              if (utils.isEmpty(policyList[i].config[value])) {
+              if (type == 'prestepassign' && !utils.isEmpty(policyList[i].config[value])) {
+                for (let p = 0; p < policyList[i].config[value].length; p++) {
+                  if (!policyList[i].config[value][p].uuid) {
+                    isChecked = 0;
+                    errorText = keyConfig[type].text;
+                    break;
+                  }
+                }
+              } else if (utils.isEmpty(policyList[i].config[value])) {
                 isChecked = 0;
                 errorText = keyConfig[type].text;
                 break;

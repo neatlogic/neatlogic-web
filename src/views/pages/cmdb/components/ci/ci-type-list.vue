@@ -95,7 +95,7 @@
               :nodes="filterCiTreeList"
               idKey="id"
               pIdKey="parentCiId"
-              :expandAll="false"
+              :expandAll="isExpandAll"
               :value="ciId"
               :nodeClasses_bak="nodeClasses"
               :enableToggleClick="toggleable"

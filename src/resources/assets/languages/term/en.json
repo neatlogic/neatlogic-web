@@ -594,6 +594,7 @@
     "saveandstart": "Save and start",
     "createcollection": "Create Collection",
     "taskinformation": "Work order information",
+    "selectsteptimelinetip": "Display the timeline within the selected steps",
     "workcentertheadppolicy": "Control the default header order and display of this classification"
   },
   "autoexec": {

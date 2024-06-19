@@ -1,6 +1,6 @@
 import { $t } from '@/resources/init.js';
 import ViewUI from 'neatlogic-ui/iview/index.js';
-const nodeConfigValid = {
+const nodeValidConfig = {
   autoexec(nodeConfig, d, that) {
     //自动化节点
     let validList = [];
@@ -23,7 +23,7 @@ const nodeConfigValid = {
     return validList;
   }
 };
-const lineConfigValid = {
+const lineValidConfig = {
   connectBackward: {
     eoa(handler, that) {
       let isValid = true;
@@ -50,4 +50,4 @@ const lineConfigValid = {
     }
   }
 };
-export { nodeConfigValid, lineConfigValid };
+export { nodeValidConfig, lineValidConfig };

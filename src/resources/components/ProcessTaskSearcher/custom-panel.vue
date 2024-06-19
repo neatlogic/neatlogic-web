@@ -20,6 +20,7 @@
                   @on-change="
                     val => {
                       change(conditionData, 'expression', val);
+                      change(conditionData, 'valueList', []);
                     }
                   "
                 ></TsFormSelect>

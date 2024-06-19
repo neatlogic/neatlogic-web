@@ -998,5 +998,6 @@
   "defaultthead": "默认表头",
   "workcenterresettheadsetting": "是否还原默认配置",
   "workcentertitleresettheadsetting": "还原配置",
-  "resetconfirm": "还原确认"
+  "resetconfirm": "还原确认",
+  "nocomment": "暂无描述"
 }

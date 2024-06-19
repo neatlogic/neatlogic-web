@@ -1,7 +1,7 @@
 <template>
   <div>
     <span class="left-label-text text-grey">{{ config.typeName }}</span>
-    <span class="text-href" :class="[isShow ? 'tsfont-up' : 'tsfont-down']" @click="seeMore">{{ isShow ? $t('page.clickandputaway') : $t('page.viewdetails') }}</span>
+    <span class="text-href" :class="[isShow ? 'tsfont-drop-down' : 'tsfont-drop-right']" @click="seeMore">{{ isShow ? $t('page.clickandputaway') : $t('page.viewdetails') }}</span>
     <TsSheet
       v-if="!$utils.isEmpty(formConfig) && isShow"
       ref="sheet"
