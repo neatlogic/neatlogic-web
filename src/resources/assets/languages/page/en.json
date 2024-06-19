@@ -992,5 +992,6 @@
   "deploy": {
     "contactwithadmin": "Please contact the administrator for authorization"
   },
-  "autoexecwaitinputnoauth": "Currently not authorized '{target}', please contact administrator for assistance"
+  "autoexecwaitinputnoauth": "Currently not authorized '{target}', please contact administrator for assistance",
+  "nocomment": "There is currently no description available"
 }

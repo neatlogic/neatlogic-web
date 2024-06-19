@@ -214,7 +214,8 @@ export default {
           const moduleGroupList = res.Return.map(module => {
             const { moduleGroupName: title, moduleGroup, funcList } = module;
             const children = funcList.map(item => {
-              return item.isHasChild ? { moduleGroup, title: item.funcId, funcId: item.funcId, loading: false, children: [] } : { moduleGroup, title: item.funcId, funcId: item.funcId };
+              // 给每个节点都设置了一个 nodeKey 字段，用来标识节点的 id，必须唯一，否则选中的目录和回显的目录不一致
+              return item.isHasChild ? { moduleGroup, title: item.funcId, funcId: item.funcId, loading: false, children: [], nodeKey: this.$utils.setUuid() } : { moduleGroup, title: item.funcId, funcId: item.funcId, nodeKey: this.$utils.setUuid() };
             });
             children.sort(item => {
               if ('children' in item) return -1;
@@ -237,7 +238,7 @@ export default {
       this.$api.framework.apiManage.getSubtree(params).then(res => {
         if (res.Status === 'OK') {
           const children = res.Return.map(item => {
-            return item.isHasChild ? { moduleGroup, title: item.funcId, funcId: funcId + '/' + item.funcId, loading: false, children: [] } : { moduleGroup, title: item.funcId, funcId: funcId + '/' + item.funcId };
+            return item.isHasChild ? { moduleGroup, title: item.funcId, funcId: funcId + '/' + item.funcId, loading: false, children: [], nodeKey: this.$utils.setUuid() } : { moduleGroup, title: item.funcId, funcId: funcId + '/' + item.funcId, nodeKey: this.$utils.setUuid() };
           });
           children.sort(item => {
             if ('children' in item) return -1;
