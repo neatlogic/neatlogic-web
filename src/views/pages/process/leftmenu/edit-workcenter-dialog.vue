@@ -7,16 +7,38 @@
     >
       <template v-slot>
         <div>
-          <TsForm ref="nameForm" :itemList="formConfig"></TsForm>
+          <TsForm ref="nameForm" :itemList="formConfig">
+            <template slot="theadList">
+              <draggable
+                :animation="150"
+                handle=".handler"
+                :list="theadList"
+              ><Tag
+                v-for="(thead, index) in theadList"
+                :key="index"
+                size="large"
+              >
+                <i class="handler tsfont-drag" style="cursor:move"></i>
+                <Checkbox
+                  v-model="thead.isShow"
+                  :true-value="1"
+                  :disabled="thead.name === 'title'"
+                  :false-value="0"
+                ></Checkbox>{{ thead.displayName }}
+              </Tag></draggable>
+            </template>
+          </TsForm>
         </div>
       </template>
     </TsDialog>
   </div>
 </template>
 <script>
+import draggable from 'vuedraggable';
 export default {
   name: '',
   components: {
+    draggable,
     TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
@@ -24,12 +46,13 @@ export default {
   },
   data() {
     return {
+      theadList: [],
       dialogConfig: {
         title: this.$t('dialog.title.edittarget', {target: this.$t('page.name')}),
         type: 'modal',
         maskClose: false,
         isShow: true,
-        width: 'small'
+        width: 'large'
       },
       workcenterData: {},
       formConfig: [
@@ -52,7 +75,13 @@ export default {
           label: this.$t('page.showtotal'),
           trueValue: 1,
           falseValue: 0,
-          desc: this.$t('term.process.workordertypenumdes')
+          tooltip: this.$t('term.process.workordertypenumdes')
+        },
+        {
+          type: 'slot',
+          name: 'theadList',
+          label: this.$t('page.defaultthead'),
+          tooltip: this.$t('term.process.workcentertheadppolicy')
         }
       ]
     };
@@ -60,9 +89,10 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-    this.getWorkcenterByUuid();
-  },
+  async mounted() {
+    await this.getWorkcenterByUuid();
+    await this.getWorkcenterTheadList();
+  }, 
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -73,9 +103,9 @@ export default {
     close(needRefresh) {
       this.$emit('close', needRefresh);
     },
-    getWorkcenterByUuid() {
+    async getWorkcenterByUuid() {
       if (this.uuid) {
-        this.$api.process.processtask.getWorkcenterByUuid(this.uuid).then(res => {
+        await this.$api.process.processtask.getWorkcenterByUuid(this.uuid).then(res => {
           this.workcenterData = res.Return;
           this.formConfig.forEach(element => {
             this.$set(element, 'value', this.workcenterData[element.name]);
@@ -87,13 +117,28 @@ export default {
       if (this.$refs['nameForm'].valid()) {
         const data = this.$refs['nameForm'].getFormValue();
         data.uuid = this.uuid;
-        this.$api.process.processtask.renameWorkcenter(data).then(res => {
+        data.theadList = this.theadList;
+        data.theadList.forEach((item, index) => {
+          item.sort = index + 1;
+        });
+        this.$api.process.processtask.editWorkcenter(data).then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
+            this.$emit('refresh', this.uuid);
             this.close(true);
           }
         });
       }
+    },
+    async getWorkcenterTheadList() {
+      await this.$api.process.processtask.listWorkcenterThead({uuid: this.uuid}).then(res => {
+        if (res.Status == 'OK') {
+          this.theadList = res.Return;
+          if (!this.$utils.isEmpty(this.theadList)) {
+            this.theadList.sort((a, b) => a.sort - b.sort);
+          }
+        }
+      });
     }
   },
   filter: {},

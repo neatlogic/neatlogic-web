@@ -593,7 +593,8 @@
     "channel": "通道",
     "saveandstart": "保存并开始",
     "createcollection": "创建集合",
-    "taskinformation": "工单信息"
+    "taskinformation": "工单信息",
+    "workcentertheadppolicy": "控制该分类默认表头顺序以及是否显示"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

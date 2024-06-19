@@ -992,5 +992,9 @@
   "deploy": {
     "contactwithadmin": "Please contact the administrator for authorization"
   },
-  "autoexecwaitinputnoauth": "Currently not authorized '{target}', please contact administrator for assistance"
+  "autoexecwaitinputnoauth": "Currently not authorized '{target}', please contact administrator for assistance",
+  "defaultthead": "Default header",
+  "workcenterresettheadsetting": "Do you want to restore the default configuration",
+  "workcentertitleresettheadsetting": "Restore configuration",
+  "resetconfirm": "Restore Confirmation"
 }

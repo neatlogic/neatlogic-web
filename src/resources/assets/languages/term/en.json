@@ -593,7 +593,8 @@
     "channel": "passageway",
     "saveandstart": "Save and start",
     "createcollection": "Create Collection",
-    "taskinformation": "Work order information"
+    "taskinformation": "Work order information",
+    "workcentertheadppolicy": "Control the default header order and display of this classification"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

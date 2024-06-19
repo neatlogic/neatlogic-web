@@ -267,6 +267,16 @@
                 <div class="text overflow">{{ li.title ? li.title : '_' }}</div>
               </div>
             </draggable>
+            <div v-if="popTipBtnList" class="text-right">
+              <Button
+                v-for="(btn, index) in popTipBtnList"
+                :key="index"
+                :type="btn.type"
+                :ghost="btn.ghost || false"
+                :disabled="btn.disabled"
+                @click.native.stop="btnClick(btn)"
+              >{{ btn.text }}</Button>
+            </div> 
           </div>
         </div>
       </Poptip>
@@ -545,6 +555,9 @@ export default {
     readonlyTextIsHighlight: { // 只读模式下，表格表头背景是否需要高亮
       type: Boolean,
       default: false
+    },
+    popTipBtnList: { //table 右上角表头排序显示自定义按钮
+      type: Array
     }
   },
   data() {
@@ -1055,6 +1068,9 @@ export default {
         }
       });
       return name;
+    },
+    btnClick(config) {
+      config.fn && config.fn(this);
     }
   },
   computed: {
