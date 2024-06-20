@@ -31,7 +31,7 @@
             "
           ></VerticalPager>
         </div>
-        <div>
+        <div class="overflow">
           <ul>
             <li
               v-for="customview in customViewData.tbodyList"
@@ -41,7 +41,7 @@
               @click="goTo('/view-data/' + customview.id)"
               @contextmenu="newTab($event, customview, '/view-data/' + customview.id)"
             >
-              <a class="cursor" :class="customview.icon">{{ customview.name }}</a>
+              <a class="cursor overflow" :class="customview.icon">{{ customview.name }}</a>
             </li>
           </ul>
         </div>
@@ -61,7 +61,7 @@
             "
           ></VerticalPager>
         </div>
-        <div>
+        <div class="overflow">
           <ul>
             <li
               v-for="customview in graphData.tbodyList"
@@ -71,7 +71,7 @@
               @click="goTo('/graph-data/' + customview.id)"
               @contextmenu="newTab($event, customview, '/graph-data/' + customview.id)"
             >
-              <a class="cursor" :class="customview.icon">{{ customview.name }}</a>
+              <a class="cursor overflow" :class="customview.icon">{{ customview.name }}</a>
             </li>
           </ul>
         </div>
@@ -181,5 +181,8 @@ export default {
 .grid {
   display: grid;
   grid-template-columns: 23px auto;
+  .link {
+    padding-left: 0px !important;
+  }
 }
 </style>

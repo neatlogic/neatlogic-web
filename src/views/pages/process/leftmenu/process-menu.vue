@@ -28,14 +28,14 @@
             >
               <li class="overflow navlist-text">
                 <!--<router-link :to="{ path: `/task-overview-${childrenItem.uuid}` }" class="router-link tsfont-tickets">{{ childrenItem.name }}</router-link>-->
-                <a class="router-link tsfont-tickets" @click="goTo('/task-overview-' + childrenItem.uuid)">{{ childrenItem.name }}</a>
+                <a class="router-link tsfont-tickets" @click="clickWorkcenter(childrenItem.uuid)">{{ childrenItem.name }}</a>
                 <i class="item-icon handle tsfont-drag hide text-actiongit"></i>
                 <span class="navlist-action">
                   <Dropdown trigger="click" :transfer="true">
                     <span v-if="childrenItem.isCanEdit === 1 || childrenItem.isCanRole === 1" ref="horizontal" class="tsfont-option-horizontal text-action"></span>
                     <DropdownMenu slot="list" class="overdown">
                       <DropdownItem v-if="childrenItem.isCanEdit === 1" @click.native="editRename(childrenItem)">
-                        <div>{{ $t('page.rename') }}</div>
+                        <div>{{ $t('page.edit') }}</div>
                       </DropdownItem>
                       <DropdownItem v-if="childrenItem.isCanRole === 1" @click.native="editAuthorization(childrenItem)">
                         <div>{{ $t('page.auth') }}</div>
@@ -64,7 +64,12 @@
       </ul>
     </template>
     <AuthDialog v-if="editAuthorizationDialog" :uuid="currentWorkcenterUuid" @close="closeAuthorizationDialog"></AuthDialog>
-    <RenameDialog v-if="editRenameDialog" :uuid="currentWorkcenterUuid" @close="closeRenameDialog"></RenameDialog>
+    <EditWorkcenterDialog
+      v-if="editRenameDialog"
+      :uuid="currentWorkcenterUuid"
+      @close="closeRenameDialog"
+      @refresh="refreshCurrentWorkcenterData"
+    ></EditWorkcenterDialog>
     <WorkOrderDialog v-if="isShowWorkOrderDialog" @close="closeWorkOrderDialog"></WorkOrderDialog>
   </div>
 </template>
@@ -78,7 +83,7 @@ export default {
   name: 'OverviewMenu',
   components: {
     draggable,
-    RenameDialog: () => import('./rename-dialog.vue'),
+    EditWorkcenterDialog: () => import('./edit-workcenter-dialog.vue'),
     AuthDialog: () => import('./auth-dialog.vue'),
     WorkOrderDialog: () => import('./work-order-dialog')
   }, // 工单中心左侧菜单
@@ -241,16 +246,6 @@ export default {
           });
         });
     },
-    saveRename() {
-      // 重命名，保存方法
-      let nameForm = this.$refs.nameForm;
-      if (nameForm.valid()) {
-        let data = nameForm.getFormValue();
-        console.log(JSON.stringify(data, null, 2));
-        //this.save(this.menuUuid, data.name, this.defaultAuthList, this.defaultType, this.defaultSupport, data.catalogName);
-        //this.editRenameDialog = false;
-      }
-    },
     saveAuthorization() {
       // 授权，保存方法
       let userForm = this.$refs.userForm;
@@ -305,6 +300,15 @@ export default {
       if (action === 'first') {
         this.$router.push({ name: 'task-overview', params: { taskTypeid: workcenterList[0].uuid } });
       }
+    },
+    refreshCurrentWorkcenterData(uuid) {
+      if (this.selectedUuid === uuid) { //如果修改的分类时当前选中的分类则需要刷新table
+        location.reload();
+      }
+    },
+    clickWorkcenter(uuid) {
+      this.selectedUuid = uuid;
+      this.goTo('/task-overview-' + uuid);
     }
   },
   computed: {
@@ -329,6 +333,7 @@ export default {
       handler(val) {
         if (val) {
           this.initData();
+          this.selectedUuid = this.$route.params['taskTypeid'];
         }
       },
       deep: true,

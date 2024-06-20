@@ -12,6 +12,7 @@
           <div
             v-for="(btn, index) in buttonList"
             :key="index"
+            :title="btn.title"
             class="cursor"
             :class="btn.icon"
             @click="btn.click()"

@@ -247,8 +247,12 @@ const processtask = {
     return axios.post('/api/rest/workcenter/condition/get', data);
   },
   workcenterTheadSave(data) {
-    // 工单搜索表单数据获取
+    // 工单中心用户自定义表头数据保存
     return axios.post('/api/rest/workcenter/thead/save', data);
+  },
+  workcenterTheadDelete(data) {
+    // 工单中心用户自定义表头数据删除
+    return axios.post('/api/rest/workcenter/thead/delete', data);
   },
   workcenterKeywordSearch(data) {
     // 返回可以匹配的关键字列表
@@ -350,9 +354,9 @@ const processtask = {
     // 获取菜单分类列表
     return axios.post('/api/rest/workcenter/catalog/list', params);
   },
-  renameWorkcenter(params) {
-    //修改工单中心分类名称
-    return axios.post('/api/rest/workcenter/rename', params);
+  editWorkcenter(params) {
+    //修改工单中心分类
+    return axios.post('/api/rest/workcenter/edit', params);
   },
   saveWorkcenterAuth(params) {
     //修改工单中心授权
@@ -381,6 +385,9 @@ const processtask = {
   },
   batchDelete(params) { // 批量删除工单
     return axios.post('/api/rest/processtask/batch/delete', params);
+  },
+  listWorkcenterThead(params) {
+    return axios.post('/api/rest/workcenter/thead/list', params);
   }
 };
 export default processtask;

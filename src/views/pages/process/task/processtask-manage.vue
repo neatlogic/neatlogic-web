@@ -46,6 +46,7 @@
                 :sortOrder="tableConfig.sortList"
                 :isBigDataPage="true"
                 :canEdit="true"
+                :popTipBtnList="popTipBtnList"
                 keyName="id"
                 multiple
                 class="tstable-box"
@@ -176,7 +177,32 @@ export default {
       },
       okBtnDisable: false,
       processTaskConfig: {},
-      selectedWorkList: []
+      selectedWorkList: [],
+      popTipBtnList: [
+        {
+          text: this.$t('page.workcentertitleresettheadsetting'), 
+          type: 'default',
+          ghost: false,
+          loading: false,
+          fn: vnode => {
+            this.$createDialog({
+              title: this.$t('page.resetconfirm'),
+              content: this.$t('page.workcenterresettheadsetting'),
+              btnType: 'error',
+              okText: this.$t('page.confirm'),
+              'on-ok': vnode => {
+                this.$api.process.processtask.workcenterTheadDelete({uuid: this.workcenterUuid}).then(res => {
+                  if (res.Status == 'OK') {
+                    this.searchProcessTask();
+                    this.$Message.success(this.$t('message.deletesuccess'));
+                    vnode.isShow = false;
+                  }
+                });
+              }
+            });
+          }
+        }
+      ]
     };
   },
   beforeCreate() {},
@@ -330,7 +356,8 @@ export default {
         // disabled: d.name == 'title' ? 1 : d.disabled,
         //20200601ui调整为标题不加粗
         className: d.className,
-        isSortable: d.isSortable
+        isSortable: d.isSortable,
+        sort: d.sort
       }));
       // 页码
       if (this.tableConfig.theadList.length <= 0) {
@@ -363,6 +390,16 @@ export default {
       this.tableConfig.currentPage = data.currentPage;
       this.tableConfig.pageCount = data.pageCount;
       this.tableConfig.sortList = theadList.filter(d => d.isSortable).map(d => d.key);
+      this.tableConfig.theadList.forEach(th => {
+        let newTh = theadList.find(thNew => thNew.key === th.key);
+        if (newTh) {
+          th.isShow = newTh.isShow;
+          th.sort = newTh.sort;
+        }
+      });
+      this.tableConfig.theadList.sort((a, b) => { 
+        return a.sort - b.sort;
+      });
       // 大数据分页
       this.tableConfig.endPage = data.endPage; //结束页
       this.tableConfig.processingOfMineCount = data.processingOfMineCount;

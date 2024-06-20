@@ -995,5 +995,9 @@
     "contactwithadmin": "请联系管理员{target}"
   },
   "autoexecwaitinputnoauth": "当前用户没有“{target}”权限，请联系管理员处理",
+  "defaultthead": "默认表头",
+  "workcenterresettheadsetting": "是否还原默认配置",
+  "workcentertitleresettheadsetting": "还原配置",
+  "resetconfirm": "还原确认",
   "nocomment": "暂无描述"
 }
