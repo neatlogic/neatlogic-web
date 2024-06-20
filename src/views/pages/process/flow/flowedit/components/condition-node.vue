@@ -412,8 +412,9 @@ export default {
   beforeMount() {},
 
   mounted() {
-    this.keyList = ['moveonConfigList']; //stepConfig 需要包含的数据
+    this.keyList = ['moveonConfigList', 'formTag']; //stepConfig 需要包含的数据
     this.getNodeSetting();
+    this.getFormTagList();
   },
 
   beforeUpdate() {},
@@ -438,9 +439,8 @@ export default {
     getNodeSetting() {
       //初始化节点数据
       let config = (this.configData = this.$utils.deepClone(this.nodeConfig));
-      this.getNewConditionList(this.formUuid);
-      this.getFormTagList();
       this.initNodeData(config, this.keyList); //初始化数据
+      this.getNewConditionList(this.formUuid);
     },
     getTargetStepList(arr) {
       //条件子节点
@@ -719,7 +719,7 @@ export default {
       //新的条件选择
       let data = {
         formUuid: formUuid,
-        tag: this.formTag,
+        tag: this.formTag || 'common',
         isAll: 1
       };
       this.$api.process.process.conditionList(data).then(res => {
