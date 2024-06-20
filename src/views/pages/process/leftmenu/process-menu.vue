@@ -66,7 +66,7 @@
     <AuthDialog v-if="editAuthorizationDialog" :uuid="currentWorkcenterUuid" @close="closeAuthorizationDialog"></AuthDialog>
     <EditWorkcenterDialog
       v-if="editRenameDialog"
-      :uuid="currentWorkcenterUuid"
+      :workcenter="currentWorkcenter"
       @close="closeRenameDialog"
       @refresh="refreshCurrentWorkcenterData"
     ></EditWorkcenterDialog>
@@ -187,6 +187,7 @@ export default {
     },
     editRename(obj) {
       this.currentWorkcenterUuid = obj.uuid;
+      this.currentWorkcenter = obj;
       this.editRenameDialog = true;
     },
     closeRenameDialog(needRefresh) {
