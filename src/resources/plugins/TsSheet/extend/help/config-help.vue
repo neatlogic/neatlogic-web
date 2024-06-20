@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="config-help-box">
     <Alert show-icon>
       {{ $t('page.help') }}
       <template slot="desc">
@@ -43,7 +43,6 @@
             </div>
           </Poptip></li>
         </ul>
-      
       </template>
     </Alert>
   </div>
@@ -197,5 +196,10 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.config-help-box {
+  /deep/ .ivu-poptip {
+    margin-top: -5px;
+  }
+}
 </style>
