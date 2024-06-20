@@ -40,7 +40,7 @@
                       <DropdownItem v-if="childrenItem.isCanRole === 1" @click.native="editAuthorization(childrenItem)">
                         <div>{{ $t('page.auth') }}</div>
                       </DropdownItem>
-                      <DropdownItem v-if="childrenItem.isCanEdit === 1" @click.native="delName(childrenItem.name, childrenItem.uuid, index)">
+                      <DropdownItem v-if="childrenItem.type != 'factory' && childrenItem.isCanEdit === 1" @click.native="delName(childrenItem.name, childrenItem.uuid, index)">
                         <div>{{ $t('page.delete') }}</div>
                       </DropdownItem>
                     </DropdownMenu>
