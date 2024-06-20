@@ -1,4 +1,4 @@
-import defaultHandler from './default-handler'; 
+import defaultHandler from './default-handler';
 import titleHandler from './title-handler';
 import priorityHandler from './priority-handler';
 import contentHandler from './content-handler';
@@ -23,17 +23,11 @@ let importComponentConfig = {};
 try {
   // 导入自定义组件
   const componentConfig = require.context('@/commercial-module', true, /processTaskAudit.js$/);
-  componentConfig
-    .keys()
-    .filter(path => {
-      const moduleName = path.split('/')?.[1]?.split('-')?.pop() || path.split('/')?.[1];
-      return moduleName === 'process';
-    })
-    .forEach(path => {
-      importComponentConfig = componentConfig(path).default || {};
-    });
+  componentConfig.keys().forEach(path => {
+    importComponentConfig = Object.assign(importComponentConfig, componentConfig(path).default || {});
+  });
 } catch (error) {
-  console.error('form/component/index.js异常', error);
+  console.error('processTaskAudit.js加载异常', error);
 }
 
 export default {
