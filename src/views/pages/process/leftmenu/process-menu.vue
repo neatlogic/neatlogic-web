@@ -40,7 +40,7 @@
                       <DropdownItem v-if="childrenItem.isCanRole === 1" @click.native="editAuthorization(childrenItem)">
                         <div>{{ $t('page.auth') }}</div>
                       </DropdownItem>
-                      <DropdownItem v-if="childrenItem.isCanEdit === 1" @click.native="delName(childrenItem.name, childrenItem.uuid, index)">
+                      <DropdownItem v-if="childrenItem.type != 'factory' && childrenItem.isCanEdit === 1" @click.native="delName(childrenItem.name, childrenItem.uuid, index)">
                         <div>{{ $t('page.delete') }}</div>
                       </DropdownItem>
                     </DropdownMenu>
@@ -66,7 +66,7 @@
     <AuthDialog v-if="editAuthorizationDialog" :uuid="currentWorkcenterUuid" @close="closeAuthorizationDialog"></AuthDialog>
     <EditWorkcenterDialog
       v-if="editRenameDialog"
-      :uuid="currentWorkcenterUuid"
+      :workcenter="currentWorkcenter"
       @close="closeRenameDialog"
       @refresh="refreshCurrentWorkcenterData"
     ></EditWorkcenterDialog>
@@ -187,6 +187,7 @@ export default {
     },
     editRename(obj) {
       this.currentWorkcenterUuid = obj.uuid;
+      this.currentWorkcenter = obj;
       this.editRenameDialog = true;
     },
     closeRenameDialog(needRefresh) {
