@@ -42,11 +42,12 @@ export default {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
-    uuid: {type: String}
+    workcenter: {type: Object}
   },
   data() {
     return {
       theadList: [],
+      uuid: null,
       dialogConfig: {
         title: this.$t('dialog.title.edittarget', {target: this.$t('page.name')}),
         type: 'modal',
@@ -90,6 +91,14 @@ export default {
   created() {},
   beforeMount() {},
   async mounted() {
+    this.uuid = this.workcenter.uuid;
+    if (this.workcenter.type === 'factory') {
+      this.formConfig.forEach((element, index) => {
+        if (element.name === 'name') {
+          this.$set(this.formConfig[index], 'readonly', 'readonly');
+        }
+      });
+    }
     await this.getWorkcenterByUuid();
     await this.getWorkcenterTheadList();
   }, 
