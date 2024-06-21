@@ -20,17 +20,6 @@
         <span class="text-grey fz10">{{ $t('term.cmdb.dataview') }}</span>
       </Divider>
       <div v-if="customViewData && customViewData.tbodyList && customViewData.tbodyList.length > 0" :class="{ grid: customViewData.pageCount > 1 }">
-        <div v-if="customViewData.pageCount > 1">
-          <VerticalPager
-            :currentPage="customViewData.currentPage"
-            :pageCount="customViewData.pageCount"
-            @change="
-              page => {
-                searchCustomView(page);
-              }
-            "
-          ></VerticalPager>
-        </div>
         <div class="overflow">
           <ul>
             <li
@@ -44,6 +33,17 @@
               <a class="cursor overflow" :class="customview.icon">{{ customview.name }}</a>
             </li>
           </ul>
+        </div>
+        <div v-if="customViewData.pageCount > 1">
+          <VerticalPager
+            :currentPage="customViewData.currentPage"
+            :pageCount="customViewData.pageCount"
+            @change="
+              page => {
+                searchCustomView(page);
+              }
+            "
+          ></VerticalPager>
         </div>
       </div>
       <Divider v-if="graphData && graphData.tbodyList && graphData.tbodyList.length > 0" style="margin: 0px" orientation="left">
@@ -180,7 +180,7 @@ export default {
 
 .grid {
   display: grid;
-  grid-template-columns: 23px auto;
+  grid-template-columns: auto 23px;
   .link {
     padding-left: 0px !important;
   }
