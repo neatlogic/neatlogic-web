@@ -13,12 +13,23 @@
       :isCustomValue="isCustomValue"
       border="border"
       search
+      @first="addRow"
       @change="
         (val, valueObject, selectItem) => {
           setValue(selectItem);
         }
       "
-    ></TsFormSelect>
+    >
+    </TsFormSelect>
+    <!-- 新增数据为true+矩阵类型是自定义矩阵，下拉框，才有新增数据按钮 -->
+    <RowEditDialog
+      v-if="isShowRowEditDialog"
+      :matrixUuid="matrixUuid"
+      @close="()=>{
+        matrixUuid = '';
+        isShowRowEditDialog = false;
+      }"
+    ></RowEditDialog>
   </div>
   <div v-else class="text-grey">
     <ul>
@@ -33,7 +44,8 @@ import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 export default {
   name: '',
   components: {
-    TsFormSelect
+    TsFormSelect,
+    RowEditDialog: () => import('@/views/pages/framework/matrix/components/row-edit.vue')
   },
   extends: base,
   mixins: [validmixin],
@@ -44,7 +56,9 @@ export default {
   data() {
     return {
       isFirst: true,
-      initFilter: this.$utils.deepClone(this.filter)
+      initFilter: this.$utils.deepClone(this.filter),
+      isShowRowEditDialog: false,
+      matrixUuid: ''
     };
   },
   beforeCreate() {},
@@ -60,6 +74,14 @@ export default {
   methods: {
     validConfig() {
       return this.validConfigForListItem();
+    },
+    addRow() {
+      let {matrixUuid = ''} = this.config || {};
+      if (this.$utils.isEmpty(matrixUuid)) {
+        return false;
+      }
+      this.isShowRowEditDialog = true;
+      this.matrixUuid = matrixUuid;
     }
   },
   filter: {},
@@ -114,6 +136,10 @@ export default {
         const params = { matrixUuid: this.config.matrixUuid, filterList: []};
         if (!this.$utils.isEmpty(this.filter)) {
           params.filterList = this.filter;
+        }
+        if (this.config.isAddData && !this.$utils.isEmpty(this.config.matrixUuid)) {
+          setting.firstLi = true;
+          setting.firstText = this.$t('dialog.title.addtarget', {'target': this.$t('page.data')});
         }
         if (this.config.mapping) {
           params.keywordColumn = this.config.mapping.text;
