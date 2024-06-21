@@ -997,5 +997,7 @@
   "workcenterresettheadsetting": "Do you want to restore the default configuration",
   "workcentertitleresettheadsetting": "Restore configuration",
   "resetconfirm": "Restore Confirmation",
-  "nocomment": "There is currently no description available"
+  "nocomment": "There is currently no description available",
+  "cleardata": "wipe data ",
+  "customdata": "Custom data"
 }

@@ -20,17 +20,6 @@
         <span class="text-grey fz10">{{ $t('term.cmdb.dataview') }}</span>
       </Divider>
       <div v-if="customViewData && customViewData.tbodyList && customViewData.tbodyList.length > 0" :class="{ grid: customViewData.pageCount > 1 }">
-        <div v-if="customViewData.pageCount > 1">
-          <VerticalPager
-            :currentPage="customViewData.currentPage"
-            :pageCount="customViewData.pageCount"
-            @change="
-              page => {
-                searchCustomView(page);
-              }
-            "
-          ></VerticalPager>
-        </div>
         <div class="overflow">
           <ul>
             <li
@@ -45,22 +34,22 @@
             </li>
           </ul>
         </div>
+        <div v-if="customViewData.pageCount > 1">
+          <VerticalPager
+            :currentPage="customViewData.currentPage"
+            :pageCount="customViewData.pageCount"
+            @change="
+              page => {
+                searchCustomView(page);
+              }
+            "
+          ></VerticalPager>
+        </div>
       </div>
       <Divider v-if="graphData && graphData.tbodyList && graphData.tbodyList.length > 0" style="margin: 0px" orientation="left">
         <span class="text-grey fz10">{{ $t('term.cmdb.topoview') }}</span>
       </Divider>
       <div v-if="graphData && graphData.tbodyList && graphData.tbodyList.length > 0" :class="{ grid: graphData.pageCount > 1 }">
-        <div v-if="graphData.pageCount > 1">
-          <VerticalPager
-            :currentPage="graphData.currentPage"
-            :pageCount="graphData.pageCount"
-            @change="
-              page => {
-                searchGraph(page);
-              }
-            "
-          ></VerticalPager>
-        </div>
         <div class="overflow">
           <ul>
             <li
@@ -74,6 +63,17 @@
               <a class="cursor overflow" :class="customview.icon">{{ customview.name }}</a>
             </li>
           </ul>
+        </div>
+        <div v-if="graphData.pageCount > 1">
+          <VerticalPager
+            :currentPage="graphData.currentPage"
+            :pageCount="graphData.pageCount"
+            @change="
+              page => {
+                searchGraph(page);
+              }
+            "
+          ></VerticalPager>
         </div>
       </div>
     </div>
@@ -180,9 +180,6 @@ export default {
 
 .grid {
   display: grid;
-  grid-template-columns: 23px auto;
-  .link {
-    padding-left: 0px !important;
-  }
+  grid-template-columns: auto 23px;
 }
 </style>
