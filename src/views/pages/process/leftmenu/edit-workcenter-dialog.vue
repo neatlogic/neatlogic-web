@@ -24,13 +24,24 @@
                   :true-value="1"
                   :disabled="thead.name === 'title'"
                   :false-value="0"
-                ></Checkbox>{{ thead.displayName }}
-              </Tag></draggable>
+                ></Checkbox>{{ thead.displayName }} 
+                <div v-if="thead.name === 'title'" class="action-group">
+                  <span class="action-item tsfont-setting" @click="showTheadSetting(thead)"></span>
+                </div>
+              </Tag>
+              </draggable>
             </template>
           </TsForm>
         </div>
       </template>
     </TsDialog>
+    <WorkcenterTheadSetting
+      v-if="isShowTheadSetting"
+      :isShowTheadSetting="isShowTheadSetting"
+      :currentSettingThead="currentSettingThead"
+      @close="closeTheadSetting"
+      @ok="saveTheadSetting"
+    ></WorkcenterTheadSetting>
   </div>
 </template>
 <script>
@@ -39,7 +50,8 @@ export default {
   name: '',
   components: {
     draggable,
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    WorkcenterTheadSetting: () => import('../task/workcenter-thead-setting.vue')
   },
   props: {
     workcenter: {type: Object}
@@ -84,7 +96,9 @@ export default {
           label: this.$t('page.defaultthead'),
           tooltip: this.$t('term.process.workcentertheadppolicy')
         }
-      ]
+      ],
+      isShowTheadSetting: false,
+      currentSettingThead: null
     };
   },
   beforeCreate() {},
@@ -148,6 +162,21 @@ export default {
           }
         }
       });
+    },
+    showTheadSetting(thead) {
+      this.currentSettingThead = thead;
+      this.isShowTheadSetting = true;
+    },
+    closeTheadSetting() {
+      this.isShowTheadSetting = false;
+    },
+    saveTheadSetting(theadSettingFormData) {
+      this.theadList.forEach(th => { 
+        if (th.name === this.currentSettingThead.name) {
+          th.config = theadSettingFormData;
+        }
+      });
+      this.isShowTheadSetting = false;
     }
   },
   filter: {},

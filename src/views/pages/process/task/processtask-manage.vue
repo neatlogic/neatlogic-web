@@ -46,7 +46,7 @@
                 :sortOrder="tableConfig.sortList"
                 :isBigDataPage="true"
                 :canEdit="true"
-                :popTipBtnList="popTipBtnList"
+                :theadPopTipBtnList="theadPopTipBtnList"
                 keyName="id"
                 multiple
                 class="tstable-box"
@@ -55,9 +55,10 @@
                 @updateSort="updateSort"
                 @checkshow="checkshow"
                 @getSelected="(value,selectList)=>{ getSelected(selectList) }"
+                @theadPopTipSettingClick="showTheadSetting"
               >
                 <template v-for="(tbody, tindex) in filtertheadList(tableConfig.theadList)" :slot="tbody.key" slot-scope="{ row }">
-                  <div :key="tindex" style="overflow: hidden;" :style="tbody.key == 'currentstep' ? {height: '50px',display: 'flex',alignItems: 'center'} : {height: '50px',lineHeight: '50px'}">
+                  <div :key="tindex" :style="(tbody.config && tbody.config.isNewLine == 1)?'':tbody.key == 'currentstep' ? {overflow: 'hidden', height: '50px',display: 'flex',alignItems: 'center'} : {overflow: 'hidden',height: '50px',lineHeight: '50px'}">
                     <tdjson
                       v-if="typeof row[tbody.key] === 'object' && tbody.key != 'action'"
                       :key="tindex"
@@ -80,7 +81,19 @@
                     ></tdBtn>
                     <div v-else-if="['starttime', 'endtime'].includes(tbody.key)" :key="tindex">{{ row[tbody.key] | formatDate }}</div>
                     <div v-else-if="tbody.key == 'title'" :key="tindex">
-                      <span class="text-href" :title="row[tbody.key]" @click.stop="clickTr(row)">{{ substr(row[tbody.key]) }}</span>
+                      <span
+                        v-if="tbody.config && tbody.config.isNewLine == 1"
+                        class="text-href"
+                        :class="(tbody.config && tbody.config.isNewLine == 1)?'text-wrap':''"
+                        :title="row[tbody.key]"
+                        @click.stop="clickTr(row)"
+                      >{{ row[tbody.key] }}</span>
+                      <span
+                        v-else
+                        class="text-href"
+                        :title="row[tbody.key]"
+                        @click.stop="clickTr(row)"
+                      >{{ substr(row[tbody.key]) }}</span>
                     </div>
                     <div v-else :key="tindex">{{ row[tbody.key] }}</div>
                   </div>
@@ -126,6 +139,13 @@
         </div>
       </template>
     </TsDialog>
+    <WorkcenterTheadSetting
+      v-if="isShowTheadSetting"
+      :isShowTheadSetting="isShowTheadSetting"
+      :currentSettingThead="currentSettingThead"
+      @close="closeTheadSetting"
+      @ok="saveTheadSetting"
+    ></WorkcenterTheadSetting>
   </div>
 </template>
 <script>
@@ -139,7 +159,9 @@ export default {
     CardInfo: () => import('./overview/CenterCard.vue'),
     tdjson: () => import('./overview/Tdjson.vue'),
     tdBtn: () => import('./overview/ControllerBtn.vue'),
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    WorkcenterTheadSetting: () => import('./workcenter-thead-setting.vue')
+
   },
   directives: { download },
   props: {},
@@ -178,7 +200,7 @@ export default {
       okBtnDisable: false,
       processTaskConfig: {},
       selectedWorkList: [],
-      popTipBtnList: [
+      theadPopTipBtnList: [
         {
           text: this.$t('page.workcentertitleresettheadsetting'), 
           type: 'default',
@@ -202,7 +224,9 @@ export default {
             });
           }
         }
-      ]
+      ],
+      currentSettingThead: null, //当前点击poptip中thead配置的thead
+      isShowTheadSetting: false
     };
   },
   beforeCreate() {},
@@ -224,6 +248,21 @@ export default {
   },
   destroyed() {},
   methods: {
+    showTheadSetting(th) {
+      this.currentSettingThead = th;
+      this.isShowTheadSetting = true;
+    },
+    closeTheadSetting() {
+      this.isShowTheadSetting = false;
+    },
+    saveTheadSetting(theadSettingFormData) {
+      this.tableConfig.theadList.forEach(th => { 
+        if (th.key === this.currentSettingThead.key) {
+          th.config = theadSettingFormData;
+        }
+      });
+      this.checkshow(this.tableConfig.theadList, 1);
+    },
     async getWorkcenterByUuid() {
       if (this.workcenterUuid && !this.workcenterData) {
         await this.$api.process.processtask.getWorkcenterByUuid(this.workcenterUuid).then(res => {
@@ -315,7 +354,8 @@ export default {
           type: d.type,
           width: 1,
           disabled: d.disabled,
-          className: d.className
+          className: d.className,
+          config: d.config
         }));
       this.$api.process.processtask
         .workcenterTheadSave({
@@ -329,6 +369,7 @@ export default {
           }
         })
         .catch(error => {});
+      this.isShowTheadSetting = false;
     },
     changePageSize(pageSize) {
       this.tableConfig.pageSize = pageSize;
@@ -357,7 +398,8 @@ export default {
         //20200601ui调整为标题不加粗
         className: d.className,
         isSortable: d.isSortable,
-        sort: d.sort
+        sort: d.sort,
+        config: d.config
       }));
       // 页码
       if (this.tableConfig.theadList.length <= 0) {
@@ -395,6 +437,10 @@ export default {
         if (newTh) {
           th.isShow = newTh.isShow;
           th.sort = newTh.sort;
+          th.config = newTh.config;
+          if (th.key === 'title' && !newTh.config) {
+            th.config = {};
+          }
         }
       });
       this.tableConfig.theadList.sort((a, b) => { 
@@ -887,6 +933,13 @@ html {
   }
   /deep/ td:nth-of-type(3) {
     padding-left: 0 !important;
+  }
+  .text-wrap {
+    display: inline-block;
+    width: 300px;
+    white-space: normal; /* 允许正常的换行 */
+    word-wrap: break-word; /* 强制长单词换行 */
+    word-break: break-all; /* 可以在任意字符处换行 */
   }
 }
 </style>
