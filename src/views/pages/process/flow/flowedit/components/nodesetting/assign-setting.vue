@@ -466,6 +466,19 @@ export default {
       //获取表单指定版本的数据，渲染表单
       this.$set(this, 'formItemList', []);
       let formitem = [];
+      let plugin = this.allFormitemList || [];
+      if (plugin && plugin.length > 0) {
+        plugin.forEach(plugins => {
+          //只能选择用户选择器、下拉框
+          if (plugins.handler == 'formuserselect' || plugins.handler == 'formselect') {
+            let conf = {
+              value: plugins.uuid,
+              text: plugins.label
+            };
+            formitem.push(conf);
+          }
+        });
+      }
       this.$set(this, 'formItemList', formitem);
       if (this.policyListAttributeUuidList && this.policyListAttributeUuidList.length > 0) {
         let newPolicyListAttributeUuid = [];
