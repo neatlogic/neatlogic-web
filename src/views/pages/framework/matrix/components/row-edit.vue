@@ -6,11 +6,16 @@
     @on-ok="okAddMatrixData"
   >
     <template>
-      <div v-if="matrixDataDialogForm.length > 0">
+      <Loading
+        v-if="loadingShow"
+        :loadingShow="loadingShow"
+        type="fix"
+      ></Loading>
+      <div v-else-if="matrixDataDialogForm.length > 0">
         <TsForm ref="matrixDataDialogForm" :item-list="matrixDataDialogForm"></TsForm>
       </div>
       <div v-else>
-        <no-data></no-data>
+        <NoData></NoData>
       </div>
     </template>
   </TsDialog>
@@ -36,7 +41,8 @@ export default {
         width: 'medium'
       },
       isMutiple: !this.data, //只有新增行数据才支持多选
-      matrixDataDialogForm: [] //添加编辑行属性表单
+      matrixDataDialogForm: [], //添加编辑行属性表单
+      loadingShow: true
     };
   },
   beforeCreate() {},
@@ -78,6 +84,7 @@ export default {
       let data = {
         matrixUuid: this.matrixUuid
       };
+      this.loadingShow = true;
       this.$api.framework.matrix.getMatrixAttributeByUuid(data).then(res => {
         if (res.Status == 'OK') {
           let list = res.Return.tbodyList;
@@ -189,6 +196,7 @@ export default {
                 break;
             }
             this.matrixDataDialogForm.push(data);
+            this.loadingShow = false;
           });
           if (this.data != undefined) {
             let uuidData = {
@@ -211,6 +219,7 @@ export default {
                     }
                   });
                 }
+                this.loadingShow = false;
               }
             });
           }
