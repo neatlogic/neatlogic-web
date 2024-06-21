@@ -1079,6 +1079,7 @@ export default {
       config.fn && config.fn(this);
     },
     theadPopTipSettingClick(th) {
+      this.visible = false;
       // 表格右上角tooltip thead的点击齿轮按钮
       this.$emit('theadPopTipSettingClick', th);
     }
