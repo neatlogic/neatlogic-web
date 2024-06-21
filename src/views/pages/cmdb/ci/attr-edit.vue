@@ -34,7 +34,7 @@
                 :true-value="'at'"
                 :false-value="'mt'"
               ></TsFormSwitch>
-              <div class="text-tip tips">{{ $t('message.cmdb.autoattr') }}</div>
+              <div class="text-grey">{{ $t('message.cmdb.autoattr') }}</div>
             </div>
           </template>
           <template v-slot:type>
