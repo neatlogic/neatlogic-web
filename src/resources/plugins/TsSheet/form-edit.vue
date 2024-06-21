@@ -1104,7 +1104,6 @@ export default {
       if (list) {
         this.extendConfigList = list;
       }
-      console.log(this.extendConfigList, list);
     }
   },
   filter: {},
