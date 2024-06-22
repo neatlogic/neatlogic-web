@@ -2731,6 +2731,7 @@
     "deleteversionconfirm": "是否确认删除版本：{target}？",
     "metro": "地铁避让",
     "manhattan": "正交避让",
-    "dynamicwidget": "动态图元"
+    "dynamicwidget": "动态图元",
+    "startcientity": "起点配置项"
   }
 }

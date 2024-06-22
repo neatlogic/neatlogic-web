@@ -1001,5 +1001,6 @@
   "resetconfirm": "还原确认",
   "nocomment": "暂无描述",
   "cleardata": "清空数据",
-  "customdata": "自定义数据"
+  "customdata": "自定义数据",
+  "clicktoselect": "点击选择"
 }

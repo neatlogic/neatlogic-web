@@ -999,5 +999,6 @@
   "resetconfirm": "Restore Confirmation",
   "nocomment": "There is currently no description available",
   "cleardata": "wipe data ",
-  "customdata": "Custom data"
+  "customdata": "Custom data",
+  "clicktoselect": "Click to select"
 }
