@@ -4,9 +4,11 @@
   class Attr extends NodeBase {
     constructor(canvas, config) {
       super(canvas, config);
-      if (config.config.canLink) {
+      if (config.config.canLink || config.config.targetCiId) {
         this._anchorList = [{ position: 'L' }, { position: 'R' }]; //连线点列表，默认左右四个锚点
-        this.__icon = this.__icon + ' >>';
+        if (config.config.canLink && !this.__icon.endsWith('>>')) {
+          this.__icon = this.__icon + ' >>';
+        }
       } else {
         this._anchorList = [];
       }
@@ -40,6 +42,22 @@
             tAnchor: targetAnchor,
             name: name
           });
+          return link;
+        }
+      } else if (this.getConfig().targetCiId && sourceAnchor && targetNode && targetAnchor && this != targetNode && targetNode.getType() === 'Ci' && targetNode.isAllowConnected(sourceNode)) {
+        const nextNodeList = this.getNextNodes();
+        if (nextNodeList.length == 0) {
+          const link = this.canvas.addLink({
+            type: joinType || 'Join',
+            source: this.getUuid(), 
+            sAnchor: sourceAnchor,
+            target: targetNode.getUuid(),
+            tAnchor: targetAnchor,
+            name: name
+          });
+          if (link) {
+            link.setIsDeleteable(false);
+          }
           return link;
         }
       }

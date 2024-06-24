@@ -2731,6 +2731,7 @@
     "deleteversionconfirm": "Are you sure to delete version: {target}?",
     "metro": "Subway avoidance",
     "manhattan": "Orthogonal avoidance",
-    "dynamicwidget": "Dynamic Elements"
+    "dynamicwidget": "Dynamic Elements",
+    "startcientity": "Starting point configuration item"
   }
 }

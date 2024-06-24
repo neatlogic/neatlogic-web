@@ -16,7 +16,7 @@
         <TsFormInput
           ref="titleInput"
           v-model="title"
-          maxlength="50"
+          maxlength="200"
           border="bottom"
           @on-blur="changeTitle(title)"
         ></TsFormInput>

@@ -39,7 +39,7 @@
           :disabled="disabled"
           :selectItemList.sync="selectMatrixConfig"
           @first="$utils.matrixDataSourceRedirect()"
-          @on-change="changeMatrixUuid()"
+          @on-change="(val, valObj,selectedItem) =>changeMatrixUuid(config,selectedItem)"
         >
           <template v-slot:option="{item}">
             <div>{{ item.name }}<span v-if="item.type" class="text-grey cen-align">({{ item.type }})</span></div>
@@ -55,7 +55,7 @@
           <i class="tsfont-rotate-right pl-xs text-tip-active" :title="$t('page.refresh')" @click="refreshMatrixConfig(config.matrixUuid)"></i>
         </div>
       </div>
-    </TsFormItem>
+    </TsFormItem> 
     <template v-if="config.dataSource === 'matrix' && config.matrixUuid">
       <TsFormItem labelPosition="top" :label="$t('page.fieldmapping')">
         <div class="padding-md radius-md" :class="validClass('mapping')">
@@ -111,6 +111,21 @@
             $set(config, 'hiddenFieldList', val);
           }"
         ></TsFormSelect>
+      </TsFormItem>
+      <TsFormItem
+        v-if="!$utils.isEmpty(config.dataSourceType) && config.dataSourceType === 'custom'"
+        :label="$t('page.newtarget',{'target':$t('page.data')})"
+        labelPosition="left"
+        contentAlign="right"
+        tooltip="当选择自定义矩阵类型并新增数据时，下拉框将显示“+”按钮。"
+      >
+        <!-- 自定义矩阵类型才显示 -->
+        <TsFormSwitch
+          v-model="config.isAddData"
+          :trueValue="true"
+          :falseValue="false"
+          :disabled="disabled"
+        ></TsFormSwitch>
       </TsFormItem>
     </template>
     <TsFormItem v-if="config.matrixUuid && config.dataSource === 'matrix' && selectMatrixConfig && mappingDataList.length > 0" labelPosition="top" :label="$t('page.filtercondition')">
@@ -206,7 +221,9 @@ export default {
       this.$set(this.config, 'matrixUuid', '');
       this.clearConfigData();
     },
-    changeMatrixUuid() {
+    changeMatrixUuid(config, selectedItem = {}) {
+      let {type = ''} = selectedItem;
+      config.dataSourceType = type;
       this.clearConfigData();
     },
     clearConfigData() {

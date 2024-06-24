@@ -1,35 +1,47 @@
 <template>
-  <TsDialog
-    v-bind="dialogConfig"
-    @on-close="close"
-    @on-ok="save"
-  >
-    <template v-slot>
-      <div>
-        <TsForm ref="form" v-model="data" :item-list="formConfig">
-          <template slot="theadList">
-            <draggable
-              :animation="150"
-              handle=".handler"
-              :list="theadList"
-            ><Tag
-              v-for="(thead, index) in theadList"
-              :key="index"
-              size="large"
-            >
-              <i class="handler tsfont-drag" style="cursor:move"></i>
-              <Checkbox
-                v-model="thead.isShow"
-                :true-value="1"
-                :disabled="thead.name === 'title'"
-                :false-value="0"
-              ></Checkbox>{{ thead.displayName }}
-            </Tag></draggable>
-          </template>
-        </TsForm>
-      </div>
-    </template>
-  </TsDialog>
+  <div>
+    <TsDialog
+      v-bind="dialogConfig"
+      @on-close="close"
+      @on-ok="save"
+    >
+      <template v-slot>
+        <div>
+          <TsForm ref="form" v-model="data" :item-list="formConfig">
+            <template slot="theadList">
+              <draggable
+                :animation="150"
+                handle=".handler"
+                :list="theadList"
+              ><Tag
+                v-for="(thead, index) in theadList"
+                :key="index"
+                size="large"
+              >
+                <i class="handler tsfont-drag" style="cursor:move"></i>
+                <Checkbox
+                  v-model="thead.isShow"
+                  :true-value="1"
+                  :disabled="thead.name === 'title'"
+                  :false-value="0"
+                ></Checkbox>{{ thead.displayName }}
+                <div v-if="thead.name === 'title'" class="action-group">
+                  <span class="action-item tsfont-setting" @click="showTheadSetting(thead)"></span>
+                </div>
+              </Tag></draggable>
+            </template>
+          </TsForm>
+        </div>
+      </template>
+    </TsDialog>
+    <WorkcenterTheadSetting
+      v-if="isShowTheadSetting"
+      :isShowTheadSetting="isShowTheadSetting"
+      :currentSettingThead="currentSettingThead"
+      @close="closeTheadSetting"
+      @ok="saveTheadSetting"
+    ></WorkcenterTheadSetting>
+  </div>
 </template>
 <script>
 import draggable from 'vuedraggable';
@@ -37,7 +49,8 @@ export default {
   name: '',
   components: {
     draggable,
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    WorkcenterTheadSetting: () => import('@/views/pages/process/task/workcenter-thead-setting.vue')
   },
   props: {},
   data() {
@@ -118,7 +131,9 @@ export default {
           label: this.$t('page.defaultthead'),
           tooltip: this.$t('term.process.workcentertheadppolicy')
         }
-      }
+      },
+      isShowTheadSetting: false,
+      currentSettingThead: null
     };
   },
   beforeCreate() {},
@@ -155,6 +170,21 @@ export default {
           }
         }
       });
+    },
+    showTheadSetting(thead) {
+      this.currentSettingThead = thead;
+      this.isShowTheadSetting = true;
+    },
+    closeTheadSetting() {
+      this.isShowTheadSetting = false;
+    },
+    saveTheadSetting(theadSettingFormData) {
+      this.theadList.forEach(th => { 
+        if (th.name === this.currentSettingThead.name) {
+          th.config = theadSettingFormData;
+        }
+      });
+      this.isShowTheadSetting = false;
     }
   },
   filter: {},

@@ -1,7 +1,9 @@
 <template>
   <div class="edit-condition">
     <div>
-      <span><a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup()">{{ $t('term.cmdb.rulegroup') }}</a></span>
+      <span>
+        <a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup()">{{ $t('term.cmdb.rulegroup') }}</a>
+      </span>
     </div>
     <div v-for="(conditionGroup, groupIndex) in rule.conditionGroupList" :key="groupIndex" class="group-border">
       <div class="group-content bg-op radius-md">
@@ -64,10 +66,10 @@
             </Col>
             <Col span="2">
               <div class="btn-group text-tip">
-                <span class="tsfont-plus mr-xs" style="cursor:pointer" @click="addCondition(conditionGroup)"></span>
+                <span class="tsfont-plus mr-xs" style="cursor: pointer" @click="addCondition(conditionGroup)"></span>
                 <span
                   v-if="conditionGroup.conditionList.length > 1"
-                  style="cursor:pointer"
+                  style="cursor: pointer"
                   class="tsfont-minus"
                   @click="delCondition(conditionGroup, conditionIndex)"
                 ></span>
@@ -193,7 +195,7 @@ export default {
     async getCustomAttrList() {
       this.customAttrList = [];
       if (this.customViewId) {
-        await this.$api.cmdb.customview.getCustomViewAttrByCustomViewId(this.customViewId, 0).then(res => {
+        await this.$api.cmdb.customview.getCustomViewAttrByCustomViewId(this.customViewId, { isHidden: 0, isHasTargetCiId: 0 }).then(res => {
           if (res.Return.attrList && res.Return.attrList.length > 0) {
             res.Return.attrList.forEach(attr => {
               this.customAttrList.push({ id: attr.uuid, type: 'attr', label: attr.alias, expressionList: attr.attrVo.expressionList });

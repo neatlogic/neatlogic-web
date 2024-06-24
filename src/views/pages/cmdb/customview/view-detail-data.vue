@@ -38,8 +38,13 @@
     </Card>
     <div v-if="filtedRefCiList && filtedRefCiList.length > 0">
       <div v-for="(ci, index) in filtedRefCiList" :key="index">
-        <div v-if="getDisplayColumnList(ci).length > 0" :bordered="false" dis-hover>
-          <Divider plain orientation="start">{{ ci.alias }}</Divider>
+        <div
+          v-if="getDisplayColumnList(ci).length > 0"
+          :bordered="false"
+          dis-hover
+          class="padding"
+        >
+          <Divider plain orientation="left">{{ ci.alias }}</Divider>
           <CiEntityList
             :ciId="ci.ciId"
             :needCondition="false"
