@@ -1,5 +1,7 @@
 import dispatcherValid from '@/views/pages/process/flow/flowedit/components/nodesetting/dispatcher/dispatcher-valid.js';
 import { nodeValidConfig, lineValidConfig } from '@/views/pages/process/flow/flowedit/components/autoexec/flow-node-valid.js';
+import { nodeValidConfig as createjobNodeValid } from '@/views/pages/process/flow/flowedit/components/createjob/flow-node-valid.js';
+
 // 流程分派器
 let FLOW_DISPATCHER_COMPONENT = {};
 let FLOW_DISPATCHER_VALID = {
@@ -9,7 +11,8 @@ let FLOW_DISPATCHER_VALID = {
 
 // 流程节点校验
 let FLOW_NODE_VALID = {
-  ...nodeValidConfig
+  ...nodeValidConfig,
+  ...createjobNodeValid
 };
 // 流程节点连接线校验
 let FLOW_LINE_VALID = {

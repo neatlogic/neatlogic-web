@@ -8,6 +8,7 @@ import event from './event-node';
 import autoexec from './autoexec/index.vue';
 import timer from './timer-node';
 import cmdb from '@/views/pages/cmdb/flow/node/index.js'; //cmdb
+import createjob from './createjob';
 
 let importComponentConfig = {};
 try {
@@ -32,5 +33,6 @@ export default {
   autoexec,
   ...cmdb,
   timer,
-  ...importComponentConfig  
+  createjob,
+  ...importComponentConfig
 };
