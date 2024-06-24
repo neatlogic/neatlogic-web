@@ -1,38 +1,43 @@
 <template>
   <div>
     <div v-if="needCondition && !ciEntityData.error">
-      <div class="clearfix mb-nm">
-        <div v-if="needAction && ciEntityData && ciEntityData.tbodyList && ciEntityData.tbodyList.length > 0" class="batch">
-          <Dropdown trigger="click">
-            <Button type="primary" ghost :disabled="!selectedCiEntityList || selectedCiEntityList.length == 0">
-              {{ $t('page.batchoperation') }}
-              <span class="tsfont-down"></span>
-            </Button>
-            <DropdownMenu slot="list">
-              <DropdownItem @click.native="batchEdit()">{{ $t('page.edit') }}</DropdownItem>
-              <DropdownItem @click.native="batchDelete()">{{ $t('page.delete') }}</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+      <div>
+        <div class="clearfix mb-nm">
+          <div v-if="needAction && ciEntityData && ciEntityData.tbodyList && ciEntityData.tbodyList.length > 0" class="batch">
+            <Dropdown trigger="click">
+              <Button type="primary" ghost :disabled="!selectedCiEntityList || selectedCiEntityList.length == 0">
+                {{ $t('page.batchoperation') }}
+                <span class="tsfont-down"></span>
+              </Button>
+              <DropdownMenu slot="list">
+                <DropdownItem @click.native="batchEdit()">{{ $t('page.edit') }}</DropdownItem>
+                <DropdownItem @click.native="batchDelete()">{{ $t('page.delete') }}</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+          <div class="int">
+            <TsFormInput
+              v-if="!isAdvancedSearch"
+              v-model="searchParam.keyword"
+              border="border"
+              :width="400"
+              :placeholder="$t('form.placeholder.keyword')"
+              @on-enter="searchCiEntity(1)"
+            ></TsFormInput>
+          </div>
+          <div v-if="!isAdvancedSearch && needExport" class="export">
+            <Button type="primary" :ghost="true" @click="isExportDialogShow = true">{{ $t('page.export') }}</Button>
+          </div>
+          <div v-if="attrList && attrList.length > 0" class="senior">
+            <span @click="isAdvancedSearch = !isAdvancedSearch">
+              {{ $t('page.advancesearch') }}
+              <i :class="isAdvancedSearch ? 'tsfont-drop-up' : 'tsfont-drop-down'"></i>
+            </span>
+          </div>
         </div>
-        <div class="int">
-          <TsFormInput
-            v-if="!isAdvancedSearch"
-            v-model="searchParam.keyword"
-            border="border"
-            :width="400"
-            :placeholder="$t('form.placeholder.keyword')"
-            @on-enter="searchCiEntity(1)"
-          ></TsFormInput>
-        </div>
-        <div v-if="!isAdvancedSearch && needExport" class="export">
-          <Button type="primary" :ghost="true" @click="isExportDialogShow = true">{{ $t('page.export') }}</Button>
-        </div>
-        <div v-if="attrList && attrList.length > 0" class="senior">
-          <span @click="isAdvancedSearch = !isAdvancedSearch">
-            {{ $t('page.advancesearch') }}
-            <i :class="isAdvancedSearch ? 'tsfont-drop-up' : 'tsfont-drop-down'"></i>
-          </span>
-        </div>
+      </div>
+      <div v-if="!isAdvancedSearch && ciEntityData.keywordList && ciEntityData.keywordList.length > 0" class="mt-xs" style="text-align: right">
+        <span class="mr-sm text-grey fz10">{{ $t('page.wordbreaklist') }}</span><Tag v-for="(k, index) in ciEntityData.keywordList" :key="index">{{ k }}</Tag>
       </div>
       <div v-if="isAdvancedSearch">
         <Tabs v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb')" v-model="advencedSearchMode">
@@ -809,39 +814,42 @@ export default {
       this.$addHistoryData('globalAttrConditionHideData', this.globalAttrConditionHideData);
       this.searchParam['globalAttrStrictMode'] = true;
 
-      await this.$api.cmdb.cientity.searchCiEntity(this.searchParam).then(res => {
-        this.searchParam.currentPage = res.Return.currentPage;
-        this.searchParam.pageSize = res.Return.pageSize;
-        this.ciEntityData = res.Return;
-        //如果ciEntityList中有一些前端控制参数(一般是“_”开头)，需要补充回来，不然状态不一致
-        if (this.ciEntityList && this.ciEntityList.length > 0) {
-          this.ciEntityList.forEach(element => {
-            for (let key in element) {
-              if (key.indexOf('_') == 0) {
-                const cientity = this.ciEntityData.tbodyList.find(d => d.uuid == element.uuid);
-                if (cientity) {
-                  cientity[key] = element[key];
+      await this.$api.cmdb.cientity
+        .searchCiEntity(this.searchParam)
+        .then(res => {
+          this.searchParam.currentPage = res.Return.currentPage;
+          this.searchParam.pageSize = res.Return.pageSize;
+          this.ciEntityData = res.Return;
+          //如果ciEntityList中有一些前端控制参数(一般是“_”开头)，需要补充回来，不然状态不一致
+          if (this.ciEntityList && this.ciEntityList.length > 0) {
+            this.ciEntityList.forEach(element => {
+              for (let key in element) {
+                if (key.indexOf('_') == 0) {
+                  const cientity = this.ciEntityData.tbodyList.find(d => d.uuid == element.uuid);
+                  if (cientity) {
+                    cientity[key] = element[key];
+                  }
                 }
               }
-            }
-          });
-        }
-        if (!this.$utils.isEmpty(this.ciEntityData.tbodyList)) {
-          this.ciEntityData.tbodyList.forEach(element => {
-            if (element.actionType == 'delete') {
-              this.$set(element, '_expander', false);
-            }
-          });
-        }
-        
-        //补充选中状态
-        if (this.selectedData && this.selectedData.length > 0) {
-          this.selectedIndexList = this.$utils.deepClone(this.selectedData);
-        }
-        this.selectedCiEntityList = [];
-      }).finally(() => {
-        this.isLoading = false;
-      });
+            });
+          }
+          if (!this.$utils.isEmpty(this.ciEntityData.tbodyList)) {
+            this.ciEntityData.tbodyList.forEach(element => {
+              if (element.actionType == 'delete') {
+                this.$set(element, '_expander', false);
+              }
+            });
+          }
+
+          //补充选中状态
+          if (this.selectedData && this.selectedData.length > 0) {
+            this.selectedIndexList = this.$utils.deepClone(this.selectedData);
+          }
+          this.selectedCiEntityList = [];
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
     async getGlobalAttrList() {
       await this.$api.cmdb.ci.getGlobalAttrByCiId(this.ciId, { isActive: 1, needAlias: 1 }).then(res => {

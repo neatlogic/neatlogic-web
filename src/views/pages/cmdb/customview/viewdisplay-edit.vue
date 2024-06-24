@@ -119,7 +119,7 @@ export default {
         }
       });
       this.viewData.nodes.forEach(node => {
-        if (node.type === 'Attr' || node.type === 'ConstAttr') {
+        if ((node.type === 'Attr' && !node.config.targetCiId) || node.type === 'ConstAttr') {
           const conf = node.config;
           if (conf.attrId) {
             attrIdList.push(conf.attrId);

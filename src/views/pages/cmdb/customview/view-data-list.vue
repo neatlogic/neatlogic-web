@@ -136,7 +136,10 @@
                 <i :class="!row._hasChild ? 'tsfont-drop-right' : 'tsfont-drop-down'" style="cursor: pointer" @click="showChild(row)"></i>
                 <span class="text-grey">{{ row._attrAlias }}：</span>
                 <span>{{ row._value }}</span>
-                <span class="text-grey">·<b class="text-info">{{ row._count }}</b></span>
+                <span class="text-grey">
+                  ·
+                  <b class="text-info">{{ row._count }}</b>
+                </span>
               </span>
               <span v-else :style="row._filterList ? 'padding-left:' + (row._filterList.length * 8 + 8) + 'px' : ''">
                 <a href="javascript:void(0)" @click="toViewDetail(row)">{{ row.id }}</a>
@@ -279,7 +282,7 @@ export default {
       }
     },
     getCustomViewAttr() {
-      this.$api.cmdb.customview.getCustomViewAttrByCustomViewId(this.viewId, 0).then(res => {
+      this.$api.cmdb.customview.getCustomViewAttrByCustomViewId(this.viewId, { isHidden: 0, isHasTargetCiId: 0 }).then(res => {
         this.attrList = res.Return.attrList;
         this.constAttrList = res.Return.constAttrList;
         this.viewData.theadList.push({ key: 'id', title: '#' });

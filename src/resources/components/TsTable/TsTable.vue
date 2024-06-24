@@ -222,6 +222,7 @@
       </div>
       <Poptip
         v-if="canEdit"
+        v-model="visible"
         placement="bottom-end"
         transfer
         width="300"
@@ -249,27 +250,30 @@
               @update="updateColSort"
             >
               <div
-                v-for="li in thList.filter(d => d.key != 'action')"
-                :key="li.key"
+                v-for="th in thList.filter(d => d.key != 'action')"
+                :key="th.key"
                 class="padding-xs"
-                :class="['sort-item', { disabled: li.key == 'selection' || li.disabled }]"
+                :class="['sort-item', { disabled: th.key == 'selection' || th.disabled }]"
               >
                 <div class="tsfont-drag sort-handle" style="text-align:center"></div>
                 <div class="sort-show" style="text-align:center">
                   <Checkbox
-                    v-model="li.isShow"
+                    v-model="th.isShow"
                     :true-value="1"
-                    :disabled="li.isDisabled || false"
+                    :disabled="th.isDisabled || false"
                     :false-value="0"
-                    @on-change="checkshow(li.key, li.isShow)"
+                    @on-change="checkshow(th.key, th.isShow)"
                   ></Checkbox>
                 </div>
-                <div class="text overflow">{{ li.title ? li.title : '_' }}</div>
+                <div class="text overflow">{{ th.title ? th.title : '_' }}</div>
+                <div v-if="th.config != null" class="action-group">
+                  <span class="action-item tsfont-setting" @click="theadPopTipSettingClick(th)"></span>
+                </div>
               </div>
             </draggable>
-            <div v-if="popTipBtnList" class="text-right">
+            <div v-if="theadPopTipBtnList" class="text-right">
               <Button
-                v-for="(btn, index) in popTipBtnList"
+                v-for="(btn, index) in theadPopTipBtnList"
                 :key="index"
                 :type="btn.type"
                 :ghost="btn.ghost || false"
@@ -556,7 +560,7 @@ export default {
       type: Boolean,
       default: false
     },
-    popTipBtnList: { //table 右上角表头排序显示自定义按钮
+    theadPopTipBtnList: { //table 右上角表头排序显示自定义按钮
       type: Array
     }
   },
@@ -591,6 +595,7 @@ export default {
       bigDataPageSize: _this.pageSize, //分页
       isRendered: true, //表格渲染需要时间导致第一次取值有问题，这里标记是否需要从新计算offsetWidth的值
       resizeEvent: null,
+      visible: false, //控制表头排序是否显示的poptip是否显示
       defaultShowSize: 10 //小于10条数据，不显示分页
     };
   },
@@ -1070,7 +1075,13 @@ export default {
       return name;
     },
     btnClick(config) {
+      this.visible = false;
       config.fn && config.fn(this);
+    },
+    theadPopTipSettingClick(th) {
+      this.visible = false;
+      // 表格右上角tooltip thead的点击齿轮按钮
+      this.$emit('theadPopTipSettingClick', th);
     }
   },
   computed: {

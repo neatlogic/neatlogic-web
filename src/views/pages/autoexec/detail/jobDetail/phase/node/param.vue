@@ -56,7 +56,7 @@
                     :value="JSON.parse(row.value)"
                   ></JsonViewer>
                 </div>
-                <span :class="row.type === 'textarea'?'pre':''">{{ JSON.stringify(row.value).length > 40 ? JSON.stringify(row.value).substring(0, 40) + '...' : row.value }}</span>
+                <span :class="row.type === 'textarea'?'pre':''">{{ formattedValue(row.value) }}</span>
               </Poptip>
             </div>
           </template>
@@ -187,6 +187,19 @@ export default {
     }
   },
   computed: {
+    formattedValue() {
+      return (value) => {
+        let jsonString = value;
+        if (typeof value !== 'string') {
+          // 字符串不能直接转json字符串，否则换行符会失效
+          jsonString = JSON.stringify(value);
+        }
+        if (jsonString.length > 40) {
+          jsonString = jsonString.substring(0, 40) + '...';
+        }
+        return jsonString; 
+      };
+    },
     getDownurl() {
       let _this = this;
       return () => {

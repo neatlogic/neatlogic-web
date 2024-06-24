@@ -63,6 +63,7 @@ mode|String|window|否|显示模式|如果是window模式，会使用100vh来计
 fixedHeader|Boolean|true|否|表格头部是否固定，如果不需要固定，则不回计算表格的高度，高度自适应|移上去action还是会显示
 isBigDataPage|Boolean|true|否|是否是大数据分页，默认不是
 theme|Object|-|否|自定义主题样式
+theadPopTipBtnList|Array|-|否｜table 右上角表头排序显示自定义按钮
 
 >>>特殊数据说明
 
@@ -184,6 +185,7 @@ clickTr|选中行的时间|点击某一行执行的事件，返回点击行的�
 updateSort|当设置了sortList哪些表头字段可以进行升序降序排列后，返回改变顺序时的排序|-
 updateRowSort|当设置了canDrag允许改变行的顺序时，返回改变顺序时的event对象|可通过该对象的newIndex和oldIndex判断是哪些顺序发生改变
 headerTitleOperation | 点击表头文字 | 表头文字和刷新按钮点击事件
+theadPopTipSettingClick | - | 表格右上角tooltip thead的点击齿轮按钮时 | - 
 
 
 #### slot卡槽说明

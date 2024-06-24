@@ -26,7 +26,7 @@
               ref="dispatchTitle"
               v-model="dispatchTitle"
               :placeholder="$t('form.placeholder.pleaseinput', {target: $t('page.title')})"
-              maxlength="50"
+              maxlength="200"
               :validateList="validateList"
               @on-keyup="knowledgeSearch()"
             ></TsFormInput>
