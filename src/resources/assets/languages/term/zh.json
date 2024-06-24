@@ -233,7 +233,9 @@
     "editablefield": "可编辑属性",
     "deletecitip": "当前配置项已被删除",
     "expandbyscene": "按场景展开",
-    "expandbylevel": "按层数展开"
+    "expandbylevel": "按层数展开",
+    "deleteattr": "删除属性",
+    "deleteglobalattr": "删除全局属性"
   },
   "process": {
     "workordercenter": "工单中心",

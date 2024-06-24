@@ -232,7 +232,9 @@
     "editablefield": "Editable attributes",
     "deletecitip": "The current configuration item has been deleted",
     "expandbyscene": "Expand by scene",
-    "expandbylevel": "Expand by layer"
+    "expandbylevel": "Expand by layer",
+    "deleteattr": "Delete attribute",
+    "deleteglobalattr": "Delete Global Properties"
   },
   "process": {
     "workordercenter": "Work Center",
