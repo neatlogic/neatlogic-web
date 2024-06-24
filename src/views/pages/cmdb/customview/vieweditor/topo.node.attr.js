@@ -6,7 +6,7 @@
       super(canvas, config);
       if (config.config.canLink || config.config.targetCiId) {
         this._anchorList = [{ position: 'L' }, { position: 'R' }]; //连线点列表，默认左右四个锚点
-        if (config.config.canLink) {
+        if (config.config.canLink && !this.__icon.endsWith('>>')) {
           this.__icon = this.__icon + ' >>';
         }
       } else {
