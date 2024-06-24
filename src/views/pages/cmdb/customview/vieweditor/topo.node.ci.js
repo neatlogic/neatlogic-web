@@ -23,6 +23,8 @@
         return true;
       } else if (conf.direction == 'to' && conf.fromCiId == this.getConfig()['ciId']) {
         return true;
+      } else if (conf.targetCiId === this.getConfig()['ciId']) {
+        return true;
       }
       return false;
     }
@@ -60,7 +62,7 @@
       const prevNodeList = this.getPrevNodes();
       if (prevNodeList.length > 0) {
         prevNodeList.forEach(n => {
-          if (n.getType() === 'Rel') {
+          if (n.getType() === 'Rel' || n.getType() === 'Attr') {
             n.destory();
           }
         });

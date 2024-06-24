@@ -173,9 +173,20 @@
                     </tr>
                     <tr v-for="(attr, aindex) in currentCi.ciAttrList" :key="'attr_' + aindex">
                       <td style="vertical-align: top"><Checkbox v-model="attr.isChecked" @on-change="checkAttr(attr)"></Checkbox></td>
-                      <td style="vertical-align: top"><i :title="$t('page.attribute')" class="tsfont-blocklist"></i></td>
+                      <td style="vertical-align: top">
+                        <i
+                          :title="$t('page.attribute')"
+                          :class="{
+                            'tsfont-blocklist': !attr.targetCiId,
+                            'tsfont-arrow-right': !!attr.targetCiId
+                          }"
+                        ></i>
+                      </td>
                       <td>
-                        <div><span>{{ attr.label }}</span><span class="ml-xs" :class="{ 'tsfont-bind': attr.isSearchAble && attr.canSearch }"></span></div>
+                        <div>
+                          <span>{{ attr.label }}</span>
+                          <span class="ml-xs" :class="{ 'tsfont-bind': attr.isSearchAble && attr.canSearch }"></span>
+                        </div>
                         <div class="text-grey">{{ attr.name }}</div>
                       </td>
                     </tr>
@@ -318,7 +329,7 @@ export default {
     },
     openDisplaySetting() {
       const d = this.topo.toJson();
-      if (d && d.nodes && d.nodes.find(d => d.type === 'Attr' || d.type === 'ConstAttr')) {
+      if (d && d.nodes && d.nodes.find(d => (d.type === 'Attr' && !d.config.targetCiId) || d.type === 'ConstAttr')) {
         this.isDisplaySettingShow = true;
       } else {
         this.$Message.info('请添加模型并选择需要显示的属性');
@@ -556,7 +567,7 @@ export default {
           }
         });
       } else {
-        this.$Message.info(this.$t('form.placeholder.pleaseinput', {'target': this.$t('term.cmdb.viewname')}));
+        this.$Message.info(this.$t('form.placeholder.pleaseinput', { target: this.$t('term.cmdb.viewname') }));
       }
     },
     deleteView() {
@@ -706,6 +717,7 @@ export default {
             config: {
               attrId: attr.id,
               attrLabel: attr.label,
+              targetCiId: attr.targetCiId,
               canLink: attr.isSearchAble && attr.canSearch,
               alias: attr.label,
               isHidden: 0,
@@ -718,6 +730,11 @@ export default {
           //先绘制节点，在加入分组
           group.addNode(node);
           attr.uuid = node.getUuid();
+          if (attr.targetCiId) {
+            const offset = 50; //偏移起点
+            const ciNode = this.drawCi({ id: attr.targetCiId, label: attr.targetCiLabel }, group.getX() + group.getWidth() + offset, group.getY());
+            node.connect({ dir: 'R' }, ciNode, { dir: 'L' }, node);
+          }
           return node;
         }
       }

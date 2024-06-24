@@ -22,8 +22,15 @@ const customview = {
   getCustomViewById(id) {
     return axios.post('/api/rest/cmdb/customview/get', { id: id });
   },
-  getCustomViewAttrByCustomViewId(id, isHidden) {
-    return axios.post('/api/rest/cmdb/customview/attr/get', { id: id, isHidden: isHidden });
+  getCustomViewAttrByCustomViewId(id, params) {
+    let param = {
+      id: id
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    
+    return axios.post('/api/rest/cmdb/customview/attr/get', param);
   },
   searchCustomViewData(param) {
     return axios.post('/api/rest/cmdb/customview/data/search', param);
