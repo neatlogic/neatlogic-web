@@ -2,7 +2,7 @@
   <div>
     <TsContain :enableCollapse="true" :siderWidth="260">
       <template v-if="formDataQueue.length <= 1" v-slot:navigation>
-        <span class="tsfont-left text-action" @click="back()">{{ $t('router.framework.formmanage') }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div :class="formDataQueue.length <= 1 ? 'flex-between' : 'flex-end'">
