@@ -66,9 +66,17 @@
               <span v-else class="text-grey">-</span>
             </div>
           </template>
+          <template v-slot:desc="{ row }">
+            <span v-if="row.action === 'delattr'" class="text-grey">{{ $t('term.cmdb.deleteattr') }}</span>
+            <span v-else-if="row.action === 'delglobalattr'" class="text-grey">{{ $t('term.cmdb.deleteglobalattr') }}</span>
+          </template>
         </TsTable>
         <Divider v-if="transactionData.description" orientation="left">{{ $t('page.memo') }}</Divider>
         <div v-if="transactionData.description" class="fz10 text-grey">{{ transactionData.description }}</div>
+      </template>
+      <template v-slot:footer>
+        <Button v-if="allowRecover" type="primary" @click="recoverCiEntity()">{{ $t('page.recover') }}</Button>
+        <span v-else class="text-grey">模型已发生变化，无法恢复</span>
       </template>
     </TsDialog>
   </div>
@@ -97,22 +105,14 @@ export default {
       transactionData: {},
       attrList: [],
       authData: {},
+      allowRecover: false, //是否允许恢复事务
       dialogConfig: {
         title: this.$t('page.detail'),
         type: 'modal',
         maskClose: true,
         isShow: true,
         hasFooter: false,
-        width: 'large',
-        btnList: [
-          {
-            text: this.$t('page.recover'),
-            type: 'primary',
-            fn: vnode => {
-              this.recoverCiEntity();
-            }
-          }
-        ]
+        width: 'large'
       },
       historyData: {},
       theadList: Object.freeze([
@@ -133,7 +133,8 @@ export default {
           key: 'newValueList',
           title: this.$t('page.afteredit'),
           width: 320
-        }
+        },
+        { key: 'desc', title: '说明' }
       ])
     };
   },
@@ -210,6 +211,7 @@ export default {
       await this.$api.cmdb.transaction
         .getCientityTransaction(this.transactionId, this.ciId, this.ciEntityId)
         .then(res => {
+          this.allowRecover = res.Return.allowRecover;
           const data = res.Return.detail;
           this.transactionData = res.Return.transaction;
           this.$set(this.historyData, 'tbodyList', data);
