@@ -1,5 +1,6 @@
 <template>
   <div class="detail">
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <Alert v-if="autoexecConfig.createJobPolicy==='batch' && !isValidTable" type="error" show-icon>{{ $t('message.process.batchcreatejobpolicyvalid') }}</Alert>
     <TsForm
       ref="formConfig"
@@ -7,7 +8,6 @@
       :item-list="formConfig"
       labelPosition="left"
     ></TsForm>
-    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <div v-if="autoexecConfig.autoexecCombopId && !loadingShow" class="pt-sm">
       <TsFormItem :label="$t('page.namepre')" labelPosition="left">
         <TsFormSelect
@@ -29,20 +29,6 @@
           </Col>
           <Col span="20">
             <TsRow :gutter="8">
-              <template v-if="autoexecConfig.runnerGroup.mappingMode==='formCommonComponent'">
-                <Col span="10">
-                  <TsFormSelect
-                    ref="runnerGroup"
-                    v-model="autoexecConfig.runnerGroup.mappingMode"
-                    :dataList="executeMappingModeList('runnerGroup')"
-                    :validateList="validateList"
-                    :firstSelect="false"
-                    transfer
-                    border="border"
-                    @on-change="changeMappingMode(autoexecConfig.runnerGroup)"
-                  ></TsFormSelect>
-                </Col>
-              </template>
               <Col span="14" style="padding:0">
                 <template v-if="autoexecConfig.runnerGroup.mappingMode==='constant'">
                   <TsFormSelect
