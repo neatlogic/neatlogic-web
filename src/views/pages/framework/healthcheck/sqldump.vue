@@ -71,22 +71,42 @@
             </div>
             <div>
               <span>{{ $t('term.framework.totalconnections') }}：</span>
-              <Badge v-if="datasourceData.totalConnections" :count="datasourceData.totalConnections" type="primary"></Badge>
+              <Badge
+                v-if="datasourceData.totalConnections"
+                :count="datasourceData.totalConnections"
+                overflow-count="9999"
+                type="primary"
+              ></Badge>
               <span v-else>-</span>
             </div>
             <div>
               <span>{{ $t('term.framework.activeconnections') }}：</span>
-              <Badge v-if="datasourceData.activeConnections" :count="datasourceData.activeConnections" type="primary"></Badge>
+              <Badge
+                v-if="datasourceData.activeConnections"
+                :count="datasourceData.activeConnections"
+                type="primary"
+                overflow-count="9999"
+              ></Badge>
               <span v-else>-</span>
             </div>
             <div>
               <span>{{ $t('term.framework.awaitingconnections') }}：</span>
-              <Badge v-if="datasourceData.threadsAwaitingConnection" :count="datasourceData.threadsAwaitingConnection" type="primary"></Badge>
+              <Badge
+                v-if="datasourceData.threadsAwaitingConnection"
+                :count="datasourceData.threadsAwaitingConnection"
+                type="primary"
+                overflow-count="9999"
+              ></Badge>
               <span v-else>-</span>
             </div>
             <div>
               <span>{{ $t('term.framework.freeconnections') }}：</span>
-              <Badge v-if="datasourceData.idleConnections" :count="datasourceData.idleConnections" type="primary"></Badge>
+              <Badge
+                v-if="datasourceData.idleConnections"
+                :count="datasourceData.idleConnections"
+                type="primary"
+                overflow-count="9999"
+              ></Badge>
               <span v-else>-</span>
             </div>
           </div>
