@@ -3,6 +3,8 @@ import automatic from './automatic.vue';
 import stepLogCommon from './step-log-common.vue';
 import cmdb from '@/views/pages/cmdb/task/processdetail/workorder/taskstep/index.js';
 import cmdbsync from './cmdbsync.vue';
+import createjob from '@/views/pages/process/task/processdetail/workorder/createjob/job-detail.vue';
+
 let importComponentConfig = {};
 try {
   // 导入自定义组件
@@ -21,5 +23,6 @@ export default {
   ...cmdb,
   stepLogCommon,
   cmdbsync,
+  createjob,
   ...importComponentConfig
 };

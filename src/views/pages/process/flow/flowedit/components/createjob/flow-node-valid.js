@@ -1,5 +1,4 @@
 import { $t } from '@/resources/init.js';
-import ViewUI from 'neatlogic-ui/iview/index.js';
 const nodeValidConfig = {
   createjob(nodeConfig, d, that) {
     //节点

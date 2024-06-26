@@ -6,6 +6,7 @@ import event from './process-event'; //事件
 import autoexec from './process-autoexec'; 
 import timer from './process-timer';
 import cmdbsync from './process-cmdbsync';
+import createjob from './process-createjob';
 let importComponentConfig = {};
 try {
   // 导入自定义组件
@@ -27,5 +28,6 @@ export default {
   autoexec,
   timer,
   cmdbsync,
+  createjob,
   ...importComponentConfig
 };

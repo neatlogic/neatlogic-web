@@ -85,6 +85,7 @@
                   <stepitems
                     :is="getSteptype(item)"
                     :item="item"
+                    :handlerStepInfo="item.handlerStepInfo"
                   ></stepitems>
                 </div>
               </div>
