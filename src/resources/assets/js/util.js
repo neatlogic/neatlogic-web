@@ -25,6 +25,7 @@ mapArray(array, key)                         //从数组对象中挑出一个key
 intersectionArr                              // 返回一个包含所有传入数组交集元素的新数组。
 getComposedPath(e)                           // 返回事件流中元素的事件路径
 removeHTMLTag(str)                           //去除html标签
+evalWithLineNumber(e, code)                  //利用eval解析时，具体报错信息和行号
 */
 import _ from 'lodash';
 import store from '@/resources/store';
@@ -1066,6 +1067,31 @@ const methods =  {
       }
     }
     return result;
+  },
+  evalWithLineNumber(e, code) {
+    let error = '';
+    if (e instanceof SyntaxError) {
+      error = `SyntaxError: ${e.message}；`;
+      console.error(`SyntaxError: ${e.message}`);
+    } else if (e instanceof EvalError) {
+      error = `EvalError: ${e.message}；`;
+      console.error(`EvalError: ${e.message}`);
+    } else {
+      error = `Error: ${e.message}；`;
+      console.error(`Error: ${e.message}`);
+    }
+    const lineMatch = e.stack.match(/<anonymous>:(\d+):\d+/);
+    if (lineMatch) {
+      const errorLineNumber = parseInt(lineMatch[1]);
+      const codeLines = code.split('\n');
+      const errorLinesContent = codeLines[errorLineNumber - 1];
+      error += `Error on line ${errorLineNumber}: ${errorLinesContent}`,
+      console.log(`Error on line ${errorLineNumber}: ${errorLinesContent}`);
+    } else {
+      error += 'Could not detarmine error line number',
+      console.error('Could not detarmine error line number');
+    }
+    return error;
   }
 };
 export default methods;
