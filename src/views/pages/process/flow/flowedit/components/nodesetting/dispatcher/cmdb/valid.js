@@ -1,4 +1,4 @@
-export const CmdbDispatcher = (that, handler, key, value) => {
+export const CmdbDispatcherValid = (that, handler, key, value) => {
   if (that.$utils.isEmpty(value)) {
     return true;
   }

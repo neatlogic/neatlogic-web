@@ -1,5 +1,5 @@
 import { $t } from '@/resources/init.js';
-export const autoexec = (nodeConfig, d, that) => {
+export const autoexecNodeValid = (nodeConfig, d, that) => {
   //自动化节点
   let validList = [];
   let nodeData = nodeConfig.stepConfig || {};
