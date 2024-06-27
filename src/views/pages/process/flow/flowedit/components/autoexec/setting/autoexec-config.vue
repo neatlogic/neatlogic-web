@@ -1,6 +1,20 @@
 <template>
   <div class="detail">
     <Alert v-if="autoexecConfig.createJobPolicy==='batch' && !isValidTable" type="error" show-icon>{{ $t('message.process.batchcreatejobpolicyvalid') }}</Alert>
+    <TsFormItem
+      label="表单标签"
+      labelPosition="left"
+      tooltip="当标签为空时：表单组件为主场景的所有表单组件；当标签不为空时：表单组件为所选标签配置的表单组件。"
+    >
+      <TsFormSelect
+        v-model="autoexecConfig.formTag"
+        :dataList="formTagList"
+        transfer
+        @on-change="(val)=>{
+          changeFormTag(val);
+        }"
+      ></TsFormSelect>
+    </TsFormItem>
     <TsForm
       ref="formConfig"
       v-model="autoexecConfig"
@@ -120,15 +134,19 @@ export default {
     Singlejobpolicy: () => import('./joppolicy/singlejobpolicy.vue')
   },
   props: {
-    allFormitemList: Array,
+    formUuid: String,
+    defaultAllFormitemList: Array,
+    formTagList: Array,
     config: Object
   },
   data() {
     return {
+      allFormitemList: [],
       loadingShow: true,
       validateList: ['required'],
       isRunnerGroupDeprecated: false, //runnerGroup是否过期需要重新保存刷新
       autoexecConfig: {
+        formTag: '',
         autoexecCombopId: null,
         jobName: '',
         jobNamePrefix: '',
@@ -219,7 +237,9 @@ export default {
   destroyed() {},
   methods: {
     async init() {
+      this.allFormitemList = this.$utils.deepClone(this.defaultAllFormitemList) || [];
       if (!this.$utils.isEmpty(this.config)) {
+        this.changeFormTag(this.config['formTag']);
         if (this.config.autoexecCombopId) {
           try {
             await this.getAutoexecCombop(this.config.autoexecCombopId);
@@ -375,6 +395,21 @@ export default {
       } else {
         return '';
       }
+    },
+    changeFormTag(tag) {
+      this.allFormitemList = this.$utils.deepClone(this.defaultAllFormitemList) || [];
+      if (!this.formUuid || !tag) {
+        return;
+      }
+      let data = {
+        formUuid: this.formUuid,
+        tag: tag
+      };
+      this.$api.framework.form.getFormItemList(data).then(res => {
+        if (res.Status == 'OK') {
+          this.allFormitemList = res.Return || [];
+        }
+      });
     }
   },
   filter: {},
