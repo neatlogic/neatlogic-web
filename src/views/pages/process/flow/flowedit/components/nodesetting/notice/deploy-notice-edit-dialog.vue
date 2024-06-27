@@ -72,6 +72,7 @@ export default {
   },
   data() {
     return {
+      conditionNodeList: [], //右边下拉框数据
       showDialog: true,
       isShowPersonSettingDialog: false,
       tacticsData: {},
@@ -107,15 +108,15 @@ export default {
       },
       formItemList: [
         {
-          name: 'personalizationsettings',
-          label: this.$t('page.personalizationsettings'),
-          type: 'slot'
-        },
-        {
           name: 'policyId',
           label: this.$t('page.notificationstrategy'),
           type: 'slot',
           validateList: ['required']
+        },
+        {
+          name: 'personalizationsettings',
+          label: this.$t('page.personalizationsettings'),
+          type: 'slot'
         }
       ]
     };
@@ -166,7 +167,9 @@ export default {
         this.notifyPolicyConfig.paramMappingList = [];
         this.notifyPolicyConfig.excludeTriggerList = [];
       }
-      this.isShowPersonSettingDialog = true;
+      if (this.notifyPolicyConfig.policyId) {
+        this.isShowPersonSettingDialog = true;
+      }
     },
     changePolicyId(policyId, valueConfig) {
       this.notifyPolicyConfig.policyId = policyId;
@@ -186,10 +189,14 @@ export default {
         }
       });
     },
-    getConditionNodeList() {
-      return this.$api.process.process.getNotifyPolicyList({notifyPolicyHandler: this.notifyPolicyConfig.handler}).then(res => {
+    async getConditionNodeList() {
+      let notifyPolicyId = this.$refs.notifyPolicyId;
+      if (notifyPolicyId && !notifyPolicyId.valid()) {
+        return false;
+      }
+      await this.$api.framework.tactics.notifyParamList({policyId: this.notifyPolicyConfig.policyId}).then(res => {
         if (res.Status == 'OK') {
-          this.conditionNodeList = res.Return.tbodyList || [];
+          this.conditionNodeList = res.Return.paramList || [];
         }
       });
     },

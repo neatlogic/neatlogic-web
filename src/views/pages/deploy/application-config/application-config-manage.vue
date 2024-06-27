@@ -61,6 +61,7 @@
                 v-if="configType == 'app'"
                 :appSystemId="appSystemId"
                 :hasEditConfigAuth="canEdit"
+                :hasAuthConfigAuth="canAuth"
                 :authList="authList"
                 :hasEditPipelineAuth="canShow ? hasEditPipelineAuth : canShow"
                 :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
@@ -495,6 +496,13 @@ export default {
     canEdit() {
       // 是否有“编辑配置”权限，isHasAllAuthority 表示自动发布管理员权限
       if (this.authList.includes('operation#all') || this.authList.includes('operation#edit') || (this.selectedApp && this.selectedApp.isHasAllAuthority)) {
+        return true;
+      }
+      return false;
+    },
+    canAuth() {
+      // 是否有“权限”权限，isHasAllAuthority 表示自动发布管理员权限
+      if (this.authList.includes('operation#all') || this.authList.includes('operation#auth') || (this.selectedApp && this.selectedApp.isHasAllAuthority)) {
         return true;
       }
       return false;
