@@ -124,7 +124,7 @@ export default {
         createPolicy: 'single',
         formTag: '',
         batchDataSourceMapping: {}, //批量
-        jopParamMappingGroupList: [], //作业参数列表
+        jobParamMappingGroupList: [], //作业参数列表
         executeParamMappingGroupList: [], //执行参数列表:执行目标、连接协议、执行用户、分批数量
         scenarioParamMappingGroupList: [], // 场景参数列表
         formAttributeMappingList: [],

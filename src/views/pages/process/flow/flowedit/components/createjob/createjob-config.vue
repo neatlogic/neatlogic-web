@@ -97,13 +97,13 @@
         :allFormitemList="allFormitemList"
         :runtimeParamList="runtimeParamList"
       ></ExecuteParam>
-      <JopParam
-        v-if="!$utils.isEmpty(createjobConfig.jopParamMappingGroupList)"
+      <JobParam
+        v-if="!$utils.isEmpty(createjobConfig.jobParamMappingGroupList)"
         ref="jopParam"
-        :jopParamMappingGroupList="createjobConfig.jopParamMappingGroupList"
+        :jobParamMappingGroupList="createjobConfig.jobParamMappingGroupList"
         :allFormitemList="allFormitemList"
         :exportParamList="exportParamList"
-      ></JopParam>
+      ></JobParam>
       <FormAttributeParam
         ref="formAttributeParam"
         :formAttributeMappingList="createjobConfig.formAttributeMappingList"
@@ -125,7 +125,7 @@ export default {
     ScenarioParam: () => import('./params/scenario-param.vue'),
     ExecuteParam: () => import('./params/execute-param.vue'),
     FormAttributeParam: () => import('./params/form-attribute-param.vue'),
-    JopParam: () => import('./params/jop-param.vue')
+    JobParam: () => import('./params/job-param.vue')
   },
   filters: {
   },
@@ -148,7 +148,7 @@ export default {
         createPolicy: 'single',
         formTag: '',
         batchDataSourceMapping: {}, //批量
-        jopParamMappingGroupList: [], //作业参数列表
+        jobParamMappingGroupList: [], //作业参数列表
         executeParamMappingGroupList: [], //执行参数列表:执行目标、连接协议、执行用户、分批数量
         scenarioParamMappingGroupList: [], // 场景参数列表
         formAttributeMappingList: []
@@ -252,7 +252,7 @@ export default {
     },
     initData(config) {
       this.createjobConfig.scenarioParamMappingGroupList = [];
-      this.createjobConfig.jopParamMappingGroupList = [];
+      this.createjobConfig.jobParamMappingGroupList = [];
       this.createjobConfig.executeParamMappingGroupList = [];
       this.createjobConfig.scenarioParamMappingGroupList = [];
       if (!this.$utils.isEmpty(this.autoexecCombop)) {
@@ -279,13 +279,13 @@ export default {
           if (item.type == 'phase') {
             this.$set(obj.config, 'dataList', this.phaseList);
           }
-          if (config && !this.$utils.isEmpty(config.jopParamMappingGroupList)) {
-            let findParam = config.jopParamMappingGroupList.find(p => p.key === item.key);
+          if (config && !this.$utils.isEmpty(config.jobParamMappingGroupList)) {
+            let findParam = config.jobParamMappingGroupList.find(p => p.key === item.key);
             if (findParam && !this.$utils.isEmpty(findParam.mappingList)) {
               obj.mappingList = findParam.mappingList;
             } 
           }
-          this.createjobConfig.jopParamMappingGroupList.push(obj);
+          this.createjobConfig.jobParamMappingGroupList.push(obj);
         });
         executeParamList.forEach(item => {
           let obj = {

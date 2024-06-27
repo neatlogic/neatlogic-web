@@ -3,7 +3,7 @@
     <div class="pb-sm">{{ $t('term.process.jobparamsvalue') }}</div>
     <div class="param-list">
       <TsFormItem
-        v-for="(item, index) in jopParamMappingGroupList"
+        v-for="(item, index) in jobParamMappingGroupList"
         :key="index"
         :label="item.name"
         :required="!!item.isRequired"
@@ -141,7 +141,7 @@ export default {
     FilterList: () => import('../filter-list.vue')
   },
   props: {
-    jopParamMappingGroupList: Array,
+    jobParamMappingGroupList: Array,
     allFormitemList: Array
   },
   data() {
