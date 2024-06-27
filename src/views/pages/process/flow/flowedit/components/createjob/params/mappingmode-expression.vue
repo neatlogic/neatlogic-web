@@ -34,7 +34,7 @@
                   v-model="currentData.value"
                   :dataList="formCommonComponentList"
                   textName="label"
-                  valueName="uuid"
+                  valueName="key"
                   border="border"
                   :validateList="mappingMode === 'formCommonComponent'? validateList : []"
                   transfer
@@ -48,7 +48,7 @@
                       v-model="currentData.value"
                       :dataList="formTableComponentList"
                       textName="label"
-                      valueName="uuid"
+                      valueName="key"
                       :validateList="mappingMode === 'formTableComponent'? validateList : []"
                       :firstSelect="false"
                       border="border"

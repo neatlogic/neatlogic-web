@@ -65,7 +65,7 @@
                     v-model="m.value"
                     :dataList="getFormComponent('formCommonComponent')"
                     textName="label"
-                    valueName="uuid"
+                    valueName="key"
                     :validateList="item.isRequired? validateList:[]"
                     :firstSelect="false"
                     transfer
@@ -94,7 +94,7 @@
                         <TsFormSelect
                           ref="formValid"
                           v-model="m.column"
-                          :dataList="getTableAttrList(m.value)"
+                          :dataList="getFormTableAttrList(m.value)"
                           :placeholder="$t('page.attribute')"
                           :validateList="item.isRequired? validateList:[]"
                           transfer
@@ -255,7 +255,7 @@ export default {
         return dataList;
       };
     },
-    getTableAttrList() {
+    getFormTableAttrList() {
       return (value) => {
         let dataList = [];
         if (value && this.allFormitemList && this.allFormitemList.length > 0) {
