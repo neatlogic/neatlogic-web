@@ -280,9 +280,10 @@ export default {
         this.taskLoading = false;
         this.pocesstaskview = true;
       }
-      //console.log(this.processTaskConfig, 'processTaskConfig');
-      //console.log(this.actionConfig, 'actionConfig');
-      //console.log(this.startProcessTaskStep, 'startProcessTaskStep');
+      //临时打log，定位工单处理页偶尔空白的问题
+      console.log(this.processTaskConfig, 'processTaskConfig');
+      console.log(this.actionConfig, 'actionConfig');
+      console.log(this.startProcessTaskStep, 'startProcessTaskStep');
     },
     getConmmonData() {
       //获取工单和步骤信息接口
