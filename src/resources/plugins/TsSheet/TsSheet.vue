@@ -1749,7 +1749,6 @@ export default {
           }
         });
       } 
-      console.log(list);
       return list;
     },
     setFormSceneConfig(formSceneUuid, formConfig) {
