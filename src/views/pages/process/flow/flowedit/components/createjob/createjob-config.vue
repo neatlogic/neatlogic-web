@@ -102,7 +102,7 @@
         ref="jopParam"
         :jobParamMappingGroupList="createjobConfig.jobParamMappingGroupList"
         :allFormitemList="allFormitemList"
-        :exportParamList="exportParamList"
+        :phaseList="phaseList"
       ></JobParam>
       <FormAttributeParam
         ref="formAttributeParam"
@@ -276,9 +276,6 @@ export default {
               filterList: []
             }]
           };
-          if (item.type == 'phase') {
-            this.$set(obj.config, 'dataList', this.phaseList);
-          }
           if (config && !this.$utils.isEmpty(config.jobParamMappingGroupList)) {
             let findParam = config.jobParamMappingGroupList.find(p => p.key === item.key);
             if (findParam && !this.$utils.isEmpty(findParam.mappingList)) {

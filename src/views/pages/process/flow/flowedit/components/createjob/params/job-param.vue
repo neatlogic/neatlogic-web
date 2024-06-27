@@ -77,6 +77,7 @@
                   :type="item.type"
                   :config="item.config?item.config:{}"
                   :isRequired="!!item.isRequired"
+                  :phaseList="phaseList"
                 ></Edit>
               </template>
               <template v-else-if="m.mappingMode === 'expression'">
@@ -142,7 +143,8 @@ export default {
   },
   props: {
     jobParamMappingGroupList: Array,
-    allFormitemList: Array
+    allFormitemList: Array,
+    phaseList: Array
   },
   data() {
     return {
@@ -261,7 +263,7 @@ export default {
       return (value) => {
         let dataList = [];
         if (value && this.allFormitemList && this.allFormitemList.length > 0) {
-          let find = this.allFormitemList.find(item => item.key === value);
+          let find = this.allFormitemList.find(item => item.uuid === value);
           if (find && find.config && find.config.dataConfig) {
             find.config.dataConfig.forEach(d => {
               dataList.push({
