@@ -30,7 +30,7 @@
           <TsFormSelect
             ref="formValid"
             v-model="f.leftColumn"
-            :dataList="getTableAttrList(f.leftValue)"
+            :dataList="getFormTableAttrList(f.leftValue)"
             :placeholder="$t('page.attribute')"
             :validateList="validateList"
             transfer
@@ -63,7 +63,7 @@
               v-model="f.value"
               :dataList="getFormComponent('formCommonComponent')"
               textName="label"
-              valueName="key"
+              valueName="uuid"
               :validateList="validateList"
               :firstSelect="false"
               transfer
@@ -78,7 +78,7 @@
                   v-model="f.rightValue"
                   :dataList="getFormComponent('formTableComponent')"
                   textName="label"
-                  valueName="key"
+                  valueName="uuid"
                   :placeholder="$t('page.component')"
                   :validateList="validateList"
                   transfer
@@ -91,7 +91,7 @@
                 <TsFormSelect
                   ref="formValid"
                   v-model="f.rightColumn"
-                  :dataList="getTableAttrList(f.rightValue)"
+                  :dataList="getFormTableAttrList(f.rightValue)"
                   :placeholder="$t('page.attribute')"
                   :validateList="validateList"
                   transfer
@@ -286,7 +286,7 @@ export default {
         return list;
       };
     },
-    getTableAttrList() {
+    getFormTableAttrList() {
       return (value) => {
         let dataList = [];
         if (value && this.allFormitemList && this.allFormitemList.length > 0) {

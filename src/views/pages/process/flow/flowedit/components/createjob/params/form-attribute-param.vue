@@ -34,7 +34,7 @@
               v-model="item.key"
               :dataList="formDataList"
               textName="label"
-              valueName="key"
+              valueName="uuid"
               transfer
               border="border"
               @on-change="changeFormItem"

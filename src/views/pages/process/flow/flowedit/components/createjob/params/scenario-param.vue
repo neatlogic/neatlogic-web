@@ -30,7 +30,7 @@
                   v-model="m.value"
                   :dataList="getFormComponent('formCommonComponent')"
                   textName="label"
-                  valueName="key"
+                  valueName="uuid"
                   :validateList="item.isRequired? validateList:[]"
                   :firstSelect="false"
                   transfer
@@ -46,7 +46,7 @@
                         v-model="m.value"
                         :dataList="getFormComponent('formTableComponent')"
                         textName="label"
-                        valueName="key"
+                        valueName="uuid"
                         :placeholder="$t('term.framework.tablecomponent')"
                         :validateList="item.isRequired? validateList:[]"
                         transfer

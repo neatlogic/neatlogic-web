@@ -56,7 +56,7 @@
             :value="createjobConfig.batchDataSourceMapping.value"
             :dataList="getFormComponent('formTableComponent')"
             textName="label"
-            valueName="key"
+            valueName="uuid"
             :validateList="validateList"
             :firstSelect="false"
             transfer
