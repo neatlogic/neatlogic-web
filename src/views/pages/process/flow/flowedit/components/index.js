@@ -8,19 +8,7 @@ import event from './event-node';
 import autoexec from './autoexec/index.vue';
 import timer from './timer-node';
 import cmdb from '@/views/pages/cmdb/flow/node/index.js'; //cmdb
-
-let importComponentConfig = {};
-try {
-  // 导入自定义组件
-  const componentConfig = require.context('@/commercial-module', true, /flowNode.js$/);
-  componentConfig
-    .keys()
-    .forEach(path => {
-      importComponentConfig = Object.assign(importComponentConfig, componentConfig(path).default || {});
-    });
-} catch (error) {
-  console.error('form/component/index.js异常', error);
-}
+import FetchComponent from '@/resources/import/fetch-component.js';
 export default {
   condition,
   omnipotent,
@@ -32,5 +20,5 @@ export default {
   autoexec,
   ...cmdb,
   timer,
-  ...importComponentConfig  
+  ...FetchComponent.getFlowNodeComponent()
 };

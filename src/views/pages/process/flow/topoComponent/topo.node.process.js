@@ -1,6 +1,6 @@
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
-import { FLOW_LINE_VALID } from '@/resources/import';
+import FetchComponent from '@/resources/import/fetch-component.js';
 // eslint-disable-next-line space-before-function-paren
 (function (global, factory) {
   factory((global.Process = global.Process || {}), global);
@@ -39,9 +39,10 @@ import { FLOW_LINE_VALID } from '@/resources/import';
             ViewUI.Message.warning({ content: $t('message.process.nodenobacklink'), duration: 3, closable: true });
             return false;
           }
-          for (let keyItem of Object.keys(FLOW_LINE_VALID)) {
-            if (keyItem == 'connectBackward' && FLOW_LINE_VALID[keyItem] && FLOW_LINE_VALID[keyItem][sourceNode.getConfig().handler]) {
-              let isTrue = FLOW_LINE_VALID[keyItem][sourceNode.getConfig().handler](sourceNode.getConfig().handler, this);
+          for (let keyItem of Object.keys(FetchComponent.getFlowLineValidComponent())) {
+            let nodeName = `${sourceNode.getConfig().handler}backwardconnect`;
+            if (keyItem == nodeName && FetchComponent.getFlowLineValidComponent()[keyItem]) {
+              let isTrue = FetchComponent.getFlowLineValidComponent()[keyItem](sourceNode.getConfig().handler, this);
               if (!isTrue) {
                 return isTrue;
               }
@@ -67,9 +68,10 @@ import { FLOW_LINE_VALID } from '@/resources/import';
                 ViewUI.Message.warning({ content: $t('message.process.timerhasonelink'), duration: 3, closable: true });
                 return false;
               }
-              for (let keyItem of Object.keys(FLOW_LINE_VALID)) {
-                if (keyItem == 'connectForward' && FLOW_LINE_VALID[keyItem] && FLOW_LINE_VALID[keyItem][sourceNode.getConfig().handler]) {
-                  let isTrue = FLOW_LINE_VALID[keyItem][sourceNode.getConfig().handler](sourceNode.getConfig().handler, this);
+              for (let keyItem of Object.keys(FetchComponent.getFlowLineValidComponent())) {
+                let nodeName = `${sourceNode.getConfig().handler}forwardconnect`;
+                if (keyItem == nodeName && FetchComponent.getFlowLineValidComponent()[keyItem]) {
+                  let isTrue = FetchComponent.getFlowLineValidComponent()[keyItem](sourceNode.getConfig().handler, this);
                   if (!isTrue) {
                     return isTrue;
                   }
