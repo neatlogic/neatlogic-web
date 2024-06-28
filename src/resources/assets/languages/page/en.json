@@ -1000,5 +1000,6 @@
   "nocomment": "There is currently no description available",
   "cleardata": "wipe data ",
   "customdata": "Custom data",
-  "clicktoselect": "Click to select"
+  "clicktoselect": "Click to select",
+  "mappingmode": "Mapping mode"
 }
