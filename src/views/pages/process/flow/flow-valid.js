@@ -1,8 +1,8 @@
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
-import FetchComponent from '@/resources/import/fetch-component.js';
-let dispatcherValid = FetchComponent.getDispatcherValidComponent();
-let flowNodeValid = FetchComponent.getFlowNodeValidComponent();
+import ComponentManager from '@/resources/import/component-manager.js';
+let dispatcherValid = ComponentManager.getDispatcherValidComponent();
+let flowNodeValid = ComponentManager.getFlowNodeValidComponent();
 let valid = {
   ...flowNodeValid,
   common(nodeConfig, d, that) {
