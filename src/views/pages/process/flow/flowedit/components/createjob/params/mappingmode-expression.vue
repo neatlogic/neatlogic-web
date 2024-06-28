@@ -13,8 +13,7 @@
       <Poptip
         v-model="isPopShow"
         :transfer="true"
-        placement="right"
-        width="400"
+        width="500"
       >
         <span class="text-href tsfont-plus" @click="addAttr()"></span>
         <div slot="content" class="api">
@@ -40,7 +39,7 @@
                   transfer
                 ></TsFormSelect>
               </TabPane>
-              <TabPane v-if="isShowFormTableComponent && jopPolicy!='single'" :label="$t('term.framework.formtableinputercomponent')" name="formTableComponent">
+              <TabPane v-if="isShowFormTableComponent" :label="$t('term.framework.formtableinputercomponent')" name="formTableComponent">
                 <TsRow :gutter="8">
                   <Col :span="12">
                     <TsFormSelect
@@ -67,6 +66,19 @@
                     ></TsFormSelect>
                   </Col>
                 </TsRow>
+                <div class="pt-sm">
+                  <FilterList
+                    v-if="isReady"
+                    ref="filterList"
+                    :filterList="currentData.filterList"
+                    :allFormitemList="allFormitemList"
+                    :value="currentData.value"
+                    showStatus
+                    @updateFilterList="(list)=>{
+                      $set(currentData,'filterList', list);
+                    }"
+                  ></FilterList>
+                </div>
               </TabPane>
             </Tabs>
             <div style="text-align: right" class="mt-md">
@@ -85,7 +97,8 @@ export default {
   name: 'MappingmodeExpression',
   components: {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    FilterList: () => import('../filter-list.vue')
   },
   props: {
     allFormitemList: {
@@ -111,8 +124,7 @@ export default {
     isRequired: {
       type: Boolean,
       default: false
-    },
-    jopPolicy: String //作业策略（单次、批量）
+    }
   },
   data() {
     return {
@@ -122,7 +134,8 @@ export default {
       currentData: {},
       currentIndex: null,
       validateList: ['required'],
-      isHasMessageError: false
+      isHasMessageError: false,
+      isReady: true
     };
   },
   beforeCreate() {},
@@ -137,7 +150,11 @@ export default {
   destroyed() {},
   methods: {
     changetab() {
+      this.isReady = false;
       this.currentData = {};
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
     },
     deleteAttr(index) {
       this.isPopShow = false;
@@ -167,6 +184,9 @@ export default {
       }
       if (this.$refs[`column_${this.mappingMode}`]) {
         isValid = this.$refs[`column_${this.mappingMode}`].valid() && isValid;
+      }
+      if (this.$refs.filterList) {
+        isValid = this.$refs.filterList.valid() && isValid;
       }
       if (isValid) {
         this.isPopShow = false;

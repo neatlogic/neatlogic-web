@@ -83,7 +83,6 @@
               <template v-else-if="m.mappingMode === 'expression'">
                 <MappingmodeExpression
                   ref="formValid"
-                  jopPolicy="batch"
                   :allFormitemList="allFormitemList"
                   :valueList="m.value"
                   :formCommonComponentList="getFormComponent('formCommonComponent')"

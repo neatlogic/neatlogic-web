@@ -267,7 +267,7 @@ export default {
             name: item.name,
             type: item.type,
             isRequired: item.isRequired,
-            config: item.config || {},
+            config: {type: item.type},
             defaultValue: item.value,
             mappingList: [{
               mappingMode: item.mappingMode || 'constant',
@@ -276,6 +276,9 @@ export default {
               filterList: []
             }]
           };
+          if (!this.$utils.isEmpty(item.config)) {
+            Object.assign(obj.config, item.config);
+          }
           if (config && !this.$utils.isEmpty(config.jobParamMappingGroupList)) {
             let findParam = config.jobParamMappingGroupList.find(p => p.key === item.key);
             if (findParam && !this.$utils.isEmpty(findParam.mappingList)) {
