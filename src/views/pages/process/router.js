@@ -21,6 +21,8 @@ const eventSolutionEdit = () => import('./event/eventSolution/event-solution-edi
 const scoreTemplateManage = () => import('./scoreTemplate/score-template-manage.vue');
 const relationsManage = () => import('./relations/relations-manage.vue');
 const subtaskTypeManage = () => import('./subtask/subtasktype-manage.vue');
+
+const flowEditNew = () => import('@/views/pages/process/flow/flow-edit-new.vue');
 //新流程图demo
 const flowDemo = () => import('./flowdemo/flow-demo.vue');
 const replyManage = () => import('./replytemplate/reply-manage.vue');
@@ -175,6 +177,18 @@ let routerList = [
     path: '/flow-edit',
     name: 'flow-edit',
     component: flowEdit,
+    meta: {
+      title: $t('router.process.flowedit'),
+      ismenu: false,
+      icon: 'tsfont-flow',
+      authority: 'PROCESS_MODIFY',
+      type: 'flow'
+    }
+  },
+  {
+    path: '/flow-edit-new',
+    name: 'flow-edit-new',
+    component: flowEditNew,
     meta: {
       title: $t('router.process.flowedit'),
       ismenu: false,

@@ -147,7 +147,6 @@ export default {
       ],
       componentList: [
         {
-          'parentUuid': '27b12c0d2bf64594b83c66295d58fd59',
           'handler': 'formselect',
           'label': '资源规格_1_系统名称',
           'key': 'formspecifications_systemName',
@@ -155,7 +154,6 @@ export default {
           'type': 'form'
         },
         {
-          'parentUuid': '27b12c0d2bf64594b83c66295d58fd59',
           'handler': 'formtableinputer',
           'label': '资源规格_1_操作系统',
           'key': 'formspecifications_os',
