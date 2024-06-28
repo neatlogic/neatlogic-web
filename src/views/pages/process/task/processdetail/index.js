@@ -7,7 +7,7 @@ import event from './process-event'; //事件
 import autoexec from './process-autoexec';
 import timer from './process-timer';
 import cmdbsync from './process-cmdbsync';
-import FetchComponent from '@/resources/import/fetch-component.js';
+import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   omnipotent,
   automatic,
@@ -17,5 +17,5 @@ export default {
   autoexec,
   timer,
   cmdbsync,
-  ...FetchComponent.getTaskDetailComponent()
+  ...ComponentManager.getTaskDetailComponent()
 };

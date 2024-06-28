@@ -1,9 +1,9 @@
-class FetchComponent {
+class ComponentManager {
   static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowNodeValid', 'flowLineValid', 'dispatcher', 'dispatcherValid'];
   static categoryConfig = {};
   static generateMethods() {
     this.categoryList.forEach(category => {
-      const methodName = `fetch${category.charAt(0).toUpperCase() + category.slice(1)}Component`;
+      const methodName = `register${category.charAt(0).toUpperCase() + category.slice(1)}Component`;
       let getMethodName = `get${category.charAt(0).toUpperCase() + category.slice(1)}Component`;
       this[methodName] = component => {
         // 分类方法
@@ -21,5 +21,5 @@ class FetchComponent {
     });
   }
 }
-FetchComponent.generateMethods();
-export default FetchComponent;
+ComponentManager.generateMethods();
+export default ComponentManager;
