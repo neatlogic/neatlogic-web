@@ -16,7 +16,7 @@
               <div slot="content" class="overflow" style="height: 300px;overflow-y: auto">
                 <TsCodemirror
                   ref="code"
-                  :value="JSON.stringify(attributeList, null,2)"   
+                  :value="attributeList"   
                   codeMode="json"
                   :isReadOnly="true"
                   isCopy
@@ -95,9 +95,9 @@ export default {
       return attributeList;
     }
 }`,
-      attributeList: [
+      attributeList: `[
         {
-          'parentUuid': '27b12c0d2bf64594b83c66295d58fd59',
+         //普通组件类型：formselect(下拉)与formtext(文本)/formradio(单选)/formcheckbox(复选)等配置一致
           'handler': 'formselect',
           'label': '资源规格_1_系统名称',
           'key': 'formspecifications_systemName',
@@ -105,14 +105,14 @@ export default {
           'type': 'form'
         },
         {
-          'parentUuid': '27b12c0d2bf64594b83c66295d58fd59',
+         //表格组件配置：formtableinputer(表格数据组件)/formtableselector(表格选择组件)
           'handler': 'formtableinputer',
           'label': '资源规格_1_数据库',
           'key': 'formspecifications_database',
           'tag': 'common1',
           'type': 'form',
           'config': {
-            'dataConfig': [
+            'dataConfig': [ //表头属性
               {
                 'handler': 'formtext',
                 'label': '资源规格_1_数据库_需求编号',
@@ -176,7 +176,7 @@ export default {
             ]
           }
         }
-      ]
+      ]`
     };
   },
   beforeCreate() {},

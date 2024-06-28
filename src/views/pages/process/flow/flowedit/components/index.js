@@ -8,6 +8,7 @@ import event from './event-node';
 import autoexec from './autoexec/index.vue';
 import timer from './timer-node';
 import cmdb from '@/views/pages/cmdb/flow/node/index.js'; //cmdb
+import createjob from './createjob';
 import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   condition,
@@ -20,5 +21,6 @@ export default {
   autoexec,
   ...cmdb,
   timer,
+  createjob,
   ...ComponentManager.getFlowNodeComponent()
 };
