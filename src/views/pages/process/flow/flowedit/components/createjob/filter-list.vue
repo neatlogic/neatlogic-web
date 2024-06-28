@@ -14,7 +14,7 @@
         v-for="(f,findex) in filterList"
         :key="findex"
         :gutter="8"
-        class="pb-xs"
+        class="filter-list"
       >
         <Col span="4">
           <TsFormSelect
@@ -36,7 +36,7 @@
             transfer
           ></TsFormSelect>
         </Col>
-        <Col span="4">
+        <Col span="3">
           <TsFormSelect
             ref="formValid"
             v-model="f.expression"
@@ -56,7 +56,7 @@
             transfer
           ></TsFormSelect>
         </Col>
-        <Col span="6">
+        <Col span="7">
           <template v-if="f.rightMappingMode === 'formCommonComponent'">
             <TsFormSelect
               ref="formValid"
@@ -324,5 +324,10 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.filter-list{
+   &:not(:last-child) {
+    padding-bottom: 8px;
+  }
+}
 </style>

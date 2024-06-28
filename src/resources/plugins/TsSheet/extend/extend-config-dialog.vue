@@ -31,6 +31,15 @@
               </TsFormItem>
               <TsFormItem label="配置">
                 <Tabs :name="'data' + index" :animated="false" @on-click="(name)=>changeTab(name, item)">
+                  <TabPane label="转换前配置" :name="'formItem' + index" :tab="'data' + index">
+                    <TsCodemirror
+                      ref="code"
+                      :value="JSON.stringify(formItemList, null,2)"   
+                      codeMode="json"
+                      :isReadOnly="true"
+                      isCopy
+                    ></TsCodemirror>  
+                  </TabPane>
                   <TabPane label="数据配置" :name="'dataConfig' + index" :tab="'data' + index">
                     <div v-if="!item._tab || item._tab === 'dataConfig' + index">
                       <ConfigHelp></ConfigHelp>
