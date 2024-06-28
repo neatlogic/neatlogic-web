@@ -29,7 +29,6 @@
             draggable="true"
             @dragstart="drag($event, node)"
           >
-            {{ node }}
             <LeftNode v-if="!node._isHide" :key="'1' + index" :node="node"></LeftNode>
           </li>
         </ul>
@@ -92,7 +91,7 @@
                 :slaListPorps="slaList"
                 :canvasNodeList="stepList"
                 :formConfig="formConfig"
-                :startNodeuuid="startNodeuuid"
+                :startNodeUuid="startNodeUuid"
                 @slaIn="nodesHighlight"
                 @slaOut="nodesHighlight([])"
               ></TacticsSetting>
@@ -100,16 +99,16 @@
             <TabPane :label="$t('term.process.scoresetting')" name="scoresetting" class="tab-content">
               <ScoreSetting ref="scoreSetting" :scoreConfig="scoreConfig" :canvasNodeList="stepList"></ScoreSetting>
             </TabPane>
-            <TabPane v-if="nodeConfig" :label="$t('term.process.nodesetting')" name="nodesetting">
+            <TabPane v-if="currentNodeData" :label="$t('term.process.nodesetting')" name="nodesetting">
               <FlownodeSetting
-                :key="nodeConfig.uuid"
+                :key="currentNodeData.uuid"
                 ref="nodeSetting"
                 :formhandlerList="formhandlerList"
                 :prevNodes="prevNodes"
                 :allPrevNodes="allPrevNodes"
                 :isStart="isNodeStart"
                 :nodeChildren="nodeChildren"
-                :nodeConfig="nodeConfig"
+                :nodeConfig="currentNodeData"
                 :formConfig="formConfig"
                 :stepList="stepList"
                 :nodeAllLinksList="nodeAllLinksList"
@@ -118,8 +117,8 @@
                 @updateNode="updateNode"
               ></FlownodeSetting>
             </TabPane>
-            <TabPane v-if="linkConfig" :label="$t('term.process.linksetting')" name="linksetting">
-              <FlowLinkSetting :config="linkConfig" @setlinkname="setLinkName"></FlowLinkSetting>
+            <TabPane v-if="currentLinkData" :label="$t('term.process.linksetting')" name="linksetting">
+              <FlowLinkSetting :config="currentLinkData" @setlinkname="setLinkName"></FlowLinkSetting>
             </TabPane>
           </Tabs>
         </div>
@@ -149,7 +148,6 @@
 import { NodeFactory } from '@/views/pages/process/flow/floweditor/element/core/NodeFactory.js';
 import { ElementFactory } from '@/views/pages/process/flow/floweditor/element/core/ElementFactory.js';
 
-import LeftNode from './flowedit/flow-left-node.vue';
 import FlownodeSetting from './flowedit/FlownodeSetting.vue';
 import FlowSetting from './flowedit/FlowSetting.vue';
 import TacticsSetting from './flowedit/TacticsSetting.vue';
@@ -170,7 +168,7 @@ export default {
     TacticsSetting,
     FlowLinkSetting,
     ScoreSetting,
-    LeftNode,
+    LeftNode: () => import('./flow-left-node-new.vue'),
     RelationService: () => import('./flowedit/relation-service.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     FlowEditor: () => import('@/views/pages/process/flow/floweditor/flow-editor.vue')
@@ -179,12 +177,13 @@ export default {
   props: [''],
   data() {
     return {
+      isSelected: false, //用于在节点选中时，触发computed计算
       isReturn: true, //是否返回管理页
       type: 'slider',
       flowName: '',
       seletedList: {},
-      nodeConfig: null, //当前节点的数据
-      linkConfig: null, //连线的数据
+      currentNodeData: null, //当前选中节点的数据
+      currentLinkData: null, //当前选中连线数据
       scoreConfig: {
         //评分设置
         scoreTemplateId: null,
@@ -192,9 +191,9 @@ export default {
         isAuto: 1,
         config: { autoTime: 3, autoTimeType: 'naturalDay' }
       },
-      prevNodes: [],
-      allPrevNodes: [],
-      isNodeStart: false,
+      //prevNodes: [],
+      //allPrevNodes: [],
+      //isNodeStart: false,
       validCardOpen: false,
       validList: [],
       processConfig: { uuid: null, name: '' }, //流程设置相关数据
@@ -225,7 +224,6 @@ export default {
       draftData: [], //草稿列表
       isNew: false, //新增判断是否是新流程
       portData: [], //接口数据
-      startNodeuuid: null,
       processUuid: '', //流程id
       formhandlerList: [], //表单控件的数据
       nodeAllLinksList: [], //当前节点的所有连线数据
@@ -260,25 +258,12 @@ export default {
     }
   },
   async mounted() {
-    // // 初始化
-    // window.vm = Vm = this;
-    // let config = Object.assign(viewOpts, {
-    //   'canvas.autoadjust': true, //显示辅助线
-    //   'anchor.size': 4 //连接点大小
-    // });
-    // TopoVm = this.$topoVm = new Topo(this.$refs.topo, config, this);
-    // this.$topoVm.draw();
-
-    // // 获取节点列表数据
+    // 获取节点列表数据
     await this.getNodeList();
-
-    // await this.initFlow('init');
     this.getWorkerdispatcher();
     this.selectNodeByStepUuid();
-    // this.flowObj.TopoVm = TopoVm;
   },
   beforeDestroy() {
-    //this.$topoVm.destroy(); //销毁topo里面注册的事件
   },
   destroyed() {
     clearInterval(this.interval);
@@ -309,11 +294,12 @@ export default {
     },
     drag(event, component) {
       //仅提取必要信息
-      const { icon, name, handler, type, isAllowStart } = component;
-      const config = { icon, name, handler, type, isAllowStart };
+      const { name, handler, type, isAllowStart, chartConfig } = component;
+      const config = { name, handler, type, isAllowStart, icon: chartConfig.icon };
       const uuid = this.$utils.setUuid();
       config.id = uuid;
-      config.uuid = uuid;
+      //数据复制一份到config，和老数据保持一致
+      config.config = { uuid, name, handler, type, isAllowStart, stepConfig: {} };
       const node = NodeFactory.createNode(this.graph, { handler, type }, config);
       this.dnd.start(node, event);
     },
@@ -326,6 +312,9 @@ export default {
       });
     },
     nodeSelected(nodeData, node) {
+      this.isSelected = false;
+      //显示节点配置
+      console.log(nodeData.config.uuid, node.id);
       this.showNodeSetting(nodeData.config);
 
       //组装links数据，需要和老数据保持一致，关键是config中的结构
@@ -336,16 +325,34 @@ export default {
         links.push(link);
       });
       this.getNodeAllLinksList(links);
+      //触发计算
+      this.$nextTick(() => {
+        this.isSelected = true;
+      });
     },
+    getPrevNodes(node) {
+      if (typeof node === 'string') {
+        node = this.graph.getCellById(node);
+      }
+      const prevNodeList = [];
+      if (node) {
+        const incommingEdges = this.graph.getIncomingEdges(node);
+        incommingEdges && incommingEdges.forEach(d => {
+          prevNodeList.push(d.getSourceCell());
+        });
+      }
+      return prevNodeList;
+    },
+
     //新的结束
     selectNodeByStepUuid() {
       // 根据步骤id选中节点并高亮
       if (this.$route.query.stepUuid && !this.$utils.isEmpty(this.stepList)) {
         // 从表单场景跳转过来，勾选对应的节点并且打开对应节点的编辑页面
-        let nodeConfig = this.stepList.find(item => item.uuid == this.$route.query.stepUuid);
-        if (nodeConfig) {
-          this.showNodeSetting(nodeConfig);
-          let nodeVm = this.$topoVm.getNodeByUuid(nodeConfig.uuid);
+        let currentNodeData = this.stepList.find(item => item.uuid == this.$route.query.stepUuid);
+        if (currentNodeData) {
+          this.showNodeSetting(currentNodeData);
+          let nodeVm = this.$topoVm.getNodeByUuid(currentNodeData.uuid);
           nodeVm && nodeVm.select(); // 节点选中
         }
       }
@@ -366,7 +373,7 @@ export default {
         //更新节点数据
         this.setNodeSetting();
       } else {
-        this.nodeConfig = null;
+        this.currentNodeData = null;
       }
     },
     async getNodeList() {
@@ -375,7 +382,6 @@ export default {
         if (res.Status == 'OK') {
           let hideList = ['start', 'end'];
           let nodesData = res.Return.map(d => {
-            d = nodeDataTransform(d);
             hideList.includes(d.handler) && (d._isHide = true); //不需要显示的节点
             d.handler == 'end' && (this.processConfig = Object.assign(d.config.processConfig, this.processConfig)); //初始化流程设置的配置数据从end节点拿取
             return d;
@@ -387,8 +393,8 @@ export default {
       });
     },
     setLinkName(value) {
-      this.linkConfig.name = value;
-      var link = this.$topoVm.getLinkByUuid(this.linkConfig.uuid);
+      this.currentLinkData.name = value;
+      var link = this.$topoVm.getLinkByUuid(this.currentLinkData.uuid);
       link && link.setName(value);
     },
     changeFlowName(value) {
@@ -582,11 +588,11 @@ export default {
       let allNode = this.$topoVm.getNodes();
       allNode.forEach(vm => {
         //给节点塞必要的值
-        let nodeConfig = _this.stepList.find(item => {
+        let currentNodeData = _this.stepList.find(item => {
           return item.uuid == vm.getUuid();
         });
-        if (setInitData[nodeConfig.handler] instanceof Function) {
-          setInitData[nodeConfig.handler](nodeConfig, vm, _this);
+        if (setInitData[currentNodeData.handler] instanceof Function) {
+          setInitData[currentNodeData.handler](currentNodeData, vm, _this);
         }
       });
       // 流程数据验证
@@ -599,7 +605,7 @@ export default {
       return TopoVm && TopoVm.getShapePath(data, { fill: 'white' }).outerHTML;
     },
     setNodeName(val) {
-      var node = this.$topoVm.getNodeByUuid(this.nodeConfig.uuid);
+      var node = this.$topoVm.getNodeByUuid(this.currentNodeData.uuid);
       node && node.setName(val);
     },
     validItemClick(item) {
@@ -728,16 +734,16 @@ export default {
     showLinkSetting(config) {
       // 线选中触发该事件，展示线编辑组件
       if (config) {
-        this.linkConfig = config;
+        this.currentLinkData = config;
         // 切tab
         this.$nextTick(() => {
-          this.nodeConfig = null;
+          this.currentNodeData = null;
           this.activeTab = 'linksetting';
         });
       } else {
         this.activeTab = 'flowsetting';
         this.$nextTick(() => {
-          this.linkConfig = null;
+          this.currentLinkData = null;
         });
       }
     },
@@ -745,14 +751,13 @@ export default {
       // 节点选中后，触发该事件，展示节点数据编辑组件
       let _this = this;
       if (config) {
-        this.linkConfig = null;
-        this.nodeConfig = config;
-        this.setPrevNodes();
+        this.currentLinkData = null;
+        this.currentNodeData = config;
         // 子节点添加
-        this.nodeChildren.splice(0);
-        let nodeVm = this.$topoVm.getNodeByUuid(config.uuid);
-        let nodeChildren = nodeVm.getNextNodes().map(d => _this.stepList.find(item => item.uuid == d.getUuid()));
-        this.nodeChildren.push(...nodeChildren);
+        //this.nodeChildren.splice(0);
+        //let nodeVm = this.$topoVm.getNodeByUuid(config.uuid);
+        //let nodeChildren = nodeVm.getNextNodes().map(d => _this.stepList.find(item => item.uuid == d.getUuid()));
+        //this.nodeChildren.push(...nodeChildren);
 
         // 切tab
         this.$nextTick(() => {
@@ -761,59 +766,27 @@ export default {
       } else {
         this.activeTab = 'flowsetting';
         this.$nextTick(() => {
-          this.nodeConfig = null;
-          this.setPrevNodes();
+          this.currentNodeData = null;
         });
       }
     },
-    setPrevNodes() {
-      // 获取节点的所有前置节点
-      let _this = this;
-      if (this.nodeConfig) {
-        var vm = TopoVm.getNodeByUuid(this.nodeConfig.uuid);
-        if (!vm) return;
-        let allPrevNodes = vm.getAllPrevNodes();
-        allPrevNodes = allPrevNodes.map(item => _this.stepList.find(step => step.uuid == item.getUuid()));
-        let parentNodes = vm.getPrevNodes();
-        let prevNodes = allPrevNodes.filter(d => d.type !== 'start' && d.type !== 'end' && d.handler != 'condition' && d.handler != 'distributary' && d.handler != 'autoexec');
-        let isStart = parentNodes.some(d => d.getConfig() && d.getConfig().handler === 'start');
-        this.isNodeStart = isStart;
-        this.prevNodes.splice(0);
-        this.prevNodes.push(...prevNodes);
-        this.allPrevNodes.splice(0);
-        this.allPrevNodes.push(...allPrevNodes);
-      } else {
-        this.prevNodes.splice(0);
-        this.allPrevNodes.splice(0);
-        this.isNodeStart = false;
-      }
-
-      let allNode = TopoVm.getNodes();
-      allNode.forEach(a => {
-        let nodeCurrent = TopoVm.getNodeByUuid(a.getUuid());
-        let nodeParent = nodeCurrent.getPrevNodes();
-        if (nodeParent.some(d => d.getConfig() && d.getConfig().handler === 'start')) {
-          this.startNodeuuid = a.getUuid();
-        }
-      });
-    },
     setNodeSetting() {
       // 获取节点设置
-      let nodeConfig = {};
+      let currentNodeData = {};
       if (this.$refs.nodeSetting) {
         //获取节点表单授权的数据，跟新整体的表单授权数据
         let newnodeConfig = this.$refs.nodeSetting.saveProcessFormConfig() || {};
         this.updateNode(newnodeConfig);
         //获取节点的数据
-        let nodeConfig = this.$refs.nodeSetting.getValueList();
+        let currentNodeData = this.$refs.nodeSetting.getValueList();
         this.stepList.find((item, i) => {
-          if (item.uuid == nodeConfig.uuid) {
-            this.stepList[i] = nodeConfig;
+          if (item.uuid == currentNodeData.uuid) {
+            this.stepList[i] = currentNodeData;
           }
-          return item.uuid == nodeConfig.uuid;
+          return item.uuid == currentNodeData.uuid;
         });
       }
-      return nodeConfig;
+      return currentNodeData;
     },
     getProcessFormConfig(action) {
       return this.$refs.nodeSetting.saveProcessFormConfig(action);
@@ -835,7 +808,6 @@ export default {
       data.x = p.x - data.width / 2;
       data.y = p.y - data.height / 2;
       data.uuid = data.uuid || this.$utils.setUuid();
-      nodeDataTransform(data);
       data.config = {
         uuid: data.uuid,
         name: data.name,
@@ -976,8 +948,8 @@ export default {
     },
     updateNode(list, nodeUuid) {
       let _this = this;
-      nodeUuid = nodeUuid || (this.nodeConfig ? this.nodeConfig.uuid : null);
-      if (list.extendConfig && this.nodeConfig && nodeUuid) {
+      nodeUuid = nodeUuid || (this.currentNodeData ? this.currentNodeData.uuid : null);
+      if (list.extendConfig && this.currentNodeData && nodeUuid) {
         //扩展属性赋值
         _this.formConfig.extendConfig = _this.formConfig.extendConfig || {};
         for (let key in list.extendConfig) {
@@ -996,8 +968,8 @@ export default {
     setNodeAllLinksList() {
       //更新节点连线
       let _this = this;
-      if (_this.nodeConfig) {
-        var vm = TopoVm.getNodeByUuid(this.nodeConfig.uuid);
+      if (_this.currentNodeData) {
+        var vm = TopoVm.getNodeByUuid(this.currentNodeData.uuid);
         if (!vm) return;
         _this.nodeAllLinksList = vm.links;
       }
@@ -1086,9 +1058,9 @@ export default {
     },
     setNodeChildren() {
       //更新选中节点的子节点
-      if (this.nodeConfig) {
+      if (this.currentNodeData) {
         this.nodeChildren.splice(0);
-        let nodeVm = this.$topoVm.getNodeByUuid(this.nodeConfig.uuid);
+        let nodeVm = this.$topoVm.getNodeByUuid(this.currentNodeData.uuid);
         let nodeChildren = nodeVm.getNextNodes().map(d => this.stepList.find(item => item.uuid == d.getUuid()));
         this.nodeChildren.push(...nodeChildren);
       }
@@ -1102,6 +1074,64 @@ export default {
     allFormitemList() {
       //表单组件
       return store.allFormitemList;
+    },
+    //开始节点uuid
+    startNodeUuid() {
+      if (this.isSelected) {
+        const nodes = this.graph.getNodes();
+        for (let i = 0; i < nodes.length; i++) {
+          if (nodes[i].getProp('handler') === 'start') {
+            return nodes[i].id;
+          }
+        }
+      }
+      return null;
+    },
+    //当前节点是否开始节点
+    isNodeStart() {
+      if (this.isSelected && this.currentNodeData) {
+        const prevNodeList = this.getPrevNodes(this.currentNodeData.uuid);
+        if (prevNodeList.length === 1 && prevNodeList[0].getProp('handler') === 'start') {
+          return true;
+        }
+      }
+      return false;
+    },
+    //当前节点的所有前置节点
+    allPrevNodes() {
+      let prevNodeList = [];
+      if (this.isSelected && this.currentNodeData) {
+        const prevNodeList = this.getPrevNodes(this.currentNodeData.uuid);
+        
+        if (prevNodeList.length > 0) {
+          const nodeSet = new Set();
+          prevNodeList.forEach(n => {
+            nodeSet.add(n.id);
+          });
+          let size = prevNodeList.length;
+          for (let i = 0; i < size; i++) {
+            const n = prevNodeList[i];
+            const tmpList = this.getPrevNodes(n);
+            tmpList.forEach(tmp => {
+              //判断新的关系是否存在，不存在则加入nodeList继续循环
+              if (!nodeSet.has(tmp.id) && this.currentNodeData.uuid !== tmp.id) {
+                nodeSet.add(tmp.id);
+                prevNodeList.push(tmp);
+              }
+            });
+            size = prevNodeList.length; //重新修正新的size
+          }
+        }
+      }
+      return prevNodeList;
+    },
+    //当前节点的前置节点
+    prevNodes() {
+      let prevNodeList = [];
+      if (this.isSelected && this.currentNodeData) {
+        prevNodeList = this.getPrevNodes(this.currentNodeData.uuid);
+      }
+      return prevNodeList;
     },
     //转换旧数据为新数据
     finalFlowData() {
