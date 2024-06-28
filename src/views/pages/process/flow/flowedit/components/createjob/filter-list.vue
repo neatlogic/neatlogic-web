@@ -14,7 +14,7 @@
         v-for="(f,findex) in filterList"
         :key="findex"
         :gutter="8"
-        class="pb-xs"
+        class="filter-list"
       >
         <Col span="4">
           <TsFormSelect
@@ -324,5 +324,10 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.filter-list{
+   &:not(:last-child) {
+    padding-bottom: 8px;
+  }
+}
 </style>

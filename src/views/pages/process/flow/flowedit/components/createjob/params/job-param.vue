@@ -10,7 +10,7 @@
         labelPosition="left"
         :tooltip="item.type == 'text'?$t('term.process.jobtextparamsvaluetip'):''"
       >
-        <div v-for="(m,mindex) in item.mappingList" :key="mindex">
+        <div v-for="(m,mindex) in item.mappingList" :key="mindex" class="mapping-list">
           <TsRow :gutter="8">
             <Col span="6">
               <TsFormSelect
@@ -279,5 +279,10 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.mapping-list {
+  &:not(:last-child) {
+    padding-bottom: 8px;
+  }
+}
 </style>
