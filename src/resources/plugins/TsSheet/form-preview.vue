@@ -42,6 +42,7 @@
           tab="preview"
         >
           <JsonViewer boxed copyable :value="formData"></JsonViewer>
+          <ExtendTagTest :formData="formData" :extendConfigList="extendConfigList" :formItemList="formItemList"></ExtendTagTest>
         </TabPane>
         <TabPane
           v-if="!$utils.isEmpty(emitData)"
@@ -74,12 +75,14 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
     JsonViewer: () => import('vue-json-viewer'),
-    TsSheet: () => import('./TsSheet.vue')
+    TsSheet: () => import('./TsSheet.vue'),
+    ExtendTagTest: () => import('./extend/extend-tag-test.vue')
   },
   directives: { clipboard },
   props: {
     data: { type: Object },
-    formSceneUuid: [String, Array]
+    formSceneUuid: [String, Array],
+    extendConfigList: Array
   },
   data() {
     return {
@@ -120,15 +123,9 @@ export default {
           let component = d.component;
           while (component && !this.$utils.isEmpty(component)) {
             if (!Array.isArray(component)) {
-              if (component.hasValue) {
-                this.formItemList.push(component);
-              }
+              this.formItemList.push(component);
             } else {
-              component.forEach(c => {
-                if (c.hasValue) {
-                  this.formItemList.push(c);
-                }
-              });
+              this.formItemList.push(...component);
             }
             if (component.isContainer && component.component) {
               component = component.component;

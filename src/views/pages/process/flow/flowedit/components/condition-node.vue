@@ -1,5 +1,20 @@
 <template>
   <div class="condition-setting permission-list">
+    <TsFormItem
+      label="表单标签"
+      labelPosition="top"
+      tooltip="当标签为空时：表单组件为主场景的所有表单组件；当标签不为空时：表单组件为所选标签配置的表单组件。"
+    >
+      <TsFormSelect
+        v-model="formTag"
+        :dataList="formTagList"
+        border="border"
+        transfer
+        @on-change="(val)=>{
+          changeFormTag(val);
+        }"
+      ></TsFormSelect>
+    </TsFormItem>
     <div class="control-setting">
       <span>{{ $t('term.process.flowrult') }}</span>
       <span class="tsfont-plus add-btn" @click="addRule()">{{ $t('page.rule') }}</span>
@@ -275,6 +290,7 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
     ConditionAttrList: () => import('./condition-attr-list.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     ...Items
   },
   mixins: [nodemixin],
@@ -381,7 +397,9 @@ export default {
           text: this.$t('page.or'),
           value: 'or'
         }
-      ]
+      ],
+      formTag: '',
+      formTagList: []
     };
   },
 
@@ -394,8 +412,9 @@ export default {
   beforeMount() {},
 
   mounted() {
-    this.keyList = ['moveonConfigList']; //stepConfig 需要包含的数据
+    this.keyList = ['moveonConfigList', 'formTag']; //stepConfig 需要包含的数据
     this.getNodeSetting();
+    this.getFormTagList();
   },
 
   beforeUpdate() {},
@@ -420,8 +439,8 @@ export default {
     getNodeSetting() {
       //初始化节点数据
       let config = (this.configData = this.$utils.deepClone(this.nodeConfig));
-      this.getNewConditionList(this.formUuid);
       this.initNodeData(config, this.keyList); //初始化数据
+      this.getNewConditionList(this.formUuid);
     },
     getTargetStepList(arr) {
       //条件子节点
@@ -700,6 +719,7 @@ export default {
       //新的条件选择
       let data = {
         formUuid: formUuid,
+        tag: this.formTag || 'common',
         isAll: 1
       };
       this.$api.process.process.conditionList(data).then(res => {
@@ -747,9 +767,32 @@ export default {
       }
     },
     saveNodeData() {
-      let data = {};
+      let data = {
+        formTag: this.formTag
+      };
       data.moveonConfigList = this.moveonConfigList;
       return data;
+    },
+    getFormTagList() {
+      this.formTagList = [];
+      if (this.formUuid) {
+        this.$api.framework.form.getFormTagList({formUuid: this.formUuid}).then(res => {
+          if (res.Return) {
+            let tbodyList = res.Return.tbodyList || [];
+            if (!this.$utils.isEmpty(tbodyList)) {
+              this.formTagList = tbodyList.map(item => {
+                return {
+                  text: item,
+                  value: item
+                };
+              });
+            }
+          }
+        });
+      }
+    },
+    changeFormTag() {
+      this.getNewConditionList(this.formUuid);
     }
   },
 
@@ -819,6 +862,7 @@ export default {
     formUuid: {
       handler(newVal, oldVal) {
         this.getNewConditionList(newVal);
+        this.getFormTagList(); 
       }
     }
   }

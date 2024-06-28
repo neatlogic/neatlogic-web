@@ -161,6 +161,7 @@ export default {
   destroyed() {},
   methods: {
     init() {
+      this.getConditionNode();
       this.getDefaultPolicyId();
       let handler = this.defaultDeepCloneConfig.handler || this.handler;
       this.notifySelectConfig.params.handler = handler;
