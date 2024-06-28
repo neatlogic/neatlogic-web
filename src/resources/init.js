@@ -3,6 +3,7 @@ import utils from '@/resources/assets/js/util.js';
 import Zh from '@/resources/assets/languages/zh.js';
 import En from '@/resources/assets/languages/en.js';
 import VueI18n from 'vue-i18n';
+import '@/resources/import/index';
 
 let config = {
   locale: BASELANGUAGES, // 定义默认语言为中文

@@ -1,8 +1,10 @@
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
-import { FLOW_DISPATCHER_VALID, FLOW_NODE_VALID } from '@/resources/import';
+import FetchComponent from '@/resources/import/fetch-component.js';
+let dispatcherValid = FetchComponent.getDispatcherValidComponent();
+let flowNodeValid = FetchComponent.getFlowNodeValidComponent();
 let valid = {
-  ...FLOW_NODE_VALID,
+  ...flowNodeValid,
   common(nodeConfig, d, that) {
     //公共校验方法  校验名称
     let validList = this.poliyUser(nodeConfig, d, that) || [];
@@ -117,7 +119,7 @@ let valid = {
                       let val = row[key];
                       let handler = policyList[i].config.handler;
                       let dispatcherName = this.handleDispatcherName(handler) || '';
-                      if (!that.$utils.isEmpty(FLOW_DISPATCHER_VALID) && !that.$utils.isEmpty(FLOW_DISPATCHER_VALID[dispatcherName]) && FLOW_DISPATCHER_VALID[dispatcherName](that, handler, key, val)) {
+                      if (!that.$utils.isEmpty(dispatcherValid) && !that.$utils.isEmpty(dispatcherValid[dispatcherName]) && dispatcherValid[dispatcherName](that, handler, key, val)) {
                         isChecked = 0;
                         errorText = $t('term.process.assignconfigvalid');
                         break;
@@ -310,138 +312,6 @@ let valid = {
           nodeData.attributeUuid = '';
           validList.push(validObj);
         }
-      }
-    }
-    return validList;
-  },
-  eoa(nodeConfig, d, that) {
-    let validList = [];
-    let nodeData = nodeConfig.stepConfig || {};
-    let eoaConfig = nodeData.eoaConfig || {};
-    let nodeChildren = d.getNextNodes().map(d => that.stepList.find(item => item.uuid == d.getUuid()));
-    if (nodeConfig.handler === 'eoa') {
-      if (that.$utils.isEmpty(eoaConfig.eoaTemplateList)) {
-        validList.push({
-          name: $t('form.validate.required', { target: $t('page.template') }),
-          href: '#eoaSetting'
-        });
-      }
-      if (that.$utils.isEmpty(eoaConfig.eoaSucceedToStepUuid) || (!that.$utils.isEmpty(eoaConfig.eoaSucceedToStepUuid) && that.$utils.isEmpty(nodeChildren)) || (!that.$utils.isEmpty(nodeChildren) && !nodeChildren.find(item => item.uuid === eoaConfig.eoaSucceedToStepUuid))) {
-        that.$set(eoaConfig, 'eoaSucceedToStepUuid', '');
-        validList.push({
-          name: $t('form.validate.required', { target: $t('term.process.eoapassedforwardedtonode') }),
-          href: '#eoaSetting'
-        });
-      }
-      if (that.$utils.isEmpty(eoaConfig.eoaFailedToStepUuid) || (!that.$utils.isEmpty(eoaConfig.eoaFailedToStepUuid) && that.$utils.isEmpty(nodeChildren)) || (!that.$utils.isEmpty(nodeChildren) && !nodeChildren.find(item => item.uuid === eoaConfig.eoaFailedToStepUuid))) {
-        that.$set(eoaConfig, 'eoaFailedToStepUuid', '');
-        validList.push({
-          name: $t('form.validate.required', { target: $t('term.process.eoanopassedforwardedtonode') }),
-          href: '#eoaSetting'
-        });
-      }
-    }
-    return validList;
-  },
-  dataconversion(nodeConfig, d, that) {
-    //dataconversion
-    let validList = [];
-    let nodeData = nodeConfig.stepConfig || {};
-    let dataConversionConfig = nodeData.dataConversionConfig || {};
-    if (nodeConfig.handler === 'dataconversion') {
-      if (!dataConversionConfig.failPolicy) {
-        validList.push({
-          name: $t('form.validate.required', { target: $t('page.failurestrategy') }),
-          href: '#dataConversionConfig'
-        });
-      }
-      if (that.$utils.isEmpty(dataConversionConfig.configList)) {
-        validList.push({
-          name: $t('form.validate.required', { target: $t('term.cmdb.modemapping') }),
-          href: '#dataConversionConfig'
-        });
-      }
-    }
-    return validList;
-  },
-  subprocess(nodeConfig, d, that) {
-    let validList = [];
-    let nodeData = nodeConfig.stepConfig || {};
-    let subProcessConfig = nodeData.subProcessConfig || {};
-    if (that.$utils.isEmpty(subProcessConfig.channelList)) {
-      validList.push({
-        name: $t('form.validate.required', { target: $t('term.process.catalogmanage') }),
-        href: '#subprocessSetting'
-      });
-    }
-    return validList;
-  },
-  diagram(nodeConfig, d, that) {
-    let validList = [];
-    let nodeData = nodeConfig.stepConfig || {};
-    let diagramConfig = nodeData.diagramConfig || {};
-    if (nodeConfig.handler === 'diagram') {
-      if (that.$utils.isEmpty(diagramConfig.catalogId)) {
-        validList.push({
-          name: $t('form.validate.required', { target: '架构目录' }),
-          href: '#diagramSetting'
-        });
-      }
-      if (that.$utils.isEmpty(diagramConfig.ciEntityIdMappingFormAttributeUuid)) {
-        validList.push({
-          name: $t('form.validate.required', { target: '架构图关联节点' }),
-          href: '#diagramSetting'
-        });
-      }
-      if (that.$utils.isEmpty(diagramConfig.requestMappingFormAttributeUuid)) {
-        validList.push({
-          name: $t('form.validate.required', { target: '架构图关联需求节点' }),
-          href: '#diagramSetting'
-        });
-      }
-      if (that.$utils.isEmpty(diagramConfig.checkingStatusList)) {
-        validList.push({
-          name: $t('form.validate.required', { target: '架构图待审批状态' }),
-          href: '#diagramSetting'
-        });
-      }
-    }
-    return validList;
-  },
-  collection(nodeConfig, d, that) {
-    let validList = [];
-    let nodeData = nodeConfig.stepConfig || {};
-    let collectionConfig = nodeData.collectionConfig || {};
-    if (nodeConfig.handler === 'collection') {
-      if (that.$utils.isEmpty(collectionConfig.systemField)) {
-        validList.push({
-          name: '应用系统关联字段不能为空',
-          href: '#collectionConfig'
-        });
-      }
-      if (that.$utils.isEmpty(collectionConfig.requestField)) {
-        validList.push({
-          name: '需求编号关联字段不能为空',
-          href: '#collectionConfig'
-        });
-      }
-      if (that.$utils.isEmpty(collectionConfig.envMatrixUuid)) {
-        validList.push({
-          name: '环境数据源不能为空',
-          href: '#collectionConfig'
-        });
-      }
-      if (that.$utils.isEmpty(collectionConfig.envValueField)) {
-        validList.push({
-          name: '环境数据源值字段映射不能为空',
-          href: '#collectionConfig'
-        });
-      }
-      if (that.$utils.isEmpty(collectionConfig.envTextField)) {
-        validList.push({
-          name: '环境数据源名称字段映射不能为空',
-          href: '#collectionConfig'
-        });
       }
     }
     return validList;
