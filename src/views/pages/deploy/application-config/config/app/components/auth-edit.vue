@@ -13,7 +13,6 @@
           :label="item.value"
         >
           <Tooltip
-            class="tooltips-box"
             theme="light"
             max-width="300"
             transfer
@@ -21,6 +20,18 @@
             <div class="text-width overflow">{{ item.text }}</div>
             <div slot="content">
               <li>{{ item.text }}</li>
+            </div>
+          </Tooltip>
+          <Tooltip
+            v-if="item.description" 
+            placement="top"
+            max-width="300"
+            transfer
+            theme="light"
+          >
+            <b class="tsfont-info-o text-href"></b>
+            <div slot="content">
+              <p>{{ item.description }}</p>
             </div>
           </Tooltip>
         </Checkbox>
@@ -175,7 +186,7 @@ export default {
     width: 100%;
   }
   /deep/ .ivu-checkbox-wrapper {
-    width: 112px;
+    width: 128px;
     white-space: nowrap;
   }
   .tooltips-box {

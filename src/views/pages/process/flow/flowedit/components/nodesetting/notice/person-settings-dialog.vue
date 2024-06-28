@@ -15,6 +15,7 @@
             type="fix"
           ></Loading>
           <Tabs
+            v-if="policyId"
             v-model="tabValue"
             class="block-tabs"
             :animated="false"
@@ -79,6 +80,12 @@
               <NoData v-else></NoData>
             </TabPane>
           </Tabs>
+          <NoData v-else>
+            <div>
+              <span v-if="$utils.isUserHasAuth('NOTIFY_POLICY_MODIFY')" class="text-href" @click="gotoAddNotify()">请设置默认通知策略</span>
+              <span v-else>没有默认通知策略，请联系管理员</span>
+            </div>
+          </NoData>
         </div>
       </template>
     </TsDialog>
@@ -226,6 +233,14 @@ export default {
         });
       }
       this.paramTypeConfig = paramTypeConfig;
+    },
+    //跳转策略编辑页面
+    gotoAddNotify(val) {
+      if (val) {
+        window.open(HOME + '/framework.html#/notifytactics-edit?id=' + val, '_blank');
+      } else {
+        window.open(HOME + '/framework.html#/notifytactics-overview', '_blank');
+      }
     }
   },
   filter: {},

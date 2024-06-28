@@ -15,7 +15,7 @@
     <div class="pt-nm pl-nm pr-nm">
       <TsRow class="pb-sm">
         <Col span="10">
-          <div v-show="hasEditConfigAuth" class="action-group mt-xs">
+          <div v-show="hasAuthConfigAuth" class="action-group mt-xs">
             <span class="action-item tsfont-plus text-href" @click="openAuthDialog">{{ $t('page.add') }}</span>
             <span
               class="action-item tsfont-edit"
@@ -67,7 +67,20 @@
                     :indeterminate="indeterminate"
                     @on-change="selectedAll"
                   ></Checkbox>
-                  <span v-else>{{ th.title }}</span>
+                  
+                  <span v-else>{{ th.title }}
+                    <Tooltip
+                      v-if="th.description" 
+                      placement="top"
+                      max-width="300"
+                      transfer
+                      theme="light"
+                    >
+                      <b class="tsfont-info-o text-href"></b>
+                      <div slot="content">
+                        <p>{{ th.description }}</p>
+                      </div>
+                    </Tooltip></span>
                 </th>
               </tr>
             </thead>
@@ -98,8 +111,8 @@
                     <span v-else :class="item && item[innerItem.name] ? 'tsfont-check text-success' : 'tsfont-close text-grey'"></span>
                   </td>
                   <div :class="item.isShow ? 'show-operation bg-selected' : 'hide-operation'" :style="item.isShow && topRightWidth ? {right: `${topRightWidth}px`} : ''">
-                    <span v-show="hasEditConfigAuth" class="tsfont-edit text-action cursor pr-sm" @click.stop="editAuth(item)">{{ $t('page.edit') }}</span>
-                    <span v-show="hasEditConfigAuth" class="tsfont-trash-s text-action cursor" @click.stop="delAuth(item)">{{ $t('page.delete') }}</span>
+                    <span v-show="hasAuthConfigAuth" class="tsfont-edit text-action cursor pr-sm" @click.stop="editAuth(item)">{{ $t('page.edit') }}</span>
+                    <span v-show="hasAuthConfigAuth" class="tsfont-trash-s text-action cursor" @click.stop="delAuth(item)">{{ $t('page.delete') }}</span>
                   </div>
                 </tr>
               </template>
@@ -146,6 +159,11 @@ export default {
     },
     hasEditConfigAuth: {
       // 是否有编辑配置权限
+      type: Boolean,
+      default: false
+    },
+    hasAuthConfigAuth: {
+      // 是否有“权限”的权限
       type: Boolean,
       default: false
     },

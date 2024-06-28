@@ -11,12 +11,17 @@
           v-if="tabValue == 'appConfig'"
           :appSystemId="appSystemId"
           :hasEditConfigAuth="hasEditConfigAuth"
+          :hasAuthConfigAuth="hasAuthConfigAuth"
           :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
           @updateAuth="updateAuth"
         ></AppInfoManage>
       </TabPane>
       <TabPane v-if="!hideFucntionExcludeAppModuleRunner" :label="$t('term.deploy.continuousintegration')" name="integrated">
-        <IntegratedManage v-if="tabValue == 'integrated'" :appSystemId="appSystemId" :hasEditConfigAuth="hasEditConfigAuth"></IntegratedManage>
+        <IntegratedManage
+          v-if="tabValue == 'integrated'"
+          :appSystemId="appSystemId"
+          :hasEditConfigAuth="hasEditConfigAuth"
+        ></IntegratedManage>
       </TabPane>
       <TabPane v-if="hasEditPipelineAuth" :label="$t('term.deploy.superpipeline')" name="pipeline">
         <AppPipeline
@@ -43,6 +48,11 @@ export default {
     },
     hasEditConfigAuth: {
       // 是否有编辑配置权限
+      type: Boolean,
+      default: false
+    },
+    hasAuthConfigAuth: {
+      // 是否有“权限”的权限
       type: Boolean,
       default: false
     },
