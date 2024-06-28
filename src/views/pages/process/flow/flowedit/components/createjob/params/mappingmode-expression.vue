@@ -13,7 +13,7 @@
       <Poptip
         v-model="isPopShow"
         :transfer="true"
-        width="700"
+        width="800"
       >
         <span class="text-href tsfont-plus" @click="addAttr()"></span>
         <div slot="content" class="api">

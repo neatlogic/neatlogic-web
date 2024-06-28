@@ -36,7 +36,7 @@
             transfer
           ></TsFormSelect>
         </Col>
-        <Col span="4">
+        <Col span="3">
           <TsFormSelect
             ref="formValid"
             v-model="f.expression"
@@ -56,7 +56,7 @@
             transfer
           ></TsFormSelect>
         </Col>
-        <Col span="6">
+        <Col span="7">
           <template v-if="f.rightMappingMode === 'formCommonComponent'">
             <TsFormSelect
               ref="formValid"
