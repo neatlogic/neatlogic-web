@@ -1,8 +1,8 @@
 const { Select } = require('neatlogic-ui/iview/index.js');
 /**topo节点的基础类，所有节点class都要extends此类**/
-(function(global, factory) {
+(function (global, factory) {
   factory((global.NodeBase = global.NodeBase || {}), global);
-})(window, function(exports, global) {
+})(window, function (exports, global) {
   'use strict';
   class NodeBase extends EventBase {
     constructor(canvas, config) {
@@ -26,12 +26,20 @@ const { Select } = require('neatlogic-ui/iview/index.js');
       this.__originalY = 0; //记录原始Y坐标
       if (config.hasOwnProperty('x')) {
         this.__originalX = config.x;
+      }
+      if (config.hasOwnProperty('y')) {
+        this.__originalY = config.y;
+      }
+
+      
+      /*if (config.hasOwnProperty('x')) {
+        this.__originalX = config.x;
         config.x = config.x - canvas.getTransformX();
       }
       if (config.hasOwnProperty('y')) {
         this.__originalY = config.y;
         config.y = config.y - canvas.getTransformY();
-      }
+      }*/
 
       /**
        * 重要说明：
@@ -138,20 +146,20 @@ const { Select } = require('neatlogic-ui/iview/index.js');
         if (k.startsWith('__')) {
           let pname = k.substring(2);
           pname = pname.replace(pname[0], pname[0].toUpperCase());
-          this['get' + pname] = function() {
+          this['get' + pname] = function () {
             return this[k];
           };
-          this['set' + pname] = function(value) {
+          this['set' + pname] = function (value) {
             this[k] = value;
             return this;
           };
         } else if (k.startsWith('_')) {
           let pname = k.substring(1);
           pname = pname.replace(pname[0], pname[0].toUpperCase());
-          this['get' + pname] = function() {
+          this['get' + pname] = function () {
             return this[k];
           };
-          this['set' + pname] = function(value) {
+          this['set' + pname] = function (value) {
             this[k] = value;
             return this;
           };
@@ -175,10 +183,7 @@ const { Select } = require('neatlogic-ui/iview/index.js');
       const canvasEl = this.canvas.zoomG; //在zoomG里创建所有元素
       this.el = canvasEl.append('g');
       this.el.datum(this);
-      this.el
-        .classed('nodeG', true)
-        .classed(this.getClass(), true)
-        .attr('cursor', 'pointer');
+      this.el.classed('nodeG', true).classed(this.getClass(), true).attr('cursor', 'pointer');
       this.initEvent();
 
       //重新设置一遍属性，触发PH set方法进行绘制
@@ -243,10 +248,10 @@ const { Select } = require('neatlogic-ui/iview/index.js');
           this.getSetConfig[k] = this.config[k];
           const that = this;
           bindConfigSetting[k] = {
-            get: function() {
+            get: function () {
               return that.getSetConfig[k];
             },
-            set: function(value) {
+            set: function (value) {
               if (that.getSetConfig[k] !== value) {
                 that['__' + k] = value;
                 that.getSetConfig[k] = value;
@@ -269,10 +274,10 @@ const { Select } = require('neatlogic-ui/iview/index.js');
           this.getSet[k] = this[k];
           const that = this;
           bindSetting[k] = {
-            get: function() {
+            get: function () {
               return that.getSet[k];
             },
-            set: function(value) {
+            set: function (value) {
               if (that.getSet[k] !== value) {
                 that.getSet[k] = value;
               }

@@ -1,0 +1,92 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.theme(@bg-color,@title-bg-color,@bg-grey,@text-color,@border-color,@primary-color,@info-color,@bg-info-grey) {
+  .x6-graph-background {
+    background: @bg-color;
+  }
+  .x6-graph {
+    border-radius: 8px;
+  }
+  .x6-graph.transition g {
+    transition: transform 0.6s ease;
+  }
+  .bg {
+    fill: @bg-color;
+  }
+  .bg-grey {
+    fill: @bg-grey;
+  }
+  .common-rect {
+    fill: @bg-info-grey;
+  }
+  .title-bg {
+    fill: @title-bg-color;
+  }
+  text {
+    fill: @text-color;
+  }
+  .line {
+    stroke: @border-color;
+  }
+  .marker {
+    stroke: @border-color;
+    fill: @border-color;
+  }
+  .vertice {
+    fill: @border-color;
+    stroke: @bg-color;
+  }
+  .port {
+    fill: @bg-color;
+    stroke-width: 2;
+    stroke: @info-color;
+  }
+  .port-active {
+    stroke: @primary-color !important;
+    stroke-width: 4;
+    stroke-opacity: 0.5;
+  }
+  .port-hidden {
+    fill: transparent;
+    stroke: transparent;
+  }
+  .x6-edge {
+    transition:
+      stroke-width 0.2s,
+      stroke 0.2s;
+  }
+  .x6-edge:hover {
+    cursor: pointer;
+    path:nth-child(2) {
+      filter: drop-shadow(0 0 3px @border-color);
+    }
+  }
+  .linktextbackground {
+    flood-color: @bg-color;
+  }
+  /*.x6-node:hover,.x6-node-selected{
+    filter: drop-shadow(0 0 5px @primary-color);
+  }*/
+
+  .x6-edge-selected {
+    path {
+      filter: drop-shadow(0 0 3px @border-color);
+    }
+  }
+  .custom-tools {
+    fill: rgba(0, 0, 0, 0);
+    stroke: @border-color;
+    stroke-width: 0;
+  }
+  .custom-tools-text {
+    fill: @text-color;
+  }
+}
+
+html {
+  .theme(@default-op,@default-th-bg-color,@default-bg-grey,@default-text,@default-icon,@default-primary-color,@default-info-color,@default-info-bg-color);
+
+  &.theme-dark {
+    .theme(@dark-op,@dark-th-bg-color,@dark-bg-grey,@dark-text,@dark-icon,@dark-primary-color,@dark-info-color,@dark-info-bg-color,);
+  }
+}
