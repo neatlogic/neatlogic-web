@@ -1,6 +1,6 @@
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
-import FetchComponent from '@/resources/import/fetch-component.js';
+import ComponentManager from '@/resources/import/component-manager.js';
 // eslint-disable-next-line space-before-function-paren
 (function (global, factory) {
   factory((global.Process = global.Process || {}), global);
@@ -39,10 +39,10 @@ import FetchComponent from '@/resources/import/fetch-component.js';
             ViewUI.Message.warning({ content: $t('message.process.nodenobacklink'), duration: 3, closable: true });
             return false;
           }
-          for (let keyItem of Object.keys(FetchComponent.getFlowLineValidComponent())) {
+          for (let keyItem of Object.keys(ComponentManager.getFlowLineValidComponent())) {
             let nodeName = `${sourceNode.getConfig().handler}backwardconnect`;
-            if (keyItem == nodeName && FetchComponent.getFlowLineValidComponent()[keyItem]) {
-              let isTrue = FetchComponent.getFlowLineValidComponent()[keyItem](sourceNode.getConfig().handler, this);
+            if (keyItem == nodeName && ComponentManager.getFlowLineValidComponent()[keyItem]) {
+              let isTrue = ComponentManager.getFlowLineValidComponent()[keyItem](sourceNode.getConfig().handler, this);
               if (!isTrue) {
                 return isTrue;
               }
@@ -68,10 +68,10 @@ import FetchComponent from '@/resources/import/fetch-component.js';
                 ViewUI.Message.warning({ content: $t('message.process.timerhasonelink'), duration: 3, closable: true });
                 return false;
               }
-              for (let keyItem of Object.keys(FetchComponent.getFlowLineValidComponent())) {
+              for (let keyItem of Object.keys(ComponentManager.getFlowLineValidComponent())) {
                 let nodeName = `${sourceNode.getConfig().handler}forwardconnect`;
-                if (keyItem == nodeName && FetchComponent.getFlowLineValidComponent()[keyItem]) {
-                  let isTrue = FetchComponent.getFlowLineValidComponent()[keyItem](sourceNode.getConfig().handler, this);
+                if (keyItem == nodeName && ComponentManager.getFlowLineValidComponent()[keyItem]) {
+                  let isTrue = ComponentManager.getFlowLineValidComponent()[keyItem](sourceNode.getConfig().handler, this);
                   if (!isTrue) {
                     return isTrue;
                   }

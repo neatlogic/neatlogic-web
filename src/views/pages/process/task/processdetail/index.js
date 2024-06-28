@@ -8,7 +8,7 @@ import autoexec from './process-autoexec';
 import timer from './process-timer';
 import cmdbsync from './process-cmdbsync';
 import createjob from './process-createjob';
-import FetchComponent from '@/resources/import/fetch-component.js';
+import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   omnipotent,
   automatic,
@@ -19,5 +19,5 @@ export default {
   timer,
   cmdbsync,
   createjob,
-  ...FetchComponent.getTaskDetailComponent()
+  ...ComponentManager.getTaskDetailComponent()
 };

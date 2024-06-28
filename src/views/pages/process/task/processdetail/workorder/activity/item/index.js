@@ -20,7 +20,7 @@ import eventinfoHandler from './list-handler';
 import focususerHandler from './focususer-handler';
 import automaticinfoHandler from './automaticinfo-handler';
 import cmdbsyncmessageHandler from './cmdbsyncmessage-handler';
-import FetchComponent from '@/resources/import/fetch-component.js';
+import ComponentManager from '@/resources/import/component-manager.js';
 
 export default {
   defaultHandler, //默认活动展示
@@ -44,5 +44,5 @@ export default {
   focususerHandler, //修改工单关注人
   automaticinfoHandler,
   cmdbsyncmessageHandler,
-  ...FetchComponent.getTimeLineComponent()
+  ...ComponentManager.getTimeLineComponent()
 };

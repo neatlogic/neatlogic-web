@@ -9,7 +9,7 @@ import autoexec from './autoexec/index.vue';
 import timer from './timer-node';
 import cmdb from '@/views/pages/cmdb/flow/node/index.js'; //cmdb
 import createjob from './createjob';
-import FetchComponent from '@/resources/import/fetch-component.js';
+import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   condition,
   omnipotent,
@@ -22,5 +22,5 @@ export default {
   ...cmdb,
   timer,
   createjob,
-  ...FetchComponent.getFlowNodeComponent()
+  ...ComponentManager.getFlowNodeComponent()
 };
