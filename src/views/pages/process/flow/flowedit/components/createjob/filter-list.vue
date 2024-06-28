@@ -260,26 +260,26 @@ export default {
     getTableList() {
       return (index) => {
         let list = [];
-        let tableKeyList = [];
+        let tableList = []; //可选的表格组件
         if (this.value) {
-          tableKeyList.push(this.value);
+          tableList.push(this.value);
           this.filterList.forEach((i, iIndex) => {
             if (index > iIndex) {
-              if (i.leftValue && !tableKeyList.includes(i.leftValue)) {
-                tableKeyList.push(i.leftValue);
+              if (i.leftValue && !tableList.includes(i.leftValue)) {
+                tableList.push(i.leftValue);
               }
              
-              if (i.rightMappingMode === 'formTableComponent' && i.rightValue && !tableKeyList.includes(i.rightValue)) {
-                tableKeyList.push(i.rightValue);
+              if (i.rightMappingMode === 'formTableComponent' && i.rightValue && !tableList.includes(i.rightValue)) {
+                tableList.push(i.rightValue);
               }
             }
           });
           list = this.allFormitemList.filter(item => {
-            return tableKeyList.includes(item.key);
+            return tableList.includes(item.uuid);
           }).map(m => {
             return {
               text: m.label,
-              value: m.key
+              value: m.uuid
             };
           });
         }
