@@ -1,3 +1,4 @@
+//时间线
 import defaultHandler from './default-handler';
 import titleHandler from './title-handler';
 import priorityHandler from './priority-handler';
@@ -19,16 +20,7 @@ import eventinfoHandler from './list-handler';
 import focususerHandler from './focususer-handler';
 import automaticinfoHandler from './automaticinfo-handler';
 import cmdbsyncmessageHandler from './cmdbsyncmessage-handler';
-let importComponentConfig = {};
-try {
-  // 导入自定义组件
-  const componentConfig = require.context('@/commercial-module', true, /processTaskAudit.js$/);
-  componentConfig.keys().forEach(path => {
-    importComponentConfig = Object.assign(importComponentConfig, componentConfig(path).default || {});
-  });
-} catch (error) {
-  console.error('processTaskAudit.js加载异常', error);
-}
+import FetchComponent from '@/resources/import/fetch-component.js';
 
 export default {
   defaultHandler, //默认活动展示
@@ -52,5 +44,5 @@ export default {
   focususerHandler, //修改工单关注人
   automaticinfoHandler,
   cmdbsyncmessageHandler,
-  ...importComponentConfig
+  ...FetchComponent.getTimeLineComponent()
 };
