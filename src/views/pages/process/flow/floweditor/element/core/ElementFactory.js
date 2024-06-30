@@ -16,19 +16,15 @@ const ElementFactory = {
   getElement: ({ handler, type }) => {
     let element;
     if (handler) {
-      for (let i = 0; i < elements.length; i++) {
-        const element = elements.find(d => d.handler && d.handler === handler);
-        if (element) {
-          return $utils.deepClone(element);
-        }
+      element = elements.find(d => d.handler && d.handler === handler);
+      if (element) {
+        return $utils.deepClone(element);
       }
     }
-    if (!element && type) {
-      for (let i = 0; i < elements.length; i++) {
-        const element = elements.find(d => d.type && d.type === type);
-        if (element) {
-          return $utils.deepClone(element);
-        }
+    if (type) {
+      element = elements.find(d => d.type && d.type === type);
+      if (element) {
+        return $utils.deepClone(element);
       }
     }
     return null;
