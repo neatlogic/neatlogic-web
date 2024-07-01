@@ -546,7 +546,7 @@ export default {
     returnNewPrevNodes(prevNodes) { //前置步骤过滤掉定时节点
       let newData = [];
       if (prevNodes) {
-        let list = prevNodes.filter(p => p.handler != 'timer');
+        let list = this.$utils.deepClone(prevNodes).filter(p => p.handler != 'timer');
         if (list) {
           newData = list;
         }
@@ -630,14 +630,13 @@ export default {
       return (prevNodes, uuid) => {
         let list = [];
         if (prevNodes) {
-          list = prevNodes.filter(p => p.handler != 'timer');
-          if (!this.$utils.isEmpty(list)) {
-            list.forEach(item => {
-              if (uuid !== item.uuid && this.processStepAssignList.find(p => p.uuid === item.uuid)) {
-                this.$set(item, '_disabled', true);
-              } else {
-                this.$set(item, '_disabled', false);
-              }
+          const filteredNodes = this.$utils.deepClone(prevNodes).filter(p => p.handler !== 'timer');
+          // 只有在filteredNodes非空时才进行遍历
+          if (!this.$utils.isEmpty(filteredNodes)) {
+            list = filteredNodes.map(item => {
+              // 直接在map过程中设置_disabled属性，避免额外的遍历
+              item._disabled = !!(uuid !== item.uuid && this.processStepAssignList.find(p => p.uuid === item.uuid));
+              return item; // 返回修改后的item
             });
           }
         }

@@ -23,72 +23,76 @@
       <TsFormInput ref="jobName" v-model="createjobConfig.jobName" v-bind="formConfig.jobName"></TsFormInput>
     </TsFormItem>
     <div v-if="createjobConfig.combopId && !loadingShow">
-      <TsFormItem :label="$t('page.namepre')" labelPosition="left">
-        <TsFormSelect
-          v-model="createjobConfig.jobNamePrefixMappingValue"
-          :dataList="autoexecParamsList"
-          textName="name"
-          valueName="key"
-          :placeholder="$t('term.process.targetparams')+' / '+ $t('term.autoexec.jobparam')"
-          transfer
-        ></TsFormSelect>
-      </TsFormItem>
-      <TsFormItem :label="$t('term.deploy.actuatorgroup')" labelPosition="left">
-        <template v-if="runnerGroup.mappingMode==='constant'">
-          <TsFormSelect v-model="runnerGroup.value" v-bind="formConfig.runnerGroup"></TsFormSelect>
-        </template>
-        <template v-else>
-          <span class="text-tip pr-sm">{{ $t('term.autoexec.jobparam') }}</span>
-          <span>{{ getruntimeParamListText(runnerGroup.value) }}</span>
-        </template>
-      </TsFormItem>
-      <TsFormItem :label="$t('term.process.jobpolicy')" labelPosition="left">
-        <TsFormRadio
-          v-model="createjobConfig.createPolicy"
-          v-bind="formConfig.createPolicy"
-          @on-change="changeJobPolicy()"
-        ></TsFormRadio>
-      </TsFormItem>
-      <template v-if="createjobConfig.createPolicy === 'batch'">
-        <TsFormItem :label="$t('page.foreachtable')" labelPosition="left" required>
+      <div class="pb-sm">
+        <TsFormItem :label="$t('page.namepre')" labelPosition="left">
           <TsFormSelect
-            ref="batchTable"
-            :value="createjobConfig.batchDataSourceMapping.value"
-            :dataList="getFormComponent('formTableComponent')"
-            textName="label"
-            valueName="uuid"
-            :validateList="validateList"
-            :firstSelect="false"
+            v-model="createjobConfig.jobNamePrefixMappingValue"
+            :dataList="autoexecParamsList"
+            textName="name"
+            valueName="key"
+            :placeholder="$t('term.process.targetparams')+' / '+ $t('term.autoexec.jobparam')"
             transfer
-            border="border"
-            @on-change="(val)=>{
-              setValue(createjobConfig.batchDataSourceMapping, 'value', val);
-            }"
           ></TsFormSelect>
         </TsFormItem>
-        <TsFormItem
-          v-if="createjobConfig.batchDataSourceMapping.value"
-          :label="$t('term.dashboard.datafilter')"
-          labelPosition="left"
-          required
-        >
-          <FilterList
-            ref="filterList"
-            :filterList="createjobConfig.batchDataSourceMapping.filterList"
-            :allFormitemList="allFormitemList"
-            :value="createjobConfig.batchDataSourceMapping.value"
-            @updateFilterList="(list)=>{
-              $set(createjobConfig.batchDataSourceMapping,'filterList', list);
-            }"
-          ></FilterList>
+        <TsFormItem :label="$t('term.deploy.actuatorgroup')" labelPosition="left">
+          <template v-if="runnerGroup.mappingMode==='constant'">
+            <TsFormSelect v-model="runnerGroup.value" v-bind="formConfig.runnerGroup"></TsFormSelect>
+          </template>
+          <template v-else>
+            <span class="text-tip pr-sm">{{ $t('term.autoexec.jobparam') }}</span>
+            <span>{{ getruntimeParamListText(runnerGroup.value) }}</span>
+          </template>
         </TsFormItem>
-      </template>
+        <TsFormItem :label="$t('term.process.jobpolicy')" labelPosition="left">
+          <TsFormRadio
+            v-model="createjobConfig.createPolicy"
+            v-bind="formConfig.createPolicy"
+            @on-change="changeJobPolicy()"
+          ></TsFormRadio>
+        </TsFormItem>
+        <template v-if="createjobConfig.createPolicy === 'batch'">
+          <TsFormItem :label="$t('page.foreachtable')" labelPosition="left" required>
+            <TsFormSelect
+              ref="batchTable"
+              :value="createjobConfig.batchDataSourceMapping.value"
+              :dataList="getFormComponent('formTableComponent')"
+              textName="label"
+              valueName="uuid"
+              :validateList="validateList"
+              :firstSelect="false"
+              transfer
+              border="border"
+              @on-change="(val)=>{
+                setValue(createjobConfig.batchDataSourceMapping, 'value', val);
+              }"
+            ></TsFormSelect>
+          </TsFormItem>
+          <TsFormItem
+            v-if="createjobConfig.batchDataSourceMapping.value"
+            :label="$t('term.dashboard.datafilter')"
+            labelPosition="left"
+            required
+          >
+            <FilterList
+              ref="filterList"
+              :filterList="createjobConfig.batchDataSourceMapping.filterList"
+              :allFormitemList="allFormitemList"
+              :value="createjobConfig.batchDataSourceMapping.value"
+              @updateFilterList="(list)=>{
+                $set(createjobConfig.batchDataSourceMapping,'filterList', list);
+              }"
+            ></FilterList>
+          </TsFormItem>
+        </template>
+      </div>
+     
       <ScenarioParam
         v-if="!$utils.isEmpty(createjobConfig.scenarioParamMappingGroupList)"
         ref="scenarioParam"
         :scenarioList="scenarioList"
         :scenarioParamMappingGroupList="createjobConfig.scenarioParamMappingGroupList"
         :allFormitemList="allFormitemList"
+        class="pb-sm"
       ></ScenarioParam>
       <ExecuteParam
         v-if="!$utils.isEmpty(createjobConfig.executeParamMappingGroupList)"
@@ -96,6 +100,7 @@
         :executeParamMappingGroupList="createjobConfig.executeParamMappingGroupList"
         :allFormitemList="allFormitemList"
         :runtimeParamList="runtimeParamList"
+        class="pb-sm"
       ></ExecuteParam>
       <JobParam
         v-if="!$utils.isEmpty(createjobConfig.jobParamMappingGroupList)"
@@ -103,6 +108,7 @@
         :jobParamMappingGroupList="createjobConfig.jobParamMappingGroupList"
         :allFormitemList="allFormitemList"
         :phaseList="phaseList"
+        class="pb-sm"
       ></JobParam>
       <FormAttributeParam
         ref="formAttributeParam"
