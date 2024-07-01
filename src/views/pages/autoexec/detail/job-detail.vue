@@ -219,7 +219,9 @@ export default {
         this.jobData = res.Return;
         this.lockSearchParam = {
           jobId: this.jobParam.jobId,
-          name: !this.jobData.extraInfo || this.jobData.extraInfo.appSystemName
+          name: !this.jobData.extraInfo || this.jobData.extraInfo.appSystemName,
+          appSystemId: !this.jobData.extraInfo || this.jobData.extraInfo.appSystemId,
+          appModuleId: !this.jobData.extraInfo || this.jobData.extraInfo.appModuleId
         };
       });
     },

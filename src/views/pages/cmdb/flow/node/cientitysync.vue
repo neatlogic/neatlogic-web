@@ -29,32 +29,6 @@
       @updatebutton="updatebutton"
     ></ButtonSetting>
 
-    <div class="permission-list">
-      <div v-if="formConfig && formConfig.uuid" class="list">
-        <div class="second-title text-grey require-label">{{ $t('page.invokeformcomponent') }}</div>
-        <div>
-          <TsFormSelect
-            ref="handlerList"
-            v-model="handlerList"
-            :dataList="getHandlerlist(previewFormContent,cientityDisabledlist)"
-            v-bind="handlerConfig"
-          ></TsFormSelect>
-        </div>
-      </div>
-      <div v-else class="text-tip">
-        当前流程未关联任何表单，请前往
-        <a href="javascript:void(0);" @click="toSetting">流程设置</a>
-        关联表单
-      </div>
-    </div>
-    <div v-if="formUuid !='' && isExtend(previewFormContent)">
-      <ExtendAuth
-        :config="extendConfig"
-        :noUserExtendList="noUserExtendList"
-        :formConfig="previewFormContent"
-        @updateConfig="updateExtendConfig"
-      ></ExtendAuth>
-    </div>
     <AssignSetting
       id="assignData"
       ref="assignData"
@@ -72,12 +46,10 @@ import itemmixin from '@/views/pages/process/flow/flowedit/components/itemmixin.
 export default {
   name: '',
   components: {
-    TsFormSelect,
     AssignSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/assign-setting'),
     NoticeSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'),
     AuthoritySetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/authority-setting.vue'),
     ButtonSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/button-setting.vue'),
-    ExtendAuth: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/extend/extendauth.vue'),
     FormsceneSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/formscene-setting') // 表单场景
   },
   filters: {},

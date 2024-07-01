@@ -21,6 +21,17 @@
             @changeCurrent="searchData"
             @changePageSize="changePageSize"
           >
+            <template v-slot:lockTarget="{ row }"> <Poptip
+              trigger="click"
+              width="500"
+              transfer
+              word-wrap
+            >
+              <span>{{ row.handlerParam.lockMode }}:{{ row.lockTarget }}</span>
+              <div slot="content" ref="tooltip">{{ row.handlerParam }}</div>
+            </Poptip>
+              
+            </template>
             <template v-slot:jobName="{ row }">
               <span
                 class="text-href"

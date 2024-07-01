@@ -114,7 +114,6 @@
                 :nodeAllLinksList="nodeAllLinksList"
                 @toFlowSetting="toFlowSetting"
                 @setNodeName="setNodeName"
-                @updateNode="updateNode"
               ></FlownodeSetting>
             </TabPane>
             <TabPane v-if="linkConfig" :label="$t('term.process.linksetting')" name="linksetting">
@@ -194,7 +193,6 @@ let viewOpts = {
     var config = d.getConfig();
     Vm.stepList.find((item, ni) => {
       if (item.uuid == d.getUuid()) {
-        Vm.removeAuthconfig(item);
         Vm.stepList.splice(ni, 1);
         return true;
       }
@@ -743,6 +741,10 @@ export default {
         action && (this.processConfig = processConfig.processConfig);
       }
       // 获取节点列表数据
+      const allNode = this.$topoVm.getNodes();
+      // 过滤掉没有节点的数据
+      this.stepList = this.stepList.filter(item => allNode.find(n => n.getUuid() === item.uuid));
+      // 获取节点列表数据
       let flowFinallConfig = {
         process: {
           processConfig: processConfig.processConfig,
@@ -754,11 +756,6 @@ export default {
         },
         topo: topoConfig
       };
-      if (this.formConfig && this.formConfig.extendConfig) {
-        flowFinallConfig.process.formConfig.extendConfig = (this.formConfig && this.formConfig.extendConfig) || null;
-      } else {
-        delete this.formConfig.extendConfig;
-      }
       // 保存数据
       let data = {
         uuid: this.processConfig.uuid,
@@ -767,7 +764,6 @@ export default {
         referenceCount: this.referenceCount,
         config: flowFinallConfig
       };
-
       return data;
     },
     async flowSave(isGoFlow) {
@@ -894,9 +890,6 @@ export default {
       // 获取节点设置
       let nodeConfig = {};
       if (this.$refs.nodeSetting) {
-        //获取节点表单授权的数据，跟新整体的表单授权数据
-        let newnodeConfig = this.$refs.nodeSetting.saveProcessFormConfig() || {};
-        this.updateNode(newnodeConfig);
         //获取节点的数据
         let nodeConfig = this.$refs.nodeSetting.getValueList();
         this.stepList.find((item, i) => {
@@ -907,9 +900,6 @@ export default {
         });
       }
       return nodeConfig;
-    },
-    getProcessFormConfig(action) {
-      return this.$refs.nodeSetting.saveProcessFormConfig(action);
     },
     nodesHighlight(item) {
       // 节点高亮处理
@@ -1022,22 +1012,6 @@ export default {
     goCreatecatalog() {
       window.open(HOME + '/process.html#/catalog-manage?processUuid=' + this.processConfig.uuid, '_blank');
     },
-    removeAuthconfig(node) {
-      if (node && node.uuid) {
-        this.removeFormauth(node.uuid);
-      }
-    },
-    removeFormauth(id) {
-      let _this = this;
-      //删除与表单相关的扩展属性
-      if (_this.formConfig.extendConfig) {
-        for (let key in _this.formConfig.extendConfig) {
-          for (let uuid in _this.formConfig.extendConfig[key]) {
-            uuid == id && delete _this.formConfig.extendConfig[key][uuid];
-          }
-        }
-      }
-    },
     restFormconfig(list) {
       //合并相同表单条件的流程节点组件
       let _this = this;
@@ -1066,19 +1040,6 @@ export default {
         return li.attributeUuid && li.action;
       });
       return mewlist;
-    },
-    updateNode(list, nodeUuid) {
-      let _this = this;
-      nodeUuid = nodeUuid || (this.nodeConfig ? this.nodeConfig.uuid : null);
-      if (list.extendConfig && this.nodeConfig && nodeUuid) {
-        //扩展属性赋值
-        _this.formConfig.extendConfig = _this.formConfig.extendConfig || {};
-        for (let key in list.extendConfig) {
-          _this.formConfig.extendConfig = _this.formConfig.extendConfig || {};
-          _this.formConfig.extendConfig[key] = _this.formConfig.extendConfig[key] || {};
-          _this.formConfig.extendConfig[key][nodeUuid] = list.extendConfig[key];
-        }
-      }
     },
     getNodeAllLinksList(list) { //节点的所有连线
       if (list) {

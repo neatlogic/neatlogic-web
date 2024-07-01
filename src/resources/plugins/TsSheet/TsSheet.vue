@@ -1773,9 +1773,6 @@ export default {
             if (item.component) {
               let component = formItemList.find(c => c.uuid === item.component.uuid);
               if (component) {
-                if (component.key && !item.component.key) {
-                  this.$set(item.component, 'key', component.key);
-                }
                 if (item.component.inherit) {
                   this.$set(item, 'component', component);
                 }

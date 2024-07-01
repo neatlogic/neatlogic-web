@@ -102,15 +102,6 @@ export default {
         });
       }
     },
-    saveFormNode() {
-      //保存数据表单权限
-      data.extendConfig = this.extendConfig || null;
-      return data;
-    },
-    getNodeform(config) {
-      //根据表单授权显示当前节点的表单设置
-      this.extendConfig = config.extendConfig;
-    },
     toggleType(type, config) {
       this.$set(config, 'attributeUuidList', []);
       this.$set(config, 'processStepUuidList', []);
@@ -126,13 +117,6 @@ export default {
           this[key] = data[key];
         }
       }
-    },
-    updateExtendConfig(config) {
-      this.extendConfig = config || null;
-      // this.$emit('updateExtendConfig', {
-      //   stepUuid: this.nodeConfig.uuid,
-      //   extendConfig: config
-      // });
     },
     updateActionSetting(actionSetting) {
       // 更新动作设置
@@ -178,15 +162,5 @@ export default {
       return !this.isStart || this.configData.stepConfig.isNeedContent;
     }
   },
-  watch: {
-    nodeFormconfig: {
-      handler: function(val) {
-        if (val) {
-          this.getNodeform(val);
-        }
-      },
-      immediate: true,
-      deep: true
-    }
-  }
+  watch: {}
 };
