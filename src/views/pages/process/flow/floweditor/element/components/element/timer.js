@@ -1,7 +1,7 @@
 import template from '../shape/ellipse.vue';
 import ports from './base/port-config.js';
 import ViewUI from 'neatlogic-ui/iview/index.js';
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 
 export default {
   name: '定时节点',
@@ -10,11 +10,8 @@ export default {
   isVue: true, //需要声明是vue组件
   config: {
     component: template,
-    ports: ports
-  },
-  prop: {
-    width: 68,
-    height: 40
+    ports: ports,
+    size: { width: 68, height: 40 }
   },
   event: {},
   setting: {
@@ -25,7 +22,7 @@ export default {
     linkin: true,
     linkout: true
   },
-  validateMagnet({editor, sourceCell}) {
+  validateMagnet({ editor, sourceCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(sourceCell, 'forward');
     //只能有一个后置节点
     if (allNextNodeIdList.size > 0) {

@@ -1,10 +1,11 @@
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
+import { validAssign } from './common.js';
 export default {
   type: 'process',
-  valid(nodeConfig, graph) {
-    //公共校验方法  校验名称
-    let validList = this.poliyUser(nodeConfig, d, that) || [];
+  //nodeConfig:节点数据，page:页面，可以直接调用page中的methods
+  valid({ nodeConfig, page, graph }) {
+    const validList = [];
     if (!nodeConfig.name) {
       validList.push({
         name: $t('form.validate.required', { target: $t('term.process.nodename') }),
@@ -17,13 +18,15 @@ export default {
         href: '#nodeName'
       });
     }
-    if (nodeConfig && nodeConfig.stepConfig && nodeConfig.stepConfig.notifyPolicyConfig && nodeConfig.stepConfig.notifyPolicyConfig.isCustom && that.$utils.isEmpty(nodeConfig.stepConfig.notifyPolicyConfig.policyId)) {
+    if (nodeConfig?.stepConfig?.notifyPolicyConfig?.isCustom && nodeConfig?.stepConfig?.notifyPolicyConfig?.policyId) {
       // 【通知策略】为自定义通知策略，必填
       validList.push({
         name: $t('form.validate.required', { target: $t('page.notificationstrategy') }),
         href: '#NoticeSetting'
       });
     }
+    //校验分配设置
+    validList.push(...validAssign.valid({ nodeConfig, graph }));
     return validList;
   }
 };

@@ -7,11 +7,8 @@ export default {
   isVue: true, //需要声明是vue组件
   config: {
     component: template,
-    ports: ports
-  },
-  prop: {
-    width: 68,
-    height: 68
+    ports: ports,
+    size: { width: 68, height: 68 }
   },
   event: {},
   setting: {
@@ -22,7 +19,7 @@ export default {
     linkin: true,
     linkout: true
   },
-  validateConnection({editor, sourceCell, targetCell }) {
+  validateConnection({ editor, sourceCell, targetCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(targetCell, 'forward');
     if (allNextNodeIdList.has(sourceCell.id)) {
       return false;

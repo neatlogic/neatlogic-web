@@ -72,7 +72,7 @@
           <Tabs v-model="activeTab" class="block-tabs" :animated="false">
             <TabPane :label="$t('term.process.flowsetting')" name="flowsetting">
               <FlowSetting
-                v-if="isInit"
+                v-if="isReady"
                 ref="flowSetting"
                 :formUuid.sync="formConfig.uuid"
                 :uuid="processUuid"
@@ -148,6 +148,7 @@
 import { NodeFactory } from '@/views/pages/process/flow/floweditor/element/core/NodeFactory.js';
 import { ElementFactory } from '@/views/pages/process/flow/floweditor/element/core/ElementFactory.js';
 import { store, mutations } from './flowedit/floweditState.js';
+import { StepValidFactory } from '@/views/pages/process/flow/floweditor/element/core/StepValidFactory.js';
 
 export default {
   name: 'FlowEdit',
@@ -197,7 +198,7 @@ export default {
       nodeChildren: [], // 编辑节点的子节点
       relevanceModel: false, //关联模态框
       referenceCount: 0,
-      isInit: false, //接口回调初始化完成，修复调用时间过长导致的数据不同步
+      isReady: false, //接口回调初始化完成，修复调用时间过长导致的数据不同步
       activeTab: 'flowsetting',
       slaList: [],
       draftPrevData: '',
@@ -292,8 +293,9 @@ export default {
         }
         //验证步骤节点
         this.stepList.forEach(step => {
-          if (setInitData[step.handler] instanceof Function) {
-            setInitData[step.handler](step, vm, _this);
+          const stepValidator = StepValidFactory.getValidator({ handler: step.handler, type: step.type });
+          if (stepValidator) {
+            validList.push(...stepValidator.valid({ nodeConfig: step || {}, graph: this.graph }));
           }
         });
 
@@ -342,7 +344,7 @@ export default {
         this.graph.addNode(endNode);
       }
       //}
-      this.isInit = true;
+      this.isReady = true;
     },
     drag(event, component) {
       //仅提取必要信息
@@ -359,59 +361,87 @@ export default {
       this.flowObj.stepList = this.stepList;
     },
     showNodeSetting(config) {
-      if (config) {
+      if (config && this.currentNodeData !== config) {
         this.currentLinkData = null;
-        this.currentNodeData = config;
+        this.currentNodeData = null;
+        //切换前先保存节点设置
+        this.updateNodeSetting();
         // 切tab
         this.$nextTick(() => {
-          this.activeTab = 'nodesetting';
+          this.currentNodeData = config;
+          if (this.activeTab !== 'nodesetting') {
+            this.activeTab = 'nodesetting';
+          }
         });
       } else {
+        this.currentNodeData = null;
         this.activeTab = 'flowsetting';
-        this.$nextTick(() => {
-          this.currentNodeData = null;
-        });
       }
     },
     nodeUnSelected() {
-      //由于nodeslect用nextTick封装了，这里也需要封装，否则有可能会导致执行顺序错乱
       this.$nextTick(() => {
-        this.currentWidgetId = null;
-        this.currentWidget = null;
-        this.selectedNode = null;
+        if (this.activeTab === 'nodesetting') {
+          this.activeTab = 'flowsetting';
+          this.currentNodeData = null;
+        }
+        this.isSelected = false;
       });
     },
     nodeSelected(nodeData, node) {
       this.isSelected = false;
+      const step = this.stepList.find(d => d.uuid === nodeData.config.uuid);
+      if (step) {
       //显示节点配置
-      this.showNodeSetting(nodeData.config);
+        this.showNodeSetting(step);
 
-      //组装links数据，需要和老数据保持一致，关键是config中的结构
-      const edges = this.graph.getConnectedEdges(node);
-      const links = [];
-      edges.forEach(edge => {
-        const link = { config: { name: edge.getProp('name'), type: edge.getProp('type'), source: edge.getSourceCellId(), target: edge.getTargetCellId() } };
-        links.push(link);
-      });
-      this.getNodeAllLinksList(links);
-      //触发计算
-      this.$nextTick(() => {
-        this.isSelected = true;
-      });
+        //组装links数据，需要和老数据保持一致，关键是config中的结构
+        const edges = this.graph.getConnectedEdges(node);
+        const links = [];
+        edges.forEach(edge => {
+          const link = { config: { name: edge.getProp('name'), type: edge.getProp('type'), source: edge.getSourceCellId(), target: edge.getTargetCellId() } };
+          links.push(link);
+        });
+        this.getNodeAllLinksList(links);
+        //触发计算
+        this.$nextTick(() => {
+          this.isSelected = true;
+        });
+      }
     },
+    /**
+     * 获取给定节点的前序节点列表
+     *
+     * @param node 节点对象或节点ID
+     * @returns 前序节点列表
+     */
     getPrevNodes(node) {
       if (typeof node === 'string') {
         node = this.graph.getCellById(node);
       }
       const prevNodeList = [];
       if (node) {
-        const incommingEdges = this.graph.getIncomingEdges(node);
+        let incommingEdges = this.graph.getIncomingEdges(node);
+        incommingEdges = incommingEdges && incommingEdges.filter(d => d.getProp('type') === 'forward');
         incommingEdges &&
           incommingEdges.forEach(d => {
             prevNodeList.push(d.getSourceCell());
           });
       }
       return prevNodeList;
+    },
+    /**
+      * 更新节点设置，由于节点设置组件没有监听数据变化，所以需要在切换页签，点击校验，点击保存等需要获取数据的时候手动触发
+      *
+      */
+    updateNodeSetting() {
+      if (this.$refs.nodeSetting) {
+        const nodeConfig = this.$refs.nodeSetting.getValueList();
+        console.log('nodesetting', JSON.stringify(nodeConfig, null, 2));
+        const index = this.stepList.findIndex(item => item.uuid === nodeConfig.uuid);
+        if (index > -1) {
+          this.$set(this.stepList, index, nodeConfig);
+        }
+      }
     },
 
     //新的结束
@@ -1043,10 +1073,10 @@ export default {
                 isAllowStart: config.isAllowStart,
                 icon,
                 position: { x: x, y: y },
-                size: {
+                /*size: {
                   width: element.prop.width,
                   height: element.prop.height
-                },
+                },*/
                 config,
                 name,
                 ports: element.config.ports
@@ -1102,14 +1132,13 @@ export default {
   },
   watch: {
     stepList(newValue, oldValue) {
-      console.log('change steplist');
       this.flowObj.stepList = this.stepList;
     },
     activeTab(newValue, oldValue) {
       // 右边active切换的时候
       if (oldValue === 'nodesetting') {
         //从节点tab页切走时 保存节点数据
-        this.setNodeSetting();
+        this.updateNodeSetting();
       } else if (oldValue === 'flowsetting') {
         //从流程设置切走的时候，保存表单id
         let formConfig = this.$refs.flowSetting && this.$refs.flowSetting.getJsonValue().formConfig ? this.$refs.flowSetting.getJsonValue().formConfig : null;

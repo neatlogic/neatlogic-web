@@ -1,7 +1,7 @@
 import template from '../shape/circle.vue';
 import ports from './base/port-config.js';
 import ViewUI from 'neatlogic-ui/iview/index.js';
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 
 export default {
   name: '开始',
@@ -9,11 +9,8 @@ export default {
   isVue: true, //需要声明是vue组件
   config: {
     component: template,
-    ports: ports
-  },
-  prop: {
-    width: 40,
-    height: 40
+    ports: ports,
+    size: { width: 40, height: 40 }
   },
   event: {},
   setting: {

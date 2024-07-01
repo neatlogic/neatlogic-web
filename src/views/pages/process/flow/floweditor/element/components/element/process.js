@@ -6,11 +6,8 @@ export default {
   isVue: true, //需要声明是vue组件
   config: {
     component: template,
-    ports: ports
-  },
-  prop: {
-    width: 68,
-    height: 40
+    ports: ports,
+    size: { width: 68, height: 40 }
   },
   event: {},
   setting: {
@@ -19,7 +16,8 @@ export default {
     draggable: true,
     selectable: true,
     linkin: true,
-    linkout: true
+    linkout: true,
+    assignable: true//是否需要分配用户
   },
   validateEdge({ edge, editor, sourceCell, targetCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(targetCell, 'forward');

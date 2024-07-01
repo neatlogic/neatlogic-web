@@ -1,2 +1,2 @@
-import common from '../../../flowvalid/components/common.js';
-export default [common];
+import process from './element/process.js';
+export default [process];
