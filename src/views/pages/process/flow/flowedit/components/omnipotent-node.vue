@@ -119,17 +119,6 @@
       :defaultIsActive="activeSetting.tagSetting"
       :list="tagList"
     ></TagSetting>
-    <div class="settingList">
-      <div v-if="formUuid !='' && isExtend(previewFormContent)">
-        <ExtendAuth
-          :config="extendConfig"
-          :noUserExtendList="noUserExtendList"
-          :formConfig="previewFormContent"
-          @updateConfig="updateExtendConfig"
-        ></ExtendAuth>
-      </div>
-
-    </div>
     <!-- 初步处理人 -->
     <div v-if="!isStart">
       <AssignSetting
@@ -158,7 +147,6 @@ export default {
     ActionSetting: () => import('./nodesetting/action-setting.vue'), // 动作设置
     ButtonSetting: () => import('./nodesetting/button-setting.vue'), // 文案修改
     AssignSetting,
-    ExtendAuth: () => import('./nodesetting/extend/extendauth.vue'), // 表单授权
     ReplySetting: () => import('./nodesetting/reply-setting.vue'), // 回复模板
     StrategySetting: () => import('./nodesetting/strategy-setting.vue'), // 创建子任务
     TagSetting: () => import('./nodesetting/tag-setting.vue'), // 标签
@@ -200,7 +188,6 @@ export default {
       copyPrevNodes: _this.prevNodes || [], //复制前置步骤
       processStepUuidList: '', //前置步骤值
       previewFormContent: null, //用来预览表单数据
-      extendConfig: {}, //拓展属性配置的流程设置
       tagList: []
     };
   },
@@ -342,13 +329,6 @@ export default {
         let _this = this;
         let newformConfig = newVal ? JSON.parse(JSON.stringify(new Object(newVal))) : {};
         this.formUuid = newformConfig.uuid || '';
-        this.extendConfig = {};
-        _this.getNodeform(newformConfig);
-        if (newformConfig.extendConfig) {
-          for (let key in newformConfig.extendConfig) {
-            this.extendConfig[key] = newformConfig.extendConfig[key] ? newformConfig.extendConfig[key][this.nodeConfig.uuid] || {} : {};
-          }
-        }
         _this.$nextTick(() => {
           _this.getFormItem(_this.formUuid);
         });

@@ -30,7 +30,6 @@
       :stepList="stepList"
       :nodeAllLinksList="nodeAllLinksList"
       class="tsForm-border-bottom"
-      @updateExtendConfig="updateExtendConfig"
     ></NodeItem>
   </div>
 </template>
@@ -69,7 +68,6 @@ export default {
   mounted() {
     this.$on('bridge', () => {
       this.getValueList();
-      this.saveProcessFormConfig();
     });
     //通知列表
     // let uselist = [];
@@ -85,7 +83,6 @@ export default {
   },
   created() {},
   beforeDestroy() {
-    this.$emit('updateNode', this.saveProcessFormConfig(), this.nodeConfig.uuid);
   },
   methods: {
     changeName() {
@@ -112,14 +109,6 @@ export default {
       this.configData = data;
       return JSON.parse(JSON.stringify(data));
     },
-    saveProcessFormConfig(isTrue) {
-      //保存的是当前节点的表单数据
-      try {
-        return this.$refs.nodeSetting.saveFormNode(isTrue);
-      } catch (e) {
-        return this.nodeForm;
-      }
-    },
     validNodeData(href) {
       //校验节点数据
       if (href != '#nodeName') {
@@ -130,26 +119,8 @@ export default {
         this.$refs.nodeName.valid();
       }
     },
-    getNodeform(config) { //主要是获取表单授权数据
-      let uuid = this.nodeConfig.uuid;
-      this.nodeForm = {
-        uuid: uuid
-      };
-      if (config.extendConfig && !this.extendConfig) {
-        let entityConfig = { hideList: [], readList: [] };
-        for (let key in config.extendConfig) {
-          this.extendConfig = this.extendConfig || {};
-          this.extendConfig[key] = this.extendConfig[key] || {};
-          this.extendConfig[key] = config.extendConfig[key][this.nodeConfig.uuid] || entityConfig;
-        }
-        this.nodeForm.extendConfig = config.extendConfig;
-      }
-    },
     getProcessuuid() {
       return this.nodeConfig.uuid;
-    },
-    updateExtendConfig(config) {
-      //console.log(config);
     }
   },
   computed: {
@@ -157,26 +128,7 @@ export default {
       return !!NodeItem[this.nodeConfig.handler];
     }
   },
-  watch: {
-    formConfig: {
-      handler: function(val) {
-        if (val) {
-          this.getNodeform(val);
-        }
-      },
-      deep: true,
-      immediate: true
-    },
-    'nodeConfig.uuid': {
-      handler: function(val, oldval) {
-        if (val && oldval) {
-          this.$emit('updateNode', this.saveProcessFormConfig(), oldval);
-        }
-        this.extendConfig = null;
-      },
-      immediate: true
-    }
-  }
+  watch: {}
 };
 </script>
 
