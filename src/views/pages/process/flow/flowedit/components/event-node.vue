@@ -77,12 +77,6 @@
       :defaultIsActive="activeSetting.tagSetting"
       :list="tagList"
     ></TagSetting>
-    <div v-if="formUuid !='' && isExtend(previewFormContent)"><ExtendAuth
-      :config="extendConfig"
-      :noUserExtendList="noUserExtendList"
-      :formConfig="previewFormContent"
-      @updateConfig="updateExtendConfig"
-    ></ExtendAuth></div>
     <!-- 初步处理人 -->
     <div v-if="!isStart">
       <AssignSetting
@@ -112,7 +106,6 @@ export default {
     ActionSetting: () => import('./nodesetting/action-setting.vue'),
     ButtonSetting: () => import('./nodesetting/button-setting.vue'),
     AssignSetting,
-    ExtendAuth: () => import('./nodesetting/extend/extendauth.vue'),
     TagSetting: () => import('./nodesetting/tag-setting.vue'),
     FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
   },
@@ -255,14 +248,7 @@ export default {
       handler(newVal, oldVal) {
         let _this = this;
         let newformConfig = this.$utils.deepClone(newVal);
-        this.extendConfig = {};
         this.formUuid = newformConfig.uuid || '';
-        _this.getNodeform(newformConfig);
-        if (newformConfig.extendConfig) {
-          for (let key in newformConfig.extendConfig) {
-            this.extendConfig[key] = newformConfig.extendConfig[key] ? newformConfig.extendConfig[key][this.nodeConfig.uuid] || {} : {};
-          }
-        }
         _this.$nextTick(() => {
           _this.getFormItem(_this.formUuid);
         });

@@ -72,14 +72,6 @@
       :defaultIsActive="activeSetting.tagSetting"
       :list="tagList"
     ></TagSetting>
-    <div v-if="formUuid !='' && isExtend(previewFormContent)">
-      <ExtendAuth
-        :config="extendConfig"
-        :noUserExtendList="noUserExtendList"
-        :formConfig="previewFormContent"
-        @updateConfig="updateExtendConfig"
-      ></ExtendAuth>
-    </div>
     <!-- 变更 -->
     <div class="settingList">
       <div id="changeStep" class="control-box">
@@ -152,7 +144,6 @@ export default {
     ActionSetting: () => import('./nodesetting/action-setting.vue'),
     ButtonSetting: () => import('./nodesetting/button-setting.vue'),
     TsFormSelect,
-    ExtendAuth: () => import('./nodesetting/extend/extendauth.vue'),
     ReplySetting: () => import('./nodesetting/reply-setting.vue'),
     TagSetting: () => import('./nodesetting/tag-setting.vue'),
     FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
@@ -314,14 +305,7 @@ export default {
       handler(newVal, oldVal) {
         let _this = this;
         let newformConfig = this.$utils.deepClone(newVal);
-        this.extendConfig = {};
         this.formUuid = newformConfig.uuid || '';
-        _this.getNodeform(newformConfig);
-        if (newformConfig.extendConfig) {
-          for (let key in newformConfig.extendConfig) {
-            this.extendConfig[key] = newformConfig.extendConfig[key] ? newformConfig.extendConfig[key][this.nodeConfig.uuid] || {} : {};
-          }
-        }
         this.getFormItem(this.formUuid);
       },
       deep: true
