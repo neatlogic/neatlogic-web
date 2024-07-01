@@ -595,6 +595,9 @@ export default {
               let findItem = formConfig.tableList.find(s => s.component && s.component.uuid === t.component.uuid);
               if (!findItem) {
                 this.$delete(t, 'component');
+              } else {
+                this.$set(t.component, 'key', findItem.component.key);
+                this.$set(t.component, 'label', findItem.component.label);
               }
             }
           });
