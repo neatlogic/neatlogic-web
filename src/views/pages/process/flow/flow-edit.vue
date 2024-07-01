@@ -743,6 +743,10 @@ export default {
         action && (this.processConfig = processConfig.processConfig);
       }
       // 获取节点列表数据
+      const allNode = this.$topoVm.getNodes();
+      // 过滤掉没有节点的数据
+      this.stepList = this.stepList.filter(item => allNode.find(n => n.getUuid() === item.uuid));
+      // 获取节点列表数据
       let flowFinallConfig = {
         process: {
           processConfig: processConfig.processConfig,
@@ -767,7 +771,6 @@ export default {
         referenceCount: this.referenceCount,
         config: flowFinallConfig
       };
-
       return data;
     },
     async flowSave(isGoFlow) {
