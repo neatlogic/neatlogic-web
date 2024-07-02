@@ -347,9 +347,9 @@ export default {
       //设置表格列是否可视
       let theadList = headList
         .filter(item => !['action', 'focususers', 'score', 'selection'].includes(item.key))
-        .map((d, i) => ({
+        .map((d, currentIndex) => ({
           name: d.key,
-          sort: i,
+          sort: currentIndex,
           isShow: d.isShow,
           type: d.type,
           width: 1,
@@ -364,11 +364,10 @@ export default {
           theadList: theadList
         })
         .then(res => {
-          if (val === 1) {
+          if (res && res.Status == 'OK') {
             this.searchProcessTask();
           }
-        })
-        .catch(error => {});
+        });
       this.isShowTheadSetting = false;
     },
     changePageSize(pageSize) {
@@ -391,42 +390,30 @@ export default {
         key: d.name,
         isShow: d.isShow,
         type: d.type,
-        //20220415需求调整为标题可配置
         disabled: d.name == '_' ? 1 : d.disabled,
         isDisabled: d.name == 'title',
-        // disabled: d.name == 'title' ? 1 : d.disabled,
-        //20200601ui调整为标题不加粗
         className: d.className,
         isSortable: d.isSortable,
         sort: d.sort,
         config: d.config
       }));
-      // 页码
-      if (this.tableConfig.theadList.length <= 0) {
-        let newTheadList = [];
-        theadList.forEach((item) => {
-          if (item && item.key) {
-            newTheadList.push(this.getColumnWidth(item));
-          }
+      let newTheadList = theadList.filter((item) => item && item.key).map((v) => this.getColumnWidth(v));
+      // 添加操作
+      if (!newTheadList.some(d => d.key === 'action')) {
+        newTheadList.push({
+          key: 'action',
+          align: 'right',
+          width: 20,
+          isShow: 1
         });
-        // 添加操作
-        let isAction = newTheadList.find(d => d.key === 'action');
-        let isSelection = newTheadList.find(d => d.key === 'selection');
-        if (!isAction) {
-          newTheadList.push({
-            key: 'action',
-            align: 'right',
-            width: 20,
-            isShow: 1
-          });
-        }
-        if (!isSelection) {
-          newTheadList.unshift({
-            key: 'selection'
-          });
-        }
-        this.tableConfig.theadList = [...newTheadList];
       }
+      // 添加选择列
+      if (!newTheadList.find(d => d.key === 'selection')) {
+        newTheadList.unshift({
+          key: 'selection'
+        });
+      }
+      this.tableConfig.theadList = newTheadList;
       this.tableConfig.rowNum = data.rowNum;
       this.tableConfig.pageSize = data.pageSize;
       this.tableConfig.currentPage = data.currentPage;
@@ -442,9 +429,6 @@ export default {
             th.config = {};
           }
         }
-      });
-      this.tableConfig.theadList.sort((a, b) => { 
-        return a.sort - b.sort;
       });
       // 大数据分页
       this.tableConfig.endPage = data.endPage; //结束页
@@ -479,11 +463,6 @@ export default {
           }
         };
       });
-
-      //用来初始化table的排序,如果之前没有排序的数据则用接口返回的初始化数据，如果已经有排序了需替换为新的排序
-      //if (data.sortList) {
-      //  this.tableConfig.sortList = data.sortList;
-      //}
       this.tableConfig.tbodyList = tbodyList;
       // 在这里必须赋值一次，不然在点击是否隐藏的时候，就会有个卡顿问题及要等到 listOperation 接口请求完之后才显示列表
       if (this.tableConfig.tbodyList.length > 0) {
