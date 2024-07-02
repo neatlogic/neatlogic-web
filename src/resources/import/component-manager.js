@@ -1,5 +1,5 @@
 class ComponentManager {
-  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowNodeValid', 'flowLineValid', 'dispatcher', 'dispatcherValid'];
+  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowNodeValid', 'flowLineValid', 'dispatcher', 'dispatcherValid', 'workCenterColumn'];
   static categoryConfig = {};
   static generateMethods() {
     this.categoryList.forEach(category => {

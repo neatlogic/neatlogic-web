@@ -59,14 +59,14 @@
               >
                 <template v-for="(tbody, tindex) in filtertheadList(tableConfig.theadList)" :slot="tbody.key" slot-scope="{ row }">
                   <div :key="tindex" :style="(tbody.config && tbody.config.isNewLine == 1)?'':tbody.key == 'currentstep' ? {overflow: 'hidden', height: '50px',display: 'flex',alignItems: 'center'} : {overflow: 'hidden',height: '50px',lineHeight: '50px'}">
-                    <tdjson
+                    <WorkcenterColumnHandler
                       v-if="typeof row[tbody.key] === 'object' && tbody.key != 'action'"
                       :key="tindex"
                       :config="row[tbody.key]"
                       :header="tbody"
                       :row="row"
                       @updateMenu="updateMenu"
-                    ></tdjson>
+                    ></WorkcenterColumnHandler>
                     <tdBtn
                       v-else-if="tbody.key == 'action'"
                       :key="tindex"
@@ -157,7 +157,7 @@ export default {
     ProcessTaskSearcher: () => import('@/resources/components/ProcessTaskSearcher/processtask-searcher.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     CardInfo: () => import('./overview/CenterCard.vue'),
-    tdjson: () => import('./overview/Tdjson.vue'),
+    WorkcenterColumnHandler: () => import('./overview/workcenter/workcenter-column-handler.vue'),
     tdBtn: () => import('./overview/ControllerBtn.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     WorkcenterTheadSetting: () => import('./workcenter-thead-setting.vue')
