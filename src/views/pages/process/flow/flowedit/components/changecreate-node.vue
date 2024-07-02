@@ -42,12 +42,17 @@
     ></ButtonSetting>
     <div class="settingList">
       <div class="control-box">
-        <div class="control-setting">
+        <div class="control-setting flex-between">
           <span class="label">{{ $t('term.process.autostart') }}</span>
-          <span class="control-btn">
+          <div class="flex-start">
             <span class="tip">{{ $t('term.process.autostarttip') }}</span>
-            <TsFormSwitch v-model="configData.stepConfig.autoStart" :true-value="1" :false-value="0"></TsFormSwitch>
-          </span>
+            <TsFormSwitch
+              v-model="configData.stepConfig.autoStart"
+              width="auto"
+              :true-value="1"
+              :false-value="0"
+            ></TsFormSwitch>
+          </div>
         </div>
       </div>
     </div>

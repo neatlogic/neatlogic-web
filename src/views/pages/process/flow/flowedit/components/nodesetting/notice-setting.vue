@@ -7,7 +7,7 @@
           <span class="text-grey">{{ $t('page.noticesetting') }}</span>
           <span class="text-href pl-sm" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
         </li>
-        <li>
+        <li class="flex-start">
           <span
             class="tip text-tip pr-xs"
           >{{ isActive == 1 ? $t('page.custom'): $t('term.framework.defaultpolicy') }}</span>
@@ -15,13 +15,14 @@
             v-model="isActive"
             :true-value="1"
             :false-value="0"
+            width="auto"
             @on-change="changeSwitch"
           ></TsFormSwitch>
         </li>
       </ul>
       <ul v-else-if="layoutType == 'flexBetween'" class="notifypolicy-box">
         <!-- 【自动化/时效设置】通知策略样式 -->
-        <li>
+        <li class="flex-start">
           <span
             class="tip text-tip pr-xs"
           >{{ isActive == 1 ? $t('page.custom'): $t('term.framework.defaultpolicy') }}</span>
@@ -29,6 +30,7 @@
             v-model="isActive"
             :true-value="1"
             :false-value="0"
+            width="auto"
             @on-change="changeSwitch"
           ></TsFormSwitch>
         </li>
