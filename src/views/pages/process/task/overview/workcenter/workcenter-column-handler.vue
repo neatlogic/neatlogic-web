@@ -1,6 +1,10 @@
 <template>
   <div class="workcenter-column-handler-box">
-    <Component :is="getComponentByKey(header.key)" :headerKey="header.key" :rowData="row"></Component>  
+    <Component
+      :is="getComponentByKey(header.key)"
+      :headerKey="header.key"
+      :rowData="getRowData(header.key)"
+    ></Component>  
   </div>
 </template>
 
@@ -28,6 +32,15 @@ export default {
       };
       return (key) => {
         return mapping[key] || (Object.keys(workcenterColumnHandler).includes(`${key}Handler`) ? `${key}Handler` : 'textHandler');
+      };
+    },
+    getRowData(key) {
+      return (key) => {
+        const mappingConfig = {
+          owner: this.config, // 上报人取得是config字段
+          reporter: this.row[key]
+        };
+        return mappingConfig[key] || this.row;
       };
     }
   }
