@@ -48,7 +48,7 @@
           <span class="label">{{ $t('term.process.autostart') }}</span>
           <span class="control-btn">
             <span class="tip">{{ $t('term.process.autostarttip') }}</span>
-            <i-switch v-model="configData.stepConfig.autoStart" :true-value="1" :false-value="0"></i-switch>
+            <TsFormSwitch v-model="configData.stepConfig.autoStart" :true-value="1" :false-value="0"></TsFormSwitch>
           </span>
         </div>
       </div>
@@ -58,7 +58,7 @@
         <div class="control-setting">
           <span class="label">{{ $t('form.placeholder.required',{target: $t('page.reply')}) }}</span>
           <span class="control-btn">
-            <i-switch v-model="configData.stepConfig.isRequired" :true-value="1" :false-value="0"></i-switch>
+            <TsFormSwitch v-model="configData.stepConfig.isRequired" :true-value="1" :false-value="0"></TsFormSwitch>
           </span>
         </div>
       </div>
@@ -99,6 +99,7 @@ import itemmixin from './itemmixin.js';
 export default {
   name: '',
   components: {
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     StrategySetting: () => import('./nodesetting/strategy-setting.vue'),
     AuthoritySetting: () => import('./nodesetting/authority-setting.vue'),
     NoticeSetting: () => import('./nodesetting/notice-setting.vue'),
