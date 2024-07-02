@@ -9,12 +9,12 @@
         </span>
         <span class="control-btn">
           <!-- <span class="tip">{{ isActive ? '自定义' : '引用全局' }}</span> -->
-          <i-switch
+          <TsFormSwitch
             v-model="isActive"
             :true-value="1"
             :false-value="0"
             @on-change="changeSwitch"
-          ></i-switch>
+          ></TsFormSwitch>
         </span>
       </div>
       <div>
@@ -67,6 +67,7 @@
 export default {
   name: 'ActionSetting', // 动作设置
   components: {
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     ActionEdit: () => import('./action/action-edit.vue')
   },
   props: {

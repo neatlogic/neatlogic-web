@@ -7,12 +7,12 @@
             <span>{{ $t('term.process.createsubtask') }}</span>
           </span>
           <span class="control-btn">
-            <i-switch
+            <TsFormSwitch
               v-model="isStrategy.isStrategy"
               :true-value="1"
               :false-value="0"
               @on-change="isWwitch"
-            ></i-switch>
+            ></TsFormSwitch>
           </span>
         </div>
       </div>
@@ -63,7 +63,8 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     TsFormSelect,
-    UserSelect: () => import('@/resources/components/UserSelect/UserSelect')
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: ['strategySetting', 'isStrategy'],
   data() {

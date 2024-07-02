@@ -62,7 +62,11 @@
         <div class="control-setting">
           <span class="label">{{ $t('term.process.enableattachments') }}</span>
           <span class="control-btn">
-            <TsFormSwitch v-model="configData.stepConfig.isNeedUploadFile" :true-value="1" :false-value="0"></TsFormSwitch>
+            <TsFormSwitch
+              v-model="configData.stepConfig.isNeedUploadFile"
+              :true-value="1"
+              :false-value="0"
+            ></TsFormSwitch>
           </span>
         </div>
       </div>

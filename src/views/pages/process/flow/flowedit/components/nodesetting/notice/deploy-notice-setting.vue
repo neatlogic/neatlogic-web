@@ -8,26 +8,26 @@
         <span
           class="tip text-tip pr-xs"
         >{{ isActive == 1 ? $t('page.custom'): $t('term.framework.defaultpolicy') }}</span>
-        <i-switch
+        <TsFormSwitch
           v-if="hasEditConfigAuth"
           v-model="isActive"
           :true-value="1"
           :false-value="0"
           @on-change="changeSwitch"
-        ></i-switch>
+        ></TsFormSwitch>
         <Tooltip
           max-width="400"
           placement="right"
           transfer
         >
-          <i-switch
+          <TsFormSwitch
             v-if="!hasEditConfigAuth"
             v-model="isActive"
             disabled
             :true-value="1"
             :false-value="0"
             @on-change="changeSwitch"
-          ></i-switch>
+          ></TsFormSwitch>
           <ul slot="content">
             <li><span>{{ $t('term.deploy.noconfigauthtip') }}</span></li>
           </ul>
@@ -63,6 +63,7 @@
 export default {
   name: '',
   components: {
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     PersonSettingsDialog: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice/person-settings-dialog.vue'), // 个性设置
     DeployNoticeEditDialog: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice/deploy-notice-edit-dialog.vue') // 编辑自定义通知策略
 
