@@ -1,7 +1,7 @@
 <template>
   <div id="createJobConfig" class="pl-nm pr-nm">
     <div class="pb-xs">
-      <TsFormItem :label="$t('term.process.recreatenewjob')" tooltip="$t('message.process.recreatenewjobtip')" labelPosition="left">
+      <TsFormItem :label="$t('term.process.recreatenewjob')" :tooltip="$t('message.process.recreatenewjobtip')" labelPosition="left">
         <TsFormSwitch v-model="createJobConfig.rerunStepToCreateNewJob" class="text-right"></TsFormSwitch>
       </TsFormItem>
     </div>
