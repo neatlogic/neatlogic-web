@@ -34,16 +34,16 @@
         </ul>
       </template>
       <template v-slot:content>
-        <div ref="graph" style="height: 100%">
+        <div ref="graph" style="height: 100%; position: relative">
           <Card
-            v-if="validCardOpen"
+            v-if="validList && validList.length > 0"
             class="radius-lg"
             style="width: 320px"
             :padding="0"
             :style="{ position: 'absolute', 'z-index': 10, top: '10px', right: '10px' }"
           >
             <p slot="title" class="text-title">{{ $t('page.validate') }}</p>
-            <a slot="extra" href="javascript:void(0);" @click.prevent="validCardOpen = false">
+            <a slot="extra" href="javascript:void(0);" @click.prevent="validList = []">
               <i class="tsfont-close text-title"></i>
             </a>
             <CellGroup class="cell-group">
@@ -60,6 +60,7 @@
           <FlowEditor
             :config="flowConfig"
             :muted="true"
+            :callback="{ validateNode: validateNode }"
             @ready="ready"
             @node:selected="nodeSelected"
             @node:unselected="nodeUnSelected"
@@ -148,7 +149,6 @@
 import { NodeFactory } from '@/views/pages/process/flow/floweditor/element/core/NodeFactory.js';
 import { ElementFactory } from '@/views/pages/process/flow/floweditor/element/core/ElementFactory.js';
 import { store, mutations } from './flowedit/floweditState.js';
-import { StepValidFactory } from '@/views/pages/process/flow/floweditor/element/core/StepValidFactory.js';
 
 export default {
   name: 'FlowEdit',
@@ -199,6 +199,7 @@ export default {
       relevanceModel: false, //关联模态框
       referenceCount: 0,
       isReady: false, //接口回调初始化完成，修复调用时间过长导致的数据不同步
+      isDrawDone: false, //判断画图是否完成，增加删除节点都要修改此值，用于激活computed
       activeTab: 'flowsetting',
       slaList: [],
       draftPrevData: '',
@@ -226,7 +227,7 @@ export default {
       graph: null,
       dnd: null,
       flowConfig: {}, //流程设计器的设置
-      flowData: null //流程数据
+      flowData: { process: { formConfig: {} } } //流程数据
     };
   },
   beforeCreate() {},
@@ -259,6 +260,14 @@ export default {
     this.clearObservable();
   },
   methods: {
+    //拖拽完成后验证节点是否允许生效，也可以用来做callback使用
+    validateNode(node) {
+      //触发相关computed计算
+      this.isDrawDone = false;
+      this.$nextTick(() => {
+        this.isDrawDone = true;
+      });
+    },
     //新的开始
     test() {
       console.log(JSON.stringify(this.graph.toJSON()));
@@ -269,6 +278,9 @@ export default {
     },
     //校验流程
     validFlow() {
+      //必须触发一次保存设置
+      this.updateNodeSetting();
+
       const flowSetting = this.$refs.flowSetting;
       const validList = [];
       if (flowSetting) {
@@ -293,12 +305,41 @@ export default {
         }
         //验证步骤节点
         this.stepList.forEach(step => {
-          const stepValidator = StepValidFactory.getValidator({ handler: step.handler, type: step.type });
-          if (stepValidator) {
-            validList.push(...stepValidator.valid({ nodeConfig: step || {}, graph: this.graph }));
+          const element = ElementFactory.getElement({ handler: step.handler, type: step.type });
+          const node = this.graph.getCellById(step.uuid);
+          if (element && node) {
+            if (element.valid && typeof element.valid === 'function') {
+              const vs = element.valid({ node: node, graph: this.graph });
+              if (vs && vs.length > 0) {
+                vs.forEach(v => {
+                  validList.push({
+                    type: 'error',
+                    href: v.href,
+                    msg: '【' + step.name + '】' + v.name,
+                    focus: () => {
+                      this.nodeSelected(node);
+                    }
+                  });
+                });
+              } else {
+                validList.push({ type: 'success', href: v.href, msg: '【' + step.name + '】' + this.$t('term.process.nodevalidpassed') });
+              }
+            }
+          } else {
+            if (!element) {
+              validList.push({ name: '节点定义' + step.handler + '不存在' });
+            }
+            if (!node) {
+              validList.push({ name: '节点' + step.handler + '不存在' });
+            }
           }
         });
-
+        this.validList = validList.sort((a, b) => {
+          let a1 = a.type === 'error' ? 1 : 0;
+          let b1 = b.type === 'error' ? 1 : 0;
+          return b1 - a1;
+        });
+        console.log('graph topo:', JSON.stringify(this.graph.toJSON()));
         console.log(JSON.stringify(this.stepList));
       }
     },
@@ -330,21 +371,56 @@ export default {
     async ready(graph, dnd) {
       this.graph = graph;
       this.dnd = dnd;
-      if (this.processUuid) {
+      if (this.processUuid && !this.isNew) {
         await this.getProcessByUuid();
-      } else if (this.processDraftUuid) {
+      } else if (this.processDraftUuid && !this.isNew && this.isDraft) {
         await this.getProcessDraftByUuid();
       }
       this.graph.fromJSON(this.finalFlowData);
       //默认增加开始和结束节点
       if (this.finalFlowData.cells.length === 0) {
-        const startNode = NodeFactory.createNode(this.graph, { type: 'start' }, { type: 'start', handler: 'start', position: { x: 200, y: 360 } });
-        const endNode = NodeFactory.createNode(this.graph, { type: 'end' }, { type: 'end', handler: 'end', position: { x: 600, y: 360 } });
+        const startId = this.$utils.setUuid();
+        const endId = this.$utils.setUuid();
+        const startNode = NodeFactory.createNode(
+          this.graph,
+          { type: 'start' },
+          {
+            id: startId,
+            type: 'start',
+            handler: 'start',
+            position: { x: 200, y: 200 },
+            data: {
+              uuid: startId,
+              handler: 'start',
+              name: '开始',
+              stepConfig: {},
+              type: 'start'
+            }
+          }
+        );
+        const endNode = NodeFactory.createNode(
+          this.graph,
+          { type: 'end' },
+          {
+            id: endId,
+            type: 'end',
+            handler: 'end',
+            position: { x: 600, y: 200 },
+            data: {
+              uuid: endId,
+              handler: 'end',
+              name: '结束',
+              stepConfig: {},
+              type: 'end'
+            }
+          }
+        );
         this.graph.addNode(startNode);
         this.graph.addNode(endNode);
       }
       //}
       this.isReady = true;
+      this.isDrawDone = true;
     },
     drag(event, component) {
       //仅提取必要信息
@@ -353,12 +429,11 @@ export default {
       const uuid = this.$utils.setUuid();
       config.id = uuid;
       //数据复制一份到config，和老数据保持一致
-      config.config = { uuid, name, handler, type, isAllowStart, stepConfig: {} };
+      config.data = { uuid, name, handler, type, isAllowStart, stepConfig: {} };
       const node = NodeFactory.createNode(this.graph, { handler, type }, config);
       this.dnd.start(node, event);
-
-      this.stepList.push(config.config);
-      this.flowObj.stepList = this.stepList;
+      //this.stepList.push(config.config);
+      //this.flowObj.stepList = this.stepList;
     },
     showNodeSetting(config) {
       if (config && this.currentNodeData !== config) {
@@ -387,12 +462,11 @@ export default {
         this.isSelected = false;
       });
     },
-    nodeSelected(nodeData, node) {
+    nodeSelected(node) {
       this.isSelected = false;
-      const step = this.stepList.find(d => d.uuid === nodeData.config.uuid);
-      if (step) {
-      //显示节点配置
-        this.showNodeSetting(step);
+      if (node) {
+        //显示节点配置
+        this.showNodeSetting(node.getData());
 
         //组装links数据，需要和老数据保持一致，关键是config中的结构
         const edges = this.graph.getConnectedEdges(node);
@@ -430,16 +504,32 @@ export default {
       return prevNodeList;
     },
     /**
-      * 更新节点设置，由于节点设置组件没有监听数据变化，所以需要在切换页签，点击校验，点击保存等需要获取数据的时候手动触发
-      *
-      */
+     * 更新节点设置，由于节点设置组件没有监听数据变化，所以需要在切换页签，点击校验，点击保存等需要获取数据的时候手动触发
+     *
+     */
     updateNodeSetting() {
       if (this.$refs.nodeSetting) {
         const nodeConfig = this.$refs.nodeSetting.getValueList();
-        console.log('nodesetting', JSON.stringify(nodeConfig, null, 2));
-        const index = this.stepList.findIndex(item => item.uuid === nodeConfig.uuid);
+        const node = this.graph.getCellById(nodeConfig.uuid);
+        if (node) {
+          node.setProp('config', nodeConfig);
+        }
+        /*const index = this.stepList.findIndex(item => item.uuid === nodeConfig.uuid);
         if (index > -1) {
           this.$set(this.stepList, index, nodeConfig);
+        }*/
+      }
+    },
+    setNodeName(val) {
+      if (this.currentNodeData) {
+        const node = this.graph.getCellById(this.currentNodeData.uuid);
+        if (node) {
+          node.setProp('name', val);
+          //赋值config，触发节点change:data事件
+          const config = this.$utils.deepClone(node.getData() || {});
+          config.name = val;
+          node.setData(config);
+          console.log(node.getData());
         }
       }
     },
@@ -560,10 +650,7 @@ export default {
       // 获取形状dom
       return TopoVm && TopoVm.getShapePath(data, { fill: 'white' }).outerHTML;
     },
-    setNodeName(val) {
-      var node = this.$topoVm.getNodeByUuid(this.currentNodeData.uuid);
-      node && node.setName(val);
-    },
+
     validItemClick(item) {
       if (item.focus) {
         if (this.validCardOpen) {
@@ -1004,12 +1091,11 @@ export default {
       }
       return false;
     },
-    //当前节点的所有前置节点
+    //当前节点的所有前置节点数据（注意：是数据！）
     allPrevNodes() {
       let prevNodeList = [];
       if (this.isSelected && this.currentNodeData) {
-        const prevNodeList = this.getPrevNodes(this.currentNodeData.uuid);
-
+        prevNodeList = this.getPrevNodes(this.currentNodeData.uuid);
         if (prevNodeList.length > 0) {
           const nodeSet = new Set();
           prevNodeList.forEach(n => {
@@ -1030,13 +1116,16 @@ export default {
           }
         }
       }
-      return prevNodeList;
+      return prevNodeList.map(d => d.getData());
     },
     //当前节点的前置节点
     prevNodes() {
       let prevNodeList = [];
       if (this.isSelected && this.currentNodeData) {
-        prevNodeList = this.getPrevNodes(this.currentNodeData.uuid);
+        const nodeList = this.getPrevNodes(this.currentNodeData.uuid);
+        nodeList.forEach(node => {
+          prevNodeList.push(node.getData());
+        });
       }
       return prevNodeList;
     },
@@ -1049,8 +1138,9 @@ export default {
     },
     //步骤列表
     stepList() {
-      if (this.flowData && this.flowData.process) {
-        return this.flowData.process.stepList || [];
+      if (this.isDrawDone) {
+        const nodes = this.graph.getNodes();
+        return nodes.map(d => d.getData());
       }
       return [];
     },
@@ -1064,6 +1154,10 @@ export default {
             const { name, icon, type, uuid, x, y, config } = n;
             const element = ElementFactory.getElement({ handler: config.handler, type: config.type });
             if (element) {
+              //有些节点数据的config并没有uuid，为了一直补充上
+              if (!config.uuid) {
+                config.uuid = uuid;
+              }
               cells.push({
                 view: 'vue-shape-view',
                 id: uuid,
@@ -1073,11 +1167,7 @@ export default {
                 isAllowStart: config.isAllowStart,
                 icon,
                 position: { x: x, y: y },
-                /*size: {
-                  width: element.prop.width,
-                  height: element.prop.height
-                },*/
-                config,
+                data: config,
                 name,
                 ports: element.config.ports
               });

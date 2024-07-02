@@ -1,5 +1,6 @@
 import template from '../shape/circle.vue';
 import ports from './base/port-config.js';
+import { $t } from '@/resources/init.js';
 
 export default {
   name: '结束',
@@ -27,5 +28,13 @@ export default {
       return false;
     }
     return true;
+  },
+  valid({node, graph}) {
+    let validList = [];
+    const incomingEdges = graph.getIncomingEdges(node);
+    if (!incomingEdges || incomingEdges.length <= 0) {
+      validList.push({ name: $t('message.process.nodenofrontnode') });
+    }
+    return validList;
   }
 };

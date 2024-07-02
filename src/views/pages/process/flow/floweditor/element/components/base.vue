@@ -6,12 +6,18 @@ export default {
   props: {},
   data() {
     return {
-      node: null
+      node: null,
+      data: null
     };
   },
   beforeCreate() {},
   created() {
     this.node = this.getNode();
+    this.data = this.node.getData();
+    this.node.on('change:data', ({ current }) => {
+      //data发生改变时，该表vue中的data值，触发模板更新
+      this.data = current;
+    });
   },
   beforeMount() {},
   mounted() {},

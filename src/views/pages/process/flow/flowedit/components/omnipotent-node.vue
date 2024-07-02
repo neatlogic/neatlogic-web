@@ -139,7 +139,6 @@
 
 <script>
 //通用节点
-import AssignSetting from './nodesetting/assign-setting';
 import nodemixin from './nodemixin.js';
 import itemmixin from './itemmixin.js';
 export default {
@@ -151,7 +150,7 @@ export default {
     ReapprovalSetting: () => import('./nodesetting/reapproval-setting.vue'), // 重审
     ActionSetting: () => import('./nodesetting/action-setting.vue'), // 动作设置
     ButtonSetting: () => import('./nodesetting/button-setting.vue'), // 文案修改
-    AssignSetting,
+    AssignSetting: () => import('./nodesetting/assign-setting.vue'), //分派设置
     ReplySetting: () => import('./nodesetting/reply-setting.vue'), // 回复模板
     StrategySetting: () => import('./nodesetting/strategy-setting.vue'), // 创建子任务
     TagSetting: () => import('./nodesetting/tag-setting.vue'), // 标签
