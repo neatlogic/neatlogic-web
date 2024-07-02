@@ -5,7 +5,7 @@
         <!-- 【流程设置/节点设置】通知策略样式 -->
         <li>
           <span class="text-grey">{{ $t('page.noticesetting') }}</span>
-          <span class="text-href pl-sm" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
+          <span v-if="isActive != 1" class="text-href pl-sm" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
         </li>
         <li class="flex-start">
           <span
@@ -34,7 +34,7 @@
             @on-change="changeSwitch"
           ></TsFormSwitch>
         </li>
-        <li>
+        <li v-if="isActive != 1">
           <span class="text-href" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
         </li>
       </ul>
@@ -64,6 +64,9 @@
             @click="gotoAddNotify(notifyPolicyConfig.policyId)"
           ></span>
         </div>
+      </div>
+      <div v-if="notifyPolicyConfig.policyId" class="pt-xs">
+        <span class="text-href" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
       </div>
     </template>
     <PersonSettingsDialog
