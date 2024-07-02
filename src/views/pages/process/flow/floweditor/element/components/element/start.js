@@ -37,5 +37,13 @@ export default {
       return false;
     }
     return true;
+  },
+  valid({node, graph}) {
+    let validList = [];
+    const outgoingEdges = graph.getOutgoingEdges(node);
+    if (!outgoingEdges || outgoingEdges.length <= 0) {
+      validList.push({ name: $t('message.process.nodenopostnode') });
+    }
+    return validList;
   }
 };

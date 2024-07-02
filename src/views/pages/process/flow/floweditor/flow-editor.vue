@@ -38,6 +38,7 @@ export default {
         return {};
       }
     },
+    callback: { type: Object }, //回调函数
     height: { type: String },
     width: { type: String },
     strictMode: { type: Boolean, default: false }, //严格框选模式
@@ -476,7 +477,7 @@ export default {
           this.graph.use(
             new Selection({
               enabled: true,
-              multiple: true,
+              multiple: false,
               multipleSelectionModifiers: ['shift'],
               rubberband: true,
               modifiers: ['meta'],
@@ -505,7 +506,7 @@ export default {
               }
             })
           );
-        } 
+        }
         this.graph.use(
           new Keyboard({
             enabled: true
@@ -529,6 +530,12 @@ export default {
             return node.clone({
               keepId: true
             });
+          },
+          validateNode: node => {
+            if (this.callback && this.callback.validateNode && typeof this.callback.validateNode === 'function') {
+              return this.callback.validateNode(node);
+            }
+            return true;
           }
         });
         //绑定事件
@@ -772,15 +779,7 @@ export default {
         this.graph.on('node:selected', ({ node }) => {
           //创建改变形状选中框
           //this.graph.createTransformWidget(node);
-          this.$emit(
-            'node:selected',
-            {
-              id: node.id,
-              name: node.getProp('name'),
-              config: node.getProp('config')
-            },
-            node
-          );
+          this.$emit('node:selected', node);
           if (node.getProp('setting') && node.getProp('setting')['deleteable']) {
             node.addTools({
               name: 'button-remove',
@@ -803,16 +802,7 @@ export default {
               this.selectedCell = selected[selected.length - 1];
               //由于节点已经处于选中状态，不能直接调用graph.select，只能手动emit
               if (this.selectedCell.isNode()) {
-                this.$emit(
-                  'node:selected',
-                  {
-                    id: this.selectedCell.id,
-                    name: this.selectedCell.shape,
-                    setting: this.selectedCell.getProp('setting'),
-                    data: this.selectedCell.getData()
-                  },
-                  this.selectedCell
-                );
+                this.$emit('node:selected', this.selectedCell);
               } else if (this.selectedCell.isEdge()) {
                 this.$emit('edge:selected', this.selectedCell);
               }
