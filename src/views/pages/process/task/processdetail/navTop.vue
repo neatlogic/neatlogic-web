@@ -1,5 +1,5 @@
 <template>
-  <div class="nav-top-box">
+  <div>
     <!-- 返回功能的公共组件
     功能如下：
     1、任务列表 的显示和隐藏功能
