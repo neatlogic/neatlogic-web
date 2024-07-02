@@ -101,7 +101,7 @@
                     <div class="title text-left text-tip">{{ $t('page.isrequired') }}</div>
                     <div class="text custom-select">
                       <div class="text-right">
-                        <i-switch v-model="item.config.isRequired" :true-value="1" :false-value="0"></i-switch>
+                        <TsFormSwitch v-model="item.config.isRequired" :true-value="1" :false-value="0"></TsFormSwitch>
                       </div>
                     </div>
                   </div>
@@ -294,6 +294,7 @@ export default {
     UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     PrestepassignDialog: () => import('./assign/prestepassign-dialog.vue'),
     ...dispatcherComponent
   },

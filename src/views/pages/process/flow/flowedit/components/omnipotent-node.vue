@@ -50,7 +50,7 @@
           <span class="label">{{ $t('term.process.autostart') }}</span>
           <span class="control-btn">
             <span class="tip">{{ $t('term.process.autostarttip') }}</span>
-            <i-switch v-model="configData.stepConfig.autoStart" :true-value="1" :false-value="0"></i-switch>
+            <TsFormSwitch v-model="configData.stepConfig.autoStart" :true-value="1" :false-value="0"></TsFormSwitch>
           </span>
         </div>
       </div>
@@ -62,7 +62,11 @@
         <div class="control-setting">
           <span class="label">{{ $t('term.process.enableattachments') }}</span>
           <span class="control-btn">
-            <i-switch v-model="configData.stepConfig.isNeedUploadFile" :true-value="1" :false-value="0"></i-switch>
+            <TsFormSwitch
+              v-model="configData.stepConfig.isNeedUploadFile"
+              :true-value="1"
+              :false-value="0"
+            ></TsFormSwitch>
           </span>
         </div>
       </div>
@@ -72,7 +76,7 @@
         <div class="control-setting">
           <span class="label">{{ $t('term.process.enabledesc') }}</span>
           <span class="control-btn">
-            <i-switch v-model="configData.stepConfig.isNeedContent" :true-value="1" :false-value="0"></i-switch>
+            <TsFormSwitch v-model="configData.stepConfig.isNeedContent" :true-value="1" :false-value="0"></TsFormSwitch>
           </span>
         </div>
       </div>
@@ -82,7 +86,7 @@
         <div class="control-setting">
           <span class="label">{{ isStart? $t('form.placeholder.required',{target: $t('page.description')}) : $t('form.placeholder.required',{target: $t('page.reply')}) }}</span>
           <span class="control-btn">
-            <i-switch v-model="configData.stepConfig.isRequired" :true-value="1" :false-value="0"></i-switch>
+            <TsFormSwitch v-model="configData.stepConfig.isRequired" :true-value="1" :false-value="0"></TsFormSwitch>
           </span>
         </div>
       </div>
@@ -94,7 +98,7 @@
             <span>{{ $t('page.defaultcontent') }}</span>
           </span>
           <span class="control-btn">
-            <i-switch v-model="activeSetting.replySetting" :true-value="1" :false-value="0"></i-switch>
+            <TsFormSwitch v-model="activeSetting.replySetting" :true-value="1" :false-value="0"></TsFormSwitch>
           </span>
         </div>
       </div>
@@ -141,6 +145,7 @@ import itemmixin from './itemmixin.js';
 export default {
   name: '',
   components: {
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     AuthoritySetting: () => import('./nodesetting/authority-setting.vue'), // 权限设置
     NoticeSetting: () => import('./nodesetting/notice-setting.vue'), // 通知设置
     ReapprovalSetting: () => import('./nodesetting/reapproval-setting.vue'), // 重审

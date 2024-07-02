@@ -11,12 +11,12 @@
           <span
             class="tip text-tip pr-xs"
           >{{ isActive == 1 ? $t('page.custom'): $t('term.framework.defaultpolicy') }}</span>
-          <i-switch
+          <TsFormSwitch
             v-model="isActive"
             :true-value="1"
             :false-value="0"
             @on-change="changeSwitch"
-          ></i-switch>
+          ></TsFormSwitch>
         </li>
       </ul>
       <ul v-else-if="layoutType == 'flexBetween'" class="notifypolicy-box">
@@ -25,12 +25,12 @@
           <span
             class="tip text-tip pr-xs"
           >{{ isActive == 1 ? $t('page.custom'): $t('term.framework.defaultpolicy') }}</span>
-          <i-switch
+          <TsFormSwitch
             v-model="isActive"
             :true-value="1"
             :false-value="0"
             @on-change="changeSwitch"
-          ></i-switch>
+          ></TsFormSwitch>
         </li>
         <li>
           <span class="text-href" @click="openPersonSettingDialog">{{ $t('page.personalizationsettings') }}</span>
@@ -83,6 +83,7 @@ export default {
   name: 'NoticeSetting',
   components: {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     PersonSettingsDialog: () => import('./notice/person-settings-dialog') // 个性设置
   },
   mixins: [itemmixin],

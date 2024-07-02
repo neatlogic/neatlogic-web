@@ -48,7 +48,7 @@
             <span>{{ $t('page.defaultcontent') }}</span>
           </span>
           <span class="control-btn">
-            <i-switch v-model="activeSetting.replySetting" :true-value="1" :false-value="0"></i-switch>
+            <TsFormSwitch v-model="activeSetting.replySetting" :true-value="1" :false-value="0"></TsFormSwitch>
           </span>
         </div>
       </div>
@@ -139,6 +139,7 @@ export default {
   name: '',
   components: {
     // StrategySetting:()=>import('./nodesetting/strategy-setting.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     AuthoritySetting: () => import('./nodesetting/authority-setting.vue'),
     NoticeSetting: () => import('./nodesetting/notice-setting.vue'),
     ActionSetting: () => import('./nodesetting/action-setting.vue'),
