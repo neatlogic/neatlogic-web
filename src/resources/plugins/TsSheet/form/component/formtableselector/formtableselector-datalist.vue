@@ -219,15 +219,59 @@ export default {
       return formItem;
     },
     getSelectedItem(idList, itemList) {
-      this.selectedItemList.push(...itemList);
-      if (this.selectedItemList && this.selectedItemList.length) {
-        this.selectedItemList = this.$utils.uniqueByField(this.selectedItemList, 'uuid');
-      }
-      let selectedArr = this.selectedItemList.filter(val => {
-        return idList.includes(val.uuid);
+      // 先过滤 itemList 中的元素，只保留在 idList 中的
+      const filteredItemList = itemList.filter(item => idList.includes(item.uuid));
+      // 使用 uniqueByField 去除重复项
+      const uniqueFilteredItemList = this.$utils.uniqueByField(filteredItemList, 'uuid');
+      // 更新 selectedItemList
+      this.selectedItemList = uniqueFilteredItemList;
+      // 如果需要，对 selectedItemList 中的元素设置默认值
+      this.selectedItemList.forEach(d => {
+        this.extraList.forEach(extra => {
+          if (this.$utils.isEmpty(d[extra.uuid])) {
+            d[extra.uuid] = this.getDefaultValue(extra.uuid, d);
+          }
+        });
       });
-      this.selectedItemList = selectedArr || [];
+      // 触发 change 事件
       this.$emit('change', this.selectedItemList);
+    },
+    getDefaultValue(uuid, row) {
+      const dataConfig = this.config.dataConfig.find(d => d.uuid === uuid);
+      if (dataConfig && dataConfig.config) {
+        const { defaultValue, defaultValueType, defaultValueField, defaultTextField } = dataConfig.config;
+        if (!this.$utils.isEmpty(defaultValue) && this.$utils.isEmpty(row[uuid])) {
+          let defaultValueObj; // 使用新的变量保存默认值
+
+          // 判断defaultValueType
+          if (defaultValueType === 'custom') {
+            // 自定义默认值
+            if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
+              if (Array.isArray(defaultValue)) {
+                defaultValueObj = defaultValue.map(d => ({ text: d, value: d }));
+              } else {
+                defaultValueObj = { text: defaultValue, value: defaultValue };
+              }
+            } else {
+              defaultValueObj = defaultValue;
+            }
+          } else if (defaultValueType === 'matrix') {
+            // matrix类型的默认值
+            if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
+              // 表单选择类型
+              defaultValueObj = {
+                text: row[defaultTextField] || '',
+                value: row[defaultValueField] || ''
+              };
+            } else {
+              defaultValueObj = row[defaultValue];
+            }
+          }
+          return defaultValueObj;
+        }
+      }
+      // 如果以上条件都不满足，则直接返回row中对应的字段值
+      return row[uuid];
     },
     operation(row, type) {
       if (type && row[type]) { //超链接跳转

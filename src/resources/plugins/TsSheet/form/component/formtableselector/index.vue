@@ -33,7 +33,7 @@
                 :formItem="getExtraFormItem(extra,row)"
                 :disabled="disabled"
                 :readonly="readonly"
-                :value="getDefaultValue(extra.uuid,row)"
+                :value="row[extra.uuid]"
                 :formData="row"
                 :showStatusIcon="false"
                 mode="read"
@@ -269,25 +269,6 @@ export default {
         });
       }
       return formItem;
-    },
-    //从表格选择列表行数据中获取指定字段作为扩展字段的默认值
-    getDefaultValue(uuid, row) {
-      const dataConfig = this.config.dataConfig.find(d => d.uuid === uuid);
-      if (dataConfig && dataConfig.config) {
-        const defaultValue = dataConfig.config.defaultValue;
-        if (dataConfig.config.defaultValueType === 'custom') {
-          return defaultValue;
-        } else if (dataConfig.config.defaultValueType === 'matrix') {
-          if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
-            const defaultValueField = dataConfig.config.defaultValueField;
-            const defaultTextField = dataConfig.config.defaultTextField;
-            return {text: row[defaultTextField], value: row[defaultValueField]};
-          } else {
-            return row[defaultValue];
-          }
-        }
-      }
-      return null;
     },
     getSelected(indexList) {
       let selectedArr = this.value.filter(val => {
