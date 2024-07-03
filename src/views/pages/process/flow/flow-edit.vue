@@ -857,34 +857,35 @@ export default {
     },
     setPrevNodes() {
       // 获取节点的所有前置节点
-      let _this = this;
       if (this.nodeConfig) {
-        var vm = TopoVm.getNodeByUuid(this.nodeConfig.uuid);
-        if (!vm) return;
-        let allPrevNodes = vm.getAllPrevNodes();
-        allPrevNodes = allPrevNodes.map(item => _this.stepList.find(step => step.uuid == item.getUuid()));
-        let parentNodes = vm.getPrevNodes();
-        let prevNodes = allPrevNodes.filter(d => d.type !== 'start' && d.type !== 'end' && d.handler != 'condition' && d.handler != 'distributary' && d.handler != 'autoexec');
-        let isStart = parentNodes.some(d => d.getConfig() && d.getConfig().handler === 'start');
+        const nodeVm = TopoVm.getNodeByUuid(this.nodeConfig.uuid);
+        if (!nodeVm) return;
+
+        const allPrevNodes = nodeVm.getAllPrevNodes('forward').map(item => this.stepList.find(step => step.uuid === item.getUuid()));
+        const parentNodes = nodeVm.getPrevNodes();
+        const prevNodes = allPrevNodes.filter(d => d.type !== 'start' && d.type !== 'end' && d.handler !== 'condition' && d.handler !== 'distributary');
+        const isStart = parentNodes.some(d => d.getConfig() && d.getConfig().handler === 'start');
+
+        this.prevNodes = prevNodes;
+        this.allPrevNodes = allPrevNodes;
         this.isNodeStart = isStart;
-        this.prevNodes.splice(0);
-        this.prevNodes.push(...prevNodes);
-        this.allPrevNodes.splice(0);
-        this.allPrevNodes.push(...allPrevNodes);
       } else {
-        this.prevNodes.splice(0);
-        this.allPrevNodes.splice(0);
+        this.prevNodes = [];
+        this.allPrevNodes = [];
         this.isNodeStart = false;
       }
 
-      let allNode = TopoVm.getNodes();
-      allNode.forEach(a => {
-        let nodeCurrent = TopoVm.getNodeByUuid(a.getUuid());
-        let nodeParent = nodeCurrent.getPrevNodes();
-        if (nodeParent.some(d => d.getConfig() && d.getConfig().handler === 'start')) {
-          this.startNodeuuid = a.getUuid();
+      let startNode = null;
+      TopoVm.getNodes().forEach(a => {
+        if (!startNode) {
+          const nodeCurrent = TopoVm.getNodeByUuid(a.getUuid());
+          const nodeParent = nodeCurrent.getPrevNodes();
+          if (nodeParent.some(d => d.getConfig() && d.getConfig().handler === 'start')) {
+            startNode = a.getUuid();
+          }
         }
       });
+      this.startNodeuuid = startNode;
     },
     setNodeSetting() {
       // 获取节点设置
