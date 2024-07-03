@@ -25,6 +25,7 @@
           v-model="searchValue"
           v-bind="searchConfig"
           @change="searchIssue(1)"
+          @change-label="combinesearcherChangeLabel"
         >
           <template v-slot:createDate="{ valueConfig, textConfig }">
             <TsFormDatePicker
@@ -371,6 +372,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    combinesearcherChangeLabel(val) {
+      if (!this.$utils.isEmpty(this.searchValue.createDate)) {
+        this.$set(val, 'createDate', this.searchValue.createDate);
+      } else {
+        this.$delete(val, 'createDate');
+      }
+    },
     closeIssueDetail() {
       this.isIssueDetailShow = false;
       this.currentIssue = null;

@@ -7,7 +7,7 @@
           v-model="searchValue"
           v-bind="searchConfig"
           @remove-label="searchWebhookData(1)"
-          @confirm="searchWebhookData(1)"
+          @change="searchWebhookData(1)"
         >
           <template v-slot:createTime="{ valueConfig, textConfig }">
             <TsFormDatePicker

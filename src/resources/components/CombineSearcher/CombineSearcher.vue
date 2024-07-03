@@ -372,10 +372,10 @@ export default {
     doSearch(val) {
       this.isVisible = false;
       let fullSearch = this.getFullSearch();
+      this.$emit('change', fullSearch);
       if (this.searchMode == 'clickBtnSearch') {
         this.refreshTextConfig(); // 点击确认时，需要把搜索结果显示在搜索栏中
       }
-      this.$emit('change', fullSearch);
     },
     clearSearch() {
       this.keyword = '';
@@ -415,9 +415,23 @@ export default {
     },
     updateVal(val) {
       this.$nextTick(() => {
-        this.searchValue = this.$utils.deepClone(val);
-        this.totalText = this.$utils.deepClone(val);
-        //清除searchList和关键字（keywordName）中没有定义的属性值，避免回显错误的选项 
+        let currentData = this.$utils.deepClone(val);
+        this.searchValue = currentData;
+        /* 
+          修复搜索条件回显异常：确保totalText使用文本(text)而非值(value)进行显示
+          具体来说，数据结构val的当前状态是：
+          val = {
+            status: 'running'
+          }
+          期望的totalText中的val结构：
+          val = {
+          status: '运行中'
+          }
+         */
+        if (!this.$utils.isEmpty(currentData) && currentData.hasOwnProperty(this.keywordName)) {
+          this.totalText[this.keywordName] = currentData[this.keywordName];
+        }
+        // 清除searchList和关键字（keywordName）中没有定义的属性值，避免回显错误的选项 
         if (this.totalText) {
           for (let k in this.totalText) {
             if (!this.searchList.find(s => s.name == k) && k != this.keywordName) {
