@@ -59,6 +59,12 @@ export default {
           name: 'transferRule',
           label: this.$t('page.valueconvert'),
           desc: this.$t('term.pbc.convertvaluedesc')
+        },
+        transferToMd5: {
+          type: 'switch',
+          name: 'transferToMd5',
+          label: '散列处理',
+          desc: '勾选此开关把任意值转换成32位字符串的散列值'
         }
       }
     };
@@ -67,6 +73,7 @@ export default {
   created() {
     this.prop.propDefaultValue = this.property.propDefaultValue;
     this.prop.transferRule = this.property.transferRule;
+    this.prop.transferToMd5 = this.property.transferToMd5;
   },
   beforeMount() {},
   mounted() {
