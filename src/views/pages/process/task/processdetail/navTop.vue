@@ -8,21 +8,29 @@
     <div v-if="processTaskConfig">
       <span class="text-action tsfont-bar mr-md" @click="isTslayout"></span>
       <span v-if="processTaskConfig.priority && isNeedPriority" class="channel-type fz10" :style="typeTip(processTaskConfig.priority.color)">{{ processTaskConfig.priority.name }}</span>
-      <span v-if="!isEdit">
-        <span class="task-title overflow" :title="title" style="max-width:200px;">{{ title }}</span>
-        <i v-if="actionConfig && actionConfig.update" class="tsfont-edit text-action" @click="editTitle(title)"></i>
-      </span>
-      <span v-if="isEdit" class="edit-title">
-        <TsFormInput
-          ref="titleInput"
-          v-model="title"
-          maxlength="200"
-          border="bottom"
-          @on-blur="changeTitle(title)"
-        ></TsFormInput>
-      </span>
+      <div ref="leftInstanceBox" class="inline-block">
+        <span v-if="!isEdit">
+          <span
+            class="task-title overflow inline-block"
+            :title="title"
+            :style="{maxWidth: `${boxMaxWidth}`}"
+          >{{ title }}</span>
+          <i v-if="actionConfig && actionConfig.update" class="tsfont-edit text-action" @click="editTitle(title)"></i>
+        </span>
+        <span v-if="isEdit" class="edit-title">
+          <TsFormInput
+            ref="titleInput"
+            v-model="title"
+            maxlength="200"
+            border="bottom"
+            :width="boxMaxWidth"
+            @on-blur="changeTitle(title)"
+          ></TsFormInput>
+        </span>
+      </div>
+    
       <!-- SLA倒计时 -->
-      <template v-if="!$utils.isEmpty(slaTimeList)">
+      <div v-if="!$utils.isEmpty(slaTimeList)" ref="slatimeBox" class="inline-block">
         <span v-for="(sla, slaIndex) in slaTimeList" :key="slaIndex" class="pl-sm">
           <span v-if="sla.status == 'doing'">
             <span v-if="sla.timeLeft >= 0" class="text-success">{{ $t('page.remainingtime') }}</span>
@@ -53,7 +61,7 @@
             </span>
           </span>
         </span>
-      </template>
+      </div>
       <!-- SLA倒计时 -->
     </div>
   </div>
@@ -81,13 +89,18 @@ export default {
       isEdit: false,
       baseTime: Date.now(),
       slaUpdateTimer: null,
-      slaTimeList: []
+      slaTimeList: [],
+      boxMaxWidth: 200
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => {
+      this.getElementWidth();
+    });
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -100,6 +113,24 @@ export default {
     }
   },
   methods: {
+    getElementWidth() {  
+      let toolbarRightElement = document.querySelector('.toolbar-right');
+      let leftInstanceBox = this.$refs?.leftInstanceBox || 0;
+      let slatimeWidth = this.$refs?.slatimeBox?.offsetWidth || 0;
+      let totalLeftWidth = 0; // 到左边菜单栏的宽度
+      let rightWidth = 0;
+      if (toolbarRightElement) {
+        rightWidth = toolbarRightElement.offsetWidth;
+      }
+      let navTopElement = leftInstanceBox;
+      while (navTopElement) {
+        if (navTopElement.offsetLeft !== undefined) { // 确保offsetLeft存在  
+          totalLeftWidth += navTopElement.offsetLeft;  
+        }
+        navTopElement = navTopElement.offsetParent;  
+      }
+      this.boxMaxWidth = `calc(100vw - ${totalLeftWidth}px - ${rightWidth}px - ${slatimeWidth}px - 40px)`;
+    },
     changeTitle(title) {
       if (title) {
         this.isEdit = false;
@@ -119,6 +150,7 @@ export default {
       this.isEdit = true;
       this.$nextTick(() => {
         this.$refs.titleInput && this.$refs.titleInput.focus();
+        this.getElementWidth();
       });
     },
     isTslayout() {
@@ -211,5 +243,8 @@ export default {
   border-radius: 16px;
   padding: 0 6px;
   line-height: 16px;
+}
+.inline-block {
+  display: inline-block;
 }
 </style>
