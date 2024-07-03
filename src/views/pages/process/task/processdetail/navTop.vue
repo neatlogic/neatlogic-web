@@ -97,9 +97,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.$nextTick(() => {
-      this.getElementWidth();
-    });
+    this.getElementWidth();
   },
   beforeUpdate() {},
   updated() {},
@@ -113,23 +111,25 @@ export default {
     }
   },
   methods: {
-    getElementWidth() {  
-      let toolbarRightElement = document.querySelector('.toolbar-right');
-      let leftInstanceBox = this.$refs?.leftInstanceBox || 0;
-      let slatimeWidth = this.$refs?.slatimeBox?.offsetWidth || 0;
-      let totalLeftWidth = 0; // 到左边菜单栏的宽度
-      let rightWidth = 0;
-      if (toolbarRightElement) {
-        rightWidth = toolbarRightElement.offsetWidth;
-      }
-      let navTopElement = leftInstanceBox;
-      while (navTopElement) {
-        if (navTopElement.offsetLeft !== undefined) { // 确保offsetLeft存在  
-          totalLeftWidth += navTopElement.offsetLeft;  
+    getElementWidth() {
+      this.$nextTick(() => {
+        let toolbarRightElement = document.querySelector('.toolbar-right');
+        let leftInstanceBox = this.$refs?.leftInstanceBox || 0;
+        let slatimeWidth = this.$refs?.slatimeBox?.offsetWidth || 0;
+        let totalLeftWidth = 0; // 到左边菜单栏的宽度
+        let rightWidth = 0;
+        if (toolbarRightElement) {
+          rightWidth = toolbarRightElement.offsetWidth;
         }
-        navTopElement = navTopElement.offsetParent;  
-      }
-      this.boxMaxWidth = `calc(100vw - ${totalLeftWidth}px - ${rightWidth}px - ${slatimeWidth}px - 40px)`;
+        let navTopElement = leftInstanceBox;
+        while (navTopElement) {
+          if (navTopElement.offsetLeft !== undefined) { // 确保offsetLeft存在  
+            totalLeftWidth += navTopElement.offsetLeft;  
+          }
+          navTopElement = navTopElement.offsetParent;  
+        }
+        this.boxMaxWidth = `calc(100vw - ${totalLeftWidth}px - ${rightWidth}px - ${slatimeWidth}px - 40px)`;
+      });
     },
     changeTitle(title) {
       if (title) {
@@ -181,6 +181,7 @@ export default {
             }
           });
           this.$store.commit('setTaskSlaTimeList', tbodyList); // 设置工单时效
+          this.getElementWidth();
           this.slaUpdateTimer = setTimeout(() => {
             this.UpdateSlaTimeDoing(doingSlaIdList);
           }, 60 * 1000);

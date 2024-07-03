@@ -260,6 +260,8 @@ export default {
         if (p) {
           this.$set(p, 'propDefaultValue', prop.propDefaultValue);
           this.$set(p, 'transferRule', prop.transferRule);
+          this.$set(p, 'transferToMd5', prop.transferToMd5);
+          console.log(JSON.stringify(p, null, 2));
         }
       }
       this.isPropConfigDialogShow = false;
