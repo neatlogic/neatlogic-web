@@ -1755,11 +1755,8 @@ export default {
       let data = this.$utils.deepClone(formConfig); //主表单
       let formItemList = [];
       if (formSceneUuid != formConfig.uuid && !this.$utils.isEmpty(formConfig.sceneList)) {
-        let sceneConfig = formConfig.sceneList.find(item => item.uuid === formSceneUuid); //流程场景
-        if (!sceneConfig) {
-          //流程场景不存在，用表单默认场景
-          sceneConfig = formConfig.sceneList.find(item => item.uuid === formConfig.defaultSceneUuid);
-        }
+        let sceneConfig = formConfig.sceneList.find(item => item.uuid === formSceneUuid) ||
+                      formConfig.sceneList.find(item => item.uuid === formConfig.defaultSceneUuid);
         if (sceneConfig) {
           //场景表单，继承组件替换
           if (formConfig.tableList) {
@@ -1773,13 +1770,18 @@ export default {
             if (item.component) {
               let component = formItemList.find(c => c.uuid === item.component.uuid);
               if (component) {
+                // 如果存在相同的组件，则更新或复制属性
+                if (component.componentList) {
+                  item.component.componentList = component.componentList;
+                }
                 if (item.component.inherit) {
-                  this.$set(item, 'component', component);
+                  item.component = component;
                 }
               }
             }
           });
-          this.$set(sceneConfig, 'formWidth', formConfig.formWidth);
+          // 继承主表单的表单宽度（如果需要）
+          sceneConfig.formWidth = formConfig.formWidth;
           data = sceneConfig;
         }
       }

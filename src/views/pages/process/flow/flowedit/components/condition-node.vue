@@ -406,7 +406,6 @@ export default {
   beforeCreate() {},
 
   created() {
-    console.log(JSON.stringify(this.formConfig, null, 2));
   },
 
   beforeMount() {},
