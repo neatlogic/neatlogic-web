@@ -48,7 +48,7 @@
             <span v-if="row" class="text-href" @click="gotoDeployStatus(row)">{{ row.version }}</span>
           </template>
           <template slot="compileCount" slot-scope="{ row }">
-            <span>{{ row.compileCount }} {{ row.compileFailCount ? $t('term.deploy.failurecount', {target: row.compileFailCount}) : '' }}</span>
+            <span>{{ row.compileCount }}</span> <span class="text-error">{{ row.compileFailCount?$t('term.deploy.failurecount', {target: row.compileFailCount}) : '' }}</span>
           </template>
           <template slot="buildNo" slot-scope="{ row }">
             <div v-if="row.buildNoList && row.buildNoList.length > 0">
