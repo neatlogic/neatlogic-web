@@ -23,6 +23,7 @@
           v-model="searchVal"
           v-bind="searchConfig"
           @change="searchCondition"
+          @change-label="changeLabel"
         >
           <template v-slot:batchSearchList="{textConfig, valueConfig}">
             <div>
@@ -37,24 +38,16 @@
                 ></TsFormRadio>
               </TsFormItem>
               <TsFormItem :label="$t('page.batchsearchvalue')" labelWidth="0px" labelPosition="left">
-                <!-- change-label主要用于存储的数据回显，value值回显不会触发@change方法 -->
                 <TsFormInput
                   v-model="valueConfig.batchSearchList"
                   type="textarea"
                   :placeholder="'192.168.0.1\n192.168.0.2\n192.168.0.*'"
                   :autoSize="{minRows: 4}"
                   @change="(val) => {
-                    if(val) {
+                    if (val) {
                       $set(textConfig, 'batchSearchList', val.split('\n'));
                     } else {
-                      $delete(textConfig, 'batchSearchList');
-                    }
-                  }"
-                  @change-label="(val) => {
-                    if(val) {
-                      $set(textConfig, 'batchSearchList', val.split('\n'));
-                    } else {
-                      $delete(textConfig, 'batchSearchList');
+                      $set(textConfig, 'batchSearchList', '');
                     }
                   }"
                 >
@@ -464,6 +457,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    changeLabel(val) {
+      if (!this.$utils.isEmpty(val)) {
+        if (this.$utils.isEmpty(this.searchVal.batchSearchList)) {
+          this.$delete(val, 'batchSearchList');
+        } else {
+          this.$set(val, 'batchSearchList', this.searchVal.batchSearchList.split('\n'));
+        }
+      }
+    },
     async init() {
       await this.getInspectStatusList();
       if (this.categoryId) {
