@@ -8,12 +8,10 @@
           class="text-href"
         >
           <span
-            v-if="file.response"
-            v-download="{
-              url:file.response.Return.url,
-              method:'post'
-            }"
-          >{{ file.response.Return.name }}</span>
+            v-if="file.id"
+            v-download="downurl(file.id)"
+            class="pr-xs"
+          >{{ file.name }}</span>
         </span>
       </template>
       <template v-else>-</template>
@@ -100,6 +98,16 @@ export default {
           uuid: list[1]
         };
         return data;
+      };
+    },
+    downurl() {
+      return id => {
+        return {
+          url: 'api/binary/file/download',
+          params: {
+            id: id
+          }
+        };
       };
     }
   },
