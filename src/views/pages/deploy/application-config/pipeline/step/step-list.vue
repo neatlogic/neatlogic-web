@@ -271,7 +271,7 @@ export default {
             uuid: this.$utils.setUuid(),
             sort: this.groupConfig && this.groupConfig.policy == 'oneShot' ? this.list[this.oindex][0].sort : this.list[this.oindex][0].sort + 1,
             groupSort: this.groupConfig.groupSort,
-            groupUuid: this.groupConfig.groupUuid
+            groupUuid: this.groupConfig.uuid
           });
           this.list[this.oindex].push(data);
         } else { //增加分组
