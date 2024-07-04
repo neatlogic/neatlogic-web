@@ -2066,7 +2066,8 @@
     "withoutconfigeditauth": "Please contact the publishing administrator for authorization configuration",
     "envattr": "Environmental attributes",
     "addenvattrtips": "Unconfigured attributes, click",
-    "noconfigviewauthtip": "You do not have the \"View Configuration Permission\" for the current application. Please contact the administrator for authorization"
+    "noconfigviewauthtip": "You do not have the \"View Configuration Permission\" for the current application. Please contact the administrator for authorization",
+    "pleasechoosedatabase": "Please select a database first"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
