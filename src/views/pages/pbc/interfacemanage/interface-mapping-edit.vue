@@ -113,7 +113,7 @@
                           "
                         ></TsFormSelect>
                       </td>
-                      <td><a :class="prop.propDefaultValue || prop.transferRule ? 'tsfont-edit-s' : 'tsfont-setting'" href="javascript:void(0)" @click="openPropConfigDialog(prop)"></a></td>
+                      <td><a :class="(prop.propDefaultValue || prop.transferRule || prop.transferToMd5) ? 'tsfont-edit-s' : 'tsfont-setting'" href="javascript:void(0)" @click="openPropConfigDialog(prop)"></a></td>
                     </tr>
                   </tbody>
                 </table>
@@ -261,7 +261,6 @@ export default {
           this.$set(p, 'propDefaultValue', prop.propDefaultValue);
           this.$set(p, 'transferRule', prop.transferRule);
           this.$set(p, 'transferToMd5', prop.transferToMd5);
-          console.log(JSON.stringify(p, null, 2));
         }
       }
       this.isPropConfigDialogShow = false;
