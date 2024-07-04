@@ -25,29 +25,18 @@ import { default as formtab } from './define/formtab.js';
 import { default as formcollapse } from './define/formcollapse.js';
 import { default as CMDBITEMS } from '@/views/pages/cmdb/form/define';
 import { default as AUTOEXECITEMS } from '@/views/pages/autoexec/form/define';
+import ComponentManager from '@/resources/import/component-manager.js';
+let defineComponentList = [];
 
+for (let key in ComponentManager.getFormDefineComponent()) {
+  if (key && ComponentManager.getFormDefineComponent().hasOwnProperty(key)) {
+    defineComponentList.push(ComponentManager.getFormDefineComponent()[key]);
+  }
+}
 export const FORMITEM_CATEGORY = [
   { value: 'basic', text: $t('term.report.basicwidget') },
   { value: 'layout', text: $t('term.framework.layoutwidget') },
   { value: 'autoexec', text: $t('term.framework.automationwidget') },
   { value: 'cmdb', text: $t('term.framework.cmdbwidget') }
 ];
-let importComponentConfig = {};
-let defineList = [];
-try {
-  // 导入自定义组件
-  const componentConfig = require.context('@/commercial-module', true, /formdefine.js$/);
-  componentConfig.keys().forEach(path => {
-    if (path) {
-      importComponentConfig = Object.assign(importComponentConfig, componentConfig(path).default || {});
-    }
-  });
-  for (let key in importComponentConfig) {
-    if (key && importComponentConfig.hasOwnProperty(key)) {
-      defineList.push(importComponentConfig[key]);
-    }
-  }
-} catch (error) {
-  console.error('formitem-list.js抛出异常', error);
-}
-export const FORMITEMS = [formlabel, formtext, formtextarea, formckeditor, formnumber, formpassword, formselect, formcascader, formradio, formcheckbox, formcube, formtableselector, formtableinputer, formdate, formtime, formlink, formrate, formuserselect, formtreeselect, formaccounts, formupload, formdivider, formtab, formcollapse, ...AUTOEXECITEMS, ...CMDBITEMS, ...defineList];
+export const FORMITEMS = [formlabel, formtext, formtextarea, formckeditor, formnumber, formpassword, formselect, formcascader, formradio, formcheckbox, formcube, formtableselector, formtableinputer, formdate, formtime, formlink, formrate, formuserselect, formtreeselect, formaccounts, formupload, formdivider, formtab, formcollapse, ...AUTOEXECITEMS, ...CMDBITEMS, ...defineComponentList];

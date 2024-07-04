@@ -1,5 +1,11 @@
+/**
+ * 组件管理器
+ * 基于categoryList动态注册和获取组件
+ * 注册方法：registerCategoryComponent(component)
+ * 获取方法：getCategoryComponent() // Category来自categoryList，首字母大写
+ */
 class ComponentManager {
-  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowNodeValid', 'flowLineValid', 'dispatcher', 'dispatcherValid', 'workCenterColumn'];
+  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowNodeValid', 'flowLineValid', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent'];
   static categoryConfig = {};
   static generateMethods() {
     this.categoryList.forEach(category => {

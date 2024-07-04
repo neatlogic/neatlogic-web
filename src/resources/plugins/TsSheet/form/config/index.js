@@ -26,18 +26,7 @@ import formcollapse from './formcollapse-conf.vue';
 import * as cmdbComponent from '@/views/pages/cmdb/form/config';
 import * as autoexecComponent from '@/views/pages/autoexec/form/config';
 
-let importComponentConfig = {};
-try {
-  // 导入表单自定义配置文件
-  const componentConfig = require.context('@/commercial-module', true, /formconfig.js$/);
-  componentConfig.keys().forEach(path => {
-    if (path) {
-      importComponentConfig = Object.assign(importComponentConfig, componentConfig(path).default || {});
-    }
-  });
-} catch (error) {
-  console.log('form/config/index.js抛出异常', error);
-}
+import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   formlabel,
   formtext,
@@ -65,5 +54,5 @@ export default {
   formcollapse,
   ...cmdbComponent,
   ...autoexecComponent,
-  ...importComponentConfig
+  ...ComponentManager.getFormConfigComponent()
 };

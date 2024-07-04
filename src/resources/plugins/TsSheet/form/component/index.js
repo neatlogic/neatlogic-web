@@ -26,19 +26,7 @@ import formtable from './formtable.vue';
 
 import * as cmdbComponent from '@/views/pages/cmdb/form/component';
 import * as autoexecComponent from '@/views/pages/autoexec/form/component';
-
-let importComponentConfig = {};
-try {
-  // 导入自定义组件
-  const componentConfig = require.context('@/commercial-module', true, /formcomponent.js$/);
-  componentConfig
-    .keys()
-    .forEach(path => {
-      importComponentConfig = Object.assign(importComponentConfig, componentConfig(path).default || {});
-    });
-} catch (error) {
-  console.error('form/component/index.js异常', error);
-}
+import ComponentManager from '@/resources/import/component-manager.js';
 
 export default {
   formlabel,
@@ -68,5 +56,5 @@ export default {
   formtable,
   ...cmdbComponent,
   ...autoexecComponent,
-  ...importComponentConfig
+  ...ComponentManager.getFormComponentComponent()
 };
