@@ -80,10 +80,13 @@ export default {
   },
   computed: {
     finalNode() {
+      let d = {};
       if (this.node) {
-        return this.node.chartConfig || {};
-      }
-      return {};
+        d = this.$utils.deepClone(this.node.chartConfig);
+        //补充name属性
+        d.name = this.node.name;
+      } 
+      return d;
     }
   },
   watch: {}

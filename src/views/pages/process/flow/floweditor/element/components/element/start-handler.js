@@ -42,7 +42,7 @@ export default {
     let validList = [];
     const outgoingEdges = graph.getOutgoingEdges(node);
     if (!outgoingEdges || outgoingEdges.length <= 0) {
-      validList.push({ name: $t('message.process.nodenopostnode') });
+      validList.push({ msg: $t('message.process.nodenopostnode') });
     }
     return validList;
   }

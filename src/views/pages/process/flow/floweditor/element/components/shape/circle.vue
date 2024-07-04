@@ -3,7 +3,7 @@
     <div class="container shadow" :class="type">
       <div class="core"></div>
     </div>
-    <div v-if="name" style="text-align: center">{{ name }}</div>
+    <div v-if="data.name" style="text-align: center" class="text-grey">{{ data.name }}</div>
   </div>
 </template>
 <script>
@@ -31,13 +31,10 @@ export default {
   filter: {},
   computed: {
     type() {
-      return this.node.getProp('type');
+      return this.node.getData()['type'];
     },
     size() {
       return this.node.size().width + 'px';
-    },
-    name() {
-      return this.node.getProp('name');
     }
   },
   watch: {}

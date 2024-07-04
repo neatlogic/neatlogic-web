@@ -3,7 +3,7 @@
     <div class="container  cursor bg-node-grey">
       <span v-if="icon" :class="icon"></span>
     </div>
-    <div v-if="name" style="text-align: center">{{ name }}</div>
+    <div v-if="data.name" style="text-align: center" class="text-grey">{{ data.name }}</div>
   </div>
 </template>
 <script>
@@ -35,9 +35,6 @@ export default {
     },
     height() {
       return this.node.size().height + 'px';
-    },
-    name() {
-      return this.node.getProp('name');
     },
     icon() {
       return this.node.getProp('icon') && this.node.getProp('icon').replace('#', '');

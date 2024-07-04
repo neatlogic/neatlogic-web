@@ -33,7 +33,7 @@ export default {
     let validList = [];
     const incomingEdges = graph.getIncomingEdges(node);
     if (!incomingEdges || incomingEdges.length <= 0) {
-      validList.push({ name: $t('message.process.nodenofrontnode') });
+      validList.push({ msg: $t('message.process.nodenofrontnode') });
     }
     return validList;
   }

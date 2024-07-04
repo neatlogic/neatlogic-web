@@ -1,6 +1,8 @@
 import template from '../shape/rect.vue';
 import ports from './base/port-config.js';
+import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
+import { assignValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/assign-valid.js';
 export default {
   name: '普通节点',
   type: 'process',
@@ -18,7 +20,8 @@ export default {
     selectable: true,
     linkin: true,
     linkout: true,
-    assignable: true//是否需要分配用户
+    assignable: true, //是否需要分配用户
+    needformscene: true //是否需要表单场景
   },
   validateEdge({ edge, editor, sourceCell, targetCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(targetCell, 'forward');
@@ -33,21 +36,45 @@ export default {
     return true;
   },
   //流程保存时校验数据
-  valid({node, graph}) {
+  valid({ node, graph }) {
     let validList = [];
     const edges = graph.getConnectedEdges(node);
     if (!edges || edges.length <= 0) {
-      validList.push({ name: $t('message.process.nodeorphaned') });
+      validList.push({ msg: $t('message.process.nodeorphaned') });
     } else {
       const outgoingEdges = graph.getOutgoingEdges(node);
       if (!outgoingEdges || outgoingEdges.length <= 0) {
-        validList.push({ name: $t('message.process.nodenopostnode') });
+        validList.push({ msg: $t('message.process.nodenopostnode') });
       }
       const incomingEdges = graph.getIncomingEdges(node);
       if (!incomingEdges || incomingEdges.length <= 0) {
-        validList.push({ name: $t('message.process.nodenofrontnode') });
+        validList.push({ msg: $t('message.process.nodenofrontnode') });
       }
     }
+    //校验分配设置
+    validList.push(...assignValid.valid({ node, graph }));
+
+    const nodeConfig = node.getData();
+    if (!nodeConfig.name) {
+      validList.push({
+        msg: $t('form.validate.required', { target: $t('term.process.nodename') }),
+        href: '#nodeName'
+      });
+    }
+    if (!utils.nameRegularValid(nodeConfig.name)) {
+      validList.push({
+        msg: $t('term.process.noderultvalid'),
+        href: '#nodeName'
+      });
+    }
+    if (nodeConfig?.stepConfig?.notifyPolicyConfig?.isCustom && nodeConfig?.stepConfig?.notifyPolicyConfig?.policyId) {
+      // 【通知策略】为自定义通知策略，必填
+      validList.push({
+        msg: $t('form.validate.required', { target: $t('page.notificationstrategy') }),
+        href: '#NoticeSetting'
+      });
+    }
+
     return validList;
   }
 };

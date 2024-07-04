@@ -482,7 +482,7 @@ export default {
               rubberband: true,
               modifiers: ['meta'],
               movable: true,
-              showNodeSelectionBox: true, //显示图元的选择框
+              showNodeSelectionBox: false, //显示图元的选择框
               showEdgeSelectionBox: false, //显示边的选择框
               pointerEvents: 'none',
               filter: node => {
@@ -779,7 +779,15 @@ export default {
         this.graph.on('node:selected', ({ node }) => {
           //创建改变形状选中框
           //this.graph.createTransformWidget(node);
-          this.$emit('node:selected', node);
+          node.addTools({
+            name: 'boundary',
+            args: {
+              padding: 5,
+              attrs: {
+                class: 'boundary'
+              }
+            }
+          });
           if (node.getProp('setting') && node.getProp('setting')['deleteable']) {
             node.addTools({
               name: 'button-remove',
@@ -791,8 +799,10 @@ export default {
             });
           }
           this.selectedCell = node;
+          this.$emit('node:selected', node);
         });
         this.graph.on('node:unselected', ({ node }) => {
+          node.removeTool('boundary');
           if (node.hasTool('button-remove')) {
             node.removeTool('button-remove');
           }

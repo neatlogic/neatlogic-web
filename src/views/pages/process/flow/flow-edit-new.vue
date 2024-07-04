@@ -75,7 +75,7 @@
               <FlowSetting
                 v-if="isReady"
                 ref="flowSetting"
-                :formUuid.sync="formConfig.uuid"
+                :formUuid="formConfig.uuid"
                 :uuid="processUuid"
                 :name="processName"
                 :formConfig="formConfig"
@@ -195,11 +195,11 @@ export default {
       validCardOpen: false,
       validList: [],
       nodeList: [], //左边可以拖动的节点列表
-      nodeChildren: [], // 编辑节点的子节点
+      //nodeChildren: [], // 编辑节点的子节点
       relevanceModel: false, //关联模态框
       referenceCount: 0,
       isReady: false, //接口回调初始化完成，修复调用时间过长导致的数据不同步
-      isDrawDone: false, //判断画图是否完成，增加删除节点都要修改此值，用于激活computed
+      isNodeReady: false, //判断画图是否完成，增加删除节点都要修改此值，用于激活computed
       activeTab: 'flowsetting',
       slaList: [],
       draftPrevData: '',
@@ -263,9 +263,9 @@ export default {
     //拖拽完成后验证节点是否允许生效，也可以用来做callback使用
     validateNode(node) {
       //触发相关computed计算
-      this.isDrawDone = false;
+      this.isNodeReady = false;
       this.$nextTick(() => {
-        this.isDrawDone = true;
+        this.isNodeReady = true;
       });
     },
     //新的开始
@@ -315,22 +315,22 @@ export default {
                   validList.push({
                     type: 'error',
                     href: v.href,
-                    msg: '【' + step.name + '】' + v.name,
+                    msg: '【' + (step.name || '无名节点') + '】' + v.msg,
                     focus: () => {
-                      this.nodeSelected(node);
+                      this.graph.select(node);
                     }
                   });
                 });
               } else {
-                validList.push({ type: 'success', href: v.href, msg: '【' + step.name + '】' + this.$t('term.process.nodevalidpassed') });
+                validList.push({ type: 'success', msg: '【' + (step.name || '无名节点') + '】' + this.$t('term.process.nodevalidpassed') });
               }
             }
           } else {
             if (!element) {
-              validList.push({ name: '节点定义' + step.handler + '不存在' });
+              validList.push({ type: 'error', msg: '节点定义' + step.handler + '不存在' });
             }
             if (!node) {
-              validList.push({ name: '节点' + step.handler + '不存在' });
+              validList.push({ type: 'error', msg: '节点' + step.handler + '不存在' });
             }
           }
         });
@@ -371,7 +371,7 @@ export default {
     async ready(graph, dnd) {
       this.graph = graph;
       this.dnd = dnd;
-      if (this.processUuid && !this.isNew) {
+      if (this.processUuid && !this.isNew && !this.isDraft) {
         await this.getProcessByUuid();
       } else if (this.processDraftUuid && !this.isNew && this.isDraft) {
         await this.getProcessDraftByUuid();
@@ -420,7 +420,7 @@ export default {
       }
       //}
       this.isReady = true;
-      this.isDrawDone = true;
+      this.isNodeReady = true;
     },
     drag(event, component) {
       //仅提取必要信息
@@ -512,7 +512,7 @@ export default {
         const nodeConfig = this.$refs.nodeSetting.getValueList();
         const node = this.graph.getCellById(nodeConfig.uuid);
         if (node) {
-          node.setProp('config', nodeConfig);
+          node.setData(nodeConfig);
         }
         /*const index = this.stepList.findIndex(item => item.uuid === nodeConfig.uuid);
         if (index > -1) {
@@ -529,12 +529,59 @@ export default {
           const config = this.$utils.deepClone(node.getData() || {});
           config.name = val;
           node.setData(config);
-          console.log(node.getData());
         }
       }
     },
 
+    changeRelateForm(formUuid) {
+      //节点设置needformscene为true时，需要更新节点的表单场景id
+      this.formSceneUuidList = [];
+      this.isNodeReady = false;
+      if (formUuid) {
+        this.$api.framework.form.getFormByVersionUuid({ uuid: formUuid }).then(res => {
+          this.$set(this.flowData.process.formConfig, 'uuid', formUuid);
+          const formConfig = res.Return.formConfig;
+          let defaultSceneUuid = formConfig.defaultSceneUuid || formConfig.uuid;
+          if (formConfig.sceneList && formConfig.sceneList.length > 0) {
+            formConfig.sceneList.forEach(item => {
+              if (item.uuid) {
+                this.formSceneUuidList.push(item.uuid);
+              }
+            });
+          }
+          if (formConfig.uuid) {
+            this.formSceneUuidList.unshift(formConfig.uuid);
+          }
+          const nodes = this.graph.getNodes();
+          nodes.forEach(n => {
+            if (n.getProp('setting') && n.getProp('setting')['needformscene']) {
+              const nodeConfig = n.getData();
+              this.$set(nodeConfig.stepConfig, 'formSceneUuid', defaultSceneUuid);
+              n.setData(nodeConfig);
+            }
+          });
+          this.isNodeReady = true;
+        });
+      } else {
+        this.$set(this.flowData.process.formConfig, 'uuid', '');
+        const nodes = this.graph.getNodes();
+        nodes.forEach(n => {
+          if (n.getProp('setting') && n.getProp('setting')['needformscene']) {
+            const nodeConfig = n.getData();
+            this.$set(nodeConfig.stepConfig, 'formSceneUuid', '');
+            n.setData(nodeConfig);
+          }
+        });
+        this.$nextTick(() => {
+          this.isNodeReady = true;
+        });
+      }
+    },
+
     //新的结束
+    //下面都是旧方法======================================================
+    //=================================================================
+    //====================================================================
     selectNodeByStepUuid() {
       // 根据步骤id选中节点并高亮
       if (this.$route.query.stepUuid && !this.$utils.isEmpty(this.stepList)) {
@@ -653,18 +700,14 @@ export default {
 
     validItemClick(item) {
       if (item.focus) {
-        if (this.validCardOpen) {
-          this.flowDataValid();
+        if (this.validList.length > 0) {
+          this.validFlow();
         }
         item.focus();
       }
       if (item.href) {
         this.$nextTick(() => {
-          try {
-            document.querySelector(item.href) && document.querySelector(item.href).scrollIntoView(true);
-          } catch (e) {
-            console.info(e);
-          }
+          document.querySelector(item.href) && document.querySelector(item.href).scrollIntoView(true);
           this.$refs.nodeSetting.validNodeData(item.href);
         });
       }
@@ -1010,48 +1053,8 @@ export default {
           }
         });
       }
-    },
-    changeRelateForm(formUuid) {
-      // 关联表单值改变
-      // 默认给所有步骤节点，选上【默认场景】，删除关联表单，清空表单场景值
-      let noFormSceneNodeList = ['start', 'end', 'distributary', 'condition', 'timer']; // 不需要表单场景节点列表
-      if (formUuid) {
-        this.$api.framework.form.getFormByVersionUuid({ uuid: formUuid }).then(res => {
-          if (res.Status == 'OK') {
-            try {
-              let formConfig = res.Return.formConfig || {};
-              let defaultSceneUuid = formConfig.defaultSceneUuid || formConfig.uuid;
-              formConfig.sceneList &&
-                formConfig.sceneList.forEach(item => {
-                  if (item.uuid) {
-                    this.formSceneUuidList.push(item.uuid);
-                  }
-                });
-              if (formConfig.uuid) {
-                this.formSceneUuidList.unshift(formConfig.uuid);
-              }
-              this.stepList &&
-                !this.$utils.isEmpty(this.stepList) &&
-                this.stepList.forEach(item => {
-                  if (item && item.handler && !noFormSceneNodeList.includes(item.handler) && item.stepConfig) {
-                    this.$set(item.stepConfig, 'formSceneUuid', formConfig && formConfig.uuid ? defaultSceneUuid : '');
-                  }
-                });
-            } catch (error) {
-              this.formSceneUuidList = [];
-            }
-          }
-        });
-      } else {
-        this.stepList &&
-          !this.$utils.isEmpty(this.stepList) &&
-          this.stepList.forEach(item => {
-            if (item && item.handler && !noFormSceneNodeList.includes(item.handler) && item.stepConfig) {
-              this.$set(item.stepConfig, 'formSceneUuid', '');
-            }
-          });
-      }
     }
+    
   },
   computed: {
     automaticList() {
@@ -1138,11 +1141,23 @@ export default {
     },
     //步骤列表
     stepList() {
-      if (this.isDrawDone) {
+      if (this.isNodeReady) {
         const nodes = this.graph.getNodes();
         return nodes.map(d => d.getData());
       }
       return [];
+    },
+    //当前节点的后续节点（数据）
+    nodeChildren() {
+      const nextNodeData = [];
+      if (this.isSelected && this.currentNodeData) {
+        const node = this.graph.getCellById(this.currentNodeData.uuid);
+        const edges = this.graph.getOutgoingEdges(node);
+        edges && edges.forEach(edge => {
+          nextNodeData.push(edge.getTargetCell().getData());
+        });
+      }
+      return nextNodeData;
     },
     //转换旧数据为新数据
     finalFlowData() {
@@ -1165,6 +1180,7 @@ export default {
                 type: config.type,
                 handler: config.handler,
                 isAllowStart: config.isAllowStart,
+                setting: element.setting,
                 icon,
                 position: { x: x, y: y },
                 data: config,
@@ -1231,7 +1247,7 @@ export default {
         this.updateNodeSetting();
       } else if (oldValue === 'flowsetting') {
         //从流程设置切走的时候，保存表单id
-        let formConfig = this.$refs.flowSetting && this.$refs.flowSetting.getJsonValue().formConfig ? this.$refs.flowSetting.getJsonValue().formConfig : null;
+        let formConfig = this.$refs.flowSetting && this.$refs.flowSetting.getJsonValue().formConfig ? this.$refs.flowSetting.getJsonValue().formConfig : {};
         this.setFormUuid(formConfig.uuid);
       }
     },
@@ -1283,7 +1299,9 @@ export default {
         );
       }
     } else {
-      next();
+      if (next) {
+        next();
+      }
     }
   }
 };

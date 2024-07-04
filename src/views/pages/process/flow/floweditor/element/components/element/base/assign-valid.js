@@ -1,24 +1,20 @@
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
-import { ElementFactory } from '@/views/pages/process/flow/floweditor/element/core/ElementFactory.js';
-const validAssign = {
-  valid: ({ nodeConfig, graph }) => {
+const assignValid = {
+  valid: ({ node, graph }) => {
     const validList = [];
-    const nodeData = nodeConfig.stepConfig || {};
-    if (nodeConfig.handler === 'start') {
-      //如果是开始节点
-      return validList;
-    }
-    const element = graph.getCellById(nodeConfig.uuid);
-    if (element && element.getProp('setting') && element.getProp('setting').assignable) {
+    const nodeData = node.getData()['stepConfig'] || {};
+    if (node && node.getProp('setting') && node.getProp('setting').assignable) {
       //需要分配处理人的节点才需要校验
       if (!nodeData || !nodeData.workerPolicyConfig) {
         validList.push({
-          name: $t('form.validate.required', { target: $t('term.process.poliyuser') }),
+          type: 'error',
+          msg: $t('form.validate.required', { target: $t('term.process.poliyuser') }),
           href: '#assignData'
         });
         validList.push({
-          name: $t('form.validate.required', { target: $t('term.process.erroruser') }),
+          type: 'error',
+          msg: $t('form.validate.required', { target: $t('term.process.erroruser') }),
           href: '#assignData'
         });
       }
@@ -107,13 +103,15 @@ const validAssign = {
 
         if (isChecked == 0) {
           validList.push({
-            name: errorText,
+            type: 'error',
+            msg: errorText,
             href: '#assignData'
           });
         }
         if (!nodeData.workerPolicyConfig.defaultWorker || nodeData.workerPolicyConfig.defaultWorker == '') {
           validList.push({
-            name: $t('form.validate.required', { target: $t('term.process.erroruser') }),
+            type: 'error',
+            msg: $t('form.validate.required', { target: $t('term.process.erroruser') }),
             href: '#assignData'
           });
         }
@@ -123,4 +121,4 @@ const validAssign = {
     return validList;
   }
 };
-export { validAssign };
+export { assignValid };

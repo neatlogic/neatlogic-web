@@ -4,7 +4,7 @@
       <div class="polygon cursor bg-node-grey shadow"></div>
       <div v-if="icon" class="icon" :class="icon"></div>
     </div>
-    <div v-if="name" style="text-align: center">{{ name }}</div>
+    <div v-if="data.name" style="text-align: center" class="text-grey">{{ data.name }}</div>
   </div>
 </template>
 <script>
@@ -33,9 +33,6 @@ export default {
   computed: {
     size() {
       return this.node.size().width;
-    },
-    name() {
-      return this.node.getProp('name');
     },
     icon() {
       return this.node.getProp('icon') && this.node.getProp('icon').replace('#', '');
