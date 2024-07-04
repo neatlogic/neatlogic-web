@@ -316,7 +316,11 @@ export default {
                         let dynamicVal = this.$utils.deepClone(this.formData[formItemUuid]);
                         if (!Array.isArray(dynamicVal)) {
                           if (!this.$utils.isEmpty(dynamicVal)) {
-                            value = dynamicVal[formItemAttrUuid];
+                            if (typeof dynamicVal === 'object') {
+                              value = dynamicVal[formItemAttrUuid];
+                            } else {
+                              value = dynamicVal;
+                            }
                           } else {
                             value = null;
                           }

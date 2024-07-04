@@ -1787,7 +1787,7 @@
     "selectaddversion": "Please select an application or module before creating a version",
     "noconfigauthtip": "You do not have the \"edit configuration permission\" for the current application, please contact the administrator for authorization",
     "notversionproductauth": "You do not have version & product management rights, please contact the administrator for authorization",
-    "failurecount": "Failed ${target} times",
+    "failurecount": "(Failed {target} times)",
     "flowchart": "Flowchart",
     "discarddraft": "Discard draft",
     "editdraft": "Edit Draft",
@@ -2066,7 +2066,8 @@
     "withoutconfigeditauth": "Please contact the publishing administrator for authorization configuration",
     "envattr": "Environmental attributes",
     "addenvattrtips": "Unconfigured attributes, click",
-    "noconfigviewauthtip": "You do not have the \"View Configuration Permission\" for the current application. Please contact the administrator for authorization"
+    "noconfigviewauthtip": "You do not have the \"View Configuration Permission\" for the current application. Please contact the administrator for authorization",
+    "pleasechoosedatabase": "Please select a database first"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",

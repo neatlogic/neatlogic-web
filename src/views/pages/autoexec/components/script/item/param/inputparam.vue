@@ -280,7 +280,7 @@ export default {
         this.$set(item, 'value', l.defaultValue);
       } else if (item.mappingMode == 'profile') { ////选择参数集时把默认值替换
         let findItem = this.profileParamVoList.find(p => {
-          return p.key == item.key && p.type == item.component && !this.$utils.isEmpty(p.defaultValue);
+          return p.key == item.key && p.type == item.component;
         });
         this.getProfileValue(findItem, item);
       } else {
@@ -315,7 +315,7 @@ export default {
       let isFilterProfile = true;
       if (profileParamVoList && profileParamVoList.length > 0) {
         profileParamVoList.forEach(p => {
-          if (p.key == item.key && p.type == item.type && !this.$utils.isEmpty(p.defaultValue)) {
+          if (p.key == item.key && p.type == item.type) {
             isFilterProfile = false;
           }
         });
