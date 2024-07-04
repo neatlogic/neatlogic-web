@@ -17,7 +17,7 @@ import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
 import AuthUtils from '@/resources/assets/js/authUtil.js'; //权限判断
 import VueDomPurifyHtml from 'vue-dompurify-html'; //防止xss攻击
 import './assets/index.js';
-import 'regenerator-runtime/runtime';// 处理regeneratorRuntime is not defined问题
+import 'regenerator-runtime/runtime'; // 处理regeneratorRuntime is not defined问题
 // common.checkTenant().then(res => {
 //   if (res) {
 //     if (res.Status != 'OK') {
@@ -32,7 +32,8 @@ import 'regenerator-runtime/runtime';// 处理regeneratorRuntime is not defined�
 //   window.location.href = '/404.html';
 // });
 
-(async function() {
+// eslint-disable-next-line space-before-function-paren
+(async function () {
   await ThemeUtils.init();
 })();
 
@@ -50,9 +51,10 @@ Vue.use(Loading);
 Vue.use(TsDialog);
 Vue.use(HistoryUtil);
 Vue.use(Particles);
-Vue.use(VueDomPurifyHtml, { //防止xss攻击，用法v-dompurify-html替代v-html
+Vue.use(VueDomPurifyHtml, {
+  //防止xss攻击，用法v-dompurify-html替代v-html
   hooks: {
-    afterSanitizeAttributes: (currentNode) => {
+    afterSanitizeAttributes: currentNode => {
       if ('target' in currentNode) {
         currentNode.setAttribute('target', '_blank');
       }
@@ -63,5 +65,6 @@ Vue.prototype.$utils = utils;
 Vue.prototype.$AuthUtils = AuthUtils;
 
 import 'assets/index.js';
+import '@/resources/import/index'; // 加载所有模块的import.js文件
 
 Vue.directive('auth', auth);
