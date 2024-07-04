@@ -891,7 +891,7 @@ export default {
     },
     clearRuntimeParamValue() { //作业参数改变时，清空工具匹配不上的作业参数值
       this.stepList.forEach(v => {
-        if (v.config && v.config.phaseOperationList.length) {
+        if (v.config && !this.$utils.isEmpty(v.config.phaseOperationList)) {
           //输入参数
           v.config.phaseOperationList.forEach(p => {
             if (p.config && p.config.paramMappingList && p.config.paramMappingList.length) {
