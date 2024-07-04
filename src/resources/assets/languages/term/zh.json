@@ -2063,7 +2063,8 @@
     "withoutconfigeditauth": "请联系发布管理员授权配置",
     "envattr": "环境属性",
     "addenvattrtips": "未配置属性，点击",
-    "noconfigviewauthtip": "您没有当前应用的“查看配置权限”，请联系管理员授权"
+    "noconfigviewauthtip": "您没有当前应用的“查看配置权限”，请联系管理员授权",
+    "pleasechoosedatabase": "请先选择数据库"
   },
   "inspect": {
     "alarmprompt": "告警提示",

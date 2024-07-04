@@ -19,8 +19,18 @@
           >
             <template v-slot:accountId>
               <div class="action-icon text-right">
-                <span class="tsfont-rotate-right text-tip-active" @click="refreshAccountList"></span>
-                <span class="tsfont-edit text-tip-active pl-md" @click="toAssetManageEditAccount"></span>
+                <template v-if="getDisabled">
+                  <Tooltip :content="$t('term.deploy.pleasechoosedatabase')" transfer>
+                    <span class="tsfont-rotate-right text-tip-active" :class="getDisabledClassName"></span>
+                  </Tooltip>
+                  <Tooltip :content="$t('term.deploy.pleasechoosedatabase')" transfer>
+                    <span class="tsfont-edit text-tip-active pl-md" :class="getDisabledClassName"></span>
+                  </Tooltip>
+                </template>
+                <template v-else>
+                  <span class="tsfont-rotate-right text-tip-active" @click="refreshAccountList"></span>
+                  <span class="tsfont-edit text-tip-active pl-md" :class="getDisabledClassName" @click="toAssetManageEditAccount"></span>
+                </template>
               </div>
               <TsFormItem :label="$t('page.account')" :required="true">
                 <TsFormSelect
@@ -430,9 +440,15 @@ export default {
     },
     toAssetManageEditAccount() {
       // 跳转到资产清单页面，打开单个账号管理弹窗
+      if (this.getDisabled) {
+        return false;
+      }
       window.open(HOME + '/cmdb.html#/asset-manage?resourceId=' + this.dbResourceId, '_blank');
     },
     refreshAccountList() {
+      if (this.getDisabled) {
+        return false;
+      }
       this.$set(this.accountSetting, 'params', {refreshUuid: this.$utils.setUuid(), protocol: 'database', resourceId: this.dbResourceId });
       this.$set(this.accountSetting, 'needCallback', true);
       this.getAccountList();
@@ -446,7 +462,14 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getDisabledClassName() {
+      return this.accountSetting.disabled ? 'text-disabled' : '';
+    },
+    getDisabled() {
+      return !!this.accountSetting.disabled;
+    }
+  },
   watch: {}
 };
 </script>
