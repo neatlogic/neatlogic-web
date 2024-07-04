@@ -9,6 +9,7 @@
       </template>
       <template v-slot:topRight>
         <div class="div-btn-contain action-group" style="text-align:right">
+          <div class="action-item tsfont-storage" @click="draftAdd()">{{ $t('page.staging') }}</div>
           <span class="action-item tsfont-rotate-right" @click="reset">{{ $t('page.reset') }}</span>
           <span class="action-item tsfont-xitongpeizhi" @click.prevent="flowDataValid">{{ $t('page.validate') }}</span>
           <span class="action-item tsfont-save" @click="flowSave(false)">{{ $t('page.save') }}</span>
@@ -447,7 +448,7 @@ export default {
     this.$topoVm.destroy();//销毁topo里面注册的事件
   },
   destroyed() {
-    clearInterval(this.interval);
+    // clearInterval(this.interval);
     this.clearObservable();
   },
   methods: {
@@ -667,7 +668,8 @@ export default {
         this.$nextTick(() => {
           let data = Vm.getFlowData();
           this.draftPrevData = this.$utils.deepClone(data);
-          this.interval = setInterval(this.draftAdd, 30 * 1000);
+          //屏蔽自动保存草稿
+          // this.interval = setInterval(this.draftAdd, 30 * 1000);
           this.portData = this.$utils.deepClone(data);
         });
       }
