@@ -112,7 +112,7 @@ export default {
     validNodeData(href) {
       //校验节点数据
       if (href != '#nodeName') {
-        if (this.$refs.nodeSetting) {
+        if (this.$refs.nodeSetting && this.$refs.nodeSetting.nodeValid) {
           this.$refs.nodeSetting.nodeValid(href);
         }
       } else {

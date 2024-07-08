@@ -316,6 +316,33 @@ let valid = {
     }
     return validList;
   },
+  condition(nodeConfig, d, that) {
+    let allNextNodes = d.getAllNextNodes();
+    let nodeUuidList = allNextNodes.map(i => i.getUuid());
+    let isValid = true;
+    let validList = [];
+    let nodeData = nodeConfig.stepConfig || {};
+    let moveonConfigList = nodeData.moveonConfigList || [];
+
+    if (!that.$utils.isEmpty(moveonConfigList)) {
+      for (let i = 0; i < moveonConfigList.length; i++) {
+        let targetStepList = that.$utils.intersectionArr(nodeUuidList, moveonConfigList[i].targetStepList);
+        that.$set(moveonConfigList[i], 'targetStepList', targetStepList);
+        if (that.$utils.isEmpty(targetStepList)) {
+          isValid = false;
+        }
+      }
+    }
+
+    if (!isValid) {
+      validList.push({
+        name: $t('form.placeholder.pleaseselect', { target: $t('term.process.complatenode') }),
+        href: '#moveonConfigList'
+      });
+    }
+
+    return validList;
+  },
   handleDispatcherName(dispatcherName) {
     // 处理分派器名称 neatlogic.module.cmdb.workerdispatcher.handler.CmdbDispatcher 截取最后一个CmdbDispatcher
     const arr = (dispatcherName && dispatcherName.split('.')) || [];
