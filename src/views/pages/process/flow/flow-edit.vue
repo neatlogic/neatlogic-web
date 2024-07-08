@@ -1138,6 +1138,7 @@ export default {
       if (this.nodeConfig) {
         this.nodeChildren.splice(0);
         let nodeVm = this.$topoVm.getNodeByUuid(this.nodeConfig.uuid);
+        if (!nodeVm) return;
         let nodeChildren = nodeVm.getNextNodes().map(d => this.stepList.find(item => item.uuid == d.getUuid()));
         this.nodeChildren.push(...nodeChildren);
       }
