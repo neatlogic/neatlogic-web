@@ -12,7 +12,7 @@
     "legalrule": "模型规则：不满足模型属性和关系的相关约束的配置项则视为不合规；自定义规则：满足自定义规则的配置项视为不合规。",
     "networksegment": "输入格式：x.x.x.x/x",
     "multiport": "多个端口使用逗号分隔",
-    "community": "json格式，例如[\"public\",\"mary\"]"
+    "community": "团体字或snmpv3鉴权信息:[\"public\",{\"username\":\"monitor\",\"authPassword\":\"AuthPassword\",\"authProtocol\":\"sha\",\"privPassword\":\"DataEncryptPassword\",\"privProtocol\":\"aes\"}]"
   },
   "placeholder": {
     "name": "请输入名称",
