@@ -102,15 +102,13 @@ export default {
       this.formTagList = [];
       if (this.formUuid) {
         return this.$api.framework.form.getFormTagList({formUuid: this.formUuid}).then(res => {
-          if (res.Return) {
-            let tbodyList = res.Return.tbodyList || [];
+          if (res.Status === 'OK') {
+            const tbodyList = res.Return?.tbodyList || [];
             if (!this.$utils.isEmpty(tbodyList)) {
-              this.formTagList = tbodyList.map(item => {
-                return {
-                  text: item,
-                  value: item
-                };
-              });
+              this.formTagList = tbodyList.map(item => ({
+                text: item,
+                value: item
+              }));
             }
           }
         });
