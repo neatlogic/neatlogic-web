@@ -50,30 +50,37 @@
                     <img src="~@/resources/assets/images/itsm/btn-relevance.png" />
                   </span>
                   <span class="status-right" :class="{ 'input-border': border }">
-                    <template v-if="notify.paramType != 'date'">
-                      <TsFormSelect
-                        ref="notifySelect"
+                    <template v-if="notify.type == 'custom'">
+                      <TsFormInput
                         v-model="notify.value"
-                        search
-                        clearable
-                        filterable
-                        transfer
-                        allow-create
                         :placeholder="notify.label"
-                        :dataList="paramTypeConfig[notify.paramType]"
-                      >
-                      </TsFormSelect>
+                        border="border"
+                      ></TsFormInput>
                     </template>
-                    <template v-else>
-                      <TimeSelect
-                        v-model="notify.value"
-                        type="datetime"
-                        format="yyyy/MM/dd HH:mm:ss"
-                        :placeholder="notify.label"
-                        :dataList="paramTypeConfig[notify.paramType]"
-                        class="time-select-box"
-                      ></TimeSelect>
-                    </template>
+                    <TsFormSelect
+                      v-else-if="notify.paramType != 'date'"
+                      ref="notifySelect"
+                      v-model="notify.value"
+                      search
+                      clearable
+                      filterable
+                      transfer
+                      allow-create
+                      :readonly="true"
+                      :placeholder="notify.label"
+                      :dataList="paramTypeConfig[notify.paramType]"
+                    >
+                    </TsFormSelect>
+                    <TimeSelect
+                      v-else-if="notify.paramType == 'date'"
+                      v-model="notify.value"
+                      type="datetime"
+                      format="yyyy/MM/dd HH:mm:ss"
+                      :readonly="notify.type"
+                      :placeholder="notify.label"
+                      :dataList="paramTypeConfig[notify.paramType]"
+                      class="time-select-box"
+                    ></TimeSelect>
                   </span>
                 </div>
               </div>
@@ -97,12 +104,13 @@ export default {
   components: {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect')
+    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     policyId: {
       // 策略id
-      type: Number,
+      type: [Number, String],
       default: null
     },
     paramMappingList: {

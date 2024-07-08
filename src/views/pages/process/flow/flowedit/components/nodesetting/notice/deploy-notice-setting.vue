@@ -4,7 +4,7 @@
       <li class="mb-sm">
         <span class="pr-sm">{{ $t('page.notify') }}</span>
       </li>
-      <li>
+      <li class="flex-start">
         <span
           class="tip text-tip pr-xs"
         >{{ isActive == 1 ? $t('page.custom'): $t('term.framework.defaultpolicy') }}</span>
@@ -13,6 +13,7 @@
           v-model="isActive"
           :true-value="1"
           :false-value="0"
+          width="auto"
           @on-change="changeSwitch"
         ></TsFormSwitch>
         <Tooltip
