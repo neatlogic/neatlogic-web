@@ -3,6 +3,10 @@ import ports from './base/port-config.js';
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
 import { assignValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/assign-valid.js';
+import { isolationValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/isolation-valid.js';
+import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
+import { notifyValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
+
 export default {
   name: '自动处理',
   handler: 'automatic',
@@ -39,43 +43,51 @@ export default {
   //流程保存时校验数据
   valid({ node, graph }) {
     let validList = [];
-    const edges = graph.getConnectedEdges(node);
-    if (!edges || edges.length <= 0) {
-      validList.push({ msg: $t('message.process.nodeorphaned') });
-    } else {
-      const outgoingEdges = graph.getOutgoingEdges(node);
-      if (!outgoingEdges || outgoingEdges.length <= 0) {
-        validList.push({ msg: $t('message.process.nodenopostnode') });
-      }
-      const incomingEdges = graph.getIncomingEdges(node);
-      if (!incomingEdges || incomingEdges.length <= 0) {
-        validList.push({ msg: $t('message.process.nodenofrontnode') });
-      }
-    }
+    //校验孤岛节点
+    validList.push(...isolationValid.valid({ node, graph }));
+    //校验节点名称
+    validList.push(...nameValid.valid({ node, graph }));
     //校验分配设置
     validList.push(...assignValid.valid({ node, graph }));
+    //校验通知设置
+    validList.push(...notifyValid.valid({ node, graph }));
 
+    //校验自动处理节点
     const nodeConfig = node.getData();
-    if (!nodeConfig.name) {
+    let nodeData = nodeConfig.stepConfig || {};
+    if (!nodeData.automaticConfig || !nodeData.automaticConfig.requestConfig.integrationUuid) {
       validList.push({
-        msg: $t('form.validate.required', { target: $t('term.process.nodename') }),
-        href: '#nodeName'
+        type: 'error',
+        msg: $t('form.validate.required', { target: $t('term.process.externalcall') }),
+        href: '#requestIntegration'
       });
     }
-    if (!utils.nameRegularValid(nodeConfig.name)) {
+    if (!nodeData.automaticConfig || !nodeData.automaticConfig.requestConfig.failPolicy) {
       validList.push({
-        msg: $t('term.process.noderultvalid'),
-        href: '#nodeName'
+        type: 'error',
+        msg: $t('form.validate.required', { target: $t('page.failurestrategy') }),
+        href: '#failPolicy'
       });
     }
-    if (nodeConfig?.stepConfig?.notifyPolicyConfig?.isCustom && nodeConfig?.stepConfig?.notifyPolicyConfig?.policyId) {
-      // 【通知策略】为自定义通知策略，必填
-      validList.push({
-        msg: $t('form.validate.required', { target: $t('page.notificationstrategy') }),
-        href: '#NoticeSetting'
-      });
+    if (nodeData.automaticConfig && nodeData.automaticConfig.callbackConfig && nodeData.automaticConfig.callbackConfig.type == 'interval') {
+      let callbackConfig = nodeData.automaticConfig.callbackConfig.config;
+      if (callbackConfig) {
+        if (!callbackConfig.integrationUuid) {
+          validList.push({
+            type: 'error',
+            msg: $t('form.validate.required', { target: $t('term.process.externalcall') }),
+            href: '#callbackintegration'
+          });
+        }
+        if (!callbackConfig.interval) {
+          validList.push({
+            type: 'error',
+            msg: $t('form.validate.required', { target: $t('page.timeinterval') }),
+            href: '#callbackInterval'
+          });
+        }
+      }
     }
-
     return validList;
   }
 };

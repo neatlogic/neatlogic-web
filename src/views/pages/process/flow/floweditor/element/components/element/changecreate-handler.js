@@ -3,11 +3,12 @@ import ports from './base/port-config.js';
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
 import { assignValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/assign-valid.js';
-import {isolationValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/isolation-valid.js';
-import {nameValid} from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
-import {notifyValid} from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
+import { isolationValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/isolation-valid.js';
+import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
+import { notifyValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
 export default {
-  name: '普通节点',
+  name: '变更创建',
+  handler: 'changecreate',
   type: 'process',
   isVue: true, //需要声明是vue组件
   config: {
@@ -57,12 +58,37 @@ export default {
         }
       }
     }
+
     if (!isStartNode) {
-    //校验分配设置
+      //校验分配设置
       validList.push(...assignValid.valid({ node, graph }));
     }
     //校验通知设置
     validList.push(...notifyValid.valid({ node, graph }));
+
+    //校验changecreate组件
+    const allNextNodes = view.getAllNextNodes(node);
+    const changeHandlerList = allNextNodes.filter(p => p.getData() && p.getData().handler === 'changehandle');
+    if (changeHandlerList.length === 0) {
+      validList.push({
+        type: 'error',
+        msg: $t('term.process.changeexistinpairsvalid')
+      });
+    } else {
+      let selectChangeList = changeHandlerList.filter(c => {
+        return c.getData() && c.getData()['stepConfig'] && c.getData()['stepConfig'].linkedChange && c.getData()['stepConfig'].linkedChange === node.id;
+      });
+      if (selectChangeList.length === 0) {
+        validList.push({
+          type: 'error',
+          msg: $t('term.process.changecreatewithouthandler')
+        });
+      } else if (selectChangeList.length > 1) {
+        validList.push({
+          msg: $t('term.process.changeonlyonerelvalid')
+        });
+      }
+    }
 
     return validList;
   }

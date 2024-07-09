@@ -34,7 +34,7 @@
         </ul>
       </template>
       <template v-slot:content>
-        <div ref="graph" style="height: 100%; position: relative">
+        <div ref="graph" style="height: 100%" class="col-center-contain col-contain tsscroll-container bg-block">
           <Card
             v-if="validList && validList.length > 0"
             class="radius-lg"
@@ -64,6 +64,8 @@
             @ready="ready"
             @node:selected="nodeSelected"
             @node:unselected="nodeUnSelected"
+            @node:removed="nodeRemoved"
+            @edge:selected="edgeSelected"
           ></FlowEditor>
         </div>
       </template>
@@ -100,19 +102,19 @@
             <TabPane :label="$t('term.process.scoresetting')" name="scoresetting" class="tab-content">
               <ScoreSetting ref="scoreSetting" :scoreConfig="scoreConfig" :canvasNodeList="stepList"></ScoreSetting>
             </TabPane>
-            <TabPane v-if="currentNodeData" :label="$t('term.process.nodesetting')" name="nodesetting">
+            <TabPane v-if="currentNodeData && currentNode" :label="$t('term.process.nodesetting')" name="nodesetting">
               <FlowNodeSetting
                 :key="currentNodeData.uuid"
                 ref="nodeSetting"
                 :formhandlerList="formhandlerList"
-                :prevNodes="prevNodes"
-                :allPrevNodes="allPrevNodes"
+                :prevNodes="getAllPrevNodesData(currentNode, { include: null, exclude: ['start', 'end', 'condition', 'distributary'] })"
+                :allPrevNodes="getAllPrevNodesData(currentNode)"
                 :isStart="isNodeStart"
                 :nodeChildren="nodeChildren"
                 :nodeConfig="currentNodeData"
                 :formConfig="formConfig"
                 :stepList="stepList"
-                :nodeAllLinksList="nodeAllLinksList"
+                :nodeAllLinksList="getEdgeDataList(currentNode)"
                 @toFlowSetting="toFlowSetting"
                 @setNodeName="setNodeName"
                 @updateNode="updateNode"
@@ -180,6 +182,7 @@ export default {
       type: 'slider',
       flowName: '',
       seletedList: {},
+      currentNode: null, //当前选中节点对象
       currentNodeData: null, //当前选中节点的数据
       currentLinkData: null, //当前选中连线数据
       scoreConfig: {
@@ -260,6 +263,8 @@ export default {
     this.clearObservable();
   },
   methods: {
+    //新的开始
+   
     //拖拽完成后验证节点是否允许生效，也可以用来做callback使用
     validateNode(node) {
       //触发相关computed计算
@@ -268,7 +273,7 @@ export default {
         this.isNodeReady = true;
       });
     },
-    //新的开始
+   
     test() {
       console.log(JSON.stringify(this.graph.toJSON()));
     },
@@ -309,7 +314,7 @@ export default {
           const node = this.graph.getCellById(step.uuid);
           if (element && node) {
             if (element.valid && typeof element.valid === 'function') {
-              const vs = element.valid({ node: node, graph: this.graph });
+              const vs = element.valid({ node: node, graph: this.graph, view: this });
               if (vs && vs.length > 0) {
                 vs.forEach(v => {
                   validList.push({
@@ -453,55 +458,215 @@ export default {
         this.activeTab = 'flowsetting';
       }
     },
-    nodeUnSelected() {
+    nodeRemoved() {
+      this.isNodeReady = false;
       this.$nextTick(() => {
-        if (this.activeTab === 'nodesetting') {
-          this.activeTab = 'flowsetting';
-          this.currentNodeData = null;
-        }
-        this.isSelected = false;
+        this.isNodeReady = true;
+      });
+    },
+    nodeUnSelected() {
+      //this.$nextTick(() => {
+      if (this.activeTab === 'nodesetting') {
+        this.activeTab = 'flowsetting';
+      }
+      this.currentNodeData = null;
+      this.currentNode = null;
+      this.isSelected = false;
+      //});
+    },
+    edgeSelected(edge) {
+      //切换前先保存当前选中节点设置
+      this.updateNodeSetting();
+      //先清空选中数据，强制刷新相关组件
+      this.isSelected = false;
+      this.currentNode = null;
+      this.currentNodeData = null;
+      this.currentLinkData = null;
+      this.$nextTick(() => {
+        this.currentLinkData = edge.getData();
+        this.isSelected = true;
       });
     },
     nodeSelected(node) {
+      //切换前先保存当前选中节点设置
+      this.updateNodeSetting();
+      //先清空选中数据，强制刷新相关组件
       this.isSelected = false;
-      if (node) {
-        //显示节点配置
-        this.showNodeSetting(node.getData());
-
-        //组装links数据，需要和老数据保持一致，关键是config中的结构
-        const edges = this.graph.getConnectedEdges(node);
-        const links = [];
-        edges.forEach(edge => {
-          const link = { config: { name: edge.getProp('name'), type: edge.getProp('type'), source: edge.getSourceCellId(), target: edge.getTargetCellId() } };
-          links.push(link);
-        });
-        this.getNodeAllLinksList(links);
-        //触发计算
-        this.$nextTick(() => {
-          this.isSelected = true;
-        });
-      }
+      this.currentNode = null;
+      this.currentNodeData = null;
+      this.currentLinkData = null;
+      this.$nextTick(() => {
+        this.currentNode = node;
+        this.currentNodeData = node.getData();
+        if (this.activeTab !== 'nodesetting') {
+          this.activeTab = 'nodesetting';
+        }
+        this.isSelected = true;
+      });
     },
     /**
-     * 获取给定节点的前序节点列表
+     * 获取节点相关的边数据列表
+     *
+     * @param node 节点对象
+     * @returns 返回一个边数据列表的数组，每个元素包含边的配置信息
+     */
+    getEdgeDataList(node) {
+      const linkList = [];
+      //组装links数据，需要和老数据保持一致，关键是config中的结构
+      const edges = this.graph.getConnectedEdges(node);
+      edges.forEach(edge => {
+        linkList.push({
+          config: {
+            name: edge.getProp('name'),
+            type: edge.getProp('type'),
+            source: edge.getSourceCellId(),
+            target: edge.getTargetCellId()
+          }
+        });
+      });
+      return linkList;
+    },
+    /**
+     * 获取指定节点的前置节点数据列表
+     *
+     * @param node 指定的节点
+     * @returns 返回前置节点数据列表
+     */
+    getPrevNodesData(node, { include, exclude } = {}) {
+      let prevNodeList = [];
+      const nodeList = this.getPrevNodes(node, { include, exclude });
+      nodeList.forEach(node => {
+        prevNodeList.push(node.getData());
+      });
+      return prevNodeList;
+    },
+    /**
+     * 获取指定节点及其之前所有节点的数据
+     *
+     * @param node 要获取数据的节点
+     * @returns 返回一个数组，包含指定节点及其之前所有节点的数据
+     */
+    getAllPrevNodesData(node, { include, exclude } = {}) {
+      const prevNodeList = this.getAllPrevNodes(node, { include, exclude });
+      return prevNodeList.map(n => n.getData());
+    },
+    /**
+     * 获取给定节点的所有前序节点列表
      *
      * @param node 节点对象或节点ID
      * @returns 前序节点列表
      */
-    getPrevNodes(node) {
-      if (typeof node === 'string') {
-        node = this.graph.getCellById(node);
+    getAllPrevNodes(node, { include, exclude }) {
+      let prevNodeList = [];
+      if (node) {
+        prevNodeList = this.getPrevNodes(node, { include, exclude });
+        if (prevNodeList.length > 0) {
+          const nodeSet = new Set();
+          prevNodeList.forEach(n => {
+            nodeSet.add(n.id);
+          });
+          let size = prevNodeList.length;
+          for (let i = 0; i < size; i++) {
+            const n = prevNodeList[i];
+            const tmpList = this.getPrevNodes(n, { include, exclude });
+            tmpList.forEach(tmp => {
+              //判断新的关系是否存在，不存在则加入nodeList继续循环
+              if (!nodeSet.has(tmp.id) && node.id !== tmp.id) {
+                nodeSet.add(tmp.id);
+                prevNodeList.push(tmp);
+              }
+            });
+            size = prevNodeList.length; //重新修正新的size
+          }
+        }
       }
+      return prevNodeList;
+    },
+    /**
+     * 获取给定节点的所有后续节点的数据
+     *
+     * @param node 给定的节点
+     * @returns 返回一个数组，包含给定节点的所有后续节点的数据
+     */
+    getAllNextNodesData(node) {
+      const nextNodeList = this.getAllNextNodes(node);
+      return nextNodeList.map(n => n.getData());
+    },
+    /**
+     * 获取给定节点的所有后续节点
+     *
+     * @param node 给定的节点
+     * @returns 返回给定节点的所有后续节点数组
+     */
+    getAllNextNodes(node) {
+      let nextNodeList = [];
+      nextNodeList = this.getNextNodes(node);
+      if (nextNodeList.length > 0) {
+        const nodeSet = new Set();
+        nextNodeList.forEach(n => {
+          nodeSet.add(n.id);
+        });
+        let size = nextNodeList.length;
+        for (let i = 0; i < size; i++) {
+          const n = nextNodeList[i];
+          const tmpList = this.getNextNodes(n);
+          tmpList.forEach(tmp => {
+            //判断新的关系是否存在，不存在则加入nodeList继续循环
+            if (!nodeSet.has(tmp.id) && node.id !== tmp.id) {
+              nodeSet.add(tmp.id);
+              nextNodeList.push(tmp);
+            }
+          });
+          size = nextNodeList.length; //重新修正新的size
+        }
+      }
+      return nextNodeList;
+    },
+    /**
+     * 获取给定节点的前序节点列表,exclude优先级高于include
+     *
+     * @param node 节点对象或节点ID
+     * @returns 前序节点列表
+     */
+    getPrevNodes(node, { include, exclude } = {}) {
       const prevNodeList = [];
       if (node) {
         let incommingEdges = this.graph.getIncomingEdges(node);
         incommingEdges = incommingEdges && incommingEdges.filter(d => d.getProp('type') === 'forward');
         incommingEdges &&
           incommingEdges.forEach(d => {
-            prevNodeList.push(d.getSourceCell());
+            const source = d.getSourceCell();
+            let need = false;
+            if (!include || include.includes(source.getProp('handler'))) {
+              need = true;
+            }
+            if (exclude && exclude.includes(source.getProp('handler'))) {
+              need = false;
+            }
+            if (need) {
+              prevNodeList.push(source);
+            }
           });
       }
       return prevNodeList;
+    },
+    /**
+     * 获取指定节点的下一个节点列表
+     *
+     * @param node 目标节点
+     * @returns 返回包含下一个节点对象的数组
+     */
+    getNextNodes(node) {
+      const nextNodeList = [];
+      if (node) {
+        let outgoingEdges = this.graph.getOutgoingEdges(node);
+        outgoingEdges = outgoingEdges && outgoingEdges.filter(d => d.getProp('type') === 'forward');
+        outgoingEdges &&
+          outgoingEdges.forEach(d => {
+            nextNodeList.push(d.getTargetCell());
+          });
+      }
+      return nextNodeList;
     },
     /**
      * 更新节点设置，由于节点设置组件没有监听数据变化，所以需要在切换页签，点击校验，点击保存等需要获取数据的时候手动触发
@@ -514,10 +679,6 @@ export default {
         if (node) {
           node.setData(nodeConfig);
         }
-        /*const index = this.stepList.findIndex(item => item.uuid === nodeConfig.uuid);
-        if (index > -1) {
-          this.$set(this.stepList, index, nodeConfig);
-        }*/
       }
     },
     setNodeName(val) {
@@ -700,17 +861,19 @@ export default {
 
     validItemClick(item) {
       if (item.focus) {
+        item.focus();
         if (this.validList.length > 0) {
           this.validFlow();
         }
-        item.focus();
       }
-      if (item.href) {
-        this.$nextTick(() => {
-          document.querySelector(item.href) && document.querySelector(item.href).scrollIntoView(true);
-          this.$refs.nodeSetting.validNodeData(item.href);
-        });
-      }
+      this.$nextTick(() => {
+        if (item.href) {
+          if (this.$refs.nodeSetting) {
+            this.$refs.nodeSetting.validNodeData(item.href);
+            this.$utils.jumpTo(item.href, 'instant', this.$refs['codeContent']);
+          }
+        }
+      });
     },
     getFlowData(action) {
       // 获取整个流程数据
@@ -1054,7 +1217,6 @@ export default {
         });
       }
     }
-    
   },
   computed: {
     automaticList() {
@@ -1094,33 +1256,6 @@ export default {
       }
       return false;
     },
-    //当前节点的所有前置节点数据（注意：是数据！）
-    allPrevNodes() {
-      let prevNodeList = [];
-      if (this.isSelected && this.currentNodeData) {
-        prevNodeList = this.getPrevNodes(this.currentNodeData.uuid);
-        if (prevNodeList.length > 0) {
-          const nodeSet = new Set();
-          prevNodeList.forEach(n => {
-            nodeSet.add(n.id);
-          });
-          let size = prevNodeList.length;
-          for (let i = 0; i < size; i++) {
-            const n = prevNodeList[i];
-            const tmpList = this.getPrevNodes(n);
-            tmpList.forEach(tmp => {
-              //判断新的关系是否存在，不存在则加入nodeList继续循环
-              if (!nodeSet.has(tmp.id) && this.currentNodeData.uuid !== tmp.id) {
-                nodeSet.add(tmp.id);
-                prevNodeList.push(tmp);
-              }
-            });
-            size = prevNodeList.length; //重新修正新的size
-          }
-        }
-      }
-      return prevNodeList.map(d => d.getData());
-    },
     //当前节点的前置节点
     prevNodes() {
       let prevNodeList = [];
@@ -1153,9 +1288,10 @@ export default {
       if (this.isSelected && this.currentNodeData) {
         const node = this.graph.getCellById(this.currentNodeData.uuid);
         const edges = this.graph.getOutgoingEdges(node);
-        edges && edges.forEach(edge => {
-          nextNodeData.push(edge.getTargetCell().getData());
-        });
+        edges &&
+          edges.forEach(edge => {
+            nextNodeData.push(edge.getTargetCell().getData());
+          });
       }
       return nextNodeData;
     },

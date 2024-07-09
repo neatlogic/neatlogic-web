@@ -1,6 +1,7 @@
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
 const assignValid = {
+  //校验节点分派策略
   valid: ({ node, graph }) => {
     const validList = [];
     const nodeData = node.getData()['stepConfig'] || {};
