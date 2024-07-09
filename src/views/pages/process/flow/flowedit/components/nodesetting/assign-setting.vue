@@ -51,6 +51,7 @@
                             textName="name"
                             valueName="uuid"
                             border="border"
+                            :firstSelect=" false"
                             :validateList="validateSelectList"
                             transfer
                             style="flex:1;"
@@ -132,6 +133,7 @@
                           textName="name"
                           valueName="uuid"
                           border="border"
+                          :firstSelect=" false"
                           :validateList="validateSelectList"
                           transfer
                         ></TsFormSelect>

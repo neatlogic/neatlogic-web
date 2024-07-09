@@ -21,8 +21,8 @@
       </div>
       <div class="content radius-sm bg-grey-hover">
         <div class="step border-color overflow">
-          <span class="title text-grey">{{ $t('term.process.associatedsteps') }}</span>
-          <span v-for="(citem, cindex) in item.processStepUuidList" :key="cindex" class="name text-default">{{ correlationList[citem] }}</span>
+          <span class="title text-grey" :class="$utils.isEmpty(item.processStepUuidList)?'text-error':''">{{ $t('term.process.associatedsteps') }}</span>
+          <span v-for="(citem, cindex) in item.processStepUuidList" :key="cindex" class="name text-default">{{ getNodeName(citem) }}</span>
         </div>
 
         <div class="step border-color overflow">
@@ -623,8 +623,6 @@ export default {
   data() {
     let _this = this;
     return {
-      //关联步骤下拉框数据
-      correlationList: [],
       calculateHandlerList: [], // 计算规则列表
       nodeList: [],
       validateSetting: {
@@ -849,6 +847,12 @@ export default {
       return calculateName;
     },
     slaDiashow: function(id, item) {
+      const stepList = this.canvasNodeList.filter((item) => item.type == 'process'); // 关联步骤不实时显示问题
+      this.slaDialog.formData.forEach(item => {
+        if (item.name == 'step') {
+          item.dataList = stepList;
+        } 
+      });
       this.slaDialog.show = !this.slaDialog.show;
       let uuid = id;
       if (item !== undefined) {
@@ -1409,6 +1413,23 @@ export default {
           }
         }
       }
+    },
+    valid() {
+      let isValid = true;
+      if (!this.$utils.isEmpty(this.slaList)) {
+        const nodeUuidList = this.canvasNodeList.map(item => item.uuid);
+        this.slaList.forEach(item => {
+          // 验证关联步骤
+          if (!this.$utils.isEmpty(item.processStepUuidList)) {
+            let processStepUuidList = this.$utils.intersectionArr(nodeUuidList, item.processStepUuidList);
+            this.$set(item, 'processStepUuidList', processStepUuidList);
+          }
+          if (item.processStepUuidList.length == 0) {
+            isValid = false;
+          }
+        });
+      }
+      return isValid;
     }
   },
   computed: {
@@ -1462,6 +1483,16 @@ export default {
         }
         return config;
       };
+    },
+    getNodeName() {
+      return (uuid) => { //节点名称
+        let name = '';
+        let findNode = this.canvasNodeList.find(d => d.uuid == uuid);
+        if (findNode) {
+          name = findNode.name;
+        }
+        return name;
+      };
     }
   },
 
@@ -1493,20 +1524,13 @@ export default {
     canvasNodeList: {
       handler: function(newVal) {
         this.nodeList = newVal.filter(d => d.type == 'process');
-        let newArr = [];
-        let textList = {};
-        this.nodeList.forEach(item => {
-          let arr = {
+        var newObj = this.slaDialog.formData.find(d => d.name === 'step');
+        newObj.dataList = this.nodeList.map(item => {
+          return {
             name: item.name,
             uuid: item.uuid
           };
-          textList[item.uuid] = item.name;
-          newArr.push(arr);
         });
-        this.correlationList = textList;
-        var newObj = this.slaDialog.formData.find(d => d.name === 'step');
-        newObj.dataList.splice(0);
-        newObj.dataList.push(...newArr);
       },
       deep: true
     },
