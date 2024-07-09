@@ -7,7 +7,8 @@
       class="pb-nm"
     ></StepLogCommon>
     <div v-if="item.processTaskStepData && !$utils.isEmpty(item.processTaskStepData.requestAudit)" class="request-audit">
-      <div v-if="item.processTaskStepData.isStepUser == 1">
+      <!-- 步骤列表中不通过当前用户是否是自动处理步骤的处理人来控制是否显示自动处理步骤信息 -->
+      <div>
         <div class="pb-sm">
           <span class="pr-nm">{{ $t('term.process.callrecord') }}</span>
           <CommonStatus
