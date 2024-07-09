@@ -55,6 +55,8 @@ let valid = {
       });
     }
     if (nodeData && nodeData.workerPolicyConfig && nodeData.workerPolicyConfig.policyList) {
+      const allPreNodes = d.getAllPrevNodes();
+      const preNodeUuidList = allPreNodes.map(i => i.getUuid());
       let policyList = nodeData.workerPolicyConfig.policyList;
       let isChecked = policyList && policyList.find(p => p.isChecked == 1) ? 1 : 0; //判断分配处理人是否有选中的项
       let errorText = $t('form.validate.required', { target: $t('term.process.poliyuser') });
@@ -83,14 +85,29 @@ let valid = {
                 } else {
                   policyList[i].config.attributeUuidList = [];
                 }
-              }
-              if (type == 'prestepassign' && !utils.isEmpty(policyList[i].config[value])) {
+              } else if (type == 'prestepassign' && !utils.isEmpty(policyList[i].config[value])) {
+                //由前置步骤处理人指定，判断是否包含前置步骤
                 for (let p = 0; p < policyList[i].config[value].length; p++) {
-                  if (!policyList[i].config[value][p].uuid) {
+                  let obj = policyList[i].config[value][p];
+                  if (obj.uuid && !preNodeUuidList.includes(obj.uuid)) {
+                    that.$set(obj, 'uuid', '');
+                  }
+                  if (!that.$utils.isEmpty(obj.condition)) {
+                    let condition = that.$utils.intersectionArr(preNodeUuidList, obj.condition);
+                    that.$set(obj, 'condition', condition);
+                  }
+                  if (!obj.uuid) {
                     isChecked = 0;
                     errorText = keyConfig[type].text;
-                    break;
-                  }
+                  } 
+                }
+              } else if (type === 'copy' && policyList[i].config[value]) {
+                //复制前置步骤处理人，判断是否包含前置步骤
+                if (!preNodeUuidList.includes(policyList[i].config[value])) {
+                  policyList[i].config[value] = '';
+                  isChecked = 0;
+                  errorText = keyConfig[type].text;
+                  break;
                 }
               } else if (utils.isEmpty(policyList[i].config[value])) {
                 isChecked = 0;
