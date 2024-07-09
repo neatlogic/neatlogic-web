@@ -264,7 +264,17 @@ function nodeValid(allNode) {
       });
     }
   }
-
+  //校验sla时效设置
+  var isSlaValid = Vm.$refs.slaSetting && Vm.$refs.slaSetting.valid ? Vm.$refs.slaSetting.valid() : true;
+  if (!isSlaValid) {
+    validList.push({
+      type: 'error',
+      msg: '【' + $t('term.process.effectivenesstimesetting') + '】' + $t('form.validate.required', {target: $t('term.process.associatedsteps')}),
+      focus() {
+        Vm.activeTab = 'tacticssetting';
+      }
+    });
+  }
   allNode.forEach(vm => {
     let valids = vm.valid() || [];
     let nodeConfig = Vm.stepList.find(item => item.uuid == vm.getUuid());
