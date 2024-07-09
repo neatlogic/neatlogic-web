@@ -26,11 +26,11 @@
         {{ $t('page.relevance') }}
       </div>
     </div>
-    <div v-if="moveonConfigList && moveonConfigList.length > 0">
+    <div v-if="moveonConfigList && moveonConfigList.length > 0" id="moveonConfigList">
       <div v-for="(item, index) in moveonConfigList" :key="index" class="rule-list">
         <div class="list">
           <div class="top">
-            <div class="text-grey overflow">
+            <div class="text-grey overflow" :class="$utils.isEmpty(item.targetStepList)?'text-error':''">
               <span v-html="item.type == 'negative' ? $t('term.process.nottransfer') : $t('term.process.transferto')"></span>
               <span class="ml-xs text-default" :title="getTargetStepList(item.targetStepList)">
                 <b>{{ getTargetStepList(item.targetStepList) }}</b>
@@ -314,6 +314,7 @@ export default {
           multiple: true,
           valueName: 'uuid',
           textName: 'name',
+          firstSelect: false,
           validateList: [
             {
               name: 'required',
@@ -769,6 +770,13 @@ export default {
       let data = {
         formTag: this.formTag
       };
+      if (!this.$utils.isEmpty(this.moveonConfigList)) {
+        let nodeUuidList = this.newChildrenNode.map(item => item.uuid);
+        this.moveonConfigList.forEach(item => {
+          const targetStepList = this.$utils.intersectionArr(nodeUuidList, item.targetStepList);
+          this.$set(item, 'targetStepList', targetStepList);
+        });
+      }
       data.moveonConfigList = this.moveonConfigList;
       return data;
     },

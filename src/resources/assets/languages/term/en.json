@@ -599,7 +599,8 @@
     "workcentertheadppolicy": "Control the default header order and display of this classification",
     "exportparameters": "[native/setenv] Export parameters, and set the scope of the environment variable to all nodes",
     "eoaviewstep": "View steps during approval",
-    "changecreatewithouthandler": "Please create a node associated with the change processing node for the change"
+    "changecreatewithouthandler": "Please create a node associated with the change processing node for the change",
+    "complatenode": "Transfer nodes"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

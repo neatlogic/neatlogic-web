@@ -27,7 +27,7 @@
     "legalrule": "Model rules: configuration items that do not satisfy the relevant constraints of model attributes and relationships are considered non-compliant; custom rules: configuration items that meet custom rules are considered non-compliant.",
     "networksegment": "Input format: x.x.x.x/x",
     "multiport": "Multiple ports separated by commas",
-    "community": "json format, such as [\"public\",\"mary\"]"
+    "community": "Group password or SNMPv3 authentication information, such as [\"public\",{\"username\":\"monitor\",\"authPassword\":\"AuthPassword\",\"authProtocol\":\"sha\",\"privPassword\":\"DataEncryptPassword\",\"privProtocol\":\"aes\"}]"
   },
   "placeholder": {
     "name": "Please enter a name",
