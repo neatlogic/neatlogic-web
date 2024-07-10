@@ -698,8 +698,8 @@ export default {
           }
         });
         this.graph.on('node:mouseenter', ({ node }) => {
-          this.graph.disableHistory();
-          const nodeList = this.graph.getNodes();
+          //this.graph.disableHistory();
+          /*const nodeList = this.graph.getNodes();
           nodeList.forEach(n => {
             const ports = n.getPorts() || [];
             ports.forEach(port => {
@@ -707,12 +707,18 @@ export default {
                 class: 'port'
               });
             });
+          });*/
+          /*const ports = node.getPorts() || [];
+          ports.forEach(port => {
+            node.setPortProp(port.id, 'attrs/circle', {
+              class: 'port'
+            });
           });
-          this.graph.enableHistory();
+          this.graph.enableHistory();*/
         });
         this.graph.on('node:mouseleave', ({ node }) => {
-          this.graph.disableHistory();
-          const nodeList = this.graph.getNodes();
+          //this.graph.disableHistory();
+          /*const nodeList = this.graph.getNodes();
           nodeList.forEach(n => {
             const ports = n.getPorts() || [];
             ports.forEach(port => {
@@ -720,8 +726,14 @@ export default {
                 class: 'port-hidden'
               });
             });
-          });
-          this.graph.enableHistory();
+          });*/
+          /*const ports = node.getPorts() || [];
+          ports.forEach(port => {
+            node.setPortProp(port.id, 'attrs/circle', {
+              class: 'port-hidden'
+            });
+          });*/
+          //this.graph.enableHistory();
         });
         this.graph.on('node:selected', ({ node }) => {
           //创建改变形状选中框
