@@ -130,11 +130,7 @@ export default {
         this.unHighlightNode(cell);
       });
     },
-    unHighlightNode(nodeId) {
-      const node = this.graph.getCellById(nodeId);
-      if (!node) {
-        return;
-      }
+    unHighlightNode(node) {
       if (node.getAttrs()['fo']) {
         node.setAttrByPath('fo/filter', null);
       } else if (node.getAttrs()['body']) {
@@ -143,18 +139,14 @@ export default {
         node.setAttrByPath('line/filter', null);
       }
     },
-    highlightNode(nodeId, color) {
-      const node = this.graph.getCellById(nodeId);
-      if (!node) {
-        return;
-      }
-      this.unHighlightNode(nodeId);
+    highlightNode(node, color) {
+      this.unHighlightNode(node);
       if (node.getAttrs()['fo']) {
         node.setAttrByPath('fo/filter', {
           name: 'outline',
           args: {
             color: color,
-            width: 10,
+            width: 4,
             margin: 0,
             opacity: 0.2
           }
@@ -164,7 +156,7 @@ export default {
           name: 'outline',
           args: {
             color: color,
-            width: 10,
+            width: 4,
             margin: 0,
             opacity: 0.2
           }
@@ -174,7 +166,7 @@ export default {
           name: 'outline',
           args: {
             color: color,
-            width: 10,
+            width: 4,
             margin: 0,
             opacity: 0.2
           }
@@ -798,15 +790,16 @@ export default {
               }
             });
           }
-          edge.addTools({
+          this.highlightNode(edge, '#1670f0');
+          /*edge.addTools({
             name: 'boundary',
             args: {
+              padding: 5,
               attrs: {
-                stroke: '#FEB663',
-                strokeWidth: 2
+                class: 'boundary-edge'
               }
             }
-          });
+          });*/
           this.selectedCell = edge;
           this.$emit('edge:selected', edge);
           this.graph.enableHistory();
@@ -819,6 +812,7 @@ export default {
           if (edge.hasTool('vertices')) {
             edge.removeTool('vertices');
           }
+          this.unHighlightNode(edge);
           if (edge.hasTool('boundary')) {
             edge.removeTool('boundary');
           }

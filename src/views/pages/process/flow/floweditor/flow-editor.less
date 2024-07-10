@@ -41,6 +41,11 @@
     stroke-width: 2;
     stroke: @info-color;
   }
+  .boundary-edge {
+    fill: transparent;
+    stroke-width: 1;
+    stroke: @primary-color;
+  }
   .boundary {
     fill: @primary-color;
     stroke-width: 1;
@@ -71,7 +76,7 @@
     fill: transparent;
     stroke: transparent;
   }
-  .x6-edge {
+  /*.x6-edge {
     transition:
       stroke-width 0.2s,
       stroke 0.2s;
@@ -81,7 +86,7 @@
     path:nth-child(2) {
       filter: drop-shadow(0 0 3px @border-color);
     }
-  }
+  }*/
   .linktextbackground {
     flood-color: @bg-color;
   }
@@ -89,11 +94,11 @@
     filter: drop-shadow(0 0 5px @primary-color);
   }*/
 
-  .x6-edge-selected {
+  /*.x6-edge-selected {
     path {
       filter: drop-shadow(0 0 3px @border-color);
     }
-  }
+  }*/
   .custom-tools {
     fill: rgba(0, 0, 0, 0);
     stroke: @border-color;
