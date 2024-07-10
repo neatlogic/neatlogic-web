@@ -27,6 +27,10 @@ export default {
     assignable: true, //是否需要分配用户
     needformscene: true //是否需要表单场景
   },
+  oldSetting: {
+    shape: 'L-rectangle:R-rectangle',
+    icon: '#tsfont-changing'
+  },
   validateEdge({ edge, editor, sourceCell, targetCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(targetCell, 'forward');
     if (allNextNodeIdList.has(sourceCell.id)) {

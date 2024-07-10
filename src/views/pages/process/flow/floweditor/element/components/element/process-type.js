@@ -3,12 +3,16 @@ import ports from './base/port-config.js';
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
 import { assignValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/assign-valid.js';
-import {isolationValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/isolation-valid.js';
-import {nameValid} from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
-import {notifyValid} from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
+import { isolationValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/isolation-valid.js';
+import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
+import { notifyValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
 export default {
   name: '普通节点',
   type: 'process',
+  oldSetting: {//转换成旧数据时使用
+    shape: 'L-rectangle:R-rectangle',
+    icon: '#tsfont-circle-o'
+  },
   isVue: true, //需要声明是vue组件
   config: {
     component: template,
@@ -58,7 +62,7 @@ export default {
       }
     }
     if (!isStartNode) {
-    //校验分配设置
+      //校验分配设置
       validList.push(...assignValid.valid({ node, graph }));
     }
     //校验通知设置
