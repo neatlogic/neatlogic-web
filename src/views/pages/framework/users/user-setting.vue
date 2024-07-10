@@ -140,7 +140,7 @@
                 <DefaultpageManage />
               </div>
             </TabPane>
-            <TabPane v-if="hasAuth" :label="$t('term.framework.missionauth')" name="task">
+            <TabPane v-if="canShow" :label="$t('term.framework.missionauth')" name="task">
               <TaskAuthorization></TaskAuthorization>
             </TabPane>
           </Tabs>
@@ -527,6 +527,12 @@ export default {
     hasAuth() {
       //任务授权权限
       return this.$store.getters.userAuthList.includes('PROCESS_BASE');
+    },
+    moduleList() {
+      return this.$store.state.topMenu.moduleList;
+    },
+    canShow() {
+      return this.hasAuth && !this.$utils.isEmpty(this.moduleList) && this.moduleList.some((v) => v.moduleId == 'process');
     }
   }
 };
