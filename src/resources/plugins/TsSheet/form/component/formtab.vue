@@ -25,7 +25,7 @@
           <div v-if="tabCompomentList(tab.value) && tabCompomentList(tab.value).length > 0" :class="{ 'bg-op': config.type === 'card' }">
             <div v-for="(component, index) in tabCompomentList(tab.value)" :key="component.uuid">
               <ChildFormItem
-                :ref="'childFormItem_' + component.uuid + '#' + tab.value "
+                :ref="'childFormItem_' + component.uuid + '##' + tab.value "
                 class="padding-xs"
                 :formItem="component"
                 :formData="formData"
@@ -126,8 +126,9 @@ export default {
         for (let name in this.$refs) {
           if (this.$refs[name]) {
             // 获取tab的name
-            const tabValue = name.split('#')[1];
-
+            const refParts = name.split('##');
+            if (refParts.length !== 2) continue;
+            const tabValue = refParts[1];
             let formitem = this.$refs[name];
             if (this.$refs[name] instanceof Array) {
               formitem = this.$refs[name][0];
@@ -317,11 +318,7 @@ export default {
             },
             [
               h('span', {
-                class: {
-                  'tsfont-warning-s': true,
-                  'mr-xs': true,
-                  'text-error': true
-                }
+                class: 'tsfont-warning-s pr-xs text-error'
               }),
               h(
                 'div',
