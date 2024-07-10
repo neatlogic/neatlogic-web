@@ -9,13 +9,13 @@
       </template>
       <template v-slot:topRight>
         <div class="div-btn-contain action-group" style="text-align: right">
-          <span class="action-item tsfont-rotate-right" @click="saveFlow()">TEST</span>
-          <span class="action-item tsfont-rotate-right" @click="reset">{{ $t('page.reset') }}</span>
-          <span class="action-item tsfont-xitongpeizhi" @click.prevent="flowDataValid">{{ $t('page.validate') }}</span>
-          <span class="action-item tsfont-save" @click="flowSave(false)">{{ $t('page.save') }}</span>
+          <div class="action-item tsfont-storage" @click="saveFlowDraft()">{{ $t('page.staging') }}</div>
+          <!-- <span class="action-item tsfont-rotate-right" @click="resetFlow()">{{ $t('page.reset') }}</span>-->
+          <span class="action-item tsfont-xitongpeizhi" @click.prevent="validFlow()">{{ $t('page.validate') }}</span>
+          <span class="action-item tsfont-save" @click="saveFlow(true)">{{ $t('page.save') }}</span>
           <span v-if="referenceCount > 0 || isNew == true" class="action-item tsfont-trash-o disable">{{ $t('page.delete') }}</span>
-          <span v-else-if="referenceCount == 0 && isNew == false" class="action-item tsfont-trash-o" @click="deleteFlow">{{ $t('page.delete') }}</span>
-          <span class="action-item tsfont-tool" @click="relevanceList">
+          <span v-else-if="referenceCount == 0 && isNew == false" class="action-item tsfont-trash-o" @click="deleteFlow()">{{ $t('page.delete') }}</span>
+          <span class="action-item tsfont-tool" @click="isRelativeServiceShow = true">
             {{ $t('term.process.relcatalog') }}
             <span v-if="referenceCount > 0" class="reference-number">{{ referenceCount }}</span>
           </span>
@@ -34,7 +34,7 @@
         </ul>
       </template>
       <template v-slot:content>
-        <div ref="graph" style="height: 100%; position: relative">
+        <div ref="graph" style="height: 100%" class="col-center-contain col-contain tsscroll-container bg-block">
           <Card
             v-if="validList && validList.length > 0"
             class="radius-lg"
@@ -57,14 +57,27 @@
               </Cell>
             </CellGroup>
           </Card>
-          <FlowEditor
-            :config="flowConfig"
-            :muted="true"
-            :callback="{ validateNode: validateNode }"
-            @ready="ready"
-            @node:selected="nodeSelected"
-            @node:unselected="nodeUnSelected"
-          ></FlowEditor>
+          <div style="height: 34px">
+            <FlowEditorToolbar
+              :selectedNode="currentNode"
+              :selectedEdge="currentEdge"
+              :graph="graph"
+              mode="graph"
+            ></FlowEditorToolbar>
+          </div>
+          <div style="height: calc(100% - 34px)">
+            <FlowEditor
+              :config="flowConfig"
+              :muted="true"
+              :callback="{ validateNode: validateNode }"
+              @ready="ready"
+              @node:selected="nodeSelected"
+              @node:unselected="nodeUnSelected"
+              @node:removed="nodeRemoved"
+              @edge:selected="edgeSelected"
+              @edge:unselected="edgeUnSelected"
+            ></FlowEditor>
+          </div>
         </div>
       </template>
       <template v-slot:right>
@@ -81,7 +94,7 @@
                 :formConfig="formConfig"
                 :stepList="stepList"
                 :processConfig="processConfig"
-                @changeFlowName="changeFlowName"
+                @changeFlowName="updateFlowName"
                 @updateformitemList="updateformitemList"
                 @changeRelateForm="changeRelateForm"
               ></FlowSetting>
@@ -100,26 +113,26 @@
             <TabPane :label="$t('term.process.scoresetting')" name="scoresetting" class="tab-content">
               <ScoreSetting ref="scoreSetting" :scoreConfig="scoreConfig" :canvasNodeList="stepList"></ScoreSetting>
             </TabPane>
-            <TabPane v-if="currentNodeData" :label="$t('term.process.nodesetting')" name="nodesetting">
+            <TabPane v-if="currentNodeData && currentNode" :label="$t('term.process.nodesetting')" name="nodesetting">
               <FlowNodeSetting
                 :key="currentNodeData.uuid"
                 ref="nodeSetting"
                 :formhandlerList="formhandlerList"
-                :prevNodes="prevNodes"
-                :allPrevNodes="allPrevNodes"
+                :prevNodes="getAllPrevNodesData(currentNode, { include: null, exclude: ['start', 'end', 'condition', 'distributary'] })"
+                :allPrevNodes="getAllPrevNodesData(currentNode)"
                 :isStart="isNodeStart"
                 :nodeChildren="nodeChildren"
                 :nodeConfig="currentNodeData"
                 :formConfig="formConfig"
                 :stepList="stepList"
-                :nodeAllLinksList="nodeAllLinksList"
+                :nodeAllLinksList="getEdgeDataList(currentNode)"
                 @toFlowSetting="toFlowSetting"
-                @setNodeName="setNodeName"
+                @setNodeName="updateNodeName"
                 @updateNode="updateNode"
               ></FlowNodeSetting>
             </TabPane>
-            <TabPane v-if="currentLinkData" :label="$t('term.process.linksetting')" name="linksetting">
-              <FlowLinkSetting :config="currentLinkData" @setlinkname="setLinkName"></FlowLinkSetting>
+            <TabPane v-if="currentEdgeData" :label="$t('term.process.linksetting')" name="linksetting">
+              <FlowLinkSetting :config="currentEdgeData" @setlinkname="setEdgeName"></FlowLinkSetting>
             </TabPane>
           </Tabs>
         </div>
@@ -127,7 +140,7 @@
     </TsContain>
 
     <!-- 关联服务弹窗 -->
-    <RelationService :isShow="relevanceModel" :processUuid="processUuid" @close="closeService"></RelationService>
+    <RelationService v-if="isRelativeServiceShow" :processUuid="processUuid" @close="isRelativeServiceShow = false"></RelationService>
     <!-- 关联服务end -->
     <TsDialog
       type="modal"
@@ -158,13 +171,14 @@ export default {
     };
   },
   components: {
+    FlowEditorToolbar: () => import('@/views/pages/process/flow/floweditor/flow-editor-toolbar.vue'),
     FlowNodeSetting: () => import('@/views/pages/process/flow/flowedit/FlownodeSetting.vue'),
     FlowSetting: () => import('@/views/pages/process/flow/flowedit/FlowSetting.vue'),
     TacticsSetting: () => import('@/views/pages/process/flow/flowedit/TacticsSetting.vue'),
     FlowLinkSetting: () => import('@/views/pages/process/flow/flowedit/FlowLinkSetting.vue'),
     ScoreSetting: () => import('@/views/pages/process/flow/flowedit/ScoreSetting.vue'),
     LeftNode: () => import('./flow-left-node-new.vue'),
-    RelationService: () => import('./flowedit/relation-service.vue'),
+    RelationService: () => import('./flowedit/relation-service-new.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     FlowEditor: () => import('@/views/pages/process/flow/floweditor/flow-editor.vue')
   },
@@ -180,8 +194,10 @@ export default {
       type: 'slider',
       flowName: '',
       seletedList: {},
+      currentNode: null, //当前选中节点对象
       currentNodeData: null, //当前选中节点的数据
-      currentLinkData: null, //当前选中连线数据
+      currentEdge: null, //当前选中边
+      currentEdgeData: null, //当前选中连线数据
       scoreConfig: {
         //评分设置
         scoreTemplateId: null,
@@ -196,10 +212,11 @@ export default {
       validList: [],
       nodeList: [], //左边可以拖动的节点列表
       //nodeChildren: [], // 编辑节点的子节点
-      relevanceModel: false, //关联模态框
+      isRelativeServiceShow: false, //关联模态框
       referenceCount: 0,
       isReady: false, //接口回调初始化完成，修复调用时间过长导致的数据不同步
-      isNodeReady: false, //判断画图是否完成，增加删除节点都要修改此值，用于激活computed
+      isFlowReady: false, //流程数据就绪，用于激活finalFlowData重新计算
+      dataTimestamp: 0, //数据时间搓，在有需要的地方修改他，用于激活computed
       activeTab: 'flowsetting',
       slaList: [],
       draftPrevData: '',
@@ -252,7 +269,6 @@ export default {
     // 获取节点列表数据
     await this.getNodeList();
     this.getWorkerdispatcher();
-    this.selectNodeByStepUuid();
   },
   beforeDestroy() {},
   destroyed() {
@@ -260,27 +276,211 @@ export default {
     this.clearObservable();
   },
   methods: {
+    //新的开始
+    deleteFlow() {
+      // 删除流程图
+      if (this.isNew) {
+        this.$Message.error(this.$t('message.process.notsaveflow'));
+        return;
+      }
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.process.flow') }),
+        btnType: 'error',
+        'on-ok': vnode => {
+          let getData = {
+            uuid: this.processUuid
+          };
+          vnode.isShow = false;
+          this.$api.process.process
+            .delProcess(getData)
+            .then(res => {
+              if (res.Status == 'OK') {
+                this.$Message.success(this.$t('message.deletesuccess'));
+                this.$router.push({
+                  path: '/flow-overview',
+                  query: { validRouter: true } //删除的时候跳转路由不需要进行对比校验
+                });
+              }
+            });
+        }
+      });
+    },
+    resetFlow() {
+      // 重置流程图
+      this.$createDialog({
+        title: this.$t('page.tip'),
+        content: this.$t('term.process.resetflowtip'),
+        'on-ok': vnode => {
+          //this.initFlow('init');
+          vnode.isShow = false;
+          this.$Message.success(this.$t('message.executesuccess'));
+        }
+      });
+    },
+    getGraphData(needTransfer) {
+      if (this.graph) {
+        const graphData = this.graph.toJSON();
+        if (needTransfer) {
+          const topoData = {
+            canvas: { uuid: this.$utils.setUuid() }
+          };
+          //处理节点
+          const nodeList = [];
+          graphData.cells
+            .filter(d => d.shape !== 'edge')
+            .forEach(node => {
+              const { id, position, data } = node;
+              const element = ElementFactory.getElement({ handler: data.handler, type: data.type });
+              if (element) {
+                nodeList.push({
+                  uuid: id,
+                  name: data.name,
+                  type: data.type,
+                  class: '',
+                  handler: data.handler,
+                  x: position.x,
+                  originalX: position.x,
+                  y: position.y,
+                  originalY: position.y,
+                  config: data,
+                  ...element.oldSetting
+                });
+              }
+            });
+          topoData.nodes = nodeList;
+          //处理联线
+          const linkList = [];
+          graphData.cells
+            .filter(d => d.shape === 'edge')
+            .forEach(edge => {
+              const { id, data, source, target, type } = edge;
+              linkList.push({
+                uuid: id,
+                type: type,
+                name: data.name,
+                style: type === 'forward' ? 'solid' : 'dotted',
+                target: target.cell,
+                source: source.cell,
+                tAnchor: {
+                  dir: target.port.substring(0, 1).toUpperCase()
+                },
+                sAnchor: {
+                  dir: source.port.substring(0, 1).toUpperCase()
+                },
+                movecircle: false,
+                adjustPath: null,
+                adjustPoints: null,
+                animationTimes: 0
+              });
+            });
+          topoData.links = linkList;
+          return topoData;
+        }
+        return graphData;
+      }
+      return null;
+    },
+    getFlowData(action) {
+      var topoConfig = this.getGraphData(true);
+      var slaList = (this.$refs.slaSetting && this.$refs.slaSetting.slaList) || [];
+      let connectionList = topoConfig.links
+        ? topoConfig.links.map(d => ({
+          uuid: d.uuid,
+          fromStepUuid: d.source,
+          toStepUuid: d.target,
+          conditionConfig: {},
+          name: d.name,
+          type: d.type || 'forward'
+        }))
+        : [];
+      if (this.activeTab === 'nodesetting') {
+        //跟新节点对应的表单数据
+        this.updateNodeSetting();
+      } else if (this.activeTab === 'flowsetting') {
+        //跟新流程对应的表单数据
+        this.updateFlowSetting();
+      }
+      let flowFinallConfig = {
+        process: {
+          processConfig: this.processConfig,
+          formConfig: this.formConfig,
+          slaList: slaList || [],
+          stepList: this.stepList || [],
+          connectionList: connectionList || [],
+          scoreConfig: this.scoreConfig.isActive ? this.scoreConfig : { isActive: 0 }
+        },
+        topo: topoConfig
+      };
+      // 保存数据
+      let data = {
+        uuid: this.processConfig.uuid,
+        name: this.processConfig.name,
+        isActive: 1,
+        referenceCount: this.referenceCount,
+        config: flowFinallConfig
+      };
+      return data;
+    },
+    /**
+     * 保存流程草稿
+     *
+     * @returns {Promise<void>} 异步操作，无返回值
+     */
+    async saveFlowDraft() {
+      // 添加草稿
+      const draftData = this.getFlowData(false);
+      await this.$api.process.process.processDraftSave({ processUuid: draftData.uuid, name: this.processName, config: draftData.config }).then(res => {
+        if (res.Status === 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+        }
+      });
+    },
+    setEdgeName(value) {
+      if (this.currentEdge && this.currentEdgeData) {
+        this.currentEdgeData.name = value;
+        const edge = this.graph.getCellById(this.currentEdge.id);
+        if (edge) {
+          edge.setLabels(value);
+          const data = edge.getData();
+          data.name = value;
+          edge.setData(data);
+        }
+      }
+    },
     //拖拽完成后验证节点是否允许生效，也可以用来做callback使用
     validateNode(node) {
       //触发相关computed计算
-      this.isNodeReady = false;
-      this.$nextTick(() => {
-        this.isNodeReady = true;
-      });
-    },
-    //新的开始
-    test() {
-      console.log(JSON.stringify(this.graph.toJSON()));
+      this.dataTimestamp = new Date().getTime();
     },
     //保存流程
-    saveFlow() {
-      this.validFlow();
+    async saveFlow(needRefresh) {
+      this.validFlow(true);
+      if (this.validList.length === 0) {
+        const saveData = this.getFlowData(false);
+        //console.log(JSON.stringify(saveData, null, 2));
+        await this.$api.process.process.processSave(saveData).then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+            this.$route.meta.isSkip = true;
+            if (needRefresh) {
+              this.$router.push({
+                path: '/flow-edit-new',
+                query: {
+                  uuid: saveData.uuid,
+                  name: saveData.name,
+                  referenceCount: this.referenceCount || 0
+                }
+              });
+            }
+          }
+        });
+      }
     },
     //校验流程
-    validFlow() {
+    validFlow(isSlient) {
       //必须触发一次保存设置
       this.updateNodeSetting();
-
       const flowSetting = this.$refs.flowSetting;
       const validList = [];
       if (flowSetting) {
@@ -309,7 +509,7 @@ export default {
           const node = this.graph.getCellById(step.uuid);
           if (element && node) {
             if (element.valid && typeof element.valid === 'function') {
-              const vs = element.valid({ node: node, graph: this.graph });
+              const vs = element.valid({ node: node, graph: this.graph, view: this });
               if (vs && vs.length > 0) {
                 vs.forEach(v => {
                   validList.push({
@@ -339,31 +539,36 @@ export default {
           let b1 = b.type === 'error' ? 1 : 0;
           return b1 - a1;
         });
-        console.log('graph topo:', JSON.stringify(this.graph.toJSON()));
-        console.log(JSON.stringify(this.stepList));
+        if (isSlient) {
+          this.validList = this.validList.filter(v => v.type === 'error');
+        }
+        //console.log('graph topo:', JSON.stringify(this.graph.toJSON()));
+        //console.log(JSON.stringify(this.stepList));
       }
-    },
-    setFormUuid(uuid) {
-      this.flowData.process.formConfig.uuid = uuid;
     },
     //获取流程信息
     async getProcessByUuid() {
       if (this.processUuid) {
+        this.isFlowReady = false;
         await this.$api.process.process.getProcess({ uuid: this.processUuid }).then(res => {
           this.flowData = res.Return.config;
+          //console.log(JSON.stringify(this.flowData, null, 2));
           this.processName = res.Return.name;
+          this.isFlowReady = true;
         });
       }
     },
     //获取流程草稿信息
     async getProcessDraftByUuid() {
       if (this.processDraftUuid) {
+        this.isFlowReady = false;
         await this.$api.process.process
           .processDraftGet({
             uuid: this.processDraftUuid
           })
           .then(res => {
             this.flowData = res.Return.config;
+            this.isFlowReady = true;
           });
       }
     },
@@ -417,10 +622,17 @@ export default {
         );
         this.graph.addNode(startNode);
         this.graph.addNode(endNode);
+        //如果参数存在步骤uuid，需要默认选中节点
+        if (this.$route.query.stepUuid) {
+          const node = this.graph.getCellById(this.$route.query.stepUuid);
+          if (node) {
+            this.graph.select(node);
+          }
+        }
       }
       //}
       this.isReady = true;
-      this.isNodeReady = true;
+      this.dataTimestamp = new Date().getTime();
     },
     drag(event, component) {
       //仅提取必要信息
@@ -435,73 +647,240 @@ export default {
       //this.stepList.push(config.config);
       //this.flowObj.stepList = this.stepList;
     },
-    showNodeSetting(config) {
-      if (config && this.currentNodeData !== config) {
-        this.currentLinkData = null;
-        this.currentNodeData = null;
-        //切换前先保存节点设置
-        this.updateNodeSetting();
-        // 切tab
-        this.$nextTick(() => {
-          this.currentNodeData = config;
-          if (this.activeTab !== 'nodesetting') {
-            this.activeTab = 'nodesetting';
-          }
-        });
-      } else {
-        this.currentNodeData = null;
+    nodeRemoved() {
+      this.dataTimestamp = new Date().getTime();
+    },
+    edgeUnSelected() {
+      if (this.activeTab === 'linksetting') {
         this.activeTab = 'flowsetting';
       }
+      this.currentEdgeData = null;
+      this.currentEdge = null;
+      this.isSelected = false;
     },
-    nodeUnSelected() {
+    edgeSelected(edge) {
+      //切换前先保存当前选中节点设置
+      this.updateNodeSetting();
+      //先清空选中数据，强制刷新相关组件
+      this.isSelected = false;
+      this.currentNode = null;
+      this.currentNodeData = null;
+      this.currentEdge = null;
+      this.currentEdgeData = null;
       this.$nextTick(() => {
-        if (this.activeTab === 'nodesetting') {
-          this.activeTab = 'flowsetting';
-          this.currentNodeData = null;
+        this.currentEdge = edge;
+        this.currentEdgeData = edge.getData();
+        if (this.activeTab !== 'linksetting') {
+          this.activeTab = 'linksetting';
         }
-        this.isSelected = false;
+        this.isSelected = true;
       });
     },
-    nodeSelected(node) {
-      this.isSelected = false;
-      if (node) {
-        //显示节点配置
-        this.showNodeSetting(node.getData());
-
-        //组装links数据，需要和老数据保持一致，关键是config中的结构
-        const edges = this.graph.getConnectedEdges(node);
-        const links = [];
-        edges.forEach(edge => {
-          const link = { config: { name: edge.getProp('name'), type: edge.getProp('type'), source: edge.getSourceCellId(), target: edge.getTargetCellId() } };
-          links.push(link);
-        });
-        this.getNodeAllLinksList(links);
-        //触发计算
-        this.$nextTick(() => {
-          this.isSelected = true;
-        });
+    nodeUnSelected() {
+      //this.$nextTick(() => {
+      if (this.activeTab === 'nodesetting') {
+        this.activeTab = 'flowsetting';
       }
+      this.currentNodeData = null;
+      this.currentNode = null;
+      this.isSelected = false;
+      //});
+    },
+
+    nodeSelected(node) {
+      //切换前先保存当前选中节点设置
+      this.updateNodeSetting();
+      //先清空选中数据，强制刷新相关组件
+      this.isSelected = false;
+      this.currentNode = null;
+      this.currentNodeData = null;
+      this.currentEdge = null;
+      this.currentEdgeData = null;
+      this.$nextTick(() => {
+        this.currentNode = node;
+        this.currentNodeData = node.getData();
+        if (this.activeTab !== 'nodesetting') {
+          this.activeTab = 'nodesetting';
+        }
+        this.isSelected = true;
+      });
     },
     /**
-     * 获取给定节点的前序节点列表
+     * 获取节点相关的边数据列表
+     *
+     * @param node 节点对象
+     * @returns 返回一个边数据列表的数组，每个元素包含边的配置信息
+     */
+    getEdgeDataList(node) {
+      const linkList = [];
+      //组装links数据，需要和老数据保持一致，关键是config中的结构
+      const edges = this.graph.getConnectedEdges(node);
+      edges.forEach(edge => {
+        linkList.push({
+          config: {
+            name: edge.getProp('name'),
+            type: edge.getProp('type'),
+            source: edge.getSourceCellId(),
+            target: edge.getTargetCellId()
+          }
+        });
+      });
+      return linkList;
+    },
+    /**
+     * 获取指定节点的前置节点数据列表
+     *
+     * @param node 指定的节点
+     * @returns 返回前置节点数据列表
+     */
+    getPrevNodesData(node, { include, exclude } = {}) {
+      let prevNodeList = [];
+      const nodeList = this.getPrevNodes(node, { include, exclude });
+      nodeList.forEach(node => {
+        prevNodeList.push(node.getData());
+      });
+      return prevNodeList;
+    },
+    /**
+     * 获取指定节点及其之前所有节点的数据
+     *
+     * @param node 要获取数据的节点
+     * @returns 返回一个数组，包含指定节点及其之前所有节点的数据
+     */
+    getAllPrevNodesData(node, { include, exclude } = {}) {
+      const prevNodeList = this.getAllPrevNodes(node, { include, exclude });
+      return prevNodeList.map(n => n.getData());
+    },
+    /**
+     * 获取给定节点的所有前序节点列表
      *
      * @param node 节点对象或节点ID
      * @returns 前序节点列表
      */
-    getPrevNodes(node) {
-      if (typeof node === 'string') {
-        node = this.graph.getCellById(node);
+    getAllPrevNodes(node, { include, exclude } = {}) {
+      let prevNodeList = [];
+      if (node) {
+        prevNodeList = this.getPrevNodes(node, { include, exclude });
+        if (prevNodeList.length > 0) {
+          const nodeSet = new Set();
+          prevNodeList.forEach(n => {
+            nodeSet.add(n.id);
+          });
+          let size = prevNodeList.length;
+          for (let i = 0; i < size; i++) {
+            const n = prevNodeList[i];
+            const tmpList = this.getPrevNodes(n, { include, exclude });
+            tmpList.forEach(tmp => {
+              //判断新的关系是否存在，不存在则加入nodeList继续循环
+              if (!nodeSet.has(tmp.id) && node.id !== tmp.id) {
+                nodeSet.add(tmp.id);
+                prevNodeList.push(tmp);
+              }
+            });
+            size = prevNodeList.length; //重新修正新的size
+          }
+        }
       }
+      return prevNodeList;
+    },
+    /**
+     * 获取给定节点的所有后续节点的数据
+     *
+     * @param node 给定的节点
+     * @returns 返回一个数组，包含给定节点的所有后续节点的数据
+     */
+    getAllNextNodesData(node) {
+      const nextNodeList = this.getAllNextNodes(node);
+      return nextNodeList.map(n => n.getData());
+    },
+    /**
+     * 获取给定节点的所有后续节点
+     *
+     * @param node 给定的节点
+     * @returns 返回给定节点的所有后续节点数组
+     */
+    getAllNextNodes(node) {
+      let nextNodeList = [];
+      nextNodeList = this.getNextNodes(node);
+      if (nextNodeList.length > 0) {
+        const nodeSet = new Set();
+        nextNodeList.forEach(n => {
+          nodeSet.add(n.id);
+        });
+        let size = nextNodeList.length;
+        for (let i = 0; i < size; i++) {
+          const n = nextNodeList[i];
+          const tmpList = this.getNextNodes(n);
+          tmpList.forEach(tmp => {
+            //判断新的关系是否存在，不存在则加入nodeList继续循环
+            if (!nodeSet.has(tmp.id) && node.id !== tmp.id) {
+              nodeSet.add(tmp.id);
+              nextNodeList.push(tmp);
+            }
+          });
+          size = nextNodeList.length; //重新修正新的size
+        }
+      }
+      return nextNodeList;
+    },
+    /**
+     * 获取给定节点的前序节点列表,exclude优先级高于include
+     *
+     * @param node 节点对象或节点ID
+     * @returns 前序节点列表
+     */
+    getPrevNodes(node, { include, exclude } = {}) {
       const prevNodeList = [];
       if (node) {
         let incommingEdges = this.graph.getIncomingEdges(node);
         incommingEdges = incommingEdges && incommingEdges.filter(d => d.getProp('type') === 'forward');
         incommingEdges &&
           incommingEdges.forEach(d => {
-            prevNodeList.push(d.getSourceCell());
+            const source = d.getSourceCell();
+            let need = false;
+            if (!include || include.includes(source.getProp('handler'))) {
+              need = true;
+            }
+            if (exclude && exclude.includes(source.getProp('handler'))) {
+              need = false;
+            }
+            if (need) {
+              prevNodeList.push(source);
+            }
           });
       }
       return prevNodeList;
+    },
+    /**
+     * 获取指定节点的下一个节点列表
+     *
+     * @param node 目标节点
+     * @returns 返回包含下一个节点对象的数组
+     */
+    getNextNodes(node) {
+      const nextNodeList = [];
+      if (node) {
+        let outgoingEdges = this.graph.getOutgoingEdges(node);
+        outgoingEdges = outgoingEdges && outgoingEdges.filter(d => d.getProp('type') === 'forward');
+        outgoingEdges &&
+          outgoingEdges.forEach(d => {
+            nextNodeList.push(d.getTargetCell());
+          });
+      }
+      return nextNodeList;
+    },
+    /**
+     * 更新流程设置
+     *
+     * @description 当从流程设置页面切换时，保存表单的id
+     */
+    updateFlowSetting() {
+      //从流程设置切走的时候，保存表单id
+      if (this.$refs.flowSetting) {
+        const formConfig = this.$refs.flowSetting.getJsonValue().formConfig ? this.$refs.flowSetting.getJsonValue().formConfig : {};
+        //console.log(JSON.stringify(formConfig, null, 2));
+        this.flowData.process.formConfig.uuid = formConfig.uuid;
+      }
     },
     /**
      * 更新节点设置，由于节点设置组件没有监听数据变化，所以需要在切换页签，点击校验，点击保存等需要获取数据的时候手动触发
@@ -509,18 +888,18 @@ export default {
      */
     updateNodeSetting() {
       if (this.$refs.nodeSetting) {
+        //避免错误的回退，修改数据不激活历史操作
+        this.graph.disableHistory();
         const nodeConfig = this.$refs.nodeSetting.getValueList();
         const node = this.graph.getCellById(nodeConfig.uuid);
         if (node) {
           node.setData(nodeConfig);
+          this.dataTimestamp = new Date().getTime();
         }
-        /*const index = this.stepList.findIndex(item => item.uuid === nodeConfig.uuid);
-        if (index > -1) {
-          this.$set(this.stepList, index, nodeConfig);
-        }*/
+        this.graph.enableHistory();
       }
     },
-    setNodeName(val) {
+    updateNodeName(val) {
       if (this.currentNodeData) {
         const node = this.graph.getCellById(this.currentNodeData.uuid);
         if (node) {
@@ -532,11 +911,10 @@ export default {
         }
       }
     },
-
+    //表单变化后更新相关节点的表单场景
     changeRelateForm(formUuid) {
       //节点设置needformscene为true时，需要更新节点的表单场景id
       this.formSceneUuidList = [];
-      this.isNodeReady = false;
       if (formUuid) {
         this.$api.framework.form.getFormByVersionUuid({ uuid: formUuid }).then(res => {
           this.$set(this.flowData.process.formConfig, 'uuid', formUuid);
@@ -560,7 +938,7 @@ export default {
               n.setData(nodeConfig);
             }
           });
-          this.isNodeReady = true;
+          this.dataTimestamp = new Date().getTime();
         });
       } else {
         this.$set(this.flowData.process.formConfig, 'uuid', '');
@@ -572,126 +950,29 @@ export default {
             n.setData(nodeConfig);
           }
         });
-        this.$nextTick(() => {
-          this.isNodeReady = true;
-        });
+        this.dataTimestamp = new Date().getTime();
       }
     },
-
-    //新的结束
-    //下面都是旧方法======================================================
-    //=================================================================
-    //====================================================================
-    selectNodeByStepUuid() {
-      // 根据步骤id选中节点并高亮
-      if (this.$route.query.stepUuid && !this.$utils.isEmpty(this.stepList)) {
-        // 从表单场景跳转过来，勾选对应的节点并且打开对应节点的编辑页面
-        let currentNodeData = this.stepList.find(item => item.uuid == this.$route.query.stepUuid);
-        if (currentNodeData) {
-          this.showNodeSetting(currentNodeData);
-          let nodeVm = this.$topoVm.getNodeByUuid(currentNodeData.uuid);
-          nodeVm && nodeVm.select(); // 节点选中
-        }
-      }
+    updateFlowName(value) {
+      this.processName = value;
     },
+    // 获取节点列表数据
     async getNodeList() {
-      // 获取节点列表数据
       await this.$api.process.process.processComponent().then(res => {
         this.nodeList = res.Return;
       });
     },
-    setLinkName(value) {
-      this.currentLinkData.name = value;
-      var link = this.$topoVm.getLinkByUuid(this.currentLinkData.uuid);
-      link && link.setName(value);
-    },
-    changeFlowName(value) {
-      // 改变流程名称
-      this.processName = value;
-    },
-    //返回流程列表
-    goflowList() {
-      this.$router.push({
-        path: '/flow-overview'
-      });
-    },
-    closeService(val) {
-      this.relevanceModel = val;
-    },
-    relevanceList() {
-      //关联服务
-      this.relevanceModel = true;
-    },
-    deleteFlow() {
-      // 删除流程图
-      if (this.isNew) {
-        this.$Message.error(this.$t('message.process.notsaveflow'));
-        return;
-      }
-      this.$createDialog({
-        title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.process.flow') }),
-        btnType: 'error',
-        'on-ok': vnode => {
-          let getData = {
-            uuid: this.processUuid
-          };
-          vnode.isShow = false;
-          this.$api.process.process
-            .delProcess(getData)
-            .then(res => {
-              if (res.Status == 'OK') {
-                this.$Message.success(this.$t('message.deletesuccess'));
-                this.$router.push({
-                  path: '/flow-overview',
-                  query: { validRouter: true } //删除的时候跳转路由不需要进行对比校验
-                });
-              }
-            })
-            .catch(error => {
-              this.$Message.error(error.data.Message);
-            });
-        }
-      });
-    },
-    reset() {
-      // 重置流程图
-      this.$createDialog({
-        title: this.$t('page.tip'),
-        content: this.$t('term.process.resetflowtip'),
-        'on-ok': vnode => {
-          //this.initFlow('init');
-          vnode.isShow = false;
-          this.$Message.success(this.$t('message.executesuccess'));
-        }
-      });
-    },
+    //新的结束
+    //下面都是旧方法======================================================
+    //=================================================================
+    //====================================================================
+
     createdBasicsNodes() {
       let list = JSON.parse(JSON.stringify(startEndNode));
       list.forEach(item => {
         item.config = { handler: item.handler, name: item.name, stepConfig: {}, type: item.type };
       });
       return list;
-    },
-    flowDataValid(action) {
-      let _this = this;
-      //保存节点数据
-      this.activeTab === 'nodesetting' && this.setNodeSetting();
-      //节点校验
-      let allNode = this.$topoVm.getNodes();
-      allNode.forEach(vm => {
-        //给节点塞必要的值
-        let currentNodeData = _this.stepList.find(item => {
-          return item.uuid == vm.getUuid();
-        });
-        if (setInitData[currentNodeData.handler] instanceof Function) {
-          setInitData[currentNodeData.handler](currentNodeData, vm, _this);
-        }
-      });
-      // 流程数据验证
-      if (action !== 'save') this.validCardOpen = true;
-      var is = nodeValid(allNode);
-      return is;
     },
     getShape(data) {
       // 获取形状dom
@@ -700,72 +981,21 @@ export default {
 
     validItemClick(item) {
       if (item.focus) {
+        item.focus();
         if (this.validList.length > 0) {
           this.validFlow();
         }
-        item.focus();
       }
-      if (item.href) {
-        this.$nextTick(() => {
-          document.querySelector(item.href) && document.querySelector(item.href).scrollIntoView(true);
-          this.$refs.nodeSetting.validNodeData(item.href);
-        });
-      }
+      this.$nextTick(() => {
+        if (item.href) {
+          if (this.$refs.nodeSetting) {
+            this.$refs.nodeSetting.validNodeData(item.href);
+            this.$utils.jumpTo(item.href, 'instant', this.$refs['codeContent']);
+          }
+        }
+      });
     },
-    getFlowData(action) {
-      // 获取整个流程数据
-      // 获取流程数据
-      // topo数据
-      var topoConfig = JSON.parse(JSON.stringify(this.$topoVm.toJson()));
-      var slaList = (Vm.$refs.slaSetting && JSON.parse(JSON.stringify(Vm.$refs.slaSetting.slaList))) || [];
-      let processConfig = { processConfig: this.processConfig };
-      let connectionList = topoConfig.links
-        ? topoConfig.links.map(d => ({
-          uuid: d.uuid,
-          fromStepUuid: d.source,
-          toStepUuid: d.target,
-          conditionConfig: {},
-          name: d.name,
-          type: d.dirType || d.type || 'forward'
-        }))
-        : [];
-      if (this.activeTab === 'nodesetting') {
-        //跟新节点对应的表单数据
-        this.setNodeSetting();
-      } else if (this.activeTab == 'flowsetting') {
-        //跟新流程对应的表单数据
-        processConfig = this.$refs.flowSetting ? this.$refs.flowSetting.getJsonValue(action) : {};
-        this.formConfig = this.$refs.flowSetting ? processConfig.formConfig : this.formConfig;
-        action && (this.processConfig = processConfig.processConfig);
-      }
-      // 获取节点列表数据
-      let flowFinallConfig = {
-        process: {
-          processConfig: processConfig.processConfig,
-          formConfig: this.formConfig,
-          slaList: slaList || [],
-          stepList: this.stepList || [],
-          connectionList: connectionList || [],
-          scoreConfig: this.scoreConfig.isActive ? this.scoreConfig : { isActive: 0 }
-        },
-        topo: topoConfig
-      };
-      if (this.formConfig && this.formConfig.extendConfig) {
-        flowFinallConfig.process.formConfig.extendConfig = (this.formConfig && this.formConfig.extendConfig) || null;
-      } else {
-        delete this.formConfig.extendConfig;
-      }
-      // 保存数据
-      let data = {
-        uuid: this.processConfig.uuid,
-        name: this.processConfig.name,
-        isActive: 1,
-        referenceCount: this.referenceCount,
-        config: flowFinallConfig
-      };
 
-      return data;
-    },
     async flowSave(isGoFlow) {
       // 保存流程
       // 如果是设置节点打开
@@ -820,7 +1050,7 @@ export default {
     showLinkSetting(config) {
       // 线选中触发该事件，展示线编辑组件
       if (config) {
-        this.currentLinkData = config;
+        this.currentEdgeData = config;
         // 切tab
         this.$nextTick(() => {
           this.currentNodeData = null;
@@ -829,28 +1059,9 @@ export default {
       } else {
         this.activeTab = 'flowsetting';
         this.$nextTick(() => {
-          this.currentLinkData = null;
+          this.currentEdgeData = null;
         });
       }
-    },
-
-    setNodeSetting() {
-      // 获取节点设置
-      let currentNodeData = {};
-      if (this.$refs.nodeSetting) {
-        //获取节点表单授权的数据，跟新整体的表单授权数据
-        let newnodeConfig = this.$refs.nodeSetting.saveProcessFormConfig() || {};
-        this.updateNode(newnodeConfig);
-        //获取节点的数据
-        let currentNodeData = this.$refs.nodeSetting.getValueList();
-        this.stepList.find((item, i) => {
-          if (item.uuid == currentNodeData.uuid) {
-            this.stepList[i] = currentNodeData;
-          }
-          return item.uuid == currentNodeData.uuid;
-        });
-      }
-      return currentNodeData;
     },
     getProcessFormConfig(action) {
       return this.$refs.nodeSetting.saveProcessFormConfig(action);
@@ -886,28 +1097,8 @@ export default {
             this.processName = draftConfig.name;
             let config = draftConfig.config;
             this.initTopo(config, this.$utils.setUuid());
-            this.selectNodeByStepUuid();
           }
         });
-    },
-    async draftAdd() {
-      // 添加草稿
-      let data = this.getFlowData(false);
-      let draftData = this.$utils.deepClone(data);
-      delete this.portData.config.topo.svg;
-      delete draftData.config.topo;
-      delete this.draftPrevData.config.topo;
-      let isSame = this.$utils.isSame(this.draftPrevData, draftData);
-      if (isSame) {
-        // 没有改变
-      } else {
-        // 有改变
-        await Vm.$api.process.process.processDraftSave({ processUuid: draftData.uuid, name: draftData.name, config: data.config }).then(res => {
-          if (res.Status == 'OK') {
-            this.draftPrevData = draftData;
-          }
-        });
-      }
     },
     //获取草稿列表
     getDraftList(uuid) {
@@ -1054,7 +1245,6 @@ export default {
         });
       }
     }
-    
   },
   computed: {
     automaticList() {
@@ -1094,33 +1284,6 @@ export default {
       }
       return false;
     },
-    //当前节点的所有前置节点数据（注意：是数据！）
-    allPrevNodes() {
-      let prevNodeList = [];
-      if (this.isSelected && this.currentNodeData) {
-        prevNodeList = this.getPrevNodes(this.currentNodeData.uuid);
-        if (prevNodeList.length > 0) {
-          const nodeSet = new Set();
-          prevNodeList.forEach(n => {
-            nodeSet.add(n.id);
-          });
-          let size = prevNodeList.length;
-          for (let i = 0; i < size; i++) {
-            const n = prevNodeList[i];
-            const tmpList = this.getPrevNodes(n);
-            tmpList.forEach(tmp => {
-              //判断新的关系是否存在，不存在则加入nodeList继续循环
-              if (!nodeSet.has(tmp.id) && this.currentNodeData.uuid !== tmp.id) {
-                nodeSet.add(tmp.id);
-                prevNodeList.push(tmp);
-              }
-            });
-            size = prevNodeList.length; //重新修正新的size
-          }
-        }
-      }
-      return prevNodeList.map(d => d.getData());
-    },
     //当前节点的前置节点
     prevNodes() {
       let prevNodeList = [];
@@ -1141,7 +1304,7 @@ export default {
     },
     //步骤列表
     stepList() {
-      if (this.isNodeReady) {
+      if (this.dataTimestamp) {
         const nodes = this.graph.getNodes();
         return nodes.map(d => d.getData());
       }
@@ -1153,30 +1316,34 @@ export default {
       if (this.isSelected && this.currentNodeData) {
         const node = this.graph.getCellById(this.currentNodeData.uuid);
         const edges = this.graph.getOutgoingEdges(node);
-        edges && edges.forEach(edge => {
-          nextNodeData.push(edge.getTargetCell().getData());
-        });
+        edges &&
+          edges.forEach(edge => {
+            nextNodeData.push(edge.getTargetCell().getData());
+          });
       }
       return nextNodeData;
     },
     //转换旧数据为新数据
     finalFlowData() {
       const cells = [];
-      if (this.flowData && this.flowData.topo && this.flowData.topo.nodes) {
+      if (this.isFlowReady && this.flowData && this.flowData.topo && this.flowData.topo.nodes) {
+        //旧数据真正的数据在stepList中，因此需要从这里提取，新版本stepList和topo的数据都是一致的。
+        const stepList = this.flowData.process.stepList;
         const nodes = this.flowData.topo.nodes;
         if (nodes && nodes.length > 0) {
           nodes.forEach(n => {
-            const { name, icon, type, uuid, x, y, config } = n;
+            const { name, icon, uuid, x, y } = n;
+            const config = stepList.find(d => d.uuid === uuid);
             const element = ElementFactory.getElement({ handler: config.handler, type: config.type });
             if (element) {
-              //有些节点数据的config并没有uuid，为了一直补充上
+              //有些节点数据的config并没有uuid，为了一致需要补充上
               if (!config.uuid) {
                 config.uuid = uuid;
               }
               cells.push({
                 view: 'vue-shape-view',
                 id: uuid,
-                shape: config.type,
+                shape: element.handler || element.type,
                 type: config.type,
                 handler: config.handler,
                 isAllowStart: config.isAllowStart,
@@ -1191,10 +1358,11 @@ export default {
           });
         }
         const links = this.flowData.topo.links;
+        //console.log(JSON.stringify(links, null, 2));
         const portMap = { L: 'left', R: 'right', B: 'bottom', T: 'top' };
         if (links && links.length > 0) {
           links.forEach(d => {
-            const { uuid, type, source, target, sAnchor, tAnchor } = d;
+            const { uuid, name, type, source, target, sAnchor, tAnchor } = d;
             const dashConfig = {};
             if (type === 'backward') {
               dashConfig.strokeDasharray = 5;
@@ -1208,6 +1376,15 @@ export default {
               router: {
                 name: 'manhattan'
               },
+              labels: [
+                {
+                  attrs: {
+                    label: {
+                      text: name
+                    }
+                  }
+                }
+              ],
               attrs: {
                 line: {
                   ...dashConfig,
@@ -1226,7 +1403,8 @@ export default {
                     height: 8
                   }
                 }
-              }
+              },
+              data: { name }
             });
           });
         }
@@ -1246,9 +1424,7 @@ export default {
         //从节点tab页切走时 保存节点数据
         this.updateNodeSetting();
       } else if (oldValue === 'flowsetting') {
-        //从流程设置切走的时候，保存表单id
-        let formConfig = this.$refs.flowSetting && this.$refs.flowSetting.getJsonValue().formConfig ? this.$refs.flowSetting.getJsonValue().formConfig : {};
-        this.setFormUuid(formConfig.uuid);
+        this.updateFlowSetting();
       }
     },
     'scoreConfig.isActive'(val) {

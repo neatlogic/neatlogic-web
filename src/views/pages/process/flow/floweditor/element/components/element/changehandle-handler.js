@@ -1,18 +1,15 @@
 import template from '../shape/rect.vue';
 import ports from './base/port-config.js';
-import utils from '@/resources/assets/js/util.js';
+//import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
-import { assignValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/assign-valid.js';
+//import { assignValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/assign-valid.js';
 import { isolationValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/isolation-valid.js';
 import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
 import { notifyValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
 export default {
-  name: '普通节点',
+  name: '变更处理',
+  handler: 'changehandle',
   type: 'process',
-  oldSetting: {//转换成旧数据时使用
-    shape: 'L-rectangle:R-rectangle',
-    icon: '#tsfont-circle-o'
-  },
   isVue: true, //需要声明是vue组件
   config: {
     component: template,
@@ -29,6 +26,10 @@ export default {
     linkout: true,
     assignable: true, //是否需要分配用户
     needformscene: true //是否需要表单场景
+  },
+  oldSetting: {
+    shape: 'L-rectangle:R-rectangle',
+    icon: '#tsfont-changing'
   },
   validateEdge({ edge, editor, sourceCell, targetCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(targetCell, 'forward');
@@ -49,24 +50,25 @@ export default {
     validList.push(...isolationValid.valid({ node, graph }));
     //校验节点名称
     validList.push(...nameValid.valid({ node, graph }));
-    //检查是否开始节点
-    let isStartNode = false;
-    const prevNodes = view.getPrevNodes(node);
-    if (prevNodes.length > 0) {
-      for (let i = 0; i < prevNodes.length; i++) {
-        const sourceNode = prevNodes[i];
-        if (sourceNode.getProp('handler') === 'start') {
-          isStartNode = true;
-          break;
-        }
-      }
-    }
-    if (!isStartNode) {
-      //校验分配设置
-      validList.push(...assignValid.valid({ node, graph }));
-    }
     //校验通知设置
     validList.push(...notifyValid.valid({ node, graph }));
+
+    //校验changecreate组件
+    let nodeData = (node.getData() && node.getData()['stepConfig']) || {};
+    let allPrevNodes = view.getAllPrevNodes();
+    const changecreateHandlerList = allPrevNodes.filter(p => p.getData() && p.getData().handler === 'changecreate');
+    if (changecreateHandlerList.length === 0) {
+      validList.push({
+        type: 'error',
+        msg: $t('term.process.changeexistinpairsvalid')
+      });
+    } else if (changecreateHandlerList.length > 0 && !nodeData.linkedChange) {
+      validList.push({
+        type: 'error',
+        msg: $t('term.process.selectchangevalid'),
+        href: '#changeStep'
+      });
+    }
 
     return validList;
   }

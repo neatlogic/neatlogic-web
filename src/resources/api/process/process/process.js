@@ -114,7 +114,7 @@ const process = {
   },
   autoComplete() {
     //auto节点：等待数据
-    return axios.get('/public/api/help/rest/processtask/automatic/complete');
+    return axios.get('/api/help/rest/processtask/automatic/complete');
   },
   //autoexec节点
   getAutoexecCombop(data) { //自动化节点获取组合工具

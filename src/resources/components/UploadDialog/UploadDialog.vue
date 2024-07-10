@@ -45,11 +45,11 @@
         <div v-if="isValid && isImport && (validConfig.failureCount > 0 || validConfig.successCount > 0)" class="valid-class">
           <template v-if="validConfig.failureReasonList.length > 0">
             <div class="radius-sm ivu-alert-error valid-list">
-              <div class="text-success pb-md"><span class="valid-icon tsfont-check-s"></span>{{ $t('message.successfullyimportitemstarget', {target: validConfig.successCount}) }}
+              <div v-if="validConfig.successCount > 0" class="text-success pb-md"><span class="valid-icon tsfont-check-s"></span>{{ $t('message.successfullyimportitemstarget', {target: validConfig.successCount}) }}
                 <span v-if="successMassage">{{ successMassage }}</span>
                 <span v-if="btntext" class="text-href" @click="goto()">{{ btntext }}</span>
               </div>
-              <div class="text-danger pb-md"><span class="valid-icon tsfont-close-s"></span>{{ $t('message.failedtoimportitemstarget', {target: validConfig.failureCount}) }}</div>
+              <div v-if="validConfig.failureCount > 0" class="text-danger pb-md"><span class="valid-icon tsfont-close-s"></span>{{ $t('message.failedtoimportitemstarget', {target: validConfig.failureCount}) }}</div>
               <div>
                 <div v-for="(result, index) in validConfig.failureReasonList" :key="index">
                   <div class="pb-md">{{ result.item }}</div>
@@ -60,7 +60,7 @@
                 <div v-if=" getWarnList(validConfig.failureReasonList) && getWarnList(validConfig.failureReasonList).length > 0 && warnMassage">
                   {{ warnMassage }} 
                   <div v-for="(result, index) in getWarnList(validConfig.failureReasonList)" :key="index">
-                    <div class="pb-md">{{ result.warnItem }}</div>
+                    <div class="pb-md">{{ result.item }}</div>
                   </div>
                   <slot name="footer">
                     <div v-if="btnList" class="text-right">

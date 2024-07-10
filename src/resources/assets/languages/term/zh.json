@@ -603,7 +603,8 @@
     "totaljobnumtarget": "总共{target}个作业",
     "runningcounttarget": "进行中{target}个",
     "completedcounttarget": "已完成{target}个",
-    "failedcounttarget": "已失败{target}个"
+    "failedcounttarget": "已失败{target}个",
+    "changecreatewithouthandler": "请为变更创建节点关联变更处理节点"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -2741,6 +2742,7 @@
     "metro": "地铁避让",
     "manhattan": "正交避让",
     "dynamicwidget": "动态图元",
-    "startcientity": "起点配置项"
+    "startcientity": "起点配置项",
+    "onlyhasdiagram": "只看有图"
   }
 }
