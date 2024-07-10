@@ -2,7 +2,6 @@ import template from '../shape/circle.vue';
 import ports from './base/port-config.js';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
-import { OnCloseDevServerFn } from '@rsbuild/core';
 
 export default {
   name: '开始',
