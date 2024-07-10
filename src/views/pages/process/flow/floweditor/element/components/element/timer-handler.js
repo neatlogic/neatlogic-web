@@ -22,6 +22,10 @@ export default {
     linkin: true,
     linkout: true
   },
+  oldSetting: {
+    shape: 'L-rectangle:R-rectangle',
+    icon: '#tsfont-timer'
+  },
   validateMagnet({ editor, sourceCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(sourceCell, 'forward');
     //只能有一个后置节点

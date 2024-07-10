@@ -1,7 +1,8 @@
 <template>
   <div class="taskdetail-auto">
     <Loading :loading-show="loadingShow" type="fix"></Loading>
-    <div v-if="isStepUser == 1">
+    <!-- 不通过当前用户是否是自动处理步骤的处理人来控制是否显示自动处理步骤信息 -->
+    <div>
       <div class="content-box-mb">
         <TsRow>
           <Col span="12">

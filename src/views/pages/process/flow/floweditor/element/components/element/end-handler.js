@@ -20,6 +20,12 @@ export default {
     linkin: true,
     linkout: false
   },
+  oldSetting: {//转换成旧数据时使用
+    shape: 'circle',
+    icon: '#ts-circle-fill',
+    fill: 'RGBA(255, 98, 90, .1)',
+    stroke: 'RGBA(255, 98, 90, .1)'
+  },
   validateMagnet() {
     return false;
   },

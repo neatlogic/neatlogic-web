@@ -88,13 +88,13 @@ export default {
       loadingShow: false,
       searchParams: {
         currentPage: 1,
-        pageSize: 10
+        pageSize: 20
       },
       treeSetting: {
         tbodyList: [],
         currentPage: 1,
         rowNum: 0,
-        pageSize: 10
+        pageSize: 20
       },
       selectSetting: {
         placeholder: this.$t('term.autoexec.pleaseselectdirectoryname'),
