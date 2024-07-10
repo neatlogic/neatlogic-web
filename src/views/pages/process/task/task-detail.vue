@@ -127,7 +127,8 @@ export default {
   provide() { //有些表单可能需要这些参数，表单里面会接收这些参数
     return {
       channelUuid: null,
-      processTaskId: this.$route.query.processTaskId
+      processTaskId: this.$route.query.processTaskId,
+      processTaskData: () => this.processTaskData
     };
   },
   components: {
@@ -138,6 +139,7 @@ export default {
   props: {},
   data() {
     return {
+      processTaskData: {processTaskStepId: null, processTaskId: null},
       isMoreStep: true, //是否有多个可处理的步骤
       defaultStartList: [], //可处理的步骤列表
       actionList: [], //按钮权限列表
@@ -174,7 +176,11 @@ export default {
       };
       await this.$api.process.processtask.ifNecessaryStartTask(param);
     }
-    await this.getAllData();
+    this.processTaskData = {
+      processTaskId: this.processTaskId,
+      processTaskStepId: this.processTaskStepId
+    };
+    await this.getAllData(true);
     this.getTaskList();
     let _this = this;
     window.addEventListener('resize', function() {
@@ -190,7 +196,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    async getAllData() {
+    async getAllData(isSetValue = false) {
       this.setTimeGetData && clearTimeout(this.setTimeGetData);
       let _this = this;
       let res = await _this.$api.process.processtask.getNextsteplist({ processTaskId: _this.processTaskId});//处理页逻辑：需要等后台处理完下一步骤的接口
@@ -199,6 +205,9 @@ export default {
         if (!_this.processTaskStepId && _this.defaultStartList.length < 2) {
           _this.isMoreStep = false;
           (_this.defaultStartList.length == 1) && (_this.processTaskStepId = _this.defaultStartList[0].id); //判断是否有可处理的步骤
+          if (isSetValue) {
+            this.processTaskData.processTaskStepId = _this.processTaskStepId;
+          }
         }
         await _this.getTaskActionObj();
         _this.getMessage();
@@ -397,6 +406,9 @@ export default {
         }
         return type;
       };
+    },
+    autoexecJobListData() {
+      return this.$store.state.isUpdateAutoexecJobListData;
     }
   },
   watch: {
@@ -406,6 +418,27 @@ export default {
       setTimeout(() => {
         this.getTaskList();
       }, 300);
+    },
+    autoexecJobListData: {
+      handler(val) {
+        if (val) {
+          let query = {};
+          const routeQuery = this.$route.query || {};
+          ['processTaskStepId', 'processTaskId', 'autoStart'].forEach(key => {
+            if (!this.$utils.isEmpty(routeQuery[key])) {
+              query[key] = routeQuery[key];
+            }
+          });
+          this.$store.commit('setAutoexecJobListData', false);
+          this.$router.replace({
+            path: '/task-detail',
+            query: {
+              ...query,
+              type: Date.now()
+            }
+          });
+        }
+      }
     }
   },
   beforeRouteEnter(to, from, next) {
