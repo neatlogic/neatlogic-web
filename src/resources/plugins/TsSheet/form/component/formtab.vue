@@ -125,10 +125,6 @@ export default {
       if (this.$refs) {
         for (let name in this.$refs) {
           if (this.$refs[name]) {
-            // 获取tab的name
-            const refParts = name.split('##');
-            if (refParts.length !== 2) continue;
-            const tabValue = refParts[1];
             let formitem = this.$refs[name];
             if (this.$refs[name] instanceof Array) {
               formitem = this.$refs[name][0];
@@ -139,6 +135,11 @@ export default {
               const err = await formitem.validData();
               if (err && err.length > 0) {
                 errorList.push(...err);
+              
+                // 获取tab的name
+                const refParts = name.split('##');
+                if (refParts.length !== 2) continue;
+                const tabValue = refParts[1];
                 // 验证错误列表
                 this.validateErrorList.push(
                   {
