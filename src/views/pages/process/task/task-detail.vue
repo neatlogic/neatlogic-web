@@ -127,7 +127,7 @@ export default {
   provide() { //有些表单可能需要这些参数，表单里面会接收这些参数
     return {
       channelUuid: null,
-      processTaskId: this.currentProcessTaskId,
+      processTaskId: this.$route.query.processTaskId,
       processTaskData: () => this.processTaskData
     };
   },
