@@ -178,6 +178,7 @@ export default {
         value: '',
         isEmpty: 0,
         delOperation: '',
+        errorMessage: '',
         valueErrorMessage: ''
       });
     },
@@ -187,7 +188,7 @@ export default {
       }
     },
     okDialog() {
-      if (!this.isRepeat() || !this.validValueIsEmpty()) {
+      if (!this.validKeyRepeat() || !this.validValueIsEmpty()) {
         return false;
       }
       let keyValueList = [];
@@ -218,25 +219,28 @@ export default {
         this.$set(this.tableData.tbodyList, index, currentValue);
       }
     },
-    isRepeat() {
-      let temp = {};
+    validKeyRepeat() {
+      const keysSet = new Set();
       for (let i = 0; i < this.tableData.tbodyList.length; i++) {
-        if (temp[this.tableData.tbodyList[i].key]) {
+        if (this.$utils.isEmpty(this.tableData.tbodyList[i].key)) {
+          this.tableData.tbodyList[i]['errorMessage'] = this.$t('form.validate.pleaseenterthecontent');
+          return false;
+        } else if (keysSet.has(this.tableData.tbodyList[i].key)) {
           return false; // 存在重复
-        } else {
-          temp[this.tableData.tbodyList[i].key] = this.tableData.tbodyList[i];
         }
+        keysSet.add(this.tableData.tbodyList[i].key);
       }
       return true;
     },
-    inputChange(currentValue) {
-      for (let index = 0; index < this.tableData.tbodyList.length; index++) {
-        if (!this.isRepeat()) {
-          if (this.tableData.tbodyList[index].key == currentValue) {
-            this.tableData.tbodyList[index].errorMessage = this.$t('form.validate.repeat', {target: currentValue});
-          } else {
-            this.tableData.tbodyList[index].errorMessage = '';
-          }
+    inputChange(currentKey) {
+      let otherList = this.tableData.tbodyList.filter(item => !this.$utils.isEmpty(currentKey) && item.key == currentKey);
+      if (otherList.length > 1) {
+        for (let index = 0; index < otherList.length; index++) {
+          otherList[index].errorMessage = this.$t('form.validate.repeat', {target: currentKey});
+        }
+      } else {
+        for (let index = 0; index < this.tableData.tbodyList.length; index++) {
+          this.tableData.tbodyList[index].errorMessage = '';
         }
       }
     },
