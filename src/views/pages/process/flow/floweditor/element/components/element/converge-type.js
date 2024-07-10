@@ -26,7 +26,7 @@ export default {
   },
   validateConnection({ editor, sourceCell, targetCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(targetCell, 'forward');
-    if (allNextNodeIdList.has(sourceCell.id)) {
+    if (allNextNodeIdList.includes(sourceCell.id)) {
       return false;
     }
     return true;

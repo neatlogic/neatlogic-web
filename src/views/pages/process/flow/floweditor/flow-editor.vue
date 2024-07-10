@@ -71,6 +71,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    //返回当前节点的所有后续节点，排除自己
     getAllNextNodeId(sourceNode, type) {
       let edgeList = this.graph.getEdges();
       if (type) {
@@ -96,7 +97,7 @@ export default {
       };
       find(foundNodeIdSet, sourceNodeIdSet, edgeList);
       foundNodeIdSet.delete(sourceNode.id);
-      return foundNodeIdSet;
+      return [...foundNodeIdSet];
     },
     toBack() {
       if (this.selectedCell) {
@@ -254,7 +255,6 @@ export default {
               }
             },
             createEdge: ({ sourceCell }) => {
-              console.log('createEdge');
               const edge = new Shape.Edge({
                 type: 'forward',
                 router: {
@@ -283,22 +283,24 @@ export default {
               });
               return edge;
             },
+            //点击 magnet 时 根据 validateMagnet 返回值来判断是否新增边，触发时机是 magnet 被按下，如果返回 false ，则没有任何反应，如果返回 true ，会在当前 magnet 创建一条新的边
             validateMagnet: ({ cell }) => {
               const element = ElementFactory.getElement({ handler: cell.getProp('handler'), type: cell.getProp('type') });
               if (element) {
                 if (element.validateMagnet && typeof element.validateMagnet === 'function') {
-                  return !!element.validateMagnet({ editor: this, sourceCell: cell });
+                  return !!element.validateMagnet({ editor: this, sourceCell: cell, graph: this.graph });
                 }
               }
               return true;
             },
+            //在移动边的时候判断连接是否有效，如果返回 false ，当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素。
             validateConnection: ({ sourceCell, targetCell }) => {
               const sourceElement = ElementFactory.getElement({ handler: sourceCell.getProp('handler'), type: sourceCell.getProp('type') });
               let can = true;
               //先校验起始节点，允许连线再继续校验目标节点
               if (sourceElement) {
                 if (sourceElement.validateConnection && typeof sourceElement.validateConnection === 'function') {
-                  can = !!sourceElement.validateConnection({ editor: this, sourceCell, targetCell });
+                  can = !!sourceElement.validateConnection({ editor: this, sourceCell, targetCell, graph: this.graph });
                 }
               }
               if (!can) {
@@ -307,11 +309,12 @@ export default {
               const targetElement = ElementFactory.getElement({ handler: targetCell.getProp('handler'), type: targetCell.getProp('type') });
               if (targetElement) {
                 if (targetElement.validateConnection && typeof targetElement.validateConnection === 'function') {
-                  return !!targetElement.validateConnection({ editor: this, sourceCell, targetCell });
+                  return !!targetElement.validateConnection({ editor: this, sourceCell, targetCell, graph: this.graph });
                 }
               }
               return true;
             },
+            //当停止拖动边的时候根据 validateEdge 返回值来判断边是否生效，如果返回 false , 该边会被清除。
             validateEdge: ({ edge }) => {
               const sourceCell = edge.getSourceCell();
               const targetCell = edge.getTargetCell();
@@ -320,7 +323,7 @@ export default {
               //先校验起始节点，允许连线再继续校验目标节点
               if (sourceElement) {
                 if (sourceElement.validateEdge && typeof sourceElement.validateEdge === 'function') {
-                  can = !!sourceElement.validateEdge({ edge, editor: this, sourceCell, targetCell });
+                  can = !!sourceElement.validateEdge({ edge, editor: this, sourceCell, targetCell, graph: this.graph });
                 }
               }
               if (!can) {
@@ -329,7 +332,7 @@ export default {
               const targetElement = ElementFactory.getElement({ handler: targetCell.getProp('handler'), type: targetCell.getProp('type') });
               if (targetElement) {
                 if (targetElement.validateEdge && typeof targetElement.validateEdge === 'function') {
-                  return !!targetElement.validateEdge({ edge, editor: this, sourceCell, targetCell });
+                  return !!targetElement.validateEdge({ edge, editor: this, sourceCell, targetCell, graph: this.graph });
                 }
               }
               return true;

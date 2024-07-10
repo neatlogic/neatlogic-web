@@ -1,22 +1,15 @@
 <template>
-  <TsDialog
-    v-bind="dialogConfig"
-    :hasFooter="false"
-    @on-close="close"
-  >
-    <template v-slot:header>
-      <div>{{ relevanceTitle }}</div>
-    </template>
+  <TsDialog v-bind="dialogConfig" :hasFooter="false" @on-close="close">
     <template v-slot>
       <Loading :loadingShow="loadingShow" type="fix"></Loading>
-      <div style="padding-bottom:10px;">
+      <div style="padding-bottom: 10px">
         <table class="flow-table">
           <thead>
             <tr class>
               <th width="60px">#</th>
               <th width="100px">{{ $t('page.type') }}</th>
               <th>{{ $t('term.process.catalogname') }}</th>
-              <th style="text-align: right;padding-right: 16px;width:200px;">
+              <th style="text-align: right; padding-right: 16px; width: 200px">
                 <div class="tsfont-refresh text-action" @click="refreshFlow">
                   {{ $t('page.refresh') }}
                 </div>
@@ -34,18 +27,20 @@
             <tr v-for="(item, index) of channelList" :key="index" :class="index % 2 ? '' : 'bg-grey'">
               <td>{{ index + 1 }}</td>
               <td>{{ item.channelTypeVo.name }}</td>
-              <td><div class="channel-name">{{ item.name }}</div></td>
+              <td>
+                <div class="channel-name">{{ item.name }}</div>
+              </td>
               <td>
                 <div class="action-group">
                   <div class="action-list">
-                    <span 
+                    <span
                       v-show="item.effectiveAuthority"
                       class="action-item active"
-                      :class="item.support == 'mobile'?'disable':''"
-                      :title="item.support == 'mobile'?$t('term.process.mobilereporttip'):''"
+                      :class="item.support == 'mobile' ? 'disable' : ''"
+                      :title="item.support == 'mobile' ? $t('term.process.mobilereporttip') : ''"
                       @click="toWorkorder(item)"
-                    > {{ $t('term.process.submittask') }}</span>
-                    <span class="action-item active" @click="alterServe(item.uuid)"> {{ $t('dialog.title.edittarget',{target:$t('term.process.catalog')}) }}</span>
+                    >{{ $t('term.process.submittask') }}</span>
+                    <span class="action-item active" @click="alterServe(item.uuid)">{{ $t('dialog.title.edittarget', { target: $t('term.process.catalog') }) }}</span>
                   </div>
                 </div>
               </td>
@@ -73,19 +68,18 @@ export default {
   data() {
     return {
       dialogConfig: {
+        title: this.$t('term.process.relcatalog'),
         type: 'modal',
-        width: 'small',
+        width: 'medium',
         isShow: true
       },
       loadingShow: true,
-      relevanceModel: false, //关联模态框
-      relevanceTitle: this.$t('term.process.relcatalog'),
       channelList: [] //关联服务
     };
   },
   beforeCreate() {},
   created() {
-    this.relevanceList(val);
+    this.relevanceList();
   },
   beforeMount() {},
   mounted() {},
@@ -101,7 +95,7 @@ export default {
     },
     refreshFlow() {
       //刷新服务
-      this.relevanceList(this.processUuid);
+      this.relevanceList();
     },
     relevanceList() {
       if (this.processUuid) {
@@ -109,11 +103,14 @@ export default {
         let data = {
           processUuid: this.processUuid
         };
-        this.$api.process.process.processReference(data).then(res => {
-          this.channelList = res.Return.channelList;
-        }).finally(() => {
-          this.loadingShow = false;
-        });
+        this.$api.process.process
+          .processReference(data)
+          .then(res => {
+            this.channelList = res.Return.channelList;
+          })
+          .finally(() => {
+            this.loadingShow = false;
+          });
       }
     },
     alterServe(uuid) {
@@ -125,7 +122,7 @@ export default {
       if (item.support != 'mobile') {
         window.open(HOME + '/process.html#/task-dispatch?uuid=' + item.uuid, '_blank');
       }
-     
+
       // this.$router.push({
       //   path: '/task-dispatch?uuid=' + uuid
       // });
@@ -136,11 +133,10 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
-<style lang='less' scoped>
+<style lang="less" scoped>
 .flow-table {
   width: 100%;
   border-spacing: 0;
@@ -166,7 +162,7 @@ export default {
   margin-bottom: 10px;
   cursor: pointer;
 }
-.channel-name{
+.channel-name {
   word-break: break-all;
 }
 </style>

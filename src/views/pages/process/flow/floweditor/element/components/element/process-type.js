@@ -32,7 +32,7 @@ export default {
   },
   validateEdge({ edge, editor, sourceCell, targetCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(targetCell, 'forward');
-    if (allNextNodeIdList.has(sourceCell.id)) {
+    if (allNextNodeIdList.includes(sourceCell.id)) {
       //
       if (sourceCell.getProp('type') === 'converge') {
         return false;

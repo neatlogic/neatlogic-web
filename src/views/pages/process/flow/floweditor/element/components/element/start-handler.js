@@ -32,7 +32,7 @@ export default {
   validateMagnet({ editor, sourceCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(sourceCell, 'forward');
     //只能有一个后置节点
-    if (allNextNodeIdList.size > 0) {
+    if (allNextNodeIdList.length > 0) {
       ViewUI.Message.warning({ content: $t('message.process.startnodeonlyoneline'), duration: 3, closable: true });
       return false;
     } else {
