@@ -1335,7 +1335,6 @@ export default {
             const { name, icon, uuid, x, y } = n;
             const config = stepList.find(d => d.uuid === uuid);
             const element = ElementFactory.getElement({ handler: config.handler, type: config.type });
-           
             if (element) {
               //有些节点数据的config并没有uuid，为了一致需要补充上
               if (!config.uuid) {
@@ -1344,7 +1343,7 @@ export default {
               cells.push({
                 view: 'vue-shape-view',
                 id: uuid,
-                shape: config.type,
+                shape: element.handler || element.type,
                 type: config.type,
                 handler: config.handler,
                 isAllowStart: config.isAllowStart,
