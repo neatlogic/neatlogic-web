@@ -48,6 +48,10 @@ const Mutations = {
   setExtramenu(state, isUpdateExtramenu) {
     // 更新附加菜单
     state.isUpdateExtramenu = isUpdateExtramenu;
+  },
+  setAutoexecJobListData(state, isUpdateAutoexecJobListData) {
+    // 刷新自动化作业列表数据
+    state.isUpdateAutoexecJobListData = isUpdateAutoexecJobListData;
   }
 };
 

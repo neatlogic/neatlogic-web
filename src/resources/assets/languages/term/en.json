@@ -599,7 +599,11 @@
     "workcentertheadppolicy": "Control the default header order and display of this classification",
     "exportparameters": "[native/setenv] Export parameters, and set the scope of the environment variable to all nodes",
     "eoaviewstep": "View steps during approval",
-    "complatenode": "Transfer nodes"
+    "complatenode": "Transfer nodes",
+    "totaljobnumtarget": "A total of {target} assignments",
+    "runningcounttarget": "{target} in progress",
+    "completedcounttarget": "{target} completed",
+    "failedcounttarget": "{target} failed attempts"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

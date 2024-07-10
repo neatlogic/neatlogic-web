@@ -599,7 +599,11 @@
     "selectsteptimelinetip": "按选的步骤，展示步骤内的时间线",
     "exportparameters": "[native/setenv]导出参数，环境变量的作用域要设置为所有节点",
     "eoaviewstep": "审批时查看步骤",
-    "complatenode": "流转节点"
+    "complatenode": "流转节点",
+    "totaljobnumtarget": "总共{target}个作业",
+    "runningcounttarget": "进行中{target}个",
+    "completedcounttarget": "已完成{target}个",
+    "failedcounttarget": "已失败{target}个"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
