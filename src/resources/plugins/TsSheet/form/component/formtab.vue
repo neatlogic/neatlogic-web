@@ -11,7 +11,7 @@
       <TabPane
         v-for="(tab, tindex) in tabList"
         :key="tindex"
-        :label="tab.text"
+        :label="!$utils.isEmpty(getValidErrorList(tab))?renderTabLabel(tab.text, getValidErrorList(tab)):tab.text"
         :name="tab.value"
         :tab="formItem.uuid"
       >
@@ -25,7 +25,7 @@
           <div v-if="tabCompomentList(tab.value) && tabCompomentList(tab.value).length > 0" :class="{ 'bg-op': config.type === 'card' }">
             <div v-for="(component, index) in tabCompomentList(tab.value)" :key="component.uuid">
               <ChildFormItem
-                :ref="'childFormItem_' + component.uuid"
+                :ref="'childFormItem_' + component.uuid + '#' + tab.value "
                 class="padding-xs"
                 :formItem="component"
                 :formData="formData"
@@ -76,7 +76,8 @@ export default {
       initFormData: this.$utils.deepClone(this.formData),
       tabReaction: {},
       currentTab: null,
-      isFirst: true
+      isFirst: true,
+      validateErrorList: [] // 验证错误列表
     };
   },
   beforeCreate() {},
@@ -120,9 +121,13 @@ export default {
     },
     async validData() {
       const errorList = [];
+      this.validateErrorList = [];
       if (this.$refs) {
         for (let name in this.$refs) {
           if (this.$refs[name]) {
+            // 获取tab的name
+            const tabValue = name.split('#')[1];
+
             let formitem = this.$refs[name];
             if (this.$refs[name] instanceof Array) {
               formitem = this.$refs[name][0];
@@ -133,6 +138,13 @@ export default {
               const err = await formitem.validData();
               if (err && err.length > 0) {
                 errorList.push(...err);
+                // 验证错误列表
+                this.validateErrorList.push(
+                  {
+                    tab: tabValue,
+                    errorList: this.$utils.mapArray(err, 'error')
+                  }
+                );
               }
             }
           }
@@ -271,6 +283,57 @@ export default {
           }
         }
         return conditionData[uuid];
+      };
+    },
+    getValidErrorList() {
+      return (tab) => {
+        let errorList = [];
+        // 获取tab内规则的错误
+        if (!this.$utils.isEmpty(this.validateErrorList) && tab.value) {
+          this.validateErrorList.forEach(i => {
+            if (i.tab === tab.value) {
+              errorList.push(...i.errorList);
+            }
+          });
+        }
+        return errorList;
+      };
+    },
+    renderTabLabel() { 
+      //渲染tab的label
+      return function(label, errorList) {
+        return (h) => {
+          return h('div', [
+            h('span', label),
+            h('Poptip', {
+              props: {
+                trigger: 'hover',
+                title: '异常',
+                width: '350',
+                transfer: true,
+                'word-wrap': true,
+                disabled: !errorList.length
+              }
+            },
+            [
+              h('span', {
+                class: {
+                  'tsfont-warning-s': true,
+                  'mr-xs': true,
+                  'text-error': true
+                }
+              }),
+              h(
+                'div',
+                {
+                  slot: 'content'
+                },
+                [h('ul', errorList.map(i => h('li', i)))]
+              )
+            ]
+            )
+          ]);
+        };
       };
     }
   },
