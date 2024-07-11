@@ -388,6 +388,9 @@ const processtask = {
   },
   listWorkcenterThead(params) {
     return axios.post('/api/rest/workcenter/thead/list', params);
+  },
+  updateProcessForm(params) { //更新工单表单
+    return axios.post('/api/rest/processtask/form/update', params);
   }
 };
 export default processtask;

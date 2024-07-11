@@ -94,7 +94,7 @@
           <DropdownItem v-if="actionConfig.copyprocesstask" @click.native="doBtnBarAction('copyProcessTask')">
             {{ actionConfig.copyprocesstask }}
           </DropdownItem>
-          <!-- 复制上报 -->
+          <!-- 编辑表单 -->
           <DropdownItem v-if="processTaskConfig && processTaskConfig.formConfig && $AuthUtils.hasRole('PROCESSTASK_MODIFY')" @click.native="editForm()">
             {{ $t('dialog.title.edittarget',{'target':$t('page.form')}) }}
           </DropdownItem>
@@ -125,7 +125,10 @@
         @click="doBtnBarAction('backTask')"
       >{{ actionConfig.back }}</Button>
     </span>
-    <!-- 回退_end -->
+    
+    <!-- 按钮插槽 -->
+    <slot name="action"></slot>
+
     <!-- 流转_start -->
     <span v-if="actionConfig.complete" class="action-item">
       <!-- 接下来步骤大于1个，弹窗选择 -->
@@ -156,7 +159,7 @@
         @click="doBtnBarAction('redoTask')"
       >{{ getRedoText }}</Button>
     </span>
-    <FormEditDialog v-if="isShowFormModal" :processTaskConfig="processTaskConfig" @close="closeFormDialog"></FormEditDialog>
+    <FormEditDialog v-if="isShowFormModal" :processTaskConfig="processTaskConfig" @close="closeFormDialog()"></FormEditDialog>
   </div>
 </template>
 <script>
@@ -197,9 +200,8 @@ export default {
     editForm() {
       this.isShowFormModal = true;
     },
-    closeFormDialog(data) {
+    closeFormDialog() {
       this.isShowFormModal = false;
-      this.$emit('doAction', 'toTask', this.processTaskConfig.id);
     }
   },
   filter: {},
@@ -208,7 +210,9 @@ export default {
       //更多操作按钮
       let actionConfig = this.actionConfig;
       let moreAction = false;
-      if (this.$AuthUtils.hasRole('PROCESSTASK_MODIFY') || actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
+      if ((this.processTaskConfig && this.processTaskConfig.formConfig && this.$AuthUtils.hasRole('PROCESSTASK_MODIFY')) || 
+      (this.knowledgeConfig && this.knowledgeConfig.isTransferKnowledge == 1) ||
+      actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
         moreAction = true;
       }
       return moreAction;

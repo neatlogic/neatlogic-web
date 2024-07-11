@@ -316,8 +316,6 @@ import itemDialog from './workorder/actiondialog/index.js';
 import detailmixin from './detailmixin.js';
 import FooterOperationBtn from './workorder/footer-operation-btn.vue'; // 底部操作按钮组件
 
-let Vm;
-
 export default {
   //工单处理
   name: '',
@@ -363,7 +361,6 @@ export default {
   mounted() {
     this.getAllData();
     this.getKnowledgeDetail(); //转知识权限
-    Vm = this;
   },
   beforeDestroy() {
     clearInterval(this.timer);
@@ -509,15 +506,6 @@ export default {
     }
   },
   computed: {
-    isMoreAction() {
-      //更多操作按钮
-      let actionConfig = this.actionConfig;
-      let moreAction = false;
-      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask || (this.knowledgeConfig && this.knowledgeConfig.isTransferKnowledge == 1)) {
-        moreAction = true;
-      }
-      return moreAction;
-    },
     getRedoText() {
       // 获取评分前回退文案
       let redoText = '';

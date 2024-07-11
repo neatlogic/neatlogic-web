@@ -33,7 +33,6 @@ export default {
   data() {
     return {
       formConfig: {}
-
     };
   },
   beforeCreate() {},
@@ -77,16 +76,32 @@ export default {
         this.formConfig = formConfig;
       }
     },
-    okDialog() {
-      let errorMap = this.$refs.formSheet && this.$refs.formSheet.validData();
+    async okDialog() {
+      let errorMap = null;
+      if (this.$refs.formSheet) {
+        errorMap = await this.$refs.formSheet.validData();
+      }
       if (!this.$utils.isEmpty(errorMap)) {
         return;
       }
       let data = {
-        formData: this.$refs.formSheet.getFormData(),
+        processTaskId: this.processTaskConfig.id,
+        formAttributeDataList: this.$refs.formSheet.getFormData(),
         formExtendAttributeDataList: this.$refs.formSheet.getFormExtendData()
       };
-      this.$emit('close', data);
+      this.$api.process.processtask.updateProcessForm(data).then(res => {
+        if (res.Status === 'OK') {
+          //刷新页面
+          this.$skipHistory();
+          this.$router.push({
+            path: '/task-detail',
+            query: {
+              processTaskId: this.processTaskConfig.id,
+              type: Date.now()
+            }
+          });
+        }
+      });
     },
     closeDialog() {
       this.$emit('close');
