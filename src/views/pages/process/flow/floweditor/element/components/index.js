@@ -9,4 +9,6 @@ import timer from '@/views/pages/process/flow/floweditor/element/components/elem
 import automatic from '@/views/pages/process/flow/floweditor/element/components/element/automatic-handler.js';
 import changecreate from '@/views/pages/process/flow/floweditor/element/components/element/changecreate-handler.js';
 import changehandle from '@/views/pages/process/flow/floweditor/element/components/element/changehandle-handler.js';
-export default [start, end, process, converge, timer, automatic, changecreate, changehandle, ...flowElementList];
+import cientitysync from '@/views/pages/process/flow/floweditor/element/components/element/cientitysync-handler.js';
+import condition from '@/views/pages/process/flow/floweditor/element/components/element/condition-handler.js';
+export default [start, end, process, converge, timer, automatic, changecreate, changehandle, cientitysync, condition, ...flowElementList];

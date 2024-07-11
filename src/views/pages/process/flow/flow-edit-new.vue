@@ -216,7 +216,7 @@ export default {
       referenceCount: 0,
       isReady: false, //接口回调初始化完成，修复调用时间过长导致的数据不同步
       isFlowReady: false, //流程数据就绪，用于激活finalFlowData重新计算
-      dataTimestamp: 0, //数据时间搓，在有需要的地方修改他，用于激活computed
+      dataTimestamp: 0, //数据时间戳，在有需要的地方修改他，用于激活computed
       activeTab: 'flowsetting',
       slaList: [],
       draftPrevData: '',
@@ -963,21 +963,10 @@ export default {
       });
     },
     //新的结束
+    
     //下面都是旧方法======================================================
     //=================================================================
     //====================================================================
-
-    createdBasicsNodes() {
-      let list = JSON.parse(JSON.stringify(startEndNode));
-      list.forEach(item => {
-        item.config = { handler: item.handler, name: item.name, stepConfig: {}, type: item.type };
-      });
-      return list;
-    },
-    getShape(data) {
-      // 获取形状dom
-      return TopoVm && TopoVm.getShapePath(data, { fill: 'white' }).outerHTML;
-    },
 
     validItemClick(item) {
       if (item.focus) {
