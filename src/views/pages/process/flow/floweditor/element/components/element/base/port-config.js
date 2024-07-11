@@ -5,7 +5,7 @@ export default {
       attrs: {
         circle: {
           magnet: true,
-          class: 'port-hidden',
+          class: 'port',
           r: 5
         }
       }
@@ -15,7 +15,7 @@ export default {
       attrs: {
         circle: {
           magnet: true,
-          class: 'port-hidden',
+          class: 'port',
           r: 5
         }
       }
@@ -25,7 +25,7 @@ export default {
       attrs: {
         circle: {
           magnet: true,
-          class: 'port-hidden',
+          class: 'port',
           r: 5
         }
       }
@@ -35,7 +35,7 @@ export default {
       attrs: {
         circle: {
           magnet: true,
-          class: 'port-hidden',
+          class: 'port',
           r: 5
         }
       }

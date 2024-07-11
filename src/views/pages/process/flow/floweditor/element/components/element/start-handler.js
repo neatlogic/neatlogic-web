@@ -6,6 +6,7 @@ import { $t } from '@/resources/init.js';
 export default {
   name: '开始',
   type: 'start',
+
   isVue: true, //需要声明是vue组件
   config: {
     component: template,
@@ -21,10 +22,17 @@ export default {
     linkin: false,
     linkout: true
   },
+  oldSetting: {
+    //转换成旧数据时使用
+    shape: 'circle',
+    icon: '#ts-circle-fill',
+    fill: 'RGBA(129, 213, 83, .1)',
+    stroke: 'RGBA(129, 213, 83, .1)'
+  },
   validateMagnet({ editor, sourceCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(sourceCell, 'forward');
     //只能有一个后置节点
-    if (allNextNodeIdList.size > 0) {
+    if (allNextNodeIdList.length > 0) {
       ViewUI.Message.warning({ content: $t('message.process.startnodeonlyoneline'), duration: 3, closable: true });
       return false;
     } else {
@@ -38,7 +46,7 @@ export default {
     }
     return true;
   },
-  valid({node, graph}) {
+  valid({ node, graph }) {
     let validList = [];
     const outgoingEdges = graph.getOutgoingEdges(node);
     if (!outgoingEdges || outgoingEdges.length <= 0) {

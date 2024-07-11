@@ -71,6 +71,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    //返回当前节点的所有后续节点，排除自己
     getAllNextNodeId(sourceNode, type) {
       let edgeList = this.graph.getEdges();
       if (type) {
@@ -96,7 +97,7 @@ export default {
       };
       find(foundNodeIdSet, sourceNodeIdSet, edgeList);
       foundNodeIdSet.delete(sourceNode.id);
-      return foundNodeIdSet;
+      return [...foundNodeIdSet];
     },
     toBack() {
       if (this.selectedCell) {
@@ -129,11 +130,7 @@ export default {
         this.unHighlightNode(cell);
       });
     },
-    unHighlightNode(nodeId) {
-      const node = this.graph.getCellById(nodeId);
-      if (!node) {
-        return;
-      }
+    unHighlightNode(node) {
       if (node.getAttrs()['fo']) {
         node.setAttrByPath('fo/filter', null);
       } else if (node.getAttrs()['body']) {
@@ -142,18 +139,14 @@ export default {
         node.setAttrByPath('line/filter', null);
       }
     },
-    highlightNode(nodeId, color) {
-      const node = this.graph.getCellById(nodeId);
-      if (!node) {
-        return;
-      }
-      this.unHighlightNode(nodeId);
+    highlightNode(node, color) {
+      this.unHighlightNode(node);
       if (node.getAttrs()['fo']) {
         node.setAttrByPath('fo/filter', {
           name: 'outline',
           args: {
             color: color,
-            width: 10,
+            width: 4,
             margin: 0,
             opacity: 0.2
           }
@@ -163,7 +156,7 @@ export default {
           name: 'outline',
           args: {
             color: color,
-            width: 10,
+            width: 4,
             margin: 0,
             opacity: 0.2
           }
@@ -173,7 +166,7 @@ export default {
           name: 'outline',
           args: {
             color: color,
-            width: 10,
+            width: 4,
             margin: 0,
             opacity: 0.2
           }
@@ -186,68 +179,6 @@ export default {
       const p = this.graph.clientToLocal({ x: x, y: y });
       this.drawingEdge.setTarget(p);
       this.drawingEdge.show();
-    },
-    resizeNode(node) {
-      let parent = node.getParent();
-      while (parent && parent.isNode()) {
-        const embedpadding = parent.getProp('setting')['embedpadding'] || [10, 10, 10, 10];
-        let originSize = parent.prop('originSize');
-        if (originSize == null) {
-          originSize = parent.getSize();
-          parent.prop('originSize', originSize);
-        }
-
-        let originPosition = parent.prop('originPosition');
-        if (originPosition == null) {
-          originPosition = parent.getPosition();
-          parent.prop('originPosition', originPosition);
-        }
-        let x = originPosition.x;
-        let y = originPosition.y;
-        let cornerX = originPosition.x + originSize.width;
-        let cornerY = originPosition.y + originSize.height;
-        let hasChange = false;
-
-        const children = parent.getChildren();
-        if (children) {
-          children.forEach(child => {
-            const bbox = child.getBBox();
-            const corner = bbox.getCorner();
-            if (bbox.x - embedpadding[3] < x) {
-              x = bbox.x - embedpadding[3];
-              hasChange = true;
-            }
-
-            if (bbox.y - embedpadding[0] < y) {
-              y = bbox.y - embedpadding[0];
-              hasChange = true;
-            }
-
-            if (corner.x + embedpadding[1] > cornerX) {
-              cornerX = corner.x + embedpadding[1];
-              hasChange = true;
-            }
-
-            if (corner.y + embedpadding[2] > cornerY) {
-              cornerY = corner.y + embedpadding[2];
-              hasChange = true;
-            }
-          });
-        }
-
-        if (hasChange) {
-          parent.prop(
-            {
-              position: { x, y },
-              size: { width: cornerX - x, height: cornerY - y }
-            },
-            { skipParentHandler: true }
-          );
-          parent = parent.getParent();
-        } else {
-          break;
-        }
-      }
     },
     init: function() {
       if (!this.graph) {
@@ -339,26 +270,29 @@ export default {
                     }
                   }
                 },
+                data: { name: ''},
                 zIndex: 0
               });
               return edge;
             },
+            //点击 magnet 时 根据 validateMagnet 返回值来判断是否新增边，触发时机是 magnet 被按下，如果返回 false ，则没有任何反应，如果返回 true ，会在当前 magnet 创建一条新的边
             validateMagnet: ({ cell }) => {
               const element = ElementFactory.getElement({ handler: cell.getProp('handler'), type: cell.getProp('type') });
               if (element) {
                 if (element.validateMagnet && typeof element.validateMagnet === 'function') {
-                  return !!element.validateMagnet({ editor: this, sourceCell: cell });
+                  return !!element.validateMagnet({ editor: this, sourceCell: cell, graph: this.graph });
                 }
               }
               return true;
             },
+            //在移动边的时候判断连接是否有效，如果返回 false ，当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素。
             validateConnection: ({ sourceCell, targetCell }) => {
               const sourceElement = ElementFactory.getElement({ handler: sourceCell.getProp('handler'), type: sourceCell.getProp('type') });
               let can = true;
               //先校验起始节点，允许连线再继续校验目标节点
               if (sourceElement) {
                 if (sourceElement.validateConnection && typeof sourceElement.validateConnection === 'function') {
-                  can = !!sourceElement.validateConnection({ editor: this, sourceCell, targetCell });
+                  can = !!sourceElement.validateConnection({ editor: this, sourceCell, targetCell, graph: this.graph });
                 }
               }
               if (!can) {
@@ -367,11 +301,12 @@ export default {
               const targetElement = ElementFactory.getElement({ handler: targetCell.getProp('handler'), type: targetCell.getProp('type') });
               if (targetElement) {
                 if (targetElement.validateConnection && typeof targetElement.validateConnection === 'function') {
-                  return !!targetElement.validateConnection({ editor: this, sourceCell, targetCell });
+                  return !!targetElement.validateConnection({ editor: this, sourceCell, targetCell, graph: this.graph });
                 }
               }
               return true;
             },
+            //当停止拖动边的时候根据 validateEdge 返回值来判断边是否生效，如果返回 false , 该边会被清除。
             validateEdge: ({ edge }) => {
               const sourceCell = edge.getSourceCell();
               const targetCell = edge.getTargetCell();
@@ -380,7 +315,7 @@ export default {
               //先校验起始节点，允许连线再继续校验目标节点
               if (sourceElement) {
                 if (sourceElement.validateEdge && typeof sourceElement.validateEdge === 'function') {
-                  can = !!sourceElement.validateEdge({ edge, editor: this, sourceCell, targetCell });
+                  can = !!sourceElement.validateEdge({ edge, editor: this, sourceCell, targetCell, graph: this.graph });
                 }
               }
               if (!can) {
@@ -389,7 +324,7 @@ export default {
               const targetElement = ElementFactory.getElement({ handler: targetCell.getProp('handler'), type: targetCell.getProp('type') });
               if (targetElement) {
                 if (targetElement.validateEdge && typeof targetElement.validateEdge === 'function') {
-                  return !!targetElement.validateEdge({ edge, editor: this, sourceCell, targetCell });
+                  return !!targetElement.validateEdge({ edge, editor: this, sourceCell, targetCell, graph: this.graph });
                 }
               }
               return true;
@@ -755,7 +690,8 @@ export default {
           }
         });
         this.graph.on('node:mouseenter', ({ node }) => {
-          const nodeList = this.graph.getNodes();
+          //this.graph.disableHistory();
+          /*const nodeList = this.graph.getNodes();
           nodeList.forEach(n => {
             const ports = n.getPorts() || [];
             ports.forEach(port => {
@@ -763,10 +699,18 @@ export default {
                 class: 'port'
               });
             });
+          });*/
+          /*const ports = node.getPorts() || [];
+          ports.forEach(port => {
+            node.setPortProp(port.id, 'attrs/circle', {
+              class: 'port'
+            });
           });
+          this.graph.enableHistory();*/
         });
         this.graph.on('node:mouseleave', ({ node }) => {
-          const nodeList = this.graph.getNodes();
+          //this.graph.disableHistory();
+          /*const nodeList = this.graph.getNodes();
           nodeList.forEach(n => {
             const ports = n.getPorts() || [];
             ports.forEach(port => {
@@ -774,11 +718,19 @@ export default {
                 class: 'port-hidden'
               });
             });
-          });
+          });*/
+          /*const ports = node.getPorts() || [];
+          ports.forEach(port => {
+            node.setPortProp(port.id, 'attrs/circle', {
+              class: 'port-hidden'
+            });
+          });*/
+          //this.graph.enableHistory();
         });
         this.graph.on('node:selected', ({ node }) => {
           //创建改变形状选中框
           //this.graph.createTransformWidget(node);
+          this.graph.disableHistory();
           node.addTools({
             name: 'boundary',
             args: {
@@ -800,8 +752,10 @@ export default {
           }
           this.selectedCell = node;
           this.$emit('node:selected', node);
+          this.graph.enableHistory();
         });
         this.graph.on('node:unselected', ({ node }) => {
+          this.graph.disableHistory();
           node.removeTool('boundary');
           if (node.hasTool('button-remove')) {
             node.removeTool('button-remove');
@@ -821,8 +775,10 @@ export default {
               this.$emit('node:unselected');
             }
           }
+          this.graph.enableHistory();
         });
         this.graph.on('edge:selected', ({ edge }) => {
+          this.graph.disableHistory();
           if (this.selectedCell && this.selectedCell.isNode()) {
             this.$emit('node:unselected');
           }
@@ -834,25 +790,29 @@ export default {
               }
             });
           }
-          edge.addTools({
+          this.highlightNode(edge, '#1670f0');
+          /*edge.addTools({
             name: 'boundary',
             args: {
+              padding: 5,
               attrs: {
-                stroke: '#FEB663',
-                strokeWidth: 2
+                class: 'boundary-edge'
               }
             }
-          });
+          });*/
           this.selectedCell = edge;
           this.$emit('edge:selected', edge);
+          this.graph.enableHistory();
         });
         this.graph.on('edge:unselected', ({ edge }) => {
+          this.graph.disableHistory();
           if (edge.hasTool('button-remove')) {
             edge.removeTool('button-remove');
           }
           if (edge.hasTool('vertices')) {
             edge.removeTool('vertices');
           }
+          this.unHighlightNode(edge);
           if (edge.hasTool('boundary')) {
             edge.removeTool('boundary');
           }
@@ -879,19 +839,24 @@ export default {
             }
             this.$emit('edge:unselected', edge);
           }
+          this.graph.enableHistory();
         });
         this.graph.on('edge:mouseenter', ({ cell }) => {
+          this.graph.disableHistory();
           cell.addTools([
             {
               name: 'button-remove',
               args: { distance: '50%' }
             }
           ]);
+          this.graph.enableHistory();
         });
         this.graph.on('edge:mouseleave', ({ cell }) => {
+          this.graph.disableHistory();
           if (cell.hasTool('button-remove')) {
             cell.removeTool('button-remove');
           }
+          this.graph.enableHistory();
         });
         this.graph.on('node:contextmenu', ({ e, x, y, node, view }) => {
           console.log(x, y);
@@ -902,28 +867,8 @@ export default {
         this.graph.on('node:embedded', () => {
           this.ctrlPressed = false;
         });
-        this.graph.on('node:change:size', ({ node, options }) => {
-          if (options.skipParentHandler) {
-            return;
-          }
-          const children = node.getChildren();
-          if (children && children.length) {
-            node.prop('originSize', node.getSize());
-          }
-          this.resizeNode(node);
-        });
-        //自动扩展/收缩父节点
-        this.graph.on('node:change:position', ({ node, options }) => {
-          if (options.skipParentHandler || this.ctrlPressed || options.slient) {
-            return;
-          }
-
-          const children = node.getChildren();
-          if (children && children.length) {
-            node.prop('originPosition', node.getPosition());
-          }
-
-          this.resizeNode(node);
+        this.graph.on('node:move', ({node}) => {
+          this.graph.startBatch('node-move');
         });
         this.graph.on('node:moved', ({ node }) => {
           const outEdges = this.graph.getOutgoingEdges(node);
@@ -951,6 +896,7 @@ export default {
               edge.setVertices([]);
             }
           });
+          this.graph.stopBatch('node-move');
         });
         this.graph.on('node:added', ({ node }) => {
           if (this.autoSelect) {

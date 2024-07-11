@@ -226,7 +226,8 @@
                   }"
                 >
                   <template v-slot:automatic>
-                    <div v-if="processTaskStepConfig && processTaskStepConfig.processTaskStepData && processTaskStepConfig.processTaskStepData.isStepUser == 1">
+                    <!-- 自动处理Tab中不通过当前用户是否是自动处理步骤的处理人来控制是否显示自动处理步骤信息 -->
+                    <div v-if="processTaskStepConfig && processTaskStepConfig.processTaskStepData">
                       <div v-if="processTaskStepConfig.processTaskStepData.requestAudit && JSON.stringify(processTaskStepConfig.processTaskStepData.requestAudit) != '{}'" class="request-audit">
                         <div class="automatic-title">
                           <span>{{ $t('term.process.callrecord') }}</span>
