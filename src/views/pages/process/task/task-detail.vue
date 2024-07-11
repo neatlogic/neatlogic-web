@@ -430,11 +430,11 @@ export default {
             }
           });
           this.$store.commit('setAutoexecJobListData', false);
+          this.$skipHistory();
           this.$router.replace({
             path: '/task-detail',
             query: {
-              ...query,
-              type: Date.now()
+              ...query
             }
           });
         }
