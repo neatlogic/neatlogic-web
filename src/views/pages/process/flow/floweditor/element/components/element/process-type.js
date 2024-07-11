@@ -63,7 +63,7 @@ export default {
     }
     if (!isStartNode) {
       //校验分配设置
-      validList.push(...assignValid.valid({ node, graph }));
+      validList.push(...assignValid.valid({ node, graph, view }));
     }
     //校验通知设置
     validList.push(...notifyValid.valid({ node, graph }));
