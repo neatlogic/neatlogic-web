@@ -94,9 +94,23 @@
           <DropdownItem v-if="actionConfig.copyprocesstask" @click.native="doBtnBarAction('copyProcessTask')">
             {{ actionConfig.copyprocesstask }}
           </DropdownItem>
-          <!-- 复制上报 -->
+          <!-- 编辑表单 -->
+          <DropdownItem v-if="processTaskConfig && processTaskConfig.formConfig && $AuthUtils.hasRole('PROCESSTASK_MODIFY')" @click.native="editForm()">
+            {{ $t('dialog.title.edittarget',{'target':$t('page.form')}) }}
+          </DropdownItem>
+          <!-- 转为知识 -->
+          <DropdownItem v-if="knowledgeConfig && knowledgeConfig.isTransferKnowledge == 1" @click.native="doBtnBarAction('createKnowledge')">
+            {{ $t('term.process.converttoknowdoc') }}
+          </DropdownItem>
         </DropdownMenu>
       </Dropdown>
+    </span>
+    <!-- 重审 -->
+    <span v-if="actionConfig.reapproval" class="action-item">
+      <Button
+        icon="tsfont tsfont-rotate-right"
+        @click="doBtnBarAction('reapprovalTask')"
+      >{{ actionConfig.reapproval }}</Button>
     </span>
     <!-- 回退s -->
     <span v-if="actionConfig.back && backStepList.length > 1" class="action-item">
@@ -111,7 +125,10 @@
         @click="doBtnBarAction('backTask')"
       >{{ actionConfig.back }}</Button>
     </span>
-    <!-- 回退_end -->
+    
+    <!-- 按钮插槽 -->
+    <slot name="action"></slot>
+
     <!-- 流转_start -->
     <span v-if="actionConfig.complete" class="action-item">
       <!-- 接下来步骤大于1个，弹窗选择 -->
@@ -135,12 +152,22 @@
       </Button>
     </span>
     <!-- 流转_end -->
+    <!-- 评分前回退 -->
+    <span v-if="getRedoText" class="action-item">
+      <Button
+        icon="tsfont tsfont-reply"
+        @click="doBtnBarAction('redoTask')"
+      >{{ getRedoText }}</Button>
+    </span>
+    <FormEditDialog v-if="isShowFormModal" :processTaskConfig="processTaskConfig" @close="closeFormDialog()"></FormEditDialog>
   </div>
 </template>
 <script>
 export default {
   name: '',
-  components: {},
+  components: {
+    FormEditDialog: () => import('./form-edit-dialog')
+  },
   props: {
     actionConfig: { type: Object },
     disabledConfig: { tpye: Object },
@@ -148,10 +175,13 @@ export default {
     selectBackConfig: {type: Object},
     nextStepList: { type: Array },
     backStepList: { type: Array },
-    pocesstaskview: {type: Boolean}
+    pocesstaskview: {type: Boolean},
+    knowledgeConfig: {type: Object}
   },
   data() {
-    return {};
+    return {
+      isShowFormModal: false
+    };
   },
   beforeCreate() {},
   created() {},
@@ -166,6 +196,12 @@ export default {
   methods: {
     doBtnBarAction(actionName, ...args) {
       this.$emit('doAction', actionName, ...args);
+    },
+    editForm() {
+      this.isShowFormModal = true;
+    },
+    closeFormDialog() {
+      this.isShowFormModal = false;
     }
   },
   filter: {},
@@ -174,10 +210,17 @@ export default {
       //更多操作按钮
       let actionConfig = this.actionConfig;
       let moreAction = false;
-      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
+      if ((this.processTaskConfig && this.processTaskConfig.formConfig && this.$AuthUtils.hasRole('PROCESSTASK_MODIFY')) || 
+      (this.knowledgeConfig && this.knowledgeConfig.isTransferKnowledge == 1) ||
+      actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
         moreAction = true;
       }
       return moreAction;
+    },
+    getRedoText() {
+      // 获取评分前回退文案
+      let redoStepConfig = this.processTaskConfig && !this.$utils.isEmpty(this.processTaskConfig.redoStepList) && this.processTaskConfig.redoStepList.find((item) => item.aliasName);
+      return redoStepConfig ? redoStepConfig.aliasName : (this.actionConfig.redo || '');
     }
   },
   watch: {}
