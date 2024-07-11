@@ -144,8 +144,8 @@ export default {
         this.loadingShow = false;
       }
       setTimeout(() => {
-        // 当this.loadingShow为false后，将在三秒后自动刷新当前路由，以避免同时进行的刷新带来的不佳体验。
-        // this.$store.commit('setAutoexecJobListData', true);
+        // 当this.loadingShow为false后，将在两秒后自动刷新当前路由，以避免同时进行的刷新带来的不佳体验。
+        this.$store.commit('setAutoexecJobListData', true);
       }, 2 * 1000);
     }
   },
