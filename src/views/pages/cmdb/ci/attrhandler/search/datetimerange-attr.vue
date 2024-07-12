@@ -6,6 +6,7 @@
       :value="value"
       :type="type"
       :format="format"
+      :transfer="true"
       @change="setData"
     ></TsFormDatePicker>
   </div>
