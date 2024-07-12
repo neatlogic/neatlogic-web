@@ -277,7 +277,7 @@
           width="100%"
           :multiple="false"
           :validateList="validateSelectList"
-          :groupList="groupList"
+          :groupList="['user', 'role', 'team']"
           border="border"
         ></UserSelect>
       </div>
@@ -394,7 +394,7 @@ export default {
           value: 'role'
         }
       ],
-      groupList: ['user', 'role', 'team'],
+      groupList: ['user', 'role', 'team'], //指派范围
       dealwithuserConfig: {
         border: 'border',
         validateList: ['required'],

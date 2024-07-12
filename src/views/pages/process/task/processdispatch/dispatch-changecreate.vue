@@ -95,7 +95,20 @@
     </div>
     <div v-if="!!isNeedContent" id="dispatchContent" class="bg-op radius-lg padding mb-nm list-block">
       <div class="title" :class="{'pb-nm':showDetailConfig.content}" @click="showDetailConfig.content = !showDetailConfig.content">
-        <span>{{ $t('term.process.changecontent') }}</span>
+        <div style="display:inline-block;">
+          <span>{{ $t('term.process.changecontent') }}</span>
+          <Tooltip
+            v-if="descriptionTooltip"
+            placement="bottom"
+            max-width="600"
+            :transfer="true"
+          >
+            <span class="tsfont-info-o"></span>
+            <div slot="content" class="dispatch-omnipotent-description-tooltip">
+              <div v-html="descriptionTooltip"></div>
+            </div>
+          </Tooltip>
+        </div>
         <span v-show="ckeditorRequired" class="require-label"></span>
         <span class="detail-icon text-tip-active" :class="showDetailConfig.content?'tsfont-down':'tsfont-up'"></span>
       </div>
@@ -106,6 +119,7 @@
           :editorDataS="changeReport.content"
           :showIconToggle="true"
           width="100%"
+          :placeholder="ckeditorPlaceholder"
           :validateList="ckeditorValidateList"
         ></TsCkeditor>
       </div>
@@ -131,6 +145,7 @@
 </template>
 <script>
 import {store} from './dispatchState.js';
+import dispatchMixin from './dispatch-mixin.js';
 export default {
   name: '',
   components: {
@@ -142,6 +157,7 @@ export default {
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
     ChangeDetail: () => import('./workorder/change/change-detail.vue')
   },
+  mixins: [dispatchMixin],
   props: {
     draftData: Object
   },
@@ -285,6 +301,15 @@ export default {
     position: absolute;
     right: 0;
     top: 0;
+  }
+}
+</style>
+<style lang="less">
+.dispatch-omnipotent-description-tooltip {
+  max-height: 300px;
+  overflow-y: scroll;
+  img {
+    max-width: 100%;
   }
 }
 </style>

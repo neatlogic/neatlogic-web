@@ -7,13 +7,14 @@
           v-bind="attrData"
           keyName="uuid"
           :canDrag="true"
+          :height="tableHeight"
           @update:tbodyList="updateList"
         >
           <template v-slot:name="{ row }">
-            <div><TsFormInput v-model="row.name" :validateList="['char']"></TsFormInput></div>
+            <div><TsFormInput v-model="row.name" :validateList="['char']" style="min-width: 120px"></TsFormInput></div>
           </template>
           <template v-slot:alias="{ row }">
-            <div><TsFormInput v-model="row.alias" :validateList="['required']"></TsFormInput></div>
+            <div><TsFormInput v-model="row.alias" :validateList="['required']" style="min-width: 120px"></TsFormInput></div>
           </template>
           <template slot="isHidden" slot-scope="{ row }">
             <div>
@@ -32,11 +33,12 @@
                 v-model="row.condition.expression"
                 :transfer="true"
                 :dataList="getAttrExpressionList(row.attrId)"
+                style="width: 80px;"
               ></TsFormSelect>
             </div>
           </template>
           <template slot="conditionValue" slot-scope="{ row }">
-            <div>
+            <div style="min-width:150px; white-space: pre-line;">
               <AttrSearcher
                 v-if="row.attrId"
                 ref="attrHandler"
@@ -94,11 +96,14 @@ export default {
         maskClose: false,
         isShow: true,
         width: 'large'
-      }
+      },
+      tableHeight: 300 //表格高度
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.tableHeight = window.innerHeight * 0.8 - 130;
+  },
   beforeMount() {},
   async mounted() {
     await this.init();
