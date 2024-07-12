@@ -2,7 +2,7 @@ import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
 const assignValid = {
   //校验节点分派策略
-  valid: ({ node, graph }) => {
+  valid: ({ node, graph, view }) => {
     const validList = [];
     const nodeData = node.getData()['stepConfig'] || {};
     if (node && node.getProp('setting') && node.getProp('setting').assignable) {

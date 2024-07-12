@@ -13,7 +13,7 @@
             <template v-slot:step>
               <TsRow>
                 <Col v-for="(item, index) in backStepList" :key="index" span="8">
-                  <div class="select-box" :class="item.id == selectConfig.id ? 'active' : ''" @click="selecStep(item, 'back')">
+                  <div class="select-box" :class="selectConfig && item.id == selectConfig.id ? 'active' : ''" @click="selecStep(item, 'back')">
                     <div class="select-icon">
                       <i></i>
                     </div>
@@ -140,10 +140,11 @@ export default {
     processTaskConfig: {
       handler(val) {
         if (val && val.redoStepList) {
-          this.selectConfig = val.redoStepList[0];
+          this.selectConfig = val.redoStepList[0] || {};
         }
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   }
 };

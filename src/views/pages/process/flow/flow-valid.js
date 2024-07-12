@@ -93,7 +93,10 @@ let valid = {
                     that.$set(obj, 'uuid', '');
                   }
                   if (!that.$utils.isEmpty(obj.condition)) {
-                    let condition = that.$utils.intersectionArr(preNodeUuidList, obj.condition);
+                    //前置步骤可选的路径节点
+                    const currPreNode = that.$topoVm.getNodeByUuid(obj.uuid);
+                    const currPreNodeUuidList = currPreNode.getNextNodes('forward').map(i => i.getUuid());
+                    let condition = that.$utils.intersectionArr(currPreNodeUuidList, obj.condition);
                     that.$set(obj, 'condition', condition);
                   }
                   if (!obj.uuid) {

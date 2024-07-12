@@ -125,11 +125,6 @@
                       {{ actionConfig.retreat }}
                     </DropdownItem>
                     <!-- 撤回_end -->
-                    <!-- 添加子任务_start -->
-                    <DropdownItem v-if="actionConfig.createsubtask" :disabled="disabledConfig.subtasking" @click.native="addAssist">
-                      {{ actionConfig.createsubtask }}
-                    </DropdownItem>
-                    <!-- 添加子任务_end -->
                     <!--转报  -->
                     <DropdownItem v-if="actionConfig.tranferreport" @click.native="openRanferreport">
                       {{ actionConfig.tranferreport }}
@@ -152,6 +147,10 @@
                     <!-- 复制上报 -->
                     <DropdownItem v-if="actionConfig.copyprocesstask" @click.native="copyProcessTask">
                       {{ actionConfig.copyprocesstask }}
+                    </DropdownItem>
+                    <!-- 编辑表单 -->
+                    <DropdownItem v-if="processTaskConfig && processTaskConfig.formConfig && $AuthUtils.hasRole('PROCESSTASK_MODIFY')" @click.native="isShowFormModal = true">
+                      {{ $t('dialog.title.edittarget',{'target':$t('page.form')}) }}
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
@@ -501,24 +500,22 @@
     </TsDialog>
     <!-- 转报 -->
     <RanferreportDialog v-if="actionConfig.tranferreport" :isShow.sync="ranferreportModel" :processTaskConfig="processTaskConfig"></RanferreportDialog>
+    <!-- 编辑表单 -->
+    <FormEditDialog v-if="isShowFormModal" :processTaskConfig="processTaskConfig" @close="isShowFormModal=false"></FormEditDialog>
   </div>
 </template>
 
 <script>
 import '@/views/pages/process/flow/topoComponent/index.js';
 import clipboard from '@/resources/directives/clipboard.js';
-import { mapGetters, mapMutations } from 'vuex';
 import detailmixin from './detailmixin.js';
 import FooterOperationBtn from './workorder/footer-operation-btn.vue'; // 底部操作按钮组件
-
-let Vm;
 
 export default {
   //工单处理
   name: '',
   tagComponent: 'taskDeal', //主要用来标识是上报页面，为表单修改优先级做标志
   components: {
-    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     CenterDetail: () => import('./workorder/CenterDetail.vue'),
     RightSetting: () => import('./workorder/RightSetting.vue'),
@@ -532,6 +529,7 @@ export default {
     ChangeDispatch: () => import('@/views/pages/process/task/processdetail/workorder/change/change-dispatch.vue'),
     ChangeDetail: () => import('@/views/pages/process/task/processdetail/workorder/change/change-detail.vue'),
     StepSelect: () => import('@/views/pages/process/task/processdetail/workorder/common/step-select.vue'),
+    FormEditDialog: () => import('@/views/pages/process/task/processdetail/workorder/common/form-edit-dialog'),
     FooterOperationBtn
   },
   directives: {
@@ -582,14 +580,14 @@ export default {
       changeStepList: [],
       isEditchange: false,
       isEditStepworker: false,
-      taskAlertHeight: 0 // taskAlert高度
+      taskAlertHeight: 0, // taskAlert高度
+      isShowFormModal: false
     };
   },
   created() {
   },
   mounted() {
     this.getAllData();
-    Vm = this;
   },
   beforeDestroy() {
     clearInterval(this.timer);
@@ -860,7 +858,8 @@ export default {
       //更多操作按钮
       let actionConfig = this.actionConfig;
       let moreAction = false;
-      if (actionConfig.createsubtask || actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
+      if ((this.processTaskConfig && this.processTaskConfig.formConfig && this.$AuthUtils.hasRole('PROCESSTASK_MODIFY')) || 
+      actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask) {
         moreAction = true;
       }
       return moreAction;
