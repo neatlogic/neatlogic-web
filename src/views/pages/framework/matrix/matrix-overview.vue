@@ -448,6 +448,10 @@ export default {
         customViewId: {
           type: 'select',
           label: this.$t('term.cmdb.customview'),
+          dynamicUrl: '/api/rest/cmdb/customview/search',
+          rootName: 'tbodyList',
+          textName: 'name',
+          valueName: 'id',
           value: null,
           transfer: true,
           isHidden: true,
@@ -629,7 +633,6 @@ export default {
           newList.push(emptyRow);
           _this.addAtrixForm.attributeMappingList.value = newList;
           _this.addAtrixForm.attributeMappingList.isHidden = false;
-          _this.cmdbCustomViewList();
         } else {
           _this.addAtrixForm.attributeMappingList.isHidden = true;
         }
@@ -683,18 +686,6 @@ export default {
             });
           });
           this.addAtrixForm.ciId.dataList = newData;
-        }
-      });
-    },
-    async cmdbCustomViewList() {
-      await this.$https.post('/api/rest/cmdb/customview/search', {}).then(res => {
-        if (res.Status == 'OK') {
-          let resData = res.Return.tbodyList;
-          let newData = [];
-          resData.forEach(v => {
-            newData.push({text: v.name, value: v.id});
-          });
-          this.addAtrixForm.customViewId.dataList = newData;
         }
       });
     },
@@ -1056,9 +1047,10 @@ export default {
         external: 'tsfont-integration', // 外部数据源
         cmdbci: 'tsfont-ci-o', // cmdb模型数据源
         view: 'tsfont-shitu', // 视图数据源
-        private: 'tsfont-private' //私有数据源
+        private: 'tsfont-private', //私有数据源
+        cmdbcustomview: 'tsfont-component' // 自定义视图
       };
-      return iconObj[typeName] || '';
+      return iconObj[typeName] || 'tsfont-chart-table';
     },
     editMatrix: function(uuid, name, type) {
       //编辑矩阵
