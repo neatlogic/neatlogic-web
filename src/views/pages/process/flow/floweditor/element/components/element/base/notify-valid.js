@@ -4,7 +4,9 @@ const notifyValid = {
   valid: ({ node, graph }) => {
     const validList = [];
     const nodeConfig = node.getData();
-    if (nodeConfig?.stepConfig?.notifyPolicyConfig?.isCustom && nodeConfig?.stepConfig?.notifyPolicyConfig?.policyId) {
+    if (nodeConfig?.stepConfig?.notifyPolicyConfig && 
+      nodeConfig.stepConfig.notifyPolicyConfig.isCustom &&
+      !nodeConfig.stepConfig.notifyPolicyConfig.policyId) {
       // 【通知策略】为自定义通知策略，必填
       validList.push({
         msg: $t('form.validate.required', { target: $t('page.notificationstrategy') }),
