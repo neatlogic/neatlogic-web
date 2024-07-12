@@ -129,10 +129,6 @@
           </Radio>
         </RadioGroup>
       </template>
-      <template v-slot:help>
-        <i-switch v-model="channelValue.isActiveHelp" :true-value="1" :false-value="0"></i-switch>
-        <TsCkeditor v-show="channelValue.isActiveHelp" v-model="channelValue.help" class="ckeditor"></TsCkeditor>
-      </template>
     </TsForm>
     <div class="btnRightText">
       <Button
@@ -151,7 +147,6 @@
 <script>
 import TsForm from '@/resources/plugins/TsForm/TsForm.vue';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect.vue';
-import TsCkeditor from '@/resources/plugins/TsCkeditor/TsCkeditor.vue';
 import editmixin from './editmixin.js';
 import TranferreportSetting from '../tranferreport-setting.vue';
 export default {
@@ -159,7 +154,6 @@ export default {
   components: {
     TsForm,
     TsFormSelect,
-    TsCkeditor,
     TranferreportSetting,
     ViewProcess: () => import('../catalog-viewprocess.vue'),
     IconEdit: () => import('./icon-edit.vue'),
@@ -355,7 +349,14 @@ export default {
         {
           type: 'ckeditor',
           name: 'desc',
-          label: this.$t('page.description')
+          label: '服务说明',
+          tooltip: '用于【服务目录】菜单下服务说明'
+        },
+        {
+          type: 'ckeditor',
+          name: 'contentHelp',
+          label: '描述帮助',
+          tooltip: '用于【服务上报】页中的描述说明提示'
         }
       ],
       initValue: {
@@ -370,10 +371,8 @@ export default {
         isNeedPriority: 1, //显示优先级
         defaultPriorityUuid: '', //默认优先级uuid
         priorityUuidList: [], //优先级列表
-        allowDesc: 0, //是否显示上报页描述
         support: 'all', //服务目录的使用范围(all/pc/mobile)
         help: '',
-        isActiveHelp: 0,
         channelTypeUuid: '',
         config: {
           allowTranferReport: 0, //允许转报
@@ -444,10 +443,8 @@ export default {
             isNeedPriority: itemValue.hasOwnProperty('isNeedPriority') ? itemValue.isNeedPriority : 1,
             defaultPriorityUuid: itemValue.defaultPriorityUuid || '',
             priorityUuidList: itemValue.priorityUuidList || [],
-            allowDesc: itemValue.allowDesc || 0,
             support: itemValue.support || 'all',
-            help: itemValue.help || '',
-            isActiveHelp: itemValue.isActiveHelp || 0,
+            contentHelp: itemValue.contentHelp || '',
             channelTypeUuid: itemValue.channelTypeUuid || '',
             config: {
               allowTranferReport: itemValue.config ? itemValue.config.allowTranferReport : 0, // 允许转报
