@@ -74,7 +74,7 @@ export default {
   filter: {},
   computed: {
     finalData() {
-      const data = [];
+      let data = [];
       if (this.data && this.data.length > 0) {
         //数据合并汇聚
         this.data.forEach(d => {
@@ -86,6 +86,7 @@ export default {
           }
         });
       }
+      data = data.filter(d => d.xField > 0);
       return data;
     }
   },
