@@ -428,6 +428,8 @@ export default {
      * @returns {Promise<void>} 异步操作，无返回值
      */
     async saveFlowDraft() {
+      //清空所有选择
+      this.graph.cleanSelection();
       // 添加草稿
       const draftData = this.getFlowData(false);
       await this.$api.process.process.processDraftSave({ processUuid: draftData.uuid, name: this.processName, config: draftData.config }).then(res => {
@@ -455,6 +457,8 @@ export default {
     },
     //保存流程
     async saveFlow(needRefresh) {
+      //清空所有选择
+      this.graph.cleanSelection();
       this.validFlow(true);
       if (this.validList.length === 0) {
         const saveData = this.getFlowData(false);

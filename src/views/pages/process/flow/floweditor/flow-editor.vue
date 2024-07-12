@@ -130,6 +130,18 @@ export default {
         this.unHighlightNode(cell);
       });
     },
+    highlightEdge(edge, action) {
+      if (edge && edge.isEdge()) {
+        edge.setAttrByPath('line/class', 'line-' + action);
+        edge.setAttrByPath('line/targetMarker/class', 'marker-' + action);
+      }
+    },
+    unHighlightEdge(edge) {
+      if (edge && edge.isEdge()) {
+        edge.setAttrByPath('line/class', 'line');
+        edge.setAttrByPath('line/targetMarker/class', 'marker');
+      }
+    },
     unHighlightNode(node) {
       if (node.getAttrs()['fo']) {
         node.setAttrByPath('fo/filter', null);
@@ -751,6 +763,13 @@ export default {
             });
           }
           this.selectedCell = node;
+          //高亮连线
+          const edges = this.graph.getConnectedEdges(node);
+          if (edges && edges.length > 0) {
+            edges.forEach(e => {
+              this.highlightEdge(e, 'actived');
+            });
+          }
           this.$emit('node:selected', node);
           this.graph.enableHistory();
         });
@@ -775,6 +794,13 @@ export default {
               this.$emit('node:unselected');
             }
           }
+          //取消高亮连线
+          const edges = this.graph.getConnectedEdges(node);
+          if (edges && edges.length > 0) {
+            edges.forEach(e => {
+              this.unHighlightEdge(e);
+            });
+          }
           this.graph.enableHistory();
         });
         this.graph.on('edge:selected', ({ edge }) => {
@@ -790,16 +816,7 @@ export default {
               }
             });
           }
-          this.highlightNode(edge, '#1670f0');
-          /*edge.addTools({
-            name: 'boundary',
-            args: {
-              padding: 5,
-              attrs: {
-                class: 'boundary-edge'
-              }
-            }
-          });*/
+          this.highlightEdge(edge, 'selected');
           this.selectedCell = edge;
           this.$emit('edge:selected', edge);
           this.graph.enableHistory();
@@ -812,10 +829,7 @@ export default {
           if (edge.hasTool('vertices')) {
             edge.removeTool('vertices');
           }
-          this.unHighlightNode(edge);
-          if (edge.hasTool('boundary')) {
-            edge.removeTool('boundary');
-          }
+          this.unHighlightEdge(edge);
           if (this.selectedCell && this.selectedCell.id === edge.id) {
             const selected = this.graph.getSelectedCells();
             if (selected.length > 0) {

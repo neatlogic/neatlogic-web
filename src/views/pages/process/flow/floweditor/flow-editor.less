@@ -1,6 +1,11 @@
 @import (reference) '~@/resources/assets/css/variable.less';
 
-.theme(@bg-color,@title-bg-color,@bg-grey,@text-color,@border-color,@primary-color,@info-color,@bg-info-grey) {
+.theme(@bg-color,@title-bg-color,@bg-grey,@text-color,@border-color,@primary-color,@info-color,@bg-info-grey,@warning-color) {
+  @keyframes dash {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
   .x6-graph-background {
     background: @bg-color;
   }
@@ -90,15 +95,36 @@
   .linktextbackground {
     flood-color: @bg-color;
   }
-  /*.x6-node:hover,.x6-node-selected{
-    filter: drop-shadow(0 0 5px @primary-color);
-  }*/
+  .x6-node:hover{
+    filter: drop-shadow(0 0 5px @bg-grey);
+  }
 
-  /*.x6-edge-selected {
+  .x6-edge:hover {
     path {
-      filter: drop-shadow(0 0 3px @border-color);
+     filter: drop-shadow(0 0 5px @border-color);
     }
-  }*/
+  }
+  //选中样式
+  .line-selected {
+    stroke-width:2px;
+    stroke: @primary-color;
+  }
+  .marker-selected {
+    stroke: @primary-color;
+    fill: @primary-color;
+  }
+  //选中节点时相关连线的提示颜色
+  .line-actived{
+    stroke-width:2px;
+    stroke: @warning-color;
+    stroke-dasharray: 5;
+    stroke-dashoffset: 10;
+    animation: dash 0.5s linear infinite;
+  }
+  .marker-actived{
+    stroke: @warning-color;
+    fill: @warning-color;
+  }
   .custom-tools {
     fill: rgba(0, 0, 0, 0);
     stroke: @border-color;
@@ -110,9 +136,9 @@
 }
 
 html {
-  .theme(@default-op,@default-th-bg-color,@default-bg-grey,@default-text,@default-icon,@default-primary-color,@default-info-color,@default-info-bg-color);
+  .theme(@default-op,@default-th-bg-color,@default-bg-grey,@default-text,@default-icon,@default-primary-color,@default-info-color,@default-info-bg-color,@default-warning-color);
 
   &.theme-dark {
-    .theme(@dark-op,@dark-th-bg-color,@dark-bg-grey,@dark-text,@dark-icon,@dark-primary-color,@dark-info-color,@dark-info-bg-color,);
+    .theme(@dark-op,@dark-th-bg-color,@dark-bg-grey,@dark-text,@dark-icon,@dark-primary-color,@dark-info-color,@dark-info-bg-color,@dark-warning-color);
   }
 }
