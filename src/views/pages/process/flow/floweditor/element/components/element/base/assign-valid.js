@@ -1,5 +1,7 @@
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
+import ComponentManager from '@/resources/import/component-manager.js';
+const dispatcherValid = ComponentManager.getDispatcherValidComponent();
 const assignValid = {
   //校验节点分派策略
   valid: ({ node, graph, view }) => {
@@ -21,6 +23,8 @@ const assignValid = {
       }
 
       if (nodeData && nodeData.workerPolicyConfig && nodeData.workerPolicyConfig.policyList) {
+        const allPreNodes = view.getAllPrevNodes(node);
+        const preNodeUuidList = allPreNodes.map(i => i.id);
         let policyList = nodeData.workerPolicyConfig.policyList;
         let isChecked = policyList && policyList.find(p => p.isChecked === 1) ? 1 : 0; //判断分配处理人是否有选中的项
         let errorText = $t('form.validate.required', { target: $t('term.process.poliyuser') });
@@ -37,11 +41,11 @@ const assignValid = {
               if (keyConfig[type]) {
                 let value = keyConfig[type].value;
                 if (type == 'form' && policyList[i].config.attributeUuidList) {
-                  if (that.allFormitemList && that.allFormitemList.length > 0) {
+                  if (view.allFormitemList && view.allFormitemList.length > 0) {
                     if (Array.isArray(policyList[i].config.attributeUuidList) && policyList[i].config.attributeUuidList.length > 0) {
                       let newPolicyListAttributeUuid = [];
                       policyList[i].config.attributeUuidList.forEach(item => {
-                        let formItem = that.allFormitemList.find(f => f.uuid == item);
+                        let formItem = view.allFormitemList.find(f => f.uuid == item);
                         formItem && newPolicyListAttributeUuid.push(item);
                       });
                       newPolicyListAttributeUuid.length == 0 && (policyList[i].config.attributeUuidList = []);
@@ -52,11 +56,29 @@ const assignValid = {
                 }
                 if (type === 'prestepassign' && !utils.isEmpty(policyList[i].config[value])) {
                   for (let p = 0; p < policyList[i].config[value].length; p++) {
-                    if (!policyList[i].config[value][p].uuid) {
+                    let obj = policyList[i].config[value][p];
+                    if (obj.uuid && !preNodeUuidList.includes(obj.uuid)) {
+                      view.$set(obj, 'uuid', '');
+                    }
+                    if (!utils.isEmpty(obj.condition)) {
+                      //前置步骤可选的路径节点
+                      const currPreNode = graph.getCellById(obj.uuid);
+                      const currPreNodeUuidList = view.getNextNodes(currPreNode).map(i => i.id);
+                      const condition = utils.intersectionArr(currPreNodeUuidList, obj.condition);
+                      view.$set(obj, 'condition', condition);
+                    }
+                    if (!obj.uuid) {
                       isChecked = 0;
                       errorText = keyConfig[type].text;
-                      break;
                     }
+                  }
+                } else if (type === 'copy' && policyList[i].config[value]) {
+                  //复制前置步骤处理人，判断是否包含前置步骤
+                  if (!preNodeUuidList.includes(policyList[i].config[value])) {
+                    policyList[i].config[value] = '';
+                    isChecked = 0;
+                    errorText = keyConfig[type].text;
+                    break;
                   }
                 } else if (utils.isEmpty(policyList[i].config[value])) {
                   isChecked = 0;
@@ -67,12 +89,12 @@ const assignValid = {
                 //分派器
                 if (policyList[i].config.handler && policyList[i].config.handler != '') {
                   if (policyList[i].config.handlerConfig != {}) {
-                    let newObj = that.automaticList.find(d => d.handler === policyList[i].config.handler);
+                    let newObj = view.automaticList.find(d => d.handler === policyList[i].config.handler);
                     if (newObj && newObj.isHasForm && newObj.config) {
                       let automaticDeal = newObj.config;
                       automaticDeal.forEach(item => {
                         if (item.type == 'formselect' && policyList[i].config.handlerConfig[item.name]) {
-                          let findFormitem = that.allFormitemList.find(f => f.uuid == policyList[i].config.handlerConfig[item.name]);
+                          let findFormitem = view.allFormitemList.find(f => f.uuid == policyList[i].config.handlerConfig[item.name]);
                           if (!findFormitem) {
                             policyList[i].config.handlerConfig[item.name] = null;
                           }
@@ -82,10 +104,11 @@ const assignValid = {
                     let row = policyList[i].config.handlerConfig;
                     for (let key in row) {
                       if (row.hasOwnProperty(key)) {
-                        let val = row[key];
-                        let handler = policyList[i].config.handler;
-                        let dispatcherName = this.handleDispatcherName(handler) || '';
-                        if (!that.$utils.isEmpty(dispatcherValid) && !that.$utils.isEmpty(dispatcherValid[dispatcherName]) && dispatcherValid[dispatcherName](that, handler, key, val)) {
+                        const val = row[key];
+                        const handler = policyList[i].config.handler;
+                        const arr = (handler && handler.split('.')) || [];
+                        const dispatcherName = arr[arr.length - 1] || '';
+                        if (!utils.isEmpty(dispatcherValid) && !utils.isEmpty(dispatcherValid[dispatcherName]) && dispatcherValid[dispatcherName](view, handler, key, val)) {
                           isChecked = 0;
                           errorText = $t('term.process.assignconfigvalid');
                           break;
