@@ -152,7 +152,7 @@
     >
       <p style="margin-bottom: 10px">
         <span>{{ $t('term.process.savedraftflow') }}</span>
-        <span style="margin-left: 36px">{{ $t('term.process.autosaveinterval') }}</span>
+        <!-- <span style="margin-left: 36px">{{ $t('term.process.autosaveinterval') }}</span> -->
       </p>
       <TsTable :theadList="draftKey" :tbodyList="draftData" @clickTr="draftCurrentChange"></TsTable>
     </TsDialog>
