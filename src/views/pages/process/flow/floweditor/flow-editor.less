@@ -1,11 +1,19 @@
 @import (reference) '~@/resources/assets/css/variable.less';
 
 .theme(@bg-color,@title-bg-color,@bg-grey,@text-color,@border-color,@primary-color,@info-color,@bg-info-grey,@warning-color) {
-  @keyframes dash {
+  @keyframes bb {
+    0%,100% {
+      stroke-opacity: 1;
+    }
+    50%{
+      stroke-opacity:0;
+    }
+  }
+  /*@keyframes dash {
     to {
       stroke-dashoffset: 0;
     }
-  }
+  }*/
   .x6-graph-background {
     background: @bg-color;
   }
@@ -117,9 +125,10 @@
   .line-actived{
     stroke-width:2px;
     stroke: @warning-color;
-    stroke-dasharray: 5;
-    stroke-dashoffset: 10;
-    animation: dash 0.5s linear infinite;
+    //stroke-dasharray: 5;
+    //stroke-dashoffset: 10;
+    //animation: dash 1s linear infinite;
+    animation: bb 1s linear infinite;
   }
   .marker-actived{
     stroke: @warning-color;
