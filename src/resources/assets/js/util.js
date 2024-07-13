@@ -649,7 +649,8 @@ const methods =  {
         external: '/matrix-external-edit', // 外部矩阵
         view: '/matrix-view-edit', // 视图矩阵
         cmdbci: '/matrix-view-edit', //cmdb
-        private: '/matrix-private' //私有数据源
+        private: '/matrix-private', //私有数据源
+        cmdbcustomview: '/matrix-view-edit', //cmdb自定义视图
       };
       let defaultType = '/matrix-edit'; // 自定义矩阵
       let path = dataSourceType[type] || defaultType;
