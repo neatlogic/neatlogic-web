@@ -36,7 +36,6 @@
 </template>
 <script>
 import { Graph, Node, Edge } from '@antv/x6';
-import DiagramUtil from '@/commercial-module/diagram/pages/editor/diagram-util.js';
 
 export default {
   name: '',
