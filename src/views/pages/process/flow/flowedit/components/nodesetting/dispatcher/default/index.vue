@@ -28,6 +28,10 @@ export default {
     value: {
       type: Object,
       default: () => ({})
+    },
+    copyPrevNodes: {
+      type: Array,
+      default: () => ([])
     }
   },
   data() {
@@ -44,6 +48,14 @@ export default {
     this.itemList.forEach((v) => {
       if (!this.$utils.isEmpty(v) && !this.$utils.isEmpty(v['name'])) {
         this.formData[v['name']] = null;
+        if (v['name'] === 'preStepList' && !this.$utils.isEmpty(this.copyPrevNodes)) {
+          v.dataList = this.copyPrevNodes.map(c => {
+            return {
+              text: c.name,
+              value: c.uuid
+            };
+          });
+        }
       }
     });
     if (!this.$utils.isEmpty(this.value)) {

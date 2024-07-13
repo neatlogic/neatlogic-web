@@ -84,6 +84,10 @@ export default {
           type: 'select',
           name: 'customViewId',
           label: this.$t('term.cmdb.customview'),
+          dynamicUrl: '/api/rest/cmdb/customview/search',
+          rootName: 'tbodyList',
+          textName: 'name',
+          valueName: 'id',
           transfer: true,
           dataList: [],
           value: null,
@@ -115,22 +119,8 @@ export default {
     };
   },
   beforeCreate() {},
-  async created() {
-    this.attributeMappingList.forEach(item => {
-      if (item.uniqueIdentifier.length == 0) {
-        this.$set(item, 'isNewUniqueIdentifier', true);
-      }
-    });
-    this.cmdbCustomViewList();
-    if (!this.$utils.isEmptyObj(this.fileObj) && this.fileObj.uuid) {
-      let isDisabled = await this.$frameworkUtils.isDependency(this.fileObj.uuid, 'matrix');
-      for (let i in this.formSetting) {
-        if (i == 'customViewId') {
-          this.formSetting[i].disabled = isDisabled;
-          this.formSetting[i].disabledHoverTitle = isDisabled ? this.$t('term.framework.usedmatrixdesc') : '';
-        }
-      }
-    }
+  created() {
+    this.init();
   },
   beforeMount() {},
   mounted() { },
@@ -141,6 +131,24 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    async init() {
+      this.attributeMappingList.forEach(item => {
+        if (item.uniqueIdentifier.length == 0) {
+          this.$set(item, 'isNewUniqueIdentifier', true);
+        }
+      });
+      this.formSetting.customViewId.value = this.customViewId;
+      this.showAttribute(this.customViewId);
+      if (!this.$utils.isEmptyObj(this.fileObj) && this.fileObj.uuid) {
+        let isDisabled = await this.$frameworkUtils.isDependency(this.fileObj.uuid, 'matrix');
+        for (let i in this.formSetting) {
+          if (i == 'customViewId') {
+            this.formSetting[i].disabled = isDisabled;
+            this.formSetting[i].disabledHoverTitle = isDisabled ? this.$t('term.framework.usedmatrixdesc') : '';
+          }
+        }
+      }
+    },
     showAttribute(val) {
       let data = {
         'matrixUuid': null,
@@ -163,20 +171,6 @@ export default {
         })
         .catch(error => {
         });
-    },
-    async cmdbCustomViewList() {
-      await this.$https.post('/api/rest/cmdb/customview/search', {}).then(res => {
-        if (res.Status == 'OK') {
-          let resData = res.Return.tbodyList;
-          let newData = [];
-          resData.forEach(v => {
-            newData.push({text: v.name, value: v.id});
-          });
-          this.formSetting.customViewId.dataList = newData;
-          this.formSetting.customViewId.value = this.customViewId;
-          this.showAttribute(this.customViewId);
-        }
-      });
     },
     getDependencyList(uuid) {
       return new Promise((resolve, reject) => {
