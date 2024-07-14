@@ -46,6 +46,9 @@ const jobWebhookEdit = () => import('./webhook/job-webhook-edit.vue');
 // 工具分类
 const toolClassificationManage = () => import('./toolclassification/tool-classification-manage.vue');
 
+//预置参数集
+const toolProfileManage = () => import('@/views/pages/autoexec/config/profile/tool-profile-manage.vue'); // 工具profile
+
 import { $t } from '@/resources/init.js';
 
 export default [
@@ -369,6 +372,18 @@ export default [
     meta: {
       title: '',
       ismenu: false,
+      authority: 'DEPLOY_MODIFY',
+      type: 'config'
+    }
+  },
+  {
+    path: '/tool-profile-manage',
+    name: 'tool-profile-manage',
+    component: toolProfileManage,
+    meta: {
+      title: $t('router.autoexec.presetparameterset'),
+      ismenu: true,
+      icon: 'tsfont-file-single',
       authority: 'DEPLOY_MODIFY',
       type: 'config'
     }

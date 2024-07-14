@@ -74,6 +74,7 @@
         :paramList="paramList"
         :paramsTypeList="paramsTypeList"
         :inputTypeList="inputTypeList"
+        :profileId="profileId"
       ></ArgumentParam>
     </div>
     <!-- 输出参数 -->
@@ -173,6 +174,7 @@ export default {
     },
     refreshProfile(profileId) { //刷新预置参数集的数据
       this.$refs['inputParam' + this.step.uuid].getProfileParamsList(profileId);
+      this.$refs['argumentParam' + this.step.uuid].getProfileParamsList(profileId);
     }
   },
   computed: {},

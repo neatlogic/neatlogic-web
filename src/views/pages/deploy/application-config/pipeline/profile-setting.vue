@@ -26,6 +26,10 @@
             :tbodyList="item.paramList"
             :fixedHeader="false"
           >
+            <template slot="type" slot-scope="{row}">
+              <span v-if="row.type==='argument'">{{ $t('term.autoexec.freeparameter') }}</span>
+              <span v-else>{{ $t('term.autoexec.toolparameter') }}</span>
+            </template>
             <template slot="name" slot-scope="{row}">
               <div class="flex-start" style="width: 140px;">
                 <span>{{ row['name'] }}</span>
@@ -164,6 +168,11 @@ export default {
           title: this.$t('page.inherit'),
           key: 'inherit',
           width: 50
+        },
+        {
+          title: this.$t('page.type'),
+          key: 'type',
+          width: 140
         },
         {
           title: this.$t('term.autoexec.paramsname'),

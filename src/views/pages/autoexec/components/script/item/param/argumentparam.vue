@@ -65,6 +65,30 @@
                 @updateVal="(val)=>{changeValue(val,lindex,'prenode')}"
               ></PrenodeSelect>
             </Col>
+            <Col v-else-if="configParamList[lindex].mappingMode == 'profile'" span="17">
+              <TsRow :gutter="8">
+                <Col :span="10">
+                  <TsFormSelect
+                    v-model="configParamList[lindex].key"
+                    :dataList="profileArgumentList"
+                    transfer
+                    textName="name"
+                    valueName="key"
+                    :validateList="validateList"
+                    :disabled="!canEdit"
+                    :firstSelect="false"
+                    @on-change="(value)=>{argumentKeyChange(value,lindex);}"
+                  ></TsFormSelect>
+                </Col>
+                <Col :span="14">
+                  <TsFormInput
+                    v-if="configParamList[lindex].key"
+                    :value="getProfileParamValue(configParamList[lindex].key)"
+                    :disabled="true"
+                    border="border"
+                  ></TsFormInput>
+                </Col>
+              </tsrow></Col>
             <Col v-if="l.mappingMode == 'globalparam'" span="17">
               <Globalparam v-model="configParamList[lindex].value" @change="(val) => { changeValue(val, lindex) }"></Globalparam>
             </Col>
@@ -81,8 +105,11 @@
                     readonly
                   ></TsFormCascader>
                 </template>
+                <span v-if="l.mappingMode === 'profile'" :title="l.name">
+                  <span class="pr-md">{{ l.key }}</span><span class="text-tip">{{ getProfileParamValue(l.key) }}</span>
+                </span>
                 <span v-else :title="l.name">
-                  {{ l.name }}
+                  <span class="text-tip">{{ l.name }}</span>
                 </span>
               </div>
             </div>
@@ -153,7 +180,11 @@ export default {
       default() {
         return [];
       }
-    }
+    },
+    profileId: {
+      type: Number,
+      default: null
+    } //预置参数集
   },
   data() {
     return {
@@ -163,11 +194,19 @@ export default {
         transfer: true,
         clearable: false
       },
-      validateList: ['required']
+      validateList: ['required'],
+      profileParamVoList: [],
+      profileArgumentList: [] //预置参数集自由参数
     };
   },
   beforeCreate() {},
-  created() {},
+  async created() {
+    if (this.profileId) {
+      await this.getProfileParamsList(this.profileId, true);
+    } else {
+      this.profileParamVoList = [];
+    }
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -177,6 +216,24 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getProfileParamValue(key) {
+      let arg = this.profileArgumentList.find(a => a.key === key);
+      if (arg) {
+        return arg.defaultValue;
+      }
+      return;
+    },
+    argumentKeyChange(value, lindex) {
+      this.configParamList[lindex].value = this.configParamList[lindex].key;
+    },
+    async getProfileParamsList(id, isFirst) { //预置参数集：参数列表
+      await this.$api.autoexec.profile.getProfileDetailById(id).then((res) => {
+        if (res.Status == 'OK') {
+          this.profileParamVoList = res.Return.profileParamVoList || [];
+          this.profileArgumentList = this.profileParamVoList.filter(o => o.type === 'argument');
+        }
+      });
+    },
     clearValue(item) {
       this.$set(item, 'value', '');
     },
@@ -295,7 +352,7 @@ export default {
     getList() {
       return function(list, isFirst) {
         return list.filter(l => {
-          return isFirst ? (l.value != 'isempty' && l.value.indexOf('prenode') == -1 && l.value != 'profile') : (l.value != 'isempty' && l.value != 'profile');
+          return isFirst ? (l.value != 'isempty' && l.value.indexOf('prenode') == -1) : (l.value != 'isempty');
         });
       };
     },
@@ -328,7 +385,8 @@ export default {
                 mappingMode: v.mappingMode,
                 value: _this.$utils.deepClone(v.value),
                 component: val.type,
-                name: v.name || ''
+                name: v.name || '',
+                key: v.key || ''
               };
             });
           } else {
@@ -336,7 +394,8 @@ export default {
               mappingMode: 'constant',
               value: this.$utils.deepClone(this.config ? this.config.defaultValue : ''),
               component: val.type,
-              name: this.$utils.deepClone(this.config ? this.config.defaultValue : '')
+              name: this.$utils.deepClone(this.config ? this.config.defaultValue : ''),
+              key: this.$utils.deepClone(this.config ? this.config.key : '')
             };
             if (val.argumentCount && val.argumentCount > 0) { //限制自由参数个数
               for (let i = 0; i < val.argumentCount; i++) {
@@ -360,7 +419,8 @@ export default {
             return {
               mappingMode: v.mappingMode,
               value: this.$utils.deepClone(v.value),
-              name: v.name
+              name: v.name,
+              key: v.key || ''
             };
           }) : [];
         let isSame = this.$utils.isSame(currentConfig, this.value);
@@ -370,6 +430,13 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    profileId(val) {
+      if (val) {
+        this.getProfileParamsList(val);
+      } else {
+        this.profileParamVoList = [];
+      }
     }
   }
 };

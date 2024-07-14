@@ -24,6 +24,9 @@
               ></ParamsList>
             </div>
           </template>
+          <template v-slot:argumentList>
+            <ArgumentEdit ref="argumentList" :tableData="profileFormConfig.argumentList"></ArgumentEdit>
+          </template>
         </TsForm>
       </template>
     </TsDialog>
@@ -35,7 +38,8 @@ export default {
   name: '',
   components: {
     ParamsList,
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    ArgumentEdit: () => import('./argument-edit.vue')
   },
   props: {
     toolProfileId: {
@@ -60,7 +64,11 @@ export default {
         description: '',
         fromSystemId: null,
         autoexecOperationVoList: [],
-        profileParamVoList: []
+        profileParamVoList: [],
+        argumentList: {
+          hideAction: false,
+          tbodyList: []
+        }
       },
       profileForm: {
         name: {
@@ -120,6 +128,12 @@ export default {
           label: this.$t('term.autoexec.toolparameter'),
           tooltip: this.$t('term.autoexec.toolparamstooltip'),
           value: []
+        },
+        argumentList: {
+          type: 'slot',
+          name: 'argumentList',
+          label: this.$t('term.autoexec.freeparameter'),
+          value: []
         }
       }
     };
@@ -146,6 +160,9 @@ export default {
       if (this.$refs.param && !this.$refs.param.valid()) {
         return;
       }
+      if (this.$refs.argumentList && (this.$refs.argumentList.validKeyRepeat() || this.$refs.argumentList.validValueIsEmpty())) {
+        return;
+      }
       let data = this.$utils.deepClone(this.profileFormConfig);
       if (this.toolProfileId && this.type != 'copy') {
         this.$set(data, 'id', this.toolProfileId);
@@ -153,6 +170,8 @@ export default {
       this.$set(data, 'autoexecOperationVoList', this.defaultAutoexecOperationVoList); // 关联工具
       data.profileParamVoList = []; // 工具参数处理
       data.profileParamVoList = this.$refs && this.$refs.param ? this.$refs.param.getValueList() : [];
+      let argumentList = this.$refs && this.$refs.argumentList ? this.$refs.argumentList.getData() : [];
+      data.profileParamVoList.push(...argumentList);
       this.$api.autoexec.profile.saveProfile(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
@@ -213,7 +232,11 @@ export default {
         description: '',
         fromSystemId: null,
         autoexecOperationVoList: [],
-        profileParamVoList: []
+        profileParamVoList: [],
+        argumentList: {
+          hideAction: false,
+          tbodyList: []
+        }
       };
       this.isValidSelf(this.type == 'copy' ? '' : profileId);
       this.$api.autoexec.profile.getProfileDetailById(profileId).then((res) => {
@@ -229,7 +252,7 @@ export default {
               dataObj['autoexecOperationVoList'].push(item.id);
             }
           });
-          data.profileParamVoList && data.profileParamVoList.forEach((item) => {
+          data.profileParamVoList && data.profileParamVoList.filter(o => o.type !== 'argument').forEach((item) => {
             if (item && item.isRequired) {
               item.isRequired = 0;
             }
@@ -250,7 +273,8 @@ export default {
               Object.assign(this.profileFormConfig, dataObj);
             });
           } else {
-            dataObj.profileParamVoList = data.profileParamVoList ? data.profileParamVoList : [];
+            dataObj.profileParamVoList = data.profileParamVoList ? data.profileParamVoList.filter(o => o.type !== 'argument') : [];
+            dataObj.argumentList.tbodyList = data.profileParamVoList ? data.profileParamVoList.filter(o => o.type === 'argument') : [];
             this.defaultAutoexecOperationVoList = data.autoexecOperationVoList;
             Object.assign(this.profileFormConfig, dataObj);
           }
