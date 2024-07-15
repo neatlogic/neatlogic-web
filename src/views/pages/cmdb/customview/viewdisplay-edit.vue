@@ -103,7 +103,6 @@ export default {
   beforeCreate() {},
   created() {
     this.tableHeight = window.innerHeight * 0.8 - 130;
-    console.log(this.tableHeight);
   },
   beforeMount() {},
   async mounted() {
