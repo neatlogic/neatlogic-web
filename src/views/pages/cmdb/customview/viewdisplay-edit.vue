@@ -38,7 +38,7 @@
             </div>
           </template>
           <template slot="conditionValue" slot-scope="{ row }">
-            <div style="min-width:150px; white-space: pre-line;">
+            <div v-if="!['is-not-null', 'is-null'].includes(row.condition.expression)" style="min-width:150px; white-space: pre-line;">
               <AttrSearcher
                 v-if="row.attrId"
                 ref="attrHandler"
@@ -103,6 +103,7 @@ export default {
   beforeCreate() {},
   created() {
     this.tableHeight = window.innerHeight * 0.8 - 130;
+    console.log(this.tableHeight);
   },
   beforeMount() {},
   async mounted() {
