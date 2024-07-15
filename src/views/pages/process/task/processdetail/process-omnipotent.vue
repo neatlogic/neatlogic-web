@@ -2,6 +2,7 @@
   <div class="taskdetail-omnipotent">
     <Loading :loadingShow="taskLoading" type="fix"></Loading>
     <TsContain
+      v-if="!taskLoading"
       :siderWidth="260"
       :isSiderHide="!isOrderLeft"
       :sessionName="sessionName"
@@ -548,4 +549,7 @@ export default {
   margin-right: 4px;
   border-radius: 20px;
 }
+// /deep/ .ivu-layout-sider {
+//   transition: none;
+// }
 </style>
