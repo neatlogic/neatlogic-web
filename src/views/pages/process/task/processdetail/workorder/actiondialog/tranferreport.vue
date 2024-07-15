@@ -71,6 +71,7 @@
                 :channelTypeRelationId="channelTypeRelationId"
                 :defaultKeyword="keyword"
                 :channelUuid="channelUuid"
+                :processTaskStepId="processTaskStepId"
               ></ServiceRoute>
             </div>
           </div>
@@ -127,7 +128,8 @@ export default {
       breadcrumbList: [],
       currentPage: 1,
       pageCount: 1,
-      clickMore: this.$t('page.loadmore')
+      clickMore: this.$t('page.loadmore'),
+      processTaskStepId: null // 当前步骤id
     };
   },
   beforeCreate() {},
@@ -304,7 +306,9 @@ export default {
     processTaskConfig: {
       handler(val) {
         if (val) {
-          this.channelUuid = val.channelUuid;
+          const {channelUuid = null, currentProcessTaskStep = {}} = val || {};
+          this.channelUuid = channelUuid;
+          this.processTaskStepId = currentProcessTaskStep.id || null;
           if (this.channelUuid) {
             this.getRelarelationList(this.channelUuid);
           }
