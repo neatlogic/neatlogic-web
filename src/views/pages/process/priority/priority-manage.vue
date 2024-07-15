@@ -340,6 +340,7 @@ export default {
         .then(res => {
           if (res.Status === 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
+            this.getTableDataSearch(1);// 拖拽成功刷新页面，拿到oldList，要不然连续拖拽排序有问题
           } else throw res;
         });
     }
