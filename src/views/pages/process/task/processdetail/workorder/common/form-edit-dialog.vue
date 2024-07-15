@@ -52,7 +52,7 @@ export default {
       if (this.processTaskConfig && this.processTaskConfig.formConfig) {
         let formConfig = this.$utils.deepClone(this.processTaskConfig.formConfig) || {};
         //清除组件只读属性
-        const attrList = ['isMask', 'isReadOnly', 'isDisabled', 'isHide', 'mask', 'hide', 'disabled', 'readonly', 'disable'];
+        const attrList = ['isMask', 'isReadOnly', 'isDisabled', 'isHide', 'mask', 'hide', 'disable', 'readonly', 'display'];
         formConfig.readOnly = false;
         formConfig.reaction = {};
         formConfig.tableList.forEach(item => {
