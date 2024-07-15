@@ -254,6 +254,10 @@ export default {
         Object.assign(param, {
           fromProcessTaskId: this.fromProcessTaskId
         });
+      this.fromProcessTaskStepId &&
+        Object.assign(param, {
+          fromProcessTaskStepId: this.fromProcessTaskStepId
+        });
       this.channelTypeRelationId &&
         Object.assign(param, {
           channelTypeRelationId: this.channelTypeRelationId
