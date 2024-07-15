@@ -2,6 +2,7 @@
   <div class="taskdetail-autoexec">
     <Loading :loadingShow="taskLoading" type="fix"></Loading>
     <TsContain
+      v-if="!taskLoading"
       :siderWidth="260"
       :isSiderHide="!isOrderLeft"
       :sessionName="sessionName"
