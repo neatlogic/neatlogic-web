@@ -52,7 +52,7 @@
                 :trueValue="1"
                 :falseValue="0"
                 :disabled="!canEdit"
-                @on-change="changeInherit"
+                @on-change="(val)=>{changeInherit(val, item)}"
               ></Checkbox>
             </template>
             <template slot="defaultValue" slot-scope="{row}">
@@ -203,7 +203,8 @@ export default {
         tbodyList: []
       },
       isVisible: false,
-      isHideAll: true
+      isHideAll: true,
+      profileMap: {} //预置参数id对应的参数列表
     };
   },
   beforeCreate() {},
@@ -230,6 +231,9 @@ export default {
     closeDialog(needRefresh) {
       this.isShow = false;
       if (needRefresh) {
+        if (this.profileMap[this.profileId]) {
+          delete this.profileMap[this.profileId];
+        }
         this.getProfileList(this.profileId);
       }
     },
@@ -278,8 +282,12 @@ export default {
         this.$set(this.paramoverrideTable, 'loading', false);
       });
     },
-    changeInherit() {
-      this.$emit('saveOverrideProfileList', this.profileList);
+    changeInherit(val, item) {
+      if (val == 1) {
+        this.getProfileList(item.profileId);
+      } else {
+        this.$emit('saveOverrideProfileList', this.profileList);
+      }
     },
     changeParamValue() {
       this.$emit('saveOverrideProfileList', this.profileList);
@@ -292,30 +300,39 @@ export default {
         appSystemId: this.appSystemId,
         defaultValue: [id]
       };
+      if (!this.$utils.isEmpty(this.profileMap[id])) {
+        this.updatedParam(this.profileMap[id]);
+        return;
+      }
       this.$api.deploy.apppipeline.getAppProfileList(data).then((res) => {
         if (res.Status == 'OK') {
-          let profileConfig = res.Return[0];
-          this.profileList.forEach(item => {
-            if (item.profileId == profileConfig.profileId) {
-              let paramList = [];
-              profileConfig.paramList.forEach(p => {
-                let paramConfig = item.paramList.find(s => s.key == p.key);
-                if (paramConfig) {
-                  if (!paramConfig.inherit) {
-                    this.$set(p, 'inherit', 0);
-                    this.$set(p, 'defaultValue', paramConfig.defaultValue);
-                  }
-                  paramList.push(p);
-                } else {
-                  paramList.push(p);
-                }
-              });
-              this.$set(item, 'paramList', paramList);
-            }
-          });
-          this.$emit('saveOverrideProfileList', this.profileList);
+          const profileConfig = res.Return[0];
+          this.profileMap[id] = profileConfig;
+          this.updatedParam(profileConfig);
         }
       });
+    },
+    updatedParam(profileConfig) {
+      this.profileList.forEach(item => {
+        if (item.profileId == profileConfig.profileId) {
+          let paramList = [];
+          profileConfig.paramList.forEach(p => {
+            let config = this.$utils.deepClone(p);
+            let paramConfig = item.paramList.find(s => s.key == p.key);
+            if (paramConfig) {
+              if (!paramConfig.inherit) {
+                this.$set(config, 'inherit', 0);
+                this.$set(config, 'defaultValue', paramConfig.defaultValue);
+              }
+              paramList.push(config);
+            } else {
+              paramList.push(config);
+            }
+          });
+          this.$set(item, 'paramList', paramList);
+        }
+      });
+      this.$emit('saveOverrideProfileList', this.profileList);
     },
     toggleshowAll() {
       this.isHideAll = !this.isHideAll;

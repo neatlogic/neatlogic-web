@@ -2,6 +2,7 @@
 <template>
   <TsFormInput
     ref="item"
+    type="text"
     :value="value"
     :readonly="readonly"
     :disabled="disabled"
