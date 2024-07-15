@@ -56,11 +56,16 @@ export default {
     channelUuid: {
       type: [String, Number],
       default: null
+    },
+    processTaskStepId: {
+      type: [String, Number],
+      default: null
     }
   },
   data() {
     return {
       processTaskId: null,
+      fromProcessTaskStepId: null,
       keyword: null,
       channelObj: null,
       channelList: [],
@@ -72,6 +77,7 @@ export default {
   beforeMount() {},
   mounted() {
     this.processTaskId = this.$route.query.processTaskId || null;
+    this.fromProcessTaskStepId = this.processTaskStepId || null;
   },
   beforeUpdate() {},
   updated() {},
@@ -119,6 +125,7 @@ export default {
         query: {
           uuid: uuid,
           fromProcessTaskId: this.processTaskId,
+          fromProcessTaskStepId: this.fromProcessTaskStepId,
           channelTypeRelationId: this.channelTypeRelationId
         }
       });
@@ -162,6 +169,12 @@ export default {
         this.keyword = val || '';
       },
       immediate: true
+    },
+    processTaskStepId: {
+      handler(val) {
+        this.fromProcessTaskStepId = val || null;
+      },
+      deep: true
     }
   }
 };

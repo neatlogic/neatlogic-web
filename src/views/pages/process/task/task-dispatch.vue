@@ -122,6 +122,7 @@ export default {
       handler: 'omnipotent',
       channelUuid: null,
       processTaskId: null,
+      fromProcessTaskStepId: null, //来源工单步骤id(转报)
       fromProcessTaskId: null, //来源工单id(转报)
       channelTypeRelationId: null, // 关系类型id（转报）
       copyProcessTaskId: null, //复制上报工单
@@ -166,13 +167,24 @@ export default {
       this.hideDispatchTaskList = JSON.parse(hideDispatchTaskList);
     }
     await this.getProfile();
-    this.channelUuid = this.propChannelUuid || this.$route.query.uuid || null;
-    this.processTaskId = this.$route.query.processTaskId || sessionStorage.getItem('processTaskId') || null;
-    this.fromProcessTaskId = this.$route.query.fromProcessTaskId || null;
-    this.channelTypeRelationId = this.$route.query.channelTypeRelationId || null;
-    this.copyProcessTaskId = this.$route.query.copyProcessTaskId || null;
-    this.parentProcessTaskStepId = this.$route.query.parentProcessTaskStepId || null;
-    this.invoke = this.$route.query.invoke || null;
+    const {
+      uuid = null,
+      processTaskId = null,
+      fromProcessTaskId = null,
+      fromProcessTaskStepId = null,
+      channelTypeRelationId = null,
+      copyProcessTaskId = null,
+      parentProcessTaskStepId = null,
+      invoke = null
+    } = this.$route.query || {};
+    this.channelUuid = this.propChannelUuid || uuid;
+    this.processTaskId = processTaskId || sessionStorage.getItem('processTaskId') || null;
+    this.fromProcessTaskId = fromProcessTaskId;
+    this.fromProcessTaskStepId = fromProcessTaskStepId;
+    this.channelTypeRelationId = channelTypeRelationId;
+    this.copyProcessTaskId = copyProcessTaskId;
+    this.parentProcessTaskStepId = parentProcessTaskStepId;
+    this.invoke = invoke;
     await this.getChannel();
     this.getChannelInfo();
     this.$nextTick(() => {
@@ -433,6 +445,9 @@ export default {
       }
       if (this.fromProcessTaskId) {
         this.$set(workdata, 'fromProcessTaskId', this.fromProcessTaskId);
+      }
+      if (this.fromProcessTaskStepId) {
+        this.$set(workdata, 'fromProcessTaskStepId', this.fromProcessTaskStepId);
       }
       if (this.channelTypeRelationId) {
         this.$set(workdata, 'channelTypeRelationId', this.channelTypeRelationId);
