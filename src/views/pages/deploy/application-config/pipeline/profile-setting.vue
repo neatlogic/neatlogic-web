@@ -31,7 +31,7 @@
               <span v-else>{{ $t('term.autoexec.toolparameter') }}</span>
             </template>
             <template slot="name" slot-scope="{row}">
-              <div class="flex-start" style="width: 140px;">
+              <div class="flex-start" style="width: 90px;">
                 <span>{{ row['name'] }}</span>
                 <Poptip
                   v-if="row['description']"
@@ -59,7 +59,7 @@
               <div v-if="row.mappingMode == 'globalparam'">
                 {{ row.defaultValue }}
               </div>
-              <div v-else class="overflow">
+              <div v-else class="overflow" style="width: 120px;">
                 <Items
                   :is="handleType(row.type)"
                   v-model="row.defaultValue"
@@ -172,16 +172,17 @@ export default {
         {
           title: this.$t('page.type'),
           key: 'type',
-          width: 140
+          width: 80
         },
         {
           title: this.$t('term.autoexec.paramsname'),
           key: 'name',
-          width: 140
+          width: 80
         },
         {
           title: this.$t('term.autoexec.paramsvalue'),
-          key: 'defaultValue'
+          key: 'defaultValue',
+          width: 100
         },
         {
           key: 'action'

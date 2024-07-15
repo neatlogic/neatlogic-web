@@ -173,8 +173,12 @@ export default {
       }
     },
     refreshProfile(profileId) { //刷新预置参数集的数据
-      this.$refs['inputParam' + this.step.uuid].getProfileParamsList(profileId);
-      this.$refs['argumentParam' + this.step.uuid].getProfileParamsList(profileId);
+      if (profileId && this.$refs['inputParam' + this.step.uuid]) {
+        this.$refs['inputParam' + this.step.uuid].getProfileParamsList(profileId);
+      }
+      if (profileId && this.$refs['argumentParam' + this.step.uuid]) {
+        this.$refs['argumentParam' + this.step.uuid].getProfileParamsList(profileId);
+      }
     }
   },
   computed: {},

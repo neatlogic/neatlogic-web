@@ -273,11 +273,16 @@ export default {
       if (type == 'runtimeparam') {
         let findRuntimeparam = this.paramList.find(r => r.key == val);
         this.$set(this.configParamList[index], 'name', findRuntimeparam ? findRuntimeparam.name : '');
+        this.$set(this.configParamList[index], 'key', null);
       } else if (type == 'prenode') {
         this.$set(this.configParamList[index], 'value', val);
         this.$set(this.configParamList[index], 'name', '');
+        this.$set(this.configParamList[index], 'key', null);
+      } else if (type == 'profile') {
+        this.$set(this.configParamList[index], 'value', this.configParamList[lindex].key);
       } else {
         this.$set(this.configParamList[index], 'name', val);
+        this.$set(this.configParamList[index], 'key', null);
       }
     },
     gotoAddParameter() { //添加作业参数
@@ -436,6 +441,14 @@ export default {
         this.getProfileParamsList(val);
       } else {
         this.profileParamVoList = [];
+        this.profileArgumentList = [];
+        this.configParamList.forEach(item => {
+          if (item.mappingMode == 'profile') {
+            this.$set(item, 'mappingMode', 'constant');
+            this.$set(item, 'value', null);
+            this.$set(item, 'key', null);
+          }
+        });
       }
     }
   }
