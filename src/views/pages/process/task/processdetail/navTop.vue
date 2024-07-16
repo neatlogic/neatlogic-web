@@ -229,7 +229,11 @@ export default {
           });
           if (!this.$utils.isEmpty(slaIdList)) {
             this.UpdateSlaTimeDoing(slaIdList);
+          } else {
+            this.$store.commit('setTaskSlaTimeList', []); // 清空工单时效
           }
+        } else {
+          this.$store.commit('setTaskSlaTimeList', []); // 清空工单时效
         }
       },
       immediate: true,

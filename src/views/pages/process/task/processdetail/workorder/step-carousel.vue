@@ -89,6 +89,9 @@
                     </span>
                   </div>
                   <div class="text-tip fz10">{{ getSlaStatus(sla.status, sla.expireTime) }}</div>
+                  <div v-if="sla.delayList && sla.delayList.length > 0">
+                    <StepSlaDelay :dataList="sla.delayList"></StepSlaDelay>
+                  </div>
                 </div>
               </div>
             </CarouselItem>
@@ -102,7 +105,8 @@
 export default {
   name: '',
   components: {
-    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    StepSlaDelay: () => import('@/views/pages/process/task/processdetail/workorder/step-sla-delay.vue')
   },
   filters: {},
   props: {},
