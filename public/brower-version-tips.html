@@ -7,7 +7,6 @@
     <meta charset="utf-8" />
     <link rel="icon" href="./resource/img/common/tsfavicon.png" />
     <title>浏览器版本过低</title>
-    <script type="text/javascript"></script>
   </head>
   <style>
     html,
@@ -19,38 +18,39 @@
       margin: 0;
       background: #e7f6fc;
     }
-    .ietips {
+    .browser-tip-box {
       position: absolute;
       top: 10%;
+      left: 25%;
       width: 50%;
       text-align: center;
       color: #666;
-      left: 25%;
       background: #fff;
       border: 1px solid #1690ff;
     }
-    .ietips .top {
+    .browser-tip-box .browser-text {
       font-size: 20px;
       line-height: 3;
       color: #fff;
       background: #1690ff;
       font-weight: bold;
     }
-    #btnInstall {
+    .browser-tip-box .browser-version-box {
+      line-height: 5;
+      font-size: 18px;
+    }
+    .browser-tip-box .browser-version-text {
       color: #1690ff;
       margin-left: 10px;
     }
   </style>
   <body>
-    <div class="ietips">
-      <div class="top">您的浏览器版本过低！</div>
-      <div style="line-height: 5;font-size:18px;">
-        建议使用
-        <span id="btnInstall">
-          谷歌浏览器
-        </span>
+    <div class="browser-tip-box">
+      <div class="browser-text">您的浏览器版本过低！</div>
+      <div class="browser-version-box">
+        请使用
+        <span class="browser-version-text">谷歌浏览器95及以上版本</span>
       </div>
-      <div style="line-height: 5;font-size: 12px;">若未安装该浏览器，请联系分公司IT或总部服务台人员。</div>
     </div>
   </body>
 </html>
