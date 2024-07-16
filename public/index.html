@@ -9,7 +9,7 @@
     <meta http-equiv="Page-Exit" content="revealTrans(duration=2, transition=9)" />
     <link rel="icon" href="<%= BASE_URL %>resource/img/common/tsfavicon.png" />
     <title><%= htmlWebpackPlugin.options.title %></title>
-    <script src="<%= BASE_URL %>resource/config.js"></script>
+    <script src="<%= BASE_URL %>resource/config.js?version=1.0.0"></script>
     <style>
       html,
       body {
@@ -25,44 +25,16 @@
   <body class="border-radius">
     <div id="index"></div>
     <script type="text/javascript">
-        window.onload = function() {
-            if (IEVersion() != -1) {
-              var url = location.href.split('//'); // 拿到协议
-              var prefixUrl = url && url[1].split('/'); // 获取域名
-              var fullUrl = url && url[0] + '//' + prefixUrl[0] + '/' + prefixUrl[1];
-              window.location.href = fullUrl + '/iealert.html';
-            }
-        };
-      function IEVersion() {
-        //  判断是否是IE浏览器，如果不是IE浏览器，那就返回一个-1，排除edge浏览器
-        var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
-        var isIE = userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1; //判断是否IE<11浏览器
-        var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf('rv:11.0') > -1;
-        if (isIE) {
-          var reIE = new RegExp('MSIE (\\d+\\.\\d+);');
-          reIE.test(userAgent);
-          var fIEVersion = parseFloat(RegExp['$1']);
-          if (fIEVersion == 7) {
-            return 7;
-          } else if (fIEVersion == 8) {
-            return 8;
-          } else if (fIEVersion == 9) {
-            return 9;
-          } else if (fIEVersion == 10) {
-            return 10;
-          } else {
-            return 6; //IE版本<=7F
-          }
-        } else if (isIE11) {
-          return 11; //IE11
-        } else {
-          return -1; //不是ie浏览器
+      window.onload = function () {
+        if (!isChromeAndVersionGE95()) {
+          window.location.href = getProtocalIpPortDomain();
         }
-      }
-      document.body.ondrop = function (event) { //使用拖拽组件draggble，火狐浏览器弹出新窗口的兼容问题
+      };
+      document.body.ondrop = function (event) {
+        //使用拖拽组件draggble，火狐浏览器弹出新窗口的兼容问题
         event.preventDefault();
         event.stopPropagation();
-      }
+      };
     </script>
   </body>
 </html>

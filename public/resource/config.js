@@ -173,3 +173,36 @@ async function getSsoTokenKey() {
   }
 }
 getSsoTokenKey();
+function isChromeAndVersionGE95() {
+  // 判断是否是Chrome浏览器，且版本号大于等于95
+  const userAgent = navigator.userAgent;
+  // 检查是否包含Chrome标识
+  if (userAgent.includes('Chrome')) {
+    // 使用正则表达式匹配Chrome版本号
+    const chromeVersionMatch = userAgent.match(/Chrome\/(\S+)/);
+    if (chromeVersionMatch && chromeVersionMatch.length > 1) {
+      // 提取版本号
+      const chromeVersion = chromeVersionMatch[1];
+      const versionParts = chromeVersion.split('.').map(Number);
+      const majorVersion = versionParts[0];
+      // 比较版本号是否大于等于95
+      if (majorVersion >= 95) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+function getProtocalIpPortDomain(isNeedTenantName = true) {
+  // 获取ip协议端口域名，例如：http://127.0.0.1:8080/develop
+  var urlParts = location.href.split('//'); // 拿到协议
+  if (urlParts.length > 1) {
+    var prefixUrl = urlParts[1].split('/'); // 获取域名
+    var fullUrl = urlParts[0] + '//' + prefixUrl[0];
+    if (isNeedTenantName) {
+      fullUrl = fullUrl + '/' + prefixUrl[1];
+    }
+    return fullUrl + '/brower-version-tips.html';
+  }
+  return location.href;
+}
