@@ -28,11 +28,15 @@
                       <span class="text-grey ml-xs">({{ row.id }})</span>
                     </div>
                     <div class="mt-xs">
-                      <span class="text-grey mr-xs">{{ $t('page.versions') }}</span>
+                      <span class="text-grey mr-xs">{{ 'pom ' + $t('page.versions') }}</span>
                       <span>{{ row.version || '-' }}</span>
                     </div>
                     <div class="mt-xs">
-                      <span class="text-grey mr-xs">{{ row.changelogVersion || '-' }}</span>
+                      <span class="text-grey mr-xs">{{ 'changelog ' + $t('page.versions') }}</span>
+                      <span>{{ row.changelogVersion || '-' }}</span>
+                    </div>
+                    <div class="mt-xs">
+                      <span class="text-grey mr-xs">{{ new Date(row.lastModified).toLocaleString() || '-' }}</span>
                     </div>
                   </div>
                 </template>
