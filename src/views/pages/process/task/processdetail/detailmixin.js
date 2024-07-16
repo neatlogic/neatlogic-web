@@ -368,13 +368,13 @@ export default {
             this.actionConfig[j] = item.text;
             if (j == 'save') {
               //当有保存按钮时才需要定时保存
-              this.setTimer();
+              // this.setTimer(); //停用自动保存
             }
           }
         }
       });
     },
-    setTimer() {
+    setTimer() { //定时保存
       let _this = this;
       _this.timer = setInterval(() => {
         _this.saveTask();
