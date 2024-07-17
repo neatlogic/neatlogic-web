@@ -43,25 +43,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.itemList = this.formConfig || [];
-    this.formData = {};
-    this.itemList.forEach((v) => {
-      if (!this.$utils.isEmpty(v) && !this.$utils.isEmpty(v['name'])) {
-        this.formData[v['name']] = null;
-        if (v['name'] === 'preStepList' && !this.$utils.isEmpty(this.copyPrevNodes)) {
-          v.dataList = this.copyPrevNodes.map(c => {
-            return {
-              text: c.name,
-              value: c.uuid
-            };
-          });
-        }
-      }
-    });
-    if (!this.$utils.isEmpty(this.value)) {
-      this.formData = Object.assign(this.formData, this.value);
-    }
-    this.loadingShow = false;
+    this.init();
   },
   beforeMount() {},
   mounted() {},
@@ -72,6 +54,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    init() {
+      this.itemList = this.formConfig || [];
+      this.formData = {};
+      if (!this.$utils.isEmpty(this.value)) {
+        this.formData = Object.assign(this.formData, this.value);
+      }
+      this.getPrevNodes();
+      this.loadingShow = false;
+    },
     valid() {
       let form = this.$refs.form;
       let isValid = true;
@@ -82,6 +73,24 @@ export default {
     },
     saveData() {
       return this.formData;
+    },
+    getPrevNodes() { // 获取前置节点
+      if (this.$utils.isEmpty(this.itemList) || this.$utils.isEmpty(this.copyPrevNodes)) {
+        return;
+      }
+      this.itemList.forEach((v) => {
+        if (!this.$utils.isEmpty(v) && !this.$utils.isEmpty(v['name'])) {
+          this.formData[v['name']] = null;
+          if (v['name'] === 'preStepList' && !this.$utils.isEmpty(this.copyPrevNodes)) {
+            v.dataList = this.copyPrevNodes.map(c => {
+              return {
+                text: c.name,
+                value: c.uuid
+              };
+            });
+          }
+        }
+      });
     }
   },
   filter: {},
@@ -98,6 +107,7 @@ export default {
         } else {
           this.itemList = [];
         }
+        this.getPrevNodes();
         this.loadingShow = false;
       },
       deep: true

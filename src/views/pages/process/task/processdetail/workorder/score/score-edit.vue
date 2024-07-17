@@ -1,5 +1,5 @@
 <template>
-  <div class="score-edit border-color padding">
+  <div class="score-edit padding">
     <div class="title">{{ $t('page.userrating') }}</div>
     <ul class="score-list clearfix">
       <li v-for="item in dimensionList" :key="item.id" class="score-item">
@@ -128,7 +128,6 @@ export default {
 
 <style lang="less" scoped>
 .score-edit {
-  border-top: 2px solid;
 	.score-list {
     padding-top: 16px;
 		.score-item {
