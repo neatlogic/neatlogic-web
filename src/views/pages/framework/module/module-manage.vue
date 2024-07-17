@@ -28,7 +28,8 @@
                       <span class="text-grey ml-xs">({{ row.id }})</span>
                     </div>
                     <div class="mt-xs">
-                      <span class="text-grey mr-xs">{{ 'pom ' + $t('page.versions') }}</span>
+                      <span v-if="row.id !== 'web'" class="text-grey mr-xs">{{ 'pom ' + $t('page.versions') }}</span>
+                      <span v-else class="text-grey mr-xs">{{ $t('page.versions') }}</span>
                       <span>{{ row.version || '-' }}</span>
                     </div>
                     <div class="mt-xs">
@@ -36,7 +37,8 @@
                       <span>{{ row.changelogVersion || '-' }}</span>
                     </div>
                     <div class="mt-xs">
-                      <span class="text-grey mr-xs">{{ new Date(row.lastModified).toLocaleString() || '-' }}</span>
+                      <span class="text-grey mr-xs">{{ $t('page.installtime') }}</span>
+                      <span>{{ new Date(row.lastModified).toLocaleString() || '-' }}</span>
                     </div>
                   </div>
                 </template>
@@ -89,6 +91,26 @@ export default {
     searchModule() {
       this.$api.framework.module.searchModule().then(res => {
         this.moduleGroupList = res.Return;
+        //补充前端版本和最后修改时间
+        fetch('/version.md')
+          .then(response => response.json())
+          .then(data => {
+            this.webBuildDate = data.fcd;
+            this.webBuildVersion = data.version;
+            this.moduleGroupList.push({
+              group: 'web',
+              groupName: '前端',
+              groupDescription: '前端页面',
+              groupSort: 0,
+              moduleList: [
+                {id: 'web',
+                  name: '前端',
+                  lastModified: data.fcd,
+                  version: data.version
+                }
+              ]
+            });
+          });
       });
     },
     openImportDialog(row) {

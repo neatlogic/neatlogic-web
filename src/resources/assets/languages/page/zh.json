@@ -1003,5 +1003,6 @@
   "cleardata": "清空数据",
   "customdata": "自定义数据",
   "clicktoselect": "点击选择",
-  "mappingmode": "映射模式"
+  "mappingmode": "映射模式",
+  "installtime": "打包日期"
 }
