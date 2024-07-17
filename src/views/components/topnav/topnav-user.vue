@@ -116,7 +116,7 @@ export default {
           this.$utils.removeCookie('neatlogic_authorization');
           let url = res.Return.url || '';
           if (url) {
-            url = url.indexOf('http://') == -1 || url.indexOf('https://') == -1 ? 'http://' + url : url;
+            url = url.indexOf('http://') == -1 && url.indexOf('https://') == -1 ? 'http://' + url : url;
             window.open(url, '_self');
           } else {
             window.location.href = HOME + '/login.html';
