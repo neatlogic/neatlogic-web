@@ -7,6 +7,26 @@
     <meta charset="utf-8" />
     <link rel="icon" href="./resource/img/common/tsfavicon.png" />
     <title>浏览器版本过低</title>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // 假设你的HTML中有一个元素包含这段文本
+        const element = document.querySelector('#browser-version-text'); // 使用合适的ID或选择器
+        if (element) {
+          // 获取当前文本
+          const currentText = element.textContent || element.innerText;
+          const newText = currentText.replace('95', getVersion());
+          element.textContent = newText;
+        }
+      });
+      function getVersion() {
+        // 获取URL对象
+        const url = new URL(window.location.href);
+        const searchParams = new URLSearchParams(url.search);
+        // 获取version参数的值
+        const version = searchParams.get('version');
+        return version;
+      }
+    </script>
   </head>
   <style>
     html,
@@ -49,7 +69,7 @@
       <div class="browser-text">您的浏览器版本过低！</div>
       <div class="browser-version-box">
         请使用
-        <span class="browser-version-text">谷歌浏览器95及以上版本</span>
+        <span class="browser-version-text" id="browser-version-text">谷歌浏览器95及以上版本</span>
       </div>
     </div>
   </body>
