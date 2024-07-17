@@ -1,168 +1,240 @@
 <template>
-  <div>
-    <ul v-if="!$utils.isEmpty(fileList)">
-      <li v-for="(file) in fileList" :key="file.id">
-        <span v-if="file.name" class="tsfont-attachment">
-          {{ file.name }}
-        </span>
-        <template v-if="file.id">
-          <span
-            v-if="!downloadLoadingConfig[file.id]"
-            v-download="downLoadUrl(file.id)"
-            :title="$t('page.download')"
-            class="tsfont-download text-action text-padding"
-          ></span>
-          <span v-if="downloadLoadingConfig[file.id]" class="action-item disable" :title="$t('page.downloadloadingtip')">
-            <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
-          </span>
-          <span v-if="isImage(file.name)" class="tsfont-eye text-action" @click="handlePreview(file.id)"></span>
-        </template>
-      </li>
-    </ul>
-    <div v-if="!$utils.isEmpty(fileData)">
-      <span
-        v-if="!downloadLoading"
-        v-download="downLoadUrl(fileData.id)"
-        :title="$t('page.download')"
-        class="icon tsfont-download text-action text-padding"
-      >{{ isShowText ? $t('page.download') :'' }}</span>
-      <span v-if="downloadLoading" class="action-item disable" :title="$t('page.downloadloadingtip')">
-        <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
-      </span>
-      <span
-        v-if="isImage(fileData.name)"
-        class="tsfont-eye text-action icon-right"
-        :title="$t('page.preview')+$t('page.image')"
-        @click="handlePreview(fileData.id)"
-      >{{ isShowText? $t('page.preview'):'' }}</span>
-    </div>
-    <TsDialog
-      :title="$t('page.preview')"
-      type="modal"
-      :hasFooter="false"
-      width="80%"
-      height="80%"
-      :fullscreen="true"
-      :isShow="isShowPreview"
-      @on-close="()=>{
-        isShowPreview = false
-        imgId = ''
-      }"
+  <div class="el-image">
+    <slot v-if="loading" name="placeholder">
+      <div class="el-image__placeholder"></div>
+    </slot>
+    <img
+      v-else
+      class="el-image__inner"
+      v-bind="$attrs"
+      :src="src"
+      :style="imageStyle"
+      :class="{ 'el-image__inner--center': alignCenter, 'el-image__preview': preview }"
+      v-on="$listeners"
+      @click="clickHandler"
     >
-      <template v-slot>
-        <div class="text-center" style="max-height: calc(100vh - 150px);max-width:100%;">
-          <img
-            v-if="imgId"
-            :src="imgId"
-            :style="{textAlign: 'center'}"
-          >
-        </div>
-      </template>
-    </TsDialog>
+    <template v-if="preview">
+      <image-viewer
+        v-if="showViewer"
+        :z-index="zIndex"
+        :initial-index="imageIndex"
+        :on-close="closeViewer"
+        :url-list="previewSrcList"
+      />
+    </template>
   </div>
 </template>
+
 <script>
-import download from '@/resources/directives/download.js';
+import ImageViewer from './image-viewer.vue';
+import { on, off, getScrollContainer, isInContainer } from './js/dom';
+import { isString, isHtmlElement } from './js/types';
+import throttle from 'lodash/throttle';
+
+const isSupportObjectFit = () => document.documentElement.style.objectFit !== undefined;
+
+const ObjectFit = {
+  NONE: 'none',
+  CONTAIN: 'contain',
+  COVER: 'cover',
+  FILL: 'fill',
+  SCALE_DOWN: 'scale-down'
+};
+let prevOverflow = '';
 export default {
   name: '',
   components: {
+    ImageViewer
   },
-  directives: {download},
+  inheritAttrs: false,
   props: {
-    fileList: {
-      // 文件列表
+    src: String,
+    fit: String,
+    lazy: Boolean,
+    scrollContainer: {},
+    previewSrcList: {
       type: Array,
-      default: () => ([])
+      default: () => []
     },
-    fileData: {
-      // 单个文件数据 fileData: {name: 'xxx', id: 'xxx}
-      type: Object,
-      default: () => ({})
+    zIndex: {
+      type: Number,
+      default: 2000
     },
-    fileDownloadParam: {
-      // 文件下载参数
-      type: Object,
-      default: () => ({})
-    },
-    fileDownloadUrl: {
-      //文件下载路径
-      type: String,
-      default: '/api/binary/file/download'
-    },
-    fileName: {
-      type: String,
-      default: 'name'
-    },
-    idName: {
-      type: String,
-      default: 'id'
-    },
-    isShowText: {
-      // 是否显示下载文案
+    initialIndex: Number,
+    isShow: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
+
   data() {
     return {
-      downloadLoadingConfig: {},
-      downloadLoading: false,
-      isShowPreview: false,
-      imgId: ''
+      loading: true,
+      error: false,
+      show: !this.lazy,
+      imageWidth: 0,
+      imageHeight: 0,
+      showViewer: false
     };
   },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
+  mounted() {
+    if (this.lazy) {
+      this.addLazyLoadListener();
+    } else {
+      this.loadImage();
+    }
+  },
+  beforeDestroy() {
+    this.lazy && this.removeLazyLoadListener();
+  },
   methods: {
-    handlePreview(id) {
-      this.imgId = id ? `${HOME}/api/binary/file/download?id=${id}` : '';
-      this.isShowPreview = true;
-    }
-  },
-  filter: {},
-  computed: {
-    downLoadUrl() {
-      return (id) => {
-        let params = {
-          id: id
-        };
-        if (!this.$utils.isEmpty(this.fileDownloadParam)) {
-          params = this.fileDownloadParam;
-        }
-        return {
-          url: this.fileDownloadUrl,
-          params: params,
-          changeStatus: status => {
-            if (status == 'start') {
-              this.downloadLoading = true;
-              this.$set(this.downloadLoadingConfig, [id], true);
-            } else if (status == 'success' || status == 'error') {
-              this.downloadLoading = false;
-              this.$set(this.downloadLoadingConfig, [id], false);
-            }
-          }
-        };
-      };
+    loadImage() {
+      if (this.$isServer) return;
     },
-    isImage() {
-      return (fileName) => {
-        // 使用split方法根据点（.）分割文件名，[-1]获取最后一个元素，即后缀
-        const fileExtension = fileName.split('.').pop().toLowerCase();
-        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico'];
-        return imageExtensions.includes(fileExtension);
-      };
+    handleLoad(e, img) {
+      this.imageWidth = img.width;
+      this.imageHeight = img.height;
+      this.loading = false;
+      this.error = false;
+    },
+    handleError(e) {
+      this.loading = false;
+      this.error = true;
+      this.$emit('error', e);
+    },
+    handleLazyLoad() {
+      if (isInContainer(this.$el, this._scrollContainer)) {
+        this.show = true;
+        this.removeLazyLoadListener();
+      }
+    },
+    addLazyLoadListener() {
+      if (this.$isServer) return;
+      const { scrollContainer } = this;
+      let _scrollContainer = null;
+      if (isHtmlElement(scrollContainer)) {
+        _scrollContainer = scrollContainer;
+      } else if (isString(scrollContainer)) {
+        _scrollContainer = document.querySelector(scrollContainer);
+      } else {
+        _scrollContainer = getScrollContainer(this.$el);
+      }
+      if (_scrollContainer) {
+        this._scrollContainer = _scrollContainer;
+        this._lazyLoadHandler = throttle(200, this.handleLazyLoad);
+        on(_scrollContainer, 'scroll', this._lazyLoadHandler);
+        this.handleLazyLoad();
+      }
+    },
+    removeLazyLoadListener() {
+      const { _scrollContainer, _lazyLoadHandler } = this;
+
+      if (this.$isServer || !_scrollContainer || !_lazyLoadHandler) return;
+
+      off(_scrollContainer, 'scroll', _lazyLoadHandler);
+      this._scrollContainer = null;
+      this._lazyLoadHandler = null;
+    },
+    /**
+       * simulate object-fit behavior to compatible with IE11 and other browsers which not support object-fit
+       */
+    getImageStyle(fit) {
+      const { imageWidth, imageHeight } = this;
+      const {
+        clientWidth: containerWidth,
+        clientHeight: containerHeight
+      } = this.$el;
+
+      if (!imageWidth || !imageHeight || !containerWidth || !containerHeight) return {};
+
+      const imageAspectRatio = imageWidth / imageHeight;
+      const containerAspectRatio = containerWidth / containerHeight;
+
+      if (fit === ObjectFit.SCALE_DOWN) {
+        const isSmaller = imageWidth < containerWidth && imageHeight < containerHeight;
+        fit = isSmaller ? ObjectFit.NONE : ObjectFit.CONTAIN;
+      }
+
+      switch (fit) {
+        case ObjectFit.NONE:
+          return { width: 'auto', height: 'auto' };
+        case ObjectFit.CONTAIN:
+          return (imageAspectRatio < containerAspectRatio) ? { width: 'auto' } : { height: 'auto' };
+        case ObjectFit.COVER:
+          return (imageAspectRatio < containerAspectRatio) ? { height: 'auto' } : { width: 'auto' };
+        default:
+          return {};
+      }
+    },
+    clickHandler() {
+      if (!this.preview) {
+        return;
+      }
+      // prevent body scroll
+      prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      this.showViewer = true;
+    },
+    closeViewer() {
+      document.body.style.overflow = prevOverflow;
+      this.showViewer = false;
+      this.$emit('close');
     }
   },
-  watch: {}
+
+  computed: {
+    imageStyle() {
+      const { fit } = this;
+      if (!this.$isServer && fit) {
+        return isSupportObjectFit()
+          ? { 'object-fit': fit }
+          : this.getImageStyle(fit);
+      }
+      return {};
+    },
+    alignCenter() {
+      return !this.$isServer && !isSupportObjectFit() && this.fit !== ObjectFit.FILL;
+    },
+    preview() {
+      const { previewSrcList } = this;
+      return Array.isArray(previewSrcList) && previewSrcList.length > 0;
+    },
+    imageIndex() {
+      let previewIndex = 0;
+      const initialIndex = this.initialIndex;
+      if (initialIndex >= 0) {
+        previewIndex = initialIndex;
+        return previewIndex;
+      }
+      const srcIndex = this.previewSrcList.indexOf(this.src);
+      if (srcIndex >= 0) {
+        previewIndex = srcIndex;
+        return previewIndex;
+      }
+      return previewIndex;
+    }
+  },
+  watch: {
+    src(val) {
+      this.show && this.loadImage();
+    },
+    show(val) {
+      val && this.loadImage();
+    },
+    isShow: {
+      handler(val) {
+        if (val) {
+          prevOverflow = document.body.style.overflow;
+          document.body.style.overflow = 'hidden';
+          this.showViewer = true;
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
-<style lang="less">
+<style lang="css" scoped>
+@import url('./image-preview.css');
 </style>

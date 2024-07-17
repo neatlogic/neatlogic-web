@@ -56,12 +56,7 @@
             <span class="file_name overflow">
               <Tooltip :transfer="true" :content="item.name">{{ item.name }}</Tooltip>
             </span>
-            <ImagePreviewDialog
-              :fileData="item"
-              :isShowText="false"
-              :fileDownloadUrl="fileDownurl"
-              :fileDownloadParam="fileDownParam"
-            ></ImagePreviewDialog>
+            <span class="tsfont-eye text-action pl-xs pr-xs" @click.stop="handlePreview(item.id)"></span>
             <i
               v-if="!readonly && !disabled"
               class="tsfont-close file_del text-action"
@@ -79,6 +74,15 @@
         </Col>
       </TsRow>
     </div>
+    <ImagePreviewDialog 
+      v-if="srcList && srcList.length > 0"
+      :isShow="srcList.length > 0 ? true : false"
+      :preview-src-list="srcList"
+      @close="()=> {
+        srcList = []
+      }"
+    >
+    </ImagePreviewDialog>
   </div>
 </template>
 
@@ -245,7 +249,9 @@ export default {
       fileStatus: 'normal',
       headerConfig: {
         Authorization: sessionStorage.getItem('neatlogic_authorization') ? sessionStorage.getItem('neatlogic_authorization') : ''
-      }
+      },
+      srcList: [],
+      url: ''
     };
   },
   beforeMount() {},
@@ -256,6 +262,14 @@ export default {
   },
   created() {},
   methods: {
+    handlePreview(id) {
+      let initSrcUrl = `${HOME}/api/binary/file/download?id=`;
+      let srcList = this.uploadList.filter((a) => a && a.id && a.id !== id).map((v) =>
+        `${HOME}${this.fileDownurl}?id=${v.id}`
+      );
+      this.url = `${HOME}${this.fileDownurl}?id=${id}`;
+      this.srcList = [this.url, ...srcList];
+    },
     FormatError: function(file) {
       this.handleFormatError(file);
     },
