@@ -26,7 +26,7 @@
     <div id="index"></div>
     <script type="text/javascript">
       window.onload = function () {
-        if (!isChromeAndVersionGE95() || !isFirefoxAndVersionGE83()) {
+        if (!getBrowserVersion()) {
           window.location.href = getProtocalIpPortDomain(false);
         }
       };

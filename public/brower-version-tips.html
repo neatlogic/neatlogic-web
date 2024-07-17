@@ -9,12 +9,17 @@
     <title>浏览器版本过低</title>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        // 假设你的HTML中有一个元素包含这段文本
-        const element = document.querySelector('#browser-version-text'); // 使用合适的ID或选择器
+        const element = document.querySelector('#browser-version-text');
         if (element) {
-          // 获取当前文本
           const currentText = element.textContent || element.innerText;
-          const newText = currentText.replace('95', getVersion());
+          const version = getVersion();
+          let newText = currentText.replace('95', version);
+          // 根据userAgent判断是谷歌还是火狐，并替换文本中的'谷歌'
+          if (navigator.userAgent.includes('Firefox')) {
+            newText = newText.replace('谷歌', '火狐');
+          } else if (navigator.userAgent.includes('Chrome')) {
+            newText = newText.replace('谷歌', '谷歌');
+          }
           element.textContent = newText;
         }
       });
@@ -24,7 +29,7 @@
         const searchParams = new URLSearchParams(url.search);
         // 获取version参数的值
         const version = searchParams.get('version');
-        return version;
+        return version || '95';
       }
     </script>
   </head>
