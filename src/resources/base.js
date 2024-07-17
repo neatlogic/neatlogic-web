@@ -18,6 +18,7 @@ import AuthUtils from '@/resources/assets/js/authUtil.js'; //权限判断
 import VueDomPurifyHtml from 'vue-dompurify-html'; //防止xss攻击
 import './assets/index.js';
 import 'regenerator-runtime/runtime'; // 处理regeneratorRuntime is not defined问题
+import 'element-ui/lib/theme-chalk/index.css';
 // common.checkTenant().then(res => {
 //   if (res) {
 //     if (res.Status != 'OK') {
