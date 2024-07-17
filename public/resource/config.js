@@ -22,17 +22,8 @@ var HTTP_RESPONSE_STATUS_CODE = ''; // http返回状态码，用于错误回显
 var GLOBAL_PAGELIST = '';
 var GLOBAL_TABLESTRYLE = '';
 var GLOBAL_LOGINTITLE = 'welcome';
-
-var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
-var isIE = userAgent.indexOf('compatible') > -1 && userAgent.indexOf('MSIE') > -1; //判断是否IE<11浏览器
-if (isIE) {
-  var reIE = new RegExp('MSIE (\\d+\\.\\d+);');
-  reIE.test(userAgent);
-  var fIEVersion = parseFloat(RegExp['$1']);
-  if (fIEVersion * 1 < 10) {
-    window.location.href = '/iealert.html';
-  }
-}
+var MINIMUM_CHROMEBROWSERVERSION = 95; // 谷歌浏览器版本号
+var MINIMUM_FIREFOXBROWSERVERSION = 0; // 火狐浏览器版本号
 
 setCookie('neatlogic_language', BASELANGUAGES, 7); // 设置cookie，解决部署首次，没有默认多语言问题
 
@@ -154,6 +145,8 @@ async function getSsoTokenKey() {
         SSOTICKETKEY = responseText.ssoTicketKey || '';
         AUTHTYPE = responseText.authType || '';
         ISNEEDAUTH = responseText.isNeedAuth || false;
+        MINIMUM_CHROMEBROWSERVERSION = (responseText.minimumChromeBrowserVersion ? Number(responseText.minimumChromeBrowserVersion) : 95) || 95;
+        MINIMUM_FIREFOXBROWSERVERSION = (responseText.minimumFirefoxBrowserVersion ? Number(responseText.minimumFirefoxBrowserVersion) : 0) || 0;
         if (responseText.commercialModuleSet && responseText.commercialModuleSet.length > 0) {
           COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
         }
@@ -185,8 +178,24 @@ function isChromeAndVersionGE95() {
       const chromeVersion = chromeVersionMatch[1];
       const versionParts = chromeVersion.split('.').map(Number);
       const majorVersion = versionParts[0];
-      // 比较版本号是否大于等于95
-      if (majorVersion >= 95) {
+      if (majorVersion >= MINIMUM_CHROMEBROWSERVERSION) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+function isFirefoxAndVersionGE83() {
+  // 判断是否是Firefox浏览器，且版本号大于等于83
+  const userAgent = navigator.userAgent;
+  // 检查是否包含Firefox标识
+  if (userAgent.includes('Firefox')) {
+    // 使用正则表达式匹配Firefox版本号
+    const firefoxVersionMatch = userAgent.match(/Firefox\/(\d+)/);
+    if (firefoxVersionMatch && firefoxVersionMatch.length > 1) {
+      // 提取版本号（注意这里我们只关心主版本号，因此直接取第一个匹配的数字）
+      const firefoxVersion = parseInt(firefoxVersionMatch[1], 10);
+      if (firefoxVersion >= MINIMUM_FIREFOXBROWSERVERSION) {
         return true;
       }
     }
@@ -202,7 +211,7 @@ function getProtocalIpPortDomain(isNeedTenantName = true) {
     if (isNeedTenantName) {
       fullUrl = fullUrl + '/' + prefixUrl[1];
     }
-    return fullUrl + '/brower-version-tips.html';
+    return fullUrl + '/brower-version-tips.html?version=' + MINIMUM_CHROMEBROWSERVERSION;
   }
   return location.href;
 }
