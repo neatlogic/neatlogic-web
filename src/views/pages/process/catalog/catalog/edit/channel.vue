@@ -310,7 +310,9 @@ export default {
           type: 'userselect',
           name: 'authorityList',
           label: this.$t('term.process.reporauth'),
-          groupList: ['user', 'team', 'role', 'common']
+          groupList: ['user', 'team', 'role', 'common'],
+          validateList: ['required'],
+          tooltip: this.$t('term.process.reportauthtooltip')
         },
         {
           type: 'slot',

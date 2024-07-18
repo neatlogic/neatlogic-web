@@ -34,7 +34,8 @@ export default {
       catalogValue: {
         name: '',
         isActive: 1,
-        authorityList: null,
+        reportAuthorityList: null,
+        viewAuthorityList: null,
         desc: '',
         uuid: this.uuid
       },
@@ -57,11 +58,23 @@ export default {
         },
         {
           type: 'userselect',
-          name: 'authorityList',
-          label: this.$t('page.auth'),
+          name: 'reportAuthorityList',
+          label: this.$t('term.process.reporauth'),
           width: '75%',
           groupList: ['user', 'team', 'role', 'common'],
-          value: ['common#alluser']
+          value: ['common#alluser'],
+          validateList: ['required'],
+          tooltip: this.$t('term.process.reportauthtooltip')
+        },
+        {
+          type: 'userselect',
+          name: 'viewAuthorityList',
+          label: this.$t('term.process.viewauth'),
+          width: '75%',
+          groupList: ['user', 'team', 'role', 'common'],
+          value: ['common#alluser'],
+          validateList: ['required'],
+          tooltip: this.$t('term.process.viewauthtooltip')
         },
         {
           type: 'ckeditor',
@@ -73,7 +86,8 @@ export default {
       initValue: {
         name: '',
         isActive: 1,
-        authorityList: ['common#alluser'],
+        reportAuthorityList: ['common#alluser'],
+        viewAuthorityList: ['common#alluser'],
         desc: ''
       }
     };
@@ -108,7 +122,8 @@ export default {
           this.catalogValue = {
             name: itemValue.name || '',
             isActive: itemValue.isActive || 0,
-            authorityList: itemValue.authorityList,
+            reportAuthorityList: itemValue.reportAuthorityList,
+            viewAuthorityList: itemValue.viewAuthorityList,
             desc: itemValue.desc || '',
             uuid: this.uuid   
           };
