@@ -162,7 +162,7 @@
                         <div class="change-commet">
                           <span class="change-commet-label text-grey pr-sm">{{ $t('page.accessory') }}</span>
                           <div v-if="change.fileList && change.fileList.length>0">
-                            <ImagePreviewDialog :fileList="change.fileList"></ImagePreviewDialog>
+                            <ImagePreview :fileList="change.fileList"></ImagePreview>
                           </div>
                           <div v-else>-</div>
                         </div>
@@ -221,7 +221,7 @@ export default {
     StrategyDetailReadonly: () => import('../strategy/strategy-detail-readonly.vue'),
     JobDetail: () => import('@/views/pages/process/task/processdetail/workorder/autoexec/job-detail.vue'),
     SlaTime: () => import('./sla-time.vue'),
-    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
+    ImagePreview: () => import('@/resources/components/image-preview/index.vue')
   },
   directives: { download },
   props: {

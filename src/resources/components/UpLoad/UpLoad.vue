@@ -56,12 +56,7 @@
             <span class="file_name overflow">
               <Tooltip :transfer="true" :content="item.name">{{ item.name }}</Tooltip>
             </span>
-            <ImagePreviewDialog
-              :fileData="item"
-              :isShowText="false"
-              :fileDownloadUrl="fileDownurl"
-              :fileDownloadParam="fileDownParam"
-            ></ImagePreviewDialog>
+            <span class="tsfont-eye text-action pl-xs pr-xs" @click.stop="handlePreview(item.id)"></span>
             <i
               v-if="!readonly && !disabled"
               class="tsfont-close file_del text-action"
@@ -79,6 +74,17 @@
         </Col>
       </TsRow>
     </div>
+    <ImagePreview 
+      v-if="srcList && srcList.length > 0"
+      :isShow="srcList.length > 0 ? true : false"
+      :fileList="srcList"
+      :fileDownloadUrl="fileDownurl"
+      :fileDownloadParam="fileDownParam"
+      @close="()=> {
+        srcList = []
+      }"
+    >
+    </ImagePreview>
   </div>
 </template>
 
@@ -87,7 +93,7 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
+    ImagePreview: () => import('@/resources/components/image-preview/index.vue')
   },
   directives: { download },
   props: {
@@ -245,7 +251,9 @@ export default {
       fileStatus: 'normal',
       headerConfig: {
         Authorization: sessionStorage.getItem('neatlogic_authorization') ? sessionStorage.getItem('neatlogic_authorization') : ''
-      }
+      },
+      srcList: [],
+      url: ''
     };
   },
   beforeMount() {},
@@ -256,6 +264,9 @@ export default {
   },
   created() {},
   methods: {
+    handlePreview() {
+      this.srcList = this.uploadList;
+    },
     FormatError: function(file) {
       this.handleFormatError(file);
     },

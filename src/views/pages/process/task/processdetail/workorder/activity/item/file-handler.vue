@@ -3,11 +3,11 @@
     <span class="left-label-text text-grey">{{ config.typeName }}</span>
     <div v-if="textShow(config) && textShow(config) ==$t('page.delete')" class="text-grey">{{ textShow(config) }}</div>
     <div v-if="config.oldContent && setData(config.oldContent).length > 0">
-      <ImagePreviewDialog :fileList="setData(config.oldContent)"></ImagePreviewDialog>
+      <ImagePreview :fileList="setData(config.oldContent)"></ImagePreview>
     </div>
     <div v-if="textShow(config) && textShow(config) !=$t('page.delete')" class="text-grey">{{ textShow(config) }}</div>
     <div v-if="config.newContent && setData(config.newContent).length > 0">
-      <ImagePreviewDialog :fileList="setData(config.newContent)"></ImagePreviewDialog>
+      <ImagePreview :fileList="setData(config.newContent)"></ImagePreview>
     </div>
   </div>
 </template>
@@ -16,7 +16,7 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
+    ImagePreview: () => import('@/resources/components/image-preview/index.vue')
   },
   directives: { download },
   filters: {},
