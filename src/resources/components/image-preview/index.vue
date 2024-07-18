@@ -2,23 +2,29 @@
   <div>
     <div v-if="!$utils.isEmpty(fileList)">
       <div v-for="(file) in fileList" :key="file.id">
-        <span v-if="file.name && isShowFileList" class="tsfont-attachment">
+        <span v-if="file.name && isShowName" class="tsfont-attachment">
           {{ file.name }}
         </span>
         <template v-if="file.id">
           <span
-            v-if="!downloadLoadingConfig[file.id] && isShowFileList"
+            v-if="!downloadLoadingConfig[file.id]"
             v-download="downLoadUrl(file.id)"
             :title="$t('page.download')"
-            class="tsfont-download text-action text-padding"
+            :class="!isShowName ? 'inline-block pt-nm' : 'text-padding'"
+            class="tsfont-download text-action"
           ></span>
-          <span v-if="downloadLoadingConfig[file.id] && isShowFileList" class="action-item disable" :title="$t('page.downloadloadingtip')">
+          <span
+            v-if="downloadLoadingConfig[file.id]"
+            class="action-item disable"
+            :class="!isShowName ? 'inline-block pt-nm' : ''"
+            :title="$t('page.downloadloadingtip')"
+          >
             <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
           </span>
           <span
             v-if="isImage(file.name)"
             class="tsfont-eye text-action"
-            :class="!isShowFileList ? 'inline-block pt-nm' : ''"
+            :class="!isShowName ? 'inline-block pt-nm' : ''"
             @click="handlePreview(file.id)"
           ></span>
         </template>
@@ -91,7 +97,7 @@ export default {
       type: String,
       default: 'id'
     },
-    isShowFileList: {
+    isShowName: {
       type: Boolean,
       default: true
     }

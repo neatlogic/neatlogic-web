@@ -10,7 +10,7 @@
         <div class="tstable-action">
           <ul class="tstable-action-ul">
             <li>
-              <ImagePreview :fileList="[{...row}]" :isShowFileList="false"></ImagePreview>
+              <ImagePreview :fileList="[{...row}]" :isShowName="false"></ImagePreview>
             </li>
           </ul>
         </div>
