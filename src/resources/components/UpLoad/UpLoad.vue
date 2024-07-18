@@ -78,6 +78,8 @@
       v-if="srcList && srcList.length > 0"
       :isShow="srcList.length > 0 ? true : false"
       :fileList="srcList"
+      :fileDownloadUrl="fileDownurl"
+      :fileDownloadParam="fileDownParam"
       @close="()=> {
         srcList = []
       }"

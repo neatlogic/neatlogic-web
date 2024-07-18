@@ -1,7 +1,7 @@
 <template>
   <div>
-    <ul v-if="!$utils.isEmpty(fileList)">
-      <li v-for="(file) in fileList" :key="file.id">
+    <div v-if="!$utils.isEmpty(fileList)">
+      <div v-for="(file) in fileList" :key="file.id">
         <span v-if="file.name && isShowFileList" class="tsfont-attachment">
           {{ file.name }}
         </span>
@@ -15,10 +15,15 @@
           <span v-if="downloadLoadingConfig[file.id] && isShowFileList" class="action-item disable" :title="$t('page.downloadloadingtip')">
             <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
           </span>
-          <span v-if="isImage(file.name)" class="tsfont-eye text-action" @click="handlePreview(file.id)"></span>
+          <span
+            v-if="isImage(file.name)"
+            class="tsfont-eye text-action"
+            :class="!isShowFileList ? 'inline-block pt-nm' : ''"
+            @click="handlePreview(file.id)"
+          ></span>
         </template>
-      </li>
-    </ul>
+      </div>
+    </div>
     <div class="image-preview-box">
       <template v-if="preview">
         <image-viewer
