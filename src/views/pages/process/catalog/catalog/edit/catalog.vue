@@ -67,7 +67,7 @@ export default {
         {
           type: 'userselect',
           name: 'viewAuthorityList',
-          label: '查看授权',
+          label: this.$t('term.process.viewauth'),
           width: '75%',
           groupList: ['user', 'team', 'role', 'common'],
           value: ['common#alluser']
