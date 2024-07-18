@@ -226,7 +226,7 @@
                       :value="item.config.handlerConfig"
                       :formConfig="getDispatcherConfig(item.config.handler)"
                       :allFormitemList="allFormitemList"
-                      :copyPrevNodes="copyPrevNodes"
+                      :prevNodes="prevNodes"
                     >
                     </Component>
                   </div>
