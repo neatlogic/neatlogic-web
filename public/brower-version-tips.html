@@ -6,21 +6,29 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <meta charset="utf-8" />
     <link rel="icon" href="./resource/img/common/tsfavicon.png" />
-    <title>浏览器版本过低</title>
+    <title>浏览器兼容提示</title>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         const element = document.querySelector('#browser-version-text');
+        const elementTitle = document.querySelector('#browser-text');
         if (element) {
           const currentText = element.textContent || element.innerText;
+          const titleText = elementTitle.textContent || elementTitle.innerText;
           const version = getVersion();
-          let newText = currentText.replace('95', version);
+          let newText = currentText.replace('95', version || '95');
+          let newTitleText = titleText;
           // 根据userAgent判断是谷歌还是火狐，并替换文本中的'谷歌'
-          if (navigator.userAgent.includes('Firefox')) {
+          if (navigator.userAgent.includes('Firefox') && version) {
             newText = newText.replace('谷歌', '火狐');
+            newTitleText = '您的浏览器版本过低！';
           } else if (navigator.userAgent.includes('Chrome')) {
             newText = newText.replace('谷歌', '谷歌');
+            newTitleText = '您的浏览器版本过低！';
+          } else {
+            newTitleText = '当前浏览器暂不支持!';
           }
           element.textContent = newText;
+          elementTitle.textContent = newTitleText;
         }
       });
       function getVersion() {
@@ -29,7 +37,7 @@
         const searchParams = new URLSearchParams(url.search);
         // 获取version参数的值
         const version = searchParams.get('version');
-        return version || '95';
+        return Number(version);
       }
     </script>
   </head>
@@ -71,7 +79,7 @@
   </style>
   <body>
     <div class="browser-tip-box">
-      <div class="browser-text">您的浏览器版本过低！</div>
+      <div class="browser-text" id="browser-text">您的浏览器版本过低！</div>
       <div class="browser-version-box">
         请使用
         <span class="browser-version-text" id="browser-version-text">谷歌浏览器95及以上版本</span>

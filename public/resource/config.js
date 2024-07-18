@@ -167,11 +167,10 @@ async function getSsoTokenKey() {
 }
 getSsoTokenKey();
 function getBrowserVersion() {
-  // 判断是否是Chrome浏览器，且版本号大于等于95
+  // 获取浏览器版本号
   const userAgent = navigator.userAgent;
-  // 检查是否包含Chrome标识
   if (userAgent.includes('Chrome')) {
-    // 使用正则表达式匹配Chrome版本号
+    // 获取Chrome版本号
     const chromeVersionMatch = userAgent.match(/Chrome\/(\S+)/);
     if (chromeVersionMatch && chromeVersionMatch.length > 1) {
       // 提取版本号
@@ -183,11 +182,12 @@ function getBrowserVersion() {
       }
     }
   } else if (userAgent.includes('Firefox')) {
-    // 使用正则表达式匹配Firefox版本号
+    // 获取Firefox版本号
     const firefoxVersionMatch = userAgent.match(/Firefox\/(\d+)/);
     if (firefoxVersionMatch && firefoxVersionMatch.length > 1) {
       const firefoxVersion = parseInt(firefoxVersionMatch[1], 10);
-      if (firefoxVersion >= MINIMUM_FIREFOXBROWSERVERSION) {
+      if (MINIMUM_FIREFOXBROWSERVERSION && firefoxVersion >= MINIMUM_FIREFOXBROWSERVERSION) {
+        // 如果为0，表示不兼容火狐浏览器
         return true;
       }
     }
@@ -203,7 +203,7 @@ function getProtocalIpPortDomain(isNeedTenantName = true) {
     if (isNeedTenantName) {
       fullUrl = fullUrl + '/' + prefixUrl[1];
     }
-    return fullUrl + '/brower-version-tips.html?version=' + (MINIMUM_FIREFOXBROWSERVERSION > 0 ? MINIMUM_FIREFOXBROWSERVERSION : MINIMUM_CHROMEBROWSERVERSION);
+    return fullUrl + '/brower-version-tips.html?version=' + (MINIMUM_FIREFOXBROWSERVERSION > 0 ? MINIMUM_FIREFOXBROWSERVERSION : MINIMUM_FIREFOXBROWSERVERSION == 0 ? 0 : MINIMUM_CHROMEBROWSERVERSION);
   }
   return location.href;
 }
