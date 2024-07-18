@@ -604,7 +604,10 @@
     "runningcounttarget": "{target} in progress",
     "completedcounttarget": "{target} completed",
     "failedcounttarget": "{target} failed attempts",
-    "changecreatewithouthandler": "Please create a node associated with the change processing node for the change"
+    "changecreatewithouthandler": "Please create a node associated with the change processing node for the change",
+    "viewauth": "View Authorization",
+    "viewauthtooltip": "The current logged in person must meet both the authorization scope of the current directory and all parent and child directories in order to view work orders created through services in the current directory.",
+    "reportauthtooltip": "The current logged in person must meet the following requirements in order to create a work order through the services in the current directory: within the authorization scope of the current directory, as well as all parent and child directories and services."
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
