@@ -12,6 +12,7 @@
       labelPosition="left"
       :labelWidth="80"
       style="width: 100%"
+      :readonly="readonly"
     >
       <template v-slot:filterList>
         <div
@@ -30,6 +31,7 @@
             :validateList="[{name: 'required', message: ''}]"
             :dealDataByUrl="dealDataByUrl"
             :isNowrap="true"
+            :readonly="readonly"
           ></TsFormSelect>
           <span class="tsfont-arrow-right" style="padding: 0 4px"></span>
           <TsFormSelect
@@ -43,6 +45,7 @@
             border="border"
             :validateList="[{name: 'required', message: ''}]"
             :isNowrap="true"
+            :readonly="readonly"
             @on-focus="handleFormAttributeDataListDisabled()"
             @change="handleFormAttributeDataListDisabled()"
           ></TsFormSelect>
@@ -102,6 +105,10 @@ export default {
       default: () => {
         return {};
       }
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

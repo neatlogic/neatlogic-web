@@ -21,7 +21,7 @@
         <div
           ref="selectBox"
           class="type-select text-action bg-op overflow radius-sm"
-          :class="isshow?'border-primary':'border-color'"
+          :class="isshow?'border-primary':validMesage? 'border-error':'border-base'"
           :style="getStyle"
         >
           <span v-if="selectValue">{{ showName(selectValue) }}</span>
@@ -303,7 +303,6 @@ export default {
   height: 32px;
   line-height: 30px;
   padding: 0 21px 0 10px;
-  border: 1px solid;
   .select-icon{
     position: absolute;
     right: 8px;
