@@ -615,3 +615,7 @@
 .tsfont-ts:before { content: '\ea3d'; } /* '' */
 .tsfont-paste:before { content: '\ea3e'; } /* '' */
 .tsfont-dataconversion:before { content: '\ea3f'; } /* '' */
+.tsfont-rotate-left:before { content: '\ea40'; } /* '' */
+.tsfont-scale-to-original:before { content: '\ea41'; } /* '' */
+.tsfont-zoom-in:before { content: '\ea42'; } /* '' */
+.tsfont-zoom-out:before { content: '\ea43'; } /* '' */
