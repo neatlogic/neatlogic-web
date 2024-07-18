@@ -604,7 +604,10 @@
     "runningcounttarget": "进行中{target}个",
     "completedcounttarget": "已完成{target}个",
     "failedcounttarget": "已失败{target}个",
-    "changecreatewithouthandler": "请为变更创建节点关联变更处理节点"
+    "changecreatewithouthandler": "请为变更创建节点关联变更处理节点",
+    "viewauth": "查看授权",
+    "viewauthtooltip": "当前登录人必须同时满足：在当前目录及所有父子目录的授权范围内，才能查看通过当前目录下服务创建的工单。",
+    "reportauthtooltip": "当前登录人必须同时满足：在当前目录、以及所有父子目录和服务的授权范围内，才能通过当前目录下的服务创建工单。"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

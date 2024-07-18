@@ -1004,5 +1004,6 @@
   "customdata": "自定义数据",
   "clicktoselect": "点击选择",
   "mappingmode": "映射模式",
-  "delayed": "已延期"
+  "delayed": "已延期",
+  "installtime": "打包日期"
 }
