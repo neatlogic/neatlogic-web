@@ -62,7 +62,9 @@ export default {
           label: this.$t('term.process.reporauth'),
           width: '75%',
           groupList: ['user', 'team', 'role', 'common'],
-          value: ['common#alluser']
+          value: ['common#alluser'],
+          validateList: ['required'],
+          tooltip: this.$t('term.process.reportauthtooltip')
         },
         {
           type: 'userselect',
@@ -70,7 +72,9 @@ export default {
           label: this.$t('term.process.viewauth'),
           width: '75%',
           groupList: ['user', 'team', 'role', 'common'],
-          value: ['common#alluser']
+          value: ['common#alluser'],
+          validateList: ['required'],
+          tooltip: this.$t('term.process.viewauthtooltip')
         },
         {
           type: 'ckeditor',
