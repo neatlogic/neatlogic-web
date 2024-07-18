@@ -604,7 +604,8 @@
     "runningcounttarget": "进行中{target}个",
     "completedcounttarget": "已完成{target}个",
     "failedcounttarget": "已失败{target}个",
-    "changecreatewithouthandler": "请为变更创建节点关联变更处理节点"
+    "changecreatewithouthandler": "请为变更创建节点关联变更处理节点",
+    "viewauth": "查看授权"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
