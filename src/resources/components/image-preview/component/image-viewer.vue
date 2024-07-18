@@ -31,12 +31,10 @@
       <!-- ACTIONS -->
       <div class="image-preview-box-viewer-btn image-preview-box-viewer-actions">
         <div class="image-preview-box-viewer-actions-inner">
-          <i class="tsfont-search-minus" @click="handleActions('zoomOut')"></i>
-          <i class="tsfont-search-plus" @click="handleActions('zoomIn')"></i>
-          <i class="image-preview-box-viewer-actions__divider"></i>
+          <i class="tsfont-zoom-out" @click="handleActions('zoomOut')"></i>
+          <i class="tsfont-zoom-in" @click="handleActions('zoomIn')"></i>
           <i :class="mode.icon" @click="toggleMode"></i>
-          <i class="image-preview-box-viewer-actions__divider"></i>
-          <i class="tsfont-reply" @click="handleActions('anticlocelise')"></i>
+          <i class="tsfont-rotate-left" @click="handleActions('anticlocelise')"></i>
           <i class="tsfont-rotate-right" @click="handleActions('clocelise')"></i>
         </div>
       </div>
@@ -70,7 +68,7 @@ const Mode = {
   },
   ORIGINAL: {
     name: 'original',
-    icon: 'tsfont-off-fullscreen'
+    icon: 'tsfont-scale-to-original'
   }
 };
 const mousewheelEventName = isFirefox() ? 'DOMMouseScroll' : 'mousewheel';
@@ -327,6 +325,6 @@ export default {
   }
 };
 </script>
-<style lang="css" scoped>
-@import url('./image-preview.css');
+<style lang="less" scoped>
+@import url('./image-preview.less');
 </style>

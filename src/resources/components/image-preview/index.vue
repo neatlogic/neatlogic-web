@@ -233,6 +233,6 @@ export default {
   }
 };
 </script>
-<style lang="css" scoped>
-@import url('./component/image-preview.css');
+<style lang="less" scoped>
+@import url('./component/image-preview.less');
 </style>
