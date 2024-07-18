@@ -1,11 +1,8 @@
 <template>
   <div>
-    <Loading
-      v-if="loadingShow"
-      :loadingShow="loadingShow"
-    ></Loading>
+    <Loading :loadingShow="loadingShow"></Loading>
     <TsForm
-      v-else
+      v-if="!loadingShow && itemList.length > 0"
       ref="form"
       v-model="formData"
       :labelWidth="79"
@@ -29,9 +26,13 @@ export default {
       type: Object,
       default: () => ({})
     },
-    copyPrevNodes: {
+    prevNodes: {
       type: Array,
       default: () => ([])
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -58,7 +59,7 @@ export default {
       this.itemList = this.formConfig || [];
       this.formData = {};
       if (!this.$utils.isEmpty(this.value)) {
-        this.formData = Object.assign(this.formData, this.value);
+        Object.assign(this.formData, this.value);
       }
       this.getPrevNodes();
       this.loadingShow = false;
@@ -75,14 +76,13 @@ export default {
       return this.formData;
     },
     getPrevNodes() { // 获取前置节点
-      if (this.$utils.isEmpty(this.itemList) || this.$utils.isEmpty(this.copyPrevNodes)) {
+      if (this.$utils.isEmpty(this.itemList) || this.$utils.isEmpty(this.prevNodes)) {
         return;
       }
       this.itemList.forEach((v) => {
         if (!this.$utils.isEmpty(v) && !this.$utils.isEmpty(v['name'])) {
-          this.formData[v['name']] = null;
-          if (v['name'] === 'preStepList' && !this.$utils.isEmpty(this.copyPrevNodes)) {
-            v.dataList = this.copyPrevNodes.map(c => {
+          if (v['name'] === 'preStepList' && !this.$utils.isEmpty(this.prevNodes)) {
+            v.dataList = this.prevNodes.map(c => {
               return {
                 text: c.name,
                 value: c.uuid
@@ -102,7 +102,9 @@ export default {
         if (!this.$utils.isEmpty(itemList)) {
           this.itemList = itemList.map((v) => ({
             ...v,
-            border: 'border'
+            readonly: this.readonly,
+            border: 'border',
+            transfer: true
           }));
         } else {
           this.itemList = [];
