@@ -10,7 +10,7 @@
         <div class="tstable-action">
           <ul class="tstable-action-ul">
             <li>
-              <ImagePreviewDialog :fileData="row"></ImagePreviewDialog>
+              <ImagePreview :fileList="[{...row}]" :isShowFileList="false"></ImagePreview>
             </li>
           </ul>
         </div>
@@ -24,7 +24,7 @@ export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
+    ImagePreview: () => import('@/resources/components/image-preview/index.vue')
   },
   directives: {download},
   props: {

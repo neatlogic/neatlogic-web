@@ -1,54 +1,10 @@
-.el-image__error,
-.el-image__placeholder {
-  background: #F5F7FA
-}
-
-.el-image__error,
-.el-image__inner,
-.el-image__placeholder {
-  width: 100%;
-  height: 100%
-}
-
-.el-image {
+.image-preview-box {
   position: relative;
   display: inline-block;
   overflow: hidden
 }
 
-.el-image__inner {
-  vertical-align: top
-}
-
-.el-image__inner--center {
-  position: relative;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  display: block
-}
-
-.el-image__error {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  font-size: 14px;
-  color: #C0C4CC;
-  vertical-align: middle
-}
-
-.el-image__preview {
-  cursor: pointer
-}
-
-.el-image-viewer__wrapper {
+.image-preview-box-viewer-wrapper {
   position: fixed;
   top: 0;
   right: 0;
@@ -56,7 +12,7 @@
   left: 0
 }
 
-.el-image-viewer__btn {
+.image-preview-box-viewer-btn {
   position: absolute;
   z-index: 1;
   display: -webkit-box;
@@ -79,7 +35,7 @@
   user-select: none
 }
 
-.el-image-viewer__close {
+.image-preview-box-viewer-close {
   top: 40px;
   right: 40px;
   width: 40px;
@@ -89,7 +45,7 @@
   background-color: #606266
 }
 
-.el-image-viewer__canvas {
+.image-preview-box-viewer-canvas {
   width: 100%;
   height: 100%;
   display: -webkit-box;
@@ -103,7 +59,7 @@
   align-items: center
 }
 
-.el-image-viewer__actions {
+.image-preview-box-viewer-actions {
   left: 50%;
   bottom: 30px;
   -webkit-transform: translateX(-50%);
@@ -116,7 +72,7 @@
   border-radius: 22px
 }
 
-.el-image-viewer__actions__inner {
+.image-preview-box-viewer-actions-inner {
   width: 100%;
   height: 100%;
   text-align: justify;
@@ -133,8 +89,8 @@
   justify-content: space-around
 }
 
-.el-image-viewer__next,
-.el-image-viewer__prev {
+.image-preview-box-viewer-next,
+.image-preview-box-viewer-prev {
   top: 50%;
   width: 44px;
   height: 44px;
@@ -144,20 +100,20 @@
   border-color: #fff
 }
 
-.el-image-viewer__prev {
+.image-preview-box-viewer-prev {
   -webkit-transform: translateY(-50%);
   transform: translateY(-50%);
   left: 40px
 }
 
-.el-image-viewer__next {
+.image-preview-box-viewer-next {
   -webkit-transform: translateY(-50%);
   transform: translateY(-50%);
   right: 40px;
   text-indent: 2px
 }
 
-.el-image-viewer__mask {
+.image-preview-box-viewer-mask {
   position: absolute;
   width: 100%;
   height: 100%;

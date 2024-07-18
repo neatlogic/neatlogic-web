@@ -74,15 +74,15 @@
         </Col>
       </TsRow>
     </div>
-    <ImagePreviewDialog 
+    <ImagePreview 
       v-if="srcList && srcList.length > 0"
       :isShow="srcList.length > 0 ? true : false"
-      :preview-src-list="srcList"
+      :fileList="srcList"
       @close="()=> {
         srcList = []
       }"
     >
-    </ImagePreviewDialog>
+    </ImagePreview>
   </div>
 </template>
 
@@ -91,7 +91,7 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
+    ImagePreview: () => import('@/resources/components/image-preview/index.vue')
   },
   directives: { download },
   props: {
@@ -262,13 +262,8 @@ export default {
   },
   created() {},
   methods: {
-    handlePreview(id) {
-      let initSrcUrl = `${HOME}/api/binary/file/download?id=`;
-      let srcList = this.uploadList.filter((a) => a && a.id && a.id !== id).map((v) =>
-        `${HOME}${this.fileDownurl}?id=${v.id}`
-      );
-      this.url = `${HOME}${this.fileDownurl}?id=${id}`;
-      this.srcList = [this.url, ...srcList];
+    handlePreview() {
+      this.srcList = this.uploadList;
     },
     FormatError: function(file) {
       this.handleFormatError(file);

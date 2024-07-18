@@ -36,7 +36,7 @@
             <Divider v-if="dataConfig.fileList.length > 0" orientation="start">
               <span class="text-grey">{{ $t('page.accessory') }}</span>
             </Divider>
-            <ImagePreviewDialog v-if="dataConfig.fileList.length > 0" class="report-content" :fileList="dataConfig.fileList"></ImagePreviewDialog>
+            <ImagePreview v-if="dataConfig.fileList.length > 0" class="report-content" :fileList="dataConfig.fileList"></ImagePreview>
           </div>
         </TsFormItem>
         <div v-else class="padding border-base radius-md" style="border-style: dotted !important; text-align: center">
@@ -96,7 +96,7 @@
                 </div>
                 <div v-if="handlerStepInfo.fileList.length > 0" class="report-content pt16">
                   <div class="text-grey pb10 fz10">{{ $t('page.accessory') }}</div>
-                  <ImagePreviewDialog :fileList="handlerStepInfo.fileList"></ImagePreviewDialog>
+                  <ImagePreview :fileList="handlerStepInfo.fileList"></ImagePreview>
                 </div>
               </template>
             </div>
@@ -178,7 +178,7 @@ export default {
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
     // TsFormSwitch:()=>import('@/resources/plugins/TsForm/TsFormSwitch'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
-    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
+    ImagePreview: () => import('@/resources/components/image-preview/index.vue')
   },
   directives: { imgViewer },
   filters: {},
