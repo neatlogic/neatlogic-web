@@ -56,7 +56,7 @@
             <span class="file_name overflow">
               <Tooltip :transfer="true" :content="item.name">{{ item.name }}</Tooltip>
             </span>
-            <span class="tsfont-eye text-action pl-xs pr-xs" @click.stop="handlePreview(item.id)"></span>
+            <span class="tsfont-eye text-action pl-xs pr-xs" @click.stop="handlePreview(index)"></span>
             <i
               v-if="!readonly && !disabled"
               class="tsfont-close file_del text-action"
@@ -75,11 +75,11 @@
       </TsRow>
     </div>
     <ImagePreview 
-      v-if="srcList && srcList.length > 0"
-      :isShow="srcList.length > 0 ? true : false"
+      :isShow="srcList.length > 0"
       :fileList="srcList"
       :fileDownloadUrl="fileDownurl"
       :fileDownloadParam="fileDownParam"
+      :initialIndex="initialIndex"
       @close="()=> {
         srcList = []
       }"
@@ -253,7 +253,7 @@ export default {
         Authorization: sessionStorage.getItem('neatlogic_authorization') ? sessionStorage.getItem('neatlogic_authorization') : ''
       },
       srcList: [],
-      url: ''
+      initialIndex: 0
     };
   },
   beforeMount() {},
@@ -264,7 +264,8 @@ export default {
   },
   created() {},
   methods: {
-    handlePreview() {
+    handlePreview(index) {
+      this.initialIndex = index;
       this.srcList = this.uploadList;
     },
     FormatError: function(file) {
