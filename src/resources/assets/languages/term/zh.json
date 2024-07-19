@@ -2073,7 +2073,9 @@
     "envattr": "环境属性",
     "addenvattrtips": "未配置属性，点击",
     "noconfigviewauthtip": "您没有当前应用的“查看配置权限”，请联系管理员授权",
-    "pleasechoosedatabase": "请先选择数据库"
+    "pleasechoosedatabase": "请先选择数据库",
+    "currentenvbuildno": "{target}环境BuildNo",
+    "buildnopending": "待构建"
   },
   "inspect": {
     "alarmprompt": "告警提示",

@@ -115,7 +115,13 @@
           <BuildnoTable :params="searchParam" @getSelectedVersion="getSelectedVersion" @addVersion="addVersion"></BuildnoTable>
         </div>
         <div v-else>
-          <VersionTable :params="searchParam" @getSelectedVersion="getSelectedVersion" @addVersion="addVersion"></VersionTable>
+          <VersionTable
+            :params="searchParam"
+            :envId="envId"
+            :envName="envName"
+            @getSelectedVersion="getSelectedVersion"
+            @addVersion="addVersion"
+          ></VersionTable>
         </div>
       </template>
     </TsDialog>

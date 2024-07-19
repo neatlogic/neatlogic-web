@@ -22,6 +22,9 @@
         @changeCurrent="searchVersion"
         @getSelected="(value,selectItem)=>{getSelectedVersion(selectItem)}"
       >
+        <template slot="currentEnvBuildNo" slot-scope="{row}">
+          {{ row.currentEnvBuildNo || $t('term.deploy.buildnopending') }}
+        </template>
         <template slot="isFreeze" slot-scope="{row}">
           <TsFormSwitch
             v-model="row.isFreeze"
@@ -56,7 +59,9 @@ export default {
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
-    params: Object
+    params: Object,
+    envId: Number,
+    envName: String
   },
   data() {
     return {
@@ -74,6 +79,10 @@ export default {
         {
           title: this.$t('page.versions'),
           key: 'version'
+        },
+        {
+          title: this.$t('term.deploy.currentenvbuildno', {target: this.envName}),
+          key: 'currentEnvBuildNo'
         },
         {
           title: this.$t('page.createtime'),
@@ -114,6 +123,7 @@ export default {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
+      this.searchParam.envId = this.envId;
       this.$api.deploy.version.searchVersion(this.searchParam).then((res) => {
         if (res.Status == 'OK') {
           this.versionData = res.Return;
