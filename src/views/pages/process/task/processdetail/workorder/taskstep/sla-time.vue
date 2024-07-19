@@ -9,8 +9,11 @@
       <div>
         <span v-if="slaTimeList[0].timeLeft > 0" class="text-success">{{ $t('page.remainingtime') }}</span>
         <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
-        <span v-if="slaTimeList[0].timeLeft >= 0 || slaTimeList[0].displayModeAfterTimeout == 'workTime'" class="text-success">
+        <span v-if="slaTimeList[0].slaTimeDisplayMode == 'workTime'" :class="getClassName(slaTimeList[0].timeLeft)">
           {{ Math.abs(slaTimeList[0].timeLeft) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
+        </span>
+        <span v-else-if="slaTimeList[0].slaTimeDisplayMode == 'naturalTime'" :class="getClassName((slaTimeList[0].expireTime - baseTime))">
+          {{ (slaTimeList[0].expireTime - baseTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
         </span>
         <span v-else>
           <span v-if="slaTimeList[0].status == 'done'" class="text-danger">
@@ -29,8 +32,11 @@
               <div>
                 <span v-if="sla.timeLeft > 0" class="text-success">{{ $t('page.remainingtime') }}</span>
                 <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
-                <span v-if="sla.timeLeft >= 0 || sla.displayModeAfterTimeout == 'workTime'" class="text-success">
+                <span v-if="sla.slaTimeDisplayMode == 'workTime'" :class="getClassName(sla.timeLeft)">
                   {{ Math.abs(sla.timeLeft) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
+                </span>
+                <span v-else-if="sla.slaTimeDisplayMode == 'naturalTime'" :class="getClassName((sla.expireTime - baseTime))">
+                  {{ (sla.expireTime - baseTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
                 </span>
                 <span v-else>
                   <span v-if="slaTimeList[0].status == 'done'" class="text-danger">
@@ -114,7 +120,7 @@ export default {
                 this.slaTimeList[j].expireTimeLong = tbody.expireTimeLong;
                 this.slaTimeList[j].realExpireTimeLong = tbody.realExpireTimeLong;
                 this.slaTimeList[j].calculationTime = tbody.calculationTime;
-                this.slaTimeList[j].displayModeAfterTimeout = tbody.displayModeAfterTimeout;
+                this.slaTimeList[j].slaTimeDisplayMode = tbody.slaTimeDisplayMode;
                 if (tbody.status === 'doing') {
                   doingSlaIdList.push(tbody.slaId);
                 }
@@ -134,6 +140,9 @@ export default {
         'pause': this.$t('page.paused')
       };
       return statusObj[type] || '';
+    },
+    getClassName() {
+      return (remainTime) => remainTime >= 0 ? 'text-success' : 'text-danger';
     }
   },
   filter: {},

@@ -510,8 +510,8 @@ export default {
           expireStatus = 'no-expired-time';
         } else if (now > expireTimeMin) {
           expireStatus = 'is-expired';
-          let displayModeAfterTimeout = timeList.find(item => item.expireTime === expireTimeMin).displayModeAfterTimeout;
-          if (displayModeAfterTimeout === 'naturalTime') {
+          let slaTimeDisplayMode = timeList.find(item => item.expireTime === expireTimeMin).slaTimeDisplayMode;
+          if (slaTimeDisplayMode === 'naturalTime' || slaTimeDisplayMode === 'workTime') {
             timeLeftMin = now - expireTimeMin;
           }
         } else if (willOverTimeMin && willOverTimeMin < expireTimeMin) {

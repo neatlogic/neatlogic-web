@@ -63,8 +63,11 @@
                   <div v-if="sla.status == 'doing'" class="time-height">
                     <span v-if="sla.timeLeft >= 0" class="text-success">{{ $t('page.remainingtime') }}</span>
                     <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
-                    <span v-if="sla.timeLeft >= 0 || sla.displayModeAfterTimeout == 'workTime'" class="text-success">
+                    <span v-if="sla.slaTimeDisplayMode == 'workTime'" :class="getClassName(sla.timeLeft)">
                       {{ sla.timeLeft | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
+                    </span>
+                    <span v-else-if="sla.slaTimeDisplayMode == 'naturalTime'" :class="getClassName((sla.expireTime - baseTime))">
+                      {{ (sla.expireTime - baseTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
                     </span>
                     <span v-else class="text-danger">
                       {{ (baseTime - sla.expireTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
@@ -74,8 +77,11 @@
                     <!-- 暂停 -->
                     <span v-if="sla.timeLeft >= 0" class="text-success">{{ $t('page.remainingtime') }}</span>
                     <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
-                    <span v-if="sla.timeLeft >= 0 || sla.displayModeAfterTimeout == 'workTime'" class="text-success">
+                    <span v-if="sla.slaTimeDisplayMode == 'workTime'" :class="getClassName(sla.timeLeft)">
                       {{ sla.timeLeft | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
+                    </span>
+                    <span v-else-if="sla.slaTimeDisplayMode == 'naturalTime'" :class="getClassName((sla.expireTime - baseTime))">
+                      {{ (sla.expireTime - baseTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
                     </span>
                     <span v-else class="text-danger">
                       {{ (baseTime - sla.expireTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
@@ -255,6 +261,9 @@ export default {
     slaTimeList() {
       this.baseTime = Date.now();
       return this.$store.state.slaTimeList;
+    },
+    getClassName() {
+      return (remainTime) => remainTime >= 0 ? 'text-success' : 'text-danger';
     }
   },
   watch: {}
