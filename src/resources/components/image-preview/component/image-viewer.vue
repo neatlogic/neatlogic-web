@@ -298,7 +298,7 @@ export default {
         'margin-top': `${offsetY}px`
       };
       if (this.mode === Mode.CONTAIN) {
-        style.maxWidth = style.maxHeight = '100%';
+        style.maxWidth = style.maxHeight = '85%';
       }
       return style;
     },
