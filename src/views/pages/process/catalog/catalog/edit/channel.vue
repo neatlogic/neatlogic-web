@@ -308,11 +308,21 @@ export default {
         },
         {
           type: 'userselect',
-          name: 'authorityList',
+          name: 'reportAuthorityList',
           label: this.$t('term.process.reporauth'),
           groupList: ['user', 'team', 'role', 'common'],
           validateList: ['required'],
           tooltip: this.$t('term.process.reportauthtooltip')
+        },
+        {
+          type: 'userselect',
+          name: 'viewAuthorityList',
+          label: this.$t('term.process.viewauth'),
+          width: '75%',
+          groupList: ['user', 'team', 'role', 'common'],
+          value: ['common#alluser'],
+          validateList: ['required'],
+          tooltip: this.$t('term.process.viewauthtooltip')
         },
         {
           type: 'slot',
@@ -365,7 +375,8 @@ export default {
         name: '',
         processUuid: this.processUuid, //工作流uuid
         isActive: 1,
-        authorityList: ['common#alluser'],
+        reportAuthorityList: ['common#alluser'],
+        viewAuthorityList: ['common#alluser'],
         worktimeUuid: '', //工作时间窗口uuid
         desc: '',
         icon: '',
@@ -437,7 +448,8 @@ export default {
             parentUuid: itemValue.parentUuid || '',
             processUuid: itemValue.processUuid || '',
             isActive: itemValue.isActive || 0,
-            authorityList: itemValue.authorityList,
+            reportAuthorityList: itemValue.reportAuthorityList,
+            viewAuthorityList: itemValue.viewAuthorityList,
             worktimeUuid: itemValue.worktimeUuid || '',
             desc: itemValue.desc || '',
             icon: itemValue.icon || '',
