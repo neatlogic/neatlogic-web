@@ -1,44 +1,44 @@
 <template>
   <div>
-    <div v-if="!$utils.isEmpty(fileList)">
+    <div v-if="!$utils.isEmpty(fileList) && !isShow">
       <div v-for="(file) in fileList" :key="file.id">
-        <span v-if="file.name && isShowName" class="tsfont-attachment">
-          {{ file.name }}
+        <span v-if="getFileName(file) && isShowName" class="tsfont-attachment">
+          {{ getFileName(file) }}
         </span>
-        <template v-if="file.id">
+        <template v-if="getIdName(file)">
           <span
-            v-if="!downloadLoadingConfig[file.id]"
-            v-download="downLoadUrl(file.id)"
+            v-if="!downloadLoadingConfig[getIdName(file)]"
+            v-download="downLoadUrl(getIdName(file))"
             :title="$t('page.download')"
-            :class="!isShowName ? 'inline-block pt-nm' : 'text-padding'"
+            :class="!isShowName ? 'inline-block pt-nm pl-xs' : 'text-padding'"
             class="tsfont-download text-action"
           ></span>
           <span
-            v-if="downloadLoadingConfig[file.id]"
+            v-if="downloadLoadingConfig[getIdName(file)]"
             class="action-item disable"
-            :class="!isShowName ? 'inline-block pt-nm' : ''"
+            :class="!isShowName ? 'inline-block pt-nm pl-xs' : ''"
             :title="$t('page.downloadloadingtip')"
           >
             <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
           </span>
           <span
-            v-if="isImage(file.name)"
+            v-if="isImage(getFileName(file))"
             class="tsfont-eye text-action"
             :class="!isShowName ? 'inline-block pt-nm' : ''"
-            @click="handlePreview(file.id)"
+            @click="handlePreview(getIdName(file))"
           ></span>
         </template>
       </div>
     </div>
     <div class="image-preview-box">
       <template v-if="preview">
-        <image-viewer
+        <ImageViewer
           v-if="showViewer"
           :z-index="zIndex"
           :initial-index="imageIndex"
           :on-close="closeViewer"
           :url-list="urlList"
-        />
+        ></ImageViewer>
       </template>
     </div>
   </div>
@@ -63,9 +63,7 @@ export default {
   directives: {download},
   inheritAttrs: false,
   props: {
-    src: String,
     fit: String,
-    scrollContainer: {},
     fileList: {
       type: Array,
       default: () => []
@@ -120,7 +118,7 @@ export default {
   methods: {
     handlePreview(id) {
       let initSrcUrl = `${HOME}${this.fileDownloadUrl}?id=`;
-      let srcList = this.fileList.filter((a) => a && a.id && a.id !== id && this.isImage(a.name)).map((v) =>
+      let srcList = this.fileList.filter((a) => a && a[this.idName] !== id && this.isImage(a[this.fileName])).map((v) =>
         `${initSrcUrl}${v.id}`
       );
       let url = `${initSrcUrl}${id}`;
@@ -156,19 +154,17 @@ export default {
           return {};
       }
     },
-    clickHandler() {
-      if (!this.preview) {
-        return;
-      }
-      // prevent body scroll
-      prevOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      this.showViewer = true;
-    },
     closeViewer() {
       document.body.style.overflow = prevOverflow;
       this.showViewer = false;
       this.$emit('close');
+    },
+    getSrcList() {
+      let initSrcUrl = `${HOME}${this.fileDownloadUrl}?id=`;
+      let srcList = this.fileList.filter((a) => a && a[this.idName] && this.isImage(a[this.fileName])).map((v) =>
+        `${initSrcUrl}${v[this.idName]}`
+      );
+      return srcList;
     }
   },
   computed: {
@@ -227,6 +223,16 @@ export default {
           }
         };
       };
+    },
+    getFileName() {
+      return (file) => {
+        return !this.$utils.isEmpty(file) && file[this.fileName];
+      };
+    },
+    getIdName() {
+      return (file) => {
+        return !this.$utils.isEmpty(file) && file[this.idName];
+      };
     }
   },
   watch: {
@@ -236,6 +242,7 @@ export default {
           prevOverflow = document.body.style.overflow;
           document.body.style.overflow = 'hidden';
           this.showViewer = true;
+          this.urlList = this.getSrcList();
         }
       },
       deep: true,
