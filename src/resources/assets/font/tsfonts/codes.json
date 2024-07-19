@@ -3442,5 +3442,29 @@
     "css": "tsfont-dataconversion",
     "hexCodepoint": "0xea3f",
     "codepoint": 59967
+  },
+  {
+    "name": "rotate-left",
+    "css": "tsfont-rotate-left",
+    "hexCodepoint": "0xea40",
+    "codepoint": 59968
+  },
+  {
+    "name": "scale-to-original",
+    "css": "tsfont-scale-to-original",
+    "hexCodepoint": "0xea41",
+    "codepoint": 59969
+  },
+  {
+    "name": "zoom-in",
+    "css": "tsfont-zoom-in",
+    "hexCodepoint": "0xea42",
+    "codepoint": 59970
+  },
+  {
+    "name": "zoom-out",
+    "css": "tsfont-zoom-out",
+    "hexCodepoint": "0xea43",
+    "codepoint": 59971
   }
 ]

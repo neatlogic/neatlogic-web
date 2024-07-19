@@ -1,53 +1,51 @@
 <template>
   <transition name="viewer-fade">
     <div
-      ref="el-image-viewer__wrapper"
+      ref="image-preview-box-viewer-wrapper"
       tabindex="-1"
-      class="el-image-viewer__wrapper"
+      class="image-preview-box-viewer-wrapper"
       :style="{ 'z-index': viewerZIndex }"
     >
-      <div class="el-image-viewer__mask" @click.self="handleMaskClick"></div>
+      <div class="image-preview-box-viewer-mask" @click.self="handleMaskClick"></div>
       <!-- CLOSE -->
-      <span class="el-image-viewer__btn el-image-viewer__close" @click="hide">
+      <span class="image-preview-box-viewer-btn image-preview-box-viewer-close" @click="hide">
         <i class="tsfont-close"></i>
       </span>
       <!-- ARROW -->
       <template v-if="!isSingle">
         <span
-          class="el-image-viewer__btn el-image-viewer__prev"
+          class="image-preview-box-viewer-btn image-preview-box-viewer-prev"
           :class="{ 'is-disabled': !infinite && isFirst }"
           @click="prev"
         >
-          <i class="el-icon-arrow-left" />
+          <i class="tsfont-left" />
         </span>
         <span
-          class="el-image-viewer__btn el-image-viewer__next"
+          class="image-preview-box-viewer-btn image-preview-box-viewer-next"
           :class="{ 'is-disabled': !infinite && isLast }"
           @click="next"
         >
-          <i class="el-icon-arrow-right" />
+          <i class="tsfont-right" />
         </span>
       </template>
       <!-- ACTIONS -->
-      <div class="el-image-viewer__btn el-image-viewer__actions">
-        <div class="el-image-viewer__actions__inner">
-          <i class="el-icon-zoom-out" @click="handleActions('zoomOut')"></i>
-          <i class="el-icon-zoom-in" @click="handleActions('zoomIn')"></i>
-          <i class="el-image-viewer__actions__divider"></i>
+      <div class="image-preview-box-viewer-btn image-preview-box-viewer-actions">
+        <div class="image-preview-box-viewer-actions-inner">
+          <i class="tsfont-zoom-out" @click="handleActions('zoomOut')"></i>
+          <i class="tsfont-zoom-in" @click="handleActions('zoomIn')"></i>
           <i :class="mode.icon" @click="toggleMode"></i>
-          <i class="el-image-viewer__actions__divider"></i>
-          <i class="el-icon-refresh-left" @click="handleActions('anticlocelise')"></i>
-          <i class="el-icon-refresh-right" @click="handleActions('clocelise')"></i>
+          <i class="tsfont-rotate-left" @click="handleActions('anticlocelise')"></i>
+          <i class="tsfont-rotate-right" @click="handleActions('clocelise')"></i>
         </div>
       </div>
       <!-- CANVAS -->
-      <div class="el-image-viewer__canvas">
+      <div class="image-preview-box-viewer-canvas">
         <template v-for="(url, i) in urlList">
           <img
             v-if="i === index"
             ref="img"
             :key="url"
-            class="el-image-viewer__img"
+            class="image-preview-box-viewer__img"
             :src="currentImg"
             :style="imgStyle"
             @load="handleImgLoad"
@@ -61,23 +59,19 @@
 </template>
 
 <script>
-import { on, off } from './js/dom';
-import { rafThrottle, isFirefox } from './js/util';
+import { rafThrottle, isFirefox, on, off } from './js/util';
 import { PopupManager } from './js/popup';
-
 const Mode = {
   CONTAIN: {
     name: 'contain',
-    icon: 'el-icon-full-screen'
+    icon: 'tsfont-fullscreen'
   },
   ORIGINAL: {
     name: 'original',
-    icon: 'el-icon-c-scale-to-original'
+    icon: 'tsfont-scale-to-original'
   }
 };
-
 const mousewheelEventName = isFirefox() ? 'DOMMouseScroll' : 'mousewheel';
-
 export default {
   name: 'ElImageViewer',
   props: {
@@ -110,7 +104,6 @@ export default {
       default: true
     }
   },
-
   data() {
     return {
       index: this.initialIndex,
@@ -133,7 +126,7 @@ export default {
       document.body.appendChild(this.$el);
     }
     // add tabindex then wrapper can be focusable via Javascript
-    this.$refs['el-image-viewer__wrapper'].focus();
+    this.$refs['image-preview-box-viewer-wrapper'].focus();
   },
   destroyed() {
     // if appendToBody is true, remove DOM node after destroy
@@ -181,12 +174,12 @@ export default {
         const delta = e.wheelDelta ? e.wheelDelta : -e.detail;
         if (delta > 0) {
           this.handleActions('zoomIn', {
-            zoomRate: 0.015,
+            zoomRate: 0.2,
             enableTransition: false
           });
         } else {
           this.handleActions('zoomOut', {
-            zoomRate: 0.015,
+            zoomRate: 0.2,
             enableTransition: false
           });
         }
@@ -209,7 +202,6 @@ export default {
     },
     handleMouseDown(e) {
       if (this.loading || e.button !== 0) return;
-
       const { offsetX, offsetY } = this.transform;
       const startX = e.pageX;
       const startY = e.pageY;
@@ -221,7 +213,6 @@ export default {
       on(document, 'mouseup', ev => {
         off(document, 'mousemove', this._dragHandler);
       });
-
       e.preventDefault();
     },
     handleMaskClick() {
@@ -240,7 +231,6 @@ export default {
     },
     toggleMode() {
       if (this.loading) return;
-
       const modeNames = Object.keys(Mode);
       const modeValues = Object.values(Mode);
       const index = modeValues.indexOf(this.mode);
@@ -335,6 +325,6 @@ export default {
   }
 };
 </script>
-<style lang="css" scoped>
-@import url('./image-preview.css');
+<style lang="less" scoped>
+@import url('./image-preview.less');
 </style>

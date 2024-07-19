@@ -60,7 +60,7 @@
               <div v-if="stepItem.fileList && stepItem.fileList.length > 0">
                 <div class="content-box">
                   <div class="text-grey mr-md xl-xs title">{{ $t('page.accessory') }}</div>
-                  <ImagePreviewDialog :fileList="stepItem.fileList"></ImagePreviewDialog>
+                  <ImagePreview :fileList="stepItem.fileList"></ImagePreview>
                 </div>
               </div>
             </div>
@@ -78,7 +78,7 @@ export default {
   name: '',
   components: {
     UserCard,
-    ImagePreviewDialog: () => import('@/resources/components/UpLoad/image-preview-dialog.vue')
+    ImagePreview: () => import('@/resources/components/image-preview/index.vue')
   },
   directives: { download, imgViewer },
   props: {
