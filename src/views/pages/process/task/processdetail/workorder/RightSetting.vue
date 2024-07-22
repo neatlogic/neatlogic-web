@@ -105,14 +105,14 @@
                 <template v-else-if="item.value == 'priority'">
                   <div class="infor-left text-grey overflow">{{ item.title }}</div>
                   <div
-                    v-if="!actionConfig.update"
+                    v-if="!canEditPrority"
                     ref="priorityName"
                     class="infor-right"
                     :style="{ color: item.textConfig.color }"
                   >
                     {{ item.textConfig.name || '-' }}
                   </div>
-                  <div v-if="actionConfig.update" id="priority" class="infor-right input-border">
+                  <div v-if="canEditPrority" id="priority" class="infor-right input-border">
                     <TsFormSelect
                       ref="priority"
                       v-model="item.textConfig.uuid"
@@ -250,6 +250,7 @@ export default {
       processTaskId: null, //工单id
       processTaskStepId: null, //步骤id
       currentProcessTaskStep: null,
+      defaultPriorityUuid: null, //默认优先级id
       priorityUuid: null, //优先级id
       channelUuid: null, //服务id
       tagVoList: [],
@@ -356,10 +357,11 @@ export default {
     },
     initializeData() {
       //初始化数据
-      this.taskInformationList.splice(0);
+      this.taskInformationList = [];
       let processTaskConfig = this.processTaskConfig;
       this.processTaskId = processTaskConfig.id;
       this.channelUuid = processTaskConfig.channelUuid;
+      this.defaultPriorityUuid = processTaskConfig.defaultPriorityUuid;
       let processTaskArr = [];
       if (processTaskConfig.tagVoList && processTaskConfig.tagVoList.length > 0) {
         this.tagVoList = processTaskConfig.tagVoList.map(item => item && item.name);
@@ -369,8 +371,15 @@ export default {
       }
       this.defaultProcessTask.forEach((item, index) => {
         if (processTaskConfig[item.value]) {
-          if (item.value == 'priority' && this.processTaskConfig.hasOwnProperty('isNeedPriority') && !this.processTaskConfig.isNeedPriority) {
-            item.textConfig = null;
+          if (item.value == 'priority' && this.processTaskConfig.hasOwnProperty('isActivePriority')) {
+            if (!this.processTaskConfig.isActivePriority) {
+              item.textConfig = null;
+            } else if (this.processTaskConfig.isActivePriority && this.processTaskConfig.hasOwnProperty('isDisplayPriority')) {
+              if (this.processTaskConfig.isDisplayPriority) {
+                item.textConfig = processTaskConfig[item.value];
+                processTaskArr.push(item);
+              }
+            }
           } else {
             item.textConfig = processTaskConfig[item.value];
             processTaskArr.push(item);
@@ -391,14 +400,22 @@ export default {
       //this.priorityList = list;
       let _this = this;
       let priority = null;//优先级数据
-      if (list.length == 1) {
+      let findPriority = false;
+      if (list.length == 0) {
+        this.priorityUuid = this.defaultPriorityUuid;
+        priority = this.priorityList.find(item => item.uuid == this.defaultPriorityUuid);
+      } else if (list.length == 1) {
         this.taskInformationList.find(item => {
           if (item.value == 'priority') {
             item.textConfig = list[0];
             _this.priorityUuid = item.textConfig.uuid || '';
             priority = list[0];
+            findPriority = true;
           }
         });
+        if (!findPriority) {
+          priority = list[0];
+        }
       } else {
         let priority = this.taskInformationList.find(item => item.value == 'priority');
         priority.textConfig = list.find(d => d.uuid == priority.textConfig.name) || {};
@@ -409,18 +426,6 @@ export default {
         this.$emit('updateActiveStep', {'priority': priority});
       } else {
         this.$emit('updateActiveStep', {'priority': null});
-      }
-    },
-    valid() {
-      if (this.$refs.priority) {
-        if (this.$utils.checkType(this.$refs.priority, 'array')) {
-          return this.$refs.priority[0] ? this.$refs.priority[0].valid() : true;
-        } else {
-          return this.$refs.priority ? this.$refs.priority.valid() : true;
-        }
-      } else if (this.$refs.priorityName) {
-        let priority = this.taskInformationList.find(item => item.value == 'priority');
-        return !!priority.textConfig.name;
       }
     },
     changePriority(val, valueLabel, obj) {
@@ -520,6 +525,9 @@ export default {
           'border-color': color
         };
       };
+    },
+    canEditPrority() {
+      return this.processTaskConfig && this.processTaskConfig.isActivePriority && this.processTaskConfig.isDisplayPriority;
     }
   },
   watch: {

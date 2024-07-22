@@ -84,7 +84,7 @@
           <div class="infor-left text-title overflow">{{ $t('term.process.reportcatalog') }}</div>
           <div class="infor-right">{{ draftData.channelPath ||'-' }}</div>
         </div>
-        <div v-if="isNeedPriority" class="information-list">
+        <div v-if="isDisplayPriority" class="information-list">
           <div class="infor-left text-title require-label overflow">{{ $t('page.priority') }}</div>
           <div class="infor-right">
             <TsFormSelect
@@ -148,7 +148,7 @@ export default {
       userDetail: {},
       groupList: ['user'],
       tagList: [],
-      isNeedPriority: true,
+      isDisplayPriority: false,
       validateList: ['required'],
       knowledgeList: [],
       showRelateKnowledge: true,
@@ -197,10 +197,16 @@ export default {
         if (this.draftData.focusUserUuidList) {
           this.dispatch.focusUserUuidList = this.draftData.focusUserUuidList;
         }
-        if (this.draftData.hasOwnProperty('isNeedPriority')) {
-          this.isNeedPriority = !!this.draftData.isNeedPriority;
-        }
-        if (this.isNeedPriority) {
+        if (this.draftData.hasOwnProperty('isActivePriority') && this.draftData.isActivePriority) {
+          // 服务“显示优先级”值为是时，在工单界面显示优先级，默认使用默认优先级
+          if (this.draftData.hasOwnProperty('isDisplayPriority')) {
+            this.isDisplayPriority = !!this.draftData.isDisplayPriority;
+            if (!this.isDisplayPriority) {
+              this.dispatch.priorityUuid = this.draftData.priorityUuid;
+            }
+          }
+        } 
+        if (this.isDisplayPriority) {
           this.dispatch.priorityUuid = this.draftData.priorityUuid;
         }
       }
@@ -242,14 +248,6 @@ export default {
           focus: '#base',
           icon: 'tsfont-close-o',
           msg: this.$t('message.process.required', {target: this.$t('page.informant')}),
-          type: 'error'
-        });
-      }
-      if (this.isNeedPriority && !this.$refs.priorityUuid.valid()) {
-        validList.push({
-          focus: '#base',
-          icon: 'tsfont-close-o',
-          msg: this.$t('message.process.required', {target: this.$t('page.priority')}),
           type: 'error'
         });
       }
