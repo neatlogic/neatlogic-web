@@ -308,6 +308,7 @@
                   :formHighlightData="formHighlightData"
                   :isCustomValue="true"
                   :formExtendData="formExtendData"
+                  :isClearSpecificAttr="isClearSpecificAttr"
                   class="padding-xs"
                   @changeConfig="addHistory()"
                   @change="resizeCell(cell.row, cell.col, true)"
@@ -431,6 +432,10 @@ export default {
     isEnableDefaultValue: { //默认启用组件赋值(应用在工单详情页，用户无流转权限，设为false)
       type: Boolean,
       default: true
+    },
+    isClearSpecificAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，必填校验，隐藏等规则属性
+      type: Boolean,
+      default: false
     }
   },
   data() {

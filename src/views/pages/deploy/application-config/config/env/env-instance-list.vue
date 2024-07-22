@@ -41,12 +41,15 @@
         :tbodyList="tbodyList"
         :theadList="theadList"
       >
+        <template slot="version" slot-scope="{ row }">
+          <span v-if="row && row.version">{{ row.version }}</span>
+          <span v-else>-</span>
+        </template>
         <template slot="maintenanceWindow" slot-scope="{ row }">
           <span v-if="row.maintenanceWindow">{{ handleTimerange(row.maintenanceWindow) }}</span>
         </template>
       </TsTable>
     </div>
-  
     <EnvInstanceEdit v-if="isShowEnInstanceEdit" :params="params" @close="closeEnvInstanceEdit"></EnvInstanceEdit>
   </div>
 </template>
@@ -84,6 +87,10 @@ export default {
         {
           title: this.$t('page.name'),
           key: 'name'
+        },
+        {
+          title: this.$t('page.versions'),
+          key: 'version'
         },
         {
           title: this.$t('page.ip'),

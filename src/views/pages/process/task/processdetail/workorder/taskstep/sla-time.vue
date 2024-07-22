@@ -65,7 +65,8 @@ export default {
   },
   data() {
     return {
-      slaUpdateTimer: null
+      slaUpdateTimer: null,
+      baseTime: Date.now()
     };
   },
   beforeCreate() {},
