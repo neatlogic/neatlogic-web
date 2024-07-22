@@ -1005,5 +1005,6 @@
   "clicktoselect": "点击选择",
   "mappingmode": "映射模式",
   "delayed": "已延期",
-  "installtime": "打包日期"
+  "installtime": "打包日期",
+  "orgnization": "组织"
 }
