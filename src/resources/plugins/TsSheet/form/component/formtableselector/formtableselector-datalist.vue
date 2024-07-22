@@ -48,6 +48,7 @@
             mode="read"
             :readonly="readonly"
             isCustomValue
+            :isSpecific="isSpecific"
             @change="changeRow(row)"
           ></FormItem>
         </div>
@@ -71,6 +72,10 @@ export default {
   props: {
     disabled: {type: Boolean},
     readonly: {
+      type: Boolean,
+      default: false
+    },
+    isSpecific: { //是否是特定表单，特定表单需要清除表单设置的只读，必填校验等（用于工单编辑表单）
       type: Boolean,
       default: false
     }

@@ -24,6 +24,10 @@ export default {
     isEnableDefaultValue: { //默认启用组件赋值(应用在工单详情页，用户无流转权限，设为false)
       type: Boolean,
       default: true
+    },
+    isSpecific: {//是否是特定表单，特定表单需要清除表单设置的只读，必填校验等（用于工单编辑表单）
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -36,6 +40,9 @@ export default {
     //在非条件模式下，用默认值替换空的value值
     if ((this.mode === 'read' || this.mode === 'readSubform') && this.isEnableDefaultValue && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
       this.setValue(this.config['defaultValue']);
+    }
+    if (this.isSpecific) {
+      this.clearSpecificAttrBase();
     }
   },
   methods: {
@@ -136,6 +143,26 @@ export default {
     },
     saveFormExtendConfig() { //保存数据转换组件配置
       return [];
+    },
+    //清除组件显示规则和必填属性，用于工单修改表单
+    clearSpecificAttrBase() {
+      const attrList = ['isRequired', 'isMask', 'isReadOnly', 'isDisabled', 'isHide', 'mask', 'hide', 'disable', 'readonly', 'display'];
+      if (this.formItem) {
+        if (this.formItem.config) {
+          Object.keys(this.formItem.config).forEach(key => {
+            if (attrList.indexOf(key) > -1) {
+              this.formItem.config[key] = false;
+            }
+          });
+        }
+        if (!this.$utils.isEmpty(this.formItem.reaction)) {
+          Object.keys(this.formItem.reaction).forEach(key => {
+            if (attrList.indexOf(key) > -1) {
+              this.formItem.reaction[key] = {};
+            }
+          });
+        }
+      }
     }
   },
   computed: {

@@ -15,6 +15,7 @@
             mode="read"
             :value="formConfig"
             :data="processTaskConfig.formAttributeDataMap"
+            :isSpecific="true"
           ></TsSheet>
         </div>
       </template>
@@ -52,27 +53,8 @@ export default {
       if (this.processTaskConfig && this.processTaskConfig.formConfig) {
         let formConfig = this.$utils.deepClone(this.processTaskConfig.formConfig) || {};
         //清除组件只读属性
-        const attrList = ['isMask', 'isReadOnly', 'isDisabled', 'isHide', 'mask', 'hide', 'disable', 'readonly', 'display'];
         formConfig.readOnly = false;
         formConfig.reaction = {};
-        formConfig.tableList.forEach(item => {
-          if (item.component) {
-            if (item.component.config) {
-              Object.keys(item.component.config).forEach(key => {
-                if (attrList.indexOf(key) > -1) {
-                  item.component.config[key] = false;
-                }
-              });
-            }
-            if (!this.$utils.isEmpty(item.component.reaction)) {
-              Object.keys(item.component.reaction).forEach(key => {
-                if (attrList.indexOf(key) > -1) {
-                  item.component.reaction[key] = {};
-                }
-              });
-            }
-          }
-        });
         this.formConfig = formConfig;
       }
     },
