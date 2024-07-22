@@ -48,6 +48,7 @@
             mode="read"
             :readonly="readonly"
             isCustomValue
+            :isClearSpecificAttr="isClearSpecificAttr"
             @change="changeRow(row)"
           ></FormItem>
         </div>
@@ -71,6 +72,10 @@ export default {
   props: {
     disabled: {type: Boolean},
     readonly: {
+      type: Boolean,
+      default: false
+    },
+    isClearSpecificAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，必填校验，隐藏等规则属性
       type: Boolean,
       default: false
     }

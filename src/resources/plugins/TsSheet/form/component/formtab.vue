@@ -33,6 +33,7 @@
                 :mode="mode"
                 :disabled="disabled || tab.isDisabled"
                 :readonly="readonly || tab.isReadOnly"
+                :isClearSpecificAttr="isClearSpecificAttr"
                 @resize="$emit('resize')"
                 @emit="
                   val => {
@@ -81,7 +82,11 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.isClearSpecificAttr) {
+      this.clearCurrSpecificAttr();
+    }
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -181,6 +186,9 @@ export default {
       return errorList;
     },
     updatetabList(newVal, oldVal) {
+      if (this.isClearSpecificAttr) { // 如果是特定表单，则不处理
+        return;
+      }
       //tab内联动规则改变
       this.config.tabList.forEach(item => {
         for (let action in item.reaction) {
@@ -226,6 +234,15 @@ export default {
     },
     showFormItem(item) {
       this.$set(item, 'isHide', false);
+    },
+    clearCurrSpecificAttr() {
+      //清除tab隐藏显示规则，用于工单修改表单
+      if (this.config.tabList) {
+        this.config.tabList.forEach(item => {
+          item.reaction = {};
+          item.isHide = false;
+        });
+      }
     }
   },
   filter: {},

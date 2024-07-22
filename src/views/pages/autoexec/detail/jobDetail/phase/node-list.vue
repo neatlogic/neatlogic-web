@@ -60,6 +60,10 @@
         <span v-else :class="{ 'text-grey through': row.isDelete === 1 }">{{ row.host }}{{ row.port ? ':' + row.port : '' }}</span>
         <span v-if="row.warnCount" class="ml-xs tsfont-warning-o text-warning">{{ row.warnCount }}</span>
       </template>
+      <template v-slot:version="{ row }">
+        <span v-if="row && row.extraInfo && row.extraInfo.version">{{ row.extraInfo.version }}</span>
+        <span v-else>-</span>
+      </template>
       <template v-slot:nodeName="{ row }">
         <span :class="{ 'text-grey': row.isDelete === 1 }">{{ row.nodeName }}</span>
       </template>
@@ -282,6 +286,13 @@ export default {
   },
   beforeCreate() {},
   created() {
+    if (this.jobData.source == 'deploy' || this.jobData.source == 'deployschedulegeneral') {
+      // 添加发布版本字段
+      this.theadList.splice(1, 0, {
+        title: this.$t('page.versions'),
+        key: 'version'
+      });
+    }
     if (this.jobData.isCanExecute) {
       this.theadList.unshift({ key: 'selection' });
       this.theadList.push({ key: 'action' });
