@@ -28,7 +28,7 @@
       :readonly="readonly"
       :showStatusIcon="false"
       isCustomValue
-      :isSpecific="isSpecific"
+      :isClearSpecificAttr="isClearSpecificAttr"
       @resize="$emit('resize')"
       @emit="
         val => {
@@ -51,7 +51,10 @@ export default {
     mode: { type: String, default: 'edit' }, //表单的模式edit或read或condition,edut模式才会显示异常、联动等辅助图标
     disabled: {type: Boolean, default: false},
     readonly: {type: Boolean, default: false},
-    isSpecific: {type: Boolean, default: false} //是否是特定表单，特定表单需要清除表单设置的只读，必填校验等（用于工单编辑表单）
+    isClearSpecificAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，必填校验，隐藏等规则属性
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {};

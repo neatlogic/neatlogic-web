@@ -308,7 +308,7 @@
                   :formHighlightData="formHighlightData"
                   :isCustomValue="true"
                   :formExtendData="formExtendData"
-                  :isSpecific="isSpecific"
+                  :isClearSpecificAttr="isClearSpecificAttr"
                   class="padding-xs"
                   @changeConfig="addHistory()"
                   @change="resizeCell(cell.row, cell.col, true)"
@@ -433,7 +433,7 @@ export default {
       type: Boolean,
       default: true
     },
-    isSpecific: { //是否是特定的表单，特定表单需要清除表单设置的只读，必填校验等（用于工单编辑表单）
+    isClearSpecificAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，必填校验，隐藏等规则属性
       type: Boolean,
       default: false
     }

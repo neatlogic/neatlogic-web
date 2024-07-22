@@ -76,7 +76,7 @@
             :disabled="disabled"
             :isClearEchoFailedDefaultValue="true"
             :isCustomValue="true"
-            :isSpecific="isSpecific"
+            :isClearSpecificAttr="isClearSpecificAttr"
             style="min-width:130px"
             @change="(val)=>changeRow(val,extra.uuid,row)"
           ></FormItem>

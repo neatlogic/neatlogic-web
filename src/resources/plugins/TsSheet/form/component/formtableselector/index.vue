@@ -38,7 +38,7 @@
                 :showStatusIcon="false"
                 mode="read"
                 isCustomValue
-                :isSpecific="isSpecific"
+                :isClearSpecificAttr="isClearSpecificAttr"
                 style="min-width:100px"
               ></FormItem>
             </div>
@@ -65,7 +65,7 @@
         :filter="filter"
         :disabled="disabled"
         :readonly="readonly"
-        :isSpecific="isSpecific"
+        :isClearSpecificAttr="isClearSpecificAttr"
         @resize="$emit('resize')"
         @change="getSelectedData"
       ></DataList>

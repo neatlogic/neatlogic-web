@@ -25,7 +25,7 @@ export default {
       type: Boolean,
       default: true
     },
-    isSpecific: {//是否是特定表单，特定表单需要清除表单设置的只读，必填校验等（用于工单编辑表单）
+    isClearSpecificAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，必填校验，隐藏等规则属性
       type: Boolean,
       default: false
     }
@@ -41,7 +41,7 @@ export default {
     if ((this.mode === 'read' || this.mode === 'readSubform') && this.isEnableDefaultValue && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
       this.setValue(this.config['defaultValue']);
     }
-    if (this.isSpecific) {
+    if (this.isClearSpecificAttr) {
       this.clearSpecificAttrBase();
     }
   },

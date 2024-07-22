@@ -33,7 +33,7 @@
                 :mode="mode"
                 :disabled="disabled || tab.isDisabled"
                 :readonly="readonly || tab.isReadOnly"
-                :isSpecific="isSpecific"
+                :isClearSpecificAttr="isClearSpecificAttr"
                 @resize="$emit('resize')"
                 @emit="
                   val => {
@@ -83,7 +83,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.isSpecific) {
+    if (this.isClearSpecificAttr) {
       this.clearCurrSpecificAttr();
     }
   },
@@ -186,7 +186,7 @@ export default {
       return errorList;
     },
     updatetabList(newVal, oldVal) {
-      if (this.isSpecific) { // 如果是特定表单，则不处理
+      if (this.isClearSpecificAttr) { // 如果是特定表单，则不处理
         return;
       }
       //tab内联动规则改变

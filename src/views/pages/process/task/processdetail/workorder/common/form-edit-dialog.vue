@@ -15,7 +15,7 @@
             mode="read"
             :value="formConfig"
             :data="processTaskConfig.formAttributeDataMap"
-            :isSpecific="true"
+            :isClearSpecificAttr="true"
           ></TsSheet>
         </div>
       </template>
