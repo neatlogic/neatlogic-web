@@ -9,6 +9,7 @@ export default {
   hasValue: true,
   isHideComponent: true,
   config: {
+    defaultvalue: ''
   },
   reaction: {'setvalue': {}, 'emit': {}}
 };
