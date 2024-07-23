@@ -262,7 +262,7 @@ export default {
                   }
                 }
               });
-              if (this.$utils.isEmpty(this.formContent.hideComponentList)) {
+              if (!this.$utils.isEmpty(this.formContent.hideComponentList)) {
                 controllerList.push(...this.formContent.hideComponentList);
               }
               plugin = controllerList;
