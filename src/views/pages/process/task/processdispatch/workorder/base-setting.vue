@@ -145,6 +145,7 @@ export default {
         priorityUuid: '',
         focusUserUuidList: []
       },
+      defaultPriorityUuid: '', // 默认优先级
       userDetail: {},
       groupList: ['user'],
       tagList: [],
@@ -205,6 +206,7 @@ export default {
               this.dispatch.priorityUuid = this.draftData.priorityUuid;
             }
           }
+          this.defaultPriorityUuid = this.draftData.defaultPriorityUuid;
         } 
         if (this.isDisplayPriority) {
           this.dispatch.priorityUuid = this.draftData.priorityUuid;
@@ -298,8 +300,17 @@ export default {
   watch: {
     defaultPriorityConfig: {
       handler(val) {
-        if (val && val.uuid) {
-          this.dispatch.priorityUuid = val.uuid;
+        let {uuid = ''} = val || {};
+        if (uuid) {
+          let findPriorityItem = this.priorityList.find((v) => v.uuid == uuid);
+          if (this.$utils.isEmpty(findPriorityItem)) {
+            // 使用默认优先级
+            this.dispatch.priorityUuid = this.defaultPriorityUuid;
+          } else {
+            this.dispatch.priorityUuid = uuid;
+          }
+        } else {
+          this.dispatch.priorityUuid = this.defaultPriorityUuid;
         }
       },
       deep: true,

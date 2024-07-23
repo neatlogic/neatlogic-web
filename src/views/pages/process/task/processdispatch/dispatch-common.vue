@@ -126,7 +126,7 @@ export default {
         } catch (e) {
           console.log(e);
         }
-        this.defaultPriorityUuid = draftData.priorityUuid; //选中默认优先级
+        this.defaultPriorityUuid = draftData.defaultPriorityUuid; //选中默认优先级
       }
       if (!this.$utils.isEmpty(draftData.formConfig)) {
         this.isShowForm = true;
