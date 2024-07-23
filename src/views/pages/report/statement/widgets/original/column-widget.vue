@@ -25,6 +25,7 @@ export default {
         },
         label: {
           position: 'top',
+          offset: 0, // 设置偏移量为0，柱状图和文本标签距离不需要太远
           layout: [
             {
               type: 'limit-in-plot' // 限制文本标签在图形范围内，可以防止文本标签于图表组件如坐标轴发生重叠遮挡
