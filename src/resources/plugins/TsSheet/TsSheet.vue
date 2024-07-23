@@ -308,7 +308,7 @@
                   :formHighlightData="formHighlightData"
                   :isCustomValue="true"
                   :formExtendData="formExtendData"
-                  :isClearSpecificAttr="isClearSpecificAttr"
+                  :isClearSpecifiedAttr="isClearSpecifiedAttr"
                   class="padding-xs"
                   @changeConfig="addHistory()"
                   @change="resizeCell(cell.row, cell.col, true)"
@@ -462,7 +462,11 @@ export default {
       type: Boolean,
       default: true
     },
-    isClearSpecificAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，必填校验，隐藏等规则属性
+    isNeedValid: { //是否需要校验
+      type: Boolean,
+      default: true
+    },
+    isClearSpecifiedAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，隐藏等规则属性
       type: Boolean,
       default: false
     }
@@ -743,8 +747,8 @@ export default {
     //校验表单内所有组件的数据，返回异常数据
     async validData(validConifg) {
       const errorMap = {};
-      //表单只读或者禁用,所有组件跳过校验
-      if (!this.disabled && !this.readonly && !this.config.readOnly) {
+      //1、表单只读或者禁用,所有组件跳过校验; 2、isNeedValid为false时，所有组件跳过校验
+      if (!this.disabled && !this.readonly && !this.config.readOnly && this.isNeedValid) {
         for (let i = 0; i < this.componentCells.length; i++) {
           const component = this.componentCells[i].component;
           if (component && component.uuid) {

@@ -25,7 +25,7 @@ export default {
       type: Boolean,
       default: true
     },
-    isClearSpecificAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，必填校验，隐藏等规则属性
+    isClearSpecifiedAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，隐藏等规则属性，并且跳过表单校验
       type: Boolean,
       default: false
     }
@@ -41,7 +41,7 @@ export default {
     if ((this.mode === 'read' || this.mode === 'readSubform') && this.isEnableDefaultValue && this.value == null && this.config && this.config.hasOwnProperty('defaultValue')) {
       this.setValue(this.config['defaultValue']);
     }
-    if (this.isClearSpecificAttr) {
+    if (this.isClearSpecifiedAttr) {
       this.clearSpecificAttrBase();
     }
   },
@@ -146,7 +146,7 @@ export default {
     },
     //清除组件显示规则和必填属性，用于工单修改表单
     clearSpecificAttrBase() {
-      const attrList = ['isRequired', 'isMask', 'isReadOnly', 'isDisabled', 'isHide', 'mask', 'hide', 'disable', 'readonly', 'display'];
+      const attrList = ['isMask', 'isReadOnly', 'isDisabled', 'isHide', 'mask', 'hide', 'disable', 'readonly', 'display'];
       if (this.formItem) {
         if (this.formItem.config) {
           Object.keys(this.formItem.config).forEach(key => {
