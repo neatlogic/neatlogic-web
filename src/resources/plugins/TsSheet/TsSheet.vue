@@ -308,7 +308,7 @@
                   :formHighlightData="formHighlightData"
                   :isCustomValue="true"
                   :formExtendData="formExtendData"
-                  :isClearSpecificAttr="isClearSpecificAttr"
+                  :isClearSpecifiedAttr="isClearSpecifiedAttr"
                   class="padding-xs"
                   @changeConfig="addHistory()"
                   @change="resizeCell(cell.row, cell.col, true)"
@@ -382,6 +382,35 @@
           </DropdownMenu>
         </Dropdown>
       </div>
+      <!-- 底部添加的隐藏组件 -->
+      <div class="form-footer mt-nm">
+        <span v-for="(item, index) in hideComponentList" :key="index">
+          <Tag 
+            v-if="mode === 'edit'"
+            :color="currentHideItem && currentHideItem.uuid === item.uuid ?'primary' :'default'"
+            closable
+            class="cursor-pointer"
+            @on-close="removeHideItem(item, index)"
+          >
+            <span :class="[item.icon, hideComponentError[item.uuid]? 'text-error':'']" @click="selectHideItem(item)">{{ item.label }}</span>
+          </Tag>
+          <FormItem
+            v-show="false"
+            ref="hideComponent"
+            :formItem="item"
+            :formData="formData"
+            :formItemList="formItemList"
+            :mode="mode"
+            :isCustomValue="true"
+            :formExtendData="formExtendData"
+            @emit="
+              val => {
+                $emit('emit', val);
+              }
+            "
+          ></FormItem>
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -433,7 +462,11 @@ export default {
       type: Boolean,
       default: true
     },
-    isClearSpecificAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，必填校验，隐藏等规则属性
+    isNeedValid: { //是否需要校验
+      type: Boolean,
+      default: true
+    },
+    isClearSpecifiedAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，隐藏等规则属性
       type: Boolean,
       default: false
     }
@@ -468,7 +501,10 @@ export default {
         { value: '18px', text: this.$t('page.maximum') }
       ],
       colorList: ['color-picker-th-', 'color-picker-', 'color-picker-border-', 'color-picker-tip-', 'color-picker-text-', 'color-picker-info-', 'color-picker-warning-', 'color-picker-success-', 'color-picker-error-', 'color-picker-info-grey-', 'color-picker-warning-grey-', 'color-picker-success-grey-', 'color-picker-error-grey-', 'color-picker-form-sheet-style-setting-'],
-      formExtendData: {} //自定义组件消费数据
+      formExtendData: {}, //自定义组件消费数据
+      hideComponentList: [], //底部隐藏组件列表
+      hideComponentError: {},
+      currentHideItem: null //选中隐藏的组件
     };
   },
   beforeCreate() {
@@ -555,6 +591,7 @@ export default {
       }
     },
     clearSelectedComponent() {
+      this.currentHideItem = null;
       this.formItemList.forEach(d => {
         if (d._selected) {
           this.$delete(d, '_selected');
@@ -587,6 +624,7 @@ export default {
          * 编辑模式下，直接将外部数据赋值给config，这样在外部对数据做了修改，也能触发表格控件发生变化。
          * 只读模式下，采用深度拷贝，避免表单渲染过程中数据变化导致外部数据也产生变化。
          **/
+        this.hideComponentList = this.value.hideComponentList || [];
         if (this.mode !== 'edit') {
           if (this.formSceneUuid) {
             this.config = this.setFormSceneConfig(this.formSceneUuid, this.value);
@@ -692,13 +730,25 @@ export default {
           }
         }
       });
+      //隐藏组件校验配置
+      const hideComponentList = this.$refs.hideComponent;
+      this.hideComponentError = {};
+      if (hideComponentList) {
+        hideComponentList.forEach(d => {
+          const hideErr = d.validConfig();
+          if (hideErr && hideErr.length > 0) {
+            errorMap[d.formItem.uuid] = hideErr;
+            this.hideComponentError[d.formItem.uuid] = hideErr;
+          }
+        });
+      }
       return errorMap;
     },
     //校验表单内所有组件的数据，返回异常数据
     async validData(validConifg) {
       const errorMap = {};
-      //表单只读或者禁用,所有组件跳过校验
-      if (!this.disabled && !this.readonly && !this.config.readOnly) {
+      //1、表单只读或者禁用,所有组件跳过校验; 2、isNeedValid为false时，所有组件跳过校验
+      if (!this.disabled && !this.readonly && !this.config.readOnly && this.isNeedValid) {
         for (let i = 0; i < this.componentCells.length; i++) {
           const component = this.componentCells[i].component;
           if (component && component.uuid) {
@@ -739,6 +789,21 @@ export default {
     addComponent(event) {
       if (this.dropCell) {
         const item = JSON.parse(event.dataTransfer.getData('item'));
+        //隐藏组件拖动
+        if (item.isHideComponent) { //拖动到底部，不显示在表单
+          const hideItem = {
+            ...item,
+            uuid: this.$utils.setUuid(),
+            label: item.label + '_' + this.componentIndex
+          };
+          this.hideComponentList.push(hideItem);
+          this.clearSelectedRowCol();
+          this.clearSelectedComponent();
+          this.unselectCell();
+          this.selectHideItem(hideItem);
+          this.componentIndex += 1;
+          return;
+        }
         const ok = item => {
           this.addHistory();
           if (item) {
@@ -1791,6 +1856,17 @@ export default {
         }
       }
       return data;
+    },
+    selectHideItem(item) {
+      this.currentHideItem = item;
+      this.$emit('selectCell', {component: item});
+    },
+    removeHideItem(item, index) {
+      if (this.currentHideItem && this.currentHideItem.uuid === item.uuid) {
+        this.currentHideItem = null;
+        this.$emit('removeComponent', item.uuid);
+      }
+      this.hideComponentList.splice(index, 1);
     }
   },
   filter: {},
@@ -2062,6 +2138,9 @@ export default {
           }
         }
       });
+      if (!this.$utils.isEmpty(this.hideComponentList)) {
+        formItemList.push(...this.hideComponentList);
+      }
       return formItemList;
     },
     //能否回退
@@ -2172,6 +2251,12 @@ export default {
       handler: function(newVal, oldVal) {
         this.$emit('setValue', this.$utils.deepClone(newVal));
         // console.log(JSON.stringify(newVal, null, 2));
+      },
+      deep: true
+    },
+    hideComponentList: {
+      handler(val) {
+        this.$emit('updateHideComponentList', val);
       },
       deep: true
     }

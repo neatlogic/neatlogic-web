@@ -1004,5 +1004,7 @@
   "mappingmode": "Mapping mode",
   "delayed": "Delayed",
   "installtime": "Packaging date",
-  "orgnization": "organization"
+  "orgnization": "organization",
+  "isdefaultselectd": "Is it selected by default",
+  "defaultselectdonlyvalue": "When there is only one option that is not required, it is selected by default"
 }

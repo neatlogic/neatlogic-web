@@ -65,7 +65,7 @@
         :readonlyTextIsHighlight="readonlyTextIsHighlight"
         :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
         :isCustomValue="isCustomValue"
-        :isClearSpecificAttr="isClearSpecificAttr"
+        :isClearSpecifiedAttr="isClearSpecifiedAttr"
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
@@ -87,7 +87,7 @@
         :readonlyTextIsHighlight="readonlyTextIsHighlight"
         :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
         :isCustomValue="isCustomValue"
-        :isClearSpecificAttr="isClearSpecificAttr"
+        :isClearSpecifiedAttr="isClearSpecifiedAttr"
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
@@ -108,7 +108,7 @@
       :readonly="(mode != 'defaultvalue'?formItem.config && formItem.config.isReadOnly:false) || readonly"
       :disabled="(mode != 'defaultvalue'?formItem.config && formItem.config.isDisabled:false) || disabled"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
-      :isClearSpecificAttr="isClearSpecificAttr"
+      :isClearSpecifiedAttr="isClearSpecifiedAttr"
       @setValue="setValue"
       @resize="$emit('resize')"
       @select="selectFormItem"
@@ -168,7 +168,7 @@ export default {
       type: Boolean,
       default: true
     },
-    isClearSpecificAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，必填校验，隐藏等规则属性
+    isClearSpecifiedAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，隐藏等规则属性
       type: Boolean,
       default: false
     }
