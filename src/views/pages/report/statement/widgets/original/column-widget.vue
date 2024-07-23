@@ -23,6 +23,12 @@ export default {
         statistic: {
           visible: true
         },
+        label: {
+          position: 'top',
+          style: {
+            fill: this.widget.config.labelColor
+          }
+        },
         theme: this.canvas.config.theme && themes[this.canvas.config.theme]
       }
     };

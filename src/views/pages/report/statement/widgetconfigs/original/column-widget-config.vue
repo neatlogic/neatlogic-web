@@ -123,6 +123,28 @@
         </div>
       </div>
     </div>
+    <div class="ivu-form-item tsform-item ivu-form-label-top">
+      <label class="ivu-form-item-label overflow">
+        {{ $t('term.report.statisticcolor') }}
+      </label>
+      <div class="ivu-form-item-content">
+        <div class="pl-md pr-md">
+          <ColorPicker
+            :value="config.labelColor"
+            :transfer="true"
+            alpha
+            recommend
+            class="colorPicker"
+            transfer-class-name="color-picker-transfer-class"
+            @on-change="
+              val => {
+                setConfigValue('labelColor', val);
+              }
+            "
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
