@@ -717,7 +717,12 @@ export default {
             //初始化：只读且没有选中时，不需要调接口
             return;
           }
-          !isSearch && this.isRequired && this.dynamicSearch('', true); //值为空 必填 需要通过调用接口判断是否只有一个下拉值
+          if (!isSearch &&
+            (this.isRequired || this.isAutoSelectdOnlyValue)
+          ) {
+            //1、值为空 必填 需要通过调用接口判断是否只有一个下拉值；2、自动选中第一个值
+            this.dynamicSearch('', true); 
+          }
         }
       } else {
         //nodeList

@@ -9,6 +9,7 @@ export default {
   hasValue: true,
   isHideComponent: true,
   config: {
+    isAutoSelectdOnlyValue: true,
     dataList: [],
     dataSource: 'static',
     matrixUuid: '',

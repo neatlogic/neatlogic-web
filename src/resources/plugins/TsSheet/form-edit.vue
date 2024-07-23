@@ -1147,6 +1147,9 @@ export default {
           }
         }
       });
+      if (!this.$utils.isEmpty(this.hideComponentList)) {
+        formItemList.push(...this.hideComponentList);
+      }
       return formItemList;
     },
     getFormCategoryList() {

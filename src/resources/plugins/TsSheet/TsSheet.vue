@@ -382,13 +382,15 @@
           </DropdownMenu>
         </Dropdown>
       </div>
-      <!-- 底部添加的扩展组件 -->
+      <!-- 底部添加的隐藏组件 -->
       <div class="form-footer mt-nm">
         <span v-for="(item, index) in hideComponentList" :key="index">
           <Tag 
             v-if="mode === 'edit'"
+            :color="currentHideItem && currentHideItem.uuid === item.uuid ?'primary' :'default'"
             closable
-            @on-close="removeHideItem(index)"
+            class="cursor-pointer"
+            @on-close="removeHideItem(item, index)"
           >
             <span :class="[item.icon, hideComponentError[item.uuid]? 'text-error':'']" @click="selectHideItem(item)">{{ item.label }}</span>
           </Tag>
@@ -399,9 +401,6 @@
             :formData="formData"
             :formItemList="formItemList"
             :mode="mode"
-            :disabled="true"
-            :readonly="true"
-            :formHighlightData="formHighlightData"
             :isCustomValue="true"
             :formExtendData="formExtendData"
           ></FormItem>
@@ -495,7 +494,8 @@ export default {
       colorList: ['color-picker-th-', 'color-picker-', 'color-picker-border-', 'color-picker-tip-', 'color-picker-text-', 'color-picker-info-', 'color-picker-warning-', 'color-picker-success-', 'color-picker-error-', 'color-picker-info-grey-', 'color-picker-warning-grey-', 'color-picker-success-grey-', 'color-picker-error-grey-', 'color-picker-form-sheet-style-setting-'],
       formExtendData: {}, //自定义组件消费数据
       hideComponentList: [], //底部隐藏组件列表
-      hideComponentError: {}
+      hideComponentError: {},
+      currentHideItem: null //选中隐藏的组件
     };
   },
   beforeCreate() {
@@ -582,6 +582,7 @@ export default {
       }
     },
     clearSelectedComponent() {
+      this.currentHideItem = null;
       this.formItemList.forEach(d => {
         if (d._selected) {
           this.$delete(d, '_selected');
@@ -781,11 +782,16 @@ export default {
         const item = JSON.parse(event.dataTransfer.getData('item'));
         //隐藏组件拖动
         if (item.isHideComponent) { //拖动到底部，不显示在表单
-          this.hideComponentList.push({
+          const hideItem = {
             ...item,
             uuid: this.$utils.setUuid(),
             label: item.label + '_隐藏' + this.hideComponentList.length
-          });
+          };
+          this.hideComponentList.push(hideItem);
+          this.clearSelectedRowCol();
+          this.clearSelectedComponent();
+          this.unselectCell();
+          this.selectHideItem(hideItem);
           return;
         }
         const ok = item => {
@@ -1842,9 +1848,14 @@ export default {
       return data;
     },
     selectHideItem(item) {
+      this.currentHideItem = item;
       this.$emit('selectCell', {component: item});
     },
-    removeHideItem(index) {
+    removeHideItem(item, index) {
+      if (this.currentHideItem && this.currentHideItem.uuid === item.uuid) {
+        this.currentHideItem = null;
+        this.$emit('removeComponent', item.uuid);
+      }
       this.hideComponentList.splice(index, 1);
     }
   },

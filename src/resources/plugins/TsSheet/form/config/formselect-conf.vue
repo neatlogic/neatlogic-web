@@ -8,6 +8,22 @@
         :disabled="disabled"
       ></TsFormSwitch>
     </TsFormItem>
+    <TsFormItem
+      :label="$t('page.isdefaultselectd')"
+      labelPosition="left"
+      contentAlign="right"
+      :tooltip="$t('page.defaultselectdonlyvalue')"
+    >
+      <TsFormSwitch
+        :value="config.isAutoSelectdOnlyValue || false"
+        :trueValue="true"
+        :falseValue="false "
+        :disabled="disabled"
+        @change="(val)=>{
+          $set(config, 'isAutoSelectdOnlyValue', val)
+        }"
+      ></TsFormSwitch>
+    </TsFormItem>
     <TsFormItem :label="$t('page.datasource')" labelPosition="top">
       <TsFormRadio
         v-model="config.dataSource"
