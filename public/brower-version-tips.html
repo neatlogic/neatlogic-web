@@ -6,29 +6,35 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <meta charset="utf-8" />
     <link rel="icon" href="./resource/img/common/tsfavicon.png" />
+    <script src="./resource/config.js?version=1.0.2"></script>
     <title>浏览器兼容提示</title>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        const element = document.querySelector('#browser-version-text');
-        const elementTitle = document.querySelector('#browser-text');
-        if (element) {
-          const currentText = element.textContent || element.innerText;
-          const titleText = elementTitle.textContent || elementTitle.innerText;
-          const version = getVersion();
-          let newText = currentText.replace('95', version || '95');
-          let newTitleText = titleText;
-          // 根据userAgent判断是谷歌还是火狐，并替换文本中的'谷歌'
-          if (navigator.userAgent.includes('Firefox') && version) {
-            newText = newText.replace('谷歌', '火狐');
-            newTitleText = '您的浏览器版本过低！';
-          } else if (navigator.userAgent.includes('Chrome')) {
-            newText = newText.replace('谷歌', '谷歌');
-            newTitleText = '您的浏览器版本过低！';
-          } else {
-            newTitleText = '当前浏览器暂不支持!';
+        if (isBrowserVersionSuitable()) {
+          window.location.href = toLoginPage();
+        } else {
+          const element = document.querySelector('#browser-version-text');
+          const elementTitle = document.querySelector('#browser-text');
+          if (element) {
+            const currentText = element.textContent || element.innerText;
+            const titleText = elementTitle.textContent || elementTitle.innerText;
+            const version = getVersion();
+            let newText = currentText.replace('95', version || '95');
+            let newTitleText = titleText;
+            // 根据userAgent判断是谷歌还是火狐，并替换文本中的'谷歌'
+            if (navigator.userAgent.includes('Firefox') && version) {
+              newText = newText.replace('谷歌', '火狐');
+              newTitleText = '您的浏览器版本（' + getBrowserVersion() + '）过低！';
+            } else if (navigator.userAgent.includes('Chrome')) {
+              newText = newText.replace('谷歌', '谷歌');
+              newText = newText.replace('95', version);
+              newTitleText = '您的浏览器版本（' + getBrowserVersion() + '）过低！';
+            } else {
+              newTitleText = '当前浏览器暂不支持!';
+            }
+            element.textContent = newText;
+            elementTitle.textContent = newTitleText;
           }
-          element.textContent = newText;
-          elementTitle.textContent = newTitleText;
         }
       });
       function getVersion() {
