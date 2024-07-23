@@ -25,6 +25,7 @@ import { default as formtab } from './define/formtab.js';
 import { default as formcollapse } from './define/formcollapse.js';
 import { default as CMDBITEMS } from '@/views/pages/cmdb/form/define';
 import { default as AUTOEXECITEMS } from '@/views/pages/autoexec/form/define';
+import HIDEITEMS from './define/hide/index.js';
 import ComponentManager from '@/resources/import/component-manager.js';
 let defineComponentList = [];
 
@@ -35,8 +36,9 @@ for (let key in ComponentManager.getFormDefineComponent()) {
 }
 export const FORMITEM_CATEGORY = [
   { value: 'basic', text: $t('term.report.basicwidget') },
+  { value: 'hide', text: '隐藏组件' },
   { value: 'layout', text: $t('term.framework.layoutwidget') },
   { value: 'autoexec', text: $t('term.framework.automationwidget') },
   { value: 'cmdb', text: $t('term.framework.cmdbwidget') }
 ];
-export const FORMITEMS = [formlabel, formtext, formtextarea, formckeditor, formnumber, formpassword, formselect, formcascader, formradio, formcheckbox, formcube, formtableselector, formtableinputer, formdate, formtime, formlink, formrate, formuserselect, formtreeselect, formaccounts, formupload, formdivider, formtab, formcollapse, ...AUTOEXECITEMS, ...CMDBITEMS, ...defineComponentList];
+export const FORMITEMS = [formlabel, formtext, formtextarea, formckeditor, formnumber, formpassword, formselect, formcascader, formradio, formcheckbox, formcube, formtableselector, formtableinputer, formdate, formtime, formlink, formrate, formuserselect, formtreeselect, formaccounts, formupload, formdivider, formtab, formcollapse, ...AUTOEXECITEMS, ...CMDBITEMS, ...defineComponentList, ...HIDEITEMS];

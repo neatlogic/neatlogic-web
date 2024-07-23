@@ -1006,5 +1006,7 @@
   "mappingmode": "映射模式",
   "delayed": "已延期",
   "installtime": "打包日期",
-  "orgnization": "组织"
+  "orgnization": "组织",
+  "isdefaultselectd": "是否默认选中",
+  "defaultselectdonlyvalue": "非必填只有一个选项时，默认选中"
 }
