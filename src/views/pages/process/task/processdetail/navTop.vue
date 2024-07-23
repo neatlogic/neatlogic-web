@@ -7,7 +7,7 @@
     3、工单中心标题 -->
     <div v-if="processTaskConfig">
       <span class="text-action tsfont-bar mr-md" @click="isTslayout"></span>
-      <span v-if="processTaskConfig.priority && isNeedPriority" class="channel-type fz10" :style="typeTip(processTaskConfig.priority.color)">{{ processTaskConfig.priority.name }}</span>
+      <span v-if="processTaskConfig.priority && isActivePriority" class="channel-type fz10" :style="typeTip(processTaskConfig.priority.color)">{{ processTaskConfig.priority.name }}</span>
       <div ref="leftInstanceBox" class="inline-block">
         <span v-if="!isEdit">
           <span
@@ -207,8 +207,8 @@ export default {
         };
       };
     },
-    isNeedPriority() {
-      return this.processTaskConfig.hasOwnProperty('isNeedPriority') ? this.processTaskConfig.isNeedPriority : 1;
+    isActivePriority() {
+      return this.processTaskConfig.hasOwnProperty('isActivePriority') ? this.processTaskConfig.isActivePriority : 1;
     },
     getClassName() {
       return (remainTime) => (remainTime) >= 0 ? 'text-success' : 'text-danger';

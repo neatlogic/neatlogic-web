@@ -335,7 +335,7 @@ export default {
           this.selectBackConfig = this.backStepList[0];
         }
       }
-      if (!this.processTaskConfig.hasOwnProperty('isNeedPriority') || (this.processTaskConfig.hasOwnProperty('isNeedPriority') && this.processTaskConfig.isNeedPriority)) {
+      if (!this.processTaskConfig.hasOwnProperty('isActivePriority') || (this.processTaskConfig.hasOwnProperty('isActivePriority') && this.processTaskConfig.isActivePriority)) {
         this.getPriority();
       }
       this.getMessage();
@@ -374,7 +374,8 @@ export default {
         }
       });
     },
-    setTimer() { //定时保存
+    setTimer() {
+      //定时保存
       let _this = this;
       _this.timer = setInterval(() => {
         _this.saveTask();
@@ -1236,7 +1237,7 @@ export default {
       //获取优先级
       let data = {
         needPage: false,
-        channelUuid: this.channelUuid
+        channelUuid: this.processTaskConfig.channelUuid
       };
       this.$api.process.priority.search(data).then(res => {
         if (res.Status == 'OK') {
@@ -1270,9 +1271,6 @@ export default {
     //     return text;
     //   };
     // },
-    // isNeedPriority() {
-    //   return this.processTaskConfig.hasOwnProperty('isNeedPriority') ? this.processTaskConfig.isNeedPriority : 1;
-    // }
   },
   watch: {
     assistModal(val) {

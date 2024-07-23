@@ -909,23 +909,6 @@ export default {
         });
       }
       this.rightsettingVue = this.rightsettingVue || getParent(this);
-      let priorityConfig = {
-        focus: '#priority'
-      };
-      if (this.rightsettingVue && this.processTaskConfig.isNeedPriority) {
-        if ((this.rightsettingVue.$refs.RightSetting && this.rightsettingVue.$refs.RightSetting.valid()) || this.processTaskConfig.priorityUuid) {
-          this.$set(priorityConfig, 'icon', 'tsfont-check-o');
-          this.$set(priorityConfig, 'iconColor', '#81D655');
-          this.$set(priorityConfig, 'msg', this.$t('message.process.success', { target: this.$t('page.priority') }));
-          this.$set(priorityConfig, 'type', 'success');
-        } else if (!this.processTaskConfig.priorityUuid) {
-          this.$set(priorityConfig, 'icon', 'tsfont-close-o');
-          this.$set(priorityConfig, 'iconColor', '#FF625A');
-          this.$set(priorityConfig, 'msg', this.$t('message.process.prioritymsg', { target: this.$t('page.priority') }));
-          this.$set(priorityConfig, 'type', 'error');
-        }
-        validList.push(priorityConfig);
-      }
       return validList;
     },
     changeValid() {
@@ -1269,17 +1252,13 @@ export default {
             defaultPriorityConfig = {};
           } else if (list.length == 0) {
             //优先级不存在时提示
-            messageConfig.content = this.$t('term.process.formpriorityrule');
-            this.$Message.error(messageConfig);
             defaultPriorityConfig = {};
           }
         }
       }
-      if (!this.$utils.isEmpty(defaultPriorityConfig)) {
-        this.rightsettingVue = this.rightsettingVue || getParent(this);
-        if (this.rightsettingVue && this.rightsettingVue.$refs.RightSetting) {
-          this.rightsettingVue.$refs.RightSetting.setPriorityByForm([defaultPriorityConfig]);
-        }
+      this.rightsettingVue = this.rightsettingVue || getParent(this);
+      if (this.rightsettingVue && this.rightsettingVue.$refs.RightSetting) {
+        this.rightsettingVue.$refs.RightSetting.setPriorityByForm(!this.$utils.isEmpty(defaultPriorityConfig) ? [defaultPriorityConfig] : []);
       }
     },
     showRelationDetail(tranferreport, processTaskRelationCount) {

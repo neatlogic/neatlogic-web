@@ -302,7 +302,7 @@ export default {
         this.$set(this.initData, 'hidecomponentList', []);
         this.$set(this.initData, 'readcomponentList', []);
       }
-      if (this.draftData.hasOwnProperty('isNeedPriority') && this.draftData.isNeedPriority) {
+      if (this.draftData.hasOwnProperty('isActivePriority') && this.draftData.isActivePriority) {
         this.$set(this.initData, 'priorityUuid', this.draftData.priorityUuid);
       }
       if (this.draftData.owner) {

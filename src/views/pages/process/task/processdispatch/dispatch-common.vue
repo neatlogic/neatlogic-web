@@ -198,14 +198,6 @@ export default {
             type: 'error'
           });
         }
-        if (this.isNeedPriority && !this.baseData.priorityUuid) {
-          validList.push({
-            focus: '#base',
-            icon: 'tsfont-close-o',
-            msg: this.$t('message.process.required', {target: this.$t('page.priority')}),
-            type: 'error'
-          });
-        }
       }
       if (this.$refs.formSetting) {
         isValidForm = await this.$refs.formSetting.valid();
@@ -261,9 +253,6 @@ export default {
       };
       let itemName = node[this.handler];
       return itemName || 'omnipotent';
-    },
-    isNeedPriority() {
-      return this.draftData.hasOwnProperty('isNeedPriority') ? this.draftData.isNeedPriority : 1;
     },
     showDetailConfig() {
       return store.showDetailConfig;

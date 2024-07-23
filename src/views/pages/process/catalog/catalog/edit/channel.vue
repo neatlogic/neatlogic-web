@@ -28,28 +28,45 @@
           </div>
         </div>
       </template>
-      <template v-slot:priorityUuidList>
-        <div class="slotForm">
-          <TsFormSelect
-            ref="priority"
-            v-model="channelValue.priorityUuidList"
-            v-bind="priorityConfig"
-            :needCallback.sync="priorityConfig.needCallback"
-            :selectItemList.sync="selectPriority"
-            @on-change="channelValue.defaultPriorityUuid = ''"
-            @searchCallback="refreshSuccess('priority')"
-          >
-            <template v-slot:first-ul>
-              <li class="tsfont-plus text-href first-slot" @click="gotoAddPiority(true)">{{ $t('page.priority') }}</li>
-            </template>
-          </TsFormSelect>
-          <div class="view">
-            <div class="div-btn-contain action-group">
-              <span class="action-item tsfont-rotate-right" @click="refresh('priority')">{{ $t('page.refresh') }}</span>
-              <span class="action-item tsfont-setting" @click="gotoAddPiority()">{{ $t('page.setting') }}</span>
-            </div>
+      <template v-slot:isActivePriority>
+        <TsFormSwitch
+          v-model="channelValue.isActivePriority"
+          :trueValue="1"
+          :falseValue="0"
+          @on-change="changePriorty"
+        ></TsFormSwitch>
+        <template v-if="channelValue.isActivePriority">
+          <div class="slotForm">
+            <TsForm
+              ref="priorityForm"
+              v-model="channelValue.activePriorityConfig"
+              :item-list="priorityFormConfig"
+              :labelWidth="87"
+            >
+              <template v-slot:priorityUuidList>
+                <TsFormSelect
+                  ref="priority"
+                  v-model="channelValue.activePriorityConfig.priorityUuidList"
+                  v-bind="priorityConfig"
+                  :needCallback.sync="priorityConfig.needCallback"
+                  :selectItemList.sync="selectPriority"
+                  @change="channelValue.activePriorityConfig.defaultPriorityUuid = ''"
+                  @searchCallback="refreshSuccess('priority')"
+                >
+                  <template v-slot:first-ul>
+                    <li class="tsfont-plus text-href first-slot" @click="gotoAddPiority(true)">{{ $t('page.priority') }}</li>
+                  </template>
+                </TsFormSelect>
+                <div class="view">
+                  <div class="div-btn-contain action-group">
+                    <span class="action-item tsfont-rotate-right" @click="refresh('priority')">{{ $t('page.refresh') }}</span>
+                    <span class="action-item tsfont-setting" @click="gotoAddPiority()">{{ $t('page.setting') }}</span>
+                  </div>
+                </div>
+              </template>
+            </TsForm>
           </div>
-        </div>
+        </template>
       </template>
       <template v-slot:worktimeUuid>
         <div class="slotForm">
@@ -230,6 +247,40 @@ export default {
         },
         rootName: 'tbodyList'
       },
+      priorityFormConfig: [
+        {
+          type: 'switch',
+          name: 'isDisplayPriority',
+          label: this.$t('term.process.showpriority'),
+          validateList: ['required'],
+          width: '75%'
+        },
+        {
+          type: 'slot',
+          name: 'priorityUuidList',
+          multiple: true,
+          label: this.$t('page.priority'),
+          search: true,
+          value: '',
+          dataList: [],
+          valueName: 'uuid',
+          textName: 'name',
+          validateList: ['required'],
+          width: '75%'
+        },
+        {
+          type: 'select',
+          name: 'defaultPriorityUuid',
+          label: this.$t('term.process.defaultpriority'),
+          search: true,
+          value: '',
+          width: '75%',
+          dataList: [],
+          valueName: 'uuid',
+          textName: 'name',
+          validateList: ['required']
+        }
+      ],
       channelForm: [
         {
           type: 'text',
@@ -253,36 +304,13 @@ export default {
           validateList: ['required']
         },
         {
-          type: 'switch',
-          name: 'isNeedPriority',
-          label: this.$t('term.process.showpriority'),
+          type: 'slot',
+          name: 'isActivePriority',
+          label: '优先级激活',
           validateList: ['required'],
           onChange: (val) => {
             this.changePriorty(val);
           }
-        },
-        {
-          type: 'slot',
-          name: 'priorityUuidList',
-          multiple: true,
-          label: this.$t('page.priority'),
-          search: true,
-          value: '',
-          dataList: [],
-          valueName: 'uuid',
-          textName: 'name',
-          validateList: ['required']
-        },
-        {
-          type: 'select',
-          name: 'defaultPriorityUuid',
-          label: this.$t('term.process.defaultpriority'),
-          search: true,
-          value: '',
-          dataList: [],
-          valueName: 'uuid',
-          textName: 'name',
-          validateList: ['required']
         },
         {
           type: 'slot',
@@ -381,23 +409,26 @@ export default {
         desc: '',
         icon: '',
         color: '#62BCFA',
-        isNeedPriority: 1, //显示优先级
-        defaultPriorityUuid: '', //默认优先级uuid
-        priorityUuidList: [], //优先级列表
+        isActivePriority: 1,
         support: 'all', //服务目录的使用范围(all/pc/mobile)
         help: '',
         channelTypeUuid: '',
         config: {
           allowTranferReport: 0, //允许转报
           channelRelationList: [] //转报设置
+        },
+        activePriorityConfig: {
+          priorityUuidList: []
         }
       },
-      selectPriority: null, //选中的优先级
-      defaultPriorityList: []
+      selectPriority: null //选中的优先级
     };
   },
   beforeCreate() {},
   created() {
+    this.channelForm.forEach(e => {
+      e.width = '75%';
+    });
     this.getData();
   },
   beforeMount() {},
@@ -409,7 +440,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    onChangeSwitch: function(val) {
+    onChangeSwitch(val) {
       this.channelValue.config.channelRelationList = [];
       this.channelValue.config.allowTranferReport = val;
       this.channelForm.forEach(e => {
@@ -423,15 +454,11 @@ export default {
       });
     },
     getData(hideLoading) {
-      this.channelForm.forEach(e => {
-        e.width = '75%';
-      });
-
       let relationObj = this.channelForm.find(d => d.name == 'channelRelationList');
       if (!this.uuid) {
         this.channelValue = this.$utils.deepClone(this.initValue);
         relationObj.isHidden = true;
-        this.changePriorty(this.channelValue.isNeedPriority);
+        this.changePriorty(this.channelValue.isDisplayPriority);
         return;
       }
       let data = {
@@ -443,34 +470,57 @@ export default {
         if (res.Status == 'OK') {
           let itemValue = res.Return;
           itemValue.desc = this.escape2Html(itemValue.desc);
+          let {
+            name = '', 
+            parentUuid = '',
+            processUuid = '',
+            isActive = 0,
+            reportAuthorityList = [],
+            viewAuthorityList = [],
+            worktimeUuid = '',
+            desc = '',
+            icon = '',
+            color = '#62BCFA',
+            isActivePriority = 1,
+            support = 'all',
+            contentHelp = '',
+            channelTypeUuid = '',
+            priorityUuidList = [],
+            defaultPriorityUuid = '',
+            isDisplayPriority = 0,
+            config = {}
+          } = itemValue || {};
           this.channelValue = {
-            name: itemValue.name || '',
-            parentUuid: itemValue.parentUuid || '',
-            processUuid: itemValue.processUuid || '',
-            isActive: itemValue.isActive || 0,
-            reportAuthorityList: itemValue.reportAuthorityList,
-            viewAuthorityList: itemValue.viewAuthorityList,
-            worktimeUuid: itemValue.worktimeUuid || '',
-            desc: itemValue.desc || '',
-            icon: itemValue.icon || '',
-            color: itemValue.color || '#62BCFA',
-            isNeedPriority: itemValue.hasOwnProperty('isNeedPriority') ? itemValue.isNeedPriority : 1,
-            defaultPriorityUuid: itemValue.defaultPriorityUuid || '',
-            priorityUuidList: itemValue.priorityUuidList || [],
-            support: itemValue.support || 'all',
-            contentHelp: itemValue.contentHelp || '',
-            channelTypeUuid: itemValue.channelTypeUuid || '',
+            name: name,
+            parentUuid: parentUuid,
+            processUuid: processUuid,
+            isActive: isActive,
+            reportAuthorityList: reportAuthorityList,
+            viewAuthorityList: viewAuthorityList,
+            worktimeUuid: worktimeUuid,
+            desc: desc,
+            icon: icon,
+            color: color,
+            isActivePriority: isActivePriority,
+            support: support,
+            contentHelp: contentHelp,
+            channelTypeUuid: channelTypeUuid,
             config: {
-              allowTranferReport: itemValue.config ? itemValue.config.allowTranferReport : 0, // 允许转报
-              channelRelationList: itemValue.config ? itemValue.config.channelRelationList : [] // 转报数据列表
+              allowTranferReport: !this.$utils.isEmpty(config) ? config.allowTranferReport : 0, // 允许转报
+              channelRelationList: !this.$utils.isEmpty(config) ? config.channelRelationList : [] // 转报数据列表
+            },
+            activePriorityConfig: {
+              isDisplayPriority: isDisplayPriority,
+              priorityUuidList: priorityUuidList,
+              defaultPriorityUuid: defaultPriorityUuid
             }
           };
-          if (!(itemValue.config && itemValue.config.allowTranferReport == 1)) {
+          if (!(!this.$utils.isEmpty(config) && config.allowTranferReport == 1)) {
             relationObj.isHidden = true;
           } else {
             relationObj.isHidden = false;
           }
-          this.changePriorty(this.channelValue.isNeedPriority);
+          this.changePriorty(this.channelValue.isActivePriority);
           this.$emit('updateName', this.channelValue.name);
         } else {
           this.channelValue = this.$utils.deepClone(this.initValue);
@@ -502,7 +552,7 @@ export default {
       this.$Message.success(this.$t('message.executesuccess'));
     },
     priority(list) { //优先级选中时改变默认优先级数据
-      this.channelForm.forEach(c => {
+      this.priorityFormConfig.forEach(c => {
         if (c.name == 'defaultPriorityUuid') {
           this.$set(c, 'dataList', list && list.length ? list : []);
         }
@@ -540,13 +590,22 @@ export default {
       this.channelValue.config.channelRelationList = [];
     },
     save() {
-      if (!this.$refs.form.valid() || ((this.channelValue.config && this.channelValue.config.allowTranferReport) && !this.$refs.channelRelationList.valid())) {
+      let priorityForm = this.$refs.priorityForm;
+      if (!this.$refs.form.valid() || (priorityForm && !priorityForm.valid()) || ((this.channelValue.config && this.channelValue.config.allowTranferReport) && !this.$refs.channelRelationList.valid())) {
         return;
       }
       if (this.channelValue.config && this.channelValue.config.allowTranferReport) {
         this.channelValue.config.channelRelationList = this.$refs.channelRelationList.saveRelationList();
       }
-      this.$emit('save', this.$refs.form.valid() ? this.channelValue : false);
+      let chanelValue = this.$utils.deepClone(this.channelValue);
+      let emitValue = {
+        ...chanelValue,
+        ...chanelValue.activePriorityConfig
+      };
+      if (emitValue.hasOwnProperty('activePriorityConfig')) {
+        delete emitValue.activePriorityConfig;
+      }
+      this.$emit('save', this.$refs.form.valid() ? emitValue : false);
     },
     updateIcon(icon) {
       this.iseditIcon = false;
@@ -564,19 +623,13 @@ export default {
       window.open(HOME + '/process.html#/relations-manage', '_blank');
     },
     changePriorty(val) {
-      this.channelForm.forEach(item => {
-        if (item.name == 'priorityUuidList' || item.name == 'defaultPriorityUuid') {
-          if (val) {
-            item.isHidden = false;
-          } else {
-            item.isHidden = true;
-          }
-        }
-      });
       this.$nextTick(() => {
         if (!val) {
-          this.channelValue.priorityUuidList = [];
-          this.channelValue.defaultPriorityUuid = '';
+          this.channelValue.activePriorityConfig = {
+            isDisplayPriority: 0,
+            priorityUuidList: [],
+            defaultPriorityUuid: ''
+          };
         }
       });
     }
@@ -586,8 +639,8 @@ export default {
     uuid(val) {
       this.getData(true);
     },
-    selectPriority(val) {
-      this.priority(val);
+    selectPriority(selectedList) {
+      this.priority(selectedList);
     },
     processUuid: {
       handler(newValue, oldValue) {

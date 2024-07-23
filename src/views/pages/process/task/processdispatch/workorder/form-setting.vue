@@ -219,10 +219,7 @@ export default {
           } else if (list.length > 1) {
             messageConfig.content = this.$t('term.process.formpriorityrule');
             this.$Message.error(messageConfig);
-          } else if (list.length == 0) { //优先级不存在时提示
-            messageConfig.content = this.$t('term.process.formpriorityrule');
-            this.$Message.error(messageConfig);
-          }
+          } 
         }
       }
     },
