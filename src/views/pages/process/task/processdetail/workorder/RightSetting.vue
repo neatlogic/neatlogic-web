@@ -69,7 +69,7 @@
             <span :class="showBasic ? 'tsfont-down' : 'tsfont-right'" class="icon-right">{{ $t('page.basicinfo') }}</span>
           </div>
           <div v-show="showBasic">
-            <div v-for="(item, index) of taskInformationList" :key="index">
+            <div v-for="(item, index) of baseInfoList" :key="index">
               <div class="information-list">
                 <template v-if="item.value == 'id'">
                   <div class="infor-left text-grey overflow">{{ item.title }}</div>
@@ -254,7 +254,7 @@ export default {
       priorityUuid: null, //优先级id
       channelUuid: null, //服务id
       tagVoList: [],
-      taskInformationList: [], //工单信息（基本信息）
+      baseInfoList: [], //工单信息（基本信息）
       defaultProcessTask: [
         //基本信息
         {
@@ -357,7 +357,7 @@ export default {
     },
     initializeData() {
       //初始化数据
-      this.taskInformationList = [];
+      this.baseInfoList = [];
       let processTaskConfig = this.processTaskConfig;
       this.processTaskId = processTaskConfig.id;
       this.channelUuid = processTaskConfig.channelUuid;
@@ -386,7 +386,7 @@ export default {
           }
         }
       });
-      this.taskInformationList = processTaskArr;
+      this.baseInfoList = processTaskArr;
       if (processTaskConfig.currentProcessTaskStep) {
         let processTaskStepConfig = processTaskConfig.currentProcessTaskStep;
         this.currentProcessTaskStep = processTaskConfig.currentProcessTaskStep;
@@ -397,32 +397,31 @@ export default {
     },
     setPriorityByForm(list) {
       //如果list存在则通过list赋值过去 ，list 主要是为了表单规则时修改优先级下拉数据
-      //this.priorityList = list;
-      let _this = this;
       let priority = null;//优先级数据
-      let findPriority = false;
+      let findPriorityItem = this.baseInfoList.find((v) => v.value == 'priority');
       if (list.length == 0) {
+        // 即表单优先级为空or选项值不在服务定义的优先级范围内，则工单优先级还是用的服务定义的默认优先级
         this.priorityUuid = this.defaultPriorityUuid;
         priority = this.priorityList.find(item => item.uuid == this.defaultPriorityUuid);
       } else if (list.length == 1) {
-        this.taskInformationList.find(item => {
-          if (item.value == 'priority') {
-            item.textConfig = list[0];
-            _this.priorityUuid = item.textConfig.uuid || '';
-            priority = list[0];
-            findPriority = true;
-          }
-        });
-        if (!findPriority) {
+        if (!this.$utils.isEmpty(findPriorityItem)) {
+          findPriorityItem.textConfig = list[0];
+          this.priorityUuid = findPriorityItem.textConfig.uuid || '';
+          priority = list[0];
+        } else {
           priority = list[0];
         }
       } else {
-        let priority = this.taskInformationList.find(item => item.value == 'priority');
-        priority.textConfig = list.find(d => d.uuid == priority.textConfig.name) || {};
-        _this.priorityUuid = priority.textConfig.uuid || '';
-        priority = priority.textConfig;
+        if (!this.$utils.isEmpty(findPriorityItem)) {
+          findPriorityItem.textConfig = list.find(d => d.uuid == priority.textConfig.name) || {};
+          this.priorityUuid = findPriorityItem.textConfig.uuid || '';
+          priority = findPriorityItem.textConfig;
+        } else {
+          this.priorityUuid = '';
+          priority = null;
+        }
       }
-      if (_this.priorityUuid) {
+      if (this.priorityUuid) {
         this.$emit('updateActiveStep', {'priority': priority});
       } else {
         this.$emit('updateActiveStep', {'priority': null});
