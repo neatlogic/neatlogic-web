@@ -797,9 +797,6 @@ export default {
             label: item.label + '_' + this.componentIndex
           };
           this.hideComponentList.push(hideItem);
-          this.clearSelectedRowCol();
-          this.clearSelectedComponent();
-          this.unselectCell();
           this.selectHideItem(hideItem);
           this.componentIndex += 1;
           return;
@@ -1858,6 +1855,9 @@ export default {
       return data;
     },
     selectHideItem(item) {
+      this.clearSelectedRowCol();
+      this.clearSelectedComponent();
+      this.unselectCell();
       this.currentHideItem = item;
       this.$emit('selectCell', {component: item});
     },
