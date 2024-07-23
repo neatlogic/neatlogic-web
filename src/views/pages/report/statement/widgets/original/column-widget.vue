@@ -25,6 +25,11 @@ export default {
         },
         label: {
           position: 'top',
+          layout: [
+            {
+              type: 'limit-in-plot' // 限制文本标签在图形范围内，可以防止文本标签于图表组件如坐标轴发生重叠遮挡
+            }
+          ],
           style: {
             fill: this.widget.config.labelColor
           }
