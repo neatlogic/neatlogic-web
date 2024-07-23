@@ -498,6 +498,10 @@ export default {
       // 鼠标上移，禁用提示文案
       type: String,
       default: ''
+    },
+    isAutoSelectdOnlyValue: { //是否自动选中唯一值
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -647,11 +651,17 @@ export default {
       return {nodeList, isCancelToken};
     },
     setDefaultValue() {
-      //默认选中第一个的判断 ,1、defaultValueIsFirst 2、必填且nodeList长度为1
+      //默认选中第一个的判断 ,1、defaultValueIsFirst; 2、必填且nodeList长度为1; 3、自动选中第一个值
       if (this.nodeList.length <= 0) { // 处理禁用(只读)状态下，默认值不生效的问题
         return;
       }
-      if ((this.$utils.isEmpty(this.currentValue) && this.defaultValueIsFirst) || (this.firstSelect && this.$utils.isEmpty(this.currentValue) && this.isRequired && this.nodeList.length == 1 && !this.nodeList[0]._disabled)) {
+      if (this.$utils.isEmpty(this.currentValue) && 
+      (
+        this.defaultValueIsFirst || 
+      (this.firstSelect && this.isRequired && this.nodeList.length == 1 && !this.nodeList[0]._disabled) ||
+      (this.isAutoSelectdOnlyValue && this.nodeList.length == 1)
+      )
+      ) {
         if (this.mode == 'normal') {
           this.selectedList = [this.nodeList[0]];
         } /*else {
@@ -707,7 +717,12 @@ export default {
             //初始化：只读且没有选中时，不需要调接口
             return;
           }
-          !isSearch && this.isRequired && this.dynamicSearch('', true); //值为空 必填 需要通过调用接口判断是否只有一个下拉值
+          if (!isSearch &&
+            (this.isRequired || this.isAutoSelectdOnlyValue)
+          ) {
+            //1、值为空 必填 需要通过调用接口判断是否只有一个下拉值；2、自动选中第一个值
+            this.dynamicSearch('', true); 
+          }
         }
       } else {
         //nodeList

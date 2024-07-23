@@ -130,6 +130,7 @@ export default {
       }
       setting.placeholder = this.config.placeholder;
       setting.sperateText = this.config.sperateText || '、';
+      setting.isAutoSelectdOnlyValue = this.config.isAutoSelectdOnlyValue || false;
       if (this.config.dataSource === 'matrix') {
         setting.dynamicUrl = '/api/rest/matrix/column/data/search/forselect';
         setting.rootName = 'dataList';

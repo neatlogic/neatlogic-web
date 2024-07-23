@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!formItem.isHideComponent">
     <TsFormItem :label="$t('page.strlength')" labelPosition="top">
       <TsFormInput
         :value="config.maxLength"
