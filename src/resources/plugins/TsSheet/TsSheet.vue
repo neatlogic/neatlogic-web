@@ -403,6 +403,11 @@
             :mode="mode"
             :isCustomValue="true"
             :formExtendData="formExtendData"
+            @emit="
+              val => {
+                $emit('emit', val);
+              }
+            "
           ></FormItem>
         </span>
       </div>
