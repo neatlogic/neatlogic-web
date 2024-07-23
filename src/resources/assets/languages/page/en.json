@@ -1003,5 +1003,6 @@
   "clicktoselect": "Click to select",
   "mappingmode": "Mapping mode",
   "delayed": "Delayed",
-  "installtime": "Packaging date"
+  "installtime": "Packaging date",
+  "orgnization": "organization"
 }
