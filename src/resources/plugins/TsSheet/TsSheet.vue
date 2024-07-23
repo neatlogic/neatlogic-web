@@ -620,7 +620,7 @@ export default {
          * 编辑模式下，直接将外部数据赋值给config，这样在外部对数据做了修改，也能触发表格控件发生变化。
          * 只读模式下，采用深度拷贝，避免表单渲染过程中数据变化导致外部数据也产生变化。
          **/
-        this.hideComponentList = this.value.hideComponentList;
+        this.hideComponentList = this.value.hideComponentList || [];
         if (this.mode !== 'edit') {
           if (this.formSceneUuid) {
             this.config = this.setFormSceneConfig(this.formSceneUuid, this.value);
@@ -790,13 +790,14 @@ export default {
           const hideItem = {
             ...item,
             uuid: this.$utils.setUuid(),
-            label: item.label + '_隐藏' + this.hideComponentList.length
+            label: item.label + '_' + this.componentIndex
           };
           this.hideComponentList.push(hideItem);
           this.clearSelectedRowCol();
           this.clearSelectedComponent();
           this.unselectCell();
           this.selectHideItem(hideItem);
+          this.componentIndex += 1;
           return;
         }
         const ok = item => {

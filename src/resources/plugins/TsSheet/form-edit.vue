@@ -406,7 +406,7 @@ export default {
       isShowValidList: false,
       previewFormData: {}, //预览数据
       isShowEditFormWidth: false, //表单宽度设置
-      formGroup: ['basic', 'layout', 'autoexec', 'cmdb', 'custom'],
+      formGroup: ['basic', 'layout', 'autoexec', 'cmdb', 'custom', 'hide'],
       isFormSceneDialog: false,
       sceneUuid: null,
       readOnly: false, //设置全局只读
