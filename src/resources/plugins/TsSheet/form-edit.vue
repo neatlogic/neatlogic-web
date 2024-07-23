@@ -262,6 +262,7 @@
             @selectCell="selectCell"
             @removeComponent="removeComponent"
             @updateResize="updateResize"
+            @updateHideComponentList="updateHideComponentList"
           ></TsSheet>
           <FormItemConfig
             v-if="currentFormItem"
@@ -583,6 +584,7 @@ export default {
         this.$set(formConfig, 'sceneList', this.initFormConfig.sceneList || []);
         this.$set(formConfig, 'defaultSceneUuid', this.initFormConfig.defaultSceneUuid || formConfig.uuid);
         this.$set(formConfig, 'readOnly', this.readOnly);
+        this.$set(formConfig, 'hideComponentList', this.hideComponentList || []);
         if (type === 'saveother') {
           this.$set(formConfig, 'uuid', this.$utils.setUuid());
           formConfig.sceneList.forEach(item => {
@@ -1038,6 +1040,14 @@ export default {
             }
           }
         });
+        //隐藏组件校验配置
+        if (!this.currentFormItem && !this.$utils.isEmpty(this.hideComponentList)) {
+          this.hideComponentList.forEach(d => {
+            if (d.uuid === uuid) {
+              this.currentFormItem = d;
+            }
+          });
+        }
       });
     },
     editFormWidth() {
@@ -1107,6 +1117,9 @@ export default {
       if (list) {
         this.extendConfigList = list;
       }
+    },
+    updateHideComponentList(list) {
+      this.hideComponentList = list;
     }
   },
   filter: {},
@@ -1154,7 +1167,7 @@ export default {
   top: 0px;
   width: 380px;
   height: 100%;
-  overflow: auto;
+  // overflow: auto;
 }
 .form-item {
   text-align: center;
