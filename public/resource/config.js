@@ -166,8 +166,8 @@ async function getSsoTokenKey() {
   }
 }
 getSsoTokenKey();
-function getBrowserVersion() {
-  // 获取浏览器版本号
+function isBrowserVersionSuitable() {
+  // 判断浏览器是否满足最低要求
   const userAgent = navigator.userAgent;
   if (userAgent.includes('Chrome')) {
     // 获取Chrome版本号
@@ -194,8 +194,10 @@ function getBrowserVersion() {
   }
   return false;
 }
-function getProtocalIpPortDomain(isNeedTenantName = true) {
-  // 获取ip协议端口域名，例如：http://127.0.0.1:8080/develop
+function toBrowerVersionTipsPage(isNeedTenantName = true) {
+  // 浏览器不满足要求，跳转到提示页面
+  // url地址如下：http://127.0.0.1:8080/develop
+  const userAgent = navigator.userAgent;
   var urlParts = location.href.split('//'); // 拿到协议
   if (urlParts.length > 1) {
     var prefixUrl = urlParts[1].split('/'); // 获取域名
@@ -203,7 +205,48 @@ function getProtocalIpPortDomain(isNeedTenantName = true) {
     if (isNeedTenantName) {
       fullUrl = fullUrl + '/' + prefixUrl[1];
     }
-    return fullUrl + '/brower-version-tips.html?version=' + (MINIMUM_FIREFOXBROWSERVERSION > 0 ? MINIMUM_FIREFOXBROWSERVERSION : MINIMUM_FIREFOXBROWSERVERSION == 0 ? 0 : MINIMUM_CHROMEBROWSERVERSION);
+    const version = userAgent.includes('Chrome') ? MINIMUM_CHROMEBROWSERVERSION : userAgent.includes('Firefox') ? MINIMUM_FIREFOXBROWSERVERSION : 0;
+    return fullUrl + '/brower-version-tips.html?version=' + version;
   }
   return location.href;
+}
+
+function toLoginPage() {
+  // 浏览器满足要求，跳转到登录页面
+  var urlParts = location.href.split('//'); // 拿到协议
+  if (urlParts.length > 1) {
+    var prefixUrl = urlParts[1].split('/'); // 获取域名
+    var fullUrl = urlParts[0] + '//' + prefixUrl[0];
+    fullUrl = fullUrl + '/' + prefixUrl[1];
+    return fullUrl + '/login.html';
+  }
+  return location.href;
+}
+
+function getBrowserVersion() {
+  // 获取浏览器版本号
+  var userAgent = navigator.userAgent;
+  var version;
+  // 检测Chrome/Chromium/Edge（基于Chromium）
+  var match = userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
+  if (match) {
+    version = match[2];
+  }
+  // 检测Firefox
+  else if (/Firefox\/([0-9]+)\./.test(userAgent)) {
+    version = userAgent.match(/Firefox\/([0-9]+)\./)[1];
+  }
+  // 检测Safari
+  else if (/Version\/([0-9]+)\.([0-9]+)(\.[0-9]+)?\s+Safari\//.test(userAgent)) {
+    version = userAgent.match(/Version\/([0-9]+)\.([0-9]+)(\.[0-9]+)?\s+Safari\//)[1];
+  }
+  // 检测IE/Edge（旧版Edge）
+  else if (/rv:([0-9]+)\.([0-9]+)\)/.test(userAgent)) {
+    version = userAgent.match(/rv:([0-9]+)\.([0-9]+)\)/)[1];
+  }
+  // 其他浏览器或无法识别
+  else {
+    version = '';
+  }
+  return version;
 }
