@@ -1244,7 +1244,6 @@ export default {
               }
             }
           });
-          console.log('工单centerDetail', data, list);
           if (list.length === 1) {
             defaultPriorityConfig = list[0];
           } else if (list.length > 1) {
