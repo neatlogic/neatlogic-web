@@ -38,6 +38,7 @@
         <template v-if="channelValue.isActivePriority">
           <div class="slotForm">
             <TsForm
+              ref="priorityForm"
               v-model="channelValue.activePriorityConfig"
               :item-list="priorityFormConfig"
               :labelWidth="87"
@@ -589,7 +590,8 @@ export default {
       this.channelValue.config.channelRelationList = [];
     },
     save() {
-      if (!this.$refs.form.valid() || ((this.channelValue.config && this.channelValue.config.allowTranferReport) && !this.$refs.channelRelationList.valid())) {
+      let priorityForm = this.$refs.priorityForm;
+      if (!this.$refs.form.valid() || (priorityForm && !priorityForm.valid()) || ((this.channelValue.config && this.channelValue.config.allowTranferReport) && !this.$refs.channelRelationList.valid())) {
         return;
       }
       if (this.channelValue.config && this.channelValue.config.allowTranferReport) {
@@ -623,7 +625,11 @@ export default {
     changePriorty(val) {
       this.$nextTick(() => {
         if (!val) {
-          this.channelValue.activePriorityConfig = {};
+          this.channelValue.activePriorityConfig = {
+            isDisplayPriority: 0,
+            priorityUuidList: [],
+            defaultPriorityUuid: ''
+          };
         }
       });
     }

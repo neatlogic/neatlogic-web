@@ -527,7 +527,7 @@ export default {
       };
     },
     canEditPrority() {
-      return this.processTaskConfig && this.processTaskConfig.isActivePriority && this.processTaskConfig.isDisplayPriority;
+      return this.processTaskConfig && this.processTaskConfig.isActivePriority && this.processTaskConfig.isDisplayPriority && this.actionConfig.update;
     }
   },
   watch: {
