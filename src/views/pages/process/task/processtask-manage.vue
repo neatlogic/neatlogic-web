@@ -278,12 +278,13 @@ export default {
         if (item.status.value === 'draft') {
           url = '/task-dispatch';
         }
-        this.$router.push({
-          path: url,
-          query: {
-            processTaskId: route.taskid
-          }
-        });
+        window.open(HOME + `/process.html#${url}?processTaskId=${route.taskid}`, '_blank');
+        // this.$router.push({
+        //   path: url,
+        //   query: {
+        //     processTaskId: route.taskid
+        //   }
+        // });
       }
     },
     search(workcenterConditionData, currentPage) {
