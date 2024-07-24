@@ -86,7 +86,7 @@
         <!--清除条件按钮-->
         <span v-if="!isDropdownShow && isAllowEditCondition && hasCondition" class="btn-remove tsfont-close-o" @click="clearCondition"></span>
         <!--展开/收起搜索面板按钮-->
-        <span v-if="isAllowEditCondition" class="btn-filter tsfont-filter" @click="toggleDropdown"></span>
+        <span class="btn-filter tsfont-filter" @click="toggleDropdown"></span>
       </div>
       <div v-if="isDropdownShow" class="dropdown-container bg-op border-color radius-sm">
         <div class="condition-container pl-nm pr-nm">
