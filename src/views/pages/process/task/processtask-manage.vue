@@ -173,6 +173,7 @@ export default {
       isLoading: true,
       timmer: null, //定时刷新工单中心
       timmerInterval: 30000, //定时刷新工单中心间隔(毫秒)
+      isAutoRefresh: true,
       workcenterData: null,
       isDownloading: false,
       tableConfig: {
@@ -313,6 +314,7 @@ export default {
         .then(res => {
           if (res && res.Status == 'OK') {
             this.handlerSearchResult(res.Return);
+            this.isAutoRefresh = res.Return.isAutoRefresh;
           }
         })
         .catch(res => {
@@ -573,7 +575,9 @@ export default {
       }
     },
     intervalRefreshSearch() {
-      this.refreshProcessTask(false);
+      if (this.isAutoRefresh) {
+        this.refreshProcessTask(false);
+      }
       this.timmer = setTimeout(() => {
         this.intervalRefreshSearch();
       }, this.timmerInterval);
