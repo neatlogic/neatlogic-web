@@ -26,12 +26,13 @@ intersectionArr                              // 返回一个包含所有传入�
 getComposedPath(e)                           // 返回事件流中元素的事件路径
 removeHTMLTag(str)                           //去除html标签
 evalWithLineNumber(e, code)                  //利用eval解析时，具体报错信息和行号
+isImage(filename)                            //判断是否是图片
 */
 import _ from 'lodash';
 import store from '@/resources/store';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
-const methods =  {
+const methods = {
   getCookie: function (name) {
     if (name) {
       let cookies = document.cookie.split(';');
@@ -1093,6 +1094,12 @@ const methods =  {
       console.error('Could not detarmine error line number');
     }
     return error;
+  },
+  isImage(fileName) {
+    // 判断是否是图片
+    const fileExtension = fileName.split('.').pop().toLowerCase(); // 使用split方法根据点（.）分割文件名，[-1]获取最后一个元素，即后缀
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico'];
+    return imageExtensions.includes(fileExtension);
   }
 };
 export default methods;

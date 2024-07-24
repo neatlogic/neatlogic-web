@@ -56,7 +56,8 @@
             <span class="file_name overflow">
               <Tooltip :transfer="true" :content="item.name">{{ item.name }}</Tooltip>
             </span>
-            <span class="tsfont-eye text-action pl-xs pr-xs" @click.stop="handlePreview(index)"></span>
+            <i v-download="downurl(item)" class="tsfont-download file_down text-action pr-xs" :title="$t('page.download')"></i>
+            <span v-if="$utils.isImage(item.name)" class="tsfont-eye text-action pr-xs" @click.stop="handlePreview(index)"></span>
             <i
               v-if="!readonly && !disabled"
               class="tsfont-close file_del text-action"
@@ -412,6 +413,20 @@ export default {
         return null;
       }
       return '.' + this.format.join(',.');
+    },
+    downurl() {
+      return item => {
+        let params = {
+          id: item.id
+        };
+        if (!this.$utils.isEmpty(this.fileDownParam)) {
+          params = this.fileDownParam;
+        }
+        return {
+          url: this.fileDownurl,
+          params: params
+        };
+      };
     }
   },
   watch: {
