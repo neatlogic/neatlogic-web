@@ -575,12 +575,17 @@ export default {
       }
     },
     intervalRefreshSearch() {
-      if (this.isAutoRefresh) {
-        this.refreshProcessTask(false);
+      //全局自动刷新且在当前浏览器tab，才执行刷新
+      if (!this.isAutoRefresh) {
+        clearTimmer();
+      } else {
+        if (document.visibilityState === 'visible') {
+          this.refreshProcessTask(false);
+        }
+        this.timmer = setTimeout(() => {
+          this.intervalRefreshSearch();
+        }, this.timmerInterval);
       }
-      this.timmer = setTimeout(() => {
-        this.intervalRefreshSearch();
-      }, this.timmerInterval);
     },
     actionTask(data) {
       this.processTaskConfig = data;
