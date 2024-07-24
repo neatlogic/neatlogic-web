@@ -192,6 +192,9 @@ export default {
             this.martixAttrList = res.Return.tbodyList;
           }
         });
+        if (!this.formItemLocal.reaction.filter) {
+          this.$set(this.formItemLocal.reaction, 'filter', {});
+        }
       } else {
         //如果数据源不是矩阵，则去掉过滤这个联动
         this.$delete(this.formItemLocal.reaction, 'filter');

@@ -8,6 +8,7 @@ export default {
   icon: 'tsfont-forminput',
   hasValue: true,
   isHideComponent: true,
+  isDynamicValue: true, //联动规则-赋值(setvalue)：是否需要动态赋值
   config: {
     defaultvalue: ''
   },
