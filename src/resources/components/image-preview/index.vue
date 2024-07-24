@@ -22,7 +22,7 @@
             <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
           </span>
           <span
-            v-if="isImage(getFileName(file))"
+            v-if="$utils.isImage(getFileName(file))"
             class="tsfont-eye text-action"
             :class="!isShowName ? 'inline-block pt-nm' : ''"
             @click="handlePreview(getIdName(file))"
@@ -118,7 +118,7 @@ export default {
   methods: {
     handlePreview(id) {
       let initSrcUrl = `${HOME}${this.fileDownloadUrl}?id=`;
-      let srcList = this.fileList.filter((a) => a && a[this.idName] !== id && this.isImage(a[this.fileName])).map((v) =>
+      let srcList = this.fileList.filter((a) => a && a[this.idName] !== id && this.$utils.isImage(a[this.fileName])).map((v) =>
         `${initSrcUrl}${v.id}`
       );
       let url = `${initSrcUrl}${id}`;
@@ -161,7 +161,7 @@ export default {
     },
     getSrcList() {
       let initSrcUrl = `${HOME}${this.fileDownloadUrl}?id=`;
-      let srcList = this.fileList.filter((a) => a && a[this.idName] && this.isImage(a[this.fileName])).map((v) =>
+      let srcList = this.fileList.filter((a) => a && a[this.idName] && this.$utils.isImage(a[this.fileName])).map((v) =>
         `${initSrcUrl}${v[this.idName]}`
       );
       return srcList;
@@ -192,14 +192,6 @@ export default {
         return previewIndex;
       }
       return previewIndex;
-    },
-    isImage() {
-      return (fileName) => {
-        // 使用split方法根据点（.）分割文件名，[-1]获取最后一个元素，即后缀
-        const fileExtension = fileName.split('.').pop().toLowerCase();
-        const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico'];
-        return imageExtensions.includes(fileExtension);
-      };
     },
     downLoadUrl() {
       return (id) => {
