@@ -95,9 +95,11 @@ export default {
             if (val == 'system') {
               this.formConfig.support.isHidden = false; // 个人分类时，隐藏使用范围
               this.formConfig.authList.isHidden = false;
+              this.formConfig.isShowTotal.isHidden = false;
             } else {
               this.formConfig.support.isHidden = true;
               this.formConfig.authList.isHidden = true;
+              this.formConfig.isShowTotal.isHidden = true;
             }
           }
         },
@@ -122,6 +124,7 @@ export default {
         isShowTotal: {
           type: 'switch',
           label: this.$t('page.showtotal'),
+          isHidden: true,
           trueValue: 1,
           falseValue: 0,
           tooltip: this.$t('term.process.workordertypenumdes')

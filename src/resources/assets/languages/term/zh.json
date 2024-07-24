@@ -371,7 +371,7 @@
     "formfilter": "表单过滤",
     "attrdragtip": "已选属性（拖动修改排序）",
     "workordercentertypedes": "作为左侧菜单显示时的分类名称，不设置则归类到默认分类：工单中心",
-    "workordertypenumdes": "左侧工单分类是否显示总数,默认为否,显示待办数",
+    "workordertypenumdes": "左侧工单分类是否显示总数,默认为否",
     "converttoknowdoc": "转为知识文档",
     "pleselectprioritystep": "选择优先要处理的步骤",
     "selectaskuser": "指定{target}处理人",

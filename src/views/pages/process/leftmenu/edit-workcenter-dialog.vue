@@ -112,6 +112,12 @@ export default {
           this.$set(this.formConfig[index], 'readonly', 'readonly');
         }
       });
+    } else if (this.workcenter.type === 'custom') {
+      this.formConfig.forEach((element, index) => {
+        if (element.name === 'isShowTotal') {
+          this.$set(this.formConfig[index], 'isHidden', true);
+        }
+      });
     }
     await this.getWorkcenterByUuid();
     await this.getWorkcenterTheadList();

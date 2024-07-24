@@ -370,7 +370,7 @@
     "formfilter": "Form Filter",
     "attrdragtip": "Selected attributes (drag to modify order)",
     "workordercentertypedes": "The category name when displayed as the left menu, if not set, it will be classified into the default category: work order center",
-    "workordertypenumdes": "Whether to display the total number of work order categories on the left, the default is no, display the number of to-dos",
+    "workordertypenumdes": "Whether to display the total number of work order categories on the left, the default is no",
     "converttoknowdoc": "Convert to knowledge document",
     "pleselectprioritystep": "Select the priority step to be processed",
     "selectaskuser": "Specify {target} handler",
