@@ -249,6 +249,11 @@ export default {
       this.$set(this.config, 'sourceColumnList', []);
       this.$set(this.config, 'hiddenFieldList', []);
       this.$set(this.config, 'defaultValue', null);
+      if (!this.$utils.isEmpty(this.formItem.reaction)) {
+        Object.keys(this.formItem.reaction).forEach(key => {
+          this.$set(this.formItem.reaction, key, {});
+        });
+      }
     },
     getFilterList(val) {
       let filterList = [];
