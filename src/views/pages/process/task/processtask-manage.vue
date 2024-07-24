@@ -577,7 +577,7 @@ export default {
     intervalRefreshSearch() {
       //全局自动刷新且在当前浏览器tab，才执行刷新
       if (!this.isAutoRefresh) {
-        clearTimmer();
+        this.clearTimmer();
       } else {
         if (document.visibilityState === 'visible') {
           this.refreshProcessTask(false);
