@@ -78,6 +78,11 @@ const handleUrl = (url, splitParam, queryParam) => {
 };
 //调用接口
 instance.interceptors.request.use(config => {
+  //console.log(document.visibilityState);
+  if (document.visibilityState !== 'visible') {
+    // 如果不在浏览器当前tab，tab中的页面无法发送请求
+    return Promise.reject(new Error('Tab is not active'));
+  }
   //每次调用接口时把cookie更新为当前环境的时区，按照+8:00的格式
   const offset = new Date().getTimezoneOffset();
   let f = '';
