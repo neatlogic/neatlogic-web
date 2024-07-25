@@ -2,20 +2,14 @@
   <div class="detail">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <Alert v-if="autoexecConfig.createJobPolicy==='batch' && !isValidTable" type="error" show-icon>{{ $t('message.process.batchcreatejobpolicyvalid') }}</Alert>
-    <TsFormItem
-      label="表单标签"
+    <!-- 表单标签 -->
+    <FormTagSetting
+      :formUuid="formUuid"
+      :defaultFormTag="autoexecConfig.formTag"
       labelPosition="left"
-      tooltip="当标签为空时：表单组件为主场景的所有表单组件；当标签不为空时：表单组件为所选标签配置的表单组件。"
-    >
-      <TsFormSelect
-        v-model="autoexecConfig.formTag"
-        :dataList="formTagList"
-        transfer
-        @on-change="(val)=>{
-          changeFormTag(val);
-        }"
-      ></TsFormSelect>
-    </TsFormItem>
+      class="pb-nm"
+      @updateFormTag="changeFormTag"
+    ></FormTagSetting>
     <TsForm
       ref="formConfig"
       v-model="autoexecConfig"
@@ -117,12 +111,12 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     Batchjobpolicy: () => import('./joppolicy/batchjobpolicy.vue'),
-    Singlejobpolicy: () => import('./joppolicy/singlejobpolicy.vue')
+    Singlejobpolicy: () => import('./joppolicy/singlejobpolicy.vue'),
+    FormTagSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/form-tag-setting.vue') // 表单扩展数据标签
   },
   props: {
     formUuid: String,
     defaultAllFormitemList: Array,
-    formTagList: Array,
     config: Object
   },
   data() {
@@ -383,6 +377,7 @@ export default {
       }
     },
     changeFormTag(tag) {
+      this.$set(this.autoexecConfig, 'formTag', tag);
       this.allFormitemList = this.$utils.deepClone(this.defaultAllFormitemList) || [];
       if (!this.formUuid || !tag) {
         return;

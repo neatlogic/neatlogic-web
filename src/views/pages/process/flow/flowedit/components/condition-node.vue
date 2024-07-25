@@ -1,20 +1,11 @@
 <template>
   <div class="condition-setting permission-list">
-    <TsFormItem
-      label="表单标签"
-      labelPosition="top"
-      tooltip="当标签为空时：表单组件为主场景的所有表单组件；当标签不为空时：表单组件为所选标签配置的表单组件。"
-    >
-      <TsFormSelect
-        v-model="formTag"
-        :dataList="formTagList"
-        border="border"
-        transfer
-        @on-change="(val)=>{
-          changeFormTag(val);
-        }"
-      ></TsFormSelect>
-    </TsFormItem>
+    <!-- 表单标签 -->
+    <FormTagSetting
+      :formUuid="formUuid"
+      :defaultFormTag="formTag"
+      @updateFormTag="changeFormTag"
+    ></FormTagSetting>
     <div class="control-setting">
       <span>{{ $t('term.process.flowrult') }}</span>
       <span class="tsfont-plus add-btn" @click="addRule()">{{ $t('page.rule') }}</span>
@@ -291,6 +282,7 @@ export default {
     TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
     ConditionAttrList: () => import('./condition-attr-list.vue'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    FormTagSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/form-tag-setting.vue'), // 表单扩展数据标签
     ...Items
   },
   mixins: [nodemixin],
@@ -399,8 +391,7 @@ export default {
           value: 'or'
         }
       ],
-      formTag: '',
-      formTagList: []
+      formTag: ''
     };
   },
 
@@ -414,7 +405,6 @@ export default {
   mounted() {
     this.keyList = ['moveonConfigList', 'formTag']; //stepConfig 需要包含的数据
     this.getNodeSetting();
-    this.getFormTagList();
   },
 
   beforeUpdate() {},
@@ -780,25 +770,8 @@ export default {
       data.moveonConfigList = this.moveonConfigList;
       return data;
     },
-    getFormTagList() {
-      this.formTagList = [];
-      if (this.formUuid) {
-        this.$api.framework.form.getFormTagList({formUuid: this.formUuid}).then(res => {
-          if (res.Return) {
-            let tbodyList = res.Return.tbodyList || [];
-            if (!this.$utils.isEmpty(tbodyList)) {
-              this.formTagList = tbodyList.map(item => {
-                return {
-                  text: item,
-                  value: item
-                };
-              });
-            }
-          }
-        });
-      }
-    },
-    changeFormTag() {
+    changeFormTag(val) {
+      this.formTag = val;
       this.getNewConditionList(this.formUuid);
     }
   },
@@ -869,7 +842,6 @@ export default {
     formUuid: {
       handler(newVal, oldVal) {
         this.getNewConditionList(newVal);
-        this.getFormTagList(); 
       }
     }
   }
