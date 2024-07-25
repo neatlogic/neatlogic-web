@@ -150,6 +150,15 @@ async function getSsoTokenKey() {
         if (responseText.commercialModuleSet && responseText.commercialModuleSet.length > 0) {
           COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
         }
+        if (location.href.indexOf('brower-version-tips') != -1) {
+          return false;
+        }
+        if (!isBrowserVersionSuitable()) {
+          const userAgent = navigator.userAgent;
+          const version = userAgent.includes('Chrome') ? MINIMUM_CHROMEBROWSERVERSION : userAgent.includes('Firefox') ? MINIMUM_FIREFOXBROWSERVERSION : 0;
+          window.location.href = getBaseUrl() + '/brower-version-tips.html?version=' + version + '&redirectUrl=' + redirectTo();
+          return false;
+        }
         if (ISNEEDAUTH) {
           getDirectUrl();
         }
@@ -213,16 +222,37 @@ function toBrowerVersionTipsPage(isNeedTenantName = true) {
 
 function toLoginPage() {
   // 浏览器满足要求，跳转到登录页面
-  var urlParts = location.href.split('//'); // 拿到协议
-  if (urlParts.length > 1) {
-    var prefixUrl = urlParts[1].split('/'); // 获取域名
-    var fullUrl = urlParts[0] + '//' + prefixUrl[0];
-    fullUrl = fullUrl + '/' + prefixUrl[1];
-    return fullUrl + '/login.html';
+  var url = location.href;
+  if (url.indexOf('redirectUrl') != -1) {
+    var redirectUrl = url.split('redirectUrl=')[1];
+    var fullPath = redirectUrl ? getBaseUrl() + '/' + redirectUrl : getBaseUrl(); // 匹配到参数地址，base64解码
+    return fullPath;
+  } else {
+    return getBaseUrl();
   }
-  return location.href;
 }
-
+function getBaseUrl() {
+  var url = location.href;
+  var pos = url.indexOf('/', 7); //http://xxxxxx/,最后一个斜杠
+  pos = url.indexOf('/', pos + 1); //http://xxxxxx/yyy/,最后一个斜杠
+  return url.substr(0, pos);
+}
+function redirectTo() {
+  const url = location.href;
+  let questionMarkIndex = url.indexOf('?');
+  var match = url.match(/^https?:\/\/[^\/]+\/(?:[^\/]+\/)(.*)$/);
+  let queryString = '';
+  if (match) {
+    queryString = match[1];
+  } else {
+    queryString = questionMarkIndex !== -1 ? url.substring(questionMarkIndex + 1) : '';
+    let secondQuestionMarkIndex = queryString.indexOf('?');
+    if (secondQuestionMarkIndex !== -1) {
+      queryString = queryString.substring(0, secondQuestionMarkIndex);
+    }
+  }
+  return queryString;
+}
 function getBrowserVersion() {
   // 获取浏览器版本号
   var userAgent = navigator.userAgent;
