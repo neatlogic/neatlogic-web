@@ -9,7 +9,7 @@
           <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget',{'target':$t('page.data')}) }}</Button>
         </div>
       </div>
-      <div v-if="value && value.length > 0">
+      <div>
         <TsTable
           :multiple="true"
           :theadList="theadList"
