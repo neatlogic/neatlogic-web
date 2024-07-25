@@ -266,8 +266,8 @@ export default {
   watch: {
     value: {
       handler(val) {
-        if (val && val != '') {
-          this.selectValue = val;
+        if (!this.$utils.isSame(this.selectValue, val)) {
+          this.selectValue = this.$utils.deepClone(val);
         }
       },
       immediate: true
