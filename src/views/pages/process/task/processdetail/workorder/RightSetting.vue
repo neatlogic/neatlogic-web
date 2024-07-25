@@ -123,7 +123,7 @@
                       transfer
                       :validateList="['required']"
                       :clearable="false"
-                      @on-change="changePriority"
+                      @change="( toValue, valueObject, selectItem) => changePriority(item.textConfig, toValue, selectItem)"
                     ></TsFormSelect>
                   </div>
                 </template>
@@ -386,7 +386,7 @@ export default {
           }
         }
       });
-      this.baseInfoList = processTaskArr;
+      this.baseInfoList = this.$utils.deepClone(processTaskArr) || [];
       if (processTaskConfig.currentProcessTaskStep) {
         let processTaskStepConfig = processTaskConfig.currentProcessTaskStep;
         this.currentProcessTaskStep = processTaskConfig.currentProcessTaskStep;
@@ -427,9 +427,12 @@ export default {
         this.$emit('updateActiveStep', {'priority': null});
       }
     },
-    changePriority(val, valueLabel, obj) {
+    changePriority(currentRow, val, selectedItem) {
       //改变优先级
-      obj && (this.priorityConfig = this.$utils.deepClone(obj));
+      if (!this.$utils.isEmpty(currentRow)) {
+        currentRow = selectedItem;
+      }
+      selectedItem && (this.priorityConfig = this.$utils.deepClone(selectedItem));
       this.priorityUuid = val;
       if (this.priorityUuid) {
         this.updatePriorityUuid();
@@ -526,7 +529,8 @@ export default {
       };
     },
     canEditPrority() {
-      return this.processTaskConfig && this.processTaskConfig.isActivePriority && this.processTaskConfig.isDisplayPriority && this.actionConfig.update;
+      let {isActivePriority = 0, isDisplayPriority = 0} = this.processTaskConfig || {};
+      return isActivePriority && isDisplayPriority && this.actionConfig.update;
     }
   },
   watch: {
