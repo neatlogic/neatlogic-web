@@ -2748,6 +2748,9 @@
     "manhattan": "正交避让",
     "dynamicwidget": "动态图元",
     "startcientity": "起点配置项",
-    "onlyhasdiagram": "只看有图"
+    "onlyhasdiagram": "只看有图",
+    "nextstatus": "流转状态",
+    "editing": "编辑中",
+    "activing": "激活中"
   }
 }

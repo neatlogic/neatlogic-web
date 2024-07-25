@@ -2748,6 +2748,9 @@
     "manhattan": "Orthogonal avoidance",
     "dynamicwidget": "Dynamic Elements",
     "startcientity": "Starting point configuration item",
-    "onlyhasdiagram": "Just looking at the pictures"
+    "onlyhasdiagram": "Just looking at the pictures",
+    "nextstatus": "Flow status",
+    "editing": "Editing in progress",
+    "activing": "Activing"
   }
 }
