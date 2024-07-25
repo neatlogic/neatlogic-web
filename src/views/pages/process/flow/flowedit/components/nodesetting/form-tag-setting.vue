@@ -1,9 +1,9 @@
 <template>
   <div>
     <TsFormItem
-      label="表单标签"
-      labelPosition="top"
-      tooltip="当标签为空时：表单组件为主场景的所有表单组件；当标签不为空时：表单组件为所选标签配置的表单组件。"
+      :label="$t('term.process.formtag')"
+      :labelPosition="labelPosition"
+      :tooltip="$t('term.process.formtagtip')"
     >
       <TsFormSelect
         v-model="formTag"
@@ -23,6 +23,10 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
+    labelPosition: {
+      type: String,
+      default: 'top'
+    },
     formUuid: {
       type: String,
       default: ''
@@ -34,7 +38,7 @@ export default {
   },
   data() {
     return {
-      formTag: this.defaultFormTag,
+      formTag: '',
       formTagList: []
     };
   },
@@ -79,6 +83,11 @@ export default {
   watch: {
     formUuid(val) {
       this.getFormTagList();
+    },
+    defaultFormTag(val) {
+      if (!this.$utils.isSame(val, this.formTag)) {
+        this.formTag = this.$utils.deepClone(val);
+      }
     }
   }
 };
