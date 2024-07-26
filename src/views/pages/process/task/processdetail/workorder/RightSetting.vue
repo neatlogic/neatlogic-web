@@ -409,6 +409,7 @@ export default {
           this.priorityUuid = findPriorityItem.textConfig.uuid || '';
           priority = list[0];
         } else {
+          this.priorityUuid = list[0].uuid;
           priority = list[0];
         }
       } else {
