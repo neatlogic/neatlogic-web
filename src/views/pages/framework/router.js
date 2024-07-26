@@ -58,6 +58,7 @@ const tenantConfigManage = () => import('./tenantconfig/tenantconfig-manage.vue'
 const serverManage = () => import('./server/server-manage.vue'); // 服务器管理
 const extramenuManage = () => import('./extramenu/extramenu-manage.vue'); //菜单管理
 const regionManage = () => import('./region/region-manage.vue');//地域管理
+const homepageManage = () => import('./homepage/homepage-manage.vue');//首页管理
 
 import { $t } from '@/resources/init.js';
 import { config } from './config.js';
@@ -715,6 +716,18 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-list',
       authority: 'EXTRA_MENU_MODIFY',
+      type: 'others'
+    }
+  },
+  {
+    path: '/homepage-manage',
+    name: 'homepageManage',
+    component: homepageManage,
+    meta: {
+      title: $t('router.framework.homepage'),
+      ismenu: true,
+      icon: 'tsfont-home',
+      authority: 'HOME_PAGE_MODIFY',
       type: 'others'
     }
   }

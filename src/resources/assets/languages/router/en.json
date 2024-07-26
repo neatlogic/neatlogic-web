@@ -167,7 +167,8 @@
     "others": "Basic Services",
     "healthcheck": "Health Check",
     "license": "License Management",
-    "extramenu": "Menu management"
+    "extramenu": "Menu management",
+    "homepage": "default page "
   },
   "knowledge": {
     "knowledgedetail": "entry details",
