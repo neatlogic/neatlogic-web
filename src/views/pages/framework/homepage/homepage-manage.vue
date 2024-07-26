@@ -85,7 +85,8 @@ export default {
         thbodList: []
       },
       isShowEditDialog: false,
-      currentId: null
+      currentId: null,
+      oldList: []
     };
   },
   beforeCreate() {},
@@ -116,6 +117,7 @@ export default {
       this.$api.framework.homepage.getHomepageList(params).then(res => {
         if (res.Status == 'OK') {
           this.tableConfig = res.Return;
+          this.oldList = res.Return.tbodyList;
         }
       });
     },
@@ -125,7 +127,7 @@ export default {
     },
     handleDragUpdate({ oldIndex, newIndex }) {
       const params = {
-        uuid: this.oldList[oldIndex].id, //被拖拽的id
+        id: this.oldList[oldIndex].id, //被拖拽的id
         sort: this.oldList[newIndex].sort //被挤走的sort
       };
       this.$api.framework.homepage.moveHomepage(params).then(res => {
