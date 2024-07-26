@@ -1,8 +1,8 @@
 <template>
-  <div style="max-width:600px;width:100%">
-    <div v-for="(condition, index) in conditionList" :key="index">
+  <div style="max-width:600px;width:100%;line-height:normal;">
+    <div v-for="(condition, index) in conditionList" :key="index" class="pb-nm">
       <label class="text-grey">{{ condition.handlerName }}</label>
-      <div>
+      <div class="pt-sm">
         <SearchInputer
           mode="simple"
           :condition="condition"
