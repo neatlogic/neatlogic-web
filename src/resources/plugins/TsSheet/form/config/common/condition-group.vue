@@ -341,7 +341,7 @@ export default {
           uuid: item.uuid
         };
         let children = [];
-        if (!this.$utils.isEmpty(item.config.hiddenFieldList)) {
+        if (item.config && !this.$utils.isEmpty(item.config.hiddenFieldList)) {
           item.config.hiddenFieldList.forEach(a => {
             children.push({
               label: item.label + '.' + a.text,
