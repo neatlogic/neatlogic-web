@@ -2,22 +2,22 @@ import axios from '../../http';
 
 const homepage = {
   getHomepageConfig(params) {
-    return axios.post('api/rest/homepage/get', params);
+    return axios.post('/api/rest/homepage/get', params);
   },
   getHomepageList(params) {
-    return axios.post('api/rest/homepage/list', params);
+    return axios.post('/api/rest/homepage/list', params);
   },
   moveHomepage(params) {
-    return axios.post('api/rest/homepage/move', params);
+    return axios.post('/api/rest/homepage/move', params);
   },
   saveHomepage(params) {
-    return axios.post('api/rest/homepage/save', params);
+    return axios.post('/api/rest/homepage/save', params);
   },
   deleteHomepage(params) {
-    return axios.post('api/rest/homepage/delete', params);
+    return axios.post('/api/rest/homepage/delete', params);
   },
   updateActive(params) {
-    return axios.post('api/rest/homepage/updateActive', params);
+    return axios.post('/api/rest/homepage/active', params);
   }
 };
 export default homepage;

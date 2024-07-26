@@ -20,9 +20,9 @@
           <template v-slot:name="{ row }">
             <span class="text-action" @click="editRow(row)">{{ row.name }}</span>
           </template>
-          <template v-slot:authorityList="{ row }">
+          <!-- <template v-slot:authorityList="{ row }">
             <GroupList :dataList="row.authorityList" type="usercard"></GroupList>
-          </template>
+          </template> -->
           <template v-slot:isActive="{ row }">
             <div>{{ row.isActive == 1 ? $t('page.enable') : $t('page.disable') }}</div>
           </template>
@@ -54,7 +54,7 @@ export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    GroupList: () => import('@/resources/components/GroupList/GroupList.vue'),
+    // GroupList: () => import('@/resources/components/GroupList/GroupList.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     EditHomepageDialog: () => import('./edit-homepage-dialog.vue')
@@ -68,11 +68,11 @@ export default {
           title: this.$t('page.name'),
           key: 'name'
         },
-        {
-          title: this.$t('page.user'),
-          key: 'authorityList',
-          type: 'usercards'
-        },
+        // {
+        //   title: this.$t('page.user'),
+        //   key: 'authorityList',
+        //   type: 'usercards'
+        // },
         {
           title: this.$t('page.status'),
           key: 'isActive'
@@ -162,7 +162,7 @@ export default {
     },
     activeData(row) {
       const params = {
-        userUuidList: row.id,
+        id: row.id,
         isActive: row.isActive
       };
       this.$api.framework.homepage.updateActive(params).then(res => {
