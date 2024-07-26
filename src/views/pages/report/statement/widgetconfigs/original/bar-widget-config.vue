@@ -74,7 +74,6 @@
           </div>
         </div>
       </div>
-
     </div>
     <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">

@@ -1,4 +1,4 @@
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 
 export const WIDGET_TYPES = [
   { name: 'basic', label: $t('term.report.basicwidget') },
@@ -35,6 +35,7 @@ import { default as pscatter } from './define/p-scatter.js';
 import { default as scatter } from './define/scatter.js';
 import { default as heatmap } from './define/heatmap.js';
 import { default as wordcloud } from './define/wordcloud.js';
+import { default as time } from './define/time.js';
 export const WIDGETS = [
   text,
   image,
@@ -64,5 +65,6 @@ export const WIDGETS = [
   scatter,
   pscatter,
   heatmap,
-  wordcloud
+  wordcloud,
+  time
 ];
