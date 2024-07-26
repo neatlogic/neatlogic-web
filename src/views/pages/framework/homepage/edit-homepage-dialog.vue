@@ -218,9 +218,7 @@ export default {
       this.$emit('close');
     }
   },
-  computed: {
-    
-  },
+  computed: {},
   watch: {}
 };
 </script>

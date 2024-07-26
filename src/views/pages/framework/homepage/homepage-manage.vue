@@ -90,6 +90,7 @@ export default {
   },
   beforeCreate() {},
   created() {
+    this.$store.dispatch('updateMenu');
     this.changeCurrent(1);
   },
   beforeMount() {},
