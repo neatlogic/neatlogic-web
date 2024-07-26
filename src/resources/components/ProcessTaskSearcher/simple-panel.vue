@@ -39,19 +39,6 @@ export default {
   },
   data() {
     return {
-      value: '',
-      dataList: [
-        {
-          text: '选项1',
-          value: '1',
-          tooltip: '这是一个提示1111111111111111'
-        },
-        {
-          text: '选项2',
-          value: '2',
-          tooltip: '这是一个提示22222222222222222'
-        }
-      ],
       mode: 'simple',
       //conditionList: {}
       /**
