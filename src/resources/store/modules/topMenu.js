@@ -420,7 +420,7 @@ function getMenuList(routeList = [], authList, moduleId) {
 }
 
 function sortMenuList(menuList, module, configList) {
-  const menuGroupList = [];
+  let menuGroupList = [];
   let currentMenuGroup;
   let typeConfig = getMenuTypeList(module, configList) || null;
   menuList.forEach(menu => {
@@ -436,7 +436,7 @@ function sortMenuList(menuList, module, configList) {
     }
     currentMenuGroup.menuList.push({ name, path, icon, istitle });
   });
-  return menuGroupList;
+  return menuGroupList.filter(v => v.menuTypeName).map(a => a);
 }
 
 function hasCustomMenuAuthority(moduleName, menuName) {
