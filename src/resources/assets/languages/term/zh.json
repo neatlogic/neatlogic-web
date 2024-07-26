@@ -1511,7 +1511,9 @@
       "rightequal": "右均分",
       "namefield": "名称字段",
       "colorfield": "颜色字段",
-      "sizefield": "大小字段"
+      "sizefield": "大小字段",
+      "axisfontcolor": "X轴字体颜色",
+      "yaxisfontcolor": "Y轴字体颜色"
     },
     "fontweight": {
       "name": "字体粗细",

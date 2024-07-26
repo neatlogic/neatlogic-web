@@ -211,7 +211,7 @@
         <div class="control-setting">
           <span class="label">{{ $t('term.process.callbackornot') }}</span>
           <span class="control-btn">
-           <!-- <span class="tip">{{ swithConfig.callbackConfig == 1 ?$t('page.yes') : $t('page.no') }}</span>-->
+            <!-- <span class="tip">{{ swithConfig.callbackConfig == 1 ?$t('page.yes') : $t('page.no') }}</span>-->
             <span style="display: inline-block;">
               <TsFormSwitch v-model="swithConfig.callbackConfig" :true-value="1" :false-value="0"></TsFormSwitch>
             </span>

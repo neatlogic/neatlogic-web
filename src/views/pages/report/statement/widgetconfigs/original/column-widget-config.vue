@@ -36,6 +36,38 @@
           "
         ></TsFormInput>
       </div>
+      <div class="mt-md">
+        <label class="ivu-form-item-label overflow">
+          {{ $t('term.report.axis.yaxisfontcolor') }}
+        </label>
+        <div class="ivu-form-item-content">
+          <div class="pl-md pr-md">
+            <ColorPicker
+              :value="config.yAxis && config.yAxis.label && config.yAxis.label.style && config.yAxis.label.style.fill"
+              :transfer="true"
+              alpha
+              recommend
+              class="colorPicker"
+              transfer-class-name="color-picker-transfer-class"
+              @on-change="
+                val => {
+                  if(val) {
+                    setConfigValue('yAxis', {
+                      label: {
+                        style: {
+                          fill: val
+                        }
+                      }
+                    });
+                  } else {
+                    setConfigValue('xAxis', val);
+                  }
+                }
+              "
+            />
+          </div>
+        </div>
+      </div>
     </div>
     <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">
@@ -78,6 +110,38 @@
             }
           "
         ></TsFormInput>
+      </div>
+      <div class="mt-md">
+        <label class="ivu-form-item-label overflow">
+          {{ $t('term.report.axis.axisfontcolor') }}
+        </label>
+        <div class="ivu-form-item-content">
+          <div class="pl-md pr-md">
+            <ColorPicker
+              :value="config.xAxis && config.xAxis.label && config.xAxis.label.style && config.xAxis.label.style.fill"
+              :transfer="true"
+              alpha
+              recommend
+              class="colorPicker"
+              transfer-class-name="color-picker-transfer-class"
+              @on-change="
+                val => {
+                  if(val) {
+                    setConfigValue('xAxis', {
+                      label: {
+                        style: {
+                          fill: val
+                        }
+                      }
+                    });
+                  } else {
+                    setConfigValue('xAxis', val);
+                  }
+                }
+              "
+            />
+          </div>
+        </div>
       </div>
     </div>
     <div class="ivu-form-item tsform-item ivu-form-label-top">

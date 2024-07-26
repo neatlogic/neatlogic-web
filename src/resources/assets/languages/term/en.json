@@ -1514,7 +1514,9 @@
       "namefield": "Name Field",
       "colorfield": "Color field",
       "valuefield": "Value Field",
-      "sizefield": "Size field"
+      "sizefield": "Size field",
+      "axisfontcolor": "X-axis font color",
+      "yaxisfontcolor": "Y-axis font color"
     },
     "fontweight": {
       "name": "Fontweight",
