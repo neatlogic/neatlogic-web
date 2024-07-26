@@ -62,12 +62,12 @@
               ></TsFormInput></div>
               <DropdownMenu slot="list" style="width:250px">
                 <div>
-                  <DropdownItem v-if="keyword" @click.native="addKeywordCondition({ name: 'content', text: $t('term.process.reportcontent'), value: keyword })">
-                    {{ $t('form.placeholder.searchtarget',{target:$t('term.process.reportcontent')}) }}：
-                    <b>{{ keyword }}</b>
-                  </DropdownItem>
                   <DropdownItem v-if="keyword" @click.native="addKeywordCondition({ name: 'title', text: $t('page.title'), value: keyword })">
                     {{ $t('form.placeholder.searchtarget',{target:$t('page.title')}) }}：
+                    <b>{{ keyword }}</b>
+                  </DropdownItem>
+                  <DropdownItem v-if="keyword" @click.native="addKeywordCondition({ name: 'content', text: $t('term.process.reportcontent'), value: keyword })">
+                    {{ $t('form.placeholder.searchtarget',{target:$t('term.process.reportcontent')}) }}：
                     <b>{{ keyword }}</b>
                   </DropdownItem>
                   <div v-for="(k, index) in forecastKeyworkList" :key="index">
