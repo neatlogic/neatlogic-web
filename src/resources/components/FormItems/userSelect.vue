@@ -1,5 +1,6 @@
 <template>
   <UserSelect
+    ref="formItem"
     transfer
     :value="value"
     v-bind="getSetting"
@@ -23,6 +24,10 @@ export default {
     config: Object,
     value: [String, Boolean, Object, Array],
     readonly: {
+      type: Boolean,
+      default: false
+    },
+    isRequired: {
       type: Boolean,
       default: false
     }
@@ -56,6 +61,9 @@ export default {
   methods: {
     updateval(val) {
       this.$emit('change', val);
+    },
+    valid() {
+      return this.$refs.formItem.valid();
     }
   },
 
