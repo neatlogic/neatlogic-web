@@ -2751,6 +2751,7 @@
     "onlyhasdiagram": "只看有图",
     "nextstatus": "流转状态",
     "editing": "编辑中",
-    "activing": "激活中"
+    "activing": "激活中",
+    "source": "来源限制"
   }
 }

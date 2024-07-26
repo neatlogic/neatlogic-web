@@ -2751,6 +2751,7 @@
     "onlyhasdiagram": "Just looking at the pictures",
     "nextstatus": "Flow status",
     "editing": "Editing in progress",
-    "activing": "Activing"
+    "activing": "Activing",
+    "source": "Source restrictions"
   }
 }
