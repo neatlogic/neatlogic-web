@@ -202,14 +202,13 @@ export default {
           // 服务“显示优先级”值为是时，在工单界面显示优先级，默认使用默认优先级
           if (this.draftData.hasOwnProperty('isDisplayPriority')) {
             this.isDisplayPriority = !!this.draftData.isDisplayPriority;
-            if (!this.isDisplayPriority) {
+            if (this.isDisplayPriority) {
               this.dispatch.priorityUuid = this.draftData.priorityUuid;
+            } else {
+              this.dispatch.priorityUuid = this.draftData.defaultPriorityUuid;
             }
           }
           this.defaultPriorityUuid = this.draftData.defaultPriorityUuid;
-        } 
-        if (this.isDisplayPriority) {
-          this.dispatch.priorityUuid = this.draftData.priorityUuid;
         }
       }
     },
