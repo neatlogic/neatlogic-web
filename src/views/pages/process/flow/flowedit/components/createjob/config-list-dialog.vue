@@ -24,7 +24,6 @@
               ref="itemConfig"
               :formUuid="formUuid"
               :defaultAllFormitemList="allFormitemList"
-              :formTagList="formTagList"
               :config="item"
               @update="(config)=>{setConfig(item, config,index)}"
             ></CreatejobConfig>
@@ -53,8 +52,7 @@ export default {
       loadingShow: true,
       configList: [],
       isValid: true,
-      allFormitemList: [],
-      formTagList: []
+      allFormitemList: []
     };
   },
   beforeCreate() {},
@@ -62,7 +60,6 @@ export default {
   beforeMount() {},
   async mounted() {
     await this.getFormItemList();
-    await this.getFormTagList();
     this.init();
   },
   beforeUpdate() {},
@@ -97,22 +94,6 @@ export default {
           this.allFormitemList = res.Return || [];
         }
       });
-    },
-    getFormTagList() {
-      this.formTagList = [];
-      if (this.formUuid) {
-        return this.$api.framework.form.getFormTagList({formUuid: this.formUuid}).then(res => {
-          if (res.Status === 'OK') {
-            const tbodyList = res.Return?.tbodyList || [];
-            if (!this.$utils.isEmpty(tbodyList)) {
-              this.formTagList = tbodyList.map(item => ({
-                text: item,
-                value: item
-              }));
-            }
-          }
-        });
-      }
     },
     addAutoexecList() {
       let config = {

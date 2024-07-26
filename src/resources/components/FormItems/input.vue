@@ -1,5 +1,6 @@
 <template>
   <TsFormInput
+    ref="formItem"
     :value="value"
     :readonly="readonly"
     v-bind="getSetting"
@@ -22,6 +23,10 @@ export default {
     config: Object,
     value: [String, Boolean, Object, Array],
     readonly: {
+      type: Boolean,
+      default: false
+    },
+    isRequired: {
       type: Boolean,
       default: false
     }
@@ -53,6 +58,9 @@ export default {
   methods: {
     updateval(val) {
       this.$emit('change', val);
+    },
+    valid() {
+      return this.$refs.formItem.valid();
     }
   },
 
@@ -64,6 +72,9 @@ export default {
       let json = {};
       if (setting) {
         json.readonlyClass = setting.readonlyClass;
+      }
+      if (this.isRequired) {
+        json.validateList = ['required'];
       }
       return json;
     }

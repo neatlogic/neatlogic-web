@@ -12,7 +12,7 @@
         {{ layout.name }}
       </span>
     </div>
-    <div id="graph" :style="error?'display:none':''" class="home-page"></div>
+    <div id="graph" :style="error?'display:none':''" class="home-page graph"></div>
     <div v-if="error" class="text-grey" style="padding-top:50px;text-align:center">
       {{ error }}
     </div>

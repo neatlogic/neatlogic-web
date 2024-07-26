@@ -1,5 +1,6 @@
 <template>
   <TsFormSelect
+    ref="formItem"
     :value="value"
     v-bind="getSetting"
     search
@@ -28,6 +29,10 @@ export default {
     readonly: {
       type: Boolean,
       default: false
+    },
+    isRequired: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -54,6 +59,9 @@ export default {
     dealDataByUrl(nodeList) {
       //当默认值的引用类型是自定义  处理默认值的数据结构
       return this.dealDataFilter(nodeList, this.config.config);
+    },
+    valid() {
+      return this.$refs.formItem.valid();
     }
   },
   computed: {
@@ -85,7 +93,9 @@ export default {
       }
       json.width = '100%';
       json.desc = '';
-      json.isRequired = false;
+      if (this.isRequired) {
+        json.validateList = ['required'];
+      }
       return json;
     }
   },

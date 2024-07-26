@@ -124,9 +124,8 @@
                     @click="openWorkcenterAddDialog"
                   >{{ $t('page.saveasnewcategory') }}</Button>
                 </div>
-                <div v-if="workcenterData.type!='factory'" class="action-item">
+                <div v-if="workcenterData.type!='factory' && $AuthUtils.hasRole('WORKCENTER_MODIFY')" class="action-item">
                   <Button
-
                     ghost
                     type="primary"
                     @click="saveWorkcenter"

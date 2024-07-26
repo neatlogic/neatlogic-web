@@ -1,6 +1,6 @@
 <template>
   <TsFormTree
-    ref="formitem"
+    ref="formItem"
     :value="value"
     v-bind="getSetting"
     :readonly="readonly"
@@ -25,6 +25,10 @@ export default {
     config: Object,
     value: [String, Boolean, Array],
     readonly: {
+      type: Boolean,
+      default: false
+    },
+    isRequired: {
       type: Boolean,
       default: false
     }
@@ -56,6 +60,9 @@ export default {
   methods: {
     updateval(val) {
       this.$emit('change', val);
+    },
+    valid() {
+      return this.$refs.formItem.valid();
     }
   },
 
