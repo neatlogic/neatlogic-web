@@ -89,6 +89,12 @@
                     </div>
                   </div>
                 </template>
+                <template v-else-if="item.value == 'regionVo'">
+                  <div class="infor-left text-grey overflow">{{ item.title }}</div>
+                  <div class="infor-right">
+                    {{ item.textConfig.upwardNamePath }}
+                  </div>
+                </template>
                 <template v-else-if="item.value == 'reporterVo'">
                   <div class="infor-left text-grey overflow">{{ item.title }}</div>
                   <div class="infor-right">
@@ -265,6 +271,11 @@ export default {
         {
           title: this.$t('page.workordernumber'),
           value: 'serialNumber',
+          textConfig: null
+        },
+        {
+          title: this.$t('term.process.region'),
+          value: 'regionVo',
           textConfig: null
         },
         {
