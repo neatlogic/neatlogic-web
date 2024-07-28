@@ -55,6 +55,7 @@ url|String|-|否|通过url来一次性获取下拉数据|接口在组件初始�
 rootName|String|-|否|通过接口获取数据的路径key值|支持层级嵌套如果 root1.root2
 valueName|String|value|否|选中下拉选项中，最终获取值的key|-
 textName|String|text|否|选中下拉选项中，显示值的key|-
+tooltipName | String | tooltip | 否 | 提示信息 | 用于显示提示信息，如果为空则不显示
 showName|String|-|否|下拉显示的key|如果没有默认与textName相同
 mode|String|normal|否|控制下拉是正常模式还是分组模式|只有normal和group两种选项
 parentValueName|String|value|否|分组模式中，父节点的值key值（不能选中）|-

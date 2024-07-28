@@ -62,12 +62,12 @@
               ></TsFormInput></div>
               <DropdownMenu slot="list" style="width:250px">
                 <div>
-                  <DropdownItem v-if="keyword" @click.native="addKeywordCondition({ name: 'content', text: $t('term.process.reportcontent'), value: keyword })">
-                    {{ $t('form.placeholder.searchtarget',{target:$t('term.process.reportcontent')}) }}：
-                    <b>{{ keyword }}</b>
-                  </DropdownItem>
                   <DropdownItem v-if="keyword" @click.native="addKeywordCondition({ name: 'title', text: $t('page.title'), value: keyword })">
                     {{ $t('form.placeholder.searchtarget',{target:$t('page.title')}) }}：
+                    <b>{{ keyword }}</b>
+                  </DropdownItem>
+                  <DropdownItem v-if="keyword" @click.native="addKeywordCondition({ name: 'content', text: $t('term.process.reportcontent'), value: keyword })">
+                    {{ $t('form.placeholder.searchtarget',{target:$t('term.process.reportcontent')}) }}：
                     <b>{{ keyword }}</b>
                   </DropdownItem>
                   <div v-for="(k, index) in forecastKeyworkList" :key="index">
@@ -124,9 +124,8 @@
                     @click="openWorkcenterAddDialog"
                   >{{ $t('page.saveasnewcategory') }}</Button>
                 </div>
-                <div v-if="workcenterData.type!='factory'" class="action-item">
+                <div v-if="workcenterData.type!='factory' && $AuthUtils.hasRole('WORKCENTER_MODIFY')" class="action-item">
                   <Button
-
                     ghost
                     type="primary"
                     @click="saveWorkcenter"

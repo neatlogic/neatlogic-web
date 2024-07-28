@@ -181,6 +181,17 @@
                     >
                       <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
                     </Tooltip>
+                    <Tooltip
+                      v-else-if="node[tooltipName]"
+                      placement="right"
+                      max-width="300"
+                      transfer
+                      theme="light"
+                      :content="node[tooltipName]"
+                      style="width:100%"
+                    >
+                      <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
+                    </Tooltip>
                     <div
                       v-else
                       class="overflow"
@@ -246,6 +257,17 @@
                           transfer
                           theme="light"
                           :content="typeof node['_disabled'] === 'string' ? node['_disabled'] : disabledHoverTitle"
+                          style="width:100%"
+                        >
+                          <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
+                        </Tooltip>
+                        <Tooltip
+                          v-else-if="node[tooltipName]"
+                          placement="right"
+                          max-width="300"
+                          transfer
+                          theme="light"
+                          :content="node[tooltipName]"
                           style="width:100%"
                         >
                           <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
@@ -395,6 +417,11 @@ export default {
     textName: {
       //text渲染值
       default: 'text'
+    },
+    tooltipName: {
+      // 非禁用模式下，tooltip显示值
+      type: String,
+      default: 'tooltip'
     },
     childrenName: {
       //分组模式下，子数据节点属性

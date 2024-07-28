@@ -1,50 +1,50 @@
 @import (reference) '~@/resources/assets/css/variable.less';
 .theme(@layer-color, @edge-stroke, @node-fill, @node-name, @link-stroke, @anchor-color, @mask-color, @cluster-color) {
   @node-removeIcon: @link-stroke;
-  .graph /deep/ .layer text {
+  .graph .layer text {
     fill: @layer-color;
   }
-  .graph /deep/ .normalnode text {
+  .graph .normalnode text {
     fill: @layer-color;
   }
-  .graph /deep/ .selectednode text {
+  .graph .selectednode text {
     fill: @cluster-color !important;
     text-decoration: underline;
     font-weight: bold;
   }
-  .graph /deep/ .cluster text {
+  .graph .cluster text {
     fill: @layer-color;
     font-family: Arial;
     font-size: 12px;
   }
-  .graph /deep/ .cluster polygon {
+  .graph .cluster polygon {
     fill: @cluster-color;
     fill-opacity: 0.1;
     stroke: @cluster-color;
     stroke-opacity: 0.1;
   }
-  .graph /deep/ .edge path {
+  .graph .edge path {
     stroke: @edge-stroke;
   }
-  .graph /deep/  .edge polygon {
+  .graph .edge polygon {
     stroke: @edge-stroke;
     fill: @edge-stroke;
   }
-  .graph /deep/ .edge text {
+  .graph .edge text {
     fill: @edge-stroke;
   }
 
-  .graph /deep/ .abstract_ci {
+  .graph .abstract_ci {
     image {
       filter: grayscale(100%);
     }
   }
 
-  .graph /deep/ text{
+  .graph text {
     user-select: none;
   }
 
-  .graph /deep/ .virtual_ci {
+  .graph .virtual_ci {
     image {
       filter: invert(0.4);
     }
@@ -58,5 +58,3 @@ html {
     .theme(@dark-text, @dark-invert-bg, @dark-dividing, @dark-title, @dark-icon, @dark-blockbg, @dark-background, @dark-primary-color);
   }
 }
-
-

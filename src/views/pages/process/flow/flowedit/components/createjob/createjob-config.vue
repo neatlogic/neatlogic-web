@@ -1,13 +1,14 @@
 <template>
   <div class="detail">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    <TsFormItem
-      label="表单标签"
+    <!-- 表单标签 -->
+    <FormTagSetting
+      :formUuid="formUuid"
+      :defaultFormTag="createjobConfig.formTag"
       labelPosition="left"
-      tooltip="当标签为空时：表单组件为主场景的所有表单组件；当标签不为空时：表单组件为所选标签配置的表单组件。"
-    >
-      <TsFormSelect v-model="createjobConfig.formTag" v-bind="formConfig.formTag"></TsFormSelect>
-    </TsFormItem>
+      class="pb-nm"
+      @updateFormTag="changeFormTag"
+    ></FormTagSetting>
     <TsFormItem
       :label="$t('term.autoexec.combinationtool')"
       labelPosition="left"
@@ -131,14 +132,14 @@ export default {
     ScenarioParam: () => import('./params/scenario-param.vue'),
     ExecuteParam: () => import('./params/execute-param.vue'),
     FormAttributeParam: () => import('./params/form-attribute-param.vue'),
-    JobParam: () => import('./params/job-param.vue')
+    JobParam: () => import('./params/job-param.vue'),
+    FormTagSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/form-tag-setting.vue') // 表单扩展数据标签
   },
   filters: {
   },
   props: {
     formUuid: String,
     defaultAllFormitemList: Array,
-    formTagList: Array,
     config: Object
   },
   data() {
@@ -161,13 +162,6 @@ export default {
       },
       validateList: ['required'],
       formConfig: {
-        formTag: {
-          dataList: this.formTagList,
-          transfer: true,
-          onChange: (val) => {
-            this.changeFormTag(val);
-          }
-        },
         combopId: {
           label: this.$t('term.autoexec.combinationtool'),
           type: 'select',
@@ -354,6 +348,7 @@ export default {
       });
     },
     changeFormTag(tag) {
+      this.$set(this.createjobConfig, 'formTag', tag);
       this.allFormitemList = this.$utils.deepClone(this.defaultAllFormitemList) || [];
       if (!this.formUuid || !tag) {
         return;

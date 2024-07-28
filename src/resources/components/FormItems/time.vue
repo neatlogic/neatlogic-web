@@ -1,5 +1,6 @@
 <template>
   <TsFormDatePicker
+    ref="formItem"
     :value="value"
     width="100%"
     transfer
@@ -22,6 +23,10 @@ export default {
     config: Object,
     value: [String, Number, Array],
     readonly: {
+      type: Boolean,
+      default: false
+    },
+    isRequired: {
       type: Boolean,
       default: false
     }
@@ -53,6 +58,9 @@ export default {
   methods: {
     updateval(val) {
       this.$emit('change', val);
+    },
+    valid() {
+      return this.$refs.formItem.valid();
     }
   },
 
@@ -78,7 +86,9 @@ export default {
       }
       json.width = '100%';
       json.desc = '';
-      json.isRequired = false;
+      if (this.isRequired) {
+        json.validateList = ['required'];
+      }
       return json;
     }
   },
