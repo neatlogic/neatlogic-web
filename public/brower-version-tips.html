@@ -6,37 +6,35 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <meta charset="utf-8" />
     <link rel="icon" href="./resource/img/common/tsfavicon.png" />
-    <script src="./resource/config.js?version=1.0.3"></script>
     <title>浏览器兼容提示</title>
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        if (isBrowserVersionSuitable()) {
-          window.location.href = toLoginPage();
-        } else {
-          const element = document.querySelector('#browser-version-text');
-          const elementTitle = document.querySelector('#browser-text');
-          if (element) {
-            const currentText = element.textContent || element.innerText;
-            const titleText = elementTitle.textContent || elementTitle.innerText;
-            const version = getVersion();
-            let newText = currentText.replace('95', version || '95');
-            let newTitleText = titleText;
-            // 根据userAgent判断是谷歌还是火狐，并替换文本中的'谷歌'
-            if (navigator.userAgent.includes('Firefox') && version) {
-              newText = newText.replace('谷歌', '火狐');
-              newTitleText = '您的浏览器版本（' + getBrowserVersion() + '）过低！';
-            } else if (navigator.userAgent.includes('Chrome')) {
-              newText = newText.replace('谷歌', '谷歌');
-              newText = newText.replace('95', version);
-              newTitleText = '您的浏览器版本（' + getBrowserVersion() + '）过低！';
-            } else {
-              newTitleText = '当前浏览器暂不支持!';
-            }
-            element.textContent = newText;
-            elementTitle.textContent = newTitleText;
+      window.onload = function () {
+        initBrowerVersion();
+      };
+      function initBrowerVersion() {
+        const element = document.querySelector('#browser-version-text');
+        const elementTitle = document.querySelector('#browser-text');
+        if (element) {
+          const currentText = element.textContent || element.innerText;
+          const titleText = elementTitle.textContent || elementTitle.innerText;
+          const version = getVersion();
+          let newText = currentText.replace('95', version || '95');
+          let newTitleText = titleText;
+          // 根据userAgent判断是谷歌还是火狐，并替换文本中的'谷歌'
+          if (navigator.userAgent.includes('Firefox') && version) {
+            newText = newText.replace('谷歌', '火狐');
+            newTitleText = '您的浏览器版本（' + getBrowserVersion() + '）过低！';
+          } else if (navigator.userAgent.includes('Chrome')) {
+            newText = newText.replace('谷歌', '谷歌');
+            newText = newText.replace('95', version);
+            newTitleText = '您的浏览器版本（' + getBrowserVersion() + '）过低！';
+          } else {
+            newTitleText = '当前浏览器暂不支持!';
           }
+          element.textContent = newText;
+          elementTitle.textContent = newTitleText;
         }
-      });
+      }
       function getVersion() {
         // 获取URL对象
         const url = new URL(window.location.href);
@@ -44,6 +42,33 @@
         // 获取version参数的值
         const version = searchParams.get('version');
         return Number(version);
+      }
+      function getBrowserVersion() {
+        // 获取浏览器版本号
+        var userAgent = navigator.userAgent;
+        var version;
+        // 检测Chrome/Chromium/Edge（基于Chromium）
+        var match = userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
+        if (match) {
+          version = match[2];
+        }
+        // 检测Firefox
+        else if (/Firefox\/([0-9]+)\./.test(userAgent)) {
+          version = userAgent.match(/Firefox\/([0-9]+)\./)[1];
+        }
+        // 检测Safari
+        else if (/Version\/([0-9]+)\.([0-9]+)(\.[0-9]+)?\s+Safari\//.test(userAgent)) {
+          version = userAgent.match(/Version\/([0-9]+)\.([0-9]+)(\.[0-9]+)?\s+Safari\//)[1];
+        }
+        // 检测IE/Edge（旧版Edge）
+        else if (/rv:([0-9]+)\.([0-9]+)\)/.test(userAgent)) {
+          version = userAgent.match(/rv:([0-9]+)\.([0-9]+)\)/)[1];
+        }
+        // 其他浏览器或无法识别
+        else {
+          version = '';
+        }
+        return version;
       }
     </script>
   </head>
