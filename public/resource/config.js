@@ -124,6 +124,8 @@ function getDirectUrl() {
           HTTP_RESPONSE_STATUS_CODE = '522';
           const directUrl = responseText.DirectUrl.startsWith('http') ? responseText.DirectUrl : 'http://' + responseText.DirectUrl;
           window.open(directUrl, '_self');
+        } else if (responseText.Status === 'FAILED' && responseText.Message) {
+          window.location.href = '/error.html?errorMessage=' + encodeURIComponent(responseText.Message);
         }
       }
     };
