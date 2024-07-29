@@ -5,12 +5,13 @@
       <li
         v-for="module in moduleList"
         :key="module.moduleId"
-        class="module"
+        class="module padding-sm"
         :class="{'module-default' : module.isDefault}"
         @click="changeDefaultModule(module)"
       >
+      
         <div class="module-icon" :class="'module-img-'+module.moduleId"></div>
-        <div class="module-name">{{ $t(module.moduleName) }}</div>
+        <div class="module-name overflow">{{ $t(module.moduleName) }}</div>
         <i class="module-check tsfont-check"></i>
       </li>
     </ul>
@@ -23,7 +24,7 @@
         <h4 class="title">{{ $t(module.moduleName) }}{{ $t('page.homepage') }}</h4>
         <Select
           :value="module.defaultPage"
-          class="menu-select"
+          class="menu-select bg-op"
           :placeholder="$t('page.default')"
           clearable
           transfer
@@ -125,9 +126,10 @@ export default {
       font-weight: normal;
     }
     .module-list {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 128px);
+      gap: 16px;
       .module {
-        width: 128px;
         height: 84px;
         border-radius: 2px;
         cursor: pointer;
@@ -135,9 +137,6 @@ export default {
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
         user-select: none;
         transition: box-shadow 0.2s ease-out;
         .module-icon {
@@ -147,6 +146,9 @@ export default {
           text-align: center;
           background-size: auto 44px;
           background-position: center center;
+        }
+        .module-name {
+          max-width: 100%;
         }
         .module-check {
           display: none;
@@ -169,9 +171,6 @@ export default {
             color: @default-blockbg;
             background-color: @default-primary-color;
           }
-        }
-        & + .module {
-          margin-left: 24px;
         }
       }
     }
