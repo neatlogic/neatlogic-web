@@ -89,6 +89,12 @@
                     </div>
                   </div>
                 </template>
+                <template v-else-if="item.value == 'regionVo'">
+                  <div class="infor-left text-grey overflow">{{ item.title }}</div>
+                  <div class="infor-right">
+                    {{ item.textConfig.upwardNamePath }}
+                  </div>
+                </template>
                 <template v-else-if="item.value == 'reporterVo'">
                   <div class="infor-left text-grey overflow">{{ item.title }}</div>
                   <div class="infor-right">
@@ -268,6 +274,11 @@ export default {
           textConfig: null
         },
         {
+          title: this.$t('term.process.region'),
+          value: 'regionVo',
+          textConfig: null
+        },
+        {
           title: this.$t('term.process.sourcename'),
           value: 'sourceName',
           textConfig: null
@@ -409,6 +420,7 @@ export default {
           this.priorityUuid = findPriorityItem.textConfig.uuid || '';
           priority = list[0];
         } else {
+          this.priorityUuid = list[0].uuid;
           priority = list[0];
         }
       } else {
