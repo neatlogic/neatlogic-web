@@ -224,8 +224,9 @@ export default {
       return formItem;
     },
     getSelectedItem(idList, itemList) {
-      // 先过滤 itemList 中的元素，只保留在 idList 中的
-      const filteredItemList = itemList.filter(item => idList.includes(item.uuid));
+      this.selectedItemList.push(...itemList);
+      // 先过滤 selectedItemList 中的元素，只保留在 idList 中的
+      const filteredItemList = this.selectedItemList.filter(item => idList.includes(item.uuid));
       // 使用 uniqueByField 去除重复项
       const uniqueFilteredItemList = this.$utils.uniqueByField(filteredItemList, 'uuid');
       // 更新 selectedItemList
