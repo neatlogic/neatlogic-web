@@ -207,11 +207,11 @@ export default {
     isEmptyObj() {
       return (obj) => {
         let isEmpty = false;
-        let {neatlogicSql = [], neatlogicTenantSql = [], version = {}} = obj || {};
+        let {neatlogic = [], neatlogic_tenant = [], version = {}} = obj || {};
 
-        if (this.$utils.isEmpty(neatlogicSql) && this.$utils.isEmpty(neatlogicTenantSql) && this.$utils.isEmpty(version)) {
+        if (this.$utils.isEmpty(neatlogic) && this.$utils.isEmpty(neatlogic_tenant) && this.$utils.isEmpty(version)) {
           isEmpty = true;
-        } else if (this.$utils.isEmpty(neatlogicSql) && this.$utils.isEmpty(neatlogicTenantSql) && !this.$utils.isEmpty(version?.content)) {
+        } else if (this.$utils.isEmpty(neatlogic) && this.$utils.isEmpty(neatlogic_tenant) && !this.$utils.isEmpty(version?.content)) {
           isEmpty = this.$utils.isEmpty(version.content);
         }
         return isEmpty;
