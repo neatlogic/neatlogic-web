@@ -91,8 +91,6 @@ export default {
       loadingShow: true,
       formConfig: {
         isActive: {
-          // labelWidth: 100,
-          // labelPosition: 'left',
           type: 'switch',
           label: '是否激活',
           trueValue: 1,
