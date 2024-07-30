@@ -11,8 +11,8 @@
         <TsTable
           v-bind="tableConfig"
           :theadList="theadList"
-          canDrag
           keyName="id"
+          :canDrag="$utils.isEmpty(tableConfig.thbodList) ? false : true"
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
           @updateRowSort="handleDragUpdate"
