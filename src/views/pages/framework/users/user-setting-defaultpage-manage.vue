@@ -50,7 +50,7 @@
               :label="$t(menuGroup.menuTypeName)"
             >
               <Option
-                v-for="(menu,mindex) in menuGroup.menuList"
+                v-for="(menu,mindex) in getFinalmenu(menuGroup.menuList)"
                 :key="menu.name+'_'+mindex"
                 :value="menu.path"
                 :label="$t(menu.name)"
@@ -175,6 +175,18 @@ export default {
     },
     moduleList() {
       return this.$store.state.topMenu.moduleList;
+    },
+    getFinalmenu() {
+      return function(list) {
+        //需要过滤掉那种作为菜单但是是菜单二级分类的，比如工单中心和知识库的知识分类
+        let groupList = [];
+        if (list && list.length > 0) {
+          groupList = list.filter(l => {
+            return !l.istitle;
+          });
+        }
+        return groupList;
+      };
     }
   },
   watch: {
