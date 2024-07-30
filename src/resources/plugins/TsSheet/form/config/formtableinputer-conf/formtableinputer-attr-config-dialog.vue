@@ -38,7 +38,7 @@
               <TsFormSwitch
                 :value="propertyLocal.config.isAutoSelectdOnlyValue || false"
                 :trueValue="true"
-                :falseValue="false "
+                :falseValue="false"
                 @change="(val)=>{
                   $set(propertyLocal.config, 'isAutoSelectdOnlyValue', val);
                 }"
