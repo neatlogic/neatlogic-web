@@ -1,96 +1,160 @@
 <template>
   <div class="defaultpage-manage">
-    <h4 class="title">{{ $t('page.defaultmodule') }}</h4>
-    <ul class="module-list">
-      <li
-        v-for="module in moduleList"
-        :key="module.moduleId"
-        class="module padding-sm"
-        :class="{'module-default' : module.isDefault}"
-        @click="changeDefaultModule(module)"
-      >
-      
-        <div class="module-icon" :class="'module-img-'+module.moduleId"></div>
-        <div class="module-name overflow">{{ $t(module.moduleName) }}</div>
-        <i class="module-check tsfont-check"></i>
-      </li>
-    </ul>
-    <ul class="menu-list">
-      <li
-        v-for="module in moduleList"
-        :key="module.moduleId"
-        class="module"
-      >
-        <h4 class="title">{{ $t(module.moduleName) }}{{ $t('page.homepage') }}</h4>
-        <Select
-          :value="module.defaultPage"
-          class="menu-select bg-op"
-          :placeholder="$t('page.default')"
-          clearable
-          transfer
-          transfer-class-name="menu-select"
-          @on-select="option=>changeModuleDefaultPage(module,option.value)"
-          @on-clear="changeModuleDefaultPage(module,'')"
+    <h4 class="title flex-start">
+      <span class="pr-nm">{{ $t('page.defaultmodule') }}</span>
+      <TsFormSwitch
+        v-model="isCustome"
+        :trueValue="true"
+        :falseValue="false"
+        :trueText="$t('page.custom')"
+        :falseText="$t('page.referenceglobal')"
+        showStatus
+        style="flex: 1;"
+        @on-change="changeCustome"
+      ></TsFormSwitch>
+    </h4>
+    <template v-if="isCustome">
+      <ul class="module-list">
+        <li
+          v-for="module in currentModuleList"
+          :key="module.moduleId"
+          class="module padding-sm"
+          :class="{'module-default' : module.isDefault}"
+          @click="changeDefaultModule(module)"
         >
-          <OptionGroup
-            v-for="menuGroup in module.menuGroupList"
-            :key="menuGroup.menuTypeName"
-            :label="$t(menuGroup.menuTypeName)"
+          <div class="module-icon" :class="'module-img-'+module.moduleId"></div>
+          <div class="module-name overflow">{{ $t(module.moduleName) }}</div>
+          <i class="module-check tsfont-check"></i>
+        </li>
+      </ul>
+      <ul class="menu-list">
+        <li
+          v-for="module in currentModuleList"
+          :key="module.moduleId"
+          class="module"
+        >
+          <h4 class="title">{{ $t(module.moduleName) }}{{ $t('page.homepage') }}</h4>
+          <Select
+            :value="module.defaultPage"
+            class="menu-select bg-op"
+            :placeholder="$t('page.default')"
+            clearable
+            transfer
+            transfer-class-name="menu-select"
+            @on-select="option=>changeModuleDefaultPage(module,option.value)"
+            @on-clear="changeModuleDefaultPage(module,'')"
           >
-            <Option
-              v-for="(menu,mindex) in menuGroup.menuList"
-              :key="menu.name+'_'+mindex"
-              :value="menu.path"
-              :label="$t(menu.name)"
-              :class="menu.icon"
-              class="menu-option"
+            <OptionGroup
+              v-for="menuGroup in module.menuGroupList"
+              :key="menuGroup.menuTypeName"
+              :label="$t(menuGroup.menuTypeName)"
             >
-              <span class="menu-name">{{ $t(menu.name) }}</span>
-            </Option>
-          </OptionGroup>
-        </Select>
-      </li>
-    </ul>
+              <Option
+                v-for="(menu,mindex) in menuGroup.menuList"
+                :key="menu.name+'_'+mindex"
+                :value="menu.path"
+                :label="$t(menu.name)"
+                :class="menu.icon"
+                class="menu-option"
+              >
+                <span class="menu-name">{{ $t(menu.name) }}</span>
+              </Option>
+            </OptionGroup>
+          </Select>
+        </li>
+      </ul>
+    </template>
   </div>
 </template>
 
 <script>
 export default {
   name: 'DefaultpageManage',
-  created() {
+  components: {
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
+  },
+  data() {
+    return {
+      isCustome: false,
+      currentModuleList: []
+    };
+  },
+  async created() {
+    await this.getUserSetting();
     this.$store.dispatch('updateMenu');
   },
 
   methods: {
+    getUserSetting() {
+      this.currentModuleList = [];
+      return this.$api.framework.user.getUserSetting({type: 'defaultModulePage'}).then(res => {
+        if (!this.$utils.isEmpty(res.Return)) {
+          this.currentModuleList = res.Return.data.defaultModulePageList || [];
+          this.isCustome = true;
+        } else {
+          this.isCustome = false;
+        }
+        this.updateCurrentModuieList();
+      });
+    },
+    updateCurrentModuieList() { // 更新当前模块列表
+      let list = [];
+      if (!this.$utils.isEmpty(this.moduleList)) {
+        this.moduleList.forEach(m => {
+          let findItem = this.currentModuleList.find(item => item.group === m.moduleId);
+          let obj = {
+            ...m,
+            isDefault: 0,
+            defaultPage: ''
+          };
+          if (findItem) {
+            if (findItem.hasOwnProperty('isDefault')) {
+              obj.isDefault = findItem.isDefault;
+            }
+            if (findItem.hasOwnProperty('defaultPage')) {
+              obj.defaultPage = findItem.defaultPage;
+            }
+          }
+          list.push(obj);
+        });
+      }
+      this.currentModuleList = list;
+    },
+    changeCustome(val) { // 切换自定义和全局设置
+      if (!val) {
+        this.$api.framework.user.deleteUserSetting({type: 'defaultModulePage'}).then(res => {
+          if (res.Status === 'OK') {
+            this.currentModuleList = [];
+            this.updateCurrentModuieList();
+            this.$Message.success(this.$t('message.updatesuccess'));
+          }
+        });
+      } else {
+        this.currentModuleList.forEach(module => {
+          module.isDefault = 0; 
+          module.defaultPage = '';
+        });
+        this.saveDefaultPageOnline();
+      }
+    },
     // 更改默认模块
     changeDefaultModule(moduleSelected) {
-      const initialModuleList = this.$utils.deepClone(this.moduleList); //保存原始数据
       moduleSelected.isDefault = moduleSelected.isDefault === 1 ? 0 : 1; //更改被点击的模块的的默认值
-      this.moduleList
+      this.currentModuleList
         .filter(module => module !== moduleSelected)
         .forEach(module => {
           module.isDefault = 0; //其他模块都变成非默认模块
         });
-      this.saveDefaultPageOnline().then(res => {
-        this.$store.commit('setModuleList', this.moduleList);
-      }).catch(() => {
-        this.$store.commit('setModuleList', initialModuleList);
-      });
+      this.saveDefaultPageOnline();
     },
     // 更改模块的默认页
     changeModuleDefaultPage(moduleSelected, menuPath) {
-      const initialDefaultPage = moduleSelected.defaultPage;
       moduleSelected.defaultPage = menuPath;
-      this.saveDefaultPageOnline().then(res => {
-        this.$store.commit('setModuleList', this.moduleList);
-      }).catch(() => {
-        moduleSelected.defaultPage = initialDefaultPage;
-        this.$store.commit('setModuleList', this.moduleList);
-      });
+      this.saveDefaultPageOnline();
     },
     // 在后台服务器保存默认模块和模块默认首页设置
     saveDefaultPageOnline() {
-      const moduleList = this.moduleList.map(module => {
+      const moduleList = this.currentModuleList.map(module => {
         const { moduleId: group, isDefault, defaultPage } = module;
         return { group, isDefault, defaultPage };
       });
@@ -111,6 +175,14 @@ export default {
     },
     moduleList() {
       return this.$store.state.topMenu.moduleList;
+    }
+  },
+  watch: {
+    moduleList: {
+      handler(val) {
+        this.updateCurrentModuieList();
+      },
+      deep: true
     }
   }
 };
