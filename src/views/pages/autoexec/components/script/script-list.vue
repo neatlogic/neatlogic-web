@@ -404,7 +404,10 @@ export default {
         let type = 'common';
         if (step.operationName == 'native/IF-Block') {
           type = 'ConditionTool';
+        } else if (step.operationName == 'native/LOOP-Block') {
+          type = 'LoopBlock';
         }
+
         return type;
       };
     }

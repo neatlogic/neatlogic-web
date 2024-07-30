@@ -873,7 +873,10 @@
     "combophasexpired": "The combination tool has expired",
     "pleasereedit": "Please re edit and submit for review",
     "abortjob": "Terminate assignment",
-    "runnergroupdeprecatedtips": "The parameters of the task executor group have expired. Please click confirm again and save the process"
+    "runnergroupdeprecatedtips": "The parameters of the task executor group have expired. Please click confirm again and save the process",
+    "loopitem": "Loop item",
+    "loopoperation": "Loop execution",
+    "loophelp": "Execute in a loop according to the loop item, draw branches to the environment variable ${LOOP_ITEM}"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",

@@ -873,7 +873,10 @@
     "combophasexpired": "组合工具已失效",
     "pleasereedit": "请重新编辑后，提交审核",
     "abortjob": "终止作业",
-    "runnergroupdeprecatedtips": "作业执行器组参数已失效，请重新点击确认并保存流程"
+    "runnergroupdeprecatedtips": "作业执行器组参数已失效，请重新点击确认并保存流程",
+    "loopitem": "循环项",
+    "loopoperation": "循环执行",
+    "loophelp": "按照循环项循环执行，循环项绘折枝到环境变量${LOOP_ITEM},多个值使用空格隔开，例如：'itemA' itemB \"itemC\""
   },
   "framework": {
     "roleauth": "创建完角色立即授权",

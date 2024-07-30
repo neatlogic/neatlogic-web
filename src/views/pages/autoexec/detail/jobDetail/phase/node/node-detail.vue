@@ -125,6 +125,59 @@
                     </div>
                   </div>
                 </template>
+                <template v-else-if="step && step.loopItems">
+                  <!-- LOOP-Block -->
+                  <div
+                    class="padding"
+                  >
+                    <div v-if="locationId === step.name.replace(/[-\.\/]+?/gi, '_') + '_' + step.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
+                    <div style="white-space:nowrap" class="overflow">
+                      <span class="stepIndex tips icon-right" :class="getStepIndexClass(step)" @click.stop></span>
+                      <span class="stepName name" :class="{ 'text-primary': step.status == 'running' }" :title="step.name">{{ getOperationName(step) }}</span>
+                    </div>
+                    <div v-if="step.description" class="stepType overflow description-pl">
+                      <span class="text-tip fz10 tips" :title="step.description">{{ step.description }}</span>
+                    </div>
+                  </div>
+                  <div v-if="!$utils.isEmpty(step.operations)" class="divide-line border-color"></div>
+                  <div v-if="!$utils.isEmpty(step.operations)" class="padding-sm">
+                    <div>
+                      <div class="text-grey pb-xs">{{ $t('term.autoexec.loopitem') }}</div>
+                      <div class="overflow mb-sm" style="white-space: nowrap;" :title="step.loopItems">{{ step.loopItems }}</div>
+                    </div>
+                    <div>
+                      <div class="text-grey pb-xs">{{ $t('term.autoexec.loopoperation') }}</div>
+                      <div
+                        v-for="item in step.operations"
+                        :key="item.id"
+                        class="condition-border border-color padding-sm radius-sm mb-sm"
+                      >
+                        <div :class="locationId === item.name.replace(/[-\.\/]+?/gi, '_') + '_' + item.id?'operation-items-focus':'operation-items'">
+                          <Dropdown v-if="item && item.type !== 'tool'" trigger="click" placement="bottom">
+                            <span class="tsfont-option-horizontal"></span>
+                            <DropdownMenu slot="list">
+                              <DropdownItem v-if="item && item.type !== 'tool'" @click.native="openScriptContentDialog(item)">
+                                <div>
+                                  <span class="action-item">{{ $t('term.autoexec.scriptcontent') }}</span>
+                                </div>
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </div>
+                        <div @click="locate(item)">
+                          <div v-if="locationId === item.name.replace(/[-\.\/]+?/gi, '_') + '_' + item.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
+                          <div style="white-space:nowrap" class="overflow">
+                            <span class="stepIndex tips icon-right" :class="getStepIndexClass(item)" @click.stop></span>
+                            <span class="stepName name" :class="{ 'text-primary': item.status == 'running' }" :title="item.name">{{ getOperationName(item) }}</span>
+                          </div>
+                          <div v-if="item.description" class="stepType overflow description-pl">
+                            <span class="text-tip fz10 tips" :title="item.description">{{ item.description }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
                 <div
                   v-else
                   class="padding"
