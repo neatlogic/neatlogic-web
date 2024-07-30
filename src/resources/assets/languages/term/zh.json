@@ -2678,7 +2678,8 @@
     "scenarioplan": "场景预案",
     "relyonmyservices": "依赖我的服务",
     "servicerelyon": "我依赖的服务",
-    "dependentapp": "依赖应用"
+    "dependentapp": "依赖应用",
+    "preparation": "预案"
   },
   "diagram": {
     "widgetlist": "图元列表",

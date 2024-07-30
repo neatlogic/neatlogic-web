@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <TsContain border="border">
@@ -12,11 +11,7 @@
       </template>
       <template v-slot:topRight>
         <div>
-          <CombineSearcher
-            v-model="searchValue"
-            v-bind="searchConfig"
-            @change="searchJob(1)"
-          ></CombineSearcher>
+          <CombineSearcher v-model="searchValue" v-bind="searchConfig" @change="searchJob(1)"></CombineSearcher>
         </div>
       </template>
       <template v-slot:content>
@@ -49,7 +44,7 @@
             <span
               v-else
               class="text-href"
-              :class="{ 'ml-nm': (!!row.parentId && row.parentId != -1) }"
+              :class="{ 'ml-nm': !!row.parentId && row.parentId != -1 }"
               @click="toJobDetail(row)"
             >{{ row.name }}</span>
             <Tooltip
@@ -152,8 +147,8 @@ export default {
       isLoading: false,
       isShowPortfolioToolsDialog: false,
       timmer: null,
-      searchParam: {hasParent: false, sortOrder: {key: 'planStartTime', type: 'DESC'}},
-      sortOrder: [{planStartTime: 'DESC'}],
+      searchParam: { hasParent: false, sortOrder: { key: 'planStartTime', type: 'DESC' } },
+      sortOrder: [{ planStartTime: 'DESC' }],
       searchValue: {},
       jobData: {},
       jobEndStatusList: ['completed', 'aborted', 'ignored', 'failed'], //终点状态节点列表，非终点状态列表的需要定时刷新。
@@ -272,11 +267,11 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-
-  },
+  created() {},
   beforeMount() {},
-  mounted() { this.searchJob(1); },
+  mounted() {
+    this.searchJob();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -405,31 +400,34 @@ export default {
       this.$addHistoryData('searchValue', this.searchValue);
       this.$addHistoryData('searchParam', this.searchParam);
       this.isLoading = true;
-      this.$api.autoexec.job.searchJobList(param).then(res => {
-        this.jobData = res.Return;
-        const idList = [];
-        if (this.jobData.tbodyList && this.jobData.tbodyList.length > 0) {
-          this.jobData.tbodyList.forEach(element => {
-            if (!this.jobEndStatusList.includes(element.status)) {
-              idList.push(element.id);
+      this.$api.autoexec.job
+        .searchJobList(param)
+        .then(res => {
+          this.jobData = res.Return;
+          const idList = [];
+          if (this.jobData.tbodyList && this.jobData.tbodyList.length > 0) {
+            this.jobData.tbodyList.forEach(element => {
+              if (!this.jobEndStatusList.includes(element.status)) {
+                idList.push(element.id);
+              }
+            });
+            if (idList.length > 0) {
+              this.timmer = setTimeout(() => {
+                this.refresh(idList);
+              }, 5000);
             }
-          });
-          if (idList.length > 0) {
-            this.timmer = setTimeout(() => {
-              this.refresh(idList);
-            }, 5000);
           }
-        }
-      }).finally(() => {
-        this.isLoading = false;
-      });
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
     refresh(idList) {
       if (this.timmer) {
         clearTimeout(this.timmer);
         this.timmer = null;
       }
-      this.$api.autoexec.job.searchJobList({needPage: false, idList: idList}).then(res => {
+      this.$api.autoexec.job.searchJobList({ needPage: false, idList: idList }).then(res => {
         const jobList = res.Return.tbodyList;
         const newIdList = [];
         if (jobList && jobList.length > 0) {
@@ -448,7 +446,9 @@ export default {
             }
           });
           if (newIdList.length > 0) {
-            this.timmer = setTimeout(() => { this.refresh(newIdList); }, 5000);
+            this.timmer = setTimeout(() => {
+              this.refresh(newIdList);
+            }, 5000);
           }
         }
       });
@@ -457,12 +457,13 @@ export default {
       this.searchParam.pageSize = pageSize;
       this.searchJob(1);
     },
-    executeRow(row) { //执行作业
-      this.$api.autoexec.job.executeJob({jobId: row.id}).then(res => {
+    executeRow(row) {
+      //执行作业
+      this.$api.autoexec.job.executeJob({ jobId: row.id }).then(res => {
         if (res.Status == 'OK') {
           this.$router.push({
             path: '/job-detail',
-            query: {id: row.id}
+            query: { id: row.id }
           });
         }
       });
@@ -470,17 +471,20 @@ export default {
     revokedRow(row) {
       this.$createDialog({
         title: this.$t('dialog.title.revocationconfirm'),
-        content: this.$t('dialog.content.revocationconfirm', {target: this.$t('term.autoexec.job')}),
+        content: this.$t('dialog.content.revocationconfirm', { target: this.$t('term.autoexec.job') }),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.autoexec.job.revokeJob({jobId: row.id}).then(res => {
-            if (res.Status == 'OK') {
-              this.$Message.success(this.$t('message.executesuccess'));
-              this.searchJob();
-            }
-          }).finally(() => {
-            vnode.isShow = false;
-          });
+          this.$api.autoexec.job
+            .revokeJob({ jobId: row.id })
+            .then(res => {
+              if (res.Status == 'OK') {
+                this.$Message.success(this.$t('message.executesuccess'));
+                this.searchJob();
+              }
+            })
+            .finally(() => {
+              vnode.isShow = false;
+            });
         }
       });
     },
@@ -498,25 +502,29 @@ export default {
     deleteRow(row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: row.name + '(' + row.id + ')'}),
+        content: this.$t('dialog.content.deleteconfirm', { target: row.name + '(' + row.id + ')' }),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.autoexec.job.deleteJob({jobId: row.id}).then(res => {
-            if (res.Status == 'OK') {
-              this.searchJob();
-              this.$Message.success(this.$t('message.deletesuccess'));
-            }
-          }).finally(() => {
-            vnode.isShow = false;
-          });
+          this.$api.autoexec.job
+            .deleteJob({ jobId: row.id })
+            .then(res => {
+              if (res.Status == 'OK') {
+                this.searchJob();
+                this.$Message.success(this.$t('message.deletesuccess'));
+              }
+            })
+            .finally(() => {
+              vnode.isShow = false;
+            });
         }
       });
-    }, updateSort(sort) {
+    },
+    updateSort(sort) {
       this.sortOrder = [];
       this.sortOrder.push(sort);
       this.$addHistoryData('sortOrder', this.sortOrder);
       for (let key in sort) {
-        this.$set(this.searchParam, 'sortOrder', {'key': key, 'type': sort[key]});
+        this.$set(this.searchParam, 'sortOrder', { key: key, type: sort[key] });
       }
       this.searchJob();
     }

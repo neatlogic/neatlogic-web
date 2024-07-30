@@ -129,6 +129,9 @@ const job = {
     //获取作业阶段列表
     return axios.post('/api/rest/autoexec/job/phase/list', params);
   },
+  getPhaseTopo(jobId) {
+    return axios.post('/api/rest/autoexec/job/phase/topo', { jobId: jobId });
+  },
   getNodePhaseList(params) {
     //获取作业阶段节点列表
     return axios.post('/api/rest/autoexec/job/phase/node/list', params);

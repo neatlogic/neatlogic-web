@@ -3,7 +3,7 @@
     <ul v-if="phaseGroupList && phaseGroupList.length > 0" class="phaseList">
       <template v-for="(group, index) in phaseGroupList">
         <li v-if="group.phaseList && group.phaseList.length > 0" :key="index" class="step-li border-color">
-          <span class="stepIndex tips" :class="{ 'text-primary border-primary': group.phaseList.findIndex(d => d.id == activePhaseId) >= 0 }">{{ index + 1 }}</span>
+          <span class="stepIndex tips" :class="{ 'text-primary border-primary': group.phaseList.findIndex(d => d.id === activePhaseId) >= 0, 'text-grey': group.phaseList.findIndex(d => d.id === activePhaseId) === -1 }">{{ index + 1 }}</span>
           <ul>
             <li
               v-for="(phase, pindex) in group.phaseList"
@@ -12,7 +12,7 @@
               :key="pindex"
               class="dividing-color cursor-pointer padding radius-sm block-border"
               :class="{ 'block-primary': activePhaseId && phase.id == activePhaseId }"
-              style="position:relative"
+              style="position: relative"
               @click="selectPhase(phase)"
             >
               <!-- 进度百分比 -->
@@ -35,10 +35,7 @@
                   <span class="tsfont-warning-o" :class="getExceptionTips(phase).class"></span>
                   <template v-slot:content>
                     <div>
-                      <div
-                        v-for=" title in getExceptionTips(phase).titles"
-                        :key="title"
-                      >{{ title }}</div>
+                      <div v-for="title in getExceptionTips(phase).titles" :key="title">{{ title }}</div>
                     </div>
                   </template>
                 </Tooltip>
@@ -48,7 +45,7 @@
         </li>
       </template>
     </ul>
-    <div v-else class="text-tip padding" style="text-align: center;">{{ $t('page.nodata') }}</div>
+    <div v-else class="text-tip padding" style="text-align: center">{{ $t('page.nodata') }}</div>
   </div>
 </template>
 <script>
@@ -74,9 +71,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -130,7 +125,7 @@ export default {
         levelList.find(item => {
           let statusTmp = step.statusCountVoList.find(cc => cc.status == item);
           if (statusTmp) {
-            titles.push(this.$t('term.autoexec.phasehastips', {target: statusTmp.statusVo.text}));
+            titles.push(this.$t('term.autoexec.phasehastips', { target: statusTmp.statusVo.text }));
             status = statusTmp;
           }
         });
@@ -256,8 +251,9 @@ export default {
         height: @stepIndex;
         border-radius: 50%;
         text-align: center;
-        line-height: 22px;
-        border: 1px solid;
+        line-height: 21px;
+        border: 2px solid;
+        font-weight: bold;
         border-color: inherit;
       }
     }

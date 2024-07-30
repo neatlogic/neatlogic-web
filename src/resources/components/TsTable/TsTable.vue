@@ -1245,6 +1245,7 @@ export default {
           this.selectedIndexList = this.$utils.deepClone(this.value);
         } else {
           this.selectedIndexList = [];
+          this.selectedItemList = [];
         }
         if (val && val.length > 0) {
           val.forEach((v, vindex) => {
