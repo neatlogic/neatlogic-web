@@ -153,7 +153,7 @@
               <span v-if="c % 2 == 0">{{ c * 50 }}</span>
             </span>
           </div>
-          <div class="canvas-background" :style="{ background: reportData.config.backgroundColor, 'background-size': reportData.config.backgroundImageLayout == 'resize' ? '100% 100%' : 'auto', 'background-image': 'url(' + reportData.config.backgroundImage + ')', position: 'absolute', top: canvasY + 'px', left: canvasX + 'px', height: reportData.height + 'px', width: reportData.width + 'px' }"></div>
+          <div class="canvas-background" :style="canvasStyle(reportData)"></div>
           <div
             ref="canvas"
             class="canvas"
@@ -728,6 +728,26 @@ export default {
         c += ' grid';
       }
       return c;
+    },
+    canvasStyle() {
+      return (reportData) => {
+        let style = {};
+        if (reportData) {
+          style.width = reportData.width + 'px';
+          style.height = reportData.height + 'px';
+          if (reportData.config) {
+            style.position = 'absolute';
+            style.top = this.canvasY + 'px';
+            style.left = this.canvasX + 'px';
+            style.background = reportData.config.backgroundColor;
+            style.backgroundSize = reportData.config.backgroundImageLayout == 'resize' ? '100% 100%' : 'auto'; 
+            if (reportData.config.backgroundImage) {
+              style.backgroundImage = 'url(' + reportData.config.backgroundImage + ')';
+            }
+          }
+        }
+        return style;
+      };
     }
   },
   watch: {
