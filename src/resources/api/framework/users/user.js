@@ -89,5 +89,11 @@ export default {
   },
   resetUserToken(data) {
     return axios.post('/api/rest/user/token/reset', data);
+  },
+  getUserSetting(data) { //获取用户个性化设置
+    return axios.post('/api/rest/user/data/get', data);
+  },
+  deleteUserSetting(data) { //删除用户个性化设置
+    return axios.post('/api/rest/user/data/delete', data);
   }
 };
