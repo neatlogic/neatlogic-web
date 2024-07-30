@@ -181,6 +181,17 @@
                     >
                       <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
                     </Tooltip>
+                    <Tooltip
+                      v-else-if="node[tooltipName]"
+                      placement="right"
+                      max-width="300"
+                      transfer
+                      theme="light"
+                      :content="node[tooltipName]"
+                      style="width:100%"
+                    >
+                      <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
+                    </Tooltip>
                     <div
                       v-else
                       class="overflow"
@@ -252,7 +263,7 @@
                         </Tooltip>
                         <Tooltip
                           v-else-if="node[tooltipName]"
-                          placement="top-start"
+                          placement="right"
                           max-width="300"
                           transfer
                           theme="light"

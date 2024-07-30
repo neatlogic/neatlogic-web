@@ -1,7 +1,20 @@
 <template>
   <div style="max-width:600px;width:100%;line-height:normal;">
     <div v-for="(condition, index) in conditionList" :key="index" class="pb-nm">
-      <label class="text-grey">{{ condition.handlerName }}</label>
+      <div style="display:flex;">
+        <label class="text-grey">{{ condition.handlerName }}</label>
+        <Tooltip
+          v-if="condition.desc"
+          placement="top-start"
+          max-width="400"
+          theme="light"
+          transfer
+        >
+          <span class="tsfont-info-o cursor text-grey" style="vertical-align: super;padding-left: 4px;"></span>
+          <div slot="content" style="max-height: 400px;overflow:auto;">{{ condition.desc }}</div>
+        </Tooltip>
+      </div>
+    
       <div class="pt-sm">
         <SearchInputer
           mode="simple"
