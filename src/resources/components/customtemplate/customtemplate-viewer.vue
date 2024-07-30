@@ -175,7 +175,8 @@ export default {
   watch: {
     data: {
       handler: function(val) {
-        Object.assign(this.templateData.data, val);
+        this.isReady = false;
+        this.init();
       },
       deep: true
     }

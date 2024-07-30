@@ -18,7 +18,7 @@
                 left: '0px',
                 background: reportData.config.backgroundColor, 
                 'background-size': reportData.config.backgroundImageLayout == 'resize' ? '100% 100%' : 'auto',
-                'background-image': 'url(' + reportData.config.backgroundImage + ')', 
+                'background-image': reportData.config.backgroundImage?'url(' + reportData.config.backgroundImage + ')':'none', 
       }"
     ></div>
     <div
