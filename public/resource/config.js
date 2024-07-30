@@ -22,9 +22,6 @@ var HTTP_RESPONSE_STATUS_CODE = ''; // http返回状态码，用于错误回显
 var GLOBAL_PAGELIST = '';
 var GLOBAL_TABLESTRYLE = '';
 var GLOBAL_LOGINTITLE = 'welcome';
-var MINIMUM_CHROMEBROWSERVERSION = 95; // 谷歌浏览器版本号
-var MINIMUM_FIREFOXBROWSERVERSION = 0; // 火狐浏览器版本号
-
 setCookie('neatlogic_language', BASELANGUAGES, 7); // 设置cookie，解决部署首次，没有默认多语言问题
 
 function setCookie(name, value, time) {
@@ -71,7 +68,6 @@ function handleUrl(url, httpresponsestatuscode) {
 function getUrlParams(url) {
   const params = {};
   const urlParts = url.split('?');
-
   if (urlParts.length > 1) {
     const queryString = urlParts[1];
     const pairs = queryString.split('&');
@@ -82,7 +78,6 @@ function getUrlParams(url) {
       params[key] = value;
     }
   }
-
   return params;
 }
 
@@ -102,7 +97,6 @@ function getDirectUrl() {
     }
     xhr.setRequestHeader('AuthType', AUTHTYPE || SSOTICKETKEY);
     xhr.setRequestHeader('AuthValue', SSOTICKETVALUE || getCookie(SSOTICKETKEY));
-
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
         const responseText = xhr.responseText;
@@ -116,6 +110,14 @@ function getDirectUrl() {
           } catch (error) {
             console.error('JSON 解析出错:', error.message);
           }
+        }
+      } else if (xhr.status === 520) {
+        // 520 代表后端认证失败，跳转到错误信息提示页面
+        removeCookie('neatlogic_authorization');
+        const responseText = JSON.parse(xhr.responseText);
+        let errorTipsContent = responseText && responseText.Message;
+        if (errorTipsContent) {
+          window.location.href = getBaseUrl() + '/error-tips.html?error_tips_content=' + encodeURIComponent(errorTipsContent);
         }
       } else if (xhr.status === 522) {
         const responseText = JSON.parse(xhr.responseText);
@@ -145,8 +147,6 @@ async function getSsoTokenKey() {
         SSOTICKETKEY = responseText.ssoTicketKey || '';
         AUTHTYPE = responseText.authType || '';
         ISNEEDAUTH = responseText.isNeedAuth || false;
-        MINIMUM_CHROMEBROWSERVERSION = (responseText.minimumChromeBrowserVersion ? Number(responseText.minimumChromeBrowserVersion) : 95) || 95;
-        MINIMUM_FIREFOXBROWSERVERSION = (responseText.minimumFirefoxBrowserVersion ? Number(responseText.minimumFirefoxBrowserVersion) : 0) || 0;
         if (responseText.commercialModuleSet && responseText.commercialModuleSet.length > 0) {
           COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
         }
@@ -166,87 +166,9 @@ async function getSsoTokenKey() {
   }
 }
 getSsoTokenKey();
-function isBrowserVersionSuitable() {
-  // 判断浏览器是否满足最低要求
-  const userAgent = navigator.userAgent;
-  if (userAgent.includes('Chrome')) {
-    // 获取Chrome版本号
-    const chromeVersionMatch = userAgent.match(/Chrome\/(\S+)/);
-    if (chromeVersionMatch && chromeVersionMatch.length > 1) {
-      // 提取版本号
-      const chromeVersion = chromeVersionMatch[1];
-      const versionParts = chromeVersion.split('.').map(Number);
-      const majorVersion = versionParts[0];
-      if (majorVersion >= MINIMUM_CHROMEBROWSERVERSION) {
-        return true;
-      }
-    }
-  } else if (userAgent.includes('Firefox')) {
-    // 获取Firefox版本号
-    const firefoxVersionMatch = userAgent.match(/Firefox\/(\d+)/);
-    if (firefoxVersionMatch && firefoxVersionMatch.length > 1) {
-      const firefoxVersion = parseInt(firefoxVersionMatch[1], 10);
-      if (MINIMUM_FIREFOXBROWSERVERSION && firefoxVersion >= MINIMUM_FIREFOXBROWSERVERSION) {
-        // 如果为0，表示不兼容火狐浏览器
-        return true;
-      }
-    }
-  }
-  return false;
-}
-function toBrowerVersionTipsPage(isNeedTenantName = true) {
-  // 浏览器不满足要求，跳转到提示页面
-  // url地址如下：http://127.0.0.1:8080/develop
-  const userAgent = navigator.userAgent;
-  var urlParts = location.href.split('//'); // 拿到协议
-  if (urlParts.length > 1) {
-    var prefixUrl = urlParts[1].split('/'); // 获取域名
-    var fullUrl = urlParts[0] + '//' + prefixUrl[0];
-    if (isNeedTenantName) {
-      fullUrl = fullUrl + '/' + prefixUrl[1];
-    }
-    const version = userAgent.includes('Chrome') ? MINIMUM_CHROMEBROWSERVERSION : userAgent.includes('Firefox') ? MINIMUM_FIREFOXBROWSERVERSION : 0;
-    return fullUrl + '/brower-version-tips.html?version=' + version;
-  }
-  return location.href;
-}
-
-function toLoginPage() {
-  // 浏览器满足要求，跳转到登录页面
-  var urlParts = location.href.split('//'); // 拿到协议
-  if (urlParts.length > 1) {
-    var prefixUrl = urlParts[1].split('/'); // 获取域名
-    var fullUrl = urlParts[0] + '//' + prefixUrl[0];
-    fullUrl = fullUrl + '/' + prefixUrl[1];
-    return fullUrl + '/login.html';
-  }
-  return location.href;
-}
-
-function getBrowserVersion() {
-  // 获取浏览器版本号
-  var userAgent = navigator.userAgent;
-  var version;
-  // 检测Chrome/Chromium/Edge（基于Chromium）
-  var match = userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
-  if (match) {
-    version = match[2];
-  }
-  // 检测Firefox
-  else if (/Firefox\/([0-9]+)\./.test(userAgent)) {
-    version = userAgent.match(/Firefox\/([0-9]+)\./)[1];
-  }
-  // 检测Safari
-  else if (/Version\/([0-9]+)\.([0-9]+)(\.[0-9]+)?\s+Safari\//.test(userAgent)) {
-    version = userAgent.match(/Version\/([0-9]+)\.([0-9]+)(\.[0-9]+)?\s+Safari\//)[1];
-  }
-  // 检测IE/Edge（旧版Edge）
-  else if (/rv:([0-9]+)\.([0-9]+)\)/.test(userAgent)) {
-    version = userAgent.match(/rv:([0-9]+)\.([0-9]+)\)/)[1];
-  }
-  // 其他浏览器或无法识别
-  else {
-    version = '';
-  }
-  return version;
+function getBaseUrl() {
+  // 获取租户域名
+  const protocal = location.protocol;
+  const host = location.host;
+  return protocal + '//' + host;
 }

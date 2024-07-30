@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <link rel="icon" href="./resource/img/common/tsfavicon.png" />
+    <title>浏览器兼容提示</title>
+    <script>
+      function replaceBrowserTip() {
+        var browserTextDom = document.querySelector('#browser-text');
+        var browserTitleDom = document.querySelector('#browser-title');
+        if (browserTitleDom) {
+          if (parseQueryString().type == 'chrome') {
+            browserTitleDom.textContent = '您的浏览器版本' + getCurrentBrowser() + '过低!';
+            browserTextDom.textContent = '谷歌浏览器' + parseQueryString().version + '及以上版本';
+          } else if (parseQueryString().type == 'firefox' && parseQueryString().version) {
+            browserTitleDom.textContent = '您的浏览器版本' + getCurrentBrowser() + '过低!';
+            browserTextDom.textContent = '火狐浏览器' + parseQueryString().version + '及以上版本';
+          } else {
+            element_text.textContent = '该浏览器暂不支持！';
+            browserTextDom.textContent = '谷歌浏览器' + parseQueryString().version + '及以上版本';
+          }
+        }
+      }
+      function parseQueryString() {
+        var params = {};
+        var queryString = window.location.search;
+        if (queryString) {
+          var currentParams = queryString.split('?')[1];
+          var pairs = currentParams.split('&');
+          for (var i = 0; i < pairs.length; i++) {
+            var pair = pairs[i];
+            var keyValueArray = pair.split('=');
+            var key = keyValueArray[0] ? decodeURIComponent(keyValueArray[0]) : '';
+            var value = keyValueArray[1] ? decodeURIComponent(keyValueArray[1]) : '';
+            var decodedKey = decodeURIComponent(key || '');
+            params[decodedKey] = value;
+          }
+        }
+        return params;
+      }
+      function getCurrentBrowser() {
+        // 获取浏览器版本号
+        var userAgent = navigator.userAgent;
+        var version;
+        var match = userAgent.match(/Chrom(e|ium)\/([0-9]+)\./); // 检测Chrome/Chromium/Edge（基于Chromium）
+        if (match) {
+          version = match[2];
+        } else if (/Firefox\/([0-9]+)\./.test(userAgent)) {
+          // 检测Firefox
+          version = userAgent.match(/Firefox\/([0-9]+)\./)[1];
+        } else if (/Version\/([0-9]+)\.([0-9]+)(\.[0-9]+)?\s+Safari\//.test(userAgent)) {
+          // 检测Safari
+          version = userAgent.match(/Version\/([0-9]+)\.([0-9]+)(\.[0-9]+)?\s+Safari\//)[1];
+        } else if (/rv:([0-9]+)\.([0-9]+)\)/.test(userAgent)) {
+          // 检测IE/Edge（旧版Edge）
+          version = userAgent.match(/rv:([0-9]+)\.([0-9]+)\)/)[1];
+        }
+        // 其他浏览器或无法识别
+        else {
+          version = '';
+        }
+        return version;
+      }
+      window.onload = function () {
+        replaceBrowserTip();
+      };
+    </script>
+  </head>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      padding: 0;
+      margin: 0;
+      background: #e7f6fc;
+    }
+    .browser-tip-box {
+      position: absolute;
+      top: 10%;
+      left: 25%;
+      width: 50%;
+      text-align: center;
+      color: #666;
+      background: #fff;
+      border: 1px solid #1690ff;
+    }
+    .browser-tip-box #browser-title {
+      font-size: 20px;
+      line-height: 3;
+      color: #fff;
+      background: #1690ff;
+      font-weight: bold;
+    }
+    .browser-tip-box .browser-version-box {
+      line-height: 5;
+      font-size: 18px;
+    }
+    .browser-tip-box #browser-text {
+      color: #1690ff;
+      margin-left: 10px;
+    }
+  </style>
+  <body>
+    <div class="browser-tip-box">
+      <div id="browser-title">您的浏览器版本过低！</div>
+      <div class="browser-version-box">
+        请使用
+        <span id="browser-text">谷歌浏览器95及以上版本</span>
+      </div>
+    </div>
+  </body>
+</html>

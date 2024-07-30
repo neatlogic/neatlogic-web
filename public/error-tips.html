@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <link rel="icon" href="./resource/img/common/tsfavicon.png" />
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        padding: 0;
+        margin: 0;
+      }
+      .error-tips-box {
+        position: relative;
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(to bottom right, #fdfeff, #e6f1fe);
+      }
+      .error-tips-box .error-tips-bg {
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+      .error-tips-box .error-tips-bg::before {
+        content: '';
+        height: 50%;
+        width: 100%;
+        bottom: 8%;
+        left: 0;
+        position: absolute;
+        background: url('./resource/img/common/login-pic.png') no-repeat center center;
+        background-size: auto 100%;
+      }
+      .error-tips-box .error-tips-content-box {
+        position: absolute;
+        top: 37%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .error-tips-box .error-tips-content-box .content {
+        font-size: 18px;
+        text-align: center;
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div class="error-tips-box">
+        <div class="error-tips-bg">
+          <div class="error-tips-content-box">
+            <div class="content" id="content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function getSearchParams() {
+        var contentDom = document.getElementById('content');
+        if (!contentDom) {
+          console.error('未找到 ID 为 "content" 的 DOM 元素');
+          return;
+        }
+        var queryString = window.location.search;
+        if (queryString) {
+          var params = new URLSearchParams(queryString);
+          var errorTipContent = params.get('error_tips_content');
+          contentDom.textContent = errorTipContent ? '登录失败：' + decodeURIComponent(errorTipContent) : '';
+        }
+      }
+      getSearchParams();
+    </script>
+  </body>
+</html>

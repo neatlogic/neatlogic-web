@@ -33,6 +33,7 @@ text-primary|主题色字体|-|
 text-success|绿色成功色字体|-|
 text-danger|红色告警色字体|-|
 text-warning|橙色告警色字体|-|
+text-error|红色错误色字体|-|
 border-error|红色边框|-|
 border-primary|主题色边框|-|
 text-tip|提示类文字，颜色浅色|跟着主题走|
