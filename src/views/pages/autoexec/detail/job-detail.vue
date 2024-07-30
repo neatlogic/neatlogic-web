@@ -6,22 +6,26 @@
       </template>
       <template v-slot:topLeft>
         <div class="action-group">
-          <span class="block-item">{{ jobData.name }}</span>
-          <Divider type="vertical" style="margin:0px" />
-          <span class="action-item">
+          <div class="action-item">
+            <strong class="text-grey">{{ jobData.name }}</strong>
+          </div>
+          <div class="action-item" style="padding: 0px"><Divider type="vertical" style="margin: 0px" /></div>
+          <div class="action-item">
             <UserCard :uuid="jobData.execUser"></UserCard>
-          </span>
-          <span><Status
+          </div>
+          <div class="action-item" style="padding: 0px"><Divider type="vertical" style="margin: 0px" /></div>
+          <div class="action-item"><Status
             v-if="jobData.status"
             :statusName="jobData.statusName"
             :statusValue="jobData.status"
             class="job-status"
-          ></Status></span>
+          ></Status></div>
         </div>
       </template>
       <template v-slot:topRight>
         <div class="div-btn-contain action-group">
           <span v-if="jobData.extraInfo && jobData.extraInfo.isHasLock == 1" class="tsfont-lock text-action action-item text-warning" @click="globalLockShow">{{ $t('term.autoexec.resourcelock') }}</span>
+          <span class="action-item tsfont-accessendpoint" @click="isShowFlow = true">流程图</span>
           <span class="action-item tsfont-console" @click="isShowConsoleLogDialog = true">{{ $t('term.autoexec.controlpanel') }}</span>
           <span class="action-item tsfont-config" @click="openShowParam">{{ $t('page.param') }}</span>
           <span class="action-item">
@@ -80,7 +84,7 @@
             :jobData="jobData"
             :phaseData="currentPhase"
             class="currentPhase-detail radius-lg"
-            :style="{'--height': offsetHeight }"
+            :style="{ '--height': offsetHeight }"
             @refresh="refresh"
           ></div>
         </div>
@@ -99,10 +103,11 @@
       :selectedApp="lockSearchParam"
       @close="globalLockClose"
     ></LockDialog>
+    <JobPhaseFlow v-if="isShowFlow && jobParam.jobId" :jobId="jobParam.jobId" @close="isShowFlow = false"></JobPhaseFlow>
   </div>
 </template>
 <script>
-import {store, mutations} from './jobDetailState.js';
+import { store, mutations } from './jobDetailState.js';
 import ContentItem from './jobDetail/phase/index.js';
 import download from '@/resources/directives/download.js';
 export default {
@@ -116,6 +121,7 @@ export default {
     ...ContentItem,
     Status: () => import('@/resources/components/Status/CommonStatus.vue'),
     ExtrainfoDetail: () => import('./jobDetail/extrainfo-detail.vue'),
+    JobPhaseFlow: () => import('@/views/pages/autoexec/detail/jobDetail/job-phase-flow.vue'),
     LockDialog: () => import('@/views/pages/deploy/job/resourcelock/resourcelock-dialog') //资源锁
   },
   filters: {},
@@ -123,6 +129,7 @@ export default {
   data() {
     const _this = this;
     return {
+      isShowFlow: false, //是否打开流程图
       downloadLoading: false,
       jobData: {}, //作业数据
       jobParam: { jobStatus: 'running' }, //查询作业时的参数
@@ -187,9 +194,8 @@ export default {
           type: 'error',
           fn: _this.revokeJob
         }
-      }, lockSearchParam: {
-
-      }
+      },
+      lockSearchParam: {}
     };
   },
   beforeCreate() {},
@@ -253,7 +259,7 @@ export default {
     abortJob() {
       this.$createDialog({
         title: this.$t('dialog.title.updateconfirm'),
-        content: this.$t('dialog.content.tipconfirm', {target: this.$t('page.abort'), name: this.$t('term.autoexec.job')}),
+        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.abort'), name: this.$t('term.autoexec.job') }),
         'on-ok': vnode => {
           this.$api.autoexec.job.abortJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {
@@ -268,7 +274,7 @@ export default {
     pauseJob() {
       this.$createDialog({
         title: this.$t('dialog.title.updateconfirm'),
-        content: this.$t('dialog.content.tipconfirm', {target: this.$t('page.pause'), name: this.$t('term.autoexec.job')}),
+        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.pause'), name: this.$t('term.autoexec.job') }),
         'on-ok': vnode => {
           this.$api.autoexec.job.pauseJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {
@@ -283,7 +289,7 @@ export default {
     executeJob() {
       this.$createDialog({
         title: this.$t('dialog.title.updateconfirm'),
-        content: this.$t('dialog.content.tipconfirm', {target: this.$t('page.execute'), name: this.$t('term.autoexec.job')}),
+        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.execute'), name: this.$t('term.autoexec.job') }),
         'on-ok': vnode => {
           this.$api.autoexec.job.executeJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {
@@ -298,7 +304,7 @@ export default {
     revokeJob() {
       this.$createDialog({
         title: this.$t('dialog.title.revocationconfirm'),
-        content: this.$t('dialog.content.revocationconfirm', {target: this.$t('term.autoexec.job')}),
+        content: this.$t('dialog.content.revocationconfirm', { target: this.$t('term.autoexec.job') }),
         'on-ok': vnode => {
           this.$api.autoexec.job.revokeJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {
@@ -357,34 +363,32 @@ export default {
     refreshPhaseList(phaseIdList) {
       this.clearTimmer();
       if (phaseIdList && phaseIdList.length > 0) {
-        this.$api.autoexec.job
-          .getPhaseList({ jobId: this.jobParam.jobId, phaseIdList: phaseIdList})
-          .then(res => {
-            if (res.Return['phaseList'] && res.Return['phaseList'].length > 0) {
-              res.Return['phaseList'].forEach(phase => {
-                const oldPhaseIndex = this.jobData.phaseList.findIndex(d => d.id === phase.id);
-                if (oldPhaseIndex >= 0) {
-                  this.$set(this.jobData.phaseList, oldPhaseIndex, phase);
-                }
-              });
-            }
-            this.$set(this.jobData, 'status', res.Return['status']);
-            this.$set(this.jobData, 'statusName', res.Return['statusName']);
-            const phaseIdList = [];
-            this.jobData.phaseList.forEach(phase => {
-              if (!this.phaseEndingStatusList.includes(phase.status)) {
-                phaseIdList.push(phase.id);
+        this.$api.autoexec.job.getPhaseList({ jobId: this.jobParam.jobId, phaseIdList: phaseIdList }).then(res => {
+          if (res.Return['phaseList'] && res.Return['phaseList'].length > 0) {
+            res.Return['phaseList'].forEach(phase => {
+              const oldPhaseIndex = this.jobData.phaseList.findIndex(d => d.id === phase.id);
+              if (oldPhaseIndex >= 0) {
+                this.$set(this.jobData.phaseList, oldPhaseIndex, phase);
               }
             });
-            if (this.jobData && this.jobData.extraInfo) {
-              this.$set(this.jobData.extraInfo, 'isHasLock', res.Return['isHasLock']);
-            }
-            if (phaseIdList.length > 0) {
-              this.timmer = setTimeout(() => {
-                this.refreshPhaseList(phaseIdList);
-              }, 5000);
+          }
+          this.$set(this.jobData, 'status', res.Return['status']);
+          this.$set(this.jobData, 'statusName', res.Return['statusName']);
+          const phaseIdList = [];
+          this.jobData.phaseList.forEach(phase => {
+            if (!this.phaseEndingStatusList.includes(phase.status)) {
+              phaseIdList.push(phase.id);
             }
           });
+          if (this.jobData && this.jobData.extraInfo) {
+            this.$set(this.jobData.extraInfo, 'isHasLock', res.Return['isHasLock']);
+          }
+          if (phaseIdList.length > 0) {
+            this.timmer = setTimeout(() => {
+              this.refreshPhaseList(phaseIdList);
+            }, 5000);
+          }
+        });
       }
     },
     changePhase(phaseId) {
@@ -409,7 +413,7 @@ export default {
     takeoverFn() {
       this.$createDialog({
         title: this.$t('term.autoexec.takeoverjob'),
-        content: this.$t('dialog.content.takeoverjobconfirm', {target: this.$t('term.autoexec.job')}),
+        content: this.$t('dialog.content.takeoverjobconfirm', { target: this.$t('term.autoexec.job') }),
         'on-ok': vnode => {
           this.$api.autoexec.job
             .takeoverJob({ jobId: this.jobData.id })
@@ -434,11 +438,13 @@ export default {
     globalLockClose() {
       this.isShowResourceLockDialog = false;
     },
-    copyJob() { //复制作业
+    copyJob() {
+      //复制作业
       let path = '';
       if (this.jobData.source == 'test') {
         path = '/test-detail';
-      } else if (this.jobData.source == 'deploy' || this.jobData.source == 'deployschedulegeneral') { // deployschedulegeneral 发布定时普通作业
+      } else if (this.jobData.source == 'deploy' || this.jobData.source == 'deployschedulegeneral') {
+        // deployschedulegeneral 发布定时普通作业
         path = '/job-add';
       } else {
         path = '/runner-detail';
@@ -463,7 +469,7 @@ export default {
       return {
         url: '/api/binary/autoexec/job/export',
         method: 'post',
-        params: { jobId: this.jobParam.jobId},
+        params: { jobId: this.jobParam.jobId },
         changeStatus: status => {
           if (status == 'start') {
             this.downloadLoading = true;

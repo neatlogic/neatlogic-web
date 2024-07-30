@@ -1,0 +1,88 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@text-color, 
+@edge-stroke,
+@border-color,
+@completed-bg-color,
+@failed-bg-color,
+@running-bg-color,
+@waitinput-bg-color,
+@default-bg-color
+) {
+  @node-removeIcon: @link-stroke;
+  .graph .phasenode-completed path {
+    fill: @completed-bg-color !important;
+  }
+  .graph .phasenode-failed path {
+    fill: @failed-bg-color !important;
+  }
+  .graph .phasenode-running path {
+    fill: @running-bg-color !important;
+  }
+  .graph .phasenode-waitInput path {
+    fill: @waitinput-bg-color !important;
+  }
+
+  .graph .phasenode-pausing path {
+    fill: @waitinput-bg-color !important;
+  }
+
+  .graph .phasenode-paused path {
+    fill: @waitinput-bg-color !important;
+  }
+
+  .graph .phasenode-waiting path {
+    fill: @waitinput-bg-color !important;
+  }
+
+  .graph .phasenode path {
+    fill: @default-bg-color;
+    stroke: @border-color;
+  }
+
+  .graph .converge ellipse {
+    fill: @default-bg-color;
+    stroke: @border-color;
+  }
+
+  .graph .edge path {
+    stroke: @edge-stroke;
+  }
+  .graph .edge polygon {
+    stroke: @edge-stroke;
+    fill: @edge-stroke;
+  }
+  .graph .edge text {
+    fill: @edge-stroke;
+  }
+
+  .graph text {
+    user-select: none;
+    fill: @text-color;
+  }
+}
+
+html {
+  .theme(
+    @default-text, 
+    @default-bg-code, 
+    @default-border,
+    @default-success-bg-color,
+    @default-error-bg-color,
+    @default-primary-bg-color,
+    @default-warning-bg-color,
+    @default-bg-grey
+    );
+
+  &.theme-dark {
+    .theme(
+      @dark-text, 
+      @dark-invert-bg, 
+      @dark-border,
+      @dark-success-bg-color,
+      @dark-error-bg-color,
+      @dark-primary-bg-color,
+      @dark-warning-bg-color,
+      @dark-bg-grey
+      );
+  }
+}
