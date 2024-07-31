@@ -32,7 +32,7 @@ export default {
             }
           ],
           style: {
-            fill: this.widget.config.labelColor
+            fill: this.widget.config.label?.style?.fill
           }
         },
         theme: this.canvas.config.theme && themes[this.canvas.config.theme]

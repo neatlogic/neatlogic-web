@@ -90,12 +90,34 @@
         </div>
       </div>
     </div>
+    <TsFormItem :label="$t('term.report.showdata')" labelPosition="top">
+      <TsFormSwitch
+        :value="config.label ? true : false"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            if (val) {
+              setConfigValue('label', {
+                position: 'middle',
+                content: item => {
+                  return item.yField && Math.floor(item.yField * 100) / 100;
+                }
+              });
+            } else {
+              setConfigValue('label', val);
+            }
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
     //TsFormRadio:()=>import('@/resources/plugins/TsForm/TsFormRadio'),

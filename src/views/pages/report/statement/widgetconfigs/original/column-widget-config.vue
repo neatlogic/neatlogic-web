@@ -130,7 +130,7 @@
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <ColorPicker
-            :value="config.labelColor"
+            :value="config.lable && config.lable.style && config.lable.style.fill"
             :transfer="true"
             alpha
             recommend
@@ -138,7 +138,14 @@
             transfer-class-name="color-picker-transfer-class"
             @on-change="
               val => {
-                setConfigValue('labelColor', val);
+                if(val){
+                  setConfigValue('label', {
+                    visible: true,
+                    style: {
+                      fill: val,
+                    },
+                  })
+                }
               }
             "
           />
