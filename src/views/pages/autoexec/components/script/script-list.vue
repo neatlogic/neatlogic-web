@@ -15,7 +15,7 @@
       @end="changeDragStatus('end')"
     >
       <li v-for="(step, sindex) in list" :id="'id_' + combopConfig.combopUuid + '_' + step.uuid" :key="sindex+'_'+step.uuid">
-        <div v-if="step.operation" class="inner-block radius-lg" :class="{'hide-li':dragStatus == 'start' || !step.isShow, 'show-li': step.isShow, 'bg-op': step.operationName != 'native/IF-Block', 'border-base': step.operationName == 'native/IF-Block'}">
+        <div v-if="step.operation" class="inner-block radius-lg" :class="{'hide-li':dragStatus == 'start' || !step.isShow, 'show-li': step.isShow, 'bg-op': step.operationName != 'native/IF-Block' && step.operationName != 'native/LOOP-Block', 'border-base': step.operationName == 'native/IF-Block' || step.operationName == 'native/LOOP-Block'}">
           <!-- <div class="script-title border-color overflow" :class="step.operationType && step.operationType == 'script' ? 'tsfont-cloud' : 'tsfont-block'"> -->
           <div>
             <Tooltip
@@ -404,6 +404,8 @@ export default {
         let type = 'common';
         if (step.operationName == 'native/IF-Block') {
           type = 'ConditionTool';
+        } else if (step.operationName == 'native/LOOP-Block') {
+          type = 'LoopBlock';
         }
         return type;
       };
