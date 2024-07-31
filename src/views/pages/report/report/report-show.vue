@@ -13,16 +13,49 @@
         <span v-auth="'REPORT_MODIFY'">{{ reportData.name }}</span>
       </template>
       <template v-slot:topRight>
-        <Button type="primary" style="margin-right:10px" @click="getReportDetail(true)">{{ $t('page.refresh') }}</Button>
+        <Button type="primary" style="margin-right: 10px" @click="getReportDetail(true)">{{ $t('page.refresh') }}</Button>
         <Dropdown v-if="reportData && reportData.id">
-          <Button :loading="isDowning.pdf || isDowning.word ||isDowning.excel">
+          <Button :loading="isDowning.pdf || isDowning.word || isDowning.excel">
             {{ $t('page.export') }}
             <Icon type="ios-arrow-down"></Icon>
           </Button>
           <DropdownMenu slot="list">
-            <DropdownItem v-download="{ url: '/api/binary/report/detail/export/' + reportData.id + '/pdf', params: searchParam,changeStatus:(arr)=>{changeDownStatus(arr,'pdf')} }" :disabled="isDowning.pdf">PDF</DropdownItem>
-            <DropdownItem v-download="{ url: '/api/binary/report/detail/export/' + reportData.id + '/word', params: searchParam,changeStatus:(arr)=>{changeDownStatus(arr,'word')} }" :disabled="isDowning.word">WORD</DropdownItem>
-            <DropdownItem v-download="{ url: '/api/binary/report/detail/export/' + reportData.id + '/excel', params: searchParam,changeStatus:(arr)=>{changeDownStatus(arr,'excel')}}" :disabled="isDowning.excel">EXCEL</DropdownItem>
+            <DropdownItem
+              v-download="{
+                url: '/api/binary/report/detail/export/' + reportData.id + '/pdf',
+                params: searchParam,
+                changeStatus: arr => {
+                  changeDownStatus(arr, 'pdf');
+                }
+              }"
+              :disabled="isDowning.pdf"
+            >
+              PDF
+            </DropdownItem>
+            <DropdownItem
+              v-download="{
+                url: '/api/binary/report/detail/export/' + reportData.id + '/word',
+                params: searchParam,
+                changeStatus: arr => {
+                  changeDownStatus(arr, 'word');
+                }
+              }"
+              :disabled="isDowning.word"
+            >
+              WORD
+            </DropdownItem>
+            <DropdownItem
+              v-download="{
+                url: '/api/binary/report/detail/export/' + reportData.id + '/excel',
+                params: searchParam,
+                changeStatus: arr => {
+                  changeDownStatus(arr, 'excel');
+                }
+              }"
+              :disabled="isDowning.excel"
+            >
+              EXCEL
+            </DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </template>
@@ -43,7 +76,11 @@
                   ref="form"
                   :validateList="param.validateList"
                   :config="param.config"
-                  @setParam="(val)=>{setParam(param.name, val)}"
+                  @setParam="
+                    val => {
+                      setParam(param.name, val);
+                    }
+                  "
                 ></component>
               </TsFormItem>
             </Col>
@@ -71,7 +108,7 @@ export default {
     ReportMain: () => import('../component/report-main.vue'),
     ...paramhandler
   },
-  directives: {download},
+  directives: { download },
   props: {},
   data() {
     return {
@@ -79,7 +116,7 @@ export default {
       id: this.$route.params['id'],
       reportContent: '',
       reportData: {},
-      searchParam: {reportInstanceId: this.$route.params['id']},
+      searchParam: { reportInstanceId: this.$route.params['id'] },
       isDowning: {
         pdf: false,
         word: false,
@@ -117,7 +154,7 @@ export default {
       // 处理数据
       let formItemData = this.$utils.deepClone(formList);
       if (formItemData && !this.$utils.isEmpty(formItemData)) {
-        formItemData.forEach((item) => {
+        formItemData.forEach(item => {
           item.isRequired = !!(item.config && item.config.isRequired);
           item.validateList = item.config && item.config.isRequired ? ['required'] : [];
         });
@@ -146,20 +183,22 @@ export default {
       if (!this.valid()) {
         return false;
       }
-      const _this = this;
       this.cancelAxios && this.cancelAxios.cancel();
       this.cancelAxios = this.$https.CancelToken.source();
       this.loadingShow = true;
       this.reportContent = '';
-      this.$api.report.report.showReportSvg(this.id, this.searchParam, this.cancelAxios.token).then(res => {
-        // _this.$refs['iframe'].src = 'data:text/html;charset=utf-8,' + res.data;
-        _this.reportContent = res.data || res;
-        if (showStatus) {
-          _this.$Message.success(_this.$t('message.refreshsuccess'));
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
+      this.$api.report.report
+        .showReportSvg(this.id, this.searchParam, this.cancelAxios.token)
+        .then(res => {
+          // _this.$refs['iframe'].src = 'data:text/html;charset=utf-8,' + res.data;
+          this.reportContent = res.data || res;
+          if (showStatus) {
+            this.$Message.success(this.$t('message.refreshsuccess'));
+          }
+        })
+        .finally(() => {
+          this.loadingShow = false;
+        });
     },
     getReportById: function() {
       if (this.id) {
@@ -219,7 +258,7 @@ export default {
 @import '~@/resources/assets/css/report/report.less';
 </style>
 <style lang="less" scoped>
-  /deep/ .report-show-formitem{
-    min-height: 53px;
-  }
+/deep/ .report-show-formitem {
+  min-height: 53px;
+}
 </style>
