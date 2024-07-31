@@ -39,6 +39,18 @@
           <template v-slot:cronExpression="{ row }">
             <TsQuartz v-if="row.cronExpression" :value="row.cronExpression" showType="read"></TsQuartz>
           </template>
+          <template v-slot:lastFireTime="{ row }">
+            <span v-if="row.lastFireTime">{{ row.lastFireTime | formatDate }}</span>
+            <span v-else>-</span>
+          </template>
+          <template v-slot:lastFinishTime="{ row }">
+            <span v-if="row.lastFinishTime">{{ row.lastFinishTime | formatDate }}</span>
+            <span v-else>-</span>
+          </template>
+          <template v-slot:nextFireTime="{ row }">
+            <span v-if="row.nextFireTime">{{ row.nextFireTime | formatDate }}</span>
+            <span v-else>-</span>
+          </template>
           <template v-slot:status="{ row }">
             <div>
               <div v-if="row.status == 'doing'" style="width: 42px">
@@ -134,6 +146,9 @@ export default {
         { key: 'status', title: this.$t('page.status') },
         { key: 'dataCount', title: this.$t('page.datacapacity') },
         { key: 'cronExpression', title: this.$t('term.framework.cronexpression') },
+        { key: 'lastFireTime', title: '最后一次激活时间' },
+        { key: 'lastFinishTime', title: '最后一次完成时间' },
+        { key: 'nextFireTime', title: '下一次激活时间' },
         { key: 'description', title: this.$t('page.explain') },
         { key: 'action' }
       ],
