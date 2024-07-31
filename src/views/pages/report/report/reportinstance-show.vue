@@ -66,12 +66,11 @@ import TsFormItem from '@/resources/plugins/TsForm/TsFormItem';
 import * as paramhandler from './paramhandler';
 import download from '@/resources/directives/download.js';
 export default {
-  name: 'ReportInstanceShow',
+  name: '',
   components: {
     TsFormItem,
     ...paramhandler,
     ReportMain: () => import('../component/report-main.vue')
-
   },
   directives: { download },
   props: {},
@@ -138,12 +137,11 @@ export default {
       if (!this.valid()) {
         return false;
       }
-      const _this = this;
       this.cancelAxios && this.cancelAxios.cancel();
       this.cancelAxios = this.$https.CancelToken.source();
       this.loadingShow = true;
       this.reportContent = '';
-      this.$https.post('/api/binary/report/show/' + this.reportInstanceData.reportId, this.searchParam, {
+      /*this.$https.post('/api/binary/report/show/' + this.reportInstanceData.reportId, this.searchParam, {
         cancelAxios: this.cancelAxios.token
       }).then(res => {
         _this.reportContent = res.data || res;
@@ -152,7 +150,18 @@ export default {
         }
       }).finally(() => {
         this.loadingShow = false;
-      });
+      });*/
+      this.$api.report.report
+        .showReportSvg(this.reportInstanceData.reportId, this.searchParam, this.cancelAxios.token)
+        .then(res => {
+          this.reportContent = res.data || res;
+          if (showStatus) {
+            this.$Message.success(this.$t('message.refreshsuccess'));
+          }
+        })
+        .finally(() => {
+          this.loadingShow = false;
+        });
     },
     getReportInstanceById() {
       if (this.id) {
