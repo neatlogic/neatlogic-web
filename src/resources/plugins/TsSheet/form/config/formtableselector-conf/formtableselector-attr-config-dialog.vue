@@ -35,6 +35,20 @@
             <TsFormItem :label="$t('page.multipleselection')">
               <TsFormSwitch v-model="propertyLocal.config.isMultiple" :trueValue="true" :falseValue="false"></TsFormSwitch>
             </TsFormItem>
+            <TsFormItem
+              v-if="propertyLocal.handler === 'formselect'"
+              :label="$t('page.isdefaultselectd')"
+              :tooltip="$t('page.defaultselectdonlyvalue')"
+            >
+              <TsFormSwitch
+                :value="propertyLocal.config.isAutoSelectdOnlyValue || false"
+                :trueValue="true"
+                :falseValue="false "
+                @change="(val)=>{
+                  $set(propertyLocal.config, 'isAutoSelectdOnlyValue', val);
+                }"
+              ></TsFormSwitch>
+            </TsFormItem>
             <TsFormItem :label="$t('page.datasource')">
               <TsFormSelect
                 ref="formitem_datasource"
@@ -486,7 +500,7 @@ export default {
     tableMatrixColumnList() {
       const columnList = [];
       this.formItemConfig.dataConfig
-        .filter(d => !d.isExtra)
+        .filter(d => d.uuid !== this.propertyLocal.uuid)
         .forEach(d => {
           columnList.push({ value: d.uuid, text: d.label });
         });
