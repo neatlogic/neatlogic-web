@@ -14,17 +14,15 @@
             :class="status.value == statusAction ? 'active' : ''"
             @click="selectStatus(status)"
           >
-            <Badge :count="status.count" :offset="[15,-5]"><span>{{ status.text }}</span></Badge>
+            <Badge :count="status.count" :offset="[15, -5]">
+              <span>{{ status.text }}</span>
+            </Badge>
           </span>
         </span>
       </template>
       <template v-slot:topRight>
         <div>
-          <CombineSearcher
-            v-model="searchVal"
-            :searchList="searchList"
-            @change="getTable"
-          ></CombineSearcher>
+          <CombineSearcher v-model="searchVal" :searchList="searchList" @change="getTable"></CombineSearcher>
         </div>
       </template>
       <template v-if="knowledgeType === 'all' && !isHideTree" v-slot:sider>
@@ -57,7 +55,7 @@
     <!-- 添加对话框 -->
     <TsDialog
       :isShow.sync="isDialogShow"
-      :title="$t('dialog.title.addtarget',{target:$t('term.knowledge.document')})"
+      :title="$t('dialog.title.addtarget', { target: $t('term.knowledge.document') })"
       @on-ok="okDocument"
       @on-close="closeForm"
     >
@@ -98,10 +96,7 @@ export default {
           value: null,
           width: '100%',
           maxlength: 50,
-          validateList: [
-            'required', 'name-special',
-            { name: 'searchUrl', url: 'api/rest/knowledge/document/title/update', message: '知识标题已存在' }
-          ]
+          validateList: ['required', 'name-special', { name: 'searchUrl', url: 'api/rest/knowledge/document/title/update', message: '知识标题已存在' }]
         },
         knowledgeDocumentTypeUuid: {
           type: 'tree',
@@ -269,7 +264,7 @@ export default {
     deleteDraft({ title, id: knowledgeDocumentVersionId }) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: title}),
+        content: this.$t('dialog.content.deleteconfirm', { target: title }),
         btnType: 'error',
         'on-ok': async vnode => {
           const params = { knowledgeDocumentVersionId };
@@ -286,7 +281,7 @@ export default {
     deleteDocument({ title, knowledgeDocumentId }) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: title}),
+        content: this.$t('dialog.content.deleteconfirm', { target: title }),
         btnType: 'error',
         'on-ok': async vnode => {
           const params = { knowledgeDocumentId };
@@ -441,8 +436,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/deep/.tscontain-header{
-  height:55px!important;
+/deep/.tscontain-header {
+  height: 55px !important;
 }
 .knowledge-overview {
   .top-default {
@@ -510,7 +505,7 @@ export default {
         }
       }
     }
-    .right-pane{
+    .right-pane {
       position: relative;
       .current-path {
         margin: 10px 5px 5px 10px;
@@ -547,12 +542,12 @@ export default {
     margin-top: 12px;
     .action-item {
       padding: 0 12px;
-      &:first-child{
+      &:first-child {
         padding-left: 0;
       }
     }
   }
-  /deep/ .ivu-badge-count{
+  /deep/ .ivu-badge-count {
     line-height: 1;
     height: inherit;
     padding: 0 4px;
