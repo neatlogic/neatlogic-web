@@ -698,6 +698,10 @@ export default {
           if (item.config.elseList && item.config.elseList.length) {
             this.$set(item.config, 'elseList', this.savePhaseOperationList(item.config.elseList));
           }
+        } else if (item.operationName == 'native/LOOP-Block') {
+          if (item.config.operations && item.config.operations.length) {
+            this.$set(item.config, 'operations', this.savePhaseOperationList(item.config.operations));
+          }
         } else {
           delete item.config.profileParamList;
           if (item.config && item.config.paramMappingList) {
