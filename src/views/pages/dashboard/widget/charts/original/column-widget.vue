@@ -29,7 +29,6 @@ export default {
               type: 'limit-in-plot' // 限制文本标签在图形范围内，可以防止文本标签于图表组件如坐标轴发生重叠遮挡
             }
           ],
-          adjustPosition: true,
           style: {
             fill: this.widget.config.label?.style?.fill || this.getChartTheme('textColor')
           }

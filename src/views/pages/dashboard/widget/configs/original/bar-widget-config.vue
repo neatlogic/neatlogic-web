@@ -118,11 +118,12 @@
           val => {
             if(val){
               setConfigValue('label', {
+                position: 'right',
                 visible: true,
                 style: {
-                  fill: val,
-                },
-              })
+                  fill: val
+                }
+              });
             } else{
               setConfigValue('label', {visible:true});
             }

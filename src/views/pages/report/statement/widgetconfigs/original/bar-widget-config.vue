@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-nm">
     <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">
         {{ $t('term.report.axis.yaxisshow') }}
@@ -101,32 +101,51 @@
         </div>
       </div>
     </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.customcolor') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <div class="pl-md pr-md">
-          <ColorPicker
-            :value="config.color"
-            :transfer="true"
-            alpha
-            recommend
-            class="colorPicker"
-            transfer-class-name="color-picker-transfer-class"
-            @on-change="val => {
-              setConfigValue('color', val);
-            }"
-          />
-        </div>
-      </div>
-    </div>
+    <TsFormItem :label="$t('term.report.customcolor')" labelPosition="top">
+      <ColorPicker
+        :value="config.color"
+        :transfer="true"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="val => {
+          setConfigValue('color', val);
+        }"
+      />
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.statisticcolor')" labelPosition="top">
+      <ColorPicker
+        :value="config.label && config.label.style && config.label.style.fill"
+        :transfer="true"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="
+          val => {
+            if(val){
+              setConfigValue('label', {
+                position: 'right',
+                visible: true,
+                style: {
+                  fill: val
+                }
+              });
+            } else{
+              setConfigValue('label', {visible:true});
+            }
+          }
+        "
+      />
+    </TsFormItem>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
