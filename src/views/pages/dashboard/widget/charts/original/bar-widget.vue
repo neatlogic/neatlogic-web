@@ -20,6 +20,12 @@ export default {
         yField: 'yField',
         legend: { visible: true, position: 'bottom' },
         color: this.getChartTheme('chart'),
+        label: { 
+          visible: true,
+          style: {
+            fill: this.widget.config.label?.style?.fill || this.getChartTheme('textColor')
+          }
+        },
         statistic: {
           visible: true
         },
