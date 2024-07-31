@@ -145,8 +145,6 @@
                       fill: val,
                     },
                   })
-                } else{
-                  setConfigValue('label', {visible:true});
                 }
               }
             "
