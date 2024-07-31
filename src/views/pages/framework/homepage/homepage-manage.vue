@@ -12,7 +12,7 @@
           v-bind="tableConfig"
           :theadList="theadList"
           keyName="id"
-          :canDrag="$utils.isEmpty(tableConfig.thbodList) ? false : true"
+          :canDrag="$utils.isEmpty(tableConfig.tbodyList) ? false : true"
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
           @updateRowSort="handleDragUpdate"
