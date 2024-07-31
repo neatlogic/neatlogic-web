@@ -41,15 +41,15 @@
           </template>
           <template v-slot:lastFireTime="{ row }">
             <span v-if="row.lastFireTime">{{ row.lastFireTime | formatDate }}</span>
-            <span v-else>-</span>
+            <span v-else></span>
           </template>
           <template v-slot:lastFinishTime="{ row }">
             <span v-if="row.lastFinishTime">{{ row.lastFinishTime | formatDate }}</span>
-            <span v-else>-</span>
+            <span v-else></span>
           </template>
           <template v-slot:nextFireTime="{ row }">
             <span v-if="row.nextFireTime">{{ row.nextFireTime | formatDate }}</span>
-            <span v-else>-</span>
+            <span v-else></span>
           </template>
           <template v-slot:status="{ row }">
             <div>
