@@ -25,6 +25,9 @@ const datawarehouse = {
   execDataSource(id) {
     return axios.post('/api/rest/datawarehouse/datasource/execute', {id: id});
   },
+  activeDataSource(params) {
+    return axios.post('/api/rest/datawarehouse/datasource/active', params);
+  },
   getDataSourceStatusByIds(idList) {
     return axios.post('/api/rest/datawarehouse/datasource/status/get', {idList: idList});
   },

@@ -222,6 +222,9 @@ export default {
           } else if (list.length === 0) {
             this.$emit('setPriorityByForm', []);
           }
+        } else if (this.$utils.isEmpty(data.changePriority)) {
+          // 处理表单优先级为空，使用默认优先级
+          this.$emit('setPriorityByForm', []);
         }
       }
     },

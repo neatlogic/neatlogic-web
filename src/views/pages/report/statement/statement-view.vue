@@ -11,7 +11,7 @@
           <span v-auth="['REPORT_STATEMENT_MODIFY']" class="action-item tsfont-edit" @click="editReport()">{{ $t('page.edit') }}</span>
         </div>
       </template>
-      <div slot="content" class="pl-md pr-md">
+      <div slot="content">
         <div ref="canvasContainer" class="bg-block radius-md canvasContainer">
           <div class="canvas-background" :style="canvasStyle(reportData)"></div>
           <div
