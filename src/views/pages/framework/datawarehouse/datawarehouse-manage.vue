@@ -39,6 +39,18 @@
           <template v-slot:cronExpression="{ row }">
             <TsQuartz v-if="row.cronExpression" :value="row.cronExpression" showType="read"></TsQuartz>
           </template>
+          <template v-slot:lastFireTime="{ row }">
+            <span v-if="row.lastFireTime">{{ row.lastFireTime | formatDate }}</span>
+            <span v-else></span>
+          </template>
+          <template v-slot:lastFinishTime="{ row }">
+            <span v-if="row.lastFinishTime">{{ row.lastFinishTime | formatDate }}</span>
+            <span v-else></span>
+          </template>
+          <template v-slot:nextFireTime="{ row }">
+            <span v-if="row.nextFireTime">{{ row.nextFireTime | formatDate }}</span>
+            <span v-else></span>
+          </template>
           <template v-slot:status="{ row }">
             <div>
               <div v-if="row.status == 'doing'" style="width: 42px">
@@ -54,14 +66,23 @@
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
-              <ul v-if="row.status != 'doing'" class="tstable-action-ul">
+              <ul class="tstable-action-ul">
+                <li @click.stop>
+                  <i-switch
+                    v-model="row.isActive"
+                    :true-value="1"
+                    :false-value="0"
+                    @on-change="activeReportDataSource(row)"
+                  ></i-switch>
+                  <span class="actionText" v-html="row.isActive == 1 ? $t('page.enable') : $t('page.disable')"></span>
+                </li>
                 <li class="tsfont-formstaticlist" @click="showReportDataSyncAudit(row)">{{ $t('term.framework.syncreport') }}</li>
-                <li class="tsfont-play" @click="runReportDataSource(row)">{{ $t('term.framework.syncdata') }}</li>
-                <li class="tsfont-db" @click="showReportData(row)">{{ $t('page.viewtarget', { target: $t('page.data') }) }}</li>
-                <li v-if="$utils.isUserHasAuth('DATA_WAREHOUSE_MODIFY')" class="tsfont-filter-o" @click="editCondition(row)">{{ $t('dialog.title.edittarget', { target: $t('page.condition') }) }}</li>
+                <li v-if="row.status != 'doing' && row.isActive == 1" class="tsfont-play" @click="runReportDataSource(row)">{{ $t('term.framework.syncdata') }}</li>
+                <li v-if="row.status != 'doing'" class="tsfont-db" @click="showReportData(row)">{{ $t('page.viewtarget', { target: $t('page.data') }) }}</li>
+                <li v-if="row.status != 'doing' && $utils.isUserHasAuth('DATA_WAREHOUSE_MODIFY')" class="tsfont-filter-o" @click="editCondition(row)">{{ $t('dialog.title.edittarget', { target: $t('page.condition') }) }}</li>
                 <!--<li class="tsfont-cloud" @click="editReportDataSource(row)">编辑同步策略</li>-->
-                <li v-if="$utils.isUserHasAuth('DATA_WAREHOUSE_MODIFY')" class="tsfont-batch-upload" @click="editReportDataSource(row)">{{ $t('dialog.title.edittarget', { target: $t('page.datasource') }) }}</li>
-                <li class="tsfont-trash-o" @click="deleteReportDataSource(row)">{{ $t('page.delete') }}</li>
+                <li v-if="row.status != 'doing' && $utils.isUserHasAuth('DATA_WAREHOUSE_MODIFY')" class="tsfont-batch-upload" @click="editReportDataSource(row)">{{ $t('dialog.title.edittarget', { target: $t('page.datasource') }) }}</li>
+                <li v-if="row.status != 'doing'" class="tsfont-trash-o" @click="deleteReportDataSource(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -125,6 +146,9 @@ export default {
         { key: 'status', title: this.$t('page.status') },
         { key: 'dataCount', title: this.$t('page.datacapacity') },
         { key: 'cronExpression', title: this.$t('term.framework.cronexpression') },
+        { key: 'lastFireTime', title: '最后一次激活时间' },
+        { key: 'lastFinishTime', title: '最后一次完成时间' },
+        { key: 'nextFireTime', title: '下一次激活时间' },
         { key: 'description', title: this.$t('page.explain') },
         { key: 'action' }
       ],
@@ -160,6 +184,21 @@ export default {
           });
         }
       });
+    },
+    activeReportDataSource(row) {
+      let param = {
+        id: row.id,
+        isActive: row.isActive
+      };
+      this.$api.framework.datawarehouse.activeDataSource(param)
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.searchReportDataSource();
+          }
+        })
+        .catch(error => {
+          this.$Notice.error({ title: error.data.Message });
+        });
     },
     editCondition(row) {
       this.isConditionShow = true;

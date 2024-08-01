@@ -20,6 +20,19 @@ export default {
         yField: 'yField',
         legend: { visible: true, position: 'bottom' },
         color: this.getChartTheme('chart'),
+        label: {
+          visible: true,
+          position: 'top',
+          offset: 0, // 设置偏移量为0，柱状图和文本标签距离不需要太远
+          layout: [
+            {
+              type: 'limit-in-plot' // 限制文本标签在图形范围内，可以防止文本标签于图表组件如坐标轴发生重叠遮挡
+            }
+          ],
+          style: {
+            fill: this.widget.config.label?.style?.fill || this.getChartTheme('textColor')
+          }
+        },
         statistic: {
           visible: true
         },
@@ -82,6 +95,10 @@ export default {
           if (dd) {
             dd.yField += d.yField;
           } else {
+            //不展示0
+            // if (d.yField === 0) {
+            //   d.yField = null;
+            // }
             data.push(d);
           }
         });
