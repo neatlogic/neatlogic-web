@@ -101,20 +101,8 @@ export default {
       let list = [];
       if (!this.$utils.isEmpty(this.moduleList)) {
         this.moduleList.forEach(m => {
-          let findItem = this.currentModuleList.find(item => item.group === m.moduleId);
-          let obj = {
-            ...m,
-            isDefault: 0,
-            defaultPage: ''
-          };
-          if (findItem) {
-            if (findItem.hasOwnProperty('isDefault')) {
-              obj.isDefault = findItem.isDefault;
-            }
-            if (findItem.hasOwnProperty('defaultPage')) {
-              obj.defaultPage = findItem.defaultPage;
-            }
-          }
+          const findItem = this.currentModuleList.find(item => item.moduleId === m.moduleId); // 假设是moduleId而非group
+          const obj = Object.assign({}, m, findItem || {});
           list.push(obj);
         });
       }
