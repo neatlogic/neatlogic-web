@@ -100,7 +100,7 @@ export default {
           type: 'text',
           label: '名称',
           maxlength: 50,
-          validateList: ['required', { name: 'searchUrl', url: '/api/rest/homepage/save', params: () => ({ id: this.formData.id }) }]
+          validateList: ['required', 'name-special', { name: 'searchUrl', url: '/api/rest/homepage/save', params: () => ({ id: this.formData.id }) }]
         },
         authorityList: { 
           type: 'userselect',
