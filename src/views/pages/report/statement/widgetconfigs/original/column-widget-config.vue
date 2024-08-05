@@ -128,27 +128,6 @@
         "
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="坐标轴颜色" labelPosition="top">
-      <ColorPicker
-        :value="config.axisColor"
-        :transfer="true"
-        alpha
-        recommend
-        class="colorPicker"
-        transfer-class-name="color-picker-transfer-class"
-        @on-change="
-          val => {
-            setConfigValue('axisColor', val);
-            setConfigValue('xAxis.title.style.fill', val || defaultSizeColor);
-            setConfigValue('xAxis.label.style.fill', val || defaultSizeColor);
-            setConfigValue('xAxis.line.style.stroke', val || defaultSizeColor);
-            setConfigValue('yAxis.label.style.fill', val || defaultSizeColor);
-            setConfigValue('yAxis.title.style.fill', val || defaultSizeColor);
-            setConfigValue('yAxis.title.style.fill', val || defaultSizeColor);
-          }
-        "
-      />
-    </TsFormItem>
     <TsFormItem label="坐标轴字体大小" labelPosition="top">
       <TsFormSelect
         :value="config.axisFontSize || 12"

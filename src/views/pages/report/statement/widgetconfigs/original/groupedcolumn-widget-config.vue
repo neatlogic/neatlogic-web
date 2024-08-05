@@ -35,40 +35,36 @@
         ></TsFormSelect>
       </div>
     </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.axis.yaxisshow') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <TsFormSwitch
-          :value="config.yAxis"
-          :true-value="true"
-          :false-value="false"
-          @change="
-            val => {
-              setConfigValue('yAxis', val);
-            }
-          "
-        ></TsFormSwitch>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.axis.xaxisshow') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <TsFormSwitch
-          :value="config.xAxis"
-          :true-value="true"
-          :false-value="false"
-          @change="
-            val => {
+    <TsFormItem :label="$t('term.report.axis.yaxisshow')" labelPosition="top">
+      <TsFormSwitch
+        :value="config.yAxis?.hasOwnProperty('visible')?config.yAxis.visible:true"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            setConfigValue('yAxis.visible', val);
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.axis.xaxisshow')" labelPosition="top">
+      <TsFormSwitch
+        :value="config.xAxis ? true : false"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            if (val) {
+              setConfigValue('xAxis', {
+                title: { text: '' }
+              });
+            } else {
               setConfigValue('xAxis', val);
             }
-          "
-        ></TsFormSwitch>
-      </div>
-    </div>
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
     <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">
         {{ $t('term.report.axis.columnwidth') }}
@@ -107,6 +103,21 @@
             } else {
               setConfigValue('label', val);
             }
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem label="辅助线" labelPosition="top">
+      <TsFormSwitch
+        :value="!!config?.yAxis?.hasOwnProperty('grid')?!!config.yAxis.grid:true"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            if(typeof config.yAxis ==='boolean'){
+              setConfigValue('yAxis', {});
+            }
+            setConfigValue('yAxis.grid.visible', val);
           }
         "
       ></TsFormSwitch>
