@@ -17,7 +17,7 @@
               </a>
               <DropdownMenu slot="list">
                 <DropdownItem v-if="filterCiTopoTemplateList.length > 0" disabled>{{ $t('term.cmdb.expandbyscene') }}</DropdownItem>
-                <DropdownItem v-for="(topoTemplate) in filterCiTopoTemplateList" :key="topoTemplate.id" :selected="searchParam.templateId === topoTemplate.id">
+                <DropdownItem v-for="topoTemplate in filterCiTopoTemplateList" :key="topoTemplate.id" :selected="searchParam.templateId === topoTemplate.id">
                   <span :class="{ 'text-grey': !topoTemplate.isActive }" @click="showTopoTemplate(topoTemplate)">{{ topoTemplate.name }}</span>
                   <span v-auth="['CI_MODIFY']" class="ml-xs tsfont-edit" @click="editTopoTemplate(topoTemplate)"></span>
                   <span v-auth="['CI_MODIFY']" class="ml-xs tsfont-trash-o" @click="deleteTopoTemplate(topoTemplate)"></span>
@@ -414,7 +414,7 @@ export default {
       //window.setTimeout(() => {
       const graphEl = this.$refs['graph'];
       if (graphEl) {
-        let graph = d3.select(graphEl);
+        const graph = d3.select(graphEl);
         const _this = this;
         graph.on('dblclick.zoom', null).on('wheel.zoom', null).on('mousewheel.zoom', null);
         if (!graph.graphviz) {
@@ -662,26 +662,11 @@ export default {
   }
 };
 </script>
-<style lang="less" scoped>
+<style lang="less">
 @import '../public/graphviz.less';
-.header {
-  display: grid;
-  grid-template-columns: 30% 40% 30%;
-}
-.layout {
-  display: flex;
-  .item {
-    padding: 0 10px;
-    position: relative;
-    &:not(:last-child):after {
-      content: '|';
-      color: @dividing-color;
-      top: 0;
-      right: 0;
-      position: absolute;
-    }
-  }
-}
+</style>
+<style lang="less" scoped>
+
 .grid {
   display: grid;
   grid-template-columns: auto 250px;

@@ -46,6 +46,7 @@
     "startconfirm": "Are you sure to start {target}？",
     "revocatetargetconfirm": "Are you sure to recall of the {target}?",
     "passtargetconfirm": "Are you sure to pass {target}？",
+    "executetargetconfirm": "Are you sure to execute {target}？",
     "rejecttargetconfirm": "Are you sure to reject {target}？",
     "deletetargetconfirm": "Are you sure to delete {target}?",
     "deleteconfirm": "Are you sure to delete this {target}?",
