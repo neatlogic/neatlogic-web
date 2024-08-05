@@ -26,6 +26,9 @@ export default {
     yAxis: { title: { text: '' } },
     xAxis: {
       title: { text: '' }
+    },
+    label: {
+      visible: true
     }
   } 
 };

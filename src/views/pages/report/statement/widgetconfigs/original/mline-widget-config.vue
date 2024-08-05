@@ -134,7 +134,7 @@
     </div>
     <TsFormItem :label="$t('term.report.showdata')" labelPosition="top">
       <TsFormSwitch
-        :value="config?.label.hasOwnProperty('visible') ? config.label.visible : false"
+        :value="config?.label?.hasOwnProperty('visible') ? config.label.visible : false"
         :true-value="true"
         :false-value="false"
         @change="
@@ -175,7 +175,7 @@
     </TsFormItem>
     <TsFormItem label="辅助线" labelPosition="top">
       <TsFormSwitch
-        :value="!!config.yAxis?.hasOwnProperty('grid')?!!config.yAxis.grid:true"
+        :value="!!config?.yAxis?.hasOwnProperty('grid')?!!config.yAxis.grid:true"
         :true-value="true"
         :false-value="false"
         @change="

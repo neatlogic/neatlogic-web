@@ -27,6 +27,9 @@ export default {
           xField: { alias: this.$t('term.report.axis.xfield') },
           yField: { alias: this.$t('term.report.axis.yfield') }
         },
+        label: {
+          visible: true
+        },
         theme: this.canvas.config.theme && themes[this.canvas.config.theme]
       }
     };

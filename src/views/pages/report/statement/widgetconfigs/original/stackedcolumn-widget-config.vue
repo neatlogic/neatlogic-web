@@ -145,7 +145,7 @@
     </TsFormItem>
     <TsFormItem label="辅助线" labelPosition="top">
       <TsFormSwitch
-        :value="!!config.yAxis?.hasOwnProperty('grid')?!!config.yAxis.grid:true"
+        :value="!!config?.yAxis?.hasOwnProperty('grid')?!!config.yAxis.grid:true"
         :true-value="true"
         :false-value="false"
         @change="

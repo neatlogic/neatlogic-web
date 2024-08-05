@@ -617,7 +617,7 @@
       "stroke": null,
       "lineWidth": 0
     },
-    "fillColorDark": "#2c3542",
+    "fillColorDark": "#ffffff",
     "fillColorLight": "#ffffff",
     "autoRotate": true
   },
@@ -633,7 +633,7 @@
   },
   "overflowLabels": {
     "style": {
-      "fill": "#A6A6A6",
+      "fill": "#ffffff",
       "fontSize": 12,
       "fontFamily": "\"Segoe UI\", Roboto, \"Helvetica Neue\", Arial,\n    \"Noto Sans\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\",\n    \"Noto Color Emoji\"",
       "stroke": "#000",

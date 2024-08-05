@@ -148,6 +148,18 @@
         "
       ></TsFormSwitch>
     </TsFormItem>
+    <TsFormItem label="辅助线" labelPosition="top">
+      <TsFormSwitch
+        :value="!!config?.yAxis?.hasOwnProperty('grid')?!!config.yAxis.grid:true"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            setConfigValue('yAxis.grid.visible', val);
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
   </div>
 </template>
 <script>
