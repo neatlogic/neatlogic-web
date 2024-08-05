@@ -124,35 +124,68 @@
         transfer-class-name="color-picker-transfer-class"
         @on-change="
           val => {
-            if(val){
-              setConfigValue('label', {
-                position: 'right',
-                visible: true,
-                offset: 0, // 设置偏移量为0，柱状图和文本标签距离不需要太远
-                layout: [
-                  {
-                    type: 'limit-in-plot' // 限制文本标签在图形范围内，可以防止文本标签于图表组件如坐标轴发生重叠遮挡
-                  }
-                ],
-                style: {
-                  fill: val
-                }
-              });
-            }
+            setConfigValue('label.position', 'right');
+            setConfigValue('label.style.fill', val || defaultSizeColor);
           }
         "
       />
     </TsFormItem>
+    <TsFormItem label="统计数据字体大小" labelPosition="top">
+      <TsFormSelect
+        :value="config.labelFontSize || 12"
+        :dataList="axisFontSizeList"
+        border="border"
+        transfer
+        @change="
+          val => {
+            setConfigValue('labelFontSize', val || 12);
+            setConfigValue('label.style.fontSize', val || 12);
+          }
+        "
+      ></TsFormSelect>
+    </TsFormItem>
+    <TsFormItem label="辅助线" labelPosition="top">
+      <TsFormSwitch
+        :value="!!config.xAxis?.hasOwnProperty('grid')?!!config.xAxis.grid:true"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            setConfigValue('xAxis.grid.visible', val);
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem label="坐标轴字体大小" labelPosition="top">
+      <TsFormSelect
+        :value="config.axisFontSize || 12"
+        :dataList="axisFontSizeList"
+        border="border"
+        transfer
+        @change="
+          val => {
+            setConfigValue('axisFontSize', val || defaultFontSize);
+            setConfigValue('xAxis.title.style.fontSize', val || defaultFontSize);
+            setConfigValue('xAxis.label.style.fontSize', val || defaultFontSize);
+            setConfigValue('yAxis.label.style.fontSize', val || defaultFontSize);
+            setConfigValue('yAxis.title.style.fontSize', val || defaultFontSize);
+          }
+        "
+      ></TsFormSelect>
+    </TsFormItem>
   </div>
 </template>
 <script>
+import { WidgetBaseConfig } from './base-config.js';
 export default {
   name: '',
   components: {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
+  extends: WidgetBaseConfig,
   props: { config: { type: Object } },
   data() {
     return {

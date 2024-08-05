@@ -27,6 +27,9 @@ export default {
         autoEllipsis: true 
       }, 
       title: { text: '' } 
-    } 
+    },
+    label: {
+      visible: true
+    }
   } 
 };
