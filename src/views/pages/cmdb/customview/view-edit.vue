@@ -442,6 +442,56 @@ export default {
             this.topoData = res.Return.config;
             this.tagList = res.Return.tagList;
             this.topo.fromJson(this.topoData);
+            //去掉不存在属性
+            const attrNodes = this.topo.getNodeByType('attr');
+            const nodeMap = {};
+            const attrIdList = [];
+            if (attrNodes && attrNodes.length > 0) {
+              attrNodes.forEach(node => {
+                const aId = node.getConfig()['attrId'];
+                if (aId) {
+                  nodeMap[node.getUuid()] = aId;
+                  if (!attrIdList.includes(aId)) {
+                    attrIdList.push(aId);
+                  }
+                }
+              });
+              if (attrIdList.length > 0) {
+                this.$api.cmdb.ci.getAttrByIdList(attrIdList).then(res => {
+                  const attrList = res.Return;
+                  for (let k in nodeMap) {
+                    if (!attrList.find(d => d.id === nodeMap[k])) {
+                      this.removeAttr({ uuid: k });
+                    }
+                  }
+                });
+              }
+            }
+            //去掉不存在关系
+            const relNodes = this.topo.getNodeByType('rel');
+            const relMap = {};
+            const relIdList = [];
+            if (relNodes && relNodes.length > 0) {
+              relNodes.forEach(node => {
+                const aId = node.getConfig()['relId'];
+                if (aId) {
+                  relMap[node.getUuid()] = aId;
+                  if (!relIdList.includes(aId)) {
+                    relIdList.push(aId);
+                  }
+                }
+              });
+              if (relIdList.length > 0) {
+                this.$api.cmdb.ci.getRelByIdList(relIdList).then(res => {
+                  const relList = res.Return;
+                  for (let k in relMap) {
+                    if (!relList.find(d => d.id === relMap[k])) {
+                      this.removeRel({ uuid: k });
+                    }
+                  }
+                });
+              }
+            }
           });
         } else {
           this.topo.fromJson(this.topoData);
