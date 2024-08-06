@@ -23,7 +23,12 @@ export default {
       visible: true, 
       position: 'bottom' 
     }, 
-    yAxis: true, 
-    xAxis: true 
+    yAxis: { title: { text: '' } },
+    xAxis: {
+      title: { text: '' }
+    },
+    label: {
+      visible: true
+    }
   } 
 };
