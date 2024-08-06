@@ -95,6 +95,9 @@ export default {
                   if (c.type == 'form') {
                     conditionGroup.conditionList.splice(i, 1);
                   }
+                  if (c.type == 'common' && c.name == 'processStep') {
+                    conditionGroup.conditionList.splice(i, 1);
+                  }
                 }
               }
             }
