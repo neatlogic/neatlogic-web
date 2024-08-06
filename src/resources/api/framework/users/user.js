@@ -95,5 +95,8 @@ export default {
   },
   deleteUserSetting(data) { //删除用户个性化设置
     return axios.post('/api/rest/user/data/delete', data);
+  },
+  clearUserSessionCache() { //删除用户会话缓存
+    return axios.post('/api/rest/user/session/cache/clear');
   }
 };

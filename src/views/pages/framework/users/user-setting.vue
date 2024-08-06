@@ -46,6 +46,7 @@
                 </template>
               </TsForm>
               <Button class="save" type="primary" @click="save()">{{ $t('page.save') }}</Button>
+              <Button class="clearCache" type="default" @click="clearUserSessionCache()">{{ $t('page.userclearsessioncache') }}</Button>
             </TabPane>
             <TabPane :label="$t('term.framework.modifypwd')" name="password">
               <TsForm ref="password" :itemList="pwdSetting"></TsForm>
@@ -506,6 +507,14 @@ export default {
         });
       }
     },
+    clearUserSessionCache: function() {
+      this.$api.framework.user.clearUserSessionCache().then(res => {
+        if (res.Status == 'OK') {
+          this.userToken = res.Return;
+          this.$Message.success(this.$t('message.clearsuccess'));
+        }
+      });
+    },
     //个性化保存
     saveProfile: function(data) {
       this.$api.framework.user
@@ -573,6 +582,10 @@ export default {
   }
   .save {
     margin-left: 120px;
+  }
+  .clearCache {
+    margin-left: 10px;
+    margin-top: 24px;
   }
   .convenience {
     .title {
