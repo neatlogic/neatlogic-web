@@ -1008,5 +1008,6 @@
   "installtime": "打包日期",
   "orgnization": "组织",
   "isdefaultselectd": "是否默认选中",
-  "defaultselectdonlyvalue": "非必填只有一个选项时，默认选中"
+  "defaultselectdonlyvalue": "非必填只有一个选项时，默认选中",
+  "userclearsessioncache": "清除用户会话缓存"
 }
