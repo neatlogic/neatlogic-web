@@ -38,39 +38,51 @@
                 <Poptip
                   trigger="hover"
                   placement="right"
-                  width="400"
+                  width="800"
                   :transfer="true"
                 >
                   <a href="javascript:void(0)">{{ $t('page.viewexample') }}</a>
                   <div slot="content" class="api">
                     <pre>
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;ci&gt;
-   &lt;!--{{ $t('message.framework.cimatrixsql') }}--&gt;
+&lt;view&gt;
+   &lt;!--{{ $t('message.framework.viewmatrixsql') }}--&gt;
   &lt;attrs&gt;
-    &lt;attr name="user_id" label="{{ $t('page.userid') }}"/&gt;
-    &lt;attr name="user_name" label="{{ $t('page.username') }}"/&gt;
-    &lt;attr name="teamName" label="{{ $t('page.group') }}"/&gt;
+    &lt;attr name="id" label="ID" /&gt;
+    &lt;attr name="xuqiu" label="需求" /&gt;
+    &lt;attr name="moduleName" label="名称" /&gt;
+    &lt;attr name="midver" label="版本" /&gt;
+    &lt;attr name="type" label="架构类型" /&gt;
+    &lt;attr name="serviceName" label="中间件服务名" /&gt;
+    &lt;attr name="port" label="端口" /&gt;
+    &lt;attr name="app" label="应用基架资源规格" /&gt;
   &lt;/attrs&gt;
   &lt;sql&gt;
     SELECT
-    &lt;!--{{ $t('message.framework.reqciid') }}--&gt;
-    `u`.`id` AS id,
-    &lt;!--{{ $t('message.framework.reqciname') }}--&gt;
-    `u`.`user_name` AS name,
-    &lt;!--{{ $t('message.framework.reqciattrs') }}--&gt;
-    `u`.`user_id` as user_id,
-    `u`.`user_name` as user_name,
-    group_concat( `t`.`name`) AS teamName
-    FROM
-    `user` `u`
-    LEFT JOIN `user_team` `ut`
-    ON `u`.`uuid` = `ut`.`user_uuid`
-    LEFT JOIN `team` `t`
-    ON `t`.`uuid` = `ut`.`team_uuid`
-    GROUP BY u.uuid
+    &lt;!--{{ $t('message.framework.reqid') }}--&gt;
+    a.`cientity_id` AS id,
+    &lt;!--{{ $t('message.framework.requuid') }}--&gt;
+    MD5(a.`cientity_id`) AS uuid,
+    &lt;!--{{ $t('message.framework.reqattrs') }}--&gt;
+    b.`name` AS moduleName,
+    a.`midver` AS midver,
+    a.`xuqiu` AS xuqiu,
+    a.`baseline` AS baseline,
+    a.`type` AS type,
+    e.`name` AS serviceName,
+    d.`port` AS port,
+    f.`name` AS app
+    FROM @{DATA_SCHEMA}.`ci_inframid_line` a
+    JOIN @{DATA_SCHEMA}.`ci_ciroot` b ON a.cientity_id = b.`cientity_id`
+    LEFT JOIN `cmdb_rel` cr0 ON cr0.`from_name` = 'inframid_line' AND cr0.`to_name` = 'cfgfw'
+    LEFT JOIN `cmdb_relentity` cr ON cr.`from_cientity_id` = a.cientity_id AND  cr.`rel_id` = cr0.`id`
+    LEFT JOIN @{DATA_SCHEMA}.`ci_cfgfw` d ON d.cientity_id = cr.to_cientity_id
+    LEFT JOIN @{DATA_SCHEMA}.`ci_ciroot` e ON e.cientity_id = d.`cientity_id`
+
+    LEFT JOIN `cmdb_rel` cr2 ON cr2.`from_name` = 'infrabase_line' AND cr2.`to_name` = 'inframid_line'
+    LEFT JOIN `cmdb_relentity` cr1 ON cr1.`to_cientity_id` = a.cientity_id AND  cr1.`rel_id` = cr2.`id`
+    LEFT JOIN @{DATA_SCHEMA}.`ci_ciroot` f ON f.cientity_id = cr1.from_cientity_id
   &lt;/sql&gt;
-&lt;/ci&gt;
+&lt;/view&gt;
                     </pre>
                   </div>
                 </Poptip>
