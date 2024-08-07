@@ -1009,5 +1009,9 @@
   "orgnization": "组织",
   "isdefaultselectd": "是否默认选中",
   "defaultselectdonlyvalue": "非必填只有一个选项时，默认选中",
-  "userclearsessioncache": "清除用户会话缓存"
+  "userclearsessioncache": "清除用户会话缓存",
+  "lastfire": "最后激活",
+  "lastfinish": "最后完成",
+  "nextfire": "下次激活",
+  "jobtime": "作业时间"
 }

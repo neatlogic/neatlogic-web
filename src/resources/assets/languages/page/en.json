@@ -1007,5 +1007,9 @@
   "orgnization": "organization",
   "isdefaultselectd": "Is it selected by default",
   "defaultselectdonlyvalue": "When there is only one option that is not required, it is selected by default",
-  "userclearsessioncache": "Clear user session cache"
+  "userclearsessioncache": "Clear user session cache",
+  "lastfire": "Finally activated",
+  "lastfinish": "Finally completed",
+  "nextfire": "Next activation",
+  "jobtime": "Homework time"
 }
