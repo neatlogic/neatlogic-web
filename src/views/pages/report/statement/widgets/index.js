@@ -19,6 +19,8 @@ export { default as liquidwidget } from './original/liquid-widget.vue';
 export { default as pscatterwidget } from './original/pscatter-widget.vue';
 export { default as scatterwidget } from './original/scatter-widget.vue';
 export { default as heatmapwidget } from './original/heatmap-widget.vue';
+export { default as columnlinewidget } from './original/columnline-widget.vue';
+
 export { default as funnelwidget } from './others/funnel-widget.vue';
 export { default as wordcloudwidget } from './others/wordcloud-widget.vue';
 export { default as customwidget } from './others/custom-widget.vue';

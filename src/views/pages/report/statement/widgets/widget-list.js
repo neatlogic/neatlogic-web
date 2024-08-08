@@ -35,6 +35,7 @@ import { default as pscatter } from './define/p-scatter.js';
 import { default as scatter } from './define/scatter.js';
 import { default as heatmap } from './define/heatmap.js';
 import { default as wordcloud } from './define/wordcloud.js';
+import { default as columnline } from './define/columnline.js';
 export const WIDGETS = [
   text,
   image,
@@ -64,5 +65,6 @@ export const WIDGETS = [
   scatter,
   pscatter,
   heatmap,
-  wordcloud
+  wordcloud,
+  columnline
 ];
