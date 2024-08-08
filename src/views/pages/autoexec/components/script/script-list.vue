@@ -15,7 +15,7 @@
       @end="changeDragStatus('end')"
     >
       <li v-for="(step, sindex) in list" :id="'id_' + combopConfig.combopUuid + '_' + step.uuid" :key="sindex+'_'+step.uuid">
-        <div v-if="step.operation" class="inner-block radius-lg" :class="{'hide-li':dragStatus == 'start' || !step.isShow, 'show-li': step.isShow, 'bg-op': step.operationName != 'native/IF-Block', 'border-base': step.operationName == 'native/IF-Block'}">
+        <div v-if="step.operation" class="inner-block radius-lg" :class="{'hide-li':dragStatus == 'start' || !step.isShow, 'show-li': step.isShow, 'bg-op': step.operationName != 'native/IF-Block' && step.operationName != 'native/LOOP-Block', 'border-base': step.operationName == 'native/IF-Block' || step.operationName == 'native/LOOP-Block'}">
           <!-- <div class="script-title border-color overflow" :class="step.operationType && step.operationType == 'script' ? 'tsfont-cloud' : 'tsfont-block'"> -->
           <div>
             <Tooltip
@@ -64,7 +64,7 @@
             @change="val=>{changeStep(val,step.uuid)}"
           ></item>
         </div>
-        <div v-else class="inner-block radius-lg hide-li" :class="{'bg-op': step.operationName != 'native/IF-Block', 'border-base': step.operationName == 'native/IF-Block'}">
+        <div v-else class="inner-block radius-lg hide-li" :class="{'bg-op': step.operationName != 'native/IF-Block' && step.operationName != 'native/LOOP-Block', 'border-base': step.operationName == 'native/IF-Block'&& step.operationName != 'native/LOOP-Block'}">
           <div class="script-title border-color">
             <div class="overflow">
               【{{ typeText(step.operationType) }}】
@@ -284,6 +284,7 @@ export default {
       let _this = this;
       _this.list.forEach(l => {
         if (l.uuid == id) {
+          console.log(config);
           Object.assign(l, config);
         }
       });
@@ -404,6 +405,8 @@ export default {
         let type = 'common';
         if (step.operationName == 'native/IF-Block') {
           type = 'ConditionTool';
+        } else if (step.operationName == 'native/LOOP-Block') {
+          type = 'LoopBlock';
         }
         return type;
       };
@@ -416,7 +419,7 @@ export default {
         if (val && !this.$utils.isSame(val, this.list)) {
           this.list = val.map((v, vindex) => {
             if (v.config) {
-              if (v.operationName != 'native/IF-Block') {
+              if (v.operationName != 'native/IF-Block' && v.operationName != 'native/LOOP-Block') {
                 this.$set(v.config, 'profileId', v.config.profileId || null);
               }
             }

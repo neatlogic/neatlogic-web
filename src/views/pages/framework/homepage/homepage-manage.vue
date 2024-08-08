@@ -81,7 +81,7 @@ export default {
         }
       ],
       tableConfig: {
-        thbodList: []
+        tbodyList: []
       },
       isShowEditDialog: false,
       currentId: null,

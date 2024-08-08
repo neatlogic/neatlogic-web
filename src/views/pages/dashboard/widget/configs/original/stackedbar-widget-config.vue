@@ -59,7 +59,7 @@
                 setConfigValue('label', {
                   position: 'middle',
                   content: item => {
-                    return item.yField && Math.floor(item.yField * 100) / 100;
+                    return item.xField && Math.floor(item.xField * 100) / 100;
                   }
                 });
               } else {

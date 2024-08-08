@@ -19,6 +19,15 @@ export default {
         xField: 'xField',
         yField: 'yField',
         color: this.getChartTheme('chart'),
+        point: {
+          visible: true
+        },
+        label: { 
+          visible: true,
+          style: {
+            fill: this.widget.config.label?.style?.fill || this.getChartTheme('textColor')
+          }
+        },
         meta: {
           xField: {
             alias: this.widget.config.xAxis?.title?.text || this.$t('term.report.axis.xaxistitle')

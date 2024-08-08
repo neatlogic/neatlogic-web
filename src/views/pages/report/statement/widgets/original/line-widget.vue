@@ -18,6 +18,12 @@ export default {
         autoFit: true,
         xField: 'xField',
         yField: 'yField',
+        point: {
+          visible: true
+        },
+        label: {
+          visible: true
+        },
         theme: this.canvas.config.theme && themes[this.canvas.config.theme]
       }
     };

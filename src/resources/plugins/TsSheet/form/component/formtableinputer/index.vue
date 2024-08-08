@@ -231,8 +231,12 @@ export default {
           }
         });
       }
-      this.$set(formItem.config, 'isDisabled', this.disabled || false);
-      this.$set(formItem.config, 'isReadOnly', this.readonly || false);
+      if (this.disabled) {
+        this.$set(formItem.config, 'isDisabled', true);
+      }
+      if (this.readonly) {
+        this.$set(formItem.config, 'isReadOnly', true);
+      }
       return formItem;
     },
     validConfig() {

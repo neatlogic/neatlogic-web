@@ -12,7 +12,7 @@
         {{ layout.name }}
       </span>
     </div>
-    <div id="graph" :style="error?'display:none':''" class="home-page graph"></div>
+    <div ref="graph" :style="error?'display:none':''" class="home-page graph"></div>
     <div v-if="error" class="text-grey" style="padding-top:50px;text-align:center">
       {{ error }}
     </div>
@@ -86,17 +86,20 @@ export default {
       return offset;
     },
     resizeSVG() {
-      const graphEl = document.getElementById('graph');
-      d3.select('#graph')
-        .selectWithoutDataPropagation('svg')
-        .transition()
-        .attr('width', graphEl.offsetWidth - 10)
-        .attr('height', window.innerHeight - 30 - this.getGraphTop(graphEl).y);
+      const graphEl = this.$refs['graph'];
+      if (graphEl) {
+        d3.select(graphEl)
+          .selectWithoutDataPropagation('svg')
+          .transition()
+          .attr('width', graphEl.offsetWidth - 10)
+          .attr('height', window.innerHeight - 30 - this.getGraphTop(graphEl).y);
+      }
     },
     initGraph() {
-      window.setTimeout(() => {
-        const graphEl = document.getElementById('graph');
-        let graph = d3.select('#graph');
+      //window.setTimeout(() => {
+      const graphEl = this.$refs['graph'];
+      if (graphEl) {
+        const graph = d3.select(graphEl);
         graph
           .on('dblclick.zoom', null)
           .on('wheel.zoom', null)
@@ -129,12 +132,13 @@ export default {
           });
         this.renderGraph();
         d3.select(window).on('resize', this.resizeSVG);
-      }, 0);
+      }
+      //}, 0);
     },
     renderGraph() {
       this.isloading = true;
       this.error = '';
-      const graphEl = document.getElementById('graph');
+      const graphEl = this.$refs['graph'];
       const param = this.searchParam;
       param.layout = this.currentLayout;
       this.$api.cmdb.ci.getCiTopoData(param).then(res => {
@@ -219,20 +223,6 @@ export default {
   }
 };
 </script>
-<style lang="less" scope>
+<style lang="less">
 @import '../public/graphviz.less';
-.layout {
-  display: flex;
-  .item {
-    padding: 0 10px;
-    position: relative;
-    &:not(:last-child):after {
-      content: '|';
-      color: @dividing-color;
-      top: 0;
-      right: 0;
-      position: absolute;
-    }
-  }
-}
 </style>

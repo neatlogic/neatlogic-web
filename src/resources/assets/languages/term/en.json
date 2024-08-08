@@ -609,7 +609,8 @@
     "viewauthtooltip": "The current logged in person must meet both the authorization scope of the current directory and all parent and child directories in order to view work orders created through services in the current directory.",
     "reportauthtooltip": "The current logged in person must meet the following requirements in order to create a work order through the services in the current directory: within the authorization scope of the current directory, as well as all parent and child directories and services.",
     "formtag": "Form label",
-    "formtagtip": "When the label is empty: all form components in the main scene are form components; When the label is not empty: The form component is configured for the selected label."
+    "formtagtip": "When the label is empty: all form components in the main scene are form components; When the label is not empty: The form component is configured for the selected label.",
+    "stepfilter": "Process steps"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
@@ -873,7 +874,10 @@
     "combophasexpired": "The combination tool has expired",
     "pleasereedit": "Please re edit and submit for review",
     "abortjob": "Terminate assignment",
-    "runnergroupdeprecatedtips": "The parameters of the task executor group have expired. Please click confirm again and save the process"
+    "runnergroupdeprecatedtips": "The parameters of the task executor group have expired. Please click confirm again and save the process",
+    "loopitem": "Loop item",
+    "loopoperation": "Loop execution",
+    "loophelp": "Execute in a loop according to the loop item, draw branches to the environment variable ${LOOP_ITEM}"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
@@ -2680,7 +2684,8 @@
     "relyonmyservices": "Rely on my services",
     "servicerelyon": "The service I rely on",
     "dependentapp": "Dependent applications",
-    "preparation": "reserve plan"
+    "preparation": "reserve plan",
+    "exerciseplan": "Exercise plan"
   },
   "diagram": {
     "widgetlist": "Element List",

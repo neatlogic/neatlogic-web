@@ -61,7 +61,7 @@
     >
       <template slot-scope="{ row }">
         <div class="rel-container" style="cursor: pointer" @click="editRel(row)">
-          <div v-if="row.isExtended == 0" class="rel-control">
+          <div v-if="ciData.authData['cimanage'] && row.isExtended == 0" class="rel-control">
             <i class="tsfont-trash-o" @click.stop="deleteRel(row)"></i>
           </div>
           <div class="rel-main">
@@ -133,10 +133,14 @@ export default {
   destroyed() {},
   methods: {
     editRel: function(rel) {
-      this.$emit('edit', rel);
+      if (this.ciData.authData['cimanage']) {
+        this.$emit('edit', rel);
+      }
     },
     deleteRel: function(rel) {
-      this.$emit('delete', rel);
+      if (this.ciData.authData['cimanage']) {
+        this.$emit('delete', rel);
+      }
     },
     rebuildRelativeRel(row) {
       this.$createDialog({

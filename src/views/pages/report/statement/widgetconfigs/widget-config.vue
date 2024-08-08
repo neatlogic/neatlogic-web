@@ -35,19 +35,22 @@ export default {
   destroyed() {},
   methods: {
     setConfig(attrName, attrValue) {
-      if (attrName.indexOf('.') == -1) {
+      if (attrName.indexOf('.') === -1) {
+        // 直接设置属性
         this.$set(this.widget.config, attrName, attrValue);
       } else {
-        const str = attrName.split('.');
+        // 处理嵌套属性
+        const path = attrName.split('.');
         let obj = this.widget.config;
-        for (let i = 0; i < str.length - 1; i++) {
-          if (obj[str[i]]) {
-            obj = obj[str[i]];
-          } else {
-            this.$set(obj, str[i], {});
+        for (let i = 0; i < path.length - 1; i++) {
+          // 使用 Vue.set 确保响应性
+          if (!obj[path[i]]) {
+            this.$set(obj, path[i], {});
           }
+          obj = obj[path[i]];
         }
-        this.$set(obj, str[str.length - 1], attrValue);
+        // 最后一级属性使用 Vue.set 确保响应性
+        this.$set(obj, path[path.length - 1], attrValue);
       }
     }
   },

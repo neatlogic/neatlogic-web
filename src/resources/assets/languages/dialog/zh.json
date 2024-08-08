@@ -46,6 +46,7 @@
     "startconfirm": "是否确认开始当前{target}？",
     "revocatetargetconfirm": "是否确认撤销当前{target}？",
     "passtargetconfirm": "是否确认通过当前{target}？",
+    "executetargetconfirm": "是否确认执行当前{target}？",
     "rejecttargetconfirm": "是否确认驳回当前{target}？",
     "deletetargetconfirm": "是否确认删除{target}？",
     "deleteconfirm": "是否确认删除当前{target}？",

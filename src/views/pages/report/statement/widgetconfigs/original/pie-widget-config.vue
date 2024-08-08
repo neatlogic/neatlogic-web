@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-nm">
     <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">
         {{ $t('term.report.innerradius') }}
@@ -80,31 +80,12 @@
     </div>
     <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.statisticfontsize') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <div class="pl-md pr-md">
-          <Slider
-            :value="config.statistic.content.style.fontSize"
-            :min="12"
-            :max="50"
-            :step="1"
-            show-tip="never"
-            @on-change="val => {
-              setConfigValue('statistic.content.style.fontSize', val);
-            }"
-          ></Slider>
-        </div>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
         {{ $t('term.report.statisticcolor') }}
       </label>
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <ColorPicker
-            :value="config.statistic.content.style.color"
+            :value="config.label && config.label.style && config.label.style.fill || ''"
             :transfer="true"
             alpha
             recommend
@@ -112,24 +93,41 @@
             transfer-class-name="color-picker-transfer-class"
             @on-change="
               val => {
-                setConfigValue('statistic.content.style.color', val);
+                setConfigValue('label.style.fill', val || 12);
               }
             "
           />
         </div>
       </div>
     </div>
+    <TsFormItem label="统计数据字体大小" labelPosition="top">
+      <TsFormSelect
+        :value="config.labelFontSize || 12"
+        :dataList="axisFontSizeList"
+        border="border"
+        transfer
+        @change="
+          val => {
+            setConfigValue('labelFontSize', val || 12);
+            setConfigValue('label.style.fontSize', val || 12);
+          }
+        "
+      ></TsFormSelect>
+    </TsFormItem>
   </div>
 </template>
 <script>
+import { WidgetBaseConfig } from './base-config.js';
 export default {
   name: '',
   components: {
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
     //TsFormInput:()=>import('@/resources/plugins/TsForm/TsFormInput')
   },
+  extends: WidgetBaseConfig,
   props: { config: { type: Object } },
   data() {
     return {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-nm">
     <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">
         {{ $t('term.report.axis.yaxisshow') }}
@@ -101,35 +101,91 @@
         </div>
       </div>
     </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.customcolor') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <div class="pl-md pr-md">
-          <ColorPicker
-            :value="config.color"
-            :transfer="true"
-            alpha
-            recommend
-            class="colorPicker"
-            transfer-class-name="color-picker-transfer-class"
-            @on-change="val => {
-              setConfigValue('color', val);
-            }"
-          />
-        </div>
-      </div>
-    </div>
+    <TsFormItem :label="$t('term.report.customcolor')" labelPosition="top">
+      <ColorPicker
+        :value="config.color"
+        :transfer="true"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="val => {
+          setConfigValue('color', val);
+        }"
+      />
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.statisticcolor')" labelPosition="top">
+      <ColorPicker
+        :value="config.label && config.label.style && config.label.style.fill"
+        :transfer="true"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="
+          val => {
+            setConfigValue('label.position', 'right');
+            setConfigValue('label.style.fill', val || defaultSizeColor);
+          }
+        "
+      />
+    </TsFormItem>
+    <TsFormItem label="统计数据字体大小" labelPosition="top">
+      <TsFormSelect
+        :value="config.labelFontSize || 12"
+        :dataList="axisFontSizeList"
+        border="border"
+        transfer
+        @change="
+          val => {
+            setConfigValue('labelFontSize', val || 12);
+            setConfigValue('label.style.fontSize', val || 12);
+          }
+        "
+      ></TsFormSelect>
+    </TsFormItem>
+    <TsFormItem label="辅助线" labelPosition="top">
+      <TsFormSwitch
+        :value="!!config.xAxis?.hasOwnProperty('grid')?!!config.xAxis.grid:true"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            setConfigValue('xAxis.grid.visible', val);
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem label="坐标轴字体大小" labelPosition="top">
+      <TsFormSelect
+        :value="config.axisFontSize || 12"
+        :dataList="axisFontSizeList"
+        border="border"
+        transfer
+        @change="
+          val => {
+            setConfigValue('axisFontSize', val || defaultFontSize);
+            setConfigValue('xAxis.title.style.fontSize', val || defaultFontSize);
+            setConfigValue('xAxis.label.style.fontSize', val || defaultFontSize);
+            setConfigValue('yAxis.label.style.fontSize', val || defaultFontSize);
+            setConfigValue('yAxis.title.style.fontSize', val || defaultFontSize);
+          }
+        "
+      ></TsFormSelect>
+    </TsFormItem>
   </div>
 </template>
 <script>
+import { WidgetBaseConfig } from './base-config.js';
 export default {
   name: '',
   components: {
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
+  extends: WidgetBaseConfig,
   props: { config: { type: Object } },
   data() {
     return {

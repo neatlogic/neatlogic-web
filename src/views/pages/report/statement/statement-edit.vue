@@ -1,10 +1,6 @@
 <template>
   <div>
-    <TsContain
-      :enableCollapse="true"
-      :siderWidth="260"
-      :rightWidth="300"
-    >
+    <TsContain :enableCollapse="true" :siderWidth="260" :rightWidth="300">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
@@ -13,11 +9,11 @@
           ref="name"
           v-model="reportData.name"
           :validateList="[{ name: 'required', message: ' ' }]"
-          :placeholder="$t('term.report.reportname')"
+          :maxlength="50"
         ></TsFormInput>
       </template>
       <template v-slot:topRight>
-        <div class="action-group" style="text-align:right">
+        <div class="action-group" style="text-align: right">
           <span
             v-if="
               recoverQueue.filter(d => {
@@ -64,8 +60,12 @@
             ></TsFormSwitch>
           </span>
           <span class="action-item tsfont-fullscreen" @click="fullscreen">{{ $t('page.fullscreen') }}</span>
-          <span class="action-item tsfont-save" @click="saveReport()">{{ $t('page.save') }}</span>
-          <span v-if="id" class="action-item"><Button type="error" @click="deleteReport()">{{ $t('page.delete') }}</Button></span>
+          <span class="action-item">
+            <Button type="primary" @click="saveReport()">{{ $t('page.save') }}</Button>
+          </span>
+          <span v-if="id" class="action-item">
+            <Button type="error" @click="deleteReport()">{{ $t('page.delete') }}</Button>
+          </span>
         </div>
       </template>
       <template v-slot:sider>
@@ -84,11 +84,11 @@
                     <div
                       v-if="getWidgetComponentByType(widget)"
                       :draggable="true"
-                      style="cursor:pointer"
+                      style="cursor: pointer"
                       :class="currentWidget && currentWidget.uuid === widget.uuid ? 'text-href' : ''"
                       @click="selectWidget(widget)"
                     >
-                      <div v-if="getWidgetComponentByType(widget).icon" :class="getWidgetComponentByType(widget).icon" style="font-size:24px"></div>
+                      <div v-if="getWidgetComponentByType(widget).icon" :class="getWidgetComponentByType(widget).icon" style="font-size: 24px"></div>
                       <div class="overflow" :title="getWidgetComponentByType(widget).label">{{ getWidgetComponentByType(widget).label }}</div>
                     </div>
                   </Col>
@@ -106,8 +106,8 @@
                     class="form-item mt-md"
                   >
                     <div :draggable="true" @dragstart="startDrag($event, widget)">
-                      <div v-if="widget.icon" :class="widget.icon" style="font-size:24px"></div>
-                      <div v-else class="tsfont-question-o" style="font-size:24px"></div>
+                      <div v-if="widget.icon" :class="widget.icon" style="font-size: 24px"></div>
+                      <div v-else class="tsfont-question-o" style="font-size: 24px"></div>
                       <div class="overflow" :title="widget.label">{{ widget.label }}</div>
                     </div>
                   </Col>
@@ -190,7 +190,7 @@
         </div>
       </template>
       <template v-slot:right>
-        <div class="pr-md pl-md config-right overflow" style="overflow:auto">
+        <div class="pr-md pl-md config-right overflow" style="overflow: auto">
           <div v-if="currentWidget">
             <Tabs>
               <TabPane :label="$t('page.layout')">
@@ -209,7 +209,7 @@
         <Divider
           plain
           orientation="right"
-          style="font-size:12px;"
+          style="font-size: 12px"
           class="mt-md mb-md"
         >{{ $t('page.thumbnail') }}</Divider>
         <div class="pl-md pr-md"><EagleEye :config="{ canvasHeight: reportData.height, canvasWidth: reportData.width, containerWidth: containerWidth, containerHeight: containerHeight, containerTop: canvasY, containerLeft: canvasX }" :reportData="reportData" @grab="moveContainer"></EagleEye></div>
@@ -674,6 +674,7 @@ export default {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
             if (res.Return) {
+              this.$skipHistory();
               this.$router.push({ path: '/statement-edit/' + res.Return });
             }
           }
@@ -683,7 +684,7 @@ export default {
     deleteReport() {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.report.report')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.report.report') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.report.statement.deleteStatement(this.id).then(res => {
@@ -730,7 +731,7 @@ export default {
       return c;
     },
     canvasStyle() {
-      return (reportData) => {
+      return reportData => {
         let style = {};
         if (reportData) {
           style.width = reportData.width + 'px';
@@ -740,7 +741,7 @@ export default {
             style.top = this.canvasY + 'px';
             style.left = this.canvasX + 'px';
             style.background = reportData.config.backgroundColor;
-            style.backgroundSize = reportData.config.backgroundImageLayout == 'resize' ? '100% 100%' : 'auto'; 
+            style.backgroundSize = reportData.config.backgroundImageLayout == 'resize' ? '100% 100%' : 'auto';
             if (reportData.config.backgroundImage) {
               style.backgroundImage = 'url(' + reportData.config.backgroundImage + ')';
             }
@@ -772,7 +773,7 @@ export default {
   position: absolute;
   top: 0px;
   height: 100%;
-  border-left: 1px dashed rgba(45, 132, 251,1);
+  border-left: 1px dashed rgba(45, 132, 251, 1);
   z-index: 9999;
 }
 .align-y {
@@ -850,7 +851,6 @@ export default {
   width: 100%;
   height: 100%;
 }
-
 </style>
 <style lang="less" scoped>
 @import '~@/resources/assets/css/variable.less';

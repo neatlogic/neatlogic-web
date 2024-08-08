@@ -126,6 +126,9 @@ const ci = {
   getRelById(relId) {
     return axios.post('/api/rest/cmdb/rel/get', { id: relId });
   },
+  getRelByIdList(relIdList) {
+    return axios.post('/api/rest/cmdb/rel/getlist', { idList: relIdList });
+  },
   getRelByCiId(ciId, params) {
     let param = {
       ciId: ciId

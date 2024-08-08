@@ -609,7 +609,8 @@
     "viewauthtooltip": "当前登录人必须同时满足：在当前目录及所有父子目录的授权范围内，才能查看通过当前目录下服务创建的工单。",
     "reportauthtooltip": "当前登录人必须同时满足：在当前目录、以及所有父子目录和服务的授权范围内，才能通过当前目录下的服务创建工单。",
     "formtag": "表单标签",
-    "formtagtip": "当标签为空时：表单组件为主场景的所有表单组件；当标签不为空时：表单组件为所选标签配置的表单组件。"
+    "formtagtip": "当标签为空时：表单组件为主场景的所有表单组件；当标签不为空时：表单组件为所选标签配置的表单组件。",
+    "stepfilter": "流程步骤"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -873,7 +874,10 @@
     "combophasexpired": "组合工具已失效",
     "pleasereedit": "请重新编辑后，提交审核",
     "abortjob": "终止作业",
-    "runnergroupdeprecatedtips": "作业执行器组参数已失效，请重新点击确认并保存流程"
+    "runnergroupdeprecatedtips": "作业执行器组参数已失效，请重新点击确认并保存流程",
+    "loopitem": "循环项",
+    "loopoperation": "循环执行",
+    "loophelp": "按照循环项循环执行，循环项绘折枝到环境变量${LOOP_ITEM},多个值使用空格隔开，例如：'itemA' itemB \"itemC\""
   },
   "framework": {
     "roleauth": "创建完角色立即授权",
@@ -2679,7 +2683,8 @@
     "relyonmyservices": "依赖我的服务",
     "servicerelyon": "我依赖的服务",
     "dependentapp": "依赖应用",
-    "preparation": "预案"
+    "preparation": "预案",
+    "exerciseplan": "演练计划"
   },
   "diagram": {
     "widgetlist": "图元列表",

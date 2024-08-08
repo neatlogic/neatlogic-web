@@ -173,8 +173,10 @@ export default {
       this.searchParam.type = name;
       this.searchReport();
     },
-    showReport: function(id) {
-      this.$router.push({ path: '/reportinstance-show/' + id });
+    showReport(id) {
+      this.$router.push({
+        path: 'reportinstance-show/' + id
+      });
     }
   },
   filter: {},

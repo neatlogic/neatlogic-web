@@ -1,15 +1,35 @@
 <template>
   <div v-if="rowData.expireStatus !== 'no-expired-time'">
-    <span v-if="rowData.expireStatus === 'not-expired' || rowData.expireStatus === 'will-be-expired'">
-      {{ rowData.expireConfig.timeLeftMin | formatTimeCost({ unitNumber: 2, language: 'zh', unit: 'minute' }) }}
-    </span>
-    <span v-else-if="rowData.expireStatus==='is-expired'">
-      <span class="text-grey">{{ rowData.expireConfig.expiredSlaName }}</span>
-      <span>{{ $t('term.process.timedout') }}</span>
-      <span class="h3">
-        {{ rowData.expireConfig.timeLeftMin | formatTimeCost({language:'en',unitNumber:1, unit: 'minute'}) }}
-      </span>
-    </span>
+    <template v-if="rowData.expireStatus === 'not-expired' || rowData.expireStatus === 'will-be-expired'">
+      <span class="text-success">{{ $t('page.remainingtime') }}</span>
+      <Poptip
+        :transfer="true"
+        width="200"
+        padding="8px"
+        placement="top"
+        trigger="hover"
+      >
+        <span class="text-success"> {{ rowData.expireConfig.timeLeftMin | formatTimeCost({ unitNumber: 3, language: 'zh', unit: 'minute' }) }}</span>
+        <div slot="content">
+          {{ $t('term.process.slatip') }}：{{ rowData.expireConfig.willOverSlaName }}
+        </div>
+      </Poptip>
+    </template>
+    <template v-else-if="rowData.expireStatus === 'is-expired'">
+      <span class="text-danger">{{ $t('term.process.timedout') }}</span>
+      <Poptip
+        :transfer="true"
+        width="200"
+        placement="top"
+        padding="8px"
+        trigger="hover"
+      >
+        <div class="text-danger">{{ rowData.expireConfig.timeLeftMin | formatTimeCost({language:'zh',unitNumber:3, unit: 'minute'}) }}</div>
+        <div slot="content">
+          {{ $t('term.process.slatip') }}： {{ rowData.expireConfig.expiredSlaName }}
+        </div>
+      </Poptip>
+    </template>
   </div>
 </template>
 <script>

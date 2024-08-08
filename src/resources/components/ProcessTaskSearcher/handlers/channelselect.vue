@@ -1,6 +1,6 @@
 <template>
   <div v-if="mode == 'simple'">
-    <div class="grid">
+    <div :class="[isChannelSingleValue?'grid':'', (isFilterForm || isFilterStep)?'pb-sm':'']">
       <div>
         <TsFormSelect
           ref="searchInputer"
@@ -13,7 +13,7 @@
           @change="change"
         ></TsFormSelect>
       </div>
-      <div>
+      <div v-if="isChannelSingleValue">
         <TsFormSwitch
           :value="isFilterForm"
           :trueValue="true"
@@ -21,40 +21,64 @@
           @on-change="toggleForm"
         >{{ $t('term.process.formfilter') }}</TsFormSwitch>
       </div>
-      <div v-if="!(value instanceof Array && value.length > 1)"><span class="text-grey">{{ $t('term.process.formfilter') }}</span></div>
+      <div v-if="isChannelSingleValue"><span class="text-grey">{{ $t('term.process.formfilter') }}</span></div>
+      <div v-if="isChannelSingleValue">
+        <TsFormSwitch
+          :value="isFilterStep"
+          :trueValue="true"
+          :falseValue="false"
+          @on-change="toggleStep"
+        >{{ $t('term.process.stepfilter') }}</TsFormSwitch>
+      </div>
+      <div v-if="isChannelSingleValue"><span class="text-grey">{{ $t('term.process.stepfilter') }}</span></div>
     </div>
-    <label v-if="isFilterForm && !(value instanceof Array && value.length > 1) && formConditionList && formConditionList.length > 0" class="text-grey">{{ $t('page.attribute') }}</label>
-    <div v-if="isFilterForm && !(value instanceof Array && value.length > 1) && formConditionList && formConditionList.length > 0">
-      <TsFormSelect
-        :dataList="formConditionList"
-        textName="handlerName"
-        valueName="handler"
-        border="border"
-        :value="workcenterFormConditionUuidList"
-        transfer
-        multiple
-        :validateList="['required']"
-        @change="changeFormAttribute"
-      ></TsFormSelect>
-      <!-- 解决index作为key，导致删除对应属性，属性对应配置信息还是上一个的问题 -->
-      <div v-for="(formcondition) in workcenterFormConditionList" :key="formcondition.uuid">
-        <div v-if="getFormConditionByName(formcondition.name)">
-          <label class="text-grey">{{ getFormConditionByName(formcondition.name).handlerName }}</label>
-          <div>
-            <SearchInputer
-              mode="simple"
-              :condition="getFormConditionByName(formcondition.name)"
-              :workcenterConditionData="workcenterConditionData"
-              :isCustomValue="isCustomValue"
-              :isCustomPanel="true"
-              @change="changeFromCondition"
-            ></SearchInputer>
+    <div v-if="isChannelSingleValue">
+      <label v-if="isFilterStep" class="text-grey">{{ $t('term.process.stepfilter') }}</label>
+      <div v-if="isFilterStep">
+        <TsFormSelect
+          v-model="processStepUuidList"
+          v-bind="processStepConfig"
+          border="border"
+          transfer
+          multiple
+          class="pb-sm"
+          :validateList="['required']"
+          @change="changeProcessStep"
+        ></TsFormSelect>
+      </div>
+      <label v-if="isFilterForm && formConditionList && formConditionList.length > 0" class="text-grey">{{ $t('page.attribute') }}</label>
+      <div v-if="isFilterForm && formConditionList && formConditionList.length > 0">
+        <TsFormSelect
+          :dataList="formConditionList"
+          textName="handlerName"
+          valueName="handler"
+          border="border"
+          :value="workcenterFormConditionUuidList"
+          transfer
+          multiple
+          class="pb-sm"
+          :validateList="['required']"
+          @change="changeFormAttribute"
+        ></TsFormSelect>
+        <!-- 解决index作为key，导致删除对应属性，属性对应配置信息还是上一个的问题 -->
+        <div v-for="(formcondition) in workcenterFormConditionList" :key="formcondition.uuid" class="pb-sm">
+          <div v-if="getFormConditionByName(formcondition.name)">
+            <label class="text-grey">{{ getFormConditionByName(formcondition.name).handlerName }}</label>
+            <div>
+              <SearchInputer
+                mode="simple"
+                :condition="getFormConditionByName(formcondition.name)"
+                :workcenterConditionData="workcenterConditionData"
+                :isCustomValue="isCustomValue"
+                :isCustomPanel="true"
+                @change="changeFromCondition"
+              ></SearchInputer>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div v-else></div>
 </template>
 <script>
 export default {
@@ -77,10 +101,23 @@ export default {
   },
   data() {
     return {
+      processStepUuidList: [],
       config: this.condition.config,
       value: this.conditionData && this.conditionData.valueList,
       isFilterForm: false,
-      formConditionList: []
+      isFilterStep: false,
+      formConditionList: [],
+      isChannelSingleValue: false,
+      processStepConfig: {
+        url: 'api/rest/process/step/list',
+        search: true,
+        params: {
+        },
+        textName: 'name',
+        valueName: 'uuid',
+        validateList: ['required'],
+        transfer: true
+      }
     };
   },
   beforeCreate() {},
@@ -88,6 +125,8 @@ export default {
   beforeMount() {},
   mounted() {
     this.isFilterForm = this.hasFormCondition;
+    this.isFilterStep = this.hasProcessStepCondition;
+    this.initProcessStepUuidList();
   },
   beforeUpdate() {},
   updated() {},
@@ -132,6 +171,32 @@ export default {
         });
       }
     },
+    changeProcessStep(procesStep, procesStepOption) {
+      console.log(procesStep);
+      console.log(procesStepOption);
+      const conditionGroupList = this.workcenterConditionData?.conditionGroupList;
+      if (conditionGroupList && conditionGroupList.length > 0 && conditionGroupList[0].conditionList) {
+        const conditionList = conditionGroupList[0].conditionList;
+        for (let i = conditionList.length - 1; i >= 0; i--) {
+          const condition = conditionList[i];
+          if (condition.type == 'common' && condition.name === 'processStep') {
+            //删除表单属性
+            conditionList.splice(i, 1);
+          }
+        }
+        
+        //增加表单属性
+        conditionList.push({
+          expression: 'include',
+          valueList: procesStep,
+          name: 'processStep',
+          type: 'common',
+          label: this.$t('term.process.stepfilter'),
+          text: procesStepOption.map(item => item.text).join('、'),
+          uuid: this.$utils.setUuid()
+        });
+      }
+    },
     change(val, option) {
       this.value = val;
       this.$emit('change', val, this.getOptionText(option));
@@ -157,6 +222,11 @@ export default {
     },
     toggleForm(val) {
       this.isFilterForm = val;
+      this.clearFormCondition();
+    },
+    toggleStep(val) {
+      this.isFilterStep = val;
+      this.clearProcessStepCondition();
     },
     getFormByChannelUuid() {
       if (this.value) {
@@ -186,6 +256,44 @@ export default {
       if (this.formConditionList && this.formConditionList.length > 0) {
         return this.formConditionList.find(d => d.handler == name);
       }
+    },
+    initProcessStepUuidList() {
+      this.processStepConfig.value = [];
+      const conditionGroupList = this.workcenterConditionData?.conditionGroupList;
+      if (conditionGroupList && conditionGroupList.length > 0 && conditionGroupList[0].conditionList) {
+        this.processStepUuidList = conditionGroupList[0].conditionList.filter(d => d.type === 'common' && d.name === 'processStep').map(d => d.valueList)[0];
+      }
+    },
+    clearFormCondition() {
+      const conditionGroupList = this.workcenterConditionData?.conditionGroupList;
+      if (conditionGroupList && conditionGroupList.length > 0 && conditionGroupList[0].conditionList) {
+        const conditionList = conditionGroupList[0].conditionList;
+        for (let i = conditionList.length - 1; i >= 0; i--) {
+          const condition = conditionList[i];
+          if (condition.type == 'form') {
+            //删除表单属性
+            conditionList.splice(i, 1);
+          }
+        }
+      }
+    },
+    clearProcessStepCondition() {
+      const conditionGroupList = this.workcenterConditionData?.conditionGroupList;
+      if (conditionGroupList && conditionGroupList.length > 0 && conditionGroupList[0].conditionList) {
+        const conditionList = conditionGroupList[0].conditionList;
+        for (let i = conditionList.length - 1; i >= 0; i--) {
+          const condition = conditionList[i];
+          if (condition.type == 'common' && condition.name === 'processStep') {
+            conditionList.splice(i, 1);
+          }
+        }
+      }
+      if (this.value instanceof Array && this.value.length == 1) {
+        this.processStepConfig.params = {
+          channelUuid: this.value[0]
+        };
+      }
+      this.processStepUuidList = [];
     }
   },
   filter: {},
@@ -193,7 +301,18 @@ export default {
     hasFormCondition() {
       const conditionGroupList = this.workcenterConditionData?.conditionGroupList;
       if (conditionGroupList && conditionGroupList.length > 0 && conditionGroupList[0].conditionList) {
-        if (conditionGroupList[0].conditionList.filter(d => d.type === 'form')) {
+        let formConditionList = conditionGroupList[0].conditionList.filter(d => d.type === 'form');
+        if (formConditionList && formConditionList.length > 0) {
+          return true;
+        }
+      }
+      return false;
+    },
+    hasProcessStepCondition() {
+      const conditionGroupList = this.workcenterConditionData?.conditionGroupList;
+      if (conditionGroupList && conditionGroupList.length > 0 && conditionGroupList[0].conditionList) {
+        let stepConditionList = conditionGroupList[0].conditionList.filter(d => d.name === 'processStep');
+        if (stepConditionList && stepConditionList.length > 0) {
           return true;
         }
       }
@@ -221,10 +340,15 @@ export default {
   watch: {
     value: {
       handler: function(val) {
-        if (val && val.length > 0) {
+        if (val && val instanceof Array && val.length == 1) {
           this.getFormByChannelUuid();
+          this.isChannelSingleValue = true;
+          this.processStepConfig.params.channelUuid = this.value[0];
         } else {
+          this.isFilterForm = false;
           this.formConditionList = [];
+          this.clearProcessStepCondition();
+          this.isChannelSingleValue = false;
         }
       },
       immediate: true
@@ -235,7 +359,7 @@ export default {
 <style lang="less" scoped>
 .grid {
   display: grid;
-  grid-template-columns: auto 20px 60px;
+  grid-template-columns: auto 20px 60px 20px 60px;
   grid-gap: 10px;
 }
 </style>
