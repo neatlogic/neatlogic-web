@@ -244,27 +244,27 @@
   &lt;sql&gt;
     SELECT
     &lt;!--{{ $t('message.framework.reqid') }}--&gt;
-    a.cientity_id  AS id,
+    a.`cientity_id` AS id,
     &lt;!--{{ $t('message.framework.requuid') }}--&gt;
-    REPLACE(UUID(),'-','') AS UUID,
+    MD5(a.`cientity_id`) AS uuid,
     &lt;!--{{ $t('message.framework.reqattrs') }}--&gt;
-    b.`name`  AS moduleName,
-    a.midver AS midver,
-    a.xuqiu AS xuqiu,
-    a.baseline AS baseline,
-    a.type AS type,
-    e.name AS serviceName,
+    b.`name` AS moduleName,
+    a.`midver` AS midver,
+    a.`xuqiu` AS xuqiu,
+    a.`baseline` AS baseline,
+    a.`type` AS type,
+    e.`name` AS serviceName,
     d.`port` AS port,
     f.`name` AS app
-    FROM @{DATA_SCHEMA}.ci_inframid_line a
+    FROM @{DATA_SCHEMA}.`ci_inframid_line` a
     JOIN @{DATA_SCHEMA}.`ci_ciroot` b ON a.cientity_id = b.`cientity_id`
     LEFT JOIN `cmdb_rel` cr0 ON cr0.`from_name` = 'inframid_line' AND cr0.`to_name` = 'cfgfw'
-    LEFT JOIN cmdb_relentity cr ON cr.`from_cientity_id` = a.cientity_id AND  cr.`rel_id` = cr0.`id`
-    LEFT JOIN @{DATA_SCHEMA}.ci_cfgfw d ON d.cientity_id = cr.to_cientity_id
+    LEFT JOIN `cmdb_relentity` cr ON cr.`from_cientity_id` = a.cientity_id AND  cr.`rel_id` = cr0.`id`
+    LEFT JOIN @{DATA_SCHEMA}.`ci_cfgfw` d ON d.cientity_id = cr.to_cientity_id
     LEFT JOIN @{DATA_SCHEMA}.`ci_ciroot` e ON e.cientity_id = d.`cientity_id`
 
-    LEFT JOIN cmdb_rel cr2 ON cr2.`from_name` = 'infrabase_line' AND cr2.`to_name` = 'inframid_line'
-    LEFT JOIN cmdb_relentity cr1 ON cr1.`to_cientity_id` = a.cientity_id AND  cr1.`rel_id` = cr2.`id`
+    LEFT JOIN `cmdb_rel` cr2 ON cr2.`from_name` = 'infrabase_line' AND cr2.`to_name` = 'inframid_line'
+    LEFT JOIN `cmdb_relentity` cr1 ON cr1.`to_cientity_id` = a.cientity_id AND  cr1.`rel_id` = cr2.`id`
     LEFT JOIN @{DATA_SCHEMA}.`ci_ciroot` f ON f.cientity_id = cr1.from_cientity_id
   &lt;/sql&gt;
 &lt;/view&gt;

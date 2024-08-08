@@ -50,7 +50,7 @@ export const WidgetBase = {
         dataSourceId: this.widget.datasourceId,
         conditionList: conditionList,
         sortList: this.widget.sortList,
-        limit: this.widget.limit
+        limit: this.widget.limit || 0 //必须要要给个0，否则会用pagesize分页
       };
       await this.$api.framework.datawarehouse.searchData(params).then(res => {
         this.tableData = res.Return;
