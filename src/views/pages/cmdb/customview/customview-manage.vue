@@ -235,7 +235,7 @@ export default {
       this.$router.push({ path: '/graph-edit/public' });
     },
     changeCustomViewPage(currentPage) {
-      this.searchParam.currentPage = currentPage;
+      this.searchCustomViewParam.currentPage = currentPage;
       this.searchCustomView();
     },
     changeCustomViewPageSize(pageSize) {

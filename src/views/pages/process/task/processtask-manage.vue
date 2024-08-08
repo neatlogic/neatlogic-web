@@ -489,52 +489,50 @@ export default {
     },
     checkExpire(timeList) {
       let timeLeftMin, expireStatus, expireTimeMin, expiredSlaName, willOverTimeMin, willOverSlaName;
-      if (timeList && timeList.length > 0) {
-        expireTimeMin = Math.min(...timeList.filter(item => 'expireTime' in item).map(item => item.expireTime));
-        willOverTimeMin = Math.min(...timeList.filter(item => 'willOverTime' in item).map(item => item.willOverTime));
-
-        if (expireTimeMin === Infinity) {
-          expireTimeMin = null;
-          expiredSlaName = null;
-          timeLeftMin = null;
-        } else {
-          expiredSlaName = timeList.find(item => item.expireTime === expireTimeMin).slaName;
-          timeLeftMin = timeList.find(item => item.expireTime === expireTimeMin).timeLeft;
-        }
-        if (willOverTimeMin === Infinity) {
-          willOverTimeMin = null;
-          willOverSlaName = null;
-        } else {
-          willOverSlaName = timeList.find(item => item.willOverTime === willOverTimeMin).slaName;
-        }
-        let now = Date.now();
-
-        if (!expireTimeMin) {
-          expireStatus = 'no-expired-time';
-        } else if (now > expireTimeMin) {
-          expireStatus = 'is-expired';
-          let slaTimeDisplayMode = timeList.find(item => item.expireTime === expireTimeMin).slaTimeDisplayMode;
-          if (slaTimeDisplayMode === 'naturalTime' || slaTimeDisplayMode === 'workTime') {
-            timeLeftMin = now - expireTimeMin;
+      if (this.$utils.isEmpty(timeList)) {
+        return {
+          expireStatus: 'no-expired-time',
+          expireConfig: {
+            timeLeftMin: null,
+            expireTimeMin: null,
+            expiredSlaName: null,
+            willOverTimeMin: null,
+            willOverSlaName: null
           }
-        } else if (willOverTimeMin && willOverTimeMin < expireTimeMin) {
-          if (now > willOverTimeMin) {
-            expireStatus = 'will-be-expired';
-          } else {
-            expireStatus = 'not-expired';
-          }
-        } else {
-          expireStatus = 'not-expired';
-        }
-      } else {
-        expireStatus = 'no-expired-time';
-        timeLeftMin = null;
+        };
+      }
+      let now = Date.now();
+      expireTimeMin = Math.min(...timeList.filter(item => 'expireTime' in item).map(item => item.expireTime)); // 假设多个步骤存在超时取最大
+      willOverTimeMin = Math.min(...timeList.filter(item => 'timeLeft' in item).map(item => item.timeLeft));// 假设多个步骤未超时取最小
+      if (expireTimeMin === Infinity) {
         expireTimeMin = null;
         expiredSlaName = null;
+        timeLeftMin = null;
+      } else {
+        expiredSlaName = timeList.find(item => item.expireTime === expireTimeMin).slaName;
+        let timeItem = timeList.find(item => item.expireTime === expireTimeMin);
+        let {slaTimeDisplayMode = '', timeLeft = 0} = timeItem || {};
+        if (slaTimeDisplayMode === 'naturalTime') {
+          timeLeftMin = expireTimeMin - now;
+        } else if (slaTimeDisplayMode === 'workTime') {
+          timeLeftMin = Math.abs(timeLeft);
+        }
+      }
+      if (willOverTimeMin === Infinity) {
         willOverTimeMin = null;
         willOverSlaName = null;
+      } else {
+        willOverSlaName = timeList.find(item => item.timeLeft === willOverTimeMin).slaName;
       }
-
+      if (!expireTimeMin) {
+        expireStatus = 'no-expired-time';
+      } else if (now > expireTimeMin) {
+        expireStatus = 'is-expired';
+      } else if (willOverTimeMin && willOverTimeMin < expireTimeMin) {
+        expireStatus = now > willOverTimeMin ? 'will-be-expired' : 'not-expired';
+      } else {
+        expireStatus = 'not-expired';
+      }
       return {
         expireStatus,
         expireConfig: {
@@ -822,14 +820,8 @@ export default {
   background-color: @default-background;
 }
 
-.theme(@text-color, @error-bg-color, @warning-bg-color, @gray-color, @icon-color) {
+.theme(@text-color, @error-bg-color, @gray-color, @icon-color) {
   .workcenter-table {
-    .will-be-expired:not(:hover) {
-      background-color: @warning-bg-color !important;
-      td {
-        color: @text-color;
-      }
-    }
     .is-expired:not(:hover) {
       background-color: @error-bg-color !important;
       td {
@@ -853,9 +845,9 @@ export default {
   }
 }
 html {
-  .theme(@default-text, @default-error-bg-color, @default-warning-bg-color, @default-gray, @default-icon);
+  .theme(@default-text, @default-error-bg-color, @default-gray, @default-icon);
   &.theme-dark {
-    .theme(@white, @dark-error-bg-color, @dark-warning-bg-color, @dark-gray, @dark-icon);
+    .theme(@white, @dark-error-bg-color, @dark-gray, @dark-icon);
   }
 }
 </style>

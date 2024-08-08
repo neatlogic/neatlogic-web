@@ -215,6 +215,7 @@ export default {
     //修改用户
     userChange(val) {
       this.userDetail = {};
+      this.dispatch.regionId = null;
       let userId = null;
       if (val) {
         if (val.includes('#')) {
