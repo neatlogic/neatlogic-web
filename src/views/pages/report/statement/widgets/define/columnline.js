@@ -20,25 +20,6 @@ export default {
   ],
   config: {
     legend: { visible: true, position: 'bottom' }, 
-    xAxis: {
-      grid: {
-        visible: false
-      } 
-    },
-    yAxis: [
-      {
-        max: 100,
-        min: 0,
-        grid: {
-          visible: false
-        }
-      },
-      {
-        max: 100,
-        min: 0,
-        visible: false
-      }
-    ],
     geometryOptions: [
       {
         geometry: 'column',

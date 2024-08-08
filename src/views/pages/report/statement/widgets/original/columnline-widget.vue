@@ -21,6 +21,11 @@ export default {
         xAxis: {
           grid: {
             visible: false
+          },
+          label: {
+            style: {
+              fill: this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || '#f1f1f1'
+            }
           } 
         },
         yAxis: [
@@ -29,6 +34,11 @@ export default {
             min: 0,
             grid: {
               visible: false
+            },
+            label: {
+              style: {
+                fill: this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || '#f1f1f1'
+              }
             }
           },
           {

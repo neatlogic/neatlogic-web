@@ -1,27 +1,5 @@
 <template>
   <div class="pb-nm">
-    <TsFormItem :label="$t('term.report.axis.yaxistitle')" labelPosition="top">
-      <TsFormInput
-        :value="config.yAxis.title && config.yAxis.title.text"
-        border="border"
-        @change="
-          val => {
-            $set(config.yAxis[1], 'title', { text: val });
-          }
-        "
-      ></TsFormInput>
-    </TsFormItem>
-    <TsFormItem :label="$t('term.report.axis.xaxistitle')" labelPosition="top">
-      <TsFormInput
-        :value="config.xAxis.title && config.xAxis.title.text"
-        border="border"
-        @change="
-          val => {
-            setConfigValue('xAxis.title.text', val);
-          }
-        "
-      ></TsFormInput>
-    </TsFormItem>
     <TsFormItem :label="$t('term.report.axis.showlegend')" labelPosition="top">
       <TsFormSwitch
         :value="config.legend.visible"
@@ -56,8 +34,8 @@ export default {
   components: {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    // TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: WidgetBaseConfig,
   props: { config: { type: Object } },
