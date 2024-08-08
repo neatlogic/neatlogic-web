@@ -131,6 +131,7 @@ export default {
     },
     searchEnvList() {
       let params = {
+        needPage: false,
         ...this.params
       };
       if (params) {
