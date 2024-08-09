@@ -1273,6 +1273,40 @@ export default {
               validElseList.length && validList.push(...validElseList);
             }
           }
+        } else if (p.operationName == 'native/LOOP-Block') {
+          if (p.config) {
+            !p.config.loopItems && validList.push({
+              text: this.$t('page.phase') + step.name + this.$t('term.autoexec.setinputloopitems'),
+              type: 'error',
+              config: {
+                stepName: step.name,
+                validComponent: 'operation',
+                stepUuid: step.uuid
+              }
+            });
+            !p.config.loopItemVar && validList.push({
+              text: this.$t('page.phase') + step.name + this.$t('term.autoexec.setinputloopitemvar'),
+              type: 'error',
+              config: {
+                stepName: step.name,
+                validComponent: 'operation',
+                stepUuid: step.uuid
+              }
+            });
+            (!p.config.operations || p.config.operations.length == 0) && validList.push({
+              text: this.$t('page.phase') + step.name + this.$t('term.autoexec.setinputloopoperations'),
+              type: 'error',
+              config: {
+                stepName: step.name,
+                validComponent: 'operation',
+                stepUuid: step.uuid
+              }
+            });
+            if (p.config.operations && p.config.operations.length) {
+              let validOperations = this.validPhaseOperationList(step, p.config.operations);
+              validOperations.length && validList.push(...validOperations);
+            }
+          }
         } else {
           let isPass = true; //输入参数
           let isPassArgument = true; //自由参数必填校验
