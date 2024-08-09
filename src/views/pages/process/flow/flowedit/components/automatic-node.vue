@@ -8,6 +8,13 @@
       :toSetting="toSetting"
       @updateScene="updateScene"
     ></FormsceneSetting>
+    <!-- 表单标签 -->
+    <FormTagSetting
+      :formUuid="formUuid"
+      :defaultFormTag="formTag"
+      class="pl-nm pr-nm"
+      @updateFormTag="changeFormTag"
+    ></FormTagSetting>
     <AuthoritySetting
       :list="authorityList"
       :defaultIsActive="activeSetting.permission"
@@ -211,7 +218,7 @@
         <div class="control-setting">
           <span class="label">{{ $t('term.process.callbackornot') }}</span>
           <span class="control-btn">
-           <!-- <span class="tip">{{ swithConfig.callbackConfig == 1 ?$t('page.yes') : $t('page.no') }}</span>-->
+            <!-- <span class="tip">{{ swithConfig.callbackConfig == 1 ?$t('page.yes') : $t('page.no') }}</span>-->
             <span style="display: inline-block;">
               <TsFormSwitch v-model="swithConfig.callbackConfig" :true-value="1" :false-value="0"></TsFormSwitch>
             </span>
@@ -510,7 +517,9 @@ export default {
     ButtonSetting: () => import('./nodesetting/button-setting.vue'),
     WaitTip: () => import('./nodesetting/wait-tip.vue'),
     TagSetting: () => import('./nodesetting/tag-setting.vue'),
-    FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
+    FormsceneSetting: () => import('./nodesetting/formscene-setting'), // 表单场景
+    FormTagSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/form-tag-setting.vue') // 表单扩展数据标签
+    
   },
   mixins: [nodemixin, itemmixin],
   props: {},
@@ -603,14 +612,15 @@ export default {
       workerPolicyConfig: {},
       notifyPolicyConfig: {},
       autoCompleteConfig: null, //回调数据
-      tagList: []
+      tagList: [],
+      formTag: ''
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   mounted() {
-    this.keyList = ['authorityList', 'customStatusList', 'customButtonList', 'replaceableTextList', 'notifyPolicyConfig', 'workerPolicyConfig', 'tagList'];//stepConfig 需要包含的数据
+    this.keyList = ['formTag', 'authorityList', 'customStatusList', 'customButtonList', 'replaceableTextList', 'notifyPolicyConfig', 'workerPolicyConfig', 'tagList'];//stepConfig 需要包含的数据
     this.getNodeSetting();
   },
   beforeUpdate() {},
@@ -627,7 +637,7 @@ export default {
       let config = this.configData = this.$utils.deepClone(this.nodeConfig);
       this.uuid = config.uuid;
       this.initNodeData(config, this.keyList);//初始化数据
-      await this.getParaConditionList(this.formUuid);
+      await this.getParaConditionList();
       this.getAutomaticConfig();
       this.getNodeConfig();
       this.getAutoComplete();
@@ -701,10 +711,11 @@ export default {
         this.autoCompleteConfig = res;
       });
     },
-    getParaConditionList(formUuid) {
+    getParaConditionList() {
       //参数条件选择
       let data = {
-        formUuid: formUuid
+        formUuid: this.formUuid,
+        tag: this.formTag || 'common'
       };
       return this.$api.process.process.processParamList(data).then(res => {
         if (res.Status == 'OK') {
@@ -877,12 +888,12 @@ export default {
     saveNodeData() {
       //保存数据
       let stepConfig = Object.assign({}, this.configData.stepConfig);
+      stepConfig.formTag = this.formTag;
       if (this.keyList && this.keyList.length) {
         this.keyList.forEach(item => {
           stepConfig[item] = this[item] || undefined;
         });
       }
-
       if (this.$refs.NoticeSetting) {
         stepConfig.notifyPolicyConfig = this.$refs.NoticeSetting.getData() || {};
       }
@@ -999,6 +1010,10 @@ export default {
         newfailPolicyList = failPolicyList;
       }
       this.failPolicyList = newfailPolicyList;
+    },
+    changeFormTag(val) {
+      this.formTag = val;
+      this.getParaConditionList();
     }
   },
   filter: {},
@@ -1020,7 +1035,7 @@ export default {
     formConfig: {
       handler(newVal, oldVal) {
         this.formUuid = newVal.uuid || '';
-        this.getParaConditionList(this.formUuid);
+        this.getParaConditionList();
       },
       deep: true
     },

@@ -6,9 +6,9 @@
           v-model="isHelpShow"
           trigger="hover"
           placement="right"
-          width="700"
+          width="800"
           :transfer="true"
-          :title="$t('term.report.dataSourceconfigexample')"
+          :title="$t('term.report.datasourceconfigexample')"
         >
           <a href="javascript:void(0)">{{ $t('term.report.datasourceconfigexample') }}</a>
           <div slot="content" style="height:600px;">
@@ -77,8 +77,8 @@ export default {
     return {
       isHelpShow: false,
       sql: this.reportData.sql,
-      datasourceHelp: 
-        `<mapper>	
+      datasourceHelp:
+        `<mapper>
           <resultMap id="dataMap" type="java.util.LinkedHashMap">
             <id column="id" property="${this.$t('term.report.taskid')}"/>
             <result column="title" property="${this.$t('page.title')}"/>
@@ -93,7 +93,7 @@ export default {
             </collection>
           </resultMap>
           <select id="getProcessTaskList" resultMap="dataMap">
-            SELECT 
+            SELECT
               a.id,
               a.title,
               a.status,
@@ -105,12 +105,12 @@ export default {
               b.name
             FROM processtask a
             JOIN processtask_step b
-            <where> 
+            <where>
               <if test="keyword != null and keyword != ''">
                 AND a.title LIKE CONCAT('%',#{keyword},'%')
               </if>
               <if test="statusList != null and statusList.size() > 0">
-                AND a.status IN 
+                AND a.status IN
                 <foreach collection="statusList" item="status" open="(" separator="," close=")">
                   #{status}
                 </foreach>
@@ -118,7 +118,7 @@ export default {
               <if test="startTimeRange != null and startTimeRange.size() > 1">
                 AND a.start_time &gt;= startTimeRange[0] AND a.start_time &lt;= startTimeRange[1]
               </if>
-            </where> 
+            </where>
           </select>
         </mapper>`
     };
