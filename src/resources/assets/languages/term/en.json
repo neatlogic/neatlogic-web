@@ -2685,7 +2685,8 @@
     "servicerelyon": "The service I rely on",
     "dependentapp": "Dependent applications",
     "preparation": "reserve plan",
-    "exerciseplan": "Exercise plan"
+    "exerciseplan": "Exercise plan",
+    "dependencyscene": "Dependent scenarios"
   },
   "diagram": {
     "widgetlist": "Element List",
@@ -2760,6 +2761,7 @@
     "nextstatus": "Flow status",
     "editing": "Editing in progress",
     "activing": "Activing",
-    "source": "Source restrictions"
+    "source": "Source restrictions",
+    "waitfordo": "Pending processing"
   }
 }

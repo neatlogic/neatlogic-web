@@ -1,9 +1,9 @@
 <template>
   <div class="ivu-cell-group" :class="{ level: level, group: isGroup }">
     <Scroll
-      v-if="pager==='scroll'"
-      :on-reach-bottom="handleReachBottom" 
-      :loading-text="loadingTip" 
+      v-if="pager === 'scroll'"
+      :on-reach-bottom="handleReachBottom"
+      :loading-text="loadingTip"
       :distance-to-edge="10"
       :height="height"
     >
@@ -17,9 +17,11 @@
         :className="className"
         :itemStyle="itemStyle"
         :isGroup="isGroup"
-      ><template>
-        <slot :row="item"></slot>
-      </template>
+        :size="size"
+      >
+        <template>
+          <slot :row="item"></slot>
+        </template>
       </LiItem>
     </Scroll>
     <div v-else>
@@ -33,9 +35,11 @@
         :className="className"
         :itemStyle="itemStyle"
         :isGroup="isGroup"
-      > <template>
-        <slot :row="item"></slot>
-      </template>
+        :size="size"
+      >
+        <template>
+          <slot :row="item"></slot>
+        </template>
       </LiItem>
       <div v-if="pageCount && pageCount > 1" :class="classPrev + 'page'">
         <!-- 圆点的分页 -->
@@ -92,17 +96,18 @@ export default {
   name: 'TsUlList',
   components: { LiItem },
   props: {
-    height: {type: Number, default: 500}, //如果分页方式是scroll，则需要给出height
-    pager: {type: String, default: 'button'}, //分页方式：button或scroll
-    isToggle: {type: Boolean, default: false},
+    height: { type: Number, default: 500 }, //如果分页方式是scroll，则需要给出height
+    pager: { type: String, default: 'button' }, //分页方式：button或scroll
+    isToggle: { type: Boolean, default: false },
     pageCount: Number,
     rowNum: Number,
     pageSize: Number,
     currentPage: Number,
     dataList: Array,
-    value: {type: [Array, String, Number]},
-    className: {type: String},
-    itemStyle: {type: String},
+    size: { type: String, default: 'normal' }, //normal,small
+    value: { type: [Array, String, Number] },
+    className: { type: String },
+    itemStyle: { type: String },
     textName: {
       type: String,
       default: 'name'
