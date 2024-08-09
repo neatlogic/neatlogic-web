@@ -3,7 +3,7 @@
     <span class="left-label-text text-grey">{{ config.typeName }}</span>
     <span v-if="config.oldContent">
       <span v-for="(item,index) in setData(config.oldContent)" :key="index">
-        <UserCard 
+        <UserCard
           v-bind="item"
           style="display: inline-block;"
         ></UserCard>
