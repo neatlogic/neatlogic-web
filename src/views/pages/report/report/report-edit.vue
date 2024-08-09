@@ -68,7 +68,7 @@ export default {
         type: 'slider',
         maskClose: false,
         isShow: true,
-        width: 'large'
+        width: '1200px'
       },
       reportData: {},
       reportFormConfig: [
