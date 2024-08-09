@@ -21,9 +21,10 @@
             {{ condition.handlerName }}
           </Tag>
         </div>
-        <label>{{ $t('page.formattr') }}</label>
         <div class="form-grid padding bg-op radius-md mt-md">
-          <div class="text-grey"><span>{{ $t('term.process.catalog') }}</span></div>
+          <div class="text-grey">
+            <span>{{ $t('term.process.catalog') }}</span>
+          </div>
           <div>
             <TsFormSelect
               :value="channelUuidList"
@@ -36,8 +37,10 @@
               @on-change="changeChannel"
             ></TsFormSelect>
           </div>
-          <div v-if="formConditionList.length>0" class="text-grey"><span>{{ $t('page.attribute') }}</span></div>
-          <div v-if="formConditionList.length>0">
+          <div v-if="formConditionList.length > 0" class="text-grey">
+            <span>{{ $t('page.formattr') }}</span>
+          </div>
+          <div v-if="formConditionList.length > 0">
             <Tag
               v-for="(condition, index) in formConditionList"
               :key="index"
@@ -51,8 +54,21 @@
               {{ condition.handlerName }}
             </Tag>
           </div>
+          <template v-if="!$utils.isEmpty(channelUuidList)">
+            <div class="text-grey">
+              <span>{{ $t('term.process.stepfilter') }}</span>
+            </div>
+            <div>
+              <TsFormSwitch
+                :value="isFilterStep"
+                :falseValue="false"
+                :trueValue="true"
+                @on-change="changeStepFilter"
+              ></TsFormSwitch>
+            </div>
+          </template>
         </div>
-        <Divider v-if="selectedAttributeList.length > 0" orientation="left" style="font-size:14px">{{ $t('term.process.attrdragtip') }}</Divider>
+        <Divider v-if="selectedAttributeList.length > 0" orientation="left" style="font-size: 14px">{{ $t('term.process.attrdragtip') }}</Divider>
         <div v-if="selectedAttributeList.length > 0" class="padding bg-op">
           <draggable
             :animation="150"
@@ -79,26 +95,72 @@ export default {
   name: '',
   components: {
     draggable,
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     conditionList: { type: Array },
-    conditionGroupUuid: {type: String}, //编辑的条件分组uuid，为空代表添加分组
-    selectedConditionList: {type: Array}, //编辑时传入的条件分组数据，为空代表添加分组
-    selectedChannelUuidList: {type: Array}//编辑时存入的服务uuid列表，为空代表添加分组
+    conditionGroupUuid: { type: String }, //编辑的条件分组uuid，为空代表添加分组
+    selectedConditionList: { type: Array }, //编辑时传入的条件分组数据，为空代表添加分组
+    selectedChannelUuidList: { type: Array } //编辑时存入的服务uuid列表，为空代表添加分组
   },
   data() {
     return {
       dialogConfig: {
-        title: this.$t('dialog.title.addtarget', {target: this.$t('page.condition')}),
+        title: this.$t('dialog.title.addtarget', { target: this.$t('page.condition') }),
         type: 'modal',
         maskClose: false,
         isShow: true,
         width: 'medium'
       },
+      // 流程步骤搜索条件
+      processStepConfig: {
+        handler: 'processStep',
+        expressionList: [
+          {
+            expression: 'include',
+            expressionName: '包括'
+          },
+          {
+            expression: 'exclude',
+            expressionName: '不包括'
+          },
+          {
+            expression: 'is-null',
+            expressionName: '为空'
+          },
+          {
+            expression: 'is-not-null',
+            expressionName: '不为空'
+          }
+        ],
+        handlerType: 'select',
+        defaultExpression: 'include',
+        conditionModel: 'select',
+        handlerName: '流程步骤',
+        isMultiple: true,
+        sort: 20,
+        type: 'common',
+        config: {
+          search: true,
+          textName: 'name',
+          mapping: {
+            text: 'text',
+            value: 'value'
+          },
+          valueName: 'uuid',
+          defaultValue: '',
+          multiple: true,
+          isMultiple: true,
+          type: 'select',
+          dynamicUrl: 'api/rest/process/step/list',
+          value: ''
+        }
+      },
       channelUuidList: [],
       selectedAttributeList: [],
-      formConditionList: [] //表单属性列表
+      formConditionList: [], //表单属性列表
+      isFilterStep: false
     };
   },
   beforeCreate() {},
@@ -106,7 +168,6 @@ export default {
   beforeMount() {},
   mounted() {
     this.init();
-    //console.log(JSON.stringify(this.selectedAttributeList, null, 2));
   },
   beforeUpdate() {},
   updated() {},
@@ -118,6 +179,13 @@ export default {
     init() {
       this.selectedAttributeList = this.selectedConditionList || [];
       this.channelUuidList = this.selectedChannelUuidList || [];
+      if (this.selectedAttributeList.length > 0) {
+        // 流程步骤字段回显
+        let findProcessStep = this.selectedAttributeList.find(d => d.handler == 'processStep');
+        if (!this.$utils.isEmpty(findProcessStep)) {
+          this.isFilterStep = true;
+        }
+      }
     },
     closeDialog() {
       this.$emit('close');
@@ -146,6 +214,13 @@ export default {
         this.channelUuidList = [val];
       } else {
         this.channelUuidList = [];
+      }
+    },
+    changeStepFilter(val) {
+      if (val) {
+        this.selectedAttributeList.push(this.processStepConfig);
+      } else {
+        this.removeSelectedAttribute(this.processStepConfig);
       }
     }
   },
@@ -201,6 +276,6 @@ export default {
   display: grid;
   width: 100%;
   grid-row-gap: 12px;
-  grid-template-columns: 50px auto;
+  grid-template-columns: 100px auto;
 }
 </style>
