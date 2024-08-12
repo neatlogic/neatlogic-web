@@ -1,6 +1,6 @@
 <template>
   <div class="menu_link">
-    <div>
+    <div :class="{ grid: pageCount > 1 }">
       <ul>
         <li class="link">
           <a class="tsfont-plus text-primary" @click="addProject">
@@ -29,6 +29,17 @@
           </a>
         </li>
       </ul>
+      <div v-if="pageCount > 1" style="margin-top: 44px;">
+        <VerticalPager
+          :currentPage="searchParam.currentPage"
+          :pageCount="pageCount"
+          @change="
+            page => {
+              handlePageSize(page);
+            }
+          "
+        ></VerticalPager>
+      </div>
     </div>
     <ProjectEditDialog v-if="isProjectDialogShow" @close="closeProjectDialog"></ProjectEditDialog>
   </div>
@@ -37,13 +48,15 @@
 export default {
   name: 'RdmMenu',
   components: {
-    ProjectEditDialog: () => import('@/views/pages/rdm/project/project-add-dialog.vue')
+    ProjectEditDialog: () => import('@/views/pages/rdm/project/project-add-dialog.vue'),
+    VerticalPager: () => import('@/resources/plugins/VerticalPager/vertical-pager.vue')
   },
   data: function() {
     return {
       isProjectDialogShow: false,
       projectList: [],
-      searchParam: { isMine: 1, isClose: 0 }
+      pageCount: 0,
+      searchParam: { isMine: 1, isClose: 0, currentPage: 1, pageSize: 10}
     };
   },
   created() {
@@ -69,9 +82,16 @@ export default {
         this.searchProject();
       }
     },
+    handlePageSize(currentPage) {
+      this.searchParam.currentPage = currentPage;
+      this.searchParam.pageSize = 10;
+      this.searchProject();
+    },
     searchProject() {
-      this.$api.rdm.project.searchProject({...this.searchParam, needPage: false}).then(res => {
-        this.projectList = res.Return.tbodyList;
+      this.$api.rdm.project.searchProject(this.searchParam).then(res => {
+        let {pageCount = 0, tbodyList = []} = res.Return || {};
+        this.projectList = tbodyList;
+        this.pageCount = pageCount;
       });
     }
   },
@@ -83,4 +103,9 @@ export default {
   }
 };
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.grid {
+  display: grid;
+  grid-template-columns: auto 23px;
+}
+</style>
