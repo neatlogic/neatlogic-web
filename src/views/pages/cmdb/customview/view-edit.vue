@@ -690,10 +690,10 @@ export default {
           group.addNode(node);
           const offset = 50; //偏移起点
           if (rel.direction === 'from') {
-            const ciNode = this.drawCi({ id: rel.toCiId, label: rel.toCiLabel }, group.getX() + group.getWidth() + offset, group.getY());
+            const ciNode = this.drawCi({ id: rel.toCiId, name: rel.toCiName, label: rel.toCiLabel }, group.getX() + group.getWidth() + offset, group.getY());
             node.connect({ dir: 'R' }, ciNode, { dir: 'L' }, node);
           } else {
-            const ciNode = this.drawCi({ id: rel.fromCiId, label: rel.fromCiLabel }, group.getX() + group.getWidth() + offset, group.getY());
+            const ciNode = this.drawCi({ id: rel.fromCiId, name: rel.fromCiName, label: rel.fromCiLabel }, group.getX() + group.getWidth() + offset, group.getY());
             node.connect({ dir: 'R' }, ciNode, { dir: 'L' }, node);
           }
           return node;
@@ -714,27 +714,31 @@ export default {
           if (ciNode && ciNode.length > 0) {
             ciNode = ciNode[0];
           }
-          const node = this.topo.addNode({
-            icon: constattr.label,
-            shape: 'rect',
-            x: 0,
-            y: 0,
-            type: 'constattr',
-            config: {
-              constName: constattr.name,
-              attrLabel: constattr.label,
-              alias: constattr.label,
-              isHidden: 0,
-              isPrimary: 0,
-              ciUuid: ciNode.getUuid(),
-              sort: 0
-            }
-          });
-          node.draw();
-          //先绘制节点，在加入分组
-          group.addNode(node);
-          constattr.uuid = node.getUuid();
-          return node;
+          if (ciNode) {
+            const ciName = ciNode.getConfig()['ciName'];
+            const node = this.topo.addNode({
+              icon: constattr.label,
+              shape: 'rect',
+              x: 0,
+              y: 0,
+              type: 'constattr',
+              config: {
+                constName: constattr.name,
+                attrLabel: constattr.label,
+                name: ciName + '_' + constattr.name,
+                alias: constattr.label,
+                isHidden: 0,
+                isPrimary: 0,
+                ciUuid: ciNode.getUuid(),
+                sort: 0
+              }
+            });
+            node.draw();
+            //先绘制节点，在加入分组
+            group.addNode(node);
+            constattr.uuid = node.getUuid();
+            return node;
+          }
         }
       }
     },
@@ -758,34 +762,38 @@ export default {
           if (ciNode && ciNode.length > 0) {
             ciNode = ciNode[0];
           }
-          const node = this.topo.addNode({
-            icon: attr.label,
-            shape: 'rect',
-            x: 0,
-            y: 0,
-            type: 'attr',
-            config: {
-              attrId: attr.id,
-              attrLabel: attr.label,
-              targetCiId: attr.targetCiId,
-              canLink: attr.isSearchAble && attr.canSearch,
-              alias: attr.label,
-              isHidden: 0,
-              isPrimary: 0,
-              ciUuid: ciNode.getUuid(),
-              sort: 0
+          if (ciNode) {
+            const ciName = ciNode.getConfig()['ciName'];
+            const node = this.topo.addNode({
+              icon: attr.label,
+              shape: 'rect',
+              x: 0,
+              y: 0,
+              type: 'attr',
+              config: {
+                attrId: attr.id,
+                name: ciName + '_' + attr.name,
+                attrLabel: attr.label,
+                targetCiId: attr.targetCiId,
+                canLink: attr.isSearchAble && attr.canSearch,
+                alias: attr.label,
+                isHidden: 0,
+                isPrimary: 0,
+                ciUuid: ciNode.getUuid(),
+                sort: 0
+              }
+            });
+            node.draw();
+            //先绘制节点，在加入分组
+            group.addNode(node);
+            attr.uuid = node.getUuid();
+            if (attr.targetCiId) {
+              const offset = 50; //偏移起点
+              const ciNode = this.drawCi({ id: attr.targetCiId, name: attr.targetCiName, label: attr.targetCiLabel }, group.getX() + group.getWidth() + offset, group.getY());
+              node.connect({ dir: 'R' }, ciNode, { dir: 'L' }, node);
             }
-          });
-          node.draw();
-          //先绘制节点，在加入分组
-          group.addNode(node);
-          attr.uuid = node.getUuid();
-          if (attr.targetCiId) {
-            const offset = 50; //偏移起点
-            const ciNode = this.drawCi({ id: attr.targetCiId, label: attr.targetCiLabel }, group.getX() + group.getWidth() + offset, group.getY());
-            node.connect({ dir: 'R' }, ciNode, { dir: 'L' }, node);
+            return node;
           }
-          return node;
         }
       }
     },
