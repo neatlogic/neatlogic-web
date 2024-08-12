@@ -70,7 +70,7 @@ export default {
       }
     },
     searchProject() {
-      this.$api.rdm.project.searchProject(this.searchParam).then(res => {
+      this.$api.rdm.project.searchProject({...this.searchParam, needPage: false}).then(res => {
         this.projectList = res.Return.tbodyList;
       });
     }
