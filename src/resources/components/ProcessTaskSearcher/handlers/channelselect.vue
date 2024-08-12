@@ -46,8 +46,8 @@
           @change="changeProcessStep"
         ></TsFormSelect>
       </div>
-      <label v-if="isFilterForm && formConditionList && formConditionList.length > 0" class="text-grey">{{ $t('page.attribute') }}</label>
-      <div v-if="isFilterForm && formConditionList && formConditionList.length > 0">
+      <label v-if="isFilterForm && formConditionList && formConditionList.length > 0" class="inline-block text-grey pb-sm">{{ $t('page.attribute') }}</label>
+      <div v-if="isFilterForm && formConditionList && formConditionList.length > 0" class="inner-attr-list">
         <TsFormSelect
           :dataList="formConditionList"
           textName="handlerName"
@@ -63,7 +63,7 @@
         <!-- 解决index作为key，导致删除对应属性，属性对应配置信息还是上一个的问题 -->
         <div v-for="(formcondition) in workcenterFormConditionList" :key="formcondition.uuid" class="pb-sm">
           <div v-if="getFormConditionByName(formcondition.name)">
-            <label class="text-grey">{{ getFormConditionByName(formcondition.name).handlerName }}</label>
+            <label class="inline-block text-grey pb-sm">{{ getFormConditionByName(formcondition.name).handlerName }}</label>
             <div>
               <SearchInputer
                 mode="simple"
@@ -361,5 +361,12 @@ export default {
   display: grid;
   grid-template-columns: auto 20px 60px 20px 60px;
   grid-gap: 10px;
+  align-items: center;
+}
+.inline-block {
+  display: inline-block;
+}
+.inner-attr-list div:last-child {
+  padding-bottom: 0;
 }
 </style>

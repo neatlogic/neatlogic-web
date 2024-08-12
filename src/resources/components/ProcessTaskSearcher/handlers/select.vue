@@ -13,7 +13,7 @@
       v-bind="config"
       border="border"
       :value="conditionData && conditionData.valueList"
-      :validateList="[{ name: 'required', message: ' ' }]"
+      :validateList="mode == 'simple' ? [] : [{ name: 'required', message: ' ' }]"
       :isCustomValue="isCustomValue"
       @change="change"
     ></TsFormSelect>

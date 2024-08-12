@@ -33,7 +33,7 @@
                   mode="custom"
                   :condition="getConditionConfigByConditionData(conditionGroup, conditionData)"
                   :conditionData="conditionData"
-                  :isCustomValue="true"
+                  :isCustomValue="false"
                   :isCustomPanel="true"
                   @change="
                     (conditionConfig, val, textStr) => {
@@ -130,7 +130,52 @@ export default {
        * 注意：传递到searchInputer的数据会使用workcenterConditionDataLocal，这样子控件可以直接修改数据而不会影响真正的搜索数据
        */
       workcenterConditionDataLocal: { conditionGroupRelList: [], conditionGroupList: [] }, //用于保存的最终数据
-      conditionMap: {} //选中的条件数据，如果是表单属性，key是channelUui+表单label
+      conditionMap: {}, //选中的条件数据，如果是表单属性，key是channelUui+表单label
+      processStepConditionMap: {
+        handler: 'processStep',
+        expressionList: [
+          {
+            expression: 'include',
+            expressionName: '包括'
+          },
+          {
+            expression: 'exclude',
+            expressionName: '不包括'
+          },
+          {
+            expression: 'is-null',
+            expressionName: '为空'
+          },
+          {
+            expression: 'is-not-null',
+            expressionName: '不为空'
+          }
+        ],
+        handlerType: 'select',
+        defaultExpression: 'include',
+        conditionModel: 'select',
+        handlerName: '流程步骤',
+        isMultiple: true,
+        sort: 20,
+        type: 'common',
+        config: {
+          search: true,
+          textName: 'name',
+          mapping: {
+            text: 'text',
+            value: 'value'
+          },
+          valueName: 'uuid',
+          defaultValue: '',
+          multiple: true,
+          isMultiple: true,
+          type: 'select',
+          value: '',
+          params: {},
+          dynamicUrl: ''
+        }
+      },
+      processStepDynamicUrl: 'api/rest/process/step/list'
     };
   },
   beforeCreate() {},
@@ -153,9 +198,16 @@ export default {
           this.conditionMap[condition.handler] = condition;
         });
       }
+      this.conditionMap['processStep'] = this.processStepConditionMap;
       //把如果工单中心使用了表单条件，也需要预先提取到conditionMap，等待提取
       const channelUuidList = [];
       this.workcenterConditionData.conditionGroupList.forEach(conditionGroup => {
+        // 处理流程步骤值回显，流程步骤需要跟根据服务作为其过滤条件
+        let channelUuid = conditionGroup.channelUuidList && conditionGroup.channelUuidList.length > 0 ? conditionGroup.channelUuidList[0] : '';
+        if (!this.$utils.isEmpty(channelUuid)) {
+          this.$set(this.conditionMap['processStep'].config.params, 'channelUuid', channelUuid);
+          this.$set(this.conditionMap['processStep'].config, 'dynamicUrl', this.processStepDynamicUrl);
+        }
         if (conditionGroup.channelUuidList && conditionGroup.channelUuidList.length > 0) {
           conditionGroup.channelUuidList.forEach(uuid => {
             channelUuidList.push(uuid);
@@ -194,7 +246,13 @@ export default {
       const currentConditionList = [];
       const channelUuidList = conditionGroupData['channelUuidList'];
       conditionGroupData.conditionList.forEach(condition => {
-        if (condition.type == 'common') {
+        if (condition.type == 'common' && condition.name == 'processStep') {
+          // 处理流程步骤值回显
+          if (this.conditionMap[condition.name]) {
+            currentConditionList.push(this.conditionMap[condition.name]);
+            this.currentChannelUuidList = channelUuidList;
+          }
+        } else if (condition.type == 'common') {
           if (this.conditionMap[condition.name]) {
             currentConditionList.push(this.conditionMap[condition.name]);
           }
@@ -337,6 +395,10 @@ export default {
           }
         }
         newConditionGroup['conditionRelList'] = conditionRelList;
+        if (channelUuidList && channelUuidList.length > 0) {
+          this.$set(this.conditionMap['processStep'].config.params, 'channelUuid', channelUuidList[0]);
+          this.$set(this.conditionMap['processStep'].config, 'dynamicUrl', this.processStepDynamicUrl);
+        }
       }
       this.closeGroupDialog();
     }

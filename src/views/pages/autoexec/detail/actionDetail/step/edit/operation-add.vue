@@ -283,9 +283,6 @@ export default {
           }
         }
       }
-      if (!this.$utils.isEmpty(this.excludeList)) {
-        this.$set(param, 'excludeList', this.excludeList);
-      }
 
       this.loading = true;
       return this.$api.autoexec.script
