@@ -2689,7 +2689,8 @@
     "servicerelyon": "我依赖的服务",
     "dependentapp": "依赖应用",
     "preparation": "预案",
-    "exerciseplan": "演练计划"
+    "exerciseplan": "演练计划",
+    "dependencyscene": "依赖场景"
   },
   "diagram": {
     "widgetlist": "图元列表",
@@ -2765,6 +2766,7 @@
     "nextstatus": "流转状态",
     "editing": "编辑中",
     "activing": "激活中",
-    "source": "来源限制"
+    "source": "来源限制",
+    "waitfordo": "待处理"
   }
 }

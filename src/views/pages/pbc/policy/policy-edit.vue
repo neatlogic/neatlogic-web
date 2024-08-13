@@ -44,12 +44,12 @@
           </template>
           <template v-slot:interfaceList>
             <div>
-              <div class="mb-md" style="text-align: rigth; width: 50%"><TsFormInput
+              <div class="mb-md" style="text-align: rigth; width: 50%"><InputSearcher
                 v-model="searchParam.keyword"
                 :placeholder="$t('form.placeholder.keyword')"
                 suffix="tsfont-search"
-                @on-enter="searchInterface"
-              ></TsFormInput></div>
+                @change="searchInterface(1)"
+              ></InputSearcher></div>
               <div v-if="policyData.interfaceList && policyData.interfaceList.length > 0" class="mb-sm">
                 {{ $t('term.pbc.selectedinterface') }}：
                 <Tag
@@ -94,10 +94,11 @@ export default {
   components: {
     draggable,
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    //TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    PolicyConfig: () => import('./policy-config.vue')
+    PolicyConfig: () => import('./policy-config.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     id: { type: Number }

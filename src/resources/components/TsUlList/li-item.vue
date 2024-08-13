@@ -1,6 +1,6 @@
 <template>
   <div :class="classes" class="radius-sm" :style="itemStyle">
-    <div class="ivu-cell" @click="onClick">
+    <div class="ivu-cell" :style="size === 'small' ? 'margin:0px !important;padding:0px !important' : ''" @click="onClick">
       <div class="ivu-cell-item">
         <slot :row="liData">
           <span v-if="liData[childName] && liData[childName].length > 0 && !isGroup" class="ts"></span>
@@ -40,6 +40,7 @@ export default {
     childName: String,
     className: String,
     itemStyle: String,
+    size: { type: String, default: 'normal' }, //normal small
     isGroup: {
       type: Boolean,
       default: false

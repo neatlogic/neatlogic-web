@@ -158,7 +158,7 @@ export default {
     return {
       isHelpShow: false,
       table: {
-        config: `{\n   "data":"dataList",\n   "title":"${this.$t('page.title')}",\n   "header":${this.$t('term.report.describe.headerdescribe')},\n   "column":${this.$t('term.report.describe.columndescribe')}\n}`
+        config: `{\n   "data":"dataList",\n   "title":"${this.$t('page.title')}",\n   "header":${this.$t('term.report.describe.headerdescribe')},\n   "column":${this.$t('term.report.describe.columndescribe')},\n   "pageSize":20,\n   "needPage":true\n}`
       },
       barHelp: {
         data: '<resultMap id="bar">\n' + '   <result property="yField"/><!--Y坐标列，必须是数值，必须存在-->\n' + '   <result property="xFiled"/><!--X坐标列，必须存在-->\n' + '   <result property="groupField"/><!--分组列，柱状图选择存在，曲线图必须存在-->\n' + '</resultMap>',
