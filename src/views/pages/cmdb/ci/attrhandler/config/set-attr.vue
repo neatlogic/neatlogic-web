@@ -12,7 +12,7 @@
               <TsFormInput
                 :width="300"
                 :value="item"
-                maxlength="15"
+                :maxlength="50"
                 @change="(val)=>{ setMember(val,index)}"
               ></TsFormInput>
             </div>
