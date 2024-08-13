@@ -27,7 +27,7 @@ export default {
   props: {
     maxlength: {
       type: Number,
-      default: 4096
+      default: 6114
     }
   },
   data() {

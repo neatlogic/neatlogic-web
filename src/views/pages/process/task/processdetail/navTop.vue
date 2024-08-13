@@ -96,7 +96,8 @@ export default {
       baseTime: Date.now(),
       slaUpdateTimer: null,
       slaTimeList: [],
-      boxMaxWidth: 200
+      boxMaxWidth: 200,
+      processTaskId: null
     };
   },
   beforeCreate() {},
@@ -162,34 +163,43 @@ export default {
     isTslayout() {
       this.$emit('isTslayout');
     },
-    UpdateSlaTimeDoing(slaIdList) {
+    UpdateSlaTimeDoing(isRefresh = false) {
       // 更新sla
-      this.slaTimeList = [];
-      let tempSlaTimeList = [];
       if (this.slaUpdateTimer) {
         clearTimeout(this.slaUpdateTimer);
         this.slaUpdateTimer = null;
       }
-      if (this.$utils.isEmpty(slaIdList)) {
+      if (!isRefresh) {
         return;
       }
-      this.$api.process.processtask.slaTimeList({slaIdList: slaIdList}).then(res => {
+      this.slaTimeList = [];
+      let tempSlaTimeList = [];
+      let data = {
+        processTaskId: this.processTaskId
+      };
+      this.$api.process.processtask.getStepStatusList(data).then(res => {
         if (res.Status === 'OK') {
           this.baseTime = Date.now();
-          let tbodyList = res.Return.tbodyList || [];
-          let doingSlaIdList = [];
-          tbodyList && tbodyList.forEach((item, index) => {
-            if (item.status === 'doing') {
-              doingSlaIdList.push(item.slaId);
-            }
-            if (index == 0) { // 当前步骤关联多个SLA时，仅仅显示最紧迫的一个(默认第一个，后端已排序)
-              tempSlaTimeList.push(item);
+          let slaTimeList = [];
+          let stepList = res.Return || [];
+          let hasDoingStatus = false;
+          stepList && stepList.forEach((item) => {
+            if (item.isInTheCurrentStepTab === 1) {
+              if (!this.$utils.isEmpty(item.slaTimeList)) { // 当前步骤关联多个SLA时，仅仅显示最紧迫的一个(默认第一个，后端已排序)
+                tempSlaTimeList.push(item.slaTimeList[0]);
+              }
+              slaTimeList = item.slaTimeList;
+              item.slaTimeList.forEach(v => {
+                if (v.status === 'doing') {
+                  hasDoingStatus = true;
+                }
+              });
             }
           });
-          this.$store.commit('setTaskSlaTimeList', tbodyList); // 设置工单时效
+          this.$store.commit('setTaskSlaTimeList', slaTimeList); // 设置工单时效
           this.getElementWidth();
           this.slaUpdateTimer = setTimeout(() => {
-            this.UpdateSlaTimeDoing(doingSlaIdList);
+            this.UpdateSlaTimeDoing(hasDoingStatus);
           }, 60 * 1000);
         }
       });
@@ -229,18 +239,9 @@ export default {
     },
     processTaskConfig: {
       handler(taskConfig) {
-        let slaIdList = [];
-        if (!this.$utils.isEmpty(taskConfig.currentProcessTaskStep) && !this.$utils.isEmpty(taskConfig.currentProcessTaskStep.slaTimeList)) {
-          taskConfig.currentProcessTaskStep.slaTimeList.forEach(item => {
-            if (item.status === 'doing') {
-              slaIdList.push(item.slaId);
-            }
-          });
-          if (!this.$utils.isEmpty(slaIdList)) {
-            this.UpdateSlaTimeDoing(slaIdList);
-          } else {
-            this.$store.commit('setTaskSlaTimeList', []); // 清空工单时效
-          }
+        if (!this.$utils.isEmpty(taskConfig) && !this.$utils.isEmpty(taskConfig.id)) {
+          this.processTaskId = taskConfig.id;
+          this.UpdateSlaTimeDoing(true);
         } else {
           this.$store.commit('setTaskSlaTimeList', []); // 清空工单时效
         }
