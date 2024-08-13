@@ -24,7 +24,7 @@ export default {
           },
           label: {
             style: {
-              fill: this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || '#f1f1f1'
+              fill: this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || this.labelColor
             }
           } 
         },
@@ -37,7 +37,7 @@ export default {
             },
             label: {
               style: {
-                fill: this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || '#f1f1f1'
+                fill: this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || this.labelColor
               }
             }
           },
@@ -75,7 +75,8 @@ export default {
         },
         lineSeriesField: 'seriesField',
         theme: this.canvas.config.theme && themes[this.canvas.config.theme]
-      }
+      },
+      labelColor: '#8C8C8C'
     };
   },
   beforeCreate() {},
@@ -120,6 +121,16 @@ export default {
     },
     sortByTime(data) {
       return data.sort((a, b) => new Date(a.xField) - new Date(b.xField));
+    },
+    changeCusTheme(val) {
+      // 自定义主题颜色更新
+      if (val) {
+        this.chartConfig.xAxis.label.style.fill = this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || this.labelColor;
+        this.chartConfig.yAxis[0].label.style.fill = this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || this.labelColor;
+      } else {
+        this.chartConfig.xAxis.label.style.fill = this.labelColor;
+        this.chartConfig.yAxis[0].label.style.fill = this.labelColor;
+      }
     }
   },
   filter: {},

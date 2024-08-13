@@ -130,10 +130,24 @@
                   fill: val,
                 },
               })
+            }else{
+              deleteConfigValue('label.style.fill');
             }
           }
         "
       />
+    </TsFormItem>
+    <TsFormItem label="辅助线" labelPosition="top">
+      <TsFormSwitch
+        :value="!config.yAxis || !!config.yAxis?.hasOwnProperty('grid')?!!config.yAxis.grid.visible:true"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            setConfigValue('yAxis.grid.visible', val);
+          }
+        "
+      ></TsFormSwitch>
     </TsFormItem>
   </div>
 </template>
@@ -182,6 +196,11 @@ export default {
     setConfigValue(attrName, attrValue) {
       if (attrName) {
         this.$emit('setConfig', attrName, attrValue);
+      }
+    },
+    deleteConfigValue(attrName) {
+      if (attrName) {
+        this.$emit('setConfig', attrName);
       }
     }
   },

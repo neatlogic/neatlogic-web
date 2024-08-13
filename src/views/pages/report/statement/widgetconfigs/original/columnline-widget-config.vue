@@ -18,9 +18,48 @@
         :transfer="true"
         :clearable="false"
         :dataList="positionList"
+        border="border"
         @change="
           val => {
             setConfigValue('legend.position', val);
+          }
+        "
+      ></TsFormSelect>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.statisticcolor')" labelPosition="top">
+      <ColorPicker
+        :value="config?.geometryOptions[0]?.label?.style?.fill || ''"
+        :transfer="true"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="
+          val => {
+            if(!config.geometryOptions[1].label.style){
+              $set(config.geometryOptions[1].label, 'style', {});
+            }
+            $set(config.geometryOptions[1].label.style, 'fill', val || defaultSizeColor)
+          }
+        "
+      />
+    </TsFormItem>
+    <TsFormItem label="统计数据字体大小" labelPosition="top">
+      <TsFormSelect
+        :value="config.labelFontSize || 12"
+        :dataList="axisFontSizeList"
+        border="border"
+        transfer
+        @change="
+          val => {
+            if(!config.geometryOptions[0].label.style){
+              $set(config.geometryOptions[0].label, 'style', {});
+            }
+            if(!config.geometryOptions[1].label.style){
+              $set(config.geometryOptions[1].label, 'style', {});
+            }
+            $set(config.geometryOptions[0].label.style, 'fontSize', val || 12);
+            $set(config.geometryOptions[1].label.style, 'fontSize', val || 12)
           }
         "
       ></TsFormSelect>
