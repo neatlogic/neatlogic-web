@@ -1,123 +1,103 @@
 <template>
-  <div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.showlegend') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormSwitch
-          :value="config.legend.visible"
-          :true-value="true"
-          :false-value="false"
-          @change="
-            val => {
-              setConfigValue('legend.visible', val);
+  <div class="pb-nm">
+    <TsFormItem :label="$t('term.report.axis.showlegend')" labelPosition="top">
+      <TsFormSwitch
+        :value="config.legend.visible"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            setConfigValue('legend.visible', val);
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem v-if="config.legend.visible" :label="$t('term.report.axis.legendposition')" labelPosition="top">
+      <TsFormSelect
+        :value="config.legend.position"
+        :transfer="true"
+        :clearable="false"
+        :dataList="positionList"
+        border="border"
+        @change="
+          val => {
+            setConfigValue('legend.position', val);
+          }
+        "
+      ></TsFormSelect>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.axis.yaxisshow')" labelPosition="top">
+      <TsFormSwitch
+        :value="config.yAxis?true:false"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            if (val) {
+              setConfigValue('yAxis', { title: { text: '' } });
+            } else {
+              setConfigValue('yAxis', val);
             }
-          "
-        ></TsFormSwitch>
-      </div>
-    </div>
-    <div v-if="config.legend.visible" class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.legendposition') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormSelect
-          :value="config.legend.position"
-          :transfer="true"
-          :clearable="false"
-          :dataList="positionList"
-          @change="
-            val => {
-              setConfigValue('legend.position', val);
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem v-if="config.yAxis" :label="$t('term.report.axis.yaxistitle')" labelPosition="top">
+      <TsFormInput
+        :value="config.yAxis.title && config.yAxis.title.text"
+        border="border"
+        @change="
+          val => {
+            setConfigValue('yAxis.title.text', val);
+          }
+        "
+      ></TsFormInput>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.axis.xaxisshow')" labelPosition="top">
+      <TsFormSwitch
+        :value="config.xAxis?true:false"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            if (val) {
+              setConfigValue('xAxis', {
+                label: {
+                  autoHide: true,
+                  autoEllipsis: true
+                },
+                title: { text: '' }
+              });
+            } else {
+              setConfigValue('xAxis', val);
             }
-          "
-        ></TsFormSelect>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.yaxisshow') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormSwitch
-          :value="config.yAxis?true:false"
-          :true-value="true"
-          :false-value="false"
-          @change="
-            val => {
-              if (val) {
-                setConfigValue('yAxis', { title: { text: '' } });
-              } else {
-                setConfigValue('yAxis', val);
-              }
-            }
-          "
-        ></TsFormSwitch>
-      </div>
-    </div>
-    <div v-if="config.yAxis" class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.yaxistitle') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormInput
-          :value="config.yAxis.title && config.yAxis.title.text"
-          border="border"
-          @change="
-            val => {
-              setConfigValue('yAxis.title.text', val);
-            }
-          "
-        ></TsFormInput>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.xaxisshow') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormSwitch
-          :value="config.xAxis?true:false"
-          :true-value="true"
-          :false-value="false"
-          @change="
-            val => {
-              if (val) {
-                setConfigValue('xAxis', {
-                  label: {
-                    autoHide: true,
-                    autoEllipsis: true
-                  },
-                  title: { text: '' }
-                });
-              } else {
-                setConfigValue('xAxis', val);
-              }
-            }
-          "
-        ></TsFormSwitch>
-      </div>
-    </div>
-    <div v-if="config.xAxis" class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.xaxistitle') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormInput
-          :value="config.xAxis.title && config.xAxis.title.text"
-          border="border"
-          @change="
-            val => {
-              setConfigValue('xAxis.title.text', val);
-            }
-          "
-        ></TsFormInput>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.smoothcurve') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormSwitch
-          :value="config.smooth"
-          :true-value="true"
-          :false-value="false"
-          @change="
-            val => {
-              setConfigValue('smooth', val);
-            }
-          "
-        ></TsFormSwitch>
-      </div>
-    </div>
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem v-if="config.yAxis" :label="$t('term.report.axis.xaxistitle')" labelPosition="top">
+      <TsFormInput
+        :value="config.xAxis.title && config.xAxis.title.text"
+        border="border"
+        @change="
+          val => {
+            setConfigValue('xAxis.title.text', val);
+          }
+        "
+      ></TsFormInput>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.smoothcurve')" labelPosition="top">
+      <TsFormSwitch
+        :value="config.smooth"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            setConfigValue('smooth', val);
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
     <TsFormItem :label="$t('term.report.showdata')" labelPosition="top">
       <TsFormSwitch
         :value="config.label ? true : false"
@@ -132,6 +112,42 @@
             } else {
               setConfigValue('label', val);
             }
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem v-if="config.label" :label="$t('term.report.statisticcolor')" labelPosition="top">
+      <ColorPicker
+        :value="config.label && config.label.style && config.label.style.fill"
+        :transfer="true"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="
+          val => {
+            if(val){
+              setConfigValue('label', {
+                visible: true,
+                style: {
+                  fill: val,
+                },
+              })
+            }else{
+              deleteConfigValue('label.style')
+            }
+          }
+        "
+      />
+    </TsFormItem>
+    <TsFormItem label="辅助线" labelPosition="top">
+      <TsFormSwitch
+        :value="!config.yAxis?true:typeof config.yAxis === 'boolean' ? true : config.yAxis.grid?config.yAxis.grid.visible:true"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            setConfigValue('yAxis.grid.visible', val);
           }
         "
       ></TsFormSwitch>
@@ -180,6 +196,11 @@ export default {
     setConfigValue(attrName, attrValue) {
       if (attrName) {
         this.$emit('setConfig', attrName, attrValue);
+      }
+    },
+    deleteConfigValue(attrName) {
+      if (attrName) {
+        this.$emit('setConfig', attrName);
       }
     }
   },

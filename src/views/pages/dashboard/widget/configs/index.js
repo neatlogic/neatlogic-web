@@ -20,6 +20,8 @@ export { default as bulletWidgetConfig } from './original/bullet-widget-config.v
 export { default as mapareaWidgetConfig } from './geography/maparea-widget-config.vue';
 export { default as groupedcolumnWidgetConfig } from './original/groupedcolumn-widget-config.vue';
 export { default as stackedcolumnWidgetConfig } from './original/stackedcolumn-widget-config.vue';
+export { default as columnlineWidgetConfig } from './original/columnline-widget-config.vue';
+
 export { default as pointWidgetConfig } from './others/point-widget-config.vue';
 export { default as funnelWidgetConfig } from './others/funnel-widget-config.vue';
 export { default as wordcloudWidgetConfig } from './others/wordcloud-widget-config.vue';
