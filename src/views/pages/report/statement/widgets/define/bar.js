@@ -2,7 +2,7 @@ import {$t} from '@/resources/init.js';
 
 export default { 
   name: 'bar', 
-  label: $t('term.report.chartsetting.barchart'), 
+  label: $t('term.dashboard.barchart'), 
   type: 'bar', 
   icon: 'tsfont-storage', 
   widgetType: 'basic', 

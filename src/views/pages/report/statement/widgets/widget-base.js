@@ -92,6 +92,9 @@ export const WidgetBase = {
       } else {
         this.$delete(this.chartConfig, 'theme');
       }
+      if (this.changeCusTheme) {
+        this.changeCusTheme(val);
+      }
       this.createPlot();
     },
     widget: {
