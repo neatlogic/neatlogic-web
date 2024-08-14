@@ -616,9 +616,9 @@ const methods = {
     let columlist = [];
     columlist.push({ text: $t('page.autoexecradomrunnergroup'), value: -1, config: {} });
     list &&
-    list.forEach(v => {
-      columlist.push({ text: v.name, value: v.id, config: v });
-    });
+      list.forEach(v => {
+        columlist.push({ text: v.name, value: v.id, config: v });
+      });
     return columlist;
   },
   getAppForselect(nodeList) {
@@ -651,7 +651,7 @@ const methods = {
         view: '/matrix-view-edit', // 视图矩阵
         cmdbci: '/matrix-view-edit', //cmdb
         private: '/matrix-private', //私有数据源
-        cmdbcustomview: '/matrix-view-edit', //cmdb自定义视图
+        cmdbcustomview: '/matrix-view-edit' //cmdb自定义视图
       };
       let defaultType = '/matrix-edit'; // 自定义矩阵
       let path = dataSourceType[type] || defaultType;
@@ -1087,11 +1087,9 @@ const methods = {
       const errorLineNumber = parseInt(lineMatch[1]);
       const codeLines = code.split('\n');
       const errorLinesContent = codeLines[errorLineNumber - 1];
-      error += `Error on line ${errorLineNumber}: ${errorLinesContent}`,
-      console.log(`Error on line ${errorLineNumber}: ${errorLinesContent}`);
+      (error += `Error on line ${errorLineNumber}: ${errorLinesContent}`), console.log(`Error on line ${errorLineNumber}: ${errorLinesContent}`);
     } else {
-      error += 'Could not detarmine error line number',
-      console.error('Could not detarmine error line number');
+      (error += 'Could not detarmine error line number'), console.error('Could not detarmine error line number');
     }
     return error;
   },
@@ -1100,6 +1098,31 @@ const methods = {
     const fileExtension = fileName.split('.').pop().toLowerCase(); // 使用split方法根据点（.）分割文件名，[-1]获取最后一个元素，即后缀
     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico'];
     return imageExtensions.includes(fileExtension);
+  },
+  setInterval(callback, delay, alwaysRun = false) {
+    let timer;
+    let isStopped = false;
+    const fn = async () => {
+      if (!document.hidden || alwaysRun) {
+        await callback();
+      }
+      if (!isStopped) {
+        timer = setTimeout(fn, delay);
+      } else {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+      }
+    };
+    // 第一次立即执行
+    fn();
+    //timer = setTimeout(fn, delay);
+    return {
+      clear: () => {
+        isStopped = true;
+      } // 用于手动清除定时器
+    };
   }
 };
 export default methods;

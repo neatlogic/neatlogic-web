@@ -5,17 +5,16 @@
       <span v-for="(item,index) in setData(config.oldContent)" :key="index">
         <UserCard
           v-bind="item"
-          hideAvatar
           style="display: inline-block;"
         ></UserCard>
-        <span v-if="setData(config.oldContent).length -1 >index">、</span>
+        <span v-if="setData(config.oldContent).length -1 >index">&nbsp;&nbsp;&nbsp;&nbsp;</span>
       </span>
     </span>
     <span v-if="config.newContent && config.oldContent" class="text-grey change-text">{{ $t('term.process.changeto') }}</span>
     <span v-if="config.newContent">
       <span v-for="(item,index) in setData(config.newContent)" :key="index" style="display: inline-block;">
-        <UserCard v-bind="item" hideAvatar></UserCard>
-        <span v-if="setData(config.newContent).length -1 >index">、</span>
+        <UserCard v-bind="item"></UserCard>
+        <span v-if="setData(config.newContent).length -1 >index">&nbsp;&nbsp;&nbsp;&nbsp;</span>
       </span>
     </span>
   </div>

@@ -2,7 +2,7 @@
   <div>
     <div v-if="attrEntity.actualValueList && attrEntity.actualValueList.length > 0" class="clearfix">
       <div v-for="(file, index) in attrEntity.actualValueList" :key="index">
-        <Tag v-download="download(file.id)" class="tsfont-download" style="cursor:pointer">{{ file.name }}</Tag>
+        <Tag v-download="download(file.id)" class="tsfont-attachment" style="cursor:pointer">{{ file.name }}</Tag>
       </div>
     </div>
   </div>

@@ -73,12 +73,17 @@
             </span>
           </template> -->
           <template slot="routeName" slot-scope="{ row }">
-            <span v-if="row.source == 'inspect' || row.source == 'inspectapp' || row.source == 'batchdeploy'">
-              <span>{{ row.route && row.route.name }}</span>
-            </span>
-            <span v-else class="text-href" @click="toRoute(row)">
-              <span>{{ row.route && row.route.name }}</span>
-            </span>
+            <div v-if="row.source == 'inspect' || row.source == 'inspectapp' || row.source == 'batchdeploy'" style="max-width:150px;" class="overflow">
+              {{ row.route && row.route.name }}
+            </div>
+            <div
+              v-else
+              style="max-width:150px;"
+              class="text-href overflow"
+              @click="toRoute(row)"
+            >
+              {{ row.route && row.route.name }}
+            </div>
           </template>
           <template slot="status" slot-scope="{ row }">
             <Status
@@ -386,6 +391,8 @@ export default {
         window.open(HOME + '/deploy.html#/schedule-job-edit?id=' + routeConfig.id, '_blank');
       } else if (row.source == 'deployci') {
         window.open(HOME + '/deploy.html#/config-add?appSystemId=' + routeConfig.appSystemId + '&id=' + routeConfig.id, '_blank');
+      } else if (row.source === 'dr') {
+        window.open(HOME + '/dr.html#/preparation-job-detail?id=' + routeConfig.id, '_blank');
       }
     },
     searchJob(currentPage) {

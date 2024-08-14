@@ -201,7 +201,7 @@ export default {
         if (res.Status == 'OK') {
           let list = res.Return || [];
           let stepDataList = list.filter(i => {
-            return i.isActive == 1 && (i.status == 'pending' || i.status == 'running');
+            return i.isInTheCurrentStepTab == 1;
           });
           if (stepDataList.length > 0) {
             let findIndex = -1;

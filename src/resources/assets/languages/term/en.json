@@ -877,7 +877,12 @@
     "runnergroupdeprecatedtips": "The parameters of the task executor group have expired. Please click confirm again and save the process",
     "loopitem": "Loop item",
     "loopoperation": "Loop execution",
-    "loophelp": "Execute in a loop according to the loop item, draw branches to the environment variable ${LOOP_ITEM}"
+    "loophelp": "Execute in a loop according to the loop item, draw branches to the environment variable ${LOOP_ITEM}",
+    "loopitemname": "Loop item name",
+    "loopitemhelp": "Set environment variable aliases for loop items and use them within the loop body",
+    "setinputloopitemvar": "Please enter the loop variable",
+    "setinputloopitems": "Please enter the loop item",
+    "setinputloopoperations": "Settings: Please enter at least one tool"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
@@ -2685,7 +2690,8 @@
     "servicerelyon": "The service I rely on",
     "dependentapp": "Dependent applications",
     "preparation": "reserve plan",
-    "exerciseplan": "Exercise plan"
+    "exerciseplan": "Exercise plan",
+    "dependencyscene": "Dependent scenarios"
   },
   "diagram": {
     "widgetlist": "Element List",
@@ -2760,6 +2766,7 @@
     "nextstatus": "Flow status",
     "editing": "Editing in progress",
     "activing": "Activing",
-    "source": "Source restrictions"
+    "source": "Source restrictions",
+    "waitfordo": "Pending processing"
   }
 }

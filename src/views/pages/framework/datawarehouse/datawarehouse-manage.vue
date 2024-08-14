@@ -32,6 +32,12 @@
           @changeCurrent="changePage"
           @changePageSize="updatePagesize"
         >
+          <template v-slot:label="{ row }">
+            <div>
+              <div>{{ row.label }}</div>
+              <div class="text-grey">{{ row.name }}</div>
+            </div>
+          </template>
           <template v-slot:isActive="{ row }">
             <span v-if="row.isActive" class="text-success">{{ $t('page.yes') }}</span>
             <span v-else class="text-grey">{{ $t('page.no') }}</span>
@@ -40,11 +46,22 @@
             <TsQuartz v-if="row.cronExpression" :value="row.cronExpression" showType="read"></TsQuartz>
           </template>
           <template v-slot:jobTime="{ row }">
-            <span v-if="row.lastFireTime">{{ $t('page.lastfire') }} {{ '：' }} {{ row.lastFireTime | formatDate }}</span>
-            <span v-else></span><br>
-            <span v-if="row.lastFinishTime">{{ $t('page.lastfinish') }} {{ '：' }} {{ row.lastFinishTime | formatDate }}</span>
-            <span v-else></span><br>
-            <span v-if="row.nextFireTime">{{ $t('page.nextfire') }} {{ '：' }} {{ row.nextFireTime | formatDate }}</span>
+            <span v-if="row.lastFireTime">
+              <span class="text-grey mr-xs">{{ $t('page.lastfire') }}</span>
+              <span>{{ row.lastFireTime | formatDate }}</span>
+            </span>
+            <span v-else></span>
+            <br />
+            <span v-if="row.lastFinishTime">
+              <span class="text-grey mr-xs">{{ $t('page.lastfinish') }}</span>
+              <span>{{ row.lastFinishTime | formatDate }}</span>
+            </span>
+            <span v-else></span>
+            <br />
+            <span v-if="row.nextFireTime">
+              <span class="text-grey mr-xs">{{ $t('page.nextfire') }}</span>
+              <span>{{ row.nextFireTime | formatDate }}</span>
+            </span>
             <span v-else></span>
           </template>
           <template v-slot:status="{ row }">
@@ -135,7 +152,6 @@ export default {
           key: 'selection',
           multiple: true
         },
-        { key: 'name', title: this.$t('page.uniquekey') },
         { key: 'label', title: this.$t('page.name') },
         { key: 'isActive', title: this.$t('page.enable') },
         { key: 'moduleName', title: this.$t('term.framework.belongmodule') },
@@ -143,7 +159,7 @@ export default {
         { key: 'dataCount', title: this.$t('page.datacapacity') },
         { key: 'cronExpression', title: this.$t('term.framework.cronexpression') },
         { key: 'jobTime', title: this.$t('page.jobtime') },
-        { key: 'description', title: this.$t('page.explain') },
+        //{ key: 'description', title: this.$t('page.explain') },
         { key: 'action' }
       ],
       timer: null,
@@ -184,7 +200,8 @@ export default {
         id: row.id,
         isActive: row.isActive
       };
-      this.$api.framework.datawarehouse.activeDataSource(param)
+      this.$api.framework.datawarehouse
+        .activeDataSource(param)
         .then(res => {
           if (res.Status == 'OK') {
             this.searchReportDataSource();

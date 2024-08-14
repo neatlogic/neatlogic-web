@@ -863,12 +863,11 @@ export default {
       this.retreatId = item.id;
     },
     validItemClick(selector, tabValue) {
-      if (tabValue != this.$refs.TaskCenterDetail.tabValue) {
-        this.$refs.TaskCenterDetail.tabValue = tabValue || 'report';
-        if (tabValue === 'report') {
-          this.$refs.TaskCenterDetail.clickTabValue(tabValue);
-        }
-      }
+      this.$refs.TaskCenterDetail.tabValue = tabValue;
+      if (tabValue === 'report') {
+        //更新表单布局
+        this.$refs.TaskCenterDetail.updateFormSheetCalc();
+      } 
       if (this.$el.querySelector(selector)) {
         // document.querySelector(selector).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
         document.querySelector(selector).scrollIntoView();

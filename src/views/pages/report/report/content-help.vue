@@ -6,7 +6,7 @@
           v-model="isHelpShow"
           trigger="hover"
           placement="right"
-          width="700"
+          width="800"
           :transfer="true"
           :title="$t('term.report.contentconfigexample')"
         >
@@ -20,15 +20,20 @@
               获取指定结果集。
               <br />
               例如：数据源配置中包含id="userList"的select节点和id="teamList"的rest节点，则可通过
-              <b>{"data": "userList"}</b>
+              <b>report.userList</b>
               和
-              <b>${"data": "teamList"}</b>
+              <b>report.teamList</b>
               获取结果集。
               <br />
-              除自行填写freemarker模板外，系统提供了以下图表函数，帮助快速生成简单图表
+              <br />
+              <p>
+                <b>内部函数</b>
+              </p>
+              系统提供了以下图表函数，帮助快速生成简单图表
               <p>
                 表格：
-                <b>${drawTable(config[必须，json格式，data字段必须])}，config范例：</b>
+                <b>${drawTable(config[必须，json格式，data字段必须])}</b>
+                ，config范例：
               </p>
               <div>
                 <TsCodemirror
@@ -41,7 +46,7 @@
               <p>
                 柱状图：
                 <b>${drawBar(config[必须，json格式，data字段必须])}</b>
-                ，data范例：
+                ，data对应数据源范例：
               </p>
               <div>
                 <TsCodemirror
@@ -54,7 +59,7 @@
               <p>
                 横向柱状图：
                 <b>${drawBarH(config[必须，json格式，data字段必须])}</b>
-                ，data范例：
+                ，data对应数据源范例：
               </p>
               <div>
                 <TsCodemirror
@@ -67,7 +72,7 @@
               <p>
                 堆积图：
                 <b>${drawStackedBar(config[必须，json格式，data字段必须])}</b>
-                ，data范例：
+                ，data对应数据源范例：
               </p>
               <div>
                 <TsCodemirror
@@ -80,19 +85,19 @@
               <p>
                 横向堆积图：
                 <b>${drawStackedBarH(config[必须，json格式，data字段必须])}</b>
-                ，data范例请参考
+                ，data对应数据源范例请参考
                 <b>堆积图</b>
               </p>
               <p>
                 曲线图：
                 <b>${drawLine(config[必须，json格式，data字段必须])}</b>
-                ，data范例请参考
+                ，data对应数据源范例请参考
                 <b>柱状图</b>
               </p>
               <p>
                 饼图：
                 <b>${drawPie(config[必须，json格式，data字段必须])}</b>
-                ，data范例：
+                ，data对应数据源范例：
               </p>
               <div>
                 <TsCodemirror
@@ -109,6 +114,29 @@
                   :value="barHelp.config"
                   :isReadOnly="true"
                   codeMode="json"
+                ></TsCodemirror>
+              </div>
+              <br />
+              <p>
+                <b>自定义内容配置</b>
+              </p>
+              <p>自定义表格规范格式：</p>
+              <p>在table标签内需填写tableName属性，表头格式[tableName]>thead>tr>th，数据内容格式[tableName]>tbody>tr>td</p>
+              <div>
+                <TsCodemirror
+                  ref="editor7"
+                  :value="custom.table"
+                  :isReadOnly="true"
+                  codeMode="xml"
+                ></TsCodemirror>
+              </div>
+              <p>自定义表格范例：</p>
+              <div>
+                <TsCodemirror
+                  ref="editor8"
+                  :value="custom.template"
+                  :isReadOnly="true"
+                  codeMode="xml"
                 ></TsCodemirror>
               </div>
             </div>
@@ -130,7 +158,7 @@ export default {
     return {
       isHelpShow: false,
       table: {
-        config: `{\n   "data":"dataList",\n   "title":"${this.$t('page.title')}",\n   "header":${this.$t('term.report.describe.headerdescribe')},\n   "column":${this.$t('term.report.describe.columndescribe')}\n}`
+        config: `{\n   "data":"dataList",\n   "title":"${this.$t('page.title')}",\n   "header":${this.$t('term.report.describe.headerdescribe')},\n   "column":${this.$t('term.report.describe.columndescribe')},\n   "pageSize":20,\n   "needPage":true\n}`
       },
       barHelp: {
         data: '<resultMap id="bar">\n' + '   <result property="yField"/><!--Y坐标列，必须是数值，必须存在-->\n' + '   <result property="xFiled"/><!--X坐标列，必须存在-->\n' + '   <result property="groupField"/><!--分组列，柱状图选择存在，曲线图必须存在-->\n' + '</resultMap>',
@@ -144,6 +172,53 @@ export default {
       },
       pie: {
         data: '<resultMap id="pie">\n' + '   <result property="typeField"/><!--分类字段，必须存在-->\n' + '   <result property="valueField"/><!--值字段，必须存在-->\n' + '</resultMap>'
+      },
+      custom: {
+        table: '<table tableName="表格名称">\n' +
+               '    <thead>\n' +
+               '        <tr>\n' +
+               '            <th>字段1</th>\n' +
+               '            <th>字段2</th>\n' +
+               '        </tr>\n' +
+               '    </thead>\n' +
+               '    <tbody>\n' +
+               '        <tr>\n' +
+               '            <td>值1</td>\n' +
+               '            <td>值2</td>\n' +
+               '        </tr>\n' +
+               '    </tbody>\n' +
+               '</table>',
+        template: '<div class="ivu-card ivu-card-dis-hover ivu-card-shadow">\n' +
+                  '    <div class="ivu-card-head">事件处理平均响应时间（分钟）</div>\n' +
+                  '    <div class="ivu-card-body tstable-container tstable-normal border tstable-no-fixedHeader block-large">\n' +
+                  '        <div class="tstable-main bg-op">\n' +
+                  '            <table tablename="事件处理平均响应时间（分钟）" class="table-main tstable-body">\n' +
+                  '                <#if (report.userTimeCostData) ?? && ((report.userTimeCostData)?size > 0) >\n' +
+                  '                    <thead>\n' +
+                  '                        <tr class="th-left">\n' +
+                  '                            <th>用户</th>\n' +
+                  '                            <th>平均响应时间</th>\n' +
+                  '                        </tr>\n' +
+                  '                    </thead>\n' +
+                  '                    <tbody class="tbody-main">\n' +
+                  '                        <#list report.userTimeCostData as item>\n' +
+                  '                            <tr>\n' +
+                  '                                <td nowrap>${item.用户}</td>\n' +
+                  '                                <td nowrap>${item.平均响应时间}</td>\n' +
+                  '                            </tr>\n' +
+                  '                        </#list>\n' +
+                  '                    </tbody>\n' +
+                  '                <#else>\n' +
+                  '                    <tbody class="tbody-main">\n' +
+                  '                        <tr>\n' +
+                  '                            <td>无数据</td>\n' +
+                  '                        </tr>\n' +
+                  '                    </tbody>\n' +
+                  '                </#if>\n' +
+                  '            </table>\n' +
+                  '        </div>\n' +
+                  '    </div>\n' +
+                  '</div>'
       }
     };
   },

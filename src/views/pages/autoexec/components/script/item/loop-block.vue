@@ -1,24 +1,38 @@
 <template>
   <div class="condition-tool">
-    <div class="pb-nm pt-nm">
-      <div class="text-title require-label pb-sm">
-        <span>{{ $t('term.autoexec.loopitem') }}</span>
-        <span>
-          <Tooltip theme="light" max-width="650" transfer>
-            <i class="tsfont-info-o text-tip fz10"></i>
-            <div slot="content">{{ $t('term.autoexec.loophelp') }}</div>
-          </Tooltip>
-        </span>
-      </div>
-      <TsFormInput
-        ref="loopItems"
-        v-model="loopItems"
-        border="border"
-        :validateList="validateList"
-        class="condition-param"
-        :readonly="!canEdit"
-        @change="changeCondition"
-      ></TsFormInput>
+    <div class="step-group pb-nm pt-nm">
+      <TsFormItem
+        :label="$t('term.autoexec.loopitem')" 
+        :tooltip="$t('term.autoexec.loophelp')" 
+        labelWidth="100"
+        :required="true"
+      >
+        <TsFormInput
+          ref="loopItems"
+          v-model="loopItems"
+          border="border"
+          :validateList="validateList"
+          class="condition-param"
+          :readonly="!canEdit"
+          @change="changeLoopItems"
+        ></TsFormInput>
+      </TsFormItem>
+      <TsFormItem
+        :label="$t('term.autoexec.loopitemname')" 
+        :tooltip="$t('term.autoexec.loopitemhelp')" 
+        labelWidth="100"
+        :required="true"
+      >
+        <TsFormInput
+          ref="loopItemVar"
+          v-model="loopItemVar"
+          border="border"
+          :validateList="validateList"
+          class="condition-param"
+          :readonly="!canEdit"
+          @change="changeLoopItemVar"
+        ></TsFormInput>
+      </TsFormItem>
     </div>
     <!-- 满足执行 -->
     <div class="pb-xs">
@@ -48,6 +62,7 @@ export default {
   name: '',
   components: {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     Tool: () => import('./condition/tool')
   },
   mixins: [itemmixin],
@@ -57,6 +72,7 @@ export default {
     return {
       validateList: ['required'],
       loopItems: '',
+      loopItemVar: '',
       step: {}
     };
   },
@@ -77,13 +93,38 @@ export default {
       this.step = val;
       if (this.step.config) {
         this.step.config.loopItems && (this.loopItems = this.step.config.loopItems);
+        this.step.config.loopItemVar && (this.loopItemVar = this.step.config.loopItemVar);
       }
     },
-    changeCondition(val) {
+    changeLoopItems(val) {
       this.$set(this.step.config, 'loopItems', val);
+    },
+    changeLoopItemVar(val) {
+      this.$set(this.step.config, 'loopItemVar', val);
     },
     changeOperation(list) {
       this.$set(this.step.config, 'operations', list);
+    },
+    valid() {
+      console.log(1);
+      //校验输入参数是否通过
+      if (this.$el.querySelectorAll('.form-li').length) {
+        let isVaild = true;
+        let childrendom = this.$el.querySelectorAll('.form-li');
+        if (childrendom && childrendom.length > 0) {
+          childrendom.forEach(children => {
+            if (children.__vue__ && children.__vue__.valid) {
+              if (!children.__vue__.valid()) {
+                isVaild = false;
+              }
+            }
+          });
+        }
+        this.$forceUpdate();
+        return isVaild;
+      } else {
+        return true;
+      }
     }
   },
   filter: {},
