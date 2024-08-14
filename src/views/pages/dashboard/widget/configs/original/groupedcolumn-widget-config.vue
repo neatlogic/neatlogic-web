@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-nm">
     <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.showlegend') }}</label>
       <div class="ivu-form-item-content">
@@ -35,7 +35,7 @@
       <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.yaxisshow') }}</label>
       <div class="ivu-form-item-content">
         <TsFormSwitch
-          :value="config.yAxis"
+          :value="config.yAxis ? true : false"
           :true-value="true"
           :false-value="false"
           @change="
@@ -101,6 +101,18 @@
         </div>
       </div>
     </div>
+    <TsFormItem label="辅助线" labelPosition="top">
+      <TsFormSwitch
+        :value="!config.yAxis?true:typeof config.yAxis === 'boolean' ? true : config.yAxis.grid.visible?true:false"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            setConfigValue('yAxis.grid.visible', val);
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
   </div>
 </template>
 <script>

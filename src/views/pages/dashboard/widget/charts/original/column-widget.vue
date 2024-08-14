@@ -30,7 +30,7 @@ export default {
             }
           ],
           style: {
-            fill: this.widget.config.label?.style?.fill || this.getChartTheme('textColor')
+            fill: this.widget.config.label?.style?.fill
           }
         },
         statistic: {
@@ -50,8 +50,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},

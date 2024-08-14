@@ -2,9 +2,9 @@
   <div ref="container"></div>
 </template>
 <script>
+
 import { DualAxes } from '@antv/g2plot';
 import { WidgetBase } from '../widget-base.js';
-import * as themes from '../../widgetthemes/index.js';
 
 export default {
   name: '',
@@ -23,9 +23,7 @@ export default {
             visible: false
           },
           label: {
-            style: {
-              fill: this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || this.labelColor
-            }
+            visible: true
           } 
         },
         yAxis: [
@@ -36,9 +34,7 @@ export default {
               visible: false
             },
             label: {
-              style: {
-                fill: this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || this.labelColor
-              }
+              visible: true
             }
           },
           {
@@ -73,10 +69,8 @@ export default {
             alias: '数量'
           }
         },
-        lineSeriesField: 'seriesField',
-        theme: this.canvas.config.theme && themes[this.canvas.config.theme]
-      },
-      labelColor: '#8C8C8C'
+        lineSeriesField: 'seriesField'
+      }
     };
   },
   beforeCreate() {},
@@ -121,17 +115,8 @@ export default {
     },
     sortByTime(data) {
       return data.sort((a, b) => new Date(a.xField) - new Date(b.xField));
-    },
-    changeCusTheme(val) {
-      // 自定义主题颜色更新
-      if (val) {
-        this.chartConfig.xAxis.label.style.fill = this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || this.labelColor;
-        this.chartConfig.yAxis[0].label.style.fill = this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || this.labelColor;
-      } else {
-        this.chartConfig.xAxis.label.style.fill = this.labelColor;
-        this.chartConfig.yAxis[0].label.style.fill = this.labelColor;
-      }
     }
+    
   },
   filter: {},
   computed: {

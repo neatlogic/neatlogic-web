@@ -89,12 +89,25 @@
         </div>
       </div>
     </div>
+    <TsFormItem label="辅助线" labelPosition="top">
+      <TsFormSwitch
+        :value="!config.yAxis?true:typeof config.yAxis === 'boolean' ? true : config.yAxis.grid.visible?true:false"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            setConfigValue('yAxis.grid.visible', val);
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
@@ -135,6 +148,11 @@ export default {
     setConfigValue(attrName, attrValue) {
       if (attrName) {
         this.$emit('setConfig', attrName, attrValue);
+      }
+    },
+    deleteConfigValue(attrName) {
+      if (attrName) {
+        this.$emit('setConfig', attrName);
       }
     }
   },

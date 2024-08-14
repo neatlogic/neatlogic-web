@@ -12,7 +12,7 @@
               <TsFormInput
                 :width="300"
                 :value="item"
-                maxlength="50"
+                :maxlength="50"
                 @change="(val)=>{ setMember(val,index)}"
               ></TsFormInput>
             </div>
@@ -70,6 +70,16 @@ export default {
         } else if (new Set(this.myConfig.members).size != this.myConfig.members.length) {
           this.error = '成员不能重复';
           return false;
+        } else if (this.myConfig.members.length > 50) {
+          this.error = '成员不能超过50个';
+          return false;
+        } else {
+          for (let i = 0; i < this.myConfig.members.length; i++) {
+            if (this.myConfig.members[i].includes(',')) {
+              this.error = '成员不能包含逗号';
+              return false;
+            }
+          }
         }
       }
       return true;

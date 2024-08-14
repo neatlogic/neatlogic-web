@@ -39,44 +39,21 @@
             if(!config.geometryOptions[1].label.style){
               $set(config.geometryOptions[1].label, 'style', {});
             }
-            $set(config.geometryOptions[1].label.style, 'fill', val || defaultSizeColor)
+            $set(config.geometryOptions[1].label.style, 'fill', val)
           }
         "
       />
     </TsFormItem>
-    <TsFormItem label="统计数据字体大小" labelPosition="top">
-      <TsFormSelect
-        :value="config.labelFontSize || 12"
-        :dataList="axisFontSizeList"
-        border="border"
-        transfer
-        @change="
-          val => {
-            if(!config.geometryOptions[0].label.style){
-              $set(config.geometryOptions[0].label, 'style', {});
-            }
-            if(!config.geometryOptions[1].label.style){
-              $set(config.geometryOptions[1].label, 'style', {});
-            }
-            $set(config.geometryOptions[0].label.style, 'fontSize', val || 12);
-            $set(config.geometryOptions[1].label.style, 'fontSize', val || 12)
-          }
-        "
-      ></TsFormSelect>
-    </TsFormItem>
   </div>
 </template>
 <script>
-import { WidgetBaseConfig } from './base-config.js';
 export default {
   name: '',
   components: {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
-    // TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
-  extends: WidgetBaseConfig,
   props: { config: { type: Object } },
   data() {
     return {
@@ -93,6 +70,20 @@ export default {
         { value: 'right-top', text: this.$t('term.report.positions.righttop') },
         { value: 'right', text: this.$t('term.report.positions.right') },
         { value: 'right-bottom', text: this.$t('term.report.positions.rightbottom') }
+      ],
+      axisFontSizeList: [
+        {
+          text: '小',
+          value: 12
+        },
+        {
+          text: '中',
+          value: 16
+        },
+        {
+          text: '大',
+          value: 20
+        }
       ]
     };
   },

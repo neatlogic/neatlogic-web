@@ -6,7 +6,9 @@
 @failed-bg-color,
 @running-bg-color,
 @waitinput-bg-color,
-@default-bg-color
+@default-bg-color,
+@start-color,
+@end-color
 ) {
   @node-removeIcon: @link-stroke;
   .graph .phasenode-completed path {
@@ -39,9 +41,17 @@
     stroke: @border-color;
   }
 
-  .graph .converge ellipse {
-    fill: @text-color;
-    stroke: @border-color;
+  .graph .converge polygon {
+    fill: @default-bg-color;
+    stroke: @edge-stroke;
+  }
+  .graph .start ellipse {
+    fill: @start-color;
+    stroke: none;
+  }
+  .graph .end ellipse {
+    fill: @end-color;
+    stroke: none;
   }
 
   .graph .edge path {
@@ -70,7 +80,9 @@ html {
     @default-error-bg-color,
     @default-primary-bg-color,
     @default-warning-bg-color,
-    @default-bg-grey
+    @default-bg-grey,
+    @default-success-color,
+    @default-error-color
     );
 
   &.theme-dark {
@@ -82,7 +94,9 @@ html {
       @dark-error-bg-color,
       @dark-primary-bg-color,
       @dark-warning-bg-color,
-      @dark-bg-grey
+      @dark-bg-grey,
+      @dark-success-color,
+      @dark-error-color
       );
   }
 }

@@ -13,4 +13,5 @@ export { default as fileattr } from './file-attr.vue';
 export { default as passwordattr } from './password-attr.vue';
 export { default as numberattr } from './number-attr.vue';
 export { default as enumattr } from './enum-attr.vue';
+export { default as setattr } from './set-attr.vue';
 export { default as hyperlinkattr } from './hyperlink-attr.vue';
