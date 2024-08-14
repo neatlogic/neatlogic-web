@@ -13,7 +13,7 @@
         <TsTable
           :multiple="true"
           :theadList="theadList"
-          :tbodyList="value"
+          :tbodyList="tbodyList"
           keyName="uuid"
           selectedRemain
           :disabled="readonly || disabled"
@@ -24,8 +24,7 @@
         >
           <template
             v-for="(extra) in extraList"
-            :slot="extra.uuid"
-            slot-scope="{ row }"
+            v-slot:[extra.uuid]="{row}"
           >
             <div :key="extra.uuid" class="table-item" @click.stop>
               <FormItem
@@ -40,6 +39,9 @@
                 isCustomValue
                 :isClearSpecifiedAttr="isClearSpecifiedAttr"
                 style="min-width:100px"
+                @change="(val)=>{
+                  changeRowItem(val, row, extra.uuid)
+                }"
               ></FormItem>
             </div>
           </template>
@@ -60,7 +62,7 @@
       <DataList
         ref="dataList"
         :formItem="formItem"
-        :value="value"
+        :value="tbodyList"
         :mode="mode"
         :filter="filter"
         :disabled="disabled"
@@ -73,7 +75,7 @@
     <DataDialog
       v-if="isTableSelectorDialogShow"
       :formItem="formItem"
-      :value="value"
+      :value="tbodyList"
       :mode="mode"
       :filter="filter"
       @close="closeTableSelectorDialog"
@@ -103,7 +105,8 @@ export default {
     return {
       isTableSelectorDialogShow: false,
       selectedItemList: [],
-      rowFormItem: {}
+      rowFormItem: {},
+      tbodyList: []
     };
   },
   beforeCreate() {},
@@ -124,22 +127,22 @@ export default {
           this.selectedItemList.splice(index, 1);
         }
       }
-      if (this.value && this.value.length > 0) {
-        const index = this.value.findIndex(d => d.uuid === row.uuid);
+      if (this.tbodyList && this.tbodyList.length > 0) {
+        const index = this.tbodyList.findIndex(d => d.uuid === row.uuid);
         if (index > -1) {
-          this.value.splice(index, 1);
-          this.setValue(this.value);
+          this.tbodyList.splice(index, 1);
+          this.setValue(this.tbodyList);
         }
       }
     },
     removeSelectedItem() {
       if (this.selectedItemList && this.selectedItemList.length > 0) {
-        for (let i = this.value.length - 1; i >= 0; i--) {
-          if (this.selectedItemList.find(d => d.uuid === this.value[i].uuid)) {
-            this.value.splice(i, 1);
+        for (let i = this.tbodyList.length - 1; i >= 0; i--) {
+          if (this.selectedItemList.find(d => d.uuid === this.tbodyList[i].uuid)) {
+            this.tbodyList.splice(i, 1);
           }
         }
-        this.setValue(this.value);
+        this.setValue(this.tbodyList);
       }
       this.selectedItemList = [];
     },
@@ -273,10 +276,14 @@ export default {
       return formItem;
     },
     getSelected(indexList) {
-      let selectedArr = this.value.filter(val => {
+      let selectedArr = this.tbodyList.filter(val => {
         return indexList.includes(val.uuid); // 获取所有选中列表
       });
       this.selectedItemList = selectedArr;
+    },
+    changeRowItem(val, row, uuid) {
+      this.$set(row, uuid, val);
+      this.setValue(this.tbodyList);
     }
   },
   filter: {},
@@ -306,7 +313,17 @@ export default {
       return this.config.dataConfig.filter(d => d.isExtra && d.isPC);
     }
   },
-  watch: {}
+  watch: {
+    value: {
+      handler(val) {
+        if (!this.$utils.isSame(val, this.tbodyList)) {
+          this.tbodyList = this.$utils.deepClone(val) || [];
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped></style>

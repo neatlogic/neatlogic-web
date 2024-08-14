@@ -1292,6 +1292,13 @@ export default {
           });
         }
       }
+    },
+    updateFormSheetCalc() {
+      if (this.$refs.formSheet) {
+        this.$nextTick(() => {
+          this.$refs.formSheet.calcContainerHeight();
+        });
+      }
     }
   },
   computed: {
