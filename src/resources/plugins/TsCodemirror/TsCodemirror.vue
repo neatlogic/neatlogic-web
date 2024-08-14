@@ -264,7 +264,7 @@ export default {
     value: {
       handler: function (val) {
         this.currentValue = val;
-        this.refresh();
+        // this.refresh(); //导致页面滚动条滚动
       },
       deep: true,
       immediate: true
