@@ -875,7 +875,7 @@ export default {
 
         const allPrevNodes = nodeVm.getAllPrevNodes('forward').map(item => this.stepList.find(step => step.uuid === item.getUuid()));
         const parentNodes = nodeVm.getPrevNodes();
-        const prevNodes = allPrevNodes.filter(d => d.type !== 'start' && d.type !== 'end' && d.handler !== 'condition' && d.handler !== 'distributary');
+        const prevNodes = allPrevNodes.filter(d => d.type !== 'start' && d.type !== 'end' && d.allowDispatchStepWorker);
         const isStart = parentNodes.some(d => d.getConfig() && d.getConfig().handler === 'start');
 
         this.prevNodes = prevNodes;

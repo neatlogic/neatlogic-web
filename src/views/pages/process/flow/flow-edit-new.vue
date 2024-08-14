@@ -118,7 +118,7 @@
                 :key="currentNodeData.uuid"
                 ref="nodeSetting"
                 :formhandlerList="formhandlerList"
-                :prevNodes="getAllPrevNodesData(currentNode, { include: null, exclude: ['start', 'end', 'condition', 'distributary'] })"
+                :prevNodes="getAllPrevNodesData(currentNode, { include: null, exclude: ['start', 'end', ...excludePreNode] })"
                 :allPrevNodes="getAllPrevNodesData(currentNode)"
                 :isStart="isNodeStart"
                 :nodeChildren="nodeChildren"
@@ -244,7 +244,8 @@ export default {
       graph: null,
       dnd: null,
       flowConfig: {}, //流程设计器的设置
-      flowData: { process: { formConfig: {} } } //流程数据
+      flowData: { process: { formConfig: {} } }, //流程数据
+      excludePreNode: ['start', 'end'] //不能作为前置步骤处理人的节点
     };
   },
   beforeCreate() {},
@@ -964,6 +965,11 @@ export default {
     async getNodeList() {
       await this.$api.process.process.processComponent().then(res => {
         this.nodeList = res.Return;
+        this.nodeList.forEach(item => {
+          if (!item.allowDispatchStepWorker && !this.excludePreNode.includes(item.handler)) {
+            this.excludePreNode.push(item.handler);
+          } 
+        });
       });
     },
     //新的结束
