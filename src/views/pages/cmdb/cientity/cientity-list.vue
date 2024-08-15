@@ -37,7 +37,8 @@
         </div>
       </div>
       <div v-if="!isAdvancedSearch && ciEntityData.keywordList && ciEntityData.keywordList.length > 0" class="mt-xs" style="text-align: right">
-        <span class="mr-sm text-grey fz10">{{ $t('page.wordbreaklist') }}</span><Tag v-for="(k, index) in ciEntityData.keywordList" :key="index">{{ k }}</Tag>
+        <span class="mr-sm text-grey fz10">{{ $t('page.wordbreaklist') }}</span>
+        <Tag v-for="(k, index) in ciEntityData.keywordList" :key="index">{{ k }}</Tag>
       </div>
       <div v-if="isAdvancedSearch">
         <Tabs v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb')" v-model="advencedSearchMode">
@@ -319,7 +320,8 @@
                 <span class="tsfont-ci-o"></span>
                 <span>{{ relentity.ciEntityName }}</span>
               </a>
-              <a v-else href="javascript:void(0)" @click="showMoreRelCiEntity(row.relEntityData[head.key])"><span class="text-href tsfont-option-horizontal"></span></a>
+            </span>
+            <span v-if="row.relEntityData[head.key]['valueList'].length > 0 && row.relEntityData[head.key]['valueList'].length > row.maxRelEntityCount" class="text-href tsfont-option-horizontal" @click="showMoreRelCiEntity(row.relEntityData[head.key])">
             </span>
           </div>
         </template>
