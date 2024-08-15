@@ -118,7 +118,7 @@
                 :key="currentNodeData.uuid"
                 ref="nodeSetting"
                 :formhandlerList="formhandlerList"
-                :prevNodes="getAllPrevNodesData(currentNode, { include: null, exclude: ['start', 'end', ...excludePreNode] })"
+                :prevNodes="getAllPrevNodesData(currentNode, { include: allowDispatchStepWorkerNode, exclude: null })"
                 :allPrevNodes="getAllPrevNodesData(currentNode)"
                 :isStart="isNodeStart"
                 :nodeChildren="nodeChildren"
@@ -245,7 +245,7 @@ export default {
       dnd: null,
       flowConfig: {}, //流程设计器的设置
       flowData: { process: { formConfig: {} } }, //流程数据
-      excludePreNode: ['start', 'end'] //不能作为前置步骤处理人的节点
+      allowDispatchStepWorkerNode: [] //允许指派任务的节点
     };
   },
   beforeCreate() {},
@@ -765,7 +765,7 @@ export default {
     getAllPrevNodes(node, { include, exclude } = {}) {
       let prevNodeList = [];
       if (node) {
-        prevNodeList = this.getPrevNodes(node, { include, exclude });
+        prevNodeList = this.getPrevNodes(node);
         if (prevNodeList.length > 0) {
           const nodeSet = new Set();
           prevNodeList.forEach(n => {
@@ -774,7 +774,7 @@ export default {
           let size = prevNodeList.length;
           for (let i = 0; i < size; i++) {
             const n = prevNodeList[i];
-            const tmpList = this.getPrevNodes(n, { include, exclude });
+            const tmpList = this.getPrevNodes(n);
             tmpList.forEach(tmp => {
               //判断新的关系是否存在，不存在则加入nodeList继续循环
               if (!nodeSet.has(tmp.id) && node.id !== tmp.id) {
@@ -784,6 +784,12 @@ export default {
             });
             size = prevNodeList.length; //重新修正新的size
           }
+          //过滤include和exclude
+          prevNodeList = prevNodeList.filter(n => {
+            const handler = n.getProp('handler');
+            return (include && include.length > 0 ? include.includes(handler) : true) &&
+           (exclude && exclude.length > 0 ? !exclude.includes(handler) : true);
+          });
         }
       }
       return prevNodeList;
@@ -965,11 +971,7 @@ export default {
     async getNodeList() {
       await this.$api.process.process.processComponent().then(res => {
         this.nodeList = res.Return;
-        this.nodeList.forEach(item => {
-          if (!item.allowDispatchStepWorker && !this.excludePreNode.includes(item.handler)) {
-            this.excludePreNode.push(item.handler);
-          } 
-        });
+        this.allowDispatchStepWorkerNode = this.nodeList.filter(item => item.allowDispatchStepWorker).map(item => item.handler);
       });
     },
     //新的结束
@@ -1416,6 +1418,7 @@ export default {
   watch: {
     stepList(newValue, oldValue) {
       this.flowObj.stepList = this.stepList;
+      this.flowObj.graph = this.graph;
     },
     activeTab(newValue, oldValue) {
       // 右边active切换的时候

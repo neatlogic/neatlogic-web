@@ -416,8 +416,8 @@ export default {
       flowObj: { //流程数据，跨组件调用
         TopoVm: null,
         stepList: this.stepList
-      }
-      
+      },
+      allowDispatchStepWorkerNode: []//允许指派任务的节点
     };
   },
   beforeCreate() {},
@@ -503,6 +503,7 @@ export default {
             return d;
           });
           this.nodeList.push(...nodesData);
+          this.allowDispatchStepWorkerNode = this.nodeList.filter(item => item.allowDispatchStepWorker).map(item => item.handler);
         } else {
           Vm.$Message.warning({content: this.$t('message.process.cannotnodelist'), duration: 3, closable: true});
         }
@@ -875,7 +876,7 @@ export default {
 
         const allPrevNodes = nodeVm.getAllPrevNodes('forward').map(item => this.stepList.find(step => step.uuid === item.getUuid()));
         const parentNodes = nodeVm.getPrevNodes();
-        const prevNodes = allPrevNodes.filter(d => d.type !== 'start' && d.type !== 'end' && d.allowDispatchStepWorker);
+        const prevNodes = allPrevNodes.filter(d => d.type !== 'start' && d.type !== 'end' && this.allowDispatchStepWorkerNode.includes(d.handler));
         const isStart = parentNodes.some(d => d.getConfig() && d.getConfig().handler === 'start');
 
         this.prevNodes = prevNodes;
