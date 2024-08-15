@@ -198,15 +198,16 @@ export default {
         await this.$api.cmdb.customview.getCustomViewAttrByCustomViewId(this.customViewId, { isHidden: 0, isHasTargetCiId: 0 }).then(res => {
           if (res.Return.attrList && res.Return.attrList.length > 0) {
             res.Return.attrList.forEach(attr => {
-              this.customAttrList.push({ id: attr.uuid, type: 'attr', label: attr.alias, expressionList: attr.attrVo.expressionList });
-              if (!this.attrMap[attr.uuid]) {
-                this.attrMap[attr.uuid] = attr.attrVo;
+              const k = attr.name || attr.uuid;
+              this.customAttrList.push({ id: k, type: 'attr', label: attr.alias, expressionList: attr.attrVo.expressionList });
+              if (!this.attrMap[k]) {
+                this.attrMap[k] = attr.attrVo;
               }
             });
           }
           if (res.Return.constAttrList && res.Return.constAttrList.length > 0) {
             res.Return.constAttrList.forEach(constattr => {
-              this.customAttrList.push({ id: constattr.uuid, type: 'constattr', label: constattr.alias, expressionList: this.constAttrExpressionList });
+              this.customAttrList.push({ id: constattr.name || constattr.uuid, type: 'constattr', label: constattr.alias, expressionList: this.constAttrExpressionList });
             });
           }
         });
