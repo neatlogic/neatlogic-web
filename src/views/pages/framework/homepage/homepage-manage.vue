@@ -122,7 +122,7 @@ export default {
     },
     changePageSize(pageSize) {
       this.pageSize = pageSize;
-      this.search(1);
+      this.changeCurrent(1);
     },
     handleDragUpdate({ oldIndex, newIndex }) {
       const params = {
