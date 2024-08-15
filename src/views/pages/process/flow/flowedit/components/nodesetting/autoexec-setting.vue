@@ -36,7 +36,7 @@
     </div>
     <div id="autoexecConfig">
       <div class="autoexecConfig-top">
-        <div class="require-label text-grey">{{ $t('term.inspect.jobdetail') }}</div>
+        <div class="require-label text-grey">{{ $t('term.autoexec.combinationtool') }}</div>
         <div class="text-href" @click="editAutoexecList">{{ autoexecConfig.configList.length > 0? $t('page.edit') : $t('term.deploy.clickadd') }}</div>
       </div>
       <div v-if="autoexecConfig.configList && autoexecConfig.configList.length > 0" class="pl-nm pr-nm">

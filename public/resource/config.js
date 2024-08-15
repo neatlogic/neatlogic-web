@@ -161,6 +161,8 @@ async function getSsoTokenKey() {
     }
   } else if (xhr.status === 500) {
     window.location.href = '/404.html';
+  } else if (xhr.status === 550) {
+    window.location.href = '/licenseIllegal.html';
   } else {
     console.error(xhr.status + ' ' + xhr.statusText);
   }
