@@ -14,20 +14,11 @@ export default {
   props: {},
   data() {
     return {
-      iterationName: this.issueData && this.issueData.iterationName,
-      iteration: (this.issueData && this.issueData.iteration) || (this.valueList && this.valueList.length > 0 && this.valueList[0])
+      issueIterationName: ''
     };
   },
   beforeCreate() {},
-  created() {
-    if (this.iterationName == null && this.iteration) {
-      this.$api.rdm.iteration.getIterationById(this.iteration).then(res => {
-        if (res.Return) {
-          this.iterationName = res.Return.name;
-        }
-      });
-    }
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -40,8 +31,31 @@ export default {
   },
   filter: {},
   computed: {
+    iterationName() {
+      return (this.issueData && this.issueData.iterationName) || this.issueIterationName;
+    },
+    iteration() {
+      return (this.issueData && this.issueData.iteration) || (this.valueList && this.valueList.length > 0 && this.valueList[0]);
+    },
+    needAjax() {
+      return (this.iterationName == null) && this.iteration;
+    }
   },
-  watch: {}
+  watch: {
+    needAjax: {
+      handler(val) {
+        if (val) {
+          this.$api.rdm.iteration.getIterationById(this.iteration).then(res => {
+            if (res.Return) {
+              this.issueIterationName = res.Return.name;
+            }
+          });
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less"></style>

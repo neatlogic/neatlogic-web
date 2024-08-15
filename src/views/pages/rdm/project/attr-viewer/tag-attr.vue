@@ -19,7 +19,7 @@ export default {
   extends: AttrBase,
   props: {},
   data() {
-    return { tagList: [] };
+    return {};
   },
   beforeCreate() {},
   created() {
@@ -36,14 +36,18 @@ export default {
   methods: {
     getTagList() {
       if (this.issueData && this.issueData.tagList) {
-        this.tagList = this.issueData.tagList;
+        return this.issueData.tagList;
       } else if (this.valueList) {
-        this.tagList = this.valueList;
+        return this.valueList;
       }
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    tagList() {
+      return this.getTagList(); 
+    }
+  },
   watch: {}
 };
 </script>

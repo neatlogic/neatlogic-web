@@ -14,20 +14,11 @@ export default {
   props: {},
   data() {
     return {
-      catalogName: this.issueData && this.issueData.catalogName,
-      catalog: (this.issueData && this.issueData.catalog) || (this.valueList && this.valueList.length > 0 && this.valueList[0])
+      issueCatalogName: ''
     };
   },
   beforeCreate() {},
-  created() {
-    if (this.catalogName == null && this.catalog) {
-      this.$api.rdm.catalog.getCatalogById(this.catalog).then(res => {
-        if (res.Return) {
-          this.catalogName = res.Return.name;
-        }
-      });
-    }
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -38,8 +29,32 @@ export default {
   destroyed() {},
   methods: {},
   filter: {},
-  computed: {},
-  watch: {}
+  computed: {
+    catalogName() {
+      return (this.issueData && this.issueData.catalogName) || this.issueCatalogName;
+    },
+    catalog() {
+      return (this.issueData && this.issueData.catalog) || (this.valueList && this.valueList.length > 0 && this.valueList[0]);
+    },
+    needAjax() {
+      return (this.catalogName == null) && this.catalog;
+    }
+  },
+  watch: {
+    needAjax: {
+      handler(val) {
+        if (val) {
+          this.$api.rdm.catalog.getCatalogById(this.catalog).then(res => {
+            if (res.Return) {
+              this.issueCatalogName = res.Return.name;
+            }
+          });
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less"></style>
