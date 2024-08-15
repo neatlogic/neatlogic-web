@@ -273,7 +273,7 @@ export default {
           }
         });
       }
-      return formItem;
+      return {...formItem};
     },
     getSelected(indexList) {
       let selectedArr = this.tbodyList.filter(val => {

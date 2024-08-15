@@ -221,7 +221,7 @@ export default {
           }
         });
       }
-      return formItem;
+      return {...formItem};
     },
     getSelectedItem(idList, itemList) {
       this.selectedItemList.push(...itemList);
