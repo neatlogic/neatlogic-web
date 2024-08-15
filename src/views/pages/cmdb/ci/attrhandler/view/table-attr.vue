@@ -7,9 +7,9 @@
         class="mr-md"
         @click="showMoreAttrEntity"
       >
-        <span v-if="!ciEntity||!ciEntity.maxAttrEntityCount||ciEntity.maxAttrEntityCount > index" class="text-href">{{ value.name }}</span>
-        <span v-else class="text-href tsfont-option-horizontal"></span>
+        <span v-if="!ciEntity || !ciEntity.maxAttrEntityCount || ciEntity.maxAttrEntityCount > index" class="text-href">{{ value.name }}</span>
       </span>
+      <span v-if="valueList.length > ciEntity.maxAttrEntityCount" class="text-href tsfont-option-horizontal"></span>
     </div>
     <TsDialog
       v-if="isShow"
@@ -34,7 +34,7 @@
               </div>
               <div v-else-if="row.relEntityData[head.key] && row.relEntityData[head.key]['valueList']" :key="index">
                 <a
-                  v-for="(relentity,rindex) in row.relEntityData[head.key]['valueList']"
+                  v-for="(relentity, rindex) in row.relEntityData[head.key]['valueList']"
                   :key="rindex"
                   class="modal-tag href"
                   href="javascript:void(0)"
@@ -58,9 +58,9 @@ export default {
     AttrViewer: () => import('../../../cientity/attr-viewer.vue')
   },
   props: {
-    mode: {type: String, default: 'list'},
-    ciEntity: {type: Object},
-    attrEntity: {type: Object}
+    mode: { type: String, default: 'list' },
+    ciEntity: { type: Object },
+    attrEntity: { type: Object }
   },
   data() {
     return {
@@ -83,8 +83,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -109,9 +108,11 @@ export default {
       }
     },
     searchCiEntity(currentPage) {
-      if (this.ciEntity) { // 查看配置项时会有ciEntity参数，这时候用fromCiEntityId来查询所有引用属性
+      if (this.ciEntity) {
+        // 查看配置项时会有ciEntity参数，这时候用fromCiEntityId来查询所有引用属性
         this.searchParam.fromCiEntityId = this.ciEntity.id;
-      } else { //看历史时则需要使用idList参数，精确查询需要的引用属性
+      } else {
+        //看历史时则需要使用idList参数，精确查询需要的引用属性
         this.searchParam.idList = this.attrEntity.valueList;
       }
       this.searchParam.currentPage = currentPage || 1;
@@ -144,7 +145,7 @@ export default {
       let theadList = [];
       this.attrEntity.config.attrList.forEach(head => {
         if (head.isSelected) {
-          theadList.push({key: 'attr_' + head.id, title: head.label});
+          theadList.push({ key: 'attr_' + head.id, title: head.label });
         }
       });
       return theadList;
@@ -168,10 +169,7 @@ export default {
       return list;
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
-<style lang="less" scoped>
-
-</style>
+<style lang="less" scoped></style>

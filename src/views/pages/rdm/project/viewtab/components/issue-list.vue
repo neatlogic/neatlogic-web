@@ -528,10 +528,8 @@ export default {
             this.$set(row, '_expand', false);
             this.issueData.tbodyList = this.issueData.tbodyList.filter(d => !d['parents'] || !d['parents'].includes(row.id));
             this.isReady = false;
-            this.isSearchReady = false;
             this.$nextTick(() => {
               this.isReady = true;
-              this.isSearchReady = true;
             });
           } else {
             this.searchChildIssue(row, index);
@@ -673,10 +671,8 @@ export default {
         .finally(() => {
           this.$set(row, '_loading', false);
           this.isReady = false;
-          this.isSearchReady = false;
           this.$nextTick(() => {
             this.isReady = true;
-            this.isSearchReady = true;
           });
         });
     },

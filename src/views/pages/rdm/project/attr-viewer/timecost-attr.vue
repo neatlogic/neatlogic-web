@@ -28,7 +28,6 @@ export default {
   props: {},
   data() {
     return {
-      timecost: (this.issueData && this.issueData.timecost) || (this.valueList && this.valueList.length > 0 && this.valueList[0])
     };
   },
   beforeCreate() {},
@@ -44,6 +43,9 @@ export default {
   methods: {},
   filter: {},
   computed: {
+    timecost() {
+      return (this.issueData && this.issueData.timecost) || (this.valueList && this.valueList.length > 0 && this.valueList[0]);
+    },
     timecostSum() {
       let sum = 0;
       if (this.issueData && this.issueData.costList && this.issueData.costList.length) {

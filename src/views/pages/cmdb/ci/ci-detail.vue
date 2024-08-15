@@ -325,10 +325,12 @@ export default {
         this.attrFormConfig.nameAttrId.dataList = [];
         if (attrList && attrList.length > 0) {
           attrList.forEach(attr => {
-            if (attr.type !== 'expression') {
+            if (attr.allowBeUnique) {
               this.attrFormConfig.uniqueRule.dataList.push({ value: attr.id, text: attr.label });
             }
-            this.attrFormConfig.nameAttrId.dataList.push({ value: attr.id, text: attr.label });
+            if (attr.allowBeName) {
+              this.attrFormConfig.nameAttrId.dataList.push({ value: attr.id, text: attr.label });
+            }
           });
           if (this.$refs['formCi']) {
             this.$refs['formCi'].$forceUpdate();
