@@ -650,12 +650,24 @@ export default {
     getConditionNodeList() {
       return (uuid) => {
         let list = [];
-        if (uuid && this.flowObj.TopoVm) {
-          let vm = this.flowObj.TopoVm.getNodeByUuid(uuid);
-          let allNextNodes = vm.getNextNodes('forward');
-          if (!this.$utils.isEmpty(this.flowObj.stepList)) {
-            allNextNodes = allNextNodes.map(item => this.flowObj.stepList.find(step => step.uuid == item.getUuid()));
-            list = allNextNodes;
+        if (uuid) {
+          if (this.flowObj.TopoVm) {
+            let vm = this.flowObj.TopoVm.getNodeByUuid(uuid);
+            let allNextNodes = vm.getNextNodes('forward');
+            if (!this.$utils.isEmpty(this.flowObj.stepList)) {
+              allNextNodes = allNextNodes.map(item => this.flowObj.stepList.find(step => step.uuid == item.getUuid()));
+              list = allNextNodes;
+            }
+          } else if (this.flowObj.graph) {
+            //新流程图
+            const node = this.flowObj.graph.getCellById(uuid);
+            let outgoingEdges = this.flowObj.graph.getOutgoingEdges(node);
+            outgoingEdges = outgoingEdges && outgoingEdges.filter(d => d.getProp('type') === 'forward');
+            outgoingEdges &&
+            outgoingEdges.forEach(d => {
+              const nodeData = d.getTargetCell().getData();
+              list.push(nodeData);
+            });
           }
         }
         return list;
