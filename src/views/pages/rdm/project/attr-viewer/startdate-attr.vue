@@ -14,7 +14,7 @@ export default {
   props: {},
   data() {
     return {
-      startDate: (this.issueData && this.issueData.startDate) || (this.valueList && this.valueList.length > 0 && this.valueList[0])
+     
     };
   },
   beforeCreate() {},
@@ -32,6 +32,9 @@ export default {
   },
   filter: {},
   computed: {
+    startDate() {
+      return (this.issueData && this.issueData.startDate) || (this.valueList && this.valueList.length > 0 && this.valueList[0]);
+    }
   },
   watch: {}
 };
