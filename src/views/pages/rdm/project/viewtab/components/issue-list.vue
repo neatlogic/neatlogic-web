@@ -350,7 +350,8 @@ export default {
       linkApp: null,
       linkRelType: null,
       completeRate: 0,
-      isBatchExecuteShow: false //批量执行确认框
+      isBatchExecuteShow: false, //批量执行确认框
+      isRefreshKeyUuid: false // 用于刷新行数据
     };
   },
   beforeCreate() {},
@@ -522,16 +523,16 @@ export default {
     },
     toggleChildIssue(row) {
       if (!row._loading) {
+        this.isRefreshKeyUuid = false;
         const index = this.issueData.tbodyList.findIndex(d => d.id === row.id);
         if (index > -1) {
           if (row['_expand']) {
             this.$set(row, '_expand', false);
+            this.isRefreshKeyUuid = true;
             this.issueData.tbodyList = this.issueData.tbodyList.filter(d => !d['parents'] || !d['parents'].includes(row.id));
             this.isReady = false;
-            this.isSearchReady = false;
             this.$nextTick(() => {
               this.isReady = true;
-              this.isSearchReady = true;
             });
           } else {
             this.searchChildIssue(row, index);
@@ -664,8 +665,10 @@ export default {
             }
           });
           if (index < this.issueData.tbodyList.length - 1) {
+            this.isRefreshKeyUuid = true;
             this.issueData.tbodyList.splice(index + 1, 0, ...dataList);
           } else {
+            this.isRefreshKeyUuid = true;
             this.issueData.tbodyList.push(...dataList);
           }
           this.$set(row, '_expand', true);
@@ -673,10 +676,8 @@ export default {
         .finally(() => {
           this.$set(row, '_loading', false);
           this.isReady = false;
-          this.isSearchReady = false;
           this.$nextTick(() => {
             this.isReady = true;
-            this.isSearchReady = true;
           });
         });
     },
@@ -776,12 +777,13 @@ export default {
       return this.attrList.filter(d => d.id);
     },
     attrList() {
-      if (this.app && this.app.attrList) {
-        return this.app.attrList;
-      } else if (this.displayAttrList) {
-        return this.displayAttrList;
+      let list = [];
+      if (this.app && this.app.attrList && this.app.attrList.length > 0) {
+        list = this.app.attrList;
+      } else if (this.displayAttrList && this.displayAttrList.length > 0) {
+        list = this.displayAttrList;
       }
-      return [];
+      return this.isRefreshKeyUuid ? list.map((v) => ({...v, keyUuid: this.$utils.setUuid()})) : list;
     },
     getAppByName() {
       return name => {

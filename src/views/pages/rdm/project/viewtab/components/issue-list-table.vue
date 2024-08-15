@@ -28,7 +28,7 @@
       ></Checkbox>
     </template>
     <template v-for="(attr, index) in attrList" :slot="attr.id ? attr.id.toString() : attr.type" slot-scope="{ row }">
-      <div :key="index">
+      <div :key="row['_index'] > 0 ? attr.keyUuid : index">
         <AttrViewer
           v-if="attr.id != 0"
           :scale="0.8"
