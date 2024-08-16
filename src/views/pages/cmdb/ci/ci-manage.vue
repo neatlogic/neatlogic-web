@@ -1,7 +1,11 @@
 <template>
   <div>
     <Loading v-if="isLoading" :loading-show="isLoading" type="fix"></Loading>
-    <TsContain border="border">
+    <TsContain
+      border="border"
+      siderPosition="right"
+      :isSiderHide="isSiderHide"
+    >
       <template slot="topLeft">
         <div class="action-group">
           <div v-auth="['CI_MODIFY']" class="action-item tsfont-plus" @click="addCi()">{{ $t('page.model') }}</div>
@@ -23,7 +27,7 @@
       </template>
       <template slot="topRight">
         <TsRow>
-          <Col :span="6">
+          <Col :span="showMode === 'card' ? 5 : 6">
             <RadioGroup v-if="!isCiTopoShow" v-model="showMode" type="button">
               <Radio label="card"><i class="tsfont-blocklist"></i></Radio>
               <Radio label="table"><i class="tsfont-list"></i></Radio>
@@ -32,14 +36,18 @@
           <Col :span="18">
             <CombineSearcher v-model="searchParam" v-bind="searchConfig" @change="searchCiTypeCi"></CombineSearcher>
           </Col>
+          <Col v-if="showMode === 'card'" :span="1"><div class="action-item tsfont-bar cursor" @click="toggleSiderHide()"></div></Col>
         </TsRow>
+      </template>
+      <template v-slot:sider>
+        <TsAnchor :itemList="ciTypeList" itemIdPrefix="type" @click="toCiType"></TsAnchor>
       </template>
       <div slot="content" class="content border-color">
         <div class="content-main">
           <div v-if="!isCiTopoShow && ciTypeList.length > 0">
             <div v-if="showMode === 'card'">
               <div v-for="(ciType, index) in ciTypeList" :key="index" class="type-main">
-                <div v-if="ciType && ciType.cardList && ciType.cardList.length > 0" class="title text-title ci-title-text">
+                <div v-if="ciType && ciType.cardList && ciType.cardList.length > 0" :id="'type' + ciType.id" class="title text-title ci-title-text">
                   <span class="text-grey">{{ ciType.name }}</span>
                 </div>
                 <div>
@@ -135,12 +143,14 @@ export default {
     CiEdit: () => import('./ci-edit.vue'),
     CiTopo: () => import('./ci-topo.vue'),
     CiImportDialog: () => import('./ci-import-dialog.vue'),
-    CiExportDialog: () => import('./ci-export-dialog.vue')
+    CiExportDialog: () => import('./ci-export-dialog.vue'),
+    TsAnchor: () => import('@/resources/components/TsAnchor/TsAnchor.vue')
   },
   props: {},
   data() {
     const _this = this;
     return {
+      isSiderHide: this.$localStore.get('isSiderHide') || false,
       showMode: this.$localStore.get('showMode') || 'card',
       theadList: [
         { key: 'name', title: this.$t('page.name') },
@@ -228,6 +238,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toggleSiderHide() {
+      this.isSiderHide = !this.isSiderHide;
+      this.$localStore.set('isSiderHide', this.isSiderHide);
+    },
+    toCiType(item) {
+      console.log(item);
+      this.$utils.jumpTo('#type' + item.id);
+    },
     updateSort(sort) {
       this.sortOrder = [];
       this.sortOrder.push(sort);
@@ -241,7 +259,7 @@ export default {
     },
     restoreHistory(historyData) {
       this.searchParam = historyData['searchParam'];
-      this.showMode = historyData['showMode'] || 'card';
+      //this.showMode = historyData['showMode'] || 'card';
       this.sortOrder = historyData['sortOrder'];
     },
     getIconClass(row) {
@@ -374,8 +392,12 @@ export default {
   watch: {
     showMode: {
       handler: function(val) {
-        this.$addHistoryData('showMode', val);
+        //this.$addHistoryData('showMode', val);
         this.$localStore.set('showMode', val);
+        if (val !== 'card') {
+          this.isSiderHide = true;
+          this.$localStore.set('isSiderHide', this.isSiderHide);
+        }
       }
     }
   }

@@ -1,6 +1,12 @@
 <template>
   <div>
-    <TsContain border="border" navBorderBottom="none" :gutter="10">
+    <TsContain
+      border="border"
+      navBorderBottom="none"
+      :gutter="10"
+      siderPosition="right"
+      :isSiderHide="isSiderHide"
+    >
       <template slot="topLeft">
         <div class="action-group">
           <div class="action-item">
@@ -11,14 +17,14 @@
               :trueText="$t('term.cmdb.hidetopo')"
               :falseText="$t('term.cmdb.showtopo')"
               showStatus
-              style="display:contents"
+              style="display: contents"
             ></TsFormSwitch>
           </div>
         </div>
       </template>
       <template slot="topRight">
         <TsRow>
-          <Col :span="6">
+          <Col :span="showMode === 'card' ? 5 : 6">
             <RadioGroup v-if="!isCiTopoShow" v-model="showMode" type="button">
               <Radio label="card"><i class="tsfont-blocklist"></i></Radio>
               <Radio label="table"><i class="tsfont-list"></i></Radio>
@@ -27,15 +33,19 @@
           <Col :span="18">
             <CombineSearcher v-model="searchParam" v-bind="searchConfig" @change="searchCiTypeCi"></CombineSearcher>
           </Col>
+          <Col v-if="showMode === 'card'" :span="1"><div class="action-item tsfont-bar cursor" @click="toggleSiderHide()"></div></Col>
         </TsRow>
+      </template>
+      <template v-slot:sider>
+        <TsAnchor :itemList="ciTypeList" itemIdPrefix="type" @click="toCiType"></TsAnchor>
       </template>
       <div slot="content" class="content border-color">
         <div class="content-main">
           <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
-          <div v-if="!isCiTopoShow && ciTypeList.length > 0">
+          <div v-if="!isCiTopoShow && ciTypeList.length > 0" id="divCard">
             <div v-if="showMode === 'card'">
               <div v-for="(ciType, index) in ciTypeList" :key="index" class="type-main">
-                <div v-if="ciType && ciType.cardList && ciType.cardList.length > 0" class="title text-title ci-title-text">
+                <div v-if="ciType && ciType.cardList && ciType.cardList.length > 0" :id="'type' + ciType.id" class="title text-title ci-title-text">
                   <span class="text-grey" :class="ciType.isMenu == 1 ? 'tsfont-formstaticlist' : ''">{{ ciType.name }}</span>
                 </div>
                 <div>
@@ -116,12 +126,14 @@ export default {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsAnchor: () => import('@/resources/components/TsAnchor/TsAnchor.vue')
   },
   props: {},
   data() {
     const _this = this;
     return {
+      isSiderHide: this.$localStore.get('isSiderHide') || false,
       showMode: this.$localStore.get('showMode') || 'card',
       theadList: [
         { key: 'name', title: this.$t('page.name') },
@@ -205,6 +217,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toggleSiderHide() {
+      this.isSiderHide = !this.isSiderHide;
+      this.$localStore.set('isSiderHide', this.isSiderHide);
+    },
+    toCiType(item) {
+      console.log(item);
+      this.$utils.jumpTo('#type' + item.id);
+    },
     updateSort(sort) {
       this.sortOrder = [];
       this.sortOrder.push(sort);
@@ -212,7 +232,7 @@ export default {
     },
     restoreHistory(historyData) {
       this.searchParam = historyData['searchParam'];
-      this.showMode = historyData['showMode'] || 'card';
+      //this.showMode = historyData['showMode'] || 'card';
       this.sortOrder = historyData['sortOrder'];
     },
     getIconClass(row) {
@@ -262,48 +282,56 @@ export default {
     }
   },
   filter: {},
-  computed: { tbodyList() {
-    const tbodyList = [];
-    this.ciTypeList.forEach(citype => {
-      citype.cardList.forEach(ci => {
-        ci.typeName = citype.name;
-        tbodyList.push(ci);
-      });
-    });
-    if (this.sortOrder && this.sortOrder.length > 0) {
-      this.sortOrder.forEach(sort => {
-        tbodyList.sort((a, b) => {
-          //debugger;
-          for (const sortKey in sort) {
-            if (sort[sortKey]) {
-              const x1 = (typeof a[sortKey] == 'string' ? a[sortKey].toUpperCase() : a[sortKey]);
-              const x2 = (typeof b[sortKey] == 'string' ? b[sortKey].toUpperCase() : b[sortKey]);
-              if (x1 && !x2) {
-                return sort[sortKey] === 'DESC' ? -1 : 1;
-              } else if (!x1 && x2) {
-                return sort[sortKey] === 'DESC' ? 1 : -1;
-              } else if (x1 && x2) {
-                if (x1 < x2) {
-                  return sort[sortKey] === 'DESC' ? 1 : -1;
-                }
-                if (x1 > x2) {
-                  return sort[sortKey] === 'DESC' ? -1 : 1;
-                }
-              }
-            }
-            return 0;
-          }
+  computed: {
+    tbodyList() {
+      const tbodyList = [];
+      this.ciTypeList.forEach(citype => {
+        citype.cardList.forEach(ci => {
+          ci.typeName = citype.name;
+          tbodyList.push(ci);
         });
       });
+      if (this.sortOrder && this.sortOrder.length > 0) {
+        this.sortOrder.forEach(sort => {
+          tbodyList.sort((a, b) => {
+            //debugger;
+            for (const sortKey in sort) {
+              if (sort[sortKey]) {
+                const x1 = typeof a[sortKey] == 'string' ? a[sortKey].toUpperCase() : a[sortKey];
+                const x2 = typeof b[sortKey] == 'string' ? b[sortKey].toUpperCase() : b[sortKey];
+                if (x1 && !x2) {
+                  return sort[sortKey] === 'DESC' ? -1 : 1;
+                } else if (!x1 && x2) {
+                  return sort[sortKey] === 'DESC' ? 1 : -1;
+                } else if (x1 && x2) {
+                  if (x1 < x2) {
+                    return sort[sortKey] === 'DESC' ? 1 : -1;
+                  }
+                  if (x1 > x2) {
+                    return sort[sortKey] === 'DESC' ? -1 : 1;
+                  }
+                }
+              }
+              return 0;
+            }
+          });
+        });
+      }
+      return tbodyList;
     }
-    return tbodyList;
-  }},
-  watch: { showMode: {
-    handler: function(val) {
-      this.$addHistoryData('showMode', val);
-      this.$localStore.set('showMode', val);
+  },
+  watch: {
+    showMode: {
+      handler: function(val) {
+        //this.$addHistoryData('showMode', val);
+        this.$localStore.set('showMode', val);
+        if (val !== 'card') {
+          this.isSiderHide = true;
+          this.$localStore.set('isSiderHide', this.isSiderHide);
+        }
+      }
     }
-  }}
+  }
 };
 </script>
 <style lang="less" scoped>
