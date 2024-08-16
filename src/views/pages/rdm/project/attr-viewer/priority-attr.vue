@@ -17,22 +17,12 @@ export default {
   props: {},
   data() {
     return {
-      priorityName: this.issueData && this.issueData.priorityName,
-      priorityColor: this.issueData && this.issueData.priorityColor,
-      priority: (this.issueData && this.issueData.priority) || (this.valueList && this.valueList.length > 0 && this.valueList[0])
+      issuePriorityName: '',
+      issuePriorityColor: ''
     };
   },
   beforeCreate() {},
-  created() {
-    if (this.priorityName == null && this.priority) {
-      this.$api.rdm.priority.getPriorityById(this.priority).then(res => {
-        if (res.Return) {
-          this.priorityName = res.Return.name;
-          this.priorityColor = res.Return.color;
-        }
-      });
-    }
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -43,8 +33,38 @@ export default {
   destroyed() {},
   methods: {},
   filter: {},
-  computed: {},
-  watch: {}
+  computed: {
+    priorityName() {
+      return this.issueData && this.issueData.priorityName || this.issuePriorityName;
+    },
+    priorityColor() {
+      return this.issueData && this.issueData.priorityColor || this.issuePriorityColor;
+    },
+    priority() {
+      return (this.issueData && this.issueData.priority) || (this.valueList && this.valueList.length > 0 && this.valueList[0]);
+    },
+    getPriorityInfo() {
+      return this.priorityName == null && this.priority;
+    }
+  },
+  watch: {
+    getPriorityInfo: {
+      handler(val) {
+        if (!val) {
+          return false;
+        }
+        this.$api.rdm.priority.getPriorityById(this.priority).then(res => {
+          if (res.Return) {
+            this.issuePriorityName = res.Return.name;
+            this.issuePriorityColor = res.Return.color;
+          }
+        });
+      },
+      immediate: true,
+      deep: true
+      
+    }
+  }
 };
 </script>
 <style lang="less"></style>

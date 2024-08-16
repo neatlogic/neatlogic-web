@@ -1011,5 +1011,6 @@
   "lastfire": "Finally activated",
   "lastfinish": "Finally completed",
   "nextfire": "Next activation",
-  "jobtime": "Homework time"
+  "jobtime": "Homework time",
+  "currenttime": "current time "
 }

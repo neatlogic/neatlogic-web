@@ -25,3 +25,4 @@ export { default as funnelWidgetConfig } from './others/funnel-widget-config.vue
 export { default as wordcloudWidgetConfig } from './others/wordcloud-widget-config.vue';
 export { default as pointWidgetConfig } from './others/point-widget-config.vue';
 export { default as customWidgetConfig } from './others/custom-widget-config.vue';
+export { default as timeWidgetConfig } from './others/time-widget-config.vue';

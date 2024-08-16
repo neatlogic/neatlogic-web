@@ -35,6 +35,7 @@ import { default as scatter } from './define/scatter.js';
 import { default as heatmap } from './define/heatmap.js';
 import { default as wordcloud } from './define/wordcloud.js';
 import { default as custom } from './define/custom.js';
+import { default as time } from './define/time.js';
 
 export const WIDGETS = [
   text,
@@ -66,5 +67,6 @@ export const WIDGETS = [
   scatter,
   pscatter,
   heatmap,
-  wordcloud
+  wordcloud,
+  time
 ];
