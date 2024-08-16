@@ -20,3 +20,4 @@ yarn.lock
 /src/commercial-module/*
 *.code-workspace
 pnpm-lock.yaml
+public/version.md
