@@ -5,7 +5,7 @@
       navBorderBottom="none"
       :gutter="10"
       siderPosition="right"
-      :isSiderHide="isSiderHide"
+      :isSiderHide="!needSider || isSiderHide"
     >
       <template slot="topLeft">
         <div class="action-group">
@@ -24,7 +24,7 @@
       </template>
       <template slot="topRight">
         <TsRow>
-          <Col :span="showMode === 'card' ? 5 : 6">
+          <Col :span="needSider ? 5 : 6">
             <RadioGroup v-if="!isCiTopoShow" v-model="showMode" type="button">
               <Radio label="card"><i class="tsfont-blocklist"></i></Radio>
               <Radio label="table"><i class="tsfont-list"></i></Radio>
@@ -33,7 +33,7 @@
           <Col :span="18">
             <CombineSearcher v-model="searchParam" v-bind="searchConfig" @change="searchCiTypeCi"></CombineSearcher>
           </Col>
-          <Col v-if="showMode === 'card'" :span="1"><div class="action-item tsfont-bar cursor" @click="toggleSiderHide()"></div></Col>
+          <Col v-if="needSider" :span="1"><div class="action-item tsfont-bar cursor" @click="toggleSiderHide()"></div></Col>
         </TsRow>
       </template>
       <template v-slot:sider>
@@ -283,6 +283,13 @@ export default {
   },
   filter: {},
   computed: {
+    needSider() {
+      if (this.showMode === 'card' && !this.isCiTopoShow) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     tbodyList() {
       const tbodyList = [];
       this.ciTypeList.forEach(citype => {
@@ -325,10 +332,6 @@ export default {
       handler: function(val) {
         //this.$addHistoryData('showMode', val);
         this.$localStore.set('showMode', val);
-        if (val !== 'card') {
-          this.isSiderHide = true;
-          this.$localStore.set('isSiderHide', this.isSiderHide);
-        }
       }
     }
   }
