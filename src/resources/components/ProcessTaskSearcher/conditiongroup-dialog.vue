@@ -56,7 +56,16 @@
           </div>
           <template v-if="!$utils.isEmpty(channelUuidList)">
             <div class="text-grey">
-              <span>{{ $t('term.process.stepfilter') }}</span>
+              <label class="text-grey">{{ $t('term.process.stepfilter') }}</label>
+              <Tooltip
+                placement="top-start"
+                max-width="400"
+                theme="light"
+                transfer
+              >
+                <span class="tsfont-info-o cursor text-grey" style="vertical-align: super;padding-left: 4px;"></span>
+                <div slot="content" style="max-height: 400px;overflow:auto;">{{ $t('term.process.stepdesc') }}</div>
+              </Tooltip>
             </div>
             <div>
               <TsFormSwitch

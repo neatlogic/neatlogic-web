@@ -34,6 +34,16 @@
     </div>
     <div v-if="isChannelSingleValue">
       <label v-if="isFilterStep" class="text-grey">{{ $t('term.process.stepfilter') }}</label>
+      <Tooltip
+        v-if="isFilterStep"
+        placement="top-start"
+        max-width="400"
+        theme="light"
+        transfer
+      >
+        <span class="tsfont-info-o cursor text-grey" style="vertical-align: super;padding-left: 4px;"></span>
+        <div slot="content" style="max-height: 400px;overflow:auto;">{{ $t('term.process.stepdesc') }}</div>
+      </Tooltip>
       <div v-if="isFilterStep">
         <TsFormSelect
           v-model="processStepUuidList"
