@@ -356,7 +356,27 @@ export default {
           }
         });
       }
+      this.updateConfig();
     },
+    //更新组件默认配置，补充新的配置
+    updateConfig() {
+      const newFormItem = FORMITEMS.find(d => d.handler === this.formItem.handler);
+      if (!newFormItem) {
+        return;
+      }
+      Object.keys(newFormItem).forEach(key => {
+        if (!this.formItem.hasOwnProperty(key)) {
+          this.$set(this.formItem, key, newFormItem[key]);
+        } else if (!this.$utils.isEmpty(newFormItem[key]) && typeof newFormItem[key] === 'object') {
+          Object.keys(newFormItem[key]).forEach(subKey => {
+            if (!this.formItem[key].hasOwnProperty(subKey)) {
+              this.$set(this.formItem[key], subKey, newFormItem[key][subKey]);
+            }
+          });
+        }
+      });
+    },
+
     openReactionDialog() {
       if (this.formItem.hasOwnProperty('inherit') && (this.formItem.inherit || this.disabled)) {
         return;

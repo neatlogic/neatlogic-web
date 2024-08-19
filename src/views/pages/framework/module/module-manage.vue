@@ -110,6 +110,9 @@ export default {
                 }
               ]
             });
+          }).catch(error => {
+            this.error = error.message;
+            console.log('Error fetching the version file:', error);
           });
       });
     },
