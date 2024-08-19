@@ -219,7 +219,7 @@ export default {
       return returnDate && returnDate.replace(/\|/g, '');
     },
     getDateValue(value) {
-      let arr = value.split('_') || [];
+      let arr = value && value.split('_') || [];
       let newdate = this.$utils.getDateByFormat(new Date(), this.config.format);
       if (arr[0] == 'less-than' || arr[0] == 'greater-than' && !this.$utils.isEmpty(arr[1])) {
         newdate = this.getDate(arr[2], arr[0] == 'less-than' ? Number(-arr[1]) : Number(arr[1]));
