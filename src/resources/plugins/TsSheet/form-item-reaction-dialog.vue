@@ -143,12 +143,13 @@ export default {
         hiderow: this.$t('term.framework.hiderow'),
         displayrow: this.$t('term.framework.displayrow'),
         emit: this.$t('page.emit'),
-        required: this.$t('page.require')
+        required: this.$t('page.require'),
+        clearValue: this.$t('page.cleardata')
       },
       emitTypeList: emitTypeList,
       dialogConfig: {
         title: this.$t('term.framework.reactionsetting'),
-        width: 'medium',
+        width: 'large',
         type: 'modal',
         isShow: true,
         maskClose: false

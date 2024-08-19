@@ -119,6 +119,7 @@
 <script>
 import formItems from './form/component/index.js';
 import conditionMixin from './form/conditionexpression/condition-mixin.js';
+import { REACTION } from './form/reaction/index.js';
 export default {
   name: '',
   components: {
@@ -189,8 +190,8 @@ export default {
         require: 0
       }, //记录操作执行次数
       isFirstLoad: true, //是否第一次加载，用于比较表单数据新旧值时，第一次触发一次操作
-      filter: [] //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
-      //expressionList: EXPRESSIONS
+      filter: [], //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
+      REACTION: REACTION //联动规则
     };
   },
   beforeCreate() {},
@@ -262,141 +263,10 @@ export default {
                 const overrideConfig = this.formItem.override_config || {};
                 const reaction = this.formItem.reaction[action];
                 if (reaction && !this.$utils.isEmpty(reaction) && this.isConditionDataChange(action, reaction, newVal, oldVal, this.formItem.uuid)) {
-                  if (action === 'mask') {
-                    if (!overrideConfig.isMask) {
-                      const result = this.executeReaction(reaction, newVal, oldVal);
-                      if (result) {
-                        this.$set(this.formItem.config, 'isMask', true);
-                      } else {
-                        this.$set(this.formItem.config, 'isMask', false);
-                      }
-                      this.addExecuteCount('mask');
-                    }
-                  } else if (action === 'hide') {
-                    if (!overrideConfig.isHide) {
-                      const result = this.executeReaction(reaction, newVal, oldVal);
-                      if (result) {
-                        this.hideFormItem();
-                      } else {
-                        this.showFormItem();
-                      }
-                      this.addExecuteCount('hide');
-                    }
-                  } else if (action === 'display') {
-                    if (!overrideConfig.isHide) {
-                      const result = this.executeReaction(reaction, newVal, oldVal);
-                      if (result) {
-                        this.showFormItem();
-                      } else {
-                        this.hideFormItem();
-                      }
-                      this.addExecuteCount('display');
-                    }
-                  } else if (action === 'readonly') {
-                    if (!overrideConfig.isReadonly) {
-                      const result = this.executeReaction(reaction, newVal, oldVal);
-                      if (result) {
-                        this.$set(this.formItem.config, 'isReadOnly', true);
-                      } else {
-                        this.$set(this.formItem.config, 'isReadOnly', false);
-                      }
-                      this.addExecuteCount('readonly');
-                    }
-                  } else if (action === 'disable') {
-                    if (!overrideConfig.isDisabled) {
-                      const result = this.executeReaction(reaction, newVal, oldVal);
-                      if (result) {
-                        this.$set(this.formItem.config, 'isDisabled', true);
-                      } else {
-                        this.$set(this.formItem.config, 'isDisabled', false);
-                      }
-                      this.addExecuteCount('disable');
-                    }
-                  } else if (action === 'setvalue') {
-                    const result = this.executeReaction(reaction, newVal, oldVal);
-                    if (result) {
-                      let value = reaction.value;
-                      if (reaction.type == 'dynamic' && !this.$utils.isEmpty(reaction.value)) {
-                        const uuidList = reaction.value.split('#');
-                        const formItemUuid = uuidList[0];
-                        const formItemAttrUuid = uuidList[1] || 'value';
-                        let dynamicVal = this.$utils.deepClone(this.formData[formItemUuid]);
-                        if (!Array.isArray(dynamicVal)) {
-                          if (!this.$utils.isEmpty(dynamicVal)) {
-                            if (typeof dynamicVal === 'object') {
-                              value = dynamicVal[formItemAttrUuid];
-                            } else {
-                              value = dynamicVal;
-                            }
-                          } else {
-                            value = null;
-                          }
-                        } else {
-                          let list = [];
-                          dynamicVal.forEach(v => {
-                            if (!this.$utils.isEmpty(v[formItemAttrUuid])) {
-                              list.push(v[formItemAttrUuid]);
-                            }
-                          });
-                          value = list.join(',');
-                        }
-                      }
-                      if ((!reaction.isFirstLoad && (!this.formData.hasOwnProperty(this.formItem.uuid) || !this.formData[this.formItem.uuid]) || (this.formData[this.formItem.uuid] && !this.$utils.isSame(value, this.formData[this.formItem.uuid]))) || (reaction.isFirstLoad && !this.executeCount['setvalue'])) {
-                        this.addExecuteCount('setvalue');
-                        this.$set(this.formData, this.formItem.uuid, value);
-                        this.$emit('change', value);
-                      }
-                    }
-                  } else if (action === 'filter') {
-                    this.filter = [];
-                    if (!this.$utils.isEmpty(reaction.ruleList)) {
-                      reaction.ruleList.forEach(r => {
-                        let list = r.formItemUuid.split('#');
-                        let formItemUuid = list[0];
-                        let column = list[1] ? list[1] : 'value';
-                        let formItem = this.formItemList.find(d => d.uuid === formItemUuid);
-                        if (formItem && formItem.config) {
-                          let valueList = [];
-                          let textList = [];
-                          let currentFormData = this.formData[formItemUuid];
-                          if (currentFormData instanceof Array) {
-                            this.formData[formItemUuid].forEach(value => {
-                              const { text, value: tmpValue } = this.handleFilterValue(value, column, formItem);  
-                              valueList.push(tmpValue);  
-                              textList.push(text); 
-                            });
-                          } else if (!this.$utils.isEmpty(currentFormData)) {
-                            const { text, value: tmpValue } = this.handleFilterValue(currentFormData, column, formItem);  
-                            valueList.push(tmpValue);  
-                            textList.push(text); 
-                          }
-                          if (valueList.length > 0) {
-                            this.filter.push({ uuid: r.matrixAttrUuid,
-                              valueList: valueList,
-                              textList: textList
-                            });
-                          }
-                        }
-                      });
-                      this.addExecuteCount('filter');
-                    }
-                  } else if (action === 'emit') {
-                    if (reaction.event) {
-                      const emitData = {};
-                      emitData[reaction.event] = this.formData[this.formItem.uuid];
-                      this.$emit('emit', emitData);
-                      this.addExecuteCount('emit');
-                    }
-                  } else if (action === 'required') {
-                    if (!overrideConfig.isRequired) {
-                      const result = this.executeReaction(reaction, newVal, oldVal);
-                      if (result) {
-                        this.$set(this.formItem.config, 'isRequired', true);
-                      } else {
-                        this.$set(this.formItem.config, 'isRequired', false);
-                      }
-                      this.addExecuteCount('required');
-                    }
+                  const result = this.executeReaction(reaction, newVal, oldVal);
+                  if (this.REACTION[action]) {
+                    //联动操作
+                    this.REACTION[action]({overrideConfig: overrideConfig, reaction: reaction, result: result, view: this});
                   }
                 }
               }

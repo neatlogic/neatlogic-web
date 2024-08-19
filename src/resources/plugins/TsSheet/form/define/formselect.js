@@ -25,5 +25,16 @@ export default {
     mapping: { value: '', text: '' },
     isAddData: false // 新增数据
   },
-  reaction: { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, setvalue: {}, filter: {}, emit: {}, required: {} }
+  reaction: { 
+    mask: {}, 
+    hide: {},
+    display: {},
+    readonly: {},
+    disable: {}, 
+    setvalue: {}, 
+    filter: {}, 
+    emit: {},
+    required: {},
+    clearValue: {}
+  }
 };

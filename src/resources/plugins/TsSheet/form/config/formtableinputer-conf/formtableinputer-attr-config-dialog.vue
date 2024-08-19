@@ -353,6 +353,15 @@ export default {
   data() {
     return {
       propertyLocal: null,
+      reaction: { 
+        mask: {}, 
+        hide: {},
+        display: {},
+        readonly: {},
+        disable: {},
+        required: {},
+        clearValue: {}
+      },
       reactionName: {
         mask: this.$t('page.invisible'),
         hide: this.$t('page.hide'),
@@ -360,7 +369,8 @@ export default {
         readonly: this.$t('page.readonly'),
         disable: this.$t('page.disable'),
         required: this.$t('page.require'),
-        filter: this.$t('page.filters')
+        filter: this.$t('page.filters'),
+        clearValue: this.$t('page.cleardata')
       },
       reactionError: {}, //交互异常信息
       errorMap: {},
@@ -539,7 +549,13 @@ export default {
       }
 
       if (!this.propertyLocal.reaction) {
-        this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
+        this.$set(this.propertyLocal, 'reaction');
+      } else {
+        Object.keys(this.reaction).forEach((key) => {
+          if (!this.propertyLocal.reaction.hasOwnProperty(key)) {
+            this.$set(this.propertyLocal.reaction, key, this.reaction[key]);
+          }
+        });
       }
       if (this.isNeedTable) {
         let findFormItem = this.formConfig.find(item => item.name === 'handler');
