@@ -16,5 +16,10 @@ export default {
     defaultValueType: 'self',
     mapping: { value: '', text: '' }
   },
-  reaction: { setvalue: {}, filter: {}, emit: {}}
+  reaction: { 
+    setvalue: {},
+    filter: {}, 
+    emit: {}, 
+    clearValue: {}
+  }
 };

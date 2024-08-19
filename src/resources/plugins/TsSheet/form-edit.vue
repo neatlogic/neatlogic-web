@@ -473,15 +473,17 @@ export default {
     },
     filterFormData(data) {
       //删除不需要对比的数据
-      this.$delete(data, 'lefterList');
-      this.$delete(data, 'headerList');
-      this.$delete(data, 'lcd');
-      this.$delete(data, 'lcu');
-      data.tableList.forEach(item => {
-        if (item.component && item.component.formData && item.component.formData.formConfig) {
-          this.filterFormData(item.component.formData.formConfig);
-        }
-      });
+      if (data) {
+        this.$delete(data, 'lefterList');
+        this.$delete(data, 'headerList');
+        this.$delete(data, 'lcd');
+        this.$delete(data, 'lcu');
+        data.tableList && data.tableList.forEach(item => {
+          if (item.component && item.component.formData && item.component.formData.formConfig) {
+            this.filterFormData(item.component.formData.formConfig);
+          }
+        });
+      }
     },
     contrastError(oldData, newData, type) {
       let isSame = true;

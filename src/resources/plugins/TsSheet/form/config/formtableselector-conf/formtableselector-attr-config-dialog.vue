@@ -282,16 +282,25 @@ export default {
     property: { type: Object } //属性配置
   },
   data() {
-    const _this = this;
     return {
       propertyLocal: null,
+      reaction: {
+        mask: {}, 
+        hide: {}, 
+        display: {}, 
+        readonly: {}, 
+        disable: {}, 
+        required: {},
+        clearValue: {}
+      },
       reactionName: {
         mask: this.$t('page.invisible'),
         hide: this.$t('page.hide'),
         display: this.$t('page.display'),
         readonly: this.$t('page.readonly'),
         disable: this.$t('page.disable'),
-        required: this.$t('page.require')
+        required: this.$t('page.require'),
+        clearValue: this.$t('page.cleardata')
       },
       reactionError: {}, //交互异常信息
       errorMap: {},
@@ -369,21 +378,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.propertyLocal = this.property;
-    if (!this.propertyLocal.config) {
-      this.$set(this.propertyLocal, 'config', {
-        isRequired: false,
-        isMask: false,
-        isHide: false
-      });
-    } else {
-      if (this.propertyLocal.config.urlAttributeValue) {
-        this.isActive = true;
-      }
-    }
-    if (!this.propertyLocal.reaction) {
-      this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {} });
-    }
+    this.init();
   },
   beforeMount() {},
   mounted() {},
@@ -394,6 +389,29 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    init() {
+      this.propertyLocal = this.property;
+      if (!this.propertyLocal.config) {
+        this.$set(this.propertyLocal, 'config', {
+          isRequired: false,
+          isMask: false,
+          isHide: false
+        });
+      } else {
+        if (this.propertyLocal.config.urlAttributeValue) {
+          this.isActive = true;
+        }
+      }
+      if (!this.propertyLocal.reaction) {
+        this.$set(this.propertyLocal, 'reaction', this.reaction);
+      } else {
+        Object.keys(this.reaction).forEach((key) => {
+          if (!this.propertyLocal.reaction.hasOwnProperty(key)) {
+            this.$set(this.propertyLocal.reaction, key, this.reaction[key]);
+          }
+        });
+      }
+    },
     close() {
       this.$emit('close');
     },
