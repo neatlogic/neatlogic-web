@@ -188,7 +188,7 @@ export default {
               if (!this.$utils.isEmpty(item.slaTimeList)) { // 当前步骤关联多个SLA时，仅仅显示最紧迫的一个(默认第一个，后端已排序)
                 tempSlaTimeList.push(item.slaTimeList[0]);
               }
-              slaTimeList = item.slaTimeList;
+              slaTimeList = [...slaTimeList, ...(item.slaTimeList || [])];
               item.slaTimeList.forEach(v => {
                 if (v.status === 'doing') {
                   hasDoingStatus = true;
@@ -201,9 +201,17 @@ export default {
           this.slaUpdateTimer = setTimeout(() => {
             this.UpdateSlaTimeDoing(hasDoingStatus);
           }, 60 * 1000);
+          if (!this.$utils.isEmpty(tempSlaTimeList)) {
+            if (tempSlaTimeList.length === 1) {
+              this.slaTimeList = tempSlaTimeList;
+            } else if (tempSlaTimeList.length > 1) {
+              this.slaTimeList = [tempSlaTimeList[0]];
+            } else {
+              this.slaTimeList = [];
+            }
+          }
         }
       });
-      this.slaTimeList = tempSlaTimeList;
     }
   },
   filter: {},
