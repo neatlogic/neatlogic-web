@@ -174,8 +174,8 @@ let routerList = [
     }
   },
   {
-    path: '/flow-edit',
-    name: 'flow-edit',
+    path: '/flow-edit-old',
+    name: 'flow-edit-old',
     component: flowEdit,
     meta: {
       title: $t('router.process.flowedit'),
@@ -186,8 +186,8 @@ let routerList = [
     }
   },
   {
-    path: '/flow-edit-new',
-    name: 'flow-edit-new',
+    path: '/flow-edit',
+    name: 'flow-edit',
     component: flowEditNew,
     meta: {
       title: $t('router.process.flowedit'),

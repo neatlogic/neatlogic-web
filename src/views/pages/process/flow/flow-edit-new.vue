@@ -470,7 +470,7 @@ export default {
             this.$route.meta.isSkip = true;
             if (needRefresh) {
               this.$router.push({
-                path: '/flow-edit-new',
+                path: '/flow-edit',
                 query: {
                   uuid: saveData.uuid,
                   name: saveData.name,
