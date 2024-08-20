@@ -686,7 +686,7 @@ const methods = {
     }
     return specialValue;
   },
-  timestampCalculation(unit = null, value = 0, timstamp = null, format = '', styleType = '-', plusMinusSign = 'add') {
+  timestampCalculation(unit = null, value = 0, timstamp = null, format = '', styleType = '-') {
     /*
       时间戳计算
       unit 单位 minute/hour/day/month/year
@@ -694,7 +694,6 @@ const methods = {
       timstamp：时间戳
       format：时间格式
       styleType：时间样式格式
-      plusMinusSign： 符号，加号和减号， add/reduce，用于时间比较是：大于还是小于
     */
     let returnDate = '';
     let dateValue = null;
@@ -716,19 +715,19 @@ const methods = {
     let day = 24 * 3600 * 1000 * value; // 天
     if (unit == 'minute') {
       // 分钟
-      timefn = plusMinusSign == 'add' ? dateValue.setTime(dateTimeValue + millisecond) : dateValue.setTime(dateTimeValue - millisecond);
+      timefn = dateValue.setTime(dateTimeValue + millisecond);
     } else if (unit == 'hour') {
       // 小时
-      timefn = plusMinusSign == 'add' ? dateValue.setTime(dateTimeValue + hour) : dateValue.setTime(dateTimeValue - hour);
+      timefn = dateValue.setTime(dateTimeValue + hour);
     } else if (unit == 'day') {
       // 天
-      timefn = plusMinusSign == 'add' ? dateValue.setTime(dateTimeValue + day) : dateValue.setTime(dateTimeValue - day);
+      timefn = dateValue.setTime(dateTimeValue + day);
     } else if (unit == 'month') {
       // 月份
-      timefn = plusMinusSign == 'add' ? dateValue.setMonth(dateMonthValue + value) : dateValue.setMonth(dateMonthValue - value);
+      timefn = dateValue.setMonth(dateMonthValue + value);
     } else if (unit == 'year') {
       // 年份
-      timefn = plusMinusSign == 'add' ? dateValue.setFullYear(dateFullYearValue + value) : dateValue.setFullYear(dateFullYearValue - value);
+      timefn = dateValue.setFullYear(dateFullYearValue + value);
     }
     returnDate = this.getDateByFormat(timefn, format, styleType);
     return returnDate.toString().trim();

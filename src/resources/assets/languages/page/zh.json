@@ -1014,5 +1014,8 @@
   "lastfinish": "最后完成",
   "nextfire": "下次激活",
   "jobtime": "作业时间",
-  "currenttime": "当前时间"
+  "currenttime": "当前时间",
+  "front": "前",
+  "after": "后",
+  "includesdata": "有数据"
 }

@@ -37,7 +37,28 @@
           ></Checkbox>
         </div>
         <div class="flex-between" style="display:flex">
-          <span>{{ $t('page.custom') }}</span>
+          <div>
+            <span>{{ $t('page.custom') }}</span>
+            <Poptip
+              width="570"
+              :transfer="true"
+              placement="top"
+              trigger="hover"
+            >
+              <b class="tsfont-info-o text-href"></b>
+              <div slot="content">
+                <p>{{ $t('term.framework.timevalue') }}</p>
+                <ul style="margin: 2px 0px 2px 40px;">
+                  <li>{{ $t('term.framework.timevaluedesc') }}</li>
+                  <li>{{ $t('term.framework.positiveintegerdesc') }}</li>
+                  <li>{{ $t('term.framework.neglectintegerdesc') }}</li>
+                </ul>
+                <ul>
+                  <li>{{ $t('term.framework.writetimedesc') }}</li>
+                </ul>
+              </div>
+            </Poptip>
+          </div>
           <Checkbox
             :value="checkValidType('custom')"
             label="custom"
@@ -67,6 +88,7 @@
               <TsFormSelect
                 ref="validFilter"
                 v-model="valid.filter"
+                :search="true"
                 :dataList="getFilterData()"
                 :validateList="validateList"
                 border="bottom"
@@ -83,6 +105,7 @@
                     v-model="valid.value"
                     type="number"
                     :validateList="numberValid"
+                    :min="-Infinity"
                     border="bottom"
                     :disabled="disabled"
                   />
@@ -108,6 +131,7 @@
                 :type="getType"
                 :validateList="validateList"
                 width="100%"
+                transfer
                 border="bottom"
                 :disabled="disabled"
               ></TsFormDatePicker>
@@ -223,7 +247,7 @@ export default {
         { text: this.$t('term.framework.earlierandequal'), value: 'earlierAndEqual' }
       ],
       validateList: ['required'],
-      numberValid: ['number'],
+      numberValid: ['integer'],
       numValid: ['required', 'integer_p'],
       nowOpt: [
         {text: this.$t('page.hour'), value: 'hour'},
@@ -414,7 +438,7 @@ export default {
       return () => {
         let filterList = [
           { text: this.$t('page.custom'), value: 'custom' },
-          { text: this.$t('term.framework.equal'), value: 'nowDay' }
+          { text: this.$t('term.framework.writetime'), value: 'nowDay' }
         ];
         this.formItemList.forEach((item) => {
           if (item.handler == 'formdate' && item.uuid != this.formItem.uuid) {

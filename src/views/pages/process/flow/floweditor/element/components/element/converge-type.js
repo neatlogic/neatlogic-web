@@ -32,12 +32,12 @@ export default {
     return true;
   },
   //流程保存时校验数据
-  valid({ node, graph }) {
+  valid({ node, graph, view }) {
     let validList = [];
     //校验孤岛节点
-    validList.push(...isolationValid.valid({ node, graph }));
+    validList.push(...isolationValid.valid({ node, graph, view }));
     //校验节点名称
-    validList.push(...nameValid.valid({ node, graph }));
+    validList.push(...nameValid.valid({ node, graph, view }));
 
     return validList;
   }

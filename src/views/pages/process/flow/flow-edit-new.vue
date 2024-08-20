@@ -65,7 +65,7 @@
               mode="graph"
             ></FlowEditorToolbar>
           </div>
-          <div style="height: calc(100% - 34px)">
+          <div style="height: calc(100% - 40px)">
             <FlowEditor
               :config="flowConfig"
               :muted="true"
@@ -866,13 +866,14 @@ export default {
      * 获取指定节点的下一个节点列表
      *
      * @param node 目标节点
+     * @param isNeedBackward 是否需要获取反向的节点
      * @returns 返回包含下一个节点对象的数组
      */
-    getNextNodes(node) {
+    getNextNodes(node, {isNeedBackward = false} = {}) {
       const nextNodeList = [];
       if (node) {
         let outgoingEdges = this.graph.getOutgoingEdges(node);
-        outgoingEdges = outgoingEdges && outgoingEdges.filter(d => d.getProp('type') === 'forward');
+        outgoingEdges = outgoingEdges && outgoingEdges.filter(d => isNeedBackward || d.getProp('type') === 'forward');
         outgoingEdges &&
           outgoingEdges.forEach(d => {
             nextNodeList.push(d.getTargetCell());

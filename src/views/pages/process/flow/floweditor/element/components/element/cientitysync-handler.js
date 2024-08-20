@@ -47,13 +47,13 @@ export default {
   valid({ node, graph, view }) {
     const validList = [];
     //校验孤岛节点
-    validList.push(...isolationValid.valid({ node, graph }));
+    validList.push(...isolationValid.valid({ node, graph, view }));
     //校验节点名称
-    validList.push(...nameValid.valid({ node, graph }));
+    validList.push(...nameValid.valid({ node, graph, view }));
     //校验分派
-    validList.push(...assignValid.valid({ node, graph }));
+    validList.push(...assignValid.valid({ node, graph, view }));
     //校验通知设置
-    validList.push(...notifyValid.valid({ node, graph }));
+    validList.push(...notifyValid.valid({ node, graph, view }));
 
     const nodeConfig = node.getData();
     const nodeData = nodeConfig.stepConfig || {};
