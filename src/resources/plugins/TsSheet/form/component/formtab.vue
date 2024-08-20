@@ -11,7 +11,7 @@
       <TabPane
         v-for="(tab, tindex) in tabList"
         :key="tindex"
-        :label="!$utils.isEmpty(getValidErrorList(tab))?renderTabLabel(tab.text, getValidErrorList(tab)):tab.text"
+        :label="!$utils.isEmpty(getValidErrorList(tab))?renderTabLabel(tab.text, getValidErrorList(tab)):renderTabLabelValueTip(tab)"
         :name="tab.value"
         :tab="formItem.uuid"
       >
@@ -78,7 +78,8 @@ export default {
       tabReaction: {},
       currentTab: null,
       isFirst: true,
-      validateErrorList: [] // 验证错误列表
+      validateErrorList: [], // 验证错误列表
+      tabValue: {} //tab下对应值
     };
   },
   beforeCreate() {},
@@ -195,29 +196,26 @@ export default {
           const reaction = item.reaction[action];
           if (reaction && !this.$utils.isEmpty(reaction)) {
             this.tabReaction = reaction;
+            const result = this.executeReaction(reaction, newVal, oldVal);
             if (action === 'hide') {
-              const result = this.executeReaction(reaction, newVal, oldVal);
               if (result) {
                 this.hideFormItem(item);
               } else {
                 this.showFormItem(item);
               }
             } else if (action === 'display') {
-              const result = this.executeReaction(reaction, newVal, oldVal);
               if (result) {
                 this.showFormItem(item);
               } else {
                 this.hideFormItem(item);
               }
             } else if (action === 'readonly') {
-              const result = this.executeReaction(reaction, newVal, oldVal);
               if (result) {
                 this.$set(item, 'isReadOnly', true);
               } else {
                 this.$set(item, 'isReadOnly', false);
               }
             } else if (action === 'disable') {
-              const result = this.executeReaction(reaction, newVal, oldVal);
               if (result) {
                 this.$set(item, 'isDisabled', true);
               } else {
@@ -242,6 +240,28 @@ export default {
           item.reaction = {};
           item.isHide = false;
         });
+      }
+    },
+    updatedTabValue() {
+      //tab内数据存在值提示，则更新tabValue
+      let tabValue = {};
+      if (!this.$utils.isEmpty(this.initFormData) && this.config.tabList && this.config.tabList.length > 0) {
+        this.config.tabList.forEach(tab => {
+          if (tab.value !== '' && tab.text !== '') {
+            tabValue[tab.value] = {};
+            const component = tab.component;
+            if (!this.$utils.isEmpty(component)) {
+              component.forEach(uuid => {
+                if (!this.$utils.isEmpty(this.initFormData[uuid])) {
+                  tabValue[tab.value][uuid] = this.initFormData[uuid];
+                }
+              });
+            }
+          }
+        });
+      }
+      if (!this.$utils.isSame(tabValue, this.tabValue)) {
+        this.tabValue = this.$utils.deepClone(tabValue);
       }
     }
   },
@@ -350,6 +370,22 @@ export default {
           ]);
         };
       };
+    },
+    renderTabLabelValueTip() {
+      //tab下面存在value的提示
+      return function(tab) {
+        return (h) => {
+          return h('div', [
+            h('span', tab.text),
+            h('span', {
+              class: !this.$utils.isEmpty(this.tabValue[tab.value]) ? 'tsfont-dot text-href' : '',
+              attrs: {
+                title: this.$t('page.includesdata')
+              }
+            })
+          ]);
+        };
+      };
     }
   },
   watch: {
@@ -360,6 +396,7 @@ export default {
             this.updatetabList(val, this.initFormData);
             this.initFormData = this.$utils.deepClone(val);
             this.isFirst = false;
+            this.updatedTabValue();
           }
         }
       },
