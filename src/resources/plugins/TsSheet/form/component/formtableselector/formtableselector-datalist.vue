@@ -223,7 +223,8 @@ export default {
       if (config && config.sourceColumnList && config.sourceColumnList.length > 0) {
         config.sourceColumnList.forEach(sourceColumn => {
           if (sourceColumn.valueColumn) {
-            sourceColumn.valueList = [row[sourceColumn.valueColumn]];
+            const valueList = Array.isArray(row[sourceColumn.valueColumn]) ? row[sourceColumn.valueColumn] : [row[sourceColumn.valueColumn]];
+            this.$set(sourceColumn, 'valueList', valueList);
             sourceColumn.expression = 'equal';
           }
         });
