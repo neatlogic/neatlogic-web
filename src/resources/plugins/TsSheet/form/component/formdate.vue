@@ -301,13 +301,6 @@ export default {
         month: this.$t('page.month'),
         year: this.$t('page.year')
       };
-      let plusMinusSign = {
-        later: 'add',
-        earlier: 'reduce',
-        laterAndEqual: 'add',
-        earlierAndEqual: 'reduce'
-      };
-   
       //自定义校验
       if (this.config.validType && this.config.validType.indexOf('custom') >= 0 && !this.$utils.isEmpty(this.config.validValueList)) {
         this.config.validValueList.forEach(item => {
@@ -316,7 +309,7 @@ export default {
             //为空校验
             return;
           } else if (item.filter == 'custom' && item.value) {
-            //自定义
+            //需要进行比较组件类型：自定义
             validateList.push({
               name: 'tomore',
               trigger: 'change',
@@ -341,7 +334,7 @@ export default {
               }
             });
           } else if (item.filter == 'nowDay') {
-            //当前时间
+            //需要进行比较组件类型：填写时间
             validateList.push({
               name: 'tomore',
               trigger: 'change',
@@ -352,7 +345,7 @@ export default {
                   currentValue = this.$utils.getDateByFormat(new Date(currentValue), this.config.format);
                 }  
                 currentValue = new Date(currentValue).getTime();
-                let calculateValue = new Date(this.$utils.timestampCalculation(item.unit, item.value || 0, null, this.config.format || '', this.config.styleType, plusMinusSign[item.text])).getTime();
+                let calculateValue = new Date(this.$utils.timestampCalculation(item.unit, item.value || 0, null, this.config.format || '', this.config.styleType)).getTime();
                 if (value == '') {
                   return true;
                 } else if (item.text == 'later') {
@@ -370,7 +363,7 @@ export default {
               }
             });
           } else {
-            //表单相同组件
+            // 表单同类型组件，例如日期组件
             if (this.formItemList) {
               for (let i = 0; i < this.formItemList.length; i++) {
                 if (this.formItemList[i].uuid == item.filter) {
@@ -384,7 +377,7 @@ export default {
                       let configValue = formValue || component.config.valueQuote; // 解决自定义规则，没有校验的问题
                       configValue = this.getDateValue(configValue);
                       let currentValue = new Date(this.$utils.handleInvalidDate(value, this.config.format || '', this.config.styleType)).getTime();
-                      let calculateValue = new Date(this.$utils.timestampCalculation(item.unit, item.value || 0, configValue, this.config.format || '', this.config.styleType, plusMinusSign[item.text])).getTime();
+                      let calculateValue = new Date(this.$utils.timestampCalculation(item.unit, item.value || 0, configValue, this.config.format || '', this.config.styleType)).getTime();
                       if (value == '' || !configValue) {
                         return true;
                       } else if (item.text == 'laterAndEqual') {
