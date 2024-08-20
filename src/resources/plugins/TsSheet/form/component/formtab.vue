@@ -380,7 +380,7 @@ export default {
             h('span', {
               class: !this.$utils.isEmpty(this.tabValue[tab.value]) ? 'tsfont-dot text-href' : '',
               attrs: {
-                title: '有数据'
+                title: this.$t('page.includesdata')
               }
             })
           ]);
