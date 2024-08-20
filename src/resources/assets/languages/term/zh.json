@@ -537,7 +537,7 @@
     "deadlinetime": "{target}截止",
     "unassigned": "未分派",
     "selectflowpath": "选择流转路径",
-    "assigntosth": "指定\"{target}\"为处理人",
+    "assigntosth": "指定\"{target}\"的处理人",
     "viewtask": "查看工单",
     "continuereport": "继续上报",
     "backtoservicelist": "返回服务目录",
