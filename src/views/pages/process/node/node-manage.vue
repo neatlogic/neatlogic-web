@@ -292,6 +292,12 @@ export default {
         //       }
         //       paramMappingList.push(data);
         //     });
+        let enableAuthority = 0;
+        item.config.authorityList.forEach((authority) => {
+          if (authority.acceptList && authority.acceptList.length > 0) {
+            enableAuthority = 1;
+          }
+        });
         let data = {
           handler: item.handler,
           config: Object.assign({}, item.config, {
@@ -301,7 +307,7 @@ export default {
             //   paramMappingList: paramMappingList,
             //   handler: item.config.notifyPolicyConfig.handler
             // }
-          })
+          }, {enableAuthority: enableAuthority})
         };
           //映射字段处理
         this.mapList.forEach(cc => {

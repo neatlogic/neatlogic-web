@@ -57,48 +57,50 @@
                   <div class="infor-right">{{ item.textConfig }}</div>
                 </template>
               </div>
-              <div v-for="(sla, slaIndex) in slaTimeList" :key="slaIndex" class="information-list">
-                <div class="infor-left text-grey overflow" :title="sla.name.length > 6 ? sla.name : ''">{{ sla.name }}</div>
-                <div class="infor-right">
-                  <div v-if="sla.status == 'doing'" class="time-height">
-                    <span v-if="sla.timeLeft >= 0" class="text-success">{{ $t('page.remainingtime') }}</span>
-                    <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
-                    <span v-if="sla.slaTimeDisplayMode == 'workTime'" :class="getClassName(sla.timeLeft)">
-                      {{ sla.timeLeft | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
-                    </span>
-                    <span v-else-if="sla.slaTimeDisplayMode == 'naturalTime'" :class="getClassName((sla.expireTime - baseTime))">
-                      {{ (sla.expireTime - baseTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
-                    </span>
-                    <span v-else class="text-danger">
-                      {{ (baseTime - sla.expireTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
-                    </span>
+              <div v-for="(sla, slaIndex) in getSlaList(sindex)" :key="slaIndex" class="information-list">
+                <template v-if="!$utils.isEmpty(sla)">
+                  <div class="infor-left text-grey overflow" :title="sla.name && sla.name.length > 6 ? sla.name : ''">{{ sla.name }}</div>
+                  <div class="infor-right">
+                    <div v-if="sla.status == 'doing'" class="time-height">
+                      <span v-if="sla.timeLeft >= 0" class="text-success">{{ $t('page.remainingtime') }}</span>
+                      <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
+                      <span v-if="sla.slaTimeDisplayMode == 'workTime'" :class="getClassName(sla.timeLeft)">
+                        {{ sla.timeLeft | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
+                      </span>
+                      <span v-else-if="sla.slaTimeDisplayMode == 'naturalTime'" :class="getClassName((sla.expireTime - baseTime))">
+                        {{ (sla.expireTime - baseTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
+                      </span>
+                      <span v-else class="text-danger">
+                        {{ (baseTime - sla.expireTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
+                      </span>
+                    </div>
+                    <div v-else-if="sla.status == 'pause'">
+                      <!-- 暂停 -->
+                      <span v-if="sla.timeLeft >= 0" class="text-success">{{ $t('page.remainingtime') }}</span>
+                      <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
+                      <span v-if="sla.slaTimeDisplayMode == 'workTime'" :class="getClassName(sla.timeLeft)">
+                        {{ sla.timeLeft | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
+                      </span>
+                      <span v-else-if="sla.slaTimeDisplayMode == 'naturalTime'" :class="getClassName((sla.expireTime - baseTime))">
+                        {{ (sla.expireTime - baseTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
+                      </span>
+                      <span v-else class="text-danger">
+                        {{ (baseTime - sla.expireTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
+                      </span>
+                    </div>
+                    <div v-else-if="sla.status == 'done'">
+                      <!-- 完成 -->
+                      <span class="text-warning">{{ $t('page.timecost') }}</span>
+                      <span class="text-warning">
+                        {{ (sla.timeSum - sla.timeLeft) | formatTimeCost({unitNumber: 3, separator: ' ', unit: 'minute' }) }}
+                      </span>
+                    </div>
+                    <div class="text-tip fz10">{{ getSlaStatus(sla.status, sla.expireTime) }}</div>
+                    <div v-if="sla.delayList && sla.delayList.length > 0">
+                      <StepSlaDelay :dataList="sla.delayList"></StepSlaDelay>
+                    </div>
                   </div>
-                  <div v-else-if="sla.status == 'pause'">
-                    <!-- 暂停 -->
-                    <span v-if="sla.timeLeft >= 0" class="text-success">{{ $t('page.remainingtime') }}</span>
-                    <span v-else class="text-danger">{{ $t('page.overtime') }}</span>
-                    <span v-if="sla.slaTimeDisplayMode == 'workTime'" :class="getClassName(sla.timeLeft)">
-                      {{ sla.timeLeft | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
-                    </span>
-                    <span v-else-if="sla.slaTimeDisplayMode == 'naturalTime'" :class="getClassName((sla.expireTime - baseTime))">
-                      {{ (sla.expireTime - baseTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
-                    </span>
-                    <span v-else class="text-danger">
-                      {{ (baseTime - sla.expireTime) | formatTimeCost({unitNumber: 3, language: 'zh', separator: ' ', unit: 'minute' }) }}
-                    </span>
-                  </div>
-                  <div v-else-if="sla.status == 'done'">
-                    <!-- 完成 -->
-                    <span class="text-warning">{{ $t('page.timecost') }}</span>
-                    <span class="text-warning">
-                      {{ (sla.timeSum - sla.timeLeft) | formatTimeCost({unitNumber: 3, separator: ' ', unit: 'minute' }) }}
-                    </span>
-                  </div>
-                  <div class="text-tip fz10">{{ getSlaStatus(sla.status, sla.expireTime) }}</div>
-                  <div v-if="sla.delayList && sla.delayList.length > 0">
-                    <StepSlaDelay :dataList="sla.delayList"></StepSlaDelay>
-                  </div>
-                </div>
+                </template>
               </div>
             </CarouselItem>
           </template>
@@ -264,6 +266,11 @@ export default {
     },
     getClassName() {
       return (remainTime) => remainTime >= 0 ? 'text-success' : 'text-danger';
+    },
+    getSlaList() {
+      return (sIndex) => {
+        return !this.$utils.isEmpty(this.slaTimeList[sIndex]) && this.slaTimeList.length > 0 ? [this.slaTimeList[sIndex]] : [];
+      };
     }
   },
   watch: {}

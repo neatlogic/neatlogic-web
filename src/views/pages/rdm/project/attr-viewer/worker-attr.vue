@@ -22,7 +22,6 @@ export default {
   props: {},
   data() {
     return {
-      userIdList: (this.issueData && this.issueData.userIdList) || this.valueList
     };
   },
   beforeCreate() {},
@@ -36,10 +35,12 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
   computed: {
+    userIdList() {
+      return (this.issueData && this.issueData.userIdList) || this.valueList;
+    }
   },
   watch: {}
 };

@@ -121,8 +121,6 @@
         v-bind="viewData"
         :showPager="false"
         :hideAction="false"
-        :fixedHeader="false"
-        :height="tableHeight"
       >
         <template v-for="(head, index) in viewData.theadList" :slot="head.key" slot-scope="{ row }">
           <div v-if="row[head.key] && row[head.key].length > 0" :key="index">
@@ -186,7 +184,6 @@ export default {
       isExporting: false,
       searchParam: { id: _this.viewId, keyword: '', pageSize: 20, searchMode: 'normal' }, //视图查询参数
       viewData: { theadList: [], tbodyList: [] },
-      tableHeight: 1000,
       dataCount: 0, //数据量
       dataLimit: 10000, //数据上限
       groupList: [],
@@ -210,7 +207,6 @@ export default {
   mounted() {
     this.searchCustomViewData();
     this.getCustomViewAttr();
-    this.setTableHeight();
   },
   beforeUpdate() {},
   updated() {},
@@ -219,10 +215,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    setTableHeight() {
-      let tableHeight = window.innerHeight - (this.$refs.table ? this.$refs.table.getBoundingClientRect().top : 0);
-      this.tableHeight = Math.max(tableHeight - 20 - 16, 40);
-    },
     restoreHistory(historyData) {
       this.searchParam = historyData['searchParam'];
       this.groupList = historyData['groupList'];
@@ -348,7 +340,6 @@ export default {
       //  element._index = index;
       //});
       this.searchCustomViewData(row);
-      this.setTableHeight();
     },
     exportUrl() {
       const params = { id: this.viewId, searchMode: 'normal', attrFilterList: [] };

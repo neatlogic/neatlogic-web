@@ -610,7 +610,8 @@
     "reportauthtooltip": "The current logged in person must meet the following requirements in order to create a work order through the services in the current directory: within the authorization scope of the current directory, as well as all parent and child directories and services.",
     "formtag": "Form label",
     "formtagtip": "When the label is empty: all form components in the main scene are form components; When the label is not empty: The form component is configured for the selected label.",
-    "stepfilter": "Process steps"
+    "stepfilter": "Process steps",
+    "stepdesc": "Activated steps"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

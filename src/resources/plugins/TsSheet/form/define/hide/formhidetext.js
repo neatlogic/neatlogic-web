@@ -12,5 +12,9 @@ export default {
   config: {
     defaultvalue: ''
   },
-  reaction: {'setvalue': {}, 'emit': {}}
+  reaction: {
+    setvalue: {},
+    emit: {},
+    clearValue: {}
+  }
 };
