@@ -105,9 +105,18 @@ export default {
         const cells = this.graph.paste();
         const newCells = [];
         cells.forEach(cell => {
-          const c = this.graph.updateCellId(cell, this.$utils.setUuid());
-          if (!c.isEdge()) {
-            newCells.push(c);
+          let currentUuid = this.$utils.setUuid();
+          this.graph.updateCellId(cell, currentUuid);
+          let currentCell = this.graph.getCellById(currentUuid);
+          if (currentCell) {
+            // 复制之后，把uuid改成新的uuid
+            const data = currentCell.getData();
+            data.uuid = currentUuid;
+            data.name = `${data.name}_copy`;
+            currentCell.setData(data);
+          }
+          if (!currentCell.isEdge()) {
+            newCells.push(currentCell);
           }
         });
         this.graph.stopBatch('paste');

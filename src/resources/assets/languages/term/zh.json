@@ -2697,7 +2697,9 @@
     "dependentapp": "依赖应用",
     "preparation": "预案",
     "exerciseplan": "演练计划",
-    "dependencyscene": "依赖场景"
+    "dependencyscene": "依赖场景",
+    "sourcedatacenter": "来源数据中心",
+    "targetdatacenter": "目标数据中心"
   },
   "diagram": {
     "widgetlist": "图元列表",
