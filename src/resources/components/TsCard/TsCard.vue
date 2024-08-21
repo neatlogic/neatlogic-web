@@ -6,7 +6,7 @@
       <div v-if="pageType != 'scroll'">
         <ul :class="cardPrev + 'ul ivu-row'">
           <li v-if="firstBtn" :class="setcardliClass()">
-            <div :class="cardPrev + 'body'" class="border-btn border-color">
+            <div :class="cardPrev + 'body'" class="border-btn border-color" style="padding:5px"><!--由于多了border，所以padding需要比正常的少1px-->
               <slot name="firstBtn"></slot>
             </div>
           </li>
