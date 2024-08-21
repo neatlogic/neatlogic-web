@@ -154,7 +154,7 @@
         <span>{{ $t('term.process.savedraftflow') }}</span>
         <!-- <span style="margin-left: 36px">{{ $t('term.process.autosaveinterval') }}</span> -->
       </p>
-      <TsTable :theadList="draftKey" :tbodyList="draftData" @clickTr="draftCurrentChange"></TsTable>
+      <TsTable :theadList="draftKey" :tbodyList="draftData" @clickTr="selectDraftRow"></TsTable>
     </TsDialog>
   </div>
 </template>
@@ -572,7 +572,13 @@ export default {
           this.flowData = res.Return.config;
           //console.log(JSON.stringify(this.flowData, null, 2));
           this.processName = res.Return.name;
-          this.slaList = this.flowData.process.slaList;
+          if (this.flowData.process) {
+            this.slaList = this.flowData.process.slaList;
+            // 评分
+            if (this.flowData.process.scoreConfig && this.flowData.process.scoreConfig.isActive) {
+              this.scoreConfig = this.flowData.process.scoreConfig; 
+            }
+          }
           this.isFlowReady = true;
         });
       }
@@ -587,6 +593,14 @@ export default {
           })
           .then(res => {
             this.flowData = res.Return.config;
+            this.processName = res.Return.name;
+            if (this.flowData.process) {
+              this.slaList = this.flowData.process.slaList;
+              // 评分
+              if (this.flowData.process.scoreConfig && this.flowData.process.scoreConfig.isActive) {
+                this.scoreConfig = this.flowData.process.scoreConfig; 
+              }
+            }
             this.isFlowReady = true;
           });
       }
@@ -658,12 +672,12 @@ export default {
     },
     drag(event, component) {
       //仅提取必要信息
-      const { name, handler, type, isAllowStart, chartConfig } = component;
+      const { name, handler, type, isAllowStart, chartConfig, config: stepConfig} = component;
       const config = { name, handler, type, isAllowStart, icon: chartConfig.icon };
       const uuid = this.$utils.setUuid();
       config.id = uuid;
       //数据复制一份到config，和老数据保持一致
-      config.data = { uuid, name, handler, type, isAllowStart, stepConfig: {} };
+      config.data = { uuid, name, handler, type, isAllowStart, stepConfig: stepConfig || {} };
       const node = NodeFactory.createNode(this.graph, { handler, type }, config);
       this.dnd.start(node, event);
       //this.stepList.push(config.config);
@@ -994,6 +1008,46 @@ export default {
         this.allowDispatchStepWorkerNode = this.nodeList.filter(item => item.allowDispatchStepWorker).map(item => item.handler);
       });
     },
+    selectDraftRow(row) {
+      this.processDraftUuid = row.uuid;
+    },
+    async draftOk() {
+      // 草稿列表确认
+      if (!this.processDraftUuid) {
+        return;
+      }
+      this.draftModel = false;
+      await this.getProcessDraftByUuid();
+      this.graph.fromJSON(this.finalFlowData);
+    },
+    //获取草稿列表
+    getDraftList(uuid) {
+      // 草稿列表
+      this.draftData = [];
+      this.$api.process.process
+        .processDraftList({
+          processUuid: uuid
+        })
+        .then(res => {
+          if (res.Status == 'OK') {
+            let draftList = res.Return;
+            draftList.forEach(d => {
+              d.fcd = this.$options.filters.formatDate(d.fcd);
+            });
+            this.draftData = draftList;
+            if (this.draftData[0]) {
+              this.processDraftUuid = this.draftData[0].uuid;
+              this.draftData[0]._selected = true;
+            }
+
+            if (draftList.length) {
+              this.draftModel = true;
+            } else {
+              this.draftModel = false;
+            }
+          }
+        });
+    },
     //新的结束
     
     //下面都是旧方法======================================================
@@ -1097,55 +1151,6 @@ export default {
       this.$nextTick(() => {
         this.activeTab = 'flowsetting';
       });
-    },
-    draftCurrentChange(currentRow) {
-      // 草稿
-      this.draftCurrentData = currentRow;
-    },
-    draftOk() {
-      // 草稿列表确认
-
-      this.draftModel = false;
-      Vm.$api.process.process
-        .processDraftGet({
-          uuid: this.draftCurrentData.uuid
-        })
-        .then(res => {
-          if (res.Status == 'OK') {
-            let draftConfig = res.Return;
-            this.processName = draftConfig.name;
-            let config = draftConfig.config;
-            this.initTopo(config, this.$utils.setUuid());
-          }
-        });
-    },
-    //获取草稿列表
-    getDraftList(uuid) {
-      // 草稿列表
-      this.$api.process.process
-        .processDraftList({
-          processUuid: uuid
-        })
-        .then(res => {
-          if (res.Status == 'OK') {
-            let draftList = res.Return;
-            draftList.forEach(d => {
-              d.fcd = this.$options.filters.formatDate(d.fcd);
-            });
-            this.draftData.splice(0);
-            this.draftData.push(...draftList);
-            if (this.draftData[0]) {
-              this.draftCurrentData = this.draftData[0];
-              this.draftData[0]._highlight = true;
-            }
-
-            if (draftList.length) {
-              this.draftModel = true;
-            } else {
-              this.draftModel = false;
-            }
-          }
-        });
     },
     goCreatecatalog() {
       window.open(HOME + '/process.html#/catalog-manage?processUuid=' + this.processUuid, '_blank');
