@@ -71,7 +71,9 @@ export default {
       }
       if (keyList && keyList.length) {
         keyList.forEach(item => {
-          this[item] = config[item] || undefined;
+          if (config.hasOwnProperty(item)) {
+            this[item] = config[item];
+          }
         });
       }
     },
