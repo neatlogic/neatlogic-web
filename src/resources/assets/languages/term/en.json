@@ -2698,7 +2698,9 @@
     "dependentapp": "Dependent applications",
     "preparation": "reserve plan",
     "exerciseplan": "Exercise plan",
-    "dependencyscene": "Dependent scenarios"
+    "dependencyscene": "Dependent scenarios",
+    "sourcedatacenter": "Source Data Center",
+    "targetdatacenter": "Target Data Center"
   },
   "diagram": {
     "widgetlist": "Element List",
