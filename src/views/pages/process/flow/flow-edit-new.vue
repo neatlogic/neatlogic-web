@@ -572,6 +572,7 @@ export default {
           this.flowData = res.Return.config;
           //console.log(JSON.stringify(this.flowData, null, 2));
           this.processName = res.Return.name;
+          this.slaList = this.flowData.process.slaList;
           this.isFlowReady = true;
         });
       }
@@ -1088,7 +1089,7 @@ export default {
       // 节点高亮处理
       var uuidList = (item.processStepUuidList && item.processStepUuidList.map(d => d)) || [];
       if (Array.isArray(uuidList)) {
-        this.$topoVm.highlight(uuidList);
+        // this.$topoVm.highlight(uuidList);
       }
     },
     toFlowSetting() {
