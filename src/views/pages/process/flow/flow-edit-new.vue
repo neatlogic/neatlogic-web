@@ -890,10 +890,10 @@ export default {
       //从流程设置切走的时候，保存表单id
       if (this.$refs.flowSetting) {
         const process = this.$refs.flowSetting ? this.$refs.flowSetting.getJsonValue() : {};
-        // const formConfig = this.$refs.flowSetting.getJsonValue().formConfig ? this.$refs.flowSetting.getJsonValue().formConfig : {};
+        const formConfig = process.formConfig ? process.formConfig : {};
         //console.log(JSON.stringify(formConfig, null, 2));
         this.$set(this.flowData.process, 'processConfig', process.processConfig);
-        this.flowData.process.formConfig.uuid = process.formConfig?.uuid;
+        this.flowData.process.formConfig.uuid = formConfig.uuid;
       }
     },
     /**
