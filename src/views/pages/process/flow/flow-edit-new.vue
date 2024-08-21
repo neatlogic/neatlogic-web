@@ -219,7 +219,6 @@ export default {
       dataTimestamp: 0, //数据时间戳，在有需要的地方修改他，用于激活computed
       activeTab: 'flowsetting',
       slaList: [],
-      draftPrevData: '',
       draftModel: false,
       draftKey: [
         {
@@ -233,7 +232,6 @@ export default {
       ],
       draftData: [], //草稿列表
       isNew: false, //新增判断是否是新流程
-      portData: [], //接口数据
       formhandlerList: [], //表单控件的数据
       nodeAllLinksList: [], //当前节点的所有连线数据
       formSceneUuidList: [], // 表单场景uuid列表
@@ -278,6 +276,20 @@ export default {
   },
   methods: {
     //新的开始
+    beforeLeaveCompare(oldData) {
+      // 离开当前页面，数据对比
+      let currentData = this.getFlowData();
+      delete oldData.config.topo.svg;
+      delete oldData.config.topo.canvas;
+      delete currentData.config.topo.svg;
+      delete currentData.config.topo.canvas;
+      const isSame = this.$utils.isSame(oldData, currentData);
+      return isSame;
+    },
+    async beforeLeave() {
+      //离开页面，二次弹窗，点击'确认按钮'，存储数据,
+      return await this.saveFlow();
+    },
     deleteFlow() {
       // 删除流程图
       if (this.isNew) {
@@ -461,26 +473,27 @@ export default {
       //清空所有选择
       this.graph.cleanSelection();
       this.validFlow(true);
-      if (this.validList.length === 0) {
-        const saveData = this.getFlowData(false);
-        //console.log(JSON.stringify(saveData, null, 2));
-        await this.$api.process.process.processSave(saveData).then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-            this.$route.meta.isSkip = true;
-            if (needRefresh) {
-              this.$router.push({
-                path: '/flow-edit',
-                query: {
-                  uuid: saveData.uuid,
-                  name: saveData.name,
-                  referenceCount: this.referenceCount || 0
-                }
-              });
-            }
-          }
-        });
+      if (this.validList && this.validList.length > 0) {
+        return false;
       }
+      const saveData = this.getFlowData(false);
+      //console.log(JSON.stringify(saveData, null, 2));
+      await this.$api.process.process.processSave(saveData).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.$route.meta.isSkip = true;
+          if (needRefresh) {
+            this.$router.push({
+              path: '/flow-edit',
+              query: {
+                uuid: saveData.uuid,
+                name: saveData.name,
+                referenceCount: this.referenceCount || 0
+              }
+            });
+          }
+        }
+      });
     },
     //校验流程
     validFlow(isSlient) {
@@ -638,6 +651,9 @@ export default {
       //}
       this.isReady = true;
       this.dataTimestamp = new Date().getTime();
+      this.$nextTick(() => {
+        this.$addWatchData(this.getFlowData());
+      });
     },
     drag(event, component) {
       //仅提取必要信息
@@ -1026,9 +1042,7 @@ export default {
       await this.$api.process.process.processSave(saveData).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
-          this.portData = saveData;
-          this.draftPrevData = this.$utils.deepClone(saveData);
-
+          this.$addWatchData(saveData);
           this.$route.meta.isSkip = true;
           if (!isGoFlow) {
             this.$router.push({
@@ -1440,48 +1454,6 @@ export default {
           let link = endNode.links[i];
           link.getType() == 'backward' ? link.destory() : i++;
         }
-      }
-    }
-  },
-  beforeRouteLeave(from, to, next, url) {
-    if (!this.$utils.isEmpty(this.portData)) {
-      let draftData = this.getFlowData();
-      delete this.portData.config.topo.svg;
-      delete draftData.config.topo.svg;
-      let isSame = this.$utils.isSame(JSON.parse(JSON.stringify(this.portData)), JSON.parse(JSON.stringify(draftData)));
-      if ((from && from.query.validRouter) || isSame) {
-        //form.query.validRouter 代表不用进行跳转校验，如删除时候
-        //当没有改动时直接跳转页面
-        url ? this.$utils.gotoHref(url) : next();
-      } else {
-        let _this = this;
-        this.$utils.jumpDialog.call(
-          this,
-          {
-            save: {
-              //保存数据
-              fn: async vnode => {
-                return await _this.flowSave(true);
-              }
-            },
-            noSave: {
-              //存草稿
-              fn: vnode => {
-                vnode.isShow = false;
-                _this.draftAdd();
-                url ? _this.$utils.gotoHref(url) : next();
-              }
-            }
-          },
-          to,
-          from,
-          next,
-          url
-        );
-      }
-    } else {
-      if (next) {
-        next();
       }
     }
   }
