@@ -907,6 +907,7 @@ export default {
         const nodeConfig = this.$refs.nodeSetting.getValueList();
         const node = this.graph.getCellById(nodeConfig.uuid);
         if (node) {
+          node.setData(nodeConfig, {overwrite: true }); // overwrite 为 true 时，替换旧数据，否则数组更新有问题
           node.setData(nodeConfig);
           this.dataTimestamp = new Date().getTime();
         }
