@@ -11,4 +11,6 @@ import changecreate from '@/views/pages/process/flow/floweditor/element/componen
 import changehandle from '@/views/pages/process/flow/floweditor/element/components/element/changehandle-handler.js';
 import cientitysync from '@/views/pages/process/flow/floweditor/element/components/element/cientitysync-handler.js';
 import condition from '@/views/pages/process/flow/floweditor/element/components/element/condition-handler.js';
-export default [start, end, process, converge, timer, automatic, changecreate, changehandle, cientitysync, condition, ...flowElementList];
+import createjob from '@/views/pages/process/flow/floweditor/element/components/element/createjob-handler.js';
+import event from '@/views/pages/process/flow/floweditor/element/components/element/event-handler.js';
+export default [start, end, process, converge, timer, automatic, changecreate, changehandle, cientitysync, condition, createjob, event, ...flowElementList];
