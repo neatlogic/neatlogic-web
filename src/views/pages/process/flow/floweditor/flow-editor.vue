@@ -425,10 +425,10 @@ export default {
           this.graph.use(
             new Selection({
               enabled: true,
-              multiple: false,
+              multiple: true, // 是否启用点击多选，使用shift键可以多选
               multipleSelectionModifiers: ['shift'],
-              rubberband: false, //禁止拖动框选
-              modifiers: ['meta'],
+              rubberband: true, //拖动框选
+              modifiers: ['alt'], // 在画布空白的地方，按着alt键，框选需要选择的节点。
               movable: true,
               showNodeSelectionBox: false, //显示图元的选择框
               showEdgeSelectionBox: false, //显示边的选择框

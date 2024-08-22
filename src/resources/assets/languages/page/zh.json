@@ -26,7 +26,7 @@
   "require": "必填",
   "value": "值",
   "positiontransfer": "位置对调",
-  "creator": "创建者",
+  "creator": "创建人",
   "createtime": "创建时间",
   "memo": "备注",
   "auth": "授权",

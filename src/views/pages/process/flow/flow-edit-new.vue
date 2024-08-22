@@ -669,6 +669,9 @@ export default {
       this.dataTimestamp = new Date().getTime();
       this.$nextTick(() => {
         this.$addWatchData(this.getFlowData());
+        setTimeout(() => {
+          this.graph.zoomToFit({ padding: 10 });
+        }, 500);
       });
     },
     drag(event, component) {
@@ -939,7 +942,7 @@ export default {
         const nodeConfig = this.$refs.nodeSetting.getValueList();
         const node = this.graph.getCellById(nodeConfig.uuid);
         if (node) {
-          node.setData(nodeConfig, {overwrite: true }); // overwrite 为 true 时，替换旧数据，否则数组更新有问题
+          node.setData(nodeConfig, {deep: false }); //与原数据进行浅 merge
           node.setData(nodeConfig);
           this.dataTimestamp = new Date().getTime();
         }
@@ -1373,6 +1376,10 @@ export default {
               if (!config.uuid) {
                 config.uuid = uuid;
               }
+              //设置评分时，结束节点可以连回退线
+              if (element.type == 'end' && this.scoreConfig.isActive) {
+                this.$set(element.setting, 'linkout', true);
+              }
               cells.push({
                 view: 'vue-shape-view',
                 id: uuid,
@@ -1462,12 +1469,19 @@ export default {
       }
     },
     'scoreConfig.isActive'(val) {
+      const graphData = this.graph.toJSON();
+      graphData.cells.forEach(d => {
+        if (d.type == 'end') {
+          this.$set(d.setting, 'linkout', !!val);
+        }
+      });
+      this.graph.fromJSON(graphData);
       //当评分设置关闭时需要删除结束节点的回退线
       if (!val) {
-        let endNode = this.$topoVm.nodes.find(d => d.getType() == 'end');
-        for (let i = 0; i < endNode.links.length;) {
-          let link = endNode.links[i];
-          link.getType() == 'backward' ? link.destory() : i++;
+        const endNode = this.stepList.find(d => d.type == 'end');
+        const edges = this.graph.getOutgoingEdges(endNode.uuid);
+        if (!this.$utils.isEmpty(edges)) {
+          this.graph.removeCells(edges);
         }
       }
     }
