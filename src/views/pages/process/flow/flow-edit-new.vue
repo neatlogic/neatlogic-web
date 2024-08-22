@@ -668,7 +668,9 @@ export default {
       this.dataTimestamp = new Date().getTime();
       this.$nextTick(() => {
         this.$addWatchData(this.getFlowData());
-        this.graph.centerContent();// 确保节点渲染成功之后，在设置画布内容居中，否则画布居中会偏移
+        setTimeout(() => {
+          this.graph.zoomToFit({ padding: 10 });
+        }, 200);
       });
     },
     drag(event, component) {
