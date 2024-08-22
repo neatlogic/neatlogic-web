@@ -537,7 +537,7 @@
     "deadlinetime": "{target}截止",
     "unassigned": "未分派",
     "selectflowpath": "选择流转路径",
-    "assigntosth": "指定\"{target}\"为处理人",
+    "assigntosth": "指定\"{target}\"的处理人",
     "viewtask": "查看工单",
     "continuereport": "继续上报",
     "backtoservicelist": "返回服务目录",
@@ -1293,7 +1293,13 @@
     "regiondispatcherapp": "业务系统",
     "regiondispatcherapptooltip": "请选择业务系统表单",
     "regiondispatchermatchtooltips": "分派器属性映射矩阵属性",
-    "compkeyname": "组件英文名称"
+    "compkeyname": "组件英文名称",
+    "writetime": "填写时间",
+    "timevalue": "时间值：",
+    "timevaluedesc": "0：表示“自定义|填写时间|日期”的值。",
+    "positiveintegerdesc": "正整数：表示“自定义|填写时间|日期”的值增加相应时间（或根据选择时间单位增加）。",
+    "neglectintegerdesc": "负整数：表示“自定义|填写时间|日期”的值减少相应时间（或根据选择时间单位减少）。",
+    "writetimedesc": "填写时间：表示触发当前组件校验时的时间。"
   },
   "knowledge": {
     "document": "文档",
@@ -2691,7 +2697,9 @@
     "dependentapp": "依赖应用",
     "preparation": "预案",
     "exerciseplan": "演练计划",
-    "dependencyscene": "依赖场景"
+    "dependencyscene": "依赖场景",
+    "sourcedatacenter": "来源数据中心",
+    "targetdatacenter": "目标数据中心"
   },
   "diagram": {
     "widgetlist": "图元列表",

@@ -260,6 +260,7 @@ export default {
             },
             createEdge: ({ sourceCell }) => {
               const edge = new Shape.Edge({
+                id: this.$utils.setUuid(),
                 type: 'forward',
                 router: {
                   name: 'manhattan'
@@ -508,6 +509,7 @@ export default {
               const y = e.clientY;
               const p = this.graph.clientToLocal({ x: x, y: y });
               this.drawingEdge = this.graph.addEdge({
+                id: this.$utils.setUuid(),
                 source: node,
                 target: p,
                 router: {

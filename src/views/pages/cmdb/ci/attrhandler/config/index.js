@@ -12,4 +12,5 @@ export { default as expressionattr } from './expression-attr.vue';
 export { default as enumattr } from './enum-attr.vue';
 export { default as setattr } from './set-attr.vue';
 export { default as hyperlinkattr } from './hyperlink-attr.vue';
+export { default as numberattr } from './number-attr.vue';
 

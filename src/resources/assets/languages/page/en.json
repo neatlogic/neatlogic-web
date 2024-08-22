@@ -1012,5 +1012,8 @@
   "lastfinish": "Finally completed",
   "nextfire": "Next activation",
   "jobtime": "Homework time",
-  "currenttime": "current time "
+  "currenttime": "current time ",
+  "front": "front",
+  "after": "after",
+  "includesdata": "There is data available"
 }

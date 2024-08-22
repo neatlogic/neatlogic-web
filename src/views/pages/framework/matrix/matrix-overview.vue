@@ -819,8 +819,7 @@ export default {
     },
     //搜索矩阵
     searchMatrix: function() {
-      this.getMatrixList();
-      this.getMatrixTableList(1, 20);
+      this.getMatrixList(1);
     },
     //删除矩阵
     delMatrix(row) {
