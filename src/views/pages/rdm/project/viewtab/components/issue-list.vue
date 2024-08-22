@@ -344,7 +344,7 @@ export default {
             name: 'createUser',
             groupList: ['user'],
             multiple: false,
-            label: this.$t('page.creator')
+            label: this.$t('term.diagram.createuser')
           },
           {
             type: 'slot',
