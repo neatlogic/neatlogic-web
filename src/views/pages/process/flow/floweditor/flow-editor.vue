@@ -425,7 +425,7 @@ export default {
           this.graph.use(
             new Selection({
               enabled: true,
-              multiple: false,
+              multiple: true, // 是否启用点击多选，使用shift键可以多选
               multipleSelectionModifiers: ['shift'],
               rubberband: false, //禁止拖动框选
               modifiers: ['meta'],
