@@ -67,6 +67,7 @@
           </div>
           <div style="height: calc(100% - 40px)">
             <FlowEditor
+              ref="flowEditor"
               :config="flowConfig"
               :muted="true"
               :callback="{ validateNode: validateNode }"
@@ -1142,9 +1143,16 @@ export default {
     },
     nodesHighlight(item) {
       // 节点高亮处理
+      const flowEditor = this.$refs.flowEditor;
       var uuidList = (item.processStepUuidList && item.processStepUuidList.map(d => d)) || [];
-      if (Array.isArray(uuidList)) {
-        // this.$topoVm.highlight(uuidList);
+      if (!this.$utils.isEmpty(uuidList)) {
+        this.graph.getNodes().forEach(node => {
+          if (uuidList.includes(node.id)) {
+            flowEditor.highlightNode(node, '#1670f0');
+          }
+        });
+      } else {
+        flowEditor.clearHighlight();
       }
     },
     toFlowSetting() {
@@ -1373,7 +1381,7 @@ export default {
                 handler: config.handler,
                 isAllowStart: config.isAllowStart,
                 setting: element.setting,
-                icon,
+                icon: element.oldSetting ? element.oldSetting.icon : icon,
                 position: { x: x, y: y },
                 data: config,
                 name,
