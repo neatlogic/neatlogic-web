@@ -107,7 +107,7 @@ export default {
       }
       data.stepConfig = stepConfig;
       this.configData = data;
-      return JSON.parse(JSON.stringify(data));
+      return this.$utils.deepClone(data);
     },
     validNodeData(href) {
       //校验节点数据
