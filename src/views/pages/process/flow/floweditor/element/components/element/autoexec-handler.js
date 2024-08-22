@@ -58,19 +58,19 @@ export default {
 
     const nodeConfig = node.getData();
     const nodeData = nodeConfig.stepConfig || {};
-    const createJobConfig = nodeData.createJobConfig || {};
-    if (!createJobConfig.failPolicy) {
+    const autoexecConfig = nodeData.autoexecConfig || {};
+    if (!autoexecConfig.failPolicy) {
       validList.push({
         type: 'error',
         msg: $t('form.validate.required', { target: $t('page.failurestrategy') }),
-        href: '#createJobConfig'
+        href: '#autoexecCombop'
       });
     }
-    if (view.$utils.isEmpty(createJobConfig.configList)) {
+    if (view.$utils.isEmpty(autoexecConfig.configList)) {
       validList.push({
         type: 'error',
         msg: $t('form.validate.leastonetarget', { target: $t('term.autoexec.job') }),
-        href: '#createJobConfig'
+        href: '#autoexecCombop'
       });
     }
     return validList;
