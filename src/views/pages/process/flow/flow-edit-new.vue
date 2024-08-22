@@ -669,7 +669,7 @@ export default {
       this.$nextTick(() => {
         this.$addWatchData(this.getFlowData());
         setTimeout(() => {
-          this.graph.zoomToFit({ padding: 10 });
+          this.graph.centerContent();
         }, 500);
       });
     },
