@@ -427,7 +427,7 @@ export default {
               enabled: true,
               multiple: false,
               multipleSelectionModifiers: ['shift'],
-              rubberband: false, //禁止拖动框选
+              rubberband: true, //禁止拖动框选
               modifiers: ['meta'],
               movable: true,
               showNodeSelectionBox: false, //显示图元的选择框
