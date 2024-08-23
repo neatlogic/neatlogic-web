@@ -497,7 +497,8 @@ export default {
               query: {
                 uuid: saveData.uuid,
                 name: saveData.name,
-                referenceCount: this.referenceCount || 0
+                referenceCount: this.referenceCount || 0,
+                time: new Date().getTime()
               }
             });
           }
