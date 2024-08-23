@@ -573,6 +573,7 @@ export default {
           this.flowData = res.Return.config;
           //console.log(JSON.stringify(this.flowData, null, 2));
           this.processName = res.Return.name;
+          this.referenceCount = res.Return.referenceCount;
           if (this.flowData.process) {
             this.slaList = this.flowData.process.slaList;
             // 评分
