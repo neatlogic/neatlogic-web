@@ -145,10 +145,23 @@ export default {
     unHighlightNode(node) {
       if (node.getAttrs()['fo']) {
         node.setAttrByPath('fo/filter', null);
+        node.setAttrByPath('fo/opacity', 1);
       } else if (node.getAttrs()['body']) {
         node.setAttrByPath('body/filter', null);
+        node.setAttrByPath('body/opacity', 1);
       } else if (node.getAttrs()['line']) {
         node.setAttrByPath('line/filter', null);
+        node.setAttrByPath('line/opacity', 1);
+        const label = node.getLabelAt(0);
+        if (label) {
+          node.setLabelAt(0, {
+            attrs: {
+              label: {
+                text: label.attrs.label.text
+              }
+            }
+          });
+        }
       }
     },
     highlightNode(node, color) {
@@ -184,6 +197,31 @@ export default {
           }
         });
       }
+    },
+    //置灰所有的节点/线
+    disableCells({exclude}) {
+      this.graph.getCells().forEach(cell => {
+        if (!exclude.includes(cell.id)) {
+          if (cell.getAttrs()['fo']) {
+            cell.setAttrByPath('fo/opacity', 0.3);
+          } else if (cell.getAttrs()['body']) {
+            cell.setAttrByPath('body/opacity', 0.3);
+          } else if (cell.getAttrs()['line']) {
+            cell.setAttrByPath('line/opacity', 0.3);
+            const label = cell.getLabelAt(0);
+            if (label) {
+              cell.setLabelAt(0, {
+                attrs: {
+                  label: {
+                    text: label.attrs.label.text,
+                    opacity: 0.3
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
     },
     drawEdge(e) {
       const x = e.clientX;

@@ -497,7 +497,8 @@ export default {
               query: {
                 uuid: saveData.uuid,
                 name: saveData.name,
-                referenceCount: this.referenceCount || 0
+                referenceCount: this.referenceCount || 0,
+                time: new Date().getTime()
               }
             });
           }
@@ -581,6 +582,7 @@ export default {
           this.flowData = res.Return.config;
           //console.log(JSON.stringify(this.flowData, null, 2));
           this.processName = res.Return.name;
+          this.referenceCount = res.Return.referenceCount;
           if (this.flowData.process) {
             this.slaList = this.flowData.process.slaList;
             // 评分
@@ -1073,14 +1075,14 @@ export default {
           this.validFlow();
         }
       }
-      this.$nextTick(() => {
+      setTimeout(() => {
         if (item.href) {
           if (this.$refs.nodeSetting) {
             this.$refs.nodeSetting.validNodeData(item.href);
             this.$utils.jumpTo(item.href, 'instant', this.$refs['codeContent']);
           }
         }
-      });
+      }, 200);
     },
 
     async flowSave(isGoFlow) {
@@ -1156,11 +1158,7 @@ export default {
       const flowEditor = this.$refs.flowEditor;
       var uuidList = (item.processStepUuidList && item.processStepUuidList.map(d => d)) || [];
       if (!this.$utils.isEmpty(uuidList)) {
-        this.graph.getNodes().forEach(node => {
-          if (uuidList.includes(node.id)) {
-            flowEditor.highlightNode(node, '#1670f0');
-          }
-        });
+        flowEditor.disableCells({exclude: uuidList});
       } else {
         flowEditor.clearHighlight();
       }
