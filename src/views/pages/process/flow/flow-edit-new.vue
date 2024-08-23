@@ -1066,14 +1066,14 @@ export default {
           this.validFlow();
         }
       }
-      this.$nextTick(() => {
+      setTimeout(() => {
         if (item.href) {
           if (this.$refs.nodeSetting) {
             this.$refs.nodeSetting.validNodeData(item.href);
             this.$utils.jumpTo(item.href, 'instant', this.$refs['codeContent']);
           }
         }
-      });
+      }, 200);
     },
 
     async flowSave(isGoFlow) {
