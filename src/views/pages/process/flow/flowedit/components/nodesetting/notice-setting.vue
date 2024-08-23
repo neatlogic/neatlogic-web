@@ -266,6 +266,7 @@ export default {
       this.isShowPersonSettingDialog = false;
       if (needUpdateValue) {
         this.tacticsData = tacticsData;
+        Object.assign(this.notifyPolicyConfig, tacticsData);
       }
     },
     getDefaultPolicyId() {

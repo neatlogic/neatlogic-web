@@ -155,7 +155,7 @@ export default {
       if (type == 'custom') {
         return value;
       }
-      let findItem = this.defaultParamList.find(item => item.name == name);
+      let findItem = this.defaultParamList && this.defaultParamList.find(item => item.name == name);
       if (this.$utils.isEmpty(findItem)) {
         return '';
       }
