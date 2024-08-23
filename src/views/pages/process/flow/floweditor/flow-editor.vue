@@ -157,8 +157,7 @@ export default {
           node.setLabelAt(0, {
             attrs: {
               label: {
-                text: label.attrs.label.text,
-                opacity: 1
+                text: label.attrs.label.text
               }
             }
           });
