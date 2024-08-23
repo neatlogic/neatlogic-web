@@ -5,19 +5,29 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <span>{{ processName }}</span>
+        <span>
+          <b class="text-grey">{{ processName }}</b>
+        </span>
       </template>
       <template v-slot:topRight>
         <div class="div-btn-contain action-group" style="text-align: right">
-          <div class="action-item tsfont-storage" @click="saveFlowDraft()">{{ $t('page.staging') }}</div>
           <!-- <span class="action-item tsfont-rotate-right" @click="resetFlow()">{{ $t('page.reset') }}</span>-->
           <span class="action-item tsfont-xitongpeizhi" @click.prevent="validFlow()">{{ $t('page.validate') }}</span>
-          <span class="action-item tsfont-save" @click="saveFlow(true)">{{ $t('page.save') }}</span>
-          <span v-if="referenceCount > 0 || isNew == true" class="action-item tsfont-trash-o disable">{{ $t('page.delete') }}</span>
-          <span v-else-if="referenceCount == 0 && isNew == false" class="action-item tsfont-trash-o" @click="deleteFlow()">{{ $t('page.delete') }}</span>
           <span class="action-item tsfont-tool" @click="isRelativeServiceShow = true">
             {{ $t('term.process.relcatalog') }}
             <span v-if="referenceCount > 0" class="reference-number">{{ referenceCount }}</span>
+          </span>
+          <div class="action-item">
+            <Button type="info" ghost @click="saveFlowDraft()">{{ $t('page.staging') }}</Button>
+          </div>
+          <span v-if="referenceCount > 0 || isNew == true" class="action-item">
+            <Button disabled>{{ $t('page.delete') }}</Button>
+          </span>
+          <span v-else-if="referenceCount == 0 && isNew == false" class="action-item">
+            <Button type="error" @click="deleteFlow()">{{ $t('page.delete') }}</Button>
+          </span>
+          <span class="action-item">
+            <Button type="primary" @click="saveFlow(true)">{{ $t('page.save') }}</Button>
           </span>
         </div>
       </template>
@@ -306,17 +316,15 @@ export default {
             uuid: this.processUuid
           };
           vnode.isShow = false;
-          this.$api.process.process
-            .delProcess(getData)
-            .then(res => {
-              if (res.Status == 'OK') {
-                this.$Message.success(this.$t('message.deletesuccess'));
-                this.$router.push({
-                  path: '/flow-overview',
-                  query: { validRouter: true } //删除的时候跳转路由不需要进行对比校验
-                });
-              }
-            });
+          this.$api.process.process.delProcess(getData).then(res => {
+            if (res.Status == 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.$router.push({
+                path: '/flow-overview',
+                query: { validRouter: true } //删除的时候跳转路由不需要进行对比校验
+              });
+            }
+          });
         }
       });
     },
@@ -577,7 +585,7 @@ export default {
             this.slaList = this.flowData.process.slaList;
             // 评分
             if (this.flowData.process.scoreConfig && this.flowData.process.scoreConfig.isActive) {
-              this.scoreConfig = this.flowData.process.scoreConfig; 
+              this.scoreConfig = this.flowData.process.scoreConfig;
             }
           }
           this.isFlowReady = true;
@@ -599,7 +607,7 @@ export default {
               this.slaList = this.flowData.process.slaList;
               // 评分
               if (this.flowData.process.scoreConfig && this.flowData.process.scoreConfig.isActive) {
-                this.scoreConfig = this.flowData.process.scoreConfig; 
+                this.scoreConfig = this.flowData.process.scoreConfig;
               }
             }
             this.isFlowReady = true;
@@ -676,7 +684,7 @@ export default {
     },
     drag(event, component) {
       //仅提取必要信息
-      const { name, handler, type, isAllowStart, chartConfig, config: stepConfig} = component;
+      const { name, handler, type, isAllowStart, chartConfig, config: stepConfig } = component;
       const config = { name, handler, type, isAllowStart, icon: chartConfig.icon };
       const uuid = this.$utils.setUuid();
       config.id = uuid;
@@ -822,8 +830,7 @@ export default {
           //过滤include和exclude
           prevNodeList = prevNodeList.filter(n => {
             const handler = n.getProp('handler');
-            return (include && include.length > 0 ? include.includes(handler) : true) &&
-           (exclude && exclude.length > 0 ? !exclude.includes(handler) : true);
+            return (include && include.length > 0 ? include.includes(handler) : true) && (exclude && exclude.length > 0 ? !exclude.includes(handler) : true);
           });
         }
       }
@@ -904,7 +911,7 @@ export default {
      * @param isNeedBackward 是否需要获取反向的节点
      * @returns 返回包含下一个节点对象的数组
      */
-    getNextNodes(node, {isNeedBackward = false} = {}) {
+    getNextNodes(node, { isNeedBackward = false } = {}) {
       const nextNodeList = [];
       if (node) {
         let outgoingEdges = this.graph.getOutgoingEdges(node);
@@ -942,7 +949,7 @@ export default {
         const nodeConfig = this.$refs.nodeSetting.getValueList();
         const node = this.graph.getCellById(nodeConfig.uuid);
         if (node) {
-          node.setData(nodeConfig, {deep: false }); //与原数据进行浅 merge
+          node.setData(nodeConfig, { deep: false }); //与原数据进行浅 merge
           node.setData(nodeConfig);
           this.dataTimestamp = new Date().getTime();
         }
@@ -1054,7 +1061,7 @@ export default {
         });
     },
     //新的结束
-    
+
     //下面都是旧方法======================================================
     //=================================================================
     //====================================================================
