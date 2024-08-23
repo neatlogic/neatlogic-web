@@ -23,6 +23,7 @@ import {store} from '@/views/pages/framework/theme/state.js';
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
 import TopnavUser from './topnav-user.vue';
 import TopnavMessage from './topnav-message/topnav-message';
+import logoConfig from '@/resources/import/logo-manager.js';
 export default {
   name: 'TopNav',
   components: {
@@ -54,14 +55,18 @@ export default {
       return this.$store.getters.defaultModule.moduleId;
     },
     setLogo() {
+      // 首先尝试使用用户上传的logo，若无则自动切换至默认前端定制包的logo，最后若两者均不可用，则采用项目本地预设的logo
       let src = '';
       store.logo;//此句不能删，用于激活cache
       let logo = ThemeUtils.getValueByType('logo');
-      //如果类型是数字代表是上传的图片
-      if (typeof logo == 'number') {
+      let themeClass = localStorage.getItem('themeClass') || 'theme-default';
+      let {logoWhiteIcon = '', logoDarkIcon = ''} = logoConfig || {};
+      if (logo && typeof logo == 'number') { //如果类型是数字代表是上传的图片
         src = HOME + '/api/binary/image/download?id=' + logo;
-      } else {
-        src = require('@/resources/assets/images/' + logo);
+      } else if (themeClass == 'theme-default') {
+        src = logoWhiteIcon || require('@/resources/assets/images/logo_big_white.png');
+      } else if (themeClass == 'theme-dark') {
+        src = logoDarkIcon || require('@/resources/assets/images/logo_big_dark.png');
       }
       return src;
     }
