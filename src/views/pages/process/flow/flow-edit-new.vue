@@ -1150,11 +1150,7 @@ export default {
       const flowEditor = this.$refs.flowEditor;
       var uuidList = (item.processStepUuidList && item.processStepUuidList.map(d => d)) || [];
       if (!this.$utils.isEmpty(uuidList)) {
-        this.graph.getNodes().forEach(node => {
-          if (uuidList.includes(node.id)) {
-            flowEditor.highlightNode(node, '#1670f0');
-          }
-        });
+        flowEditor.disableCells({exclude: uuidList});
       } else {
         flowEditor.clearHighlight();
       }
