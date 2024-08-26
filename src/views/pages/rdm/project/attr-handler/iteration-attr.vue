@@ -9,6 +9,7 @@
       :params="{ projectId: projectId }"
       dynamicUrl="/api/rest/rdm/iteration/search"
       :border="border"
+      :dynamicDefaultValue="[iteration]"
       :validateList="validateList"
       :dealDataByUrl="fixData"
       @change="
