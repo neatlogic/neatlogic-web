@@ -29,18 +29,25 @@
           <template slot="condition" slot-scope="{ row }">
             <div>
               <TsFormSelect
-                v-if="row.attrId"
+                v-if="row.type === 'Attr' && row.attrId"
                 v-model="row.condition.expression"
-                :transfer="true"
+                transfer
                 :dataList="getAttrExpressionList(row.attrId)"
-                style="width: 80px;"
+                style="width: 80px"
+              ></TsFormSelect>
+              <TsFormSelect
+                v-else-if="row.type === 'GlobalAttr'"
+                v-model="row.condition.expression"
+                :dataList="globalAttrExpressionList"
+                transfer
+                style="width: 80px"
               ></TsFormSelect>
             </div>
           </template>
           <template slot="conditionValue" slot-scope="{ row }">
-            <div v-if="!['is-not-null', 'is-null'].includes(row.condition.expression)" style="min-width:150px; white-space: pre-line;">
+            <div v-if="!['is-not-null', 'is-null'].includes(row.condition.expression)" style="min-width: 150px; white-space: pre-line">
               <AttrSearcher
-                v-if="row.attrId"
+                v-if="row.type === 'Attr' && row.attrId"
                 ref="attrHandler"
                 :attrData="getAttrById(row.attrId)"
                 :valueList="row.condition.valueList"
@@ -50,6 +57,16 @@
                   }
                 "
               ></AttrSearcher>
+              <GlobalAttrSearcher
+                v-else-if="row.type === 'GlobalAttr'"
+                :valueList="row.condition.valueList"
+                :globalAttrData="getGlobalAttrById(row.attrId)"
+                @setData="
+                  (val, actualValue) => {
+                    setAttrData(row.uuid, val, actualValue);
+                  }
+                "
+              ></GlobalAttrSearcher>
             </div>
           </template>
         </TsTable>
@@ -69,13 +86,15 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    AttrSearcher: () => import('../cientity/attr-searcher.vue')
+    AttrSearcher: () => import('../cientity/attr-searcher.vue'),
+    GlobalAttrSearcher: () => import('../cientity/globalattr-searcher.vue')
   },
 
   props: { viewData: { type: Object } },
   data() {
     return {
       attrList: null,
+      globalAttrList: null,
       constAttrList: null,
       attrData: {
         theadList: [
@@ -97,6 +116,15 @@ export default {
         isShow: true,
         width: 'large'
       },
+      globalAttrExpressionList: [
+        {
+          value: 'like',
+          text: this.$t('term.expression.like')
+        },
+        { value: 'notlike', text: this.$t('term.expression.notlike') },
+        { value: 'is-null', text: this.$t('term.expression.empty') },
+        { value: 'is-not-null', text: this.$t('term.expression.notempty') }
+      ],
       tableHeight: 300 //表格高度
     };
   },
@@ -117,6 +145,7 @@ export default {
   methods: {
     async init() {
       const attrIdList = [];
+      const globalAttrIdList = [];
       const ciMap = {};
       this.viewData.nodes.forEach(node => {
         if (node.type == 'Ci') {
@@ -124,13 +153,16 @@ export default {
         }
       });
       this.viewData.nodes.forEach(node => {
-        if ((node.type === 'Attr' && !node.config.targetCiId) || node.type === 'ConstAttr') {
+        if ((node.type === 'Attr' && !node.config.targetCiId) || node.type === 'ConstAttr' || node.type === 'GlobalAttr') {
           const conf = node.config;
-          if (conf.attrId) {
+          if (conf.attrId && node.type === 'Attr') {
             attrIdList.push(conf.attrId);
+          } else if (conf.attrId && node.type === 'GlobalAttr') {
+            globalAttrIdList.push(conf.attrId);
           }
           this.attrData.tbodyList.push({
             uuid: node.uuid,
+            type: node.type,
             constName: conf.constName,
             attrId: conf.attrId,
             attrLabel: conf.attrLabel,
@@ -156,6 +188,11 @@ export default {
           this.attrList = res.Return;
         });
       }
+      if (globalAttrIdList.length > 0) {
+        await this.$api.cmdb.ci.getGlobalAttrByIdList(globalAttrIdList, { needItem: 1 }).then(res => {
+          this.globalAttrList = res.Return;
+        });
+      }
     },
     close() {
       this.$emit('close');
@@ -177,6 +214,16 @@ export default {
           const attr = this.attrList[i];
           if (attr.id == attrId) {
             return attr.expressionList;
+          }
+        }
+      }
+    },
+    getGlobalAttrById(attrId) {
+      if (this.globalAttrList) {
+        for (let i = 0; i < this.globalAttrList.length; i++) {
+          const attr = this.globalAttrList[i];
+          if (attr.id == attrId) {
+            return attr;
           }
         }
       }
