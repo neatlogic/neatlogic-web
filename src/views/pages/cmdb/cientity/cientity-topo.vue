@@ -177,6 +177,8 @@ export default {
       maxLevel: 5,
       isloading: false,
       currentLayout: 'dot',
+      inspectCiEntityList: [],
+      monitorCiEntityList: [],
       layoutList: [
         { engine: 'dot', name: this.$t('term.cmdb.topo.dot') },
         { engine: 'circo', name: this.$t('term.cmdb.topo.circo') },
@@ -213,7 +215,8 @@ export default {
       globalAttrList: [],
       ciTopoTemplateList: [],
       isCiTopoTemplateEditShow: false,
-      currentTopoTemplateId: null
+      currentTopoTemplateId: null,
+      statusMapping: { warn: 'text-warning', fatal: 'text-error', critial: 'text-error' }
     };
   },
   beforeCreate() {},
@@ -462,64 +465,100 @@ export default {
         const graphEl = this.$refs['graph'];
         const param = this.searchParam;
         param.layout = this.currentLayout;
-        this.$api.cmdb.cientity.getCiEntityTopoData(param).then(res => {
-          if (!this.$utils.isEmpty(res.Return) && res.Return.dot) {
-            this.error = '';
-            const nodesString = this.$utils.handleTopoImagePath(res.Return.dot || '');
-            this.relList = res.Return.relList || [];
-            this.loadImage(nodesString);
-            this.graph.graphviz
-              .transition()
-              .height(this.height || window.innerHeight - 40 - this.getGraphTop(graphEl).y)
-              .width(graphEl.offsetWidth - 10)
-              .renderDot(nodesString);
+        this.$api.cmdb.cientity
+          .getCiEntityTopoData(param)
+          .then(res => {
+            if (res.Return) {
+              this.inspectCiEntityList = res.Return.inspectCiEntityList || [];
+              this.monitorCiEntityList = res.Return.monitorCiEntityList || [];
+              if (res.Return.dot) {
+                this.error = '';
+                const nodesString = this.$utils.handleTopoImagePath(res.Return.dot || '');
+                this.relList = res.Return.relList || [];
+                this.loadImage(nodesString);
+                this.graph.graphviz
+                  .transition()
+                  .height(this.height || window.innerHeight - 40 - this.getGraphTop(graphEl).y)
+                  .width(graphEl.offsetWidth - 10)
+                  .renderDot(nodesString);
 
-            //let svg = d3.select('#graph').select('svg');
-            //svg.append('g').lower();
-            addEvent('svg', 'mouseover', e => {
-              this.unColorNode();
-              e.preventDefault();
-              e.stopPropagation();
-            });
-            addEvent('.cinode', 'mouseenter', async e => {
-              e.preventDefault();
-              e.stopPropagation();
-              d3.selectAll('g').attr('cursor', 'pointer');
-              this.g = e.currentTarget;
-              this.nodeName = this.g.firstElementChild.textContent.trim();
-              this.colorNode(this.nodeName);
-              this.showTooltip(e.currentTarget);
-            });
-            addEvent('.cinode', 'mouseleave', async e => {
-              e.preventDefault();
-              e.stopPropagation();
-              this.hideTooltip();
-            });
-            addEvent('.cinode', 'click', async e => {
-              const g = e.currentTarget;
-              const className = d3.select(g).attr('class');
-              if (className) {
-                const ids = className
-                  .split(' ')
-                  .find(d => d.indexOf('CiEntity_') == 0)
-                  .split('_');
-                this.toCiEntityView(ids[1], ids[2]);
+                //let svg = d3.select('#graph').select('svg');
+                //svg.append('g').lower();
+                addEvent('svg', 'mouseover', e => {
+                  this.unColorNode();
+                  e.preventDefault();
+                  e.stopPropagation();
+                });
+                addEvent('.cinode', 'mouseenter', async e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  d3.selectAll('g').attr('cursor', 'pointer');
+                  this.g = e.currentTarget;
+                  this.nodeName = this.g.firstElementChild.textContent.trim();
+                  this.colorNode(this.nodeName);
+                  this.showTooltip(e.currentTarget);
+                });
+                addEvent('.cinode', 'mouseleave', async e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  this.hideTooltip();
+                });
+                addEvent('.cinode', 'click', async e => {
+                  const g = e.currentTarget;
+                  const className = d3.select(g).attr('class');
+                  if (className) {
+                    const ids = className
+                      .split(' ')
+                      .find(d => d.indexOf('CiEntity_') == 0)
+                      .split('_');
+                    this.toCiEntityView(ids[1], ids[2]);
+                  }
+                });
+
+                if (this.monitorCiEntityList && this.monitorCiEntityList.length > 0) {
+                  this.monitorCiEntityList.forEach(cientity => {
+                    if (this.statusMapping[cientity.monitorStatus]) {
+                      const g = d3.select('#CiEntity_' + cientity.id);
+                      if (g) {
+                        const bbox = g.node().getBBox();
+                        g.append('foreignObject')
+                          .attr('x', bbox.x + bbox.width) // 右上角的 x 坐标
+                          .attr('y', bbox.y - 15) // 右上角的 y 坐标
+                          .attr('width', 20) // 设置足够的宽度
+                          .attr('height', 20) // 设置足够的高度
+                          .append('xhtml:span') // 使用 xhtml 命名空间
+                          .attr('title', '监控状态:' + cientity.monitorStatus)
+                          .attr('class', 'tsfont-warning-s ' + this.statusMapping[cientity.monitorStatus]); // 应用字体图标的 class
+                      }
+                    }
+                  });
+                }
+                if (this.inspectCiEntityList && this.inspectCiEntityList.length > 0) {
+                  this.inspectCiEntityList.forEach(cientity => {
+                    if (this.statusMapping[cientity.inspectStatus]) {
+                      const g = d3.select('#CiEntity_' + cientity.id);
+                      if (g) {
+                        const bbox = g.node().getBBox();
+                        g.append('foreignObject')
+                          .attr('x', bbox.x - 15) // 左上角的 x 坐标
+                          .attr('y', bbox.y) // 左上角的 y 坐标
+                          .attr('width', 20) // 设置足够的宽度
+                          .attr('height', 20) // 设置足够的高度
+                          .append('xhtml:span') // 使用 xhtml 命名空间
+                          .attr('title', '巡检状态:' + cientity.inspectStatus)
+                          .attr('class', 'tsfont-info-s ' + this.statusMapping[cientity.inspectStatus]); // 应用字体图标的 class
+                      }
+                    }
+                  });
+                }
+              } else {
+                this.error = this.$t('message.cmdb.notopo');
               }
-            });
-            /*const g = d3.select('#CiEntity_431579058937856_459181555458049');
-        let x = g.node().getBBox().x;
-        let y = g.node().getBBox().y;
-        d3.select('#CiEntity_431579058937856_459181555458049')
-          .attr('transform', 'translate(0,0)')
-          .append('text')
-          .attr('x', x)
-          .attr('y', y + 10)
-          .text('abc');*/
-          } else {
-            this.error = this.$t('message.cmdb.notopo');
-          }
-          this.isloading = false;
-        });
+            }
+          })
+          .finally(() => {
+            this.isloading = false;
+          });
       }
     },
     clearTooltipTimer() {
@@ -666,7 +705,6 @@ export default {
 @import '../public/graphviz.less';
 </style>
 <style lang="less" scoped>
-
 .grid {
   display: grid;
   grid-template-columns: auto 250px;

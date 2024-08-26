@@ -69,7 +69,7 @@ export default {
   destroyed() {},
   methods: {
     getConstList() {
-      this.$api.cmdb.ci.getViewConstList(this.ciId, {showType: 'detail', needAlias: 1}).then(res => {
+      this.$api.cmdb.ci.getViewConstList(this.ciId, { showType: 'detail', needAlias: 1 }).then(res => {
         this.constList = res.Return;
       });
     },
