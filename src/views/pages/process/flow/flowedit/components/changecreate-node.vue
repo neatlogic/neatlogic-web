@@ -250,7 +250,12 @@ export default {
         stepConfig.tagList = this.$refs.TagSetting.getData();
       }
       //回复模板
-      stepConfig.commentTemplateId = this.$refs.replySetting && this.$refs.replySetting.getData() ? this.$refs.replySetting.getData() : undefined;
+      if (this.$refs.replySetting) {
+        const commentTemplateId = this.$refs.replySetting.getData();
+        if (commentTemplateId) {
+          stepConfig.commentTemplateId = commentTemplateId;
+        }
+      }
       //分派处理人
       if (this.$refs.assignData) {
         stepConfig.workerPolicyConfig = this.$refs.assignData.saveAssignData();

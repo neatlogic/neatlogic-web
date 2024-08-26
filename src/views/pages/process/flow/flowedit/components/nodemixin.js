@@ -44,7 +44,8 @@ export default {
         this.activeSetting.replySetting = config.commentTemplateId ? 1 : 0;
         this.activeSetting.tagSetting = config.tagList && config.tagList.length > 0 ? 1 : 0;
         this.activeSetting.actionSetting = config.actionConfig && config.actionConfig.actionList.length > 0 ? 1 : 0; // 动作设置状态回显
-        config.commentTemplateId = config.commentTemplateId || undefined;
+    
+        // config.commentTemplateId = config.commentTemplateId || null;
         //？？？没有的数据，前端不要在初始化的时候塞值，会导致数据对比不一致
         // if (!config.taskConfig) { 
         //   config.taskConfig = {};
