@@ -22,7 +22,7 @@ export default {
   },
   oldSetting: {
     shape: 'L-triangle:R-triangle',
-    icon: '#tsfont-question'
+    icon: '#tsfont-shunt'
   },
   validateConnection({ editor, sourceCell, targetCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(targetCell, 'forward');
