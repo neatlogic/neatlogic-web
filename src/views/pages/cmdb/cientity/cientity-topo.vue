@@ -524,10 +524,29 @@ export default {
                         g.append('foreignObject')
                           .attr('x', bbox.x + bbox.width) // 右上角的 x 坐标
                           .attr('y', bbox.y - 15) // 右上角的 y 坐标
-                          .attr('width', 15) // 设置足够的宽度
-                          .attr('height', 15) // 设置足够的高度
+                          .attr('width', 20) // 设置足够的宽度
+                          .attr('height', 20) // 设置足够的高度
                           .append('xhtml:span') // 使用 xhtml 命名空间
+                          .attr('title', '监控状态:' + cientity.monitorStatus)
                           .attr('class', 'tsfont-warning-s ' + this.statusMapping[cientity.monitorStatus]); // 应用字体图标的 class
+                      }
+                    }
+                  });
+                }
+                if (this.inspectCiEntityList && this.inspectCiEntityList.length > 0) {
+                  this.inspectCiEntityList.forEach(cientity => {
+                    if (this.statusMapping[cientity.inspectStatus]) {
+                      const g = d3.select('#CiEntity_' + cientity.id);
+                      if (g) {
+                        const bbox = g.node().getBBox();
+                        g.append('foreignObject')
+                          .attr('x', bbox.x - 15) // 左上角的 x 坐标
+                          .attr('y', bbox.y) // 左上角的 y 坐标
+                          .attr('width', 20) // 设置足够的宽度
+                          .attr('height', 20) // 设置足够的高度
+                          .append('xhtml:span') // 使用 xhtml 命名空间
+                          .attr('title', '巡检状态:' + cientity.inspectStatus)
+                          .attr('class', 'tsfont-info-s ' + this.statusMapping[cientity.inspectStatus]); // 应用字体图标的 class
                       }
                     }
                   });
