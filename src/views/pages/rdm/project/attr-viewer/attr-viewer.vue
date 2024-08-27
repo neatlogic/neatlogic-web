@@ -42,20 +42,11 @@ export default {
   },
   data() {
     return {
-      handlers: handlers,
-      valueListLocal: null
+      handlers: handlers
     };
   },
   beforeCreate() {},
   created() {
-    if (this.issueData && this.issueData.attrList) {
-      const attrData = this.issueData.attrList.find(d => d.attrId === this.attrConfig.id);
-      if (attrData) {
-        this.valueListLocal = attrData.valueList;
-      }
-    } else if (this.valueList) {
-      this.valueListLocal = this.valueList;
-    }
   },
   beforeMount() {},
   mounted() {},
@@ -77,7 +68,20 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    valueListLocal() {
+      let valueListLocal = [];
+      if (this.issueData && this.issueData.attrList) {
+        const attrData = this.issueData.attrList.find(d => d.attrId === this.attrConfig.id);
+        if (attrData) {
+          valueListLocal = attrData.valueList;
+        }
+      } else if (this.valueList) {
+        valueListLocal = this.valueList;
+      }
+      return valueListLocal;
+    }
+  },
   watch: {}
 };
 </script>
