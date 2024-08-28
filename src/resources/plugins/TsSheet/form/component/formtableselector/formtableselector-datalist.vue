@@ -164,6 +164,13 @@ export default {
             for (let k in d) {
               d[k] = d[k].text;
             }
+            if (!this.$utils.isEmpty(this.config.dataConfig.length)) {
+              this.config.dataConfig.forEach(column => {
+                if (column.isExtra && column.isPC) {
+                  this.$set(d, column.uuid, null);
+                }
+              });
+            }
             if (this.value && this.value.length > 0) {
               const valueitem = this.value.find(valuedata => valuedata.uuid === d.uuid);
               if (valueitem) {
@@ -171,7 +178,7 @@ export default {
                 for (let key in valueitem) {
                   const column = this.config.dataConfig.find(c => c.uuid === key);
                   if (column && column.isExtra && column.isPC) {
-                    d[key] = valueitem[key];
+                    this.$set(d, key, valueitem[key]);
                   }
                 }
               }
@@ -216,12 +223,13 @@ export default {
       if (config && config.sourceColumnList && config.sourceColumnList.length > 0) {
         config.sourceColumnList.forEach(sourceColumn => {
           if (sourceColumn.valueColumn) {
-            sourceColumn.valueList = [row[sourceColumn.valueColumn]];
+            const valueList = Array.isArray(row[sourceColumn.valueColumn]) ? row[sourceColumn.valueColumn] : [row[sourceColumn.valueColumn]];
+            this.$set(sourceColumn, 'valueList', valueList);
             sourceColumn.expression = 'equal';
           }
         });
       }
-      return formItem;
+      return {...formItem};
     },
     getSelectedItem(idList, itemList) {
       this.selectedItemList.push(...itemList);

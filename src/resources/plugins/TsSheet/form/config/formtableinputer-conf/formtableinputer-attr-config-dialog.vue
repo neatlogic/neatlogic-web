@@ -134,16 +134,20 @@
                     >
                       <Col span="10">
                         <TsFormSelect
+                          ref="formitem_column"
                           v-model="sourceColumn.column"
                           :dataList="extraPropertyMatrixColumnList"
+                          :validateList="validateList"
                           transfer
                           border="border"
                         ></TsFormSelect>
                       </Col>
                       <Col span="2" style="text-align:center" class="text-grey">{{ $t('term.expression.eq') }}</Col>
                       <Col span="10"><TsFormSelect
+                        ref="formitem_valueColumn"
                         v-model="sourceColumn.valueColumn"
                         :dataList="tableMatrixColumnList"
+                        :validateList="validateList"
                         transfer
                         border="border"
                       ></TsFormSelect></Col>
@@ -423,7 +427,8 @@ export default {
             { text: this.$t('page.radio'), value: 'formradio' },
             { text: this.$t('page.checkbox'), value: 'formcheckbox' },
             { text: this.$t('page.date'), value: 'formdate' },
-            { text: this.$t('page.time'), value: 'formtime' }
+            { text: this.$t('page.time'), value: 'formtime' },
+            { text: this.$t('page.uploadattachment'), value: 'formupload' }
           ],
           validateList: ['required']
         },
@@ -549,7 +554,7 @@ export default {
       }
 
       if (!this.propertyLocal.reaction) {
-        this.$set(this.propertyLocal, 'reaction');
+        this.$set(this.propertyLocal, 'reaction', this.reaction);
       } else {
         Object.keys(this.reaction).forEach((key) => {
           if (!this.propertyLocal.reaction.hasOwnProperty(key)) {
@@ -576,9 +581,16 @@ export default {
       if (this.$refs) {
         for (let key in this.$refs) {
           if (key.startsWith('formitem_')) {
-            if (this.$refs[key] && this.$refs[key].valid && !this.$refs[key].valid()) {
-              isValid = false;
-            }
+            const item = this.$refs[key];
+            if (item) {
+              if (Array.isArray(item) && item.length) {
+                item.forEach(k => {
+                  k.valid && !k.valid() && (isValid = false);
+                });
+              } else {
+                item.valid && !item.valid() && (isValid = false);
+              }
+            } 
           } else if (key === 'assignmentValue') {
             let formitem = null;
             if (this.$refs[key] instanceof Array) {

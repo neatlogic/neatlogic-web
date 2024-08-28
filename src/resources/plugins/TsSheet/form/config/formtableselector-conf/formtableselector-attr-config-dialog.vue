@@ -35,6 +35,20 @@
             <TsFormItem :label="$t('page.multipleselection')">
               <TsFormSwitch v-model="propertyLocal.config.isMultiple" :trueValue="true" :falseValue="false"></TsFormSwitch>
             </TsFormItem>
+            <TsFormItem
+              v-if="propertyLocal.handler === 'formselect'"
+              :label="$t('page.isdefaultselectd')"
+              :tooltip="$t('page.defaultselectdonlyvalue')"
+            >
+              <TsFormSwitch
+                :value="propertyLocal.config.isAutoSelectdOnlyValue || false"
+                :trueValue="true"
+                :falseValue="false "
+                @change="(val)=>{
+                  $set(propertyLocal.config, 'isAutoSelectdOnlyValue', val);
+                }"
+              ></TsFormSwitch>
+            </TsFormItem>
             <TsFormItem :label="$t('page.datasource')">
               <TsFormSelect
                 ref="formitem_datasource"
@@ -107,19 +121,24 @@
                   >
                     <Col span="10">
                       <TsFormSelect
+                        ref="formitem_column"
                         v-model="sourceColumn.column"
                         :dataList="extraPropertyMatrixColumnList"
+                        :validateList="validateList"
                         transfer
                         border="border"
                       ></TsFormSelect>
                     </Col>
                     <Col span="2" style="text-align:center" class="text-grey">{{ $t('term.expression.eq') }}</Col>
-                    <Col span="10"><TsFormSelect
-                      v-model="sourceColumn.valueColumn"
-                      :dataList="tableMatrixColumnList"
-                      transfer
-                      border="border"
-                    ></TsFormSelect></Col>
+                    <Col span="10">
+                      <TsFormSelect
+                        ref="formitem_valuecolumn"
+                        v-model="sourceColumn.valueColumn"
+                        :dataList="tableMatrixColumnList"
+                        :validateList="validateList"
+                        transfer
+                        border="border"
+                      ></TsFormSelect></Col>
                     <Col span="2" style="text-align:center"><span class="tsfont-trash-o text-action" @click="removeSourceColumn(index)"></span></Col>
                   </Row>
                 </div>
@@ -420,9 +439,16 @@ export default {
       if (this.$refs) {
         for (let key in this.$refs) {
           if (key.startsWith('formitem_')) {
-            if (this.$refs[key] && !this.$refs[key].valid()) {
-              isValid = false;
-            }
+            const item = this.$refs[key];
+            if (item) {
+              if (Array.isArray(item) && item.length) {
+                item.forEach(k => {
+                  k.valid && !k.valid() && (isValid = false);
+                });
+              } else {
+                item.valid && !item.valid() && (isValid = false);
+              }
+            } 
           }
         }
       }
@@ -504,7 +530,7 @@ export default {
     tableMatrixColumnList() {
       const columnList = [];
       this.formItemConfig.dataConfig
-        .filter(d => !d.isExtra)
+        .filter(d => d.uuid !== this.propertyLocal.uuid)
         .forEach(d => {
           columnList.push({ value: d.uuid, text: d.label });
         });
