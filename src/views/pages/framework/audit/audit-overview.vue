@@ -125,9 +125,12 @@
       draggable
       className="audit-drawer"
     >
-      <TsCodemirror
+      <JsonViewer
+        v-if="auditDetail"
+        boxed
+        copyable
         :value="auditDetail"
-      ></TsCodemirror>
+      ></JsonViewer>
       <Button
         v-if="hasMore"
         v-download="auditDetailDownloadParams"
@@ -160,7 +163,7 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     UserCard: () => import('@/resources/components/UserCard/UserCard'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
-    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
+    JsonViewer: () => import('vue-json-viewer')
   },
   data() {
     return {
@@ -399,12 +402,9 @@ export default {
       const params = { filePath };
       this.$api.framework.audit.getCallDetail(params).then(res => {
         if (res.Status === 'OK') {
-          this.hasMore = res.Return.hasMore;
-          try {
-            this.auditDetail = JSON.stringify(JSON.parse(res.Return.content), null, 2);
-          } catch {
-            this.auditDetail = res.Return.content;
-          }
+          let {hasMore = false, content = ''} = res.Return || {};
+          this.hasMore = hasMore;
+          this.auditDetail = content || '';
         }
       });
     },
