@@ -64,7 +64,7 @@ export default {
         isShow: true,
         hasFooter: false,
         type: 'slider',
-        width: 'medium',
+        width: 'large',
         title: this.title
       },
       resultFilePath: '', // 日志详情查询，文件路径
