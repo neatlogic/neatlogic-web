@@ -47,6 +47,10 @@ export default {
   deactivated() {},
   beforeDestroy() {
     this.destory();
+    if (this.timmer) {
+      clearTimeout(this.timmer);
+      this.timmer = null;
+    }
   },
   destroyed() {},
   methods: {
