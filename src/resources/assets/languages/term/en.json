@@ -234,7 +234,8 @@
     "expandbyscene": "Expand by scene",
     "expandbylevel": "Expand by layer",
     "deleteattr": "Delete attribute",
-    "deleteglobalattr": "Delete Global Properties"
+    "deleteglobalattr": "Delete Global Properties",
+    "groupbyci": "Group by model"
   },
   "process": {
     "workordercenter": "Work Center",

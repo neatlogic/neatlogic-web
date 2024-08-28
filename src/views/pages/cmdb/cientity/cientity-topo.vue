@@ -70,6 +70,18 @@
               @on-change="changeIsBackbone"
             ></TsFormSwitch>
           </div>
+          <div class="action-item">
+            <TsFormSwitch
+              :trueName="1"
+              :falseName="0"
+              :showStatus="true"
+              :trueText="$t('term.cmdb.groupbyci')"
+              :falseText="$t('term.cmdb.groupbyci')"
+              :value="searchParam.isGroup"
+              @on-change="changeIsGroup"
+            ></TsFormSwitch>
+          </div>
+
         </div>
         <div>
           <TsFormInput
@@ -193,6 +205,7 @@ export default {
       relList: [],
       searchParam: {
         isBackbone: 1,
+        isGroup: 0,
         ciEntityId: this.ciEntityId,
         ciId: this.ciId,
         disableRelList: [],
@@ -383,6 +396,9 @@ export default {
     },
     changeIsBackbone(isBackbone) {
       this.searchParam.isBackbone = isBackbone;
+    },
+    changeIsGroup(isGroup) {
+      this.searchParam.isGroup = isGroup;
     },
     loadImage(nodesString) {
       (nodesString.match(/image=[^,]*(files\/\d*|png)/g) || [])
