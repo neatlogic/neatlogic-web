@@ -241,7 +241,9 @@ export default {
       }
       if (this.config.sourceColumnList && this.config.sourceColumnList.length > 0) {
         for (let i = 0; i < this.config.sourceColumnList.length; i++) {
-          if (this.$utils.isEmpty(this.config.sourceColumnList[i].column) || this.$utils.isEmpty(this.config.sourceColumnList[i].expression) || (this.config.sourceColumnList[i].expression != 'is-null' && this.config.sourceColumnList[i].expression != 'is-not-null' && this.$utils.isEmpty(this.config.sourceColumnList[i].valueList))) {
+          if (this.$utils.isEmpty(this.config.sourceColumnList[i].column) || 
+          this.$utils.isEmpty(this.config.sourceColumnList[i].expression) || 
+          (this.config.sourceColumnList[i].expression != 'is-null' && this.config.sourceColumnList[i].expression != 'is-not-null' && this.$utils.isEmpty(this.config.sourceColumnList[i].valueList) && this.$utils.isEmpty(this.config.sourceColumnList[i].valueColumn))) {
             errorList.push({ field: 'sourceColumnList', error: this.$t('message.framework.plecompletecondition') });
             break;
           }
@@ -269,7 +271,17 @@ export default {
         config.sourceColumnList.forEach(sourceColumn => {
           if (sourceColumn.valueColumn) {
             const valueList = Array.isArray(row[sourceColumn.valueColumn]) ? row[sourceColumn.valueColumn] : [row[sourceColumn.valueColumn]];
-            this.$set(sourceColumn, 'valueList', valueList);
+            let newValueList = [];
+            if (!this.$utils.isEmpty(valueList)) {
+              valueList.forEach(i => {
+                if (i && typeof i === 'object') {
+                  newValueList.push(i.value);
+                } else {
+                  newValueList.push(i);
+                }
+              });
+            }
+            this.$set(sourceColumn, 'valueList', newValueList);
             sourceColumn.expression = 'equal';
           }
         });

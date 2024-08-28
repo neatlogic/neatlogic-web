@@ -121,19 +121,24 @@
                   >
                     <Col span="10">
                       <TsFormSelect
+                        ref="formitem_column"
                         v-model="sourceColumn.column"
                         :dataList="extraPropertyMatrixColumnList"
+                        :validateList="validateList"
                         transfer
                         border="border"
                       ></TsFormSelect>
                     </Col>
                     <Col span="2" style="text-align:center" class="text-grey">{{ $t('term.expression.eq') }}</Col>
-                    <Col span="10"><TsFormSelect
-                      v-model="sourceColumn.valueColumn"
-                      :dataList="tableMatrixColumnList"
-                      transfer
-                      border="border"
-                    ></TsFormSelect></Col>
+                    <Col span="10">
+                      <TsFormSelect
+                        ref="formitem_valuecolumn"
+                        v-model="sourceColumn.valueColumn"
+                        :dataList="tableMatrixColumnList"
+                        :validateList="validateList"
+                        transfer
+                        border="border"
+                      ></TsFormSelect></Col>
                     <Col span="2" style="text-align:center"><span class="tsfont-trash-o text-action" @click="removeSourceColumn(index)"></span></Col>
                   </Row>
                 </div>
@@ -434,9 +439,16 @@ export default {
       if (this.$refs) {
         for (let key in this.$refs) {
           if (key.startsWith('formitem_')) {
-            if (this.$refs[key] && !this.$refs[key].valid()) {
-              isValid = false;
-            }
+            const item = this.$refs[key];
+            if (item) {
+              if (Array.isArray(item) && item.length) {
+                item.forEach(k => {
+                  k.valid && !k.valid() && (isValid = false);
+                });
+              } else {
+                item.valid && !item.valid() && (isValid = false);
+              }
+            } 
           }
         }
       }
