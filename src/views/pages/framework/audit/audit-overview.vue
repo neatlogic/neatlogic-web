@@ -125,7 +125,9 @@
       draggable
       className="audit-drawer"
     >
-      <pre>{{ auditDetail }}</pre>
+      <TsCodemirror
+        :value="auditDetail"
+      ></TsCodemirror>
       <Button
         v-if="hasMore"
         v-download="auditDetailDownloadParams"
@@ -156,10 +158,9 @@ export default {
   components: {
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    // UserSelect:()=>import('@/resources/components/UserSelect/UserSelect'),
     UserCard: () => import('@/resources/components/UserCard/UserCard'),
-    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
-    //TsFormInput:()=>import('@/resources/plugins/TsForm/TsFormInput')
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   data() {
     return {
