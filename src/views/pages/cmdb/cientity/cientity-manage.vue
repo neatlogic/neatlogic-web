@@ -37,7 +37,12 @@
         </TsRow>
       </template>
       <template v-slot:sider>
-        <TsAnchor :itemList="ciTypeList" itemIdPrefix="type" @click="toCiType"></TsAnchor>
+        <TsAnchor
+          v-if="!isLoading"
+          :itemList="ciTypeList"
+          itemIdPrefix="type"
+          @click="toCiType"
+        ></TsAnchor>
       </template>
       <div slot="content" class="content border-color">
         <div class="content-main">
