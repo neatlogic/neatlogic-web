@@ -651,10 +651,10 @@ export default {
     },
     iconType() {
       return function(value) {
-        let icon = 'tsfont-layer';
+        let icon = 'tsfont-taskperson';
         let icontype = value.split('#')[0] || null;
         if (icontype && this.icontypeList.indexOf(icontype) > -1) {
-          icon = this.iconConfig[icontype] || 'tsfont-layer';
+          icon = this.iconConfig[icontype] || 'tsfont-taskperson';
         }
         return icon;
       };
