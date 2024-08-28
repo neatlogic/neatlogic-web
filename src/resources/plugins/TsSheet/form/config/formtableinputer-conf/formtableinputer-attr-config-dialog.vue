@@ -427,7 +427,8 @@ export default {
             { text: this.$t('page.radio'), value: 'formradio' },
             { text: this.$t('page.checkbox'), value: 'formcheckbox' },
             { text: this.$t('page.date'), value: 'formdate' },
-            { text: this.$t('page.time'), value: 'formtime' }
+            { text: this.$t('page.time'), value: 'formtime' },
+            { text: this.$t('page.uploadattachment'), value: 'formupload' }
           ],
           validateList: ['required']
         },
