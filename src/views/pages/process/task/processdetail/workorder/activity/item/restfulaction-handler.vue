@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <span class="left-label-text text-grey">{{ $t('term.process.triggertime', {target: newContentJson.triggerText}) }}</span> -->
     <div>
       <span style="padding-right:8px;">{{ newContentJson.integrationName }}</span>
       <span :class="newContentJson.succeed == true?'text-success':'text-danger'">{{ newContentJson.statusText }}</span>
