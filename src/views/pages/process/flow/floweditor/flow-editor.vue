@@ -145,10 +145,23 @@ export default {
     unHighlightNode(node) {
       if (node.getAttrs()['fo']) {
         node.setAttrByPath('fo/filter', null);
+        node.setAttrByPath('fo/opacity', 1);
       } else if (node.getAttrs()['body']) {
         node.setAttrByPath('body/filter', null);
+        node.setAttrByPath('body/opacity', 1);
       } else if (node.getAttrs()['line']) {
         node.setAttrByPath('line/filter', null);
+        node.setAttrByPath('line/opacity', 1);
+        const label = node.getLabelAt(0);
+        if (label) {
+          node.setLabelAt(0, {
+            attrs: {
+              label: {
+                text: label.attrs.label.text
+              }
+            }
+          });
+        }
       }
     },
     highlightNode(node, color) {
@@ -184,6 +197,31 @@ export default {
           }
         });
       }
+    },
+    //置灰所有的节点/线
+    disableCells({exclude}) {
+      this.graph.getCells().forEach(cell => {
+        if (!exclude.includes(cell.id)) {
+          if (cell.getAttrs()['fo']) {
+            cell.setAttrByPath('fo/opacity', 0.3);
+          } else if (cell.getAttrs()['body']) {
+            cell.setAttrByPath('body/opacity', 0.3);
+          } else if (cell.getAttrs()['line']) {
+            cell.setAttrByPath('line/opacity', 0.3);
+            const label = cell.getLabelAt(0);
+            if (label) {
+              cell.setLabelAt(0, {
+                attrs: {
+                  label: {
+                    text: label.attrs.label.text,
+                    opacity: 0.3
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
     },
     drawEdge(e) {
       const x = e.clientX;
@@ -260,6 +298,7 @@ export default {
             },
             createEdge: ({ sourceCell }) => {
               const edge = new Shape.Edge({
+                id: this.$utils.setUuid(),
                 type: 'forward',
                 router: {
                   name: 'manhattan'
@@ -424,10 +463,10 @@ export default {
           this.graph.use(
             new Selection({
               enabled: true,
-              multiple: false,
+              multiple: true, // 是否启用点击多选，使用shift键可以多选
               multipleSelectionModifiers: ['shift'],
-              rubberband: false, //禁止拖动框选
-              modifiers: ['meta'],
+              rubberband: true, //拖动框选
+              modifiers: ['alt'], // 在画布空白的地方，按着alt键，框选需要选择的节点。
               movable: true,
               showNodeSelectionBox: false, //显示图元的选择框
               showEdgeSelectionBox: false, //显示边的选择框
@@ -508,6 +547,7 @@ export default {
               const y = e.clientY;
               const p = this.graph.clientToLocal({ x: x, y: y });
               this.drawingEdge = this.graph.addEdge({
+                id: this.$utils.setUuid(),
                 source: node,
                 target: p,
                 router: {

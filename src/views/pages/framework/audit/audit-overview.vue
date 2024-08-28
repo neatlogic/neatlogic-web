@@ -125,7 +125,12 @@
       draggable
       className="audit-drawer"
     >
-      <pre>{{ auditDetail }}</pre>
+      <JsonViewer
+        v-if="auditDetail"
+        boxed
+        copyable
+        :value="auditDetail"
+      ></JsonViewer>
       <Button
         v-if="hasMore"
         v-download="auditDetailDownloadParams"
@@ -156,10 +161,9 @@ export default {
   components: {
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    // UserSelect:()=>import('@/resources/components/UserSelect/UserSelect'),
     UserCard: () => import('@/resources/components/UserCard/UserCard'),
-    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
-    //TsFormInput:()=>import('@/resources/plugins/TsForm/TsFormInput')
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
+    JsonViewer: () => import('vue-json-viewer')
   },
   data() {
     return {
@@ -398,12 +402,9 @@ export default {
       const params = { filePath };
       this.$api.framework.audit.getCallDetail(params).then(res => {
         if (res.Status === 'OK') {
-          this.hasMore = res.Return.hasMore;
-          try {
-            this.auditDetail = JSON.stringify(JSON.parse(res.Return.content), null, 2);
-          } catch {
-            this.auditDetail = res.Return.content;
-          }
+          let {hasMore = false, content = ''} = res.Return || {};
+          this.hasMore = hasMore;
+          this.auditDetail = content || '';
         }
       });
     },

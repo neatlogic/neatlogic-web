@@ -234,7 +234,8 @@
     "expandbyscene": "Expand by scene",
     "expandbylevel": "Expand by layer",
     "deleteattr": "Delete attribute",
-    "deleteglobalattr": "Delete Global Properties"
+    "deleteglobalattr": "Delete Global Properties",
+    "groupbyci": "Group by model"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -1293,7 +1294,13 @@
     "regiondispatcherapp": "Business system",
     "regiondispatcherapptooltip": "Please select the business system form",
     "regiondispatchermatchtooltips": "Dispatcher Property Mapping Matrix Properties",
-    "compkeyname": "Component English Name"
+    "compkeyname": "Component English Name",
+    "writetime": "Fill in the time",
+    "timevalue": "Time value:",
+    "timevaluedesc": "0: Represents the value of \"Custom | Fill in Time | Date\".",
+    "positiveintegerdesc": "Positive integer: Indicates that the value of \"Custom | Fill in Time | Date\" increases by the corresponding time (or by the selected time unit).",
+    "neglectintegerdesc": "Negative integer: Indicates that the value of \"Custom | Fill in Time | Date\" is reduced by the corresponding time (or by the selected time unit).",
+    "writetimedesc": "Fill in time: indicates the time when the current component validation was triggered."
   },
   "knowledge": {
     "document": "Document",
@@ -2692,7 +2699,9 @@
     "dependentapp": "Dependent applications",
     "preparation": "reserve plan",
     "exerciseplan": "Exercise plan",
-    "dependencyscene": "Dependent scenarios"
+    "dependencyscene": "Dependent scenarios",
+    "sourcedatacenter": "Source Data Center",
+    "targetdatacenter": "Target Data Center"
   },
   "diagram": {
     "widgetlist": "Element List",

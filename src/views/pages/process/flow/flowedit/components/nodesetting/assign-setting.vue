@@ -436,7 +436,7 @@ export default {
           this.policyList = policyList;
           this.policyList.forEach((item, index) => {
             if (item.type == 'prestepassign') {
-              this.processStepAssignList = this.$utils.isEmpty(item.config.processStepList) ? [{uuid: '', condition: []}] : item.config.processStepList;
+              this.processStepAssignList = this.$utils.isEmpty(item.config.processStepList) ? [] : item.config.processStepList;
             }
             if (item.type == 'copy') {
               this.processCopyStepUuidList = item.config.processStepUuid;

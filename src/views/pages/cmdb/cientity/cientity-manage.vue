@@ -37,7 +37,13 @@
         </TsRow>
       </template>
       <template v-slot:sider>
-        <TsAnchor :itemList="ciTypeList" itemIdPrefix="type" @click="toCiType"></TsAnchor>
+        <!--必须通过needSider让tsanchor重新初始化，否则隐藏再显示后会有问题，原因不明-->
+        <TsAnchor
+          v-if="needSider"
+          :itemList="ciTypeList"
+          itemIdPrefix="type"
+          @click="toCiType"
+        ></TsAnchor>
       </template>
       <div slot="content" class="content border-color">
         <div class="content-main">

@@ -117,6 +117,15 @@ const ci = {
     }
     return axios.post('/api/rest/cmdb/ci/listglobalattr', param);
   },
+  getGlobalAttrByIdList(idList, params) {
+    let param = {
+      idList: idList
+    };
+    if (params) {
+      param = Object.assign(param, params);
+    }
+    return axios.post('/api/rest/cmdb/globalattr/getlist', param);
+  },
   getExpressionAttrRelByCiId(ciId) {
     return axios.post('/api/rest/cmdb/ci/' + ciId + '/listexpressionattrrel', {});
   },

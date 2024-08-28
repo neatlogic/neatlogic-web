@@ -29,6 +29,7 @@ export default {
       initData: null,
       currentItem: null,
       observer: null,
+      timmer: null,
       config: {
         root: null, // 观察视口
         rootMargin: '-200px 0px', // 视口上下缩小100px
@@ -46,6 +47,10 @@ export default {
   deactivated() {},
   beforeDestroy() {
     this.destory();
+    if (this.timmer) {
+      clearTimeout(this.timmer);
+      this.timmer = null;
+    }
   },
   destroyed() {},
   methods: {
@@ -75,16 +80,23 @@ export default {
   watch: {
     itemList: {
       handler: function(val) {
-        this.destory();
-        if (this.itemList && this.itemList.length > 0) {
-          this.observer = new IntersectionObserver(this.callback, this.config);
-          this.itemList.forEach(item => {
-            const dom = document.getElementById(this.itemIdPrefix + item[this.valueName]);
-            if (dom) {
-              this.observer.observe(dom);
-            }
-          });
+        if (this.timmer) {
+          clearTimeout(this.timmer);
+          this.timmer = null;
         }
+        //需要延时一下处理，否则可能取不到组件的id
+        this.timmer = setTimeout(() => {
+          this.destory();
+          if (this.itemList && this.itemList.length > 0) {
+            this.observer = new IntersectionObserver(this.callback, this.config);
+            this.itemList.forEach(item => {
+              const dom = document.getElementById(this.itemIdPrefix + item[this.valueName]);
+              if (dom) {
+                this.observer.observe(dom);
+              }
+            });
+          }
+        }, 1000);
       },
       deep: true,
       immediate: true

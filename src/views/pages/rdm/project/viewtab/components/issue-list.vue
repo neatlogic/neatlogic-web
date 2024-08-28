@@ -47,7 +47,7 @@
               "
             ></TsFormDatePicker>
           </template>
-          <template v-for="(attr) in searchAttrList" :slot="attr.isPrivate ? attr.name : 'attr_' + attr.id" slot-scope="{ valueConfig, textConfig }">
+          <template v-for="attr in searchAttrList" :slot="attr.isPrivate ? attr.name : 'attr_' + attr.id" slot-scope="{ valueConfig, textConfig }">
             <div :key="attr.id">
               <AttrHandler
                 v-if="isSearchReady"
@@ -55,7 +55,7 @@
                 :attrConfig="attr"
                 :value="attr.isPrivate ? valueConfig[attr.name] : valueConfig['attr_' + attr.id]"
                 mode="search"
-                @changeLabel="(text) => changeLabel(attr, text, textConfig)"
+                @changeLabel="text => changeLabel(attr, text, textConfig)"
                 @setValue="
                   (val, text) => {
                     if (attr.isPrivate) {
@@ -286,7 +286,8 @@ export default {
       }
     },
     catalog: { type: Number },
-    fixedHeader: { // 固定表头，默认true
+    fixedHeader: {
+      // 固定表头，默认true
       type: Boolean,
       default: true
     }
@@ -322,6 +323,7 @@ export default {
             name: 'keyword',
             label: this.$t('page.keyword')
           },
+          { type: 'text', name: 'issueId', label: 'id' },
           {
             type: 'radio',
             name: 'isExpired',
@@ -336,6 +338,13 @@ export default {
                 text: this.$t('page.nottimedout')
               }
             ]
+          },
+          {
+            type: 'userselect',
+            name: 'createUser',
+            groupList: ['user'],
+            multiple: false,
+            label: this.$t('page.creator')
           },
           {
             type: 'slot',

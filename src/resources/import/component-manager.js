@@ -15,7 +15,11 @@ class ComponentManager {
         // 分类方法
         if (this.categoryConfig[category]) {
           // 如果分类已存在，则合并
-          Object.assign(this.categoryConfig[category], component);
+          if (Array.isArray(component)) {
+            this.categoryConfig[category].push(...component);
+          } else {
+            Object.assign(this.categoryConfig[category], component);
+          }
         } else {
           this.categoryConfig[category] = component;
         }

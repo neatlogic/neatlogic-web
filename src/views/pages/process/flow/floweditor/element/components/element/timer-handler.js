@@ -2,6 +2,9 @@ import template from '../shape/ellipse.vue';
 import ports from './base/port-config.js';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
+import { assignValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/assign-valid.js';
+import { isolationValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/isolation-valid.js';
+import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
 
 export default {
   name: '定时节点',
@@ -20,7 +23,8 @@ export default {
     draggable: true,
     selectable: true,
     linkin: true,
-    linkout: true
+    linkout: true,
+    assignable: true //是否需要分配用户
   },
   oldSetting: {
     shape: 'L-rectangle:R-rectangle',
@@ -35,5 +39,37 @@ export default {
     } else {
       return true;
     }
+  }, //流程保存时校验数据
+  valid({ node, graph, view }) {
+    let validList = [];
+    //校验孤岛节点
+    validList.push(...isolationValid.valid({ node, graph, view }));
+    //校验节点名称
+    validList.push(...nameValid.valid({ node, graph, view }));
+    //校验分配设置
+    validList.push(...assignValid.valid({ node, graph, view }));
+    //定时节点
+    const nodeConfig = node.getData();
+    const nodeData = nodeConfig.stepConfig || {};
+    let validObj = {
+      type: 'error',
+      msg: $t('form.validate.required', { target: $t('term.process.circulationtime') }),
+      href: '#timerAttributeUuid'
+    };
+    if (!nodeData.attributeUuid) {
+      validObj.msg = $t('form.validate.required', { target: $t('term.process.circulationtime') });
+      validList.push(validObj);
+    } else if (nodeData.attributeUuid) {
+      validObj.msg = $t('term.process.formupdateselecttimevalid');
+      if (view.allFormitemList && view.allFormitemList.length > 0) {
+        let attributeUuid = view.allFormitemList.find(f => f.uuid == nodeData.attributeUuid);
+        !attributeUuid && (nodeData.attributeUuid = '') && validList.push(validObj);
+      } else {
+        nodeData.attributeUuid = '';
+        validList.push(validObj);
+      }
+    }
+    
+    return validList;
   }
 };

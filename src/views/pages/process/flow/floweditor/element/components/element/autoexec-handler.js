@@ -1,14 +1,15 @@
-import template from '../shape/rect.vue';
+import template from '../shape/ellipse.vue';
 import ports from './base/port-config.js';
-//import utils from '@/resources/assets/js/util.js';
+import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
-//import { assignValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/assign-valid.js';
+import { assignValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/assign-valid.js';
 import { isolationValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/isolation-valid.js';
 import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
 import { notifyValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
+
 export default {
-  name: '变更处理',
-  handler: 'changehandle',
+  name: '自动化',
+  handler: 'autoexec',
   type: 'process',
   isVue: true, //需要声明是vue组件
   config: {
@@ -28,8 +29,8 @@ export default {
     needformscene: true //是否需要表单场景
   },
   oldSetting: {
-    shape: 'L-rectangle:R-rectangle',
-    icon: '#tsfont-changing'
+    icon: '#tsfont-zidonghua',
+    shape: 'L-rectangle:R-rectangle'
   },
   validateEdge({ edge, editor, sourceCell, targetCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(targetCell, 'forward');
@@ -50,26 +51,28 @@ export default {
     validList.push(...isolationValid.valid({ node, graph, view }));
     //校验节点名称
     validList.push(...nameValid.valid({ node, graph, view }));
+    //校验分配设置
+    validList.push(...assignValid.valid({ node, graph, view }));
     //校验通知设置
     validList.push(...notifyValid.valid({ node, graph, view }));
 
-    //校验changecreate组件
-    let nodeData = (node.getData() && node.getData()['stepConfig']) || {};
-    let allPrevNodes = view.getAllPrevNodes(node);
-    const changecreateHandlerList = allPrevNodes.filter(p => p.getData() && p.getData().handler === 'changecreate');
-    if (changecreateHandlerList.length === 0) {
+    const nodeConfig = node.getData();
+    const nodeData = nodeConfig.stepConfig || {};
+    const autoexecConfig = nodeData.autoexecConfig || {};
+    if (!autoexecConfig.failPolicy) {
       validList.push({
         type: 'error',
-        msg: $t('term.process.changeexistinpairsvalid')
-      });
-    } else if (changecreateHandlerList.length > 0 && !nodeData.linkedChange) {
-      validList.push({
-        type: 'error',
-        msg: $t('term.process.selectchangevalid'),
-        href: '#changeStep'
+        msg: $t('form.validate.required', { target: $t('page.failurestrategy') }),
+        href: '#autoexecCombop'
       });
     }
-
+    if (view.$utils.isEmpty(autoexecConfig.configList)) {
+      validList.push({
+        type: 'error',
+        msg: $t('form.validate.leastonetarget', { target: $t('term.autoexec.job') }),
+        href: '#autoexecCombop'
+      });
+    }
     return validList;
   }
 };

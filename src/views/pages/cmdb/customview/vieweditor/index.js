@@ -2,6 +2,7 @@ import '@/resources/plugins/TsTopoNew/index.js'; //基础类导入
 
 import './topo.group.js';
 import './topo.node.attr.js';
+import './topo.node.globalattr.js';
 import './topo.node.rel.js';
 import './topo.node.const.js';
 import './topo.node.ci.js';
@@ -22,6 +23,7 @@ const nodeFactory = new NodeFactory();
 nodeFactory.addClass(Ci, 'Ci');
 nodeFactory.addClass(Rel, 'Rel');
 nodeFactory.addClass(Attr, 'Attr');
+nodeFactory.addClass(GlobalAttr, 'GlobalAttr');
 nodeFactory.addClass(ConstAttr, 'ConstAttr');
 //注册线类型进连线工厂
 const linkFactory = new LinkFactory();

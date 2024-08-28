@@ -47,9 +47,9 @@ export default {
   valid({ node, graph, view }) {
     let validList = [];
     //校验孤岛节点
-    validList.push(...isolationValid.valid({ node, graph }));
+    validList.push(...isolationValid.valid({ node, graph, view }));
     //校验节点名称
-    validList.push(...nameValid.valid({ node, graph }));
+    validList.push(...nameValid.valid({ node, graph, view }));
     //检查是否开始节点
     let isStartNode = false;
     const prevNodes = view.getPrevNodes(node);
@@ -65,10 +65,10 @@ export default {
 
     if (!isStartNode) {
       //校验分配设置
-      validList.push(...assignValid.valid({ node, graph }));
+      validList.push(...assignValid.valid({ node, graph, view }));
     }
     //校验通知设置
-    validList.push(...notifyValid.valid({ node, graph }));
+    validList.push(...notifyValid.valid({ node, graph, view }));
 
     //校验changecreate组件
     const allNextNodes = view.getAllNextNodes(node);

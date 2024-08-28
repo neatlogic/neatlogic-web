@@ -47,7 +47,18 @@
                 <Col span="6" class="search-label text-grey">{{ attr.alias }}</Col>
                 <Col span="6" class="search-expression">
                   <TsFormSelect
-                    v-if="attr.attrVo"
+                    v-if="attr.globalAttrVo"
+                    :transfer="true"
+                    :value="attrFilterList['globalattr_' + attr.uuid] && attrFilterList['globalattr_' + attr.uuid]['expression']"
+                    :dataList="attr.globalAttrVo.expressionList"
+                    @change="
+                      (vals, opts) => {
+                        setGlobalAttrData(attr, 'expression', opts);
+                      }
+                    "
+                  ></TsFormSelect>
+                  <TsFormSelect
+                    v-else-if="attr.attrVo"
                     :transfer="true"
                     :value="attrFilterList['attr_' + attr.uuid] && attrFilterList['attr_' + attr.uuid]['expression']"
                     :dataList="attr.attrVo.expressionList"
@@ -70,8 +81,18 @@
                   ></TsFormSelect>
                 </Col>
                 <Col v-if="!attrConditionHideData[attr.uuid]" span="12" class="search-condition">
+                  <GlobalAttrSearcher
+                    v-if="attr.globalAttrVo"
+                    :valueList="attrFilterList['globalattr_' + attr.uuid] && attrFilterList['globalattr_' + attr.uuid]['valueList']"
+                    :globalAttrData="attr.globalAttrVo"
+                    @setData="
+                      (val, actualValue) => {
+                        setGlobalAttrData(attr, 'value', actualValue);
+                      }
+                    "
+                  ></GlobalAttrSearcher>
                   <AttrSearcher
-                    v-if="attr.attrVo"
+                    v-else-if="attr.attrVo"
                     ref="attrHandler"
                     :attrData="attr.attrVo"
                     :valueList="attrFilterList['attr_' + attr.uuid] && attrFilterList['attr_' + attr.uuid]['valueList']"
@@ -172,7 +193,8 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     AttrSearcher: () => import('../cientity/attr-searcher.vue'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    GlobalAttrSearcher: () => import('@/views/pages/cmdb/cientity/globalattr-searcher.vue')
   },
   directives: { download },
   props: {
@@ -187,6 +209,7 @@ export default {
       dataCount: 0, //数据量
       dataLimit: 10000, //数据上限
       groupList: [],
+      globalAttrList: [], //全局属性列表
       attrList: [], //属性列表,
       constAttrList: [], //内部属性列表
       attrFilterList: {}, //过滤条件列表
@@ -221,9 +244,43 @@ export default {
       this.attrFilterList = historyData['attrFilterList'];
       this.constAttrFilterList = historyData['constAttrFilterList'];
       this.isAdvancedSearch = historyData['isAdvancedSearch'];
+      this.attrConditionHideData = historyData['attrConditionHideData'] || {};
     },
     toViewDetail(row) {
       this.$router.push({ path: '/view-detail/' + this.viewId + '/' + row.id });
+    },
+    setGlobalAttrData(globalattr, type, value) {
+      if (!this.attrFilterList['globalattr_' + globalattr.uuid]) {
+        this.attrFilterList['globalattr_' + globalattr.uuid] = {};
+        this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'attrUuid', globalattr.uuid);
+        this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'alias', globalattr.alias);
+      }
+      if (type == 'value') {
+        const valObj = value;
+        if (value && value.length > 0) {
+          this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'valueList', value.map(d => d.value));
+          this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'actualValueList', value.map(d => d.text));
+        } else {
+          this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'valueList', []);
+          this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'actualValueList', []);
+        }
+      } else if (type == 'expression') {
+        const opt = value;
+        this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'expression', opt.value);
+        this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'expressionText', opt.text);
+        if (opt.value == 'is-null' || opt.value == 'is-not-null') {
+          //先判断值，不一样才修改，避免触发下拉框重复绑定
+          if (!this.attrConditionHideData[globalattr.uuid]) {
+            this.$set(this.attrConditionHideData, globalattr.uuid, true);
+            this.$addHistoryData('attrConditionHideData', this.attrConditionHideData);
+          }
+        } else {
+          if (this.attrConditionHideData[globalattr.uuid]) {
+            this.$set(this.attrConditionHideData, globalattr.uuid, false);
+            this.$addHistoryData('attrConditionHideData', this.attrConditionHideData);
+          }
+        }
+      }
     },
     setConstAttrData(constattr, type, value) {
       if (!this.attrFilterList['constattr_' + constattr.uuid]) {
@@ -265,20 +322,23 @@ export default {
           //先判断值，不一样才修改，避免触发下拉框重复绑定
           if (!this.attrConditionHideData[attr.uuid]) {
             this.$set(this.attrConditionHideData, attr.uuid, true);
+            this.$addHistoryData('attrConditionHideData', this.attrConditionHideData);
           }
         } else {
           if (this.attrConditionHideData[attr.uuid]) {
             this.$set(this.attrConditionHideData, attr.uuid, false);
+            this.$addHistoryData('attrConditionHideData', this.attrConditionHideData);
           }
         }
       }
     },
     getCustomViewAttr() {
       this.$api.cmdb.customview.getCustomViewAttrByCustomViewId(this.viewId, { isHidden: 0, isHasTargetCiId: 0 }).then(res => {
+        this.globalAttrList = res.Return.globalAttrList;
         this.attrList = res.Return.attrList;
         this.constAttrList = res.Return.constAttrList;
         this.viewData.theadList.push({ key: 'id', title: '#' });
-        const theadList = [...this.attrList, ...this.constAttrList];
+        const theadList = [...this.attrList, ...this.constAttrList, ...this.globalAttrList];
         theadList.sort((a, b) => {
           return a.sort - b.sort;
         });
@@ -351,7 +411,7 @@ export default {
             attrUuid: d.attrUuid,
             valueList: d.valueList,
             expression: d.expression,
-            type: key.startsWith('constattr_') ? 'constattr' : 'attr'
+            type: key.startsWith('constattr_') ? 'constattr' : key.startsWith('globalattr_') ? 'globalattr' : 'attr'
           });
         }
       }
@@ -387,8 +447,9 @@ export default {
           this.searchParam.attrFilterList.push({
             attrUuid: d.attrUuid,
             valueList: d.valueList,
+            actualValueList: d.actualValueList,
             expression: d.expression,
-            type: key.startsWith('constattr_') ? 'constattr' : 'attr'
+            type: key.startsWith('constattr_') ? 'constattr' : key.startsWith('globalattr_') ? 'globalattr' : 'attr'
           });
         }
       }
@@ -506,8 +567,9 @@ export default {
   filter: {},
   computed: {
     searchAttrList: function() {
-      if ((this.attrList && this.attrList.length > 0) || (this.constAttrList && this.constAttrList.length > 0)) {
+      if ((this.globalAttrList && this.globalAttrList.length > 0) || (this.attrList && this.attrList.length > 0) || (this.constAttrList && this.constAttrList.length > 0)) {
         const searchAttrList = [
+          ...this.globalAttrList,
           ...this.attrList.filter(attr => {
             return attr.attrVo && attr.attrVo.canSearch;
           }),

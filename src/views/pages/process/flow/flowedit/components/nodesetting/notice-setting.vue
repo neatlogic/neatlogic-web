@@ -166,9 +166,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    init() {
-      this.getConditionNode();
-      this.getDefaultPolicyId();
+    async init() {
+      await this.getConditionNode();
+      await this.getDefaultPolicyId();
       let handler = this.defaultDeepCloneConfig.handler || this.handler;
       this.notifySelectConfig.params.handler = handler;
       this.isActive = this.defaultDeepCloneConfig.isCustom || 0;
@@ -176,6 +176,8 @@ export default {
       this.$set(this.notifyPolicyConfig, 'isCustom', this.defaultDeepCloneConfig.isCustom);
       this.$set(this.notifyPolicyConfig, 'excludeTriggerList', this.defaultDeepCloneConfig.excludeTriggerList);
       this.$set(this.notifyPolicyConfig, 'handler', handler);
+      this.defaultPolicyId && this.$set(this.notifyPolicyConfig, 'policyId', this.defaultPolicyId);
+      this.defaultPolicyName && this.$set(this.notifyPolicyConfig, 'policyName', this.defaultPolicyName);
       if (this.defaultDeepCloneConfig.hasOwnProperty('policyId')) {
         this.$set(this.notifyPolicyConfig, 'policyId', this.defaultDeepCloneConfig.policyId);
       }
@@ -207,7 +209,7 @@ export default {
         return false;
       }
       let formData = { formUuid: this.formUuid, notifyPolicyHandler: handler};
-      this.$api.process.process.getNotifyPolicyList(formData).then(res => {
+      return this.$api.process.process.getNotifyPolicyList(formData).then(res => {
         if (res.Status == 'OK') {
           this.conditionNodeList = res.Return.tbodyList || [];
         }
@@ -266,6 +268,7 @@ export default {
       this.isShowPersonSettingDialog = false;
       if (needUpdateValue) {
         this.tacticsData = tacticsData;
+        Object.assign(this.notifyPolicyConfig, tacticsData);
       }
     },
     getDefaultPolicyId() {
@@ -278,7 +281,7 @@ export default {
       }
       this.defaultPolicyId = null;
       this.defaultPolicyName = '';
-      this.$api.framework.tactics.getDefaultPolicy(data).then(res => {
+      return this.$api.framework.tactics.getDefaultPolicy(data).then(res => {
         if (res.Status == 'OK') {
           if (res.Return) {
             this.defaultPolicyId = res.Return.id;

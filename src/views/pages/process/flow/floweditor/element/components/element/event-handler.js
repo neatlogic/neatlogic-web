@@ -1,15 +1,21 @@
-import template from '../shape/polygon.vue';
+import template from '../shape/ellipse.vue';
 import ports from './base/port-config.js';
+import utils from '@/resources/assets/js/util.js';
+import { $t } from '@/resources/init.js';
+import { assignValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/assign-valid.js';
 import { isolationValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/isolation-valid.js';
 import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
+import { notifyValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
+
 export default {
-  name: '分流/汇聚',
-  type: 'converge',
+  name: '事件',
+  handler: 'event',
+  type: 'process',
   isVue: true, //需要声明是vue组件
   config: {
     component: template,
     ports: ports,
-    size: { width: 68, height: 68 }
+    size: { width: 68, height: 40 }
   },
   event: {},
   setting: {
@@ -18,18 +24,13 @@ export default {
     draggable: true,
     selectable: true,
     linkin: true,
-    linkout: true
+    linkout: true,
+    assignable: true, //是否需要分配用户
+    needformscene: true //是否需要表单场景
   },
   oldSetting: {
-    shape: 'L-triangle:R-triangle',
-    icon: '#tsfont-shunt'
-  },
-  validateConnection({ editor, sourceCell, targetCell }) {
-    const allNextNodeIdList = editor.getAllNextNodeId(targetCell, 'forward');
-    if (allNextNodeIdList.includes(sourceCell.id)) {
-      return false;
-    }
-    return true;
+    icon: '#tsfont-checklist',
+    shape: 'L-rectangle:R-rectangle'
   },
   //流程保存时校验数据
   valid({ node, graph, view }) {
@@ -38,7 +39,11 @@ export default {
     validList.push(...isolationValid.valid({ node, graph, view }));
     //校验节点名称
     validList.push(...nameValid.valid({ node, graph, view }));
-
+    //校验分配设置
+    validList.push(...assignValid.valid({ node, graph, view }));
+    //校验通知设置
+    validList.push(...notifyValid.valid({ node, graph, view }));
+    
     return validList;
   }
 };

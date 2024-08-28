@@ -30,11 +30,11 @@
           ></TsFormSwitch></span>
           <span class="action-item tsfont-formtextarea" @click="openCustomTempateDialog">{{ $t('page.customtemplate') }}</span>
           <span class="action-item tsfont-circulation-o" @click="openDisplaySetting">{{ $t('page.displaysetting') }}</span>
-          <span class="action-item">
-            <Button type="primary" @click="saveView()">{{ $t('page.save') }}</Button>
-          </span>
           <span v-if="viewData.id" class="action-item">
             <Button type="error" @click="deleteView()">{{ $t('page.delete') }}</Button>
+          </span>
+          <span class="action-item">
+            <Button type="primary" @click="saveView()">{{ $t('page.save') }}</Button>
           </span>
         </div>
       </template>
@@ -151,12 +151,12 @@
                 @on-change="changeCiIsShow"
               ></TsFormSwitch>
             </TsFormItem>
-            <TsFormItem :label="$t('page.alias')" labelPosition="top">
-              <TsFormInput v-model="currentCi.alias" @change="changeCiAlias"></TsFormInput>
+            <TsFormItem :label="$t('page.alias')" labelPosition="top" contentAlign="right">
+              <TsFormInput v-model="currentCi.alias" :maxlength="30" @change="changeCiAlias"></TsFormInput>
             </TsFormItem>
-            <TsFormItem v-if="(currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" :label="$t('term.cmdb.attributelist')" labelPosition="top">
+            <TsFormItem v-if="(currentCi.constList && currentCi.constList.length > 0) || (currentCi.globalAttrList && currentCi.globalAttrList.length > 0) || (currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" :label="$t('term.cmdb.attributelist')" labelPosition="top">
               <div class="tstable-container">
-                <table v-if="(currentCi.constList && currentCi.constList.length > 0) || (currentCi.ciAttrList && currentCi.ciAttrList.length > 0) || (currentCi.ciRelList && currentCi.ciRelList.length > 0)" class="tstable-body">
+                <table class="tstable-body">
                   <colgroup>
                     <col />
                     <col />
@@ -169,6 +169,23 @@
                       <td>
                         <div>{{ constattr.label }}</div>
                         <div class="text-grey">{{ constattr.name }}</div>
+                      </td>
+                    </tr>
+
+                    <tr v-for="(attr, aindex) in currentCi.globalAttrList" :key="'globalattr_' + aindex">
+                      <td style="vertical-align: top"><Checkbox v-model="attr.isChecked" @on-change="checkGlobalAttr(attr)"></Checkbox></td>
+                      <td style="vertical-align: top">
+                        <i
+                          :title="$t('term.cmdb.globalattr')"
+                          class="tsfont-internet"
+                        ></i>
+                      </td>
+                      <td>
+                        <div>
+                          <span>{{ attr.label }}</span>
+                          <span class="ml-xs"></span>
+                        </div>
+                        <div class="text-grey">{{ attr.name }}</div>
                       </td>
                     </tr>
                     <tr v-for="(attr, aindex) in currentCi.ciAttrList" :key="'attr_' + aindex">
@@ -269,6 +286,7 @@ export default {
       ],
       currentCi: {
         constList: [],
+        globalAttrList: [],
         ciAttrList: [],
         ciRelList: [],
         isHidden: 0,
@@ -372,6 +390,22 @@ export default {
                 constattr.isChecked = true;
               }
             });
+            //全局属性
+            const globalNodeList = node.group.nodes.filter(n => n.getType() === 'GlobalAttr');
+            this.$api.cmdb.ci.getGlobalAttrByCiId(node.getConfig()['ciId']).then(res => {
+              this.currentCi.globalAttrList = res.Return;
+              this.currentCi.globalAttrList.forEach(attr => {
+                //设置对应分组的uuid
+                attr.groupUuid = node.group.getUuid();
+                const attrnode = globalNodeList.find(n => n.getConfig()['attrId'] == attr.id);
+                if (attrnode) {
+                  attr.uuid = attrnode.getUuid();
+                  attr.isChecked = true;
+                }
+              });
+            });
+
+            //模型属性
             const attrNodeList = node.group.nodes.filter(n => n.getType() === 'Attr');
             this.$api.cmdb.ci.getAttrByCiId(node.getConfig()['ciId']).then(res => {
               this.currentCi.ciAttrList = res.Return;
@@ -385,6 +419,7 @@ export default {
                 }
               });
             });
+            //关系列表
             const relNodeList = node.group.nodes.filter(n => n.getType() === 'Rel');
             this.$api.cmdb.ci.getRelByCiId(node.getConfig()['ciId']).then(res => {
               this.currentCi.ciRelList = res.Return;
@@ -442,6 +477,31 @@ export default {
             this.topoData = res.Return.config;
             this.tagList = res.Return.tagList;
             this.topo.fromJson(this.topoData);
+            //去掉不存在的全局属性
+            const globalAttrNodes = this.topo.getNodeByType('globalattr');
+            const globalNodeMap = {};
+            const globalAttrIdList = [];
+            if (globalAttrNodes && globalAttrNodes.length > 0) {
+              globalAttrNodes.forEach(node => {
+                const aId = node.getConfig()['attrId'];
+                if (aId) {
+                  globalNodeMap[node.getUuid()] = aId;
+                  if (!globalAttrIdList.includes(aId)) {
+                    globalAttrIdList.push(aId);
+                  }
+                }
+              });
+              if (globalAttrIdList.length > 0) {
+                this.$api.cmdb.ci.getGlobalAttrByIdList(globalAttrIdList).then(res => {
+                  const attrList = res.Return;
+                  for (let k in globalNodeMap) {
+                    if (!attrList.find(d => d.id === globalNodeMap[k])) {
+                      this.removeGlobalAttr({ uuid: k });
+                    }
+                  }
+                });
+              }
+            }
             //去掉不存在属性
             const attrNodes = this.topo.getNodeByType('attr');
             const nodeMap = {};
@@ -651,6 +711,13 @@ export default {
       }
       return null;
     },
+    checkGlobalAttr(attr) {
+      if (attr.isChecked) {
+        this.drawGlobalAttr(attr);
+      } else {
+        this.removeGlobalAttr(attr);
+      }
+    },
     checkAttr(attr) {
       if (attr.isChecked) {
         this.drawAttr(attr);
@@ -742,6 +809,12 @@ export default {
         }
       }
     },
+    removeGlobalAttr(attr) {
+      const node = this.topo.getNodeByUuid(attr.uuid);
+      if (node) {
+        node.destory();
+      }
+    },
     removeConst(constattr) {
       const node = this.topo.getNodeByUuid(constattr.uuid);
       if (node) {
@@ -752,6 +825,43 @@ export default {
       const node = this.topo.getNodeByUuid(attr.uuid);
       if (node) {
         node.destory();
+      }
+    },
+    drawGlobalAttr(attr) {
+      if (attr.groupUuid) {
+        const group = this.topo.getGroupByUuid(attr.groupUuid);
+        if (group) {
+          let ciNode = group.getNodeByType('Ci');
+          if (ciNode && ciNode.length > 0) {
+            ciNode = ciNode[0];
+          }
+          if (ciNode) {
+            const ciName = ciNode.getConfig()['ciName'];
+            const node = this.topo.addNode({
+              icon: attr.label,
+              shape: 'rect',
+              x: 0,
+              y: 0,
+              type: 'globalattr',
+              config: {
+                attrId: attr.id,
+                name: ciName + '_' + attr.name,
+                attrLabel: attr.label,
+                canLink: false,
+                alias: attr.label,
+                isHidden: 0,
+                isPrimary: 0,
+                ciUuid: ciNode.getUuid(),
+                sort: 0
+              }
+            });
+            node.draw();
+            //先绘制节点，在加入分组
+            group.addNode(node);
+            attr.uuid = node.getUuid();
+            return node;
+          }
+        }
       }
     },
     drawAttr(attr) {

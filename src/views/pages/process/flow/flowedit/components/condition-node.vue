@@ -394,31 +394,19 @@ export default {
       formTag: ''
     };
   },
-
   beforeCreate() {},
-
-  created() {
-  },
-
+  created() {},
   beforeMount() {},
-
   mounted() {
     this.keyList = ['moveonConfigList', 'formTag']; //stepConfig 需要包含的数据
     this.getNodeSetting();
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     fullscreen(div) {
       let fullDiv = this.$refs[div];
@@ -775,9 +763,7 @@ export default {
       this.getNewConditionList(this.formUuid);
     }
   },
-
   filter: {},
-
   computed: {
     ruleConditionConfig() {
       const data = {};
@@ -829,11 +815,9 @@ export default {
       };
     }
   },
-
   watch: {
     formConfig: {
       handler(newVal, oldVal) {
-        let _this = this;
         let newformConfig = newVal;
         this.formUuid = newformConfig.uuid || '';
       },

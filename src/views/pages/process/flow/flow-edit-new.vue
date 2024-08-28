@@ -5,19 +5,29 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <span>{{ processName }}</span>
+        <span>
+          <b class="text-grey">{{ processName }}</b>
+        </span>
       </template>
       <template v-slot:topRight>
         <div class="div-btn-contain action-group" style="text-align: right">
-          <div class="action-item tsfont-storage" @click="saveFlowDraft()">{{ $t('page.staging') }}</div>
           <!-- <span class="action-item tsfont-rotate-right" @click="resetFlow()">{{ $t('page.reset') }}</span>-->
           <span class="action-item tsfont-xitongpeizhi" @click.prevent="validFlow()">{{ $t('page.validate') }}</span>
-          <span class="action-item tsfont-save" @click="saveFlow(true)">{{ $t('page.save') }}</span>
-          <span v-if="referenceCount > 0 || isNew == true" class="action-item tsfont-trash-o disable">{{ $t('page.delete') }}</span>
-          <span v-else-if="referenceCount == 0 && isNew == false" class="action-item tsfont-trash-o" @click="deleteFlow()">{{ $t('page.delete') }}</span>
           <span class="action-item tsfont-tool" @click="isRelativeServiceShow = true">
             {{ $t('term.process.relcatalog') }}
             <span v-if="referenceCount > 0" class="reference-number">{{ referenceCount }}</span>
+          </span>
+          <div class="action-item">
+            <Button type="info" ghost @click="saveFlowDraft()">{{ $t('page.staging') }}</Button>
+          </div>
+          <span v-if="referenceCount > 0 || isNew == true" class="action-item">
+            <Button disabled>{{ $t('page.delete') }}</Button>
+          </span>
+          <span v-else-if="referenceCount == 0 && isNew == false" class="action-item">
+            <Button type="error" @click="deleteFlow()">{{ $t('page.delete') }}</Button>
+          </span>
+          <span class="action-item">
+            <Button type="primary" @click="saveFlow(true)">{{ $t('page.save') }}</Button>
           </span>
         </div>
       </template>
@@ -65,8 +75,9 @@
               mode="graph"
             ></FlowEditorToolbar>
           </div>
-          <div style="height: calc(100% - 34px)">
+          <div style="height: calc(100% - 40px)">
             <FlowEditor
+              ref="flowEditor"
               :config="flowConfig"
               :muted="true"
               :callback="{ validateNode: validateNode }"
@@ -154,7 +165,7 @@
         <span>{{ $t('term.process.savedraftflow') }}</span>
         <!-- <span style="margin-left: 36px">{{ $t('term.process.autosaveinterval') }}</span> -->
       </p>
-      <TsTable :theadList="draftKey" :tbodyList="draftData" @clickTr="draftCurrentChange"></TsTable>
+      <TsTable :theadList="draftKey" :tbodyList="draftData" @clickTr="selectDraftRow"></TsTable>
     </TsDialog>
   </div>
 </template>
@@ -219,7 +230,6 @@ export default {
       dataTimestamp: 0, //数据时间戳，在有需要的地方修改他，用于激活computed
       activeTab: 'flowsetting',
       slaList: [],
-      draftPrevData: '',
       draftModel: false,
       draftKey: [
         {
@@ -233,7 +243,6 @@ export default {
       ],
       draftData: [], //草稿列表
       isNew: false, //新增判断是否是新流程
-      portData: [], //接口数据
       formhandlerList: [], //表单控件的数据
       nodeAllLinksList: [], //当前节点的所有连线数据
       formSceneUuidList: [], // 表单场景uuid列表
@@ -278,6 +287,20 @@ export default {
   },
   methods: {
     //新的开始
+    beforeLeaveCompare(oldData) {
+      // 离开当前页面，数据对比
+      let currentData = this.getFlowData();
+      delete oldData.config.topo.svg;
+      delete oldData.config.topo.canvas;
+      delete currentData.config.topo.svg;
+      delete currentData.config.topo.canvas;
+      const isSame = this.$utils.isSame(oldData, currentData);
+      return isSame;
+    },
+    async beforeLeave() {
+      //离开页面，二次弹窗，点击'确认按钮'，存储数据,
+      return await this.saveFlow();
+    },
     deleteFlow() {
       // 删除流程图
       if (this.isNew) {
@@ -293,17 +316,15 @@ export default {
             uuid: this.processUuid
           };
           vnode.isShow = false;
-          this.$api.process.process
-            .delProcess(getData)
-            .then(res => {
-              if (res.Status == 'OK') {
-                this.$Message.success(this.$t('message.deletesuccess'));
-                this.$router.push({
-                  path: '/flow-overview',
-                  query: { validRouter: true } //删除的时候跳转路由不需要进行对比校验
-                });
-              }
-            });
+          this.$api.process.process.delProcess(getData).then(res => {
+            if (res.Status == 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.$router.push({
+                path: '/flow-overview',
+                query: { validRouter: true } //删除的时候跳转路由不需要进行对比校验
+              });
+            }
+          });
         }
       });
     },
@@ -461,26 +482,28 @@ export default {
       //清空所有选择
       this.graph.cleanSelection();
       this.validFlow(true);
-      if (this.validList.length === 0) {
-        const saveData = this.getFlowData(false);
-        //console.log(JSON.stringify(saveData, null, 2));
-        await this.$api.process.process.processSave(saveData).then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-            this.$route.meta.isSkip = true;
-            if (needRefresh) {
-              this.$router.push({
-                path: '/flow-edit',
-                query: {
-                  uuid: saveData.uuid,
-                  name: saveData.name,
-                  referenceCount: this.referenceCount || 0
-                }
-              });
-            }
-          }
-        });
+      if (this.validList && this.validList.length > 0) {
+        return false;
       }
+      const saveData = this.getFlowData(false);
+      //console.log(JSON.stringify(saveData, null, 2));
+      await this.$api.process.process.processSave(saveData).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.$route.meta.isSkip = true;
+          if (needRefresh) {
+            this.$router.push({
+              path: '/flow-edit',
+              query: {
+                uuid: saveData.uuid,
+                name: saveData.name,
+                referenceCount: this.referenceCount || 0,
+                time: new Date().getTime()
+              }
+            });
+          }
+        }
+      });
     },
     //校验流程
     validFlow(isSlient) {
@@ -559,6 +582,14 @@ export default {
           this.flowData = res.Return.config;
           //console.log(JSON.stringify(this.flowData, null, 2));
           this.processName = res.Return.name;
+          this.referenceCount = res.Return.referenceCount;
+          if (this.flowData.process) {
+            this.slaList = this.flowData.process.slaList;
+            // 评分
+            if (this.flowData.process.scoreConfig && this.flowData.process.scoreConfig.isActive) {
+              this.scoreConfig = this.flowData.process.scoreConfig;
+            }
+          }
           this.isFlowReady = true;
         });
       }
@@ -573,6 +604,14 @@ export default {
           })
           .then(res => {
             this.flowData = res.Return.config;
+            this.processName = res.Return.name;
+            if (this.flowData.process) {
+              this.slaList = this.flowData.process.slaList;
+              // 评分
+              if (this.flowData.process.scoreConfig && this.flowData.process.scoreConfig.isActive) {
+                this.scoreConfig = this.flowData.process.scoreConfig;
+              }
+            }
             this.isFlowReady = true;
           });
       }
@@ -638,15 +677,21 @@ export default {
       //}
       this.isReady = true;
       this.dataTimestamp = new Date().getTime();
+      this.$nextTick(() => {
+        this.$addWatchData(this.getFlowData());
+        setTimeout(() => {
+          this.graph.centerContent();
+        }, 500);
+      });
     },
     drag(event, component) {
       //仅提取必要信息
-      const { name, handler, type, isAllowStart, chartConfig } = component;
+      const { name, handler, type, isAllowStart, chartConfig, config: stepConfig } = component;
       const config = { name, handler, type, isAllowStart, icon: chartConfig.icon };
       const uuid = this.$utils.setUuid();
       config.id = uuid;
       //数据复制一份到config，和老数据保持一致
-      config.data = { uuid, name, handler, type, isAllowStart, stepConfig: {} };
+      config.data = { uuid, name, handler, type, isAllowStart, stepConfig: stepConfig || {} };
       const node = NodeFactory.createNode(this.graph, { handler, type }, config);
       this.dnd.start(node, event);
       //this.stepList.push(config.config);
@@ -787,8 +832,7 @@ export default {
           //过滤include和exclude
           prevNodeList = prevNodeList.filter(n => {
             const handler = n.getProp('handler');
-            return (include && include.length > 0 ? include.includes(handler) : true) &&
-           (exclude && exclude.length > 0 ? !exclude.includes(handler) : true);
+            return (include && include.length > 0 ? include.includes(handler) : true) && (exclude && exclude.length > 0 ? !exclude.includes(handler) : true);
           });
         }
       }
@@ -866,13 +910,14 @@ export default {
      * 获取指定节点的下一个节点列表
      *
      * @param node 目标节点
+     * @param isNeedBackward 是否需要获取反向的节点
      * @returns 返回包含下一个节点对象的数组
      */
-    getNextNodes(node) {
+    getNextNodes(node, { isNeedBackward = false } = {}) {
       const nextNodeList = [];
       if (node) {
         let outgoingEdges = this.graph.getOutgoingEdges(node);
-        outgoingEdges = outgoingEdges && outgoingEdges.filter(d => d.getProp('type') === 'forward');
+        outgoingEdges = outgoingEdges && outgoingEdges.filter(d => isNeedBackward || d.getProp('type') === 'forward');
         outgoingEdges &&
           outgoingEdges.forEach(d => {
             nextNodeList.push(d.getTargetCell());
@@ -888,8 +933,10 @@ export default {
     updateFlowSetting() {
       //从流程设置切走的时候，保存表单id
       if (this.$refs.flowSetting) {
-        const formConfig = this.$refs.flowSetting.getJsonValue().formConfig ? this.$refs.flowSetting.getJsonValue().formConfig : {};
+        const process = this.$refs.flowSetting ? this.$refs.flowSetting.getJsonValue() : {};
+        const formConfig = process.formConfig ? process.formConfig : {};
         //console.log(JSON.stringify(formConfig, null, 2));
+        this.$set(this.flowData.process, 'processConfig', process.processConfig);
         this.flowData.process.formConfig.uuid = formConfig.uuid;
       }
     },
@@ -904,6 +951,7 @@ export default {
         const nodeConfig = this.$refs.nodeSetting.getValueList();
         const node = this.graph.getCellById(nodeConfig.uuid);
         if (node) {
+          node.setData(nodeConfig, { deep: false }); //与原数据进行浅 merge
           node.setData(nodeConfig);
           this.dataTimestamp = new Date().getTime();
         }
@@ -974,8 +1022,48 @@ export default {
         this.allowDispatchStepWorkerNode = this.nodeList.filter(item => item.allowDispatchStepWorker).map(item => item.handler);
       });
     },
+    selectDraftRow(row) {
+      this.processDraftUuid = row.uuid;
+    },
+    async draftOk() {
+      // 草稿列表确认
+      if (!this.processDraftUuid) {
+        return;
+      }
+      this.draftModel = false;
+      await this.getProcessDraftByUuid();
+      this.graph.fromJSON(this.finalFlowData);
+    },
+    //获取草稿列表
+    getDraftList(uuid) {
+      // 草稿列表
+      this.draftData = [];
+      this.$api.process.process
+        .processDraftList({
+          processUuid: uuid
+        })
+        .then(res => {
+          if (res.Status == 'OK') {
+            let draftList = res.Return;
+            draftList.forEach(d => {
+              d.fcd = this.$options.filters.formatDate(d.fcd);
+            });
+            this.draftData = draftList;
+            if (this.draftData[0]) {
+              this.processDraftUuid = this.draftData[0].uuid;
+              this.draftData[0]._selected = true;
+            }
+
+            if (draftList.length) {
+              this.draftModel = true;
+            } else {
+              this.draftModel = false;
+            }
+          }
+        });
+    },
     //新的结束
-    
+
     //下面都是旧方法======================================================
     //=================================================================
     //====================================================================
@@ -987,14 +1075,14 @@ export default {
           this.validFlow();
         }
       }
-      this.$nextTick(() => {
+      setTimeout(() => {
         if (item.href) {
           if (this.$refs.nodeSetting) {
             this.$refs.nodeSetting.validNodeData(item.href);
             this.$utils.jumpTo(item.href, 'instant', this.$refs['codeContent']);
           }
         }
-      });
+      }, 200);
     },
 
     async flowSave(isGoFlow) {
@@ -1023,9 +1111,7 @@ export default {
       await this.$api.process.process.processSave(saveData).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
-          this.portData = saveData;
-          this.draftPrevData = this.$utils.deepClone(saveData);
-
+          this.$addWatchData(saveData);
           this.$route.meta.isSkip = true;
           if (!isGoFlow) {
             this.$router.push({
@@ -1069,9 +1155,12 @@ export default {
     },
     nodesHighlight(item) {
       // 节点高亮处理
+      const flowEditor = this.$refs.flowEditor;
       var uuidList = (item.processStepUuidList && item.processStepUuidList.map(d => d)) || [];
-      if (Array.isArray(uuidList)) {
-        this.$topoVm.highlight(uuidList);
+      if (!this.$utils.isEmpty(uuidList)) {
+        flowEditor.disableCells({exclude: uuidList});
+      } else {
+        flowEditor.clearHighlight();
       }
     },
     toFlowSetting() {
@@ -1079,55 +1168,6 @@ export default {
       this.$nextTick(() => {
         this.activeTab = 'flowsetting';
       });
-    },
-    draftCurrentChange(currentRow) {
-      // 草稿
-      this.draftCurrentData = currentRow;
-    },
-    draftOk() {
-      // 草稿列表确认
-
-      this.draftModel = false;
-      Vm.$api.process.process
-        .processDraftGet({
-          uuid: this.draftCurrentData.uuid
-        })
-        .then(res => {
-          if (res.Status == 'OK') {
-            let draftConfig = res.Return;
-            this.processName = draftConfig.name;
-            let config = draftConfig.config;
-            this.initTopo(config, this.$utils.setUuid());
-          }
-        });
-    },
-    //获取草稿列表
-    getDraftList(uuid) {
-      // 草稿列表
-      this.$api.process.process
-        .processDraftList({
-          processUuid: uuid
-        })
-        .then(res => {
-          if (res.Status == 'OK') {
-            let draftList = res.Return;
-            draftList.forEach(d => {
-              d.fcd = this.$options.filters.formatDate(d.fcd);
-            });
-            this.draftData.splice(0);
-            this.draftData.push(...draftList);
-            if (this.draftData[0]) {
-              this.draftCurrentData = this.draftData[0];
-              this.draftData[0]._highlight = true;
-            }
-
-            if (draftList.length) {
-              this.draftModel = true;
-            } else {
-              this.draftModel = false;
-            }
-          }
-        });
     },
     goCreatecatalog() {
       window.open(HOME + '/process.html#/catalog-manage?processUuid=' + this.processUuid, '_blank');
@@ -1341,6 +1381,10 @@ export default {
               if (!config.uuid) {
                 config.uuid = uuid;
               }
+              //设置评分时，结束节点可以连回退线
+              if (element.type == 'end' && this.scoreConfig.isActive) {
+                this.$set(element.setting, 'linkout', true);
+              }
               cells.push({
                 view: 'vue-shape-view',
                 id: uuid,
@@ -1349,7 +1393,7 @@ export default {
                 handler: config.handler,
                 isAllowStart: config.isAllowStart,
                 setting: element.setting,
-                icon,
+                icon: element.oldSetting ? element.oldSetting.icon : icon,
                 position: { x: x, y: y },
                 data: config,
                 name,
@@ -1430,55 +1474,20 @@ export default {
       }
     },
     'scoreConfig.isActive'(val) {
+      const graphData = this.graph.toJSON();
+      graphData.cells.forEach(d => {
+        if (d.type == 'end') {
+          this.$set(d.setting, 'linkout', !!val);
+        }
+      });
+      this.graph.fromJSON(graphData);
       //当评分设置关闭时需要删除结束节点的回退线
       if (!val) {
-        let endNode = this.$topoVm.nodes.find(d => d.getType() == 'end');
-        for (let i = 0; i < endNode.links.length;) {
-          let link = endNode.links[i];
-          link.getType() == 'backward' ? link.destory() : i++;
+        const endNode = this.stepList.find(d => d.type == 'end');
+        const edges = this.graph.getOutgoingEdges(endNode.uuid);
+        if (!this.$utils.isEmpty(edges)) {
+          this.graph.removeCells(edges);
         }
-      }
-    }
-  },
-  beforeRouteLeave(from, to, next, url) {
-    if (!this.$utils.isEmpty(this.portData)) {
-      let draftData = this.getFlowData();
-      delete this.portData.config.topo.svg;
-      delete draftData.config.topo.svg;
-      let isSame = this.$utils.isSame(JSON.parse(JSON.stringify(this.portData)), JSON.parse(JSON.stringify(draftData)));
-      if ((from && from.query.validRouter) || isSame) {
-        //form.query.validRouter 代表不用进行跳转校验，如删除时候
-        //当没有改动时直接跳转页面
-        url ? this.$utils.gotoHref(url) : next();
-      } else {
-        let _this = this;
-        this.$utils.jumpDialog.call(
-          this,
-          {
-            save: {
-              //保存数据
-              fn: async vnode => {
-                return await _this.flowSave(true);
-              }
-            },
-            noSave: {
-              //存草稿
-              fn: vnode => {
-                vnode.isShow = false;
-                _this.draftAdd();
-                url ? _this.$utils.gotoHref(url) : next();
-              }
-            }
-          },
-          to,
-          from,
-          next,
-          url
-        );
-      }
-    } else {
-      if (next) {
-        next();
       }
     }
   }
