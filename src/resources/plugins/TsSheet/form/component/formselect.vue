@@ -149,13 +149,15 @@ export default {
         }
         if (this.config.sourceColumnList && this.config.sourceColumnList.length > 0) {
           this.config.sourceColumnList.forEach(sourceColumn => {
-            const valueList = sourceColumn.valueList.filter(v => !this.$utils.isEmpty(v));
-            if (!this.$utils.isEmpty(valueList) && sourceColumn.column && sourceColumn.expression) {
-              params.filterList.push({
-                uuid: sourceColumn.column,
-                expression: sourceColumn.expression,
-                valueList: valueList
-              });
+            if (!this.$utils.isEmpty(sourceColumn.valueList) && sourceColumn.column && sourceColumn.expression) {
+              const newValueList = sourceColumn.valueList.filter(v => !this.$utils.isEmpty(v));
+              if (!this.$utils.isEmpty(newValueList)) {
+                params.filterList.push({
+                  uuid: sourceColumn.column,
+                  expression: sourceColumn.expression,
+                  valueList: newValueList
+                });
+              }
             }
           });
         }

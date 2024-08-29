@@ -134,6 +134,7 @@
       v-if="isAttrConfigDialogShow && currentProperty"
       :formItemConfig="config"
       :property="currentProperty"
+      :formItemList="formItemList"
       @close="closeAttrConfigDialog"
     ></AttrConfigDialog>
   </div>
