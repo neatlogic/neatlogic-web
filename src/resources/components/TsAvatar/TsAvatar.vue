@@ -68,7 +68,7 @@ export default {
       if (this.initType === 'role') return require('@/resources/assets/images/avatar/role.png');
       if (this.initType === 'team') return require('@/resources/assets/images/avatar/team.png');
       if (this.initType === 'user' && !this.namePinyin) return require('@/resources/assets/images/avatar/user.png');
-      if (this.initType) return require('@/resources/assets/images/avatar/process.png');
+      if (this.initType && !this.namePinyin) return require('@/resources/assets/images/avatar/process.png');
       else return null;
     },
 
