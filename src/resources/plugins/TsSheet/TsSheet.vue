@@ -388,8 +388,8 @@
           <Tag 
             v-if="mode === 'edit'"
             :color="currentHideItem && currentHideItem.uuid === item.uuid ?'primary' :'default'"
-            closable
-            class="cursor-pointer"
+            :closable="!disabledHideComponent"
+            :class="disabledHideComponent?'text-disabled':'cursor-pointer'"
             @on-close="removeHideItem(item, index)"
           >
             <span :class="[item.icon, hideComponentError[item.uuid]? 'text-error':'']" @click="selectHideItem(item)">{{ item.label }}</span>
@@ -467,6 +467,10 @@ export default {
       default: true
     },
     isClearSpecifiedAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，隐藏等规则属性
+      type: Boolean,
+      default: false
+    },
+    disabledHideComponent: { //是否禁用隐藏组件
       type: Boolean,
       default: false
     }
@@ -619,12 +623,12 @@ export default {
     },
     //初始化表格
     initSheet() {
+      this.hideComponentList = this.value?.hideComponentList || [];
       if (this.value && this.value.lefterList && this.value.headerList && this.value.tableList) {
         /**
          * 编辑模式下，直接将外部数据赋值给config，这样在外部对数据做了修改，也能触发表格控件发生变化。
          * 只读模式下，采用深度拷贝，避免表单渲染过程中数据变化导致外部数据也产生变化。
          **/
-        this.hideComponentList = this.value.hideComponentList || [];
         if (this.mode !== 'edit') {
           if (this.formSceneUuid) {
             this.config = this.setFormSceneConfig(this.formSceneUuid, this.value);
@@ -1855,6 +1859,9 @@ export default {
       return data;
     },
     selectHideItem(item) {
+      if (this.disabledHideComponent) {
+        return;
+      }
       this.clearSelectedRowCol();
       this.clearSelectedComponent();
       this.unselectCell();

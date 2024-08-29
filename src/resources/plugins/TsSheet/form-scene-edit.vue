@@ -112,6 +112,7 @@
             ref="sheet"
             v-model="formData.formConfig"
             :readonly="readOnly"
+            :disabledHideComponent="true"
             @selectCell="selectCell"
             @removeComponent="removeComponent"
             @updateItemList="updateItemList"
@@ -180,7 +181,9 @@ export default {
       initFormData: {},
       initFormConfig: {},
       initFormItemList: [],
-      formData: {},
+      formData: {
+        formConfig: {}
+      },
       validateList: [
         { name: 'required', message: ' ' },
         { name: 'name-special', message: ' ' }
@@ -299,6 +302,7 @@ export default {
         if (res.Status == 'OK') {
           this.initFormData = res.Return;
           let formConfig = res.Return.formConfig || {};
+          this.hideComponentList = formConfig.hideComponentList || [];
           this.initFormConfig = this.$utils.deepClone(formConfig);
           this.sceneList = formConfig.sceneList || [];
           let sceneConfig = {};
@@ -352,6 +356,7 @@ export default {
               this.readOnly = sceneConfig.readOnly || false;
             }
           }
+          this.formData.formConfig.hideComponentList = this.hideComponentList;
           this.$addWatchData(this.getCompareData(sceneConfig));
         }
       }).finally(() => {
@@ -649,6 +654,9 @@ export default {
           }
         }
       });
+      if (!this.$utils.isEmpty(this.hideComponentList)) {
+        formItemList.push(...this.hideComponentList);
+      }
       return formItemList;
     }
   },
