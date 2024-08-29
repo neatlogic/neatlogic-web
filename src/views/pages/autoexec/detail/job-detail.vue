@@ -28,6 +28,7 @@
           <span class="action-item tsfont-accessendpoint" @click="isShowFlow = true">流程图</span>
           <span class="action-item tsfont-console" @click="isShowConsoleLogDialog = true">{{ $t('term.autoexec.controlpanel') }}</span>
           <span class="action-item tsfont-config" @click="openShowParam">{{ $t('page.param') }}</span>
+          <span v-if="versionId != null" class="action-item tsfont-file-single icon" @click="openProjectDirectoryDialog(versionId)">{{ $t('term.deploy.projectdirectory') }}</span>
           <span class="action-item">
             <Dropdown trigger="hover" placement="bottom">
               <span class="tsfont-option-horizontal"></span>
@@ -104,6 +105,12 @@
       @close="globalLockClose"
     ></LockDialog>
     <JobPhaseFlow v-if="isShowFlow && jobParam.jobId" :jobId="jobParam.jobId" @close="isShowFlow = false"></JobPhaseFlow>
+    <ProjectDirectoryDialog
+      v-if="isShowProjectDirectoryDialog"
+      :params="projectDirectoryParams"
+      :hasAllAuth="hasOperationVersionAndProductManagerAuth"
+      @close="isShowProjectDirectoryDialog = false"
+    ></ProjectDirectoryDialog>
   </div>
 </template>
 <script>
@@ -122,6 +129,7 @@ export default {
     Status: () => import('@/resources/components/Status/CommonStatus.vue'),
     ExtrainfoDetail: () => import('./jobDetail/extrainfo-detail.vue'),
     JobPhaseFlow: () => import('@/views/pages/autoexec/detail/jobDetail/job-phase-flow.vue'),
+    ProjectDirectoryDialog: () => import('@/views/pages/deploy/version/project-directory-dialog'), // 工程目录
     LockDialog: () => import('@/views/pages/deploy/job/resourcelock/resourcelock-dialog') //资源锁
   },
   filters: {},
@@ -195,7 +203,13 @@ export default {
           fn: _this.revokeJob
         }
       },
-      lockSearchParam: {}
+      lockSearchParam: {},
+      isShowProjectDirectoryDialog: false,
+      projectDirectoryParams: {
+        id: null
+      },
+      versionId: null,
+      hasOperationVersionAndProductManagerAuth: false
     };
   },
   beforeCreate() {},
@@ -229,6 +243,12 @@ export default {
           appSystemId: !this.jobData.extraInfo || this.jobData.extraInfo.appSystemId,
           appModuleId: !this.jobData.extraInfo || this.jobData.extraInfo.appModuleId
         };
+        if (this.jobData.extraInfo) {
+          this.hasOperationVersionAndProductManagerAuth = this.jobData.extraInfo.hasOperationVersionAndProductManagerAuth;
+          if (this.jobData.extraInfo.version) {
+            this.versionId = this.jobData.extraInfo.version.id;
+          }
+        }
       });
     },
     refresh() {
@@ -409,6 +429,12 @@ export default {
     },
     openShowParam() {
       this.isShowJobParam = true;
+    },
+    openProjectDirectoryDialog(id) {
+      if (id) {
+        this.projectDirectoryParams.id = id;
+        this.isShowProjectDirectoryDialog = true;
+      }
     },
     takeoverFn() {
       this.$createDialog({
