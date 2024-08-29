@@ -360,7 +360,7 @@ export default {
     },
     //更新组件默认配置，补充新的配置
     updateConfig() {
-      const newFormItem = FORMITEMS.find(d => d.handler === this.formItem.handler);
+      const newFormItem = FORMITEMS.find(d => d.handler === this.formItem.handler && d.category === this.formItem.category);
       if (!newFormItem) {
         return;
       }
