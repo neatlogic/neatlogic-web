@@ -161,6 +161,8 @@
       :processTaskId="processTaskId"
       :processTaskStepId="processTaskStepId"
       :content="transferContent"
+      :actionConfig="actionConfig"
+      @close="saveTransferTask"
     ></TransferDialog>
     <!-- 查看流程图 -->
     <LookSitemapDialog
