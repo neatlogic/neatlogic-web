@@ -82,6 +82,19 @@ export default {
       }
       this.isShowRowEditDialog = true;
       this.matrixUuid = matrixUuid;
+    },
+    transformPropertyToString(value, uuid = 'text') {
+      if (this.$utils.isEmpty(value)) return '';
+
+      if (Array.isArray(value)) {  
+        return value.map(item => this.transformPropertyToString(item))
+          .filter(itemValue => !this.$utils.isEmpty(itemValue))
+          .join(' ');
+      } else if (typeof value === 'object') {  
+        return value[uuid];  
+      } else {   
+        return value;  
+      }
     }
   },
   filter: {},
@@ -171,19 +184,22 @@ export default {
         let list = [];
         if (this.config.formtableinputerUuid && !this.$utils.isEmpty(this.formData) && !this.$utils.isEmpty(this.formData[this.config.formtableinputerUuid])) {
           list = this.$utils.deepClone(this.formData[this.config.formtableinputerUuid]);
-          console.log(list);
           if (!this.$utils.isEmpty(list)) {
             list.forEach(item => {
-              const valueUuid = this.config.mapping.value.split('##')[0];
-              const textUuid = this.config.mapping.text.split('##')[0];
-              if (this.config.mapping && !this.$utils.isEmpty(item) && item[valueUuid]) {
-                let findValue = setting.dataList.find(d => d.value === item[valueUuid]);
-                if (!this.$utils.isEmpty(findValue)) {
-                  let obj = {
-                    value: item[valueUuid],
-                    text: item[textUuid]
-                  };
-                  setting.dataList.push(this.$utils.deepClone(obj));
+              if (this.config.mapping && !this.$utils.isEmpty(item)) {
+                const valueUuid = this.config.mapping.value.split('##')[0];
+                const textUuid = this.config.mapping.text.split('##')[0];
+                const value = this.transformPropertyToString(item[valueUuid]);
+                const text = this.transformPropertyToString(item[textUuid]);
+                if (!this.$utils.isEmpty(value) && !this.$utils.isEmpty(text)) {
+                  let findValue = setting.dataList.find(d => d.value === value);
+                  if (this.$utils.isEmpty(findValue)) {
+                    let obj = {
+                      value: value,
+                      text: text
+                    };
+                    setting.dataList.push(this.$utils.deepClone(obj));
+                  }
                 }
               }
             });
