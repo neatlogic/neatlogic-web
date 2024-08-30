@@ -612,7 +612,9 @@
     "formtag": "Form label",
     "formtagtip": "When the label is empty: all form components in the main scene are form components; When the label is not empty: The form component is configured for the selected label.",
     "stepfilter": "Process steps",
-    "stepdesc": "Activated steps"
+    "stepdesc": "Activated steps",
+    "savetransfer": "Save and transfer",
+    "savetransfertip": "Save the current form and forward it"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

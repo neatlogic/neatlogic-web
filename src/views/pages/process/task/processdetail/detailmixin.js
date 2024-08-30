@@ -1254,6 +1254,15 @@ export default {
     },
     comment() {
       this.$refs.TaskCenterDetail.comment();
+    },
+    async saveTransferTask(data) {
+      //保存并转交工单
+      await this.saveTaskData(true);
+      this.$api.process.processtask.transferTaskDetail(data).then(res => {
+        if (res.Status == 'OK') {
+          this.toTask(this.processTaskId);
+        }
+      });
     }
   },
   computed: {

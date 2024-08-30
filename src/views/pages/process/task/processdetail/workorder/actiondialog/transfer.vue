@@ -6,7 +6,6 @@
       :title="$t('page.transfer')"
       :okBtnDisable="disabledTransferring"
       className="task-step"
-      @on-ok="transferOk"
       @on-close="closeTransferModal"
     >
       <template>
@@ -23,6 +22,15 @@
           </TsForm>
         </div>
       </template>
+      <template v-slot:footer>
+        <Button @click="closeTransferModal()">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" ghost @click="transferOk()">{{ $t('page.transfer') }}</Button>
+        <Button v-if="actionConfig.save" type="primary" @click="saveTransfer()">
+          <Tooltip placement="top-end" :content="$t('term.process.savetransfertip')" transfer>
+            {{ $t('term.process.savetransfer') }}
+          </Tooltip>
+        </Button>
+      </template>
     </TsDialog>
   </div>
 </template>
@@ -37,7 +45,8 @@ export default {
     isShow: {type: Boolean, default: false},
     processTaskId: Number,
     processTaskStepId: Number,
-    content: String
+    content: String,
+    actionConfig: Object //操作权限配置
   },
   data() {
     return {
@@ -169,6 +178,21 @@ export default {
           type: Date.now()
         }
       });
+    },
+    saveTransfer() {
+      const transferForm = this.$refs.transferForm;
+      if (transferForm.valid()) {
+        const formList = transferForm.getFormValue();
+        const data = {
+          processTaskId: this.processTaskId,
+          processTaskStepId: this.transferId,
+          workerList: formList.workerList,
+          content: formList.reason,
+          isSaveData: 1
+        };
+        this.$emit('close', data);
+        this.closeTransferModal();
+      }
     }
   },
   filter: {},
