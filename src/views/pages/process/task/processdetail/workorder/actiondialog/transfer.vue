@@ -187,7 +187,8 @@ export default {
           processTaskId: this.processTaskId,
           processTaskStepId: this.transferId,
           workerList: formList.workerList,
-          content: formList.reason
+          content: formList.reason,
+          isSaveData: 1
         };
         this.$emit('close', data);
         this.closeTransferModal();
