@@ -15,7 +15,7 @@
       </template>
       <template v-slot:topRight>
         <div style="text-align: right" :style="{ '--children': 3 }" class="controller-group">
-          <div><TsformSelect v-model="apiType" v-bind="apiTypeConfig" @on-change="handleApiTypeChange" /></div>
+          <!-- <div><TsformSelect v-model="apiType" v-bind="apiTypeConfig" @on-change="handleApiTypeChange" /></div> -->
           <div><TsformSelect v-model="needAudit" v-bind="auditConfig" @on-change="filterAudit" /></div>
           <div>
             <InputSearcher v-model="searchParams.keyword" @change="handleSearchChange"></InputSearcher>
@@ -134,17 +134,17 @@ export default {
       isCallRecordShow: false, //是否显示接口调用记录
       isFormDialogShow: false, //是否显示对话框
       apiType: 'system',
-      apiTypeConfig: Object.freeze({
-        //接口类型选择器配置
-        value: 'system',
-        clearable: false,
-        border: 'border',
-        dataList: [
-          { value: 'system', text: this.$t('page.systemapi') },
-          { value: 'custom', text: this.$t('page.customapi') }
-        ],
-        validateList: ['required']
-      }),
+      // apiTypeConfig: Object.freeze({
+      //   //接口类型选择器配置
+      //   value: 'system',
+      //   clearable: false,
+      //   border: 'border',
+      //   dataList: [
+      //     { value: 'system', text: this.$t('page.systemapi') },
+      //     { value: 'custom', text: this.$t('page.customapi') }
+      //   ],
+      //   validateList: ['required']
+      // }),
       auditConfig: {
         placeholder: this.$t('page.isneedaudit'),
         border: 'border',
