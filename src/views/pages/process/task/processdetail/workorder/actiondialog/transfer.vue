@@ -26,8 +26,8 @@
         <Button @click="closeTransferModal()">{{ $t('page.cancel') }}</Button>
         <Button type="primary" ghost @click="transferOk()">{{ $t('page.transfer') }}</Button>
         <Button v-if="actionConfig.save" type="primary" @click="saveTransfer()">
-          <Tooltip placement="top-end" content="保存当前表单并转交" transfer>
-            保存并转交
+          <Tooltip placement="top-end" :content="$t('term.process.savetransfertip')" transfer>
+            {{ $t('term.process.savetransfer') }}
           </Tooltip>
         </Button>
       </template>

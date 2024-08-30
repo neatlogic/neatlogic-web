@@ -612,7 +612,9 @@
     "formtag": "表单标签",
     "formtagtip": "当标签为空时：表单组件为主场景的所有表单组件；当标签不为空时：表单组件为所选标签配置的表单组件。",
     "stepfilter": "流程步骤",
-    "stepdesc": "过滤已激活的步骤"
+    "stepdesc": "过滤已激活的步骤",
+    "savetransfer": "保存并转交",
+    "savetransfertip": "保存当前表单并转交"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
