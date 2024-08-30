@@ -542,10 +542,12 @@ export default {
             this.$set(config, 'mapping', {});
           } else {
             if (findItem.config && findItem.config.dataConfig) {
-              if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.value)) {
+              const valueUuid = config.mapping.value.split('##')[0];
+              const textUuid = config.mapping.text.split('##')[0];
+              if (!findItem.config.dataConfig.find(d => d.uuid === valueUuid)) {
                 this.$set(config.mapping, 'value', null);
               }
-              if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.text)) {
+              if (!findItem.config.dataConfig.find(d => d.uuid === textUuid)) {
                 this.$set(config.mapping, 'text', null);
               }
             }

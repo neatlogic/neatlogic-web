@@ -171,14 +171,17 @@ export default {
         let list = [];
         if (this.config.formtableinputerUuid && !this.$utils.isEmpty(this.formData) && !this.$utils.isEmpty(this.formData[this.config.formtableinputerUuid])) {
           list = this.$utils.deepClone(this.formData[this.config.formtableinputerUuid]);
+          console.log(list);
           if (!this.$utils.isEmpty(list)) {
             list.forEach(item => {
-              if (this.config.mapping && !this.$utils.isEmpty(item) && item[this.config.mapping.value]) {
-                let findValue = setting.dataList.find(d => d.value === item[this.config.mapping.value]);
-                if (!findValue) {
+              const valueUuid = this.config.mapping.value.split('##')[0];
+              const textUuid = this.config.mapping.text.split('##')[0];
+              if (this.config.mapping && !this.$utils.isEmpty(item) && item[valueUuid]) {
+                let findValue = setting.dataList.find(d => d.value === item[valueUuid]);
+                if (!this.$utils.isEmpty(findValue)) {
                   let obj = {
-                    value: item[this.config.mapping.value],
-                    text: item[this.config.mapping.text]
+                    value: item[valueUuid],
+                    text: item[textUuid]
                   };
                   setting.dataList.push(this.$utils.deepClone(obj));
                 }

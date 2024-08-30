@@ -271,10 +271,12 @@ export default {
               } else {
                 if (findItem.config && findItem.config.dataConfig) {
                   let isValidMapping = true;
-                  if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.value)) {
+                  const valueUuid = config.mapping.value.split('##')[0];
+                  const textUuid = config.mapping.text.split('##')[0];
+                  if (!findItem.config.dataConfig.find(d => d.uuid === valueUuid)) {
                     isValidMapping = false;
                   }
-                  if (!findItem.config.dataConfig.find(d => d.uuid === config.mapping.text)) {
+                  if (!findItem.config.dataConfig.find(d => d.uuid === textUuid)) {
                     isValidMapping = false;
                   }
                   if (!isValidMapping) {
