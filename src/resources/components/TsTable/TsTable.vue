@@ -81,6 +81,7 @@
       <div
         ref="tablemain"
         v-scrollHidden
+        v-custom-scrollbar
         class="tstable-main bg-op"
         :class="{ 'table-radius-main': !rowNum || !pageSize || !showPager }"
         :style="setTableheight(tableheight)"
@@ -350,8 +351,7 @@ import draggable from 'vuedraggable';
 import THead from './component/table-thead.vue';
 import TBody from './component/table-tbody.vue';
 import ColGroup from './component/col-group.vue';
-// import UserCard from './UserCardNew/UserCard.vue';
-// import Liquid from '@/resources/components/SimpleGraph/Liquid.vue';
+import customScrollbar from '@/resources/directives/v-custom-scrollbar.js';
 
 export default {
   name: 'TsTable',
@@ -360,11 +360,9 @@ export default {
     THead,
     TBody,
     ColGroup,
-    // UserCard,
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
-    // Liquid
   },
-  directives: { scrollHidden },
+  directives: { scrollHidden, customScrollbar: customScrollbar },
   model: {
     prop: 'value',
     event: 'change'

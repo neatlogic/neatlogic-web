@@ -30,10 +30,11 @@
               <FormItem
                 :ref="'formitem_true_' + row.uuid"
                 :formItem="getExtraFormItem(extra,row)"
+                :formItemList="$utils.deepClone(extraList.concat(formItemList))"
                 :disabled="disabled"
                 :readonly="readonly"
                 :value="row[extra.uuid]"
-                :formData="row"
+                :formData="{...$utils.deepClone(formData || {}), ...row}"
                 :showStatusIcon="false"
                 mode="read"
                 isCustomValue
@@ -61,7 +62,9 @@
     <div v-else-if="config.mode === 'normal'">
       <DataList
         ref="dataList"
+        :formData="formData"
         :formItem="formItem"
+        :formItemList="formItemList"
         :value="tbodyList"
         :mode="mode"
         :filter="filter"
@@ -74,10 +77,12 @@
     </div>
     <DataDialog
       v-if="isTableSelectorDialogShow"
+      :formData="formData"
       :formItem="formItem"
       :value="tbodyList"
       :mode="mode"
       :filter="filter"
+      :formItemList="formItemList"
       @close="closeTableSelectorDialog"
     ></DataDialog>
   </div>
