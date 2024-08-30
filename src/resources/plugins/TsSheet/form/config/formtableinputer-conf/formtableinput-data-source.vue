@@ -112,6 +112,11 @@ export default {
                   value: d.uuid,
                   text: d.label
                 });
+              } else if (d.handler === 'formselect') {
+                list.push({
+                  value: d.uuid + '##' + d.config.mapping.text,
+                  text: d.label
+                });
               }
             });
           }
