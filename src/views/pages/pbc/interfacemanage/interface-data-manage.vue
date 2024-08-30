@@ -41,7 +41,7 @@
             >
               <Loading :loadingShow="isLoading" type="fix"></Loading>
               <div v-if="interfaceItemData && interfaceItemData.tbodyList && interfaceItemData.tbodyList.length > 0" class="tstable-container tstable-normal tstable-allborder tstable-no-fixedHeader radius-lg">
-                <div class="tstable-main bg-op">
+                <div v-custom-scrollbar class="tstable-main bg-op">
                   <table class="table-main tstable-body">
                     <thead>
                       <tr v-if="hasComplexProp">
@@ -212,7 +212,7 @@
 </template>
 <script>
 import download from '@/resources/directives/download.js';
-
+import customScrollbar from '@/resources/directives/v-custom-scrollbar.js';
 export default {
   name: '',
   components: {
@@ -222,7 +222,7 @@ export default {
     InterfaceItemImportDialog: () => import('./components/interface-item-import-dialog.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
-  directives: { download },
+  directives: { download, customScrollbar },
   props: {},
   data() {
     return {
