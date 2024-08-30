@@ -8,10 +8,12 @@
       <div>
         <DataList
           ref="dataList"
+          :formData="formData"
           :formItem="formItem"
           :value="value"
           :mode="mode"
           :filter="filter"
+          :formItemList="formItemList"
           @change="getSelectedData"
         ></DataList>
       </div>
@@ -28,7 +30,9 @@ export default {
     mode: { type: String, default: 'edit' }, //表单的模式edit或read或condition,edut模式才会显示异常、联动等辅助图标
     value: { type: [Object, Array, String, Number] }, //当前表单组件的值
     formItem: { type: Object },
-    filter: {type: Array}
+    filter: {type: Array},
+    formItemList: { type: Array },
+    formData: { type: Object }
   },
   data() {
     return {

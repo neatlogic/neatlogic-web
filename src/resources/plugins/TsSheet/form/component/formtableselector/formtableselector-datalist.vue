@@ -41,15 +41,16 @@
           <FormItem
             :ref="'formitem_' + row._selected + '_' + row.uuid"
             :formItem="getExtraFormItem(extra,row)"
+            :formItemList="$utils.deepClone(extraList.concat(formItemList))"
             :disabled="!row._selected || disabled"
             :value="row[extra.uuid]"
-            :formData="row"
+            :formData="{...$utils.deepClone(formData || {}), ...row}"
             :showStatusIcon="false"
             mode="read"
             :readonly="readonly"
             isCustomValue
             :isClearSpecifiedAttr="isClearSpecifiedAttr"
-            @change="changeRow(row)"
+            @change="(val)=>{changeRow(row, extra.uuid, val)}"
           ></FormItem>
         </div>
       </template>
@@ -78,7 +79,9 @@ export default {
     isClearSpecifiedAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，隐藏等规则属性
       type: Boolean,
       default: false
-    }
+    },
+    formItemList: {type: Array},
+    formData: {type: Object}
   },
   data() {
     return {
@@ -318,7 +321,8 @@ export default {
       }
       return errorList;
     },
-    changeRow(row) {
+    changeRow(row, uuid, val) {
+      this.$set(row, uuid, val);
       let index = this.selectedItemList.findIndex(s => s.uuid === row.uuid);
       if (index > -1) {
         this.$set(this.selectedItemList, index, row);
