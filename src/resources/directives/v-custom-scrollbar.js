@@ -43,7 +43,7 @@ export default {
           if (bottom > viewportHeight && tableSrcollHeight > viewportHeight && tableHeight) {
             // 表格容器底部不在可视区域内，固定滚动条在视口底部
             customScrollbar.style.position = 'absolute';
-            customScrollbar.style.top = `${tsmodalFooterHeight ? tableViewHeight - tsmodalFooterHeight - 89 : tssliderFooterHeight > 0 ? tableViewHeight - tssliderFooterHeight - 21 : tableViewHeight - 21}px`;
+            customScrollbar.style.top = `${tsmodalFooterHeight ? tableViewHeight - tsmodalFooterHeight - 89 : tssliderFooterHeight > 0 ? tableViewHeight - tssliderFooterHeight - 21 : tableViewHeight - 22}px`;
           } else {
             // 表格容器底部在可视区域内，滚动条在容器底部
             customScrollbar.style.display = 'none';
