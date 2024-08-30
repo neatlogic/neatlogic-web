@@ -74,6 +74,9 @@
                 textName="name"
                 valueName="uuid"
                 transfer
+                @on-change="(val)=>{
+                  changeMatrixUuid(val);
+                }"
               ></TsFormSelect>
             </TsFormItem>
             <TsFormItem v-if="propertyLocal.config.dataSource === 'matrix' && propertyLocal.config.matrixUuid && mappingDataList.length > 0" :label="$t('page.fieldmapping')">
@@ -237,9 +240,10 @@
                 :name="key"
               >
                 <ConditionGroup
+                  v-if="key !== 'filter'"
                   :ref="'condition_' + key"
                   :value="r"
-                  :formItemList="formItemList"
+                  :formItemList="allFormItemList"
                   :formItem="propertyLocal"
                   @input="
                     rule => {
@@ -247,6 +251,20 @@
                     }
                   "
                 ></ConditionGroup>
+                <div v-else>
+                  <ReactionFilter
+                    :ref="'condition_' + key"
+                    :value="r"
+                    :martixAttrList="mappingDataList"
+                    :formItem="propertyLocal"
+                    :formItemList="allFormItemList"
+                    @input="
+                      rule => {
+                        setReaction(key, rule);
+                      }
+                    "
+                  ></ReactionFilter>
+                </div>
               </TabPane>
             </Tabs>
           </template>
@@ -294,11 +312,14 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
     StaticDataEditor: () => import('../common/static-data-editor.vue'),
-    ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue')
+    ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
+    ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue')
+    
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
-    property: { type: Object } //属性配置
+    property: { type: Object }, //属性配置
+    formItemList: {typeof: Array}
   },
   data() {
     return {
@@ -319,6 +340,7 @@ export default {
         readonly: this.$t('page.readonly'),
         disable: this.$t('page.disable'),
         required: this.$t('page.require'),
+        filter: this.$t('page.filters'),
         clearValue: this.$t('page.cleardata')
       },
       reactionError: {}, //交互异常信息
@@ -330,7 +352,7 @@ export default {
         title: this.$t('page.edit'),
         maskClose: false,
         isShow: true,
-        width: 'medium'
+        width: 'large'
       },
       dataSourceList: [
         { value: 'static', text: this.$t('page.staticdatasource') },
@@ -518,13 +540,22 @@ export default {
         });
       }
       return isValid;
+    },
+    changeMatrixUuid(val) {
+      this.$set(this.propertyLocal.config, 'defaultValue', null);
+      this.$set(this.propertyLocal.config, 'mapping', {});
+      if (val) {
+        this.$set(this.propertyLocal.reaction, 'filter', {});
+      } else {
+        this.$delete(this.propertyLocal.reaction, 'filter');
+      }
     }
   },
   filter: {},
   computed: {
-    formItemList() {
-      //所有表单组件列表
-      return this.formItemConfig.dataConfig;
+    allFormItemList() {
+      //表格内属性组件和表格外组件
+      return this.formItemConfig.dataConfig.concat(this.formItemList);
     },
     //表格选择组件矩阵的字段
     tableMatrixColumnList() {
@@ -579,6 +610,9 @@ export default {
     'propertyLocal.config.matrixUuid': {
       handler: function(val) {
         if (val) {
+          if (this.propertyLocal.reaction && !this.propertyLocal.reaction.filter) {
+            this.$set(this.propertyLocal.reaction, 'filter', {});
+          }
           this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: val }).then(res => {
             if (res.Status == 'OK') {
               this.mappingDataList = res.Return.tbodyList;
@@ -594,6 +628,7 @@ export default {
         if (val === 'matrix') {
           if (!this.propertyLocal.config.mapping) {
             this.$set(this.propertyLocal.config, 'mapping', {});
+            this.$delete(this.propertyLocal.reaction, 'filter');
           }
         }
       },

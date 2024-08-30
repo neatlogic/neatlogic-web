@@ -384,7 +384,7 @@ export default {
         type: 'modal',
         maskClose: false,
         isShow: true,
-        width: 'medium'
+        width: 'large'
       },
       dataSourceList: [
         { value: 'static', text: this.$t('page.staticdatasource') },
