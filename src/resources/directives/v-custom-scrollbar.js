@@ -52,7 +52,7 @@ export default {
           function onScroll(e) {
             const scrollLeft = tableWrapper.scrollLeft; // 水平滚动偏移量
             const maxScrollLeft = scrollWidth - containerWidth; // 滚动条最大滚动距离
-            const scrollPercent = maxScrollLeft ? (scrollLeft / maxScrollLeft).toFixed(2) : 0; // 最大滚动范围的位置
+            const scrollPercent = scrollLeft / maxScrollLeft; // 最大滚动范围的位置
             scrollBar.style.transform = `translateX(${scrollPercent * (scrollWidth - scrollbarWidth)}px)`; // 拖动滚动条的位置
           }
           tableWrapper.addEventListener('scroll', onScroll);
