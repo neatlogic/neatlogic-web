@@ -27,7 +27,7 @@ const timingTaskEdit = () => import('./notifytactics/tacticsedit/timing-task-edi
 const subscriptionSetting = () => import('./message/subscription-setting.vue');
 const noticeManage = () => import('./notice/notice-manage.vue');
 const historyOverview = () => import('./history/history-overview.vue');
-const formEditOld = () => import('./form/form-edit.vue');
+const formEditOld = () => import('./form/form-edit_deprecated.vue');
 const formEdit = () => import('@/resources/plugins/TsSheet/form-edit.vue');
 const formSceneEdit = () => import('@/resources/plugins/TsSheet/form-scene-edit.vue'); //表单场景
 const formOverview = () => import('./form/form-overview.vue');
