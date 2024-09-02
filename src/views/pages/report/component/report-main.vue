@@ -6,6 +6,7 @@
 </template>
 <script>
 import '@/resources/assets/js/jquery-1.11.1.js';
+import { createCustomScrollbar } from './custom-scrollbar.js';
 export default {
   name: 'ReportMain',
   components: {},
@@ -14,7 +15,9 @@ export default {
     content: String
   },
   data() {
-    return {};
+    return {
+      destroyCustomScrollbar: null
+    };
   },
   beforeCreate() {},
   created() {
@@ -30,14 +33,25 @@ export default {
     })(this);
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+  
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    // 销毁自定义滚动条
+    if (this.destroyCustomScrollbar) {
+      this.destroyCustomScrollbar();
+    }
+  },
   destroyed() {},
   methods: {
+    initCustomScrollbar() {
+      const tableElement = document.querySelector('.tstable-main'); // 通过 ref 访问 DOM 元素
+      this.destroyCustomScrollbar = createCustomScrollbar(tableElement);
+    },
     changeReportContentPage(rootName, currentPage) {
       this.$emit('changeReportContentPage', rootName, currentPage);
     },
@@ -63,6 +77,11 @@ export default {
     content: {
       handler(val) {
         this.createElementScript(val);
+        if (val) {
+          this.$nextTick(() => {
+            this.initCustomScrollbar();
+          });
+        }
       },
       immediate: true,
       deep: true
