@@ -1,5 +1,6 @@
 import template from '../shape/circle.vue';
 import ports from './base/port-config.js';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
 
 export default {
@@ -31,8 +32,10 @@ export default {
     const setting = node.getProp('setting');
     if (setting.linkout) {
       return true;
+    } else {
+      ViewUI.Message.warning({ content: $t('message.process.pleasestartscoringsetting'), duration: 3, closable: true });
+      return false;
     }
-    return false;
   },
   validateEdge({ edge, editor, sourceCell, targetCell }) {
     const graph = editor.graph;
