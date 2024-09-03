@@ -467,7 +467,8 @@ export default {
           this.overrideProfileList = val.overrideProfileList || [];
         }
       },
-      deep: true
+      deep: true,
+      immediate: true
     }
   }
 };
