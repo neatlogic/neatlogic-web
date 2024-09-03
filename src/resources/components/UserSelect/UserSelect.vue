@@ -242,7 +242,7 @@ export default {
       focusIndex: 0, //通过键盘选中列表
       userList: [], //搜索下拉列表
       selectedList: [], //选中的列表，精确匹配
-      currentValue: getCurrentValue(_this.value, _this.multiple) || [], //默认值的设置  currentValue 始终是数组
+      currentValue: getCurrentValue(_this.value, _this.groupList) || [], //默认值的设置  currentValue 始终是数组
       actualValue: _this.value instanceof Array ? _this.value.concat([]) : _this.value, //复制给value对应的值 ,主要是为了区分数组和字符串
       isLoading: false, //条用接口加载中
       alluser: [],
@@ -716,7 +716,7 @@ export default {
     value: {
       handler: function(val) {
         if (!this.$utils.isSame(val, this.actualValue)) {
-          this.currentValue = getCurrentValue(val, this.multiple) || []; //默认值的设置  currentValue 始终是数组
+          this.currentValue = getCurrentValue(val, this.groupList) || []; //默认值的设置  currentValue 始终是数组
           this.actualValue = this.value instanceof Array ? this.value.concat([]) : this.value; //复制给value对应的值 ,主要是为了区分数组和字符串
           this.initValue();
           this.validMesage = '';
@@ -770,12 +770,22 @@ function setWidth($contain, $target) {
   }
 }
 
-function getCurrentValue(val, multiple) {
+function getCurrentValue(val, groupList) {
   let valueList = [];
-  if (val instanceof Array) {
-    valueList = val.concat([]);
+  let prefix = '';
+  if (groupList && groupList.length) {
+    prefix = groupList[0] + '#';
+  }
+  if (Array.isArray(val)) {
+    val.forEach(item => {
+      if (item) {
+        valueList.push(item.includes('#') ? item : prefix + item);
+      }
+    });
   } else if (typeof val == 'string') {
-    valueList.push(val);
+    if (val) {
+      valueList.push(val.includes('#') ? val : prefix + val);
+    }
   }
   return valueList;
 }
