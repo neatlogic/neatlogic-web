@@ -13,6 +13,7 @@
       ref="formSheet"
       mode="read"
       :value="formConfig"
+      :externalData="externalData"
       :formSceneUuid="formSceneUuid"
       :data="formAttributeDataMap"
       @emit="formSheetEmitData"
@@ -30,7 +31,14 @@ export default {
   mixins: [dealFormMix],
   props: {
     draftData: Object,
-    priorityList: Array
+    priorityList: Array,
+    externalData: {
+      // 外部数据，非表单数据，例如工单上报人数据等
+      type: Object,
+      default: () => {
+        return {};
+      }
+    }
   },
   data() {
     return {

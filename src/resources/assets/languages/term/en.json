@@ -1302,7 +1302,8 @@
     "timevaluedesc": "0: Represents the value of \"Custom | Fill in Time | Date\".",
     "positiveintegerdesc": "Positive integer: Indicates that the value of \"Custom | Fill in Time | Date\" increases by the corresponding time (or by the selected time unit).",
     "neglectintegerdesc": "Negative integer: Indicates that the value of \"Custom | Fill in Time | Date\" is reduced by the corresponding time (or by the selected time unit).",
-    "writetimedesc": "Fill in time: indicates the time when the current component validation was triggered."
+    "writetimedesc": "Fill in time: indicates the time when the current component validation was triggered.",
+    "fieldsconfiginfo": "According to the field mapping configuration, obtain the relevant information of the work order reporter"
   },
   "knowledge": {
     "document": "Document",
