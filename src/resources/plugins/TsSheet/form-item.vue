@@ -66,6 +66,7 @@
         :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
         :isCustomValue="isCustomValue"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
+        :externalData="externalData"
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
@@ -88,6 +89,7 @@
         :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
         :isCustomValue="isCustomValue"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
+        :externalData="externalData"
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
@@ -109,6 +111,7 @@
       :disabled="(mode != 'defaultvalue'?formItem.config && formItem.config.isDisabled:false) || disabled"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
       :isClearSpecifiedAttr="isClearSpecifiedAttr"
+      :externalData="externalData"
       @setValue="setValue"
       @resize="$emit('resize')"
       @select="selectFormItem"
@@ -172,6 +175,11 @@ export default {
     isClearSpecifiedAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，隐藏等规则属性
       type: Boolean,
       default: false
+    },
+    externalData: {
+      // 外部数据，非表单数据，例如工单上报人数据等
+      type: Object,
+      default: () => {}
     }
   },
   data() {
