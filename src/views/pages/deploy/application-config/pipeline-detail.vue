@@ -287,7 +287,8 @@ export default {
       defaultPelineData: null, //用于对比
       combopConfig: {
         phaseList: [], //阶段
-        isEditRuntimeParam: true //是否可以添加作业参数
+        isEditRuntimeParam: true, //是否可以添加作业参数
+        overrideProfileList: []
       },
       defaultScenarioId: null,
       executeConfig: null,
@@ -344,6 +345,7 @@ export default {
         this.profileList = this.$utils.deepClone(this.overrideProfileList);
         this.stepList = this.getStepList(this.combopPhaseList);
         this.combopConfig.phaseList = this.stepList;
+        this.$set(this.combopConfig, 'overrideProfileList', this.overrideProfileList);
         if (this.stepList.length > 0) {
           this.currentStep = this.stepList[0];
         }
@@ -519,6 +521,7 @@ export default {
     },
     saveOverrideProfileList(list) {
       this.profileList = list;
+      this.$set(this.combopConfig, 'overrideProfileList', this.profileList);
     },
     getSaveData() {
       let data = {

@@ -196,7 +196,8 @@ export default {
       },
       validateList: ['required'],
       profileParamVoList: [],
-      profileArgumentList: [] //预置参数集自由参数
+      profileArgumentList: [], //预置参数集自由参数
+      overrideProfileList: [] //覆盖参数集列表
     };
   },
   beforeCreate() {},
@@ -226,13 +227,22 @@ export default {
     argumentKeyChange(value, lindex) {
       this.configParamList[lindex].value = this.configParamList[lindex].key;
     },
-    async getProfileParamsList(id, isFirst) { //预置参数集：参数列表
-      await this.$api.autoexec.profile.getProfileDetailById(id).then((res) => {
-        if (res.Status == 'OK') {
-          this.profileParamVoList = res.Return.profileParamVoList || [];
-          this.profileArgumentList = this.profileParamVoList.filter(o => o.type === 'argument');
-        }
-      });
+    async getProfileParamsList(id, isFirst) {
+      let findItem = null;
+      if (!this.$utils.isEmpty(this.overrideProfileList)) {
+        findItem = this.overrideProfileList.find(p => p.profileId === this.profileId);
+      }
+      if (findItem) {
+        this.profileParamVoList = findItem.paramList || [];
+        this.profileArgumentList = this.profileParamVoList.filter(o => o.type === 'argument');
+      } else {
+        await this.$api.autoexec.profile.getProfileDetailById(id).then((res) => {
+          if (res.Status == 'OK') {
+            this.profileParamVoList = res.Return.profileParamVoList || [];
+            this.profileArgumentList = this.profileParamVoList.filter(o => o.type === 'argument');
+          }
+        });
+      }
     },
     clearValue(item) {
       this.$set(item, 'value', '');
@@ -450,6 +460,15 @@ export default {
           }
         });
       }
+    },
+    getCombopConfig: {
+      handler(val) {
+        if (val) {
+          this.overrideProfileList = val.overrideProfileList || [];
+        }
+      },
+      deep: true,
+      immediate: true
     }
   }
 };

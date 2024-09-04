@@ -231,7 +231,8 @@ export default {
         text: ['text', 'date', 'time', 'datetime', 'select', 'radio', 'textarea', 'phase', 'password'], //如果自定义工具或工具库的参数类型是是【文本】类型，以下控件类型的作业参数、全局参数均可被引用：文本、日期、时间、时间日期、单选下拉、单选、文本域、阶段、密码
         textarea: ['text', 'textarea'],
         json: ['json', 'node']
-      }
+      },
+      overrideProfileList: [] //覆盖参数集列表
     };
   },
   beforeCreate() {},
@@ -498,11 +499,19 @@ export default {
     getProfileParamConfig() {
       return (profileParamVoList, item) => {
         let config = '';
-        profileParamVoList.forEach(p => {
-          if (p.key == item.key && p.type == item.type) {
-            config = p;
-          }
-        });
+        let findItem = null;
+        if (!this.$utils.isEmpty(this.overrideProfileList)) {
+          findItem = this.overrideProfileList.find(p => p.profileId === this.profileId);
+        }
+        if (findItem) {
+          config = findItem.paramList.find(p => p.key === item.key);
+        } else {
+          profileParamVoList.forEach(p => {
+            if (p.key == item.key && p.type == item.type) {
+              config = p;
+            }
+          });
+        }
         return config;
       };
     },
@@ -586,6 +595,7 @@ export default {
           if (val.hasOwnProperty('isEditRuntimeParam')) {
             this.isEditRuntimeParam = val.isEditRuntimeParam;
           }
+          this.overrideProfileList = val.overrideProfileList || [];
         }
       },
       deep: true,
