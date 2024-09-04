@@ -1302,7 +1302,8 @@
     "timevaluedesc": "0：表示“自定义|填写时间|日期”的值。",
     "positiveintegerdesc": "正整数：表示“自定义|填写时间|日期”的值增加相应时间（或根据选择时间单位增加）。",
     "neglectintegerdesc": "负整数：表示“自定义|填写时间|日期”的值减少相应时间（或根据选择时间单位减少）。",
-    "writetimedesc": "填写时间：表示触发当前组件校验时的时间。"
+    "writetimedesc": "填写时间：表示触发当前组件校验时的时间。",
+    "fieldsconfiginfo": "根据字段映射配置，获取工单上报人相关信息"
   },
   "knowledge": {
     "document": "文档",
@@ -1996,8 +1997,8 @@
     "chooseatleastonetool": "至少选择一个工具",
     "currentmodulenotadddbconfig": "当前模块未添加DB配置，点击",
     "compiletime": "编译时间",
-    "addbuildno": "新建BiuldNo",
-    "selectbuildno": "选择BiuldNo",
+    "addbuildno": "新建BuildNo",
+    "selectbuildno": "选择BuildNo",
     "sealedplate": "(已封版)",
     "unsealedversion": "(未封版)",
     "selectversion": "选择版本",

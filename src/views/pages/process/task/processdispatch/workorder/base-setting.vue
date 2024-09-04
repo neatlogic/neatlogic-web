@@ -192,6 +192,7 @@ export default {
           this.userDetail = this.$AuthUtils.getCurrentUser();
         }
         this.dispatch.owner = 'user#' + this.userDetail.uuid;
+        this.$emit('updateDispatchOwnerInfo', this.userDetail);
         if (this.draftData.tagList) {
           this.tagList = this.draftData.tagList;
         }
@@ -229,8 +230,11 @@ export default {
         return this.$api.framework.user.getUser(data).then(res => {
           if (res.Status == 'OK') {
             this.userDetail = res.Return;
+            this.$emit('updateDispatchOwnerInfo', this.userDetail);
           }
         });
+      } else {
+        this.$emit('updateDispatchOwnerInfo', {});
       }
     },
     changePriorityUuid(val) {
