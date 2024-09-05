@@ -372,19 +372,23 @@ export default {
       });
     },
     async changeOverride(val, step) {
-      if (!val && this.$utils.isEmpty(this.initStepList)) {
+      if (!val) {
         //如果当前是环境层，取消重载时需要获取模块层的当前阶段
         //如果当前是模块层，取消重载时需要获取应用层的当前阶段
-        let data = {
-          appSystemId: this.appSystemId
-        };
-        if (this.envId) {
-          this.$set(data, 'appModuleId', this.appModuleId);
+        if (this.$utils.isEmpty(this.initStepList)) {
+          let data = {
+            appSystemId: this.appSystemId
+          };
+          if (this.envId) {
+            this.$set(data, 'appModuleId', this.appModuleId);
+          }
+          let res = await this.$api.deploy.apppipeline.getAppPipeline(data);
+          if (res.Status == 'OK') {
+            this.initStepList = res.Return.config.combopPhaseList || [];
+          }
         }
-        let res = await this.$api.deploy.apppipeline.getAppPipeline(data);
-        if (res.Status == 'OK') {
-          this.initStepList = res.Return.config.combopPhaseList || [];
-          let findItem = this.initStepList.find(s => s.uuid == step.uuid);
+        const findItem = this.initStepList.find(s => s.uuid == step.uuid);
+        if (findItem) {
           this.$set(step, 'config', findItem.config);
         }
       }

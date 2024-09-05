@@ -159,7 +159,6 @@ export default {
   },
   data() {
     return {
-      defaultParamoverride: {}, //预设参数初始值
       profileList: [], //预置参数列表
       isShow: false,
       profileId: null,
@@ -222,12 +221,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    initParamList(list) {
-      this.initParamoverride = {};
-      list && list.forEach((item) => {
-        this.$set(this.defaultParamoverride, 'profileId', item.paramList);
-      });
-    },
     closeDialog(needRefresh) {
       this.isShow = false;
       if (needRefresh) {
@@ -284,7 +277,11 @@ export default {
     },
     changeInherit(val, item) {
       if (val == 1) {
-        this.getProfileList(item.profileId);
+        if (this.envId || this.appModuleId) {
+          this.getProfileList(item.profileId);
+        } else {
+          this.getProfileDetailById(item.profileId);
+        }
       } else {
         this.$emit('saveOverrideProfileList', this.profileList);
       }
@@ -296,10 +293,15 @@ export default {
       this.$emit('jumpToItem', item);
     },
     getProfileList(id) { //预置参数更新
+    //模块层的预置参数继承应用层
       let data = {
         appSystemId: this.appSystemId,
         defaultValue: [id]
       };
+      //环境层的预置参数继承模块层的
+      if (this.envId) {
+        data.appModuleId = this.appModuleId;
+      }
       if (!this.$utils.isEmpty(this.profileMap[id])) {
         this.updatedParam(this.profileMap[id]);
         return;
@@ -309,6 +311,24 @@ export default {
           const profileConfig = res.Return[0];
           this.profileMap[id] = profileConfig;
           this.updatedParam(profileConfig);
+        }
+      });
+    },
+    getProfileDetailById(id) {
+      //应用层预置参数继承全局预置参数
+      this.$api.autoexec.profile.getProfileDetailById(id).then(res => {
+        if (res.Status == 'OK') {
+          const profileParamVoList = res.Return.profileParamVoList || [];
+          let findItem = this.profileList.find(item => item.profileId == id);
+          if (findItem) {
+            profileParamVoList.forEach(item => {
+              let findParam = findItem.paramList.find(p => p.key == item.key);
+              if (findParam && findParam.inherit) {
+                this.$set(findParam, 'defaultValue', item.defaultValue);
+              }
+            });
+            this.$emit('saveOverrideProfileList', this.profileList);
+          }
         }
       });
     },
@@ -361,7 +381,6 @@ export default {
         } else {
           this.profileList = [];
         }
-        this.initParamList(val);
       },
       deep: true,
       immediate: true

@@ -403,6 +403,7 @@
             :mode="mode"
             :isCustomValue="true"
             :formExtendData="formExtendData"
+            :externalData="externalData"
             @emit="
               val => {
                 $emit('emit', val);
@@ -473,6 +474,11 @@ export default {
     disabledHideComponent: { //是否禁用隐藏组件
       type: Boolean,
       default: false
+    },
+    externalData: {
+      // 外部数据，非表单数据，例如工单上报人数据等
+      type: Object,
+      default: () => {}
     }
   },
   data() {

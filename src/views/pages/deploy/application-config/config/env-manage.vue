@@ -34,17 +34,20 @@
         >
         </EnvAttr>
       </TabPane>
+      <appConfigEnvTabHandler></appConfigEnvTabHandler>
     </Tabs>
   </div>
 </template>
 <script>
+import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   name: '',
   components: {
     EnvInstanceList: () => import('./env/env-instance-list'), // 实例列表
     EnvAutoConfigList: () => import('./env/env-autoconfig-list'), // autoconfig
     EnvDbConfigList: () => import('./env/env-db-config-list'), // autoconfig
-    EnvAttr: () => import('./env/env-attr')
+    EnvAttr: () => import('./env/env-attr'),
+    ...ComponentManager.getDeployAppConfigEnvTabComponent()
   },
   props: {
     params: {

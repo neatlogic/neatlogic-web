@@ -78,7 +78,8 @@ export default {
   data() {
     return {
       filter: this.value || {},
-      validateList: [{ name: 'required', message: ' ' }]
+      validateList: [{ name: 'required', message: ' ' }],
+      filterComponentList: ['formselect', 'formradio', 'formcheckbox', 'formuserselect', 'formdispatchowner']
     };
   },
   beforeCreate() {},
@@ -125,7 +126,7 @@ export default {
   filter: {},
   computed: {
     otherFormItemList() {
-      let list = this.formItemList.filter(d => d.uuid !== this.formItem.uuid && ['formselect', 'formradio', 'formcheckbox', 'formuserselect'].includes(d.handler));
+      let list = this.formItemList.filter(d => d.uuid !== this.formItem.uuid && this.filterComponentList.includes(d.handler));
       let newList = [];
       list.forEach(item => {
         let obj = {
