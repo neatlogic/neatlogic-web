@@ -1,5 +1,5 @@
 export default ({result, view}) => {
-  if (result) {
+  if (result && !view.$utils.isEmpty(view.formData[view.formItem.uuid])) {
     view.$set(view.formData, view.formItem.uuid, null);
   }
   view.addExecuteCount('clearValue');

@@ -1278,7 +1278,9 @@ export default {
           this.$set(item, '_focusSelect', true);
           selectData = item;
         } else {
-          this.$set(item, '_focusSelect', false);
+          if (item.hasOwnProperty('_focusSelect')) {
+            this.$set(item, '_focusSelect', false);
+          }
         }
       });
 
@@ -1557,7 +1559,9 @@ export default {
       }
       if (!val && this.nodeList.length > 0) {
         this.nodeList.forEach(no => {
-          no['_focusSelect'] = false;
+          if (no.hasOwnProperty('_focusSelect')) {
+            no['_focusSelect'] = false;
+          }
         });
         this.focusIndex = -1;
       }
