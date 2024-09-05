@@ -24,15 +24,18 @@
                   animation="300"
                 >
                   <transition-group>
-                    <div
-                      v-for="(phase, index) in activedPhaseList"
-                      :key="phase.phase"
-                      style="display: inline-block;"
-                    >
-                      <div class="pl-md pr-md mr-md mb-md radius-mi phase-item bg-selected border-primary text-primary"><span class="cursor tsfont-trash-o" @click="removePhase(phase)">{{ phase.name }}</span>
-                        <i v-if="phase.configTemplate" :class="hasConfig(phase.phase)" @click.stop="openConfig(phase)"></i>
+                    <div v-for="(phase, index) in activedPhaseList" :key="phase.phase" style="display: inline-block">
+                      <div class="pl-md pr-md mr-md mb-md radius-mi phase-item bg-selected border-primary text-primary">
+                        <span class="cursor tsfont-trash-o" @click="removePhase(phase)"></span>
+                        <span>{{ phase.name }}</span>
+                        <span
+                          v-if="phase.configTemplate"
+                          class="cursor"
+                          :class="hasConfig(phase.phase)"
+                          @click.stop="openConfig(phase)"
+                        ></span>
                       </div>
-                      <div v-if="index<activedPhaseList.length - 1" class="forbid mr-md mb-md text-grey" style="display: inline-block;"><span class="tsfont-arrow-right"></span></div>
+                      <div v-if="index < activedPhaseList.length - 1" class="forbid mr-md mb-md text-grey" style="display: inline-block"><span class="tsfont-arrow-right"></span></div>
                     </div>
                   </transition-group>
                 </draggable>
@@ -243,6 +246,9 @@ export default {
       const index = this.activedPhaseList.findIndex(d => d === phase);
       if (index > -1) {
         this.activedPhaseList.splice(index, 1);
+        if (this.policyData?.config?.phaseConfig) {
+          this.$delete(this.policyData.config.phaseConfig, phase.phase);
+        }
       }
     },
     addPhase(phase) {
@@ -257,12 +263,13 @@ export default {
       this.isConfigDialogShow = false;
     },
     setPhaseConfig(phase, phaseConfig) {
-      const config = { phaseConfig: {} };
-      config.phaseConfig[phase] = phaseConfig;
       if (!this.policyData.config) {
-        this.policyData.config = {};
+        this.$set(this.policyData, 'config', {});
       }
-      Object.assign(this.policyData.config, config);
+      if (!this.policyData.config.phaseConfig) {
+        this.$set(this.policyData.config, 'phaseConfig', {});
+      }
+      this.$set(this.policyData.config.phaseConfig, phase, phaseConfig);
     },
     delInterface(interfaceId) {
       if (this.policyData && this.policyData.interfaceList) {
