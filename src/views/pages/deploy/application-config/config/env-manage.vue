@@ -34,7 +34,7 @@
         >
         </EnvAttr>
       </TabPane>
-      <appConfigEnvTabHandler></appConfigEnvTabHandler>
+      <div :is="'appConfigEnvTabHandler'" v-if="isHasAppConfigEnvTabHandler"></div>
     </Tabs>
   </div>
 </template>
@@ -85,7 +85,12 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    isHasAppConfigEnvTabHandler() {
+      const Items = ComponentManager.getDeployAppConfigEnvTabComponent && ComponentManager.getDeployAppConfigEnvTabComponent();
+      return !!Items['appConfigEnvTabHandler'];
+    }
+  },
   watch: {}
 };
 </script>
