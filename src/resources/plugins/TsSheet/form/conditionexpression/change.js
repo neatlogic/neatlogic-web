@@ -1,5 +1,5 @@
 export default (currentValue, oldValue, condition) => {
-  if (currentValue != oldValue) {
+  if (JSON.stringify(currentValue) !== JSON.stringify(oldValue)) {
     return true;
   }
   return false;
