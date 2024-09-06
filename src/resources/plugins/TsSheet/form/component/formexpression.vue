@@ -6,7 +6,6 @@
 <script>
 import base from './base.vue';
 import validmixin from './common/validate-mixin.js';
-import TsTable from '@/resources/components/TsTable/TsTable.vue';
 export default {
   name: '',
   components: {
