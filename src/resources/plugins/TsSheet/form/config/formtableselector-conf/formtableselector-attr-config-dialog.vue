@@ -231,6 +231,18 @@
               ></TsFormDatePicker>
             </TsFormItem>
           </template>
+          <template v-else-if="propertyLocal.handler === 'formexpression'" v-slot:config>
+            <TsFormItem :label="$t('term.cmdb.expression')">
+              <ExpressionSetting
+                :formItemList="formItemList"
+                :uuid="propertyLocal.uuid"
+                :valueList="propertyLocal.config.expressionList"
+                @setConfig="(val)=>{
+                  $set(propertyLocal.config, 'expressionList', val)
+                }"
+              ></ExpressionSetting>
+            </TsFormItem>
+          </template>
           <template v-slot:reaction>
             <Tabs v-if="propertyLocal.reaction">
               <TabPane
@@ -313,8 +325,8 @@ export default {
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
     StaticDataEditor: () => import('../common/static-data-editor.vue'),
     ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
-    ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue')
-    
+    ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
+    ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue')
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -394,7 +406,8 @@ export default {
             { text: this.$t('page.radio'), value: 'formradio' },
             { text: this.$t('page.checkbox'), value: 'formcheckbox' },
             { text: this.$t('page.date'), value: 'formdate' },
-            { text: this.$t('page.time'), value: 'formtime' }
+            { text: this.$t('page.time'), value: 'formtime' },
+            {text: this.$t('term.cmdb.expression'), value: 'formexpression' }
           ],
           validateList: ['required']
         },
