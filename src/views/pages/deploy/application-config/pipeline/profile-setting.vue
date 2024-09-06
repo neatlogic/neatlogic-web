@@ -338,14 +338,18 @@ export default {
           let paramList = [];
           profileConfig.paramList.forEach(p => {
             let config = this.$utils.deepClone(p);
+            //当前参数中存在该key的参数
             let paramConfig = item.paramList.find(s => s.key == p.key);
             if (paramConfig) {
+              this.$set(config, 'inherit', paramConfig.inherit);
               if (!paramConfig.inherit) {
-                this.$set(config, 'inherit', 0);
+                //非继承的参数
                 this.$set(config, 'defaultValue', paramConfig.defaultValue);
               }
               paramList.push(config);
             } else {
+              //新增的参数
+              this.$set(config, 'inherit', 1);
               paramList.push(config);
             }
           });
