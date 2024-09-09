@@ -1,6 +1,6 @@
 <template>
   <div>
-       
+    {{ expressionValue }}
   </div>
 </template>
 <script>
@@ -19,7 +19,8 @@ export default {
   },
   data() {
     return {
-      expressionValue: ''
+      expressionValue: '',
+      whiteList: ['formtext', 'formdate', 'formtime', 'formselect', 'formradio', 'formnumber']
     };
   },
   beforeCreate() {},
@@ -36,44 +37,82 @@ export default {
   destroyed() {},
   methods: {
     init() {
+      this.getFormlabelMapping(this.formData);
       let value = '';
-      if (this.formData && this.config && this.$utils.isEmpty(this.config.expressionList)) {
-        this.config.expressionList.forEach(item => {
-          if (item.mappingMode === 'constant') {
-            value += item.value;
-          } else if (item.mappingMode === 'formCommonComponent') {
-            const uuidList = item.value.split('#');
-            const formItemValue = this.formData[uuidList[0]];
-            if (!this.$utils.isEmpty(formItemValue)) {
-              if (typeof formItemValue === 'object') {
-                if (uuidList[1]) {
-                  value += formItemValue[uuidList[1]];
-                } else {
-                  value += formItemValue['text'];
-                }
-              } else if (Array.isArray(formItemValue)) {
-                formItemValue.forEach(a => {
-                  if (typeof a === 'object') {
-                    if (uuidList[1]) {
-                      value += a[uuidList[1]];
-                    } else {
-                      value += a['text'];
-                    }
+      if (this.formData && this.config && !this.$utils.isEmpty(this.config.expression)) {
+        const expression = this.config.expression;
+        if (expression.type === 'strExpression') {
+          expression.list.forEach(item => {
+            if (item.mappingMode === 'constant') {
+              value += item.value;
+            } else if (item.mappingMode === 'formCommonComponent') {
+              const uuidList = item.value.split('#');
+              const formItemValue = this.formData[uuidList[0]] || '';
+              if (!this.$utils.isEmpty(formItemValue)) {
+                if (typeof formItemValue === 'object') {
+                  if (uuidList[1]) {
+                    value += formItemValue[uuidList[1]] || '';
                   } else {
-                    value += a;
+                    value += formItemValue['text'] || '';
                   }
-                });
-              } else {
-                value += formItemValue;
+                } else if (Array.isArray(formItemValue)) {
+                  formItemValue.forEach(a => {
+                    if (typeof a === 'object') {
+                      if (uuidList[1]) {
+                        value += a[uuidList[1]] || '';
+                      } else {
+                        value += a['text'] || '';
+                      }
+                    } else {
+                      value += a;
+                    }
+                  });
+                } else {
+                  value += formItemValue;
+                }
               }
             }
-
-            value += this.formData[uuidList[0]];
-          } else if (item.mappingMode === 'formTableComponent') {
-            //
-          }
-        });
+          });
+        } else if (expression.type === 'jsExpression' && expression.jsValue) {
+          const data = this.getFormlabelMapping(this.formData);
+          value = this.safeEval(expression.jsValue, data);
+        }
       }
+      if (this.$utils.isSame(value, this.expressionValue)) return;
+      this.$nextTick(() => {
+        this.expressionValue = this.$utils.deepClone(value);
+        this.setValue(value);
+      });
+    },
+    safeEval(jsExpression, formData) {
+      try {
+        const func = new Function('data', `${jsExpression}`);
+        return func(formData);
+      } catch (error) {
+        console.error('Error evaluating expression:', error);
+        return null;
+      }
+    },
+    getFormlabelMapping(formData) {
+      let data = {};
+      this.formItemList.forEach(item => {
+        if (!this.$utils.isEmpty(formData[item.uuid]) && this.whiteList.includes(item.handler)) {
+          data[item.label] = formData[item.uuid];
+        } else {
+          if (item.config && item.config.dataConfig) {
+            const findItem = item.config.dataConfig.find(a => a.uuid === this.formItem.uuid);
+            if (findItem) {
+              item.config.dataConfig.forEach(a => {
+                const label = item.label + '.' + a.label;
+                if (!this.$utils.isEmpty(formData[a.uuid]) && this.whiteList.includes(a.handler)) {
+                  data[label] = formData[a.uuid];
+                }
+              });
+            }
+          }
+        }
+      });
+      return data;
     }
    
   },
@@ -82,14 +121,14 @@ export default {
   watch: {
     value: {
       handler(val) {
-        console.log('value', val);
+        this.expressionValue = this.$utils.deepClone(val);
       },
       deep: true,
       immediate: true
     },
-    'config.expressionList': {
-      handler: function(val) {
-        console.log('expressionList', val);
+    formData: {
+      handler(val) {
+        this.init();
       },
       deep: true,
       immediate: true

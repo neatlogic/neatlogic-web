@@ -234,11 +234,15 @@
           <template v-else-if="propertyLocal.handler === 'formexpression'" v-slot:config>
             <TsFormItem :label="$t('term.cmdb.expression')">
               <ExpressionSetting
+                ref="formitem_expression"
+                :allFormItemList="allFormItemList"
                 :formItemList="formItemList"
-                :uuid="propertyLocal.uuid"
-                :valueList="propertyLocal.config.expressionList"
+                :formItemUuid="formItemUuid"
+                :attrUuid="propertyLocal.uuid"
+                :value="propertyLocal.config.expression"
+                isRequired
                 @setConfig="(val)=>{
-                  $set(propertyLocal.config, 'expressionList', val)
+                  changeExpression(val);
                 }"
               ></ExpressionSetting>
             </TsFormItem>
@@ -329,6 +333,7 @@ export default {
     ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue')
   },
   props: {
+    formItemUuid: { type: String }, //表单组件uuid
     formItemConfig: { type: Object }, //表单组件配置
     property: { type: Object }, //属性配置
     formItemList: {typeof: Array}
@@ -562,6 +567,9 @@ export default {
       } else {
         this.$delete(this.propertyLocal.reaction, 'filter');
       }
+    },
+    changeExpression(val) {
+      this.$set(this.propertyLocal.config, 'expression', val);
     }
   },
   filter: {},
@@ -652,6 +660,9 @@ export default {
       handler: function(newVal, oldVal) {
         if (newVal && oldVal && oldVal != newVal) {
           this.$set(this.propertyLocal, 'config', {});
+          if (newVal === 'formexpression') {
+            this.$set(this.propertyLocal.config, 'isReadOnly', true);
+          }
         }
       },
       deep: true,
