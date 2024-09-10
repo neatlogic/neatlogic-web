@@ -4,10 +4,19 @@
       <div>
         <TsForm ref="formitem_formConfig" v-model="propertyLocal" :item-list="formConfig">
           <template v-slot:isRequired>
-            <TsFormSwitch v-model="propertyLocal.config.isRequired" :trueValue="true" :falseValue="false"></TsFormSwitch>
+            <TsFormSwitch
+              v-model="propertyLocal.config.isRequired"
+              :trueValue="true"
+              :falseValue="false"
+            ></TsFormSwitch>
           </template>
           <template v-slot:isReadOnly>
-            <TsFormSwitch v-model="propertyLocal.config.isReadOnly" :trueValue="true" :falseValue="false"></TsFormSwitch>
+            <TsFormSwitch
+              v-model="propertyLocal.config.isReadOnly"
+              :trueValue="true"
+              :falseValue="false"
+              :disabled="propertyLocal.handler === 'formexpression'? true : false"
+            ></TsFormSwitch>
           </template>
           <template v-if="['formtext', 'formtextarea'].includes(propertyLocal.handler)" v-slot:config>
             <TsFormItem v-if="propertyLocal.handler=== 'formtext'" :label="$t('form.placeholder.checkrule')">
@@ -228,6 +237,21 @@
               ></TableConfig>
             </TsFormItem>
           </template>
+          <template v-else-if="propertyLocal.handler === 'formexpression'" v-slot:config>
+            <TsFormItem :label="$t('term.cmdb.expression')">
+              <ExpressionSetting
+                ref="formitem_expression"
+                :formItemList="formItemList"
+                :formItemUuid="formItemUuid"
+                :attrUuid="propertyLocal.uuid"
+                :value="propertyLocal.config.expression"
+                isRequired
+                @setConfig="(val)=>{
+                  $set(propertyLocal.config, 'expression', val)
+                }"
+              ></ExpressionSetting>
+            </TsFormItem>
+          </template>
           <template v-slot:reaction>
             <Tabs v-if="propertyLocal.reaction">
               <TabPane
@@ -335,7 +359,8 @@ export default {
     TableConfig: () => import('./formtableinputer-table-config.vue'),
     FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
-    FormtableinputDataSource: () => import('./formtableinput-data-source.vue')
+    FormtableinputDataSource: () => import('./formtableinput-data-source.vue'),
+    ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue')
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -428,7 +453,8 @@ export default {
             { text: this.$t('page.checkbox'), value: 'formcheckbox' },
             { text: this.$t('page.date'), value: 'formdate' },
             { text: this.$t('page.time'), value: 'formtime' },
-            { text: this.$t('page.uploadattachment'), value: 'formupload' }
+            { text: this.$t('page.uploadattachment'), value: 'formupload' },
+            { text: this.$t('term.cmdb.expression'), value: 'formexpression' }
           ],
           validateList: ['required']
         },
@@ -661,6 +687,9 @@ export default {
       this.$nextTick(() => {
         this.$set(this.propertyLocal, 'reaction', this.reaction);
         this.$set(this.propertyLocal, 'value', null);
+        if (val === 'formexpression') {
+          this.$set(this.propertyLocal.config, 'isReadOnly', true);
+        }
         if (val === 'formtext' || val === 'formtextarea') {
           // 联动规则(赋值)：是否可以动态赋值
           this.$set(this.propertyLocal, 'isDynamicValue', true);
