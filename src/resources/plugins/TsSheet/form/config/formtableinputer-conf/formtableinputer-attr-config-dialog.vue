@@ -686,7 +686,7 @@ export default {
     changeHandler(val) {
       this.propertyLocal.reaction = null;
       this.$nextTick(() => {
-        this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
+        this.$set(this.propertyLocal, 'reaction', this.reaction);
         this.$set(this.propertyLocal, 'value', null);
         if (val === 'formexpression') {
           this.$set(this.propertyLocal.config, 'isReadOnly', true);
