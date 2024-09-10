@@ -37,7 +37,6 @@ export default {
   destroyed() {},
   methods: {
     init() {
-      this.getFormlabelMapping(this.formData);
       let value = '';
       if (this.formData && this.config && !this.$utils.isEmpty(this.config.expression)) {
         const expression = this.config.expression;
@@ -53,7 +52,7 @@ export default {
                   if (uuidList[1]) {
                     value += formItemValue[uuidList[1]] || '';
                   } else {
-                    value += formItemValue['text'] || '';
+                    value += formItemValue['value'] || '';
                   }
                 } else if (Array.isArray(formItemValue)) {
                   formItemValue.forEach(a => {
@@ -61,7 +60,7 @@ export default {
                       if (uuidList[1]) {
                         value += a[uuidList[1]] || '';
                       } else {
-                        value += a['text'] || '';
+                        value += a['value'] || '';
                       }
                     } else {
                       value += a;
@@ -78,11 +77,12 @@ export default {
           value = this.safeEval(expression.jsValue, data);
         }
       }
-      if (this.$utils.isSame(value, this.expressionValue)) return;
-      this.$nextTick(() => {
-        this.expressionValue = this.$utils.deepClone(value);
-        this.setValue(value);
-      });
+      if (!this.$utils.isSame(value, this.expressionValue)) {
+        this.$nextTick(() => {
+          this.expressionValue = this.$utils.deepClone(value);
+          this.setValue(value);
+        });
+      }
     },
     safeEval(jsExpression, formData) {
       try {
@@ -96,16 +96,16 @@ export default {
     getFormlabelMapping(formData) {
       let data = {};
       this.formItemList.forEach(item => {
-        if (!this.$utils.isEmpty(formData[item.uuid]) && this.whiteList.includes(item.handler)) {
-          data[item.label] = formData[item.uuid];
+        if (this.whiteList.includes(item.handler)) {
+          data[item.label] = this.getValueString(formData[item.uuid]);
         } else {
           if (item.config && item.config.dataConfig) {
             const findItem = item.config.dataConfig.find(a => a.uuid === this.formItem.uuid);
             if (findItem) {
               item.config.dataConfig.forEach(a => {
                 const label = item.label + '.' + a.label;
-                if (!this.$utils.isEmpty(formData[a.uuid]) && this.whiteList.includes(a.handler)) {
-                  data[label] = formData[a.uuid];
+                if (this.whiteList.includes(a.handler)) {
+                  data[label] = this.getValueString(formData[a.uuid]);
                 }
               });
             }
@@ -113,8 +113,20 @@ export default {
         }
       });
       return data;
+    },
+    getValueString(data) {
+      if (!this.$utils.isEmpty(data)) {
+        if (Array.isArray(data)) {
+          return data[0].value;
+        } else if (typeof data === 'object') {
+          return data.value;
+        } else {
+          return data;
+        }
+      } else {
+        return '';
+      }
     }
-   
   },
   filter: {},
   computed: {},

@@ -235,7 +235,6 @@
             <TsFormItem :label="$t('term.cmdb.expression')">
               <ExpressionSetting
                 ref="formitem_expression"
-                :allFormItemList="allFormItemList"
                 :formItemList="formItemList"
                 :formItemUuid="formItemUuid"
                 :attrUuid="propertyLocal.uuid"

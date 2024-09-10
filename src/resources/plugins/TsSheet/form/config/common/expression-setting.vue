@@ -102,10 +102,6 @@ export default {
       default: ''
 
     },
-    allFormItemList: { //表格内外组件列表
-      type: Array,
-      default: () => []
-    },
     formItemList: { //表单组件列表
       type: Array,
       default: () => []
@@ -170,29 +166,23 @@ export default {
   methods: {
     init() {
       let formAttrList = [];
-      this.formItemList.forEach((item) => {
-        if (this.whiteList.includes(item.handler)) {
+      const processItem = (item, parentLabel) => {
+        if (this.whiteList.includes(item.handler) && (!item.config || !item.config.isMultiple)) {
+          const label = parentLabel ? `${parentLabel}.${item.label}` : item.label;
           formAttrList.push({
             handler: item.handler,
             handlerName: this.mapping[item.handler],
-            label: item.label,
-            key: item.key,
-            uuid: item.uuid
-
+            label
           });
-        } else if (item.uuid === this.formItemUuid) {
-          const dataConfig = item?.config?.dataConfig || [];
-          dataConfig.forEach((subItem) => {
-            if (this.whiteList.includes(subItem.handler)) {
-              formAttrList.push({
-                handler: subItem.handler,
-                handlerName: this.mapping[subItem.handler],
-                label: item.label + '.' + subItem.label,
-                key: item.key,
-                uuid: item.uuid
-              });
-            } 
+        }
+      };
+      this.formItemList.forEach((item) => {
+        if (item.uuid === this.formItemUuid) {
+          (item.config?.dataConfig || []).forEach((subItem) => {
+            processItem(subItem, item.label);
           });
+        } else {
+          processItem(item);
         }
       });
       this.formAttrList = formAttrList;
@@ -275,12 +265,25 @@ export default {
     formCommonComponentList() {
       let dataList = [];
       let list = [];
-      if (this.allFormItemList && this.allFormItemList.length > 0) {
-        //表单普通组件(表格内外的组件)
-        dataList = this.allFormItemList.filter(item => {
+      if (this.formItemList && this.formItemList.length > 0) {
+        //表单普通组件(表格外的组件)
+        dataList = this.formItemList.filter(item => {
           return item.uuid != this.attrUuid && this.whiteList.includes(item.handler);
         });
-       
+        //当前表格组件属性列表(表格输入/表格选择组件)
+        const findItem = this.formItemList.find(item => item.uuid === this.formItemUuid);
+        if (findItem) {
+          const dataConfig = findItem?.config?.dataConfig || [];
+          dataConfig.forEach((d) => {
+            if (this.whiteList.includes(d.handler)) {
+              dataList.push({
+                ...d,
+                label: findItem.label + '.' + d.label
+              });
+            } 
+          });
+        }
+
         dataList.forEach(item => {
           let obj = {
             label: item.label,
@@ -296,9 +299,12 @@ export default {
               });
             });
           }
-          list.push(obj);
-          if (!this.$utils.isEmpty(children)) {
-            list.push(...children);
+          //过滤多选
+          if (!item.config || !item.config.isMultiple) {
+            list.push(obj);
+            if (!this.$utils.isEmpty(children)) {
+              list.push(...children);
+            }
           }
         });
       }
