@@ -641,7 +641,7 @@ export default {
       }
       return resultValue;
     },
-    getConditionFormItemList() { //获取外部可以作为联动的条件的组件
+    getConditionFormItemList() { //获取可以作为联动的条件的组件(外部组件和当前行下组件的属性)
       this.conditionFormItemUuidList = [];
       let allFormItem = this.formItemList.concat(this.formItem.config.dataConfig);
       let formItemList = allFormItem.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
@@ -661,7 +661,9 @@ export default {
         this.initExternalData = this.$utils.deepClone(obj);
         this.tableData.tbodyList.forEach(item => {
           Object.keys(item).forEach(key => {
-            if (!this.conditionFormItemUuidList.includes(key) && key !== 'uuid') { //uuid作为每一行的唯一标识，不能删除
+            //是否是当前组件的属性
+            const currentItemKey = this.config.dataConfig.find(d => d.uuid === key);
+            if (!currentItemKey && !this.conditionFormItemUuidList.includes(key) && key !== 'uuid') { //uuid作为每一行的唯一标识，不能删除
               this.$delete(item, key);
             }
           });
