@@ -659,7 +659,7 @@ export default {
     changeHandler(val) {
       this.propertyLocal.reaction = null;
       this.$nextTick(() => {
-        this.$set(this.propertyLocal, 'reaction', { mask: {}, hide: {}, display: {}, readonly: {}, disable: {}, required: {}});
+        this.$set(this.propertyLocal, 'reaction', this.reaction);
         this.$set(this.propertyLocal, 'value', null);
         if (val === 'formtext' || val === 'formtextarea') {
           // 联动规则(赋值)：是否可以动态赋值
