@@ -664,6 +664,7 @@ export default {
             //是否是当前组件的属性
             const currentItemKey = this.config.dataConfig.find(d => d.uuid === key);
             if (!currentItemKey && !this.conditionFormItemUuidList.includes(key) && key !== 'uuid') { //uuid作为每一行的唯一标识，不能删除
+              //清除当前行下多余的属性（主要是外部组件联动属性）
               this.$delete(item, key);
             }
           });
