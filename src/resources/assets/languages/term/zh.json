@@ -1303,7 +1303,10 @@
     "positiveintegerdesc": "正整数：表示“自定义|填写时间|日期”的值增加相应时间（或根据选择时间单位增加）。",
     "neglectintegerdesc": "负整数：表示“自定义|填写时间|日期”的值减少相应时间（或根据选择时间单位减少）。",
     "writetimedesc": "填写时间：表示触发当前组件校验时的时间。",
-    "fieldsconfiginfo": "根据字段映射配置，获取工单上报人相关信息"
+    "fieldsconfiginfo": "根据字段映射配置，获取工单上报人相关信息",
+    "jsscriptconversion": "js脚本转换",
+    "strjoin": "字段拼接",
+    "expressionplaceholder": "请填写ES5脚本，最后返回表达式的值value，范例："
   },
   "knowledge": {
     "document": "文档",

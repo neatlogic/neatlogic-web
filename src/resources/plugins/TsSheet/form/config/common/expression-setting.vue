@@ -61,7 +61,7 @@
         trigger="hover"
         word-wrap
         width="550"
-        title="属性列表"
+        :title="$t('term.cmdb.attributelist')"
         :transfer="true"
       >
         <span class="tsfont-question-o">{{ $t('page.help') }}</span>
@@ -75,7 +75,7 @@
         v-model="jsValue"
         codeMode="javascript"
         height="auto"
-        placeholder="请填写ES5脚本，最后返回表达式的值value，范例：return value"
+        :placeholder="$t('term.framework.expressionplaceholder') + 'return value'"
         @change="changeJsValue"
       ></TsCodemirror>
     </div>
@@ -120,11 +120,11 @@ export default {
       type: 'strExpression',
       dataList: [
         {
-          text: '字段拼接',
+          text: this.$t('term.framework.strjoin'),
           value: 'strExpression'
         },
         {
-          text: 'js脚本转换',
+          text: this.$t('term.framework.jsscriptconversion'),
           value: 'jsExpression'
         }
       ],
@@ -140,14 +140,12 @@ export default {
       whiteList: ['formtext', 'formdate', 'formtime', 'formselect', 'formradio', 'formnumber'],
       formAttrList: [],
       mapping: {
-        formtext: '文本框',
-        formdate: '日期',
-        formtime: '时间',
-        formselect: '下拉框',
-        formradio: '单选框',
-        formnumber: '复选框',
-        formtableinputer: '表格输入组件',
-        formtableselector: '表格选择组件'
+        formtext: this.$t('page.input'),
+        formdate: this.$t('page.date'),
+        formtime: this.$t('page.time'),
+        formselect: this.$t('page.select'),
+        formradio: this.$t('page.radio'),
+        formnumber: this.$t('page.checkbox')
       }
     };
   },
