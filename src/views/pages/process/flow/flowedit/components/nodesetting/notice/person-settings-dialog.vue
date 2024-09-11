@@ -250,6 +250,9 @@ export default {
   computed: {
     getValueByNotifyName() {
       return (dataList, name) => {
+        if (this.$utils.isEmpty(dataList)) {
+          return '';
+        }
         let findItem = dataList.find(item => item.value == name);
         if (findItem) {
           return findItem.text;
