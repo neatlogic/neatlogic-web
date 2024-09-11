@@ -345,7 +345,8 @@ export default {
                   currentValue = this.$utils.getDateByFormat(new Date(currentValue), this.config.format);
                 }  
                 currentValue = new Date(currentValue).getTime();
-                let calculateValue = new Date(this.$utils.timestampCalculation(item.unit, item.value || 0, null, this.config.format || '', this.config.styleType)).getTime();
+                let calculateNum = (item.text == 'earlier' || item.text == 'earlierAndEqual') ? (item.value > 0 ? -(item.value) : item.value) : item.value;
+                let calculateValue = new Date(this.$utils.timestampCalculation(item.unit, calculateNum || 0, null, this.config.format || '', this.config.styleType)).getTime();
                 if (value == '') {
                   return true;
                 } else if (item.text == 'later') {
@@ -376,8 +377,9 @@ export default {
                     validator: (rule, value) => {
                       let configValue = formValue || component.config.valueQuote; // 解决自定义规则，没有校验的问题
                       configValue = this.getDateValue(configValue);
+                      let calculateNum = (item.text == 'earlier' || item.text == 'earlierAndEqual') ? (item.value > 0 ? -(item.value) : item.value) : item.value;
                       let currentValue = new Date(this.$utils.handleInvalidDate(value, this.config.format || '', this.config.styleType)).getTime();
-                      let calculateValue = new Date(this.$utils.timestampCalculation(item.unit, item.value || 0, configValue, this.config.format || '', this.config.styleType)).getTime();
+                      let calculateValue = new Date(this.$utils.timestampCalculation(item.unit, calculateNum || 0, configValue, this.config.format || '', this.config.styleType)).getTime();
                       if (value == '' || !configValue) {
                         return true;
                       } else if (item.text == 'laterAndEqual') {
@@ -436,7 +438,7 @@ export default {
                 minDate = _this.handleLaterAndEqual(item.unit, minDate, item.value);
               }
             } else if (item.text == 'earlier' || item.text == 'earlierAndEqual') {
-              let newValue = _this.$utils.timestampCalculation(item.unit, -(item.value || 0), null, this.config.format || '', this.config.styleType);
+              let newValue = _this.$utils.timestampCalculation(item.unit, ((item.value > 0 ? -(item.value) : item.value) || 0), null, this.config.format || '', this.config.styleType);
               maxDate = maxDate ? Math.max(new Date(maxDate).getTime(), new Date(newValue).getTime()) : new Date(newValue).getTime();
               if (item.text == 'earlierAndEqual') {
                 // 处理禁用日期边界
@@ -463,7 +465,7 @@ export default {
                   minDate = _this.handleLaterAndEqual(item.unit, minDate, item.value);
                 }
               } else if (item.text == 'earlier' || item.text == 'earlierAndEqual') {
-                let newValue = _this.$utils.timestampCalculation(item.unit, -(item.value || 0), comparedValue, this.config.format || '', this.config.styleType);
+                let newValue = _this.$utils.timestampCalculation(item.unit, ((item.value > 0 ? -(item.value) : item.value) || 0), comparedValue, this.config.format || '', this.config.styleType);
                 maxDate = maxDate ? Math.max(new Date(maxDate).getTime(), new Date(newValue).getTime()) : new Date(newValue).getTime();
                 if (item.text == 'earlierAndEqual') {
                   // 处理禁用日期边界
