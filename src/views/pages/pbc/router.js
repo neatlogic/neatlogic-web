@@ -10,6 +10,7 @@ const corporationManage = () => import('./corporation/corporation-manage.vue');
 const propertyManage = () => import('./property/property-manage.vue');
 const policyManage = () => import('./policy/policy-manage.vue');
 const policyAuditManage = () => import('./policy/policy-audit-manage.vue');
+const policyAuditView = () => import('@/views/pages/pbc/policy/policy-audit-view.vue');
 import {$t} from '@/resources/init.js';
 
 export default [
@@ -73,6 +74,17 @@ export default [
     component: policyAuditManage,
     meta: {
       title: $t('router.pbc.executionrecordmanage'),
+      ismenu: false,
+      type: 'pbcreport',
+      authority: 'PBC_INTERFACE_MODIFY'
+    }
+  },
+  {
+    path: '/policy-audit-view',
+    name: 'policy-audit-view',
+    component: policyAuditView,
+    meta: {
+      title: '策略执行记录',
       ismenu: false,
       type: 'pbcreport',
       authority: 'PBC_INTERFACE_MODIFY'

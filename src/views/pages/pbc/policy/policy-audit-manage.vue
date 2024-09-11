@@ -29,8 +29,8 @@
             @updatePage="searchPolicy"
           >
             <template slot-scope="{ row }">
-              <div style="position:relative" class="pl-sm pr-sm">
-                <div style="position:absolute;top:0px;right:0px;">
+              <div style="position: relative" class="pl-sm pr-sm">
+                <div style="position: absolute; top: 0px; right: 0px">
                   <Badge v-if="row.execCount" :count="row.execCount" type="primary"></Badge>
                 </div>
                 <div class="text-grey">
@@ -58,7 +58,7 @@
               <div v-if="row.status != 'running'">
                 <span :class="row.status == 'success' ? 'text-success' : row.status == 'failed' ? 'text-danger' : 'text-grey'">{{ row.statusText }}</span>
               </div>
-              <div v-else-if="row.status == 'running'" style="width:42px">
+              <div v-else-if="row.status == 'running'" style="width: 42px">
                 <Progress
                   :percent="99"
                   :stroke-width="10"
@@ -205,13 +205,14 @@ export default {
       this.currentAuditId = null;
     },
     viewPolicyAudit(row) {
-      this.currentAuditId = row.id;
-      this.isAuditDetailShow = true;
+      //this.currentAuditId = row.id;
+      //this.isAuditDetailShow = true;
+      this.$router.push({ path: '/policy-audit-view', query: { id: row.id } });
     },
     deletePolicyAudit(row) {
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: this.$t('dialog.contetn.deletetargetconfirm', {target: this.$t('term.autoexec.executionrecord')}),
+        content: this.$t('dialog.contetn.deletetargetconfirm', { target: this.$t('term.autoexec.executionrecord') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.pbc.policy.deletePolicyAudit(row.id).then(res => {
