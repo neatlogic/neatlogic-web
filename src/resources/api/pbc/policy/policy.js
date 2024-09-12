@@ -39,6 +39,9 @@ const policy = {
   },
   getPhaseInterfaceList(id) {
     return axios.post('/api/rest/pbc/policy/phase/interface/list', { id: id });
+  },
+  getLastPolicyAudit(params) {
+    return axios.post('/api/rest/pbc/policy/audit/getlast', params);
   }
 };
 

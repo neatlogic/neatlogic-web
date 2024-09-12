@@ -32,166 +32,186 @@
       </template>
       <template v-slot:content>
         <div v-if="searchParam.interfaceId">
-          <Tabs v-if="corporationList && corporationList.length > 0" v-model="currentCorporation" @on-click="changeTag">
-            <TabPane
-              v-for="corporation in corporationList"
-              :key="corporation.id"
-              :label="getLabel(corporation)"
-              :name="corporation.id.toString()"
-            >
-              <Loading :loadingShow="isLoading" type="fix"></Loading>
-              <div v-if="interfaceItemData && interfaceItemData.tbodyList && interfaceItemData.tbodyList.length > 0" class="tstable-container tstable-normal tstable-allborder tstable-no-fixedHeader radius-lg">
-                <div v-custom-scrollbar class="tstable-main bg-op">
-                  <table class="table-main tstable-body">
-                    <thead>
-                      <tr v-if="hasComplexProp">
-                        <th :colspan="hasDeleteItem ? 5 : 4"></th>
-                        <th
-                          v-for="(prop, pindex) in propertyList"
-                          :key="pindex"
-                          nowrap
-                          :colspan="prop.subPropertyList ? prop.subPropertyList.length : 1"
-                        >
-                          {{ prop.complexName || '' }}
-                        </th>
-                      </tr>
-                      <tr style="text-align:center">
-                        <th></th>
-                        <th v-if="hasDeleteItem">
-                          <Checkbox
-                            :value="isCheckAll"
-                            :indeterminate="isIndeterminate"
-                            style="margin:0px"
-                            @on-change="toggleSelectAll"
-                          ></Checkbox>
-                        </th>
-                        <th>{{ $t('page.exception') }}</th>
-                        <th>{{ $t('page.status') }}</th>
-                        <th>{{ $t('page.updatetime') }}</th>
-                        <th v-for="(prop, pindex) in allPropertyList" :key="pindex" nowrap>
-                          <span v-if="!isUseAlias">{{ prop.name }}</span>
-                          <span v-else>{{ prop.alias || prop.name }}</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody v-if="interfaceItemData.tbodyList && interfaceItemData.tbodyList.length > 0" class="tbody-main">
-                      <tr v-for="(interfaceItem, index) in interfaceItemData.tbodyList" :key="index">
-                        <td>
-                          <Dropdown placement="bottom-start" :transfer="true">
-                            <a href="javascript:void(0)" class="tsfont-option-horizontal"></a>
-                            <DropdownMenu slot="list">
-                              <DropdownItem @click.native="editInterfaceItem(interfaceItem.id)">{{ $t('page.edit') }}</DropdownItem>
-                              <DropdownItem @click.native="validInterfaceItem(interfaceItem.id)">{{ $t('page.validate') }}</DropdownItem>
-                              <DropdownItem v-if="!interfaceItem.isImported" @click.native="delInterfaceItem(interfaceItem.id)">{{ $t('page.delete') }}</DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                        </td>
-                        <td v-if="hasDeleteItem"><Checkbox v-if="!interfaceItem.isImported" v-model="interfaceItem.isSelected" style="margin:0px"></Checkbox></td>
-                        <td><Badge :count="interfaceItem.errorCount"></Badge></td>
-                        <td>状态</td>
-                        <td>
-                          <span v-if="interfaceItem.lcd">{{ interfaceItem.lcd | formatDate }}</span>
-                          <span v-else-if="interfaceItem.fcd">{{ interfaceItem.fcd | formatDate }}</span>
-                        </td>
-                        <td v-for="(prop, pindex) in allPropertyList" :key="pindex">
-                          <div v-if="interfaceItem.dataText && !prop.complexId" class="divContent">
-                            <Poptip
-                              v-if="interfaceItem.error && interfaceItem.error[prop.id]"
-                              :transfer="true"
-                              trigger="hover"
-                              :title="$t('page.exception')"
-                              class="error"
-                              word-wrap
-                              width="400"
-                              :content="interfaceItem.error[prop.id]"
-                            >
-                              <i class="text-error tsfont-warning-s"></i>
-                            </Poptip>
-                            {{ interfaceItem.dataText[prop.id] }}
-                          </div>
-                          <div v-else-if="interfaceItem.dataText && prop.complexId && interfaceItem.dataText[prop.complexId] && interfaceItem.dataText[prop.complexId].length > 0">
-                            <div v-for="(d, dindex) in interfaceItem.dataText[prop.complexId]" :key="dindex" class="mb-xs divContent">
-                              <div v-if="dindex < 5 || isShowMore(interfaceItem.id, prop.complexId)">
-                                <Poptip
-                                  v-if="interfaceItem.error && interfaceItem.error[prop.complexId] && interfaceItem.error[prop.complexId][dindex.toString()] && interfaceItem.error[prop.complexId][dindex.toString()][prop.id]"
-                                  :transfer="true"
-                                  trigger="hover"
-                                  :title="$t('page.exception')"
-                                  class="error"
-                                  word-wrap
-                                  width="400"
-                                  :content="interfaceItem.error[prop.complexId][dindex.toString()][prop.id]"
-                                >
-                                  <span class="text-error tsfont-warning-s mr-xs"></span>
-                                </Poptip>
-                                <span v-if="d[prop.id]">{{ d[prop.id] }}</span>
-                                <span v-else>-</span>
-                                <Divider v-if="dindex < interfaceItem.dataText[prop.complexId].length - 1" style="margin:0px;padding:0px" />
-                              </div>
+          <div v-if="corporationList && corporationList.length > 0">
+            <Tabs v-model="currentCorporation" @on-click="changeTag">
+              <TabPane
+                v-for="corporation in corporationList"
+                :key="corporation.id"
+                :label="getLabel(corporation)"
+                :name="corporation.id.toString()"
+              ></TabPane>
+            </Tabs>
+            <Loading :loadingShow="isLoading" type="fix"></Loading>
+            <div v-if="auditData" class="mb-md">
+              <div class="mb-sm"><b class="text-grey">最近一次同步记录</b></div>
+              <div class="mb-sm">
+                <span class="mr-xs text-grey">开始时间</span>
+                <span class="mr-md">{{ auditData.startTime | formatDate }}</span>
+                <span class="mr-xs text-grey">结束时间</span>
+                <span class="mr-md">{{ auditData.endTime | formatDate }}</span>
+                <span class="mr-xs text-grey">耗时</span>
+                <span class="mr-md">{{ auditData.timeCost | formatTimeCost }}</span>
+                <span class="text-href" @click="$router.push({ path: '/policy-audit-view', query: { id: auditData.id } })">查看详情</span>
+              </div>
+              <Steps>
+                <Step v-for="(phase, index) in auditData.phaseList" :key="index" :status="getStatus(phase.status)">
+                  <template v-slot:title>
+                    <div>{{ phase.name }}</div>
+                  </template>
+                </Step>
+              </Steps>
+            </div>
+            <div v-if="interfaceItemData && interfaceItemData.tbodyList && interfaceItemData.tbodyList.length > 0" class="tstable-container tstable-normal tstable-allborder tstable-no-fixedHeader radius-lg">
+              <div v-custom-scrollbar class="tstable-main bg-op">
+                <table class="table-main tstable-body">
+                  <thead>
+                    <tr v-if="hasComplexProp">
+                      <th :colspan="hasDeleteItem ? 5 : 4"></th>
+                      <th
+                        v-for="(prop, pindex) in propertyList"
+                        :key="pindex"
+                        nowrap
+                        :colspan="prop.subPropertyList ? prop.subPropertyList.length : 1"
+                      >
+                        {{ prop.complexName || '' }}
+                      </th>
+                    </tr>
+                    <tr style="text-align: center">
+                      <th></th>
+                      <th v-if="hasDeleteItem">
+                        <Checkbox
+                          :value="isCheckAll"
+                          :indeterminate="isIndeterminate"
+                          style="margin: 0px"
+                          @on-change="toggleSelectAll"
+                        ></Checkbox>
+                      </th>
+                      <th>{{ $t('page.exception') }}</th>
+                      <th>{{ $t('page.status') }}</th>
+                      <th>{{ $t('page.updatetime') }}</th>
+                      <th v-for="(prop, pindex) in allPropertyList" :key="pindex" nowrap>
+                        <span v-if="!isUseAlias">{{ prop.name }}</span>
+                        <span v-else>{{ prop.alias || prop.name }}</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody v-if="interfaceItemData.tbodyList && interfaceItemData.tbodyList.length > 0" class="tbody-main">
+                    <tr v-for="(interfaceItem, index) in interfaceItemData.tbodyList" :key="index">
+                      <td>
+                        <Dropdown placement="bottom-start" :transfer="true">
+                          <a href="javascript:void(0)" class="tsfont-option-horizontal"></a>
+                          <DropdownMenu slot="list">
+                            <DropdownItem @click.native="editInterfaceItem(interfaceItem.id)">{{ $t('page.edit') }}</DropdownItem>
+                            <DropdownItem @click.native="validInterfaceItem(interfaceItem.id)">{{ $t('page.validate') }}</DropdownItem>
+                            <DropdownItem v-if="!interfaceItem.isImported" @click.native="delInterfaceItem(interfaceItem.id)">{{ $t('page.delete') }}</DropdownItem>
+                          </DropdownMenu>
+                        </Dropdown>
+                      </td>
+                      <td v-if="hasDeleteItem"><Checkbox v-if="!interfaceItem.isImported" v-model="interfaceItem.isSelected" style="margin: 0px"></Checkbox></td>
+                      <td><Badge :count="interfaceItem.errorCount"></Badge></td>
+                      <td>状态</td>
+                      <td>
+                        <span v-if="interfaceItem.lcd">{{ interfaceItem.lcd | formatDate }}</span>
+                        <span v-else-if="interfaceItem.fcd">{{ interfaceItem.fcd | formatDate }}</span>
+                      </td>
+                      <td v-for="(prop, pindex) in allPropertyList" :key="pindex">
+                        <div v-if="interfaceItem.dataText && !prop.complexId" class="divContent">
+                          <Poptip
+                            v-if="interfaceItem.error && interfaceItem.error[prop.id]"
+                            :transfer="true"
+                            trigger="hover"
+                            :title="$t('page.exception')"
+                            class="error"
+                            word-wrap
+                            width="400"
+                            :content="interfaceItem.error[prop.id]"
+                          >
+                            <i class="text-error tsfont-warning-s"></i>
+                          </Poptip>
+                          {{ interfaceItem.dataText[prop.id] }}
+                        </div>
+                        <div v-else-if="interfaceItem.dataText && prop.complexId && interfaceItem.dataText[prop.complexId] && interfaceItem.dataText[prop.complexId].length > 0">
+                          <div v-for="(d, dindex) in interfaceItem.dataText[prop.complexId]" :key="dindex" class="mb-xs divContent">
+                            <div v-if="dindex < 5 || isShowMore(interfaceItem.id, prop.complexId)">
+                              <Poptip
+                                v-if="interfaceItem.error && interfaceItem.error[prop.complexId] && interfaceItem.error[prop.complexId][dindex.toString()] && interfaceItem.error[prop.complexId][dindex.toString()][prop.id]"
+                                :transfer="true"
+                                trigger="hover"
+                                :title="$t('page.exception')"
+                                class="error"
+                                word-wrap
+                                width="400"
+                                :content="interfaceItem.error[prop.complexId][dindex.toString()][prop.id]"
+                              >
+                                <span class="text-error tsfont-warning-s mr-xs"></span>
+                              </Poptip>
+                              <span v-if="d[prop.id]">{{ d[prop.id] }}</span>
+                              <span v-else>-</span>
+                              <Divider v-if="dindex < interfaceItem.dataText[prop.complexId].length - 1" style="margin: 0px; padding: 0px" />
                             </div>
-                            <div v-if="!isShowMore(interfaceItem.id, prop.complexId) && interfaceItem.dataText[prop.complexId].length > 5" class="text-href" @click="showMore(interfaceItem.id, prop.complexId)">{{ $t('page.viewmore') }}...</div>
-                            <div v-if="isShowMore(interfaceItem.id, prop.complexId) && interfaceItem.dataText[prop.complexId].length > 5" class="text-href" @click="hideMore(interfaceItem.id, prop.complexId)">{{ $t('page.packup') }}</div>
                           </div>
-                          <div v-else-if="interfaceItem.error && interfaceItem.error[prop.complexId]" class="divContent">
-                            <Poptip
-                              :transfer="true"
-                              trigger="hover"
-                              :title="$t('page.exception')"
-                              class="error"
-                              word-wrap
-                              width="400"
-                              :content="interfaceItem.error[prop.complexId]"
-                            >
-                              <i class="text-error tsfont-warning-s"></i>
-                            </Poptip>
-                          </div>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                          <div v-if="!isShowMore(interfaceItem.id, prop.complexId) && interfaceItem.dataText[prop.complexId].length > 5" class="text-href" @click="showMore(interfaceItem.id, prop.complexId)">{{ $t('page.viewmore') }}...</div>
+                          <div v-if="isShowMore(interfaceItem.id, prop.complexId) && interfaceItem.dataText[prop.complexId].length > 5" class="text-href" @click="hideMore(interfaceItem.id, prop.complexId)">{{ $t('page.packup') }}</div>
+                        </div>
+                        <div v-else-if="interfaceItem.error && interfaceItem.error[prop.complexId]" class="divContent">
+                          <Poptip
+                            :transfer="true"
+                            trigger="hover"
+                            :title="$t('page.exception')"
+                            class="error"
+                            word-wrap
+                            width="400"
+                            :content="interfaceItem.error[prop.complexId]"
+                          >
+                            <i class="text-error tsfont-warning-s"></i>
+                          </Poptip>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <NoData v-else :text="$t('page.nodata')"></NoData>
-              <div v-if="interfaceItemData.pageCount > 1" class="tstable-page text-right">
-                <ul class="ivu-page mini">
-                  <span class="ivu-page-total">{{ $t('page.intotaltarget', {target: interfaceItemData.rowNum}) }}</span>
-                  <li
-                    v-if="interfaceItemData.currentPage > 1"
-                    :title="$t('page.previouspage')"
-                    class="ivu-page-prev"
-                    @click="changePage(interfaceItemData.currentPage - 1)"
-                  >
-                    <a><i class="ivu-icon ivu-icon-ios-arrow-back"></i></a>
-                  </li>
-                  <li v-else :title="$t('page.previouspage')" class="ivu-page-prev ivu-page-disabled">
-                    <a><i class="ivu-icon ivu-icon-ios-arrow-back"></i></a>
-                  </li>
-                  <li
-                    v-for="(p, index) in pageRange(interfaceItemData.currentPage, interfaceItemData.pageCount)"
-                    :key="index"
-                    :title="p"
-                    class="ivu-page-item"
-                    :class="interfaceItemData.currentPage == p ? 'ivu-page-item-active' : ''"
-                  >
-                    <a href="javascript:void(0)" @click="changePage(p)">{{ p }}</a>
-                  </li>
-                  <li
-                    v-if="interfaceItemData.currentPage < interfaceItemData.pageCount"
-                    :title="$t('page.nextpage')"
-                    class="ivu-page-next"
-                    @click="changePage(interfaceItemData.currentPage + 1)"
-                  >
-                    <a><i class="ivu-icon ivu-icon-ios-arrow-forward"></i></a>
-                  </li>
-                  <li v-else :title="$t('page.nextpage')" class="ivu-page-next ivu-page-disabled">
-                    <a><i class="ivu-icon ivu-icon-ios-arrow-forward"></i></a>
-                  </li>
-                </ul>
-              </div>
-            </TabPane>
-          </Tabs>
+            </div>
+            <NoData v-else :text="$t('page.nodata')"></NoData>
+            <div v-if="interfaceItemData.pageCount > 1" class="tstable-page text-right">
+              <ul class="ivu-page mini">
+                <span class="ivu-page-total">{{ $t('page.intotaltarget', { target: interfaceItemData.rowNum }) }}</span>
+                <li
+                  v-if="interfaceItemData.currentPage > 1"
+                  :title="$t('page.previouspage')"
+                  class="ivu-page-prev"
+                  @click="changePage(interfaceItemData.currentPage - 1)"
+                >
+                  <a><i class="ivu-icon ivu-icon-ios-arrow-back"></i></a>
+                </li>
+                <li v-else :title="$t('page.previouspage')" class="ivu-page-prev ivu-page-disabled">
+                  <a><i class="ivu-icon ivu-icon-ios-arrow-back"></i></a>
+                </li>
+                <li
+                  v-for="(p, index) in pageRange(interfaceItemData.currentPage, interfaceItemData.pageCount)"
+                  :key="index"
+                  :title="p"
+                  class="ivu-page-item"
+                  :class="interfaceItemData.currentPage == p ? 'ivu-page-item-active' : ''"
+                >
+                  <a href="javascript:void(0)" @click="changePage(p)">{{ p }}</a>
+                </li>
+                <li
+                  v-if="interfaceItemData.currentPage < interfaceItemData.pageCount"
+                  :title="$t('page.nextpage')"
+                  class="ivu-page-next"
+                  @click="changePage(interfaceItemData.currentPage + 1)"
+                >
+                  <a><i class="ivu-icon ivu-icon-ios-arrow-forward"></i></a>
+                </li>
+                <li v-else :title="$t('page.nextpage')" class="ivu-page-next ivu-page-disabled">
+                  <a><i class="ivu-icon ivu-icon-ios-arrow-forward"></i></a>
+                </li>
+              </ul>
+            </div>
+          </div>
           <div v-else>
-            <NoData :text="$t('term.pbc.noorganization')"></NoData>
+            <NoData>{{ $t('term.pbc.noorganization') }}</NoData>
           </div>
         </div>
         <div v-else><NoData :text="$t('term.pbc.chooseinterface')"></NoData></div>
@@ -242,7 +262,8 @@ export default {
       isExporting: false,
       isLoading: false,
       moreMap: [],
-      isUseAlias: 0
+      isUseAlias: 0,
+      auditData: null //最后一次作业记录
     };
   },
   beforeCreate() {},
@@ -258,6 +279,30 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    restoreHistory(historyData) {
+      if (historyData['searchParam']) {
+        this.searchParam = historyData['searchParam'];
+        this.currentCorporation = this.searchParam.corporationId.toString();
+        this.init();
+      }
+    },
+    getStatus(status) {
+      if (status == 'running') {
+        return 'process';
+      } else if (status == 'success') {
+        return 'finish';
+      } else if (status == 'failed') {
+        return 'error';
+      } else {
+        return 'wait';
+      }
+    },
+    //获取最后一次同步状态
+    getLastAudit() {
+      this.$api.pbc.policy.getLastPolicyAudit({ interfaceId: this.searchParam.interfaceId, corporationId: this.searchParam.corporationId }).then(res => {
+        this.auditData = res.Return;
+      });
+    },
     toggleSelectAll(val) {
       this.interfaceItemData.tbodyList.forEach(element => {
         this.$set(element, 'isSelected', val);
@@ -314,6 +359,7 @@ export default {
         if (this.searchParam.corporationId !== corporationId) {
           this.$set(this.searchParam, 'corporationId', corporationId);
           this.searchInterfaceItem();
+          this.getLastAudit();
         }
       }
     },
@@ -321,8 +367,10 @@ export default {
       await this.$api.pbc.corporation.searchCorporation(true, this.searchParam.interfaceId).then(res => {
         this.corporationList = res.Return;
         if (this.corporationList.length > 0) {
-          this.currentCorporation = this.corporationList[0].id.toString();
-          this.$set(this.searchParam, 'corporationId', this.corporationList[0].id);
+          if (!this.searchParam.corporationId) {
+            this.currentCorporation = this.corporationList[0].id.toString();
+            this.$set(this.searchParam, 'corporationId', this.corporationList[0].id);
+          }
         }
       });
     },
@@ -330,6 +378,7 @@ export default {
       await this.getCorporationList();
       this.getProperty();
       this.searchInterfaceItem();
+      this.getLastAudit();
     },
     showImportDialog() {
       this.isImportShow = true;
@@ -413,6 +462,7 @@ export default {
           })
           .finally(() => {
             this.isLoading = false;
+            this.$addHistoryData('searchParam', this.searchParam);
           });
       }
     },
@@ -466,7 +516,7 @@ export default {
     delInterfaceItem(id) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.data')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.data') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.pbc.interfaceitem.deleteInterfaceItem(id).then(res => {
