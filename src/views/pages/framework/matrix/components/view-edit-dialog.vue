@@ -170,21 +170,19 @@ export default {
       if (!this.fileId) {
         return;
       }
-      let data = {
-        uuid: this.matrixUuid || null,
-        fileId: this.fileId
-      };
       if (this.isDisabledUpload) {
         //矩阵被引用时保存确认
-        this.saveOk(data);
-      } else {
-        this.$api.framework.matrix.saveMatrixViewList(data).then(res => {
-          if (res.Status == 'OK') {
-            this.editTsDialog.isShow = false;
-            this.$Message.success(this.$t('message.savesuccess'));
-            this.closeDialog(true);
+        this.$createDialog({
+          title: this.$t('page.confirm'),
+          content: this.$t('term.framework.matrixsaveconfirm'),
+          btnType: 'error',
+          'on-ok': (vnode) => {
+            vnode.isShow = false;
+            this.saveData();
           }
         });
+      } else {
+        this.saveData();
       }
     },
     closeDialog(needRefresh) {
@@ -231,22 +229,16 @@ export default {
           }
         });
     },
-    saveOk(data) {
-      //矩阵被引用时保存确认
-      this.$createDialog({
-        title: this.$t('page.confirm'),
-        content: this.$t('term.framework.matrixsaveconfirm'),
-        btnType: 'error',
-        'on-ok': (vnode) => {
-          this.$api.framework.matrix.saveMatrixViewList(data).then(res => {
-            if (res.Status == 'OK') {
-              this.editTsDialog.isShow = false;
-              this.$Message.success(this.$t('message.savesuccess'));
-              this.closeDialog(true);
-            }
-          }).finally(() => {
-            vnode.isShow = false;
-          });
+    saveData() {
+      const data = {
+        uuid: this.matrixUuid || null,
+        fileId: this.fileId
+      };
+      this.$api.framework.matrix.saveMatrixViewList(data).then(res => {
+        if (res.Status == 'OK') {
+          this.editTsDialog.isShow = false;
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.closeDialog(true);
         }
       });
     }
