@@ -8,10 +8,7 @@
         </div>
       </template>
       <template slot="topRight">
-        <InputSearcher
-          v-model="searchParam.keyword"
-          @change="searchPolicy()"
-        ></InputSearcher>
+        <InputSearcher v-model="searchParam.keyword" @change="searchPolicy()"></InputSearcher>
       </template>
       <template v-slot:content>
         <TsTable
@@ -32,13 +29,32 @@
           </template>
           <template v-slot:phaseText="{ row }">
             <div>
-              <div v-for="(phase,index) in row.phaseTextList" :key="index">
-                <span class="mr-xs">{{ index+1 }}.</span><span>{{ phase }}</span>
+              <div v-for="(phase, index) in row.phaseTextList" :key="index">
+                <span class="mr-xs">{{ index + 1 }}.</span>
+                <span>{{ phase }}</span>
               </div>
             </div>
           </template>
+          <template v-slot:interfaceCount="{ row }">
+            <Poptip
+              v-if="row.interfaceCount"
+              title="关联接口"
+              placement="left"
+              :transfer="true"
+              @on-popper-show="showProp(row.id)"
+            >
+              <span class="text-href">{{ row.interfaceCount }}</span>
+              <div slot="content">
+                <div v-if="policyInterfaceMap[row.id.toString()]">
+                  <div v-for="(inter,index) in policyInterfaceMap[row.id.toString()]" :key="index">
+                    {{ inter.name }}
+                  </div>
+                </div>
+              </div>
+            </Poptip>
+          </template>
           <template v-slot:execCount="{ row }">
-            <a v-if="row.execCount>0" href="javascript:void(0)" @click="showPolicyAudit(row.id)">
+            <a v-if="row.execCount > 0" href="javascript:void(0)" @click="showPolicyAudit(row.id)">
               <span v-if="row.execCount > 99">99+</span>
               <span v-else>{{ row.execCount }}</span>
             </a>
@@ -47,14 +63,8 @@
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li
-                  class="tsfont-play"
-                  @click="executePolicy(row)"
-                >{{ $t('page.execute') }}</li>
-                <li
-                  class="tsfont-trash-o"
-                  @click="deletePolicy(row)"
-                >{{ $t('page.delete') }}</li>
+                <li class="tsfont-play" @click="executePolicy(row)">{{ $t('page.execute') }}</li>
+                <li class="tsfont-trash-o" @click="deletePolicy(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -80,17 +90,21 @@ export default {
       isPolicyEditShow: false,
       currentId: null,
       policyData: {},
+      policyInterfaceMap: {},
       theadList: [
-        {key: 'name', title: this.$t('page.name')},
-        {key: 'isActive', title: this.$t('term.report.isactive')},
-        {key: 'corporationName', title: this.$t('term.pbc.organization')},
-        {key: 'phaseText', title: this.$t('term.autoexec.executephase')},
-        {key: 'interfaceCount', title: this.$t('term.pbc.interfaceamount')},
-        {key: 'execCount', title: this.$t('term.autoexec.executecount')},
-        {key: 'cronExpression', title: this.$t('term.pbc.cromexpression')},
-        {key: 'description', title: this.$t('page.description')},
-        {key: 'lastExecDate', title: this.$t('term.pbc.lastexecutertime'), type: 'time'},
-        {key: 'action' }
+        {
+          key: 'name',
+          title: this.$t('page.name')
+        },
+        { key: 'isActive', title: this.$t('term.report.isactive') },
+        { key: 'corporationName', title: this.$t('term.pbc.organization') },
+        { key: 'phaseText', title: this.$t('term.autoexec.executephase') },
+        { key: 'interfaceCount', title: this.$t('term.pbc.interfaceamount') },
+        { key: 'execCount', title: this.$t('term.autoexec.executecount') },
+        { key: 'cronExpression', title: this.$t('term.pbc.cromexpression') },
+        { key: 'description', title: this.$t('page.description') },
+        { key: 'lastExecDate', title: this.$t('term.pbc.lastexecutertime'), type: 'time' },
+        { key: 'action' }
       ]
     };
   },
@@ -107,11 +121,18 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    showProp(policyId) {
+      if (!this.policyInterfaceMap[policyId.toString()]) {
+        this.$api.pbc.policy.getInterfaceByPolicyId(policyId).then(res => {
+          this.$set(this.policyInterfaceMap, policyId.toString(), res.Return);
+        });
+      }
+    },
     showPolicyAudit(id) {
-      this.$router.push({name: 'policy-audit-manage', params: {policyId: id}});
+      this.$router.push({ name: 'policy-audit-manage', params: { policyId: id } });
     },
     viewPolicyAudit() {
-      this.$router.push({path: '/policy-audit-manage'});
+      this.$router.push({ path: '/policy-audit-manage' });
     },
     addPolicy() {
       this.isPolicyEditShow = true;
@@ -148,15 +169,13 @@ export default {
     executePolicy(policy) {
       this.$createDialog({
         title: this.$t('dialog.title.executeconfirm'),
-        content: this.$t('term.pbc.exepolicyconfirm', {target: policy.name}),
+        content: this.$t('term.pbc.exepolicyconfirm', { target: policy.name }),
         'on-ok': vnode => {
-          this.$api.pbc.policy
-            .executePolicy(policy.id)
-            .then(res => {
-              this.$Message.success(this.$t('message.executesuccess'));
-              vnode.isShow = false;
-              this.searchPolicy();
-            });
+          this.$api.pbc.policy.executePolicy(policy.id).then(res => {
+            this.$Message.success(this.$t('message.executesuccess'));
+            vnode.isShow = false;
+            this.searchPolicy();
+          });
         },
         'on-cancel': vnode => {
           vnode.isShow = false;
@@ -166,16 +185,14 @@ export default {
     deletePolicy(policy) {
       this.$createDialog({
         title: this.$t('page.deletewarning'),
-        content: this.$t('term.pbc.deletepolicyconfirm', {target: policy.name}),
+        content: this.$t('term.pbc.deletepolicyconfirm', { target: policy.name }),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.pbc.policy
-            .deletePolicy(policy.id)
-            .then(res => {
-              this.$Message.success(this.$t('message.deletesuccess'));
-              vnode.isShow = false;
-              this.searchPolicy();
-            });
+          this.$api.pbc.policy.deletePolicy(policy.id).then(res => {
+            this.$Message.success(this.$t('message.deletesuccess'));
+            vnode.isShow = false;
+            this.searchPolicy();
+          });
         },
         'on-cancel': vnode => {
           vnode.isShow = false;
@@ -188,5 +205,4 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

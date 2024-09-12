@@ -13,6 +13,9 @@ const policy = {
   savePolicy(params) {
     return axios.post('/api/rest/pbc/policy/save', params);
   },
+  getInterfaceByPolicyId(id) {
+    return axios.post('/api/rest/pbc/policy/interface/list', { id: id });
+  },
   getPolicyAuditById(auditId) {
     return axios.post('/api/rest/pbc/policy/audit/get', { id: auditId });
   },
