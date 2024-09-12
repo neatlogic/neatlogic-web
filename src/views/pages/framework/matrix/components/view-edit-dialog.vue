@@ -235,7 +235,7 @@ export default {
       //矩阵被引用时保存确认
       this.$createDialog({
         title: this.$t('page.confirm'),
-        content: '矩阵已被引用，是否确认修改？',
+        content: this.$t('term.framework.matrixsaveconfirm'),
         btnType: 'error',
         'on-ok': (vnode) => {
           this.$api.framework.matrix.saveMatrixViewList(data).then(res => {
