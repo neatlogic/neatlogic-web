@@ -25,7 +25,12 @@
         </div>
       </template>
       <template slot="topRight">
-        <InputSearcher v-model="searchParam.keyword" @change="searchInterfaceItem(1)"></InputSearcher>
+        <!--<InputSearcher v-model="searchParam.keyword" @change="searchInterfaceItem(1)"></InputSearcher>-->
+        <CombineSearcher
+          v-model="searchVal"
+          v-bind="searchConfig"
+          @change="searchInterfaceItem(1)"
+        ></CombineSearcher>
       </template>
       <template v-slot:sider>
         <InterfaceList :id="searchParam.interfaceId" :needItemCount="true" @click="changeInterface"></InterfaceList>
@@ -66,7 +71,7 @@
                 <table class="table-main tstable-body">
                   <thead>
                     <tr v-if="hasComplexProp">
-                      <th :colspan="hasDeleteItem ? 5 : 4"></th>
+                      <th :colspan="hasDeleteItem ? 6 : 5"></th>
                       <th
                         v-for="(prop, pindex) in propertyList"
                         :key="pindex"
@@ -87,6 +92,7 @@
                         ></Checkbox>
                       </th>
                       <th>{{ $t('page.exception') }}</th>
+                      <th>{{ $t('page.action') }}</th>
                       <th>{{ $t('page.status') }}</th>
                       <th>{{ $t('page.updatetime') }}</th>
                       <th v-for="(prop, pindex) in allPropertyList" :key="pindex" nowrap>
@@ -109,10 +115,19 @@
                       </td>
                       <td v-if="hasDeleteItem"><Checkbox v-if="!interfaceItem.isImported" v-model="interfaceItem.isSelected" style="margin: 0px"></Checkbox></td>
                       <td><Badge :count="interfaceItem.errorCount"></Badge></td>
-                      <td>状态</td>
                       <td>
-                        <span v-if="interfaceItem.lcd">{{ interfaceItem.lcd | formatDate }}</span>
-                        <span v-else-if="interfaceItem.fcd">{{ interfaceItem.fcd | formatDate }}</span>
+                        <div v-if="!interfaceItem.isImported && !interfaceItem.error">
+                          <span v-if="interfaceItem.isNew" class="text-success">新增</span>
+                          <span v-else-if="interfaceItem.isDelete" class="text-error">删除</span>
+                          <span v-else class="text-primary">修改</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span v-if="interfaceItem.isImported" class="text-success">已上报</span>
+                        <span v-else class="text-grey">未上报</span>
+                      </td>
+                      <td>
+                        <span>{{ interfaceItem.lcd | formatDate }}</span>
                       </td>
                       <td v-for="(prop, pindex) in allPropertyList" :key="pindex">
                         <div v-if="interfaceItem.dataText && !prop.complexId" class="divContent">
@@ -238,11 +253,12 @@ import customScrollbar from '@/resources/directives/v-custom-scrollbar.js';
 export default {
   name: '',
   components: {
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    //InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     InterfaceItemEdit: () => import('./interface-item-edit.vue'),
     InterfaceList: () => import('./components/interface-list.vue'),
     InterfaceItemImportDialog: () => import('./components/interface-item-import-dialog.vue'),
-    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
   },
   directives: { download, customScrollbar },
   props: {},
@@ -263,7 +279,35 @@ export default {
       isLoading: false,
       moreMap: [],
       isUseAlias: 0,
-      auditData: null //最后一次作业记录
+      auditData: null, //最后一次作业记录
+      searchVal: {}, //搜索下拉插件的值
+      searchConfig: {
+        search: true,
+        searchList: [
+          {
+            type: 'radio',
+            name: 'isImported',
+            dataList: [{value: 0, text: '未上报'}, {value: 1, text: '已上报'}],
+            label: '同步状态',
+            labelPosition: 'left'
+          },
+          {
+            type: 'radio',
+            name: 'hasError',
+            dataList: [{value: 0, text: '无异常'}, {value: 1, text: '有异常'}],
+            label: '是否异常',
+            labelPosition: 'left'
+          },
+          {
+            type: 'datetimerange',
+            name: 'updateTimeRange',
+            label: '更新时间',
+            transfer: true,
+            format: 'yyyy-MM-dd HH:mm',
+            labelPosition: 'left'
+          }
+        ]
+      }
     };
   },
   beforeCreate() {},
@@ -282,6 +326,7 @@ export default {
     restoreHistory(historyData) {
       if (historyData['searchParam']) {
         this.searchParam = historyData['searchParam'];
+        this.searchVal = historyData['searchVal'];
         this.currentCorporation = this.searchParam.corporationId.toString();
         this.init();
       }
@@ -358,7 +403,7 @@ export default {
         const corporationId = parseInt(name);
         if (this.searchParam.corporationId !== corporationId) {
           this.$set(this.searchParam, 'corporationId', corporationId);
-          this.searchInterfaceItem();
+          this.searchInterfaceItem(1);
           this.getLastAudit();
         }
       }
@@ -377,7 +422,7 @@ export default {
     async init() {
       await this.getCorporationList();
       this.getProperty();
-      this.searchInterfaceItem();
+      this.searchInterfaceItem(1);
       this.getLastAudit();
     },
     showImportDialog() {
@@ -442,6 +487,10 @@ export default {
     },
     searchInterfaceItem(currentPage) {
       if (this.searchParam.corporationId) {
+        this.searchParam.keyword = this.searchVal.keyword;
+        this.searchParam.isImported = this.searchVal.isImported;
+        this.searchParam.hasError = this.searchVal.hasError;
+        this.searchParam.updateTimeRange = this.searchVal.updateTimeRange;
         this.searchParam.currentPage = currentPage || 1;
         this.isLoading = true;
         this.$api.pbc.interfaceitem
@@ -462,6 +511,7 @@ export default {
           })
           .finally(() => {
             this.isLoading = false;
+            this.$addHistoryData('searchVal', this.searchVal);
             this.$addHistoryData('searchParam', this.searchParam);
           });
       }
