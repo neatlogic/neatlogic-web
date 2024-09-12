@@ -5,6 +5,7 @@
         :is="phase.phase"
         v-if="phase && phase.phase"
         :phase="phase"
+        :audit="audit"
       ></component>
     </div>
   </div>
@@ -17,7 +18,8 @@ export default {
     ...handlers
   },
   props: {
-    phase: { type: Object}
+    audit: { type: Object },
+    phase: { type: Object }
   },
   data() {
     return {

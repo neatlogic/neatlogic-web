@@ -32,7 +32,7 @@
       </template>
       <template v-slot:content>
         <div v-if="searchParam.interfaceId">
-          <Tabs v-if="corporationList && corporationList.length > 0" @on-click="changeTag">
+          <Tabs v-if="corporationList && corporationList.length > 0" v-model="currentCorporation" @on-click="changeTag">
             <TabPane
               v-for="corporation in corporationList"
               :key="corporation.id"
@@ -45,7 +45,7 @@
                   <table class="table-main tstable-body">
                     <thead>
                       <tr v-if="hasComplexProp">
-                        <th :colspan="hasDeleteItem ? 4 : 3"></th>
+                        <th :colspan="hasDeleteItem ? 5 : 4"></th>
                         <th
                           v-for="(prop, pindex) in propertyList"
                           :key="pindex"
@@ -66,6 +66,7 @@
                           ></Checkbox>
                         </th>
                         <th>{{ $t('page.exception') }}</th>
+                        <th>{{ $t('page.status') }}</th>
                         <th>{{ $t('page.updatetime') }}</th>
                         <th v-for="(prop, pindex) in allPropertyList" :key="pindex" nowrap>
                           <span v-if="!isUseAlias">{{ prop.name }}</span>
@@ -87,6 +88,7 @@
                         </td>
                         <td v-if="hasDeleteItem"><Checkbox v-if="!interfaceItem.isImported" v-model="interfaceItem.isSelected" style="margin:0px"></Checkbox></td>
                         <td><Badge :count="interfaceItem.errorCount"></Badge></td>
+                        <td>状态</td>
                         <td>
                           <span v-if="interfaceItem.lcd">{{ interfaceItem.lcd | formatDate }}</span>
                           <span v-else-if="interfaceItem.fcd">{{ interfaceItem.fcd | formatDate }}</span>
@@ -226,6 +228,7 @@ export default {
   props: {},
   data() {
     return {
+      currentCorporation: null,
       corporationList: [],
       isInterfaceItemDialogShow: false,
       currentInterfaceItemId: null,
@@ -318,6 +321,7 @@ export default {
       await this.$api.pbc.corporation.searchCorporation(true, this.searchParam.interfaceId).then(res => {
         this.corporationList = res.Return;
         if (this.corporationList.length > 0) {
+          this.currentCorporation = this.corporationList[0].id.toString();
           this.$set(this.searchParam, 'corporationId', this.corporationList[0].id);
         }
       });
