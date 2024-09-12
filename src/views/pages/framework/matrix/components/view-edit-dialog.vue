@@ -177,7 +177,6 @@ export default {
       if (this.isDisabledUpload) {
         //矩阵被引用时保存确认
         this.saveOk(data);
-        return false;
       } else {
         this.$api.framework.matrix.saveMatrixViewList(data).then(res => {
           if (res.Status == 'OK') {
