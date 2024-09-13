@@ -1,11 +1,12 @@
 <template>
   <div v-if="!phase.error">
-    <div v-if="result && result.filePathList && result.filePathList.length > 0">{{ $t('page.filepath') }}：</div>
-    <div v-for="(filePath, index) in result.filePathList" :key="index">
-      <span v-if="filePath.id && filePath.name">
-        <span v-download="downurl(filePath.id)" class="tsfont-download text-action"> {{ filePath.name }}</span>
-      </span>
-      <span v-else>{{ filePath }}</span>
+    <div v-if="result && result.filePathList && result.filePathList.length > 0"><div>{{ $t('page.filepath') }}：</div>
+      <div v-for="(filePath, index) in result.filePathList" :key="index">
+        <span v-if="filePath.id && filePath.name">
+          <span v-download="downurl(filePath.id)" class="tsfont-download text-action"> {{ filePath.name }}</span>
+        </span>
+        <span v-else>{{ filePath }}</span>
+      </div>
     </div>
   </div>
   <div v-else>
