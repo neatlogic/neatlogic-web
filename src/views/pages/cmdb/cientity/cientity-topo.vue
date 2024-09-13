@@ -217,6 +217,7 @@ export default {
       searchParam: {
         isBackbone: 1,
         isGroup: 0,
+        isRelLabel: 0,
         ciEntityId: this.ciEntityId,
         ciId: this.ciId,
         disableRelList: [],
