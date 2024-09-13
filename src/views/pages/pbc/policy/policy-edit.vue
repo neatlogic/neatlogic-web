@@ -221,8 +221,12 @@ export default {
       await this.getPolicyById();
       if (this.policyData && this.policyData.phase && this.phaseList && this.phaseList.length > 0) {
         const phases = this.policyData.phase.split(',');
-        const list = this.phaseList.filter(d => phases.includes(d.phase));
-        this.activedPhaseList.push(...list);
+        phases.forEach(p => {
+          const phase = this.phaseList.find(d => d.phase === p);
+          if (phase) {
+            this.activedPhaseList.push(phase);
+          }
+        });
       }
     },
     async getPhaseList() {
@@ -237,11 +241,11 @@ export default {
           this.formConfig.forEach(element => {
             element.value = this.policyData[element.name];
           });
-          if (!this.policyData.phase) {
+          /*if (!this.policyData.phase) {
             if (this.phaseList && this.phaseList.length > 0) {
               this.policyData.phase = this.phaseList[0].sort + '-' + this.phaseList[this.phaseList.length - 1].sort;
             }
-          }
+          }*/
         });
       }
     },
