@@ -1,21 +1,30 @@
 <template>
   <div>
-    <div v-if="result" class="grid">
-      <div class="title">{{ $t('term.pbc.batchid') }}：</div>
-      <div>{{ result.branchId }}</div>
-      <div class="title">{{ $t('page.returncode') }}：</div>
-      <div>{{ result.code }}</div>
-      <div class="title">{{ $t('term.pbc.message') }}：</div>
-      <div>{{ result.msg }}</div>
-      <div v-if="result.data && result.data.length > 0" class="title">{{ $t('page.exception') }}：</div>
-      <div v-if="result.data && result.data.length>0">
-        <TsTable
-          :theadList="theadList"
-          :tbodyList="result.data"
-          :fixedHeader="false"
-        >
-        </TsTable>
+    <div v-if="!phase.error">
+      <div v-if="result" class="grid">
+        <div class="title">{{ $t('term.pbc.batchid') }}：</div>
+        <div>{{ result.branchId }}</div>
+        <div class="title">{{ $t('page.returncode') }}：</div>
+        <div>{{ result.code }}</div>
+        <div class="title">{{ $t('term.pbc.message') }}：</div>
+        <div>{{ result.msg }}</div>
+        <div v-if="result.data && result.data.length > 0" class="title">{{ $t('page.exception') }}：</div>
+        <div v-if="result.data && result.data.length>0">
+          <TsTable
+            :theadList="theadList"
+            :tbodyList="result.data"
+            :fixedHeader="false"
+          >
+          </TsTable>
+        </div>
       </div>
+    </div>
+    <div v-else>
+      <Alert type="error">
+        <div>
+          <span>{{ phase.error }}</span>
+        </div>
+      </Alert>
     </div>
   </div>
 </template>
