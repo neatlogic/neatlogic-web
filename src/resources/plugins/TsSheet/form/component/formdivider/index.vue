@@ -1,6 +1,6 @@
 <template>
   <div :class="classes" :style="style">
-    <span v-if="config.content" :style="style" class="divider-inner-text">{{ config.content }}</span>
+    <span v-if="config.content" :style="fontStyle" class="divider-inner-text pl-nm pr-nm">{{ config.content }}</span>
   </div>
 </template>
 <script>
@@ -47,6 +47,16 @@ export default {
       style['--border-style'] = this.config.dividerType || 'solid';
       if (this.config.dividerColor) {
         style['--border-color'] = this.config.dividerColor;
+      }
+      return style;
+    },
+    fontStyle() {
+      let style = {};
+      if (this.config.fontColor) {
+        style['color'] = this.config.fontColor;
+      } 
+      if (this.config.isFontBold) {
+        style['font-weight'] = 'bold';
       }
       return style;
     }
