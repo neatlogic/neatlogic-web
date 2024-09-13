@@ -25,8 +25,6 @@
               :uploadCount="1"
               :format="['xml']"
               :defaultList="defaultFileList"
-              :disabled="isDisabledUpload"
-              :disabledTitle="isDisabledUpload ? $t('message.framework.notcaneditmatrixtip') : ''"
               :fileDownurl="fileDownurl"
               :fileDownParam="fileDownParam"
               @remove="removeFile"
@@ -172,17 +170,20 @@ export default {
       if (!this.fileId) {
         return;
       }
-      let data = {
-        uuid: this.matrixUuid || null,
-        fileId: this.fileId
-      };
-      this.$api.framework.matrix.saveMatrixViewList(data).then(res => {
-        if (res.Status == 'OK') {
-          this.editTsDialog.isShow = false;
-          this.$Message.success(this.$t('message.savesuccess'));
-          this.closeDialog(true);
-        }
-      });
+      if (this.isDisabledUpload) {
+        //矩阵被引用时保存确认
+        this.$createDialog({
+          title: this.$t('page.confirm'),
+          content: this.$t('term.framework.matrixsaveconfirm'),
+          btnType: 'error',
+          'on-ok': (vnode) => {
+            vnode.isShow = false;
+            this.saveData();
+          }
+        });
+      } else {
+        this.saveData();
+      }
     },
     closeDialog(needRefresh) {
       this.$emit('close', needRefresh);
@@ -227,6 +228,19 @@ export default {
             }
           }
         });
+    },
+    saveData() {
+      const data = {
+        uuid: this.matrixUuid || null,
+        fileId: this.fileId
+      };
+      this.$api.framework.matrix.saveMatrixViewList(data).then(res => {
+        if (res.Status == 'OK') {
+          this.editTsDialog.isShow = false;
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.closeDialog(true);
+        }
+      });
     }
   },
   filter: {},

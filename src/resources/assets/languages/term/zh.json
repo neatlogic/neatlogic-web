@@ -1307,7 +1307,8 @@
     "fieldsconfiginfo": "根据字段映射配置，获取工单上报人相关信息",
     "jsscriptconversion": "js脚本转换",
     "strjoin": "字段拼接",
-    "expressionplaceholder": "请填写ES5脚本，最后返回表达式的值value，范例："
+    "expressionplaceholder": "请填写ES5脚本，最后返回表达式的值value，范例：",
+    "matrixsaveconfirm": "矩阵已被引用，是否确认修改？"
   },
   "knowledge": {
     "document": "文档",
