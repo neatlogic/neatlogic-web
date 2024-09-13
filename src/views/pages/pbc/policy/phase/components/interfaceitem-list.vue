@@ -164,6 +164,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    pageRange(currentPage, pageCount) {
+      const pageRange = [];
+      for (let i = Math.max(1, currentPage - 2); i <= Math.min(currentPage + 2, pageCount); i++) {
+        pageRange.push(i);
+      }
+      return pageRange;
+    },
     isShowMore(interfaceItemId, complexId) {
       return this.moreMap[interfaceItemId + '_' + complexId];
     },
