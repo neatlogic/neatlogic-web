@@ -235,7 +235,8 @@
     "expandbylevel": "Expand by layer",
     "deleteattr": "Delete attribute",
     "deleteglobalattr": "Delete Global Properties",
-    "groupbyci": "Group by model"
+    "groupbyci": "Group by model",
+    "showrellabel": "Display relationship type"
   },
   "process": {
     "workordercenter": "Work Center",

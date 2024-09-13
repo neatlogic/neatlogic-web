@@ -75,6 +75,17 @@
               :trueName="1"
               :falseName="0"
               :showStatus="true"
+              :trueText="$t('term.cmdb.showrellabel')"
+              :falseText="$t('term.cmdb.showrellabel')"
+              :value="searchParam.isRelLabel"
+              @on-change="changeIsRelLabel"
+            ></TsFormSwitch>
+          </div>
+          <div class="action-item">
+            <TsFormSwitch
+              :trueName="1"
+              :falseName="0"
+              :showStatus="true"
               :trueText="$t('term.cmdb.groupbyci')"
               :falseText="$t('term.cmdb.groupbyci')"
               :value="searchParam.isGroup"
@@ -399,6 +410,9 @@ export default {
     },
     changeIsGroup(isGroup) {
       this.searchParam.isGroup = isGroup;
+    },
+    changeIsRelLabel(isRelLabel) {
+      this.searchParam.isRelLabel = isRelLabel;
     },
     loadImage(nodesString) {
       (nodesString.match(/image=[^,]*(files\/\d*|png)/g) || [])

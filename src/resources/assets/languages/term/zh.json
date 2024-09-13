@@ -236,7 +236,8 @@
     "expandbylevel": "按层数展开",
     "deleteattr": "删除属性",
     "deleteglobalattr": "删除全局属性",
-    "groupbyci": "按模型分组"
+    "groupbyci": "按模型分组",
+    "showrellabel": "显示关系类型"
   },
   "process": {
     "workordercenter": "工单中心",
