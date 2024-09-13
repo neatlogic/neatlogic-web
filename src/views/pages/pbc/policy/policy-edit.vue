@@ -57,15 +57,18 @@
                 {{ $t('term.pbc.selectedinterface') }}：
                 <Tag
                   v-for="inter in policyData.interfaceList"
-                  :key="inter"
+                  :key="inter.id"
                   closable
                   @on-close="delInterface(inter)"
-                >{{ inter }}</Tag>
+                >
+                  <span>{{ inter.name }}</span>
+                  <span class="text-grey">·{{ inter.id }}</span>
+                </Tag>
               </div>
               <div>
                 <TsTable
                   v-if="interfaceData"
-                  v-model="policyData.interfaceList"
+                  :value="policyData.interfaceList ? policyData.interfaceList.map(d => d.id) : []"
                   :showSizer="false"
                   :fixedHeader="false"
                   v-bind="interfaceData"
@@ -315,7 +318,11 @@ export default {
       }
     },
     getSelected(indexList, itemList) {
-      this.policyData.interfaceList = indexList;
+      if (itemList && itemList.length > 0) {
+        this.policyData.interfaceList = itemList;
+      } else {
+        this.policyData.interfaceList = [];
+      }
     },
     changePage(page) {
       this.searchInterface(page);
