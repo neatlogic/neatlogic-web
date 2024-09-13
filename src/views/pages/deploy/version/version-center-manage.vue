@@ -62,30 +62,9 @@
                 type="block"
                 @click="() => openBuildNoDialog(row, item)"
               ></CommonStatus>
-              <Poptip
-                v-if="row.buildNoList.length > 1"
-                word-wrap
-                :width="225 + (row.buildNoList.length / 50) * 50"
-                :transfer="true"
-                trigger="hover"
-                placement="top"
-              >
-                <span class="tsfont-option-horizontal text-href"></span>
-                <div slot="content" class="clearfix">
-                  <div
-                    v-for="(item, index) in row.buildNoList"
-                    v-show="index > 1"
-                    :key="index"
-                    class="mb-xs version-item"
-                  ><CommonStatus
-                    :statusValue="getStatusValue(item.status)"
-                    :statusName="item.buildNo"
-                    class="cursor"
-                    type="block"
-                    @click="() => openBuildNoDialog(row, item)"
-                  ></CommonStatus></div>
-                </div>
-              </Poptip>
+              <template v-if="row.buildNoList.length > 1">
+                <PoptipCommonStatus :row="row" @click="openBuildNoDialog" />
+              </template>
             </div>
           </template>
           <template slot="env" slot-scope="{ row }">
@@ -191,7 +170,8 @@ export default {
     VersionAddDialog: () => import('./version-add-dialog'), // 新增版本
     BuildNoDialog: () => import('./build-no/build-no-dialog'), // build-no
     EnvDialog: () => import('./env-dialog'), // env
-    ProjectDirectoryDialog: () => import('./project-directory-dialog') // 工程目录
+    ProjectDirectoryDialog: () => import('./project-directory-dialog'), // 工程目录
+    PoptipCommonStatus: () => import('./version-center/poptip-common-status.vue')
   },
   mixins: [versionCenterMixin],
   props: {},
@@ -591,11 +571,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.version-item {
-  text-align: center;
-  display: inline-block;
-  width: 40px;
-}
 .status-grid {
   width: 100%;
   display: grid;
