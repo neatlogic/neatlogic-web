@@ -1306,7 +1306,8 @@
     "fieldsconfiginfo": "According to the field mapping configuration, obtain the relevant information of the work order reporter",
     "jsscriptconversion": "JS Script Conversion",
     "strjoin": "Field concatenation",
-    "expressionplaceholder": "Please fill in the ES5 script and return the value of the expression as' value '. Example:"
+    "expressionplaceholder": "Please fill in the ES5 script and return the value of the expression as' value '. Example:",
+    "matrixsaveconfirm": "The matrix has been referenced, are you sure to make the modifications?"
   },
   "knowledge": {
     "document": "Document",
