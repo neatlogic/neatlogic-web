@@ -45,7 +45,6 @@
                 <ContentHandlerDialog
                   v-if="contentMode == 'edit'"
                   :title="$t('page.edit') + $t('page.detailinfo')"
-                  :mode="contentMode"
                   :issueData="issueData"
                   @close="({needRefresh = false, content = ''} = {}) => {
                     if(needRefresh) {

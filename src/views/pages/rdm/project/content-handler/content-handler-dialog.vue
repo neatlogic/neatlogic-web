@@ -7,9 +7,7 @@
     >
       <template v-slot>
         <div>
-          <div v-if="mode === 'edit'">
-            <TsCkeditor v-model="content"></TsCkeditor>
-          </div>
+          <TsCkeditor v-model="content"></TsCkeditor>
         </div>
       </template>
     </TsDialog>
@@ -23,7 +21,6 @@ export default {
   },
   props: {
     issueData: { type: Object },
-    mode: { type: String, default: 'read' },
     title: { type: String, default: '' }
   },
   data() {
