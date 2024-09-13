@@ -14,7 +14,27 @@
         :disabled="disabled"
       ></TsFormRadio>
     </TsFormItem>
-    <TsFormItem :label="$t('page.color')" labelPosition="left" contentAlign="right">
+    <TsFormItem :label="$t('page.isfontbold')" labelPosition="left" contentAlign="right">
+      <TsFormSwitch
+        v-model="config.isFontBold"
+        :trueValue="true"
+        :falseValue="false"
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem :label="$t('page.fontcolor')" labelPosition="left" contentAlign="right">
+      <ColorPicker
+        :value="config.fontColor"
+        recommend
+        transfer
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        :disabled="disabled"
+        @on-change="val => {
+          setConfig('fontColor', val);
+        }"
+      />
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.axis.dividinglinecolor')" labelPosition="left" contentAlign="right">
       <ColorPicker
         :value="config.dividerColor"
         recommend
@@ -59,7 +79,8 @@ export default {
   components: {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   extends: base,
   props: {},

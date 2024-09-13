@@ -1,5 +1,5 @@
 @import (reference) '~@/resources/assets/css/variable.less';
-.theme(@border-color) {
+.theme(@text-color, @border-color) {
   .divider {
     border-top: var(--border-width, 1px) var(--border-style, solid) var(--border-color, @border-color);
     height: 0px;
@@ -41,7 +41,7 @@
   .divider-inner-text {
     position: relative;
     display: inline-block;
-    color: var(--border-color, @border-color);
+    color: var(--border-color, @text-color);
   }
 
   .divider-inner-text:before,
@@ -67,8 +67,8 @@
 }
 
 html {
-  .theme(@default-tip);
+  .theme(@default-text, @default-dividing);
   &.theme-dark {
-    .theme(@dark-tip);
+    .theme(@dark-text, @dark-dividing);
   }
 }
