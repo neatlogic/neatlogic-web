@@ -45,7 +45,9 @@
             <Loading :loadingShow="isLoading" type="fix"></Loading>
             <div v-if="$AuthUtils.hasRole('PBC_INTERFACE_MODIFY') && policyList && policyList.length > 0" class="mb-md pl-sm">
               <span class="mr-md"><b class="text-grey">关联策略</b></span>
-              <Tag v-for="(policy, index) in policyList" :key="index"><span class="text-href" @click="editPolicy(policy.id)">{{ policy.name }}</span></Tag>
+              <Tag v-for="(policy, index) in policyList" :key="index">
+                <span class="text-href" @click="editPolicy(policy.id)">{{ policy.name }}</span>
+              </Tag>
             </div>
             <div v-if="auditData" class="mb-md pl-sm">
               <div class="mb-md">
@@ -117,7 +119,13 @@
                         </Dropdown>
                       </td>
                       <td v-if="hasDeleteItem" style="text-align: center"><Checkbox v-if="!interfaceItem.isImported" v-model="interfaceItem.isSelected" style="margin: 0px"></Checkbox></td>
-                      <td><Badge :count="interfaceItem.errorCount"></Badge></td>
+                      <td>
+                        <Badge :count="interfaceItem.errorCount"></Badge>
+                        <Divider v-if="interfaceItem.errorCount > 0 && interfaceItem.syncError" type="vertical" />
+                        <Tooltip v-if="interfaceItem.syncError" :content="interfaceItem.syncError" placement="right">
+                          <span class="text-error tsfont-warning-s"></span>
+                        </Tooltip>
+                      </td>
                       <td>
                         <div v-if="!interfaceItem.isImported && !interfaceItem.error">
                           <span v-if="interfaceItem.isNew && !interfaceItem.dataHash" class="text-success">新增</span>
