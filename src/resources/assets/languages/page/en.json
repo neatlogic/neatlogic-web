@@ -1015,5 +1015,6 @@
   "currenttime": "current time ",
   "front": "front",
   "after": "after",
-  "includesdata": "There is data available"
+  "includesdata": "There is data available",
+  "isfontbold": "Is the font bolded"
 }

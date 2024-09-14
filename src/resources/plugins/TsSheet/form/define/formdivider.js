@@ -15,6 +15,8 @@ export default {
     dividerColor: '',
     dividerType: 'solid',
     dividerWidth: 1,
+    fontColor: '',
+    isFontBold: false,
     content: '',
     contentPosition: 'left'
   },

@@ -42,8 +42,19 @@
           <Tabs v-model="currentTab" :animated="false">
             <TabPane :label="render => renderEditContentTab(render, $t('page.detailinfo'))" name="main">
               <div v-if="currentTab == 'main'" class="pl-nm pr-nm">
+                <ContentHandlerDialog
+                  v-if="contentMode == 'edit'"
+                  :title="$t('page.edit') + $t('page.detailinfo')"
+                  :issueData="issueData"
+                  @close="({needRefresh = false, content = ''} = {}) => {
+                    if(needRefresh) {
+                      issueData.content = content;
+                    }
+                    contentMode = 'read';
+                  }"
+                />
                 <ContentHandler
-                  :mode="contentMode"
+                  mode="read"
                   :issueData="issueData"
                   :autoSave="false"
                   @cancel="contentMode = 'read'"
@@ -192,6 +203,7 @@ export default {
   name: '',
   components: {
     ContentHandler: () => import('@/views/pages/rdm/project/content-handler/content-handler.vue'),
+    ContentHandlerDialog: () => import('@/views/pages/rdm/project/content-handler/content-handler-dialog.vue'),
     IssueTitle: () => import('@/views/pages/rdm/project/viewtab/components/issue-title.vue'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     CommentList: () => import('@/views/pages/rdm/project/viewtab/components/comment-list.vue'),

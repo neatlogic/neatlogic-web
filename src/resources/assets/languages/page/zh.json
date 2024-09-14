@@ -1017,5 +1017,6 @@
   "currenttime": "当前时间",
   "front": "前",
   "after": "后",
-  "includesdata": "有数据"
+  "includesdata": "有数据",
+  "isfontbold": "是否字体加粗"
 }
