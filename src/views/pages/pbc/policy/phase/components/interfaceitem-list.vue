@@ -18,7 +18,6 @@
             </tr>
             <tr style="text-align: center">
               <th>{{ $t('page.exception') }}</th>
-              <th>{{ $t('page.status') }}</th>
               <th>{{ $t('page.updatetime') }}</th>
               <th v-for="(prop, pindex) in allPropertyList" :key="pindex" nowrap>
                 <span>{{ prop.alias || prop.name }}</span>
@@ -28,7 +27,6 @@
           <tbody v-if="interfaceItemData.tbodyList && interfaceItemData.tbodyList.length > 0" class="tbody-main">
             <tr v-for="(interfaceItem, index) in interfaceItemData.tbodyList" :key="index">
               <td><Badge :count="interfaceItem.errorCount"></Badge></td>
-              <td>状态</td>
               <td>
                 <span v-if="interfaceItem.lcd">{{ interfaceItem.lcd | formatDate }}</span>
                 <span v-else-if="interfaceItem.fcd">{{ interfaceItem.fcd | formatDate }}</span>
@@ -135,8 +133,8 @@ export default {
   name: '',
   components: {},
   props: {
-    auditId: {type: Number},
-    phaseId: {type: Number},
+    auditId: { type: Number },
+    phaseId: { type: Number },
     interfaceId: { type: String },
     corporationId: { type: Number }
   },

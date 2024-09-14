@@ -26,11 +26,7 @@
       </template>
       <template slot="topRight">
         <!--<InputSearcher v-model="searchParam.keyword" @change="searchInterfaceItem(1)"></InputSearcher>-->
-        <CombineSearcher
-          v-model="searchVal"
-          v-bind="searchConfig"
-          @change="searchInterfaceItem(1)"
-        ></CombineSearcher>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="searchInterfaceItem(1)"></CombineSearcher>
       </template>
       <template v-slot:sider>
         <InterfaceList :id="searchParam.interfaceId" :needItemCount="true" @click="changeInterface"></InterfaceList>
@@ -47,16 +43,22 @@
               ></TabPane>
             </Tabs>
             <Loading :loadingShow="isLoading" type="fix"></Loading>
-            <div v-if="auditData" class="mb-md">
-              <div class="mb-sm"><b class="text-grey">最近一次同步记录</b></div>
-              <div class="mb-sm">
-                <span class="mr-xs text-grey">开始时间</span>
-                <span class="mr-md">{{ auditData.startTime | formatDate }}</span>
-                <span class="mr-xs text-grey">结束时间</span>
-                <span class="mr-md">{{ auditData.endTime | formatDate }}</span>
-                <span class="mr-xs text-grey">耗时</span>
-                <span class="mr-md">{{ auditData.timeCost | formatTimeCost }}</span>
-                <span class="text-href" @click="$router.push({ path: '/policy-audit-view', query: { id: auditData.id } })">查看详情</span>
+            <div v-if="$AuthUtils.hasRole('PBC_INTERFACE_MODIFY') && policyList && policyList.length > 0" class="mb-md pl-sm">
+              <span class="mr-md"><b class="text-grey">关联策略</b></span>
+              <Tag v-for="(policy, index) in policyList" :key="index"><span class="text-href" @click="editPolicy(policy.id)">{{ policy.name }}</span></Tag>
+            </div>
+            <div v-if="auditData" class="mb-md pl-sm">
+              <div class="mb-md">
+                <span class="mr-md mb-sm"><b class="text-grey">同步记录</b></span>
+                <span class="mb-sm">
+                  <span class="mr-xs text-grey">开始时间</span>
+                  <span class="mr-md">{{ auditData.startTime | formatDate }}</span>
+                  <span class="mr-xs text-grey">结束时间</span>
+                  <span class="mr-md">{{ auditData.endTime | formatDate }}</span>
+                  <span class="mr-xs text-grey">耗时</span>
+                  <span class="mr-md">{{ auditData.timeCost | formatTimeCost }}</span>
+                  <span class="text-href" @click="$router.push({ path: '/policy-audit-view', query: { id: auditData.id } })">查看详情</span>
+                </span>
               </div>
               <Steps>
                 <Step v-for="(phase, index) in auditData.phaseList" :key="index" :status="getStatus(phase.status)">
@@ -110,16 +112,17 @@
                             <DropdownItem @click.native="editInterfaceItem(interfaceItem.id)">{{ $t('page.edit') }}</DropdownItem>
                             <DropdownItem @click.native="validInterfaceItem(interfaceItem.id)">{{ $t('page.validate') }}</DropdownItem>
                             <DropdownItem v-if="!interfaceItem.isImported" @click.native="delInterfaceItem(interfaceItem.id)">{{ $t('page.delete') }}</DropdownItem>
+                            <DropdownItem divided @click.native="getAudit(interfaceItem.id)">最近一次同步</DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
                       </td>
-                      <td v-if="hasDeleteItem"><Checkbox v-if="!interfaceItem.isImported" v-model="interfaceItem.isSelected" style="margin: 0px"></Checkbox></td>
+                      <td v-if="hasDeleteItem" style="text-align: center"><Checkbox v-if="!interfaceItem.isImported" v-model="interfaceItem.isSelected" style="margin: 0px"></Checkbox></td>
                       <td><Badge :count="interfaceItem.errorCount"></Badge></td>
                       <td>
                         <div v-if="!interfaceItem.isImported && !interfaceItem.error">
-                          <span v-if="interfaceItem.isNew" class="text-success">新增</span>
+                          <span v-if="interfaceItem.isNew && !interfaceItem.dataHash" class="text-success">新增</span>
+                          <span v-else-if="interfaceItem.isNew && interfaceItem.dataHash" class="text-primary">修改</span>
                           <span v-else-if="interfaceItem.isDelete" class="text-error">删除</span>
-                          <span v-else class="text-primary">修改</span>
                         </div>
                       </td>
                       <td>
@@ -245,6 +248,7 @@
       :interfaceId="searchParam.interfaceId"
       @close="closeImportDialog"
     ></InterfaceItemImportDialog>
+    <PolicyEdit v-if="isPolicyEditShow" :id="currentPolicyId" @close="closePolicyDialog"></PolicyEdit>
   </div>
 </template>
 <script>
@@ -258,12 +262,15 @@ export default {
     InterfaceList: () => import('./components/interface-list.vue'),
     InterfaceItemImportDialog: () => import('./components/interface-item-import-dialog.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    PolicyEdit: () => import('@/views/pages/pbc/policy/policy-edit.vue')
   },
   directives: { download, customScrollbar },
   props: {},
   data() {
     return {
+      currentPolicyId: null,
+      isPolicyEditShow: false,
       currentCorporation: null,
       corporationList: [],
       isInterfaceItemDialogShow: false,
@@ -279,6 +286,7 @@ export default {
       isLoading: false,
       moreMap: [],
       isUseAlias: 0,
+      policyList: null,
       auditData: null, //最后一次作业记录
       searchVal: {}, //搜索下拉插件的值
       searchConfig: {
@@ -287,14 +295,20 @@ export default {
           {
             type: 'radio',
             name: 'isImported',
-            dataList: [{value: 0, text: '未上报'}, {value: 1, text: '已上报'}],
+            dataList: [
+              { value: 0, text: '未上报' },
+              { value: 1, text: '已上报' }
+            ],
             label: '同步状态',
             labelPosition: 'left'
           },
           {
             type: 'radio',
             name: 'hasError',
-            dataList: [{value: 0, text: '无异常'}, {value: 1, text: '有异常'}],
+            dataList: [
+              { value: 0, text: '无异常' },
+              { value: 1, text: '有异常' }
+            ],
             label: '是否异常',
             labelPosition: 'left'
           },
@@ -323,6 +337,17 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    closePolicyDialog(needRefresh) {
+      this.isPolicyEditShow = false;
+      this.currentPolicyId = null;
+      if (needRefresh) {
+        this.getPolicyList();
+      }
+    },
+    editPolicy(policyId) {
+      this.currentPolicyId = policyId;
+      this.isPolicyEditShow = true;
+    },
     restoreHistory(historyData) {
       if (historyData['searchParam']) {
         this.searchParam = historyData['searchParam'];
@@ -347,6 +372,16 @@ export default {
       this.$api.pbc.policy.getLastPolicyAudit({ interfaceId: this.searchParam.interfaceId, corporationId: this.searchParam.corporationId }).then(res => {
         this.auditData = res.Return;
       });
+    },
+    getPolicyList() {
+      this.$api.pbc.policy
+        .searchPolicy({
+          interfaceId: this.searchParam.interfaceId,
+          corporationId: this.searchParam.corporationId
+        })
+        .then(res => {
+          this.policyList = res.Return.tbodyList;
+        });
     },
     toggleSelectAll(val) {
       this.interfaceItemData.tbodyList.forEach(element => {
@@ -405,6 +440,7 @@ export default {
           this.$set(this.searchParam, 'corporationId', corporationId);
           this.searchInterfaceItem(1);
           this.getLastAudit();
+          this.getPolicyList();
         }
       }
     },
@@ -424,6 +460,7 @@ export default {
       this.getProperty();
       this.searchInterfaceItem(1);
       this.getLastAudit();
+      this.getPolicyList();
     },
     showImportDialog() {
       this.isImportShow = true;
@@ -576,6 +613,15 @@ export default {
               this.searchInterfaceItem();
             }
           });
+        }
+      });
+    },
+    getAudit(id) {
+      this.$api.pbc.interfaceitem.getInterfaceItemLastAudit(id).then(res => {
+        if (!res.Return) {
+          this.$Message.info('没有任何同步记录');
+        } else {
+          this.$router.push({ path: '/policy-audit-view', query: { id: res.Return.id } });
         }
       });
     },
