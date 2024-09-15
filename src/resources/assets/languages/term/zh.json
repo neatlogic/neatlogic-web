@@ -237,7 +237,9 @@
     "deleteattr": "删除属性",
     "deleteglobalattr": "删除全局属性",
     "groupbyci": "按模型分组",
-    "showrellabel": "显示关系类型"
+    "showrellabel": "显示关系类型",
+    "exportformodel": "导出为Model",
+    "exportforexcel": "导出为Excel"
   },
   "process": {
     "workordercenter": "工单中心",

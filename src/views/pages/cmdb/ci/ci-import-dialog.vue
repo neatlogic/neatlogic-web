@@ -28,7 +28,7 @@
               </div>
             </template>
             <template v-slot:result>
-              <div>
+              <div v-if="resultData && resultData.length">
                 <Card v-for="(ci, index) in resultData" :key="index" class="mt-sm">
                   <div slot="title" class="grid">
                     <div>
@@ -84,6 +84,7 @@
                   </TsTable>
                 </Card>
               </div>
+              <div v-else><span>没有任何变化</span></div>
             </template>
           </TsForm>
         </div>

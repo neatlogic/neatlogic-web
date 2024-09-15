@@ -8,7 +8,8 @@
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" @click="exportCi()">{{ $t('page.confirm') }}</Button>
+        <Button type="info" @click="exportCi('model')">{{ $t('term.cmdb.exportformodel') }}</Button>
+        <Button type="primary" @click="exportCi('excel')">{{ $t('term.cmdb.exportforexcel') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -30,7 +31,7 @@ export default {
         type: 'modal',
         isShow: true,
         maskClose: false,
-        width: 'medium'
+        width: 'small'
       },
       idList: [],
       formConfig: [
@@ -67,8 +68,12 @@ export default {
     close() {
       this.$emit('close');
     },
-    exportCi() {
-      this.download({url: '/api/binary/cmdb/ci/export/forexcel', params: {idList: this.idList}});
+    exportCi(type) {
+      if (type === 'excel') {
+        this.download({url: '/api/binary/cmdb/ci/export/forexcel', params: {idList: this.idList}});
+      } else if (type === 'model') {
+        this.download({url: '/api/binary/cmdb/ci/export', params: {idList: this.idList}});
+      }
       this.$emit('close');
     }
   },

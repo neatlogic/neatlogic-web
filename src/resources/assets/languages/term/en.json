@@ -236,7 +236,9 @@
     "deleteattr": "Delete attribute",
     "deleteglobalattr": "Delete Global Properties",
     "groupbyci": "Group by model",
-    "showrellabel": "Display relationship type"
+    "showrellabel": "Display relationship type",
+    "exportformodel": "Export as Model",
+    "exportforexcel": "Export to Excel"
   },
   "process": {
     "workordercenter": "Work Center",
