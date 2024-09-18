@@ -48,7 +48,7 @@
                   :issueData="issueData"
                   @close="({needRefresh = false, content = ''} = {}) => {
                     if(needRefresh) {
-                      issueData.content = content;
+                      $set(issueData, 'content', content)
                     }
                     contentMode = 'read';
                   }"
