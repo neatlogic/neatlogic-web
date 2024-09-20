@@ -18,7 +18,7 @@
               :disabled="propertyLocal.handler === 'formexpression'? true : false"
             ></TsFormSwitch>
           </template>
-          <template v-if="['formtext', 'formtextarea'].includes(propertyLocal.handler)" v-slot:config>
+          <template v-if="['formtext', 'formtextarea', 'formpassword'].includes(propertyLocal.handler)" v-slot:config>
             <TsFormItem v-if="propertyLocal.handler=== 'formtext'" :label="$t('form.placeholder.checkrule')">
               <TsFormSelect
                 v-model="propertyLocal.config.validate"
@@ -448,6 +448,7 @@ export default {
           dataList: [
             { text: this.$t('page.input'), value: 'formtext' },
             { text: this.$t('page.textfield'), value: 'formtextarea' },
+            { text: this.$t('page.password'), value: 'formpassword' },
             { text: this.$t('page.select'), value: 'formselect' },
             { text: this.$t('page.radio'), value: 'formradio' },
             { text: this.$t('page.checkbox'), value: 'formcheckbox' },
