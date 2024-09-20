@@ -134,8 +134,9 @@
                         </div>
                       </td>
                       <td>
-                        <span v-if="interfaceItem.isImported" class="text-success">已上报</span>
-                        <span v-else class="text-grey">未上报</span>
+                        <span v-if="interfaceItem.syncStatus === 'pending'" class="text-grey">等待上报</span>
+                        <span v-else-if="interfaceItem.syncStatus === 'succeed'" class="text-success">上报成功</span>
+                        <span v-else-if="interfaceItem.syncStatus === 'failed'" class="text-error">上报失败</span>
                       </td>
                       <td>
                         <span>{{ interfaceItem.lcd | formatDate }}</span>
@@ -302,10 +303,11 @@ export default {
         searchList: [
           {
             type: 'radio',
-            name: 'isImported',
+            name: 'syncStatus',
             dataList: [
-              { value: 0, text: '未上报' },
-              { value: 1, text: '已上报' }
+              { value: 'pending', text: '等待上报' },
+              { value: 'succeed', text: '上报成功' },
+              { value: 'failed', text: '上报失败' }
             ],
             label: '同步状态',
             labelPosition: 'left'
@@ -317,7 +319,7 @@ export default {
               { value: 0, text: '无异常' },
               { value: 1, text: '有异常' }
             ],
-            label: '是否异常',
+            label: '校验异常',
             labelPosition: 'left'
           },
           {
@@ -533,7 +535,7 @@ export default {
     searchInterfaceItem(currentPage) {
       if (this.searchParam.corporationId) {
         this.searchParam.keyword = this.searchVal.keyword;
-        this.searchParam.isImported = this.searchVal.isImported;
+        this.searchParam.syncStatus = this.searchVal.syncStatus;
         this.searchParam.hasError = this.searchVal.hasError;
         this.searchParam.updateTimeRange = this.searchVal.updateTimeRange;
         this.searchParam.currentPage = currentPage || 1;

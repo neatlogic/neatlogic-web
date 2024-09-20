@@ -79,6 +79,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    restoreHistory(historyData) {
+      if (historyData['keyword']) {
+        this.keyword = historyData['keyword'];
+      }
+    },
     click(inter) {
       this.$emit('click', inter);
     },
@@ -135,7 +140,9 @@ export default {
   },
   watch: {
     keyword: {
-      handler: function(val) {}
+      handler: function(val) {
+        this.$addHistoryData('keyword', val);
+      }
     }
   }
 };
