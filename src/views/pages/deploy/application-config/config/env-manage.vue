@@ -34,7 +34,7 @@
         >
         </EnvAttr>
       </TabPane>
-      <div :is="'appConfigEnvTabHandler'" v-if="isHasAppConfigEnvTabHandler"></div>
+      <div :is="'appConfigEnvTabHandler'" v-if="isHasAppConfigEnvTabHandler" :appData="params"></div>
     </Tabs>
   </div>
 </template>
