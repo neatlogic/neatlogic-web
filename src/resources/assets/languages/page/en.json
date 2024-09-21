@@ -1016,5 +1016,6 @@
   "front": "front",
   "after": "after",
   "includesdata": "There is data available",
-  "isfontbold": "Is the font bolded"
+  "isfontbold": "Is the font bolded",
+  "nochange": "unchanged"
 }
