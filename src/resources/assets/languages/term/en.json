@@ -2780,5 +2780,9 @@
     "activing": "Activing",
     "source": "Source restrictions",
     "waitfordo": "Pending processing"
+  },
+  "license": {
+    "isbanmodule": "Disable module upon expiration",
+    "graceperiod": "Delay grace days"
   }
 }
