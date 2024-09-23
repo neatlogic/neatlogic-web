@@ -51,6 +51,9 @@ export default {
           if (this.licenseInvalidTips && this.licenseInvalidTips.length > 0) {
             this.licenseInvalidTips = this.licenseInvalidTips.filter(item => item.moduleGroupVos.some(m => m.group === MODULEID));
           }
+          if (this.licenseInvalidTips && this.licenseInvalidTips.length > 0) {
+            this.isShow = true;
+          }
         });
       }, 1800000);//30分钟执行一次
     }
