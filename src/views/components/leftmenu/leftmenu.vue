@@ -78,8 +78,7 @@ export default {
       if (isDisabled) {
         this.$Notice.error({
           title: this.$t('page.licenseexception'),
-          desc: disabledReason,
-          duration: 0
+          desc: disabledReason
         });
         return false;
       } else {
