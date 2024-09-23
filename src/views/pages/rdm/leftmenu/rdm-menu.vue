@@ -24,7 +24,7 @@
               v-if="project.isOwner || project.isLeader"
               style="position: absolute; right: 0px; top: 0px"
               class="text-grey cursor tsfont-setting"
-              @click.stop="toProjectManage(project.id)"
+              @click.stop="goTo( '/project-edit/' + project.id)"
             ></div>
           </a>
         </li>
@@ -45,12 +45,14 @@
   </div>
 </template>
 <script>
+import LeftMenu from '@/views/components/leftmenu/leftmenu';
 export default {
   name: 'RdmMenu',
   components: {
     ProjectEditDialog: () => import('@/views/pages/rdm/project/project-add-dialog.vue'),
     VerticalPager: () => import('@/resources/plugins/VerticalPager/vertical-pager.vue')
   },
+  extends: LeftMenu,
   data: function() {
     return {
       isProjectDialogShow: false,
@@ -64,15 +66,6 @@ export default {
   },
   mounted() {},
   methods: {
-    goTo(path) {
-      //从左侧菜单点链接，激活清理历史标记
-      this.$route.meta.clearHistory = true;
-      this.$router.push({ path: path });
-    },
-    toProjectManage(projectId) {
-      this.$route.meta.clearHistory = true; // 激活清理历史标记
-      this.$router.push({ path: '/project-edit/' + projectId });
-    },
     addProject() {
       this.isProjectDialogShow = true;
     },

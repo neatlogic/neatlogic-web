@@ -64,7 +64,7 @@ const actions = {
       res.Return &&
       res.Return.forEach(moduleGroup => {
         try {
-          let { group: moduleId, groupName: moduleName, description, isDefault, defaultPage } = moduleGroup;
+          let { group: moduleId, groupName: moduleName, description, isDefault, defaultPage, isDisabled, disabledReason } = moduleGroup;
           if (!description || !description.trim()) {
             description = `${moduleName}平台`;
           }
@@ -74,7 +74,7 @@ const actions = {
             const hasAuthorizedDynamicMenu = routerConfig[moduleId].some(route => route.meta && route.meta.istitle && userAuthList.length > 0 && hasAuthNoMenu(route, userAuthList));
             if (((hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && !showModuleList) || (showModuleList && (hasAuthorizedDynamicMenu || authorizedMenuList.length > 0) && showModuleList.indexOf(moduleId) > -1 && userAuthList.length > 0)) {
               //有权限菜单的模块才让显示
-              moduleList.push({ moduleId, moduleName, menuGroupList, description, isDefault, defaultPage });
+              moduleList.push({ moduleId, moduleName, menuGroupList, description, isDefault, defaultPage, isDisabled, disabledReason });
             }
           }
         } catch (e) {
