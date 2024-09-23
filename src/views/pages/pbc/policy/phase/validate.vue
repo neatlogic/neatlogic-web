@@ -1,12 +1,21 @@
 <template>
   <div>
-    <div v-if="result" class="grid">
-      <div class="title">{{ $t('term.pbc.groupid') }}：</div>
-      <div>{{ result.groupId }}</div>
-      <div class="title">{{ $t('page.returncode') }}：</div>
-      <div>{{ result.code }}</div>
-      <div class="title">{{ $t('term.pbc.message') }}：</div>
-      <div>{{ result.msg }}</div>
+    <div v-if="!phase.error">
+      <div v-if="result" class="grid">
+        <div class="title">{{ $t('term.pbc.groupid') }}：</div>
+        <div>{{ result.groupId }}</div>
+        <div class="title">{{ $t('page.returncode') }}：</div>
+        <div>{{ result.code }}</div>
+        <div class="title">{{ $t('term.pbc.message') }}：</div>
+        <div>{{ result.msg }}</div>
+      </div>
+    </div>
+    <div v-else>
+      <Alert type="error">
+        <div>
+          <span>{{ phase.error }}</span>
+        </div>
+      </Alert>
     </div>
   </div>
 </template>

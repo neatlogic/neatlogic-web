@@ -56,25 +56,25 @@ export default {
         {
           type: 'text',
           name: 'reportUrl',
-          label: this.$t('term.pbc.reporturl'),
+          label: '上报数据元实例接口',
           validateList: ['required', 'url']
         },
         {
           type: 'text',
           name: 'validUrl',
-          label: this.$t('term.pbc.validurl'),
+          label: '数据元检核请求接口',
           validateList: ['required', 'url']
         },
         {
           type: 'text',
           name: 'selectDataUrl',
-          label: this.$t('term.pbc.selectdataurl'),
+          label: '查询数据处理状态接口',
           validateList: ['required', 'url']
         },
         {
           type: 'text',
           name: 'validResultUrl',
-          label: this.$t('term.pbc.validresulturl'),
+          label: '查询批次组处理状态接口',
           validateList: ['required', 'url']
         },
         /*{

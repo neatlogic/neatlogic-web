@@ -28,7 +28,7 @@
               </div>
             </template>
             <template v-slot:result>
-              <div>
+              <div v-if="resultData && resultData.length">
                 <Card v-for="(ci, index) in resultData" :key="index" class="mt-sm">
                   <div slot="title" class="grid">
                     <div>
@@ -37,7 +37,8 @@
                     </div>
                     <div>
                       <span v-if="ci._action === 'insert'" class="text-success">{{ $t('page.new') }}</span>
-                      <span v-else class="text-warning">{{ $t('page.revise') }}</span>
+                      <span v-else-if="ci._action === 'update'" class="text-warning">{{ $t('page.revise') }}</span>
+                      <span v-else class="text-grey">{{ $t('page.nochange') }}</span>
                     </div>
                   </div>
                   <ul v-if="ci.error.length > 0" class="text-error error-info">
@@ -72,7 +73,8 @@
                     <template v-slot:_action="{ row }">
                       <div>
                         <span v-if="row._action === 'insert'" class="text-success">{{ $t('page.new') }}</span>
-                        <span v-else class="text-warning">{{ $t('page.revise') }}</span>
+                        <span v-else-if="row._action === 'update'" class="text-warning">{{ $t('page.revise') }}</span>
+                        <span v-else class="text-grey">{{ $t('page.nochange') }}</span>
                       </div>
                     </template>
                     <template v-slot:error="{ row }">
@@ -84,6 +86,7 @@
                   </TsTable>
                 </Card>
               </div>
+              <div v-else><span>没有任何变化</span></div>
             </template>
           </TsForm>
         </div>
@@ -94,12 +97,6 @@
         <Button v-else type="success" @click="importCi()">{{ $t('page.import') }}</Button>
       </template>
     </TsDialog>
-    <IconDialog
-      v-if="isIconDialogShow"
-      :currentIcon="ciData.icon"
-      @cancel="(isIconDialogShow = false), (ciData.icon = 'tsfont-ci-o')"
-      @confirm="selectIcon"
-    ></IconDialog>
   </div>
 </template>
 <script>
@@ -109,7 +106,6 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
-    IconDialog: () => import('../common/icon-dialog.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   mixins: [upload],
@@ -118,7 +114,6 @@ export default {
     return {
       allowImport: false,
       currentIcon: 'tsfont-ci',
-      isIconDialogShow: false,
       ciData: { fileList: [] },
       dialogConfig: {
         title: this.$t('term.cmdb.importci'),
@@ -175,14 +170,10 @@ export default {
       const index = this.ciData.fileList.findIndex(d => d.name === file.name);
       if (index >= 0) {
         this.$delete(this.ciData.fileList, index);
+        this.resultData = null;
+        this.$set(this.formConfig.result, 'isHidden', true);
         this.allowImport = false;
       }
-    },
-    selectIcon(icon) {
-      this.isIconDialogShow = false;
-      this.$nextTick(() => {
-        this.$set(this.ciData, 'icon', icon);
-      });
     },
     close(needRefresh) {
       this.$emit('close', needRefresh);

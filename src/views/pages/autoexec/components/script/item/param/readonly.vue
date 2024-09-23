@@ -92,7 +92,9 @@ export default {
     prevList: Array,
     phaseList: Array, //阶段列表
     profileParamVoList: Array, //预置参数集：参数列表
-    prenodeDataList: Array
+    prenodeDataList: Array,
+    profileId: Number, //预置参数集：id
+    overrideProfileList: Array //覆盖预置参数集
   },
   data() {
     return {
@@ -170,11 +172,19 @@ export default {
     getProfileParamConfig() {
       return (profileParamVoList, item) => {
         let config = '';
-        profileParamVoList.forEach(p => {
-          if (p.key == item.key && p.type == item.type) {
-            config = p;
-          }
-        });
+        let findItem = null;
+        if (!this.$utils.isEmpty(this.overrideProfileList)) {
+          findItem = this.overrideProfileList.find(p => p.profileId === this.profileId);
+        }
+        if (findItem) {
+          config = findItem.paramList.find(p => p.key === item.key);
+        } else {
+          profileParamVoList.forEach(p => {
+            if (p.key == item.key && p.type == item.type) {
+              config = p;
+            }
+          });
+        }
         return config;
       };
     }

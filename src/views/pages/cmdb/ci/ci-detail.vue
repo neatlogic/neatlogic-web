@@ -15,7 +15,8 @@
                 {{ $t('page.moresetting') }}
               </span>
               <DropdownMenu slot="list">
-                <DropdownItem v-if="!ciData.isVirtual" class="tsfont-download" @click.native="exportModel()">{{ $t('term.cmdb.exportci') }}</DropdownItem>
+                <DropdownItem v-if="!ciData.isVirtual" class="tsfont-download" @click.native="exportModel()">{{ $t('term.cmdb.exportformodel') }}</DropdownItem>
+                <DropdownItem v-if="!ciData.isVirtual" class="tsfont-download" @click.native="exportExcel()">{{ $t('term.cmdb.exportforexcel') }}</DropdownItem>
                 <DropdownItem v-if="!ciData.isVirtual" class="tsfont-eye" @click.native="viewSetting()">{{ $t('page.display') }}/{{ $t('page.edit') }}{{ $t('page.setting') }}</DropdownItem>
                 <DropdownItem v-if="ciData.isVirtual" class="tsfont-eye" @click.native="viewSetting()">{{ $t('page.display') }}{{ $t('page.setting') }}</DropdownItem>
                 <DropdownItem v-if="!ciData.isVirtual" class="tsfont-unlock" @click.native="editAuth()">{{ $t('page.auth') }}</DropdownItem>
@@ -403,7 +404,10 @@ export default {
       });
     },
     exportModel() {
-      this.download({ url: '/api/binary/cmdb/ci/export', params: { ciId: this.ciData.id } });
+      this.download({ url: '/api/binary/cmdb/ci/export', params: { idList: [this.ciData.id] } });
+    },
+    exportExcel() {
+      this.download({ url: '/api/binary/cmdb/ci/export/forexcel', params: { idList: [this.ciData.id] } });
     },
     viewSetting: function() {
       this.isViewShow = true;

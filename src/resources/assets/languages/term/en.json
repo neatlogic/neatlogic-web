@@ -235,7 +235,10 @@
     "expandbylevel": "Expand by layer",
     "deleteattr": "Delete attribute",
     "deleteglobalattr": "Delete Global Properties",
-    "groupbyci": "Group by model"
+    "groupbyci": "Group by model",
+    "showrellabel": "Display relationship type",
+    "exportformodel": "Export as Model",
+    "exportforexcel": "Export to Excel"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -1302,7 +1305,12 @@
     "timevaluedesc": "0: Represents the value of \"Custom | Fill in Time | Date\".",
     "positiveintegerdesc": "Positive integer: Indicates that the value of \"Custom | Fill in Time | Date\" increases by the corresponding time (or by the selected time unit).",
     "neglectintegerdesc": "Negative integer: Indicates that the value of \"Custom | Fill in Time | Date\" is reduced by the corresponding time (or by the selected time unit).",
-    "writetimedesc": "Fill in time: indicates the time when the current component validation was triggered."
+    "writetimedesc": "Fill in time: indicates the time when the current component validation was triggered.",
+    "fieldsconfiginfo": "According to the field mapping configuration, obtain the relevant information of the work order reporter",
+    "jsscriptconversion": "JS Script Conversion",
+    "strjoin": "Field concatenation",
+    "expressionplaceholder": "Please fill in the ES5 script and return the value of the expression as' value '. Example:",
+    "matrixsaveconfirm": "The matrix has been referenced, are you sure to make the modifications?"
   },
   "knowledge": {
     "document": "Document",

@@ -40,6 +40,7 @@
               v-show="showDetailConfig.form"
               ref="formSetting"
               :draftData="draftData"
+              :externalData="externalData"
               :priorityList="priorityList"
               @setPriorityByForm="setPriorityByForm"
             ></FormSetting>
@@ -53,6 +54,7 @@
           :draftData="draftData"
           :priorityList="priorityList"
           :defaultPriorityConfig="defaultPriorityConfig"
+          @updateDispatchOwnerInfo="updateDispatchOwnerInfo"
         ></BaseSetting>
       </template>
     </TsContain>
@@ -90,10 +92,9 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
       taskLoading: true,
-      channelUuid: _this.defaultChannelUuid,
+      channelUuid: this.defaultChannelUuid,
       baseData: {},
       dispatchTitle: '',
       defaultPriorityUuid: null, //默认优先级
@@ -101,11 +102,8 @@ export default {
       tranferReportProcessTaskList: null, //转报的工单信息
       isShowForm: false,
       validateList: ['required'],
-      priorityList: []
-      // showDetailConfig: {
-      //   title: true,
-      //   form: true
-      // }
+      priorityList: [],
+      externalData: {}
     };
   },
   created() {},
@@ -243,6 +241,9 @@ export default {
       if (this.$refs.formSetting && this.$refs.formSetting.$el && this.$refs.formSetting.$el.__vue__.$refs.formSheet) {
         this.$refs.formSetting.$el.__vue__.$refs.formSheet.initContainerWidth();
       }
+    },
+    updateDispatchOwnerInfo(userDetail) {
+      this.$set(this.externalData, 'dispatchOwnerInfo', userDetail);
     }
   },
   computed: {

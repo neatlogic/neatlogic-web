@@ -132,6 +132,7 @@
     </TsFormItem>
     <AttrConfigDialog
       v-if="isAttrConfigDialogShow && currentProperty"
+      :formItemUuid="formItem.uuid"
       :formItemConfig="config"
       :property="currentProperty"
       :formItemList="formItemList"

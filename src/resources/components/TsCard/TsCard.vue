@@ -1,12 +1,13 @@
 <template>
   <div :class="cardClassname()" :style="setOuterpadding(padding)">
-    <Loading v-if="loading" loadingShow style="height:100px;"></Loading>
+    <Loading v-if="loading" loadingShow style="height: 100px"></Loading>
     <template v-else-if="list && list.length > 0">
       <!-- 圆点分页_start -->
       <div v-if="pageType != 'scroll'">
         <ul :class="cardPrev + 'ul ivu-row'">
           <li v-if="firstBtn" :class="setcardliClass()">
-            <div :class="cardPrev + 'body'" class="border-btn border-color" style="padding:5px"><!--由于多了border，所以padding需要比正常的少1px-->
+            <div :class="cardPrev + 'body'" class="border-btn border-color" style="padding: 5px">
+              <!--由于多了border，所以padding需要比正常的少1px-->
               <slot name="firstBtn"></slot>
             </div>
           </li>
@@ -110,7 +111,7 @@
                   <div v-else-if="n.type == 'dropdown'" class="inline text-action">
                     <Dropdown
                       trigger="click"
-                      style="width:33%"
+                      style="width: 33%"
                       class="inline"
                       transfer
                     >
@@ -170,7 +171,7 @@
             >
               <a><i class="ivu-icon ivu-icon-ios-arrow-forward"></i></a>
             </li>
-            <Select v-model="bigDataPageSize" style="width:90px" @on-change="getPageSize(bigDataPageSize)">
+            <Select v-model="bigDataPageSize" style="width: 90px" @on-change="getPageSize(bigDataPageSize)">
               <Option v-for="item in pageSizeOpts" :key="item" :value="item">{{ $t('page.itemspagetarget', { target: item }) }}</Option>
             </Select>
           </ul>
@@ -288,8 +289,7 @@
       </div>
     </template>
     <template v-else>
-      <NoData></NoData>
-      <!--<div style="text-align: center; margin-top: 20px;">{{nodataText}}</div>-->
+      <NoData v-if="needNoData"></NoData>
     </template>
   </div>
 </template>
@@ -327,6 +327,7 @@ export default {
         return this.$t('page.nodata');
       }
     },
+    needNoData: { type: Boolean, default: true },
     headerPosition: [String], //顶部位置，默认正常占位，可设置right\left
     alwaysShowHeader: { type: Boolean, default: false }, //总是显示顶部内容
     headerStyle: [Object], //顶部样式自定义

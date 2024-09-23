@@ -116,6 +116,8 @@
             :prevList="prevList"
             :phaseList="phaseList"
             :profileParamVoList="profileParamVoList"
+            :profileId="profileId"
+            :overrideProfileList="overrideProfileList"
             :prenodeDataList="getPrevList(prevList, configParamList[lindex].component,configParamList[lindex].mappingMode)"
           ></Readonly>
         </template>
@@ -302,13 +304,21 @@ export default {
       }
     },
     getProfileParamsList(id, isFirst) { //预置参数集：参数列表
-      this.$api.autoexec.profile.getProfileDetailById(id).then((res) => {
-        if (res.Status == 'OK') {
-          this.profileParamVoList = res.Return.profileParamVoList || [];
-          !isFirst && this.updateParamMappingList(this.profileParamVoList);
-          this.$forceUpdate();
-        }
-      });
+      let findItem = null;
+      if (!this.$utils.isEmpty(this.overrideProfileList)) {
+        findItem = this.overrideProfileList.find(p => p.profileId === this.profileId);
+      }
+      if (findItem) {
+        this.profileParamVoList = findItem.paramList || [];
+      } else {
+        this.$api.autoexec.profile.getProfileDetailById(id).then((res) => {
+          if (res.Status == 'OK') {
+            this.profileParamVoList = res.Return.profileParamVoList || [];
+            !isFirst && this.updateParamMappingList(this.profileParamVoList);
+            this.$forceUpdate();
+          }
+        });
+      }
     },
     //判断是否需要把预置参数集的选项过滤
     filterProfile(list, profileParamVoList, item) {

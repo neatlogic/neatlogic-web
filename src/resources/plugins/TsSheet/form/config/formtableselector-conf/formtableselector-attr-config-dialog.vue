@@ -231,6 +231,21 @@
               ></TsFormDatePicker>
             </TsFormItem>
           </template>
+          <template v-else-if="propertyLocal.handler === 'formexpression'" v-slot:config>
+            <TsFormItem :label="$t('term.cmdb.expression')">
+              <ExpressionSetting
+                ref="formitem_expression"
+                :formItemList="formItemList"
+                :formItemUuid="formItemUuid"
+                :attrUuid="propertyLocal.uuid"
+                :value="propertyLocal.config.expression"
+                isRequired
+                @setConfig="(val)=>{
+                  changeExpression(val);
+                }"
+              ></ExpressionSetting>
+            </TsFormItem>
+          </template>
           <template v-slot:reaction>
             <Tabs v-if="propertyLocal.reaction">
               <TabPane
@@ -313,10 +328,11 @@ export default {
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
     StaticDataEditor: () => import('../common/static-data-editor.vue'),
     ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
-    ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue')
-    
+    ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
+    ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue')
   },
   props: {
+    formItemUuid: { type: String }, //表单组件uuid
     formItemConfig: { type: Object }, //表单组件配置
     property: { type: Object }, //属性配置
     formItemList: {typeof: Array}
@@ -394,7 +410,8 @@ export default {
             { text: this.$t('page.radio'), value: 'formradio' },
             { text: this.$t('page.checkbox'), value: 'formcheckbox' },
             { text: this.$t('page.date'), value: 'formdate' },
-            { text: this.$t('page.time'), value: 'formtime' }
+            { text: this.$t('page.time'), value: 'formtime' },
+            {text: this.$t('term.cmdb.expression'), value: 'formexpression' }
           ],
           validateList: ['required']
         },
@@ -549,6 +566,9 @@ export default {
       } else {
         this.$delete(this.propertyLocal.reaction, 'filter');
       }
+    },
+    changeExpression(val) {
+      this.$set(this.propertyLocal.config, 'expression', val);
     }
   },
   filter: {},
@@ -639,6 +659,9 @@ export default {
       handler: function(newVal, oldVal) {
         if (newVal && oldVal && oldVal != newVal) {
           this.$set(this.propertyLocal, 'config', {});
+          if (newVal === 'formexpression') {
+            this.$set(this.propertyLocal.config, 'isReadOnly', true);
+          }
         }
       },
       deep: true,
