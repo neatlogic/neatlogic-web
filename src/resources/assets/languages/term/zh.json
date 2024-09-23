@@ -2788,5 +2788,9 @@
     "activing": "激活中",
     "source": "来源限制",
     "waitfordo": "待处理"
+  },
+  "license": {
+    "isbanmodule": "到期禁用模块",
+    "graceperiod": "超时宽限天数"
   }
 }

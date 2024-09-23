@@ -1,9 +1,12 @@
 <template>
-  <div v-if="licenseData && (licenseData.isWillExpired || licenseData.isExpired) && isShow" class="license-container">
+  <div v-if="licenseInvalidTips && isShow" class="license-container">
     <!---->
-    <div style="position: relative;" class="pr-nm">
-      <div v-if="licenseData.isWillExpired" class="cursor h1 text-grey" @click="toLicenseManage">许可将于{{ licenseData.expiredTime }}过期</div>
-      <div v-if="licenseData.isExpired" class="cursor h1 text-grey" @click="toLicenseManage">许可已过期，系统将于{{ licenseData.stopServiceTime }}停止服务</div>
+    <div v-if="licenseInvalidTips&&licenseInvalidTips.length > 0" style="position: relative;" class="pr-nm">
+      <div class="cursor h1 text-grey" @click="toLicenseManage">许可license</div>
+      <div v-for="(tip,index) in licenseInvalidTips" :key="index">
+        <div v-if="tip.type === 'error'" class="cursor h3 text-error" @click="toLicenseManage">异常：{{ tip.msg }}</div>
+        <div v-else class="cursor h3 text-warning" @click="toLicenseManage">警告：{{ tip.msg }}</div>
+      </div>
       <span class="tsfont-close cursor" style="position:absolute;right:0px;top:-3px" @click="isShow = false"></span>
     </div>
   </div>
@@ -15,13 +18,14 @@ export default {
   props: {},
   data() {
     return {
-      licenseData: null,
-      isShow: true
+      licenseInvalidTips: null,
+      isShow: true,
+      timer: null
     };
   },
   beforeCreate() {},
   created() {
-    this.checkTenant();
+    this.checkLicense();
   },
   beforeMount() {},
   mounted() {},
@@ -29,16 +33,26 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
+  beforeDestroy() {
+    if (this.timer) {
+      this.timer.clear();
+    }
+  },
+  destroyed() {
+  },
   methods: {
     toLicenseManage() {
       window.location.href = HOME + '/framework.html#/license-manage';
     },
-    checkTenant() {
-      this.$api.common.checkTenant().then(res => {
-        this.licenseData = res?.license;
-      });
+    checkLicense() {
+      this.timer = this.$utils.setInterval(async() => {
+        await this.$api.common.getLicenseInvalidMsg().then(res => {
+          this.licenseInvalidTips = res.Return;
+          if (this.licenseInvalidTips && this.licenseInvalidTips.length > 0) {
+            this.licenseInvalidTips = this.licenseInvalidTips.filter(item => item.moduleGroupVos.some(m => m.group === MODULEID));
+          }
+        });
+      }, 1800000);//30分钟执行一次
     }
   },
   filter: {},

@@ -177,6 +177,9 @@ const common = {
   getUserRoleTeam(params) {
     // 用户角色及组织架构查询接口
     return axios.post('/api/rest/user/role/team/search', params);
+  },
+  getLicenseInvalidMsg() {
+    return axios.post('/api/rest/license/invalid/msg/get');
   }
 };
 
