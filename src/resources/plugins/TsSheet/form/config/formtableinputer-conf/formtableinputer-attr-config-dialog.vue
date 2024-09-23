@@ -230,6 +230,7 @@
             <TsFormItem :label="$t('term.framework.thsetting')" required>
               <TableConfig
                 ref="formitem_table"
+                :formItem="formItem"
                 :config="propertyLocal.config"
                 @setDataConfig="(dataConfig)=>{
                   $set(propertyLocal.config, 'dataConfig', dataConfig);
@@ -377,7 +378,11 @@ export default {
       type: Array,
       default: () => []
     },
-    formItemUuid: String
+    formItemUuid: String,
+    formItem: { //表单组件
+      type: Object,
+      default: () => {}
+    } 
   },
   data() {
     return {

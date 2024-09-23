@@ -98,7 +98,7 @@
               </tr>
             </draggable>
           </table>
-          <div class="margin-sm" style="text-align:center">
+          <div v-if="!formItem.hasOwnProperty('inherit')" class="margin-sm" style="text-align:center">
             <Button style="width:100%" :disabled="disabled" @click="addExtraProperty()"><span class="tsfont-plus">{{ $t('term.framework.extraattr') }}</span></Button>
           </div>
         </div>
