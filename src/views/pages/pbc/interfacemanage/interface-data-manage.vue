@@ -107,7 +107,7 @@
                   </thead>
                   <tbody v-if="interfaceItemData.tbodyList && interfaceItemData.tbodyList.length > 0" class="tbody-main">
                     <tr v-for="(interfaceItem, index) in interfaceItemData.tbodyList" :key="index">
-                      <td>
+                      <td style="text-align: center; width: 30px">
                         <Dropdown placement="bottom-start" :transfer="true">
                           <a href="javascript:void(0)" class="tsfont-option-horizontal"></a>
                           <DropdownMenu slot="list">
@@ -118,22 +118,30 @@
                           </DropdownMenu>
                         </Dropdown>
                       </td>
-                      <td v-if="hasDeleteItem" style="text-align: center"><Checkbox v-if="!interfaceItem.isImported" v-model="interfaceItem.isSelected" style="margin: 0px"></Checkbox></td>
-                      <td>
-                        <Badge :count="interfaceItem.errorCount"></Badge>
-                        <Divider v-if="interfaceItem.errorCount > 0 && interfaceItem.syncError" type="vertical" />
-                        <Tooltip v-if="interfaceItem.syncError" :content="interfaceItem.syncError" placement="right">
-                          <span class="text-error tsfont-warning-s"></span>
-                        </Tooltip>
+                      <td v-if="hasDeleteItem" style="text-align: center; width: 40px"><Checkbox v-if="!interfaceItem.isImported" v-model="interfaceItem.isSelected" style="margin: 0px"></Checkbox></td>
+                      <td style="width: 80px; text-align: center">
+                        <span>
+                          <Tooltip v-if="interfaceItem.errorCount" :content="interfaceItem.errorCount + '个校验异常'" :transfer="true">
+                            <span class="tsfont-info-o text-error">
+                              <sup>{{ interfaceItem.errorCount }}</sup>
+                            </span>
+                          </Tooltip>
+                        </span>
+                        <span>
+                          <Divider v-if="interfaceItem.errorCount > 0 && interfaceItem.syncError" type="vertical" />
+                        </span>
+                        <span>
+                          <Tooltip v-if="interfaceItem.syncError" :content="interfaceItem.syncError" :transfer="true">
+                            <span class="text-error tsfont-warning-s"></span>
+                          </Tooltip>
+                        </span>
                       </td>
-                      <td>
-                        <div v-if="!interfaceItem.isImported && !interfaceItem.error">
-                          <span v-if="interfaceItem.isNew && !interfaceItem.dataHash" class="text-success">新增</span>
-                          <span v-else-if="interfaceItem.isNew && interfaceItem.dataHash" class="text-primary">修改</span>
-                          <span v-else-if="interfaceItem.isDelete" class="text-error">删除</span>
-                        </div>
+                      <td style="width: 50px; text-align: center">
+                        <span v-if="interfaceItem.isNew && !interfaceItem.dataHash" class="text-success">新增</span>
+                        <span v-else-if="interfaceItem.isNew && interfaceItem.dataHash" class="text-primary">修改</span>
+                        <span v-else-if="interfaceItem.isDelete" class="text-error">删除</span>
                       </td>
-                      <td>
+                      <td style="width: 50px; text-align: center">
                         <span v-if="interfaceItem.syncStatus === 'pending'" class="text-grey">等待上报</span>
                         <span v-else-if="interfaceItem.syncStatus === 'succeed'" class="text-success">上报成功</span>
                         <span v-else-if="interfaceItem.syncStatus === 'failed'" class="text-error">上报失败</span>
@@ -153,7 +161,7 @@
                             width="400"
                             :content="interfaceItem.error[prop.id]"
                           >
-                            <i class="text-error tsfont-warning-s"></i>
+                            <i class="text-error tsfont-info-o"></i>
                           </Poptip>
                           {{ interfaceItem.dataText[prop.id] }}
                         </div>
@@ -170,7 +178,7 @@
                                 width="400"
                                 :content="interfaceItem.error[prop.complexId][dindex.toString()][prop.id]"
                               >
-                                <span class="text-error tsfont-warning-s mr-xs"></span>
+                                <span class="text-error tsfont-info-o mr-xs"></span>
                               </Poptip>
                               <span v-if="d[prop.id]">{{ d[prop.id] }}</span>
                               <span v-else>-</span>
@@ -190,7 +198,7 @@
                             width="400"
                             :content="interfaceItem.error[prop.complexId]"
                           >
-                            <i class="text-error tsfont-warning-s"></i>
+                            <i class="text-error tsfont-info-o"></i>
                           </Poptip>
                         </div>
                       </td>
@@ -427,7 +435,9 @@ export default {
         return h('div', [
           h('span', corporation.name),
           h('Badge', {
+            class: 'ml-xs',
             props: {
+              type: 'primary',
               count: corporation.itemCount
             }
           })
