@@ -91,7 +91,7 @@
                 </td>
                 <td v-if="!disabled">
                   <span v-if="data.isExtra" class="tsfont-setting text-action" @click="openAttrConfigDialog(data)"></span>
-                  <span v-if="data.isExtra" class="ml-xs tsfont-plus-o text-action" @click="addExtraProperty()"></span>
+                  <span v-if="!formItem.hasOwnProperty('inherit') && data.isExtra" class="ml-xs tsfont-plus-o text-action" @click="addExtraProperty()"></span>
                   <span v-if="data.isExtra" class="ml-xs tsfont-close-o text-action" @click="removeExtraProperty(data)"></span>
                 </td>
               </tr>
@@ -115,6 +115,7 @@
     </TsFormItem>
     <AttrConfigDialog
       v-if="isAttrConfigDialogShow && currentProperty"
+      :formItem="formItem"
       :formItemConfig="config"
       :property="currentProperty"
       :formItemList="formItemList"
