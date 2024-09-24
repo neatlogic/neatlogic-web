@@ -141,7 +141,7 @@ export default {
       });
     },
     changeCurrent(currentPage) {
-      this.searchRecord(currentPage);
+      this.searchIntegrated(currentPage);
     },
     changePageSize(pageSize) {
       this.searchParams.pageSize = pageSize;
