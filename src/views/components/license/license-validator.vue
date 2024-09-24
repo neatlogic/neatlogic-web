@@ -2,10 +2,11 @@
   <div v-if="licenseInvalidTips && isShow" class="license-container">
     <!---->
     <div v-if="licenseInvalidTips&&licenseInvalidTips.length > 0" style="position: relative;" class="pr-nm">
-      <div class="cursor h1 text-grey" @click="toLicenseManage">许可license</div>
+      <div class="cursor h1 text-grey" @click="toLicenseManage">{{ $t('page.license') }}</div>
       <div v-for="(tip,index) in licenseInvalidTips" :key="index">
-        <div v-if="tip.type === 'error'" class="cursor h3 text-error" @click="toLicenseManage">异常：{{ tip.msg }}</div>
-        <div v-else class="cursor h3 text-warning" @click="toLicenseManage">警告：{{ tip.msg }}</div>
+        <div v-if="tip.type === 'error'" class="cursor h3 text-error" @click="toLicenseManage">{{ $t('page.exception') }}：{{ tip.msg }}</div>
+        <div v-else-if="tip.type === 'warn'" class="cursor h3 text-warning" @click="toLicenseManage">{{ $t('page.warning') }}：{{ tip.msg }}</div>
+        <div v-else class="cursor h3 text-info" @click="toLicenseManage">{{ $t('page.tip') }}：{{ tip.msg }}</div>
       </div>
       <span class="tsfont-close cursor" style="position:absolute;right:0px;top:-3px" @click="isShow = false"></span>
     </div>

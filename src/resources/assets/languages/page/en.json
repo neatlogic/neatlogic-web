@@ -1018,5 +1018,6 @@
   "includesdata": "There is data available",
   "isfontbold": "Is the font bolded",
   "nochange": "unchanged",
-  "licenseexception": "License exception"
+  "licenseexception": "License exception",
+  "license": "permit"
 }

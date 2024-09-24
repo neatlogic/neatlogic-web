@@ -1020,5 +1020,6 @@
   "includesdata": "有数据",
   "isfontbold": "是否字体加粗",
   "nochange": "无变化",
-  "licenseexception": "许可异常"
+  "licenseexception": "许可异常",
+  "license": "许可"
 }
