@@ -8,7 +8,8 @@ export default {
     initFormItemList: {
       type: Array,
       default: () => []
-    }
+    },
+    source: { type: String, default: '' } //表单组件配置来源：scene(场景)
   },
   methods: {
     //设置属性值

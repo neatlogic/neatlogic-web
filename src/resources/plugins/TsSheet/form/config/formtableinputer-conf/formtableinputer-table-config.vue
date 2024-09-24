@@ -32,7 +32,7 @@
             </td>
             <td>
               <span v-if="data.isExtra" class="tsfont-setting text-action" @click="openAttrConfigDialog(data)"></span>
-              <span v-if="!formItem.hasOwnProperty('inherit') && data.isExtra" class="ml-xs tsfont-plus-o text-action" @click="addExtraProperty()"></span>
+              <span v-if="source !== 'scene' && data.isExtra" class="ml-xs tsfont-plus-o text-action" @click="addExtraProperty()"></span>
               <span v-if="dataConfig.length > 1 && data.isExtra" class="ml-xs tsfont-close-o text-action" @click="removeExtraProperty(data)"></span>
             </td>
           </tr>
@@ -61,11 +61,8 @@ export default {
     AttrConfigDialog: () => import('./formtableinputer-attr-config-dialog.vue')
   },
   props: {
-    formItem: {
-      type: Object,
-      default: () => {}
-    },
-    config: Object
+    config: Object,
+    source: {type: String, default: ''}
   },
   data() {
     return {
