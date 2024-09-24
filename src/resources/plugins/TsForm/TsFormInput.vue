@@ -55,7 +55,7 @@
         @on-search="onSearchValue"
         @on-clear="onClearValue"
       ></InputNumber>
-      <div v-if="desc && !descType" class="text-tip tips desc-text-mt">{{ desc }}</div>
+      <div v-if="desc && !descType" class="text-tip tips desc-text-mt text-word-break">{{ desc }}</div>
       <Alert v-else-if="desc && descType" :type="descType">{{ desc }}</Alert>
       <transition name="fade">
         <slot name="validMessage">
