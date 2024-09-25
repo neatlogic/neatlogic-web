@@ -53,7 +53,8 @@ export default {
       light: [],
       dark: [],
       temLight: [],
-      temDark: []
+      temDark: [],
+      btnLoading: false
     };
   },
   beforeCreate() {},
@@ -158,6 +159,10 @@ export default {
       if (item === 'preview') {
         this.render();
       } else {
+        if (this.btnLoading) {
+          return;
+        }
+        this.btnLoading = true;
         this.$api.framework.theme.saveTheme({}).then(res => {
           if (res.Status == 'OK') {
             this.light = this.$utils.deepClone(themeConfig.temLight);
@@ -179,6 +184,8 @@ export default {
             this.updatedFavicon(themeConfig); 
             this.$Message.success(this.$t('message.executesuccess'));
           }
+        }).finally(() => {
+          this.btnLoading = false;
         });
       }
     },
@@ -195,6 +202,10 @@ export default {
       return newList;
     },
     save() {
+      if (this.btnLoading) {
+        return;
+      }
+      this.btnLoading = true;
       let light = this.$utils.deepClone(this.light);
       let dark = this.$utils.deepClone(this.dark);
       let data = {
@@ -209,16 +220,18 @@ export default {
           this.updatedFavicon(data.config); 
           this.$Message.success(this.$t('message.savesuccess'));
         }
+      }).finally(() => {
+        this.btnLoading = false;
       });
     },
-    updatedFavicon(config) {
+    updatedFavicon(themeConfig) {
       //更新网站图标
       var url = '';
       var favicon = '';
-      let temList = config.light;
+      let temList = themeConfig.light;
       if (localStorage.themeClass === 'theme-dark') {
         // 默认主题模式
-        temList = config.dark;
+        temList = themeConfig.dark;
       }
       temList && temList instanceof Array && temList.forEach(v => {
         if (v.param === 'favicon') {
