@@ -9,7 +9,8 @@ export default {
     'menuSelect': $t('term.framework.theme.menucolor'),
     'others': $t('term.framework.theme.otherscolor'),
     'dashboard': $t('term.framework.theme.dashboardcolor'),
-    'logo': $t('term.framework.theme.logoimg')
+    'logo': $t('term.framework.theme.logoimg'),
+    'favicon': $t('page.favicon')
   },
   'light': [
     {
@@ -200,6 +201,14 @@ export default {
       'label': $t('term.framework.theme.logosetting'),
       'param': 'logo',
       'value': 'logo_big_dark.png',
+      'type': 'file',
+      'input': 'file'
+    },
+    {
+      'titleType': 'favicon',
+      'label': $t('page.favicon'),
+      'value': '',
+      'param': 'favicon',
       'type': 'file',
       'input': 'file'
     }
@@ -395,6 +404,14 @@ export default {
       'label': $t('term.framework.theme.logosetting'),
       'value': 'logo_big_dark.png',
       'param': 'logo',
+      'type': 'file',
+      'input': 'file'
+    },
+    {
+      'titleType': 'favicon',
+      'label': $t('page.favicon'),
+      'value': '',
+      'param': 'favicon',
       'type': 'file',
       'input': 'file'
     }

@@ -1019,5 +1019,6 @@
   "isfontbold": "Is the font bolded",
   "nochange": "unchanged",
   "licenseexception": "License exception",
-  "license": "permit"
+  "license": "permit",
+  "favicon": "Website icon"
 }

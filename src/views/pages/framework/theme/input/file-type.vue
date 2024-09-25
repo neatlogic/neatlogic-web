@@ -17,7 +17,7 @@
     </TsUpLoad>
     <div v-if="fileList.length > 0">
       <div v-for="j in fileList" :key="j.id">
-        <img class="topnav-newlogo" :src="j.src" style="width:100%" />
+        <img class="topnav-newlogo" :src="j.src" style="max-width:100%" />
       </div>
     </div>
   </div>
@@ -42,7 +42,7 @@ export default {
     if (typeof value == 'number') {
       this.fileList = [{
         id: value,
-        name: this.$t('term.framework.theme.customlogo'),
+        name: this.$t('page.custom') + this.config.label,
         src: HOME + '/api/binary/image/download?id=' + value
       }];
     }
@@ -62,7 +62,7 @@ export default {
     selectFile: function(fileList) {
       let fileObj = {};
       fileObj['id'] = fileList[0].id;
-      fileObj['name'] = this.$t('term.framework.theme.customlogo');
+      fileObj['name'] = this.$t('page.custom') + this.config.label;
       fileObj['src'] = HOME + '/api/binary/image/download?id=' + fileList[0].id;
       this.config.value = fileObj['id'];
       this.fileList.push(fileObj);
