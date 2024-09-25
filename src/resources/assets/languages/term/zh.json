@@ -239,7 +239,8 @@
     "groupbyci": "按模型分组",
     "showrellabel": "显示关系类型",
     "exportformodel": "导出为Model",
-    "exportforexcel": "导出为Excel"
+    "exportforexcel": "导出为Excel",
+    "isterm": "是否关键字"
   },
   "process": {
     "workordercenter": "工单中心",

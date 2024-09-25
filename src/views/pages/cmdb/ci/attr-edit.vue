@@ -27,6 +27,16 @@
               <div class="text-grey">{{ $t('term.cmdb.searchablehelp') }}</div>
             </div>
           </template>
+          <template v-slot:isTerm>
+            <div>
+              <TsFormSwitch
+                v-model="attrData.isTerm"
+                :true-value="1"
+                :false-value="0"
+              ></TsFormSwitch>
+              <div class="text-grey">关键字属性的值会添加到全文检索分词字典中，让全文检索分词结果更精准。如果激活前已经存在配置项数据，需要重建索引。</div>
+            </div>
+          </template>
           <template v-slot:inputType>
             <div>
               <TsFormSwitch
@@ -186,6 +196,12 @@ export default {
           type: 'slot',
           isHidden: false,
           label: this.$t('term.cmdb.searchable')
+        },
+        isTerm: {
+          _belong: 'normal',
+          type: 'slot',
+          isHidden: false,
+          label: this.$t('term.cmdb.isterm')
         },
         groupName: {
           type: 'text',

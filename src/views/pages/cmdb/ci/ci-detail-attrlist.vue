@@ -45,6 +45,10 @@
         <div v-if="row.isSearchAble" class="text-success">{{ $t('page.yes') }}</div>
         <div v-else class="text-grey">{{ $t('page.no') }}</div>
       </template>
+      <template v-slot:isTerm="{ row }">
+        <div v-if="row.isTerm" class="text-success">{{ $t('page.yes') }}</div>
+        <div v-else class="text-grey">{{ $t('page.no') }}</div>
+      </template>
       <template slot="inputType" slot-scope="{ row }">
         <div v-if="row.inputType == 'at'" class="text-success">{{ $t('page.yes') }}</div>
         <div v-else class="text-grey">{{ $t('page.no') }}</div>
@@ -134,6 +138,10 @@ export default {
         {
           title: this.$t('term.cmdb.searchable'),
           key: 'isSearchAble'
+        },
+        {
+          title: this.$t('term.cmdb.isterm'),
+          key: 'isTerm'
         },
         {
           title: this.$t('page.autocollect'),

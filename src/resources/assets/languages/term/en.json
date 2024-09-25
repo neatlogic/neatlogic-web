@@ -238,7 +238,8 @@
     "groupbyci": "Group by model",
     "showrellabel": "Display relationship type",
     "exportformodel": "Export as Model",
-    "exportforexcel": "Export to Excel"
+    "exportforexcel": "Export to Excel",
+    "isterm": "Is it a keyword"
   },
   "process": {
     "workordercenter": "Work Center",
