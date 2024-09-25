@@ -176,6 +176,7 @@ export default {
             this.delProperty(list);
             ThemeUtils.resetTheme();
             mutations.setLogo('');
+            this.updatedFavicon(themeConfig); 
             this.$Message.success(this.$t('message.executesuccess'));
           }
         });
@@ -205,9 +206,34 @@ export default {
       this.$api.framework.theme.saveTheme(data).then(res => {
         if (res.Status == 'OK') {
           this.getTheme(data.config);
+          this.updatedFavicon(data.config); 
           this.$Message.success(this.$t('message.savesuccess'));
         }
       });
+    },
+    updatedFavicon(config) {
+      //更新网站图标
+      var url = '';
+      var favicon = '';
+      let temList = config.light;
+      if (localStorage.themeClass === 'theme-dark') {
+        // 默认主题模式
+        temList = config.dark;
+      }
+      temList && temList instanceof Array && temList.forEach(v => {
+        if (v.param === 'favicon') {
+          if (v.value) {
+            favicon = v.value;
+          }
+        }
+      });
+      if (favicon) {
+        url = HOME + '/api/binary/image/download?id=' + favicon;
+      } else {
+        url = '/resource/img/common/tsfavicon.png';
+      }
+      var link = document.querySelector("link[rel*='icon']");
+      link.href = url;
     }
   },
   filter: {},
