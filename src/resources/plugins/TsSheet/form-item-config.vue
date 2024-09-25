@@ -29,6 +29,7 @@
               :formItemList="formItemList"
               :disabled="!!formItem.inherit || disabled"
               :initFormItemList="initFormItemList"
+              :source="source"
               class="mb-sm"
               @editSubForm="editSubForm"
             ></component>
@@ -122,7 +123,8 @@ export default {
     initFormItemList: { //默认表单组件列表
       type: Array,
       default: () => []
-    }
+    },
+    source: { type: String, default: '' } //表单组件配置来源：scene(场景)
   },
   data() {
     const _this = this;
