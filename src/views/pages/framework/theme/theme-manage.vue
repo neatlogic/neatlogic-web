@@ -53,7 +53,8 @@ export default {
       light: [],
       dark: [],
       temLight: [],
-      temDark: []
+      temDark: [],
+      btnLoading: false
     };
   },
   beforeCreate() {},
@@ -158,6 +159,10 @@ export default {
       if (item === 'preview') {
         this.render();
       } else {
+        if (this.btnLoading) {
+          return;
+        }
+        this.btnLoading = true;
         this.$api.framework.theme.saveTheme({}).then(res => {
           if (res.Status == 'OK') {
             this.light = this.$utils.deepClone(themeConfig.temLight);
@@ -176,8 +181,11 @@ export default {
             this.delProperty(list);
             ThemeUtils.resetTheme();
             mutations.setLogo('');
+            this.updatedFavicon(themeConfig); 
             this.$Message.success(this.$t('message.executesuccess'));
           }
+        }).finally(() => {
+          this.btnLoading = false;
         });
       }
     },
@@ -194,6 +202,10 @@ export default {
       return newList;
     },
     save() {
+      if (this.btnLoading) {
+        return;
+      }
+      this.btnLoading = true;
       let light = this.$utils.deepClone(this.light);
       let dark = this.$utils.deepClone(this.dark);
       let data = {
@@ -205,9 +217,36 @@ export default {
       this.$api.framework.theme.saveTheme(data).then(res => {
         if (res.Status == 'OK') {
           this.getTheme(data.config);
+          this.updatedFavicon(data.config); 
           this.$Message.success(this.$t('message.savesuccess'));
         }
+      }).finally(() => {
+        this.btnLoading = false;
       });
+    },
+    updatedFavicon(themeConfig) {
+      //更新网站图标
+      var url = '';
+      var favicon = '';
+      let temList = themeConfig.light;
+      if (localStorage.themeClass === 'theme-dark') {
+        // 默认主题模式
+        temList = themeConfig.dark;
+      }
+      temList && temList instanceof Array && temList.forEach(v => {
+        if (v.param === 'favicon') {
+          if (v.value) {
+            favicon = v.value;
+          }
+        }
+      });
+      if (favicon) {
+        url = HOME + '/api/binary/image/download?id=' + favicon;
+      } else {
+        url = '/resource/img/common/tsfavicon.png';
+      }
+      var link = document.querySelector("link[rel*='icon']");
+      link.href = url;
     }
   },
   filter: {},
