@@ -26,6 +26,9 @@
                         search
                         transfer
                         :disabled="!conItem.isNewLabel"
+                        @on-change="(val)=>{
+                          changeAttrLabel(val, conItem);
+                        }"
                       ></TsFormSelect>
                     </div>
                   </Col>
@@ -322,6 +325,9 @@ export default {
     },
     delAttr(conItem, conIdex) {
       this.$delete(this.formSetting.attributeMappingList.value, conIdex);
+    },
+    changeAttrLabel(val, conItem) {
+      this.$set(conItem, 'uniqueIdentifier', val);
     }
   },
   computed: {
