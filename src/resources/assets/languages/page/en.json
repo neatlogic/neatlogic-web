@@ -1017,5 +1017,8 @@
   "after": "after",
   "includesdata": "There is data available",
   "isfontbold": "Is the font bolded",
-  "nochange": "unchanged"
+  "nochange": "unchanged",
+  "licenseexception": "License exception",
+  "license": "permit",
+  "favicon": "Website icon"
 }

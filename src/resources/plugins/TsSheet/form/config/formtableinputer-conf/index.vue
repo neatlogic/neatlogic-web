@@ -91,7 +91,7 @@
                 </td>
                 <td v-if="!disabled">
                   <span v-if="data.isExtra" class="tsfont-setting text-action" @click="openAttrConfigDialog(data)"></span>
-                  <span v-if="data.isExtra" class="ml-xs tsfont-plus-o text-action" @click="addExtraProperty()"></span>
+                  <span v-if="source !== 'scene' && data.isExtra" class="ml-xs tsfont-plus-o text-action" @click="addExtraProperty()"></span>
                   <span v-if="data.isExtra" class="ml-xs tsfont-close-o text-action" @click="removeExtraProperty(data)"></span>
                 </td>
               </tr>
@@ -119,6 +119,7 @@
       :property="currentProperty"
       :formItemList="formItemList"
       :formItemUuid="formItem.uuid"
+      :source="source"
       @close="closeAttrConfigDialog"
     ></AttrConfigDialog>
   </div>

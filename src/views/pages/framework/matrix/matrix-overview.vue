@@ -276,7 +276,7 @@
             <div v-if="showFileError" class="form-error-tip">{{ $t('term.framework.upconfigfile') }}</div>
           </div>
         </template>
-        <template v-slot:attributeMappingList>
+        <template v-slot:attributeMappingList="{valueConfig}">
           <div v-for="(conItem, conIdex) in addAtrixForm.attributeMappingList.value" :key="conIdex" class="pb-sm">
             <TsRow :gutter="0">
               <Col span="10">
@@ -287,6 +287,9 @@
                     search
                     transfer
                     :validateList="['required']"
+                    @on-change="(val)=>{
+                      changeAttrLabel(val, conItem, valueConfig);
+                    }"
                   ></TsFormSelect>
                 </div>
               </Col>
@@ -1131,6 +1134,11 @@ export default {
     },
     delAttr(conItem, conIdex) {
       this.$delete(this.addAtrixForm.attributeMappingList.value, conIdex);
+    },
+    changeAttrLabel(val, conItem, valueConfig) {
+      if (valueConfig.type === 'cmdbci') {
+        this.$set(conItem, 'uniqueIdentifier', val);
+      }
     }
   },
   filter: {},

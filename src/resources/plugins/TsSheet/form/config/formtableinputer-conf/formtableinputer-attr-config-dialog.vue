@@ -231,6 +231,7 @@
               <TableConfig
                 ref="formitem_table"
                 :config="propertyLocal.config"
+                :source="source"
                 @setDataConfig="(dataConfig)=>{
                   $set(propertyLocal.config, 'dataConfig', dataConfig);
                 }"
@@ -377,7 +378,8 @@ export default {
       type: Array,
       default: () => []
     },
-    formItemUuid: String
+    formItemUuid: String,
+    source: { type: String, default: '' } //表单组件配置来源：scene(场景)
   },
   data() {
     return {

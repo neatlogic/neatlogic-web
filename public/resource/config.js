@@ -144,6 +144,7 @@ async function getSsoTokenKey() {
     try {
       const responseText = JSON.parse(xhr.responseText);
       if (responseText && responseText.Status === 'OK') {
+        getFaviconUrl(responseText.themeConfig);
         SSOTICKETKEY = responseText.ssoTicketKey || '';
         AUTHTYPE = responseText.authType || '';
         ISNEEDAUTH = responseText.isNeedAuth || false;
@@ -173,4 +174,30 @@ function getBaseUrl() {
   const protocal = location.protocol;
   const host = location.host;
   return protocal + '//' + host;
+}
+function getFaviconUrl(themeConfig) {
+  if (themeConfig && themeConfig.light && themeConfig.dark){
+    //网站图标
+    var url = '';
+    var favicon = '';
+    let temList = themeConfig.light;
+    if (localStorage.themeClass === 'theme-dark') {
+      // 默认主题模式
+      temList = themeConfig.dark;
+    }
+    temList && temList instanceof Array && temList.forEach(v => {
+      if (v.param === 'favicon') {
+        if (v.value) {
+          favicon = v.value;
+        }
+      }
+    });
+    if (favicon) {
+      url = HOME + '/api/binary/image/download?id=' + favicon;
+    } else {
+      url = '/resource/img/common/tsfavicon.png';
+    }
+    var link = document.querySelector("link[rel*='icon']");
+    link.href = url;
+  }
 }

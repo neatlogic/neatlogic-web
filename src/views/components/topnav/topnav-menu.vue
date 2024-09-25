@@ -41,7 +41,7 @@
     </Poptip>
     <!-- 导航内容开始 -->
     <div class="topnav-menu-module overflow">
-      <Tabs :value="moduleId" @on-click="toMenu">
+      <Tabs :value="moduleId" @on-click="(name)=>toMenu(name, '/', true)">
         <TabPane
           v-for="module in moduleList"
           :key="module.moduleId"
@@ -73,12 +73,27 @@ export default {
   },
   created() {},
   methods: {
+    canClick() {
+      let {isDisabled = false, disabledReason = ''} = this.currentModuleItem || {};
+      if (isDisabled) {
+        this.$Notice.error({
+          title: this.$t('page.licenseexception'),
+          desc: disabledReason
+        });
+        return false;
+      } else {
+        return true;
+      }
+    },
     updateMenu() {
       this.$store.dispatch('updateMenu');
     },
-    toMenu(module, path = '/') {
+    toMenu(module, path = '/', isDisabled = false) {
       this.isShow = false;
       this.moduleId = module;
+      if (!this.canClick() && !isDisabled) {
+        return false;
+      }
       document.querySelector('.topnav-menu-list').style.display = 'none';
       if (document.querySelector(`#tab_${module}`)) {
         document.querySelector(`#tab_${module}`).setAttribute('href', 'javascript:void(0)');
@@ -159,6 +174,11 @@ export default {
     },
     isUpdateExtramenu() {
       return this.$store.state.isUpdateExtramenu;
+    },
+    currentModuleItem() {
+      return this.moduleList.find(item => {
+        return item.moduleId === MODULEID;
+      });
     }
   },
   watch: {

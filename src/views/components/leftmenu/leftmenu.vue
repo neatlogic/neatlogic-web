@@ -37,7 +37,6 @@ import { mapMutations, mapState } from 'vuex';
 import * as Types from '@/resources/store/mutation-type';
 export default {
   name: 'LeftMenu',
-
   components: {},
   props: ['action'],
   data() {
@@ -49,7 +48,6 @@ export default {
       isSlider: true
     };
   },
-
   beforecreated() {},
   created() {
     this.getMenuList();
@@ -63,9 +61,7 @@ export default {
     }
   },
   beforeMount() {},
-
   mounted() {
-    const that = this;
     //404页面必须在所有路由加载完成后添加，不然无效
     this.$router.addRoute({
       path: '*',
@@ -77,14 +73,32 @@ export default {
   },
 
   methods: {
+    canClick() {
+      let {isDisabled = false, disabledReason = ''} = this.currentModuleItem || {};
+      if (isDisabled) {
+        this.$Notice.error({
+          title: this.$t('page.licenseexception'),
+          desc: disabledReason
+        });
+        return false;
+      } else {
+        return true;
+      }
+    },
     newTab(e, menu, path) {
       //鼠标右键打开新标签页
+      if (!this.canClick()) {
+        return false;
+      }
       let base = this.$router.options.base;
       let replaceStr = `<a href="${base}#${path}" class="cursor ${menu.icon}">${menu.name}</a>`;
       e.currentTarget.innerHTML = replaceStr;
     },
     goTo(path) {
       //从左侧菜单点链接，激活清理历史标记
+      if (!this.canClick()) {
+        return false;
+      }
       this.$route.meta.clearHistory = true;
       this.$router.push({ path: path });
     },
@@ -185,6 +199,11 @@ export default {
         }
         return groupList;
       };
+    },
+    currentModuleItem() {
+      let moduleList = this.$store.state.topMenu.moduleList;
+      let findItem = moduleList.find(item => item.moduleId === MODULEID);
+      return findItem || {};
     }
   },
   watch: {

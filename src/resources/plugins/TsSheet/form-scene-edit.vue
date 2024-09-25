@@ -124,6 +124,7 @@
             :error="currentFormItemError"
             :disabled="disabled"
             :initFormItemList="initFormItemList"
+            source="scene"
             class="form-item-config bg-grey border-base-left"
             @close="currentFormItem = null"
             @inheritFormItem="inheritFormItem"
