@@ -9,9 +9,9 @@
   >
     <div class="pb-sm">
       <TsRow>
-        <Col span="14">
+        <Col span="8">
         </Col>
-        <Col span="10">
+        <Col span="16">
           <FilterSearch :defaultSearchValue="defaultSearchValue" @changeValue="changeValue"></FilterSearch>
         </Col>
       </TsRow>

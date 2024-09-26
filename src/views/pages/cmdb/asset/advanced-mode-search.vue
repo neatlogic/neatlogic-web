@@ -178,10 +178,10 @@
                 </div>
               </div>
               <TsRow class="bg-op">
-                <Col span="4" class="mt-nm">
+                <Col span="5" class="mt-nm">
                   <span v-if="disabledUuidList.length == 0" class="tsfont-left pl-nm text-action" @click="switchMode">{{ $t('page.simplemode') }}</span>
                 </Col>
-                <Col span="20">
+                <Col span="19">
                   <div class="pt-nm pr-nm mb-sm text-right">
                     <div class="action-group">
                       <div class="action-item">
