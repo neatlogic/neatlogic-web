@@ -6,7 +6,13 @@
           ref="form"
           v-model="propertyData"
           :item-list="formConfig"
-        ></TsForm>
+        > <template v-slot:expression>
+          <TsCodemirror
+            v-model="propertyData.expression"
+            codeMode="javascript"
+          ></TsCodemirror>
+          <div class="mt-xs text-grey">对值进行二次计算，例如：$value = $value * 10，假如原值是10，则转换后的值是100。只支持ES5语法。</div>
+        </template></TsForm>
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
@@ -19,7 +25,8 @@
 export default {
   name: '',
   components: {
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   props: {
     propertyUid: { type: Number },
@@ -104,6 +111,11 @@ export default {
           name: 'needTransfer',
           label: '尝试转换',
           desc: '尝试对属性数据进行转换，一般用在数字类型的属性，例如原值是1.1234，值域是保留两位小数，则会转换成1.12。如果转换失败，将继续使用原值。'
+        },
+        {
+          type: 'slot',
+          name: 'expression',
+          label: '转换表达式'
         },
         {
           type: 'textarea',

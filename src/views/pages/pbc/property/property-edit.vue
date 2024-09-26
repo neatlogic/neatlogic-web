@@ -6,7 +6,15 @@
         <div v-if="!uid">{{ $t('term.pbc.addproperty') }}</div>
       </template>
       <template v-slot>
-        <TsForm ref="form" :item-list="formConfig"></TsForm>
+        <TsForm ref="form" v-model="propertyData" :item-list="formConfig">
+          <template v-slot:expression>
+            <TsCodemirror
+              v-model="propertyData.expression"
+              codeMode="javascript"
+            ></TsCodemirror>
+            <div class="mt-xs text-grey">对值进行二次计算，例如：$value = $value * 10，假如原值是10，则转换后的值是100。只支持ES5语法。</div>
+          </template>
+        </TsForm>
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
@@ -19,7 +27,8 @@
 export default {
   name: '',
   components: {
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   props: { uid: { type: Number } },
   data() {
@@ -119,6 +128,12 @@ export default {
           desc: '尝试对属性数据进行转换，一般用在数字类型的属性，例如原值是1.1234，值域是保留两位小数，则会转换成1.12。如果转换失败，将继续使用原值。'
         },
         {
+          type: 'slot',
+          name: 'expression',
+          label: '转换表达式',
+          desc: '对值进行二次计算，例如：$value = $value * 10，假如原值是10，则转换后的值是100。只支持ES5语法。'
+        },
+        {
           type: 'textarea',
           name: 'description',
           label: this.$t('page.explain'),
@@ -156,7 +171,7 @@ export default {
     save() {
       const form = this.$refs['form'];
       if (form.valid()) {
-        this.$api.pbc.property.saveProperty(form.getFormValue()).then(res => {
+        this.$api.pbc.property.saveProperty(this.propertyData).then(res => {
           if (res.Status == 'OK') {
             this.close(true);
             this.$Message.success(this.$t('message.savesuccess'));
