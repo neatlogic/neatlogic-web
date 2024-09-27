@@ -1,6 +1,9 @@
 import ComponentManager from '@/resources/import/component-manager.js';
 const flowElementList = ComponentManager.getFlowElementComponent();
-
+let nodeList = [];
+if (Object.keys(flowElementList).length != 0) {
+  nodeList = flowElementList;
+}
 import start from '@/views/pages/process/flow/floweditor/element/components/element/start-handler.js';
 import end from '@/views/pages/process/flow/floweditor/element/components/element/end-handler.js';
 import process from '@/views/pages/process/flow/floweditor/element/components/element/process-type.js';
@@ -14,4 +17,4 @@ import condition from '@/views/pages/process/flow/floweditor/element/components/
 import createjob from '@/views/pages/process/flow/floweditor/element/components/element/createjob-handler.js';
 import event from '@/views/pages/process/flow/floweditor/element/components/element/event-handler.js';
 import autoexec from '@/views/pages/process/flow/floweditor/element/components/element/autoexec-handler.js';
-export default [start, end, process, converge, timer, automatic, changecreate, changehandle, cientitysync, condition, createjob, event, autoexec, ...flowElementList];
+export default [start, end, process, converge, timer, automatic, changecreate, changehandle, cientitysync, condition, createjob, event, autoexec, ...nodeList];

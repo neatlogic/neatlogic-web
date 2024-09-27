@@ -45,6 +45,7 @@
   </li>
 </template>
 <script>
+import '@/views/pages/process/flow/topoComponent/index.js';
 import LeftNode from '@/views/pages/process/flow/topoComponent/topo.node.draw.js';
 import * as d3 from 'd3';
 import '@/resources/plugins/TsTopoNew/js/topo.shape.js'; //节点形状
