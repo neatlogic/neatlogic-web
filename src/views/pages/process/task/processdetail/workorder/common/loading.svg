@@ -1,0 +1,15 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- 外圈 -->
+  <circle fill="none" stroke="#ff0000" stroke-width="2" cx="100" cy="100" r="50"/>
+  
+  <!-- 内圈 -->
+  <circle fill="#ff0000" stroke="#ff0000" stroke-width="1" opacity="0.8" cx="104" cy="104" r="2">
+    <animateTransform 
+      attributeName="transform"
+      type="rotate"
+      dur="2s"
+      from="0 100 100"
+      to="360 100 100"
+      repeatCount="indefinite" />
+  </circle>
+</svg>

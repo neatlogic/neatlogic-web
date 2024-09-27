@@ -432,6 +432,7 @@ export default {
     //     }
     //   });
     // },
+    /*换成新的流程图，旧代码废弃
     async lookSitemap() {
       //查看流程图
       let data = await this.$api.process.processtask.stepFlowTop({ processTaskId: this.processTaskId }); //绘制流程图
@@ -444,7 +445,7 @@ export default {
         this.tsDialoglookSitemap.flowUuid = this.processConfig.process.processConfig.uuid;
         this.initTopo(data.Return);
       }
-    },
+    },*/
     //注释原因，可以通this.$api.process.processtask.stepFlowTop这个接口拿取所有数据
     // getStepStatus() {
     //   //流程图数据
@@ -457,7 +458,7 @@ export default {
     //     }
     //   });
     // },
-    initTopo(data) {
+    /*initTopo(data) {
       //获取流程图
       let Vm = this;
       let viewOpts = {
@@ -493,7 +494,7 @@ export default {
         this.$topoVm.center(0);
         this.changeNodeStatus(data.processTaskStepList, data.processTaskStepRelList);
       });
-    },
+    },*/
     changeNodeStatus(stepList, relList) {
       //改变节点和连线的颜色状态
       //节点的改变

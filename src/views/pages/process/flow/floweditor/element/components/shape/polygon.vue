@@ -1,8 +1,13 @@
 <template>
   <div>
     <div class="container">
-      <div class="polygon cursor bg-node-grey shadow"></div>
-      <div v-if="icon" class="icon" :class="icon"></div>
+      <div class="polygon cursor shadow" :class="status"></div>
+      <div class="icon">
+        <span v-if="status !== 'bg-primary' && icon" :class="icon"></span>
+        <span v-else-if="status === 'bg-primary'">
+          <LoadingIcon></LoadingIcon>
+        </span>
+      </div>
     </div>
     <div v-if="data.name" style="text-align: center" class="text-grey">{{ data.name }}</div>
   </div>
@@ -12,7 +17,8 @@ import base from '@/views/pages/process/flow/floweditor/element/components/base.
 
 export default {
   name: 'VuePolygon',
-  components: {},
+  components: {
+  },
   extends: base,
   props: {},
   data() {

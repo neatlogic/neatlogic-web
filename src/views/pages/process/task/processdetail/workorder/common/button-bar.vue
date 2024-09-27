@@ -47,7 +47,12 @@
       @click="doBtnBarAction('recoverStep')"
     >{{ actionConfig.recover }}</span>
     <!-- 查看流程图_start -->
-    <span v-if="!pocesstaskview" class="action-item" @click="doBtnBarAction('lookSitemap')">
+    <!-- <span v-if="!pocesstaskview" class="action-item" @click="doBtnBarAction('lookSitemap')">
+      <Tooltip :content="$t('term.process.viewflowchart')" theme="light">
+        <i class="tsfont-topo"></i>
+      </Tooltip>
+    </span>-->
+    <span v-if="!pocesstaskview" class="action-item" @click="isShowProcessTaskTopo = true">
       <Tooltip :content="$t('term.process.viewflowchart')" theme="light">
         <i class="tsfont-topo"></i>
       </Tooltip>
@@ -160,13 +165,15 @@
       >{{ getRedoText }}</Button>
     </span>
     <FormEditDialog v-if="isShowFormModal" :processTaskConfig="processTaskConfig" @close="closeFormDialog()"></FormEditDialog>
+    <ProcessTaskTopo v-if="isShowProcessTaskTopo" :processTaskId="processTaskConfig.id" @close="isShowProcessTaskTopo=false"></ProcessTaskTopo>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    FormEditDialog: () => import('./form-edit-dialog')
+    FormEditDialog: () => import('./form-edit-dialog'),
+    ProcessTaskTopo: () => import('@/views/pages/process/task/processdetail/workorder/common/processtask-topo-dialog.vue')
   },
   props: {
     actionConfig: { type: Object },
@@ -180,7 +187,8 @@ export default {
   },
   data() {
     return {
-      isShowFormModal: false
+      isShowFormModal: false,
+      isShowProcessTaskTopo: false
     };
   },
   beforeCreate() {},

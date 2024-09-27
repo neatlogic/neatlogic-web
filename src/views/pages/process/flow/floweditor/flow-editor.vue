@@ -199,7 +199,7 @@ export default {
       }
     },
     //置灰所有的节点/线
-    disableCells({exclude}) {
+    disableCells({ exclude }) {
       this.graph.getCells().forEach(cell => {
         if (!exclude.includes(cell.id)) {
           if (cell.getAttrs()['fo']) {
@@ -321,7 +321,7 @@ export default {
                     }
                   }
                 },
-                data: { name: ''},
+                data: { name: '' },
                 zIndex: 0
               });
               return edge;
@@ -585,32 +585,12 @@ export default {
                     }
                   },
                   label: {
-                    /*filter: {
-                      name: 'lineText',
-                      attrs: {
-                        x: 0,
-                        y: 0,
-                        width: 1,
-                        height: 1
-                      }
-                    },*/
                     textPath: { selector: 'line', startOffset: '50%' },
                     textAnchor: 'middle',
                     textVerticalAnchor: 'bottom',
                     text: ''
                   }
                 }
-                /*tools: [
-                  {
-                    name: 'segments',
-                    args: {
-                      snapRadius: 20,
-                      attrs: {
-                        fill: '#444'
-                      }
-                    }
-                  }
-                ]*/
               });
               this.drawingEdge.hide();
               document.addEventListener('mousemove', this.drawEdge);
@@ -710,21 +690,6 @@ export default {
 
             if (targetNode && canLink) {
               this.drawingEdge.setTarget(targetNode);
-              //设置路径点，让线可以自由拖动
-              /*if (!this.drawingEdge.getRouter()) {
-                const sourcePos = this.drawingEdge.getSourcePoint();
-                const targetPos = this.drawingEdge.getTargetPoint();
-                //if (sourcePos.y !== targetPos.y) {
-                this.drawingEdge.setVertices([
-                  {
-                    x: sourcePos.x + (targetPos.x - sourcePos.x) / 2,
-                    y: sourcePos.y
-                  },
-                  { x: sourcePos.x + (targetPos.x - sourcePos.x) / 2, y: targetPos.y }
-                ]);
-                //}
-                this.graph.select(this.drawingEdge);
-              }*/
             } else {
               this.graph.removeEdge(this.drawingEdge);
             }
@@ -739,46 +704,11 @@ export default {
             if (data && data.ciEntityId && data.ciId) {
               this.$emit('node:click:cientity', data.ciEntityId, data.ciId);
             }
+            this.$emit('node:click', node);
           }
         });
-        this.graph.on('node:mouseenter', ({ node }) => {
-          //this.graph.disableHistory();
-          /*const nodeList = this.graph.getNodes();
-          nodeList.forEach(n => {
-            const ports = n.getPorts() || [];
-            ports.forEach(port => {
-              n.setPortProp(port.id, 'attrs/circle', {
-                class: 'port'
-              });
-            });
-          });*/
-          /*const ports = node.getPorts() || [];
-          ports.forEach(port => {
-            node.setPortProp(port.id, 'attrs/circle', {
-              class: 'port'
-            });
-          });
-          this.graph.enableHistory();*/
-        });
-        this.graph.on('node:mouseleave', ({ node }) => {
-          //this.graph.disableHistory();
-          /*const nodeList = this.graph.getNodes();
-          nodeList.forEach(n => {
-            const ports = n.getPorts() || [];
-            ports.forEach(port => {
-              n.setPortProp(port.id, 'attrs/circle', {
-                class: 'port-hidden'
-              });
-            });
-          });*/
-          /*const ports = node.getPorts() || [];
-          ports.forEach(port => {
-            node.setPortProp(port.id, 'attrs/circle', {
-              class: 'port-hidden'
-            });
-          });*/
-          //this.graph.enableHistory();
-        });
+        this.graph.on('node:mouseenter', ({ node }) => {});
+        this.graph.on('node:mouseleave', ({ node }) => {});
         this.graph.on('node:selected', ({ node }) => {
           //创建改变形状选中框
           //this.graph.createTransformWidget(node);
@@ -896,14 +826,16 @@ export default {
           this.graph.enableHistory();
         });
         this.graph.on('edge:mouseenter', ({ cell }) => {
-          this.graph.disableHistory();
-          cell.addTools([
-            {
-              name: 'button-remove',
-              args: { distance: '50%' }
-            }
-          ]);
-          this.graph.enableHistory();
+          if (!this.readonly) {
+            this.graph.disableHistory();
+            cell.addTools([
+              {
+                name: 'button-remove',
+                args: { distance: '50%' }
+              }
+            ]);
+            this.graph.enableHistory();
+          }
         });
         this.graph.on('edge:mouseleave', ({ cell }) => {
           this.graph.disableHistory();
@@ -921,7 +853,7 @@ export default {
         this.graph.on('node:embedded', () => {
           this.ctrlPressed = false;
         });
-        this.graph.on('node:move', ({node}) => {
+        this.graph.on('node:move', ({ node }) => {
           this.graph.startBatch('node-move');
         });
         this.graph.on('node:moved', ({ node }) => {
@@ -966,24 +898,6 @@ export default {
         this.graph.on('node:removed', ({ view, e }) => {
           this.$emit('node:removed', this.graph, view);
         });
-        /*this.graph.on('clipboard:changed', ({ cells }) => {
-          console.log(cells);
-          cells.forEach(d => {
-            d.removeTools();
-          });
-        });*/
-
-        /* this.lineTextFilterId = this.graph.defineFilter({
-          name: 'lineText',
-          attrs: {
-            id: 'lineTextFilter',
-            x: 0,
-            y: 0,
-            width: 1,
-            height: 1
-          }
-        });
-        console.log(this.lineTextFilterId);*/
         this.$emit('ready', this.graph, this.dnd);
       }
     }

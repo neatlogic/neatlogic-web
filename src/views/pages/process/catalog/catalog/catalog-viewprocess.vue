@@ -1,9 +1,25 @@
 <template>
   <div class="catalog-viewprocess">
-    <div class="col-topo bg-op">
-      <div ref="topo" class="sitemapMain" style="height:100%"></div>
+    <div class="col-topo bg-op radius-md">
+      <div v-if="isReady" style="height: 34px">
+        <FlowEditorToolbar
+          :graph="graph"
+          mode="graph"
+          :readonly="true"
+        ></FlowEditorToolbar>
+      </div>
+      <div v-if="isReady" style="height: calc(100vh - 334px)">
+        <FlowEditor
+          ref="flowEditor"
+          :config="{}"
+          :muted="true"
+          :readonly="true"
+          :grid="false"
+          @ready="ready"
+        ></FlowEditor>
+      </div>
     </div>
-    <div class="col-right-contain dividing-color bg-grey col-contain tsscroll-container">
+    <div class="col-right-contain dividing-color radius-md bg-grey col-contain tsscroll-container">
       <div v-if="slaList.length > 0">
         <div
           v-for="(item, index) in slaList"
@@ -149,14 +165,15 @@
 </template>
 
 <script>
-import '@/views/pages/process/flow/topoComponent/index.js';
-import UserSelect from '@/resources/components/UserSelect/UserSelect.vue';
+import FlowUtil from '@/views/pages/process/flow/flow-utils.js';
 import Items from '@/resources/components/FormItems';
 export default {
   name: 'CatalogViewprocess',
   components: {
-    UserSelect,
-    ...Items
+    ...Items,
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
+    FlowEditor: () => import('@/views/pages/process/flow/floweditor/flow-editor.vue'),
+    FlowEditorToolbar: () => import('@/views/pages/process/flow/floweditor/flow-editor-toolbar.vue')
   },
   props: {
     uuid: {
@@ -166,9 +183,12 @@ export default {
   },
   data() {
     return {
+      isReady: false,
+      graph: null,
+      dnd: null,
       calculateHandlerList: [], // 计算规则列表
       slaList: [],
-      processConfig: {},
+      flowData: {},
       formAllData: [],
       formDataList: [], //表单数据
       commonDataList: [], //common数据
@@ -200,6 +220,7 @@ export default {
     // this.noticeSerch();
     this.getNotifyList();
     this.getCalculateHandlerList();
+    window.addEventListener('resize', this.resize);
   },
 
   beforeMount() {},
@@ -214,11 +235,21 @@ export default {
 
   deactivated() {},
 
-  beforeDestroy() {},
+  beforeDestroy() {
+    window.removeEventListener('resize', this.resize);
+  },
 
   destroyed() {},
 
   methods: {
+    resize() {
+      setTimeout(() => {
+        if (this.graph) {
+          this.graph.zoomToFit({ maxScale: 1, padding: 10 });
+          this.graph.centerContent();
+        }
+      }, 300);
+    },
     getCalculateHandlerList() {
       // 获取计算规则列表
       this.$https.post('/api/rest/universal/enum/get', {enumClass: 'neatlogic.framework.process.sla.core.SlaCalculateHandlerFactory'}).then((res) => {
@@ -265,33 +296,25 @@ export default {
           this.slaList = config.process.slaList;
           this.canvasNodeList = config.topo.nodes;
           this.getFormItem(formUuid);
-          this.processConfig = config;
+          this.flowData = config;
           this.$nextTick(() => {
-            this.initTopo(this.processConfig); //绘制流程图
+            this.isReady = true;
           });
         }
       });
     },
-    //获取流程图
-    initTopo(config, action) {
-      if (!config) return;
-      let data = config;
-      var topodata = data.topo || { nodes: startEndNode, links: [] };
-      this.$topoVm = new Topo(this.$refs.topo, {
-        'canvas.autoadjust': true, //显示辅助线
-        'anchor.size': 4, //连接点大小
-        'link.deleteable': false,
-        'link.selectable': false,
-        'node.selectable': false,
-        'node.dragable': false,
-        'node.deleteable': false,
-        'node.connectable': false
+    async ready(graph, dnd) {
+      this.graph = graph;
+      this.dnd = dnd;
+      this.graph.fromJSON(this.finalFlowData);
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.graph.zoomToFit({ maxScale: 1, padding: 10 });
+          this.graph.centerContent();
+        }, 500);
       });
-      this.$topoVm.draw();
-      topodata.links.forEach(link => { link.type = link.dirType || link.type; });
-      this.$topoVm.fromJson(JSON.parse(JSON.stringify(topodata)));
-      this.$topoVm.center(0);
     },
+    //获取流程图
     getUserList() {
       let data = {};
       this.$api.process.process
@@ -370,13 +393,14 @@ export default {
       });
     },
     slamouseenter(item) {
-      var uuidList = (item.processStepUuidList && item.processStepUuidList.map(d => d)) || [];
-      if (Array.isArray(uuidList)) {
-        var nodes = this.$topoVm.getNodes(uuidList);
-        this.$topoVm.highlight(uuidList);
-        nodes.forEach(vm => {
-          vm.highlight && vm.highlight('opacity');
-        });
+      const flowEditor = this.$refs.flowEditor;
+      if (flowEditor) {
+        var uuidList = (item.processStepUuidList && item.processStepUuidList.map(d => d)) || [];
+        if (!this.$utils.isEmpty(uuidList)) {
+          flowEditor.disableCells({exclude: uuidList});
+        } else {
+          flowEditor.clearHighlight();
+        }
       }
     },
     slamouseleave() {},
@@ -438,6 +462,15 @@ export default {
   filter: {},
 
   computed: {
+    finalFlowData() {
+      if (this.isReady && this.flowData && this.flowData.topo && this.flowData.topo.nodes) {
+        const cells = FlowUtil.transfer(this.flowData);
+        return { cells: cells };
+      } else if (this.flowData && this.flowData.topo && this.flowData.topo.cells) {
+        return this.flowData.topo.cells;
+      }
+      return [];
+    },
     setUsertxt() {
       return function(val) {
         let showtxt = '';

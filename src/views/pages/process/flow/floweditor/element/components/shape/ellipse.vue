@@ -1,7 +1,10 @@
 <template>
   <div>
-    <div class="container  cursor bg-node-grey">
-      <span v-if="icon" :class="icon"></span>
+    <div class="container cursor" :class="status">
+      <span v-if="status !== 'bg-primary' && icon" :class="icon"></span>
+      <span v-else-if="status === 'bg-primary'">
+        <LoadingIcon></LoadingIcon>
+      </span>
     </div>
     <div v-if="data.name" style="text-align: center" class="text-grey">{{ data.name }}</div>
   </div>
@@ -50,6 +53,6 @@ export default {
   justify-content: center;
   width: 68px;
   height: 40px;
-  border-radius: 20px / 20px; 
+  border-radius: 20px / 20px;
 }
 </style>

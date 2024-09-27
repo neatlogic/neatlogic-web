@@ -77,12 +77,12 @@
         ></DispatchCommon>
       </template>
     </TsContain>
-    <TsDialog :isShow.sync="isShowFlowmap" v-bind="flowmapConfig">
+    <!--<TsDialog :isShow.sync="isShowFlowmap" v-bind="flowmapConfig">
       <template v-slot:header>
         <span class="text-action" @click="openFlow()">{{ flowmapConfig.title }}</span>
       </template>
       <div ref="topo" style="min-height: 480px; height: 100%"></div>
-    </TsDialog>
+    </TsDialog>-->
     <ValidDialog :isShow.sync="validCardOpen" :validList="validList" @validItem="validItem"></ValidDialog>
     <SubmitDialog
       v-if="submitModel"
@@ -97,6 +97,7 @@
       @saveStep="saveStep"
       @close="assignModal = false"
     ></AssignDialog>
+    <ProcessTopoDialog v-if="isShowFlowmap" :channelUuid="channelUuid" @close="isShowFlowmap=false"></ProcessTopoDialog>
   </div>
 </template>
 <script>
@@ -109,7 +110,8 @@ export default {
     DispatchCommon: () => import('./processdispatch/dispatch-common.vue'),
     ValidDialog: () => import('./processdispatch/workorder/valid-dialog.vue'),
     SubmitDialog: () => import('./processdispatch/workorder/submit-dialog.vue'),
-    AssignDialog: () => import('./processdispatch/workorder/assign-dialog.vue')
+    AssignDialog: () => import('./processdispatch/workorder/assign-dialog.vue'),
+    ProcessTopoDialog: () => import('@/views/pages/process/task/process-topo-dialog.vue')
   },
   props: {
     propChannelUuid: { type: String }
@@ -134,13 +136,13 @@ export default {
       },
       validCardOpen: false,
       isShowFlowmap: false, //展示流程图
-      flowmapConfig: {
+      /*flowmapConfig: {
         width: 'large',
         height: 'calc(100vh - 200px)',
         fullscreen: true,
         hasFooter: false,
         maskClose: true
-      },
+      },*/
       channelList: [],
       validList: [],
       autoSaveKey: false, //自动保存权限，当用户点击暂存成功后再进行自动保存
@@ -362,19 +364,19 @@ export default {
     },
     async lookSitemap() {
       //查看流程图
-      let data = await this.$api.process.processtask.stepFlowTop({ channelUuid: this.channelUuid }); //绘制流程图
+      //let data = await this.$api.process.processtask.stepFlowTop({ channelUuid: this.channelUuid }); //绘制流程图
       this.isShowFlowmap = true;
-      this.sitemapFullscreen = false;
+      /*this.sitemapFullscreen = false;
       if (data.Status == 'OK') {
         this.processConfig = data.Return.config;
         this.flowmapConfig.title = this.processConfig.process.processConfig.name;
         this.initTopo(data.Return);
-      }
+      }*/
     },
     openFlow() {
       window.open(HOME + '/process.html#/flow-edit?uuid=' + this.processConfig.process.processConfig.uuid, '_blank');
     },
-    initTopo(data) {
+    /*initTopo(data) {
       //获取流程图
       if (!data) return;
       let viewOpts = {
@@ -398,7 +400,7 @@ export default {
         this.$topoVm.center(0);
         this.changeNodeStatus(data.processTaskStepList, data.processTaskStepRelList);
       });
-    },
+    },*/
     changeNodeStatus(stepList, relList) {
       //上报：流程图节点状态提示
       let allNodes = this.$topoVm.getNodes();

@@ -1,7 +1,9 @@
 <script>
 export default {
   name: '',
-  components: {},
+  components: {
+    LoadingIcon: () => import('@/views/pages/process/flow/floweditor/element/components/shape/loading.vue')
+  },
   inject: ['getGraph', 'getNode'],
   props: {},
   data() {
@@ -15,7 +17,7 @@ export default {
     this.node = this.getNode();
     this.data = this.node.getData();
     this.node.on('change:data', ({ current }) => {
-      //data发生改变时，该表vue中的data值，触发模板更新
+      //data发生改变时，改变vue中的data值，触发模板更新
       this.data = current;
     });
   },
@@ -29,7 +31,18 @@ export default {
   destroyed() {},
   methods: {},
   filter: {},
-  computed: {},
+  computed: {
+    status() {
+      if (this.data.status) {
+        if (this.data.status === 'succeed') {
+          return 'bg-success-grey';
+        } else if (this.data.status === 'running') {
+          return 'bg-primary';
+        }
+      }
+      return 'bg-node-grey';
+    }
+  },
   watch: {}
 };
 </script>
