@@ -61,7 +61,7 @@
       </div>
     </div>
     <CompleteSetting v-model="activeSetting.autoComplete"></CompleteSetting>
-    <ApprovalSetting v-model="activeSetting.autoApproval"></ApprovalSetting>
+    <!-- <ApprovalSetting v-model="activeSetting.autoApproval"></ApprovalSetting> -->
     <div v-if="isStart" class="settingList">
       <div class="control-box">
         <div class="control-setting">
@@ -160,7 +160,7 @@ export default {
     StrategySetting: () => import('./nodesetting/strategy-setting.vue'), // 创建子任务
     TagSetting: () => import('./nodesetting/tag-setting.vue'), // 标签
     CompleteSetting: () => import('./nodesetting/complete-setting.vue'), // 自动流转
-    ApprovalSetting: () => import('./nodesetting/approval-setting.vue'), // 自动审批
+    // ApprovalSetting: () => import('./nodesetting/approval-setting.vue'), // 自动审批
     FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
   },
   mixins: [nodemixin, itemmixin],
