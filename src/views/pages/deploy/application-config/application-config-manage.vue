@@ -70,7 +70,7 @@
               <ModuleManage v-if="configType == 'module'" :params="{appSystemId,appModuleId}" :hasEditConfigAuth="canEdit"></ModuleManage>
               <EnvManage
                 v-if="configType == 'env' && canShow"
-                :params="{appSystemId,appModuleId, envId, appSystemName: selectedApp?.abbrName}"
+                :params="{appSystemId,appModuleId, envId, appSystemName: selectedApp?.abbrName, envName: selectedEnv?.name}"
                 :hasEditConfigAuth="canEdit"
                 @close="closeEnvManage"
               ></EnvManage>
