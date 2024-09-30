@@ -1,7 +1,7 @@
 <template>
   <div>
     <div :class="{ padding: mode === 'window' }">
-      <div v-if="needToolbar" class="grid">
+      <div v-if="needToolbar" class="grid-deprecated">
         <div class="action-group">
           <div class="action-item">
             <Dropdown placement="bottom-start">
@@ -92,19 +92,40 @@
               @on-change="changeIsGroup"
             ></TsFormSwitch>
           </div>
-
         </div>
-        <div>
-          <TsFormInput
-            v-model="keyword"
-            :search="true"
-            :width="250"
-            border="bottom"
-            @on-change="findNode"
-          ></TsFormInput>
+        <Divider orientation="left">
+          <span class="text-href" @click="isShowFilter = !isShowFilter">过滤</span>
+          <span class="text-href" :class="{ 'tsfont-drop-down': !isShowFilter, 'tsfont-drop-up': isShowFilter }" @click="isShowFilter = !isShowFilter"></span>
+        </Divider>
+        <div v-if="isShowFilter">
+          <TsFormItem label="关键字">
+            <TsFormInput
+              v-model="keyword"
+              :search="true"
+              :width="250"
+              @on-change="findNode"
+            ></TsFormInput>
+          </TsFormItem>
+          <TsFormItem v-for="(attr, index) in globalAttrList" :key="index" :label="attr.label">
+            <TsFormSelect
+              :dataList="attr.itemList"
+              valueName="id"
+              textName="value"
+              transfer
+              :value="getSelectedGlobalAttrValue(attr)"
+              :multiple="true"
+              border="border"
+              @on-change="
+                (val, opt, item) => {
+                  toggleAttr(attr, item);
+                }
+              "
+            ></TsFormSelect>
+          </TsFormItem>
+          <Divider></Divider>
         </div>
       </div>
-      <div v-if="needToolbar && globalAttrList && globalAttrList.length > 0" class="mb-md">
+      <!--<div v-if="needToolbar && globalAttrList && globalAttrList.length > 0" class="mb-md">
         <span v-for="(attr, index) in globalAttrList" :key="index" class="mr-md mb-md">
           <span class="mr-md">
             <b class="text-grey">{{ attr.label }}</b>
@@ -119,7 +140,7 @@
             {{ item.value }}
           </Tag>
         </span>
-      </div>
+      </div>-->
       <div style="position: relative">
         <div v-if="needToolbar && currentTemplate && currentTemplate.config && currentTemplate.config.ciRelList && currentTemplate.config.ciRelList.length > 0" class="mb-md">
           <span v-for="(p, pindex) in currentTemplate.config.ciRelList" :key="pindex">
@@ -182,6 +203,8 @@ import { addEvent } from './util/event.js';
 export default {
   name: '',
   components: {
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     D3Tooltip: () => import('../asset/d3/d3-tooltip.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
@@ -196,6 +219,7 @@ export default {
   },
   data() {
     return {
+      isShowFilter: false,
       keyword: '',
       maxLevel: 5,
       isloading: false,
@@ -345,14 +369,29 @@ export default {
         return this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id).valueList.includes(item.id);
       }
     },
+    getSelectedGlobalAttrValue(attr) {
+      const a = this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id);
+      if (a) {
+        return a.valueList || [];
+      }
+      return [];
+    },
     toggleAttr(attr, item) {
-      if (!this.isAttrActive(attr, item)) {
-        if (!this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id)) {
-          this.searchParam.globalAttrFilterList.push({ attrId: attr.id, expression: 'like', valueList: [item.id] });
-        } else {
-          this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id).valueList.push(item.id);
-        }
+      let valueList = [];
+      if (item && item.length > 0) {
+        valueList = item.map(d => d.id);
+      }
+      console.log(JSON.stringify(valueList, null, 2));
+      //if (!this.isAttrActive(attr, item)) {
+      if (!this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id)) {
+        this.searchParam.globalAttrFilterList.push({ attrId: attr.id, expression: 'like', valueList: valueList });
       } else {
+        const a = this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id);
+        if (a) {
+          this.$set(a, 'valueList', valueList);
+        }
+      }
+      /*} else {
         const aindex = this.searchParam.globalAttrFilterList.findIndex(d => d.attrId === attr.id);
         if (aindex > -1) {
           const index = this.searchParam.globalAttrFilterList[aindex].valueList.findIndex(d => d === item.id);
@@ -363,7 +402,7 @@ export default {
             this.searchParam.globalAttrFilterList.splice(aindex, 1);
           }
         }
-      }
+      }*/
     },
     searchGlobalAttr() {
       this.$api.cmdb.globalattr.searchGlobalAttr({ isActive: 1 }).then(res => {
@@ -728,6 +767,14 @@ export default {
         this.renderGraph();
       },
       deep: true
+    },
+    isShowFilter: {
+      handler: function(val) {
+        setTimeout(() => {
+          console.log('aa');
+          this.resizeSVG();
+        }, 300);
+      }
     }
   }
 };

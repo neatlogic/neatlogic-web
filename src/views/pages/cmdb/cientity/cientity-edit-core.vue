@@ -68,7 +68,25 @@
                     </div>
                     <div v-else-if="e.type === 'global'">
                       <TsFormItem :label="e.element.label" :labelPosition="labelPosition">
-                        <TsFormRadio
+                        <TsFormSelect
+                          :dataList="e.element.itemList"
+                          transfer
+                          valueName="id"
+                          textName="value"
+                          :multiple="e.element.isMultiple ? true : false"
+                          border="border"
+                          :value="getGlobalValueList(ciEntityData.globalAttrEntityData, e.element)"
+                          @change="
+                            (val, opt, item) => {
+                              if (opt) {
+                                setGlobalAttrData(e.element, e.element.isMultiple ? item : [item]);
+                              } else {
+                                setGlobalAttrData(e.element, []);
+                              }
+                            }
+                          "
+                        ></TsFormSelect>
+                        <!--<TsFormRadio
                           v-if="!e.element.isMultiple"
                           :allowToggle="true"
                           :dataList="e.element.itemList"
@@ -85,14 +103,8 @@
                             }
                           "
                         ></TsFormRadio>
-                        <TsFormCheckbox
-                          v-if="!!e.element.isMultiple"
-                          :dataList="e.element.itemList"
-                          valueName="id"
-                          textName="value"
-                          :value="getGlobalValueList(ciEntityData.globalAttrEntityData, e.element)"
-                          @change="(val, opt) => setGlobalAttrData(e.element, opt)"
-                        ></TsFormCheckbox>
+                        <TsFormCheckbox v-if="!!e.element.isMultiple" :dataList="e.element.itemList" valueName="id" textName="value" :value="getGlobalValueList(ciEntityData.globalAttrEntityData, e.element)" @change="(val, opt) => setGlobalAttrData(e.element, opt)"></TsFormCheckbox>
+                        -->
                       </TsFormItem>
                     </div>
                     <div v-else-if="e.type == 'rel'">
@@ -244,8 +256,9 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     AttrInputer: () => import('./attr-inputer.vue'),
     HistoryList: () => import('./history-list.vue'),
-    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
-    TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    //TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    //TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox'),
     // TsTable:()=>import('@/resources/components/TsTable/TsTable.vue'),
     CiEntityChoose: () => import('./cientity-choose.vue')
   },
@@ -559,6 +572,7 @@ export default {
       }
     },
     setGlobalAttrData(attr, opt) {
+      console.log(opt);
       if (!this.ciEntityData.globalAttrEntityData) {
         this.ciEntityData.globalAttrEntityData = {};
       }
