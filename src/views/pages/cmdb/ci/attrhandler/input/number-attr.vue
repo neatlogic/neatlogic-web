@@ -4,6 +4,7 @@
       ref="handler"
       type="number"
       :value="value"
+      :disabled="disabled"
       maxlength="20"
       :validateList="validateList"
       @change="setData"
@@ -19,6 +20,7 @@ export default {
     TsFormInput
   },
   props: {
+    disabled: {type: Boolean, default: false},
     attrData: { type: Object },
     valueList: { type: Array }
   },

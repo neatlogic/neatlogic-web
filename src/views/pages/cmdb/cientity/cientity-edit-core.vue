@@ -69,8 +69,9 @@
                     <div v-else-if="e.type === 'global'">
                       <TsFormItem :label="e.element.label" :labelPosition="labelPosition">
                         <TsFormSelect
-                          :dataList="e.element.itemList"
+                          dynamicUrl="/api/rest/cmdb/globalattritem/search"
                           transfer
+                          :params="{ attrId: e.element.id }"
                           valueName="id"
                           textName="value"
                           :multiple="e.element.isMultiple ? true : false"
@@ -668,4 +669,5 @@ export default {
 /deep/.ivu-collapse-content {
   padding: 0px;
 }
+
 </style>

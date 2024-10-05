@@ -16,14 +16,6 @@
             <span v-if="row.isMultiple" class="text-success">{{ $t('page.yes') }}</span>
             <span v-else class="text-grey">{{ $t('page.no') }}</span>
           </template>
-          <template v-slot:itemList="{ row }">
-            <div v-if="row.itemList && row.itemList.length > 0">
-              <Tag v-for="(item, index) in row.itemList" :key="index">
-                {{ item.value }}
-              </Tag>
-            </div>
-            <div v-else>-</div>
-          </template>
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
@@ -59,7 +51,6 @@ export default {
         { key: 'label', title: this.$t('page.name') },
         { key: 'isActive', title: this.$t('term.report.isactive') },
         { key: 'isMultiple', title: this.$t('page.ismultiple') },
-        { key: 'itemList', title: this.$t('page.option') },
         { key: 'description', title: this.$t('page.description') },
         { key: 'action' }
       ]

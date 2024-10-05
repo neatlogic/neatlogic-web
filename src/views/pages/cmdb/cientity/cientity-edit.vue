@@ -456,7 +456,8 @@ export default {
         .getGlobalAttrByCiId(ciId, {
           isActive: 1,
           allowEdit: 1,
-          needAlias: 1
+          needAlias: 1,
+          needItem: 0
         })
         .then(res => {
           globalAttrList = res.Return;

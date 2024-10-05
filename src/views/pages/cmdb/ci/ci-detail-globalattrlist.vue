@@ -8,11 +8,6 @@
       :showTotal="false"
       :fixedHeader="false"
     >
-      <template v-slot:itemList="{ row }">
-        <div v-if="row.itemList && row.itemList.length > 0">
-          <Tag v-for="(item,index) in row.itemList" :key="index">{{ item.value }}</Tag>
-        </div>
-      </template>
     </TsTable>
   </div>
 </template>
@@ -56,10 +51,6 @@ export default {
         {
           title: this.$t('page.alias'),
           key: 'alias'
-        },
-        {
-          title: this.$t('page.option'),
-          key: 'itemList'
         }
       ];
       tmp.tbodyList = this.attrData;

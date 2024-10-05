@@ -2,50 +2,58 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot>
-        <div>
+        <div class="bg-block radius-lg pt-lg pr-lg pl-lg pb-xs mb-lg">
           <div class="tsForm tsForm-border-border ivu-form-label-right">
-            <div v-if="elementList && elementList.length > 0">
-              <div v-for="(e, index) in elementList" :key="index" style="margin: 0 auto; width: 80%">
-                <div v-if="e.type === 'attr'">
-                  <div
-                    v-if="e.element.canInput"
-                    class="ivu-form-item tsform-item ivu-form-label-right"
-                    :class="e.element.isRequired ? 'ivu-form-item-required' : ''"
-                    style="width: 100%"
-                  >
-                    <label class="ivu-form-item-label overflow" style="width: 120px">
-                      <div>
-                        {{ e.element.label }}
-                        <Checkbox v-model="checkData['attr_' + e.element.id]" class="ml-md"></Checkbox>
+            <Collapse v-model="openPanel" simple>
+              <Panel v-for="elementType in elementTypeList" :key="elementType.type" :name="elementType.type">
+                {{ elementType.label }}
+                <div
+                  v-if="elementType.elementList.length > 0"
+                  slot="content"
+                  style="margin: 0 auto"
+                  class="pt-lg"
+                >
+                  <div v-for="(e, index) in elementType.elementList" :key="index" style="margin: 0 auto; width: 100%">
+                    <div v-if="e.type === 'attr'">
+                      <div
+                        v-if="e.element.canInput"
+                        class="ivu-form-item tsform-item ivu-form-label-right"
+                        :class="e.element.isRequired ? 'ivu-form-item-required' : ''"
+                        style="width: 100%"
+                      >
+                        <label class="ivu-form-item-label overflow" style="width: 200px">
+                          <div>
+                            {{ e.element.label }}
+                            <Checkbox v-model="checkData['attr_' + e.element.id]" class="ml-md"></Checkbox>
+                          </div>
+                        </label>
+                        <div class="ivu-form-item-content" style="margin-left: 200px !important">
+                          <AttrInputer
+                            ref="attrHandler"
+                            :disabled="!checkData['attr_' + e.element.id] ? true : false"
+                            :allowBatchAdd="allowBatchAdd"
+                            :attrEntity="ciEntityData.attrEntityData['attr_' + e.element.id]"
+                            :attrData="e.element"
+                            :valueList="getValueList(ciEntityData.attrEntityData, e.element)"
+                            @setData="setAttrData(e.element, arguments[0], arguments[1])"
+                            @new="addNewAttrEntity(e.element)"
+                            @edit="editNewAttrEntity($event)"
+                            @delete="deleteAttrEntity('attr_' + e.element.id, $event)"
+                            @select="selectAttrEntity('attr_' + e.element.id, $event)"
+                          ></AttrInputer>
+                        </div>
                       </div>
-                    </label>
-                    <div class="ivu-form-item-content" style="margin-left: 120px !important">
-                      <AttrInputer
-                        ref="attrHandler"
-                        :disabled="!checkData['attr_' + e.element.id] ? true : false"
-                        :allowBatchAdd="allowBatchAdd"
-                        :attrEntity="ciEntityData.attrEntityData['attr_' + e.element.id]"
-                        :attrData="e.element"
-                        :valueList="getValueList(ciEntityData.attrEntityData, e.element)"
-                        @setData="setAttrData(e.element, arguments[0], arguments[1])"
-                        @new="addNewAttrEntity(e.element)"
-                        @edit="editNewAttrEntity($event)"
-                        @delete="deleteAttrEntity('attr_' + e.element.id, $event)"
-                        @select="selectAttrEntity('attr_' + e.element.id, $event)"
-                      ></AttrInputer>
                     </div>
-                  </div>
-                </div>
-                <div v-else-if="e.type === 'global'">
-                  <div class="ivu-form-item tsform-item ivu-form-label-right" style="width: 100%">
-                    <label class="ivu-form-item-label overflow" style="width: 120px">
-                      <div>
-                        {{ e.element.label }}
-                        <Checkbox v-model="checkData['global_' + e.element.id]" class="ml-md"></Checkbox>
-                      </div>
-                    </label>
-                    <div class="ivu-form-item-content" style="margin-left: 120px !important">
-                      <TsFormRadio
+                    <div v-else-if="e.type === 'global'">
+                      <div class="ivu-form-item tsform-item ivu-form-label-right" style="width: 100%">
+                        <label class="ivu-form-item-label overflow" style="width: 200px">
+                          <div>
+                            {{ e.element.label }}
+                            <Checkbox v-model="checkData['global_' + e.element.id]" class="ml-md"></Checkbox>
+                          </div>
+                        </label>
+                        <div class="ivu-form-item-content" style="margin-left: 200px !important">
+                          <!--<TsFormRadio
                         v-if="!e.element.isMultiple"
                         :disabled="!checkData['global_' + e.element.id] ? true : false"
                         :allowToggle="true"
@@ -69,109 +77,127 @@
                         valueName="id"
                         textName="value"
                         @change="(val, opt) => setGlobalAttrData(e.element, opt)"
-                      ></TsFormCheckbox>
+                      ></TsFormCheckbox>-->
+                          <TsFormSelect
+                            dynamicUrl="/api/rest/cmdb/globalattritem/search"
+                            transfer
+                            :disabled="!checkData['global_' + e.element.id] ? true : false"
+                            :params="{ attrId: e.element.id }"
+                            valueName="id"
+                            textName="value"
+                            :multiple="e.element.isMultiple ? true : false"
+                            border="border"
+                            @change="
+                              (val, opt, item) => {
+                                if (opt) {
+                                  setGlobalAttrData(e.element, e.element.isMultiple ? item : [item]);
+                                } else {
+                                  setGlobalAttrData(e.element, []);
+                                }
+                              }
+                            "
+                          ></TsFormSelect>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div v-if="e.type === 'rel'">
-                  <div class="ivu-form-item tsform-item ivu-form-label-right" :class="(e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired) ? 'ivu-form-item-required' : ''" style="width: 100%">
-                    <label class="ivu-form-item-label overflow" style="width: 120px">
-                      <div v-if="e.element.direction == 'from'">
-                        {{ e.element.toLabel }}
-                        <Checkbox v-model="checkData['relfrom_' + e.element.id]" class="ml-md"></Checkbox>
-                      </div>
-                      <div v-else-if="e.element.direction == 'to'">
-                        {{ e.element.fromLabel }}
-                        <Checkbox v-model="checkData['relto_' + e.element.id]" class="ml-md"></Checkbox>
-                      </div>
-                    </label>
-                    <div class="ivu-form-item-content" style="margin-left: 120px !important">
-                      <div v-if="isRelShow(e.element)">
-                        <span>
-                          <a href="javascript:void(0)" :class="!checkData['rel' + e.element.direction + '_' + e.element.id] ? 'text-disabled' : ''" @click="addRelEntity(e.element)">
-                            <i class="tsfont-check"></i>
-                            {{ $t('page.choose') }}
-                          </a>
-                        </span>
-                        <span>
-                          <a v-if="allowBatchAdd && ((e.element.direction == 'from' && e.element.toAllowInsert) || (e.element.direction == 'to' && e.element.fromAllowInsert))" href="javascript:void(0)" @click="addNewRelEntity(e.element)">
-                            <i class="tsfont-plus"></i>
-                            {{ $t('page.add') }}
-                          </a>
-                        </span>
-                        <Poptip v-model="isRelPopShow[e.element.id + '_' + e.element.direction]" placement="right">
-                          <a></a>
-                          <div slot="content">
-                            <div v-if="relCiList" :style="'width:' + Math.min(450, relCiList.length * 90) + 'px'">
-                              <div
-                                v-for="relci in relCiList"
-                                :key="relci.id"
-                                style="text-align: center; margin-right: 10px; float: left; cursor: pointer; width: 80px"
-                                @click="newCiEntity(e.element, relci.id)"
-                              >
-                                <div>
-                                  <a href="javascript:void(0)"><i style="font-size: 20px" :class="relci.icon"></i></a>
-                                </div>
-                                <div>
-                                  <a href="javascript:void(0)">{{ relci.label }}</a>
+                    <div v-if="e.type === 'rel'">
+                      <div class="ivu-form-item tsform-item ivu-form-label-right" :class="(e.element.direction == 'from' && e.element.toIsRequired) || (e.element.direction == 'to' && e.element.fromIsRequired) ? 'ivu-form-item-required' : ''" style="width: 100%">
+                        <label class="ivu-form-item-label overflow" style="width: 200px">
+                          <div v-if="e.element.direction == 'from'">
+                            {{ e.element.toLabel }}
+                            <Checkbox v-model="checkData['relfrom_' + e.element.id]" class="ml-md"></Checkbox>
+                          </div>
+                          <div v-else-if="e.element.direction == 'to'">
+                            {{ e.element.fromLabel }}
+                            <Checkbox v-model="checkData['relto_' + e.element.id]" class="ml-md"></Checkbox>
+                          </div>
+                        </label>
+                        <div class="ivu-form-item-content" style="margin-left: 200px !important">
+                          <div v-if="isRelShow(e.element)">
+                            <span>
+                              <a href="javascript:void(0)" :class="!checkData['rel' + e.element.direction + '_' + e.element.id] ? 'text-disabled' : ''" @click="addRelEntity(e.element)">
+                                <i class="tsfont-check"></i>
+                                {{ $t('page.choose') }}
+                              </a>
+                            </span>
+                            <span>
+                              <a v-if="allowBatchAdd && ((e.element.direction == 'from' && e.element.toAllowInsert) || (e.element.direction == 'to' && e.element.fromAllowInsert))" href="javascript:void(0)" @click="addNewRelEntity(e.element)">
+                                <i class="tsfont-plus"></i>
+                                {{ $t('page.add') }}
+                              </a>
+                            </span>
+                            <Poptip v-model="isRelPopShow[e.element.id + '_' + e.element.direction]" placement="right">
+                              <a></a>
+                              <div slot="content">
+                                <div v-if="relCiList" :style="'width:' + Math.min(450, relCiList.length * 90) + 'px'">
+                                  <div
+                                    v-for="relci in relCiList"
+                                    :key="relci.id"
+                                    style="text-align: center; margin-right: 10px; float: left; cursor: pointer; width: 80px"
+                                    @click="newCiEntity(e.element, relci.id)"
+                                  >
+                                    <div>
+                                      <a href="javascript:void(0)"><i style="font-size: 20px" :class="relci.icon"></i></a>
+                                    </div>
+                                    <div>
+                                      <a href="javascript:void(0)">{{ relci.label }}</a>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
+                            </Poptip>
+                          </div>
+                          <div v-if="ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList']">
+                            <div>
+                              <TsFormRadio
+                                :value="ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] ? ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id].action : 'insert'"
+                                :dataList="[
+                                  { value: 'insert', text: $t('page.append') },
+                                  { value: 'replace', text: $t('page.replace') }
+                                ]"
+                                @change="val => changeRelAction(e.element, val)"
+                              ></TsFormRadio>
+                            </div>
+                            <div>
+                              <Tag
+                                v-for="(relentity, reindex) in ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList']"
+                                :key="reindex"
+                                :color="getTagType(relentity)"
+                                type="dot"
+                                size="large"
+                                :closable="relentity.ciEntityId || relentity.type == 'new' ? true : false"
+                                :style="getTagType(relentity) == 'success' ? 'cursor:pointer' : ''"
+                                @click.native="editNewRelEntity(relentity)"
+                                @on-close="delRelEntity('rel' + e.element.direction + '_' + e.element.id, relentity)"
+                              >{{ relentity.ciEntityName }}</Tag>
                             </div>
                           </div>
-                        </Poptip>
-                      </div>
-                      <div v-if="ciEntityData.relEntityData && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] && ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList']">
-                        <div>
-                          <TsFormRadio
-                            :value="ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id] ? ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id].action : 'insert'"
-                            :dataList="[
-                              { value: 'insert', text: $t('page.append') },
-                              { value: 'replace', text: $t('page.replace') }
-                            ]"
-                            @change="val => changeRelAction(e.element, val)"
-                          ></TsFormRadio>
-                        </div>
-                        <div>
-                          <Tag
-                            v-for="(relentity, reindex) in ciEntityData.relEntityData['rel' + e.element.direction + '_' + e.element.id]['valueList']"
-                            :key="reindex"
-                            :color="getTagType(relentity)"
-                            type="dot"
-                            size="large"
-                            :closable="relentity.ciEntityId || relentity.type == 'new' ? true : false"
-                            :style="getTagType(relentity) == 'success' ? 'cursor:pointer' : ''"
-                            @click.native="editNewRelEntity(relentity)"
-                            @on-close="delRelEntity('rel' + e.element.direction + '_' + e.element.id, relentity)"
-                          >{{ relentity.ciEntityName }}</Tag>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <Divider />
-              <div style="margin: 0 auto; width: 80%">
-                <div>
-                  <div class="ivu-form-item tsform-item ivu-form-label-right" style="width: 100%">
-                    <label class="ivu-form-item-label overflow" style="width: 120px">
-                      <span>{{ $t('page.description') }}</span>
-                    </label>
-                    <div class="ivu-form-item-content" style="margin-left: 120px !important">
-                      <TsFormInput v-model="ciEntityData.description" type="textarea" maxlength="500"></TsFormInput>
-                    </div>
-                  </div>
+              </Panel>
+              <Panel name="description">
+                {{ $t('term.cmdb.changememo') }}
+                <div slot="content" class="pt-lg" style="margin: 0 auto">
+                  <TsFormItem :label="$t('term.cmdb.changememo')">
+                    <TsFormInput v-model="ciEntityData.description" type="textarea" maxlength="500"></TsFormInput>
+                  </TsFormItem>
                 </div>
-              </div>
-              <Divider v-if="ciEntityList && ciEntityList.length > 0">{{ $t('term.cmdb.affectcientity') }}</Divider>
-              <div v-if="ciEntityList && ciEntityList.length > 0">
-                <Tag
-                  v-for="cientity in ciEntityList"
-                  :key="cientity.id"
-                  closable
-                  @on-close="removeCiEntity(cientity)"
-                >{{ cientity.name }}</Tag>
-              </div>
-            </div>
+              </Panel>
+              <Panel v-if="ciEntityList && ciEntityList.length > 0" name="cientitylist">
+                {{ $t('term.cmdb.affectcientity') }}
+                <div slot="content" class="pt-lg pb-lg" style="margin: 0 auto">
+                  <Tag
+                    v-for="cientity in ciEntityList"
+                    :key="cientity.id" 
+                    closable
+                    @on-close="removeCiEntity(cientity)"
+                  >{{ cientity.name }}</Tag>
+                </div>
+              </Panel>
+            </Collapse>
           </div>
         </div>
       </template>
@@ -204,10 +230,12 @@
 export default {
   name: '',
   components: {
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     AttrInputer: () => import('./attr-inputer.vue'),
     CiEntityChoose: () => import('./cientity-choose.vue'),
-    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
     mode: { type: String, default: 'window' },
@@ -217,6 +245,7 @@ export default {
   },
   data() {
     return {
+      openPanel: ['global', 'unique', 'manual', 'description', 'cientitylist'],
       dialogConfig: {
         title: this.$t('page.batchedit'),
         type: 'modal',
@@ -232,6 +261,7 @@ export default {
       },
       allowBatchAdd: false, //允许在编辑过程中添加引用配置项
       elementList: [],
+      uniqueList: [],
       isCiEntityChooseShow: false,
       relCiList: [], //关系的所有下游模型列表
       isRelPopShow: {}
@@ -364,9 +394,17 @@ export default {
       }
       return true;
     },
+    async getCiUniqueByCiId(ciId) {
+      let uniqueList = [];
+      await this.$api.cmdb.ci.getCiUniqueByCiId(ciId).then(res => {
+        uniqueList = res.Return;
+      });
+      return uniqueList;
+    },
     async init() {
       await this.getCiById(this.ciId);
       this.elementList = await this.getElementByCiId(this.ciId);
+      this.uniqueList = await this.getCiUniqueByCiId(this.ciId);
     },
     async getCiById(ciId) {
       await this.$api.cmdb.ci.getCiById(ciId, { needAction: true }).then(res => {
@@ -548,7 +586,35 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    elementTypeList() {
+      const typeList = [];
+      if (this.elementList) {
+        const globalObj = { type: 'global', label: this.$t('term.cmdb.globalattr'), elementList: [], isShow: true };
+        globalObj.elementList = this.elementList.filter(d => d.type === 'global');
+        if (globalObj.elementList.length > 0) {
+          typeList.push(globalObj);
+        }
+        const uniqueObj = { type: 'unique', label: this.$t('term.cmdb.uniquerule'), elementList: [], isShow: true };
+        uniqueObj.elementList = this.elementList.filter(d => d.type === 'attr' && this.uniqueList.includes(d.element.id));
+        if (uniqueObj.elementList.length > 0) {
+          typeList.push(uniqueObj);
+        }
+        const manualObj = { type: 'manual', label: this.$t('term.cmdb.manualinput'), elementList: [], isShow: false };
+        manualObj.elementList = this.elementList.filter(d => !this.uniqueList.includes(d.element.id) && d.element.inputType === 'mt' && d.element.type !== 'expression');
+        //console.log(JSON.stringify(manualObj.elementList, null, 2));
+        if (manualObj.elementList.length > 0) {
+          typeList.push(manualObj);
+        }
+        const autoObj = { type: 'auto', label: this.$t('page.autocollect'), elementList: [], isShow: true };
+        autoObj.elementList = this.elementList.filter(d => !this.uniqueList.includes(d.element.id) && d.element.inputType === 'at' && d.element.type !== 'expression');
+        if (autoObj.elementList.length > 0) {
+          typeList.push(autoObj);
+        }
+      }
+      return typeList;
+    }
+  },
   watch: {}
 };
 </script>
@@ -560,5 +626,23 @@ export default {
 .cientity-item {
   height: 50px;
   border: 1px solid @default-border;
+}
+/deep/.tstabs {
+  .tstable-main {
+    max-height: initial !important;
+  }
+}
+/deep/.ivu-collapse {
+  border-top: 0px;
+  border-bottom: 0px;
+}
+/deep/.ivu-collapse-header {
+  border-bottom: 0px;
+}
+/deep/.ivu-collapse-content-box {
+  padding-bottom: 0px;
+}
+/deep/.ivu-collapse-content {
+  padding: 0px;
 }
 </style>
