@@ -18,7 +18,7 @@ export default {
     TsFormInput
   },
   props: {
-    disabled: {type: Boolean, default: false},
+    disabled: { type: Boolean, default: false },
     attrData: { type: Object },
     valueList: { type: Array }
   },
@@ -36,11 +36,10 @@ export default {
       if (this.attrData.validConfig && this.attrData.validConfig.regex) {
         this.validateList.push({ name: 'regex', pattern: this.attrData.validConfig.regex });
       }
-    } 
+    }
   },
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -63,12 +62,11 @@ export default {
     value: function() {
       if (this.valueList && this.valueList.length > 0) {
         return this.valueList[0];
-      } 
+      }
       return '';
     }
   },
   watch: {}
 };
 </script>
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>
