@@ -1,5 +1,8 @@
 <template>
-  <TsDialog v-bind="dialogConfig" :title="title" @on-close="close()">
+  <TsDialog v-bind="dialogConfig" @on-close="close()">
+    <template v-slot:header>
+      <span class="text-action" @click="openFlow()">{{ title }}</span>
+    </template>
     <template v-slot>
       <div class="bg-op radius-md">
         <div style="height: 34px">
@@ -141,6 +144,11 @@ export default {
           this.graph.centerContent();
         }, 500);
       });
+    },
+    openFlow() {
+      if (this.flowUuid) {
+        window.open(HOME + '/process.html#/flow-edit?uuid=' + this.flowUuid, '_blank');
+      }
     }
   },
   filter: {},
@@ -159,6 +167,12 @@ export default {
         return this.flowData.process.processConfig.name;
       }
       return '流程图';
+    },
+    flowUuid() {
+      if (this.isFlowReady && this.flowData && this.flowData.process && this.flowData.process.processConfig) {
+        return this.flowData.process.processConfig.uuid;
+      }
+      return '';
     }
   },
   watch: {}
