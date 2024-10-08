@@ -484,7 +484,6 @@
     "echotemplate": "回显模板",
     "callbackornot": "是否回调",
     "intervaltip": "定时检测需要配置检测时间间隔和状态查询接口地址，系统会定时调用状态查询接口，直到获得正确结果为止。",
-    "stepcallbackaiptip": "步骤处理中，等待第三方系统回调接口：",
     "userfilter": "处理人过滤",
     "emptynotlimitusertip": "不填写时，不限制处理人范围",
     "formscene": "表单场景",
@@ -618,7 +617,8 @@
     "stepfilter": "流程步骤",
     "stepdesc": "过滤已激活的步骤",
     "savetransfer": "保存并转交",
-    "savetransfertip": "保存当前表单并转交"
+    "savetransfertip": "保存当前表单并转交",
+    "thirdpartyapi": "第三方回调接口"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

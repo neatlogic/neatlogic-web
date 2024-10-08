@@ -457,8 +457,8 @@
           </div>
         </div>
         <div v-if="callbackConfigType == 'wait'">
-          <div>{{ $t('term.process.stepcallbackaiptip') }}</div>
-          <div>processtask/automatic/complete</div>
+          <div class="text-grey">{{ $t('term.process.thirdpartyapi') }}</div>
+          <div class="mt-md text-grey" style="while-space:normal;word-break:break-all"><b>{{ thirdPartyUrl }}</b></div>
           <div class="control-setting">
             <span class="label">{{ $t('page.inputparam') }}</span>
           </div>
@@ -1018,6 +1018,9 @@ export default {
   },
   filter: {},
   computed: {
+    thirdPartyUrl() {
+      return '协议://地址:端口' + HOME + '/api/rest/processtask/automatic/complete';
+    },
     showConfigInput() {
       let expression = this.requestSuccessConfig.expression;
       return expression != 'is-null' && expression != 'is-not-null';

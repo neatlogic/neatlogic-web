@@ -484,7 +484,6 @@
     "echotemplate": "Echo Template",
     "callbackornot": "Whether to call back",
     "intervaltip": "Scheduled detection needs to configure the detection interval and status query interface address, the system will call the status query interface regularly until the correct result is obtained.",
-    "stepcallbackaiptip": "Step processing, waiting for third-party system callback interface:",
     "userfilter": "Processor filter",
     "emptynotlimitusertip": "When not filled, do not limit the range of processors",
     "formscene": "Form Scene",
@@ -618,7 +617,8 @@
     "stepfilter": "Process steps",
     "stepdesc": "Activated steps",
     "savetransfer": "Save and transfer",
-    "savetransfertip": "Save the current form and forward it"
+    "savetransfertip": "Save the current form and forward it",
+    "thirdpartyapi": "Third party callback interface"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
