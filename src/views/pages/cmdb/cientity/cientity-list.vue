@@ -1,21 +1,24 @@
 <template>
   <div>
-    <div v-if="needCondition && !ciEntityData.error">
-      <div>
-        <div class="clearfix mb-nm">
-          <div v-if="needAction && ciEntityData && ciEntityData.tbodyList && ciEntityData.tbodyList.length > 0" class="batch">
-            <Dropdown trigger="click">
-              <Button type="primary" ghost :disabled="!selectedCiEntityList || selectedCiEntityList.length == 0">
-                {{ $t('page.batchoperation') }}
-                <span class="tsfont-down"></span>
-              </Button>
-              <DropdownMenu slot="list">
-                <DropdownItem @click.native="batchEdit()">{{ $t('page.edit') }}</DropdownItem>
-                <DropdownItem @click.native="batchDelete()">{{ $t('page.delete') }}</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+    <div v-if="!ciEntityData.error">
+      <div class="condition-grid mb-nm">
+        <div>
+          <Dropdown v-if="needAction && ciEntityData && ciEntityData.tbodyList && ciEntityData.tbodyList.length > 0" trigger="click">
+            <Button type="primary" ghost :disabled="!selectedCiEntityList || selectedCiEntityList.length == 0">
+              {{ $t('page.batchoperation') }}
+              <span class="tsfont-down"></span>
+            </Button>
+            <DropdownMenu slot="list">
+              <DropdownItem @click.native="batchEdit()">{{ $t('page.edit') }}</DropdownItem>
+              <DropdownItem @click.native="batchDelete()">{{ $t('page.delete') }}</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+        <div style="text-align:right" class="action-group">
+          <div v-if="!isAdvancedSearch && needExport" class="action-item">
+            <Button type="primary" :ghost="true">{{ $t('page.export') }}</Button>
           </div>
-          <div class="int">
+          <div v-if="needCondition" class="action-item">
             <TsFormInput
               v-if="!isAdvancedSearch"
               v-model="searchParam.keyword"
@@ -25,10 +28,7 @@
               @on-enter="searchCiEntity(1)"
             ></TsFormInput>
           </div>
-          <div v-if="!isAdvancedSearch && needExport" class="export">
-            <Button type="primary" :ghost="true" @click="isExportDialogShow = true">{{ $t('page.export') }}</Button>
-          </div>
-          <div v-if="attrList && attrList.length > 0" class="senior">
+          <div v-if="needCondition && attrList && attrList.length > 0" class="action-item">
             <span @click="isAdvancedSearch = !isAdvancedSearch">
               {{ $t('page.advancesearch') }}
               <i :class="isAdvancedSearch ? 'tsfont-drop-up' : 'tsfont-drop-down'"></i>
@@ -36,7 +36,7 @@
           </div>
         </div>
       </div>
-      <div v-if="!isAdvancedSearch && ciEntityData.keywordList && ciEntityData.keywordList.length > 0" class="mt-xs" style="text-align: right">
+      <div v-if="needCondition && !isAdvancedSearch && ciEntityData.keywordList && ciEntityData.keywordList.length > 0" class="mt-xs" style="text-align: right">
         <span class="mr-sm text-grey fz10">{{ $t('page.wordbreaklist') }}</span>
         <Tag v-for="(k, index) in ciEntityData.keywordList" :key="index">{{ k }}</Tag>
       </div>
@@ -1364,6 +1364,10 @@ export default {
   // 兼容暗黑模式
   padding-right: 0px !important;
 }
+.condition-grid{
+  display:grid;
+  grid-template-columns: 30% 70%;
+}
 .exportItemContainer {
   display: grid;
   grid-template-columns: 25% 25% 25% 25%;
@@ -1387,31 +1391,6 @@ export default {
   line-height: 38px;
   .search-label {
     text-align: right;
-  }
-}
-.clearfix {
-  position: relative;
-  margin-bottom: 10px;
-  height: 30px;
-  .batch {
-    position: absolute;
-    left: 0px;
-  }
-  .int {
-    position: absolute;
-    right: 80px;
-  }
-  .export {
-    position: absolute;
-    right: 490px;
-  }
-  .senior {
-    cursor: pointer;
-    line-height: 30px;
-    margin-left: 10px;
-    position: absolute;
-    right: 0;
-    top: 0;
   }
 }
 

@@ -43,6 +43,7 @@
             </div>
             <div v-if="currentCiId">
               <CiEntityList
+                :needExport="true"
                 :needAction="false"
                 :needCondition="false"
                 :condition="{ keywordList: wordList }"

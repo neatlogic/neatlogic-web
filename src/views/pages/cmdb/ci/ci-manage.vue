@@ -10,7 +10,7 @@
         <div class="action-group">
           <div v-auth="['CI_MODIFY']" class="action-item tsfont-plus" @click="addCi()">{{ $t('page.model') }}</div>
           <div v-auth="['CI_MODIFY']" class="action-item tsfont-upload" @click="importCi()">{{ $t('term.cmdb.importci') }}</div>
-          <div v-auth="['CI_MODIFY']" class="action-item tsfont-export" @click="exportCi()">{{ $t('term.cmdb.exportci') }}</div>
+          <div v-auth="['CI_MODIFY']" class="action-item tsfont-download" @click="exportCi()">{{ $t('term.cmdb.exportci') }}</div>
           <div v-auth="['CI_MODIFY']" class="action-item tsfont-plus" @click="addCiType()">{{ $t('page.hierarchy') }}</div>
           <div v-auth="['CI_MODIFY']" class="action-item tsfont-edit" @click="editCiType()">{{ $t('page.hierarchy') }}</div>
           <div class="action-item">
