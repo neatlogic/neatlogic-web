@@ -47,6 +47,19 @@ const runnerGroupMixin = {
           maxlength: 200,
           validateList: ['required']
         },
+        tagList: {
+          type: 'select',
+          label: $t('page.tag'),
+          allowCreate: true,
+          search: true,
+          transfer: true,
+          dynamicUrl: '/api/rest/tag/search?type=runnergroup',
+          keyword: 'name',
+          multiple: true,
+          rootName: 'tagList',
+          valueName: 'name',
+          textName: 'name'
+        },
         groupNetworkList: {
           label: $t('page.networksegment'),
           type: 'slot'
