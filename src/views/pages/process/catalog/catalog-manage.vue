@@ -123,7 +123,7 @@ export default {
           }
         },
         {
-          icon: 'tsfont-putongjigui',
+          icon: 'tsfont-flow-children',
           desc: this.$t('dialog.title.addtarget', { target: this.$t('term.process.catalog') }),
           isAddFn: (treeNode) => {
             if (treeNode.type == 'catalog') {

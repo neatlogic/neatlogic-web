@@ -10,6 +10,7 @@
         @click="changeLayout(layout.engine)"
       >
         {{ layout.name }}
+        <Divider v-if="index < layoutList.length - 1" style="margin:0px" type="vertical"></Divider>
       </span>
     </div>
     <div ref="graph" :style="error?'display:none':''" class="home-page graph"></div>

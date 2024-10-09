@@ -23,6 +23,10 @@
             <span v-if="hasTagModifyAuth" class="text-href" @click.stop="editTag(row)">{{ row.name }}</span>
             <span v-else>{{ row.name }}</span>
           </template>
+          <template v-slot:assetsCount="{ row }">
+            <Badge :count="row.assetsCount" type="primary">
+            </Badge>
+          </template>
           <template v-slot:action="{ row }">
             <div v-auth="'RESOURCECENTER_TAG_MODIFY'" class="tstable-action">
               <ul class="tstable-action-ul">
@@ -134,7 +138,7 @@ export default {
         return;
       }
       this.$createDialog({
-        title: this.$t('page.warning'),
+        title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteconfirm', { target: relType.name }),
         btnType: 'error',
         'on-ok': vnode => {

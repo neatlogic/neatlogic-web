@@ -26,6 +26,7 @@
           :lg="6"
           :xl="6"
           :xxl="4"
+          :padding="false"
           :boxShadow="false"
           @updateSize="changePageSize"
           @updatePage="changePage"

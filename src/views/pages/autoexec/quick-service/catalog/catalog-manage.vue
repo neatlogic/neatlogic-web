@@ -153,7 +153,7 @@ export default {
           }
         },
         {
-          icon: 'tsfont-putongjigui',
+          icon: 'tsfont-flow-children',
           desc: this.$t('term.autoexec.addservice'),
           isAddFn: (treeNode) => {
             if (treeNode.type == 'catalog') {

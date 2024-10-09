@@ -33,7 +33,7 @@
           <span v-if="ciData && ciData.isAbstract === 0 && ciData.isVirtual === 0 && ciData.authData && ciData.authData.cientityinsert" class="action-item tsfont-plus" @click="addAsset">
             {{ $t('dialog.title.addtarget', { target: $t('page.assets') }) }}
           </span>
-          <span v-if="tableConfig && tableConfig.tbodyList && tableConfig.tbodyList.length > 0" class="action-item tsfont-export" @click="openExportDialog">{{ $t('page.export') }}</span>
+          <span v-if="tableConfig && tableConfig.tbodyList && tableConfig.tbodyList.length > 0" class="action-item tsfont-download" @click="openExportDialog">{{ $t('page.export') }}</span>
         </div>
       </template>
       <template v-slot:topRight>

@@ -2,13 +2,13 @@
   <div>
     <TsContain
       :isRightSiderHide="isHelpHide"
-      navBorderBottom="none"
       :class="{ helps: !isHelpHide }"
     >
       <template v-slot:topLeft>
-        <span class="text-action" :class="tabName == 'upload' ? 'text-primary tsfont-location-o' : ''" @click="tabName = 'upload'">{{ $t('page.importaudit') }}</span>
-        <Divider type="vertical" />
-        <span class="text-action" :class="tabName == 'download' ? 'text-primary tsfont-location-o' : ''" @click="tabName = 'download'">{{ $t('term.process.downloadtemp') }}</span>
+        <Tabs v-model="tabName">
+          <TabPane :label="$t('page.importaudit')" name="upload"></TabPane>
+          <TabPane :label="$t('term.process.downloadtemp') " name="download"></TabPane>
+        </Tabs>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
@@ -31,7 +31,7 @@
       </template>
 
       <div slot="right" class="help-container">
-        <h3 class="help-title text-title">{{ $t('page.help') }}</h3>
+        <h4 class="help-title text-title">{{ $t('page.help') }}</h4>
         <ul class="help-list">
           <li class="help-item">{{ $t('message.cmdb.importhelp1') }}</li>
           <li class="help-item">{{ $t('message.cmdb.importhelp2') }}</li>
