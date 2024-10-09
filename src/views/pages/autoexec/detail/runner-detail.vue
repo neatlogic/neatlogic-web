@@ -94,6 +94,9 @@
           <div v-if="!dataConfig.existRunnerOrSqlExecMode" class="box-block text-tip">
             {{ $t('message.autoexec.norunnerphaserunnergrouptips') }}
           </div>
+          <div v-else class="box-block text-tip pt-sm">
+            {{ $t('page.autoexeccomboprunnergrouptips') }}
+          </div>
         </div>
         <div>
           <Divider orientation="start">{{ $t('term.autoexec.executetarget') }}</Divider>

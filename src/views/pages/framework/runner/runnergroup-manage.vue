@@ -39,6 +39,19 @@
                 <span v-else>{{ row.runnerCount }}</span>
               </div>
             </template>
+            <template slot="tagList" slot-scope="{ row }">
+              <div @click.stop>
+                <Tag v-for="(t, index) in showTableList(row.tagList)" :key="index">{{ t }}</Tag>
+                <span v-if="row.tagList && row.tagList.length > 3">
+                  <Dropdown placement="bottom-start" transfer>
+                    <span class="text-action tsfont-option-horizontal"></span>
+                    <DropdownMenu slot="list">
+                      <DropdownItem v-for="(item, index) in showRestText(row.tagList)" :key="index" @click.stop>{{ item }}</DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </span>
+              </div>
+            </template>
           </TsTable>
         </div>
       </template>
@@ -120,6 +133,10 @@ export default {
           {
             key: 'runnerCount',
             title: this.$t('term.framework.runnercount')
+          },
+          {
+            key: 'tagList',
+            title: this.$t('page.tag')
           },
           {
             key: 'description',
@@ -257,6 +274,24 @@ export default {
       if (needRefresh) {
         this.getTableData();
       }
+    },
+    showTableList(val) {
+      let list = [];
+      if (val && val.length > 0) {
+        for (var i = 0; i < val.length; i++) {
+          list.push(val[i]);
+          if (i >= 2) {
+            break;
+          }
+        }
+      }
+      return list;
+    },
+    //剩余
+    showRestText(list) {
+      let textList = '';
+      textList = list.slice(3);
+      return textList;
     }
   },
   computed: {},
