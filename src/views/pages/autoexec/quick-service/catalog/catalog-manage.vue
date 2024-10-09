@@ -41,6 +41,7 @@
         <div class="pl-md pr-md">
           <TsFormSelect v-bind="tsFormSelectSetting" @change="handleChange"></TsFormSelect>
           <TsZtree
+            ref="ztree"
             :nodes="nodeList"
             :hoverDomList="hoverDomList"
             :onClick="clickNode"
@@ -271,7 +272,8 @@ export default {
           if (res.Status == 'OK') {
             this.selectSaveId = res.Return;
             this.$Message.success(this.$t('message.savesuccess'));
-            this.getTreeList();
+            const treeNode = this.catalogType == 'catalog' ? this.catalogData : this.serviceData;
+            this.updateZtree(treeNode.id ? 'edit' : 'add', Object.assign(treeNode, {id: this.selectSaveId}));
             if (this.catalogType == 'service') {
               this.$refs[this.catalogType] && this.$refs[this.catalogType].initData(); // 保存成功之后，刷新数据
             }
@@ -336,7 +338,7 @@ export default {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
               vnode.isShow = false;
-              this.getTreeList(true);
+              this.updateZtree('delete', treeNode);
             }
           });
         }
@@ -395,6 +397,27 @@ export default {
     },
     updateName(name) {
       this.serviceData.name = name;
+    },
+    updateZtree(type, treeNode) {
+      const zTreeObj = this.$refs.ztree && this.$refs.ztree.getZTreeObj();
+      if (zTreeObj) {
+        if (type === 'add') {
+          const parentNode = !this.$utils.isEmpty(this.selectedTreeData) ? this.selectedTreeData : null;
+          zTreeObj.addNodes(parentNode, treeNode);
+          this.selectedTreeId = treeNode.id;
+        } else if (type === 'edit') {
+          zTreeObj.updateNode(treeNode);
+        } else if (type === 'delete') {
+          zTreeObj.removeNode(treeNode);
+          if (this.selectedTreeId === treeNode.id) {
+            const nodes = zTreeObj.getNodes();
+            this.selectedTreeId = nodes.length ? nodes[0].id : null;
+            if (!this.selectedTreeId) {
+              this.addRootCatalog();
+            }
+          }
+        }
+      }
     }
   },
   computed: {
