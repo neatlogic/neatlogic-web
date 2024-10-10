@@ -16,6 +16,10 @@ const runner = {
     // 查询runner组列表
     return axios.post('/api/rest/runnergroup/search', params);
   },
+  getRunnerGroupTag(params) {
+    // 查询runner组标签列表
+    return axios.post('/api/rest/tag/search?type=runnergroup', params);
+  },
   // 分组
   saveRunnerGroup(params) {
     // 保存runner组

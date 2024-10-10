@@ -8,7 +8,7 @@
           :des="data.description"
           class="param-item"
           :class="isFullWidth ? 'no-padding-bottom' : ''"
-          :labelWidth="100"
+          :labelWidth="110"
           labelPosition="left"
         >
           <Item

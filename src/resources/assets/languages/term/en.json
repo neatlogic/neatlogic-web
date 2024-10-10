@@ -890,7 +890,9 @@
     "loopitemhelp": "Set environment variable aliases for loop items and use them within the loop body",
     "setinputloopitemvar": "Please enter the loop variable",
     "setinputloopitems": "Please enter the loop item",
-    "setinputloopoperations": "Settings: Please enter at least one tool"
+    "setinputloopoperations": "Settings: Please enter at least one tool",
+    "runnergrouptagprocesstips": "If form assignment is required, please set the executor group to the \"Job Parameters\" type in the combination tool",
+    "runnergroupprocesstips": "If form assignment is required, please set the \"Executor Group\" to the \"Job Parameter\" type in the combination tool"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
@@ -2108,7 +2110,8 @@
     "noconfigviewauthtip": "You do not have the \"View Configuration Permission\" for the current application. Please contact the administrator for authorization",
     "pleasechoosedatabase": "Please select a database first",
     "currentenvbuildno": "{target} environment BuildNo",
-    "buildnopending": "To be built"
+    "buildnopending": "To be built",
+    "actuatorgrouptag": "Actuator group label"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",

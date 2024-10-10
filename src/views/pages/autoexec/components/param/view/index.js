@@ -18,6 +18,7 @@ import switchHandler from '../edit/switch.vue';
 import filepathHandler from '../edit/filepath.vue'; 
 import userselectHandler from './userselect.vue'; 
 import runnergroupHandler from '../edit/runnergroup';
+import runnergrouptagHandler from '../edit/runnergrouptag';
 export default {
   defaultInput,
   textHandler,
@@ -38,5 +39,6 @@ export default {
   switchHandler,
   filepathHandler,
   userselectHandler,
-  runnergroupHandler
+  runnergroupHandler,
+  runnergrouptagHandler
 };

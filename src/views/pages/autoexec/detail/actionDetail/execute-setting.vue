@@ -23,6 +23,17 @@
                 :runtimeParamList="runtimeParamList"
               ></ExecuteuserSetting>
             </template>
+            <template v-slot:runnerGroupTag>
+              <RunnerGroupTagSetting
+                ref="runnerGroupTag"
+                :config="settingConfig.runnerGroupTag"
+                :disabled="!isEditSetting"
+                :runtimeParamList="runtimeParamList"
+              ></RunnerGroupTagSetting>
+              <div class="text-tip tips">
+                {{ $t('page.autoexeccomboprunnergrouptagtips') }}
+              </div>
+            </template>
             <template v-slot:runnerGroup>
               <RunnerGroupSetting
                 ref="runnerGroup"
@@ -30,6 +41,9 @@
                 :disabled="!isEditSetting"
                 :runtimeParamList="runtimeParamList"
               ></RunnerGroupSetting>
+              <div class="text-tip tips">
+                {{ $t('page.autoexeccomboprunnergrouptips') }}
+              </div>
             </template>
           </TsForm>
         </div>
@@ -97,7 +111,8 @@ export default {
     Filters: () => import('@/views/pages/autoexec/components/common/executionMode/filters'),
     TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
     ExecuteuserSetting: () => import('./executeuser-setting.vue'),
-    RunnerGroupSetting: () => import('./runnergroup-setting.vue')
+    RunnerGroupSetting: () => import('./runnergroup-setting.vue'),
+    RunnerGroupTagSetting: () => import('./runnergrouptag-setting.vue')
   },
   filters: {},
   props: {
@@ -139,11 +154,16 @@ export default {
           label: this.$t('page.executeuser'),
           labelWidth: '113'
         },
+        runnerGroupTag: {
+          type: 'slot',
+          label: '执行器组标签',
+          labelWidth: '113',
+          desc: ''
+        },
         runnerGroup: {
           type: 'slot',
           label: this.$t('page.autoexeccomboprunnergrouplabel'),
-          labelWidth: '113',
-          tooltip: this.$t('page.autoexeccomboprunnergrouptips')
+          labelWidth: '113'
         },
         roundCount: {
           type: 'select',
@@ -172,6 +192,7 @@ export default {
         protocolId: '',
         executeUser: null,
         runnerGroup: null,
+        runnerGroupTag: null,
         roundCount: null,
         whenToSpecify: 'runtime',
         executeNodeConfig: {}
@@ -229,6 +250,7 @@ export default {
     okSetting() {
       this.$set(this.settingConfig, 'executeUser', this.$refs.executeUser.save());
       this.$set(this.settingConfig, 'runnerGroup', this.$refs.runnerGroup.save());
+      this.$set(this.settingConfig, 'runnerGroupTag', this.$refs.runnerGroupTag.save());
       this.settingConfig.executeNodeConfig = {};
       if (this.settingConfig.whenToSpecify == 'now') {
         this.validSetting(true);

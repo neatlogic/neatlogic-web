@@ -1020,5 +1020,6 @@
   "nochange": "unchanged",
   "licenseexception": "License exception",
   "license": "permit",
-  "favicon": "Website icon"
+  "favicon": "Website icon",
+  "autoexeccomboprunnergrouptagtips": "The actuator group needs to meet the current label requirements"
 }

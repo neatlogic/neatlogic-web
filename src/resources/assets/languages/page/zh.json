@@ -980,8 +980,8 @@
   "dynamicvalue": "动态值",
   "exitedit": "退出编辑",
   "notype": "无类型",
-  "autoexeccomboprunnergrouptips": "只对执行方式是“runner执行“的阶段生效,选择“随机分配”表示会从所有执行器组中随机选择runner执行器",
-  "autoexeccomboprunnergrouplabel": "runner执行组",
+  "autoexeccomboprunnergrouptips": "只对执行方式是“runner执行”的阶段生效。选择“随机分配”表示会从所有执行器组中随机选择runner执行器",
+  "autoexeccomboprunnergrouplabel": "执行器组",
   "autoexecradomrunnergroup": "随机分配",
   "common": "普通",
   "design": "设计",
@@ -1022,5 +1022,6 @@
   "nochange": "无变化",
   "licenseexception": "许可异常",
   "license": "许可",
-  "favicon": "网站图标"
+  "favicon": "网站图标",
+  "autoexeccomboprunnergrouptagtips": "执行器组需满足当前标签"
 }

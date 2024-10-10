@@ -890,7 +890,9 @@
     "loopitemhelp": "给循环项变量设置环境变量，在循环体内使用",
     "setinputloopitemvar": "设置：请输入循环项变量",
     "setinputloopitems": "设置：请输入循环项",
-    "setinputloopoperations": "设置：请输入至少一个工具"
+    "setinputloopoperations": "设置：请输入至少一个工具",
+    "runnergrouptagprocesstips": "如果需要表单赋值，请在组合工具设置“执行器组标签”为“作业参数”类型",
+    "runnergroupprocesstips": "如果需要表单赋值，请在组合工具设置“执行器组”为“作业参数”类型"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",
@@ -2105,7 +2107,8 @@
     "noconfigviewauthtip": "您没有当前应用的“查看配置权限”，请联系管理员授权",
     "pleasechoosedatabase": "请先选择数据库",
     "currentenvbuildno": "{target}环境BuildNo",
-    "buildnopending": "待构建"
+    "buildnopending": "待构建",
+    "actuatorgrouptag": "执行器组标签"
   },
   "inspect": {
     "alarmprompt": "告警提示",
