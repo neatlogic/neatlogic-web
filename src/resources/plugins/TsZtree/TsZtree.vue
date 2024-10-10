@@ -195,6 +195,9 @@ export default {
       nodes.forEach(node => {
         this.zTreeObj.cancelSelectedNode(node);
       })
+    },
+    getZTreeObj(){ //获取 id 为 ztree 的 zTree 对象
+      return $.fn.zTree.getZTreeObj('ztree');
     }
   },
   computed: {},
