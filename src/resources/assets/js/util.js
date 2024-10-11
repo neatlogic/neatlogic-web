@@ -621,6 +621,14 @@ const methods = {
       });
     return columlist;
   },
+  getRunnerGroupTagList(list) {
+    let columlist = [];
+    list &&
+      list.forEach(v => {
+        columlist.push({ text: v.name, value: v.id, config: v });
+      });
+    return columlist;
+  },
   getAppForselect(nodeList) {
     //系统和模块下拉数据（资源中心）
     let columlist = [];

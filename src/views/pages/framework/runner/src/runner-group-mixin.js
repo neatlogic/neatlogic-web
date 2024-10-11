@@ -1,4 +1,4 @@
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 
 const runnerGroupMixin = {
   data() {
@@ -29,9 +29,9 @@ const runnerGroupMixin = {
           value: '',
           maxlength: 50,
           validateList: [
-            'required',   
+            'required',
             'name-special', // 字段必须，不能更改
-            { 
+            {
               name: 'searchUrl', // 字段必须，不能更改
               url: '/api/rest/runnergroup/save', // 换成对应接口地址，保存的接口地址
               params: {
@@ -76,7 +76,7 @@ const runnerGroupMixin = {
       // 操作行，add 表示新增，del表示删除
       if (type == 'add') {
         this.netWorkList.splice(index, 0, {
-          networkIp: '', 
+          networkIp: '',
           mask: ''
         });
       } else {
@@ -103,7 +103,7 @@ const runnerGroupMixin = {
           if (!el.valid() && el.currentValue) {
             valid = false;
           }
-        }); 
+        });
       }
       return valid;
     }

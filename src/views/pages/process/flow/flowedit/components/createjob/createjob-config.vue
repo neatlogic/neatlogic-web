@@ -35,6 +35,18 @@
             transfer
           ></TsFormSelect>
         </TsFormItem>
+        <TsFormItem :label="$t('term.deploy.actuatorgrouptag')" labelPosition="left">
+          <template v-if="runnerGroupTag.mappingMode==='constant'">
+            <TsFormSelect v-model="runnerGroupTag.value" v-bind="formConfig.runnerGroupTag"></TsFormSelect>
+          </template>
+          <template v-else>
+            <span class="text-tip pr-sm">{{ $t('term.autoexec.jobparam') }}</span>
+            <span>{{ getruntimeParamListText(runnerGroupTag.value) }}</span>
+          </template>
+          <div v-if="runnerGroupTag.mappingMode==='constant'" class="text-tip tips">
+            {{ $t('term.autoexec.runnergrouptagprocesstips') }}
+          </div>
+        </TsFormItem>
         <TsFormItem :label="$t('term.deploy.actuatorgroup')" labelPosition="left">
           <template v-if="runnerGroup.mappingMode==='constant'">
             <TsFormSelect v-model="runnerGroup.value" v-bind="formConfig.runnerGroup"></TsFormSelect>
@@ -43,6 +55,9 @@
             <span class="text-tip pr-sm">{{ $t('term.autoexec.jobparam') }}</span>
             <span>{{ getruntimeParamListText(runnerGroup.value) }}</span>
           </template>
+          <div v-if="runnerGroup.mappingMode==='constant'" class="text-tip tips">
+            {{ $t('term.autoexec.runnergroupprocesstips') }}
+          </div>
         </TsFormItem>
         <TsFormItem :label="$t('term.process.jobpolicy')" labelPosition="left">
           <TsFormRadio
@@ -183,6 +198,14 @@ export default {
           label: this.$t('term.autoexec.jobname'),
           validateList: ['required']
         },
+        runnerGroupTag: {
+          type: 'select',
+          dynamicUrl: '/api/rest/tag/search?type=runnergroup',
+          rootName: 'tagList',
+          multiple: true,
+          dealDataByUrl: this.$utils.getRunnerGroupTagList,
+          readonly: true
+        },
         runnerGroup: {
           type: 'select',
           dynamicUrl: '/api/rest/runnergroup/search',
@@ -203,6 +226,7 @@ export default {
           ]
         }
       },
+      runnerGroupTag: {}, //执行器组标签
       runnerGroup: {}, //执行组
       phaseList: [],
       scenarioList: [],
@@ -255,9 +279,11 @@ export default {
       this.createjobConfig.jobParamMappingGroupList = [];
       this.createjobConfig.executeParamMappingGroupList = [];
       this.createjobConfig.scenarioParamMappingGroupList = [];
+      console.log(this.autoexecCombop);
       if (!this.$utils.isEmpty(this.autoexecCombop)) {
         //执行器组只需要只读，从组合工具带出即可
         this.runnerGroup = this.autoexecCombop.runnerGroup || {};
+        this.runnerGroupTag = this.autoexecCombop.runnerGroupTag || {};
         let runtimeParamList = this.autoexecCombop.runtimeParamList || [];
         let executeParamList = this.autoexecCombop.executeParamList || [];
         let scenarioParamList = this.autoexecCombop.scenarioParamList || [];

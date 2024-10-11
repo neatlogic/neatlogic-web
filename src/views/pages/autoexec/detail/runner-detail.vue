@@ -73,6 +73,29 @@
           </div>
         </div>
         <div>
+          <Divider orientation="start">{{ $t('term.deploy.actuatorgrouptag') }}</Divider>
+          <div v-if="runnerGroupTag && runnerGroupTag.mappingMode==='runtimeparam'">
+            <RunnerGroupTagSetting
+              ref="runnerGroupTag"
+              :config="runnerGroupTag"
+              :readonly="true"
+              :runtimeParamList="runtimeParamList"
+            ></RunnerGroupTagSetting>
+          </div>
+          <div v-if="runnerGroupTag && runnerGroupTag.mappingMode==='constant'">
+            <RunnerGroupTagSetting
+              ref="runnerGroupTag"
+              :config="runnerGroupTag"
+              :runtimeParamList="runtimeParamList"
+              :isCreateJob="true"
+              :disabled="false"
+            ></RunnerGroupTagSetting>
+          </div>
+          <div class="box-block text-tip pt-sm">
+            {{ $t('page.autoexeccomboprunnergrouptagtips') }}
+          </div>
+        </div>
+        <div>
           <Divider orientation="start">{{ $t('term.deploy.actuatorgroup') }}</Divider>
           <div v-if="dataConfig.existRunnerOrSqlExecMode && runnerGroup && runnerGroup.mappingMode==='runtimeparam'">
             <RunnerGroupSetting
@@ -231,7 +254,8 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     ExpiredReasonAlert: () => import('./expired-reason-alert'),
     ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
-    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue')
+    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
+    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue')
   },
   filters: {},
   props: {
@@ -274,7 +298,7 @@ export default {
       isRunner: true, //标志是否是执行页面，涉及到执行页面的一系列参数以此为准
       scrollTop: 0,
       nameForm: {
-        labelWidth: 100,
+        labelWidth: 110,
         labelPosition: 'left',
         itemList: {
           name: {
@@ -320,6 +344,10 @@ export default {
       runnerGroup: {
         mappingMode: 'constant',
         value: '-1'
+      },
+      runnerGroupTag: {
+        mappingMode: 'constant',
+        value: null
       },
       needExecuteNode: false, //组合工具的执行目标
       needExecuteUser: false, //组合工具的执行用户
@@ -432,6 +460,7 @@ export default {
             this.needRoundCount = this.dataConfig.needRoundCount;
             this.executeConfig = this.dataConfig.config.executeConfig || {};
             this.runnerGroup = this.executeConfig.runnerGroup || this.runnerGroup;
+            this.runnerGroupTag = this.$utils.isEmptyObj(this.executeConfig.runnerGroupTag) ? this.runnerGroupTag : this.executeConfig.runnerGroupTag;
             this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
             mutations.setOpType(this.dataConfig.opType);
             if (this.jobId) {
@@ -626,6 +655,8 @@ export default {
       if (this.dataConfig.existRunnerOrSqlExecMode) {
         this.$set(data, 'runnerGroup', this.runnerGroup);
       }
+      this.$set(this, 'runnerGroupTag', this.$refs.runnerGroupTag.save());
+      this.$set(data, 'runnerGroupTag', this.runnerGroupTag);
       return data;
     },
     setJobParams(config) {

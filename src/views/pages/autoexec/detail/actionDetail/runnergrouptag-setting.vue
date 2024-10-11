@@ -3,7 +3,7 @@
     <TsRow v-if="!readonly" :gutter="8">
       <Col v-if="!isCreateJob" span="8">
         <TsFormSelect
-          v-model="runnerGroup.mappingMode"
+          v-model="runnerGroupTag.mappingMode"
           :dataList="mappingModeList"
           :disabled="disabled"
           :clearable="false"
@@ -13,8 +13,8 @@
       </Col>
       <Col :span="getSelectWidth">
         <TsFormSelect
-          v-if="runnerGroup.mappingMode==='runtimeparam'"
-          v-model="runnerGroup.value"
+          v-if="runnerGroupTag.mappingMode==='runtimeparam'"
+          v-model="runnerGroupTag.value"
           :dataList="paramsList"
           :disabled="disabled"
           :validateList="isRequired? validateList : []"
@@ -25,33 +25,30 @@
           @first="gotoAddParameter"
         ></TsFormSelect>
         <TsFormSelect
-          v-if="runnerGroup.mappingMode==='constant'"
-          ref="runnerGroup"
-          v-model="runnerGroup.value"
-          v-bind="runnerGroupConfig"
+          v-if="runnerGroupTag.mappingMode==='constant'"
+          ref="runnerGroupTag"
+          v-model="runnerGroupTag.value"
+          v-bind="runnerGroupTagConfig"
           :disabled="disabled"
-          :clearable="false"
+          :clearable="true"
           @on-change="updateRunnerGroupText"
         >
-          <template v-slot:first-ul>
-            <li class="tsfont-plus text-href first-slot" @click="gotoRunnerGroupPage">{{ $t('term.deploy.actuatorgroup') }}</li>
-          </template>
         </TsFormSelect>
       </Col>
-      <Col v-if="!isCreateJob && runnerGroup.mappingMode!=='runtimeparam' && !disabled" span="5">
+      <Col v-if="!isCreateJob && runnerGroupTag.mappingMode!=='runtimeparam' && !disabled" span="5">
         <div class="view">
           <div class="div-btn-contain action-group">
-            <span class="action-item tsfont-rotate-right" @click="refresh('process')">{{ $t('page.refresh') }}</span>
+            <span class="action-item tsfont-rotate-right" @click="refresh()">{{ $t('page.refresh') }}</span>
             <span class="action-item tsfont-setting" @click="gotoRunnerGroupPage()">{{ $t('page.setting') }}</span>
           </div>
         </div>
       </Col>
     </TsRow>
     <div v-else>
-      <template v-if="runnerGroup.value">
-        <span class="text-tip pr-nm">{{ mappingModeLabel[runnerGroup.mappingMode] }}</span>
-        <span v-if="runnerGroup.mappingMode === 'runtimeparam'">{{ getParamLabel(runnerGroup.value) }}</span>
-        <span v-else>{{ runnerGroup.text }}</span>
+      <template v-if="runnerGroupTag.value">
+        <span class="text-tip pr-nm">{{ mappingModeLabel[runnerGroupTag.mappingMode] }}</span>
+        <span v-if="runnerGroupTag.mappingMode === 'runtimeparam'">{{ getParamLabel(runnerGroupTag.value) }}</span>
+        <span v-else>{{ runnerGroupTag.text }}</span>
       </template>
       <template v-else>-</template>
     </div>
@@ -92,10 +89,10 @@ export default {
   },
   data() {
     return {
-      runnerGroup: {
+      runnerGroupTag: {
         mappingMode: 'constant',
-        value: '-1',
-        text: this.$t('page.autoexecradomrunnergroup')
+        value: null,
+        text: null
       },
       mappingModeList: [
         {
@@ -111,25 +108,23 @@ export default {
         constant: this.$t('page.constant'),
         runtimeparam: this.$t('term.autoexec.jobparam')
       },
-      typeList: ['runnergroup'],
+      typeList: ['runnergrouptag'],
       validateList: ['required'],
-      runnerGroupConfig: {
+      runnerGroupTagConfig: {
         transfer: true,
         needCallback: false,
         border: 'border',
-        validateList: ['required'],
-        dealDataByUrl: this.$utils.getRunnerGroupList,
-        dynamicUrl: '/api/rest/runnergroup/search',
-        params: {
-
-        },
-        rootName: 'tbodyList'
+        dynamicUrl: '/api/rest/tag/search?type=runnergroup',
+        multiple: true,
+        keyword: 'name',
+        dealDataByUrl: this.$utils.getRunnerGroupTagList,
+        rootName: 'tagList'
       }
     };
   },
   beforeCreate() {},
   async created() {
-    await this.getRunnerGroupLabel();
+    await this.getRunnerGroupTagLabel();
   },
   beforeMount() {},
   mounted() {},
@@ -142,9 +137,9 @@ export default {
   methods: {
     init() {
       if (!this.$utils.isEmpty(this.config)) {
-        Object.keys(this.runnerGroup).forEach(key => {
+        Object.keys(this.runnerGroupTag).forEach(key => {
           if (this.config.hasOwnProperty(key)) {
-            this.runnerGroup[key] = this.config[key];
+            this.runnerGroupTag[key] = this.config[key];
           }
         });
       }
@@ -153,16 +148,16 @@ export default {
       this.openParamsSetting();
     },
     save() {
-      if (this.runnerGroup.value) {
-        return this.runnerGroup;
+      if (this.runnerGroupTag.value) {
+        return this.runnerGroupTag;
       } else {
         return {};
       }
     },
     valid() {
       let isValid = true;
-      if (this.$refs.runnerGroup) {
-        isValid = this.$refs.runnerGroup.valid();
+      if (this.$refs.runnerGroupTag) {
+        isValid = this.$refs.runnerGroupTag.valid();
       }
       return isValid;
     },
@@ -176,20 +171,17 @@ export default {
       }
       return label;
     },
-    async getRunnerGroupLabel() {
-      if (this.runnerGroup.value == -1) {
-        return;
-      }
-      let params = {defaultValue: [this.runnerGroup.value]};
-      await this.$api.framework.runner.getRunnerGroup(params)
+    async getRunnerGroupTagLabel() {
+      let params = {defaultValue: [this.runnerGroupTag.value]};
+      await this.$api.framework.runner.getRunnerGroupTag(params)
         .then(res => {
           if (res.Status == 'OK') {
-            this.runnerGroup.text = res.Return.tbodyList.length > 0 ? res.Return.tbodyList[0].name : '执行器组已被删除';
+            this.runnerGroupTag.text = res.Return.tagList.length > 0 ? res.Return.tagList[0].name : '执行器组标签已被删除';
           }
         });
     },
     changeMappingMode() {
-      this.$set(this.runnerGroup, 'value', '');
+      this.$set(this.runnerGroupTag, 'value', '');
     },
     refreshSuccess(type) {
       this.$Message.success(this.$t('message.executesuccess'));
@@ -199,11 +191,11 @@ export default {
     },
     refresh() {
       let newParam = { timeUuid: this.$utils.setUuid() };
-      this.$set(this.runnerGroupConfig, 'params', newParam);
-      this.$set(this.runnerGroupConfig, 'needCallback', true);
+      this.$set(this.runnerGroupTagConfig, 'params', newParam);
+      this.$set(this.runnerGroupTagConfig, 'needCallback', true);
     },
     updateRunnerGroupText(val, valObj) {
-      this.runnerGroup.text = valObj.text;
+      this.runnerGroupTag.text = valObj.text;
     }
   },
   filter: {},
@@ -225,7 +217,7 @@ export default {
       if (this.isCreateJob) {
         return 24;
       }
-      if (this.runnerGroup.mappingMode === 'runtimeparam' || this.disabled) {
+      if (this.runnerGroupTag.mappingMode === 'runtimeparam' || this.disabled) {
         return 16;
       } else {
         return 11;
@@ -233,7 +225,7 @@ export default {
     }
   },
   watch: {
-    runnerGroup: {
+    runnerGroupTag: {
       handler(val) {
         this.$emit('change', val);
       },
