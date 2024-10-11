@@ -1,8 +1,15 @@
 <template>
-  <div style="position:relative">
+  <div style="position: relative">
     <TsContain>
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+      </template>
+      <template v-slot:topLeft>
+        <div>
+          <span :class="graphData.icon"></span>
+          <span class="ml-xs">{{ graphData.name }}</span>
+          <span v-if="graphData.description" class="ml-xs">{{ graphData.description }}</span>
+        </div>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
@@ -20,38 +27,25 @@
         </div>
       </template>
       <template v-slot:content>
-        <div class="ci-content">
-          <div class="ci-right">
-            <div class="right-top">
-              <div class="icon-block iconWidth radius-lg text-primary">
-                <i :class="graphData.icon" class="ci-icon"></i>
-              </div>
-              <div class="title overflow">
-                <div>
-                  <span class="ci-label">{{ graphData.name }}</span>
-                </div>
-                <div v-if="graphData.description" class="ci-description overflow text-grey" :title="graphData.description">{{ graphData.description }}</div>
-                <div v-else class="text-grey">{{ $t('page.notarget', { target: $t('page.description') }) }}</div>
-              </div>
-            </div>
-            <div ref="divTopo" style="position:relative" :style="{ height: height + 'px' }">
-              <!-- <div
-                class="bg-block radius-md topoContainer"
-                style="z-index:0;background-size:100% 100%"
-                :style="{
-                  'background-color': graphData.config.backgroundColor || null,
-                  'background-image': graphData.config.backgroundImage ? 'url(' + graphData.config.backgroundImage + ')' : null
-                }"
-              ></div>-->
-              <div class="radius-md topoContainer" style="z-index:1">
-                <div ref="topo" style="height:100%"></div>
-              </div>
-            </div>
+        <div class="bg-op radius-md" style="height: 100%">
+          <div style="height: 34px">
+            <GraphEditorToolbar :graph="graph" mode="graph" :readonly="true"></GraphEditorToolbar>
+          </div>
+          <div style="height: calc(100% - 40px)">
+            <GraphEditor
+              ref="graphEditor"
+              :config="{}"
+              :muted="false"
+              :readonly="true"
+              :grid="false"
+              @ready="ready"
+              @node:click="nodeClick"
+            ></GraphEditor>
           </div>
         </div>
       </template>
     </TsContain>
-    <div v-if="isAlertListShow" class="bg-op-opacity padding top-shadow" style="z-index:999;position:absolute;bottom:0px;height:300px;width:100%">
+    <div v-if="isAlertListShow" class="bg-op-opacity padding top-shadow" style="z-index: 999; position: absolute; bottom: 0px; height: 300px; width: 100%">
       <TsTable v-bind="ciEntityAlertData" :theadList="theadList" :loading="isLoading">
         <template v-slot:level="{ row }">
           <span :style="{ color: row.levelColor }">{{ row.levelName }}</span>
@@ -69,11 +63,13 @@
   </div>
 </template>
 <script>
-import './grapheditor/index.js';
+//import './grapheditor/index.js';
 import screenfull from '@/resources/assets/js/screenfull.js';
 export default {
   name: '',
   components: {
+    GraphEditorToolbar: () => import('@/views/pages/cmdb/graph/graph-editor/graph-editor-toolbar.vue'),
+    GraphEditor: () => import('@/views/pages/cmdb/graph/graph-editor/graph-editor.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     GraphTopoDialog: () => import('./graph-topo.vue')
   },
@@ -86,7 +82,6 @@ export default {
       isAlertListShow: false,
       isGraphRelShow: false,
       graphData: { config: {} },
-      topoData: { nodes: [], links: [], groups: [] },
       height: 200,
       ciEntityAlertData: {},
       ciEntityTimmer: null,
@@ -106,7 +101,9 @@ export default {
         { key: 'metricName', title: this.$t('page.attribute') },
         { key: 'metricValue', title: this.$t('page.value') },
         { key: 'alertMessage', title: this.$t('page.message') }
-      ]
+      ],
+      graph: null,
+      dnd: null
     };
   },
   beforeCreate() {},
@@ -114,15 +111,9 @@ export default {
     if (this.$route.params['id']) {
       this.id = parseInt(this.$route.params['id']);
     }
-    this.calcTopoHeight();
-    window.addEventListener('resize', () => {
-      this.calcTopoHeight();
-    });
   },
   beforeMount() {},
-  mounted() {
-    this.initTopo();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -130,6 +121,112 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initTopo() {
+      setTimeout(() => {
+        const width = this.$refs.divTopo.offsetWidth;
+        const height = this.height - 5;
+        this.topo = new Topo(this.$refs.topo, {
+          'canvas.width': width,
+          'canvas.height': height,
+          'canvas.class': 'topoGraph',
+          'canvas.backgroundImage': '',
+          'canvas.backgroundColor': '',
+          'canvas.backgroundResizable': false,
+          'canvas.backgroundLayout': '',
+          'link.deleteable': false,
+          'link.selectable': false,
+          'node.selectable': false,
+          'node.dragable': false,
+          'node.deleteable': false,
+          'node.connectable': false,
+          'group.deleteable': false,
+          'group.selectable': false,
+          'group.dragable': false,
+          'group.connectable': false,
+          'anchor.size': 4,
+          'node.clickFn': node => {
+            if (node.getType() === 'Graph') {
+              if (node.getConfig().id) {
+                this.toGraph(node.getConfig().id);
+              }
+            } else if (node.getType() === 'Cientity') {
+              if (node.getConfig().id && node.getConfig().ciId) {
+                this.$route.meta.title = this.graphData.name;
+                this.$router.push({ path: '/ci/' + node.getConfig().ciId + '/cientity-view/' + node.getConfig().id });
+              }
+            }
+          }
+        });
+        this.topo.draw();
+        if (this.id) {
+          this.$api.cmdb.graph.getGraphById(this.id).then(async res => {
+            this.graphData = res.Return;
+            if (res.Return.config.topo) {
+              this.topoData = res.Return.config.topo;
+            }
+            this.topo.fromJson(this.topoData);
+            this.topo.setBackgroundImage(this.graphData.config.backgroundImage);
+            this.topo.setBackgroundColor(this.graphData.config.backgroundColor);
+            this.topo.setBackgroundResizable(this.graphData.config.backgroundResizable);
+            this.topo.setBackgroundLayout(this.graphData.config.backgroundLayout);
+            if (this.topoData && this.topoData.nodes) {
+              this.topoData.nodes.forEach(node => {
+                if (node.type === 'Cientity') {
+                  this.ciEntityIdList.push(node.config.id);
+                  this.$set(this.ciEntityAlertLevel, 'cientity_' + node.config.id, null);
+                } else if (node.type === 'Graph') {
+                  this.graphIdList.push(node.config.id);
+                  this.$set(this.graphAlertLevel, 'graph_' + node.config.id, null);
+                }
+              });
+            }
+            //因为原来是空对象，这里必须刷新一下，否则watch不能响应
+            this.$forceUpdate();
+            //等待递归查出所有子视图的配置项id
+            await this.getAllGraphCiEntityId();
+            this.refreshCiEntityStatus();
+          });
+        } else {
+          this.topo.fromJson(this.topoData);
+        }
+      }, 100);
+    },
+    async getGraphById() {
+      if (this.id) {
+        await this.$api.cmdb.graph.getGraphById(this.id).then(res => {
+          this.graphData = res.Return;
+        });
+      }
+    },
+    async ready(graph, dnd) {
+      this.graph = graph;
+      this.dnd = dnd;
+      await this.getGraphById();
+      if (this.graphData?.config?.topo) {
+        this.graph.fromJSON(this.graphData.config.topo);
+      }
+      const nodes = this.graph.getNodes();
+      nodes.forEach(n => {
+        const d = n.getData();
+        if (d && d.handler) {
+          if (d.handler === 'cientity') {
+            this.ciEntityIdList.push(d.id);
+            this.$set(this.ciEntityAlertLevel, 'cientity_' + d.id, null);
+          } else if (d.handler === 'graph') {
+            this.graphIdList.push(d.id);
+            this.$set(this.graphAlertLevel, 'graph_' + d.id, null);
+          }
+        }
+      });
+      //等待递归查出所有子视图的配置项id
+      await this.getAllGraphCiEntityId();
+      this.refreshCiEntityStatus();
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.graph.centerContent();
+        }, 500);
+      });
+    },
     showGraphRel() {
       this.isGraphRelShow = true;
     },
@@ -140,6 +237,14 @@ export default {
     },
     toCiEntity(ciId, ciEntityId) {
       this.$router.push({ path: '/ci/' + ciId + '/cientity-view/' + ciEntityId });
+    },
+    nodeClick(node) {
+      const data = node.getData();
+      if (data.handler === 'cientity') {
+        this.toCiEntity(data.ciId, data.id);
+      } else if (data.handler === 'graph') {
+        this.toGraph(data.id);
+      }
     },
     async getAllGraphCiEntityId() {
       //获取子视图的所有配置项id，不包括当前视图的配置项id
@@ -232,92 +337,8 @@ export default {
         this.$router.push({ path: '/graph-data/' + graphId });
       }
     },
-    calcTopoHeight() {
-      this.$nextTick(() => {
-        //减去底部的距离
-        this.height = window.innerHeight - 18 - (this.$refs.divTopo ? this.$refs.divTopo.getBoundingClientRect().top : 0);
-        if (this.$refs.topo) {
-          const height = this.height - 5;
-          const width = this.$refs.divTopo.offsetWidth;
-          if (this.topo) {
-            this.topo.setHeight(height);
-            this.topo.setWidth(width);
-          }
-        }
-      });
-    },
     editGraph() {
       this.$router.push({ path: '/graph-edit/' + this.graphData.type + '/' + this.id });
-    },
-    initTopo() {
-      setTimeout(() => {
-        const width = this.$refs.divTopo.offsetWidth;
-        const height = this.height - 5;
-        this.topo = new Topo(this.$refs.topo, {
-          'canvas.width': width,
-          'canvas.height': height,
-          'canvas.class': 'topoGraph',
-          'canvas.backgroundImage': '',
-          'canvas.backgroundColor': '',
-          'canvas.backgroundResizable': false,
-          'canvas.backgroundLayout': '',
-          'link.deleteable': false,
-          'link.selectable': false,
-          'node.selectable': false,
-          'node.dragable': false,
-          'node.deleteable': false,
-          'node.connectable': false,
-          'group.deleteable': false,
-          'group.selectable': false,
-          'group.dragable': false,
-          'group.connectable': false,
-          'anchor.size': 4,
-          'node.clickFn': node => {
-            if (node.getType() === 'Graph') {
-              if (node.getConfig().id) {
-                this.toGraph(node.getConfig().id);
-              }
-            } else if (node.getType() === 'Cientity') {
-              if (node.getConfig().id && node.getConfig().ciId) {
-                this.$route.meta.title = this.graphData.name;
-                this.$router.push({ path: '/ci/' + node.getConfig().ciId + '/cientity-view/' + node.getConfig().id });
-              }
-            }
-          }
-        });
-        this.topo.draw();
-        if (this.id) {
-          this.$api.cmdb.graph.getGraphById(this.id).then(async res => {
-            this.graphData = res.Return;
-            if (res.Return.config.topo) {
-              this.topoData = res.Return.config.topo;
-            }
-            this.topo.fromJson(this.topoData);
-            this.topo.setBackgroundImage(this.graphData.config.backgroundImage);
-            this.topo.setBackgroundColor(this.graphData.config.backgroundColor);
-            this.topo.setBackgroundResizable(this.graphData.config.backgroundResizable);
-            this.topo.setBackgroundLayout(this.graphData.config.backgroundLayout);
-            if (this.topoData && this.topoData.nodes) {
-              this.topoData.nodes.forEach(node => {
-                if (node.type === 'Cientity') {
-                  this.ciEntityIdList.push(node.config.id);
-                  this.$set(this.ciEntityAlertLevel, 'cientity_' + node.config.id, null);
-                } else if (node.type === 'Graph') {
-                  this.graphIdList.push(node.config.id);
-                  this.$set(this.graphAlertLevel, 'graph_' + node.config.id, null);
-                }
-              });
-            }
-            //因为原来是空对象，这里必须刷新一下，否则watch不能响应
-            this.$forceUpdate();
-            //等待递归查出所有子视图的配置项id
-            await this.getAllGraphCiEntityId();
-            this.refreshCiEntityStatus();
-          });
-        } else {
-          this.topo.fromJson(this.topoData);
-        }
-      }, 100);
     }
   },
   filter: {},
@@ -356,17 +377,22 @@ export default {
         for (let key in this.graphAlertLevel) {
           const alert = this.graphAlertLevel[key];
           const graphid = key.replace('graph_', '');
-          const node = this.topo.getNodes().find(d => d.getConfig() && d.getType() === 'Graph' && d.getConfig().id == graphid);
+          const node = this.graph.getCellById(graphid);
+          const editor = this.$refs['graphEditor'];
+          //const node = this.topo.getNodes().find(d => d.getConfig() && d.getType() === 'Graph' && d.getConfig().id == graphid);
           if (node) {
             if (!alert) {
-              const nData = this.topoData.nodes.find(d => d.uuid === node.getUuid());
+              /*const nData = this.topoData.nodes.find(d => d.uuid === node.getUuid());
               node.setAnimate(null);
               node.setStroke(nData.stroke);
-              node.setIconcolor(nData.iconcolor);
+              node.setIconcolor(nData.iconcolor);*/
+              editor.unHighlightNode(node);
             } else {
+              editor.highlightNode(node, alert.levelColor);
+              /*
               node.setAnimate('breath');
               node.setStroke(alert.levelColor);
-              node.setIconcolor(alert.levelColor);
+              node.setIconcolor(alert.levelColor);*/
             }
           }
         }
@@ -378,17 +404,22 @@ export default {
         for (let key in this.ciEntityAlertLevel) {
           const alert = this.ciEntityAlertLevel[key];
           const cientityid = key.replace('cientity_', '');
-          const node = this.topo.getNodes().find(d => d.getConfig() && d.getType() === 'Cientity' && d.getConfig().id == cientityid);
+          const node = this.graph.getCellById(cientityid);
+          const editor = this.$refs['graphEditor'];
+          //const node = this.topo.getNodes().find(d => d.getConfig() && d.getType() === 'Cientity' && d.getConfig().id == cientityid);
           if (node) {
             if (!alert) {
-              const nData = this.topoData.nodes.find(d => d.uuid === node.getUuid());
+              editor.unHighlightNode(node);
+              /*const nData = this.topoData.nodes.find(d => d.uuid === node.getUuid());
               node.setAnimate(null);
               node.setStroke(nData.stroke);
-              node.setIconcolor(nData.iconcolor);
+              node.setIconcolor(nData.iconcolor);*/
             } else {
-              node.setAnimate('breath');
+              /* node.setAnimate('breath');
               node.setStroke(alert.levelColor);
               node.setIconcolor(alert.levelColor);
+              */
+              editor.highlightNode(node, alert.levelColor);
             }
           }
         }

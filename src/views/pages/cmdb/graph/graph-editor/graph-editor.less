@@ -1,0 +1,175 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.theme(@bg-color,@title-bg-color,@bg-grey,@text-color,@border-color,@primary-color,@info-color,@bg-info-grey,@warning-color,@success-color,@error-color) {
+  @keyframes bb {
+    0%,
+    100% {
+      stroke-opacity: 1;
+    }
+    50% {
+      stroke-opacity: 0;
+    }
+  }
+  /*@keyframes dash {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }*/
+  .x6-graph-background {
+    background: @bg-color;
+  }
+  .x6-graph {
+    border-radius: 8px;
+  }
+  .x6-graph.transition g {
+    transition: transform 0.6s ease;
+  }
+  .bg {
+    fill: @bg-color;
+  }
+  .bg-grey {
+    fill: @bg-grey;
+  }
+  .common-rect {
+    fill: @bg-info-grey;
+  }
+  .title-bg {
+    fill: @title-bg-color;
+  }
+  text {
+    fill: @text-color;
+  }
+  .line {
+    stroke: @border-color;
+  }
+  .marker {
+    stroke: @border-color;
+    fill: @border-color;
+  }
+  .vertice {
+    fill: @border-color;
+    stroke: @bg-color;
+  }
+  .port {
+    fill: @bg-color;
+    stroke-width: 2;
+    stroke: @info-color;
+  }
+  .boundary-edge {
+    fill: transparent;
+    stroke-width: 1;
+    stroke: @primary-color;
+  }
+  .boundary {
+    fill: @primary-color;
+    stroke-width: 1;
+    stroke: @primary-color;
+    fill-opacity: 0.1;
+    stroke-dasharray: 0 !important;
+  }
+  .port-active {
+    stroke: @primary-color !important;
+    stroke-width: 4;
+    stroke-opacity: 0.5;
+  }
+  .x6-node:hover {
+    .port {
+      fill: @bg-color;
+      stroke-width: 2;
+      stroke: @info-color;
+    }
+  }
+  .x6-node {
+    .port {
+      stroke-width: 2;
+      fill: transparent;
+      stroke: transparent;
+    }
+  }
+  .port-hidden {
+    fill: transparent;
+    stroke: transparent;
+  }
+  /*.x6-edge {
+    transition:
+      stroke-width 0.2s,
+      stroke 0.2s;
+  }
+  .x6-edge:hover {
+    cursor: pointer;
+    path:nth-child(2) {
+      filter: drop-shadow(0 0 3px @border-color);
+    }
+  }*/
+  .linktextbackground {
+    flood-color: @bg-color;
+  }
+  .x6-node:hover {
+    filter: drop-shadow(0 0 5px @bg-grey);
+  }
+
+  .x6-edge:hover {
+    path {
+      filter: drop-shadow(0 0 5px @border-color);
+    }
+  }
+  //选中样式
+  .line-selected {
+    stroke-width: 2px;
+    stroke: @primary-color;
+  }
+  .line-succeed {
+    stroke-width: 1px;
+    stroke: @success-color;
+  }
+  .line-error {
+    stroke-width: 1px;
+    stroke: @error-color;
+  }
+  .marker-succeed {
+    stroke: @success-color;
+    fill: @success-color;
+  }
+  .marker-error {
+    stroke: @error-color;
+    fill: @error-color;
+  }
+  .marker-selected {
+    stroke: @primary-color;
+    fill: @primary-color;
+  }
+  //选中节点时相关连线的提示颜色
+  .line-actived {
+    stroke-width: 2px;
+    stroke: @warning-color;
+    //stroke-dasharray: 5;
+    //stroke-dashoffset: 10;
+    //animation: dash 1s linear infinite;
+    animation: bb 1s linear infinite;
+  }
+  .marker-actived {
+    stroke: @warning-color;
+    fill: @warning-color;
+  }
+  .custom-tools {
+    fill: rgba(0, 0, 0, 0);
+    stroke: @border-color;
+    stroke-width: 0;
+  }
+  .custom-tools-text {
+    fill: @text-color;
+  }
+  .x6-edge-label {
+    rect {
+      fill: transparent;
+    }
+  }
+}
+
+html {
+  .theme(@default-op,@default-th-bg-color,@default-bg-grey,@default-text,@default-icon,@default-primary-color,@default-info-color,@default-info-bg-color,@default-warning-color,@default-success-color,@default-error-color);
+
+  &.theme-dark {
+    .theme(@dark-op,@dark-th-bg-color,@dark-bg-grey,@dark-text,@dark-icon,@dark-primary-color,@dark-info-color,@dark-info-bg-color,@dark-warning-color,@dark-success-color,@dark-error-color);
+  }
+}

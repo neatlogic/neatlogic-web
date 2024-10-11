@@ -1,41 +1,68 @@
 <template>
   <div>
-    <TsFormItem :label="$t('page.name')" labelPosition="top">
-      <div class="padding-sm radius-sm">
-        <TsFormInput v-model="config.name" border="border" :maxlength="50"></TsFormInput>
-      </div>
+    <TsFormItem label="边框" labelPosition="top">
+      <div class="pl-md"><Slider v-model="data.borderWidth" :min="0" :max="10"></Slider></div>
     </TsFormItem>
-    <TsFormItem :label="$t('page.icon')" labelPosition="top">
-      <div class="padding-sm radius-sm">
-        <div class="logo bg-block border-color text-primary" @click="isIconDialogShow = true">
-          <i class="logo-icon" :class="(config.icon && config.icon.replace('#', '')) || 'tsfont-question-o'"></i>
-        </div>
-      </div>
+    <TsFormItem label="边框颜色" labelPosition="top">
+      <ColorPicker
+        :transfer="true"
+        :value="data.borderColor"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="
+          val => {
+            $set(data, 'borderColor', val);
+          }
+        "
+      />
     </TsFormItem>
-    <TsFormItem :label="$t('page.color')" labelPosition="top">
-      <div class="padding-sm radius-sm">
-        <ColorPicker
-          :value="config.iconcolor || ''"
-          :transfer="true"
-          recommend
-          class="colorPicker"
-          transfer-class-name="color-picker-transfer-class"
-          @on-change="
-            val => {
-              setConfig('iconcolor', val);
-              setConfig('stroke', val);
-              setConfig('labelcolor', val);
-            }
-          "
-        />
-      </div>
+    <TsFormItem label="图标颜色" labelPosition="top">
+      <ColorPicker
+        :transfer="true"
+        :value="data.iconColor"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="
+          val => {
+            $set(data, 'iconColor', val);
+          }
+        "
+      />
     </TsFormItem>
-    <IconDialog
-      v-if="isIconDialogShow"
-      :currentIcon="config.icon"
-      @cancel="(isIconDialogShow = false), (icon = 'tsfont-ci-o')"
-      @confirm="selectIcon"
-    ></IconDialog>
+    <TsFormItem label="背景颜色" labelPosition="top">
+      <ColorPicker
+        :transfer="true"
+        :value="data.bgColor"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="
+          val => {
+            $set(data, 'bgColor', val);
+          }
+        "
+      />
+    </TsFormItem>
+    <TsFormItem label="文本颜色" labelPosition="top">
+      <ColorPicker
+        :transfer="true"
+        :value="data.fontColor"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="
+          val => {
+            $set(data, 'fontColor', val);
+          }
+        "
+      />
+    </TsFormItem>
   </div>
 </template>
 <script>
@@ -43,16 +70,12 @@ import base from './base-config.vue';
 export default {
   name: '',
   components: {
-    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
-    IconDialog: () => import('@/views/pages/common/icon-dialog.vue'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
   extends: base,
   props: {},
   data() {
     return {
-      isIconDialogShow: false,
-      configLocal: this.config
     };
   },
   beforeCreate() {},
@@ -66,10 +89,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    selectIcon(icon) {
-      this.setConfig('icon', '#' + icon);
-      this.isIconDialogShow = false;
-    }
   },
   filter: {},
   computed: {},
@@ -77,28 +96,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.logo {
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  display: inline-block;
-  position: relative;
-  border: 1px solid;
-  top: -5px;
-  text-align: center;
-  line-height: 40px;
-  .logo-icon {
-    font-size: 20px;
-    // position: absolute;
-    // top: 4px;
-    // left: 10px;
-  }
-  &::after {
-    content: '更换';
-    left: 44px;
-    width: 40px;
-    position: absolute;
-    top: 2px;
-  }
-}
 </style>

@@ -3,6 +3,9 @@
     <TsFormItem label="边框" labelPosition="top">
       <div class="pl-md"><Slider v-model="data.borderWidth" :min="0" :max="10"></Slider></div>
     </TsFormItem>
+    <TsFormItem label="圆角" labelPosition="top">
+      <div class="pl-md"><Slider v-model="data.borderRadius" :min="0" :max="20"></Slider></div>
+    </TsFormItem>
     <TsFormItem label="边框颜色" labelPosition="top">
       <ColorPicker
         :transfer="true"
@@ -14,21 +17,6 @@
         @on-change="
           val => {
             $set(data, 'borderColor', val);
-          }
-        "
-      />
-    </TsFormItem>
-    <TsFormItem label="图标颜色" labelPosition="top">
-      <ColorPicker
-        :transfer="true"
-        :value="data.iconColor"
-        alpha
-        recommend
-        class="colorPicker"
-        transfer-class-name="color-picker-transfer-class"
-        @on-change="
-          val => {
-            $set(data, 'iconColor', val);
           }
         "
       />
@@ -47,24 +35,6 @@
           }
         "
       />
-    </TsFormItem>
-    <TsFormItem label="文本颜色" labelPosition="top">
-      <ColorPicker
-        :transfer="true"
-        :value="data.fontColor"
-        alpha
-        recommend
-        class="colorPicker"
-        transfer-class-name="color-picker-transfer-class"
-        @on-change="
-          val => {
-            $set(data, 'fontColor', val);
-          }
-        "
-      />
-    </TsFormItem>
-    <TsFormItem label="编辑" labelPosition="top">
-      <Button type="primary" ghost @click="editGraph()">{{ $t('dialog.title.edittarget', { target: $t('term.cmdb.view') }) }}</Button>
     </TsFormItem>
   </div>
 </template>
@@ -92,9 +62,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    editGraph() {
-      this.$router.push({ path: '/graph-edit/' + this.data.id });
-    }
   },
   filter: {},
   computed: {},

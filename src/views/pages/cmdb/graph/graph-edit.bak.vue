@@ -76,11 +76,11 @@
                 @updatePage="searchCiEntity"
               >
                 <template slot-scope="{ row }">
-                  <div :draggable="!isNodeExists(row)" :style="isNodeExists(row) ? 'cursor:not-allowed' : ''" @dragstart="drag($event, row, 'cientity')">
+                  <div :draggable="isNodeExists(row)" :style="!isNodeExists(row) ? 'cursor:not-allowed' : ''" @dragstart="dragCiEntity($event, row)">
                     <div style="margin: auto; line-height: 40px; text-align: center; width: 40px; height: 40px; border-radius: 40px" class="bg-grey">
                       <span :class="row.ciIcon" style="font-size: 16px" class="text-grey"></span>
                     </div>
-                    <div class="overflow" style="text-align: center" :class="{ 'text-primary': isNodeExists(row) }">{{ row.name || '-' }}</div>
+                    <div class="overflow" style="text-align: center" :class="{ 'text-primary': !isNodeExists(row) }">{{ row.name || '-' }}</div>
                   </div>
                 </template>
               </TsUlList>
@@ -101,11 +101,11 @@
                 @updatePage="searchGraph"
               >
                 <template slot-scope="{ row }">
-                  <div :draggable="!isNodeExists(row)" :style="isNodeExists(row) ? 'cursor:not-allowed' : ''" @dragstart="drag($event, row, 'graph')">
+                  <div :draggable="isNodeExists(row)" :style="!isNodeExists(row) ? 'cursor:not-allowed' : ''" @dragstart="dragGraph($event, row)">
                     <div :class="{ 'text-primary': !row.id, 'text-grey': !!row.id }" style="margin: auto; line-height: 40px; text-align: center; width: 40px; height: 40px; border-radius: 5px" class="bg-grey">
                       <span :class="row.icon" style="font-size: 16px"></span>
                     </div>
-                    <div class="overflow" :class="{ 'text-primary': !row.id || isNodeExists(row) }" style="text-align: center">{{ row.name || '-' }}</div>
+                    <div class="overflow" :class="{ 'text-primary': !row.id || !isNodeExists(row) }" style="text-align: center">{{ row.name || '-' }}</div>
                   </div>
                 </template>
               </TsUlList>
@@ -113,7 +113,7 @@
           </div>
           <div v-if="activeTab === 'other'" class="bg-op padding radius-sm" style="height: calc(100vh - 148px); overflow-y: auto">
             <ul class="tscard-ul ivu-row">
-              <div draggable="true" @dragstart="drag($event, null, 'group')">
+              <div draggable="true" @dragstart="dragGroup($event)">
                 <div style="border-radius: 5px" class="bg-grey padding cursor">
                   <span class="tsfont-square text-grey">{{ $t('page.group') }}</span>
                 </div>
@@ -123,60 +123,126 @@
         </div>
       </template>
       <template v-slot:content>
-        <div class="bg-op radius-md" style="height: 100%">
-          <div style="height: 34px">
-            <GraphEditorToolbar
-              :selectedNode="currentNode"
-              :selectedEdge="currentEdge"
-              :graph="graph"
-              :config="toolbarConfig"
-              mode="graph"
-            ></GraphEditorToolbar>
-          </div>
-          <div style="height: calc(100% - 40px)">
-            <GraphEditor
-              ref="flowEditor"
-              :config="{}"
-              :muted="true"
-              :callback="{ validateNode: validateNode }"
-              :edgeMode="toolbarConfig.edgeMode"
-              @ready="ready"
-              @node:selected="nodeSelected"
-              @node:unselected="nodeUnSelected"
-              @node:removed="nodeRemoved"
-              @edge:selected="edgeSelected"
-              @edge:unselected="edgeUnSelected"
-            ></GraphEditor>
+        <div ref="divTopo" style="position: relative" :style="{ height: height + 'px' }">
+          <div style="z-index: 1" class="radius-md topoContainer">
+            <div
+              ref="topo"
+              style="height: 100%"
+              @drop="drop"
+              @dragover.prevent
+            ></div>
           </div>
         </div>
       </template>
       <template v-slot:right>
         <div class="margin-md">
-          <NodeConfig v-if="currentNode" :data="currentNodeData"></NodeConfig>
-          <EdgeConfig v-else-if="currentEdge" :edge="currentEdge" :data="currentEdgeData"></EdgeConfig>
-          <GraphConfig v-else :graph="graph" :graphData="graphData"></GraphConfig>
+          <GraphConfig
+            v-if="currentElement"
+            :config="currentElement"
+            :graphData="graphData"
+            @setConfig="setConfig"
+          ></GraphConfig>
+          <div v-else>
+            <!--视图配置-->
+            <TsFormItem :label="$t('page.icon')" labelPosition="top">
+              <div class="padding-sm radius-sm">
+                <div class="logo bg-block border-color text-primary" @click="isIconDialogShow = true">
+                  <i class="logo-icon" :class="graphData.icon || 'tsfont-question-o'"></i>
+                </div>
+              </div>
+            </TsFormItem>
+            <TsFormItem v-if="graphData.type === 'public'" :label="$t('page.auth')" labelPosition="top">
+              <UserSelect
+                v-model="graphData.authList"
+                :multiple="true"
+                :transfer="true"
+                :groupList="['common', 'user', 'role', 'team']"
+              ></UserSelect>
+            </TsFormItem>
+            <TsFormItem :label="$t('page.backgroundcolor')" labelPosition="top">
+              <div class="padding-sm radius-sm">
+                <ColorPicker
+                  :transfer="true"
+                  recommend
+                  :value="graphData.config.backgroundColor"
+                  :visible="true"
+                  class="colorPicker"
+                  alpha
+                  transfer-class-name="color-picker-transfer-class"
+                  @on-change="setBackgroundColor"
+                />
+              </div>
+            </TsFormItem>
+            <TsFormItem :label="$t('page.backgroundimage')" labelPosition="top">
+              <div class="padding-sm radius-sm">
+                <div v-if="graphData.config.backgroundImage" class="snapshot">
+                  <img class="radius-md" style="width: 60%" :src="graphData.config.backgroundImage" />
+                  <i class="tsfont-trash-o" style="cursor: pointer" @click="removeBackgrounImage"></i>
+                </div>
+                <TsUpLoad
+                  v-if="!graphData.config.backgroundImage"
+                  styleType="button"
+                  dataType="image"
+                  className="smallUpload"
+                  type="drag"
+                  :multiple="false"
+                  :format="['png', 'jpg', 'jpeg', 'gif']"
+                  @getFileList="setBackgroundImage"
+                ></TsUpLoad>
+              </div>
+            </TsFormItem>
+            <TsFormItem :label="$t('page.filltype')" labelPosition="top">
+              <TsFormRadio
+                :value="graphData.config.backgroundLayout"
+                :dataList="[
+                  { value: '', text: $t('page.auto') },
+                  { value: 'scale', text: $t('term.report.axis.scale') },
+                  { value: 'stretch', text: $t('term.report.stretch') }
+                ]"
+                @on-change="setBackgroundLayout"
+              ></TsFormRadio>
+            </TsFormItem>
+            <TsFormItem :label="$t('page.backgroundresizable')" labelPosition="top">
+              <TsFormSwitch v-model="graphData.config.backgroundImageResizable" @on-change="setBackgroundResizable"></TsFormSwitch>
+            </TsFormItem>
+            <TsFormItem :label="$t('page.description')" labelPosition="top">
+              <div class="padding-sm radius-sm">
+                <TsFormInput
+                  v-model="graphData.description"
+                  type="textarea"
+                  border="border"
+                  :maxlength="500"
+                ></TsFormInput>
+              </div>
+            </TsFormItem>
+          </div>
         </div>
       </template>
     </TsContain>
-
+    <IconDialog
+      v-if="isIconDialogShow"
+      :currentIcon="graphData.icon"
+      @cancel="isIconDialogShow = false"
+      @confirm="setGraphIcon"
+    ></IconDialog>
     <GraphAddDialog v-if="isAddGraphShow" :type="graphData.type" @close="closeGraphDialog"></GraphAddDialog>
   </div>
 </template>
 <script>
-import { NodeFactory } from '@/views/pages/cmdb/graph/graph-editor/element/core/NodeFactory.js';
+import './grapheditor/index.js';
 export default {
   name: '',
   components: {
-    GraphEditorToolbar: () => import('@/views/pages/cmdb/graph/graph-editor/graph-editor-toolbar.vue'),
-    GraphEditor: () => import('@/views/pages/cmdb/graph/graph-editor/graph-editor.vue'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsUlList: () => import('@/resources/components/TsUlList/TsUlList.vue'),
-
+    IconDialog: () => import('@/views/pages/common/icon-dialog.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
-    NodeConfig: () => import('./node-config.vue'),
-    EdgeConfig: () => import('./edge-config.vue'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     GraphConfig: () => import('./graph-config.vue'),
     GraphAddDialog: () => import('./graph-add-dialog.vue')
   },
@@ -185,6 +251,8 @@ export default {
     const _this = this;
     return {
       id: null,
+      width: 200,
+      height: 200,
       currentElement: null,
       activeTab: 'cientity',
       ciList: [],
@@ -195,7 +263,7 @@ export default {
       searchGraphParam: { isActive: 1 },
       ciEntityData: {},
       isReady: true,
-
+      isIconDialogShow: false,
       ciEntityListHeight: 200,
       graphListHeight: 200,
       invokeGraphList: [], //引用视图列表
@@ -224,14 +292,11 @@ export default {
         isActive: 1,
         config: { backgroundLayout: '' }
       },
-      //新的开始
-      graph: null,
-      dnd: null,
-      currentNode: null, //当前选中节点对象
-      currentNodeData: null, //当前选中节点的数据
-      currentEdge: null, //当前选中边
-      currentEdgeData: null, //当前选中连线数据
-      toolbarConfig: { edgeMode: false }
+      topoData: {
+        nodes: [],
+        links: [],
+        groups: []
+      }
     };
   },
   beforeCreate() {},
@@ -248,11 +313,14 @@ export default {
   beforeMount() {},
   mounted() {
     this.searchGraph();
+    this.initTopo();
     this.getInvokeGraphList();
     window.addEventListener('resize', () => {
+      this.calcTopoHeight();
       this.calcCiEntityHeight();
       this.calcGraphHeight();
     });
+    this.calcTopoHeight();
     this.calcCiEntityHeight();
     this.calcGraphHeight();
   },
@@ -263,95 +331,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    async getGraphById() {
-      if (this.id) {
-        await this.$api.cmdb.graph.getGraphById(this.id).then(res => {
-          this.graphData = res.Return;
-        });
-      }
-    },
-    //流程图ready后的回调方法
-    async ready(graph, dnd) {
-      this.graph = graph;
-      this.dnd = dnd;
-      await this.getGraphById();
-      if (this.graphData?.config?.topo) {
-        this.graph.fromJSON(this.graphData.config.topo);
-      }
-      this.$nextTick(() => {
-        setTimeout(() => {
-          this.graph.centerContent();
-        }, 500);
-      });
-    },
-    drag(event, component, type) {
-      const config = { data: { handler: type } };
-      if (component) {
-        const { id, name, ciIcon, icon, ciId } = component;
-        config.id = id;
-        config.data = { icon: ciIcon || icon, name, id, handler: type, ciId };
-      }
-      const node = NodeFactory.createNode(this.graph, { handler: type }, config);
-      this.dnd.start(node, event);
-    },
-    nodeRemoved() {
-      this.refreshList();
-    },
-    edgeUnSelected() {
-      this.currentEdgeData = null;
-      this.currentEdge = null;
-      this.isSelected = false;
-    },
-    edgeSelected(edge) {
-      //先清空选中数据，强制刷新相关组件
-      this.isSelected = false;
-      this.currentNode = null;
-      this.currentNodeData = null;
-      this.currentEdge = null;
-      this.currentEdgeData = null;
-      this.$nextTick(() => {
-        this.currentEdge = edge;
-        this.currentEdgeData = edge.getData();
-        this.isSelected = true;
-      });
-    },
-    nodeUnSelected() {
-      this.currentNodeData = null;
-      this.currentNode = null;
-      this.isSelected = false;
-    },
-
-    nodeSelected(node) {
-      //先清空选中数据，强制刷新相关组件
-      this.isSelected = false;
-      this.currentNode = null;
-      this.currentNodeData = null;
-      this.currentEdge = null;
-      this.currentEdgeData = null;
-      this.$nextTick(() => {
-        this.currentNode = node;
-        this.currentNodeData = node.getData();
-        this.isSelected = true;
-      });
-    },
-    validateNode(node) {
-      const data = node.getData();
-      if (data && data.handler === 'graph' && !data.id) {
-        this.isAddGraphShow = true;
-        this.newGraphX = node.position().x;
-        this.newGraphY = node.position().y;
-        return false;
-      }
-      this.refreshList();
-      return true;
-    },
     isNodeExists(row) {
-      if (this.graph) {
+      if (this.topo) {
         if (!row.id) {
-          return false;
+          return true;
         }
-        const node = this.graph.getCellById(row.id);
-        if (node) {
+        const nodes = this.topo.getNodes();
+        if (nodes && nodes.length > 0) {
+          return !nodes.find(d => d.getConfig() && d.getConfig().id === row.id);
+        } else {
           return true;
         }
       }
@@ -372,13 +360,45 @@ export default {
     closeGraphDialog(graphData) {
       this.isAddGraphShow = false;
       if (graphData) {
-        const { id, name, icon } = graphData;
-        const config = { id, x: this.newGraphX, y: this.newGraphY };
-        config.data = { icon, name, id, handler: 'graph' };
-        const node = NodeFactory.createNode(this.graph, { handler: 'graph' }, config);
-        this.graph.addNode(node);
-        this.searchGraph();
+        this.drawGraph(graphData, this.newGraphX, this.newGraphY);
       }
+    },
+    setBackgroundColor(val) {
+      this.topo.setBackgroundColor(val);
+      this.$set(this.graphData.config, 'backgroundColor', val);
+    },
+    setBackgroundImage(val) {
+      if (val && val.length > 0) {
+        this.topo.setBackgroundImage(HOME + '/api/binary/image/download?id=' + val[0].id);
+        this.$set(this.graphData.config, 'backgroundImage', HOME + '/api/binary/image/download?id=' + val[0].id);
+      }
+    },
+    setBackgroundLayout(val) {
+      this.topo.setBackgroundLayout(val);
+      this.$set(this.graphData.config, 'backgroundLayout', val);
+    },
+    setBackgroundResizable(val) {
+      this.topo.setBackgroundResizable(val);
+      this.$set(this.graphData.config, 'backgroundResizable', val);
+    },
+    removeBackgrounImage() {
+      this.$delete(this.graphData.config, 'backgroundImage');
+      this.topo.setBackgroundImage(null);
+    },
+    calcTopoHeight() {
+      this.$nextTick(() => {
+        //减去底部的距离
+        this.height = window.innerHeight - 18 - (this.$refs.divTopo ? this.$refs.divTopo.getBoundingClientRect().top : 0);
+        if (this.$refs.topo) {
+          //const height = this.$refs.topo.offsetHeight;
+          const height = this.height - 5;
+          const width = this.$refs.divTopo.offsetWidth;
+          if (this.topo) {
+            this.topo.setHeight(height);
+            this.topo.setWidth(width);
+          }
+        }
+      });
     },
     toGraph(graph) {
       this.$router.push({ path: '/graph-data/' + graph.id });
@@ -393,7 +413,10 @@ export default {
     addGraph() {
       this.$router.push({ path: '/graph-edit/' + this.graphData.type });
     },
-
+    setGraphIcon(icon) {
+      this.graphData.icon = icon;
+      this.isIconDialogShow = false;
+    },
     calcCiEntityHeight() {
       setTimeout(() => {
         //减去底部的距离
@@ -454,6 +477,138 @@ export default {
         this.searchGraph(1);
       }
     },
+    selectIcon(icon) {
+      this.$set(this.graphData, 'icon', icon);
+      this.isIconDialogShow = false;
+    },
+    initTopo() {
+      setTimeout(() => {
+        const width = this.$refs.divTopo.offsetWidth;
+        const height = this.height - 5;
+        this.topo = new Topo(this.$refs.topo, {
+          'canvas.width': width,
+          'canvas.height': height,
+          'canvas.backgroundImage': '',
+          'canvas.backgroundColor': '',
+          'canvas.backgroundResizable': false,
+          'canvas.backgroundLayout': '',
+          'canvas.class': 'topoGraph',
+          'canvas.autoadjust': true, //显示辅助线
+          'anchor.size': 4,
+          'node.selectedFn': node => {
+            this.currentElement = node.getNodeConfig();
+          },
+          'node.unselectFn': node => {
+            this.currentElement = null;
+          },
+          'node.removeFn': canvas => {
+            this.refreshList();
+          },
+          'group.selectedFn': group => {
+            this.currentElement = group.getGroupConfig();
+          },
+          'group.unselectFn': group => {
+            this.currentElement = null;
+          },
+          'link.selectedFn': link => {
+            this.currentElement = link.getLinkConfig();
+          },
+          'link.unselectFn': link => {
+            this.currentElement = null;
+          },
+          'link.removeFn': (link, param) => {
+            if (!param) {
+              const targetNode = link.canvas.getNodeByUuid(link.getTarget());
+              if (targetNode && targetNode.getType() === 'Ci') {
+                targetNode.destory();
+              }
+            }
+          }
+        });
+        this.topo.draw();
+        if (this.id) {
+          this.$api.cmdb.graph.getGraphById(this.id).then(res => {
+            Object.assign(this.graphData, res.Return);
+            if (res.Return.config.topo) {
+              this.topoData = res.Return.config.topo;
+            }
+            this.tagList = res.Return.tagList;
+            this.topo.fromJson(this.topoData);
+            this.topo.setBackgroundImage(this.graphData.config.backgroundImage);
+            this.topo.setBackgroundColor(this.graphData.config.backgroundColor);
+            this.topo.setBackgroundResizable(this.graphData.config.backgroundResizable);
+            this.topo.setBackgroundLayout(this.graphData.config.backgroundLayout);
+            this.$addWatchData(this.graphData);
+          });
+        } else {
+          this.topo.fromJson(this.topoData);
+          this.$addWatchData(this.graphData);
+        }
+      }, 100);
+    },
+    dragCiEntity(event, data) {
+      const graph = { type: 'cientity' };
+      if (data) {
+        graph.data = data;
+      }
+      event.dataTransfer.setData('data', JSON.stringify(graph));
+    },
+    dragGraph(event, data) {
+      const graph = { type: 'graph' };
+      if (data) {
+        graph.data = data;
+      }
+      event.dataTransfer.setData('data', JSON.stringify(graph));
+    },
+    dragGroup(event) {
+      const graph = { type: 'group' };
+      event.dataTransfer.setData('data', JSON.stringify(graph));
+    },
+    drop(event) {
+      let data = event.dataTransfer.getData('data');
+      if (data) {
+        data = JSON.parse(data);
+        if (data.type === 'graph') {
+          this.drawGraph(data.data, event.offsetX, event.offsetY);
+        } else if (data.type === 'group') {
+          this.drawGroup(event.offsetX, event.offsetY);
+        } else if (data.type === 'cientity') {
+          this.drawCiEntity(data.data, event.offsetX, event.offsetY);
+        }
+      }
+    },
+    drawCiEntity(cientity, x, y) {
+      const node = this.topo.addNode({
+        name: cientity.name,
+        icon: '#' + cientity.ciIcon,
+        x: x,
+        y: y,
+        type: 'cientity',
+        config: { ciId: cientity.ciId, id: cientity.id }
+      });
+      node.draw();
+      this.refreshList();
+      return node;
+    },
+    drawGraph(graph, x, y) {
+      if (graph.id) {
+        const node = this.topo.addNode({
+          name: graph.name,
+          icon: '#' + graph.icon,
+          x: x,
+          y: y,
+          type: 'graph',
+          config: { id: graph.id }
+        });
+        node.draw();
+        this.refreshList();
+        return node;
+      } else {
+        this.isAddGraphShow = true;
+        this.newGraphX = x;
+        this.newGraphY = y;
+      }
+    },
     refreshList() {
       this.isReady = false;
       this.$nextTick(() => {
@@ -475,8 +630,7 @@ export default {
     async saveGraph(needRefresh) {
       let isSuccess = false;
       if (this.$refs['txtName'].valid()) {
-        this.graph.cleanSelection();
-        this.graphData.config.topo = this.graph.toJSON();
+        this.graphData.config.topo = this.topo.toJson();
         await this.$api.cmdb.graph.saveGraph(this.graphData).then(res => {
           if (res.Status == 'OK') {
             this.$addWatchData(this.graphData);
@@ -518,6 +672,14 @@ export default {
           vnode.isShow = false;
         }
       });
+    },
+    setConfig(config) {
+      if (this.currentElement) {
+        const node = this.topo.getNodeByUuid(this.currentElement.uuid);
+        if (node) {
+          node.setConfig(config);
+        }
+      }
     }
   },
   filter: {},
@@ -533,6 +695,23 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+}
+.logo {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+  position: relative;
+  border: 1px solid;
+  top: -5px;
+  text-align: center;
+  line-height: 40px;
+  .logo-icon {
+    font-size: 20px;
+    // position: absolute;
+    // top: 4px;
+    // left: 10px;
+  }
 }
 
 .tstable-body {

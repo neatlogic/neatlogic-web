@@ -2,16 +2,16 @@
 export default {
   props: {
     error: { type: Array }, //异常列表
-    config: { type: Object } //配置
+    data: { type: Object } //配置
   },
   methods: {
     //设置属性值
     setConfig(attrName, attrValue) {
       if (attrName.indexOf('.') == -1) {
-        this.$set(this.config, attrName, attrValue);
+        this.$set(this.data, attrName, attrValue);
       } else {
         const str = attrName.split('.');
-        let obj = this.config;
+        let obj = this.data;
         for (let i = 0; i < str.length - 1; i++) {
           if (obj[str[i]]) {
             obj = obj[str[i]];
@@ -41,7 +41,7 @@ export default {
   computed: {},
 
   watch: {
-    config: {
+    data: {
       handler: function(val) {
         this.$emit('setConfig', val);
       },
@@ -51,6 +51,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+/*
 .ivu-form-label-left {
   > .ivu-form-item-label {
     position: absolute;
@@ -79,5 +80,5 @@ export default {
   > span {
     // display: inline-block;
   }
-}
+}*/
 </style>
