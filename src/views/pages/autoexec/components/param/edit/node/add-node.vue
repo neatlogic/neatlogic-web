@@ -12,7 +12,12 @@
         <Col span="8">
         </Col>
         <Col span="16">
-          <FilterSearch :defaultSearchValue="defaultSearchValue" @changeValue="changeValue"></FilterSearch>
+          <FilterSearch 
+            :defaultSearchValue="defaultSearchValue" 
+            @changeValue="changeValue"
+            @advancedModeSearch="(value) => advancedModeSearch(value, 1, 20)"
+          >
+          </FilterSearch>
         </Col>
       </TsRow>
     </div>
@@ -112,8 +117,10 @@ export default {
       tableData: null,
       selectList: [],
       selectNodeList: _this.$utils.deepClone(_this.nodeList),
-      searchParams: {},
       nodeType: '',
+      currentPage: 1,
+      pageSize: 20,
+      complexModeSearchValue: {}, // 复杂模式搜索值
       defaultSearchValue: {}
     };
   },
@@ -122,7 +129,13 @@ export default {
     this.init();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    if (!this.$utils.isEmpty(this.defaultSearchValue) && this.defaultSearchValue.hasOwnProperty('conditionGroupList')) {
+      this.advancedModeSearch(this.defaultSearchValue);
+    } else {
+      this.searchNodeList();
+    }
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -139,8 +152,12 @@ export default {
       this.searchNodeList();
     },
     searchNodeList() {
-      let data = Object.assign(this.searchParams, this.searchVal);
-      data.cmdbGroupType = this.opType;
+      let data = {
+        currentPage: this.currentPage,
+        pageSize: this.pageSize,
+        cmdbGroupType: this.opType,
+        ...this.searchVal
+      };
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -168,11 +185,16 @@ export default {
     },
     getDataList(type, value) {
       if (type == 'currentPage') {
-        this.$set(this.searchParams, 'currentPage', value);
+        this.currentPage = value;
       } else {
-        this.$set(this.searchParams, 'pageSize', value);
+        this.pageSize = value;
       }
-      this.searchNodeList();
+
+      if (this.complexModeSearchValue && !this.$utils.isEmptyObj(this.complexModeSearchValue)) {
+        this.advancedModeSearch(this.complexModeSearchValue);
+      } else {
+        this.searchNodeList();
+      }
     },
     getSelected(indexList, itemList) {
       this.selectNodeList.push(...itemList);
@@ -190,6 +212,26 @@ export default {
     changeValue(val) {
       this.searchVal = this.$utils.deepClone(val);
       this.getDataList('currentPage', 1);
+    },
+    advancedModeSearch(complexModeSearchValue, currentPage, pageSize) {
+      this.complexModeSearchValue = complexModeSearchValue;
+      // 复杂模式搜索
+      let params = {
+        currentPage: currentPage || this.currentPage,
+        pageSize: pageSize || this.pageSize,
+        cmdbGroupType: this.opType,
+        ...this.defaultSearchValue,
+        ...complexModeSearchValue
+      };
+      this.loading = true;
+      this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
+        if (res.Status == 'OK') {
+          this.tableData = res.Return;
+          this.$set(this.tableData, 'theadList', this.theadList);
+        }
+      }).finally(() => {
+        this.loading = false;
+      });
     },
     validSetting(type) { //true不需要提示校验信息
       let list = this.selectNodeList.map(item => {
