@@ -16,7 +16,7 @@
         </div>
         <div style="text-align:right" class="action-group">
           <div v-if="!isAdvancedSearch && needExport" class="action-item">
-            <Button type="primary" :ghost="true">{{ $t('page.export') }}</Button>
+            <Button type="primary" :ghost="true" @click="isExportDialogShow = true">{{ $t('page.export') }}</Button>
           </div>
           <div v-if="needCondition" class="action-item">
             <TsFormInput
