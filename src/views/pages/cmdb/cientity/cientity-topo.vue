@@ -224,8 +224,9 @@ export default {
       maxLevel: 5,
       isloading: false,
       currentLayout: 'dot',
-      inspectCiEntityList: [],
-      monitorCiEntityList: [],
+      //inspectCiEntityList: [],
+      //monitorCiEntityList: [],
+      ciEntityAlertList: [],
       layoutList: [
         { engine: 'dot', name: this.$t('term.cmdb.topo.dot') },
         { engine: 'circo', name: this.$t('term.cmdb.topo.circo') },
@@ -266,7 +267,7 @@ export default {
       isCiTopoTemplateEditShow: false,
       currentTopoTemplateId: null,
       statusMapping: { warn: 'text-warning', fatal: 'text-error', critical: 'text-error' },
-      statusColorMapping: {warn: 'orange', fatal: '#8B0000', critical: 'red' }
+      statusColorMapping: { warn: 'orange', fatal: '#8B0000', critical: 'red' }
     };
   },
   beforeCreate() {},
@@ -540,8 +541,9 @@ export default {
           .getCiEntityTopoData(param)
           .then(res => {
             if (res.Return) {
-              this.inspectCiEntityList = res.Return.inspectCiEntityList || [];
-              this.monitorCiEntityList = res.Return.monitorCiEntityList || [];
+              //this.inspectCiEntityList = res.Return.inspectCiEntityList || [];
+              //this.monitorCiEntityList = res.Return.monitorCiEntityList || [];
+              this.ciEntityAlertList = res.Return.ciEntityAlertList || [];
               if (res.Return.dot) {
                 this.error = '';
                 const nodesString = this.$utils.handleTopoImagePath(res.Return.dot || '');
@@ -585,64 +587,65 @@ export default {
                     this.toCiEntityView(ids[1], ids[2]);
                   }
                 });
+                
+                /*d3.selectAll('.cinode').each(function() {
+                  const g = d3.select(this);
+                  const img = g.select('image');
+                  const bbox = img.node().getBBox();
+                  g.insert('circle', ':first-child')
+                    .attr('r', 24)
+                    .attr('fill', 'red')
+                    .attr('class', 'cientitybg')
+                    .attr('cx', bbox.x + 18) // 右上角的 x 坐标
+                    .attr('cy', bbox.y + 18); // 右上角的 y 坐标;
+                });*/
 
-                if (this.monitorCiEntityList && this.monitorCiEntityList.length > 0) {
-                  this.monitorCiEntityList.forEach(cientity => {
-                    if (this.statusMapping[cientity.monitorStatus]) {
-                      const g = d3.select('#CiEntity_' + cientity.id);
-                      if (g) {
-                        const bbox = g.node().getBBox();
-                        /*g.append('foreignObject')
-                          .attr('x', bbox.x + bbox.width) // 右上角的 x 坐标
-                          .attr('y', bbox.y - 15) // 右上角的 y 坐标
-                          .attr('width', 20) // 设置足够的宽度
-                          .attr('height', 20) // 设置足够的高度
-                          .append('xhtml:span') // 使用 xhtml 命名空间
-                          .attr('title', '监控状态:' + cientity.monitorStatus)
-                          .attr('class', 'tsfont-warning-s ' + this.statusMapping[cientity.monitorStatus]); // 应用字体图标的 class
-                          */
+                if (this.ciEntityAlertList && this.ciEntityAlertList.length > 0) {
+                  this.ciEntityAlertList.forEach(cientity => {
+                    const g = d3.select('#CiEntity_' + cientity.ciEntityId);
+                    const alertList = cientity.alertList;
+                    let color = '';
+                    let level = -1;
+                    alertList.forEach(a => {
+                      if (level < a.level) {
+                        level = a.level;
+                        color = a.levelColor;
                       }
-                    }
-                  });
-                }
-                if (this.inspectCiEntityList && this.inspectCiEntityList.length > 0) {
-                  this.inspectCiEntityList.forEach(cientity => {
-                    if (this.statusColorMapping[cientity.inspectStatus]) {
-                      const g = d3.select('#CiEntity_' + cientity.id);
-                      if (g) {
-                        const bbox = g.node().getBBox();
-                        /*g.append('foreignObject')
-                          .attr('x', bbox.x - 15) // 左上角的 x 坐标
-                          .attr('y', bbox.y) // 左上角的 y 坐标
-                          .attr('width', 20) // 设置足够的宽度
-                          .attr('height', 20) // 设置足够的高度
-                          .append('xhtml:span') // 使用 xhtml 命名空间
-                          .attr('title', '巡检状态:' + cientity.inspectStatus)
-                          .attr('class', 'tsfont-info-s ' + this.statusMapping[cientity.inspectStatus]); // 应用字体图标的 class
-                          */
-                        const warnCircle = g.insert('circle')
-                          .attr('cx', bbox.x + bbox.width / 2) // 根据需要调整cx
-                          .attr('cy', bbox.y + 15) // 根据需要调整cy
-                          .attr('r', 15)
-                          .attr('fill', this.statusColorMapping[cientity.inspectStatus])
-                          .attr('stroke-width', 0)
-                          .attr('fill-opacity', 1);
+                    });
+                    if (g && color) {
+                      const img = g.select('image');
+                      const bbox = img.node().getBBox();
+                      //图标底色
+                      g.insert('circle', ':first-child')
+                        .attr('r', 24)
+                        .attr('fill', 'red')
+                        .attr('class', 'cientitybg')
+                        .attr('cx', bbox.x + 18) 
+                        .attr('cy', bbox.y + 18); 
+                      const warnCircle = g
+                        .insert('circle', ':first-child')
+                        .attr('cx', bbox.x + 18) 
+                        .attr('cy', bbox.y + 18) 
+                        .attr('r', 24)
+                        .attr('fill', color)
+                        .attr('stroke-width', 0)
+                        .attr('fill-opacity', 1);
 
-                        warnCircle.append('animate') // 添加第一个动画
-                          .attr('attributeName', 'r')
-                          .attr('from', 15)
-                          .attr('to', 40)
-                          .attr('dur', '1s')
-                          .attr('repeatCount', 'indefinite');
+                      warnCircle
+                        .append('animate') 
+                        .attr('attributeName', 'r')
+                        .attr('from', 24)
+                        .attr('to', 40)
+                        .attr('dur', '1s')
+                        .attr('repeatCount', 'indefinite');
 
-                        warnCircle // 选择刚添加的 circle
-                          .append('animate') // 添加第二个动画
-                          .attr('attributeName', 'fill-opacity')
-                          .attr('from', 0.7)
-                          .attr('to', 0)
-                          .attr('dur', '1s')
-                          .attr('repeatCount', 'indefinite');
-                      }
+                      warnCircle 
+                        .append('animate') 
+                        .attr('attributeName', 'fill-opacity')
+                        .attr('from', 0.7)
+                        .attr('to', 0)
+                        .attr('dur', '1s')
+                        .attr('repeatCount', 'indefinite');
                     }
                   });
                 }
