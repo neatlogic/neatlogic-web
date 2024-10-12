@@ -601,53 +601,57 @@ export default {
                 });*/
 
                 if (this.ciEntityAlertList && this.ciEntityAlertList.length > 0) {
-                  this.ciEntityAlertList.forEach(cientity => {
-                    const g = d3.select('#CiEntity_' + cientity.ciEntityId);
-                    const alertList = cientity.alertList;
-                    let color = '';
-                    let level = -1;
-                    alertList.forEach(a => {
-                      if (level < a.level) {
-                        level = a.level;
-                        color = a.levelColor;
+                  //等待1秒，确认布局完毕后再生成光环
+                  setTimeout(() => {
+                    this.ciEntityAlertList.forEach(cientity => {
+                      const g = d3.select('#CiEntity_' + cientity.ciEntityId);
+                      const alertList = cientity.alertList;
+                      let color = '';
+                      let level = -1;
+                      alertList.forEach(a => {
+                        if (level < a.level) {
+                          level = a.level;
+                          color = a.levelColor;
+                        }
+                      });
+                      if (g && color) {
+                        const img = g.select('image');
+                        const bbox = img.node().getBBox();
+                        console.log(bbox.x);
+                        //图标底色
+                        g.insert('circle', ':first-child')
+                          .attr('r', 24)
+                          .attr('fill', 'red')
+                          .attr('class', 'cientitybg')
+                          .attr('cx', bbox.x + 18) 
+                          .attr('cy', bbox.y + 18); 
+                        const warnCircle = g
+                          .insert('circle', ':first-child')
+                          .attr('cx', bbox.x + 18) 
+                          .attr('cy', bbox.y + 18) 
+                          .attr('r', 24)
+                          .attr('fill', color)
+                          .attr('stroke-width', 0)
+                          .attr('fill-opacity', 1);
+
+                        warnCircle
+                          .append('animate') 
+                          .attr('attributeName', 'r')
+                          .attr('from', 24)
+                          .attr('to', 40)
+                          .attr('dur', '1s')
+                          .attr('repeatCount', 'indefinite');
+
+                        warnCircle 
+                          .append('animate') 
+                          .attr('attributeName', 'fill-opacity')
+                          .attr('from', 0.7)
+                          .attr('to', 0)
+                          .attr('dur', '1s')
+                          .attr('repeatCount', 'indefinite');
                       }
                     });
-                    if (g && color) {
-                      const img = g.select('image');
-                      const bbox = img.node().getBBox();
-                      //图标底色
-                      g.insert('circle', ':first-child')
-                        .attr('r', 24)
-                        .attr('fill', 'red')
-                        .attr('class', 'cientitybg')
-                        .attr('cx', bbox.x + 18) 
-                        .attr('cy', bbox.y + 18); 
-                      const warnCircle = g
-                        .insert('circle', ':first-child')
-                        .attr('cx', bbox.x + 18) 
-                        .attr('cy', bbox.y + 18) 
-                        .attr('r', 24)
-                        .attr('fill', color)
-                        .attr('stroke-width', 0)
-                        .attr('fill-opacity', 1);
-
-                      warnCircle
-                        .append('animate') 
-                        .attr('attributeName', 'r')
-                        .attr('from', 24)
-                        .attr('to', 40)
-                        .attr('dur', '1s')
-                        .attr('repeatCount', 'indefinite');
-
-                      warnCircle 
-                        .append('animate') 
-                        .attr('attributeName', 'fill-opacity')
-                        .attr('from', 0.7)
-                        .attr('to', 0)
-                        .attr('dur', '1s')
-                        .attr('repeatCount', 'indefinite');
-                    }
-                  });
+                  }, 1000);
                 }
               } else {
                 this.error = this.$t('message.cmdb.notopo');
