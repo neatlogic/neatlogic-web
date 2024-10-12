@@ -1,14 +1,63 @@
 <template>
-  <div style="text-align: center" :style="sizeStyle">
-    <div class="container shadow bg-grey" style="margin:auto" :style="style">
+  <div style="text-align: center; position: relative; padding-top: 10px" :style="sizeStyle">
+    <div class="container shadow bg-grey" style="margin: auto" :style="style">
       <div :class="data.icon" :style="iconStyle"></div>
     </div>
     <div
       v-if="data.name"
       class="text-grey fz10 mt-xs"
-      style="white-space:normal;word-break:break-all"
+      style="white-space: normal; word-break: break-all"
       :style="fontStyle"
     >{{ data.name }}</div>
+    <div v-if="data.alertColor" style="position: absolute; z-index: -1; top: 0px; left: 0px">
+      <svg data-v-61b1d234="" :width="size.width" :height="size.height">
+        <rect
+          width="40"
+          height="40"
+          :x="size.width / 2 - 20"
+          :y="10"
+          :fill="data.alertColor"
+          stroke-width="0"
+          fill-opacity="1"
+        >
+          <animate
+            attributeName="x"
+            :from="size.width / 2 - 20"
+            :to="size.width / 2 - 30"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animate>
+          <animate
+            attributeName="y"
+            :from="10"
+            :to="0"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animate>
+          <animate
+            attributeName="width"
+            :from="40"
+            :to="60"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animate>
+          <animate
+            attributeName="height"
+            :from="40"
+            :to="60"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animate>
+          <animate
+            attributeName="fill-opacity"
+            from="1"
+            to="0"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animate>
+        </rect>
+      </svg>
+    </div>
   </div>
 </template>
 <script>

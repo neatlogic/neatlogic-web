@@ -381,14 +381,17 @@ export default {
           const editor = this.$refs['graphEditor'];
           //const node = this.topo.getNodes().find(d => d.getConfig() && d.getType() === 'Graph' && d.getConfig().id == graphid);
           if (node) {
+            const d = node.getData();
             if (!alert) {
               /*const nData = this.topoData.nodes.find(d => d.uuid === node.getUuid());
               node.setAnimate(null);
               node.setStroke(nData.stroke);
               node.setIconcolor(nData.iconcolor);*/
-              editor.unHighlightNode(node);
+              //editor.unHighlightNode(node);
+              this.$delete(d, 'alertColor');
             } else {
-              editor.highlightNode(node, alert.levelColor);
+              this.$set(d, 'alertColor', alert.levelColor);
+              //editor.highlightNode(node, alert.levelColor);
               /*
               node.setAnimate('breath');
               node.setStroke(alert.levelColor);
@@ -408,18 +411,21 @@ export default {
           const editor = this.$refs['graphEditor'];
           //const node = this.topo.getNodes().find(d => d.getConfig() && d.getType() === 'Cientity' && d.getConfig().id == cientityid);
           if (node) {
+            const d = node.getData();
             if (!alert) {
-              editor.unHighlightNode(node);
+              //editor.unHighlightNode(node);
               /*const nData = this.topoData.nodes.find(d => d.uuid === node.getUuid());
               node.setAnimate(null);
               node.setStroke(nData.stroke);
               node.setIconcolor(nData.iconcolor);*/
+              this.$delete(d, 'alertColor');
             } else {
               /* node.setAnimate('breath');
               node.setStroke(alert.levelColor);
               node.setIconcolor(alert.levelColor);
               */
-              editor.highlightNode(node, alert.levelColor);
+              //editor.highlightNode(node, alert.levelColor);
+              this.$set(d, 'alertColor', alert.levelColor);
             }
           }
         }

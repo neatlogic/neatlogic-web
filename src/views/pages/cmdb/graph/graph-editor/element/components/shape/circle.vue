@@ -1,14 +1,43 @@
 <template>
-  <div style="text-align: center" :style="sizeStyle">
-    <div class="container shadow bg-grey" style="margin:auto" :style="style">
+  <div style="text-align: center; position: relative; padding-top: 10px" :style="sizeStyle">
+    <!--为了水波纹不被遮挡，上方需要留空10px-->
+    <div class="container shadow bg-grey" style="margin: auto" :style="style">
       <div :class="data.icon" :style="iconStyle"></div>
     </div>
     <div
       v-if="data.name"
       class="text-grey fz10 mt-xs"
-      style="white-space:normal;word-break:break-all"
+      style="white-space: normal; word-break: break-all"
       :style="fontStyle"
     >{{ data.name }}</div>
+    <div v-if="data.alertColor" style="position: absolute; z-index: -1; top: 0px; left: 0px">
+      <svg data-v-61b1d234="" :width="size.width" :height="size.height">
+        <circle
+          :cx="size.width / 2"
+          cy="30"
+          r="20"
+          :fill="data.alertColor"
+          stroke="black"
+          stroke-width="0"
+          fill-opacity="1"
+        >
+          <animate
+            attributeName="r"
+            from="20"
+            to="30"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animate>
+          <animate
+            attributeName="fill-opacity"
+            from="1"
+            to="0"
+            dur="1s"
+            repeatCount="indefinite"
+          ></animate>
+        </circle>
+      </svg>
+    </div>
   </div>
 </template>
 <script>
