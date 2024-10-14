@@ -128,7 +128,7 @@
                   multiple
                   isCustomValue
                   @change="(val)=>{
-                    $set(propertyLocal.config, 'hiddenFieldList', val);
+                    changeHiddenFieldList(val);
                   }"
                 ></TsFormSelect>
               </TsFormItem>
@@ -254,19 +254,36 @@
             </TsFormItem>
           </template>
           <template v-slot:reaction>
-            <Tabs v-if="propertyLocal.reaction">
+            <Tabs v-if="propertyLocal.reaction && isReady">
               <TabPane
-                v-for="(r, key) in propertyLocal.reaction"
+                v-for="(r, key) in reactionTabList"
                 :key="key"
                 :label="getReactionLabel(key)"
                 :name="key"
               >
+                <div v-if="key === 'filter'">
+                  <ReactionFilter
+                    :ref="'formitem_' + key"
+                    :value="r"
+                    :martixAttrList="mappingDataList"
+                    :formItem="propertyLocal"
+                    :formItemList="allFormItemList"
+                    @input="
+                      rule => {
+                        setReaction(key, rule);
+                      }
+                    "
+                  ></ReactionFilter>
+                </div>
                 <ConditionGroup
-                  v-if="key !== 'filter'"
-                  :ref="'condition_' + key"
+                  v-else
+                  :ref="'formitem_' + key"
                   :value="r"
                   :formItemList="allFormItemList"
                   :formItem="propertyLocal"
+                  @reactionValid="(isValid)=>{
+                    reactionValid(key, isValid)
+                  }"
                   @input="
                     rule => {
                       setReaction(key, rule);
@@ -318,19 +335,15 @@
                     "
                   ></FormItem>
                 </div>
-                <div v-else-if="key === 'filter'">
-                  <ReactionFilter
-                    :ref="'condition_' + key"
-                    :value="r"
-                    :martixAttrList="mappingDataList"
-                    :formItem="propertyLocal"
-                    :formItemList="allFormItemList"
-                    @input="
-                      rule => {
-                        setReaction(key, rule);
-                      }
-                    "
-                  ></ReactionFilter>
+                <div v-else-if="key === 'setValueOther'">
+                  <ReactionSetvalueSetting
+                    v-if="propertyLocal && propertyLocal.config.hiddenFieldList && !$utils.isEmpty(r)"
+                    ref="setValueOther_valueList"
+                    :value="r.valueList"
+                    :hiddenFieldList="propertyLocal.config.hiddenFieldList"
+                    :attrList="formItemConfig.dataConfig"
+                    :currentAttrUuid="propertyLocal.uuid"
+                  ></ReactionSetvalueSetting>
                 </div>
               </TabPane>
             </Tabs>
@@ -361,7 +374,9 @@ export default {
     FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
     FormtableinputDataSource: () => import('./formtableinput-data-source.vue'),
-    ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue')
+    ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue'),
+    ReactionSetvalueSetting: () => import('./reaction-setvalue-setting.vue')
+
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -383,6 +398,7 @@ export default {
   },
   data() {
     return {
+      isReady: true,
       propertyLocal: null,
       reaction: { 
         mask: {}, 
@@ -391,7 +407,8 @@ export default {
         readonly: {},
         disable: {},
         required: {},
-        clearValue: {}
+        clearValue: {},
+        setValueOther: {}
       },
       reactionName: {
         mask: this.$t('page.invisible'),
@@ -401,7 +418,9 @@ export default {
         disable: this.$t('page.disable'),
         required: this.$t('page.require'),
         filter: this.$t('page.filters'),
-        clearValue: this.$t('page.cleardata')
+        clearValue: this.$t('page.cleardata'),
+        setvalue: this.$t('term.framework.assignment'),
+        setValueOther: '其他组件赋值'
       },
       reactionError: {}, //交互异常信息
       errorMap: {},
@@ -585,11 +604,11 @@ export default {
       }
 
       if (!this.propertyLocal.reaction) {
-        this.$set(this.propertyLocal, 'reaction', this.reaction);
+        this.$set(this.propertyLocal, 'reaction', this.$utils.deepClone(this.reaction));
       } else {
         Object.keys(this.reaction).forEach((key) => {
           if (!this.propertyLocal.reaction.hasOwnProperty(key)) {
-            this.$set(this.propertyLocal.reaction, key, this.reaction[key]);
+            this.$set(this.propertyLocal.reaction, key, {});
           }
         });
       }
@@ -609,17 +628,25 @@ export default {
     },
     async save() {
       let isValid = true;
+      this.reactionError = {};
       if (this.$refs) {
         for (let key in this.$refs) {
           if (key.startsWith('formitem_')) {
+            const arrKey = key.split('_');
             const item = this.$refs[key];
             if (item) {
               if (Array.isArray(item) && item.length) {
                 item.forEach(k => {
-                  k.valid && !k.valid() && (isValid = false);
+                  if (k.valid && !k.valid()) {
+                    isValid = false;
+                    this.$set(this.reactionError, arrKey[1], true);
+                  }
                 });
               } else {
-                item.valid && !item.valid() && (isValid = false);
+                if (item.valid && !item.valid()) {
+                  isValid = false;
+                  this.$set(this.reactionError, arrKey[1], true);
+                }
               }
             } 
           } else if (key === 'assignmentValue') {
@@ -633,7 +660,19 @@ export default {
               const err = await formitem.validData();
               if (err && err.length > 0) {
                 isValid = false;
+                this.$set(this.reactionError, 'setvalue', true);
               }
+            }
+          } else if (key === 'setValueOther_valueList') {
+            let setValueOtherValueList = null;
+            if (this.$refs[key] instanceof Array) {
+              setValueOtherValueList = this.$refs[key][0];
+            } else {
+              setValueOtherValueList = this.$refs[key];
+            }
+            if (setValueOtherValueList && !setValueOtherValueList.valid()) {
+              isValid = false;
+              this.$set(this.reactionError, 'setValueOther', true);
             }
           }
         }
@@ -645,6 +684,10 @@ export default {
         isValid = false;
       }
       if (isValid) {
+        if (this.$refs.setValueOther_valueList) {
+          const valueList = this.$refs.setValueOther_valueList[0].save();
+          this.$set(this.propertyLocal.reaction.setValueOther, 'valueList', valueList);
+        }
         this.$emit('close', this.propertyLocal);
       }
     },
@@ -688,7 +731,7 @@ export default {
     changeHandler(val) {
       this.propertyLocal.reaction = null;
       this.$nextTick(() => {
-        this.$set(this.propertyLocal, 'reaction', this.reaction);
+        this.$set(this.propertyLocal, 'reaction', this.$utils.deepClone(this.reaction));
         this.$set(this.propertyLocal, 'value', null);
         if (val === 'formexpression') {
           this.$set(this.propertyLocal.config, 'isReadOnly', true);
@@ -739,6 +782,16 @@ export default {
         });
       }
       return isValid;
+    },
+    changeHiddenFieldList(val) {
+      this.isReady = false;
+      this.$set(this.propertyLocal.config, 'hiddenFieldList', val);
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
+    },           
+    reactionValid(key, isValid) {
+      this.$set(this.reactionError, key, !isValid);
     }
   },
   filter: {},
@@ -843,6 +896,13 @@ export default {
         }
         return list;
       };
+    },
+    reactionTabList() {
+      const reaction = this.$utils.deepClone(this.propertyLocal.reaction);
+      if (this.propertyLocal && this.$utils.isEmpty(this.propertyLocal.config.hiddenFieldList)) {
+        this.$delete(reaction, 'setValueOther');
+      }
+      return reaction;
     }
   },
   watch: {

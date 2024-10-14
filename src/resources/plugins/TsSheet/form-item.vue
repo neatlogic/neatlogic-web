@@ -1,6 +1,6 @@
 <template>
   <div class="form-item">
-    <i v-if="showComponent(formItem) && formItem.config && formItem.config.isRequired && !readonly && !formItem.config.isReadOnly" class="require-tip text-error">*</i>
+    <i v-if="isShowComponent && formItem.config && formItem.config.isRequired && !readonly && !formItem.config.isReadOnly" class="require-tip text-error">*</i>
     <!--编辑模式下的非container组件需要增加遮罩屏蔽所有操作，container组件需要接受拖拽组件进去，不需要遮罩-->
     <div v-if="(mode === 'edit' || mode === 'editSubform') && !formItem.isContainer" class="editor-mask"></div>
     <div v-if=" mode != 'defaultvalue' && mode !== 'condition' && ((formItem.override_config && formItem.override_config.isMask) || (formItem.config && formItem.config.isMask))" class="mask">
@@ -47,10 +47,10 @@
     ></div>
     <div v-if="mode == 'edit' && formItem.config && formItem.config.isHide" class="corner-bottom-icon text-grey tsfont-eye-off"></div>
     <div v-if="needLabel" class="mb-xs">{{ formItem.label }}</div>
-    <template v-if="showComponent(formItem) && (!formItem.type || formItem.type === 'form')">
+    <template v-if="isShowComponent && (!formItem.type || formItem.type === 'form')">
       <component
         :is="formItem.handler"
-        v-if="isExistComponent(formItem.handler)"
+        v-if="isExistComponent && formItem.handler !== 'formcustom'"
         ref="formItem"
         :style="{ width: mode != 'defaultvalue'?(formItem.config && formItem.config.width) || '100%':'100%' }"
         :formItem="formItem"
@@ -73,7 +73,7 @@
       ></component>
       <component
         :is="formItem.customName"
-        v-else-if="formItem.handler === 'formcustom' && isExistComponent(formItem.customName)"
+        v-else-if="isExistComponent && formItem.handler === 'formcustom'"
         ref="formItem"
         :style="{ width: mode != 'defaultvalue'?(formItem.config && formItem.config.width) || '100%':'100%' }"
         :formItem="formItem"
@@ -98,7 +98,7 @@
       <div v-else class="text-warning">{{ $t('page.commercialcomponent') }}</div>
     </template>
     <CustomItem
-      v-else-if="showComponent(formItem) && formItem.type === 'custom'"
+      v-else-if="isShowComponent && formItem.type === 'custom'"
       ref="formItem"
       :style="{ width: (formItem.config && formItem.config.width) || '100%' }"
       :formItem="formItem"
@@ -116,7 +116,7 @@
       @resize="$emit('resize')"
       @select="selectFormItem"
     ></CustomItem>
-    <div v-if="showComponent(formItem) && formItem.config && formItem.config.description" class="tsfont-info-o text-tip">{{ formItem.config.description }}</div>
+    <div v-if="isShowComponent && formItem.config && formItem.config.description" class="tsfont-info-o text-tip">{{ formItem.config.description }}</div>
   </div>
 </template>
 <script>
@@ -506,16 +506,15 @@ export default {
     hasDataError() {
       return this.dataErrorList && this.dataErrorList.length > 0;
     },
-    showComponent() {
-      return formItem => {
-        let isShow = true;
-        if (((this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing ||
+    isShowComponent() {
+      const formItem = this.formItem;
+      let isShow = true;
+      if (((this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing ||
          (formItem.override_config && formItem.override_config.isHide)
-        ) {
-          isShow = false;
-        }
-        return isShow;
-      };
+      ) {
+        isShow = false;
+      }
+      return isShow;
     },
     readonlyTextIsHighlight() {
       // 只读模式下，工单详情时间线，有变更的数据，需要高亮显示
@@ -526,13 +525,17 @@ export default {
       return readonlyTextIsHighlight;
     },
     isExistComponent() {
-      return (handler) => {
-        let component = true;
-        if (!formItems[handler]) {
-          component = false;
-        }
-        return component;
-      };
+      let handler = '';
+      if (this.formItem.handler === 'formcustom') {
+        handler = this.formItem.customName;
+      } else {
+        handler = this.formItem.handler;
+      }
+      let component = true;
+      if (!handler || !formItems[handler]) {
+        component = false;
+      }
+      return component;
     }
   },
   watch: {}

@@ -78,7 +78,10 @@
             :isCustomValue="true"
             :isClearSpecifiedAttr="isClearSpecifiedAttr"
             style="min-width:130px"
-            @change="(val)=>changeRow(val,extra.uuid,row)"
+            @change="(val)=>changeRow(val,extra.uuid, row)"
+            @updateCurrentRow="(data)=>{
+              updateCurrentRow(row, data);
+            }"
           ></FormItem>
         </div>
       </template>
@@ -89,14 +92,13 @@
 <script>
 import base from '../base.vue';
 import validmixin from '../common/validate-mixin.js';
-import TsTable from '@/resources/components/TsTable/TsTable.vue';
 import ExcelJS from 'exceljs';
 import FileSaver from 'file-saver';
 
 export default {
   name: '',
   components: {
-    TsTable,
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
   extends: base,
@@ -194,13 +196,6 @@ export default {
           this.tableData.tbodyList.splice(i, 1);
         }
       }
-    },
-    getSelectedData(itemList) {
-      const valueList = this.$utils.deepClone(itemList);
-      valueList.forEach(d => {
-        this.$delete(d, '_selected');
-      });
-      this.setValue(itemList);
     },
     addData() {
       const data = { uuid: this.$utils.setUuid() };
@@ -671,6 +666,13 @@ export default {
           Object.assign(item, obj);
         });
       }
+    },
+    updateCurrentRow(row, val) {
+      this.$nextTick(() => {
+        if (val) {
+          Object.assign(row, val);
+        }
+      });
     }
   },
   filter: {},

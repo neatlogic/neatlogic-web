@@ -45,7 +45,7 @@
             <Col v-if="isNeedAttrValue(conItem)" span="8">
               <div>
                 <FormItem
-                  :ref="'formitem_' + conItem.uuid"
+                  ref="select"
                   :formItem="getFormItem(conItem.formItemUuid)"
                   :value="conItem.valueList"
                   mode="condition"
@@ -299,7 +299,7 @@ export default {
       let isValid = true;
       if (this.$refs['select']) {
         this.$refs['select'].forEach(element => {
-          if (!element.valid()) {
+          if (element.valid && !element.valid()) {
             isValid = false;
           }
         });
@@ -317,6 +317,7 @@ export default {
           }
         });
       }
+      this.$emit('reactionValid', isValid);
       return isValid;
     },
     getFormItem(formItemUuid) {
@@ -333,7 +334,7 @@ export default {
   filter: {},
   computed: {
     hasValueFormItemList() {
-      let list = this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
+      let list = this.formItemList.filter(d => d.hasValue && !this.filterComponentList.includes(d.handler));
       let newList = [];
       list.forEach(item => {
         let obj = {

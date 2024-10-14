@@ -886,8 +886,9 @@ export default {
       }
     },
     scrollContainer(event) {
-      this.scrollTop = event.target.scrollTop;
-      this.scrollLeft = event.target.scrollLeft;
+      //导致页面卡顿，暂时屏蔽
+      // this.scrollTop = event.target.scrollTop;
+      // this.scrollLeft = event.target.scrollLeft;
     },
     //组件变化时修正单元格尺寸
     resizeCell(row, col, needReset) {

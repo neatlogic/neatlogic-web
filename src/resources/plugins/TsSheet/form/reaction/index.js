@@ -8,6 +8,7 @@ import { default as filter } from './filter.js';
 import { default as emit } from './emit.js';
 import { default as required } from './required.js';
 import { default as clearValue } from './clearValue.js';
+import { default as setValueOther } from './setValueOther.js';
 
 export const REACTION = {
   mask: mask,
@@ -19,5 +20,6 @@ export const REACTION = {
   filter: filter,
   emit: emit,
   required: required,
-  clearValue: clearValue
+  clearValue: clearValue,
+  setValueOther: setValueOther
 };

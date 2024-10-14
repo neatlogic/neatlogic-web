@@ -28,7 +28,7 @@ export default ({ reaction, result, view }) => {
     }
     if ((!reaction.isFirstLoad && (!view.formData.hasOwnProperty(view.formItem.uuid) || !view.formData[view.formItem.uuid]) || (view.formData[view.formItem.uuid] && !view.$utils.isSame(value, view.formData[view.formItem.uuid]))) || (reaction.isFirstLoad && !view.executeCount['setvalue'])) {
       view.addExecuteCount('setvalue');
-      view.$set(view.formData, view.formItem.uuid, value);
+      view.setValue(value);
       view.$emit('change', value);
     }
   }
