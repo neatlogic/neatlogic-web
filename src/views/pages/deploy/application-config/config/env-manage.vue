@@ -1,40 +1,45 @@
 <template>
   <div>
-    <Tabs v-model="tabActive" class="block-tabs">
-      <TabPane :label="$t('term.deploy.dbconfig')">
+    <Tabs v-model="tabSelectedName" class="block-tabs">
+      <TabPane :label="$t('term.deploy.dbconfig')" name="dbconfig">
         <EnvDbConfigList
-          v-if="tabActive == 0"
+          v-if="tabSelectedName == 'dbconfig'"
           :params="params"
           :hasEditConfigAuth="hasEditConfigAuth"
           @close="close"
         ></EnvDbConfigList>
       </TabPane>
-      <TabPane :label="$t('term.deploy.configurationfileadaptation')">
+      <TabPane :label="$t('term.deploy.configurationfileadaptation')" name="configurationfileadaptation">
         <EnvAutoConfigList
-          v-if="tabActive == 1"
+          v-if="tabSelectedName == 'configurationfileadaptation'"
           :params="params"
           :hasEditConfigAuth="hasEditConfigAuth"
           @close="close"
         ></EnvAutoConfigList>
       </TabPane>
-      <TabPane :label="$t('term.deploy.instancelist')">
+      <TabPane :label="$t('term.deploy.instancelist')" name="instancelist">
         <EnvInstanceList
-          v-if="tabActive == 2"
+          v-if="tabSelectedName == 'instancelist'"
           :params="params"
           :hasEditConfigAuth="hasEditConfigAuth"
           @close="close"
         ></EnvInstanceList>
       </TabPane>
-      <TabPane :label="$t('term.deploy.envattr')">
+      <TabPane :label="$t('term.deploy.envattr')" name="envattr">
         <EnvAttr
-          v-if="tabActive == 3"
+          v-if="tabSelectedName == 'envattr'"
           :params="params"
           :hasEditConfigAuth="hasEditConfigAuth"
           @close="close"
         >
         </EnvAttr>
       </TabPane>
-      <div :is="'appConfigEnvTabHandler'" v-if="isHasAppConfigEnvTabHandler" :appData="params"></div>
+      <div
+        :is="'appConfigEnvTabHandler'"
+        v-if="isHasAppConfigEnvTabHandler"
+        :tabSelectedName="tabSelectedName"
+        :appData="params"
+      ></div>
     </Tabs>
   </div>
 </template>
@@ -64,13 +69,11 @@ export default {
   },
   data() {
     return {
-      tabActive: 0
+      tabSelectedName: 'dbconfig'
     };
   },
   beforeCreate() {},
-  created() {
-    this.tabActive = 0;
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},

@@ -265,26 +265,30 @@ export default {
         if (needWatch && this.formData) {
           this.$watch(
             'formDataForWatch',
-            (newVal, oldVal) => {
-              for (let action in this.formItem.reaction) {
+            (newValue, oldValue) => {
+              this.$nextTick(() => {
+                const newVal = newValue && JSON.parse(newValue);
+                const oldVal = oldValue && JSON.parse(oldValue);
+                for (let action in this.formItem.reaction) {
                 //如果override_config有配置，则相关联动不生效
-                const overrideConfig = this.formItem.override_config || {};
-                const reaction = this.formItem.reaction[action];
-                if (reaction && !this.$utils.isEmpty(reaction) && this.isConditionDataChange(action, reaction, newVal, oldVal, this.formItem.uuid)) {
-                  const result = this.executeReaction(reaction, newVal, oldVal);
-                  if (this.REACTION[action]) {
+                  const overrideConfig = this.formItem.override_config || {};
+                  const reaction = this.formItem.reaction[action];
+                  if (reaction && !this.$utils.isEmpty(reaction) && this.isConditionDataChange(action, reaction, newVal, oldVal, this.formItem.uuid)) {
+                    const result = this.executeReaction(reaction, newVal, oldVal);
+                    if (this.REACTION[action]) {
                     //联动操作
-                    this.REACTION[action]({overrideConfig: overrideConfig, reaction: reaction, result: result, view: this});
+                      this.REACTION[action]({overrideConfig: overrideConfig, reaction: reaction, result: result, view: this});
+                    }
                   }
                 }
-              }
-              if (this.formItem.config && this.formItem.config.isHide && this.formItem.config.isRequired) {
+                if (this.formItem.config && this.formItem.config.isHide && this.formItem.config.isRequired) {
                 // 拿到隐藏+必填表单uuid
-                this.$emit('updateHiddenComponentList', newVal, this.formItem.uuid);
-              }
-              this.$forceUpdate();
+                  this.$emit('updateHiddenComponentList', newVal, this.formItem.uuid);
+                }
+                this.$forceUpdate();
+              });
             },
-            { deep: true, immediate: true }
+            { immediate: true }
           );
         }
       }
@@ -457,7 +461,7 @@ export default {
   computed: {
     //如果reaction直接监听formData，由于都是同一个对象，所以watch无法获取前后值变化，需要用此计算属性转换一下数据
     formDataForWatch() {
-      return JSON.parse(JSON.stringify(this.formData));
+      return JSON.stringify(this.formData);
     },
     //由于condition的valueList类型是数组，所以不能直接在script中以字符串的方式复制
     conditionData() {
