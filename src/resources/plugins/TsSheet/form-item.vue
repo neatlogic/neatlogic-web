@@ -129,6 +129,12 @@ export default {
     ...formItems,
     CustomItem: () => import('./form/component/customitem.vue')
   },
+  inject: {
+    enqueueReaction: {
+      from: 'enqueueReaction',
+      default: null
+    }
+  },
   mixins: [conditionMixin],
   props: {
     needLabel: { type: Boolean, default: false }, //是否需要展示label，一般用在移动端或子组件
@@ -266,8 +272,7 @@ export default {
           this.$watch(
             'formDataForWatch',
             (newValue, oldValue) => {
-              this.$parent.enqueueReaction(() => {
-                console.log('执行单个交互');
+              this.enqueueReaction(() => {
                 const newVal = newValue && JSON.parse(newValue);
                 const oldVal = oldValue && JSON.parse(oldValue);
                 for (let action in this.formItem.reaction) {

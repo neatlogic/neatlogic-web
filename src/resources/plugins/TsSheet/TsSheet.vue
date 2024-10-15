@@ -422,6 +422,11 @@ export default {
   components: {
     FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
+  provide() {
+    return {
+      enqueueReaction: this.enqueueReaction
+    };
+  },
   mixins: [conditionMixin],
   props: {
     disabled: {
@@ -554,11 +559,10 @@ export default {
       if (!this.isDoingReaction) {
         this.isDoingReaction = true;
         // 在下一个事件循环中统一处理
-        this.$nextTick(this.executeReaction);
+        this.$nextTick(this.executeReactions);
       }
     },
-    executeReaction() {
-      console.log('开始执行所有交互');
+    executeReactions() {
       // 执行所有收集到的更新
       this.reactionFnQueue.forEach(fn => fn());
       this.reactionFnQueue = [];
