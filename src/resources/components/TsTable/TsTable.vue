@@ -10,14 +10,14 @@
       <div
         v-if="fixedHeader"
         ref="tabletop"
-        :style="setTop(scrollbarWidth, scrollLeft)"
+        :style="setTopStyle"
         class="bg-table"
       >
         <table class="table-top tstable-body" :style="setLayout" :class="{ fixtop: scrollTop && scrollTop > 0 }">
-          <ColGroup :list="getColWidth(columnList, thList, tbodyWidthList)" :canResize="canResize"></ColGroup>
+          <ColGroup :list="colsList" :canResize="canResize"></ColGroup>
           <THead
             :columnList="columnList"
-            :list="getshowList(thList)"
+            :list="showThList"
             :keyName="keyName"
             :theme="theme"
             :sortList="sortList"
@@ -39,11 +39,11 @@
             </template>
           </THead>
           <TBody
-            v-if="getshowList(thList).length > 0 && tbodyList.length > 0"
+            v-if="showThList.length > 0 && tbodyList.length > 0"
             :tbodyList="tbodyList"
             :columnList="columnList"
-            :colsList="getColWidth(columnList, thList, tbodyWidthList)"
-            :theadList="getshowList(thList)"
+            :colsList="colsList"
+            :theadList="showThList"
             :selectList="selectedIndexList"
             :canDrag="canDrag"
             :canSelectRow="canSelectRow"
@@ -63,7 +63,7 @@
             @getTbodyWidth="getTbodyWidth"
             @updateTbodyList="updateTbodyList"
           >
-            <template v-for="hitem in getshowList(thList)" :slot="hitem.key" slot-scope="{ row }">
+            <template v-for="hitem in showThList" :slot="hitem.key" slot-scope="{ row }">
               <slot :name="hitem.key" :row="row"></slot>
             </template>
             <template v-if="canExpand" slot="folder" slot-scope="{ row }">
@@ -72,7 +72,7 @@
           </TBody>
           <tbody v-else>
             <tr>
-              <td :colspan="getshowList(thList).length || 0" class="text-center">
+              <td :colspan="showThList.length || 0" class="text-center">
                 <slot name="noDataTip">
                   <div class="text-tip">{{ noDataText }}</div>
                 </slot>
@@ -84,21 +84,19 @@
       <!-- 用于做固定的表头_end -->
       <div
         ref="tablemain"
-        v-scrollHidden
-        v-custom-scrollbar
         class="tstable-main bg-op"
         :class="{ 'table-radius-main': !rowNum || !pageSize || !showPager }"
-        :style="setTableheight(tableheight)"
+        :style="setTableheight"
         @scroll.stop="scrollTable($event)"
         @mouseenter.stop="caculateWidth"
         @mousewheel.stop
       >
         <table ref="tstable" class="table-main tstable-body" :style="setLayout">
-          <ColGroup :list="getColWidth(columnList, thList, tbodyWidthList)"></ColGroup>
+          <ColGroup :list="colsList"></ColGroup>
           <THead
             :theme="theme"
             :columnList="columnList"
-            :list="getshowList(thList)"
+            :list="showThList"
             :keyName="keyName"
             :sortList="sortList"
             :tbodyList="tbodyList"
@@ -122,11 +120,11 @@
             </template>
           </THead>
           <TBody
-            v-if="getshowList(thList).length > 0 && tbodyList.length > 0"
+            v-if="showThList.length > 0 && tbodyList.length > 0"
             :columnList="columnList"
-            :colsList="getColWidth(columnList, thList, tbodyWidthList)"
+            :colsList="colsList"
             :tbodyList="tbodyList"
-            :theadList="getshowList(thList)"
+            :theadList="showThList"
             :selectList="selectedIndexList"
             :canDrag="canDrag"
             :theme="theme"
@@ -149,7 +147,7 @@
             @getTbodyWidth="getTbodyWidth"
             @updateTbodyList="updateTbodyList"
           >
-            <template v-for="hitem in getshowList(thList)" :slot="hitem.key" slot-scope="{ row, index }">
+            <template v-for="hitem in showThList" :slot="hitem.key" slot-scope="{ row, index }">
               <slot
                 v-if="hitem.type"
                 :name="hitem.key"
@@ -220,7 +218,7 @@
           </TBody>
           <tbody v-else>
             <tr>
-              <td :colspan="getshowList(thList).length || 0" class="text-center">
+              <td :colspan="showThList.length || 0" class="text-center">
                 <slot name="noDataTip">
                   <div class="text-tip">{{ noDataText }}</div>
                 </slot>
@@ -726,11 +724,14 @@ export default {
       this.$refs['tablemain'].scrollTop = st;
     },
     scrollTable: function(e) {
-      let sTop = e.srcElement.scrollTop;
-      let sLeft = e.srcElement.scrollLeft;
-      this.scrollTop = sTop;
-      this.scrollLeft = sLeft;
-      this.$emit('scroll', sTop);
+      if (this.fixedHeader) { 
+        //数据大，会导致卡顿
+        let sTop = e.srcElement.scrollTop;
+        let sLeft = e.srcElement.scrollLeft;
+        this.scrollTop = sTop;
+        this.scrollLeft = sLeft;
+        this.$emit('scroll', sTop);
+      }
     },
     unActiveAutoScroll: function() {
       if (this.scrollTimmer) {
@@ -1091,30 +1092,27 @@ export default {
     }
   },
   computed: {
-    getshowList() {
-      return function(list) {
-        let showList = [];
-        if (list && list.length > 0) {
-          showList = list.filter(th => {
-            return th.isShow || th.isShow == undefined;
-          });
-        }
-        return showList;
-      };
+    showThList() {
+      let showList = [];
+      if (this.thList && this.thList.length > 0) {
+        showList = this.thList.filter(th => {
+          return th.isShow || th.isShow == undefined;
+        });
+      }
+      return showList;
     },
     setTableheight() {
-      return function(tableheight) {
-        if (this.fixedHeader) {
-          //38是头部高度
-          let pageHeight = 0;
-          if (this.$refs.tablepage) {
-            pageHeight = this.$refs.tablepage.clientHeight;
-          }
-          return { maxHeight: typeof tableheight == 'number' ? tableheight - 38 - pageHeight + 'px' : tableheight };
-        } else {
-          return null;
+      const tableheight = this.tableheight;
+      if (this.fixedHeader) {
+        //38是头部高度
+        let pageHeight = 0;
+        if (this.$refs.tablepage) {
+          pageHeight = this.$refs.tablepage.clientHeight;
         }
-      };
+        return { maxHeight: typeof tableheight == 'number' ? tableheight - 38 - pageHeight + 'px' : tableheight };
+      } else {
+        return null;
+      }
     },
     fixLeft() {
       let translateStyle = '';
@@ -1161,49 +1159,50 @@ export default {
       }
       return classlist;
     },
-    setTop() {
-      return function(right, left) {
-        let styles = {};
-        if (right) {
-          Object.assign(styles, {
-            paddingRight: right + 'px'
-          });
-        }
-        if (left) {
-          Object.assign(styles, {
-            marginLeft: -left + 'px'
-          });
-        }
-        return styles;
-      };
+    setTopStyle() {
+      const right = this.scrollbarWidth;
+      const left = this.scrollLeft;
+
+      let styles = {};
+      if (right) {
+        Object.assign(styles, {
+          paddingRight: right + 'px'
+        });
+      }
+      if (left) {
+        Object.assign(styles, {
+          marginLeft: -left + 'px'
+        });
+      }
+      return styles;
     },
     setLayout() {
       return {
         'table-layout': this.layout || ''
       };
     },
-    getColWidth() {
-      return function(columnList, list, tbodyWidthList) {
-        let thList = [];
-        let showList = [];
-        if (columnList && columnList.length > 0) {
-          thList.push({ key: 'columnWidth' });
-        }
-        if (this.canDrag) {
-          thList.push({ key: 'dragWidth', width: 30 });
-        }
-        if (list && list.length > 0) {
-          showList = list.filter(th => {
-            return th.isShow || th.isShow == undefined;
-          });
-        }
-        if (showList && showList.length) {
-          showList.forEach(s => {
-            thList.push({ key: s.key + 'Width', width: s.width && s.width > 1 ? s.width : s.key == 'selection' ? 40 : null });
-          });
-        }
-        return thList;
-      };
+    colsList() {
+      const columnList = this.columnList; 
+      const list = this.thList;
+      let thList = [];
+      let showList = [];
+      if (columnList && columnList.length > 0) {
+        thList.push({ key: 'columnWidth' });
+      }
+      if (this.canDrag) {
+        thList.push({ key: 'dragWidth', width: 30 });
+      }
+      if (list && list.length > 0) {
+        showList = list.filter(th => {
+          return th.isShow || th.isShow == undefined;
+        });
+      }
+      if (showList && showList.length) {
+        showList.forEach(s => {
+          thList.push({ key: s.key + 'Width', width: s.width && s.width > 1 ? s.width : s.key == 'selection' ? 40 : null });
+        });
+      }
+      return thList;
     }
   },
   watch: {

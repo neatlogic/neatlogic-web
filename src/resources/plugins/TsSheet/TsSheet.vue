@@ -886,8 +886,9 @@ export default {
       }
     },
     scrollContainer(event) {
-      this.scrollTop = event.target.scrollTop;
-      this.scrollLeft = event.target.scrollLeft;
+      //导致页面卡顿，暂时屏蔽
+      // this.scrollTop = event.target.scrollTop;
+      // this.scrollLeft = event.target.scrollLeft;
     },
     //组件变化时修正单元格尺寸
     resizeCell(row, col, needReset) {
@@ -1074,39 +1075,44 @@ export default {
       if (needWatch && this.formData) {
         this.$watch(
           'formDataForWatch',
-          (newVal, oldVal) => {
-            for (let key in this.config.reaction) {
-              this.config.reaction[key].forEach(reaction => {
-                if (this.mode !== 'edit' && reaction.rows && reaction.rows.length > 0) {
-                  const reactionResult = this.executeReaction(reaction, newVal, oldVal);
-                  if (key === 'hiderow') {
-                    if (reactionResult) {
-                      reaction.rows.forEach(row => {
-                        this.hideRow(row);
-                      });
-                    } else {
-                      reaction.rows.forEach(row => {
-                        this.displayRow(row);
-                      });
-                    }
-                  } else if (key === 'displayrow') {
-                    if (reactionResult) {
-                      reaction.rows.forEach(row => {
-                        this.displayRow(row);
-                      });
-                    } else {
-                      reaction.rows.forEach(row => {
-                        this.hideRow(row);
-                      });
+          (newValue, oldValue) => {
+            this.$nextTick(() => {
+              const newVal = newValue && JSON.parse(newValue);
+              const oldVal = oldValue && JSON.parse(oldValue);
+
+              for (let key in this.config.reaction) {
+                this.config.reaction[key].forEach(reaction => {
+                  if (this.mode !== 'edit' && reaction.rows && reaction.rows.length > 0) {
+                    const reactionResult = this.executeReaction(reaction, newVal, oldVal);
+                    if (key === 'hiderow') {
+                      if (reactionResult) {
+                        reaction.rows.forEach(row => {
+                          this.hideRow(row);
+                        });
+                      } else {
+                        reaction.rows.forEach(row => {
+                          this.displayRow(row);
+                        });
+                      }
+                    } else if (key === 'displayrow') {
+                      if (reactionResult) {
+                        reaction.rows.forEach(row => {
+                          this.displayRow(row);
+                        });
+                      } else {
+                        reaction.rows.forEach(row => {
+                          this.hideRow(row);
+                        });
+                      }
                     }
                   }
-                }
-              });
-            }
-            // 根据隐藏行，获取隐藏组件
-            this.$emit('updateFormValue', newVal, this.getHiddenComponentsByHideCondition());
+                });
+              }
+              // 根据隐藏行，获取隐藏组件
+              this.$emit('updateFormValue', newVal, this.getHiddenComponentsByHideCondition());
+            });
           },
-          { deep: true, immediate: true }
+          { immediate: true }
         );
       }
     },
@@ -1905,7 +1911,7 @@ export default {
     },
     //如果reaction直接监听formData，由于都是同一个对象，所以watch无法获取前后值变化，需要用此计算属性转换一下数据
     formDataForWatch() {
-      return JSON.parse(JSON.stringify(this.formData));
+      return JSON.stringify(this.formData);
     },
     //由于condition的valueList类型是数组，所以不能直接在script中以字符串的方式复制
     conditionData() {
