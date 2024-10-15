@@ -31,7 +31,7 @@ export default {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
-    level: { type: Number }
+    id: { type: Number }
   },
   data() {
     return {
@@ -40,7 +40,7 @@ export default {
         maskClose: false,
         isShow: true,
         title:
-          this.level == null
+          this.id == null
             ? this.$t('dialog.title.addtarget', {
               target: this.$t('term.cmdb.alertlevel')
             })
@@ -56,12 +56,34 @@ export default {
           type: 'number',
           min: 1,
           label: this.$t('page.level'),
-          validateList: ['required']
+          validateList: ['required'],
+          desc: '全局唯一'
         },
         {
           name: 'name',
           type: 'text',
+          //readonly: !!this.id,
+          label: this.$t('page.uniquekey'),
+          maxlength: 50,
+          validateList: ['required', 'enchar']
+        },
+        {
+          name: 'type',
+          type: 'radio',
+          label: '类型',
+          //readonly: !!this.id,
+          dataList: [
+            { value: 'inspect', text: '巡检状态' },
+            { value: 'monitor', text: '监控状态' }
+          ],
+          validateList: ['required'],
+          desc: '同一类型下唯一标识不能重复'
+        },
+        {
+          name: 'label',
+          type: 'text',
           label: this.$t('page.name'),
+          maxlength: 100,
           validateList: ['required']
         },
         {
@@ -86,8 +108,8 @@ export default {
   destroyed() {},
   methods: {
     getAlertLevel() {
-      if (this.level) {
-        this.$api.cmdb.cientity.getAlertLevel(this.level).then(res => {
+      if (this.id) {
+        this.$api.cmdb.cientity.getAlertLevelById(this.id).then(res => {
           this.alertLevelData = res.Return;
         });
       }

@@ -378,7 +378,7 @@ let routerArr = [
     }
   },
   {
-    path: '/alertlevel/manage',
+    path: '/alertlevel-manage',
     name: 'alertlevel-manage',
     component: alertLevelManage,
     meta: {

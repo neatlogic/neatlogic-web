@@ -103,14 +103,14 @@ const cientity = {
   searchAlertLevel() {
     return axios.post('/api/rest/cmdb/alertlevel/search', {});
   },
-  getAlertLevel(level) {
-    return axios.post('/api/rest/cmdb/alertlevel/get', { level: level });
+  getAlertLevelById(id) {
+    return axios.post('/api/rest/cmdb/alertlevel/get', { id: id });
   },
   saveAlertLevel(alertLevel) {
     return axios.post('/api/rest/cmdb/alertlevel/save', alertLevel);
   },
-  deleteAlertLevel(level) {
-    return axios.post('/api/rest/cmdb/alertlevel/delete', { level: level });
+  deleteAlertLevel(id) {
+    return axios.post('/api/rest/cmdb/alertlevel/delete', { id: id });
   }
 };
 

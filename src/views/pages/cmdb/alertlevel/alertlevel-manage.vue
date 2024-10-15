@@ -25,7 +25,7 @@
         </TsTable>
       </template>
     </TsContain>
-    <AlertLevelEdit v-if="isAlertLevelShow" :level="currentLevel" @close="closeAlertLevel"></AlertLevelEdit>
+    <AlertLevelEdit v-if="isAlertLevelShow" :id="currentLevelId" @close="closeAlertLevel"></AlertLevelEdit>
   </div>
 </template>
 <script>
@@ -39,11 +39,13 @@ export default {
   data() {
     return {
       isAlertLevelShow: false,
-      currentLevel: null,
+      currentLevelId: null,
       alertLevelData: {
         theadList: [
           { key: 'level', title: this.$t('page.level') },
-          { key: 'name', title: this.$t('page.name') },
+          { key: 'name', title: this.$t('page.uniquekey') },
+          { key: 'label', title: this.$t('page.name') },
+          { key: 'typeText', title: this.$t('page.type') },
           { key: 'color', title: this.$t('page.color') },
           { key: 'action', title: '' }
         ]
@@ -65,15 +67,15 @@ export default {
   methods: {
     addAlertLevel() {
       this.isAlertLevelShow = true;
-      this.currentLevel = null;
+      this.currentLevelId = null;
     },
     deleteAlertLevel(row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.cmdb.alertlevel')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('term.cmdb.alertlevel') }),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.cmdb.cientity.deleteAlertLevel(row.level).then(res => {
+          this.$api.cmdb.cientity.deleteAlertLevel(row.id).then(res => {
             vnode.isShow = false;
             this.$Message.success(this.$t('message.deletesuccess'));
             this.searchAlertLevel();
@@ -83,7 +85,7 @@ export default {
     },
     editAlertLevel(row) {
       this.isAlertLevelShow = true;
-      this.currentLevel = row.level;
+      this.currentLevelId = row.id;
     },
     closeAlertLevel(needRefresh) {
       this.isAlertLevelShow = false;
