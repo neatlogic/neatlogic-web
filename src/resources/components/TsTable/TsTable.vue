@@ -33,7 +33,11 @@
             @selectAll="selectAll"
             @switchStatus="switchStatus"
             @headerTitleOperation="headerTitleOperation"
-          ></THead>
+          >
+            <template v-if="canDrag" slot="drag-title">
+              <slot name="drag-title"></slot>
+            </template>
+          </THead>
           <TBody
             v-if="getshowList(thList).length > 0 && tbodyList.length > 0"
             :tbodyList="tbodyList"
@@ -112,7 +116,11 @@
             @selectAll="selectAll"
             @switchStatus="switchStatus"
             @headerTitleOperation="headerTitleOperation"
-          ></THead>
+          >
+            <template v-if="canDrag" slot="drag-title">
+              <slot name="drag-title"></slot>
+            </template>
+          </THead>
           <TBody
             v-if="getshowList(thList).length > 0 && tbodyList.length > 0"
             :columnList="columnList"
