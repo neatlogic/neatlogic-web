@@ -514,7 +514,9 @@ export default {
       formExtendData: {}, //自定义组件消费数据
       hideComponentList: [], //底部隐藏组件列表
       hideComponentError: {},
-      currentHideItem: null //选中隐藏的组件
+      currentHideItem: null, //选中隐藏的组件
+      reactionFnQueue: [],
+      isDoingReaction: false
     };
   },
   beforeCreate() {
@@ -547,6 +549,22 @@ export default {
   },
   destroyed() {},
   methods: {
+    enqueueReaction(updateFunction) {
+      this.reactionFnQueue.push(updateFunction);
+      if (!this.isDoingReaction) {
+        this.isDoingReaction = true;
+        // 在下一个事件循环中统一处理
+        this.$nextTick(this.executeReaction);
+      }
+    },
+    executeReaction() {
+      console.log('开始执行所有交互');
+      // 执行所有收集到的更新
+      this.reactionFnQueue.forEach(fn => fn());
+      this.reactionFnQueue = [];
+      this.isDoingReaction = false;
+      this.$forceUpdate();
+    },
     cutCell() {
       if (this.handlerCell) {
         this.copyedCell = {};
