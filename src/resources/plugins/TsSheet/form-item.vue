@@ -266,7 +266,8 @@ export default {
           this.$watch(
             'formDataForWatch',
             (newValue, oldValue) => {
-              this.$nextTick(() => {
+              this.$parent.enqueueReaction(() => {
+                console.log('执行单个交互');
                 const newVal = newValue && JSON.parse(newValue);
                 const oldVal = oldValue && JSON.parse(oldValue);
                 for (let action in this.formItem.reaction) {
@@ -285,7 +286,8 @@ export default {
                 // 拿到隐藏+必填表单uuid
                   this.$emit('updateHiddenComponentList', newVal, this.formItem.uuid);
                 }
-                this.$forceUpdate();
+                //此语句移到了TsSheet的executeReaction方法中，批量执行完毕后再强制重绘
+                //this.$forceUpdate();
               });
             },
             { immediate: true }
