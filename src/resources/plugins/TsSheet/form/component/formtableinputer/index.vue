@@ -92,13 +92,14 @@
 <script>
 import base from '../base.vue';
 import validmixin from '../common/validate-mixin.js';
+import TsTable from '@/resources/components/TsTable/TsTable.vue'; //不能使用异步引入，会导致tssheet列高错位
 import ExcelJS from 'exceljs';
 import FileSaver from 'file-saver';
 
 export default {
   name: '',
   components: {
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsTable,
     FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
   extends: base,
@@ -126,8 +127,10 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.init();
-    this.getConditionFormItemList();
+    if (this.mode !== 'edit') {
+      this.init();
+      this.getConditionFormItemList();
+    }
   },
   beforeMount() {},
   mounted() {
