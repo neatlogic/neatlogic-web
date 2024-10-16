@@ -78,7 +78,10 @@
             :isCustomValue="true"
             :isClearSpecifiedAttr="isClearSpecifiedAttr"
             style="min-width:130px"
-            @change="(val)=>changeRow(val,extra.uuid,row)"
+            @change="(val)=>changeRow(val,extra.uuid, row)"
+            @updateCurrentRow="(data)=>{
+              updateCurrentRow(row, data);
+            }"
           ></FormItem>
         </div>
       </template>
@@ -89,7 +92,7 @@
 <script>
 import base from '../base.vue';
 import validmixin from '../common/validate-mixin.js';
-import TsTable from '@/resources/components/TsTable/TsTable.vue';
+import TsTable from '@/resources/components/TsTable/TsTable.vue'; //不能使用异步引入，会导致tssheet列高错位
 import ExcelJS from 'exceljs';
 import FileSaver from 'file-saver';
 
@@ -124,8 +127,10 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.init();
-    this.getConditionFormItemList();
+    if (this.mode !== 'edit') {
+      this.init();
+      this.getConditionFormItemList();
+    }
   },
   beforeMount() {},
   mounted() {
@@ -194,13 +199,6 @@ export default {
           this.tableData.tbodyList.splice(i, 1);
         }
       }
-    },
-    getSelectedData(itemList) {
-      const valueList = this.$utils.deepClone(itemList);
-      valueList.forEach(d => {
-        this.$delete(d, '_selected');
-      });
-      this.setValue(itemList);
     },
     addData() {
       const data = { uuid: this.$utils.setUuid() };
@@ -671,6 +669,13 @@ export default {
           Object.assign(item, obj);
         });
       }
+    },
+    updateCurrentRow(row, val) {
+      this.$nextTick(() => {
+        if (val) {
+          Object.assign(row, val);
+        }
+      });
     }
   },
   filter: {},
