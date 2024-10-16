@@ -239,7 +239,8 @@
     "showrellabel": "Display relationship type",
     "exportformodel": "Export as Model",
     "exportforexcel": "Export to Excel",
-    "isterm": "Is it a keyword"
+    "isterm": "Is it a keyword",
+    "batchimport": "Batch upload"
   },
   "process": {
     "workordercenter": "Work Center",
