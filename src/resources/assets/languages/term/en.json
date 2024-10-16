@@ -1315,7 +1315,8 @@
     "expressionplaceholder": "Please fill in the ES5 script and return the value of the expression as' value '. Example:",
     "matrixsaveconfirm": "The matrix has been referenced, are you sure to make the modifications?",
     "linkageassignment": "Linkage assignment",
-    "conditionassignment": "Conditional assignment"
+    "conditionassignment": "Conditional assignment",
+    "passworkauth": "Original password authorization"
   },
   "knowledge": {
     "document": "Document",

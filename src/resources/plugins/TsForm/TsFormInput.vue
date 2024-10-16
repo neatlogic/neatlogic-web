@@ -21,6 +21,7 @@
         :clearable="getClearable"
         :showRemain="showRemain"
         :suffix="suffix"
+        :icon="icon"
         :search="search"
         :style="setThemeColor()"
         :autocomplete="type == 'password'? 'new-password': 'off'"
@@ -32,6 +33,7 @@
         @on-keydown="onEvent($event, 'keydown')"
         @on-search="onSearchValue"
         @on-clear="onClearValue"
+        @on-click="onClick"
       >
         <span v-if="prepend" slot="prepend" v-html="prepend"></span>
         <span v-if="append" slot="append" v-html="append"></span>
@@ -118,7 +120,9 @@ export default {
     },
     prepend: String,
     append: String,
+    prefix: String,
     suffix: String,
+    icon: String,
     rows: {
       type: Number,
       default: 5
@@ -244,6 +248,12 @@ export default {
     },
     focus() {
       this.$refs.input && this.$refs.input.focus();
+    },
+    handleToggleShowPassword() {
+      this.$refs.input && this.$refs.input.handleToggleShowPassword();
+    },
+    onClick() {
+      this.$emit('clickIcon');
     }
   },
   computed: {
