@@ -9,9 +9,24 @@
             :label="getReactionLabel(key)"
             :name="key"
           >
+            <div v-if="key === 'filter'">
+              <ReactionFilter
+                :ref="'condition_' + key"
+                :value="r"
+                :martixAttrList="martixAttrList"
+                :formItem="formItemLocal"
+                :formItemList="formItemList"
+                @input="
+                  rule => {
+                    setReaction(key, rule);
+                  }
+                "
+              ></ReactionFilter>
+            </div>
             <ConditionGroup
-              v-if="key !== 'filter'"
+              v-else
               :ref="'condition_' + key"
+              :reactionKey="key"
               :value="r"
               :formItemList="formItemList"
               :formItem="formItem"
@@ -75,20 +90,6 @@
                 }"
               ></TsFormSwitch>-->
             </div>
-            <div v-else-if="key === 'filter'">
-              <ReactionFilter
-                :ref="'condition_' + key"
-                :value="r"
-                :martixAttrList="martixAttrList"
-                :formItem="formItemLocal"
-                :formItemList="formItemList"
-                @input="
-                  rule => {
-                    setReaction(key, rule);
-                  }
-                "
-              ></ReactionFilter>
-            </div>
             <div v-else-if="key === 'emit'">
               <div class="mt-sm mb-sm text-grey">{{ $t('page.triggerevent') }}</div>
               <TsFormRadio
@@ -108,6 +109,20 @@
                 "
               ></TsFormRadio>
             </div>
+            <div v-else-if="key === 'setValueOther'">
+              <ReactionSetValueOtherSetting
+                v-if="formItemLocal && !$utils.isEmpty(r)"
+                ref="setValueOther_valueList"
+                :value="r.valueList"
+                :hiddenFieldList="formItemLocal.config.hiddenFieldList || []"
+                :attrList="formItemList"
+                :currentAttrUuid="formItemLocal.uuid"
+                @change="
+                  val => {
+                    $set(r, 'valueList', val);
+                  }"
+              ></ReactionSetValueOtherSetting>
+            </div>
           </TabPane>
         </Tabs>
       </template>
@@ -123,7 +138,9 @@ export default {
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
     FormItem: () => import('./form-item.vue'),
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    ReactionSetValueOtherSetting: () => import('./form-item-reaction-setvalueother-setting.vue')
+
   },
   props: {
     formItem: { type: Object }, //当前表单组件
@@ -138,13 +155,14 @@ export default {
         display: this.$t('page.display'),
         readonly: this.$t('page.readonly'),
         disable: this.$t('page.disable'),
-        setvalue: this.$t('term.framework.linkageassignment'),
+        setvalue: this.$t('term.framework.conditionassignment'),
         filter: this.$t('page.filters'),
         hiderow: this.$t('term.framework.hiderow'),
         displayrow: this.$t('term.framework.displayrow'),
         emit: this.$t('page.emit'),
         required: this.$t('page.require'),
-        clearValue: this.$t('page.clear')
+        clearValue: this.$t('page.clear'),
+        setValueOther: this.$t('term.framework.linkageassignment')
       },
       emitTypeList: emitTypeList,
       dialogConfig: {
@@ -238,6 +256,17 @@ export default {
                 this.$set(this.error, key.replace('condition_', ''), true);
               }
             });
+          } else if (key === 'setValueOther_valueList') {
+            let setValueOtherValueList = null;
+            if (this.$refs[key] instanceof Array) {
+              setValueOtherValueList = this.$refs[key][0];
+            } else {
+              setValueOtherValueList = this.$refs[key];
+            }
+            if (setValueOtherValueList && !setValueOtherValueList.valid()) {
+              isValid = false;
+              this.$set(this.reactionError, 'setValueOther', true);
+            }
           }
         }
       }

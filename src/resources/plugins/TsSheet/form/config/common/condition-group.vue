@@ -127,7 +127,8 @@ export default {
     formItem: {
       type: Object,
       default: () => {}
-    }
+    },
+    reactionKey: { type: String }
   },
   data() {
     return {
@@ -334,7 +335,12 @@ export default {
   filter: {},
   computed: {
     hasValueFormItemList() {
-      let list = this.formItemList.filter(d => d.hasValue && !this.filterComponentList.includes(d.handler));
+      let list = [];
+      if (this.reactionKey === 'setValueOther') {
+        list = this.formItemList.filter(d => d.uuid === this.formItem.uuid && !this.filterComponentList.includes(d.handler));
+      } else {
+        list = this.formItemList.filter(d => d.hasValue && (!this.formItem || d.uuid != this.formItem.uuid) && !this.filterComponentList.includes(d.handler));
+      }
       let newList = [];
       list.forEach(item => {
         let obj = {
