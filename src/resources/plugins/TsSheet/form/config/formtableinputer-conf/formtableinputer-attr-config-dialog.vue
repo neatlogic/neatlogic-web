@@ -689,7 +689,6 @@ export default {
         isValid = false;
       }
       if (isValid) {
-        console.log('this.propertyLocal', this.propertyLocal);
         this.$emit('close', this.propertyLocal);
       }
     },

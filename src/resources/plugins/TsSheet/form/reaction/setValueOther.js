@@ -11,6 +11,8 @@ export default ({ reaction, result, view }) => {
           view.$set(currentFormData, item.attrUuid, item.value);
         }
       });
+      // 更新当前行数据
+      view.$emit('updateCurrentRow', currentFormData);
       view.addExecuteCount('setValueOther');
     }
   }
