@@ -278,6 +278,7 @@
                 <ConditionGroup
                   v-else
                   :ref="'formitem_' + key"
+                  :reactionKey="key"
                   :value="r"
                   :formItemList="allFormItemList"
                   :formItem="propertyLocal"
@@ -336,14 +337,18 @@
                   ></FormItem>
                 </div>
                 <div v-else-if="key === 'setValueOther'">
-                  <ReactionSetvalueSetting
+                  <ReactionSetValueOtherSetting
                     v-if="propertyLocal && propertyLocal.config.hiddenFieldList && !$utils.isEmpty(r)"
                     ref="setValueOther_valueList"
                     :value="r.valueList"
                     :hiddenFieldList="propertyLocal.config.hiddenFieldList"
                     :attrList="formItemConfig.dataConfig"
                     :currentAttrUuid="propertyLocal.uuid"
-                  ></ReactionSetvalueSetting>
+                    @change="
+                      val => {
+                        $set(propertyLocal.reaction[key], 'valueList', val);
+                      }"
+                  ></ReactionSetValueOtherSetting>
                 </div>
               </TabPane>
             </Tabs>
@@ -375,8 +380,7 @@ export default {
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
     FormtableinputDataSource: () => import('./formtableinput-data-source.vue'),
     ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue'),
-    ReactionSetvalueSetting: () => import('./reaction-setvalue-setting.vue')
-
+    ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue')
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -620,7 +624,7 @@ export default {
         }
       }
       if (this.propertyLocal.handler != 'formtable') {
-        this.$set(this.reactionName, 'setvalue', this.$t('term.framework.linkageassignment'));
+        this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
         this.$set(this.propertyLocal.reaction, 'setvalue', this.propertyLocal.reaction.setvalue || {});
       }
     },
@@ -685,10 +689,6 @@ export default {
         isValid = false;
       }
       if (isValid) {
-        if (this.$refs.setValueOther_valueList) {
-          const valueList = this.$refs.setValueOther_valueList[0].save();
-          this.$set(this.propertyLocal.reaction.setValueOther, 'valueList', valueList);
-        }
         this.$emit('close', this.propertyLocal);
       }
     },
@@ -744,7 +744,7 @@ export default {
           this.$set(this.propertyLocal, 'isDynamicValue', false);
         }
         if (val != 'formtable') {
-          this.$set(this.reactionName, 'setvalue', this.$t('term.framework.linkageassignment'));
+          this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
           this.$set(this.propertyLocal.reaction, 'setvalue', {});
         } else {
           this.$delete(this.reactionName, 'setvalue');
