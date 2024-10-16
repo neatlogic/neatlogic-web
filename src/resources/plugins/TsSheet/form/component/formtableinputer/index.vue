@@ -68,7 +68,7 @@
             :ref="'formitem_' + extra.uuid + '_' + index"
             :formItem="getExtraFormItem(extra, row)"
             :value="getDefaultValue(extra.uuid, row)"
-            :formData="{...$utils.deepClone(formData || {}), ...row}"
+            :formData="row"
             :formItemList="$utils.deepClone(extraList.concat(formItemList))"
             :showStatusIcon="false"
             mode="read"
@@ -79,9 +79,6 @@
             :isClearSpecifiedAttr="isClearSpecifiedAttr"
             style="min-width:130px"
             @change="(val)=>changeRow(val,extra.uuid, row)"
-            @updateCurrentRow="(data)=>{
-              updateCurrentRow(row, data);
-            }"
           ></FormItem>
         </div>
       </template>
@@ -669,14 +666,14 @@ export default {
           Object.assign(item, obj);
         });
       }
-    },
-    updateCurrentRow(row, val) {
-      this.$nextTick(() => {
-        if (val) {
-          Object.assign(row, val);
-        }
-      });
     }
+    // updateCurrentRow(row, val) {
+    //   this.$nextTick(() => {
+    //     if (val) {
+    //       Object.assign(row, val);
+    //     }
+    //   });
+    // }
   },
   filter: {},
   computed: {

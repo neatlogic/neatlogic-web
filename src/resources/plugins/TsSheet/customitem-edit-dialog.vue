@@ -351,7 +351,7 @@ export default {
         { value: 'display', text: this.$t('page.display') },
         { value: 'readonly', text: this.$t('page.readonly') },
         { value: 'disable', text: this.$t('page.disable') },
-        { value: 'setvalue', text: this.$t('term.framework.linkageassignment') },
+        { value: 'setvalue', text: this.$t('term.framework.conditionassignment') },
         { value: 'filter', text: this.$t('page.filters') },
         { value: 'emit', text: this.$t('page.emit') }
       ],
