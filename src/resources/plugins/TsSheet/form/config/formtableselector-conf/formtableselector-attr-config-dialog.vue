@@ -357,7 +357,7 @@ export default {
         disable: this.$t('page.disable'),
         required: this.$t('page.require'),
         filter: this.$t('page.filters'),
-        clearValue: this.$t('page.cleardata')
+        clearValue: this.$t('page.clear')
       },
       reactionError: {}, //交互异常信息
       errorMap: {},
