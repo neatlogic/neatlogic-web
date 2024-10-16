@@ -35,6 +35,7 @@ export default {
     filter: {}, 
     emit: {},
     required: {},
-    clearValue: {}
+    clearValue: {},
+    setValueOther: {}
   }
 };

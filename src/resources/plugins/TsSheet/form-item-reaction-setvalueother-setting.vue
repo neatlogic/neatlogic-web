@@ -1,14 +1,14 @@
 <template>
-  <div>
-    <TsRow v-if="list.length" :gutter="8" class="text-tip pt-sm">
+  <div class="pt-sm">
+    <TsRow v-if="list.length" :gutter="8" class="text-tip pb-sm">
       <Col span="8">
-        表头属性
+        {{ $t('page.component') }}
       </Col>
       <Col span="4">
-        类型
+        {{ $t('page.type') }}
       </Col>
       <Col span="8">
-        常量/隐藏属性赋值
+        {{ $t('page.constant') }}/{{ $t('term.framework.hideattrassignment') }}
       </Col>
     </TsRow>
     <div v-for="(item,index) in list" :key="index" class="pb-sm">
@@ -23,6 +23,7 @@
               textName="label"
               :transfer="true"
               :validateList="validateList"
+              border="border"
             ></TsFormSelect>
           </div>
         </Col>
@@ -34,6 +35,7 @@
               :dataList="typeDataList"
               :transfer="true"
               :validateList="validateList"
+              border="border"
               @change="
                 $set(item, 'value', '');
               "
@@ -74,7 +76,7 @@
         </Col>
       </TsRow>
     </div>
-    <div class="tsfont-plus text-href" @click="addItem()">赋值</div>
+    <div class="tsfont-plus text-href" @click="addItem()">{{ $t('term.framework.assignment') }}</div>
   </div>
 </template>
 <script>
@@ -95,11 +97,11 @@ export default {
       type: Array,
       default: () => []
     },
-    hiddenFieldList: {
+    hiddenFieldList: { //隐藏字段列表
       type: Array,
       default: () => []
     },
-    attrList: {
+    attrList: { //被赋值组件列表
       type: Array,
       default: () => []
     }
@@ -124,7 +126,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.list = this.value || [];
+    this.init();
   },
   beforeUpdate() {},
   updated() {},
@@ -133,6 +135,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    init() {
+      this.list = this.$utils.deepClone(this.value) || [];
+    },
     addItem() {
       this.list.push({ attrUuid: '', type: '', value: '' });
     },
@@ -164,7 +169,7 @@ export default {
       return (attrUuid) => {
         let arr = [];
         this.attrList.forEach(item => {
-          if (item.uuid === this.currentAttrUuid) {
+          if (item.uuid === this.currentAttrUuid || item.handler !== 'formtext') {
             return;
           }
           let obj = { ...item };
@@ -182,6 +187,23 @@ export default {
       };
     }
   },
-  watch: {}
+  watch: {
+    list: {
+      handler(val) {
+        if (!this.$utils.isSame(this.value, val)) {
+          this.$emit('change', this.$utils.deepClone(val));
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
+<style lang="less" scoped>
+.btn-group {
+  height: 32px;
+  display: flex;
+  align-items: center;
+}
+</style>
