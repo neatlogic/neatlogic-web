@@ -138,13 +138,13 @@ export default {
         display: this.$t('page.display'),
         readonly: this.$t('page.readonly'),
         disable: this.$t('page.disable'),
-        setvalue: this.$t('term.framework.assignment'),
+        setvalue: this.$t('term.framework.linkageassignment'),
         filter: this.$t('page.filters'),
         hiderow: this.$t('term.framework.hiderow'),
         displayrow: this.$t('term.framework.displayrow'),
         emit: this.$t('page.emit'),
         required: this.$t('page.require'),
-        clearValue: this.$t('page.cleardata')
+        clearValue: this.$t('page.clear')
       },
       emitTypeList: emitTypeList,
       dialogConfig: {

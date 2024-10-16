@@ -568,7 +568,7 @@ export default {
     executeReactions() {
       // 执行所有收集到的更新
       console.log('开始批量处理', new Date());
-      this.reactionFnQueue.forEach(fn => fn());
+      this.reactionFnQueue.forEach(fn => fn && fn());
       this.reactionFnQueue = new Map();
       this.isDoingReaction = false;
       console.log('批量处理完毕', new Date());

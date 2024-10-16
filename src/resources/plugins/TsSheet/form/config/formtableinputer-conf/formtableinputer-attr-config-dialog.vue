@@ -418,9 +418,9 @@ export default {
         disable: this.$t('page.disable'),
         required: this.$t('page.require'),
         filter: this.$t('page.filters'),
-        clearValue: this.$t('page.cleardata'),
-        setvalue: this.$t('term.framework.assignment'),
-        setValueOther: '其他组件赋值'
+        clearValue: this.$t('page.clear'),
+        setvalue: this.$t('term.framework.conditionassignment'),
+        setValueOther: this.$t('term.framework.linkageassignment')
       },
       reactionError: {}, //交互异常信息
       errorMap: {},
@@ -620,7 +620,7 @@ export default {
         }
       }
       if (this.propertyLocal.handler != 'formtable') {
-        this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
+        this.$set(this.reactionName, 'setvalue', this.$t('term.framework.linkageassignment'));
         this.$set(this.propertyLocal.reaction, 'setvalue', this.propertyLocal.reaction.setvalue || {});
       }
     },
@@ -744,7 +744,7 @@ export default {
           this.$set(this.propertyLocal, 'isDynamicValue', false);
         }
         if (val != 'formtable') {
-          this.$set(this.reactionName, 'setvalue', this.$t('term.framework.assignment'));
+          this.$set(this.reactionName, 'setvalue', this.$t('term.framework.linkageassignment'));
           this.$set(this.propertyLocal.reaction, 'setvalue', {});
         } else {
           this.$delete(this.reactionName, 'setvalue');

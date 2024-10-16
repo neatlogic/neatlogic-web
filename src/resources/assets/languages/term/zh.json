@@ -1313,7 +1313,9 @@
     "jsscriptconversion": "js脚本转换",
     "strjoin": "字段拼接",
     "expressionplaceholder": "请填写ES5脚本，最后返回表达式的值value，范例：",
-    "matrixsaveconfirm": "矩阵已被引用，是否确认修改？"
+    "matrixsaveconfirm": "矩阵已被引用，是否确认修改？",
+    "linkageassignment": "联动赋值",
+    "conditionassignment": "条件赋值"
   },
   "knowledge": {
     "document": "文档",
