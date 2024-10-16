@@ -190,9 +190,11 @@ export default {
   },
   data() {
     return {
+      componentUuid: this.$utils.setUuid(),
       configErrorList: [],
       dataErrorList: [],
       isMask: false,
+      needWatch: false,
       executeCount: {
         mask: 0,
         hide: 0,
@@ -259,20 +261,21 @@ export default {
     //根据联动配置初始化watch
     initReactionWatch() {
       if (this.mode === 'read' || this.mode === 'readSubform') {
-        let needWatch = false;
+        this.needWatch = false;
         if (this.formItem.reaction) {
           for (let key in this.formItem.reaction) {
             if (!this.$utils.isEmpty(this.formItem.reaction[key])) {
-              needWatch = true;
+              this.needWatch = true;
               break;
             }
           }
         }
-        if (needWatch && this.formData) {
+        if (this.needWatch && this.formData) {
           this.$watch(
             'formDataForWatch',
             (newValue, oldValue) => {
-              this.enqueueReaction(() => {
+              this.enqueueReaction(this.componentUuid, () => {
+                console.log('开始单个处理');
                 const newVal = newValue && JSON.parse(newValue);
                 const oldVal = oldValue && JSON.parse(oldValue);
                 for (let action in this.formItem.reaction) {
@@ -295,7 +298,7 @@ export default {
                 //this.$forceUpdate();
               });
             },
-            { immediate: true }
+            { immediate: false }
           );
         }
       }
@@ -468,7 +471,12 @@ export default {
   computed: {
     //如果reaction直接监听formData，由于都是同一个对象，所以watch无法获取前后值变化，需要用此计算属性转换一下数据
     formDataForWatch() {
-      return JSON.stringify(this.formData);
+      if (this.needWatch && this.formData) {
+        const str = JSON.stringify(this.formData);
+        console.log('formDataForWatch', new Date());
+        return str;
+      }
+      return null;
     },
     //由于condition的valueList类型是数组，所以不能直接在script中以字符串的方式复制
     conditionData() {

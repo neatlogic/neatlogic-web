@@ -488,6 +488,7 @@ export default {
   },
   data() {
     return {
+      needWatch: false,
       isReady: false,
       copyedCell: null, //已复制的单元格，包含component或content
       defaultWidth: 200,
@@ -520,8 +521,9 @@ export default {
       hideComponentList: [], //底部隐藏组件列表
       hideComponentError: {},
       currentHideItem: null, //选中隐藏的组件
-      reactionFnQueue: [],
-      isDoingReaction: false
+      reactionFnQueue: new Map(),
+      isDoingReaction: false,
+      components: new Set()
     };
   },
   beforeCreate() {
@@ -554,8 +556,9 @@ export default {
   },
   destroyed() {},
   methods: {
-    enqueueReaction(updateFunction) {
-      this.reactionFnQueue.push(updateFunction);
+    enqueueReaction(componentUuid, updateFunction) {
+      //this.reactionFnQueue.push(updateFunction);
+      this.reactionFnQueue.set(componentUuid, updateFunction);
       if (!this.isDoingReaction) {
         this.isDoingReaction = true;
         // 在下一个事件循环中统一处理
@@ -564,9 +567,11 @@ export default {
     },
     executeReactions() {
       // 执行所有收集到的更新
+      console.log('开始批量处理', new Date());
       this.reactionFnQueue.forEach(fn => fn());
-      this.reactionFnQueue = [];
+      this.reactionFnQueue = new Map();
       this.isDoingReaction = false;
+      console.log('批量处理完毕', new Date());
       this.$forceUpdate();
     },
     cutCell() {
@@ -1085,16 +1090,16 @@ export default {
     },
     //根据联动配置初始化watch
     initReactionWatch() {
-      let needWatch = false;
+      this.needWatch = false;
       if (this.config.reaction) {
         for (let key in this.config.reaction) {
           if (this.config.reaction[key].some(d => !this.$utils.isEmpty(d)) > 0) {
-            needWatch = true;
+            this.needWatch = true;
             break;
           }
         }
       }
-      if (needWatch && this.formData) {
+      if (this.needWatch && this.formData) {
         this.$watch(
           'formDataForWatch',
           (newValue, oldValue) => {
@@ -1933,7 +1938,10 @@ export default {
     },
     //如果reaction直接监听formData，由于都是同一个对象，所以watch无法获取前后值变化，需要用此计算属性转换一下数据
     formDataForWatch() {
-      return JSON.stringify(this.formData);
+      if (this.needWatch && this.formData) {
+        return JSON.stringify(this.formData);
+      }
+      return null;
     },
     //由于condition的valueList类型是数组，所以不能直接在script中以字符串的方式复制
     conditionData() {
