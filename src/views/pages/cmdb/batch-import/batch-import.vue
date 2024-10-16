@@ -6,7 +6,7 @@
     >
       <template v-slot:topLeft>
         <Tabs v-model="tabName">
-          <TabPane :label="$t('page.importaudit')" name="upload"></TabPane>
+          <TabPane :label="$t('term.cmd.batchimport')" name="upload"></TabPane>
           <TabPane :label="$t('term.process.downloadtemp') " name="download"></TabPane>
         </Tabs>
       </template>
