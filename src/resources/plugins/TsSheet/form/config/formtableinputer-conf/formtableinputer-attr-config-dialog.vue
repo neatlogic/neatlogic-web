@@ -430,7 +430,8 @@ export default {
         type: 'modal',
         maskClose: false,
         isShow: true,
-        width: 'large'
+        width: 'large',
+        title: '表格属性设置'
       },
       dataSourceList: [
         { value: 'static', text: this.$t('page.staticdatasource') },
