@@ -287,8 +287,8 @@
                     search
                     transfer
                     :validateList="['required']"
-                    @on-change="(val)=>{
-                      changeAttrLabel(val, conItem, valueConfig);
+                    @on-change="(val, item, selectItem)=>{
+                      changeAttrLabel(val, item, selectItem, conItem, valueConfig);
                     }"
                   ></TsFormSelect>
                 </div>
@@ -650,7 +650,7 @@ export default {
             let dataList = [];
             tbodyList.forEach(v => {
               if (v.label) {
-                dataList.push({text: v.name, value: v.label});
+                dataList.push({text: v.name, value: v.label, defaultUniqueIdentifier: v.defaultUniqueIdentifier});
               }
             });
             this.cmdbCiEntityAttrList = dataList;
@@ -1135,9 +1135,9 @@ export default {
     delAttr(conItem, conIdex) {
       this.$delete(this.addAtrixForm.attributeMappingList.value, conIdex);
     },
-    changeAttrLabel(val, conItem, valueConfig) {
+    changeAttrLabel(val, item, selectItem, conItem, valueConfig) {
       if (valueConfig.type === 'cmdbci') {
-        this.$set(conItem, 'uniqueIdentifier', val);
+        this.$set(conItem, 'uniqueIdentifier', selectItem.defaultUniqueIdentifier);
       }
     }
   },
