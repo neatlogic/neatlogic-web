@@ -4,7 +4,7 @@
       <template v-slot>
         <Tabs v-if="formItemLocal.reaction">
           <TabPane
-            v-for="(r, key) in formItemLocal.reaction"
+            v-for="(r, key) in $utils.sortByObj(formItemLocal.reaction)"
             :key="key"
             :label="getReactionLabel(key)"
             :name="key"

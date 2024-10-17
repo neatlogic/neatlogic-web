@@ -34,6 +34,18 @@
               <!--由于最后一个formitem去掉了margin-bottom，这里补充回来-->
               <TsFormInput v-model="propertyLocal.config.defaultValue" :validateList="propertyLocal.config.validate? [propertyLocal.config.validate]:[]" :type="propertyLocal.handler.replace('form', '')"></TsFormInput>
             </TsFormItem>
+            <TsFormItem :label="$t('page.viewtarget',{'target':$t('page.auth')})">
+              <UserSelect
+                :value="propertyLocal.config.viewPasswordAuthorityList"
+                :multiple="true"
+                :transfer="true"
+                :groupList="['user', 'role', 'team']"
+                @on-change="val => {
+                  $set(propertyLocal.config, 'viewPasswordAuthorityList', val)
+
+                }"
+              ></UserSelect>
+            </TsFormItem>
           </template>
           <template v-else-if="['formselect', 'formradio', 'formcheckbox'].includes(propertyLocal.handler)" v-slot:config>
             <TsFormItem v-if="propertyLocal.handler !== 'formradio'" :label="$t('page.multipleselection')">
@@ -256,7 +268,7 @@
           <template v-slot:reaction>
             <Tabs v-if="propertyLocal.reaction && isReady">
               <TabPane
-                v-for="(r, key) in reactionTabList"
+                v-for="(key) in Object.keys(reactionTabList)"
                 :key="key"
                 :label="getReactionLabel(key)"
                 :name="key"
@@ -264,7 +276,7 @@
                 <div v-if="key === 'filter'">
                   <ReactionFilter
                     :ref="'formitem_' + key"
-                    :value="r"
+                    :value="propertyLocal.reaction[key]"
                     :martixAttrList="mappingDataList"
                     :formItem="propertyLocal"
                     :formItemList="allFormItemList"
@@ -279,7 +291,7 @@
                   v-else
                   :ref="'formitem_' + key"
                   :reactionKey="key"
-                  :value="r"
+                  :value="propertyLocal.reaction[key]"
                   :formItemList="allFormItemList"
                   :formItem="propertyLocal"
                   @reactionValid="(isValid)=>{
@@ -291,25 +303,25 @@
                     }
                   "
                 ></ConditionGroup>
-                <div v-if="key === 'setvalue' && !$utils.isEmpty(r)">
+                <div v-if="key === 'setvalue' && !$utils.isEmpty(propertyLocal.reaction[key])">
                   <div class="mt-sm text-grey">{{ $t('term.framework.assignment') }}</div>
                   <!--isDynamicValue: 是否可以动态赋值  -->
                   <div v-if="propertyLocal.isDynamicValue" class="pb-sm">
                     <TsFormRadio
-                      :value="r.type || 'static'"
+                      :value="propertyLocal.reaction[key].type || 'static'"
                       :dataList="typeDataList"
                       @change="
                         val => {
-                          $set(r, 'type', val);
-                          $set(r, 'value', null);
+                          $set(propertyLocal.reaction[key], 'type', val);
+                          $set(propertyLocal.reaction[key], 'value', null);
                         }
                       "
                     ></TsFormRadio>
                   </div>
                   <!--dynamic:动态赋值  -->
                   <TsFormSelect
-                    v-if="r.type === 'dynamic'"
-                    :value="r.value"
+                    v-if="propertyLocal.reaction[key].type === 'dynamic'"
+                    :value="propertyLocal.reaction[key].value"
                     :dataList="hasValueFormItemList"
                     valueName="uuid"
                     textName="label"
@@ -317,7 +329,7 @@
                     transfer
                     @on-change="
                       val => {
-                        $set(r, 'value', val);
+                        $set(propertyLocal.reaction[key], 'value', val);
                       }
                     "
                   ></TsFormSelect>
@@ -325,22 +337,22 @@
                     v-else
                     ref="assignmentValue"
                     :formItem="assignmentValueConfig"
-                    :value="r.value"
+                    :value="propertyLocal.reaction[key].value"
                     mode="defaultvalue"
                     :showStatusIcon="false"
                     isCustomValue
                     @change="
                       val => {
-                        $set(r, 'value', val);
+                        $set(propertyLocal.reaction[key], 'value', val);
                       }
                     "
                   ></FormItem>
                 </div>
                 <div v-else-if="key === 'setValueOther'">
                   <ReactionSetValueOtherSetting
-                    v-if="propertyLocal && propertyLocal.config.hiddenFieldList && !$utils.isEmpty(r)"
+                    v-if="propertyLocal && propertyLocal.config.hiddenFieldList && !$utils.isEmpty(propertyLocal.reaction[key])"
                     ref="setValueOther_valueList"
-                    :value="r.valueList"
+                    :value="propertyLocal.reaction[key].valueList"
                     :hiddenFieldList="propertyLocal.config.hiddenFieldList"
                     :attrList="formItemConfig.dataConfig"
                     :currentAttrUuid="propertyLocal.uuid"
@@ -366,6 +378,7 @@
 export default {
   name: '',
   components: {
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
@@ -412,6 +425,7 @@ export default {
         disable: {},
         required: {},
         clearValue: {},
+        setvalue: {},
         setValueOther: {}
       },
       reactionName: {
@@ -750,6 +764,10 @@ export default {
           this.$delete(this.reactionName, 'setvalue');
           this.$delete(this.propertyLocal.reaction, 'setvalue');
         }
+        this.isReady = false;
+        this.$nextTick(() => {
+          this.isReady = true;
+        });
       });
     },
     changeMatrixUuid(val) {
@@ -760,12 +778,20 @@ export default {
       } else {
         this.$delete(this.propertyLocal.reaction, 'filter');
       }
+      this.isReady = false;
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
     },
     changeDataSource() {
       this.$set(this.propertyLocal.config, 'matrixUuid', null);
       this.$set(this.propertyLocal.config, 'formtableinputerUuid', null);
       this.$set(this.propertyLocal.config, 'mapping', {});
       this.$delete(this.propertyLocal.reaction, 'filter');
+      this.isReady = false;
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
     },
     valieKey() { //校验英文名称唯一
       let isValid = true;
@@ -794,6 +820,7 @@ export default {
     reactionValid(key, isValid) {
       this.$set(this.reactionError, key, !isValid);
     }
+    
   },
   filter: {},
   computed: {
@@ -903,7 +930,7 @@ export default {
       if (this.propertyLocal && this.$utils.isEmpty(this.propertyLocal.config.hiddenFieldList)) {
         this.$delete(reaction, 'setValueOther');
       }
-      return reaction;
+      return this.$utils.sortByObj(reaction);
     }
   },
   watch: {

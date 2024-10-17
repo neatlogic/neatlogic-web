@@ -247,9 +247,9 @@
             </TsFormItem>
           </template>
           <template v-slot:reaction>
-            <Tabs v-if="propertyLocal.reaction">
+            <Tabs v-if="propertyLocal.reaction && isReady">
               <TabPane
-                v-for="(r, key) in propertyLocal.reaction"
+                v-for="(r, key) in $utils.sortByObj(propertyLocal.reaction)"
                 :key="key"
                 :label="getReactionLabel(key)"
                 :name="key"
@@ -339,6 +339,7 @@ export default {
   },
   data() {
     return {
+      isReady: true,
       propertyLocal: null,
       reaction: {
         mask: {}, 
@@ -566,6 +567,10 @@ export default {
       } else {
         this.$delete(this.propertyLocal.reaction, 'filter');
       }
+      this.isReady = false;
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
     },
     changeExpression(val) {
       this.$set(this.propertyLocal.config, 'expression', val);
@@ -649,6 +654,10 @@ export default {
           if (!this.propertyLocal.config.mapping) {
             this.$set(this.propertyLocal.config, 'mapping', {});
             this.$delete(this.propertyLocal.reaction, 'filter');
+            this.isReady = false;
+            this.$nextTick(() => {
+              this.isReady = true;
+            });
           }
         }
       },

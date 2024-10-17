@@ -1130,6 +1130,20 @@ const methods = {
         isStopped = true;
       } // 用于手动清除定时器
     };
+  },
+  sortByObj(obj) { //对象的属性按首字母排序
+    if(this.isEmpty(obj)) {
+      return {};
+    }
+    // 获取对象的键并排序
+    const sortedKeys = _.sortBy(Object.keys(obj));
+
+    // 根据排序后的键顺序，重新构建对象
+    const sortedObj = {};
+    sortedKeys.forEach(key => {
+      sortedObj[key] = obj[key];
+    });
+    return sortedObj;
   }
 };
 export default methods;

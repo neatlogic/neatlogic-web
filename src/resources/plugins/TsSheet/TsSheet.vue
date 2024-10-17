@@ -309,6 +309,8 @@
                   :isCustomValue="true"
                   :formExtendData="formExtendData"
                   :isClearSpecifiedAttr="isClearSpecifiedAttr"
+                  :externalData="externalData"
+                  :rowUuid="rowUuid"
                   class="padding-xs"
                   @changeConfig="addHistory()"
                   @change="resizeCell(cell.row, cell.col, true)"
@@ -484,7 +486,9 @@ export default {
       // 外部数据，非表单数据，例如工单上报人数据等
       type: Object,
       default: () => {}
-    }
+    },
+    rowUuid: String //表单子组件行uuid
+
   },
   data() {
     return {

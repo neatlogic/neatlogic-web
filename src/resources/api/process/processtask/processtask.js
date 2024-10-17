@@ -391,6 +391,9 @@ const processtask = {
   },
   updateProcessForm(params) { //更新工单表单
     return axios.post('/api/rest/processtask/form/update', params);
+  },
+  decryptPassword(params) { //工单表单密码解密
+    return axios.post('/api/rest/processtask/form/password/decrypt', params);
   }
 };
 export default processtask;

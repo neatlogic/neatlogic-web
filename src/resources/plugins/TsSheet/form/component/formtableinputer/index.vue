@@ -68,7 +68,7 @@
             :ref="'formitem_' + extra.uuid + '_' + index"
             :formItem="getExtraFormItem(extra, row)"
             :value="getDefaultValue(extra.uuid, row)"
-            :formData="{...$utils.deepClone(formData || {}), ...row}"
+            :formData="{...filterUuid(initFormData), ...row}"
             :formItemList="$utils.deepClone(extraList.concat(formItemList))"
             :showStatusIcon="false"
             mode="read"
@@ -77,6 +77,8 @@
             :isClearEchoFailedDefaultValue="true"
             :isCustomValue="true"
             :isClearSpecifiedAttr="isClearSpecifiedAttr"
+            :externalData="externalData"
+            :rowUuid="row.uuid"
             style="min-width:130px"
             @change="(val)=>changeRow(val,extra.uuid, row)"
             @updateCurrentRow="(data)=>{
@@ -651,7 +653,7 @@ export default {
     updateConditionData() {
       let obj = {};
       Object.keys(this.formDataForWatch).forEach(key => {
-        if (this.conditionFormItemUuidList.includes(key)) {
+        if (key !== 'uuid' && this.conditionFormItemUuidList.includes(key)) {
           obj[key] = this.formDataForWatch[key];
         }
       });
@@ -676,6 +678,12 @@ export default {
           Object.assign(row, val);
         }
       });
+    },
+    filterUuid(obj) {
+      if (obj.uuid) {
+        delete obj.uuid;
+      }
+      return obj;
     }
   },
   filter: {},
@@ -769,7 +777,7 @@ export default {
     formDataForWatch: {
       handler(val) {
         if (this.mode != 'edit' && this.mode != 'editSubform' && !this.$utils.isSame(val, this.initFormData)) {
-          this.initFormData = this.$utils.deepClone(val);
+          this.initFormData = this.$utils.deepClone(val) || {};
           this.updateConditionData();
         }
       },
