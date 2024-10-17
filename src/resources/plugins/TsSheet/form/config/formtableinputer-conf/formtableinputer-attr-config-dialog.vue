@@ -774,12 +774,20 @@ export default {
       } else {
         this.$delete(this.propertyLocal.reaction, 'filter');
       }
+      this.isReady = false;
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
     },
     changeDataSource() {
       this.$set(this.propertyLocal.config, 'matrixUuid', null);
       this.$set(this.propertyLocal.config, 'formtableinputerUuid', null);
       this.$set(this.propertyLocal.config, 'mapping', {});
       this.$delete(this.propertyLocal.reaction, 'filter');
+      this.isReady = false;
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
     },
     valieKey() { //校验英文名称唯一
       let isValid = true;
