@@ -122,7 +122,7 @@ export default {
     append: String,
     prefix: String,
     suffix: String,
-    icon: String,
+    icon: String, //通过 icon 属性可以在输入框右边加一个图标。点击图标，会触发 on-click 事件。
     rows: {
       type: Number,
       default: 5
