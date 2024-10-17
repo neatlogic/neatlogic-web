@@ -1,33 +1,40 @@
 <template>
-  <div>
+  <div class="password-item">
     <Poptip
-      trigger="hover"
-      :disabled="!passworkValue? true : false"
+      v-if="passworkValue && isShowPasssork"
+      v-model="isShowPasssork"
+      :offset="100"
+      placement="top"
       transfer
       class="password-tip"
     >
-      <TsFormInput
-        ref="formitem"
-        type="password"
-        border="border"
-        :placeholder="config.placeholder"
-        :maxlength="config.maxLength"
-        :readonly="readonly"
-        :disabled="disabled"
-        :value="actualValue"
-        :validateList="validateList"
-        :readonlyTextIsHighlight="readonlyTextIsHighlight"
-        :icon="isShowPasssork? 'ios-eye-outline':'ios-eye-off-outline'"
-        @change="
-          val => {
-            setValue(val);
-          }
-        "
-        @clickIcon="viewPasswork()"
-      >
-      </TsFormInput>
       <div slot="content">原密码：{{ passworkValue }}</div>
     </Poptip>
+    <div v-if="readonly">
+      <span>{{ actualValue }}</span>
+      <span v-if="isCanView" class="pl-xs tsfont-eye" @click.stop="viewPasswork()"></span>
+    </div>
+    <TsFormInput
+      v-else
+      ref="formitem"
+      type="password"
+      border="border"
+      :placeholder="config.placeholder"
+      :maxlength="config.maxLength"
+      :readonly="readonly"
+      :disabled="disabled"
+      :value="actualValue"
+      :validateList="validateList"
+      :readonlyTextIsHighlight="readonlyTextIsHighlight"
+      :icon="isShowPasssork? 'ios-eye-outline':'ios-eye-off-outline'"
+      @change="
+        val => {
+          setValue(val);
+        }
+      "
+      @clickIcon="viewPasswork()"
+    >
+    </TsFormInput>
   </div>
 </template>
 <script>
@@ -49,8 +56,10 @@ export default {
   },
   data() {
     return {
+      isReady: true,
       isShowPasssork: false,
-      passworkValue: ''   
+      passworkValue: '',
+      error: ''
     };
   },
   beforeCreate() {},
@@ -64,27 +73,39 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    viewPasswork() {
-      if (this.$refs.formitem) {
-        this.isShowPasssork = !this.isShowPasssork;
-        this.$refs.formitem.handleToggleShowPassword();
-        if (this.isCanView) {
-          let data = {
-            processTaskId: this.externalData.processTaskId,
-            formAttributeUuid: this.formItem.uuid,
-            otherParamConfig: {}
-          };
-          if (this.rowUuid) {
-            data.otherParamConfig.rowUuid = this.rowUuid;
-          }
-          this.$api.process.processtask.decryptPassword(data).then(res => {
-            if (res.Status === 'OK') {
-              this.passworkValue = res.Return.formAttributeValue;
-            }
-          });
-        }
+    async viewPasswork() {
+      if (this.isCanView) {
+        await this.getPassword();
       }
-    }
+      this.$nextTick(() => {
+        this.isShowPasssork = !this.isShowPasssork;
+        if (this.$refs.formitem) {
+          this.$refs.formitem.handleToggleShowPassword();
+        }
+      });
+    },
+    getPassword() {
+      if (this.passworkValue) {
+        return false;
+      }
+      let data = {
+        processTaskId: this.externalData.processTaskId,
+        formAttributeUuid: this.formItem.uuid,
+        otherParamConfig: {}
+      };
+      if (this.rowUuid) {
+        data.otherParamConfig.rowUuid = this.rowUuid;
+      }
+      return this.$api.process.processtask.decryptPassword(data).then(res => {
+        if (res.Status === 'OK') {
+          if (res.Return.password) {
+            this.passworkValue = res.Return.password;
+          } else if (res.Return.error) {
+            this.passworkValue = res.Return.error;
+          }
+        }
+      });
+    } 
   },
   filter: {},
   computed: {
@@ -106,10 +127,11 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.password-tip {
-  width: 100%;
-  /deep/ .ivu-poptip-rel {
-    width: 100%;
+.password-item{
+  position: relative;
+  .password-tip {
+    position: absolute;
+    top: -10px;
   }
 }
 </style>

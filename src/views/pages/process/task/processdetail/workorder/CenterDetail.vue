@@ -58,8 +58,11 @@
                 :formSceneUuid="formSceneUuid"
                 :data="processTaskConfig.formAttributeDataMap"
                 :readonly="!actionConfig.save || !formEdit"
+                :externalData="externalData"
                 class="pl-sm pr-sm"
                 @emit="formSheetEmitData"
+                @updateHiddenComponentList="updateHiddenComponentList"
+                @setValue="setFormAttributeDataMap"
               ></TsSheet>
             </template>
             <template v-else>
@@ -186,6 +189,7 @@
                   :formSceneUuid="formSceneUuid"
                   :data="processTaskConfig.formAttributeDataMap"
                   :readonly="!actionConfig.save || !formEdit"
+                  :externalData="externalData"
                   class="pl-sm pr-sm"
                   style="width: 100%"
                   @emit="formSheetEmitData"
@@ -307,6 +311,7 @@
         >
           <!-- 时间线 -->
           <ActivityOverview
+            :processTaskId="processTaskId"
             :stepDataList="stepData"
             :defaultActiveData="activeData"
             :formConfig="processTaskConfig.formConfig"
@@ -535,7 +540,10 @@ export default {
       autoexechandlerStepInfo: null, // 自动化信息
       lastFormConfig: null,
       isShowForm: true,
-      formSceneUuid: 'defaultSceneUuid'
+      formSceneUuid: 'defaultSceneUuid',
+      externalData: {
+        processTaskId: this.defaultProcessTaskId //工单id
+      }
     };
   },
   created() {

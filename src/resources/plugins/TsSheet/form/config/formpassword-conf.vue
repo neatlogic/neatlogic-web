@@ -20,7 +20,7 @@
         }"
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem :label="$t('page.viewtarget',{'target':$t('term.framework.passworkauth')})" labelPosition="top">
+    <TsFormItem :label="$t('page.viewtarget',{'target':$t('page.auth')})" labelPosition="top">
       <UserSelect
         :value="config.viewPasswordAuthorityList"
         :multiple="true"

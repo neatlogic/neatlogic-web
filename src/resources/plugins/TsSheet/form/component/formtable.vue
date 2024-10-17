@@ -16,6 +16,8 @@
             :showStatusIcon="false"
             :readonly="readonly"
             :isCustomValue="isCustomValue"
+            :externalData="externalData"
+            :rowUuid="row.uuid"
             mode="read"
             style="min-width:130px"
             @change="changeRow(row,index)"

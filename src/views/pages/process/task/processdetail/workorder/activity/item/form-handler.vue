@@ -13,6 +13,7 @@
       :formSceneUuid="formSceneUuid || 'defaultSceneUuid'"
       :data="formData"
       :formHighlightData="formHighlightData"
+      :externalData="externalData"
     ></TsSheet>
   </div>
 </template>
@@ -36,13 +37,17 @@ export default {
       type: Number,
       default: null
     },
-    formSceneUuid: String
+    formSceneUuid: String,
+    processTaskId: [Number, String]
   },
   data() {
     return {
       isShow: false,
       formData: {},
-      formHighlightData: {}
+      formHighlightData: {},
+      externalData: {
+        processTaskId: this.processTaskId
+      }
     };
   },
   beforeCreate() {},
