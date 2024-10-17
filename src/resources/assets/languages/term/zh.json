@@ -240,7 +240,8 @@
     "showrellabel": "显示关系类型",
     "exportformodel": "导出为Model",
     "exportforexcel": "导出为Excel",
-    "isterm": "是否关键字"
+    "isterm": "是否关键字",
+    "batchimport": "批量上传"
   },
   "process": {
     "workordercenter": "工单中心",

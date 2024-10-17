@@ -2,7 +2,7 @@
   <div>
     <div class="textRight">
       <CombineSearcher
-        v-model="searchParam"
+        v-model="searchVal"
         style="width:400px;display:inline-block"
         v-bind="searchConfig"
         @change="searchCiEntity(1)"
@@ -108,6 +108,7 @@ export default {
       theadList: [],
       ciEntityData: {},
       attrList: [],
+      searchVal: {},
       searchParam: { pageSize: this.pageSize },
       searchConfig: {
         search: false,
@@ -168,7 +169,7 @@ export default {
         this.searchParam.currentPage = current;
       }
 
-      this.$api.cmdb.cientity.searchDeleteCiEntity(this.searchParam).then(res => {
+      this.$api.cmdb.cientity.searchDeleteCiEntity({...this.searchParam, ...this.searchVal}).then(res => {
         this.searchParam.currentPage = res.Return.currentPage;
         this.searchParam.pageSize = res.Return.pageSize;
         this.ciEntityData = res.Return;

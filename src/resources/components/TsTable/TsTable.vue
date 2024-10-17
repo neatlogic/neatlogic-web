@@ -703,11 +703,14 @@ export default {
       this.$emit('changePageSize', size);
     },
     checkshow(key, val) {
-      this.thList.forEach(th => {
-        if (th.key == key) {
-          this.$set(th, 'isShow', val);
-        }
+      const thIndex = this.thList.findIndex(t => {
+        return t.key === key;
       });
+      if (thIndex > -1) {
+        const th = this.thList[thIndex];
+        th.isShow = val;
+        this.$set(this.thList, thIndex, th);
+      }
       this.$emit('checkshow', this.thList, val);
     },
     initTable() {
@@ -1096,7 +1099,7 @@ export default {
       let showList = [];
       if (this.thList && this.thList.length > 0) {
         showList = this.thList.filter(th => {
-          return th.isShow || th.isShow == undefined;
+          return th.isShow || th.isShow === undefined;
         });
       }
       return showList;

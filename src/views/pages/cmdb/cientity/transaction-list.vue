@@ -1,22 +1,10 @@
 <template>
   <div>
     <div v-if="needSearch" class="clearfix">
-      <!--<div v-if="needAction && transactionData && transactionData.tbodyList && transactionData.tbodyList.length>0" class="batch">
-        <Dropdown trigger="click">
-          <Button :disabled="!selectedTransactionList || selectedTransactionList.length == 0">
-            批量操作
-            <i class="tsfont-down"></i>
-          </Button>
-          <DropdownMenu slot="list">
-            <DropdownItem @click.native="batchCommit()">提交</DropdownItem>
-            <DropdownItem @click.native="batchDelete()">删除</DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-      </div>-->
       <div class="search">
         <CombineSearcher
-          v-model="searchParam"
-          style="width:400px;display:inline-block"
+          v-model="searchVal"
+          style="width: 400px; display: inline-block"
           v-bind="searchConfig"
           @change="searchTransaction(1)"
         ></CombineSearcher>
@@ -105,7 +93,13 @@ export default {
         { key: 'error', title: this.$t('page.exception') },
         { key: 'action' }
       ],
-      searchParam: { currentPage: 1, pageSize: 20, status: 'uncommit', needAction: true },
+      searchVal: {
+      
+      },
+      searchParam: { currentPage: 1,
+        pageSize: 20,
+        status: 'uncommit',
+        needAction: true},
       searchConfig: {
         search: false,
         labelPosition: 'left',
@@ -207,7 +201,7 @@ export default {
       if (!row.authData || !row.authData.transactionmanage) {
         return;
       }
-      let content = this.$t('dialog.content.deleteconfirm', {target: this.$t('term.cmdb.transaction')});
+      let content = this.$t('dialog.content.deleteconfirm', { target: this.$t('term.cmdb.transaction') });
       if (row.brotherTransactionCount > 1) {
         content = this.$t('dialog.content.invokedeleteconfirm', { count: brotherTransactionCount });
       }
@@ -249,7 +243,7 @@ export default {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
-      this.$api.cmdb.transaction.searchTransaction(this.searchParam).then(res => {
+      this.$api.cmdb.transaction.searchTransaction({ ...this.searchParam, ...this.searchVal }).then(res => {
         this.transactionData = res.Return;
         this.transactionData.theadList = this.theadList;
         this.isLoading = false;

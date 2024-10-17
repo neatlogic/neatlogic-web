@@ -6,8 +6,8 @@
       </span>
       <span>
         <CombineSearcher
-          v-model="searchParam"
-          style="width:400px;display:inline-block"
+          v-model="searchVal"
+          style="width: 400px; display: inline-block"
           v-bind="searchConfig"
           @change="searchCiEntity(1)"
         ></CombineSearcher>
@@ -33,7 +33,7 @@
               v-for="(err, index) in row.error"
               :key="index"
               class="text-grey"
-              style="white-space:normal"
+              style="white-space: normal"
             >
               {{ err }}
             </li>
@@ -124,6 +124,7 @@ export default {
       isExportDialogShow: false,
       ciEntityData: {},
       attrList: [],
+      searchVal: {},
       searchParam: {},
       attrRelList: [], //属性和关系列表，用于导出excel时选择
       theadList: [
@@ -184,7 +185,7 @@ export default {
     },
     exportUrl() {
       //复制一个条件对象不要影响页面搜索
-      const searchParam = this.$utils.deepClone(this.searchParam);
+      const searchParam = { ...this.searchParam, ...searchVal };
       const showAttrRelList = [];
       this.attrRelList.forEach(element => {
         if (element.selected) {
@@ -247,7 +248,7 @@ export default {
         this.searchParam.currentPage = current;
       }
 
-      this.$api.cmdb.cientity.searchIllegalCiEntity(this.searchParam).then(res => {
+      this.$api.cmdb.cientity.searchIllegalCiEntity({ ...this.searchParam, ...this.searchVal }).then(res => {
         this.ciEntityData = res.Return;
         this.ciEntityData.theadList = this.theadList;
         this.isLoading = false;
