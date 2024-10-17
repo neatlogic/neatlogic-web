@@ -84,7 +84,7 @@
               </TabPane>
               <TabPane v-if="!ciData.isVirtual && ciData.authData && (ciData.authData['transactionmanage'] || ciData.authData['cimanage'])" :label="$t('term.cmdb.uncommittransaction')" name="transaction">
                 <TransactionList
-                  v-if="currentTab == 'transaction'"
+                  v-if="currentTab === 'transaction'"
                   class="pt-nm pl-nm pr-nm bg-op border8"
                   :needCheck="true"
                   :needAction="true"
@@ -93,7 +93,7 @@
               </TabPane>
               <TabPane v-if="!ciData.isVirtual && ciData.authData && (ciData.authData['cientityrecover'] || ciData.authData['cimanage'])" :label="$t('page.deleteaudit')" name="deletecientity">
                 <DeleteCiEntityList
-                  v-if="currentTab == 'deletecientity'"
+                  v-if="currentTab === 'deletecientity'"
                   class="pt-nm pl-nm pr-nm bg-op border8"
                   :ciId="ciData.id"
                   @toCiEntity="switchCi"
