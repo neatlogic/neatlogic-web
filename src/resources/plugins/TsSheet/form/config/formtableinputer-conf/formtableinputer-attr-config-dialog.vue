@@ -917,7 +917,7 @@ export default {
       if (this.propertyLocal && this.$utils.isEmpty(this.propertyLocal.config.hiddenFieldList)) {
         this.$delete(reaction, 'setValueOther');
       }
-      return reaction;
+      return this.$utils.sortByObj(reaction);
     }
   },
   watch: {

@@ -249,7 +249,7 @@
           <template v-slot:reaction>
             <Tabs v-if="propertyLocal.reaction">
               <TabPane
-                v-for="(r, key) in propertyLocal.reaction"
+                v-for="(r, key) in $utils.sortByObj(propertyLocal.reaction)"
                 :key="key"
                 :label="getReactionLabel(key)"
                 :name="key"
