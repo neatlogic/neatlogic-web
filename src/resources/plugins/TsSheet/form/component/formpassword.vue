@@ -1,14 +1,14 @@
 <template>
   <div class="password-item">
     <Poptip
-      v-if="passworkValue && isShowPasssork"
-      v-model="isShowPasssork"
+      v-if="passworkValue"
+      v-model="isShowPoptip"
       :offset="100"
       placement="top"
       transfer
       class="password-tip"
     >
-      <div slot="content">原密码：{{ passworkValue }}</div>
+      <div slot="content">{{ passworkValue }}</div>
     </Poptip>
     <div v-if="readonly">
       <span>{{ actualValue }}</span>
@@ -29,6 +29,7 @@
       :icon="isShowPasssork? 'ios-eye-outline':'ios-eye-off-outline'"
       @change="
         val => {
+          isShowPoptip = false;
           setValue(val);
         }
       "
@@ -56,10 +57,10 @@ export default {
   },
   data() {
     return {
-      isReady: true,
+      isShowPoptip: false, //明文显示密码提示框
       isShowPasssork: false,
-      passworkValue: '',
-      error: ''
+      passworkValue: '', //明文密码
+      initValue: this.$utils.deepClone(this.value) //初始值
     };
   },
   beforeCreate() {},
@@ -76,9 +77,12 @@ export default {
     async viewPasswork() {
       if (this.isCanView) {
         await this.getPassword();
+      } else {
+        this.passworkValue = '';
       }
       this.$nextTick(() => {
         this.isShowPasssork = !this.isShowPasssork;
+        this.isShowPoptip = this.isShowPasssork;
         if (this.$refs.formitem) {
           this.$refs.formitem.handleToggleShowPassword();
         }
@@ -119,8 +123,8 @@ export default {
       }
       return null;
     },
-    isCanView() {
-      return (this.mode === 'read' || this.mode === 'readSubform') && !this.$utils.isEmpty(this.config.viewPasswordAuthorityList) && this.externalData && this.externalData.processTaskId;
+    isCanView() { //是否有权限查看密码
+      return (this.mode === 'read' || this.mode === 'readSubform') && this.$utils.isSame(this.value, this.initValue) && !this.$utils.isEmpty(this.config.viewPasswordAuthorityList) && this.externalData && this.externalData.processTaskId;
     }
   },
   watch: {}
