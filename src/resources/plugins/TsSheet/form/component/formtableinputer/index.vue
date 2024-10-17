@@ -68,7 +68,7 @@
             :ref="'formitem_' + extra.uuid + '_' + index"
             :formItem="getExtraFormItem(extra, row)"
             :value="getDefaultValue(extra.uuid, row)"
-            :formData="{...filterUuid(formData), ...row}"
+            :formData="{...filterUuid(initFormData), ...row}"
             :formItemList="$utils.deepClone(extraList.concat(formItemList))"
             :showStatusIcon="false"
             mode="read"
