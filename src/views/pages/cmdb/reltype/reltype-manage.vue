@@ -7,7 +7,7 @@
       <div slot="content" ref="maintable" class="content">
         <TsTable v-if="relTypeData" v-bind="relTypeData">
           <template slot="invokeCount" slot-scope="{ row }">
-            <Tag>{{ row.invokeCount }}</Tag>
+            <Badge :count="row.invokeCount" type="primary"></Badge>
           </template>
           <template slot="name" slot-scope="{ row }">
             {{ row.name }}
