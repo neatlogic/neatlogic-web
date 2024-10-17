@@ -654,6 +654,10 @@ export default {
           if (!this.propertyLocal.config.mapping) {
             this.$set(this.propertyLocal.config, 'mapping', {});
             this.$delete(this.propertyLocal.reaction, 'filter');
+            this.isReady = false;
+            this.$nextTick(() => {
+              this.isReady = true;
+            });
           }
         }
       },

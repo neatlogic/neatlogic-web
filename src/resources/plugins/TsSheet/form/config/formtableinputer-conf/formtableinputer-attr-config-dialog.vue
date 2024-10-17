@@ -764,6 +764,10 @@ export default {
           this.$delete(this.reactionName, 'setvalue');
           this.$delete(this.propertyLocal.reaction, 'setvalue');
         }
+        this.isReady = false;
+        this.$nextTick(() => {
+          this.isReady = true;
+        });
       });
     },
     changeMatrixUuid(val) {
@@ -816,6 +820,7 @@ export default {
     reactionValid(key, isValid) {
       this.$set(this.reactionError, key, !isValid);
     }
+    
   },
   filter: {},
   computed: {
