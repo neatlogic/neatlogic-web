@@ -731,19 +731,19 @@ export default {
     },
     edgeConnected() {
       //节点连线改变后，需要更新节点设置
-      this.updateNodeSetting();
       if (this.currentNode) {
+        this.updateNodeSetting();
         const edge = this.graph.getCellById(this.currentNode.id);
         if (edge) {
           const currentEdgeData = edge.getData();
           this.currentNode = edge;
           this.currentNodeData = currentEdgeData;
         }
+        this.isReady = false;
+        this.$nextTick(() => {
+          this.isReady = true;
+        });
       }
-      this.isReady = false;
-      this.$nextTick(() => {
-        this.isReady = true;
-      });
     },
     nodeUnSelected() {
       //this.$nextTick(() => {
