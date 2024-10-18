@@ -67,6 +67,7 @@
         :isCustomValue="isCustomValue"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
         :externalData="externalData"
+        :rowUuid="rowUuid"
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
@@ -186,7 +187,8 @@ export default {
       // 外部数据，非表单数据，例如工单上报人数据等
       type: Object,
       default: () => {}
-    }
+    },
+    rowUuid: { type: String } //行uuid，表格组件引用时需要
   },
   data() {
     return {

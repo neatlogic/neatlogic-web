@@ -20,6 +20,17 @@
         }"
       ></TsFormInput>
     </TsFormItem>
+    <TsFormItem :label="$t('page.viewtarget',{'target':$t('page.auth')})" labelPosition="top">
+      <UserSelect
+        :value="config.viewPasswordAuthorityList"
+        :multiple="true"
+        :transfer="true"
+        :groupList="['user', 'role', 'team']"
+        @on-change="val => {
+          setConfig('viewPasswordAuthorityList', val);
+        }"
+      ></UserSelect>
+    </TsFormItem>
   </div>
 </template>
 <script>
@@ -29,7 +40,8 @@ export default {
   name: '',
   components: {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   extends: base,
   props: {},

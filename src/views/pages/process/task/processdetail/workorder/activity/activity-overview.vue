@@ -63,6 +63,7 @@
                   :formSceneUuid="item.formSceneUuid"
                   :formConfig="$utils.deepClone(formConfig)"
                   :processTaskStepId="item.processTaskStepId"
+                  :processTaskId="processTaskId"
                   class="mb-sm"
                 ></component>
               </template>
@@ -96,6 +97,10 @@ export default {
     stepDataList: { //步骤日志列表
       type: Array,
       default: () => []
+    },
+    processTaskId: {
+      type: [String, Number],
+      default: null
     }
   },
   data() {

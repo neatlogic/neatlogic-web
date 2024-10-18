@@ -31,11 +31,11 @@ export default {
     display: {},
     readonly: {},
     disable: {}, 
-    setvalue: {}, 
+    setvalue: {},
+    setValueOther: {}, 
     filter: {}, 
     emit: {},
     required: {},
-    clearValue: {},
-    setValueOther: {}
+    clearValue: {}
   }
 };
