@@ -149,7 +149,7 @@ export default {
         setting.rootName = 'dataList';
         const params = { matrixUuid: this.config.matrixUuid, filterList: []};
         if (!this.$utils.isEmpty(this.filter)) {
-          params.filterList = this.filter;
+          params.filterList = this.$utils.deepClone(this.filter);
         }
         if (this.config.isAddData && !this.$utils.isEmpty(this.config.matrixUuid)) {
           setting.firstLi = true;
