@@ -2795,7 +2795,12 @@
     "editing": "Editing in progress",
     "activing": "Activing",
     "source": "Source restrictions",
-    "waitfordo": "Pending processing"
+    "waitfordo": "Pending processing",
+    "torel": "Downstream relationship",
+    "fromrel": "Upstream relationship",
+    "rel": "Related relationships",
+    "reltypeconfig": "Connection type configuration",
+    "edgetype": "line segment"
   },
   "license": {
     "isbanmodule": "Disable module upon expiration",

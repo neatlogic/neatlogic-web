@@ -2795,7 +2795,12 @@
     "editing": "编辑中",
     "activing": "激活中",
     "source": "来源限制",
-    "waitfordo": "待处理"
+    "waitfordo": "待处理",
+    "torel": "下游关系",
+    "fromrel": "上游关系",
+    "rel": "关联关系",
+    "reltypeconfig": "连线类型配置",
+    "edgetype": "线段"
   },
   "license": {
     "isbanmodule": "到期禁用模块",
