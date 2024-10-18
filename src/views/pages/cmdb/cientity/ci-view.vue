@@ -69,7 +69,7 @@
             </div>
           </div>
           <div class="mt-nm">
-            <Tabs v-model="currentTab" class="block-tabs">
+            <Tabs v-model="currentTab" class="block-tabs" :animated="false">
               <TabPane :label="$t('term.cmdb.cientitylist')" name="cientity">
                 <CiEntityList
                   v-if="currentTab == 'cientity'"
