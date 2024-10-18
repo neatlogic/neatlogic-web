@@ -735,9 +735,8 @@ export default {
         this.updateNodeSetting();
         const edge = this.graph.getCellById(this.currentNode.id);
         if (edge) {
-          const currentEdgeData = edge.getData();
           this.currentNode = edge;
-          this.currentNodeData = currentEdgeData;
+          this.currentNodeData = edge.getData();
         }
         this.isReady = false;
         this.$nextTick(() => {
