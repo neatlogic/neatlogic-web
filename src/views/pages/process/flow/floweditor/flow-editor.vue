@@ -898,6 +898,14 @@ export default {
         this.graph.on('node:removed', ({ view, e }) => {
           this.$emit('node:removed', this.graph, view);
         });
+        this.graph.on('edge:connected', ({isNew, edge }) => {
+          //边连入和连出线的回调函数
+          this.$emit('edge:connected');
+        });
+        this.graph.on('edge:removed', ({ edge }) => {
+          //删除连线的回调函数
+          this.$emit('edge:removed');
+        });
         this.$emit('ready', this.graph, this.dnd);
       }
     }
