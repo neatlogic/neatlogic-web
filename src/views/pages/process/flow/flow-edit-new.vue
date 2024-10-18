@@ -87,6 +87,8 @@
               @node:removed="nodeRemoved"
               @edge:selected="edgeSelected"
               @edge:unselected="edgeUnSelected"
+              @edge:connected="edgeConnected"
+              @edge:removed="edgeConnected"
             ></FlowEditor>
           </div>
         </div>
@@ -126,6 +128,7 @@
             </TabPane>
             <TabPane v-if="currentNodeData && currentNode" :label="$t('term.process.nodesetting')" name="nodesetting">
               <FlowNodeSetting
+                v-if="isReady"
                 :key="currentNodeData.uuid"
                 ref="nodeSetting"
                 :formhandlerList="formhandlerList"
@@ -725,6 +728,21 @@ export default {
         }
         this.isSelected = true;
       });
+    },
+    edgeConnected() {
+      //节点连线改变后，需要更新节点设置
+      if (this.currentNode) {
+        this.updateNodeSetting();
+        const edge = this.graph.getCellById(this.currentNode.id);
+        if (edge) {
+          this.currentNode = edge;
+          this.currentNodeData = edge.getData();
+        }
+        this.isReady = false;
+        this.$nextTick(() => {
+          this.isReady = true;
+        });
+      }
     },
     nodeUnSelected() {
       //this.$nextTick(() => {
