@@ -12,7 +12,7 @@
     </Poptip>
     <div v-if="readonly">
       <span>{{ actualValue }}</span>
-      <span v-if="isCanView" class="pl-xs tsfont-eye" @click.stop="viewPasswork()"></span>
+      <span v-if="actualValue && isCanView" class="pl-xs tsfont-eye" @click.stop="viewPasswork()"></span>
     </div>
     <TsFormInput
       v-else
