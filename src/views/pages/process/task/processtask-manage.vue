@@ -288,12 +288,12 @@ export default {
         // });
       }
     },
-    search(workcenterConditionData, currentPage) {
+    search(workcenterTmpConditionData, currentPage) {
       this.selectedWorkList = [];
       if (currentPage) {
         this.tableConfig.currentPage = currentPage;
       }
-      this.$set(this.workcenterData, 'conditionConfig', workcenterConditionData);
+      this.$set(this.workcenterData, 'tmpConditionConfig', workcenterTmpConditionData);
       this.searchProcessTask();
     },
     searchProcessTask(isNeedLoading = true) {
@@ -855,7 +855,8 @@ html {
 @import '~@/resources/assets/css/variable.less';
 .top-grid {
   display: grid;
-  grid-template-columns: auto 150px 50px;
+  grid-template-columns: auto 110px 50px;
+  grid-gap: 5px;
 }
 .search-container {
   width: calc(100% - 90px);

@@ -2,9 +2,9 @@
   <div class="searcher-container">
     <div>
       <!--日期范围-->
-      <TimeSelect :value="workcenterConditionData.startTimeCondition" v-bind="timeSelectConfig" @change="changeTimeRange"></TimeSelect>
+      <TimeSelect :value="workcenterTmpConditionData.startTimeCondition" v-bind="timeSelectConfig" @change="changeTimeRange"></TimeSelect>
     </div>
-    <div class="text-right">
+    <div>
       <Dropdown trigger="custom" :visible="visible">
         <Button
           type="primary"
@@ -24,25 +24,47 @@
         </DropdownMenu>
       </Dropdown>
       <!--我的待办-->
-      <span v-if="workcenterData.processingOfMineCount && workcenterData.processingOfMineCount!='0'" class="pl-sm">
+      <span v-if="workcenterData.processingOfMineCount" class="pl-sm">
         <Button :type="workcenterConditionData.isProcessingOfMine ? 'primary' : 'default'" @click="toggleIsMyProcessing">
           <Badge :text="workcenterData.processingOfMineCount"></Badge>
           <span>{{ $t('term.process.mytodo') }}</span>
         </Button>
       </span>
     </div>
-    <div ref="searchContainer" style="position:relative;text-align:right">
-      <!--主搜索框-->
-      <div v-if="searchWidth > 0" class="radius-sm bg-op border-color searcher-inputer" :style="{ width: searchWidth + 'px' }">
+    <div>
+      <!--固定条件-->
+      <div
+        v-if="searchWidth > 0"
+        class="radius-sm border-color searcher-inputer"
+        style="padding:0;text-align:right"
+      >
         <!--已选择的搜索条件-->
         <div style="white-space: nowrap;overflow-x: auto;">
           <div style="display:inline-block">
             <ConditionViewer
               v-if="workcenterConditionData"
               ref="conditionViewer"
-              :readonly="isDropdownShow || !isAllowEditCondition"
+              :readonly="true"
               :conditionList="conditionList"
               :workcenterConditionData="workcenterConditionData"
+              @remove="removeCondition"
+            ></ConditionViewer>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div ref="searchContainer" style="position:relative;text-align:left">
+      <!--主搜索框-->
+      <div v-if="searchWidth > 0" class="radius-sm bg-op border-color searcher-inputer" :style="{ width: searchWidth + 'px' }">
+        <!--已选择的搜索条件-->
+        <div style="white-space: nowrap;overflow-x: auto;">
+          <div style="display:inline-block">
+            <ConditionViewer
+              v-if="workcenterTmpConditionData"
+              ref="conditionViewer"
+              :readonly="isDropdownShow || !isAllowEditCondition"
+              :conditionList="conditionList"
+              :workcenterConditionData="workcenterTmpConditionData"
               @remove="removeCondition"
             ></ConditionViewer>
           </div>
@@ -94,12 +116,12 @@
             v-if="searchMode === 'simple' && conditionList.length > 0"
             ref="searchPanel"
             :conditionList="conditionList"
-            :workcenterConditionData="workcenterConditionData"
+            :workcenterConditionData="workcenterTmpConditionData"
           ></SimplePanel>
           <CustomPanel
             v-else-if="searchMode === 'custom' && conditionList.length > 0"
             ref="searchPanel"
-            :workcenterConditionData="workcenterConditionData"
+            :workcenterConditionData="workcenterTmpConditionData"
             :conditionList="conditionList"
           ></CustomPanel>
         </div>
@@ -191,7 +213,8 @@ export default {
       isShowKeywordList: false,
       conditionList: [], //默认的条件列表，查询时也需要提供workcenteruuid
       //后端提供的workceter数据的conditionConfig是字符串
-      workcenterConditionData: this.workcenterData && this.workcenterData.conditionConfig
+      workcenterConditionData: {},
+      workcenterFixedConditionData: {}
     };
   },
   beforeCreate() {},
@@ -232,10 +255,10 @@ export default {
     },
     //添加关键字条件
     addKeywordCondition(keywordData) {
-      if (!this.workcenterConditionData.keywordConditionList) {
-        this.$set(this.workcenterConditionData, 'keywordConditionList', []);
+      if (!this.workcenterTmpConditionData.keywordConditionList) {
+        this.$set(this.workcenterTmpConditionData, 'keywordConditionList', []);
       }
-      const keywordConditionList = this.workcenterConditionData.keywordConditionList;
+      const keywordConditionList = this.workcenterTmpConditionData.keywordConditionList;
       const item = keywordConditionList.find(d => d.name == keywordData.name);
       if (!item) {
         keywordConditionList.push({ uuid: this.$utils.setUuid(), name: keywordData.name, text: keywordData.text, valueList: [keywordData.value] });
@@ -259,8 +282,8 @@ export default {
           keyword: val,
           pageSize: 12,
           conditionConfig: {
-            isProcessingOfMine: this.workcenterConditionData.isProcessingOfMine, //是否需要过滤我的待办
-            startTimeCondition: this.workcenterConditionData.startTimeCondition //时间区间
+            isProcessingOfMine: this.workcenterTmpConditionData.isProcessingOfMine, //是否需要过滤我的待办
+            startTimeCondition: this.workcenterTmpConditionData.startTimeCondition //时间区间
           }
         };
         this.keywordSearchTimer = setTimeout(() => {
@@ -285,25 +308,25 @@ export default {
     },
     //清理所有条件
     clearCondition() {
-      this.$set(this.workcenterConditionData, 'conditionGroupList', []);
-      this.$set(this.workcenterConditionData, 'keywordConditionList', []);
+      this.$set(this.workcenterTmpConditionData, 'conditionGroupList', []);
+      this.$set(this.workcenterTmpConditionData, 'keywordConditionList', []);
       this.search();
     },
     //保存当前工单分类
-    saveWorkcenter() {
-      if (this.$refs['searchPanel'] && this.$refs['searchPanel'].valid()) {
-        let workcenterConditionData = {};
-        workcenterConditionData = this.$refs['searchPanel'].getData();
-        workcenterConditionData = this.generateJoinData(workcenterConditionData);
-        this.$api.process.processtask.workcenterConditionSave({ uuid: this.workcenterData.uuid, conditionConfig: workcenterConditionData }).then(res => {
-          if (res.Status == 'OK') {
-            this.$emit('search', workcenterConditionData, 1);
-            this.isDropdownShow = false;
-            this.$Message.success(this.$t('message.savesuccess'));
-          }
-        });
-      }
-    },
+    // saveWorkcenter() {
+    //   if (this.$refs['searchPanel'] && this.$refs['searchPanel'].valid()) {
+    //     let workcenterConditionData = {};
+    //     workcenterConditionData = this.$refs['searchPanel'].getData();
+    //     workcenterConditionData = this.generateJoinData(workcenterConditionData);
+    //     this.$api.process.processtask.workcenterConditionSave({ uuid: this.workcenterData.uuid, conditionConfig: workcenterConditionData }).then(res => {
+    //       if (res.Status == 'OK') {
+    //         this.$emit('search', workcenterConditionData, 1);
+    //         this.isDropdownShow = false;
+    //         this.$Message.success(this.$t('message.savesuccess'));
+    //       }
+    //     });
+    //   }
+    // },
     //打开另存为新类型按钮
     openWorkcenterAddDialog() {
       if (this.$refs['searchPanel'] && this.$refs['searchPanel'].valid()) {
@@ -316,14 +339,14 @@ export default {
     //另存为新的工单分类
     saveNewWorkcenter(workcenterData) {
       if (this.$refs['searchPanel'] && this.$refs['searchPanel'].valid()) {
-        let workcenterConditionData = {};
-        workcenterConditionData = this.$refs['searchPanel'].getData();
-        workcenterConditionData = this.generateJoinData(workcenterConditionData);
-        workcenterData['conditionConfig'] = workcenterConditionData;
+        let workcenterTmpConditionData = {};
+        workcenterTmpConditionData = this.$refs['searchPanel'].getData();
+        workcenterTmpConditionData = this.generateJoinData(workcenterTmpConditionData);
+        workcenterData['conditionConfig'] = workcenterTmpConditionData;
         this.$api.process.processtask.saveMenu(workcenterData).then(res => {
           if (res.Status == 'OK') {
             const uuid = res.Return;
-            this.$emit('search', workcenterConditionData, 1);
+            this.$emit('search', workcenterTmpConditionData, 1);
             this.$Message.success(this.$t('message.savesuccess'));
             this.isDropdownShow = false;
             this.isTypeDialogShow = false;
@@ -343,24 +366,24 @@ export default {
     //修改时间范围
     changeTimeRange(val) {
       //直接设到外部数据
-      this.$set(this.workcenterConditionData, 'startTimeCondition', val);
+      this.$set(this.workcenterTmpConditionData, 'startTimeCondition', val);
       this.search();
     },
     //切换我的待办按钮
     toggleIsMyProcessing() {
       //直接设到外部数据
-      if (this.workcenterConditionData.isProcessingOfMine) {
-        this.workcenterConditionData.isProcessingOfMine = 0;
+      if (this.workcenterTmpConditionData.isProcessingOfMine) {
+        this.workcenterTmpConditionData.isProcessingOfMine = 0;
       } else {
-        this.workcenterConditionData.isProcessingOfMine = 1;
+        this.workcenterTmpConditionData.isProcessingOfMine = 1;
       }
       this.search();
     },
     //通过关闭标签移除条件
     removeCondition(condition) {
-      if (this.workcenterConditionData.conditionGroupList && this.workcenterConditionData.conditionGroupList.length > 0) {
+      if (this.workcenterTmpConditionData.conditionGroupList && this.workcenterTmpConditionData.conditionGroupList.length > 0) {
         let deleteGroupIndex = null;
-        this.workcenterConditionData.conditionGroupList.forEach((group, gindex) => {
+        this.workcenterTmpConditionData.conditionGroupList.forEach((group, gindex) => {
           group.conditionList.forEach((c, index) => {
             if (c.uuid == condition.uuid) {
               //group.conditionList.splice(index, 1);
@@ -395,19 +418,19 @@ export default {
           }
         });
         if (deleteGroupIndex != null && deleteGroupIndex >= 0) {
-          //this.workcenterConditionData.conditionGroupList.splice(deleteGroupIndex, 1);
-          this.$delete(this.workcenterConditionData.conditionGroupList, deleteGroupIndex);
+          //this.workcenterTmpConditionData.conditionGroupList.splice(deleteGroupIndex, 1);
+          this.$delete(this.workcenterTmpConditionData.conditionGroupList, deleteGroupIndex);
           if (deleteGroupIndex > 0) {
-            //this.workcenterConditionData.conditionGroupRelList.splice(deleteGroupIndex - 1, 1);
-            this.$delete(this.workcenterConditionData.conditionGroupRelList, deleteGroupIndex - 1);
+            //this.workcenterTmpConditionData.conditionGroupRelList.splice(deleteGroupIndex - 1, 1);
+            this.$delete(this.workcenterTmpConditionData.conditionGroupRelList, deleteGroupIndex - 1);
           }
         }
       }
-      if (this.workcenterConditionData.keywordConditionList && this.workcenterConditionData.keywordConditionList.length > 0) {
-        this.workcenterConditionData.keywordConditionList.forEach((keyword, index) => {
+      if (this.workcenterTmpConditionData.keywordConditionList && this.workcenterTmpConditionData.keywordConditionList.length > 0) {
+        this.workcenterTmpConditionData.keywordConditionList.forEach((keyword, index) => {
           if (keyword.uuid == condition.uuid) {
-            //this.workcenterConditionData.keywordConditionList.splice(index, 1);
-            this.$delete(this.workcenterConditionData.keywordConditionList, index);
+            //this.workcenterTmpConditionData.keywordConditionList.splice(index, 1);
+            this.$delete(this.workcenterTmpConditionData.keywordConditionList, index);
             return false;
           }
         });
@@ -439,7 +462,7 @@ export default {
           data = this.$refs['searchPanel'].getData();
         }
       } else {
-        data = this.workcenterConditionData;
+        data = this.workcenterTmpConditionData;
         this.isDropdownShow = false;
       }
       if (data) {
@@ -448,22 +471,22 @@ export default {
         this.isDropdownShow = false;
       }
     },
-    generateJoinData(workcenterConditionData) {
+    generateJoinData(workcenterTmpConditionData) {
       //为了方便删除和编辑，搜索前才会补充关系数据
-      for (let g = 0; g < workcenterConditionData.conditionGroupList.length; g++) {
-        const conditionGroup = workcenterConditionData.conditionGroupList[g];
+      for (let g = 0; g < workcenterTmpConditionData.conditionGroupList.length; g++) {
+        const conditionGroup = workcenterTmpConditionData.conditionGroupList[g];
         for (let c = 1; c < conditionGroup.conditionList.length; c++) {
           const conditionRelObj = conditionGroup.conditionRelList[c - 1];
           conditionRelObj['from'] = conditionGroup.conditionList[c - 1].uuid;
           conditionRelObj['to'] = conditionGroup.conditionList[c].uuid;
         }
         if (g >= 1) {
-          const conditionGroupRelObj = workcenterConditionData.conditionGroupRelList[g - 1];
-          conditionGroupRelObj['from'] = workcenterConditionData.conditionGroupList[g - 1].uuid;
-          conditionGroupRelObj['to'] = workcenterConditionData.conditionGroupList[g].uuid;
+          const conditionGroupRelObj = workcenterTmpConditionData.conditionGroupRelList[g - 1];
+          conditionGroupRelObj['from'] = workcenterTmpConditionData.conditionGroupList[g - 1].uuid;
+          conditionGroupRelObj['to'] = workcenterTmpConditionData.conditionGroupList[g].uuid;
         }
       }
-      return workcenterConditionData;
+      return workcenterTmpConditionData;
     },
     batchAction(type) {
       this.$emit('batchAction', type);
@@ -473,8 +496,8 @@ export default {
   filter: {},
   computed: {
     hasCondition() {
-      if ((this.workcenterConditionData.conditionGroupList && this.workcenterConditionData.conditionGroupList.length > 0) ||
-    (this.workcenterConditionData.keywordConditionList && this.workcenterConditionData.keywordConditionList.length > 0)) {
+      if ((this.workcenterTmpConditionData.conditionGroupList && this.workcenterTmpConditionData.conditionGroupList.length > 0) ||
+    (this.workcenterTmpConditionData.keywordConditionList && this.workcenterTmpConditionData.keywordConditionList.length > 0)) {
         return true;
       }
       return false;
@@ -504,6 +527,7 @@ export default {
     workcenterData: {
       handler: function(val) {
         this.workcenterConditionData = val.conditionConfig;
+        this.workcenterTmpConditionData = val.tmpConditionConfig;
         this.searchMode = val?.conditionConfig?.handlerType || 'simple';
       },
       deep: true
@@ -523,7 +547,7 @@ export default {
 <style lang="less" scoped>
 .searcher-container {
   display: grid;
-  grid-template-columns: 220px 240px auto;
+  grid-template-columns: 100px 237px 237px auto;
   grid-gap: 10px;
 }
 .searcher-inputer {
