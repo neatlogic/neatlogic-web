@@ -300,8 +300,10 @@ export default {
       this.selectedItemList = selectedArr;
     },
     changeRowItem(val, row, uuid) {
-      this.$set(row, uuid, val);
-      this.setValue(this.tbodyList);
+      if (!this.$utils.isSame(val, row[uuid])) {
+        this.$set(row, uuid, val);
+        this.setValue(this.tbodyList);
+      }
     }
   },
   filter: {},
