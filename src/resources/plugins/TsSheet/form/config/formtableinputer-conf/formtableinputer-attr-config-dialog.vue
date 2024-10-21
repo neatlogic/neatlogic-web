@@ -242,6 +242,7 @@
             <TsFormItem :label="$t('term.framework.thsetting')" required>
               <TableConfig
                 ref="formitem_table"
+                :formItemList="allFormItemList"
                 :config="propertyLocal.config"
                 :source="source"
                 @setDataConfig="(dataConfig)=>{
@@ -624,6 +625,9 @@ export default {
 
       if (!this.propertyLocal.reaction) {
         this.$set(this.propertyLocal, 'reaction', this.$utils.deepClone(this.reaction));
+        if (['formselect', 'formradio', 'formcheckbox'].includes(this.propertyLocal.handler)) {
+          this.$set(this.propertyLocal.reaction, 'filter', {});
+        }
       } else {
         Object.keys(this.reaction).forEach((key) => {
           if (!this.propertyLocal.reaction.hasOwnProperty(key)) {

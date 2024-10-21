@@ -44,10 +44,11 @@
     </div>
     <AttrConfigDialog
       v-if="isAttrConfigDialogShow && currentProperty"
+      :formItemList="formItemList"
       :formItemConfig="config"
       :property="currentProperty"
       :isNeedTable="false"
-      :isNeedReaction="false"
+      :isNeedReaction="true"
       @close="closeAttrConfigDialog"
     ></AttrConfigDialog>
   </div>
@@ -62,7 +63,8 @@ export default {
   },
   props: {
     config: Object,
-    source: {type: String, default: ''}
+    source: {type: String, default: ''},
+    formItemList: {type: Array, default: () => []}
   },
   data() {
     return {
