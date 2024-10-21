@@ -27,6 +27,7 @@
                 :mode="mode"
                 :disabled="disabled"
                 :readonly="readonly"
+                :externalData="externalData"
                 @resize="$emit('resize')"
                 @emit="
                   val => {
