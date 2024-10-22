@@ -15,7 +15,10 @@
           :selectItemList.sync="selectMatrixConfig"
           :disabled="disabled"
           @first="$utils.matrixDataSourceRedirect()"
-          @change="changeMatrix"
+          @change="(val)=>{
+            $set(config, 'dataConfig', []);
+            changeMatrix(val);
+          }"
           @change-label="changeMatrixLabel"
         >
           <template v-slot:option="{item}">
@@ -233,7 +236,6 @@ export default {
       });
     },
     changeMatrix(matrixUuid) {
-      this.$set(this.config, 'dataConfig', []);
       if (matrixUuid) {
         //更新了矩阵需要重新刷新columnList,先把表单组件变成不就绪状态，等columnList加载完再重新改为就绪状态
         this.formItem.isEditing = true;
@@ -244,15 +246,15 @@ export default {
           //删除矩阵中不存在的值
           for (let i = this.config.dataConfig.length - 1; i >= 0; i--) {
             const data = this.config.dataConfig[i];
-            if (!data.isExtra && !dataList.find(d => d.uuid === data.uuid)) {
+            if (!data.isExtra && !dataList.find(d => d.uniqueIdentifier === data.key)) {
               this.config.dataConfig.splice(i, 1);
             }
           }
           //补充矩阵新增的数据
           dataList.forEach(item => {
-            if (!this.config.dataConfig.find(d => d.uuid === item.uuid)) {
+            if (!this.config.dataConfig.find(d => d.key === item.uniqueIdentifier)) {
               //矩阵的数据默认都是用formtext作为输入组件
-              this.config.dataConfig.push({ uuid: item.uuid, key: item.uniqueIdentifier, label: item.name, isPC: true, isMobile: false, isSearch: false, isSearchable: item.isSearchable, handler: 'formtext', hasValue: true });
+              this.config.dataConfig.push({ uuid: this.$utils.setUuid(), key: item.uniqueIdentifier, label: item.name, isPC: true, isMobile: false, isSearch: false, isSearchable: item.isSearchable, handler: 'formtext', hasValue: true });
             }
           });
         }).catch(err => {

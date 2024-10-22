@@ -58,18 +58,16 @@ export default {
     }
   },
   methods: {
-    valid() {
-      
-    }
+    valid() {}
   },
   computed: {},
   watch: {
-    valueLocal: {
+    /*valueLocal: {
       handler() {
         this.$emit('on-change', this.valueLocal);
       },
       deep: true
-    }
+    }*/
   },
   render(h, cx) {
     let $handler;
@@ -78,8 +76,10 @@ export default {
         ref: this.ref,
         props: { value: this.valueLocal, ...this.config, type: this.type },
         on: {
-          change: val => {
+          change: (val, opt) => {
             this.valueLocal = val;
+            this.$emit('on-change', this.valueLocal, opt);
+            //console.log(JSON.stringify(opt));
           }
         }
       });
