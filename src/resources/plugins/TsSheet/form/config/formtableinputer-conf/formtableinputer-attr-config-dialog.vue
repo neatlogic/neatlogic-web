@@ -34,7 +34,7 @@
               <!--由于最后一个formitem去掉了margin-bottom，这里补充回来-->
               <TsFormInput v-model="propertyLocal.config.defaultValue" :validateList="propertyLocal.config.validate? [propertyLocal.config.validate]:[]" :type="propertyLocal.handler.replace('form', '')"></TsFormInput>
             </TsFormItem>
-            <TsFormItem :label="$t('page.viewtarget',{'target':$t('page.auth')})">
+            <TsFormItem v-if="propertyLocal.handler === 'formpassword'" :label="$t('page.viewtarget',{'target':$t('page.auth')})">
               <UserSelect
                 :value="propertyLocal.config.viewPasswordAuthorityList"
                 :multiple="true"
