@@ -286,6 +286,9 @@ export default {
         if (rule.hasOwnProperty('type')) {
           this.$delete(rule, 'type');
         }
+        if (rule.hasOwnProperty('valueList')) { //条件赋值
+          this.$delete(rule, 'valueList');
+        }
       }
       if (!rule.conditionGroupRelList || rule.conditionGroupRelList.length == 0) {
         this.$delete(rule, 'conditionGroupRelList');

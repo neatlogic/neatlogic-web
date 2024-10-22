@@ -63,9 +63,7 @@ export default {
     this.init();
   },
   beforeMount() {},
-  mounted() {
-    console.log(this.formItemList, 'formItemList');
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
