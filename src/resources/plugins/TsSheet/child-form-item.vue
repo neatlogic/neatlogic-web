@@ -29,6 +29,7 @@
       :showStatusIcon="false"
       isCustomValue
       :isClearSpecifiedAttr="isClearSpecifiedAttr"
+      :externalData="externalData"
       @resize="$emit('resize')"
       @emit="
         val => {
@@ -54,6 +55,11 @@ export default {
     isClearSpecifiedAttr: {//工单权限用户编辑表单时，需要清除表单设置的只读，禁用，隐藏等规则属性
       type: Boolean,
       default: false
+    },
+    externalData: {
+      // 外部数据，非表单数据，例如工单上报人数据等
+      type: Object,
+      default: () => {}
     }
   },
   data() {

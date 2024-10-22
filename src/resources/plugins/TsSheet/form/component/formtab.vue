@@ -34,6 +34,7 @@
                 :disabled="disabled || tab.isDisabled"
                 :readonly="readonly || tab.isReadOnly"
                 :isClearSpecifiedAttr="isClearSpecifiedAttr"
+                :externalData="externalData"
                 @resize="$emit('resize')"
                 @emit="
                   val => {

@@ -571,11 +571,11 @@ export default {
     },
     executeReactions() {
       // 执行所有收集到的更新
-      console.log('开始批量处理', new Date());
+      // console.log('开始批量处理', new Date());
       this.reactionFnQueue.forEach(fn => fn && fn());
       this.reactionFnQueue = new Map();
       this.isDoingReaction = false;
-      console.log('批量处理完毕', new Date());
+      // console.log('批量处理完毕', new Date());
       this.$forceUpdate();
     },
     cutCell() {
@@ -598,6 +598,8 @@ export default {
         } else if (this.handlerCell.component) {
           this.copyedCell.component = this.$utils.deepClone(this.handlerCell.component);
           this.copyedCell.component.uuid = this.$utils.setUuid(); //重新生成组件uuid
+          this.copyedCell.component.uuid = this.$utils.setUuid(); //重新生成组件uuid
+          this.updateCellAttrUuid(this.copyedCell);
         }
       }
     },
@@ -947,6 +949,7 @@ export default {
         }
         //针对子表单
         this.calcContainerHeight();
+        this.$emit('resize');
       });
     },
     //获取真正的rowspan，排除隐藏行
@@ -1917,7 +1920,62 @@ export default {
         this.$emit('removeComponent', item.uuid);
       }
       this.hideComponentList.splice(index, 1);
+    },
+    //复制组件，需要更新表格内属性的uuid(后台要求，属性的uuid也要保存唯一)
+    updateCellAttrUuid(cell) {
+      if (cell.component) {
+        if (cell.component.config && !this.$utils.isEmpty(cell.component.config.dataConfig)) {
+          this.updateTableAttrUuids(cell.component.config.dataConfig);
+        } else if (cell.component.component && !this.$utils.isEmpty(cell.component.component)) {
+          this.updateLayoutAttrUuids(cell);
+        } else if (cell.component.formData && !this.$utils.isEmpty(cell.component.formData.formConfig)) {
+          this.updateSubFormAttrUuids(cell.component.formData.formConfig);
+        }
+      }
+    },
+    updateTableAttrUuids(list) { //表格组件更新属性uuid
+      list.forEach(attr => {
+        this.$set(attr, 'uuid', this.$utils.setUuid());
+        if (attr.handler === 'formtable') {
+          if (attr.config && !this.$utils.isEmpty(attr.config.dataConfig)) {
+            this.updateTableAttrUuids(attr.config.dataConfig);
+          }
+        }
+      });
+    },
+    updateLayoutAttrUuids(item) { //布局组件内部表格更新属性uuid
+      let mapUuid = {};
+      item.component.component.forEach(attr => {
+        const uuid = this.$utils.setUuid();
+        mapUuid[attr.uuid] = uuid;
+        this.$set(attr, 'uuid', uuid);
+        if (attr.config && !this.$utils.isEmpty(attr.config.dataConfig)) {
+          this.updateTableAttrUuids(attr.config.dataConfig);
+        }
+      });
+      if (item.component.config && item.component.config.tabList) {
+        item.component.config.tabList.forEach(tab => {
+          let componentUuidList = [];
+          tab.component.forEach(uuid => {
+            if (mapUuid[uuid] && !componentUuidList.includes(uuid)) {
+              componentUuidList.push(mapUuid[uuid]);
+            }
+          });
+          this.$set(tab, 'component', componentUuidList);
+        });
+      }
+    },
+    updateSubFormAttrUuids(formConfig) { //子表单更新属性uuid
+      if (formConfig.tableList) {
+        formConfig.tableList.forEach(cell => {
+          if (cell.component && cell.component.hasOwnProperty('uuid')) {
+            this.$set(cell.component, 'uuid', this.$utils.setUuid());
+            this.updateCellAttrUuid(cell); 
+          }
+        });
+      }
     }
+
   },
   filter: {},
   computed: {
