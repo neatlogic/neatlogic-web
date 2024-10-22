@@ -93,7 +93,7 @@
                 :validateList="validateList"
                 border="bottom"
                 :disabled="disabled"
-                @on-change="changeFilter(arguments,vindex)"
+                @on-change="()=>changeFilter(valid.filter,vindex)"
               >
               </TsFormSelect>
             </Col>
@@ -250,6 +250,7 @@ export default {
       numberValid: ['integer'],
       numValid: ['required', 'integer_p'],
       nowOpt: [
+        {text: this.$t('page.minute'), value: 'minute'},
         {text: this.$t('page.hour'), value: 'hour'},
         {text: this.$t('page.day'), value: 'day'},
         {text: this.$t('page.month'), value: 'month'},
@@ -339,9 +340,13 @@ export default {
       }
       return timeTypeList;
     },
-    changeFilter(arg, index) {
+    changeFilter(type, index) {
       let filter = this.config.validValueList[index];
-      filter.value = '';
+      if (type != 'custom') {
+        filter.value = 0; // 处理value值类型是number时，props传递值控制台报错问题
+      } else {
+        filter.value = '';
+      }
       filter.unit = 'day';
     },
     changeDefaultValue() {

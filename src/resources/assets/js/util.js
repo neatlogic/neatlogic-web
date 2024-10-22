@@ -755,6 +755,7 @@ const methods = {
     let returnDate = null;
     let time = timstamp ? new Date(timstamp) : new Date();
     let dateObj = {
+      minute: time.getTime() + 1 * 60 * 1000 * value,
       hour: time.getTime() + 1 * 60 * 60 * 1000 * value,
       day: time.getTime() + 24 * 3600 * 1000 * value,
       month: this.deepClone(time).setMonth(time.getMonth() + value),
@@ -1131,8 +1132,9 @@ const methods = {
       } // 用于手动清除定时器
     };
   },
-  sortByObj(obj) { //对象的属性按首字母排序
-    if(this.isEmpty(obj)) {
+  sortByObj(obj) {
+    //对象的属性按首字母排序
+    if (this.isEmpty(obj)) {
       return {};
     }
     // 获取对象的键并排序
