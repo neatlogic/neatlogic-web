@@ -246,8 +246,8 @@ export default {
       immediate: true
     },
     processTaskConfig: {
-      handler(taskConfig) {
-        let {id = ''} = taskConfig || {};
+      handler(newVal) {
+        let {id = ''} = newVal || {};
         if (!this.$utils.isEmpty(id)) {
           if (!this.$utils.isSame(this.processTaskId, id)) { 
             this.processTaskId = this.$utils.deepClone(id);
