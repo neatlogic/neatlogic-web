@@ -37,7 +37,8 @@ export default {
       timePickerOptions: {
         disabledHours: [],
         disabledMinutes: []
-      }
+      },
+      unitList: ['minute', 'hour', 'day', 'month', 'year']
     };
   },
   beforeCreate() {},
@@ -115,7 +116,7 @@ export default {
         this.timePickerOptions.disabledHours = [];
         this.timePickerOptions.disabledMinutes = [];
       } else if (currentValue <= calculateValue) {
-        if ((unit == 'day' || unit == 'hour' || unit == 'month' || unit == 'year')) {
+        if (this.unitList.includes(unit)) {
           disabledHours = new Date(calculateValue).getHours();
           disabledMinutes = new Date(calculateValue).getMinutes();
           this.timePickerOptions.disabledHours = [];
@@ -135,7 +136,12 @@ export default {
     handleLaterAndEqual(unit, minDate, num) {
       // 处理大于等于规则时，处理置灰时间边界
       let date = new Date(this.$utils.deepClone(minDate));
-      if (unit == 'hour') {
+      if (unit == 'minute') {
+        // 分钟
+        date.setDate(date.getDate() - 1); // -1表示禁用日期的前一天可选，即禁用日期的前一天可选
+        date.setMinutes(date.getMinutes() + num);
+        minDate = new Date(date).getTime();
+      } else if (unit == 'hour') {
         //小时
         date.setDate(date.getDate() - 1);
         date.setHours(date.getHours() - num);
@@ -162,7 +168,7 @@ export default {
       let disabledHours = '';
       let disabledMinutes = '';
       if (currentYMD == calculateYMD) {
-        if ((unit == 'day' || unit == 'hour' || unit == 'month' || unit == 'year')) {
+        if (this.unitList.includes(unit)) {
           let currentHour = new Date(currentValue).getHours();
           disabledHours = new Date(calculateValue).getHours();
           disabledMinutes = new Date(calculateValue).getMinutes();
@@ -190,7 +196,11 @@ export default {
     handleEarlierAndEqual(unit, maxDate, num) {
       // 处理小于等于规则时，置灰日期边界
       let date = new Date(this.$utils.deepClone(maxDate));
-      if (unit == 'hour') {
+      if (unit == 'minute') {
+        // 分钟
+        date.setMinutes(date.getMinutes() + num);
+        maxDate = new Date(date).getTime();
+      } else if (unit == 'hour') {
         //小时
         date.setDate(date.getDate() + 1);
         date.setHours(date.getHours() + num);
@@ -214,7 +224,7 @@ export default {
       let returnDate;
       let format = this.config.format || '';
       let styleType = this.config.styleType; 
-      returnDate = this.$utils.getDateByFormat(this.$utils.calculateDate(unit, value, timstamp), format, styleType);  
+      returnDate = this.$utils.getDateByFormat(this.$utils.calculateDate(unit, value, timstamp), format, styleType);
       // 修复工单中心传递yyyy|MM|dd 的格式给后端，正常的应该是yyyyMMdd 
       return returnDate && returnDate.replace(/\|/g, '');
     },
@@ -248,7 +258,7 @@ export default {
             return newdate;
           } else if (arr[0] == 'others') {
             if (arr[1]) {
-              this.setValue(newdate);
+              this.setValue(arr[1]);
               return arr[1];
             } else {
               this.setValue('');
@@ -296,6 +306,7 @@ export default {
         earlierAndEqual: this.$t('term.framework.earlierandequal')
       };
       let unitText = {
+        minute: this.$t('page.minute'),
         hour: this.$t('page.hour'),
         day: this.$t('page.day'),
         month: this.$t('page.month'),
@@ -409,8 +420,10 @@ export default {
       let config = this.config;
       let minDate = '';//早于，可选择区间里最小的日期
       let maxDate = '';//晚于，可选择区间里最大的日期
+      let unit = '';
       if (config.validType && config.validType.indexOf('custom') >= 0 && config.validValueList && config.validValueList.length > 0) {
         config.validValueList.forEach(item => {
+          unit = item.text;
           if (item.filter == 'custom' && item.value) {
             //自定义
             if (item.text == 'later' || item.text == 'laterAndEqual') {
@@ -436,7 +449,7 @@ export default {
                 minDate = _this.handleLaterAndEqual(item.unit, minDate, item.value);
               }
             } else if (item.text == 'earlier' || item.text == 'earlierAndEqual') {
-              let newValue = _this.$utils.timestampCalculation(item.unit, ((item.value > 0 ? -(item.value) : item.value) || 0), null, this.config.format || '', this.config.styleType);
+              let newValue = _this.$utils.timestampCalculation(item.unit, item.value || 0, null, this.config.format || '', this.config.styleType);
               maxDate = maxDate ? Math.max(new Date(maxDate).getTime(), new Date(newValue).getTime()) : new Date(newValue).getTime();
               if (item.text == 'earlierAndEqual') {
                 // 处理禁用日期边界
@@ -476,17 +489,21 @@ export default {
       }
       return {
         disabledDate(date) {
+          // 处理禁用日期边界, -86400000 为一天的毫秒数，表示不禁用当天
           let curTime = new Date();
           new Date(date.setHours(curTime.getHours()));
           new Date(date.setMinutes(curTime.getMinutes()));
-          return date && ((maxDate && date.valueOf() >= maxDate) || (minDate && date.valueOf() <= minDate));
+          if (unit == 'later' || unit == 'earlier') {
+            // 大于或者小于的时候，需要减去一天的毫秒数，否则会禁用当天
+            return date && ((maxDate && date.valueOf() - 86400000 >= maxDate) || (minDate && date.valueOf() <= minDate - 86400000));
+          } else {
+            return date && ((maxDate && date.valueOf() > maxDate) || (minDate && date.valueOf() < minDate));
+          }
         }  
       };
     }
   },
-  watch: {
-
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped></style>
