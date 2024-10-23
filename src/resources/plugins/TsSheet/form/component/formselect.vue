@@ -246,7 +246,9 @@ export default {
       handler(val) {
         if (!this.isFirst && !this.$utils.isEmpty(val) && !this.$utils.isSame(val, this.initFilter)) {
           //改变过滤条件，清空选项
-          this.setValue(null);
+          if (!this.disabled && !this.readonly) {
+            this.setValue(null);
+          }
         }
         this.initFilter = this.$utils.deepClone(val);
         this.isFirst = false;
