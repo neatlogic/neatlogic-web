@@ -64,6 +64,7 @@ export default {
         rowNum: 0,
         tbodyList: []
       },
+      defaultData: null,
       theadList: [
         {
           title: this.$t('page.title'),
@@ -150,8 +151,13 @@ export default {
   computed: {},
   watch: {
     processTaskConfig: {
-      handler(val) {
-        this.getTableList();
+      handler(newVal) {
+        let {owner = '', id = ''} = newVal || {};
+        let tempData = {owner, id};
+        if (!this.$utils.isSame(this.defaultData, tempData)) {
+          this.defaultData = this.$utils.deepClone(tempData);
+          this.getTableList();
+        }
       },
       deep: true
     }
