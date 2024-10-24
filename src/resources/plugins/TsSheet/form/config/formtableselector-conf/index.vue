@@ -254,7 +254,7 @@ export default {
           dataList.forEach(item => {
             if (!this.config.dataConfig.find(d => d.key === item.uniqueIdentifier)) {
               //矩阵的数据默认都是用formtext作为输入组件
-              this.config.dataConfig.push({ uuid: this.$utils.setUuid(), key: item.uniqueIdentifier, label: item.name, isPC: true, isMobile: false, isSearch: false, isSearchable: item.isSearchable, handler: 'formtext', hasValue: true });
+              this.config.dataConfig.push({ uuid: this.$utils.setUuid(), matrixAttrUuid: item.uuid, key: item.uniqueIdentifier, label: item.name, isPC: true, isMobile: false, isSearch: false, isSearchable: item.isSearchable, handler: 'formtext', hasValue: true });
             }
           });
         }).catch(err => {
