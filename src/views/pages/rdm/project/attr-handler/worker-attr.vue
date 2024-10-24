@@ -8,10 +8,10 @@
       :multiple="true"
       :transfer="true"
       :extendCondition="{ projectId: projectId }"
-      :groupList="groupList"
+      :groupList="['user']"
       :border="border"
+      :rangeList="rangeList"
       :includeList="['common#loginuser']"
-      :excludeList="['common#alluser']"
       @change="
         (val, opt) => {
           setValue('userIdList', val, opt);
@@ -33,11 +33,14 @@ export default {
   props: {},
   data() {
     return {
-      userIdList: (this.issueData && this.issueData.userIdList) || this.valueList
+      userIdList: (this.issueData && this.issueData.userIdList) || this.valueList,
+      rangeList: [] // 查询指定用户列表
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.getProjectById();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -70,26 +73,24 @@ export default {
         }
       }
       this.$emit('setValue', attr, val, text);
+    },
+    getProjectById() {
+      if (this.projectId) {
+        this.$api.rdm.project.getProjectById(this.projectId).then(res => {
+          let {userList = []} = res.Return || {};
+          if (userList.length > 0) {
+            this.rangeList = userList.map((v) => `user#${v.userId}`);
+          }
+        });
+      }
     }
   },
   filter: {},
   computed: {
-    groupList() {
-      const groupList = [];
-      if (this.projectId) {
-        if (this.mode === 'search') {
-          groupList.push('common');
-        }
-        groupList.push('rdm.project');
-      } else {
-        groupList.push('user');
-      }
-      return groupList;
-    },
     finalUserIdList() {
       let userIdList = [];
       if (this.userIdList && this.userIdList.length > 0) {
-        userIdList = this.userIdList.map(str => str.indexOf('#') == -1 ? 'rdm.project#' + str : str);
+        userIdList = this.userIdList.map(str => str.indexOf('#') == -1 ? 'user#' + str : str);
       }
       return userIdList;
     },
