@@ -6,6 +6,7 @@
         <div class="action-group">
           <span v-auth="'INSPECT_EXECUTE'" class="action-item tsfont-apps" @click="batchInspection()">{{ $t('term.inspect.batchinspect') }}</span>
           <span v-auth="'INSPECT_SCHEDULE_EXECUTE'" class="action-item tsfont-sla" @click="openInspectionScheduleDialog()">{{ $t('term.inspect.scheduleinspect') }}</span>
+          <span v-if="reportData && reportData.tbodyList && reportData.tbodyList.length > 0" class="action-item tsfont-download" @click="exportAsset">{{ $t('page.export') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
@@ -140,6 +141,7 @@
   </div>
 </template>
 <script>
+import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
@@ -155,6 +157,7 @@ export default {
     RuleOfThresholdDialog: () => import('@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue')
   },
   filters: {},
+  mixins: [download],
   props: {},
   data() {
     return {
@@ -756,6 +759,15 @@ export default {
     },
     gotoAssetManagePage() {
       window.open(HOME + '/cmdb.html#/asset-manage', '_blank');
+    },
+    exportAsset() {
+      let data = {
+        url: 'api/binary/inspect/resource/report/export',
+        params: {
+          ...this.searchParam, ...this.searchValue
+        }
+      };
+      this.download(data);
     }
   },
   computed: {
