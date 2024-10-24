@@ -246,10 +246,13 @@ export default {
       immediate: true
     },
     processTaskConfig: {
-      handler(taskConfig) {
-        if (!this.$utils.isEmpty(taskConfig) && !this.$utils.isEmpty(taskConfig.id)) {
-          this.processTaskId = taskConfig.id;
-          this.UpdateSlaTimeDoing(true);
+      handler(newVal) {
+        let {id = ''} = newVal || {};
+        if (!this.$utils.isEmpty(id)) {
+          if (!this.$utils.isSame(this.processTaskId, id)) { 
+            this.processTaskId = this.$utils.deepClone(id);
+            this.UpdateSlaTimeDoing(true);
+          }
         } else {
           this.$store.commit('setTaskSlaTimeList', []); // 清空工单时效
         }
