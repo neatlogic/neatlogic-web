@@ -12,7 +12,8 @@
           <FormItem
             :ref="'formitem_' + extra.uuid + '_' + index"
             :formItem="extra"
-            :formData="row"
+            :formData="{...filterUuid(initFormData), ...row}"
+            :formItemList="$utils.deepClone(config.dataConfig.concat(formItemList))"
             :showStatusIcon="false"
             :readonly="readonly"
             :isCustomValue="isCustomValue"
@@ -20,7 +21,7 @@
             :rowUuid="row.uuid"
             mode="read"
             style="min-width:130px"
-            @change="changeRow(row,index)"
+            @change="(val)=>{changeRow(val, extra.uuid, row);}"
           ></FormItem>
         </div>
       </template>
@@ -53,7 +54,8 @@ export default {
     return {
       isTableSelectorDialogShow: false,
       selectedIndexList: [],
-      tableData: { theadList: [], tbodyList: [] }
+      tableData: { theadList: [], tbodyList: [] },
+      initFormData: this.$utils.deepClone(this.formData)
     };
   },
   beforeCreate() {},
@@ -100,9 +102,11 @@ export default {
         this.addItem();
       }
     },
-    changeRow(row, index) {
-      this.$set(this.tableData.tbodyList, index, row);
-      this.setValue(this.tableData.tbodyList);
+    changeRow(val, uuid, row) {
+      if (!this.$utils.isSame(row[uuid], val)) {
+        this.$set(row, uuid, val);
+        this.setValue(this.tableData.tbodyList);
+      }
     },
     deleteItem(row) {
       const index = this.tableData.tbodyList.findIndex(d => d.uuid === row.uuid);
@@ -148,6 +152,12 @@ export default {
       let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
       this.tableData.tbodyList.splice(event.newIndex, 0, beforeVal);
       this.setValue(this.tableData.tbodyList);
+    },
+    filterUuid(obj) {
+      if (obj.uuid) {
+        delete obj.uuid;
+      }
+      return obj;
     }
   },
   filter: {},
@@ -177,6 +187,15 @@ export default {
             this.tableData.theadList.push(item);
           });
           this.tableData.theadList.push({ key: 'btn' });
+        }
+      },
+      deep: true,
+      immediate: true
+    },
+    formData: {
+      handler(val) {
+        if (this.mode != 'edit' && this.mode != 'editSubform' && !this.$utils.isSame(val, this.initFormData)) {
+          this.initFormData = this.$utils.deepClone(val) || {};
         }
       },
       deep: true,
