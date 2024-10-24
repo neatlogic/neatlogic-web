@@ -56,7 +56,7 @@
                 mode="read"
                 :value="formConfig"
                 :formSceneUuid="formSceneUuid"
-                :data="processTaskConfig.formAttributeDataMap"
+                :data="formAttributeDataMap"
                 :readonly="!actionConfig.save || !formEdit"
                 :externalData="externalData"
                 class="pl-sm pr-sm"
@@ -187,7 +187,7 @@
                   mode="read"
                   :value="formConfig"
                   :formSceneUuid="formSceneUuid"
-                  :data="processTaskConfig.formAttributeDataMap"
+                  :data="formAttributeDataMap"
                   :readonly="!actionConfig.save || !formEdit"
                   :externalData="externalData"
                   class="pl-sm pr-sm"
@@ -471,7 +471,6 @@ export default {
     }
   },
   data() {
-    let showFormValueConfig = this.processTaskConfig.formAttributeDataMap;
     return {
       fixedPageTab: {
         report: true,
@@ -507,7 +506,6 @@ export default {
       processTaskId: this.defaultProcessTaskId, //工单id
       processTaskStepId: this.defaultProcessTaskStepId, //步骤id
       auditId: null, //活动id
-      formValueConfig: showFormValueConfig, //表单值
       buttonLog: '1', //活动日志
       activeData: [], //按活动分
       stepContent: null, //描述
@@ -543,7 +541,8 @@ export default {
       formSceneUuid: 'defaultSceneUuid',
       externalData: {
         processTaskId: this.defaultProcessTaskId //工单id
-      }
+      },
+      formAttributeDataMap: this.processTaskConfig && this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap)
     };
   },
   created() {
@@ -1117,6 +1116,10 @@ export default {
       // 固定页面
       e.stopPropagation(); // 阻止冒泡，点击固定页面图标时，不触发tab的onClick事件，阻止tabValue值被改变
       this.loadingShow = true;
+      if (this.processTaskConfig.formAttributeDataMap) {
+        //表单重新渲染时，获取表单最新数据
+        this.formAttributeDataMap = this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap);
+      }
       this.fixedPageList.push({
         tabValue: tabValue,
         label: labelName,
@@ -1138,6 +1141,10 @@ export default {
     cancelFixedPage(tabValue) {
       // 取消固定页面
       this.loadingShow = true;
+      if (this.processTaskConfig.formAttributeDataMap) {
+        //表单重新渲染时，获取表单最新数据
+        this.formAttributeDataMap = this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap);
+      }
       for (let index = 0; index < this.fixedPageList.length; index++) {
         if (this.fixedPageList[index] && this.fixedPageList[index]['tabValue'] == tabValue) {
           this.fixedPageList.splice(index, 1);
@@ -1290,6 +1297,10 @@ export default {
         if (this.hasForm) {
           //重现渲染表单组件（重新计算），避免表单宽度为0
           this.isShowForm = false;
+          if (this.processTaskConfig.formAttributeDataMap) {
+            //表单重新渲染时，获取表单最新数据
+            this.formAttributeDataMap = this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap);
+          }
           this.$nextTick(() => {
             this.isShowForm = true;
             this.$nextTick(async() => {
