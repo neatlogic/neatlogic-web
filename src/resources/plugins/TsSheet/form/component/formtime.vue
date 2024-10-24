@@ -51,7 +51,15 @@ export default {
       const errorList = this.validDataForAllItem();
       if (!this.$utils.isEmpty(this.config.validType) && !this.$utils.isEmpty(this.config.validValueList)) {
         for (let i = 0; i < this.config.validValueList.length; i++) {
-          if (!this.config.validValueList[i].text || !this.config.validValueList[i].value || !this.config.validValueList[i].filter) {
+          if (this.config.validValueList[i].filter && this.config.validValueList[i].filter !== 'custom') {
+            const findItem = this.formItemList.find(item => item.uuid == this.config.validValueList[i].filter);
+            if (!findItem) {
+              this.$set(this.config.validValueList[i], 'filter', '');
+            }
+          }
+          if (!this.config.validValueList[i].text || 
+          !this.config.validValueList[i].filter ||
+          (this.config.validValueList[i].filter === 'custom' && !this.config.validValueList[i].value)) {
             errorList.push({ field: 'validValueList', error: this.$t('message.completerequired', {'target': this.$t('term.framework.cusvalid')}) });
             break;
           }
@@ -100,26 +108,28 @@ export default {
             });
           } else {
             //表单相同组件
-            for (let i = 0; i < this.formItemList.length; i++) {
-              if (this.formItemList[i].uuid == item.filter) {
-                let component = this.formItemList[i];
-                let formValue = this.formData[item.filter];
-                validateList.push({
-                  name: 'tomore',
-                  trigger: 'change',
-                  message: this.$t('term.framework.timeneed') + (item.text == 'later' ? this.$t('page.later') : this.$t('page.earlier')) + component.label,
-                  validator: (rule, value) => {
-                    if (value == '' || !formValue) {
+            if (!this.$utils.isEmpty(this.formItemList)) {
+              for (let i = 0; i < this.formItemList.length; i++) {
+                if (this.formItemList[i].uuid == item.filter) {
+                  let component = this.formItemList[i];
+                  let formValue = this.formData[item.filter];
+                  validateList.push({
+                    name: 'tomore',
+                    trigger: 'change',
+                    message: this.$t('term.framework.timeneed') + (item.text == 'later' ? this.$t('page.later') : this.$t('page.earlier')) + component.label,
+                    validator: (rule, value) => {
+                      if (value == '' || !formValue) {
+                        return true;
+                      } else if (item.text == 'later') {
+                        return value > formValue;
+                      } else if (item.text == 'earlier') {
+                        return value < formValue;
+                      }
                       return true;
-                    } else if (item.text == 'later') {
-                      return value > formValue;
-                    } else if (item.text == 'earlier') {
-                      return value < formValue;
                     }
-                    return true;
-                  }
-                });
-                break;
+                  });
+                  break;
+                }
               }
             }
           }

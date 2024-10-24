@@ -48,7 +48,7 @@
                 transfer
               ></TsFormSelect>
             </Col>
-            <Col span="9">
+            <Col :span="valid.filter == 'custom'?9:18">
               <TsFormSelect
                 ref="validFilter"
                 v-model="valid.filter"
@@ -60,9 +60,8 @@
               >
               </TsFormSelect>
             </Col>
-            <Col span="9">
+            <Col v-if="valid.filter == 'custom'" span="9">
               <TsFormDatePicker
-                v-if="valid.filter == 'custom'"
                 ref="validValue"
                 v-model="valid.value"
                 value-type="format"
