@@ -1117,7 +1117,7 @@ export default {
       e.stopPropagation(); // 阻止冒泡，点击固定页面图标时，不触发tab的onClick事件，阻止tabValue值被改变
       this.loadingShow = true;
       if (this.processTaskConfig.formAttributeDataMap) {
-        //表单从新渲染时，获取表单最新数据
+        //表单重新渲染时，获取表单最新数据
         this.formAttributeDataMap = this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap);
       }
       this.fixedPageList.push({
@@ -1142,7 +1142,7 @@ export default {
       // 取消固定页面
       this.loadingShow = true;
       if (this.processTaskConfig.formAttributeDataMap) {
-        //表单从新渲染时，获取表单最新数据
+        //表单重新渲染时，获取表单最新数据
         this.formAttributeDataMap = this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap);
       }
       for (let index = 0; index < this.fixedPageList.length; index++) {
@@ -1298,7 +1298,7 @@ export default {
           //重现渲染表单组件（重新计算），避免表单宽度为0
           this.isShowForm = false;
           if (this.processTaskConfig.formAttributeDataMap) {
-            //表单从新渲染时，获取表单最新数据
+            //表单重新渲染时，获取表单最新数据
             this.formAttributeDataMap = this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap);
           }
           this.$nextTick(() => {
