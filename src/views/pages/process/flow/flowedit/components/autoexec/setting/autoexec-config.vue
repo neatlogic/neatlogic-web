@@ -146,6 +146,7 @@ export default {
           multiple: false,
           search: true,
           dynamicUrl: '/api/rest/autoexec/combop/list',
+          params: {isActive: 1},
           rootName: 'tbodyList',
           textName: 'name',
           valueName: 'id',
