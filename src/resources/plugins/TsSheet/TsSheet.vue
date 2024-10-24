@@ -2360,11 +2360,7 @@ export default {
     },
     formData: {
       handler: function(newVal, oldVal) {
-        if (!this.$utils.isSame(newVal, oldVal)) {
-          this.$emit('setValue', this.$utils.deepClone(newVal));
-        }
-       
-        // console.log(JSON.stringify(newVal, null, 2));
+        this.$emit('setValue', this.$utils.deepClone(newVal));
       },
       deep: true
     },
