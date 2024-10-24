@@ -92,7 +92,8 @@ export default {
       selectedItemList: [],
       loadingShow: true,
       searchConditionValueList: [], //搜索条件的值列表
-      searchConditionConfig: {}
+      searchConditionConfig: {},
+      matrixAttrUuidMap: {} //矩阵属性uuid与uuid的映射，用于获取矩阵属性
     };
   },
   beforeCreate() {},
@@ -119,6 +120,14 @@ export default {
       }
     },
     searchMatrixData(currentPage) {
+      if (this.config.dataConfig) {
+        this.config.dataConfig.forEach(d => {
+          if (!d.isExtra && !this.matrixAttrUuidMap.hasOwnProperty(d.uuid)) {
+          //uuid与矩阵属性uuid的映射，用于获取矩阵属性
+            this.$set(this.matrixAttrUuidMap, d.uuid, d.matrixAttrUuid || d.uuid);
+          } 
+        });
+      }
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
@@ -135,8 +144,8 @@ export default {
       this.searchParam.columnList = [];
       this.searchParam.searchColumnList = [];
       this.config.dataConfig.filter(d => !d.isExtra).forEach(d => {
-        d.isPC && this.searchParam.columnList.push(d.uuid);
-        d.isSearch && this.searchParam.searchColumnList.push(d.uuid);
+        d.isPC && this.searchParam.columnList.push(this.matrixAttrUuidMap[d.uuid]);
+        d.isSearch && this.searchParam.searchColumnList.push(this.matrixAttrUuidMap[d.uuid]);
       });
       if (!this.searchParam.columnList.length) {
         this.loadingShow = false;
@@ -161,32 +170,46 @@ export default {
         //编辑模式下只显示表头
         if (this.mode === 'read') {
           this.matrixData = res.Return;
-          this.matrixData.tbodyList &&
-          this.matrixData.tbodyList.forEach(d => {
-          //矩阵回来的数据包含了text,type,value三个属性，表格显示时只需要text属性
-            for (let k in d) {
-              d[k] = d[k].text;
-            }
-            if (!this.$utils.isEmpty(this.config.dataConfig.length)) {
-              this.config.dataConfig.forEach(column => {
-                if (column.isExtra && column.isPC) {
-                  this.$set(d, column.uuid, null);
-                }
+          if (!this.$utils.isEmpty(this.matrixData.tbodyList)) {
+            let tbodyList = [];
+            this.matrixData.tbodyList.forEach(d => {
+              let td = {};
+              //矩阵回来的数据包含了text,type,value三个属性，表格显示时只需要text属性
+              for (let k in d) {
+                d[k] = d[k].text;
+              }
+              if (d.uuid) {
+                td.uuid = d.uuid;
+              }
+              Object.keys(this.matrixAttrUuidMap).forEach(uuid => {
+                td[uuid] = d[this.matrixAttrUuidMap[uuid]];
               });
-            }
-            if (this.value && this.value.length > 0) {
-              const valueitem = this.value.find(valuedata => valuedata.uuid === d.uuid);
-              if (valueitem) {
-                d['_selected'] = true;
-                for (let key in valueitem) {
-                  const column = this.config.dataConfig.find(c => c.uuid === key);
-                  if (column && column.isExtra && column.isPC) {
-                    this.$set(d, key, valueitem[key]);
+              tbodyList.push(td);
+            });
+            tbodyList.forEach(d => {
+              if (!this.$utils.isEmpty(this.config.dataConfig.length)) {
+                this.config.dataConfig.forEach(column => {
+                  if (column.isExtra && column.isPC) {
+                    this.$set(d, column.uuid, null);
+                  }
+                });
+              }
+              if (this.value && this.value.length > 0) {
+                const valueitem = this.value.find(valuedata => valuedata.uuid === d.uuid);
+                if (valueitem) {
+                  d['_selected'] = true;
+                  for (let key in valueitem) {
+                    const column = this.config.dataConfig.find(c => c.uuid === key);
+                    if (column && column.isExtra && column.isPC) {
+                      this.$set(d, key, valueitem[key]);
+                    }
                   }
                 }
               }
-            }
-          });
+            });
+            this.matrixData.tbodyList = tbodyList;
+          }
+   
           if (!this.$utils.isEmpty(this.matrixData.searchColumnDetailList)) {
             this.matrixData.searchColumnDetailList.forEach(item => {
               if (!this.searchConditionValueList.find(s => s.uuid === item.uuid)) {
