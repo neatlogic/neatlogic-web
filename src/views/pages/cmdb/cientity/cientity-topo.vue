@@ -108,7 +108,8 @@
           </TsFormItem>
           <TsFormItem v-for="(attr, index) in globalAttrList" :key="index" :label="attr.label">
             <TsFormSelect
-              :dataList="attr.itemList"
+              dynamicUrl="/api/rest/cmdb/globalattritem/search"
+              :params="{ attrId: attr.id }"
               valueName="id"
               textName="value"
               transfer
@@ -383,7 +384,6 @@ export default {
       if (item && item.length > 0) {
         valueList = item.map(d => d.id);
       }
-      console.log(JSON.stringify(valueList, null, 2));
       //if (!this.isAttrActive(attr, item)) {
       if (!this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id)) {
         this.searchParam.globalAttrFilterList.push({ attrId: attr.id, expression: 'like', valueList: valueList });
@@ -803,7 +803,6 @@ export default {
     isShowFilter: {
       handler: function(val) {
         setTimeout(() => {
-          console.log('aa');
           this.resizeSVG();
         }, 300);
       }

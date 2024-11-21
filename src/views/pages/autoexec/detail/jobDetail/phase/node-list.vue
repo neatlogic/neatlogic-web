@@ -98,17 +98,32 @@
             'text-success': row.status == 'succeed',
             'text-error': row.status == 'failed',
             'text-grey': row.status == 'pending',
-            'text-warning': row.status == 'ignored' || row.status == 'aborted' || row.status == 'aborting' || row.status == 'waitInput' || row.status == 'paused'
+            'text-warning': row.status == 'ignored' || row.status == 'aborted' || row.status == 'aborting' || row.status == 'waitInput' || row.status == 'paused' || row.status == 'invalid'
           }"
         >
-          <span>{{ row.statusName }}</span>
+          <Tooltip
+            v-if="row.status == 'invalid'"
+            :transfer="true"
+            placement="bottom-start"
+            trigger="hover"
+            max-width="400"
+          >
+            <span class="ml-xs tsfont-warning-o text-warn">{{ row.statusName }}</span>
+            <div slot="content">{{ row.errorMsg }}</div>
+          </Tooltip>
+          <span v-else>{{ row.statusName }}</span>
         </span>
       </template>
       <template v-slot:action="{ row }">
         <div class="tstable-action">
           <ul class="tstable-action-ul">
             <li>
-              <Tooltip :transfer="true" placement="bottom-start" trigger="hover">
+              <Tooltip
+                v-if="row.runnerHost"
+                :transfer="true"
+                placement="bottom-start"
+                trigger="hover"
+              >
                 <span class="action-item tsfont-adapter text-action">{{ $t('term.autoexec.actuatorinformation') }}</span>
                 <div slot="content">{{ row.runnerHost }}{{ row.runnerPort ? ':' + row.runnerPort : '' }}</div>
               </Tooltip>

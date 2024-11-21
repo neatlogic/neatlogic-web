@@ -668,5 +668,4 @@ export default {
 /deep/.ivu-collapse-content {
   padding: 0px;
 }
-
 </style>

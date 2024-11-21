@@ -13,6 +13,7 @@
 @default-aborting: @default-warning-color; //中止中
 @default-aborted: @default-warning-color; //已终止
 @default-ignored: @default-warning-color; //已忽略
+@default-invalid: @default-warning-color; //非法节点
 @default-submitted: @default-warning-color; //审核中
 @default-failed: @default-error-color; //已失败
 @default-rejected: @default-error-color; //已驳回
@@ -41,6 +42,7 @@
 @dark-aborting: @dark-warning-color; //中止中
 @dark-aborted: @dark-warning-color; //已终止
 @dark-ignored: @dark-warning-color; //已忽略
+@dark-invalid: @dark-warning-color; //非法节点
 @dark-submitted: @dark-warning-color; //审核中
 @dark-failed: @dark-error-color; //已失败
 @dark-rejected: @dark-error-color; //已驳回
@@ -55,7 +57,7 @@
 @dark-compiled: @default-info-color; // 已编译
 @dark-compile-failed: @default-error-color; // 编辑失败
 
-.theme(@saved,@pending,@running,@pausing,@paused,@aborting,@aborted,@completed,@failed,@succeed,@ignored,@default,@passed,@draft,@rejected,@submitted,@hang,@info-bg-color,@success-bg-color,@warning-bg-color,@error-bg-color,@pending-info) {
+.theme(@saved,@pending,@running,@pausing,@paused,@aborting,@aborted,@completed,@failed,@succeed,@ignored,@invalid,@default,@passed,@draft,@rejected,@submitted,@hang,@info-bg-color,@success-bg-color,@warning-bg-color,@error-bg-color,@pending-info) {
   .com-status {
     > [class*='bg-'] {
       background-color: @default;
@@ -105,6 +107,10 @@
     }
     .bg-ignored,
     .progress-ignored .ivu-progress-bg {
+      background-color: @warning-bg-color;
+    }
+    .bg-invalid,
+    .progress-invalid .ivu-progress-bg {
       background-color: @warning-bg-color;
     }
     .bg-draft,
@@ -229,6 +235,10 @@
     .text-ignored {
       color: @ignored;
     }
+    &.text-invalid,
+    .text-invalid {
+      color: @invalid;
+    }
     &.text-draft,
     .text-draft {
       color: @draft;
@@ -257,8 +267,8 @@
 }
 
 html {
-  .theme(@default-saved, @default-pending, @default-running, @default-pausing, @default-paused, @default-aborting, @default-aborted, @default-completed, @default-failed, @default-succeed, @default-ignored, @default-default, @default-passed, @default-draft, @default-rejected, @default-submitted, @default-hang, @default-info-bg-color, @default-success-bg-color, @default-warning-bg-color, @default-error-bg-color, @default-input-border);
+  .theme(@default-saved, @default-pending, @default-running, @default-pausing, @default-paused, @default-aborting, @default-aborted, @default-completed, @default-failed, @default-succeed, @default-ignored, @default-invalid, @default-default, @default-passed, @default-draft, @default-rejected, @default-submitted, @default-hang, @default-info-bg-color, @default-success-bg-color, @default-warning-bg-color, @default-error-bg-color, @default-input-border);
   &.theme-dark {
-    .theme(@dark-saved, @dark-pending, @dark-running, @dark-pausing, @dark-paused, @dark-aborting, @dark-aborted, @dark-completed, @dark-failed, @dark-succeed, @dark-ignored, @dark-default, @dark-passed, @dark-draft, @dark-rejected, @dark-submitted, @dark-hang, @dark-info-bg-color, @dark-success-bg-color, @dark-warning-bg-color, @dark-error-bg-color, @dark-input-border);
+    .theme(@dark-saved, @dark-pending, @dark-running, @dark-pausing, @dark-paused, @dark-aborting, @dark-aborted, @dark-completed, @dark-failed, @dark-succeed, @dark-ignored, @dark-invalid, @dark-default, @dark-passed, @dark-draft, @dark-rejected, @dark-submitted, @dark-hang, @dark-info-bg-color, @dark-success-bg-color, @dark-warning-bg-color, @dark-error-bg-color, @dark-input-border);
   }
 }

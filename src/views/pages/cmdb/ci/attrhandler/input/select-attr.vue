@@ -48,7 +48,6 @@ export default {
   data() {
     return {
       multiple: false,
-      validateList: [],
       searchConfig: {
         border: 'border',
         search: true,
@@ -89,11 +88,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.attrData) {
-      if (this.attrData.isRequired || this.attrData.isCiUnique) {
-        this.validateList.push('required');
-      }
-    }
+  
   },
   beforeMount() {},
   mounted() {},
@@ -138,6 +133,16 @@ export default {
   },
   filter: {},
   computed: {
+    validateList() {
+      if (this.attrData) {
+        if (this.attrData.isRequired || this.attrData.isCiUnique) {
+          if (this.extraDataList.length === 0) {
+            return ['required'];
+          }
+        }
+      }
+      return [];
+    },
     isShow() {
       return !(!this.isMultiple && this.extraDataList.length > 0);
     },
