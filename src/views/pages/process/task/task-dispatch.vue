@@ -640,7 +640,7 @@ export default {
       this.updateFormWidth();
     },
     setTimer() {
-      this.timer = setInterval(() => {
+      this.timer = this.$utils.setInterval(() => {
         let isSame = this.beforeLeaveCompare(this.initData);
         if (this.autoSaveKey && !isSame) {
           this.save();

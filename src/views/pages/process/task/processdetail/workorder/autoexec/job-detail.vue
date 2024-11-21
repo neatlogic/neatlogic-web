@@ -131,7 +131,7 @@ export default {
         this.intervalId = null;
       }
       if (!this.$utils.isEmpty(handlerStepInfo) && handlerStepInfo.jobList && handlerStepInfo.jobList.length > 0 && handlerStepInfo.jobList.some(job => job.status === 'running' || job.status === 'pending')) {
-        this.intervalId = setInterval(this.getTaskStepInfo, 15 * 1000);
+        this.intervalId = this.$utils.setInterval(this.getTaskStepInfo, 15 * 1000);
       } else {
         this.clearIntervalIfSet(); // 清除定时器
       }
