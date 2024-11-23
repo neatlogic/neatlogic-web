@@ -290,6 +290,7 @@ export default {
         this.initData(this.valueConfig, true);
       }
       this.valid();
+      this.$emit('on-ok');
     },
     openMore() {
       this.moreVisible = true;

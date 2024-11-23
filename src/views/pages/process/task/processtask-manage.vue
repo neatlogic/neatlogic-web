@@ -174,6 +174,7 @@ export default {
       timmer: null, //定时刷新工单中心
       timmerInterval: 30000, //定时刷新工单中心间隔(毫秒)
       isAutoRefresh: true,
+      isNewPage: false, // 是否是新页面打开
       workcenterData: null,
       isDownloading: false,
       tableConfig: {
@@ -279,13 +280,16 @@ export default {
         if (item.status.value === 'draft') {
           url = '/task-dispatch';
         }
-        window.open(HOME + `/process.html#${url}?processTaskId=${route.taskid}`, '_blank');
-        // this.$router.push({
-        //   path: url,
-        //   query: {
-        //     processTaskId: route.taskid
-        //   }
-        // });
+        if (this.isNewPage) {
+          window.open(HOME + `/process.html#${url}?processTaskId=${route.taskid}`, '_blank');
+        } else {
+          this.$router.push({
+            path: url,
+            query: {
+              processTaskId: route.taskid
+            }
+          });
+        }
       }
     },
     search(workcenterConditionData, currentPage) {
@@ -313,8 +317,10 @@ export default {
         .searchWorkcenter(this.workcenterData, { cancelToken: this.cancelAxios.token })
         .then(res => {
           if (res && res.Status == 'OK') {
+            let {isAutoRefresh, isNewPage} = res.Return || {};
             this.handlerSearchResult(res.Return);
-            this.isAutoRefresh = res.Return.isAutoRefresh;
+            this.isAutoRefresh = isAutoRefresh;
+            this.isNewPage = isNewPage;
           }
         })
         .catch(res => {

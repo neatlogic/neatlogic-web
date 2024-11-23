@@ -111,6 +111,7 @@
               :show-checkbox="multiple || false"
               :check-strictly="true"
               :childrenKey="childrenKey"
+              :load-data="loadData"
               @on-select-change="onSelectChange"
               @on-check-change="onCheckChange"
             ></Tree>
@@ -552,6 +553,9 @@ export default {
         }
       }
       this.readonlyTitle = width > text_length * 14 ? null : str;
+    },
+    loadData(item, callback) {
+      this.$emit('load-data', item, callback);
     }
   },
   computed: {

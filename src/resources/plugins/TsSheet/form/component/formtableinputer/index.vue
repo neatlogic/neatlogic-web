@@ -418,10 +418,12 @@ export default {
       let selectCpmponentList = ['formselect', 'formradio', 'formcheckbox']; // 数据有效性列表
       const startRow = 2;
       const endRow = 10;
+      let resultConfig = await this.handlePromiseAll(selectCpmponentList, theadUuidList);
       for (let [index, item] of this.extraList.entries()) {
         if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
           // 遍历每一行，设置数据有效性
-          let formulaeList = await this.handleFormulae(item.config);
+          let {dataSource = '', dataList = [] } = item.config || {};
+          let formulaeList = dataSource === 'matrix' ? resultConfig[item.uuid] || [] : this.handleDataList(dataList);
           for (let row = startRow; row <= endRow; row++) {
             const worksheetRow = _sheet1.getRow(row);
             const cell = worksheetRow.getCell(`${this.convertToExcelColumn(index + 1)}`);
@@ -449,6 +451,53 @@ export default {
           this.isShowExportExcelTemplate = true;
         });
       });
+    },
+    async handlePromiseAll(selectCpmponentList, theadUuidList = []) {
+      // 并发请求
+      let ajaxConfig = {};
+      let ajaxResult = [];
+      let resultConfig = {};
+      let ajaxRequest = [];
+      for (let [index, item] of this.extraList.entries()) {
+        if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
+          let {dataSource, matrixUuid = '', mapping = {}} = item.config || {};
+          if (dataSource === 'matrix') {
+            ajaxResult.push(item.uuid);
+            ajaxConfig[item.uuid] = {
+              matrixUuid: matrixUuid,
+              valueField: mapping.value,
+              textField: mapping.text
+            };
+          }
+        }
+      }
+      for (let key in ajaxConfig) {
+        ajaxRequest.push(this.$api.framework.matrix.getMatrixDataForSelect(ajaxConfig[key]));
+      }
+      try {
+        const resultList = await Promise.all(ajaxRequest);
+        if (resultList && resultList.length > 0) {
+          resultList.forEach((res, index) => {
+            let {Status = '', Return = {}} = res || {};
+            let {dataList = []} = Return || {};
+            if (Status && Status == 'OK') {
+              resultConfig[ajaxResult[index]] = [`"${dataList.filter((a) => this.handleSpecialValue(a.text)).map((b) => this.handleSpecialValue(b.text)).join(',')}"`];
+            }
+          });
+        }
+      } catch (error) {
+        console.error('error', error);
+      }
+      return resultConfig;
+    },
+    handleDataList(dataList) {
+      const resultArray = [
+        `"${dataList
+          .filter(item => item?.text)
+          .map(item => item.text)
+          .join(',')}"`
+      ];
+      return resultArray;
     },
     async exportExcel() {
       // 导出excel带表格数据
@@ -516,10 +565,12 @@ export default {
       let selectCpmponentList = ['formselect', 'formradio', 'formcheckbox']; // 数据有效性列表
       const startRow = 2;
       const endRow = 10;
+      let resultConfig = await this.handlePromiseAll(selectCpmponentList, theadUuidList);
       for (let [index, item] of this.extraList.entries()) {
         if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
           // 遍历每一行，设置数据有效性
-          let formulaeList = await this.handleFormulae(item.config);
+          let {dataSource = '', dataList = [] } = item.config || {};
+          let formulaeList = dataSource === 'matrix' ? resultConfig[item.uuid] || [] : this.handleDataList(dataList);
           for (let row = startRow; row <= endRow; row++) {
             const worksheetRow = _sheet1.getRow(row);
             const cell = worksheetRow.getCell(`${this.convertToExcelColumn(index + 1)}`);
@@ -531,7 +582,6 @@ export default {
           }
         }
       }
-
       // 导出表格
       _workbook.xlsx.writeBuffer().then((buffer) => {
         let _file = new Blob([buffer], {
@@ -576,30 +626,7 @@ export default {
       }
       return result;
     },
-    async handleFormulae(config) {
-      // 处理数据有效性下拉
-      let {dataSource = '', matrixUuid = '', mapping = {}, dataList = [] } = config || {};
-      if (dataSource === 'matrix') {
-        let param = {
-          matrixUuid: matrixUuid,
-          valueField: mapping.value,
-          textField: mapping.text
-        };
-        return await this.$api.framework.matrix.getMatrixDataForSelect(param).then(res => {
-          if (res.Status == 'OK') {
-            return [`"${res.Return?.dataList?.filter((item) => this.handleSpecialValue(item.text)).map((item) => this.handleSpecialValue(item.text)).join(',')}"`];
-          }
-        });
-      } else {
-        const resultArray = [
-          `"${dataList
-            .filter(item => item?.text)
-            .map(item => item.text)
-            .join(',')}"`
-        ];
-        return resultArray;
-      }
-    },
+
     handleSpecialValue(value) {
       let valueList = [];
       if (typeof value == 'string') {

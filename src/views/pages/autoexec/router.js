@@ -97,7 +97,7 @@ export default [
       title: $t('router.autoexec.timejob'),
       ismenu: true,
       icon: 'tsfont-formtime',
-      authority: 'AUTOEXEC_BASE',
+      authority: 'AUTOEXEC_MODIFY',
       type: 'job'
     }
   },
@@ -110,7 +110,7 @@ export default [
       title: $t('router.autoexec.timejob'),
       ismenu: false,
       icon: 'tsfont-formtime',
-      authority: 'AUTOEXEC_BASE',
+      authority: 'AUTOEXEC_MODIFY',
       type: 'detail'
     }
   },
@@ -122,7 +122,7 @@ export default [
       title: $t('router.autoexec.timejob'),
       ismenu: false,
       icon: 'tsfont-formtime',
-      authority: 'AUTOEXEC_BASE',
+      authority: 'AUTOEXEC_MODIFY',
       type: 'detail'
     }
   },
@@ -185,7 +185,7 @@ export default [
       title: $t('router.autoexec.combinationtool'),
       ismenu: true,
       icon: 'tsfont-flow',
-      authority: 'AUTOEXEC_BASE',
+      authority: 'AUTOEXEC_COMBOP_SEARCH',
       type: 'tool'
     }
   },
@@ -197,7 +197,7 @@ export default [
       title: $t('router.autoexec.combinationtooldetail'),
       ismenu: false,
       icon: 'tsfont-calendar',
-      authority: 'AUTOEXEC_BASE',
+      authority: 'AUTOEXEC_COMBOP_SEARCH',
       type: 'detail'
     }
   },
@@ -210,7 +210,7 @@ export default [
       title: $t('page.execute'),
       ismenu: false,
       icon: 'tsfont-run',
-      authority: '',
+      authority: 'AUTOEXEC_COMBOP_SEARCH',
       type: 'detail'
     }
   },
@@ -246,7 +246,7 @@ export default [
       title: $t('router.autoexec.scriptdetails'),
       ismenu: false,
       icon: 'tsfont-script',
-      authority: '',
+      authority: 'AUTOEXEC_SCRIPT_SEARCH',
       type: 'detail'
     }
   },
@@ -258,7 +258,7 @@ export default [
       title: $t('router.autoexec.addscript'),
       ismenu: false,
       icon: 'tsfont-script',
-      authority: '',
+      authority: 'AUTOEXEC_SCRIPT_MODIFY',
       type: 'detail'
     }
   },
@@ -294,7 +294,7 @@ export default [
       title: $t('router.autoexec.tooltestpage'),
       ismenu: false,
       icon: '',
-      authority: 'AUTOEXEC_BASE',
+      authority: 'AUTOEXEC_SCRIPT_MODIFY',
       type: 'detail'
     }
   },

@@ -275,11 +275,15 @@ export default {
           await this.getCombopDetail();
         }
         if (this.serviceData.config.executeNodeConfig && this.serviceData.config.executeNodeConfig.mappingMode == 'constant') {
-          this.filterSearchValue = !this.$utils.isEmpty(this.serviceData.config) ? this.serviceData.config.executeNodeConfig.value : {}; // 执行目标值回显
+          let {config = {}} = this.serviceData || {};
+          let {executeNodeConfig = {}} = config || {};
+          let {value = ''} = executeNodeConfig || {};
+          
+          this.filterSearchValue = value || {}; // 执行目标值回显
           this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue); // 执行目标回显
         } else {
           this.$set(this.executeNode, 'mappingMode', this.serviceData.config.executeNodeConfig.mappingMode);
-          this.$set(this.executeNode, 'value', this.serviceData.config.executeNodeConfig.value);
+          this.$set(this.executeNode, 'value', this.serviceData.config.executeNodeConfig.value || {});
         }
       }
       if (!this.$utils.isEmpty(this.serviceData)) {

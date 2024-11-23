@@ -1,14 +1,20 @@
 <template>
   <div>
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    <ExpiredReasonAlert :serviceData="serviceData"></ExpiredReasonAlert>
-    <div class="radius-lg bg-op padding">
-      <div class="flex-between" :class="unfoldAndFold.jobName ? 'mb-sm' : ''">
-        <span class="tsfont-biaoti">
-          {{ $t('term.autoexec.job') }}
-          <i class="require-label"></i>
-        </span>
-        <span class="tsfont-down cursor" :class="unfoldAndFold.jobName ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('jobName')"></span>
+    <ExpiredReasonAlert :serviceData="defaultData"></ExpiredReasonAlert>
+    <div :class="getPaddingClass">
+      <div :class="getFlexClass(unfoldAndFold.jobName)">
+        <template v-if="border !='border'">
+          <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.jobName)" @click.stop="handleUnfoldAndFold('jobName')"></span>
+          <Divider orientation="left" style="border-collapse: initial;"><span>{{ $t('term.autoexec.job') }}<i class="require-label"></i></span></Divider>
+        </template>
+        <template v-else>
+          <span class="tsfont-biaoti">
+            {{ $t('term.autoexec.job') }}
+            <i class="require-label"></i>
+          </span>
+          <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.jobName)" @click.stop="handleUnfoldAndFold('jobName')"></span>
+        </template>
       </div>
       <TsFormItem
         v-show="unfoldAndFold.jobName"
@@ -24,15 +30,21 @@
         ></TsFormInput>
       </TsFormItem>
     </div>
-    <div class="radius-lg bg-op padding mt-nm">
-      <div class="flex-between" :class="unfoldAndFold.formParam ? 'mb-sm' : ''">
-        <span class="tsfont-formlist">
-          {{ $t('page.inputparam') }}
-          <i class="require-label"></i>
-        </span>
-        <span class="tsfont-down cursor" :class="unfoldAndFold.formParam ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('formParam')"></span>
+    <div :class="[getPaddingClass, getMtnmClass]">
+      <div :class="getFlexClass(unfoldAndFold.formParam)">
+        <template v-if="border !='border'">
+          <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.formParam)" @click.stop="handleUnfoldAndFold('formParam')"></span>
+          <Divider orientation="left" style="border-collapse: initial;"><span>{{ $t('page.inputparam') }} </span></Divider>
+        </template>
+        <template v-else>
+          <span class="tsfont-formlist">
+            {{ $t('page.inputparam') }}
+            <i class="require-label"></i>
+          </span>
+          <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.formParam)" @click.stop="handleUnfoldAndFold('formParam')"></span>
+        </template>
       </div>
-      <template v-if="!$utils.isEmpty(formConfig)">
+      <div v-if="!$utils.isEmpty(formConfig)">
         <TsSheet
           v-show="unfoldAndFold.formParam"
           ref="formSheet"
@@ -40,22 +52,30 @@
           :value="formConfig"
           :data="formAttributeData"
           class="pl-sm pr-sm"
+          @setValue="handleTsSheetData"
         ></TsSheet>
-      </template>
+      </div>
     </div>
-    <div class="radius-lg bg-op padding mt-nm">
-      <div class="flex-between" :class="unfoldAndFold.otherParam ? 'mb-sm' : ''">
-        <span class="tsfont-adjust">{{ $t('term.autoexec.otherparam') }}</span>
-        <span class="tsfont-down cursor" :class="unfoldAndFold.otherParam ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('otherParam')"></span>
+    <div :class="[getPaddingClass, getMtnmClass]">
+      <div :class="getFlexClass(unfoldAndFold.otherParam)">
+        <template v-if="border !='border'">
+          <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.otherParam)" @click.stop="handleUnfoldAndFold('otherParam')"></span>
+          <Divider orientation="left" style="border-collapse: initial;"><span>{{ $t('term.autoexec.otherparam') }}</span></Divider>
+        </template>
+        <template v-else>
+          <span class="tsfont-adjust">{{ $t('term.autoexec.otherparam') }}</span>
+          <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.otherParam)" @click.stop="handleUnfoldAndFold('otherParam')"></span>
+        </template>
       </div>
       <div v-if="unfoldAndFold.otherParam">
-        <FormOtherParams v-if="!$utils.isEmpty(serviceData)" :serviceData="serviceData"></FormOtherParams>
+        <FormOtherParams v-if="!$utils.isEmpty(defaultData)" :serviceData="defaultData"></FormOtherParams>
       </div>
     </div>
     <SaveSetting v-if="isSaveDialog" v-model="isSaveDialog" @on-ok="okSave"></SaveSetting>
   </div>
 </template>
 <script>
+import serviceMixin from '@/views/pages/autoexec/quick-service/service-catalog/service-mixin.js';
 export default {
   name: '',
   components: {
@@ -63,18 +83,11 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue'),
     SaveSetting: () => import('@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'),
-    FormOtherParams: () => import('./other-params'), // 其他参数
-    ExpiredReasonAlert: () => import('./expired-reason-alert') // 服务失效原因提示列表
+    FormOtherParams: () => import('@/views/pages/autoexec/quick-service/service-catalog/other-params'), // 其他参数
+    ExpiredReasonAlert: () => import('@/views/pages/autoexec/quick-service/service-catalog/expired-reason-alert') // 服务失效原因提示列表
   },
-  mixins: [],
-  props: {
-    serviceData: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    }
-  },
+  mixins: [serviceMixin],
+  props: {},
   data() {
     return {
       loadingShow: false,
@@ -97,11 +110,16 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-    this.initData();
-  },
+  created() {},
   beforeMount() {},
-  mounted() {},
+  async mounted() {
+    await this.initData();
+    let {formAttributeDataList = []} = this.serviceData || {};
+    this.formAttributeData = formAttributeDataList;
+    this.$nextTick(() => {
+      this.$emit('set-value', this.saveData());
+    });
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -109,6 +127,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleTsSheetData() {
+      this.$emit('set-value', this.saveData());
+    },
     initData() {
       // 初始化
       this.jobName = '';
@@ -118,17 +139,12 @@ export default {
         formParam: true,
         otherParam: true
       };
-      if (!this.$utils.isEmpty(this.serviceData) && this.serviceData.formUuid) {
-        this.getFormListByFormUuid(this.serviceData.formUuid);
+      let {formUuid = '', combopName = ''} = this.defaultData || {};
+      if (!this.$utils.isEmpty(combopName)) {
+        this.jobName = combopName;
       }
-      if (!this.$utils.isEmpty(this.serviceData) && this.serviceData.combopName) {
-        this.jobName = this.serviceData.combopName;
-      }
-    },
-    getFormListByFormUuid(uuid) {
-      // 根据表单id获取表单列表
-      if (uuid) {
-        this.$api.framework.form.getFormByVersionUuid({ uuid: uuid }).then(res => {
+      if (!this.$utils.isEmpty(formUuid)) {
+        return this.$api.framework.form.getFormByVersionUuid({ uuid: formUuid }).then(res => {
           if (res.Status == 'OK') {
             this.formConfig = res.Return.formConfig;
           }
@@ -141,9 +157,10 @@ export default {
         this.unfoldAndFold[moduleName] = !this.unfoldAndFold[moduleName];
       }
     },
-    formValid() {
+    async valid() {
       let isValid = true;
-      let errorMap = this.$refs.formSheet.validData();
+      let formSheet = this.$refs.formSheet;
+      let errorMap = formSheet.validData ? await formSheet.validData() : '';
       let nameValid = this.$refs.jobName.valid();
       if (!nameValid) {
         if (!this.unfoldAndFold['jobName']) {
@@ -161,21 +178,36 @@ export default {
     },
     saveService() {
       // 保存
-      if (!this.formValid()) {
+      if (!this.valid()) {
         return false;
       }
       this.isSaveDialog = true;
     },
+    saveData() {
+      // 提供给外部使用
+      let formSheet = this.$refs?.formSheet || '';
+      let formAttributeDataList = formSheet ? formSheet.getFormData() : [];
+      let hidecomponentList = formSheet ? formSheet.getHiddenComponents() : [];
+      let readcomponentList = formSheet ? formSheet.getReadComponents() : [];
+      let params = {
+        serviceId: '',
+        name: this.jobName,
+        formAttributeDataList: formAttributeDataList || [],
+        hidecomponentList: hidecomponentList || [],
+        readcomponentList: readcomponentList || []
+      };
+      return params;
+    },
     saveExecuteService(data) {
       // 立即执行
-      if (!this.formValid()) {
+      if (!this.valid()) {
         return false;
       }
       let formAttributeDataList = this.$refs.formSheet.getFormData();
       let hidecomponentList = this.$refs.formSheet.getHiddenComponents();
       let readcomponentList = this.$refs.formSheet.getReadComponents();
       let params = {
-        serviceId: this.serviceData.id,
+        serviceId: this.defaultData.id,
         name: this.jobName,
         formAttributeDataList: formAttributeDataList || [],
         hidecomponentList: hidecomponentList || [],
@@ -204,9 +236,16 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getMtnmClass() {
+      return this.border == 'border' ? 'mt-nm' : '';
+    },
+    getPaddingClass() {
+      return this.border == 'border' ? 'radius-lg bg-op padding' : '';
+    }
+  },
   watch: {
-    serviceData: {
+    defaultData: {
       handler() {
         this.initData();
       },

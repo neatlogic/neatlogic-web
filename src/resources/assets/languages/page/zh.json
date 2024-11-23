@@ -1026,5 +1026,6 @@
   "autoexeccomboprunnergrouptagtips": "执行器组需满足当前标签",
   "disabledd": "禁止添加",
   "disabledelete": "禁止删除",
-  "notbelong": "不属于"
+  "notbelong": "不属于",
+  "autoexecservice": "自动化服务"
 }

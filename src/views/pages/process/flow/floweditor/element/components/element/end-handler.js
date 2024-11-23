@@ -46,8 +46,10 @@ export default {
       if (sourceCell.getProp('type') === 'converge') {
         return false;
       }
-      edge.prop('type', 'backward');
-      edge.setAttrByPath('line/strokeDasharray', 5);
+      if (targetCell.getProp('type') !== 'end') {
+        edge.prop('type', 'backward');
+        edge.setAttrByPath('line/strokeDasharray', 5);
+      }
     } else if (targetCell.getProp('type') !== 'end') {
       return false;
     }

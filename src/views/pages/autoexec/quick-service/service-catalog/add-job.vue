@@ -33,8 +33,8 @@
       </template>
       <template v-slot:content>
         <div>
-          <FormServiceEdit v-if="formUuid == 'form'" ref="formServiceEdit" :serviceData="serviceData"></FormServiceEdit>
-          <NoFormServiceEdit v-else-if="formUuid == 'noform'" ref="noFormServiceEdit" :serviceData="serviceData"></NoFormServiceEdit>
+          <FormServiceEdit v-if="formUuid == 'form'" ref="formServiceEdit" :defaultData="defaultData"></FormServiceEdit>
+          <NoFormServiceEdit v-else-if="formUuid == 'noform'" ref="noFormServiceEdit" :defaultData="defaultData"></NoFormServiceEdit>
         </div>
       </template>
     </TsContain>
@@ -54,7 +54,7 @@ export default {
       serviceId: null,
       serviceName: '',
       formUuid: '',
-      serviceData: {}
+      defaultData: {}
     };
   },
   beforeCreate() {},
@@ -78,16 +78,16 @@ export default {
     initData() {
       // 初始化
       this.formUuid = '';
-      this.serviceData = {};
+      this.defaultData = {};
       this.loadingShow = true;
       this.$api.autoexec.catalogManage.getSeriveInfo({id: this.serviceId}).then(res => {
         if (res.Status == 'OK') {
           let dataInfo = res.Return;
           this.formUuid = dataInfo && dataInfo.formUuid ? 'form' : 'noform';
-          this.serviceData = dataInfo;
-          if (this.serviceData && this.serviceData.combopId) {
+          this.defaultData = dataInfo;
+          if (this.defaultData && this.defaultData.combopId) {
             // 根据组合工具id获取组合工具名称
-            this.getCombopNamebyId(this.serviceData.combopId);
+            this.getCombopNamebyId(this.defaultData.combopId);
           }
         }
       }).finally(() => {
@@ -99,7 +99,7 @@ export default {
       if (combopId) {
         this.$api.autoexec.action.getCombopExecutableList({defaultValue: [combopId]}).then((res) => {
           if (res && res.Status == 'OK') {
-            this.$set(this.serviceData, 'combopName', !this.$utils.isEmpty(res.Return.tbodyList) ? res.Return.tbodyList[0].name : '');
+            this.$set(this.defaultData, 'combopName', !this.$utils.isEmpty(res.Return.tbodyList) ? res.Return.tbodyList[0].name : '');
           }
         });
       }
@@ -121,7 +121,7 @@ export default {
   },
   computed: {
     canSaveJob() {
-      return !!((this.serviceData && (this.serviceData.configExpired)));
+      return !!((this.defaultData && (this.defaultData.configExpired)));
     }
   },
   watch: {}

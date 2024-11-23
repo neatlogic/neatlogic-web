@@ -1024,5 +1024,6 @@
   "autoexeccomboprunnergrouptagtips": "The actuator group needs to meet the current label requirements",
   "disabledd": "Prohibit adding",
   "disabledelete": "Prohibit deletion",
-  "notbelong": "Not belonging to"
+  "notbelong": "Not belonging to",
+  "autoexecservice": "Automated services"
 }

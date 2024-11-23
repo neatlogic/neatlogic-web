@@ -22,7 +22,7 @@ export default {
   },
   filters: {},
   props: {
-    value: [Number, String]
+    value: [Number, String, Array]
   },
   data() {
     return {

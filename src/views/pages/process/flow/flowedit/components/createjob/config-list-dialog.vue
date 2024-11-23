@@ -20,13 +20,37 @@
             </div>
           </div>
           <div v-show="item.isShow" class="main-content border-color padding">
+            <TsFormItem
+              label="作业类型"
+              labelPosition="left"
+              required
+            >
+              <TsFormRadio
+                v-model="item.type"
+                :dataList="typeDataList"
+                @change="()=>{
+                  item.jobName = '';
+                  item.formAttributeUuid = ''
+                }"
+              ></TsFormRadio>
+            </TsFormItem>
+       
             <CreatejobConfig
+              v-if="item.type == 'combop'"
               ref="itemConfig"
               :formUuid="formUuid"
               :defaultAllFormitemList="allFormitemList"
               :config="item"
               @update="(config)=>{setConfig(item, config,index)}"
             ></CreatejobConfig>
+            <AutoexecserviceCreatejobConfig
+              v-else-if="item.type == 'service'"
+              :formUuid="formUuid"
+              :defaultAllFormitemList="allFormitemList"
+              :configList="configList"
+              :config="item"
+              @update="(config)=>{setConfig(item, config,index)}"
+            ></AutoexecserviceCreatejobConfig>
           </div>
         </div>
       </div>
@@ -41,7 +65,10 @@
 export default {
   name: '',
   components: {
-    CreatejobConfig: () => import('./createjob-config.vue')
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    CreatejobConfig: () => import('./createjob-config.vue'),
+    AutoexecserviceCreatejobConfig: () => import('./autoexecservice-createjob-config.vue')
   },
   props: {
     formUuid: String,
@@ -52,7 +79,17 @@ export default {
       loadingShow: true,
       configList: [],
       isValid: true,
-      allFormitemList: []
+      allFormitemList: [],
+      typeDataList: [
+        {
+          text: this.$t('term.autoexec.combinationtool'),
+          value: 'combop'
+        },
+        {
+          text: this.$t('term.process.catalog'),
+          value: 'service'
+        }
+      ]
     };
   },
   beforeCreate() {},
@@ -107,7 +144,9 @@ export default {
         executeParamMappingGroupList: [], //执行参数列表:执行目标、连接协议、执行用户、分批数量
         scenarioParamMappingGroupList: [], // 场景参数列表
         formAttributeMappingList: [],
-        isShow: true
+        isShow: true,
+        type: '', // 组合工具、服务
+        formAttributeUuid: '' // 表单属性，自动化服务的uuid
       };
       this.configList.push(config);
     },
@@ -153,8 +192,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 };
 </script>
