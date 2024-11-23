@@ -137,9 +137,6 @@ const process = {
   getResourceList(params) {
     return axios.post('/api/rest/resourcecenter/resource/list', params);
   },
-  getNotifyPolicyList(params) { //通知策略参数右边下拉框可选列表
-    return axios.post('/api/rest/process/notify/policy/param/list', params);
-  },
   saveTaskFile(params) { //子任务策略：保存附件
     return axios.post('/api/rest/processtask/step/task/file/save', params);
   },
