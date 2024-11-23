@@ -2810,5 +2810,8 @@
   "license": {
     "isbanmodule": "Disable module upon expiration",
     "graceperiod": "Delay grace days"
+  },
+  "alert": {
+    "alerttype": "Alarm Type "
   }
 }

@@ -87,7 +87,7 @@ export default {
     name: String,
     value: {
       //默认值
-      type: [String, Number],
+      type: [String, Number, Object],
       default: ''
     },
     maxlength: [Number, String], //最长值
@@ -153,7 +153,7 @@ export default {
   },
   data() {
     return {
-      currentValue: this.$utils.isEmpty(this.value) ? (this.type != 'number' ? '' : null) : this.value,
+      currentValue: this.$utils.isEmpty(this.value) ? (this.type != 'number' ? '' : null) : (typeof this.value === 'object' ? this.value.toString() : this.value),
       validMesage: this.errorMessage || '',
       currentValidList: this.filterValid(this.validateList) || [],
       readonlyTitle: null,

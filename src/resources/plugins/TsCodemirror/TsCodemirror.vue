@@ -1,7 +1,7 @@
 <template>
   <div class="tscodemirror" :class="cmOptions.readOnly ? 'disabled' : ''" @keydown.stop>
     <Loading v-if="isLoading" :text="loadingText" :loadingShow="isLoading" type="fix"></Loading>
-     <i v-if="isCopy && currentValue" v-clipboard="currentValue" v-clipboard:success="clipboardSuccess" class="text-href tscodemirror-copy">copy</i>                
+    <i v-if="isCopy && currentValue" v-clipboard="currentValue" v-clipboard:success="clipboardSuccess" class="text-href tscodemirror-copy">copy</i>
     <codemirror ref="myCode" :placeholder="placeholder" v-model="currentValue" :options="getOption" class="tscodemirror-code" :class="[classCodeStyle, !isValidPass ? 'border-color-error' : 'border-color']" :style="setHeight" @blur="onBlur" @focus="onFocus" @cursorActivity="cursorActivity" @scroll="onScroll"></codemirror>
     <transition name="fade">
       <slot name="validMessage">
@@ -46,6 +46,7 @@ import 'codemirror/addon/fold/comment-fold.js';
 //placeholder插件
 import 'codemirror/addon/display/placeholder.js';
 // 新加语言
+import 'codemirror/mode/clike/clike.js';
 import 'codemirror/mode/python/python.js';
 import 'codemirror/mode/ruby/ruby.js';
 import 'codemirror/mode/vbscript/vbscript.js';
@@ -62,7 +63,7 @@ import clipboard from '@/resources/directives/clipboard.js';
 export default {
   name: 'TsCodemirror',
   components: { codemirror },
-  directives: {clipboard},
+  directives: { clipboard },
   tagComponent: 'TsForm',
   mixins: [formMixins],
   model: {
@@ -174,7 +175,8 @@ export default {
         cmd: 'shell',
         ksh: 'shell',
         vue: 'vue',
-        xml: 'xml'
+        xml: 'xml',
+        java: 'text/x-java'
       },
       isValidPass: true
     };
@@ -230,7 +232,7 @@ export default {
     },
     clipboardSuccess() {
       this.$Message.success(this.$t('message.copysuccess'));
-    },
+    }
   },
   computed: {
     codemirror() {
@@ -242,6 +244,7 @@ export default {
     getOption() {
       let cmOptions = Object.assign(this.cmOptions, this.config);
       this.$set(cmOptions, 'mode', cmOptions.mode && this.modeMappingConfig[cmOptions.mode] ? this.modeMappingConfig[cmOptions.mode] : 'text/javascript');
+      console.log(JSON.stringify(cmOptions, null, 2));
       return cmOptions;
     }
   },

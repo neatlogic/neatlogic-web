@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="padding-b">
-      <span class="text-action tsfont-plus" @click="editSubscribe()">{{ $t('term.framework.subscribe') }}</span>
+    <div class="mb-md">
+      <span class="cursor tsfont-plus" @click="editSubscribe()">{{ $t('term.framework.subscribe') }}</span>
     </div>
     <TsTable v-if="subscribeData" v-bind="subscribeData" :theadList="theadList">
       <!-- <template slot="isDurable" slot-scope="{ row }">

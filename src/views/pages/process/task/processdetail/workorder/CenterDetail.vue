@@ -291,7 +291,7 @@
           tab="tab1"
         >
           <!--步骤日志 -->
-          <div v-if="stepData && stepData.length > 0">
+          <div v-if="tabValue === 'step' && stepData && stepData.length > 0">
             <StepOverview
               :processTaskId="processTaskId"
               :processTaskStepId="processTaskStepId"
@@ -311,6 +311,7 @@
         >
           <!-- 时间线 -->
           <ActivityOverview
+            v-if="tabValue === 'activity'"
             :processTaskId="processTaskId"
             :stepDataList="stepData"
             :defaultActiveData="activeData"
@@ -326,7 +327,12 @@
           tab="tab1"
         >
           <!-- 关联工单 -->
-          <RelationDetail :processTaskConfig="processTaskConfig" :relationAuth="actionConfig.tranferreport" @upActivityList="updateStepActive()"></RelationDetail>
+          <RelationDetail
+            v-if="tabValue === 'relevance'"
+            :processTaskConfig="processTaskConfig"
+            :relationAuth="actionConfig.tranferreport"
+            @upActivityList="updateStepActive()"
+          ></RelationDetail>
         </TabPane>
         <TabPane
           v-if="(actionConfig.markrepeat || repeatList.length > 0) && fixedPageTab.markrepeat"
@@ -337,6 +343,7 @@
         >
           <!-- 重复事件 -->
           <MarkRepeat
+            v-if="tabValue === 'markrepeat'"
             :processTaskId="processTaskId"
             :actionConfig="actionConfig"
             :repeatList="repeatList"
@@ -361,7 +368,7 @@
           tab="tab1"
         >
           <!-- 上报历史 -->
-          <ReportingHistory :processTaskConfig="processTaskConfig"></ReportingHistory>
+          <ReportingHistory v-if="tabValue === 'reportingHistory'" :processTaskConfig="processTaskConfig"></ReportingHistory>
         </TabPane>
       </Tabs>
     </div>

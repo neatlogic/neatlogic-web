@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="mb-md">
+      <span class="cursor tsfont-plus" @click="editTopic()">{{ $t('page.theme') }}</span>
+    </div>
     <TsTable
       v-if="topicData"
       v-bind="topicData"

@@ -12,9 +12,10 @@ import process from './process';
 import report from './report';
 import rdm from './rdm';
 import documentonline from './documentonline';
+import alert from './alert';
 
 let moduleApiConfig = {};
-let moduleList = ['autoexec', 'cmdb', 'common', 'dashboard', 'deploy', 'framework', 'globalsearch', 'inspect', 'knowledge', 'pbc', 'process', 'report', 'rdm', 'documentonline']; // 用于自定义页面接口导入做浅拷贝
+let moduleList = ['autoexec', 'cmdb', 'common', 'dashboard', 'deploy', 'framework', 'globalsearch', 'inspect', 'knowledge', 'pbc', 'process', 'report', 'rdm', 'documentonline', 'alert']; // 用于自定义页面接口导入做浅拷贝
 let moduleConfig = {
   autoexec: autoexec,
   cmdb: cmdb,
@@ -29,7 +30,8 @@ let moduleConfig = {
   process: process,
   report: report,
   rdm: rdm,
-  documentonline: documentonline
+  documentonline: documentonline,
+  alert: alert
 };
 try {
   // 导入自定义模块，获取导出接口地址
@@ -64,5 +66,6 @@ export default {
   report,
   rdm,
   documentonline,
+  alert,
   ...moduleApiConfig
 };

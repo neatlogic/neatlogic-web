@@ -1,14 +1,6 @@
 <template>
   <div>
     <TsContain>
-      <template v-slot:topLeft>
-        <div class="action-group">
-
-        </div>
-      </template>
-      <template v-slot:topRight>
-
-      </template>
       <template v-slot:content>
         <TsTable
           v-if="!loading"
@@ -24,9 +16,10 @@
       </template>
     </TsContain>
     <TsDialog
+      v-if="isShowFormDialog"
       type="modal"
-      :isShow.sync="isShowFormDialog"
-      :title="$t('page.edit')"
+      :isShow="true"
+      :title="$t('dialog.title.edittarget', { target: $t('page.param') })"
       @on-close="close"
       @on-ok="save"
     >
@@ -37,8 +30,7 @@
           :itemList="formSetting"
           type="type"
           labelPosition="right"
-        >
-        </TsForm>
+        ></TsForm>
       </template>
     </TsDialog>
   </div>
@@ -117,16 +109,19 @@ export default {
     },
     listTenantConfig() {
       this.loading = true;
-      this.$api.framework.tenantconfig.listTenantConfig({currentPage: this.currentPage, pageSize: this.pageSize}).then(res => {
-        if (res.Status === 'OK') {
-          this.tableData = res.Return;
-        }
-      }).finally(() => {
-        this.loading = false;
-      });
+      this.$api.framework.tenantconfig
+        .listTenantConfig({ currentPage: this.currentPage, pageSize: this.pageSize })
+        .then(res => {
+          if (res.Status === 'OK') {
+            this.tableData = res.Return;
+          }
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
     async showTenantConfigForm(key) {
-      await this.$api.framework.tenantconfig.getTenantConfig({key}).then(res => {
+      await this.$api.framework.tenantconfig.getTenantConfig({ key }).then(res => {
         if (res.Status === 'OK') {
           this.rowData = res.Return;
         }
@@ -152,9 +147,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-
-  },
+  computed: {},
   watch: {}
 };
 </script>
