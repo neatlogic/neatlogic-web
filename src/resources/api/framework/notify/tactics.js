@@ -58,6 +58,10 @@ const tactics = {
   notifyParamList(data) {
     return axios.post('/api/rest/notify/policy/param/list', data);
   },
+  //系统参数列表
+  notifySystemParamList(data) {
+    return axios.post('/api/rest/notify/policy/systemparam/list', data);
+  },
   //参数类型匹配数据
   notifyParamTypeList(data) {
     return axios.post('/api/rest/notify/policy/paramtype/list', data);

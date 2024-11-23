@@ -137,11 +137,12 @@ export default {
       });
     },
     getConditionNodeList() {
-      // return this.$api.process.process.getNotifyPolicyList({notifyPolicyHandler: this.notifyPolicyConfig.handler}).then(res => {
-      //   if (res.Status == 'OK') {
-      //     this.conditionNodeList = res.Return.tbodyList || [];
-      //   }
-      // });
+      let param = {notifyPolicyHandler: this.notifyPolicyConfig.handler};
+      return this.$api.framework.tactics.notifySystemParamList(param).then(res => {
+        if (res.Status == 'OK') {
+          this.conditionNodeList = res.Return.tbodyList || [];
+        }
+      });
     },
     getDefaultPolicyId() {
       // 获取默认通知策略信息

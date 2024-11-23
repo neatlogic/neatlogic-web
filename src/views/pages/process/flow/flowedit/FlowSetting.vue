@@ -64,6 +64,7 @@
       v-model="activeSetting.informSetting"
       :formUuid="formUuid"
       :config="notifyPolicyConfig"
+      handler="TaskNotifyPolicyHandler"
     ></NoticeSetting>
     <!-- 动作设置 -->
     <ActionSetting

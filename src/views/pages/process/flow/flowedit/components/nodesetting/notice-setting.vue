@@ -178,14 +178,14 @@ export default {
       this.$set(this.notifyPolicyConfig, 'handler', handler);
       this.defaultPolicyId && this.$set(this.notifyPolicyConfig, 'policyId', this.defaultPolicyId);
       this.defaultPolicyName && this.$set(this.notifyPolicyConfig, 'policyName', this.defaultPolicyName);
-      if (this.defaultDeepCloneConfig.hasOwnProperty('policyId')) {
+      if (this.defaultDeepCloneConfig.hasOwnProperty('policyId') && this.defaultDeepCloneConfig.policyId) {
         this.$set(this.notifyPolicyConfig, 'policyId', this.defaultDeepCloneConfig.policyId);
       }
-      if (this.defaultDeepCloneConfig.hasOwnProperty('policyName')) {
+      if (this.defaultDeepCloneConfig.hasOwnProperty('policyName') && this.defaultDeepCloneConfig.policyName) {
         this.$set(this.notifyPolicyConfig, 'policyName', this.defaultDeepCloneConfig.policyName);
       }
-      if (this.defaultDeepCloneConfig.hasOwnProperty('policyPath')) {
-        this.$set(this.notifyPolicyConfig, 'policyPath', this.defaultDeepCloneConfig.policyPath || '');
+      if (this.defaultDeepCloneConfig.hasOwnProperty('policyPath') && this.defaultDeepCloneConfig.policyPath) {
+        this.$set(this.notifyPolicyConfig, 'policyPath', this.defaultDeepCloneConfig.policyPath);
       }
     },
     //跳转策略编辑页面
@@ -209,7 +209,7 @@ export default {
         return false;
       }
       let formData = { formUuid: this.formUuid, notifyPolicyHandler: handler};
-      return this.$api.process.process.getNotifyPolicyList(formData).then(res => {
+      return this.$api.framework.tactics.notifySystemParamList(formData).then(res => {
         if (res.Status == 'OK') {
           this.conditionNodeList = res.Return.tbodyList || [];
         }
