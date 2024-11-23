@@ -2,12 +2,15 @@ import axios from '../../http';
 
 const mq = {
   getSubscribeById(id) {
-    return axios.post('/api/rest/mq/subscribe/get', {id: id});
+    return axios.post('/api/rest/mq/subscribe/get', { id: id });
   },
   searchSubscribe(params) {
     return axios.post('/api/rest/mq/subscribe/search', {
       params: params
     });
+  },
+  getTopicByName(name) {
+    return axios.post('/api/rest/mq/topic/get', { name: name });
   },
   listMqHandler(params) {
     return axios.post('/api/rest/mq/mqhandler/list', params || {});
@@ -31,7 +34,10 @@ const mq = {
     return axios.post('/api/rest/mq/subscribe/toggleactive', param);
   },
   deleteSubscribe(id) {
-    return axios.post('/api/rest/mq/subscribe/delete', {id: id});
+    return axios.post('/api/rest/mq/subscribe/delete', { id: id });
+  },
+  deleteTopic(name) {
+    return axios.post('/api/rest/mq/topic/delete', { name: name });
   }
 };
 export default mq;

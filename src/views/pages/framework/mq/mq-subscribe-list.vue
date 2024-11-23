@@ -20,7 +20,7 @@
         </span>
       </template>
       <template slot="name" slot-scope="{ row }">
-        <span class="text-href" @click.stop="editSubscribe(row)">{{ row.name }}</span>
+        {{ row.name }}
       </template>
       <template slot="isActive" slot-scope="{ row }">
         <span v-if="row.isActive == 1" class="text-success">{{ $t('page.yes') }}</span>
@@ -50,6 +50,7 @@
                 @on-change="toggleSubscribeActive(row)"
               ></TsFormSwitch>
             </li>
+            <li class="tsfont-edit" @click.stop="editSubscribe(row)">{{ $t('page.edit') }}</li>
             <li class="tsfont-trash-o" @click="deleteSubscribe(row)">{{ $t('page.delete') }}</li>
           </ul>
         </div>

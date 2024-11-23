@@ -16,7 +16,7 @@
       <template v-slot:handlerName="{ row }">
         <span>{{ row.handlerName }}</span>
         <Tooltip
-          v-if="!row.isEnable"
+          v-if="row.isEmbed && !row.isEnable"
           placement="top"
           :transfer="true"
           content="消息队列组件不可用"
@@ -36,12 +36,13 @@
                 @on-change="toggleTopicActive(row)"
               ></TsFormSwitch>
             </li>
-            <li @click="editTopic(row)">{{ $t('page.edit') }}</li>
+            <li v-if="row.hasConfig" @click="editTopic(row)">{{ $t('page.edit') }}</li>
+            <li v-if="!row.isEmbed" @click="deleteTopic(row)">{{ $t('page.delete') }}</li>
           </ul>
         </div>
       </template>
     </TsTable>
-    <MqTopicEdit v-if="isShowEdit" :topic="currentTopic" @close="closeTopicEdit"></MqTopicEdit>
+    <MqTopicEdit v-if="isShowEdit" :name="currentTopicName" @close="closeTopicEdit"></MqTopicEdit>
   </div>
 </template>
 <script>
@@ -56,7 +57,7 @@ export default {
   data() {
     return {
       isShowEdit: false,
-      currentTopic: null,
+      currentTopicName: null,
       topicData: {
         theadList: [
           { key: 'name', title: this.$t('page.uniquekey') },
@@ -84,11 +85,15 @@ export default {
   methods: {
     editTopic(topic) {
       this.isShowEdit = true;
-      this.currentTopic = topic;
+      if (topic) {
+        this.currentTopicName = topic.name;
+      } else {
+        this.currentTopicName = null;
+      }
     },
     closeTopicEdit(needRefresh) {
       this.isShowEdit = false;
-      this.currentTopic = null;
+      this.currentTopicName = null;
       if (needRefresh) {
         this.listTopic();
       }
@@ -104,6 +109,22 @@ export default {
     listTopic() {
       this.$api.framework.mq.listTopic().then(res => {
         this.$set(this.topicData, 'tbodyList', res.Return);
+      });
+    },
+    deleteTopic(topic) {
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.theme')}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.$api.framework.mq.deleteTopic(topic.name).then(res => {
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.listTopic();
+              vnode.isShow = false;
+            }
+          });
+        }
       });
     }
   },

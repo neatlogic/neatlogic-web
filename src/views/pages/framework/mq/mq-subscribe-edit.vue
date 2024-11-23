@@ -11,6 +11,7 @@
             <TsFormRadio
               v-if="handlerList && handlerList.length > 0"
               :readonly="!!id"
+              :value="subscribeData.handler"
               :dataList="handlerList"
               :validateList="['required']"
               @on-change="
