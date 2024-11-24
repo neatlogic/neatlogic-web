@@ -7,7 +7,7 @@
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
+        <Button :loading="isRefiring" type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -42,7 +42,8 @@ export default {
           text: this.$t('term.autoexec.rerunallnode'),
           value: 'refireResetAll'
         }
-      ]
+      ],
+      isRefiring: false
     };
   },
   beforeCreate() {},
@@ -60,6 +61,7 @@ export default {
       this.$emit('close', needRefresh);
     },
     save() {
+      this.isRefiring = true;
       this.$api.autoexec.job
         .reFireJob({
           jobId: this.id,
@@ -73,6 +75,7 @@ export default {
         })
         .finally(() => {
           this.dialogConfig.loading = false;
+          this.isRefiring = false;
         });
     }
   },

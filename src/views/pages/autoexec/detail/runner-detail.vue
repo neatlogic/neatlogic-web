@@ -229,7 +229,13 @@
     </TsContain>
     <NoData v-else-if="!loading"></NoData>
     <!-- 执行 -->
-    <SaveSetting v-if="isSaveDialog" v-model="isSaveDialog" @on-ok="okSave"></SaveSetting>
+    <SaveSetting
+      v-if="isSaveDialog"
+      ref="saveSetting"
+      v-model="isSaveDialog"
+      :isCreating="isCreating"
+      @on-ok="okSave"
+    ></SaveSetting>
   </div>
 </template>
 <script>
@@ -561,6 +567,7 @@ export default {
             path: '/job-detail',
             query: {id: res.Return.jobId}
           });
+          this.$refs.saveSetting.close();
         }
       }).finally(e => {
         this.isCreating = false;
@@ -583,6 +590,7 @@ export default {
         combopId: this.actionId,
         name: this.nameForm.itemList.name.value
       }, this.getCombopParams());
+      this.isCreating = true;
       this.$api.autoexec.action.executeAction(val).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
@@ -591,6 +599,8 @@ export default {
             query: {id: res.Return.jobId}
           });
         }
+      }).finally(() => {
+        this.isCreating = false;
       });
     },
     getSelectStepList(scenarioId) { //获取选中的阶段列表
