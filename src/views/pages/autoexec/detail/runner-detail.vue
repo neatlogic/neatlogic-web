@@ -567,7 +567,9 @@ export default {
             path: '/job-detail',
             query: {id: res.Return.jobId}
           });
-          this.$refs.saveSetting.close();
+          if (this.$refs.saveSetting) {
+            this.$refs.saveSetting.close();
+          }
         }
       }).finally(e => {
         this.isCreating = false;
