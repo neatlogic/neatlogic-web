@@ -50,7 +50,7 @@
         :readonly="true"
       ></TsFormSelect>
       <AddTarget
-        v-else
+        v-else-if="needExecuteNode"
         :id="combopId"
         ref="addTarget"
         :value="executeConfig ? executeConfig.executeNodeConfig:{}"
@@ -61,6 +61,14 @@
         :needBorder="needExecuteUser|| needProtocol"
         :filterSearchValue="filterSearchValue"
       ></AddTarget>
+      <div v-else class="box-block text-tip">
+        <div v-if="dataConfig && dataConfig.allPhasesAreRunnerOrSqlExecMode">
+          {{ $t('message.autoexec.executerunnertip') }}
+        </div>
+        <div v-else>
+          {{ $t('message.autoexec.notsetexecutertip') }}
+        </div>
+      </div>
     </TsFormItem>
   </div>
 </template>
@@ -95,6 +103,8 @@ export default {
         combopId: null,
         formUuid: null
       },
+      dataConfig: null,
+      needExecuteNode: false, // 是否需要显示执行目标
       filterSearchValue: {},
       executeConfig: {},
       executeValue: {},
@@ -274,16 +284,17 @@ export default {
         if (this.combopId) {
           await this.getCombopDetail();
         }
-        if (this.serviceData.config.executeNodeConfig && this.serviceData.config.executeNodeConfig.mappingMode == 'constant') {
-          let {config = {}} = this.serviceData || {};
-          let {executeNodeConfig = {}} = config || {};
-          let {value = ''} = executeNodeConfig || {};
-          
-          this.filterSearchValue = value || {}; // 执行目标值回显
-          this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue); // 执行目标回显
+        let {config = {}} = this.serviceData || {};
+        let {executeNodeConfig = {}} = config || {};
+        let {value = '', mappingMode} = executeNodeConfig || {};
+        if (mappingMode == 'constant') {
+          if (!this.$utils.isEmpty(value)) {
+            this.filterSearchValue = value || {}; // 执行目标值回显
+            this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue); // 执行目标回显
+          }
         } else {
-          this.$set(this.executeNode, 'mappingMode', this.serviceData.config.executeNodeConfig.mappingMode);
-          this.$set(this.executeNode, 'value', this.serviceData.config.executeNodeConfig.value || {});
+          this.$set(this.executeNode, 'mappingMode', mappingMode);
+          this.$set(this.executeNode, 'value', value || {});
         }
       }
       if (!this.$utils.isEmpty(this.serviceData)) {
@@ -327,10 +338,10 @@ export default {
         return item.constantMappingMode;
       }
     },
-    async getFormListByFormUuid(uuid) {
+    getFormListByFormUuid(uuid) {
       // 根据表单id获取表单列表
       this.formList.dataList = [];
-      await this.$api.framework.form.getFormByVersionUuid({uuid: uuid}).then(res => {
+      return this.$api.framework.form.getFormByVersionUuid({uuid: uuid}).then(res => {
         if (res.Status == 'OK') {
           let formConfig = res.Return.formConfig;
           formConfig && formConfig.tableList && formConfig.tableList.length > 0 && formConfig.tableList.forEach((item) => {
@@ -341,15 +352,12 @@ export default {
         }
       });
     },
-    async getCombopDetail() {
-      if (!this.combopId) {
-        return;
-      }
+    getCombopDetail() {
       let data = {
         id: this.combopId
       };
       this.loadingShow = true;
-      await this.$api.autoexec.action
+      return this.$api.autoexec.action
         .getActionDetail(data)
         .then(res => {
           this.loadingShow = false;

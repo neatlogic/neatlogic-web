@@ -81,18 +81,28 @@
       </div>
       <div v-show="unfoldAndFold.executeNodeConfig">
         <TsFormItem :label="$t('term.autoexec.executetarget')" :required="true">
-          <AddTarget
-            :id="combopId"
-            ref="executeNodeConfig"
-            :value="executeConfig ? executeConfig.executeNodeConfig:{}"
-            :canEdit="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify == 'runtime':true"
-            :type="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify: 'runtime'"
-            :executeConfig="executeValue"
-            :runtimeParamList="runtimeParamList"
-            :needBorder="needExecuteUser|| needProtocol"
-            :filterSearchValue="filterSearchValue"
-            @on-ok="handleChange"
-          ></AddTarget>
+          <template v-if="needExecuteNode">
+            <AddTarget
+              :id="combopId"
+              ref="executeNodeConfig"
+              :value="executeConfig ? executeConfig.executeNodeConfig:{}"
+              :canEdit="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify == 'runtime':true"
+              :type="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify: 'runtime'"
+              :executeConfig="executeValue"
+              :runtimeParamList="runtimeParamList"
+              :needBorder="needExecuteUser|| needProtocol"
+              :filterSearchValue="filterSearchValue"
+              @on-ok="handleChange"
+            ></AddTarget>
+          </template>
+          <div v-else class="box-block text-tip">
+            <div v-if="dataConfig && dataConfig.allPhasesAreRunnerOrSqlExecMode">
+              {{ $t('message.autoexec.executerunnertip') }}
+            </div>
+            <div v-else>
+              {{ $t('message.autoexec.notsetexecutertip') }}
+            </div>
+          </div>
         </TsFormItem>
       </div>
     </div>
@@ -234,6 +244,7 @@ export default {
       runtimeParamList: [],
       stepList: [],
       paramKeyList: [],
+      needExecuteNode: '',
       needExecuteUser: '',
       needProtocol: '',
       filterSearchValue: {},
@@ -383,6 +394,7 @@ export default {
           if (res.Status == 'OK') {
             this.dataConfig = res.Return;
             this.stepList = this.dataConfig.config.combopPhaseList;
+            this.needExecuteNode = this.dataConfig.needExecuteNode;
             this.executeConfig = this.dataConfig.config.executeConfig || {};
             this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue); // 执行目标回显
             this.runtimeParamList = this.dataConfig.config.runtimeParamList.filter((item) => {
