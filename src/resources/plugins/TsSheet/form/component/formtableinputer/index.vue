@@ -466,7 +466,8 @@ export default {
             ajaxConfig[item.uuid] = {
               matrixUuid: matrixUuid,
               valueField: mapping.value,
-              textField: mapping.text
+              textField: mapping.text,
+              needPage: false // 不需要分页，直接返回所有数据
             };
           }
         }
