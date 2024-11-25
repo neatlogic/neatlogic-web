@@ -104,6 +104,9 @@ export default {
           return false;
         }
         const item = JSON.parse(event.dataTransfer.getData('item'));
+        if (item && item.isHideComponent) {
+          return false;
+        }
         if (tab && item) {
           if (this.addComponent(item)) {
             if (!tab.component) {
