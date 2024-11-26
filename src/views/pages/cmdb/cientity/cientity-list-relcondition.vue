@@ -18,7 +18,7 @@ export default {
       selectConfig: {
         border: 'border',
         dynamicUrl: '/api/rest/cmdb/cientity/search',
-        params: { ciId: this.relData.direction == 'from' ? this.relData.toCiId : this.relData.fromCiId },
+        params: { ciId: this.relData.direction == 'from' ? this.relData.toCiId : this.relData.fromCiId, showAttrRelList: ['const_id', 'const_name'] },
         rootName: 'tbodyList',
         textName: 'name',
         valueName: 'id',

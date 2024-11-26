@@ -1,7 +1,31 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-ok="save()" @on-close="close()">
     <template v-slot>
-      <TsForm v-model="alertTypeData" :item-list="formConfig"></TsForm>
+      <TsForm ref="form" v-model="alertTypeData" :item-list="formConfig">
+        <template v-slot:fileId>
+          <div class="text-grey">
+            <div>帮助</div>
+            <div>不提供插件代表不转换告警内容，如果告警内容不符合标准规范，会被直接抛弃。</div>
+            <div>
+              1.先
+              <a href="https://gitee.com/neat-logic/neatlogic-alert-plugin-base" target="_blank">下载</a>
+              最新的插件接口。
+            </div>
+            <div>2.待补充……</div>
+          </div>
+          <TsUpLoad
+            dataType="alerttype"
+            type="drag"
+            :uploadCount="1"
+            :multiple="false"
+            tips="asdfafasdfaf"
+            :defaultList="alertTypeData.fileId && [alertTypeData.fileId]"
+            @remove="setFile"
+            @getFileList="setFile"
+          ></TsUpLoad>
+          <div v-if="fileError" class="text-error">{{ fileError }}</div>
+        </template>
+      </TsForm>
     </template>
   </TsDialog>
 </template>
@@ -9,7 +33,8 @@
 export default {
   name: '',
   components: {
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue')
   },
   props: {
     id: { type: Number }
@@ -23,32 +48,31 @@ export default {
         isShow: true,
         width: 'medium'
       },
+      fileList: [],
+      fileError: null,
       alertTypeData: { isActive: 1 },
       formConfig: {
         name: {
-          label: '唯一标识',
+          label: this.$t('page.uniquekey'),
           type: 'text',
           maxlength: 50,
-          validateList: ['required']
+          validateList: ['required', 'enchar']
         },
         label: {
-          label: '名称',
+          label: this.$t('page.name'),
           type: 'text',
           maxlength: 50,
           validateList: ['required']
         },
         isActive: {
-          label: '是否激活',
+          label: this.$t('term.report.isactive'),
           type: 'switch',
           trueValue: 1,
           falseValue: 0
         },
-        content: {
-          label: '转换代码',
-          type: 'codemirror',
-          codeMode: 'java',
-          desc: '编写java代码，转换告警数据为指定格式',
-          placeholder: 'public String convert(String input){\nreturn "converted:" + input;\n}'
+        fileId: {
+          label: this.$t('page.plugins'),
+          type: 'slot'
         }
       }
     };
@@ -66,6 +90,25 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    save() {
+      if (this.$refs.form && this.$refs.form.valid()) {
+        this.$api.alert.alerttype.saveAlertType(this.alertTypeData).then(() => {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.close(true);
+        });
+      }
+    },
+    close(needRefresh) {
+      this.$emit('close', needRefresh);
+    },
+    setFile(fileList) {
+      if (fileList && fileList.length > 0) {
+        this.fileList = fileList;
+        this.$set(this.alertTypeData, 'fileId', fileList[0].id);
+      } else {
+        this.$delete(this.alertTypeData, 'fileId');
+      }
+    },
     getAlertTypeById() {
       if (this.id) {
         this.$api.alert.alerttype.getAlertTypeById(this.id).then(res => {

@@ -17,6 +17,18 @@
             <span v-if="row.isActive" class="text-success">{{ $t('page.yes') }}</span>
             <span v-else class="text-grey">{{ $t('page.no') }}</span>
           </template>
+          <template v-slot:fcu="{ row }">
+            <UserCard
+              :uuid="row.fcu"
+              :hideAvatar="true"
+            ></UserCard>
+          </template>
+          <template v-slot:lcu="{ row }">
+            <UserCard
+              :uuid="row.lcu"
+              :hideAvatar="true"
+            ></UserCard>
+          </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
@@ -36,7 +48,8 @@ export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    AlertTypeEidt: () => import('@/views/pages/alert/alerttype/alerttype-edit-dialog.vue')
+    AlertTypeEidt: () => import('@/views/pages/alert/alerttype/alerttype-edit-dialog.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   props: {},
   data() {
@@ -52,6 +65,10 @@ export default {
         },
         { key: 'label', title: '名称' },
         { key: 'isActive', title: '是否激活' },
+        { key: 'fcu', title: '创建人' },
+        { key: 'fcd', title: '创建时间', type: 'time' },
+        { key: 'lcu', title: '修改人' },
+        { key: 'lcd', title: '修改时间', type: 'time' },
         { key: 'action' }
       ]
     };
@@ -96,6 +113,22 @@ export default {
       }
       this.$api.alert.alerttype.searchAlertType(this.searchParam).then(res => {
         this.alertTypeData = res.Return;
+      });
+    },
+    delAlertType(row) {
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('term.alert.alerttype')}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.$api.alert.alerttype.deleteAlertType(row.id).then((res) => {
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              vnode.isShow = false;
+              this.searchAlertType();
+            }
+          });
+        }
       });
     }
   },

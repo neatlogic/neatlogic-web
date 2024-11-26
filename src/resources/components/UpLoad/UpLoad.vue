@@ -33,12 +33,13 @@
             {{ $t('page.uploadattachment') }}
           </span>
         </div>
-        <div v-else-if="!readonly" class="padding" :style="{ height: height ? height + 'px' : null }">
-          <p class="title">{{ title }}</p>
+        <div v-else-if="!readonly" class="padding-md" :style="{ height: height ? height + 'px' : null }">
+          <p v-if="title" class="title">{{ title }}</p>
           <div v-if="type == 'drag'" class="drag">
             <!-- <i class="icon-tip tsfont-plus"></i> -->
             <div class="upload-icon">
-              <img src="../UploadDialog/upload-icon.png" :alt="$t('page.importicon')" />
+              <div class="tsfont-tianjiawenjian text-info" style="font-size:25px"></div>
+              <!--<img src="../UploadDialog/upload-icon.png" :alt="$t('page.importicon')" />-->
               <p class="text-grey">{{ $t('page.clickanddragfile') }}</p>
             </div>
             <!-- <p>上传附件</p> -->
@@ -54,7 +55,7 @@
           <div class="upload_item" :class="readonlyTextIsHighlight ? 'text-warning' : ''">
             <span class="tsfont-attachment"></span>
             <span class="file_name overflow">
-              <Tooltip :transfer="true" :content="item.name">{{ item.name }}</Tooltip>
+              <Tooltip :transfer="true" :content="item.name" max-width="200">{{ item.name }}</Tooltip>
             </span>
             <i v-download="downurl(item)" class="tsfont-download file_down text-action pr-xs" :title="$t('page.download')"></i>
             <span v-if="$utils.isImage(item.name)" class="tsfont-eye text-action pr-xs" @click.stop="handlePreview(index)"></span>

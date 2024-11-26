@@ -835,7 +835,7 @@ export default {
       this.$addHistoryData('attrConditionHideData', this.attrConditionHideData);
       this.$addHistoryData('globalAttrConditionHideData', this.globalAttrConditionHideData);
       this.searchParam['globalAttrStrictMode'] = true;
-
+      //this.searchParam['needAccount'] = true;
       await this.$api.cmdb.cientity
         .searchCiEntity(this.searchParam)
         .then(res => {
@@ -1269,7 +1269,7 @@ export default {
         return {
           border: 'border',
           dynamicUrl: '/api/rest/cmdb/cientity/search',
-          params: { ciId: rel.direction == 'from' ? rel.toCiId : rel.fromCiId },
+          params: { ciId: rel.direction == 'from' ? rel.toCiId : rel.fromCiId, showAttrRelList: ['const_id', 'const_name'] },
           rootName: 'tbodyList',
           textName: 'name',
           valueName: 'id'
@@ -1409,7 +1409,7 @@ export default {
 }
 .cientity-list-box {
   .cientity-search-card {
-      .search-item {
+    .search-item {
       height: 40px !important;
       line-height: 38px;
       .search-label {

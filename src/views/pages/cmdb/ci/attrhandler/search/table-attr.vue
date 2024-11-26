@@ -1,10 +1,6 @@
 <template>
   <div>
-    <TsFormSelect
-      ref="handler"
-      v-bind="searchConfig"
-      :value="valueList"
-    ></TsFormSelect>
+    <TsFormSelect ref="handler" v-bind="searchConfig" :value="valueList"></TsFormSelect>
   </div>
 </template>
 <script>
@@ -15,8 +11,8 @@ export default {
     TsFormSelect
   },
   props: {
-    attrData: {type: Object},
-    valueList: {type: Array}
+    attrData: { type: Object },
+    valueList: { type: Array }
   },
   data() {
     return {
@@ -28,7 +24,7 @@ export default {
         search: true,
         width: '100%',
         dynamicUrl: '/api/rest/cmdb/cientity/search',
-        params: {ciId: this.attrData.targetCiId},
+        params: { ciId: this.attrData.targetCiId, showAttrRelList: ['const_id', 'const_name'] },
         rootName: 'tbodyList',
         textName: 'name',
         valueName: 'id',
@@ -37,7 +33,11 @@ export default {
         onChange: (val, opt) => {
           if (opt) {
             if (Array.isArray(opt)) {
-              this.$emit('setData', val, opt.filter(d => d.text));
+              this.$emit(
+                'setData',
+                val,
+                opt.filter(d => d.text)
+              );
             } else {
               this.$emit('setData', val, opt.text);
             }
@@ -51,22 +51,17 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
-  computed: {
-  },
-  watch: {
-  }
+  computed: {},
+  watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>
