@@ -5,7 +5,6 @@
       type="modal"
       :isShow.sync="showDialog"
       :title="$t('term.autoexec.savejob')"
-      @on-ok="onOk"
     >
       <TsForm
         ref="formConfig"
@@ -13,6 +12,10 @@
         v-bind="formConfig"
         type="type"
       ></TsForm>
+      <template v-slot:footer>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
+        <Button :loading="isCreating" type="primary" @click="onOk()">{{ $t('page.confirm') }}</Button>
+      </template>
     </TsDialog>
   </div>
 </template>
@@ -29,6 +32,7 @@ export default {
     event: 'change'
   },
   props: {
+    isCreating: {type: Boolean}
   },
   data() {
     let _this = this;
@@ -99,9 +103,11 @@ export default {
     },
     onOk() {
       if (this.$refs.formConfig.valid()) {
-        this.showDialog = false;
         this.$emit('on-ok', this.$refs.formConfig.getFormValue());
       }
+    },
+    close() {
+      showDialog = false;
     }
   },
   computed: {

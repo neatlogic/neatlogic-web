@@ -88,6 +88,9 @@ export default {
     },
     dropFormItem(event, panel) {
       const item = JSON.parse(event.dataTransfer.getData('item'));
+      if (item && item.isHideComponent) {
+        return false;
+      }
       if (panel && item) {
         if (this.addComponent(item)) {
           if (!panel.component) {

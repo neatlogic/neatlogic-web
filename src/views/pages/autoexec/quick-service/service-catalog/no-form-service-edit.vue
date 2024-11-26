@@ -80,7 +80,7 @@
         </template>
       </div>
       <div v-show="unfoldAndFold.executeNodeConfig">
-        <TsFormItem :label="$t('term.autoexec.executetarget')" :required="true">
+        <TsFormItem v-if="needExecuteNode" :label="$t('term.autoexec.executetarget')" :required="true">
           <AddTarget
             :id="combopId"
             ref="executeNodeConfig"
@@ -94,6 +94,14 @@
             @on-ok="handleChange"
           ></AddTarget>
         </TsFormItem>
+        <div v-else class="box-block text-tip">
+          <div v-if="dataConfig && dataConfig.allPhasesAreRunnerOrSqlExecMode">
+            {{ $t('message.autoexec.executerunnertip') }}
+          </div>
+          <div v-else>
+            {{ $t('message.autoexec.notsetexecutertip') }}
+          </div>
+        </div>
       </div>
     </div>
     <div v-if="hasServiceValue.executeUser || hasServiceValue.protocol" :class="getClassByBorder">
@@ -234,6 +242,7 @@ export default {
       runtimeParamList: [],
       stepList: [],
       paramKeyList: [],
+      needExecuteNode: '',
       needExecuteUser: '',
       needProtocol: '',
       filterSearchValue: {},
@@ -383,6 +392,7 @@ export default {
           if (res.Status == 'OK') {
             this.dataConfig = res.Return;
             this.stepList = this.dataConfig.config.combopPhaseList;
+            this.needExecuteNode = this.dataConfig.needExecuteNode;
             this.executeConfig = this.dataConfig.config.executeConfig || {};
             this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue); // 执行目标回显
             this.runtimeParamList = this.dataConfig.config.runtimeParamList.filter((item) => {

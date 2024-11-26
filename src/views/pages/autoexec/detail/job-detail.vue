@@ -311,12 +311,15 @@ export default {
         title: this.$t('dialog.title.updateconfirm'),
         content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.execute'), name: this.$t('term.autoexec.job') }),
         'on-ok': vnode => {
+          vnode.loading = true;
           this.$api.autoexec.job.executeJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {
               vnode.isShow = false;
               this.$Message.success(this.$t('message.executesuccess'));
               this.refresh();
             }
+          }).finally(() => {
+            vnode.loading = false;
           });
         }
       });

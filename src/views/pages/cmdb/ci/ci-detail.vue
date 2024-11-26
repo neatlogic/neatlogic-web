@@ -347,6 +347,9 @@ export default {
           'cardList',
           res.Return.filter(d => !relMap.has(d.id) && relMap.set(d.id, 1))
         );
+        if (this.$utils.isEmpty(this.relData.cardList) && this.currentTab === 'rel') {
+          this.currentTab = 'attr';
+        }
         this.$set(this.relData, 'pageCount', 1);
       });
     },
