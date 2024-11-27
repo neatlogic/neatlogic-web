@@ -1027,5 +1027,6 @@
   "disabledd": "禁止添加",
   "disabledelete": "禁止删除",
   "notbelong": "不属于",
-  "autoexecservice": "自动化服务"
+  "autoexecservice": "自动化服务",
+  "unifiedauthentrance": "统一认证入口"
 }

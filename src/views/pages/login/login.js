@@ -13,9 +13,15 @@ import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
 import store from '@/resources/store';
 import '@/resources/base.js'; // 全局样式
 
+let loginPage = Login;
+import ComponentManager from '@/resources/import/component-manager.js';
+const loginPageComponent = ComponentManager.getLoginPageComponent();
+if (loginPageComponent && loginPageComponent.Login) {
+  loginPage = loginPageComponent.Login;
+}
 Vue.use(ViewUI);
 Vue.use(VueI18n);
-Vue.use(CompareUtil);//必须要在use router之后执行
+Vue.use(CompareUtil); //必须要在use router之后执行
 
 Vue.config.productionTip = false;
 Vue.prototype.$md5 = md5;
@@ -59,7 +65,7 @@ axios({
       router,
       i18n,
       store,
-      render: h => h(Login, {props: {'authtype': authtype, 'encrypt': encrypt}})
+      render: h => h(loginPage, {props: {'authtype': authtype, 'encrypt': encrypt}})
     }).$mount('#index');
   }
 }).catch(error => {
