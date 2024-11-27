@@ -1025,5 +1025,6 @@
   "disabledd": "Prohibit adding",
   "disabledelete": "Prohibit deletion",
   "notbelong": "Not belonging to",
-  "autoexecservice": "Automated services"
+  "autoexecservice": "Automated services",
+  "unifiedauthentrance": "Unified authentication entrance"
 }

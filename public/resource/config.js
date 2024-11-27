@@ -22,6 +22,8 @@ var HTTP_RESPONSE_STATUS_CODE = ''; // http返回状态码，用于错误回显
 var GLOBAL_PAGELIST = '';
 var GLOBAL_TABLESTRYLE = '';
 var GLOBAL_LOGINTITLE = 'welcome';
+var ISAUTODIRECT = false; // 是否需要自动跳转
+var REDIRECTURL = ''; // 重定向url
 setCookie('neatlogic_language', BASELANGUAGES, 7); // 设置cookie，解决部署首次，没有默认多语言问题
 
 function setCookie(name, value, time) {
@@ -122,10 +124,17 @@ function getDirectUrl() {
       } else if (xhr.status === 522) {
         const responseText = JSON.parse(xhr.responseText);
         removeCookie('neatlogic_authorization');
-        if (responseText.Status === 'FAILED' && responseText.DirectUrl) {
+        if (responseText.Status === 'FAILED') {
           HTTP_RESPONSE_STATUS_CODE = '522';
-          const directUrl = responseText.DirectUrl.startsWith('http') ? responseText.DirectUrl : 'http://' + responseText.DirectUrl;
-          window.open(directUrl, '_self');
+          if (responseText.IsAutoDirect) {
+            if (responseText.DirectUrl) {
+              const directUrl = responseText.DirectUrl.startsWith('http') ? responseText.DirectUrl : 'http://' + responseText.DirectUrl;
+              window.open(directUrl, '_self');
+            }
+          } else {
+            ISAUTODIRECT = false;
+            REDIRECTURL = responseText.DirectUrl;
+          }
         }
       }
     };
