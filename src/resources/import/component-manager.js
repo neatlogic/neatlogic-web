@@ -19,9 +19,10 @@
  * formConfig 表单配置
  * formComponent 表单组件
  * deployAppConfigEnvTab 部署应用配置环境tab
+ * loginPage 登录页
  */
 class ComponentManager {
-  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'flowNodeValid', 'flowLineValid', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab'];
+  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'flowNodeValid', 'flowLineValid', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'loginPage'];
   static categoryConfig = {};
   static generateMethods() {
     this.categoryList.forEach(category => {
