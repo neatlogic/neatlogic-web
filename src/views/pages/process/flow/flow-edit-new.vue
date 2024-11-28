@@ -1394,7 +1394,7 @@ export default {
           nodes.forEach(n => {
             const { name, icon, uuid, x, y } = n;
             const config = stepList.find(d => d.uuid === uuid);
-            const element = ElementFactory.getElement({ handler: config.handler, type: config.type });
+            const element = config && ElementFactory.getElement({ handler: config.handler, type: config.type });
             if (element) {
               //有些节点数据的config并没有uuid，为了一致需要补充上
               if (!config.uuid) {
