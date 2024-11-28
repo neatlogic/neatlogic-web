@@ -74,6 +74,7 @@
                   :defaultProcessTaskStepId="processTaskStepId"
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
+                  :defaultTabValue="$utils.isEmpty(formConfig)? 'step' : 'report'"
                   @update="update"
                   @changeDisableCommet="(val)=>{
                     isDisableCommet = val
