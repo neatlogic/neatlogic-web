@@ -19,7 +19,7 @@
           @remove="removeCommentFile"
         ></TsUpLoad>
       </div>
-      <div v-if="handler == 'event'" class="eventEdit mt-sm">
+      <div v-if="handler == 'event'" id="event" class="eventEdit mt-sm">
         <!-- 事件节点 -->
         <TsRow>
           <Col span="12">
