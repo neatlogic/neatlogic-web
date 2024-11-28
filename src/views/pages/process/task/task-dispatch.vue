@@ -77,12 +77,6 @@
         ></DispatchCommon>
       </template>
     </TsContain>
-    <!--<TsDialog :isShow.sync="isShowFlowmap" v-bind="flowmapConfig">
-      <template v-slot:header>
-        <span class="text-action" @click="openFlow()">{{ flowmapConfig.title }}</span>
-      </template>
-      <div ref="topo" style="min-height: 480px; height: 100%"></div>
-    </TsDialog>-->
     <ValidDialog :isShow.sync="validCardOpen" :validList="validList" @validItem="validItem"></ValidDialog>
     <SubmitDialog
       v-if="submitModel"
@@ -101,7 +95,6 @@
   </div>
 </template>
 <script>
-import '@/views/pages/process/flow/topoComponent/index.js';
 import { store, mutations } from './processdispatch/dispatchState.js';
 export default {
   name: '',
@@ -136,13 +129,6 @@ export default {
       },
       validCardOpen: false,
       isShowFlowmap: false, //展示流程图
-      /*flowmapConfig: {
-        width: 'large',
-        height: 'calc(100vh - 200px)',
-        fullscreen: true,
-        hasFooter: false,
-        maskClose: true
-      },*/
       channelList: [],
       validList: [],
       autoSaveKey: false, //自动保存权限，当用户点击暂存成功后再进行自动保存
@@ -364,73 +350,12 @@ export default {
       // 刷新左侧菜单
       this.$store.dispatch('leftMenu/getWorkCenterMenuData');
     },
-    async lookSitemap() {
+    lookSitemap() {
       //查看流程图
-      //let data = await this.$api.process.processtask.stepFlowTop({ channelUuid: this.channelUuid }); //绘制流程图
       this.isShowFlowmap = true;
-      /*this.sitemapFullscreen = false;
-      if (data.Status == 'OK') {
-        this.processConfig = data.Return.config;
-        this.flowmapConfig.title = this.processConfig.process.processConfig.name;
-        this.initTopo(data.Return);
-      }*/
     },
     openFlow() {
       window.open(HOME + '/process.html#/flow-edit?uuid=' + this.processConfig.process.processConfig.uuid, '_blank');
-    },
-    /*initTopo(data) {
-      //获取流程图
-      if (!data) return;
-      let viewOpts = {
-        'canvas.autoadjust': true, //显示辅助线
-        'anchor.size': 4, //连接点大小
-        'link.deleteable': false,
-        'link.selectable': false,
-        'node.selectable': false,
-        'node.dragable': false,
-        'node.deleteable': false,
-        'node.connectable': false
-      };
-      this.$nextTick(() => {
-        var topodata = this.processConfig.topo || { nodes: startEndNode, links: [] };
-        this.$topoVm = new Topo(this.$refs.topo, viewOpts);
-        this.$topoVm.draw();
-        topodata.links.forEach(link => {
-          link.type = link.dirType || link.type;
-        });
-        this.$topoVm.fromJson(JSON.parse(JSON.stringify(topodata)));
-        this.$topoVm.center(0);
-        this.changeNodeStatus(data.processTaskStepList, data.processTaskStepRelList);
-      });
-    },*/
-    changeNodeStatus(stepList, relList) {
-      //上报：流程图节点状态提示
-      let allNodes = this.$topoVm.getNodes();
-      let process = this.processConfig.process;
-      let startUuid = process.stepList.find(s => s.handler == 'start').uuid;
-      let startDispatchUuid = process.connectionList.find(c => c.fromStepUuid == startUuid).toStepUuid;
-      let node = allNodes.find(a => a.getUuid() === startDispatchUuid);
-      node.setFill('#2d84fb');
-      node.setLoadingcolor('#fff');
-
-      //连线的颜色改变 ，开始节点的连线需要额外操作，因为接口不返回对应的连线信息
-      let allLinks = this.$topoVm.links;
-      let startNodeUuid = allNodes.find(a => a.getType() === 'start');
-      startNodeUuid = startNodeUuid ? startNodeUuid.getUuid() : null;
-      startNodeUuid &&
-        allLinks.find(item => {
-          if (item.getSource() == startNodeUuid) {
-            item.setClass('linkPath success');
-            return true;
-          }
-          return false;
-        });
-      relList.forEach(rel => {
-        if (rel.isHit > 0) {
-          let link = this.$topoVm.getLinkByUuid(rel.processStepRelUuid);
-          link && link.setClass('linkPath success');
-        }
-      });
     },
     channelClick(item) {
       this.$router.replace({ query: { uuid: item.uuid } });

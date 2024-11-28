@@ -23,7 +23,6 @@
   </div>
 </template>
 <script>
-import '@/views/pages/process/flow/topoComponent/index.js';
 export default {
   name: '',
   components: {

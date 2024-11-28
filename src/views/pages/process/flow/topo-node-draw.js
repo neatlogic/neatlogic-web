@@ -1,6 +1,13 @@
 
 /**topo节点的基础类，所有节点class都要extends此类**/
 export default class LeftNode {
+  static generateUuid() {
+    return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = (Math.random() * 16) | 0;
+      var v = c == 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
   constructor(config) {
     if (!config) {
       console.error('请提供节点定义');
@@ -32,7 +39,7 @@ export default class LeftNode {
     this._iconsize = config.iconsize || 18; //节点图标大小
     this._width = config.chartConfig.width;//节点宽度
     this._height = config.chartConfig.height; //节点高度
-    this.__uuid = config.uuid || Topo.generateUuid(); //唯一id
+    this.__uuid = config.uuid || LeftNode.generateUuid(); //唯一id
     if (!this.config.uuid) {
       this.config.uuid = this.__uuid;
     }
