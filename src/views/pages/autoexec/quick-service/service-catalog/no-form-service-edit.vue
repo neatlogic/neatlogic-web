@@ -284,7 +284,9 @@ export default {
   async mounted() {
     await this.initData();
     this.defaultValue();
-    this.handleChange();
+    this.$nextTick(() => {
+      this.handleChange();
+    });
   },
   beforeUpdate() {},
   updated() {},
@@ -301,6 +303,9 @@ export default {
           } else if (key == 'name') {
             this.jobName = this.serviceData[key];
           }
+        }
+        if (!this.$utils.isEmpty(this.runtimeParamList)) {
+          this.initConfig(this.serviceData['runtimeParamMap']);
         }
       }
     },
@@ -421,7 +426,7 @@ export default {
           }
         });
     },
-    initConfig() {
+    initConfig(defaultValue = {}) {
       // 初始化作业参数列表数据
       this.itemConfig = {};
       this.valueConfig = {};
@@ -441,7 +446,7 @@ export default {
         }
         config.type = data.type;
         this.$set(this.itemConfig, data.key, config);
-        this.$set(this.valueConfig, data.key, data.defaultValue);
+        this.$set(this.valueConfig, data.key, !this.$utils.isEmpty(defaultValue) && !this.$utils.isEmpty(defaultValue[data.key]) ? defaultValue[data.key] : data.defaultValue);
       });
     },
     handleUnfoldAndFold(moduleName) {
