@@ -865,7 +865,7 @@ export default {
       this.retreatId = item.id;
     },
     validItemClick(selector, tabValue) {
-      this.$refs.TaskCenterDetail.tabValue = tabValue;
+      this.$refs.TaskCenterDetail.changeTabValue(tabValue);
       if (tabValue === 'report') {
         //更新表单布局
         this.$refs.TaskCenterDetail.updateFormSheetCalc();

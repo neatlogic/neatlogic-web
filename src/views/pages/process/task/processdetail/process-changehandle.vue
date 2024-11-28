@@ -98,7 +98,7 @@
                 @click="recoverStep"
               >{{ actionConfig.recover }}</span>
               <!-- 查看流程图_start -->
-              <span v-if="!pocesstaskview" class="action-item" @click="lookSitemap">
+              <span v-if="!pocesstaskview" class="action-item" @click="isShowProcessTaskTopo=true">
                 <Tooltip :content="$t('term.process.viewflowchart')" theme="light">
                   <i class="tsfont-topo"></i>
                 </Tooltip>
@@ -345,15 +345,7 @@
       @close="saveTransferTask"
     ></TransferDialog>
     <!-- 查看流程图 -->
-    <LookSitemapDialog
-      ref="isLookSitemap"
-      :lookSitemapModel="lookSitemapModel"
-      :stepDialogClass="stepDialogClass"
-      :tsDialoglookSitemap="tsDialoglookSitemap"
-      :sitemapTitle="sitemapTitle"
-      :tooltipStyle="tooltipStyle"
-      :stepTooltip="stepTooltip"
-    ></LookSitemapDialog>
+    <ProcessTaskTopo v-if="isShowProcessTaskTopo" :processTaskId="processTaskId" @close="isShowProcessTaskTopo=false"></ProcessTaskTopo>
     <!-- 添加子任务 -->
     <TsDialog
       type="modal"
@@ -522,7 +514,7 @@ export default {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     CenterDetail: () => import('./workorder/CenterDetail.vue'),
     RightSetting: () => import('./workorder/RightSetting.vue'),
-    LookSitemapDialog: () => import('./workorder/actiondialog/lookSitemap.vue'),
+    ProcessTaskTopo: () => import('@/views/pages/process/task/processdetail/workorder/common/processtask-topo-dialog.vue'),
     TransferDialog: () => import('./workorder/actiondialog/transfer.vue'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem.vue'),
     UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
@@ -584,7 +576,8 @@ export default {
       isEditchange: false,
       isEditStepworker: false,
       taskAlertHeight: 0, // taskAlert高度
-      isShowFormModal: false
+      isShowFormModal: false,
+      isShowProcessTaskTopo: false
     };
   },
   created() {

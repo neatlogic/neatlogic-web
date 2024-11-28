@@ -167,16 +167,6 @@
       :actionConfig="actionConfig"
       @close="saveTransferTask"
     ></TransferDialog>
-    <!-- 查看流程图 -->
-    <LookSitemapDialog
-      ref="isLookSitemap"
-      :lookSitemapModel="lookSitemapModel"
-      :stepDialogClass="stepDialogClass"
-      :tsDialoglookSitemap="tsDialoglookSitemap"
-      :sitemapTitle="sitemapTitle"
-      :tooltipStyle="tooltipStyle"
-      :stepTooltip="stepTooltip"
-    ></LookSitemapDialog>
     <!-- 添加子任务 -->
     <TsDialog
       type="modal"
@@ -328,7 +318,6 @@ export default {
     ButtonBar: () => import('@/views/pages/process/task/processdetail/workorder/common/button-bar.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     CenterDetail: () => import('./workorder/CenterDetail.vue'),
-    LookSitemapDialog: () => import('./workorder/actiondialog/lookSitemap.vue'),
     RightSetting: () => import('./workorder/RightSetting.vue'),
     NavTop: () => import('./navTop.vue'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem.vue'),

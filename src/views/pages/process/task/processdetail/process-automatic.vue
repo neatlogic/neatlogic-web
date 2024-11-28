@@ -194,16 +194,6 @@
       :actionConfig="actionConfig"
       @close="saveTransferTask"
     ></TransferDialog>
-    <!-- 查看流程图 -->
-    <LookSitemapDialog
-      ref="isLookSitemap"
-      :lookSitemapModel="lookSitemapModel"
-      :stepDialogClass="stepDialogClass"
-      :tsDialoglookSitemap="tsDialoglookSitemap"
-      :sitemapTitle="sitemapTitle"
-      :tooltipStyle="tooltipStyle"
-      :stepTooltip="stepTooltip"
-    ></LookSitemapDialog>
     <!-- 添加子任务 -->
     <TsDialog
       type="modal"
