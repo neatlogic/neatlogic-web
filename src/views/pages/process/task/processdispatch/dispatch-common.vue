@@ -61,7 +61,6 @@
   </div>
 </template>
 <script>
-import '@/views/pages/process/flow/topoComponent/index.js';
 import Dispatch from './index.js';
 import scrollHidden from '@/resources/directives/scroll-hidden.js';
 import {store} from './dispatchState.js';

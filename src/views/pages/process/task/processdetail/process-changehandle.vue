@@ -501,7 +501,6 @@
 </template>
 
 <script>
-import '@/views/pages/process/flow/topoComponent/index.js';
 import clipboard from '@/resources/directives/clipboard.js';
 import detailmixin from './detailmixin.js';
 import FooterOperationBtn from './workorder/footer-operation-btn.vue'; // 底部操作按钮组件

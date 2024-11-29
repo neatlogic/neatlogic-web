@@ -159,7 +159,6 @@
   </div>
 </template>
 <script>
-import '@/views/pages/process/flow/topoComponent/index.js';
 import clipboard from '@/resources/directives/clipboard.js';
 import detailmixin from './detailmixin.js';
 export default {

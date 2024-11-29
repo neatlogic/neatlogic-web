@@ -281,7 +281,6 @@
 </template>
 
 <script>
-import '@/views/pages/process/flow/topoComponent/index.js';
 import clipboard from '@/resources/directives/clipboard.js';
 import itemDialog from './workorder/actiondialog/index.js';
 import detailmixin from './detailmixin.js';
