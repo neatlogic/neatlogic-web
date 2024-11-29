@@ -1,7 +1,7 @@
 
 <template>
   <div class="file-main">
-    <template v-if="value && !$utils.isEmpty(value)">
+    <template v-if="value && !$utils.isEmpty(value.fileList)">
       <div v-for="(item, index) in getShowList(value.fileList)" :key="item.id ||index" class="list">
         <div class="tsfont-attachment file-name overflow " :title="item.name">
           {{ item.name }}
@@ -58,7 +58,7 @@ export default {
   },
   filters: {},
   props: {
-    value: Object
+    value: [Object, String]
   },
   data() {
     return {
@@ -99,7 +99,7 @@ export default {
   computed: {
     getShowList() {
       return function(list) {
-        let showList = list.slice(0, this.showNumber);
+        let showList = list && list instanceof Array && list.length > 0 ? list.slice(0, this.showNumber) : '';
         return showList;
       };
     }
