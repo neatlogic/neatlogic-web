@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isReady">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <ExpiredReasonAlert :serviceData="defaultData"></ExpiredReasonAlert>
     <div :class="getClassByBorder">
@@ -204,6 +204,7 @@ export default {
   props: {},
   data() {
     return {
+      defaultServiceData: null,
       loadingShow: false,
       isSaveDialog: false,
       unfoldAndFold: {
@@ -275,7 +276,8 @@ export default {
       executeUserForm: {
         // 执行账户
         validateList: ['required']
-      }
+      },
+      isReady: false
     };
   },
   beforeCreate() {},
@@ -285,7 +287,7 @@ export default {
     await this.initData();
     this.defaultValue();
     this.$nextTick(() => {
-      this.handleChange();
+      this.isReady = true;
     });
   },
   beforeUpdate() {},
@@ -577,7 +579,18 @@ export default {
       return this.border == 'border' ? 'radius-lg bg-op padding mt-nm' : '';
     }
   },
-  watch: {}
+  watch: {
+    serviceData: {
+      handler(val) {
+        let deepCloneData = this.$utils.deepClone(val);
+        if (this.isReady && !this.$utils.isSame(val, this.defaultServiceData)) {
+          this.defaultValue();
+          this.defaultServiceData = deepCloneData;
+        }
+      },
+      deep: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
