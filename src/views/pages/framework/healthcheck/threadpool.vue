@@ -151,7 +151,7 @@ export default {
 <style lang="less" scoped>
 .grid {
   display: grid;
-  grid-template-columns: 40px auto;
+  grid-template-columns: 35px auto;
 }
 .container {
   display: grid;
