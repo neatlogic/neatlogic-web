@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsContain>
+    <TsContain :hasContentPadding="false">
       <template v-slot:topLeft>
         <div v-if="threadPoolData" class="action-group">
           <div class="action-item">
@@ -30,19 +30,10 @@
         </div>
       </template>
       <template v-slot:content>
-        <!--<div v-if="threadPoolData && threadPoolData.threadList && threadPoolData.threadList.length > 0">
-          <li v-for="(thread, index) in threadPoolData.threadList" :key="index" class="grid">
-            <div>
-              {{ thread.name }}
-            </div>
-            <div>{{ thread.startTime | formatDate }}</div>
-            <div></div>
-          </li>
-        </div>-->
-        <div>
+        <div v-if="threadPoolData" class="container">
           <div
             v-for="index in threadPoolData.mainPoolSize"
-            :key="index"
+            :key="'pool' + index"
             class="item"
             :class="getThreadInfo(index) ? 'bg-success cursor' : 'bg-info'"
           >
@@ -70,7 +61,7 @@
               </div>
             </Tooltip>
           </div>
-          <div v-for="index in Math.min(threadPoolData.mainQueueSize, maxsize)" :key="index" class="item bg-error"></div>
+          <div v-for="index in Math.min(threadPoolData.mainQueueSize, maxsize)" :key="'queue' + index" class="item bg-error"></div>
           <span v-if="threadPoolData.mainQueueSize > maxsize" class="text-grey">还有 {{ threadPoolData.mainQueueSize - maxsize }}</span>
         </div>
       </template>
@@ -88,7 +79,7 @@ export default {
     return {
       maxsize: 500,
       timer: null,
-      threadPoolData: {}
+      threadPoolData: null
     };
   },
   beforeCreate() {},
@@ -162,14 +153,21 @@ export default {
   display: grid;
   grid-template-columns: 40px auto;
 }
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30px, 0.1fr));
+  gap: 8px; /* 圆圈之间的间距 */
+  padding: 0px 16px 0px 16px; /* 页面两边的间距 */
+  box-sizing: border-box;
+  height: 100%; /* 如果需要占满页面 */
+}
 .item {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  margin-right: 3px;
-  margin-bottom: 3px;
-  border-radius: 15px;
-  text-align: center;
-  padding-top: 6px;
+  width: 100%; /* 自适应宽度 */
+  aspect-ratio: 1; /* 保证是圆形 */
+  border-radius: 50%;
+  display: flex; /* 启用 flex 布局 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  padding-top: 3px;
 }
 </style>
