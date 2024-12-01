@@ -155,11 +155,10 @@ export default {
 }
 .container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(30px, 0.1fr));
+  grid-template-columns: repeat(auto-fit, minmax(30px, 0.05fr));
   gap: 8px; /* 圆圈之间的间距 */
   padding: 0px 16px 0px 16px; /* 页面两边的间距 */
   box-sizing: border-box;
-  height: 100%; /* 如果需要占满页面 */
 }
 .item {
   width: 100%; /* 自适应宽度 */
