@@ -1026,5 +1026,6 @@
   "disabledelete": "Prohibit deletion",
   "notbelong": "Not belonging to",
   "autoexecservice": "Automated services",
-  "unifiedauthentrance": "Unified authentication entrance"
+  "unifiedauthentrance": "Unified authentication entrance",
+  "tagentregistercount": "Tagent registration times"
 }
