@@ -66,7 +66,7 @@ export default {
       });
     } else if (nodeData && nodeData.handlerList && nodeData.handlerList.length > 0) {
       for (let i = 0; i < nodeData.handlerList.length; i++) {
-        let findFormitem = view.allFormitemList.find(f => f.uuid === nodeData.handlerList[i]);
+        let findFormitem = view.allFormitemList.find(f => f.key === nodeData.handlerList[i]);
         if (!findFormitem) {
           nodeData.handlerList = [];
           validList.push({

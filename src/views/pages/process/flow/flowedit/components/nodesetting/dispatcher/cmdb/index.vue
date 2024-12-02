@@ -39,7 +39,7 @@
             v-model="item.formAttributeUuid"
             :dataList="item.formAttributeDataList"
             textName="label"
-            valueName="uuid"
+            valueName="key"
             width="84px"
             transfer
             border="border"

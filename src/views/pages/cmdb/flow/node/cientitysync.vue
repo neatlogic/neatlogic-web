@@ -79,7 +79,7 @@ export default {
     return {
       configData: {stepConfig: {}}, //当前节点数据
       handlerConfig: {
-        valueName: 'uuid',
+        valueName: 'key',
         textName: 'label',
         clearable: false,
         multiple: true,
