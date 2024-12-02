@@ -59,7 +59,11 @@ export default {
     getFormTagList() {
       this.formTagList = [];
       if (this.formUuid) {
-        this.$api.framework.form.getFormTagList({formUuid: this.formUuid}).then(res => {
+        let data = { formUuid: this.formUuid };
+        if (this.flowObj && this.flowObj.processTaskId) {
+          data.processTaskId = this.flowObj.processTaskId;
+        }
+        this.$api.process.process.getProcessFormTagList(data).then(res => {
           if (res.Return) {
             let tbodyList = res.Return.tbodyList || [];
             if (!this.$utils.isEmpty(tbodyList)) {

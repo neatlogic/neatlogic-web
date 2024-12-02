@@ -114,6 +114,7 @@ export default {
     Singlejobpolicy: () => import('./joppolicy/singlejobpolicy.vue'),
     FormTagSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/form-tag-setting.vue') // 表单扩展数据标签
   },
+  inject: ['flowObj'],
   props: {
     formUuid: String,
     defaultAllFormitemList: Array,
@@ -387,7 +388,10 @@ export default {
         formUuid: this.formUuid,
         tag: tag
       };
-      this.$api.framework.form.getFormItemList(data).then(res => {
+      if (this.flowObj && this.flowObj.processTaskId) {
+        data.processTaskId = this.flowObj.processTaskId;
+      }
+      this.$api.process.process.getProcessFormAttributeList(data).then(res => {
         if (res.Status == 'OK') {
           this.allFormitemList = res.Return || [];
         }

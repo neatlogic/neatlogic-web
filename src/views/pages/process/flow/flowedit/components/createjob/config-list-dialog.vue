@@ -70,6 +70,7 @@ export default {
     CreatejobConfig: () => import('./createjob-config.vue'),
     AutoexecserviceCreatejobConfig: () => import('./autoexecservice-createjob-config.vue')
   },
+  inject: ['flowObj'],
   props: {
     formUuid: String,
     list: Array
@@ -126,7 +127,10 @@ export default {
         formUuid: this.formUuid,
         tag: 'common'
       };
-      return this.$api.framework.form.getFormItemList(data).then(res => {
+      if (this.flowObj && this.flowObj.processTaskId) {
+        data.processTaskId = this.flowObj.processTaskId;
+      }
+      return this.$api.process.process.getProcessFormAttributeList(data).then(res => {
         if (res.Status == 'OK') {
           this.allFormitemList = res.Return || [];
         }

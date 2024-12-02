@@ -192,6 +192,7 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
     FormTagSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/form-tag-setting.vue') // 表单扩展数据标签
   },
+  inject: ['flowObj'],
   props: {
     isShow: {
       type: Boolean,
@@ -417,6 +418,9 @@ export default {
         formUuid: this.formUuid,
         tag: this.formTag || 'common'
       };
+      if (this.flowObj && this.flowObj.processTaskId) {
+        data.processTaskId = this.flowObj.processTaskId;
+      }
       this.processParamList = [];
       this.$api.process.process.processParamList(data).then(res => {
         if (res.Status == 'OK') {

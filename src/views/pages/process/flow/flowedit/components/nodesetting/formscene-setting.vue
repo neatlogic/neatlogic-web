@@ -49,6 +49,7 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     FormPreview: () => import('@/resources/plugins/TsSheet/form-preview.vue')
   },
+  inject: ['flowObj'],
   mixins: [nodemixin, itemmixin],
   props: {
     value: {
@@ -107,7 +108,11 @@ export default {
           this.dataList = [];
         }
         this.formPreviewContent = {};
-        await this.$api.framework.form.getFormByVersionUuid({uuid: this.formConfig.uuid}).then(res => {
+        let data = {uuid: this.formConfig.uuid};
+        if (this.flowObj && this.flowObj.processTaskId) {
+          data.processTaskId = this.flowObj.processTaskId;
+        }
+        await this.$api.process.process.getProcessForm(data).then(res => {
           if (res.Status == 'OK') {
             try {
               let formConfig = res.Return.formConfig || {};
