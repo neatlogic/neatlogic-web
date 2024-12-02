@@ -18,21 +18,27 @@
             </span>
           </div>
           <div class="action-item">
-            <span class="mr-xs text-grey">任务数</span>
+            <span class="mr-xs text-grey">最大线程</span>
             <span>
-              <b class="text-success">{{ threadPoolData.mainActiveCount || '-' }}</b>
+              <b>{{ threadPoolData.maxThreadCount }}</b>
             </span>
           </div>
-          <div class="action-item">
-            <span class="mr-xs text-grey">线程数</span>
+          <div v-if="threadPoolData.mainActiveCount" class="action-item">
+            <span class="mr-xs text-grey">当前任务</span>
             <span>
-              <b class="text-primary">{{ threadPoolData.mainPoolSize || '-' }}</b>
+              <b class="text-success">{{ threadPoolData.mainActiveCount }}</b>
             </span>
           </div>
-          <div class="action-item">
+          <div v-if="threadPoolData.mainPoolSize" class="action-item">
+            <span class="mr-xs text-grey">当前线程</span>
+            <span>
+              <b class="text-primary">{{ threadPoolData.mainPoolSize }}</b>
+            </span>
+          </div>
+          <div v-if="threadPoolData.mainQueueSize" class="action-item">
             <span class="mr-xs text-grey">排队</span>
             <span>
-              <b class="text-error">{{ threadPoolData.mainQueueSize || '-' }}</b>
+              <b class="text-error">{{ threadPoolData.mainQueueSize }}</b>
             </span>
           </div>
         </div>
@@ -41,43 +47,58 @@
         <div class="bg-op radius-md" style="height: 100%">
           <div v-if="threadPoolData" class="container">
             <div
-              v-for="index in threadPoolData.mainPoolSize"
+              v-for="(thread, index) in threadPoolData.threadList"
               :key="'pool' + index"
-              class="item"
-              :class="getThreadInfo(index) ? 'bg-success cursor' : 'bg-info'"
-              @click="searchThread(index)"
+              class="item cursor"
+              :class="getThreadInfo(thread.id) ? 'bg-success' : 'bg-info'"
+              @click="searchThread(thread.id)"
             >
-              <Tooltip v-if="getThreadInfo(index)" :max-width="300" :transfer="true">
-                <LoadingIcon></LoadingIcon>
+              <Tooltip :max-width="300" :transfer="true">
+                <div v-if="getThreadInfo(thread.id)" style="margin-top: 4px"><LoadingIcon></LoadingIcon></div>
+                <span v-else class="text-op tsfont-formtime"></span>
                 <div slot="content">
-                  <div class="grid">
+                  <div v-if="getThreadInfo(thread.id)" class="grid">
+                    <div class="text-grey">{{ $t('page.task') }}</div>
+                    <div>
+                      <b class="text-grey">{{ getThreadInfo(thread.id).name }}</b>
+                    </div>
+                  </div>
+                  <div v-else class="grid">
                     <div class="text-grey">{{ $t('page.name') }}</div>
                     <div>
-                      <b class="text-grey">{{ getThreadInfo(index).name }}</b>
+                      <b class="text-grey">{{ thread.name }}</b>
                     </div>
                   </div>
                   <div class="grid">
                     <div class="text-grey">{{ $t('page.thread') }}</div>
                     <div>
-                      <b class="text-grey">{{ getThreadInfo(index).id }}</b>
+                      <b v-if="getThreadInfo(thread.id)" class="text-grey">{{ getThreadInfo(thread.id).id }}</b>
+                      <b v-else class="text-grey">{{ thread.id }}</b>
                     </div>
                   </div>
                   <div class="grid">
                     <div class="text-grey">{{ $t('page.begin') }}</div>
                     <div>
-                      <b class="text-grey">{{ getThreadInfo(index).startTime | formatDate }}</b>
+                      <b v-if="getThreadInfo(thread.id)" class="text-grey">{{ getThreadInfo(thread.id).startTime | formatDate }}</b>
+                      <b v-else class="text-grey">{{ thread.startTime | formatDate }}</b>
                     </div>
                   </div>
-                  <div class="grid">
+                  <div v-if="getThreadInfo(thread.id)" class="grid">
                     <div class="text-grey">{{ $t('page.term.rank') }}</div>
                     <div>
-                      <b class="text-grey">{{ getThreadInfo(index).priority }}</b>
+                      <b class="text-grey">{{ getThreadInfo(thread.id).priority }}</b>
                     </div>
                   </div>
-                  <div class="grid">
+                  <div v-if="getThreadInfo(thread.id)" class="grid">
                     <div class="text-grey">{{ $t('page.timecost') }}</div>
                     <div>
-                      <b class="text-grey">{{ formatTimeCost(getThreadInfo(index).timeCost) }}</b>
+                      <b class="text-grey">{{ formatTimeCost(getThreadInfo(thread.id).timeCost) }}</b>
+                    </div>
+                  </div>
+                  <div v-else class="grid">
+                    <div class="text-grey">{{ $t('page.term.alived') }}</div>
+                    <div>
+                      <b class="text-grey">{{ formatTimeCost(thread.timeCost) }}</b>
                     </div>
                   </div>
                 </div>
@@ -156,13 +177,10 @@ export default {
   },
   destroyed() {},
   methods: {
-    searchThread(index) {
+    searchThread(id) {
       if (this.isShowThreaddump && this.threaddump) {
-        const t = this.getThreadInfo(index);
-        if (t) {
-          this.keyword = 'tid=' + t.id.toString();
-          this.searchKeyword();
-        }
+        this.keyword = 'tid=' + id.toString();
+        this.searchKeyword();
       }
     },
     exportThreaddump() {
@@ -217,11 +235,8 @@ export default {
 
       return result.join(' ');
     },
-    getThreadInfo(index) {
-      if (this?.threadPoolData?.threadList && this.threadPoolData.threadList.length > index - 1) {
-        return this.threadPoolData.threadList[index - 1];
-      }
-      return null;
+    getThreadInfo(tid) {
+      return this.threadTaskMap[tid];
     },
     getThreadPoolStatus() {
       this.timmer = this.$utils.setInterval(async() => {
@@ -254,12 +269,7 @@ export default {
       // 遍历文本节点并记录匹配位置
       const range = document.createRange();
       range.selectNodeContents(container);
-      const treeWalker = document.createTreeWalker(
-        range.commonAncestorContainer,
-        NodeFilter.SHOW_TEXT,
-        null,
-        false
-      );
+      const treeWalker = document.createTreeWalker(range.commonAncestorContainer, NodeFilter.SHOW_TEXT, null, false);
 
       while (treeWalker.nextNode()) {
         const textNode = treeWalker.currentNode;
@@ -319,6 +329,15 @@ export default {
   computed: {
     poolSum() {
       return this.threadPoolData.mainPoolSize + this.threadPoolData.backupPoolSize;
+    },
+    threadTaskMap() {
+      const data = {};
+      if (this?.threadPoolData?.threadTaskList) {
+        this.threadPoolData.threadTaskList.forEach(d => {
+          data[d.id] = d;
+        });
+      }
+      return data;
     }
   },
   watch: {}
@@ -343,6 +362,6 @@ export default {
   display: flex; /* 启用 flex 布局 */
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
-  padding-top: 3px;
+  //padding-top: 3px;
 }
 </style>

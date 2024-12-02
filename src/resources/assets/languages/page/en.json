@@ -1032,6 +1032,7 @@
     "prev": "the previous",
     "next": "next",
     "printagent": "Reprint",
-    "rank": "weight"
+    "rank": "weight",
+    "alived": "survival"
   }
 }

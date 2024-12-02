@@ -1034,6 +1034,7 @@
     "prev": "上一个",
     "next": "下一个",
     "printagent": "重新打印",
-    "rank": "权重"
+    "rank": "权重",
+    "alived": "存活"
   }
 }
