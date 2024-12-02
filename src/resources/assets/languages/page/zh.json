@@ -1029,5 +1029,11 @@
   "notbelong": "不属于",
   "autoexecservice": "自动化服务",
   "unifiedauthentrance": "统一认证入口",
-  "tagentregistercount": "tagent注册次数"
+  "tagentregistercount": "tagent注册次数",
+  "term": {
+    "prev": "上一个",
+    "next": "下一个",
+    "printagent": "重新打印",
+    "rank": "权重"
+  }
 }

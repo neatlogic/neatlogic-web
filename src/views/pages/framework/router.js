@@ -42,7 +42,6 @@ const InstallationPackage = () => import('./tagent/tagent/installation-package.v
 const runnerManage = () => import('./runner/runner-manage.vue'); // runner管理
 
 const threadpool = () => import('@/views/pages/framework/healthcheck/threadpool.vue');
-const threaddump = () => import('./healthcheck/threaddump.vue');
 const sqldump = () => import('./healthcheck/sqldump.vue');
 const databaseFragment = () => import('./healthcheck/database-fragment.vue');
 
@@ -646,18 +645,6 @@ let routerList = [
       icon: 'tsfont-adapter',
       authority: 'ADMIN',
       type: 'others'
-    }
-  },
-  {
-    path: '/threaddump',
-    name: 'threaddump',
-    component: threaddump,
-    meta: {
-      title: $t('router.framework.threaddump'),
-      ismenu: true,
-      icon: 'tsfont-horizontal-right',
-      authority: 'ADMIN',
-      type: 'healthcheck'
     }
   },
   {

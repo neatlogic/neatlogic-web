@@ -1,26 +1,39 @@
 <template>
-  <div>
-    <TsContain>
-      <div slot="topRight" style="text-align:right">
-        <Button type="primary" @click="printThreaddump()">{{ $t('term.framework.printsnapshot') }}</Button></div><div slot="content">
+  <TsDialog
+    v-bind="dialogConfig"
+    @on-close="close"
+  >
+    <template v-slot>
+      <div>
         <p style="white-space: pre" v-html="threaddump"></p>
       </div>
-    </TsContain>
-  </div>
+    </template>
+    <template v-slot:footer>
+      <Button @click="close()">{{ $t('page.close') }}</Button>
+      <Button type="primary" @click="printThreaddump()">{{ $t('term.framework.printsnapshot') }}</Button>
+    </template>
+  </TsDialog>
 </template>
 <script>
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   props: {},
   data() {
     return {
+      dialogConfig: {
+        title: '线程快照',
+        type: 'slider',
+        width: 'large',
+        isShow: true
+      },
       threaddump: ''
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.printThreaddump();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -43,5 +56,4 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

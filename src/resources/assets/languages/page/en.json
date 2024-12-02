@@ -1027,5 +1027,11 @@
   "notbelong": "Not belonging to",
   "autoexecservice": "Automated services",
   "unifiedauthentrance": "Unified authentication entrance",
-  "tagentregistercount": "Tagent registration times"
+  "tagentregistercount": "Tagent registration times",
+  "term": {
+    "prev": "the previous",
+    "next": "next",
+    "printagent": "Reprint",
+    "rank": "weight"
+  }
 }
