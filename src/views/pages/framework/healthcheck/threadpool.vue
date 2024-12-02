@@ -53,6 +53,12 @@
                   </div>
                 </div>
                 <div class="grid">
+                  <div class="text-grey">权重</div>
+                  <div>
+                    <b class="text-grey">{{ getThreadInfo(index).priority }}</b>
+                  </div>
+                </div>
+                <div class="grid">
                   <div class="text-grey">耗时</div>
                   <div>
                     <b class="text-grey">{{ formatTimeCost(getThreadInfo(index).timeCost) }}</b>
