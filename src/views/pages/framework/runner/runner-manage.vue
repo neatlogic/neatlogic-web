@@ -48,6 +48,44 @@
                 </ul>
               </div>
             </template>
+            <template v-slot:status="{ row }">
+              <span v-if="row.status == 'connected'" class="green">
+                <Tooltip
+                  v-if="row.infoObj"
+                  transfer
+                  placement="bottom-start"
+                >
+                  <span class="green cursor">{{ $t('term.framework.connected') }}</span>
+                  <div slot="content" style="width:300px">
+                    <Row>
+                      <Col span="8" class="text-right"> $t('page.updatetime')：</Col>
+                      <Col span="16">{{ $utils.getDateByFormat(row.statusLcd) }}</Col>
+                    </Row>
+                    <Row>
+                      <Col span="8" class="text-right"> $t('page.tagentregistercount')：</Col>
+                      <Col span="16">{{ row.infoObj.tagentRegisterCount }}</Col>
+                    </Row>
+                  </div>
+                </Tooltip>
+                <span v-else class="green">
+                  {{ $t('term.framework.connected') }}
+                </span>
+              </span>
+              <span v-else>
+                <Tooltip
+                  v-if="row.disConnectReason"
+                  :content="row.disConnectReason"
+                  :max-width="300"
+                  transfer
+                  placement="bottom-start"
+                >
+                  <span class="red cursor">{{ $t('term.framework.notconnected') }}</span>
+                </Tooltip>
+                <span v-else class="red">
+                  {{ $t('term.framework.notconnected') }}
+                </span>
+              </span>
+            </template>
           </TsTable>
         </div>
       </template>
@@ -85,8 +123,8 @@ export default {
           key: 'name'
         },
         {
-          title: this.$t('term.deploy.connectionmode'),
-          key: 'authType'
+          title: this.$t('page.status'),
+          key: 'status'
         },
         {
           title: 'IP',

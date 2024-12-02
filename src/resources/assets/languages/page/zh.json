@@ -1028,5 +1028,6 @@
   "disabledelete": "禁止删除",
   "notbelong": "不属于",
   "autoexecservice": "自动化服务",
-  "unifiedauthentrance": "统一认证入口"
+  "unifiedauthentrance": "统一认证入口",
+  "tagentregistercount": "tagent注册次数"
 }
