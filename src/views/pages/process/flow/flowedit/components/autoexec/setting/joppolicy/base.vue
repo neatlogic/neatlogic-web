@@ -13,6 +13,7 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     MappingmodeExpression: () => import('@/views/pages/process/flow/flowedit/components/autoexec/setting/joppolicy/mappingmode-expression.vue')
   },
+  inject: ['flowObj'],
   props: {
     config: Object,
     allFormitemList: Array
@@ -41,7 +42,10 @@ export default {
         textName: 'label',
         valueName: 'name',
         border: 'border',
-        transfer: true
+        transfer: true,
+        params: {
+          processTaskId: this.flowObj && this.flowObj.processTaskId
+        }
       }
     };
   },

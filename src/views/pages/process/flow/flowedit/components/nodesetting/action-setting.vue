@@ -70,6 +70,7 @@ export default {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     ActionEdit: () => import('./action/action-edit.vue')
   },
+  inject: ['flowObj'],
   props: {
     actionList: {
       type: Array,
@@ -145,19 +146,6 @@ export default {
         this.$set(this, 'triggerList', res.Return || []);
       });
     },
-    // getParaConditionList(uuid) {
-    //   //参数条件选择
-    //   let data = {};
-    //   if (uuid) {
-    //     data.formUuid = uuid;
-    //   }
-    //   this.paraConditionList = [];
-    //   this.$api.process.process.processParamList(data).then(res => {
-    //     if (res.Status == 'OK') {
-    //       this.$set(this, 'paraConditionList', res.Return || []);
-    //     }
-    //   });
-    // },
     getIntegrationList(val) {
       //获取外部数据源选中的列表回显需要的列表
       this.integrationList = [];
@@ -174,6 +162,9 @@ export default {
             formUuid: this.formUuid,
             tag: formTag
           };
+          if (this.flowObj && this.flowObj.processTaskId) {
+            data.processTaskId = this.flowObj.processTaskId;
+          }
           this.$api.process.process.processParamList(data).then(res => {
             if (res.Status == 'OK') {
               let processParamList = res.Return || [];
@@ -281,7 +272,6 @@ export default {
     'formConfig.uuid': {
       handler: function(val, oldval) {
         this.formUuid = val;
-        // this.getParaConditionList(val);
       },
       deep: true,
       immediate: true

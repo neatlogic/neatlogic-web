@@ -717,6 +717,9 @@ export default {
         formUuid: this.formUuid,
         tag: this.formTag || 'common'
       };
+      if (this.flowObj && this.flowObj.processTaskId) {
+        data.processTaskId = this.flowObj.processTaskId;
+      }
       return this.$api.process.process.processParamList(data).then(res => {
         if (res.Status == 'OK') {
           let defaultParamConditionList = res.Return;

@@ -598,6 +598,7 @@ export default {
     noticeSetting,
     ...formItems
   },
+  inject: ['flowObj'],
   props: {
     slaListPorps: {
       type: Array,
@@ -1540,6 +1541,9 @@ export default {
         let data = {
           formUuid: this.formUuid
         };
+        if (this.flowObj && this.flowObj.processTaskId) {
+          data.processTaskId = this.flowObj.processTaskId;
+        }
         this.getFormItem(data);
       } else {
         let data = {};

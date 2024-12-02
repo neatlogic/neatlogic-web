@@ -1,4 +1,5 @@
 export default {
+  inject: ['flowObj'],
   props: {
     nodeConfig: Object, //节点数据
     formConfig: Object,
@@ -84,7 +85,10 @@ export default {
         let data = {
           uuid: uuid
         };
-        this.$api.framework.form.getFormByVersionUuid(data).then(res => {
+        if (this.flowObj && this.flowObj.processTaskId) {
+          data.processTaskId = this.flowObj.processTaskId;
+        }
+        this.$api.process.process.getProcessForm(data).then(res => {
           if (res.Status == 'OK') {
             try {
               let formConfig = res.Return.formConfig || {};

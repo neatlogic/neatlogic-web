@@ -91,7 +91,12 @@
       @saveStep="saveStep"
       @close="assignModal = false"
     ></AssignDialog>
-    <ProcessTopoDialog v-if="isShowFlowmap" :channelUuid="channelUuid" @close="isShowFlowmap=false"></ProcessTopoDialog>
+    <ProcessTopoDialog
+      v-if="isShowFlowmap"
+      :channelUuid="channelUuid"
+      :processTaskId="processTaskId"
+      @close="isShowFlowmap=false"
+    ></ProcessTopoDialog>
   </div>
 </template>
 <script>
