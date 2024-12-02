@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isReady">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <ExpiredReasonAlert :serviceData="defaultData"></ExpiredReasonAlert>
     <div :class="getClassByBorder">
@@ -204,6 +204,7 @@ export default {
   props: {},
   data() {
     return {
+      defaultServiceData: null,
       loadingShow: false,
       isSaveDialog: false,
       unfoldAndFold: {
@@ -275,7 +276,8 @@ export default {
       executeUserForm: {
         // 执行账户
         validateList: ['required']
-      }
+      },
+      isReady: false
     };
   },
   beforeCreate() {},
@@ -284,7 +286,9 @@ export default {
   async mounted() {
     await this.initData();
     this.defaultValue();
-    this.handleChange();
+    this.$nextTick(() => {
+      this.isReady = true;
+    });
   },
   beforeUpdate() {},
   updated() {},
@@ -295,12 +299,16 @@ export default {
   methods: {
     defaultValue() {
       if (this.source == 'form') {
-        for (let key in this.serviceData) {
+        let deepCloneData = this.$utils.deepClone(this.serviceData);
+        for (let key in deepCloneData) {
           if (this.hasOwnProperty(key)) {
-            this[key] = this.serviceData[key];
+            this[key] = deepCloneData[key];
           } else if (key == 'name') {
-            this.jobName = this.serviceData[key];
+            this.jobName = deepCloneData[key];
           }
+        }
+        if (!this.$utils.isEmpty(this.runtimeParamList)) {
+          this.initConfig(deepCloneData['runtimeParamMap']);
         }
       }
     },
@@ -353,17 +361,22 @@ export default {
     initData() {
       // 初始化
       this.defaultInitData();
-      if (!this.$utils.isEmpty(this.defaultData)) {
-        if (this.defaultData.config && !this.$utils.isEmpty(this.defaultData.config)) {
-          for (let key in this.defaultData.config) {
-            if (key && this.defaultData.config[key] && this.hasServiceValue.hasOwnProperty(key) && (this.defaultData.config[key]['mappingMode'] == 'notsetup')) {
+      let defaultData = this.$utils.deepClone(this.defaultData);
+      let serviceData = this.$utils.deepClone(this.serviceData);
+      let {config = {}, combopId, combopName} = defaultData || {};
+      let {executeNodeConfig = {}} = config || {};
+      let {value = ''} = executeNodeConfig || {};
+      if (!this.$utils.isEmpty(defaultData)) {
+        if (config && !this.$utils.isEmpty(config)) {
+          for (let key in config) {
+            if (key && config[key] && this.hasServiceValue.hasOwnProperty(key) && (config[key]['mappingMode'] == 'notsetup')) {
               // 映射关系为notsetup时，需要把对应的组件显示出来
               this.$set(this.hasServiceValue, [key], true);
             }
           }
-          if (this.defaultData.config && !this.$utils.isEmpty(this.defaultData.config.runtimeParamList)) {
+          if (config && !this.$utils.isEmpty(config.runtimeParamList)) {
             // 作业参数映射关系为不设置时，需要把对应作业参数显示出来
-            this.defaultData.config.runtimeParamList.forEach((item) => {
+            config.runtimeParamList.forEach((item) => {
               if (item && item.mappingMode == 'notsetup') {
                 this.$set(this.hasServiceValue, 'runtimeParamList', true);
               }
@@ -373,13 +386,10 @@ export default {
             });
           }
         }
-        let {config = {}} = this.defaultData || {};
-        let {executeNodeConfig = {}} = config || {};
-        let {value = ''} = executeNodeConfig || {};
-        this.filterSearchValue = this.serviceData && !this.$utils.isEmpty(this.serviceData.executeNodeConfig) ? this.serviceData.executeNodeConfig : !this.$utils.isEmpty(value) ? value : {}; // 执行目标值回显
-        this.combopId = this.defaultData.combopId || null;
-        if (!this.$utils.isEmpty(this.defaultData) && this.defaultData.combopName) {
-          this.jobName = this.defaultData.combopName;
+        this.filterSearchValue = serviceData && !this.$utils.isEmpty(serviceData.executeNodeConfig) ? serviceData.executeNodeConfig : !this.$utils.isEmpty(value) ? value : {}; // 执行目标值回显
+        this.combopId = combopId || null;
+        if (combopName) {
+          this.jobName = combopName;
         }
         if (this.combopId) {
           return this.getCombopDetail();
@@ -421,7 +431,7 @@ export default {
           }
         });
     },
-    initConfig() {
+    initConfig(defaultValue = {}) {
       // 初始化作业参数列表数据
       this.itemConfig = {};
       this.valueConfig = {};
@@ -441,7 +451,7 @@ export default {
         }
         config.type = data.type;
         this.$set(this.itemConfig, data.key, config);
-        this.$set(this.valueConfig, data.key, data.defaultValue);
+        this.$set(this.valueConfig, data.key, !this.$utils.isEmpty(defaultValue) && !this.$utils.isEmpty(defaultValue[data.key]) ? defaultValue[data.key] : data.defaultValue);
       });
     },
     handleUnfoldAndFold(moduleName) {
@@ -570,15 +580,13 @@ export default {
     }
   },
   watch: {
-    defaultData: {
-      handler() {
-        this.initData();
-      },
-      deep: true
-    },
     serviceData: {
-      handler() {
-        this.defaultValue();
+      handler(val) {
+        let deepCloneData = this.$utils.deepClone(val);
+        if (this.isReady && !this.$utils.isSame(val, this.defaultServiceData)) {
+          this.defaultValue();
+          this.defaultServiceData = deepCloneData;
+        }
       },
       deep: true
     }

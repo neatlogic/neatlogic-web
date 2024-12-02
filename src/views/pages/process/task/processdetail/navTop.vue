@@ -6,7 +6,8 @@
     2、优先级
     3、工单中心标题 -->
     <div v-if="processTaskConfig">
-      <span class="text-action tsfont-bar mr-md" @click="isTslayout"></span>
+      <!-- 任务列表 -->
+      <!-- <span class="text-action tsfont-bar mr-md" @click="isTslayout"></span> -->
       <span v-if="processTaskConfig.priority && isActivePriority" class="channel-type fz10" :style="typeTip(processTaskConfig.priority.color)">{{ processTaskConfig.priority.name }}</span>
       <div ref="leftInstanceBox" class="inline-block">
         <span v-if="!isEdit">

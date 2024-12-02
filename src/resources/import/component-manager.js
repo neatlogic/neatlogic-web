@@ -9,9 +9,7 @@
  * taskDetail 工单详情
  * stepLog 步骤日志
  * flowNode 流程节点
- * flowElement 流程节点
- * flowNodeValid 流程节点校验
- * flowLineValid 流程线校验
+ * flowElement 流程元素
  * dispatcher 分派器
  * dispatcherValid 分派器校验
  * workCenterColumn 工作中心列
@@ -22,7 +20,7 @@
  * loginPage 登录页
  */
 class ComponentManager {
-  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'flowNodeValid', 'flowLineValid', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'loginPage'];
+  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'loginPage'];
   static categoryConfig = {};
   static generateMethods() {
     this.categoryList.forEach(category => {

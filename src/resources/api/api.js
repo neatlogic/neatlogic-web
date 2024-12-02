@@ -12,7 +12,6 @@ import process from './process';
 import report from './report';
 import rdm from './rdm';
 import documentonline from './documentonline';
-import alert from './alert';
 
 let moduleApiConfig = {};
 let moduleList = ['autoexec', 'cmdb', 'common', 'dashboard', 'deploy', 'framework', 'globalsearch', 'inspect', 'knowledge', 'pbc', 'process', 'report', 'rdm', 'documentonline', 'alert']; // 用于自定义页面接口导入做浅拷贝
@@ -66,6 +65,5 @@ export default {
   report,
   rdm,
   documentonline,
-  alert,
   ...moduleApiConfig
 };

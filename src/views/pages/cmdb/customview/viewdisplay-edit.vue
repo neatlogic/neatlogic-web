@@ -11,7 +11,7 @@
           @update:tbodyList="updateList"
         >
           <template v-slot:name="{ row }">
-            <div><TsFormInput v-model="row.name" :validateList="['char']" style="min-width: 120px"></TsFormInput></div>
+            <div><TsFormInput v-model="row.name" :validateList="['unique_ident']" style="min-width: 120px"></TsFormInput></div>
           </template>
           <template v-slot:alias="{ row }">
             <div><TsFormInput v-model="row.alias" :validateList="['required']" style="min-width: 120px"></TsFormInput></div>

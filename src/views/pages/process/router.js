@@ -8,7 +8,6 @@ const taskDispatch = () => import('./task/task-dispatch.vue');
 const taskBatchDispatch = () => import('./task/task-batch-dispatch');
 const taskDetail = () => import('./task/task-detail.vue');
 const flowOverview = () => import('./flow/flow-overview.vue');
-const flowEdit = () => import('./flow/flow-edit.vue');
 const slaManage = () => import('./sla/sla-manage.vue');
 const priorityManage = () => import('./priority/priority-manage.vue');
 const nodeManage = () => import('./node/node-manage.vue');
@@ -170,18 +169,6 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-node',
       authority: 'PROCESS_STEP_HANDLER_MODIFY',
-      type: 'flow'
-    }
-  },
-  {
-    path: '/flow-edit-old',
-    name: 'flow-edit-old',
-    component: flowEdit,
-    meta: {
-      title: $t('router.process.flowedit'),
-      ismenu: false,
-      icon: 'tsfont-flow',
-      authority: 'PROCESS_MODIFY',
       type: 'flow'
     }
   },

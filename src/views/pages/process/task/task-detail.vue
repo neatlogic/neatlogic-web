@@ -24,7 +24,8 @@
         @updateMenu="updateMenu"
         @operation="operation"
       >
-        <div class="workorder-task">
+      <!-- 任务列表 屏蔽 -->
+        <!-- <div class="workorder-task">
           <div class="task-list">
             <div class="title-top">{{ $t('page.tasklist') }}</div>
             <div class="task-secrch">
@@ -104,7 +105,7 @@
               </Scroll>
             </div>
           </div>
-        </div>
+        </div> -->
       </nodeDetail>
     </div>
     <div v-else>
@@ -181,7 +182,7 @@ export default {
       processTaskStepId: this.processTaskStepId
     };
     await this.getAllData(true);
-    this.getTaskList();
+    // this.getTaskList();
     let _this = this;
     window.addEventListener('resize', function() {
       if (_this.$refs.processList) {

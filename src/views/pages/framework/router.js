@@ -41,6 +41,7 @@ const BatchUpgrade = () => import('./tagent/tagent/batch-upgrade.vue'); // tagen
 const InstallationPackage = () => import('./tagent/tagent/installation-package.vue'); // tagent管理/安装包管理
 const runnerManage = () => import('./runner/runner-manage.vue'); // runner管理
 
+const threadpool = () => import('@/views/pages/framework/healthcheck/threadpool.vue');
 const threaddump = () => import('./healthcheck/threaddump.vue');
 const sqldump = () => import('./healthcheck/sqldump.vue');
 const databaseFragment = () => import('./healthcheck/database-fragment.vue');
@@ -655,6 +656,18 @@ let routerList = [
       title: $t('router.framework.threaddump'),
       ismenu: true,
       icon: 'tsfont-horizontal-right',
+      authority: 'ADMIN',
+      type: 'healthcheck'
+    }
+  },
+  {
+    path: '/threadpool',
+    name: 'threadpool',
+    component: threadpool,
+    meta: {
+      title: '线程池监控',
+      ismenu: true,
+      icon: 'tsfont-accessendpoint',
       authority: 'ADMIN',
       type: 'healthcheck'
     }

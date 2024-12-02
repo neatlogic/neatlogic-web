@@ -164,6 +164,7 @@
     <!-- 中间选项卡内容 -->
     <div v-if="!loadingShow" ref="commonMain" class="common-main">
       <Tabs
+        ref="tabList"
         v-model="tabValue"
         class="block-tabs"
         :animated="false"
@@ -594,10 +595,6 @@ export default {
       // 首次加载时需要判断表单是否必填，没填写时，需要高亮tab
       let valid = await this.formValid(this.processTaskConfig);
       return valid;
-    },
-    openTabName(tabValue) {
-      // 错误信息时，点击对应的标签，定位到具体的错误内容
-      this.tabValue = tabValue;
     },
     updateAccessoriesList(val) {
       this.hasAccessoriesList = true;
@@ -1139,10 +1136,9 @@ export default {
         this.$set(this.fixedPageTab, tabValue, false);
       }
       this.$nextTick(() => {
-        if (this.tabValue == tabValue) {
-          this.tabValue = ''; // 当前选中tab是高亮tab时，固定页面后，设置默认选中第一个tab
-        }
         this.loadingShow = false;
+        // 当前选中tab是高亮tab时，固定页面后，设置默认选中第一个tab
+        this.changeTabValue();
       });
     },
     cancelFixedPage(tabValue) {
@@ -1192,7 +1188,7 @@ export default {
     },
     closeRepeatTab() {
       this.repeatList = [];
-      this.tabValue = 'report';
+      this.changeTabValue();
     },
     stepListSort() {
       this.stepSortIcon = !this.stepSortIcon;
@@ -1325,7 +1321,22 @@ export default {
           this.$refs.formSheet.calcContainerHeight();
         });
       }
+    },
+    changeTabValue(val) {
+      // 更新当前tabValue
+      this.$nextTick(() => {
+        const navList = this.$refs.tabList && this.$refs.tabList.navList || [];
+        if (!this.$utils.isEmpty(navList)) {
+          const findItem = val && navList.find(item => item.name === val);
+          if (findItem) {
+            this.tabValue = findItem.name;
+          } else {
+            this.tabValue = navList[0].name;
+          }
+        }
+      });
     }
+     
   },
   computed: {
     unfixedSlotList() {
