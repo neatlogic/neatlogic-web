@@ -1,5 +1,5 @@
 <template>
-  <div class="menu_link">
+  <div class="menu_link rdm-menu-box">
     <div :class="{ grid: pageCount > 1 }">
       <ul>
         <li class="link">
@@ -10,21 +10,19 @@
         <li
           v-for="project in projectList"
           :key="project.id"
-          class="link"
+          class="link rdm-menu-link"
           :class="{ active: $isMenuActive('/project/' + project.id) || $isMenuActive('/project-edit/' + project.id) }"
         >
           <a
-            class="cursor tsfont-blocks"
+            class="cursor tsfont-blocks rdm-menu-a"
             :style="{ color: project.color }"
-            style="position: relative"
             @click="goTo('/project/' + project.id)"
           >
-            <span>{{ project.name }}</span>
+            <span class="project-name overflow">{{ project.name }}</span>
             <div
               v-if="project.isOwner || project.isLeader"
-              style="position: absolute; right: 0px; top: 0px"
-              class="text-grey cursor tsfont-setting"
-              @click.stop="goTo( '/project-edit/' + project.id)"
+              class="text-grey cursor tsfont-setting rdm-menu-setting-icon"
+              @click.stop="goTo('/project-edit/' + project.id)"
             ></div>
           </a>
         </li>
@@ -58,7 +56,7 @@ export default {
       isProjectDialogShow: false,
       projectList: [],
       pageCount: 0,
-      searchParam: { isMine: 1, isClose: 0, currentPage: 1, pageSize: 10}
+      searchParam: { isMine: 1, isClose: 0, currentPage: 1, pageSize: 10 }
     };
   },
   created() {
@@ -82,7 +80,7 @@ export default {
     },
     searchProject() {
       this.$api.rdm.project.searchProject(this.searchParam).then(res => {
-        let {pageCount = 0, tbodyList = []} = res.Return || {};
+        let { pageCount = 0, tbodyList = [] } = res.Return || {};
         this.projectList = tbodyList;
         this.pageCount = pageCount;
       });
@@ -97,8 +95,33 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.grid {
-  display: grid;
-  grid-template-columns: auto 23px;
+.rdm-menu-box {
+  .grid {
+    display: grid;
+    grid-template-columns: 177px 23px;
+    .rdm-menu-link {
+      padding: 0 0 0 6px !important;
+    }
+    .rdm-menu-a {
+      position: relative;
+      width: 100%;
+      padding-right: 0px !important;
+    }
+    .rdm-menu-setting-icon {
+      right: 4px;
+    }
+    .project-name {
+      max-width: calc(100% - 44px);
+    }
+  }
+  .project-name {
+    display: inline-block;
+    max-width: calc(100% - 35px);
+  }
+  .rdm-menu-setting-icon {
+    position: absolute;
+    right: 12px;
+    top: 0px;
+  }
 }
 </style>
