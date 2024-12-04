@@ -27,7 +27,7 @@
           @changePageSize="changePageSize"
         >
           <template v-slot:detail="{ row }">
-            <span style="cursor:pointer" class="tsfont-task" @click="showHistoryDetail(row)"></span>
+            <span style="cursor: pointer" class="tsfont-task" @click="showHistoryDetail(row)"></span>
           </template>
           <template v-slot:ciName="{ row }">
             <div>
@@ -55,7 +55,7 @@
           </template>
           <template v-slot:createTime="{ row }">
             <Poptip v-if="row.createTime" trigger="hover" :transfer="true">
-              <div style="cursor:help">
+              <div style="cursor: help">
                 <span>{{ row.createTime | formatDate }}</span>
                 <span class="fz10 tsfont-taskperson"></span>
               </div>
@@ -66,7 +66,7 @@
           </template>
           <template v-slot:commitTime="{ row }">
             <Poptip v-if="row.commitTime" trigger="hover" :transfer="true">
-              <div style="cursor:help">
+              <div style="cursor: help">
                 <span>{{ row.commitTime | formatDate }}</span>
                 <span class="fz10 tsfont-taskperson"></span>
               </div>
@@ -134,9 +134,12 @@ export default {
       searchParam: { needAction: true },
       searchConfig: {
         search: false,
+        labelPosition: 'left',
         searchList: [
           { type: 'text', name: 'transactionId', label: this.$t('term.cmdb.transactionid') },
           { type: 'text', name: 'transactionGroupId', label: this.$t('term.cmdb.transactiongroupid') },
+          { type: 'userselect', multiple: false, name: 'createUser', label: '创建用户', groupList: ['user'] },
+          { type: 'userselect', multiple: false, name: 'commitUser', label: '提交用户', groupList: ['user'] },
           { type: 'select', name: 'status', url: '/api/rest/universal/enum/get', params: { enumClass: 'neatlogic.framework.cmdb.enums.TransactionStatus' }, label: this.$t('page.status'), transfer: true },
           {
             type: 'select',

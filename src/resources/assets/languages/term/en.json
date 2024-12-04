@@ -240,7 +240,8 @@
     "exportformodel": "Export as Model",
     "exportforexcel": "Export to Excel",
     "isterm": "Is it a keyword",
-    "batchimport": "Batch upload"
+    "batchimport": "Batch upload",
+    "errordetail": "Exception Details"
   },
   "process": {
     "workordercenter": "Work Center",

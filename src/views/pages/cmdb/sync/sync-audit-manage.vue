@@ -71,8 +71,8 @@
           <template v-slot:error="{ row }">
             <Poptip
               v-if="row.error"
-              trigger="click"
-              title="异常"
+              trigger="hover"
+              :title="$t('page.exception')"
               word-wrap
               width="500"
               :transfer="true"
@@ -86,9 +86,13 @@
               </div>
             </Poptip>
           </template>
+          <template v-slot:errorDataCount="{ row }">
+            <span v-if="row.errorDataCount" class="text-error cursor" @click="viewErrorData(row)">{{ row.errorDataCount }}</span>
+            <span v-else class="text-grey">-</span>
+          </template>
           <template v-slot:transactionCount="{ row }">
             <a v-if="row.transactionCount > 0" href="javascript:void(0)" @click="showCiEntityTransaction(row.transactionGroupId)">{{ row.transactionCount }}</a>
-            <span v-else>-</span>
+            <span v-else class="text-grey">-</span>
           </template>
           <template v-slot:action="{ row }">
             <div class="tstable-action">
@@ -141,6 +145,7 @@ export default {
         { key: 'startTime', title: '开始时间', type: 'time' },
         { key: 'endTime', title: '结束时间', type: 'time' },
         { key: 'timeCost', title: '耗时' },
+        { key: 'errorDataCount', title: '异常数据量' },
         { key: 'dataCount', title: '处理数据量' },
         { key: 'transactionCount', title: '更新配置项' },
         { key: 'action' }
@@ -210,6 +215,9 @@ export default {
   },
   destroyed() {},
   methods: {
+    viewErrorData(row) {
+      this.$router.push({ path: '/discovery-data/' + row.ciCollectionName, query: { hasError: 1 } });
+    },
     clipboardSuccess() {
       this.$Message.success(this.$t('message.copysuccess'));
     },

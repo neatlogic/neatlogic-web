@@ -241,7 +241,8 @@
     "exportformodel": "导出为Model",
     "exportforexcel": "导出为Excel",
     "isterm": "是否关键字",
-    "batchimport": "批量上传"
+    "batchimport": "批量上传",
+    "errordetail": "异常详情"
   },
   "process": {
     "workordercenter": "工单中心",

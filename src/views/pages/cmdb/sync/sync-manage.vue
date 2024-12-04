@@ -118,8 +118,8 @@
                   <span>{{ row.statusText }}</span>
                   <Poptip
                     v-if="row.error"
-                    trigger="click"
-                    title="异常"
+                    trigger="hover"
+                    :title="$t('page.exception')"
                     word-wrap
                     width="500"
                     :transfer="true"
