@@ -118,15 +118,15 @@
                   <span>{{ row.statusText }}</span>
                   <Poptip
                     v-if="row.error"
-                    trigger="hover"
+                    trigger="click"
                     title="异常"
                     word-wrap
-                    width="400"
+                    width="500"
                     :transfer="true"
                   >
                     <span class="text-error tsfont-warning-s"></span>
                     <div slot="content">
-                      <div>{{ row.error }}</div>
+                      <div style="max-height:400px;overflow:auto">{{ row.error }}</div>
                       <div style="text-align:right"><Button v-clipboard="row.error" v-clipboard:success="clipboardSuccess" size="small">{{ $t('page.copy') }}</Button></div>
                     </div>
                   </Poptip>

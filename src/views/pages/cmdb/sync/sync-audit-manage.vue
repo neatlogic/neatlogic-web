@@ -71,15 +71,19 @@
           <template v-slot:error="{ row }">
             <Poptip
               v-if="row.error"
-              trigger="hover"
+              trigger="click"
               title="异常"
               word-wrap
-              width="400"
+              width="500"
               :transfer="true"
-              :content="row.error"
-              placement="right"
             >
               <span class="text-error tsfont-warning-s"></span>
+              <div slot="content">
+                <div style="max-height: 400px; overflow: auto">{{ row.error }}</div>
+                <div style="text-align: right">
+                  <Button v-clipboard="row.error" v-clipboard:success="clipboardSuccess" size="small">{{ $t('page.copy') }}</Button>
+                </div>
+              </div>
             </Poptip>
           </template>
           <template v-slot:transactionCount="{ row }">
@@ -99,6 +103,8 @@
   </div>
 </template>
 <script>
+import clipboard from '@/resources/directives/clipboard.js';
+
 export default {
   name: '',
   components: {
@@ -107,6 +113,7 @@ export default {
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
+  directives: { clipboard },
   props: {},
   data() {
     return {
@@ -203,6 +210,9 @@ export default {
   },
   destroyed() {},
   methods: {
+    clipboardSuccess() {
+      this.$Message.success(this.$t('message.copysuccess'));
+    },
     deleteSyncAudit(row) {
       this.$createDialog({
         title: '警告',

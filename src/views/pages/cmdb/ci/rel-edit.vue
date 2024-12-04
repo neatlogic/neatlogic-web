@@ -30,13 +30,14 @@
                     <Poptip
                       word-wrap
                       width="200"
+                      :transfer="true"
                       placement="left"
                       trigger="hover"
                     >
-                      <div slot="content">
-                        {{ $t('form.help.activeautocollect') }}
-                      </div>
                       <i class="tsfont-info-o"></i>
+                      <div slot="content">
+                        <span style="text-align:left !important">{{ $t('form.help.activeautocollect') }}</span>
+                      </div>
                     </Poptip>
                   </div>
                 </Col>
