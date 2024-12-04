@@ -125,6 +125,7 @@ export default {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue')
   },
+  inject: ['flowObj'],
   props: {
     uuid: {
       //流程uuid
@@ -243,7 +244,10 @@ export default {
       let data = {
         uuid: uuid
       };
-      this.$api.framework.form.getFormByVersionUuid(data).then(res => {
+      if (this.flowObj && this.flowObj.processTaskId) {
+        data.processTaskId = this.flowObj.processTaskId;
+      }
+      this.$api.process.process.getProcessForm(data).then(res => {
         if (res.Status == 'OK') {
           this.currentVersionUuid = res.Return.currentVersionUuid;
           if (!this.$utils.isEmpty(res.Return.formConfig)) {

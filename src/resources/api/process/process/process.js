@@ -157,6 +157,15 @@ const process = {
   },
   saveTransferablestep(params) { //保存转交步骤
     return axios.post('/api/rest/eoa/step/transfer', params);
+  },
+  getProcessForm(data) { //工单表单
+    return axios.post('/api/rest/process/form/get', data);
+  },
+  getProcessFormTagList(data) { //工单表单标签列表
+    return axios.post('/api/rest/process/form/tag/list', data);
+  },
+  getProcessFormAttributeList(data) { //工单表单组件属性列表
+    return axios.post('/api/rest/process/form/attribute/list', data);
   }
 };
 

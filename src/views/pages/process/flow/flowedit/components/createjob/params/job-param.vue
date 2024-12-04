@@ -139,6 +139,7 @@ export default {
     MappingmodeExpression: () => import('./mappingmode-expression.vue'),
     FilterList: () => import('../filter-list.vue')
   },
+  inject: ['flowObj'],
   props: {
     jobParamMappingGroupList: Array,
     allFormitemList: Array,
@@ -170,7 +171,10 @@ export default {
         textName: 'label',
         valueName: 'name',
         border: 'border',
-        transfer: true
+        transfer: true,
+        params: {
+          processTaskId: this.flowObj && this.flowObj.processTaskId
+        }
       }
     };
   },

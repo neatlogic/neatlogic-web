@@ -17,7 +17,7 @@
             {{ $t('term.process.relcatalog') }}
             <span v-if="referenceCount > 0" class="reference-number">{{ referenceCount }}</span>
           </span>
-          <div class="action-item">
+          <div v-if="!processTaskId" class="action-item">
             <Button type="info" ghost @click="saveFlowDraft()">{{ $t('page.staging') }}</Button>
           </div>
           <span v-if="referenceCount > 0 || isNew == true" class="action-item">
@@ -26,7 +26,7 @@
           <span v-else-if="referenceCount == 0 && isNew == false" class="action-item">
             <Button type="error" @click="deleteFlow()">{{ $t('page.delete') }}</Button>
           </span>
-          <span class="action-item">
+          <span v-if="!processTaskId" class="action-item">
             <Button type="primary" @click="saveFlow(true)">{{ $t('page.save') }}</Button>
           </span>
         </div>
@@ -258,7 +258,8 @@ export default {
       dnd: null,
       flowConfig: {}, //流程设计器的设置
       flowData: { process: { formConfig: {} } }, //流程数据
-      allowDispatchStepWorkerNode: [] //允许指派任务的节点
+      allowDispatchStepWorkerNode: [], //允许指派任务的节点
+      processTaskId: null
     };
   },
   beforeCreate() {},
@@ -277,6 +278,11 @@ export default {
     if (this.$route.query.activeTab) {
       //从策略页面跳转过滤，定位tab
       this.activeTab = this.$route.query.activeTab;
+    }
+    if (this.$route.query.processTaskId) {
+      //工单id
+      this.processTaskId = Math.floor(this.$route.query.processTaskId);
+      this.flowObj.processTaskId = this.processTaskId;
     }
   },
   async mounted() {
@@ -582,7 +588,13 @@ export default {
     async getProcessByUuid() {
       if (this.processUuid) {
         this.isFlowReady = false;
-        await this.$api.process.process.getProcess({ uuid: this.processUuid }).then(res => {
+        let data = {
+          uuid: this.processUuid
+        };
+        if (this.processTaskId) {
+          data.processTaskId = this.processTaskId;
+        }
+        await this.$api.process.process.getProcess(data).then(res => {
           this.flowData = res.Return.config;
           //console.log(JSON.stringify(this.flowData, null, 2));
           this.processName = res.Return.name;
@@ -994,7 +1006,11 @@ export default {
       //节点设置needformscene为true时，需要更新节点的表单场景id
       this.formSceneUuidList = [];
       if (formUuid) {
-        this.$api.framework.form.getFormByVersionUuid({ uuid: formUuid }).then(res => {
+        let data = { uuid: formUuid };
+        if (this.flowObj && this.flowObj.processTaskId) {
+          data.processTaskId = this.flowObj.processTaskId;
+        }
+        this.$api.process.process.getProcessForm(data).then(res => {
           this.$set(this.flowData.process.formConfig, 'uuid', formUuid);
           const formConfig = res.Return.formConfig;
           let defaultSceneUuid = formConfig.defaultSceneUuid || formConfig.uuid;
@@ -1285,7 +1301,11 @@ export default {
     async getFormSceneuuidList(uuid) {
       //获取表单指定版本的数据，渲染表单
       if (uuid) {
-        await this.$api.framework.form.getFormByVersionUuid({ uuid: uuid }).then(res => {
+        let data = { uuid: uuid };
+        if (this.flowObj && this.flowObj.processTaskId) {
+          data.processTaskId = this.flowObj.processTaskId;
+        }
+        await this.$api.process.process.getProcessForm(data).then(res => {
           if (res.Status == 'OK') {
             try {
               let formConfig = res.Return.formConfig || {};

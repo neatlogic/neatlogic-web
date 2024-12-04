@@ -301,7 +301,6 @@ export default {
     PrestepassignDialog: () => import('./assign/prestepassign-dialog.vue'),
     ...dispatcherComponent
   },
-  inject: ['flowObj'],
   props: {
     prevNodes: {
       type: Array,

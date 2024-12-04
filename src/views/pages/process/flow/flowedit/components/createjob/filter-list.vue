@@ -139,6 +139,7 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
+  inject: ['flowObj'],
   props: {
     value: String,
     filterList: Array,
@@ -194,7 +195,10 @@ export default {
         valueName: 'name',
         border: 'border',
         transfer: true,
-        validateList: ['required']
+        validateList: ['required'],
+        params: {
+          processTaskId: this.flowObj && this.flowObj.processTaskId
+        }
       }
     };
   },

@@ -151,8 +151,7 @@ export default {
     JobParam: () => import('./params/job-param.vue'),
     FormTagSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/form-tag-setting.vue') // 表单扩展数据标签
   },
-  filters: {
-  },
+  inject: ['flowObj'],
   props: {
     formUuid: String,
     defaultAllFormitemList: Array, //默认表单项列表
@@ -385,7 +384,10 @@ export default {
         formUuid: this.formUuid,
         tag: tag
       };
-      this.$api.framework.form.getFormItemList(data).then(res => {
+      if (this.flowObj && this.flowObj.processTaskId) {
+        data.processTaskId = this.flowObj.processTaskId;
+      }
+      this.$api.process.process.getProcessFormAttributeList(data).then(res => {
         if (res.Status == 'OK') {
           this.allFormitemList = res.Return || [];
         }

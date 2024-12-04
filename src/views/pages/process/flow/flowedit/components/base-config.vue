@@ -66,6 +66,7 @@ export default {
     AssignSetting: () => import('./nodesetting/assign-setting.vue'), //分派处理人
     FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
   },
+  inject: ['flowObj'],
   mixins: [],
   props: {
     formUuid: String,
@@ -149,7 +150,10 @@ export default {
         let data = {
           uuid: uuid
         };
-        this.$api.framework.form.getFormByVersionUuid(data).then(res => {
+        if (this.flowObj && this.flowObj.processTaskId) {
+          data.processTaskId = this.flowObj.processTaskId;
+        }
+        this.$api.process.process.getProcessForm(data).then(res => {
           if (res.Status == 'OK') {
             try {
               let formConfig = res.Return.formConfig || {};

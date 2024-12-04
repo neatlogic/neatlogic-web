@@ -700,6 +700,9 @@ export default {
         tag: this.formTag || 'common',
         isAll: 1
       };
+      if (this.flowObj && this.flowObj.processTaskId) {
+        data.processTaskId = this.flowObj.processTaskId;
+      }
       this.$api.process.process.conditionList(data).then(res => {
         if (res.Status == 'OK') {
           this.formAttrList = res.Return;

@@ -58,11 +58,11 @@
                   <span class="green cursor">{{ $t('term.framework.connected') }}</span>
                   <div slot="content" style="width:300px">
                     <Row>
-                      <Col span="8" class="text-right"> $t('page.updatetime')：</Col>
+                      <Col span="8" class="text-right"> {{ $t('page.updatetime') }}：</Col>
                       <Col span="16">{{ $utils.getDateByFormat(row.statusLcd) }}</Col>
                     </Row>
                     <Row>
-                      <Col span="8" class="text-right"> $t('page.tagentregistercount')：</Col>
+                      <Col span="8" class="text-right"> {{ $t('page.tagentregistercount') }}：</Col>
                       <Col span="16">{{ row.infoObj.tagentRegisterCount }}</Col>
                     </Row>
                   </div>

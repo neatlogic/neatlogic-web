@@ -664,7 +664,7 @@ export default {
         if (returnData && returnData.pageCount > 0) {
           this.reachPage = nodeList.length == 0 ? returnData.pageCount : returnData.currentPage;
           this.pageCount = returnData.pageCount;
-          if (returnData.pageCount > 1) {
+          if (returnData.pageCount > 1 && (!this.$utils.isEmpty(nodeList) && nodeList.length > 0)) { // nodeList为空，后端接口pageCount大于1，表格输入组件，/*  */会默认选中第一个更多请搜索的选项
             nodeList.push(this.moreSearchTip);
           }
         } else {

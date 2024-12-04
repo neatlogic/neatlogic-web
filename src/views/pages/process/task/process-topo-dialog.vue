@@ -1,7 +1,10 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-close="close()">
     <template v-slot:header>
-      <span class="text-action" @click="openFlow()">{{ title }}</span>
+      <div>
+        <span class="text-action pr-xs" @click="openFlow()">{{ title }}</span>
+        <span class="tsfont-eye text-tip-active" title="查看当前工单流程配置" @click="openFlow(true)"></span>
+      </div>
     </template>
     <template v-slot>
       <div class="bg-op radius-md">
@@ -39,7 +42,8 @@ export default {
     FlowEditorToolbar: () => import('@/views/pages/process/flow/floweditor/flow-editor-toolbar.vue')
   },
   props: {
-    channelUuid: { type: String }
+    channelUuid: { type: String },
+    processTaskId: { type: Number }
   },
   data() {
     return {
@@ -100,9 +104,14 @@ export default {
         }, 500);
       });
     },
-    openFlow() {
+    openFlow(isView) {
       if (this.flowUuid) {
-        window.open(HOME + '/process.html#/flow-edit?uuid=' + this.flowUuid, '_blank');
+        let url = HOME + '/process.html#/flow-edit?uuid=' + this.flowUuid; 
+        if (isView) {
+        //查看当前工单的流程图配置，需要传递工单id
+          url = HOME + '/process.html#/flow-edit?uuid=' + this.flowUuid + '&processTaskId=' + this.processTaskId;
+        }
+        window.open(url, '_blank');
       }
     }
   },
