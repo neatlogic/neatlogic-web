@@ -1,5 +1,6 @@
 {
   "title": {
+    "pausecomfirm": "暂停确认",
     "deleteconfirm": "删除确认",
     "updateconfirm": "修改确认",
     "commitconfirm": "提交确认",
@@ -43,6 +44,7 @@
     "lockconfirm": "锁定确认"
   },
   "content": {
+    "pausecomfirm": "是否确认暂停当前{target}？",
     "startconfirm": "是否确认开始当前{target}？",
     "revocatetargetconfirm": "是否确认撤销当前{target}？",
     "passtargetconfirm": "是否确认通过当前{target}？",

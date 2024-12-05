@@ -66,6 +66,12 @@ const sync = {
   },
   deleteObject(id) {
     return axios.post('/api/rest/cmdb/sync/object/delete', { id: id });
+  },
+  pauseSyncCiCollection(id) {
+    return axios.post('/api/rest/cmdb/sync/cicollection/pause', { id: id });
+  },
+  resumeSyncCiCollection(id) {
+    return axios.post('/api/rest/cmdb/sync/cicollection/resume', { id: id });
   }
 };
 
