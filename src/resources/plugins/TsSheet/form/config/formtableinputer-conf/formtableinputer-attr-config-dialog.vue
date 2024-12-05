@@ -32,8 +32,43 @@
                 :dataList="ruleList"
                 transfer
                 border="border"
+                @on-change="(validateRule)=> {
+                  if(validateRule !== 'custom'){
+                    $set(propertyLocal.config,'regex','');
+                    $set(propertyLocal.config,'regexMessage','');
+                  }
+                }"
               ></TsFormSelect>
             </TsFormItem>
+            <template v-if="propertyLocal && propertyLocal.config && (propertyLocal.config.validate == 'custom')">
+              <TsFormItem :label="$t('message.framework.regex')" :tooltip="$t('message.framework.regextip')">
+                <TsFormInput
+                  ref="formitem_regex"
+                  :value="propertyLocal.config.regex"
+                  :validateList="regexValidateList"
+                  :placeholder="$t('message.framework.regularexpression')"
+                  prepend="/"
+                  append="/"
+                  class="regex-input"
+                  @on-change="val => {
+                    $set(propertyLocal.config,'regex', val);
+                  }"
+                >
+                </TsFormInput>
+              </TsFormItem>
+              <TsFormItem :label="$t('message.framework.validtip')" :tooltip="$t('message.framework.regexvalidtip')">
+                <TsFormInput
+                  ref="formitem_regexMessage"
+                  :value="propertyLocal.config.regexMessage"
+                  :validateList="!$utils.isEmpty(propertyLocal.config.regex)? ['required']:[]"
+                  :placeholder="$t('message.framework.regexvalidplaceholder')"
+                  @on-change="val => {
+                    $set(propertyLocal.config,'regexMessage', val);
+                  }"
+                >
+                </TsFormInput>
+              </TsFormItem>
+            </template>
             <TsFormItem :label="$t('page.inputtip')">
               <TsFormInput v-model="propertyLocal.config.placeholder" :maxlength="50"></TsFormInput>
             </TsFormItem>
@@ -578,6 +613,10 @@ export default {
         {
           text: 'URL',
           value: 'url'
+        },
+        {
+          text: this.$t('page.custom'),
+          value: 'custom'
         }
       ],
       typeDataList: [
@@ -588,6 +627,25 @@ export default {
         {
           text: this.$t('page.dynamicvalue'),
           value: 'dynamic'
+        }
+      ],
+      regexValidateList: [
+        {
+          name: 'tomore',
+          trigger: 'change',
+          message: this.$t('message.pleaseentertruetarget', {'target': this.$t('message.framework.regularexpression')}),
+          validator: (rule, value) => {
+            if (this.$utils.isEmpty(value)) {
+              return true;
+            } else {
+              try {
+                new RegExp(value);
+                return true;
+              } catch (error) {
+                return false;
+              }
+            }
+          }
         }
       ]
       //filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
