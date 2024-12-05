@@ -25,13 +25,16 @@
               :title="$t('page.preview')"
               @click="previewForm"
             ></span>
-            <span
-              v-if="relateList.uuid"
-              class="tsfont-edit text-tip-active action-item"
-              :title="$t('page.edit')"
-              @click="editForm"
-            ></span>
-            <span class="tsfont-refresh text-tip-active action-item" :title="$t('page.refreshtarget',{target:$t('term.process.formlist')})" @click="refreshRelateList()"></span>
+            <!-- 查看当前工单流程时，表单数据不可编辑修改 -->
+            <template v-if="!flowObj.processTaskId">
+              <span
+                v-if="relateList.uuid"
+                class="tsfont-edit text-tip-active action-item"
+                :title="$t('page.edit')"
+                @click="editForm"
+              ></span>
+              <span class="tsfont-refresh text-tip-active action-item" :title="$t('page.refreshtarget',{target:$t('term.process.formlist')})" @click="refreshRelateList()"></span>
+            </template>
           </div>
         </div>
         <div class="panel-contain input-border">
