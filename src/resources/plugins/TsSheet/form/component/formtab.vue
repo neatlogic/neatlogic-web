@@ -16,7 +16,7 @@
         :tab="formItem.uuid"
       >
         <div
-          @drop="
+          @drop.stop="
             event => {
               dropFormItem(event, tab);
             }
@@ -60,6 +60,7 @@
       </TabPane>
     </Tabs>
     <div v-else-if="mode === 'edit' && mode === 'editSubform'" class="text-grey">{{ $t('form.placeholder.pleaseadd',{'target':$t('page.tab')}) }}</div>
+    <FormItemKeyDialog v-if="isShowFormItemKeyDialog" :formItemList="formItemList" @close="closeFormItemKeyDialog"></FormItemKeyDialog>
   </div>
 </template>
 <script>
@@ -69,7 +70,10 @@ import conditionMixin from '@/resources/plugins/TsSheet/form/conditionexpression
 
 export default {
   name: '',
-  components: { ChildFormItem: () => import('@/resources/plugins/TsSheet/child-form-item.vue') },
+  components: { 
+    ChildFormItem: () => import('@/resources/plugins/TsSheet/child-form-item.vue'),
+    FormItemKeyDialog: () => import('@/resources/plugins/TsSheet/form-item-key-dialog.vue')
+  },
   extends: base,
   mixins: [validmixin, conditionMixin],
   props: {},
@@ -80,7 +84,10 @@ export default {
       currentTab: null,
       isFirst: true,
       validateErrorList: [], // 验证错误列表
-      tabValue: {} //tab下对应值
+      tabValue: {}, //tab下对应值
+      isShowFormItemKeyDialog: false,
+      currentTabObj: {},
+      currentEventItem: null //当前单元格获取的新组件
     };
   },
   beforeCreate() {},
@@ -107,13 +114,10 @@ export default {
         if (item && item.isHideComponent) {
           return false;
         }
-        if (tab && item) {
-          if (this.addComponent(item)) {
-            if (!tab.component) {
-              this.$set(tab, 'component', []);
-            }
-            tab.component.push(item.uuid);
-          }
+        this.currentTabObj = tab;
+        this.currentEventItem = item;
+        if (this.addComponent(item)) {
+          this.isShowFormItemKeyDialog = true;
         }
       }
     },
@@ -266,6 +270,20 @@ export default {
       }
       if (!this.$utils.isSame(tabValue, this.tabValue)) {
         this.tabValue = this.$utils.deepClone(tabValue);
+      }
+    },
+    closeFormItemKeyDialog(key) {
+      this.isShowFormItemKeyDialog = false;
+      if (key) {
+        if (this.currentTabObj && this.currentEventItem) {
+          const uuid = this.$md5(key);
+          this.currentEventItem.key = key;
+          this.currentEventItem.uuid = uuid;
+          if (!this.currentTabObj.component) {
+            this.$set(this.currentTabObj, 'component', []);
+          }
+          this.currentTabObj.component.push(uuid);
+        }
       }
     }
   },

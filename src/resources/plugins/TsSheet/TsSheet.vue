@@ -841,7 +841,7 @@ export default {
       if (this.dropCell) {
         this.actionType = 'add';
         this.currentEventItem = JSON.parse(event.dataTransfer.getData('item'));
-        if (!this.currentEventItem.hasOwnProperty('inherit')) {
+        if (!this.currentEventItem.isContainer || !this.currentEventItem.hasOwnProperty('inherit')) {
           this.isShowFormItemKeyDialog = true;
         } else {
           this.addComponent(this.currentEventItem.key);
@@ -1822,8 +1822,7 @@ export default {
       if (event.key == 'c' && event.ctrlKey) {
         //复制组件
         if (!event.target._value && this.hasCopy) {
-          console.log('复制组件', event);
-          this.copyCell(event);
+          this.copyCell();
         }
       } else if (event.key == 'v' && event.ctrlKey) {
         //粘贴组件
