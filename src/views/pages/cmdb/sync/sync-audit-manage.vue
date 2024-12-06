@@ -66,13 +66,25 @@
                   :hide-info="true"
                 />
               </div>
+              <div v-else-if="row.status == 'pausing'" style="width: 42px">
+                <Progress
+                  :percent="99"
+                  :stroke-width="10"
+                  stroke-color="orange"
+                  status="active"
+                  :hide-info="true"
+                />
+              </div>
+              <div v-else-if="row.status == 'paused'" class="text-error">
+                {{ row.statusText }}
+              </div>
             </div>
           </template>
           <template v-slot:error="{ row }">
             <Poptip
               v-if="row.error"
-              trigger="click"
-              title="异常"
+              trigger="hover"
+              :title="$t('page.exception')"
               word-wrap
               width="500"
               :transfer="true"
@@ -86,14 +98,24 @@
               </div>
             </Poptip>
           </template>
+          <template v-slot:errorDataCount="{ row }">
+            <span v-if="row.errorDataCount" class="text-error cursor" @click="viewErrorData(row)">{{ row.errorDataCount }}</span>
+            <span v-else class="text-grey">-</span>
+          </template>
+          <template v-slot:dataCount="{ row }">
+            <span v-if="row.dataCount" class="text-grey">{{ row.dataCount }}</span>
+            <span v-else class="text-grey">-</span>
+          </template>
           <template v-slot:transactionCount="{ row }">
             <a v-if="row.transactionCount > 0" href="javascript:void(0)" @click="showCiEntityTransaction(row.transactionGroupId)">{{ row.transactionCount }}</a>
-            <span v-else>-</span>
+            <span v-else class="text-grey">-</span>
           </template>
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-trash-o" @click="deleteSyncAudit(row)">删除</li>
+                <li v-if="row.status === 'doing'" class="tsfont-pause" @click="pauseSync(row.id)">{{ $t('page.pause') }}</li>
+                <li v-if="row.status === 'paused'" class="tsfont-restart" @click="resumeSync(row.id)">{{ $t('page.recover') }}</li>
+                <li v-if="!['doing', 'pausing'].includes(row.status)" class="tsfont-trash-o" @click="deleteSyncAudit(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>
@@ -119,6 +141,7 @@ export default {
     return {
       isLoading: false,
       searchVal: {},
+      searchParam: {},
       sessionName: 'sync-audit-manage',
       syncCiCollectionData: {},
       syncAuditData: {},
@@ -141,6 +164,7 @@ export default {
         { key: 'startTime', title: '开始时间', type: 'time' },
         { key: 'endTime', title: '结束时间', type: 'time' },
         { key: 'timeCost', title: '耗时' },
+        { key: 'errorDataCount', title: '异常数据量' },
         { key: 'dataCount', title: '处理数据量' },
         { key: 'transactionCount', title: '更新配置项' },
         { key: 'action' }
@@ -154,6 +178,7 @@ export default {
             name: 'status',
             dataList: [
               { value: 'doing', text: '同步中' },
+              { value: 'paused', text: '已暂停' },
               { value: 'done', text: '已完成' }
             ],
             label: '状态',
@@ -210,6 +235,33 @@ export default {
   },
   destroyed() {},
   methods: {
+    resumeSync(id) {
+      this.$api.cmdb.sync.resumeSyncCiCollection(id).then(res => {
+        if (res.Status === 'OK') {
+          this.$Message.success(this.$t('message.executesuccess'));
+          this.searchSyncAudit();
+        }
+      });
+    },
+    pauseSync(id) {
+      this.$createDialog({
+        title: this.$t('dialog.title.pausecomfirm'),
+        content: this.$t('dialog.content.pausecomfirm', { target: this.$t('term.cmdb.collect') }),
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.$api.cmdb.sync.pauseSyncCiCollection(id).then(res => {
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('message.executesuccess'));
+              vnode.isShow = false;
+              this.searchSyncAudit();
+            }
+          });
+        }
+      });
+    },
+    viewErrorData(row) {
+      this.$router.push({ path: '/discovery-data/' + row.ciCollectionName, query: { hasError: 1 } });
+    },
     clipboardSuccess() {
       this.$Message.success(this.$t('message.copysuccess'));
     },
@@ -232,8 +284,8 @@ export default {
       });
     },
     changeSyncAuditPageSize(pageSize) {
-      this.pageSize = pageSize;
-      this.searchSyncAudit();
+      this.searchParam.pageSize = pageSize;
+      this.searchSyncAudit(1);
     },
     changeCiCollectionId(id) {
       if (this.ciCollectionId != id) {
@@ -264,19 +316,12 @@ export default {
     searchSyncAudit(currentPage) {
       this.clearTimer();
       if (currentPage) {
-        this.currentPage = currentPage;
-      } else {
-        this.currentPage = 1;
+        this.searchParam.currentPage = currentPage;
       }
-      let data = {
-        currentPage: this.currentPage,
-        pageSize: this.pageSize,
-        ciCollectionId: this.ciCollectionId
-      };
-      Object.assign(data, this.searchVal);
+      this.searchParam.ciCollectionId = this.ciCollectionId;
       this.isLoading = true;
       this.$api.cmdb.sync
-        .searchSyncAudit(data)
+        .searchSyncAudit({ ...this.searchParam, ...this.searchVal })
         .then(res => {
           this.syncAuditData = res.Return;
           this.syncAuditData.theadList = this.theadList;
@@ -284,7 +329,7 @@ export default {
           this.doingIdList = [];
           if (this.syncAuditData.tbodyList) {
             this.syncAuditData.tbodyList.forEach(element => {
-              if (element.status == 'doing') {
+              if (['doing', 'pausing'].includes(element.status)) {
                 this.doingIdList.push(element.id);
               }
             });
@@ -305,7 +350,7 @@ export default {
           if (res.Return && res.Return.length > 0) {
             res.Return.forEach(element => {
               const oldElement = this.syncAuditData.tbodyList.find(a => a.id == element.id);
-              if (element.status == 'doing') {
+              if (['doing', 'pausing'].includes(element.status)) {
                 this.doingIdList.push(element.id);
               }
               if (oldElement) {
@@ -313,6 +358,7 @@ export default {
                 this.$set(oldElement, 'statusText', element.statusText);
                 this.$set(oldElement, 'endTime', element.endTime);
                 this.$set(oldElement, 'timeCost', element.timeCost);
+                this.$set(oldElement, 'errorDataCount', element.errorDataCount);
                 this.$set(oldElement, 'dataCount', element.dataCount);
                 this.$set(oldElement, 'transactionCount', element.transactionCount);
                 this.$set(oldElement, 'error', element.error);

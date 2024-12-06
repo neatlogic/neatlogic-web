@@ -8,13 +8,14 @@
       </template>
       <template v-slot:topRight>
         <div>
-          <TsFormInput
+          <!--<TsFormInput
             v-model="searchParam.keyword"
             :search="true"
             :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.keyword') })"
             clearable
             @on-enter="searchCollectionData()"
-          ></TsFormInput>
+          ></TsFormInput>-->
+          <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="searchCollectionData(1)"></CombineSearcher>
         </div>
       </template>
       <template v-slot:sider>
@@ -79,6 +80,11 @@
               </table>
               <div v-if="!row[key] || row[key].length == 0" :key="key"></div>
             </template>
+            <template v-slot:_error="{ row }">
+              <span class="cursor text-error tsfont-warning-s" @click="currentError = row._error">
+                <b class="fz10">{{ row._error.length }}</b>
+              </span>
+            </template>
             <template v-slot:action="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
@@ -92,6 +98,25 @@
       </template>
     </TsContain>
     <DiscoveryDataDetail v-if="isDetailShow" :data="currentData" @close="closeDetail"></DiscoveryDataDetail>
+    <TsDialog
+      v-if="currentError"
+      type="slider"
+      :isShow="true"
+      :maskClose="true"
+      width="medium"
+      :title="$t('term.cmdb.errordetail')"
+      @on-close="currentError = null"
+    >
+      <template v-slot>
+        <div v-for="(e, eindex) in currentError" :key="eindex">
+          <div>{{ e }}</div>
+          <Divider v-if="eindex > 0 && eindex < currentError.length - 1"></Divider>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <Button @click="currentError = null">{{ $t('page.close') }}</Button>
+      </template>
+    </TsDialog>
   </div>
 </template>
 <script>
@@ -99,14 +124,28 @@ export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     CollectionTypeList: () => import('./collection-type-list.vue'),
     DiscoveryDataDetail: () => import('./discovery-data-detail.vue'),
-    JsonViewer: () => import('vue-json-viewer')
+    JsonViewer: () => import('vue-json-viewer'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
   },
   props: {},
   data() {
     return {
+      currentError: null,
+      searchVal: {},
+      searchConfig: {
+        labelWidth: 100,
+        // placeholder: '请输入节点ip、端口、名称',
+        searchList: [
+          {
+            type: 'radio',
+            name: 'hasError',
+            label: '只看异常数据',
+            dataList: [{ value: 1, text: '是' }]
+          }
+        ]
+      },
       collectionKeyword: '',
       searchParam: {},
       isDetailShow: false,
@@ -123,6 +162,9 @@ export default {
   beforeCreate() {},
   created() {
     this.searchParam.collection = this.$route.params['collection'] || '';
+    if (this.$route.query['hasError']) {
+      this.searchVal.hasError = this.$route.query['hasError'];
+    }
   },
   beforeMount() {},
   mounted() {
@@ -158,7 +200,7 @@ export default {
       } else {
         this.searchParam.currentPage = 1;
       }
-      this.$api.cmdb.sync.searchCollectionData(this.searchParam).then(res => {
+      this.$api.cmdb.sync.searchCollectionData({ ...this.searchParam, ...this.searchVal }).then(res => {
         this.collectionData = res.Return;
         this.collectionData.theadList.forEach(element => {
           //默认隐藏复杂属性，避免表格内容过多

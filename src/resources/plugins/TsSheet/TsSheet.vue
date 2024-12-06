@@ -4,6 +4,7 @@
     ref="container"
     class="tssheet-container"
     :class="{ resizing: !!resizeColumn || !!resizeRow || isDragging }"
+    tabindex="0"
     @contextmenu.prevent
     @mousemove="doDrag"
     @mouseup="endResize"
@@ -541,7 +542,8 @@ export default {
       components: new Set(),
       isShowFormItemKeyDialog: false, //设置唯一标识弹框
       currentEventItem: null, //当前单元格获取的新组件
-      actionType: '' //当前操作类型,'add'新增组件，'copy'复制组件
+      actionType: '', //当前操作类型,'add'新增组件，'copy'复制组件
+      windowKeypressHandler: null // 用于存储事件处理函数的引用
     };
   },
   beforeCreate() {
@@ -562,7 +564,6 @@ export default {
     });
 
     window.addEventListener('resize', this.calcContainerHeight);
-    window.addEventListener('keydown', this.windowKeypress);
   },
   beforeUpdate() {},
   updated() {},
@@ -570,7 +571,11 @@ export default {
   deactivated() {},
   beforeDestroy() {
     window.removeEventListener('resize', this.calcContainerHeight);
-    window.removeEventListener('keydown', this.windowKeypress);
+    let container = this.$refs.container;
+    if (container && this.windowKeypressHandler) {
+      // 移除事件监听
+      container.removeEventListener('keydown', this.windowKeypressHandler);
+    }
   },
   destroyed() {},
   methods: {
@@ -2409,6 +2414,13 @@ export default {
           }
         }
         this.isReady = true;
+        this.$nextTick(() => {
+          let container = this.$refs.container; // container元素上，必须有一个tabindex的属性，才可以监听到某个元素按下鼠标事件
+          if (container) {
+            this.windowKeypressHandler = this.windowKeypress.bind(this);
+            container.addEventListener('keydown', this.windowKeypressHandler); // 仅针对特定元素监听 keydown 事件，解决 TsSheet 之外的复制粘贴操作对 TsSheet 自身复制粘贴功能产生干扰的问题。
+          }
+        });
       },
       deep: true,
       immediate: true

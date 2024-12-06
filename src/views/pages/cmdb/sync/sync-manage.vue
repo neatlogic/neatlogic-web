@@ -104,7 +104,7 @@
               <span v-else>-</span>
             </template>
             <template v-slot:status="{ row }">
-              <span v-if="row.status == 'doing'">
+              <span v-if="row.status === 'doing'">
                 <Progress
                   hide-info
                   :percent="99"
@@ -112,22 +112,33 @@
                   style="width: 50px"
                 />
               </span>
+              <span v-else-if="row.status === 'pausing'">
+                <Progress
+                  hide-info
+                  :percent="99"
+                  status="active"
+                  stroke-color="orange"
+                  style="width: 50px"
+                />
+              </span>
               <span v-else>
-                <span v-if="!row.error" class="text-success">{{ row.statusText }}</span>
+                <span v-if="!row.error" :class="{ 'text-success': row.status === 'done', 'text-error': row.status === 'paused' }">{{ row.statusText }}</span>
                 <span v-else class="text-error">
                   <span>{{ row.statusText }}</span>
                   <Poptip
                     v-if="row.error"
-                    trigger="click"
-                    title="异常"
+                    trigger="hover"
+                    :title="$t('page.exception')"
                     word-wrap
                     width="500"
                     :transfer="true"
                   >
                     <span class="text-error tsfont-warning-s"></span>
                     <div slot="content">
-                      <div style="max-height:400px;overflow:auto">{{ row.error }}</div>
-                      <div style="text-align:right"><Button v-clipboard="row.error" v-clipboard:success="clipboardSuccess" size="small">{{ $t('page.copy') }}</Button></div>
+                      <div style="max-height: 400px; overflow: auto">{{ row.error }}</div>
+                      <div style="text-align: right">
+                        <Button v-clipboard="row.error" v-clipboard:success="clipboardSuccess" size="small">{{ $t('page.copy') }}</Button>
+                      </div>
                     </div>
                   </Poptip>
                 </span>
@@ -140,10 +151,12 @@
             <template v-slot:action="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li v-if="row.collectMode == 'initiative' && row.status != 'doing'" class="tsfont-play-o" @click="execCiCollection(row)">{{ $t('page.execute') }}</li>
+                  <li v-if="row.collectMode == 'initiative' && row.status === 'doing' && row.lastAuditId" class="tsfont-pause" @click="pauseSync(row.lastAuditId)">{{ $t('page.pause') }}</li>
+                  <li v-if="row.collectMode == 'initiative' && row.status === 'paused' && row.lastAuditId" class="tsfont-restart" @click="resumeSync(row.lastAuditId)">{{ $t('page.recover') }}</li>
+                  <li v-if="row.collectMode == 'initiative' && !['doing', 'pausing'].includes(row.status)" class="tsfont-play-o" @click="execCiCollection(row)">{{ $t('page.execute') }}</li>
                   <li v-if="row.collectMode == 'initiative'" class="tsfont-timer" @click="addSchedulePolicy(row)">{{ $t('term.pbc.cromexpression') }}</li>
-                  <li class="tsfont-edit" @click="editCiCollection(row)">{{ $t('page.edit') }}</li>
-                  <li class="tsfont-trash-o" @click="deleteCiCollection(row)">{{ $t('page.delete') }}</li>
+                  <li v-if="!['doing', 'pausing'].includes(row.status)" class="tsfont-edit" @click="editCiCollection(row)">{{ $t('page.edit') }}</li>
+                  <li v-if="!['doing', 'pausing'].includes(row.status)" class="tsfont-trash-o" @click="deleteCiCollection(row)">{{ $t('page.delete') }}</li>
                 </ul>
               </div>
             </template>
@@ -165,11 +178,7 @@
       @close="closeSyncPolicyDialog"
     ></SyncPolicyEdit>
     <CollectionData v-if="isCollectionDataShow" :collection="currentCollection" @close="closeCollectionData"></CollectionData>
-    <LaunchConfirmDialog
-      v-if="isLaunchShow"
-      :collection="currentCollection"
-      @close="closeLaunchDialog"
-    ></LaunchConfirmDialog>
+    <LaunchConfirmDialog v-if="isLaunchShow" :collection="currentCollection" @close="closeLaunchDialog"></LaunchConfirmDialog>
   </div>
 </template>
 <script>
@@ -189,7 +198,7 @@ export default {
     TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
     LaunchConfirmDialog: () => import('@/views/pages/cmdb/sync/launch-confirm-dialog.vue')
   },
-  directives: { clipboard},
+  directives: { clipboard },
   props: {},
   data() {
     return {
@@ -258,9 +267,34 @@ export default {
   beforeDestroy() {
     let _this = this;
     window.removeEventListener('resize', _this.initHeight);
+    this.clearTimer();
   },
   destroyed() {},
   methods: {
+    resumeSync(id) {
+      this.$api.cmdb.sync.resumeSyncCiCollection(id).then(res => {
+        if (res.Status === 'OK') {
+          this.$Message.success(this.$t('message.executesuccess'));
+          this.searchSyncCiCollection();
+        }
+      });
+    },
+    pauseSync(id) {
+      this.$createDialog({
+        title: this.$t('dialog.title.pausecomfirm'),
+        content: this.$t('dialog.content.pausecomfirm', { target: this.$t('term.cmdb.collect') }),
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.$api.cmdb.sync.pauseSyncCiCollection(id).then(res => {
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('message.executesuccess'));
+              vnode.isShow = false;
+              this.searchSyncCiCollection();
+            }
+          });
+        }
+      });
+    },
     clipboardSuccess() {
       this.$Message.success(this.$t('message.copysuccess'));
     },
@@ -364,21 +398,6 @@ export default {
     execCiCollection(row) {
       this.currentCollection = row;
       this.isLaunchShow = true;
-      /*
-      this.$createDialog({
-        title: this.$t('dialog.title.executeconfirm'),
-        content: '确定执行采集映射：' + row.collectionName + ' -> ' + row.ciLabel + '？',
-        'on-ok': vnode => {
-          this.$api.cmdb.sync.launchSyncCiCollection(row.id).then(res => {
-            this.$Message.success(this.$t('message.runsuccess'));
-            vnode.isShow = false;
-            this.refreshSyncCiCollection([row.id]);
-          });
-        },
-        'on-cancel': vnode => {
-          vnode.isShow = false;
-        }
-      });*/
     },
     addSyncCiCollection() {
       this.currentCiCollectionId = null;
@@ -405,7 +424,7 @@ export default {
           this.syncCiCollectionData = Object.assign(this.syncCiCollectionData, res.Return);
           const idList = [];
           res.Return.tbodyList.forEach(element => {
-            if (element.status === 'doing') {
+            if (element.status === 'doing' || element.status === 'pausing') {
               idList.push(element.id);
             }
           });
@@ -417,19 +436,23 @@ export default {
           this.isLoading = false;
         });
     },
-    refreshSyncCiCollection(idList) {
+    clearTimer() {
       if (this.timmer) {
         clearTimeout(this.timmer);
         this.timmer = null;
       }
+    },
+    refreshSyncCiCollection(idList) {
+      this.clearTimer();
       this.$api.cmdb.sync.searchSyncCiCollection({ idList: idList }).then(res => {
         const idList = [];
         res.Return.tbodyList.forEach(element => {
-          if (element.status === 'doing') {
+          if (element.status === 'doing' || element.status === 'pausing') {
             idList.push(element.id);
           }
           const row = this.syncCiCollectionData.tbodyList.find(d => d.id === element.id);
           if (row) {
+            this.$set(row, 'lastAuditId', element.lastAuditId);
             this.$set(row, 'status', element.status);
             this.$set(row, 'statusText', element.statusText);
             this.$set(row, 'execCount', element.execCount);
