@@ -181,10 +181,10 @@ export default {
       if (this.defaultDeepCloneConfig.hasOwnProperty('policyId') && this.defaultDeepCloneConfig.policyId) {
         this.$set(this.notifyPolicyConfig, 'policyId', this.defaultDeepCloneConfig.policyId);
       }
-      if (this.defaultDeepCloneConfig.hasOwnProperty('policyName') && this.defaultDeepCloneConfig.policyName) {
+      if (this.defaultDeepCloneConfig.hasOwnProperty('policyName')) {
         this.$set(this.notifyPolicyConfig, 'policyName', this.defaultDeepCloneConfig.policyName);
       }
-      if (this.defaultDeepCloneConfig.hasOwnProperty('policyPath') && this.defaultDeepCloneConfig.policyPath) {
+      if (this.defaultDeepCloneConfig.hasOwnProperty('policyPath')) {
         this.$set(this.notifyPolicyConfig, 'policyPath', this.defaultDeepCloneConfig.policyPath);
       }
     },
@@ -315,8 +315,10 @@ export default {
     config: {
       handler(config) {
         // 解决切换不同的节点，通知策略数据没有变化的问题
-        this.defaultDeepCloneConfig = this.$utils.deepClone(config);
-        this.init();
+        if (!this.$utils.isSame(this.defaultDeepCloneConfig, config)) {
+          this.defaultDeepCloneConfig = this.$utils.deepClone(config);
+          this.init();
+        }
       },
       deep: true
     },
