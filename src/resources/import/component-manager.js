@@ -16,11 +16,12 @@
  * formDefine 表单定义
  * formConfig 表单配置
  * formComponent 表单组件
+ * formVersionList 表单版本列表（用户自定义组件，新加配置，存量数据不会跟着改变的问题）
  * deployAppConfigEnvTab 部署应用配置环境tab
  * loginPage 登录页
  */
 class ComponentManager {
-  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'loginPage'];
+  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'loginPage', 'formVersionList'];
   static categoryConfig = {};
   static generateMethods() {
     this.categoryList.forEach(category => {

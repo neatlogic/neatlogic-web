@@ -28,7 +28,17 @@ import formexpression from './formexpression.vue';
 import * as cmdbComponent from '@/views/pages/cmdb/form/component';
 import * as autoexecComponent from '@/views/pages/autoexec/form/component';
 import ComponentManager from '@/resources/import/component-manager.js';
-
+let formComponent = ComponentManager.getFormComponentComponent() || {};
+let formComponentConfig = {};
+for (let key in formComponent) {
+  if (key && formComponent[key] instanceof Array && formComponent[key].length > 0) {
+    formComponent[key].forEach((item, index) => {
+      formComponentConfig[`${key}-version${index + 1}`] = formComponent[key][index];
+    });
+  } else {
+    formComponentConfig[key] = formComponent[key];
+  }
+}
 export default {
   formlabel,
   formtext,
@@ -58,5 +68,5 @@ export default {
   formexpression,
   ...cmdbComponent,
   ...autoexecComponent,
-  ...ComponentManager.getFormComponentComponent()
+  ...formComponentConfig
 };
