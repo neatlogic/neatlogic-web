@@ -622,7 +622,8 @@
     "stepdesc": "Activated steps",
     "savetransfer": "Save and transfer",
     "savetransfertip": "Save the current form and forward it",
-    "thirdpartyapi": "Third party callback interface"
+    "thirdpartyapi": "Third party callback interface",
+    "reactivatestep": "Reactivation steps"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

@@ -32,6 +32,10 @@
       @click="doBtnBarAction('transferTask')"
     >{{ actionConfig.transfer }}</span>
     <!-- 转交_end -->
+    <!-- 重新激活 -->
+    <span v-if="actionConfig.reactivate" class="action-item tsfont-check-square-o" @click="reactivata()">
+      {{ actionConfig.reactivate }}
+    </span>
     <!-- 暂停步骤 -->
     <span
       v-if="actionConfig.pause"
@@ -170,6 +174,7 @@
     <FormEditDialog v-if="isShowFormModal" :processTaskConfig="processTaskConfig" @close="closeFormDialog()"></FormEditDialog>
     <ProcessTaskTopo v-if="isShowProcessTaskTopo" :processTaskId="processTaskConfig.id" @close="isShowProcessTaskTopo=false"></ProcessTaskTopo>
     <TransfereoastepDialog v-if="isShowTransfereoastep" :processTaskId="processTaskConfig.id" @close="isShowTransfereoastep=false"></TransfereoastepDialog>
+    <ReactivateDialog v-if="isShowReactivateStep" :processTaskId="processTaskConfig.id" @close="isShowReactivateStep=false"></ReactivateDialog>
   </div>
 </template>
 <script>
@@ -178,7 +183,8 @@ export default {
   components: {
     FormEditDialog: () => import('./form-edit-dialog'),
     ProcessTaskTopo: () => import('@/views/pages/process/task/processdetail/workorder/common/processtask-topo-dialog.vue'),
-    TransfereoastepDialog: () => import('./transfereoastep-dialog.vue')
+    TransfereoastepDialog: () => import('./reactivate-dialog.vue'),
+    ReactivateDialog: () => import('./reactivate-dialog.vue')
   },
   props: {
     actionConfig: { type: Object },
@@ -194,7 +200,8 @@ export default {
     return {
       isShowFormModal: false,
       isShowProcessTaskTopo: false,
-      isShowTransfereoastep: false
+      isShowTransfereoastep: false,
+      isShowReactivateStep: false
     };
   },
   beforeCreate() {},
@@ -219,6 +226,9 @@ export default {
     },
     transfereoastep() {
       this.isShowTransfereoastep = true;
+    },
+    reactivata() { //选择激活步骤
+      this.isShowReactivateStep = true;
     }
   },
   filter: {},

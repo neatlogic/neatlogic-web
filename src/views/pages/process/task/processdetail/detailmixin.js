@@ -182,7 +182,8 @@ export default {
         markrepeat: null, // 标记重复事件
         reapproval: null, // 重审
         createtask: null, //创建任务（新的子任务）
-        transfereoastep: null // eoa转交
+        transfereoastep: null, // eoa转交
+        reactivate: null //重新激活
       },
       disabledConfig: {
         //禁止按钮连续调用接口
