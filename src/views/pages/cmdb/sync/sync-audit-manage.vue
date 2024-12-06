@@ -102,6 +102,10 @@
             <span v-if="row.errorDataCount" class="text-error cursor" @click="viewErrorData(row)">{{ row.errorDataCount }}</span>
             <span v-else class="text-grey">-</span>
           </template>
+          <template v-slot:dataCount="{ row }">
+            <span v-if="row.dataCount" class="text-grey">{{ row.dataCount }}</span>
+            <span v-else class="text-grey">-</span>
+          </template>
           <template v-slot:transactionCount="{ row }">
             <a v-if="row.transactionCount > 0" href="javascript:void(0)" @click="showCiEntityTransaction(row.transactionGroupId)">{{ row.transactionCount }}</a>
             <span v-else class="text-grey">-</span>
@@ -354,6 +358,7 @@ export default {
                 this.$set(oldElement, 'statusText', element.statusText);
                 this.$set(oldElement, 'endTime', element.endTime);
                 this.$set(oldElement, 'timeCost', element.timeCost);
+                this.$set(oldElement, 'errorDataCount', element.errorDataCount);
                 this.$set(oldElement, 'dataCount', element.dataCount);
                 this.$set(oldElement, 'transactionCount', element.transactionCount);
                 this.$set(oldElement, 'error', element.error);
