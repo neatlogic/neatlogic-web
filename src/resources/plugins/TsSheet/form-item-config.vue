@@ -133,7 +133,7 @@ export default {
         {
           type: 'text',
           name: 'key',
-          label: this.$t('page.englishname'),
+          label: this.$t('page.uniquekey'),
           validateList: ['required',
             {
               name: 'regex',
@@ -143,7 +143,7 @@ export default {
           ],
           value: this.formItem.key,
           maxlength: 50,
-          disabled: this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit,
+          disabled: true,
           onChange: val => {
             this.$set(this.formItem, 'key', val);
           }

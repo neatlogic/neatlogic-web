@@ -1036,5 +1036,6 @@
     "printagent": "重新打印",
     "rank": "权重",
     "alived": "存活"
-  }
+  },
+  "uniquenotedit": "唯一标识设置后不能修改"
 }

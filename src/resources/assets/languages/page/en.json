@@ -1034,5 +1034,6 @@
     "printagent": "Reprint",
     "rank": "weight",
     "alived": "survival"
-  }
+  },
+  "uniquenotedit": "The unique identifier cannot be modified after being set"
 }

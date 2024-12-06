@@ -258,7 +258,7 @@
               @drop="
                 event => {
                   if (mode === 'edit') {
-                    addComponent(event);
+                    addItemKey(event);
                   }
                 }
               "
@@ -332,6 +332,12 @@
                   "
                   @delete="deleteFormItem(cell)"
                   @updateHiddenComponentList="updateHiddenComponentList"
+                  @dropHideComponent="
+                    event => {
+                      if (mode === 'edit') {
+                        addItemKey(event);
+                      }
+                    }"
                 ></FormItem>
               </div>
               <div v-if="!cell._isHandler && cell.border">
@@ -416,6 +422,7 @@
         </span>
       </div>
     </div>
+    <FormItemKeyDialog v-if="isShowFormItemKeyDialog" :formItemList="formItemList" @close="closeFormItemKeyDialog"></FormItemKeyDialog>
   </div>
 </template>
 <script>
@@ -423,7 +430,8 @@ import conditionMixin from './form/conditionexpression/condition-mixin.js';
 export default {
   name: '',
   components: {
-    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
+    FormItemKeyDialog: () => import('./form-item-key-dialog.vue')
   },
   provide() {
     return {
@@ -532,6 +540,9 @@ export default {
       reactionFnQueue: new Map(),
       isDoingReaction: false,
       components: new Set(),
+      isShowFormItemKeyDialog: false, //设置唯一标识弹框
+      currentEventItem: null, //当前单元格获取的新组件
+      actionType: '', //当前操作类型,'add'新增组件，'copy'复制组件
       windowKeypressHandler: null // 用于存储事件处理函数的引用
     };
   },
@@ -598,16 +609,16 @@ export default {
         }
       }
     },
-    copyCell() {
+    copyCell(e) {
+      this.actionType = '';
       if (this.handlerCell) {
         this.copyedCell = {};
         if (this.handlerCell.content) {
           this.copyedCell.content = this.$utils.deepClone(this.handlerCell.content);
         } else if (this.handlerCell.component) {
+          this.actionType = 'copy';
           this.copyedCell.component = this.$utils.deepClone(this.handlerCell.component);
-          this.copyedCell.component.uuid = this.$utils.setUuid(); //重新生成组件uuid
-          this.copyedCell.component.uuid = this.$utils.setUuid(); //重新生成组件uuid
-          this.updateCellAttrUuid(this.copyedCell);
+          this.isShowFormItemKeyDialog = true;
         }
       }
     },
@@ -837,15 +848,27 @@ export default {
     activeDropContainer(cell) {
       this.dropCell = cell;
     },
-    addComponent(event) {
+    addItemKey(event) {
       if (this.dropCell) {
-        const item = JSON.parse(event.dataTransfer.getData('item'));
+        this.actionType = 'add';
+        this.currentEventItem = JSON.parse(event.dataTransfer.getData('item'));
+        if (!this.currentEventItem.notUniqueKey && !this.currentEventItem.hasOwnProperty('inherit')) {
+          this.isShowFormItemKeyDialog = true;
+        } else {
+          this.addComponent();
+        }
+      }
+    },
+    addComponent(key) {
+      if (this.dropCell) {
+        const item = this.currentEventItem; 
         //隐藏组件拖动
         if (item.isHideComponent) {
           //拖动到底部，不显示在表单
           const hideItem = {
             ...item,
-            uuid: this.$utils.setUuid(),
+            key: key,
+            uuid: this.$md5(key),
             label: item.label + '_' + this.componentIndex
           };
           this.hideComponentList.push(hideItem);
@@ -856,7 +879,12 @@ export default {
         const ok = item => {
           this.addHistory();
           if (item) {
-            item.uuid = item.hasOwnProperty('inherit') ? item.uuid : this.$utils.setUuid();
+            if (key) {
+              item.key = key;
+              item.uuid = item.hasOwnProperty('inherit') ? item.uuid : this.$md5(key);
+            } else {
+              item.uuid = item.hasOwnProperty('inherit') ? item.uuid : this.$utils.setUuid();
+            }
             item.label = item.hasOwnProperty('inherit') ? item.label : item.label + '_' + this.componentIndex;
             this.$set(this.dropCell, 'component', item);
           }
@@ -1986,6 +2014,23 @@ export default {
           }
         });
       }
+    },
+    closeFormItemKeyDialog(key) {
+      this.isShowFormItemKeyDialog = false;
+      if (this.actionType === 'add') {
+        if (key) {
+          this.addComponent(key);
+        }
+      } else if (this.actionType === 'copy') {
+        if (key) {
+          this.copyedCell.component.key = key;
+          this.copyedCell.component.uuid = this.$md5(key);
+          this.updateCellAttrUuid(this.copyedCell);
+        } else {
+          this.copyedCell = null;
+        }
+      }
+      this.actionType = '';
     }
   },
   filter: {},

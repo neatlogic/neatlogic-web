@@ -8,6 +8,7 @@ export default {
   icon: 'tsfont-minus',
   hasValue: false,
   override_config: {},
+  notUniqueKey: true, //不需要唯一标识key
   config: {
     description: '',
     width: '100%',

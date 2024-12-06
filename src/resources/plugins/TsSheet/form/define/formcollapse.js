@@ -10,6 +10,7 @@ export default {
   hasValue: false,
   isContainer: true,
   component: [],
+  notUniqueKey: true, //不需要唯一标识key
   config: {
     width: '100%',
     isMask: false,
