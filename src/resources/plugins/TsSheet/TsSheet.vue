@@ -331,6 +331,12 @@
                   "
                   @delete="deleteFormItem(cell)"
                   @updateHiddenComponentList="updateHiddenComponentList"
+                  @dropHideComponent="
+                    event => {
+                      if (mode === 'edit') {
+                        addItemKey(event);
+                      }
+                    }"
                 ></FormItem>
               </div>
               <div v-if="!cell._isHandler && cell.border">
@@ -841,16 +847,16 @@ export default {
       if (this.dropCell) {
         this.actionType = 'add';
         this.currentEventItem = JSON.parse(event.dataTransfer.getData('item'));
-        if (!this.currentEventItem.isContainer || !this.currentEventItem.hasOwnProperty('inherit')) {
+        if (!this.currentEventItem.notUniqueKey && !this.currentEventItem.hasOwnProperty('inherit')) {
           this.isShowFormItemKeyDialog = true;
         } else {
-          this.addComponent(this.currentEventItem.key);
+          this.addComponent();
         }
       }
     },
     addComponent(key) {
       if (this.dropCell) {
-        const item = this.currentEventItem;
+        const item = this.currentEventItem; 
         //隐藏组件拖动
         if (item.isHideComponent) {
           //拖动到底部，不显示在表单
@@ -868,11 +874,13 @@ export default {
         const ok = item => {
           this.addHistory();
           if (item) {
-            if (!item.hasOwnProperty('inherit')) {
+            if (key) {
               item.key = key;
               item.uuid = this.$md5(key);
-              item.label = item.label + '_' + this.componentIndex;
+            } else {
+              item.uuid = item.hasOwnProperty('inherit') ? item.uuid : this.$utils.setUuid();
             }
+            item.label = item.hasOwnProperty('inherit') ? item.label : item.label + '_' + this.componentIndex;
             this.$set(this.dropCell, 'component', item);
           }
           //重新选择当前单元格，触发selectCell事件
@@ -2017,6 +2025,7 @@ export default {
           this.copyedCell = null;
         }
       }
+      this.dropCell = null;
       this.actionType = '';
     }
   },

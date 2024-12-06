@@ -10,7 +10,7 @@
         {{ panel.text }}
         <div
           slot="content"
-          @drop="
+          @drop.stop="
             event => {
               dropFormItem(event, panel);
             }
@@ -53,6 +53,7 @@
       </Panel>
     </Collapse>
     <div v-else class="text-grey">{{ $t('form.placeholder.pleaseadd',{'target':$t('page.tab')}) }}</div>
+    <FormItemKeyDialog v-if="isShowFormItemKeyDialog" :formItemList="formItemList" @close="closeFormItemKeyDialog"></FormItemKeyDialog>
   </div>
 </template>
 <script>
@@ -61,13 +62,19 @@ import validmixin from './common/validate-mixin.js';
 export default {
   name: '',
   components: {
-    ChildFormItem: () => import('@/resources/plugins/TsSheet/child-form-item.vue')
+    ChildFormItem: () => import('@/resources/plugins/TsSheet/child-form-item.vue'),
+    FormItemKeyDialog: () => import('@/resources/plugins/TsSheet/form-item-key-dialog.vue')
+  
   },
   extends: base,
   mixins: [validmixin],
   props: {},
   data() {
-    return {};
+    return {
+      isShowFormItemKeyDialog: false,
+      currentTabObj: {},
+      currentEventItem: null //当前单元格获取的新组件
+    };
   },
   beforeCreate() {},
   created() {},
@@ -87,16 +94,29 @@ export default {
       }, 300);
     },
     dropFormItem(event, panel) {
-      const item = JSON.parse(event.dataTransfer.getData('item'));
-      if (item && item.isHideComponent) {
-        return false;
-      }
-      if (panel && item) {
-        if (this.addComponent(item)) {
-          if (!panel.component) {
-            this.$set(panel, 'component', []);
+      if (this.mode === 'edit' || this.mode === 'editSubform') {
+        if (this.formItem.hasOwnProperty('inherit')) {
+          return false;
+        }
+        const item = JSON.parse(event.dataTransfer.getData('item'));
+        if (item && item.isHideComponent) {
+          return false;
+        }
+        if (panel && item) {
+          if (!tab.component) {
+            this.$set(tab, 'component', []);
           }
-          panel.component.push(item.uuid);
+          if (this.addComponent(item)) {
+            if (item.notUniqueKey) {
+              item.uuid = this.$utils.setUuid();
+              this.formItem.component.push(item);
+              tab.component.push(item.uuid);
+            } else {
+              this.currentTabObj = panel;
+              this.currentEventItem = item;
+              this.isShowFormItemKeyDialog = true;
+            }
+          }
         }
       }
     },
@@ -155,6 +175,15 @@ export default {
         }
       }
       return errorList;
+    },
+    closeFormItemKeyDialog(key) {
+      if (key) {
+        this.currentEventItem.key = key;
+        this.currentEventItem.uuid = this.$md5(key);
+        this.formItem.component.push(this.currentEventItem);
+        this.currentTabObj.component.push(this.currentEventItem.uuid);
+      }
+      this.isShowFormItemKeyDialog = false;
     }
   },
   filter: {},

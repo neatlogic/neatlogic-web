@@ -112,12 +112,24 @@ export default {
         }
         const item = JSON.parse(event.dataTransfer.getData('item'));
         if (item && item.isHideComponent) {
+          this.$emit('dropHideComponent', event);
           return false;
         }
-        this.currentTabObj = tab;
-        this.currentEventItem = item;
-        if (this.addComponent(item)) {
-          this.isShowFormItemKeyDialog = true;
+        if (tab && item) {
+          if (!tab.component) {
+            this.$set(tab, 'component', []);
+          }
+          if (this.addComponent(item)) {
+            if (item.notUniqueKey) {
+              item.uuid = this.$utils.setUuid();
+              this.formItem.component.push(item);
+              tab.component.push(item.uuid);
+            } else {
+              this.currentTabObj = tab;
+              this.currentEventItem = item;
+              this.isShowFormItemKeyDialog = true;
+            }
+          }
         }
       }
     },
@@ -273,18 +285,13 @@ export default {
       }
     },
     closeFormItemKeyDialog(key) {
-      this.isShowFormItemKeyDialog = false;
       if (key) {
-        if (this.currentTabObj && this.currentEventItem) {
-          const uuid = this.$md5(key);
-          this.currentEventItem.key = key;
-          this.currentEventItem.uuid = uuid;
-          if (!this.currentTabObj.component) {
-            this.$set(this.currentTabObj, 'component', []);
-          }
-          this.currentTabObj.component.push(uuid);
-        }
+        this.currentEventItem.key = key;
+        this.currentEventItem.uuid = this.$md5(key);
+        this.formItem.component.push(this.currentEventItem);
+        this.currentTabObj.component.push(this.currentEventItem.uuid);
       }
+      this.isShowFormItemKeyDialog = false;
     }
   },
   filter: {},

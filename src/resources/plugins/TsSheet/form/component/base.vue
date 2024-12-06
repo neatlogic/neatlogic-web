@@ -135,7 +135,6 @@ export default {
       let isSuccess = false;
       if (!item.isContainer && this.formItem.isContainer && this.formItem.component && this.formItem.component instanceof Array) {
         if (!this.formItem.component.find(d => d.uuid === item.uuid)) {
-          this.formItem.component.push(item);
           isSuccess = true;
         }
       }

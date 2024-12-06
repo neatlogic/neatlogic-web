@@ -8,6 +8,7 @@ export default {
   icon: 'tsfont-title',
   override_config: {},
   hasValue: false,
+  notUniqueKey: true, //不需要唯一标识key
   config: {
     width: '100%',
     isMask: false,
