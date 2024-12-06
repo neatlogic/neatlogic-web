@@ -7,8 +7,8 @@
     >
       <template v-slot>
         <div>
-          <Alert type="warning" show-icon>唯一标识设置后不能修改</Alert>
-          <TsFormItem label="唯一标识" required>
+          <Alert type="warning" show-icon>{{ $t('page.uniquenotedit') }}</Alert>
+          <TsFormItem :label="$t('page.uniquekey')" required>
             <TsFormInput
               ref="itemKey"
               v-model="value"
@@ -53,7 +53,7 @@ export default {
           {
             name: 'custom',
             trigger: 'change',
-            message: '唯一标识不能重复',
+            message: this.$t('message.cannotrepeat', {'target': this.$t('page.uniquekey')}),
             validator: (rule, val) => {
               if (!this.$utils.isEmpty(this.formItemList)) {
                 return !this.formItemList.find(item => item.key === val);

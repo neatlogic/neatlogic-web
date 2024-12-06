@@ -881,7 +881,7 @@ export default {
           if (item) {
             if (key) {
               item.key = key;
-              item.uuid = this.$md5(key);
+              item.uuid = item.hasOwnProperty('inherit') ? item.uuid : this.$md5(key);
             } else {
               item.uuid = item.hasOwnProperty('inherit') ? item.uuid : this.$utils.setUuid();
             }

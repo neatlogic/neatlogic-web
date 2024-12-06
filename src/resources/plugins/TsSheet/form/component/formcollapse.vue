@@ -100,8 +100,10 @@ export default {
         }
         const item = JSON.parse(event.dataTransfer.getData('item'));
         if (item && item.isHideComponent) {
+          this.$emit('dropHideComponent', event);
           return false;
         }
+       
         if (panel && item) {
           if (!tab.component) {
             this.$set(tab, 'component', []);
