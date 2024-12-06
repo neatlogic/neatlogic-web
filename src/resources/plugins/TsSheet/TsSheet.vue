@@ -2030,7 +2030,6 @@ export default {
           this.copyedCell = null;
         }
       }
-      this.dropCell = null;
       this.actionType = '';
     }
   },
