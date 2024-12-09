@@ -155,7 +155,7 @@ export default {
           validateList: ['required'],
           value: this.formItem.label,
           maxlength: 50,
-          disabled: this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit,
+          disabled: this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit || this.source === 'scene',
           onChange: val => {
             this.$set(this.formItem, 'label', val);
           }
