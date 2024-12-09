@@ -7,25 +7,6 @@
       <!-- <span class="tsfont-eye-off"></span>
       <span class="mask-text text-grey">当前组件不可见</span>-->
     </div>
-    <div v-if="(mode != 'edit' && mode != 'editSubform') && isShowVersionMessage && formItem && formItem.version">
-      <!-- <Poptip
-        word-wrap
-        trigger="hover"
-        :title="$t('page.versions')"
-        transfer
-      > -->
-      <Tag
-        color="default"
-        closable
-        @on-close="closeVersionTag"
-      >
-        <b>版本：{{ formItem && formItem.version ? formItem.version.split('version')[1] : '' }}</b>
-      </Tag>
-      <!-- <div slot="content">
-        <b>{{ formItem && formItem.version }}</b>
-      </div> -->
-      <!-- </Poptip> -->
-    </div>
     <div v-if="showStatusIcon && hasConfigError" class="corner-icon">
       <Poptip
         word-wrap
@@ -238,8 +219,7 @@ export default {
       isFirstLoad: true, //是否第一次加载，用于比较表单数据新旧值时，第一次触发一次操作
       filter: [], //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
       REACTION: REACTION, //联动规则
-      isShowErrorMessage: true,
-      isShowVersionMessage: true
+      isShowErrorMessage: true
     };
   },
   beforeCreate() {},
@@ -528,9 +508,6 @@ export default {
     },
     handleCloseErrorMessage() {
       this.isShowErrorMessage = false;
-    },
-    closeVersionTag() {
-      this.isShowVersionMessage = false;
     }
   },
   filter: {},

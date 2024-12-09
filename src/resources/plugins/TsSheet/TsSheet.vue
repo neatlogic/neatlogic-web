@@ -292,10 +292,10 @@
                 :class="cell.component.icon"
               ></div>
               <div
-                v-if="mode === 'edit' && !$utils.isEmpty(cell.component) && !$utils.isEmpty(cell.component.version)"
+                v-if="mode === 'edit' && !$utils.isEmpty(cell.component) && !$utils.isEmpty(cell.component.config) && !$utils.isEmpty(cell.component.config.version)"
                 style="position: absolute; top: 0px; left: 16px; z-index: 10; font-size: 12px"
-                class="text-grey tsfont-version"
-              >{{ cell.component.version }}</div>
+                class="text-grey"
+              >{{ cell.component.config.version }}</div>
               <div v-if="$utils.isEmpty(cell.component)" class="padding-xs">
                 <span v-if="!cell._isEditing">{{ cell.content || '' }}</span>
                 <textarea v-else v-model="cell.content" class="content-inputer"></textarea>

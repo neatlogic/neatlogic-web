@@ -33,9 +33,12 @@ let formComponent = ComponentManager.getFormConfigComponent() || {};
 let formComponentConfig = {};
 for (let key in formComponent) {
   if (key && formComponent[key] instanceof Array && formComponent[key].length > 0) {
-    formComponent[key].forEach((item, index) => {
-      formComponentConfig[`${key}-version${index + 1}`] = formComponent[key][index];
+    formComponent[key].forEach(item => {
+      let {version, component} = item;
+      formComponentConfig[`${key}-${version}`] = component;
     });
+    let findDefaultVersionItem = formComponent[key].find(item => item.version === 'defaultVersion');
+    formComponentConfig[key] = findDefaultVersionItem['component']; // 设置默认版本，兼容表单数据
   } else {
     formComponentConfig[key] = formComponent[key];
   }
