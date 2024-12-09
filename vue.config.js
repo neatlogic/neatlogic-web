@@ -6,6 +6,8 @@ let commercialModule = './src/commercial-module';
 let localUrl = '../neatlogic-web/src/resources';
 let pageTitle = 'neatlogic'; //页面标题名称
 const { tenantName, urlPrefix } = require('./apiconfig.json');
+let importDefaultConfig = glob.sync(`${commercialModule}/**/defaultconfig.js`) || [];
+console.log('11111', importDefaultConfig);
 function getPages(pageList) {
   const pages = {};
   if (!pageList) {

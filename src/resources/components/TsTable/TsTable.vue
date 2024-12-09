@@ -605,7 +605,8 @@ export default {
       bigDataPageSize: _this.pageSize, //分页
       isRendered: true, //表格渲染需要时间导致第一次取值有问题，这里标记是否需要从新计算offsetWidth的值
       resizeEvent: null,
-      visible: false //控制表头排序是否显示的poptip是否显示
+      visible: false, //控制表头排序是否显示的poptip是否显示
+      table_style: GLOBAL_LOGINTITLE
     };
   },
   beforeCreate() {},
@@ -1154,8 +1155,9 @@ export default {
       if (this.type) {
         classlist += ' tstable-' + this.type;
       }
+      console.log('121212', this.table_style);
       if (this.styleType) {
-        classlist += ' ' + this.styleType;
+        classlist += ' ' + (this.table_style || this.styleType);
       }
       classlist += '' + this.border && typeof this.border == 'string' ? ' tstable-' + this.border + 'border' : !this.border ? ' tstable-noborder' : '';
       if (this.disabledHover) {
