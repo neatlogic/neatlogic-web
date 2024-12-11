@@ -1155,9 +1155,8 @@ export default {
       if (this.type) {
         classlist += ' tstable-' + this.type;
       }
-      console.log('121212', this.table_style);
       if (this.styleType) {
-        classlist += ' ' + (this.table_style || this.styleType);
+        classlist += ' ' + (GLOBAL_TABLESTRYLE || this.styleType);
       }
       classlist += '' + this.border && typeof this.border == 'string' ? ' tstable-' + this.border + 'border' : !this.border ? ' tstable-noborder' : '';
       if (this.disabledHover) {

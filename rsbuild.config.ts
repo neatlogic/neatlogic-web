@@ -11,7 +11,6 @@ let login_Title = 'welcome';
 let table_style = 'border';
 let imgModule = './public/resource';
 let importDefaultConfig = glob.sync(`${commercialModule}/**/defaultconfig.js`) || [];
-console.log('11111', importDefaultConfig);
 importDefaultConfig.forEach((filePath) => {
   if (filePath) {
     let {tableStyle, title, loginTitle, home} = require(filePath);
@@ -88,8 +87,8 @@ export default defineConfig({
         new rspack.DefinePlugin({
           'GLOBAL_VERSION': "'3.0.0'",
           'GLOBAL_PAGELIST': "''",
-          'GLOBAL_TABLESTRYLE': "''" + table_style + "''",
-          'GLOBAL_LOGINTITLE': "''" + login_Title + "''"
+          'GLOBAL_TABLESTRYLE': JSON.stringify(table_style),
+          'GLOBAL_LOGINTITLE': JSON.stringify(login_Title)
         })
       ]
     },
