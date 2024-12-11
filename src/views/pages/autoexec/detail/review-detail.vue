@@ -4,7 +4,7 @@
     <Loading :loadingShow="isLoading" type="fix"></Loading>
     <TsContain border="border">
       <template v-slot:navigation>
-        <span class="tsfont-left text-action" @click="toPrevpath">{{ prevPath.name }}</span>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <VersionStatus
@@ -147,10 +147,6 @@ export default {
   data() {
     let _this = this;
     return {
-      prevPath: {
-        router: '/script-manage',
-        name: this.$t('page.back')
-      },
       isLoading: true,
       scriptId: null,
       scriptConfig: null,
@@ -214,12 +210,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    toPrevpath() {
-      //返回到列表页面
-      this.$router.push({
-        path: this.prevPath.router
-      });
-    },
     initData() {
       this.getDetail();
       this.getversionCompare();
