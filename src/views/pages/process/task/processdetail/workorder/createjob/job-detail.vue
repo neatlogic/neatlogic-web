@@ -2,7 +2,7 @@
   <div v-if="handlerStepInfo">
     <Alert v-if="!$utils.isEmpty(handlerStepInfo.errorList)" type="error">
       <template slot="desc">
-        <div v-for="(e,eindex) in handlerStepInfo.errorList" :key="eindex">
+        <div v-for="(e,eindex) in handlerStepInfo.errorList" :key="eindex" class="text-word-break">
           {{ $t('term.autoexec.targetjoberror',{target: e.jobName}) }}：{{ e.error.length > 500 && !e.isMore? e.error.slice(0,500) : e.error }}
           <span v-if="e.error.length > 500" class="text-href pl-sm" @click="viewDetail(e)">{{ !e.isMore?$t('page.viewmore'):$t('page.packup') }}</span>
         </div>
