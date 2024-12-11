@@ -304,7 +304,11 @@ export default {
       delete oldData.config.topo.canvas;
       delete currentData.config.topo.svg;
       delete currentData.config.topo.canvas;
-      const isSame = this.$utils.isSame(oldData, currentData);
+      let isSame = this.$utils.isSame(oldData, currentData);
+      if (this.flowObj.processTaskId) {
+        //工单查看流程不需要数据对比，直接返回true
+        isSame = true;
+      }
       return isSame;
     },
     async beforeLeave() {
