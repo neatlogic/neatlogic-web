@@ -19,6 +19,7 @@ const scriptDetail = () => import('@/views/pages/autoexec/detail/script-detail.v
 const toolDetail = () => import('@/views/pages/autoexec/detail/tool-detail.vue'); //自动化：工具
 const testDetail = () => import('@/views/pages/autoexec/detail/test-detail.vue'); //自动化：工具测试
 const jobDetail = () => import('@/views/pages/autoexec/detail/job-detail.vue'); // 自动发现作业详情
+const reviewDetail = () => import('@/views/pages/autoexec/detail/review-detail.vue'); // 自动化自定义工具版本评审详情
 
 // 自动化end
 const publishingJobManage = () => import('./job/job-manage'); //一键发布
@@ -165,7 +166,18 @@ export default [
     name: 'script-detail',
     component: scriptDetail,
     meta: {
-      title: $t('router.deploy.publishstatus'),
+      title: $t('router.autoexec.scriptdetails'),
+      ismenu: false,
+      authority: '',
+      type: 'config'
+    }
+  }, 
+  {
+    path: '/review-detail',
+    name: 'review-detail',
+    component: reviewDetail,
+    meta: {
+      title: $t('router.autoexec.customizetoolapproval'),
       ismenu: false,
       authority: '',
       type: 'config'
