@@ -12,7 +12,7 @@
           </Alert>
           <div>
             <div class="pb-sm">
-              <span class="tsfont-plus text-action" @click="addScene()">{{ $t('page.scene') }}</span>
+              <span v-if="!processTaskId" class="tsfont-plus text-action" @click="addScene()">{{ $t('page.scene') }}</span>
               <span class="pl-nm">
                 <span class="text-tip pr-xs">{{ $t('page.defaultscenario') }}</span>
                 <span class="text-href" @click="selectDefaultscene()">{{ getSceneName(defaultSceneUuid) }}</span>
@@ -36,11 +36,12 @@
                   v-model="row.readOnly"
                   :falseValue="false"
                   :trueValue="true"
+                  :disabled="!!processTaskId"
                   @on-change="(val)=>changeReadOnly(val, row)"
                 ></TsFormSwitch>
               </template>
               <template v-slot:action="{ row }">
-                <div class="tstable-action">
+                <div v-if="!processTaskId" class="tstable-action">
                   <ul class="tstable-action-ul">
                     <li class="tsfont-copy" @click="copyScene(row)">{{ $t('page.copy') }}</li>
                     <li
@@ -98,7 +99,8 @@ export default {
     currentVersionUuid: String,
     sceneUuid: String,
     data: Object,
-    formConfig: Object
+    formConfig: Object,
+    processTaskId: Number
   },
   data() {
     return {
@@ -227,26 +229,27 @@ export default {
     },
     operation(row, type) {
       if (type === 'edit') {
+        let params = {
+          uuid: this.uuid,
+          currentVersionUuid: this.currentVersionUuid
+        };
+        if (this.processTaskId) {
+          params.processTaskId = this.processTaskId;
+        }
         if (this.sceneUuid === row.uuid) {
           this.$emit('close');
         } else {
           if (this.formConfig.uuid === row.uuid) {
             this.$router.replace({
               path: '/form-edit',
-              query: {
-                uuid: this.uuid,
-                currentVersionUuid: this.currentVersionUuid
-              }
+              query: params
             });
           } else {
+            params.sceneUuid = row.uuid;
+            params.type = 'edit';
             this.$router.replace({
               path: '/form-scene-edit',
-              query: {
-                uuid: this.uuid,
-                currentVersionUuid: this.currentVersionUuid,
-                sceneUuid: row.uuid,
-                type: 'edit'
-              }
+              query: params
             });
           }
         }
@@ -282,6 +285,9 @@ export default {
       });
     },
     selectDefaultscene() {
+      if (this.processTaskId) {
+        return;
+      }
       this.selectSceneUuid = this.$utils.deepClone(this.defaultSceneUuid);
       this.isSelectDefaultsceneDialog = true;
     },

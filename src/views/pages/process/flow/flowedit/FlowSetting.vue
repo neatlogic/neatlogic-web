@@ -35,12 +35,21 @@
               ></span>
               <span class="tsfont-refresh text-tip-active action-item" :title="$t('page.refreshtarget',{target:$t('term.process.formlist')})" @click="refreshRelateList()"></span>
             </template>
+            <template v-else>
+              <span
+                v-if="relateList.uuid"
+                class="tsfont-inspection action-item"
+                :title="$t('page.viewtarget',{'target':$t('page.form')})"
+                @click="viewForm"
+              ></span>
+            </template>
           </div>
         </div>
         <div class="panel-contain input-border">
           <TsFormSelect
             v-model="relateList.uuid"
             v-bind="relateSelectConfig"
+            :disabled="!!flowObj.processTaskId"
             @on-change="onChangeForm"
           >
             <template slot="first-ul">
@@ -233,6 +242,10 @@ export default {
     editForm() {
       //编辑表单
       window.open(HOME + '/framework.html#/form-edit?uuid=' + this.relateList.uuid + '&currentVersionUuid=' + this.currentVersionUuid, '_blank');
+    },
+    viewForm() {
+      //根据工单id，查看引用的表单
+      window.open(HOME + '/framework.html#/form-edit?uuid=' + this.relateList.uuid + '&processTaskId=' + this.flowObj.processTaskId, '_blank');
     },
     //刷新关联表单信息
     refreshRelateList() {

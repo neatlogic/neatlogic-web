@@ -67,7 +67,7 @@
           <div class="action-item text-action tsfont-lightning" @click="openReactionDialog()">{{ $t('term.framework.rowreaction') }}</div>
           <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
           <div class="action-item text-action tsfont-circulation-s" @click="openPreview()">{{ $t('page.preview') }}</div>
-          <div class="action-item last">
+          <div v-if="!processTaskId" class="action-item last">
             <Button type="primary" @click.stop="saveForm()">{{ $t('page.save') }}</Button>
           </div>
         </div>
@@ -144,6 +144,7 @@
       :sceneUuid="sceneUuid"
       :data="initFormData"
       :formConfig="initFormConfig"
+      :processTaskId="processTaskId"
       @close="closeScene"
       @deleteScene="deleteScene"
       @updateDefaultSceneUuid="updateDefaultSceneUuid"
@@ -200,7 +201,8 @@ export default {
       disabled: false,
       sceneList: [],
       deleteSceneUuid: '',
-      readOnly: false
+      readOnly: false,
+      processTaskId: null
     };
   },
   beforeCreate() {},
@@ -209,6 +211,9 @@ export default {
     this.currentVersionUuid = this.$route.query.currentVersionUuid || null;
     this.sceneUuid = this.$route.query.sceneUuid || null;
     this.type = this.$route.query.type || 'add';
+    if (this.$route.query.processTaskId) {
+      this.processTaskId = parseInt(this.$route.query.processTaskId);
+    }
     if (this.type === 'add') {
       this.sceneUuid = this.$utils.setUuid();
     }
@@ -247,6 +252,9 @@ export default {
         if (isSame) {
           isSame = this.contrastError(oldHeaderList, newHeaderList, 'width');
         }
+      }
+      if (this.processTaskId) {
+        isSame = true;
       }
       return isSame;
     },
@@ -299,7 +307,10 @@ export default {
         uuid: this.formUuid,
         currentVersionUuid: this.currentVersionUuid
       };
-      this.$api.framework.form.getFormByVersionUuid(data).then(res => {
+      if (this.processTaskId) {
+        data.processTaskId = this.processTaskId;
+      }
+      this.$api.process.process.getProcessForm(data).then(res => {
         if (res.Status == 'OK') {
           this.initFormData = res.Return;
           let formConfig = res.Return.formConfig || {};
@@ -585,12 +596,16 @@ export default {
       }
     },
     gotoFormEdit() {
+      let params = {
+        uuid: this.uuid,
+        currentVersionUuid: this.currentVersionUuid
+      };
+      if (this.processTaskId) {
+        params.processTaskId = this.processTaskId;
+      }
       this.$router.replace({
         path: '/form-edit',
-        query: {
-          uuid: this.uuid,
-          currentVersionUuid: this.currentVersionUuid
-        }
+        query: params
       });
     },
     updateDefaultSceneUuid(uuid) {
