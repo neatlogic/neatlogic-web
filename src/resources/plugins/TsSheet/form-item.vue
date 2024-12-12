@@ -74,6 +74,9 @@
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
+        @dropHideComponent="(enevt)=>{
+          $emit('dropHideComponent', enevt)
+        }"
       ></component>
       <component
         :is="formItem.customName"

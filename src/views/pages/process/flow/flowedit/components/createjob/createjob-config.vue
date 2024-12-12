@@ -280,7 +280,6 @@ export default {
       this.createjobConfig.jobParamMappingGroupList = [];
       this.createjobConfig.executeParamMappingGroupList = [];
       this.createjobConfig.scenarioParamMappingGroupList = [];
-      console.log(this.autoexecCombop);
       if (!this.$utils.isEmpty(this.autoexecCombop)) {
         //执行器组只需要只读，从组合工具带出即可
         this.runnerGroup = this.autoexecCombop.runnerGroup || {};
@@ -397,7 +396,9 @@ export default {
       this.createjobConfig.jobNamePrefixMappingValue = '';
       this.createjobConfig.createPolicy = 'single';
       this.createjobConfig.formAttributeMappingList = [];
+      this.autoexecCombop = {};
       if (!val) {
+        this.initData();
         return;
       }
       this.loadingShow = true;

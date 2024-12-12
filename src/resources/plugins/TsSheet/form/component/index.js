@@ -28,7 +28,22 @@ import formexpression from './formexpression.vue';
 import * as cmdbComponent from '@/views/pages/cmdb/form/component';
 import * as autoexecComponent from '@/views/pages/autoexec/form/component';
 import ComponentManager from '@/resources/import/component-manager.js';
-
+let formComponent = ComponentManager.getFormComponentComponent() || {};
+let formComponentConfig = {};
+for (let key in formComponent) {
+  if (key && formComponent[key] instanceof Array && formComponent[key].length > 0) {
+    formComponent[key].forEach(item => {
+      let {version = '', component} = item || {};
+      if (version) {
+        formComponentConfig[`${key}-${version}`] = component;
+      }
+    });
+    let findDefaultVersion = formComponent[key].find(item => item.version === 'defaultVersion');
+    formComponentConfig[key] = findDefaultVersion['component']; // 设置默认版本，兼容表单数据
+  } else {
+    formComponentConfig[key] = formComponent[key];
+  }
+}
 export default {
   formlabel,
   formtext,
@@ -58,5 +73,5 @@ export default {
   formexpression,
   ...cmdbComponent,
   ...autoexecComponent,
-  ...ComponentManager.getFormComponentComponent()
+  ...formComponentConfig
 };

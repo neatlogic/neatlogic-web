@@ -133,7 +133,7 @@ export default {
         {
           type: 'text',
           name: 'key',
-          label: this.$t('page.englishname'),
+          label: this.$t('page.uniquekey'),
           validateList: ['required',
             {
               name: 'regex',
@@ -143,7 +143,7 @@ export default {
           ],
           value: this.formItem.key,
           maxlength: 50,
-          disabled: this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit,
+          disabled: true,
           onChange: val => {
             this.$set(this.formItem, 'key', val);
           }
@@ -155,7 +155,7 @@ export default {
           validateList: ['required'],
           value: this.formItem.label,
           maxlength: 50,
-          disabled: this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit,
+          disabled: this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit || this.source === 'scene',
           onChange: val => {
             this.$set(this.formItem, 'label', val);
           }
@@ -296,7 +296,8 @@ export default {
         }
       ],
       isReactionShow: false,
-      keyBlacklist: ['formlabel', 'formtab', 'formcollapse', 'formdivider'] //不用设置英文名称的组件
+      keyBlacklist: ['formlabel', 'formtab', 'formcollapse', 'formdivider'], //不用设置英文名称的组件
+      formItemConfigKeyList: [] // 配置config的key属性，确保点击的时候，拿到当前版本的config配置
     };
   },
   beforeCreate() {},
@@ -490,6 +491,19 @@ export default {
         }
       },
       immediate: true
+    },
+    'formItem.config': {
+      handler(val) {
+        if (!this.$utils.isEmpty(val)) {
+          let formItemConfigKeyList = Object.keys(val) || [];
+          if (!this.$utils.isSame(this.formItemConfigKeyList, formItemConfigKeyList)) {
+            // 处理点击当前组件，对应的表单配置没有更新的问题
+            this.formItemConfigKeyList = this.$utils.deepClone(formItemConfigKeyList) || [];
+            this.init();
+          }
+        }
+      },
+      deep: true
     }
   }
 };

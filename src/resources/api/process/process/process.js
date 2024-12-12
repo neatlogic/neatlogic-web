@@ -158,14 +158,20 @@ const process = {
   saveTransferablestep(params) { //保存转交步骤
     return axios.post('/api/rest/eoa/step/transfer', params);
   },
-  getProcessForm(data) { //工单表单
-    return axios.post('/api/rest/process/form/get', data);
+  getProcessForm(params) { //工单表单
+    return axios.post('/api/rest/process/form/get', params);
   },
-  getProcessFormTagList(data) { //工单表单标签列表
-    return axios.post('/api/rest/process/form/tag/list', data);
+  getProcessFormTagList(params) { //工单表单标签列表
+    return axios.post('/api/rest/process/form/tag/list', params);
   },
-  getProcessFormAttributeList(data) { //工单表单组件属性列表
-    return axios.post('/api/rest/process/form/attribute/list', data);
+  getProcessFormAttributeList(params) { //工单表单组件属性列表
+    return axios.post('/api/rest/process/form/attribute/list', params);
+  },
+  getCanreactivatestepList(params) { //激活工单步骤列表
+    return axios.post('/api/rest/processtask/canreactivatestep/list', params);
+  },
+  getManualinterventionStep(params) { //人工干预步骤
+    return axios.post('/api/rest/manualintervention/processtask/step/active', params);
   }
 };
 
