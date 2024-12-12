@@ -2,11 +2,11 @@
   <div>
     <TsFormItem :label="$t('page.displayformat')" labelPosition="top">
       <TsFormRadio
-        :value="config.uploadType"
+        v-model="uploadType"
         :dataList="uploadTypeList"
         :disabled="disabled"
         @on-change="val => {
-          setConfig('uploadType', val);
+          changeType(val);
         }"
       ></TsFormRadio>
     </TsFormItem>
@@ -20,6 +20,9 @@
         :disabled="disabled"
         @on-change="val => {
           setConfig('isTemplate', val);
+          if(!val){
+            setConfig('templateList', []);
+          }
         }"
       ></TsFormSwitch>
     </TsFormItem>
@@ -31,7 +34,7 @@
         className="smallUpload"
         type="drag"
         :rowSpan="24"
-        :uploadCount="1"
+        :uploadCount="config.uploadType == 'one'?1:5"
         :multiple="false"
         :defaultList="config.templateList || []"
         :disabled="disabled"
@@ -58,16 +61,19 @@ export default {
   props: {},
   data() {
     return {
+      uploadType: '',
       uploadTypeList: [
         { text: this.$t('page.onefile'), value: 'one' },
-        { text: this.$t('page.morefile'), value: 'more' }
+        { text: this.$t('page.morefile'), value: 'more', description: this.$t('form.validate.filecount', { target: '5' })}
       ]
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.initConfig();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -75,11 +81,34 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initConfig() {
+      this.uploadType = (this.config && this.$utils.deepClone(this.config.uploadType)) || 'one';
+    },
     remove: function(fileList) {
       this.setConfig('templateList', fileList);
     },
     getFileList(fileList) {
       this.setConfig('templateList', fileList);
+    },
+    changeType(type) {
+      if (type === 'one' && this.config.templateList && this.config.templateList.length > 1) {
+        this.$createDialog({
+          title: '确定切换单个附件',
+          content: '默认保存第一个附件模板文件。',
+          'on-ok': vnode => {
+            this.setConfig('uploadType', type);
+            this.setConfig('templateList', this.config.templateList.slice(0, 1));
+            vnode.isShow = false;
+          },
+          'on-close': vnode => {
+            // 取消之后，激活状态变成修改之前状态
+            this.uploadType = 'more';
+            vnode.isShow = false;
+          }
+        });
+      } else {
+        this.setConfig('uploadType', type);
+      }
     }
   },
   filter: {},
