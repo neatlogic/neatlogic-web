@@ -15,11 +15,7 @@
           ghost
           @click="rebuild(false)"
         >{{ $t('term.framework.incrementalrebuild') }}</Button>
-        <Button
-          class="ml-md"
-          type="primary"
-          @click="rebuild(true)"
-        >{{ $t('term.framework.allrebuild') }}</Button>
+        <Button class="ml-md" type="primary" @click="rebuild(true)">{{ $t('term.framework.allrebuild') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -29,11 +25,11 @@ export default {
   name: '',
   components: {},
   props: {
-    audit: {type: Object}
+    audit: { type: Object }
   },
   data() {
     return {
-      dialogConfig: { 
+      dialogConfig: {
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -43,7 +39,8 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -54,8 +51,8 @@ export default {
   destroyed() {},
   methods: {
     rebuild(isAll) {
-      this.$api.framework.fulltextindex.rebuildFullTextIndex({type: this.audit.type, isAll: isAll}).then(res => {
-        if (res.Status == 'OK') {
+      this.$api.framework.fulltextindex.rebuildFullTextIndex({ handler: this.audit.handler, type: this.audit.type, isAll: isAll }).then(res => {
+        if (res.Status === 'OK') {
           this.close(true);
         }
       });
