@@ -19,7 +19,7 @@
       >
         <div slot="tips">
           <div v-for="(item,index) in config.templateList" :key="index" class="text-tip pt-xs">
-            {{ $t('term.framework.filestandard') }}&nbsp;<span v-download="downloadUrl(item.id)" class="text-href text-action">{{ $t('page.filetemplate') }}</span>
+            {{ $t('term.framework.filestandard') }}&nbsp;<span v-download="downloadUrl(item.id)" class="text-href text-action">{{ item.name }}</span>
           </div>
         </div>
       </TsUpLoad>

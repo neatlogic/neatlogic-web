@@ -22,11 +22,10 @@ export default {
       //控件类型
       if (data.type == 'select') {
         formData.dynamicUrl = '/api/rest/deploy/app/attr/search';
-        formData.params = {attrName: item, ciName: ciName};
-        formData.textName = 'name';
-        formData.valueName = 'id';
+        formData.params = { attrName: item, ciName: ciName };
         formData.transfer = true;
         formData.search = true;
+        formData.rootName = 'tbodyList';
         if (data.isMultiple) {
           formData.multiple = data.isMultiple;
         } else {
@@ -69,4 +68,4 @@ export default {
     }
   }
 };
-  
+
