@@ -45,6 +45,7 @@
             <Col v-if="isNeedAttrValue(conItem)" span="8">
               <ConditionItem
                 v-if="getAttr(conItem)"
+                :value="conItem.valueList"
                 :conditionItem="getAttr(conItem)"
                 @change="val => {
                   setAttrValue(conItem, val);
