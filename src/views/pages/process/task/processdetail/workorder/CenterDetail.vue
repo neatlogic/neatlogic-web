@@ -1318,7 +1318,7 @@ export default {
     updateFormSheetCalc() {
       if (this.$refs.formSheet) {
         this.$nextTick(() => {
-          this.$refs.formSheet.calcContainerHeight();
+          this.$refs.formSheet.calcContainerHeight && this.$refs.formSheet.calcContainerHeight();
         });
       }
     },
@@ -1331,9 +1331,15 @@ export default {
           if (findItem) {
             this.tabValue = findItem.name;
           } else {
-            this.tabValue = navList[0].name;
+            if (!this.fixedPageList.find(d => d.tabValue === val)) {
+              this.tabValue = navList[0].name;
+            }
           }
         }
+        if (val === 'report') {
+        //流转校验，更新表单布局
+          this.updateFormSheetCalc();
+        } 
       });
     }
      

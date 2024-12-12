@@ -729,10 +729,6 @@ export default {
     },
     validItemClick(selector, tabValue) {
       this.$refs.TaskCenterDetail.changeTabValue(tabValue);
-      if (tabValue === 'report') {
-        //更新表单布局
-        this.$refs.TaskCenterDetail.updateFormSheetCalc();
-      } 
       if (this.$el.querySelector(selector)) {
         // document.querySelector(selector).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
         document.querySelector(selector).scrollIntoView();
@@ -746,6 +742,7 @@ export default {
           document.querySelector(selector) && document.querySelector(selector).scrollIntoView();
         });
       }
+      console.log('更新表单布局1');
     },
     selecStartStep(item) {
       this.startId = item.id;
