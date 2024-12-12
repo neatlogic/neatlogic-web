@@ -106,7 +106,7 @@
                     v-model="paramMappingList[pindex].value"
                     search
                     transfer
-                    :dataList="processParamList"
+                    :dataList="getNewProcessParamList(paramMappingList[pindex])"
                     textName="label"
                     valueName="name"
                     :validateList="param.isRequired==1?vaild:[]"
@@ -444,6 +444,19 @@ export default {
           }
         }
         return successexpressList;
+      };
+    },
+    getNewProcessParamList() {
+      return (item) => {
+        let list = this.processParamList;
+        if (item.value && !list.find(i => i.name == item.value)) {
+          list.push({
+            name: item.value,
+            label: item.value,
+            type: 'constant'
+          });
+        }
+        return list;
       };
     }
   },
