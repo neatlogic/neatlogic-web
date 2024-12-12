@@ -742,7 +742,6 @@ export default {
           document.querySelector(selector) && document.querySelector(selector).scrollIntoView();
         });
       }
-      console.log('更新表单布局1');
     },
     selecStartStep(item) {
       this.startId = item.id;
