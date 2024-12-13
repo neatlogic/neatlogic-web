@@ -183,7 +183,7 @@ export default {
   components: {
     FormEditDialog: () => import('./form-edit-dialog'),
     ProcessTaskTopo: () => import('@/views/pages/process/task/processdetail/workorder/common/processtask-topo-dialog.vue'),
-    TransfereoastepDialog: () => import('./reactivate-dialog.vue'),
+    TransfereoastepDialog: () => import('./transfereoastep-dialog.vue'),
     ReactivateDialog: () => import('./reactivate-dialog.vue')
   },
   props: {
