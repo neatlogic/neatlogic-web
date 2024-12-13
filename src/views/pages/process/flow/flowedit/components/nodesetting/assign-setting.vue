@@ -649,7 +649,7 @@ export default {
     getConditionNodeList() {
       return (uuid) => {
         let list = [];
-        if (uuid) {
+        if (uuid && this.flowObj) {
           if (this.flowObj.TopoVm) {
             let vm = this.flowObj.TopoVm.getNodeByUuid(uuid);
             let allNextNodes = vm.getNextNodes('forward');
