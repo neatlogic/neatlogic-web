@@ -43,7 +43,7 @@ export default {
   },
   props: {
     channelUuid: { type: String },
-    processTaskId: { type: Number }
+    processTaskId: { type: [Number, String] }
   },
   data() {
     return {
