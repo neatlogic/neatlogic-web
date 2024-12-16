@@ -29,6 +29,7 @@
                             valueName="name"
                             textName="name"
                             showName="showName"
+                            :transfer="true"
                             @on-change="changeConItem(conItem, getExpressionList(conItem.name))"
                           ></TsFormSelect>
                         </div>
@@ -40,6 +41,7 @@
                             :dataList="getExpressionList(conItem.name).expressionList"
                             valueName="expression"
                             textName="expressionName"
+                            :transfer="true"
                             @on-change="changeExpression(conItem)"
                           ></TsFormSelect>
                         </div>
@@ -67,6 +69,7 @@
                               :clearable="false"
                               border="none"
                               size="small"
+                              :transfer="true"
                             ></TsFormSelect>
                           </div>
                         </Col>
@@ -85,6 +88,7 @@
                           :clearable="false"
                           border="none"
                           size="small"
+                          :transfer="true"
                         ></TsFormSelect>
                       </div>
                     </Col>
@@ -115,6 +119,7 @@
                           valueName="id"
                           textName="name"
                           :clearable="false"
+                          :transfer="true"
                         >
                           <template slot="first-ul">
                             <li class="tsfont-plus text-href first-slot" @click.stop="toEditTemplate()">

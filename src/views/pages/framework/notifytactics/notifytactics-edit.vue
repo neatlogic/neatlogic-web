@@ -185,10 +185,8 @@
       :id="id"
       :triggerList="triggerList"
       :handler="handler"
-      :isEditDialog.sync="isEditDialog"
       :defaultTemplateId="templateId"
       :showTemplate="showTemplate"
-      :isShow.sync="templateDialog"
       @closeEdit="closeEdit"
     ></SettingTemplate>
     <SettingParameter
@@ -262,7 +260,6 @@ export default {
         id: null
       },
       conditionOptionList: [],
-      isEditDialog: false, //是否编辑模板
       showTemplate: 'overview', //模板列表弹框或者编辑模板
       templateId: null, //模板id
       detailTemplate: '' //详情模板动作，标识详情的
@@ -382,17 +379,13 @@ export default {
       if (type == 'edit') {
         this.showTemplate = 'edit';
         this.templateId = id || null;
-        this.isEditDialog = true;
       } else {
         this.showTemplate = 'overview';
       }
       this.templateDialog = true;
     },
     closeEdit() {
-      this.isEditDialog = false;
-      if (this.showTemplate == 'edit') {
-        this.templateDialog = false;
-      }
+      this.templateDialog = false;
     },
     editParamList() {
       this.parameDialog = true;
