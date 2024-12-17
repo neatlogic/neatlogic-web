@@ -55,8 +55,11 @@
       @updateRowSort="updateRowSort"
       @getSelected="getSelectedItem"
     >
-      <template v-slot:delete="{ row }">
-        <span class="tsfont-close-o text-action" @click.stop="deleteItem(row)"></span>
+      <template v-slot:delete="{ row, index }">
+        <div class="flex-start">
+          <span class="tsfont-plus text-action mr-nm" @click.stop="addRow(index)"></span>
+          <span class="tsfont-close text-action" @click.stop="deleteItem(row)"></span>
+        </div>
       </template>
       <template v-if="config.isShowNumber" v-slot:number="{ index }">
         {{ index+1 }}
@@ -192,6 +195,16 @@ export default {
       if (index > -1) {
         this.tableData.tbodyList.splice(index, 1);
       }
+    },
+    addRow(index) {
+      const data = { uuid: this.$utils.setUuid() };
+      this.config.dataConfig.forEach(d => {
+        if (d.isPC) {
+          data[d.uuid] = (d.config && d.config.defaultValue) || null;
+        }
+      });
+      Object.assign(data, this.initExternalData);
+      this.tableData.tbodyList.splice(index + 1, 0, data);
     },
     removeSelectedItem() {
       for (let i = this.tableData.tbodyList.length - 1; i >= 0; i--) {
@@ -418,19 +431,23 @@ export default {
       let selectCpmponentList = ['formselect', 'formradio', 'formcheckbox']; // 数据有效性列表
       const startRow = 2;
       const endRow = 10;
+      const _worksheetDataSource = _workbook.addWorksheet('数据源勿删'); // 从第二个工作表开始
       let resultConfig = await this.handlePromiseAll(selectCpmponentList, theadUuidList);
       for (let [index, item] of this.extraList.entries()) {
         if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
           // 遍历每一行，设置数据有效性
           let {dataSource = '', dataList = [] } = item.config || {};
           let formulaeList = dataSource === 'matrix' ? resultConfig[item.uuid] || [] : this.handleDataList(dataList);
+          let columnsIndex = index + 1;
+          _worksheetDataSource.getColumn(columnsIndex).values = formulaeList; // 设置数据有效性
+          let columnsName = this.convertToExcelColumn(columnsIndex);
           for (let row = startRow; row <= endRow; row++) {
             const worksheetRow = _sheet1.getRow(row);
-            const cell = worksheetRow.getCell(`${this.convertToExcelColumn(index + 1)}`);
+            const cell = worksheetRow.getCell(`${columnsName}`);
             cell.dataValidation = {
               type: 'list',
               allowBlank: false,
-              formulae: formulaeList
+              formulae: [`数据源勿删!$${columnsName}:$${columnsName}`]
             };
           }
         }
@@ -482,7 +499,7 @@ export default {
             let {Status = '', Return = {}} = res || {};
             let {dataList = []} = Return || {};
             if (Status && Status == 'OK') {
-              resultConfig[ajaxResult[index]] = [`"${dataList.filter((a) => this.handleSpecialValue(a.text)).map((b) => this.handleSpecialValue(b.text)).join(',')}"`];
+              resultConfig[ajaxResult[index]] = dataList.filter((a) => this.handleSpecialValue(a.text)).map((b) => this.handleSpecialValue(b.text));
             }
           });
         }
@@ -492,12 +509,9 @@ export default {
       return resultConfig;
     },
     handleDataList(dataList) {
-      const resultArray = [
-        `"${dataList
-          .filter(item => item?.text)
-          .map(item => item.text)
-          .join(',')}"`
-      ];
+      const resultArray = dataList
+        .filter(item => item?.text)
+        .map(item => item.text);
       return resultArray;
     },
     async exportExcel() {
@@ -566,19 +580,23 @@ export default {
       let selectCpmponentList = ['formselect', 'formradio', 'formcheckbox']; // 数据有效性列表
       const startRow = 2;
       const endRow = 10;
+      const _worksheetDataSource = _workbook.addWorksheet('数据源勿删'); // 下拉的数据源
       let resultConfig = await this.handlePromiseAll(selectCpmponentList, theadUuidList);
       for (let [index, item] of this.extraList.entries()) {
         if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
           // 遍历每一行，设置数据有效性
           let {dataSource = '', dataList = [] } = item.config || {};
           let formulaeList = dataSource === 'matrix' ? resultConfig[item.uuid] || [] : this.handleDataList(dataList);
+          let columnsIndex = index + 1;
+          _worksheetDataSource.getColumn(columnsIndex).values = formulaeList; // 设置数据有效性
+          let columnsName = this.convertToExcelColumn(columnsIndex); // 数据校验的字符最大限制为255的字符，所以需要引用其他工作表作为下拉数据源
           for (let row = startRow; row <= endRow; row++) {
             const worksheetRow = _sheet1.getRow(row);
-            const cell = worksheetRow.getCell(`${this.convertToExcelColumn(index + 1)}`);
+            const cell = worksheetRow.getCell(`${columnsName}`);
             cell.dataValidation = {
               type: 'list',
               allowBlank: false,
-              formulae: formulaeList
+              formulae: [`数据源勿删!$${columnsName}:$${columnsName}`]
             };
           }
         }
