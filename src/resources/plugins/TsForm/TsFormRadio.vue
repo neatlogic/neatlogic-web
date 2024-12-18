@@ -80,7 +80,7 @@ export default {
       default: 'text'
     },
     value: {
-      type: [String, Number, Boolean, Object],
+      type: [String, Number, Boolean, Object, Array],
       default: ''
     }, 
     url: {
