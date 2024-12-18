@@ -6,7 +6,7 @@
       </span>
     </div>
     <div v-for="(conditionGroup, groupIndex) in rule.conditionGroupList" :key="groupIndex" class="group-border">
-      <div class="group-content bg-op radius-md">
+      <div class="group-content radius-md" :class="level % 2 === 0 ? 'bg-op' : 'bg-grey'">
         <div v-for="(conItem, conditionIndex) in conditionGroup.conditionList" :key="conditionIndex" class="condition-content">
           <TsRow :gutter="8">
             <Col span="10">
@@ -47,9 +47,11 @@
                 v-if="getAttr(conItem)"
                 :value="conItem.valueList"
                 :conditionItem="getAttr(conItem)"
-                @change="val => {
-                  setAttrValue(conItem, val);
-                }"
+                @change="
+                  val => {
+                    setAttrValue(conItem, val);
+                  }
+                "
               ></ConditionItem>
               <!-- <TsFormSelect
                 v-if="getSelectConfig(conItem)"
@@ -72,7 +74,7 @@
               ></TsFormInput>-->
             </Col>
             <Col span="2">
-              <div class="btn-group text-tip">
+              <div class="btn-group text-grey">
                 <span class="tsfont-plus mr-xs" style="cursor: pointer" @click="addCondition(conditionGroup)"></span>
                 <span
                   v-if="conditionGroup.conditionList.length > 1"
@@ -122,7 +124,7 @@
         </TsRow>
       </div>
       <div v-if="rule.conditionGroupList.length > 0" class="delGroup" @click="delConditionGroup(rule, groupIndex)">
-        <i class="tsfont-close-s text-tip"></i>
+        <i class="tsfont-close-s text-grey"></i>
       </div>
     </div>
   </div>
@@ -137,6 +139,7 @@ export default {
     ConditionItem: () => import('@/resources/components/Condition/condition-item.vue')
   },
   props: {
+    level: { type: Number, default: 1 },
     value: { type: Object },
     attrList: [] //定义属性列表，[{name:'attrname',label:'属性名称',url:'xxx',dataList:[{value:'value',text:'text'}],expressionList:['equal','like']}]
   },
@@ -239,7 +242,6 @@ export default {
       this.updateRule();
     },
     setAttr(condition, id, option, item) {
-      console.log(JSON.stringify(item));
       if (id) {
         this.$set(condition, 'id', item.name);
         this.$set(condition, 'name', item.name);
@@ -345,9 +347,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-   
-  },
+  computed: {},
   watch: {}
 };
 </script>

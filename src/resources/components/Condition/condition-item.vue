@@ -52,7 +52,6 @@ export default {
   destroyed() {},
   methods: {
     changeValue() {
-      console.log('changeValue', ...arguments);
       this.$emit('change', ...arguments);
     }
   },
