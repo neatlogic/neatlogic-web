@@ -6,7 +6,7 @@
       width="large"
       height="400px"
       className="setting-dialog"
-      :isShow="isShow"
+      :isShow="true"
       :hasFooter="false"
       @on-close="close"
     >
@@ -256,10 +256,6 @@ export default {
   },
   filters: {},
   props: {
-    isShow: {
-      type: Boolean,
-      default: false
-    },
     id: {
       //策略id
       type: Number,
@@ -268,10 +264,6 @@ export default {
     handler: {
       type: String,
       default: null
-    },
-    isEditDialog: {
-      type: Boolean,
-      default: false
     },
     defaultTemplateId: {
       type: [String, Number],
@@ -370,13 +362,20 @@ export default {
   destroyed() {},
   methods: {
     initData() {
+      if (this.showTemplate == 'edit') {
+        if (this.defaultTemplateId) {
+          this.templateId = this.defaultTemplateId;
+          this.editTemplate();
+        }
+        this.templateDialog = true;
+      }
       this.gethandlerList();
       this.getTemplateList();
       this.getParamtypeList();
       this.getParamList();
     },
     close() {
-      this.$emit('update:isShow', false);
+      this.$emit('closeEdit');
     },
     getTemplateList(currentPage) {
       let notifyVal = this.notifyHandler;
@@ -485,6 +484,7 @@ export default {
             this.$Message.success(this.$t('message.savesuccess'));
             this.getTemplateList();
             this.templateDialog = false;
+            this.$emit('closeEdit');
           }
         }).finally(() => {
           this.isSaving = false;
@@ -500,7 +500,6 @@ export default {
       this.blurText = '';
       this.templateDialog = false;
       this.$emit('closeEdit');
-      this.$emit('update:isEditDialog', false);
     },
     onBlur() {
       setTimeout(() => {
@@ -651,20 +650,7 @@ export default {
       };
     }
   },
-  watch: {
-    isEditDialog: {
-      handler(val) {
-        if (val) {
-          if (this.defaultTemplateId) {
-            this.templateId = this.defaultTemplateId;
-            this.editTemplate();
-          }
-          this.templateDialog = true;
-        }
-      },
-      immediate: true
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

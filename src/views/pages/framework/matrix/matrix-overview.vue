@@ -1138,6 +1138,8 @@ export default {
     changeAttrLabel(val, item, selectItem, conItem, valueConfig) {
       if (valueConfig.type === 'cmdbci') {
         this.$set(conItem, 'uniqueIdentifier', selectItem.defaultUniqueIdentifier);
+      } else if (valueConfig.type === 'cmdbcustomview') {
+        this.$set(conItem, 'uniqueIdentifier', selectItem.defaultUniqueIdentifier);
       }
     }
   },

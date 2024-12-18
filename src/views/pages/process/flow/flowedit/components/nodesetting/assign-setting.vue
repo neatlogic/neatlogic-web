@@ -129,7 +129,7 @@
                         <TsFormSelect
                           ref="dealValue"
                           v-model="processCopyStepUuidList"
-                          :dataList="returnNewPrevNodes(copyPrevNodes)"
+                          :dataList="getPreNodesList(copyPrevNodes)"
                           textName="name"
                           valueName="uuid"
                           border="border"
@@ -301,6 +301,7 @@ export default {
     PrestepassignDialog: () => import('./assign/prestepassign-dialog.vue'),
     ...dispatcherComponent
   },
+  inject: ['flowObj'],
   props: {
     prevNodes: {
       type: Array,
@@ -546,16 +547,6 @@ export default {
         this.$set(findDispatcherItem['config'], 'handlerConfig', {});
       }
     },
-    returnNewPrevNodes(prevNodes) { //前置步骤过滤掉定时节点
-      let newData = [];
-      if (prevNodes) {
-        let list = this.$utils.deepClone(prevNodes).filter(p => p.handler != 'timer');
-        if (list) {
-          newData = list;
-        }
-      }
-      return newData;
-    },
     changeGroupList(val) { 
       // 由前置步骤处理人指定，根据指派目标，过滤指派范围
       this.policyList.map(e => {
@@ -649,7 +640,7 @@ export default {
     getConditionNodeList() {
       return (uuid) => {
         let list = [];
-        if (uuid) {
+        if (uuid && this.flowObj) {
           if (this.flowObj.TopoVm) {
             let vm = this.flowObj.TopoVm.getNodeByUuid(uuid);
             let allNextNodes = vm.getNextNodes('forward');
@@ -670,6 +661,24 @@ export default {
           }
         }
         return list;
+      };
+    },
+    getPreNodesList() {
+      // 获取当前节点的前置节点列表，排除第一个节点和定时器节点
+      return (prevNodes) => {
+        if (!this.flowObj || !this.flowObj.graph) return [];
+
+        const startNode = this.flowObj.graph.getNodes().find(node => node.getProp('handler') === 'start');
+        if (!startNode) return [];
+
+        const startNodeUuid = startNode.id;
+        const node = this.flowObj.graph.getCellById(startNodeUuid);
+        const outgoingEdges = this.flowObj.graph.getOutgoingEdges(node).filter(edge => edge.getProp('type') === 'forward'); // 拿到开始节点的所有后置节点
+
+        const list = outgoingEdges.map(edge => edge.getTargetCell().getData());
+        const uuid = list.length > 0 ? list[0].uuid : ''; // 拿到第一个后置节点的uuid
+
+        return prevNodes ? prevNodes.filter(node => node.handler !== 'timer' && node.uuid !== uuid) : [];
       };
     }
   },

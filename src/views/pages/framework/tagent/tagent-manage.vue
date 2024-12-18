@@ -9,6 +9,7 @@
           <span class="tsfont-edit action-item" @click="goPages('batchResetcred')">{{ $t('term.framework.batchresetcred') }}</span>
           <span class="tsfont-anzhuangbao action-item" @click="goPages('installationPackage')">{{ $t('term.framework.installpackage') }}</span>
           <span class="tsfont-question-s action-item" @click="openInstallTipsDialog">{{ $t('term.framework.tagentinstall') }}</span>
+          <span class="tsfont-export action-item" @click="exportExcel">{{ $t('page.export') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
@@ -77,6 +78,7 @@
   </div>
 </template>
 <script>
+import download from '@/resources/mixins/download.js';
 export default {
   name: 'TagentManage',
   components: {
@@ -89,6 +91,9 @@ export default {
     TagentConfigDialog: () => import('./tagent/tagent-config-dialog') // tagent配置
   },
   filters: {},
+  mixins: [
+    download
+  ],
   props: {},
   data() {
     return {
@@ -359,6 +364,9 @@ export default {
       this.isShowVersionUpdate = false;
       this.isShowLogDialog = false;
       this.isShowPasswordDialog = false;
+    },
+    exportExcel() {
+      this.download({ url: '/api/binary/tagent/export', params: this.searchVal });
     }
   },
   computed: {},

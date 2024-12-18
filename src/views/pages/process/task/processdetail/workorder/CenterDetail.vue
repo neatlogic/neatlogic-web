@@ -1292,7 +1292,10 @@ export default {
     setFormAttributeDataMap(val) {
       //表单改变时更新formAttributeDataMap
       if (!this.$utils.isSame(val, this.processTaskConfig.formAttributeDataMap)) {
-        this.processTaskConfig.formAttributeDataMap = this.$utils.deepClone(val);
+        //避免数据更新时，卡顿
+        this.$nextTick(() => {
+          this.processTaskConfig.formAttributeDataMap = this.$utils.deepClone(val);
+        });
       }
     },
     clickTabValue(name) {
