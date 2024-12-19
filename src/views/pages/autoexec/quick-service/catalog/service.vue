@@ -150,7 +150,7 @@
               <RunnerGroupSetting
                 ref="runnerGroup"
                 :config="runnerGroup"
-                :runtimeParamList="runtimeParamList"
+                :runtimeParamList="paramsList"
                 :isCreateJob="true"
                 :disabled="false"
               >
@@ -173,7 +173,7 @@
                 <RunnerGroupSetting
                   ref="runnerGroup"
                   :config="runnerGroup"
-                  :runtimeParamList="runtimeParamList"
+                  :runtimeParamList="paramsList"
                   :isCreateJob="true"
                   :disabled="false"
                 ></RunnerGroupSetting>
