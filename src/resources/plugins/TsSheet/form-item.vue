@@ -1,6 +1,6 @@
 <template>
   <div class="form-item radius-md" :class="{ 'bg-error-grey': showStatusIcon && (hasDataError || hasConfigError) }">
-    <i v-if="isShowComponent && formItem.config && formItem.config.isRequired && !readonly && !formItem.config.isReadOnly" class="require-tip text-error">*</i>
+    <i v-if="isShowComponent(formItem) && formItem.config && formItem.config.isRequired && !readonly && !formItem.config.isReadOnly" class="require-tip text-error">*</i>
     <!--编辑模式下的非container组件需要增加遮罩屏蔽所有操作，container组件需要接受拖拽组件进去，不需要遮罩-->
     <div v-if="(mode === 'edit' || mode === 'editSubform') && !formItem.isContainer" class="editor-mask"></div>
     <div v-if="mode != 'defaultvalue' && mode !== 'condition' && ((formItem.override_config && formItem.override_config.isMask) || (formItem.config && formItem.config.isMask))" class="mask">
@@ -50,7 +50,7 @@
     <div v-if="clearable && mode == 'edit'" class="corner-close-icon tsfont-close-o text-tip-active" @mousedown.prevent.stop="$emit('delete')"></div>
     <div v-if="mode == 'edit' && formItem.config && formItem.config.isHide" class="corner-bottom-icon text-grey tsfont-eye-off"></div>
     <div v-if="needLabel" class="mb-xs">{{ formItem.label }}</div>
-    <template v-if="isShowComponent && (!formItem.type || formItem.type === 'form')">
+    <template v-if="isShowComponent(formItem) && (!formItem.type || formItem.type === 'form')">
       <component
         :is="formItem.handler"
         v-if="isExistComponent && formItem.handler !== 'formcustom'"
@@ -105,7 +105,7 @@
       <div v-else class="text-warning">{{ $t('page.commercialcomponent') }}</div>
     </template>
     <CustomItem
-      v-else-if="isShowComponent && formItem.type === 'custom'"
+      v-else-if="isShowComponent(formItem) && formItem.type === 'custom'"
       ref="formItem"
       :style="{ width: (formItem.config && formItem.config.width) || '100%' }"
       :formItem="formItem"
@@ -123,7 +123,7 @@
       @resize="$emit('resize')"
       @select="selectFormItem"
     ></CustomItem>
-    <div v-if="isShowComponent && formItem.config && formItem.config.description" class="tsfont-info-o text-tip">{{ formItem.config.description }}</div>
+    <div v-if="isShowComponent(formItem) && formItem.config && formItem.config.description" class="tsfont-info-o text-tip">{{ formItem.config.description }}</div>
   </div>
 </template>
 <script>
@@ -222,7 +222,8 @@ export default {
       isFirstLoad: true, //是否第一次加载，用于比较表单数据新旧值时，第一次触发一次操作
       filter: [], //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
       REACTION: REACTION, //联动规则
-      isShowErrorMessage: true
+      isShowErrorMessage: true,
+      currentItemHide: false //当前组件是否隐藏
     };
   },
   beforeCreate() {},
@@ -433,9 +434,11 @@ export default {
     },
     hideFormItem() {
       this.$set(this.formItem.config, 'isHide', true);
+      this.currentItemHide = true;
     },
     showFormItem() {
       this.$set(this.formItem.config, 'isHide', false);
+      this.currentItemHide = false;
     },
     //验证配置是否完整
     validConfig() {
@@ -572,12 +575,13 @@ export default {
       return this.dataErrorList && this.dataErrorList.length > 0;
     },
     isShowComponent() {
-      const formItem = this.formItem;
-      let isShow = true;
-      if (((this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing || (formItem.override_config && formItem.override_config.isHide)) {
-        isShow = false;
-      }
-      return isShow;
+      return (formItem) => {
+        let isShow = true;
+        if (this.currentItemHide || ((this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing || (formItem.override_config && formItem.override_config.isHide)) {
+          isShow = false;
+        }
+        return isShow;
+      };
     },
     readonlyTextIsHighlight() {
       // 只读模式下，工单详情时间线，有变更的数据，需要高亮显示

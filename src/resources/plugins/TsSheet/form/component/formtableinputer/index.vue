@@ -249,7 +249,7 @@ export default {
       if (this.readonly) {
         this.$set(formItem.config, 'isReadOnly', true);
       }
-      return formItem;
+      return {...formItem};
     },
     validConfig() {
       const errorList = [];
@@ -749,28 +749,6 @@ export default {
       }
       this.conditionFormItemUuidList.push('uuid');
     },
-    updateConditionData() {
-      let obj = {};
-      Object.keys(this.formDataForWatch).forEach(key => {
-        if (key !== 'uuid' && this.conditionFormItemUuidList.includes(key)) {
-          obj[key] = this.formDataForWatch[key];
-        }
-      });
-      if (!this.$utils.isSame(obj, this.initExternalData)) {
-        this.initExternalData = this.$utils.deepClone(obj);
-        this.tableData.tbodyList.forEach(item => {
-          Object.keys(item).forEach(key => {
-            //是否是当前组件的属性
-            const currentItemKey = this.config.dataConfig.find(d => d.uuid === key);
-            if (!currentItemKey && !this.conditionFormItemUuidList.includes(key) && key !== 'uuid') { //uuid作为每一行的唯一标识，不能删除
-              //清除当前行下多余的属性（主要是外部组件联动属性）
-              this.$delete(item, key);
-            }
-          });
-          Object.assign(item, obj);
-        });
-      }
-    },
     updateCurrentRow(row, val) {
       this.$nextTick(() => {
         if (val) {
@@ -877,7 +855,6 @@ export default {
       handler(val) {
         if (this.mode != 'edit' && this.mode != 'editSubform' && !this.$utils.isSame(val, this.initFormData)) {
           this.initFormData = this.$utils.deepClone(val) || {};
-          this.updateConditionData();
         }
       },
       deep: true,

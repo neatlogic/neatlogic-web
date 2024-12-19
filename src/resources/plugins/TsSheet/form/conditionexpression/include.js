@@ -26,7 +26,7 @@ export default (currentValue, oldValue, condition) => {
     } else if ((typeof currentValue == 'string' || typeof currentValue == 'number') && currentValue.indexOf(conditionValue) > -1) {
       isInclude = true;
     } else if (typeof currentValue === 'object') {
-      if (currentValue[uuid].indexOf(conditionValueList) > -1) {
+      if (currentValue[uuid] && currentValue[uuid].indexOf(conditionValueList) > -1) {
         isInclude = true;
       }
     } 
