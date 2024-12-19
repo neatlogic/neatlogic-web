@@ -834,7 +834,9 @@ export default {
           this.combopId = itemValue.combopId || null;
           if (config) {
             for (let key in config) {
-              this[key] = config[key]; // 分批数量，执行目标，执行器组标签，执行器组
+              if (!this.$utils.isEmpty(config[key])) {
+                this[key] = config[key]; // 分批数量，执行目标，执行器组标签，执行器组
+              }
             }
             if (config && !this.$utils.isEmpty(runtimeParamList)) {
               runtimeParamList.forEach((item) => {
@@ -849,8 +851,10 @@ export default {
             if (executeNodeConfig && (executeNodeConfig.mappingMode == 'constant')) {
               this.filterSearchValue = executeNodeConfig.value || {}; // 执行目标值回显
             } else {
-              this.$set(this.executeNode, 'mappingMode', executeNodeConfig.mappingMode);
-              this.$set(this.executeNode, 'value', executeNodeConfig.value);
+              this.$set(this.executeNode, 'mappingMode', executeNodeConfig.mappingMode || 'constant');
+              if (!this.$utils.isEmpty(executeNodeConfig.value)) {
+                this.$set(this.executeNode, 'value', executeNodeConfig.value);
+              }
             }
           }
           this.basicFormItemList && this.basicFormItemList.forEach((item) => {
@@ -1102,49 +1106,27 @@ export default {
             }
             // 场景
             this.scenarioList = scenarioList;
-            if (!isEdit) {
-              // 主要是为了解决流程管理，服务作为自动化的时候，会把值清空
-              this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
-              if (this.executeConfig.roundCount == 0 || !this.$utils.isEmpty(this.executeConfig.roundCount)) {
+            this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
+            if (this.executeConfig.roundCount == 0 || !this.$utils.isEmpty(this.executeConfig.roundCount)) {
+              if (this.$utils.isEmpty(this.roundCount.value)) {
                 this.$set(this.roundCount, 'value', this.executeConfig.roundCount);
-                this.$set(this.roundCountForm, 'disabled', true);
-                this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
               }
-              if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
-                this.$set(this.executeConfig, 'executeNodeConfig', {});
-              }
-              this.scenarioId = defaultScenarioId;
-              if (executeConfig && !this.$utils.isEmptyObj(executeConfig)) {
+              this.$set(this.roundCountForm, 'disabled', true);
+              this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
+            }
+            if (this.executeConfig.whenToSpecify == 'runtime' && this.$utils.isEmpty(this.protocol.value)) { // 过滤器运行在执行，需要把执行目标值清空
+              this.$set(this.executeConfig, 'executeNodeConfig', {});
+            }
+            this.scenarioId = defaultScenarioId;
+            if (executeConfig && !this.$utils.isEmptyObj(executeConfig)) {
               // 连接协议和执行账户回显
-                this.executeValue['executeUser'] = executeConfig['executeUser'];
-                this.executeValue['protocolId'] = executeConfig['protocolId'];
-                if (!this.$utils.isEmpty(executeConfig['executeUser'] && executeConfig['executeUser']['mappingMode'])) {
-                  this.executeUser.mappingMode = executeConfig['executeUser']['mappingMode']; // 执行用户回显
-                }
-                this.executeUser.value = executeConfig['executeUser']['value'];
-                this.protocol.value = executeConfig['protocolId'];
+              this.executeValue['executeUser'] = executeConfig['executeUser'];
+              this.executeValue['protocolId'] = executeConfig['protocolId'];
+              if (!this.$utils.isEmpty(executeConfig['executeUser'] && executeConfig['executeUser']['mappingMode'])) {
+                this.executeUser.mappingMode = this.executeUser.mappingMode || executeConfig['executeUser']['mappingMode']; // 执行用户回显
               }
-            } else {
-              this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
-              if (this.executeConfig.roundCount == 0 || !this.$utils.isEmpty(this.executeConfig.roundCount)) {
-                this.$set(this.roundCount, 'value', this.executeConfig.roundCount);
-                this.$set(this.roundCountForm, 'disabled', true);
-                this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
-              }
-              if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
-                this.$set(this.executeConfig, 'executeNodeConfig', {});
-              }
-              this.scenarioId = defaultScenarioId;
-              if (executeConfig && !this.$utils.isEmptyObj(executeConfig)) {
-              // 连接协议和执行账户回显
-                this.executeValue['executeUser'] = executeConfig['executeUser'];
-                this.executeValue['protocolId'] = executeConfig['protocolId'];
-                if (!this.$utils.isEmpty(executeConfig['executeUser'] && executeConfig['executeUser']['mappingMode'])) {
-                  this.executeUser.mappingMode = executeConfig['executeUser']['mappingMode']; // 执行用户回显
-                }
-                this.executeUser.value = executeConfig['executeUser'] ? executeConfig['executeUser']['value'] : '';
-                this.protocol.value = executeConfig['protocolId'];
-              }
+              this.executeUser.value = (this.executeUser ? this.executeUser.value : executeConfig['executeUser'] ? executeConfig['executeUser']['value'] : '');
+              this.protocol.value = this.protocol.value || executeConfig['protocolId'];
             }
           }
         })
