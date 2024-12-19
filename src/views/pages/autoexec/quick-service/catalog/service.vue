@@ -96,7 +96,7 @@
         <span>{{ $t('term.deploy.actuatorgrouptag') }}</span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.runnerGroupTag ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('runnerGroupTag')"></span>
       </div>
-      <TsFormItem v-show="unfoldAndFold.runnerGroupTag" :label="$t('term.deploy.actuatorgrouptag')" :required="hasRequired(runnerGroupTag.mappingMode)">
+      <TsFormItem v-show="unfoldAndFold.runnerGroupTag" :label="$t('term.deploy.actuatorgrouptag')">
         <div id="positioningkey_runnerGroupTag" :class="runnerGroupTag.mappingMode == 'formattr' || runnerGroupTag.mappingMode == 'constant' ? 'form-wrap-box' : ''">
           <template v-if="runnerGroupTag.mappingMode == 'runtimeparam'">
             <RunnerGroupTagSetting
@@ -139,7 +139,6 @@
               transfer
               border="border"
               class="pr-sm form-li-width"
-              :validateList="['required']"
             ></TsFormSelect>
           </template>
         </div>
@@ -852,9 +851,7 @@ export default {
               this.filterSearchValue = executeNodeConfig.value || {}; // 执行目标值回显
             } else {
               this.$set(this.executeNode, 'mappingMode', executeNodeConfig.mappingMode || 'constant');
-              if (!this.$utils.isEmpty(executeNodeConfig.value)) {
-                this.$set(this.executeNode, 'value', executeNodeConfig.value);
-              }
+              this.$set(this.executeNode, 'value', executeNodeConfig.value); 
             }
           }
           this.basicFormItemList && this.basicFormItemList.forEach((item) => {
@@ -1094,9 +1091,6 @@ export default {
             this.executeConfig = executeConfig || {};
             this.runnerGroup = !this.$utils.isEmpty(this.runnerGroup) && (!this.$utils.isEmpty(this.runnerGroup['value']) || this.runnerGroup['mappingMode'] == 'notsetup') ? this.runnerGroup : runnerGroup;
             this.runnerGroupTag = !this.$utils.isEmpty(this.runnerGroupTag) && (!this.$utils.isEmpty(this.runnerGroupTag['value']) || this.runnerGroupTag['mappingMode'] == 'notsetup') ? this.runnerGroupTag : runnerGroupTag;
-            if (isEdit) {
-              this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue); // 执行目标回显
-            }
             if (this.paramsList && !this.$utils.isEmpty(this.paramsList)) {
               this.initConfig(); // 设置作业参数值
             }
@@ -1114,19 +1108,21 @@ export default {
               this.$set(this.roundCountForm, 'disabled', true);
               this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
             }
-            if (this.executeConfig.whenToSpecify == 'runtime' && this.$utils.isEmpty(this.protocol.value)) { // 过滤器运行在执行，需要把执行目标值清空
+            if (this.executeConfig.whenToSpecify == 'runtime' && this.$utils.isEmpty(this.executeConfig)) { // 过滤器运行在执行，需要把执行目标值清空
               this.$set(this.executeConfig, 'executeNodeConfig', {});
             }
             this.scenarioId = defaultScenarioId;
             if (executeConfig && !this.$utils.isEmptyObj(executeConfig)) {
               // 连接协议和执行账户回显
-              this.executeValue['executeUser'] = executeConfig['executeUser'];
-              this.executeValue['protocolId'] = executeConfig['protocolId'];
-              if (!this.$utils.isEmpty(executeConfig['executeUser'] && executeConfig['executeUser']['mappingMode'])) {
-                this.executeUser.mappingMode = this.executeUser.mappingMode || executeConfig['executeUser']['mappingMode']; // 执行用户回显
+              let {executeUser = {}, protocolId = ''} = executeConfig;
+              let {mappingMode = ''} = executeUser || {};
+              this.executeValue['executeUser'] = executeUser;
+              this.executeValue['protocolId'] = protocolId;
+              if (!this.$utils.isEmpty(mappingMode)) {
+                this.executeUser.mappingMode = this.executeUser.mappingMode || mappingMode; // 执行用户回显
               }
-              this.executeUser.value = (this.executeUser ? this.executeUser.value : executeConfig['executeUser'] ? executeConfig['executeUser']['value'] : '');
-              this.protocol.value = this.protocol.value || executeConfig['protocolId'];
+              this.executeUser.value = (this.executeUser && this.executeUser.value ? this.executeUser.value : executeConfig['executeUser'] ? executeConfig['executeUser']['value'] : '');
+              this.protocol.value = (this.protocol && this.protocol.value ? this.protocol.value : executeConfig['protocolId']);
             }
           }
         })
