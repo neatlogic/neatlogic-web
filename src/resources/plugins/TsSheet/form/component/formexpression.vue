@@ -50,13 +50,7 @@ export default {
               const uuidList = item.value.split('#');
               const formItemValue = this.formData[uuidList[0]] || '';
               if (!this.$utils.isEmpty(formItemValue)) {
-                if (typeof formItemValue === 'object') {
-                  if (uuidList[1]) {
-                    value += formItemValue[uuidList[1]] || '';
-                  } else {
-                    value += formItemValue['value'] || '';
-                  }
-                } else if (Array.isArray(formItemValue)) {
+                if (Array.isArray(formItemValue)) {
                   formItemValue.forEach(a => {
                     if (typeof a === 'object') {
                       if (uuidList[1]) {
@@ -68,6 +62,12 @@ export default {
                       value += a;
                     }
                   });
+                } else if (typeof formItemValue === 'object') {
+                  if (uuidList[1]) {
+                    value += formItemValue[uuidList[1]] || '';
+                  } else {
+                    value += formItemValue['value'] || '';
+                  }
                 } else {
                   value += formItemValue;
                 }
@@ -119,7 +119,7 @@ export default {
     getValueString(data) {
       if (!this.$utils.isEmpty(data)) {
         if (Array.isArray(data)) {
-          return data[0].value;
+          return this.$utils.mapArray(data, 'value');
         } else if (typeof data === 'object') {
           return data.value;
         } else {
