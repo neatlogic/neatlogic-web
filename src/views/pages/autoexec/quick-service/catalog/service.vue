@@ -156,7 +156,7 @@
               >
               </RunnerGroupSetting>
             </template>
-            <div :class="runnerGroup.mappingMode==='constant' ? 'form-wrap-box' : ''">
+            <div :class="runnerGroup.mappingMode==='constant' || runnerGroup.mappingMode =='formattr' ? 'form-wrap-box' : ''">
               <TsFormSelect
                 ref="executeNodemappingMode"
                 v-model="runnerGroup.mappingMode"
