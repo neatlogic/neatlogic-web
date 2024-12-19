@@ -297,12 +297,9 @@ export default {
               });
             });
           }
-          //过滤多选
-          if (!item.config || !item.config.isMultiple) {
-            list.push(obj);
-            if (!this.$utils.isEmpty(children)) {
-              list.push(...children);
-            }
+          list.push(obj);
+          if (!this.$utils.isEmpty(children)) {
+            list.push(...children);
           }
         });
       }
