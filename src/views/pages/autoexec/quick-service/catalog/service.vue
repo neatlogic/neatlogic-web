@@ -1070,10 +1070,8 @@ export default {
             this.needProtocol = needProtocol;
             this.needRoundCount = needRoundCount;
             this.executeConfig = executeConfig || {};
-            this.runnerGroup = runnerGroup || this.runnerGroup;
-            this.runnerGroupTag = !this.$utils.isEmpty(this.runnerGroupTag) && !this.$utils.isEmpty(this.runnerGroupTag['value']) ? this.runnerGroupTag : runnerGroupTag;
-            console.log('11111', this.runnerGroupTag, runnerGroupTag);
-            
+            this.runnerGroup = !this.$utils.isEmpty(this.runnerGroup) && (!this.$utils.isEmpty(this.runnerGroup['value']) || this.runnerGroup['mappingMode'] == 'notsetup') ? this.runnerGroup : runnerGroup;
+            this.runnerGroupTag = !this.$utils.isEmpty(this.runnerGroupTag) && (!this.$utils.isEmpty(this.runnerGroupTag['value']) || this.runnerGroupTag['mappingMode'] == 'notsetup') ? this.runnerGroupTag : runnerGroupTag;
             if (isEdit) {
               this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue); // 执行目标回显
             }

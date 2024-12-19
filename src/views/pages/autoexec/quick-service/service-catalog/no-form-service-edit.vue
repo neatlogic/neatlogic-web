@@ -92,6 +92,9 @@
             runnerGroupTag = val;
           }"
         ></RunnerGroupTagSetting>
+        <div class="box-block text-tip">
+          {{ $t('page.autoexeccomboprunnergrouptagtips') }}
+        </div>
       </TsFormItem>
     </div>
     <div v-if="hasServiceValue.runnerGroup" :class="getClassByBorder">
@@ -105,7 +108,12 @@
           <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.runnerGroup)" @click.stop="handleUnfoldAndFold('runnerGroup')"></span>
         </template>
       </div>
-      <TsFormItem v-show="unfoldAndFold.runnerGroup" :label="$t('page.autoexeccomboprunnergrouplabel')" :required="true">
+      <TsFormItem
+        v-if="dataConfig && dataConfig.existRunnerOrSqlExecMode && runnerGroup"
+        v-show="unfoldAndFold.runnerGroup"
+        :label="$t('page.autoexeccomboprunnergrouplabel')"
+        :required="true"
+      >
         <RunnerGroupSetting
           ref="ref_runnerGroup"
           class="grid"
@@ -118,6 +126,12 @@
           }"
         ></RunnerGroupSetting>
       </TsFormItem>
+      <div v-if="dataConfig && !dataConfig.existRunnerOrSqlExecMode" class="box-block text-tip desc-info">
+        {{ $t('message.autoexec.norunnerphaserunnergrouptips') }}
+      </div>
+      <div v-else class="box-block text-tip desc-info">
+        {{ $t('page.autoexeccomboprunnergrouptips') }}
+      </div>
     </div>
     <div v-if="hasServiceValue.executeNodeConfig" :class="getClassByBorder">
       <div :class="getFlexClass(unfoldAndFold.executeNodeConfig)">
@@ -652,6 +666,10 @@ export default {
 .no-form-service-container {
   .grid {
     display: grid;
+  }
+  .desc-info {
+    margin-top: -10px;
+    margin-left: 120px;
   }
 }
 </style>
