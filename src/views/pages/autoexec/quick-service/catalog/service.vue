@@ -36,7 +36,7 @@
         ></TsFormRadio>
       </TsFormItem>
     </div>
-    <div v-if="hasCombopId" class="radius-lg bg-op padding mt-nm">
+    <div v-if="hasCombopId && needRoundCount" class="radius-lg bg-op padding mt-nm">
       <div class="flex-between" :class="unfoldAndFold.roundCountForm ? 'mb-sm' : ''">
         <span>{{ $t('term.autoexec.batchsetting') }}</span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.roundCountForm ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('roundCountForm')"></span>
@@ -82,6 +82,129 @@
       </TsFormItem>
     </div>
     <div v-if="hasCombopId" class="radius-lg bg-op padding mt-nm">
+      <div class="flex-between" :class="unfoldAndFold.runnerGroupTag ? 'mb-sm' : ''">
+        <span>{{ $t('term.deploy.actuatorgrouptag') }}</span>
+        <span class="tsfont-down cursor" :class="unfoldAndFold.runnerGroupTag ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('runnerGroupTag')"></span>
+      </div>
+      <TsFormItem v-show="unfoldAndFold.runnerGroupTag" :label="$t('term.deploy.actuatorgrouptag')" :required="hasRequired(runnerGroupTag.mappingMode)">
+        <div id="positioningkey_runnerGroupTag" :class="runnerGroupTag.mappingMode == 'formattr' || runnerGroupTag.mappingMode == 'constant' ? 'form-wrap-box' : ''">
+          <template v-if="runnerGroupTag.mappingMode == 'runtimeparam'">
+            <RunnerGroupTagSetting
+              ref="runnerGroupTag"
+              :config="runnerGroupTag"
+              :readonly="true"
+              :runtimeParamList="paramsList"
+            ></RunnerGroupTagSetting>
+          </template>
+          <template v-else>
+            <TsFormSelect
+              ref="protocolmappingMode"
+              v-model="runnerGroupTag.mappingMode"
+              :dataList="mappingModeDataList"
+              :clearable="false"
+              transfer
+              border="border"
+              :width="runnerGroupTag.mappingMode == 'formattr' || runnerGroupTag.mappingMode == 'constant' ? 100 : '100%'"
+              :class="runnerGroupTag.mappingMode == 'formattr' || runnerGroupTag.mappingMode == 'constant' ? 'pr-sm' : ''"
+              :validateList="['required']"
+              @change="(mappingMode) => changeMappingMode(mappingMode, 'runnerGroupTag')"
+            ></TsFormSelect>
+            <div v-if="runnerGroupTag.mappingMode==='constant'">
+              <RunnerGroupTagSetting
+                ref="runnerGroupTag"
+                :config="runnerGroupTag"
+                :runtimeParamList="paramsList"
+                :isCreateJob="true"
+                :disabled="false"
+                @change="(val)=> { runnerGroupTag = val }"
+              ></RunnerGroupTagSetting>
+            </div>
+            <TsFormSelect
+              v-else-if="runnerGroupTag.mappingMode == 'formattr'"
+              ref="runnerGroupTag"
+              v-model="runnerGroupTag.value"
+              :dataList="formDataList"
+              valueName="uuid"
+              textName="label"
+              transfer
+              border="border"
+              class="pr-sm form-li-width"
+              :validateList="['required']"
+            ></TsFormSelect>
+          </template>
+        </div>
+        <div class="box-block text-tip">
+          {{ $t('page.autoexeccomboprunnergrouptagtips') }}
+        </div>
+      </TsFormItem>
+    </div>
+    <div v-if="hasCombopId" class="radius-lg bg-op padding mt-nm">
+      <div class="flex-between" :class="unfoldAndFold.runnerGroup ? 'mb-sm' : ''">
+        <span>{{ $t('page.autoexeccomboprunnergrouplabel') }}</span>
+        <span class="tsfont-down cursor" :class="unfoldAndFold.runnerGroup ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('runnerGroup')"></span>
+      </div>
+      <TsFormItem v-show="unfoldAndFold.runnerGroup" :label="$t('page.autoexeccomboprunnergrouplabel')" :required="hasRequired(runnerGroup.mappingMode)">
+        <div id="positioningkey_runnerGroup">
+          <template v-if="dataConfig && dataConfig.existRunnerOrSqlExecMode && runnerGroup">
+            <template v-if="runnerGroup.mappingMode==='runtimeparam'">
+              <RunnerGroupSetting
+                ref="runnerGroup"
+                :config="runnerGroup"
+                :runtimeParamList="runtimeParamList"
+                :isCreateJob="true"
+                :disabled="false"
+              >
+              </RunnerGroupSetting>
+            </template>
+            <div :class="runnerGroup.mappingMode==='constant' ? 'form-wrap-box' : ''">
+              <TsFormSelect
+                ref="executeNodemappingMode"
+                v-model="runnerGroup.mappingMode"
+                :dataList="mappingModeDataList"
+                :clearable="false"
+                transfer
+                border="border"
+                :width="runnerGroup.mappingMode == 'formattr' || runnerGroup.mappingMode == 'constant' ? 100 : '100%'"
+                :class="runnerGroup.mappingMode == 'formattr' || runnerGroup.mappingMode == 'constant' ? 'pr-sm' : ''"
+                :validateList="['required']"
+                @change="(mappingMode) => changeMappingMode(mappingMode, 'runnerGroup')"
+              ></TsFormSelect>
+              <template v-if="runnerGroup.mappingMode==='constant'">
+                <RunnerGroupSetting
+                  ref="runnerGroup"
+                  :config="runnerGroup"
+                  :runtimeParamList="runtimeParamList"
+                  :isCreateJob="true"
+                  :disabled="false"
+                ></RunnerGroupSetting>
+              </template>
+              <TsFormSelect
+                v-else-if="runnerGroup.mappingMode == 'formattr'"
+                ref="runnerGroup"
+                v-model="runnerGroup.value"
+                :dataList="formDataList"
+                valueName="uuid"
+                textName="label"
+                transfer
+                border="border"
+                class="pr-sm form-li-width"
+                :validateList="['required']"
+              ></TsFormSelect>
+            </div>
+            <div v-if="runnerGroup.mappingMode=='constant'" class="text-tip tips">
+              {{ $t('term.autoexec.runnergroupprocesstips') }}
+            </div>
+          </template>
+          <div v-else-if="dataConfig && !dataConfig.existRunnerOrSqlExecMode" class="box-block text-tip">
+            {{ $t('message.autoexec.norunnerphaserunnergrouptips') }}
+          </div>
+          <div v-else class="box-block text-tip pt-sm">
+            {{ $t('page.autoexeccomboprunnergrouptips') }}
+          </div>
+        </div>
+      </TsFormItem>
+    </div>
+    <div v-if="hasCombopId && needExecuteNode" class="radius-lg bg-op padding mt-nm">
       <div class="flex-between" :class="unfoldAndFold.executeTarget ? 'mb-sm' : ''">
         <span>{{ $t('term.autoexec.executetarget') }}</span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.executeTarget ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('executeTarget')"></span>
@@ -132,13 +255,13 @@
         </div>
       </TsFormItem>
     </div>
-    <div v-if="hasCombopId" class="radius-lg bg-op padding mt-nm">
+    <div v-if="hasCombopId && (needExecuteUser || needProtocol)" class="radius-lg bg-op padding mt-nm">
       <div class="flex-between" :class="unfoldAndFold.executeAccountForm ? 'mb-sm' : ''">
         <span>{{ $t('term.autoexec.executeaccount') }}</span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.executeAccountForm ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('executeAccountForm')"></span>
       </div>
       <div v-show="unfoldAndFold.executeAccountForm">
-        <TsFormItem :label="$t('page.protocol')" :required="hasRequired(protocol.mappingMode)">
+        <TsFormItem v-if="needProtocol" :label="$t('page.protocol')" :required="hasRequired(protocol.mappingMode)">
           <div id="positioningkey_protocol" :class="protocol.mappingMode == 'formattr' || protocol.mappingMode == 'constant' ? 'form-wrap-box' : ''">
             <TsFormSelect
               ref="protocolmappingMode"
@@ -175,7 +298,7 @@
             ></TsFormSelect>
           </div>
         </TsFormItem>
-        <TsFormItem :label="$t('page.executeuser')" :required="hasRequired(executeUser.mappingMode)">
+        <TsFormItem v-if="needExecuteUser" :label="$t('page.executeuser')" :required="hasRequired(executeUser.mappingMode)">
           <div id="positioningkey_executeUser" :class="executeUser.mappingMode == 'formattr' || executeUser.mappingMode == 'constant' ? 'form-wrap-box' : ''">
             <template v-if="executeUser.mappingMode == 'runtimeparam'">
               <!-- 执行用户映射关系是自动化设置的作业参数时，设置只读样式 -->
@@ -292,6 +415,7 @@
 <script>
 import catalogmixin from './catalogmixin.js';
 import Component from '@/views/pages/autoexec/components/param/view/index.js';
+import AddTarget from '@/views/pages/autoexec/detail/runnerDetail/add-target.vue';
 export default {
   name: '',
   components: {
@@ -300,8 +424,10 @@ export default {
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    AddTarget: () => import('@/views/pages/autoexec/detail/runnerDetail/add-target.vue'),
+    AddTarget,
     ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
+    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
+    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
     ExpiredReasonAlert: () => import('../service-catalog/expired-reason-alert'), // 服务失效原因提示列表
     ...Component
   },
@@ -318,7 +444,9 @@ export default {
         roundCountForm: true,
         executeTarget: true,
         executeAccountForm: true,
-        jobParam: true
+        jobParam: true,
+        runnerGroupTag: true, // 执行器组标签
+        runnerGroup: true // 执行器组
       },
       formUuid: '',
       valueConfig: {}, //所有值对应的集合
@@ -330,8 +458,22 @@ export default {
         isActive: 0,
         citeForm: 0
       }, // 基本信息
-      roundCount: {mappingMode: 'constant', value: 2}, // 分批数量
-      protocol: {mappingMode: 'constant', value: null}, // 执行目标
+      roundCount: {
+        mappingMode: 'constant',
+        value: 2
+      }, // 分批数量
+      runnerGroup: {
+        mappingMode: 'constant',
+        value: '-1'
+      },
+      runnerGroupTag: {
+        mappingMode: 'constant',
+        value: null
+      },
+      protocol: {
+        mappingMode: 'constant',
+        value: null
+      }, // 执行目标
       executeUser: {
         // 执行账户
         mappingMode: 'constant',
@@ -348,8 +490,10 @@ export default {
       executeValue: {},
       paramsList: [],
       stepList: [],
-      needExecuteUser: '',
-      needProtocol: '',
+      needExecuteNode: false,
+      needExecuteUser: false,
+      needProtocol: false,
+      needRoundCount: false, // 是否需要显示分批数量，组合工具设置分批数量，这里不需要再次设置分批数量
       filterSearchValue: {},
       formDataList: [],
       nociteFormMappingModeList: [
@@ -525,7 +669,8 @@ export default {
       executeUserForm: {},
       jobParamValue: {}, // 作业参数值
       jobParamsMappingMode: {}, // 作业参数映射关系
-      locationKey: ''
+      locationKey: '',
+      dataConfig: null
     };
   },
   beforeCreate() {},
@@ -586,15 +731,9 @@ export default {
     },
     defaultIniData() {
       // 默认初始值
-      this.unfoldAndFold = {
-        // 展开收起
-        scenarioForm: true,
-        basicForm: true,
-        roundCountForm: true,
-        executeTarget: true,
-        executeAccountForm: true,
-        jobParam: true
-      };
+      for (let key in this.unfoldAndFold) {
+        this.unfoldAndFold[key] = true;
+      }
       this.combopId = null; // 自动化组合工具id
       this.hasCombopId = false; // 是否有组合工具id
       this.basicFormValue = {isActive: 0, citeForm: 0};
@@ -612,6 +751,8 @@ export default {
       this.scenarioId = null; // 场景id
       this.needExecuteUser = false;
       this.needProtocol = false;
+      this.needRoundCount = false;
+      this.needExecuteNode = false;
       this.scenarioList = [];
       this.valueConfig = {}; //所有值对应的集合
       this.itemConfig = {};//所以组件对应的渲染config集合
@@ -619,6 +760,8 @@ export default {
       this.protocol = {mappingMode: 'constant', value: null}; // 执行目标
       this.executeUser = {mappingMode: 'constant', value: ''};// 执行用户
       this.executeNode = {mappingMode: 'constant', value: null};// 连接协议
+      this.runnerGroup = {mappingMode: 'constant', value: '-1'}; // 执行器组
+      this.runnerGroupTag = {mappingMode: 'constant', value: null}; // 执行器组标签
       this.executeConfig = {};
       this.executeValue = {};
       this.filterSearchValue = {};
@@ -658,6 +801,8 @@ export default {
       await this.$api.autoexec.catalogManage.getSeriveInfo({id: this.id}).then(async res => {
         if (res.Status == 'OK') {
           let itemValue = res.Return;
+          let {config} = res.Return || {};
+          let {executeNodeConfig = {}, runtimeParamList = []} = config || {};
           this.serviceData = itemValue;
           itemValue.description = this.escape2Html(itemValue.description);
           this.$set(this.basicFormValue, 'name', itemValue.name);
@@ -669,12 +814,12 @@ export default {
           this.$set(this.basicFormValue, 'formUuid', (itemValue.formUuid || ''));
           this.hasCombopId = !!itemValue.combopId;
           this.combopId = itemValue.combopId || null;
-          if (itemValue.config) {
-            for (let key in itemValue.config) {
-              this[key] = itemValue.config[key];
+          if (config) {
+            for (let key in config) {
+              this[key] = config[key]; // 分批数量，执行目标，执行器组标签，执行器组
             }
-            if (itemValue.config && !this.$utils.isEmpty(itemValue.config.runtimeParamList)) {
-              itemValue.config.runtimeParamList.forEach((item) => {
+            if (config && !this.$utils.isEmpty(runtimeParamList)) {
+              runtimeParamList.forEach((item) => {
                 if (item.key) {
                   this.$set(this.jobParamValue, [item.key], item.value);
                   if (item.mappingMode) { // 作业参数映射关系值回显
@@ -683,11 +828,11 @@ export default {
                 }
               });
             }
-            if (itemValue.config.executeNodeConfig.mappingMode == 'constant') {
-              this.filterSearchValue = itemValue.config.executeNodeConfig.value || {}; // 执行目标值回显
+            if (executeNodeConfig && (executeNodeConfig.mappingMode == 'constant')) {
+              this.filterSearchValue = executeNodeConfig.value || {}; // 执行目标值回显
             } else {
-              this.$set(this.executeNode, 'mappingMode', itemValue.config.executeNodeConfig.mappingMode);
-              this.$set(this.executeNode, 'value', itemValue.config.executeNodeConfig.value);
+              this.$set(this.executeNode, 'mappingMode', executeNodeConfig.mappingMode);
+              this.$set(this.executeNode, 'value', executeNodeConfig.value);
             }
           }
           this.basicFormItemList && this.basicFormItemList.forEach((item) => {
@@ -847,11 +992,34 @@ export default {
             mappingMode: this.executeNode.mappingMode,
             value: this.executeNode.value || executeNode
           },
+          runnerGroup: this.runnerGroup,
+          runnerGroupTag: this.runnerGroupTag,
           runtimeParamList: runtimeParamList
         }
       };
       if (params && params.hasOwnProperty('citeForm')) {
         delete params.citeForm;
+      }
+      // 组合工具已设置好的参数，这里不需要传递给后端
+      if (!this.needRoundCount) {
+        delete params.config.roundCount;
+      }
+      if (!this.needExecuteNode) {
+        delete params.config.executeNodeConfig;
+      }
+      if (!this.needExecuteUser) {
+        delete params.config.executeUser;
+      }
+      if (!this.needProtocol) {
+        delete params.config.protocol;
+      }
+      if (this.runnerGroup && this.runnerGroup.mappingMode == 'runtimeparam') {
+        // 组合工具，执行器组如果是作业参数，不需要传递给后端
+        delete params.config.runnerGroup;
+      }
+      if (this.runnerGroupTag && this.runnerGroupTag.mappingMode == 'runtimeparam') {
+        // 组合工具，执行器组标签如果是作业参数，不需要传递给后端
+        delete params.config.runnerGroupTag;
       }
       if (!this.valid()) {
         return false;
@@ -891,13 +1059,21 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             dataInfo = res.Return;
-            this.stepList = dataInfo.config.combopPhaseList;
-            this.paramsList = dataInfo.config.runtimeParamList || [];
-            this.needExecuteNode = dataInfo.needExecuteNode;
-            this.needExecuteUser = dataInfo.needExecuteUser;
-            this.needProtocol = dataInfo.needProtocol;
-            this.needRoundCount = dataInfo.needRoundCount;
-            this.executeConfig = dataInfo.config.executeConfig || {};
+            const {config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false } = res.Return || {};
+            const {combopPhaseList = [], runtimeParamList = [], executeConfig = {}, scenarioList = []} = config;
+            const {runnerGroup = '', runnerGroupTag = {}} = executeConfig;
+            this.dataConfig = dataInfo;
+            this.stepList = combopPhaseList;
+            this.paramsList = runtimeParamList || [];
+            this.needExecuteNode = needExecuteNode;
+            this.needExecuteUser = needExecuteUser;
+            this.needProtocol = needProtocol;
+            this.needRoundCount = needRoundCount;
+            this.executeConfig = executeConfig || {};
+            this.runnerGroup = runnerGroup || this.runnerGroup;
+            this.runnerGroupTag = !this.$utils.isEmpty(this.runnerGroupTag) && !this.$utils.isEmpty(this.runnerGroupTag['value']) ? this.runnerGroupTag : runnerGroupTag;
+            console.log('11111', this.runnerGroupTag, runnerGroupTag);
+            
             if (isEdit) {
               this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue); // 执行目标回显
             }
@@ -909,9 +1085,7 @@ export default {
               this.executeUserForm.isHidden = !this.needExecuteUser;
             }
             // 场景
-            if (dataInfo && dataInfo.config && dataInfo.config.scenarioList) {
-              this.scenarioList = dataInfo.config.scenarioList;
-            }
+            this.scenarioList = scenarioList;
             if (!isEdit) {
               this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
               if (this.executeConfig.roundCount == 0 || !this.$utils.isEmpty(this.executeConfig.roundCount)) {
@@ -977,7 +1151,7 @@ export default {
           if (mappingMode == 'notsetup') {
             // 作业参数必填，但是映射关系是不设置时，需要把必填去掉
             if (key == 'file' || key == 'node') {
-              this.$set(this.itemConfig[key], 'validateList', []); // 文件.节点，需要清空必填参数
+              this.$set(this.itemConfig[key], 'validateList', []); // 文件节点，需要清空必填参数
             }
             return false;
           } else {

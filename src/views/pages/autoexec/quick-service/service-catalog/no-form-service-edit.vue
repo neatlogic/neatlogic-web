@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isReady">
+  <div v-if="isReady" class="no-form-service-container">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <ExpiredReasonAlert :serviceData="defaultData"></ExpiredReasonAlert>
     <div :class="getClassByBorder">
@@ -15,7 +15,7 @@
       </div>
       <TsFormItem v-show="unfoldAndFold.jobName" label="" :labelWidth="0">
         <TsFormInput
-          ref="jobName"
+          ref="ref_jobName"
           v-model="jobName"
           border="border"
           v-bind="jobNameForm"
@@ -36,7 +36,7 @@
       </div>
       <TsFormItem v-show="unfoldAndFold.scenarioForm" :label="$t('page.scene')" :required="true">
         <TsFormRadio
-          ref="scenarioForm"
+          ref="ref_scenarioForm"
           v-model="scenarioId"
           :dataList="scenarioList"
           valueName="scenarioId"
@@ -60,12 +60,63 @@
       </div>
       <TsFormItem v-show="unfoldAndFold.roundCount" :label="$t('term.autoexec.batchquantity')" :required="true">
         <TsFormSelect
-          ref="roundCount"
+          ref="ref_roundCount"
           v-model="roundCount"
           v-bind="roundCountForm"
           transfer
           @change="handleChange"
         ></TsFormSelect>
+      </TsFormItem>
+    </div>
+    <div v-if="hasServiceValue.runnerGroupTag" :class="getClassByBorder">
+      <div :class="getFlexClass(unfoldAndFold.runnerGroupTag)">
+        <template v-if="border !='border'">
+          <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.runnerGroupTag)" @click.stop="handleUnfoldAndFold('runnerGroupTag')"></span>
+          <Divider orientation="left" style="border-collapse: initial;"><span>{{ $t('term.deploy.actuatorgrouptag') }}</span></Divider>
+        </template>
+        <template v-else>
+          <span>{{ $t('term.deploy.actuatorgrouptag') }}</span>
+          <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.runnerGroupTag)" @click.stop="handleUnfoldAndFold('runnerGroupTag')"></span>
+        </template>
+      </div>
+      <TsFormItem v-show="unfoldAndFold.runnerGroupTag" :label="$t('term.deploy.actuatorgrouptag')" :required="true">
+        <RunnerGroupTagSetting
+          ref="ref_runnerGroupTag"
+          class="grid"
+          :config="runnerGroupTag"
+          :runtimeParamList="runtimeParamList"
+          :isCreateJob="true"
+          :disabled="false"
+          :isRequired="false"
+          @change="(val)=> {
+            runnerGroupTag = val;
+          }"
+        ></RunnerGroupTagSetting>
+      </TsFormItem>
+    </div>
+    <div v-if="hasServiceValue.runnerGroup" :class="getClassByBorder">
+      <div :class="getFlexClass(unfoldAndFold.runnerGroup)">
+        <template v-if="border !='border'">
+          <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.runnerGroup)" @click.stop="handleUnfoldAndFold('runnerGroup')"></span>
+          <Divider orientation="left" style="border-collapse: initial;"><span>{{ $t('page.autoexeccomboprunnergrouplabel') }}</span></Divider>
+        </template>
+        <template v-else>
+          <span>{{ $t('page.autoexeccomboprunnergrouplabel') }}</span>
+          <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.runnerGroup)" @click.stop="handleUnfoldAndFold('runnerGroup')"></span>
+        </template>
+      </div>
+      <TsFormItem v-show="unfoldAndFold.runnerGroup" :label="$t('page.autoexeccomboprunnergrouplabel')" :required="true">
+        <RunnerGroupSetting
+          ref="ref_runnerGroup"
+          class="grid"
+          :config="runnerGroup"
+          :runtimeParamList="runtimeParamList"
+          :isCreateJob="true"
+          :disabled="false"
+          @change="( val) => {
+            runnerGroup = val;
+          }"
+        ></RunnerGroupSetting>
       </TsFormItem>
     </div>
     <div v-if="hasServiceValue.executeNodeConfig" :class="getClassByBorder">
@@ -83,7 +134,7 @@
         <TsFormItem v-if="needExecuteNode" :label="$t('term.autoexec.executetarget')" :required="true">
           <AddTarget
             :id="combopId"
-            ref="executeNodeConfig"
+            ref="ref_executeNodeConfig"
             :value="executeConfig ? executeConfig.executeNodeConfig:{}"
             :canEdit="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify == 'runtime':true"
             :type="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify: 'runtime'"
@@ -118,7 +169,7 @@
       <div v-show="unfoldAndFold.protocol">
         <TsFormItem v-if="hasServiceValue.protocol" :label="$t('page.protocol')" :required="true">
           <TsFormSelect
-            ref="protocol"
+            ref="ref_protocol"
             v-model="protocol"
             v-bind="protocolForm"
             transfer
@@ -127,7 +178,7 @@
         </TsFormItem>
         <TsFormItem v-if="hasServiceValue.executeUser" :label="$t('term.autoexec.executeaccount')" :required="true">
           <TsFormInput
-            ref="executeUser"
+            ref="ref_executeUser"
             v-model="executeUser"
             v-bind="executeUserForm"
             border="border"
@@ -152,7 +203,7 @@
           <TsFormItem :label="item.name" :required="item.isRequired ? true : false">
             <Component
               :is="handleType(item.type)"
-              ref="jobParam"
+              ref="ref_jobParam"
               v-model="valueConfig[item.key]"
               style="margin-left: 4px;"
               :isRequired="item.isRequired"
@@ -186,6 +237,7 @@
 <script>
 import serviceMixin from '@/views/pages/autoexec/quick-service/service-catalog/service-mixin.js';
 import Component from '@/views/pages/autoexec/components/param/view/index.js';
+import { ref } from 'vue';
 export default {
   name: '',
   components: {
@@ -198,6 +250,8 @@ export default {
     SaveSetting: () => import('@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'),
     OtherParam: () => import('@/views/pages/autoexec/quick-service/service-catalog/other-params'), // 其他参数
     ExpiredReasonAlert: () => import('@/views/pages/autoexec/quick-service/service-catalog/expired-reason-alert'), // 服务失效原因提示列表
+    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
+    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
     ...Component
   },
   mixins: [serviceMixin],
@@ -215,7 +269,9 @@ export default {
         executeNodeConfig: true,
         protocol: true,
         jobParam: true,
-        otherParam: true // 其他参数
+        otherParam: true, // 其他参数
+        runnerGroupTag: true, // 执行器组标签
+        runnerGroup: true // 执行器组
       },
       hasServiceValue: {
         // 是否服务那边有值
@@ -224,7 +280,9 @@ export default {
         protocol: false,
         executeUser: false,
         executeNodeConfig: false,
-        runtimeParamList: false
+        runtimeParamList: false,
+        runnerGroupTag: false, // 执行器组标签
+        runnerGroup: false // 执行器组
       },
       valueConfig: {}, //所有值对应的集合
       itemConfig: {}, //所以组件对应的渲染config集合
@@ -236,6 +294,8 @@ export default {
       executeUser: '', // 执行用户
       executeNodeConfig: {}, // 执行目标
       scenarioList: [], //场景列表
+      runnerGroup: {},
+      runnerGroupTag: {},
       dataConfig: {},
       paramValue: {},
       executeConfig: {},
@@ -243,9 +303,10 @@ export default {
       runtimeParamList: [],
       stepList: [],
       paramKeyList: [],
-      needExecuteNode: '',
-      needExecuteUser: '',
-      needProtocol: '',
+      needRoundCount: false, // 是否需要显示分批数量
+      needExecuteNode: false, // 是否需要显示执行目标
+      needExecuteUser: false, // 是否需要显示执行用户
+      needProtocol: false, // 是否需要显示协议
       filterSearchValue: {},
       jobNameForm: {
         maxlength: 50,
@@ -323,25 +384,12 @@ export default {
     },
     defaultInitData() {
       // 默认初始值
-      this.unfoldAndFold = {
-        // 展开收起
-        jobName: true, // 作业名称
-        scenarioForm: true, // 场景
-        roundCount: true, // 分批数量
-        executeNodeConfig: true, // 执行目标
-        protocol: true, // 连接协议
-        jobParam: true, // 作业参数
-        otherParam: true // 其他参数
-      };
-      this.hasServiceValue = {
-        // 是否服务那边有值
-        scenarioId: false,
-        roundCount: false,
-        protocol: false,
-        executeUser: false,
-        executeNodeConfig: false,
-        runtimeParamList: false
-      };
+      for (let key in this.unfoldAndFold) {
+        this.unfoldAndFold[key] = true;
+      }
+      for (const key in this.hasServiceValue) {
+        this.hasServiceValue[key] = false;
+      }
       this.scenarioId = null; // 场景id
       this.combopId = null; // 自动化组合工具id
       this.valueConfig = {}; //所有值对应的集合
@@ -401,17 +449,20 @@ export default {
         .getActionDetail({id: this.combopId}).then((res) => {
           if (res.Status == 'OK') {
             this.dataConfig = res.Return;
-            this.stepList = this.dataConfig.config.combopPhaseList;
-            this.needExecuteNode = this.dataConfig.needExecuteNode;
-            this.executeConfig = this.dataConfig.config.executeConfig || {};
+            let {config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false} = this.dataConfig || {};
+            let {executeConfig = {}, scenarioList = [], combopPhaseList = []} = config || {};
+            let {executeUser: configexecuteUser, protocolId = null} = executeConfig || {};
+            this.stepList = combopPhaseList;
+            this.needExecuteNode = needExecuteNode;
+            this.needExecuteUser = needExecuteUser;
+            this.needProtocol = needProtocol;
+            this.needRoundCount = needRoundCount;
+            this.executeConfig = executeConfig;
             this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue); // 执行目标回显
             this.runtimeParamList = this.dataConfig.config.runtimeParamList.filter((item) => {
               return this.paramKeyList.includes(item.key);
             });
             let {executeUser = '', protocol = null} = this.serviceData || {};
-            let {config = {}} = this.dataConfig || {};
-            let {executeConfig = {}, scenarioList = []} = config || {};
-            let {executeUser: configexecuteUser, protocolId = null} = executeConfig || {};
             // 连接协议和执行账户回显
             if (executeUser || configexecuteUser) {
               this.executeValue['executeUser'] = executeUser || configexecuteUser;
@@ -460,29 +511,6 @@ export default {
         this.unfoldAndFold[moduleName] = !this.unfoldAndFold[moduleName];
       }
     },
-    valid() {
-      let isValid = true;
-      let formList = ['jobName', 'roundCount', 'executeUser', 'executeNodeConfig', 'protocol'];
-      let paramFormList = this.$refs.jobParam || [];
-      !this.$utils.isEmpty(formList) && formList.forEach((item) => {
-        if (this.$refs[item] && !this.$refs[item].valid()) {
-          if (!this.unfoldAndFold[item]) {
-            this.handleUnfoldAndFold(item); // 验证不通过，打开对应收起的模块
-          }
-          isValid = false;
-        }
-      });
-      !this.$utils.isEmpty(paramFormList) && paramFormList.forEach((item) => {
-        // 作业参数必填校验
-        if (item && !item.valid()) {
-          if (!this.unfoldAndFold['jobParam']) {
-            this.handleUnfoldAndFold('jobParam');
-          }
-          isValid = false;
-        }
-      });
-      return isValid;
-    },
     getSaveData(data) {
       let params = {
         serviceId: this.defaultData.id,
@@ -516,7 +544,34 @@ export default {
       if (!this.$utils.isEmpty(runtimeParamMap)) {
         params.runtimeParamMap = runtimeParamMap;
       }
+      if (this.runnerGroup) {
+        params.runnerGroup = this.runnerGroup;
+      }
+      if (this.runnerGroupTag) {
+        params.runnerGroupTag = this.runnerGroupTag;
+      }
       return params;
+    },
+    valid() {
+      let isValid = true;
+      let refs = this.$refs;
+      for (let key in refs) {
+        let refName = key ? key.split('_')[1] : '';
+        if (refs[key] instanceof Array && refs[key].length) {
+          refs[key].forEach((item) => {
+            if (item && item.valid && !item.valid()) {
+              isValid = false;
+              this.handleUnfoldAndFold(refName);
+            }
+          });
+        } else {
+          if (refs[key] && refs[key].valid && !refs[key].valid()) {
+            isValid = false;
+            this.handleUnfoldAndFold(refName);
+          }
+        }
+      }
+      return isValid;
     },
     saveService() {
       // 保存
@@ -594,4 +649,9 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.no-form-service-container {
+  .grid {
+    display: grid;
+  }
+}
 </style>

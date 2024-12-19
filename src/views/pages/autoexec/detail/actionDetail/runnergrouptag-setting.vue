@@ -31,6 +31,7 @@
           v-bind="runnerGroupTagConfig"
           :disabled="disabled"
           :clearable="true"
+          :validateList="isRequired ? [] : validateList"
           @on-change="updateRunnerGroupText"
         >
         </TsFormSelect>
