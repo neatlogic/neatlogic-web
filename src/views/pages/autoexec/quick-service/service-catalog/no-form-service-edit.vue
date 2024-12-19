@@ -251,7 +251,6 @@
 <script>
 import serviceMixin from '@/views/pages/autoexec/quick-service/service-catalog/service-mixin.js';
 import Component from '@/views/pages/autoexec/components/param/view/index.js';
-import { ref } from 'vue';
 export default {
   name: '',
   components: {
@@ -426,7 +425,7 @@ export default {
       let defaultData = this.$utils.deepClone(this.defaultData);
       let serviceData = this.$utils.deepClone(this.serviceData);
       let {config = {}, combopId, combopName} = defaultData || {};
-      let {executeNodeConfig = {}} = config || {};
+      let {executeNodeConfig = {}, runtimeParamList = []} = config || {};
       let {value = ''} = executeNodeConfig || {};
       if (!this.$utils.isEmpty(defaultData)) {
         if (config && !this.$utils.isEmpty(config)) {
@@ -436,9 +435,9 @@ export default {
               this.$set(this.hasServiceValue, [key], true);
             }
           }
-          if (config && !this.$utils.isEmpty(config.runtimeParamList)) {
+          if (!this.$utils.isEmpty(runtimeParamList)) {
             // 作业参数映射关系为不设置时，需要把对应作业参数显示出来
-            config.runtimeParamList.forEach((item) => {
+            runtimeParamList.forEach((item) => {
               if (item && item.mappingMode == 'notsetup') {
                 this.$set(this.hasServiceValue, 'runtimeParamList', true);
               }
@@ -459,6 +458,7 @@ export default {
       }
     },
     getCombopDetail() {
+      // 获取自动化组合工具详情
       return this.$api.autoexec.action
         .getActionDetail({id: this.combopId}).then((res) => {
           if (res.Status == 'OK') {
