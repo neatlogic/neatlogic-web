@@ -204,15 +204,16 @@ export default {
     deleteItem(item) {
       let _this = this;
       this.$createDialog({
-        title: this.$t('page.warning'),
-        content: this.$t('dialog.content.unbindconfirm'),
+        title: _this.$t('page.warning'),
+        content: _this.$t('dialog.content.unbindconfirm'),
         btnType: 'error',
         'on-ok': function(vnode) {
           let data = {
-            processTaskId: item.id
+            processTaskId: _this.processTaskId,
+            repeatProcessTaskId: item.id
           };
           _this.$api.process.processtask.deleteRepeat(data).then(res => {
-            _this.$Message.success(this.$t('message.executesuccess'));
+            _this.$Message.success(_this.$t('message.executesuccess'));
             vnode.isShow = false;
             _this.getRepeatList();
           });
