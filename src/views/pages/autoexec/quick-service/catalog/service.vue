@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="service-container">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <ExpiredReasonAlert :serviceData="serviceData" type="location" @click="toJobParamLocation"></ExpiredReasonAlert>
     <div class="radius-lg bg-op padding">
@@ -12,7 +12,17 @@
         ref="basicForm"
         v-model="basicFormValue"
         :item-list="basicFormItemList"
-      ></TsForm>
+      >
+        <template v-slot:combopId>
+          <div class="grid">
+            <TsFormSelect
+              v-model="basicFormValue.combopId"
+              v-bind="combopConfig"
+            ></TsFormSelect>
+            <span v-if="basicFormValue.combopId" class="tsfont-edit text-action" @click.stop="toActionDetail(basicFormValue.combopId)">{{ $t('page.edit') }}</span>
+          </div>
+        </template>
+      </TsForm>
     </div>
     <div v-if="hasCombopId && (scenarioList.length > 0)" class="radius-lg bg-op padding mt-nm">
       <div class="flex-between" :class="unfoldAndFold.scenarioForm ? 'mb-sm' : ''">
@@ -546,6 +556,20 @@ export default {
         }
       ],
       mappingModeDataList: this.nociteFormMappingModeList,
+      combopConfig: {
+        multiple: false,
+        search: true, // 可以搜索
+        dynamicUrl: '/api/rest/autoexec/combop/executable/list',
+        valueName: 'id',
+        textName: 'name',
+        rootName: 'tbodyList',
+        validateList: ['required'],
+        onChange: (id) => {
+          this.hasCombopId = !!id;
+          this.combopId = id;
+          this.getCombopDetail();
+        }
+      },
       basicFormItemList: [
         {
           type: 'text',
@@ -587,21 +611,9 @@ export default {
           validateList: ['required']
         },
         {
-          type: 'select',
+          type: 'slot',
           name: 'combopId',
-          label: this.$t('term.autoexec.combinationtool'),
-          multiple: false,
-          search: true, // 可以搜索
-          dynamicUrl: '/api/rest/autoexec/combop/executable/list',
-          valueName: 'id',
-          textName: 'name',
-          rootName: 'tbodyList',
-          validateList: ['required'],
-          onChange: (id) => {
-            this.hasCombopId = !!id;
-            this.combopId = id;
-            this.getCombopDetail();
-          }
+          label: this.$t('term.autoexec.combinationtool')
         },
         {
           type: 'switch',
@@ -657,7 +669,8 @@ export default {
         allowCreate: true,
         search: true,
         transfer: true,
-        desc: this.$t('term.autoexec.roundcountdescrition')
+        desc: this.$t('term.autoexec.roundcountdescrition'),
+        disabled: false
       },
       protocolForm: {
         multiple: false,
@@ -686,6 +699,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toActionDetail(combopId) {
+      if (combopId) {
+        window.open(HOME + '/autoexec.html#/action-detail?id=' + combopId + '&versionStatus=passed', '_blank');
+      }
+    },
     changejobparamMappingMode(item, key, mappingMode) {
       if (mappingMode == 'isempty' || mappingMode == 'notsetup') {
         // 映射关系为空或者不设置需要清空值
@@ -1060,7 +1078,7 @@ export default {
           if (res.Status == 'OK') {
             dataInfo = res.Return;
             const {config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false } = res.Return || {};
-            const {combopPhaseList = [], runtimeParamList = [], executeConfig = {}, scenarioList = []} = config;
+            const {combopPhaseList = [], runtimeParamList = [], executeConfig = {}, scenarioList = [], defaultScenarioId = null} = config;
             const {runnerGroup = '', runnerGroupTag = {}} = executeConfig;
             this.dataConfig = dataInfo;
             this.stepList = combopPhaseList;
@@ -1085,6 +1103,7 @@ export default {
             // 场景
             this.scenarioList = scenarioList;
             if (!isEdit) {
+              // 主要是为了解决流程管理，服务作为自动化的时候，会把值清空
               this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
               if (this.executeConfig.roundCount == 0 || !this.$utils.isEmpty(this.executeConfig.roundCount)) {
                 this.$set(this.roundCount, 'value', this.executeConfig.roundCount);
@@ -1094,16 +1113,37 @@ export default {
               if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
                 this.$set(this.executeConfig, 'executeNodeConfig', {});
               }
-              this.scenarioId = dataInfo.config.defaultScenarioId || null;
-              if (dataInfo.config.executeConfig && !this.$utils.isEmptyObj(dataInfo.config.executeConfig)) {
+              this.scenarioId = defaultScenarioId;
+              if (executeConfig && !this.$utils.isEmptyObj(executeConfig)) {
               // 连接协议和执行账户回显
-                this.executeValue['executeUser'] = dataInfo.config.executeConfig['executeUser'];
-                this.executeValue['protocolId'] = dataInfo.config.executeConfig['protocolId'];
-                if (!this.$utils.isEmpty(dataInfo.config.executeConfig['executeUser'] && dataInfo.config.executeConfig['executeUser']['mappingMode'])) {
-                  this.executeUser.mappingMode = dataInfo.config.executeConfig['executeUser']['mappingMode']; // 执行用户回显
+                this.executeValue['executeUser'] = executeConfig['executeUser'];
+                this.executeValue['protocolId'] = executeConfig['protocolId'];
+                if (!this.$utils.isEmpty(executeConfig['executeUser'] && executeConfig['executeUser']['mappingMode'])) {
+                  this.executeUser.mappingMode = executeConfig['executeUser']['mappingMode']; // 执行用户回显
                 }
-                this.executeUser.value = dataInfo.config.executeConfig['executeUser']['value'];
-                this.protocol.value = dataInfo.config.executeConfig['protocolId'];
+                this.executeUser.value = executeConfig['executeUser']['value'];
+                this.protocol.value = executeConfig['protocolId'];
+              }
+            } else {
+              this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
+              if (this.executeConfig.roundCount == 0 || !this.$utils.isEmpty(this.executeConfig.roundCount)) {
+                this.$set(this.roundCount, 'value', this.executeConfig.roundCount);
+                this.$set(this.roundCountForm, 'disabled', true);
+                this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
+              }
+              if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
+                this.$set(this.executeConfig, 'executeNodeConfig', {});
+              }
+              this.scenarioId = defaultScenarioId;
+              if (executeConfig && !this.$utils.isEmptyObj(executeConfig)) {
+              // 连接协议和执行账户回显
+                this.executeValue['executeUser'] = executeConfig['executeUser'];
+                this.executeValue['protocolId'] = executeConfig['protocolId'];
+                if (!this.$utils.isEmpty(executeConfig['executeUser'] && executeConfig['executeUser']['mappingMode'])) {
+                  this.executeUser.mappingMode = executeConfig['executeUser']['mappingMode']; // 执行用户回显
+                }
+                this.executeUser.value = executeConfig['executeUser'] ? executeConfig['executeUser']['value'] : '';
+                this.protocol.value = executeConfig['protocolId'];
               }
             }
           }
@@ -1217,5 +1257,12 @@ export default {
 }
 .form-li-width {
  width: 100%;
+}
+.service-container {
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 43px;
+    grid-column-gap: 6px;
+  }
 }
 </style>
