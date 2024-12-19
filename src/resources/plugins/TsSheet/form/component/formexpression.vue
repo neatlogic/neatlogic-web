@@ -119,7 +119,7 @@ export default {
     getValueString(data) {
       if (!this.$utils.isEmpty(data)) {
         if (Array.isArray(data)) {
-          return data[0].value;
+          return this.$utils.mapArray(data, 'value');
         } else if (typeof data === 'object') {
           return data.value;
         } else {

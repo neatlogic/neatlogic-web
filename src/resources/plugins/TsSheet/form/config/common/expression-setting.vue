@@ -165,7 +165,7 @@ export default {
     init() {
       let formAttrList = [];
       const processItem = (item, parentLabel) => {
-        if (this.whiteList.includes(item.handler) && (!item.config || !item.config.isMultiple)) {
+        if (this.whiteList.includes(item.handler)) {
           const label = parentLabel ? `${parentLabel}.${item.label}` : item.label;
           formAttrList.push({
             handler: item.handler,
