@@ -2,6 +2,7 @@
   <div>
     <component
       :is="itemMap[conditionItem.type]"
+      :readonly="readonly"
       v-bind="conditionItem.config"
       :value="finalValue"
       @on-change="changeValue"
@@ -17,6 +18,7 @@ export default {
     ...handlers
   },
   props: {
+    readonly: { type: Boolean, default: false },
     conditionItem: { type: Object },
     value: { type: [String, Array] }
   },

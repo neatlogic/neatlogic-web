@@ -1,12 +1,20 @@
 <template>
   <div class="edit-condition">
-    <div class="mb-md">
+    <div v-if="!readonly" class="mb-md">
       <span>
         <a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup()">{{ $t('term.cmdb.rulegroup') }}</a>
       </span>
     </div>
     <div v-for="(conditionGroup, groupIndex) in rule.conditionGroupList" :key="groupIndex" class="group-border">
-      <div class="group-content radius-md" :class="level % 2 === 0 ? 'bg-op' : 'bg-grey'">
+      <div
+        class="radius-md"
+        :class="{
+          'padding-sm': padding,
+          'bg-op': level % 2 === 0,
+          'bg-grey': level % 2 !== 0,
+          'border-base': border
+        }"
+      >
         <div v-for="(conItem, conditionIndex) in conditionGroup.conditionList" :key="conditionIndex" class="condition-content">
           <TsRow :gutter="8">
             <Col span="10">
@@ -14,6 +22,7 @@
                 <TsFormSelect
                   :dataList="attrList"
                   search
+                  :readonly="readonly"
                   :value="conItem.name"
                   :transfer="true"
                   valueName="name"
@@ -30,6 +39,7 @@
             <Col :span="isNeedAttrValue(conItem) ? 4 : 10">
               <div class>
                 <TsFormSelect
+                  :readonly="readonly"
                   :value="conItem.expression"
                   :dataList="getExpressionList(conItem)"
                   :transfer="true"
@@ -45,6 +55,7 @@
             <Col v-if="isNeedAttrValue(conItem)" span="8">
               <ConditionItem
                 v-if="getAttr(conItem)"
+                :readonly="readonly"
                 :value="conItem.valueList"
                 :conditionItem="getAttr(conItem)"
                 @change="
@@ -73,7 +84,7 @@
                 }"
               ></TsFormInput>-->
             </Col>
-            <Col span="2">
+            <Col v-if="!readonly" span="2">
               <div class="btn-group text-grey">
                 <span class="tsfont-plus mr-xs" style="cursor: pointer" @click="addCondition(conditionGroup)"></span>
                 <span
@@ -94,6 +105,7 @@
                     v-model="conditionGroup.conditionRelList[conditionIndex]"
                     :dataList="joinTypeList"
                     :clearable="false"
+                    :readonly="readonly"
                     border="none"
                     size="small"
                     :transfer="true"
@@ -112,6 +124,7 @@
             <div class="condition-joinType text-href">
               <TsFormSelect
                 v-model="rule.conditionGroupRelList[groupIndex]"
+                :readonly="readonly"
                 :dataList="joinTypeList"
                 :clearable="false"
                 border="none"
@@ -123,7 +136,7 @@
           </Col>
         </TsRow>
       </div>
-      <div v-if="rule.conditionGroupList.length > 0" class="delGroup" @click="delConditionGroup(rule, groupIndex)">
+      <div v-if="!readonly && rule.conditionGroupList.length > 0" class="delGroup" @click="delConditionGroup(rule, groupIndex)">
         <i class="tsfont-close-s text-grey"></i>
       </div>
     </div>
@@ -139,8 +152,11 @@ export default {
     ConditionItem: () => import('@/resources/components/Condition/condition-item.vue')
   },
   props: {
+    padding: { type: Boolean, default: true },
+    border: { type: Boolean, default: false },
     level: { type: Number, default: 1 },
     value: { type: Object },
+    readonly: { type: Boolean, default: false },
     attrList: [] //定义属性列表，[{name:'attrname',label:'属性名称',url:'xxx',dataList:[{value:'value',text:'text'}],expressionList:['equal','like']}]
   },
   data() {
