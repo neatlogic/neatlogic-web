@@ -79,7 +79,7 @@
           <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.runnerGroupTag)" @click.stop="handleUnfoldAndFold('runnerGroupTag')"></span>
         </template>
       </div>
-      <TsFormItem v-show="unfoldAndFold.runnerGroupTag" :label="$t('term.deploy.actuatorgrouptag')" :required="true">
+      <TsFormItem v-show="unfoldAndFold.runnerGroupTag" :label="$t('term.deploy.actuatorgrouptag')">
         <RunnerGroupTagSetting
           ref="ref_runnerGroupTag"
           class="grid"
@@ -309,6 +309,7 @@ export default {
       scenarioList: [], //场景列表
       runnerGroup: {},
       runnerGroupTag: {},
+      defaultRunnerGroupTag: {},
       dataConfig: {},
       paramValue: {},
       executeConfig: {},
@@ -384,6 +385,9 @@ export default {
         if (!this.$utils.isEmpty(this.runtimeParamList)) {
           this.initConfig(deepCloneData['runtimeParamMap']);
         }
+        if (this.$utils.isEmpty(this.runnerGroupTag) || this.runnerGroupTag['mappingMode'] == 'constant' && this.$utils.isEmpty(this.runnerGroupTag['value'])) {
+          this.runnerGroupTag = this.$utils.deepClone(this.defaultRunnerGroupTag);
+        }
       }
     },
     handleChange() {
@@ -430,9 +434,14 @@ export default {
       if (!this.$utils.isEmpty(defaultData)) {
         if (config && !this.$utils.isEmpty(config)) {
           for (let key in config) {
-            if (key && config[key] && this.hasServiceValue.hasOwnProperty(key) && (config[key]['mappingMode'] == 'notsetup')) {
-              // 映射关系为notsetup时，需要把对应的组件显示出来
-              this.$set(this.hasServiceValue, [key], true);
+            if (key && config[key] && this.hasServiceValue.hasOwnProperty(key)) {
+              // 映射关系为notsetup(不设置)时，需要把对应的组件显示出来
+              if (config[key]['mappingMode'] == 'notsetup') {
+                this.$set(this.hasServiceValue, [key], true);
+              } else if (config[key]['mappingMode'] == 'constant' && key == 'runnerGroupTag') {
+                // 执行器组标签映射关系为不设置时，需要把对应执行器组标签显示出来
+                this.$set(this.hasServiceValue, [key], true);
+              }
             }
           }
           if (!this.$utils.isEmpty(runtimeParamList)) {
@@ -440,8 +449,6 @@ export default {
             runtimeParamList.forEach((item) => {
               if (item && item.mappingMode == 'notsetup') {
                 this.$set(this.hasServiceValue, 'runtimeParamList', true);
-              }
-              if (item && item.mappingMode == 'notsetup') {
                 this.paramKeyList.push(item.key);
               }
             });
@@ -465,7 +472,7 @@ export default {
             this.dataConfig = res.Return;
             let {config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false} = this.dataConfig || {};
             let {executeConfig = {}, scenarioList = [], combopPhaseList = []} = config || {};
-            let {executeUser: configexecuteUser, protocolId = null, executeNodeConfig = {}} = executeConfig || {};
+            let {executeUser: configexecuteUser, protocolId = null, executeNodeConfig = {}, runnerGroupTag = {}} = executeConfig || {};
             const {filter = {}} = executeNodeConfig;
             this.stepList = combopPhaseList;
             this.needExecuteNode = needExecuteNode;
@@ -477,6 +484,9 @@ export default {
               this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue || {});
             } else {
               this.filterSearchValue = !this.$utils.isEmpty(this.filterSearchValue) ? this.filterSearchValue : filter || {};
+            }
+            if (this.$utils.isEmpty(this.runnerGroupTag) || this.runnerGroupTag && (this.runnerGroupTag['mappingMode'] == 'constant' && this.$utils.isEmpty(this.runnerGroupTag['value']))) {
+              this.defaultRunnerGroupTag = runnerGroupTag; // 执行器组标签，需要单独处理，服务目录设置为空，组合工具会有默认值，会把空的替换，需要单独处理，可以自行选择
             }
             this.runtimeParamList = this.dataConfig.config.runtimeParamList.filter((item) => {
               return this.paramKeyList.includes(item.key);
@@ -563,10 +573,10 @@ export default {
       if (!this.$utils.isEmpty(runtimeParamMap)) {
         params.runtimeParamMap = runtimeParamMap;
       }
-      if (this.runnerGroup) {
+      if (!this.$utils.isEmpty(this.runnerGroup)) {
         params.runnerGroup = this.runnerGroup;
       }
-      if (this.runnerGroupTag) {
+      if (!this.$utils.isEmpty(this.runnerGroupTag)) {
         params.runnerGroupTag = this.runnerGroupTag;
       }
       return params;
