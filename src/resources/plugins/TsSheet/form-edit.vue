@@ -129,7 +129,7 @@
                     <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
                       <div class="tsfont-export">{{ $t('page.export') }}</div>
                     </DropdownItem>
-                    <DropdownItem>
+                    <DropdownItem v-if="!processTaskId">
                       <div
                         :title="showActiveTooltip ? $t('message.framework.activedversiontip') : ''"
                         class="action-item tsfont-check-square-o"
@@ -138,7 +138,7 @@
                         @mouseenter="haveChangeData"
                       >{{ $t('page.enable') }}</div>
                     </DropdownItem>
-                    <DropdownItem>
+                    <DropdownItem v-if="!processTaskId">
                       <span class="action-item tsfont-trash-o" :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''" @click="delVersionModal(currentVersion.uuid, currentVersion.text)">{{ $t('page.delete') }}</span>
                     </DropdownItem>
                     <DropdownItem>
@@ -147,10 +147,10 @@
                   </DropdownMenu>
                 </Dropdown>
               </div>
-              <div class="action-item">
+              <div v-if="!processTaskId" class="action-item">
                 <Button type="primary" ghost @click.stop="saveForm('saveother')">{{ $t('term.framework.saveothernewversion') }}</Button>
               </div>
-              <div class="action-item last">
+              <div v-if="!processTaskId" class="action-item last">
                 <Button type="primary" @click.stop="handleSaveForm()">{{ $t('page.save') }}</Button>
               </div>
             </template>
@@ -317,6 +317,7 @@
       :data="initData"
       :formConfig="$utils.deepClone(initFormConfig)"
       :sceneUuid="sceneUuid"
+      :processTaskId="processTaskId"
       @close="closeScene"
       @deleteScene="deleteScene"
       @updateDefaultSceneUuid="updateDefaultSceneUuid"
@@ -411,13 +412,17 @@ export default {
       sceneUuid: null,
       readOnly: false, //设置全局只读
       isShowExtendConfigDialog: false,
-      extendConfigList: []
+      extendConfigList: [],
+      processTaskId: null //工单id
     };
   },
   beforeCreate() {},
   created() {
     if (this.$route.query.name) {
       this.formData.name = this.$route.query.name;
+    }
+    if (this.$route.query.processTaskId) {
+      this.processTaskId = parseInt(this.$route.query.processTaskId);
     }
     this.formUuid = this.$route.query.uuid || null;
     this.isnew = this.$route.query.isnew || false;
@@ -442,7 +447,12 @@ export default {
     beforeLeaveCompare(oldData) {
       // 离开当前页面，数据对比
       let newData = this.$refs.sheet.getFormConfig();
-      return this.compareData(oldData, newData);
+      let isSame = this.compareData(oldData, newData);
+      if (this.processTaskId) {
+        //工单查看表单不需要数据对比，直接返回true
+        isSame = true;
+      }
+      return isSame;
     },
     async beforeLeave() {
       //离开页面，二次弹窗，点击'确认按钮'，存储数据,
@@ -708,7 +718,7 @@ export default {
       this.showActiveTooltip = false;
       this.isFormLoaded = false;
       this.isFormOldDialog = false;
-      if (!this.currentVersion.uuid || this.isnew) {
+      if (!this.processTaskId && (!this.currentVersion.uuid || this.isnew)) {
         //缺少版本uuid或者新建过来的，不带任何数据
         this.currentFormItem = null;
         const formConfig = {};
@@ -727,8 +737,10 @@ export default {
         uuid: this.formUuid,
         currentVersionUuid: val
       };
-      this.$api.framework.form
-        .getFormByVersionUuid(data)
+      if (this.processTaskId) {
+        data.processTaskId = this.processTaskId;
+      }
+      this.$api.process.process.getProcessForm(data)
         .then(res => {
           if (res.Status == 'OK') {
             this.initData = res.Return;

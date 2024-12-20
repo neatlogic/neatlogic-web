@@ -26,6 +26,9 @@
                         search
                         transfer
                         :disabled="!conItem.isNewLabel"
+                        @on-change="(val, item , selectItem)=>{
+                          changeAttrLabel(val, item , selectItem, conItem);
+                        }"
                       ></TsFormSelect>
                     </div>
                   </Col>
@@ -163,7 +166,7 @@ export default {
             let newData = [];
             resData.forEach(v => {
               if (v.label) {
-                newData.push({text: v.name, value: v.label});
+                newData.push({text: v.name, value: v.label, defaultUniqueIdentifier: v.defaultUniqueIdentifier});
               }
             });
             this.cmdbCiEntityAttrList = newData;
@@ -313,6 +316,9 @@ export default {
     },
     delAttr(conItem, conIdex) {
       this.$delete(this.formSetting.attributeMappingList.value, conIdex);
+    },
+    changeAttrLabel(val, item, selectItem, conItem) {
+      this.$set(conItem, 'uniqueIdentifier', selectItem.defaultUniqueIdentifier);
     }
   },
   computed: {

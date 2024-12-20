@@ -1292,7 +1292,10 @@ export default {
     setFormAttributeDataMap(val) {
       //表单改变时更新formAttributeDataMap
       if (!this.$utils.isSame(val, this.processTaskConfig.formAttributeDataMap)) {
-        this.processTaskConfig.formAttributeDataMap = this.$utils.deepClone(val);
+        //避免数据更新时，卡顿
+        this.$nextTick(() => {
+          this.processTaskConfig.formAttributeDataMap = this.$utils.deepClone(val);
+        });
       }
     },
     clickTabValue(name) {
@@ -1318,7 +1321,7 @@ export default {
     updateFormSheetCalc() {
       if (this.$refs.formSheet) {
         this.$nextTick(() => {
-          this.$refs.formSheet.calcContainerHeight();
+          this.$refs.formSheet.calcContainerHeight && this.$refs.formSheet.calcContainerHeight();
         });
       }
     },
@@ -1331,9 +1334,15 @@ export default {
           if (findItem) {
             this.tabValue = findItem.name;
           } else {
-            this.tabValue = navList[0].name;
+            if (!this.fixedPageList.find(d => d.tabValue === val)) {
+              this.tabValue = navList[0].name;
+            }
           }
         }
+        if (val === 'report') {
+        //流转校验，更新表单布局
+          this.updateFormSheetCalc();
+        } 
       });
     }
      

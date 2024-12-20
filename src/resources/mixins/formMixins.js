@@ -264,6 +264,10 @@ export default {
               value = [].concat(currentValue);
             }
           }
+        } else if (this.$options.name == 'TsFormRadio' && currentValue instanceof Array) {
+          if (currentValue.length > 0) {
+            value = currentValue[0];
+          }
         } else {
           if (this.isCustomValue && currentValue && typeof currentValue === 'object' && currentValue[this.valueName]) {
             value = currentValue[this.valueName];

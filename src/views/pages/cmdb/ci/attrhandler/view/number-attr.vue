@@ -29,6 +29,8 @@ export default {
     value: function() {
       if (this.attrEntity.actualValueList && this.attrEntity.actualValueList.length > 0) {
         return this.attrEntity.actualValueList[0];
+      } else if (this.attrEntity.valueList && this.attrEntity.valueList.length > 0) {
+        return this.attrEntity.valueList[0];
       }
       return '-';
     }

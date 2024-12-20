@@ -59,7 +59,7 @@
         </div>
       </TabPane>
     </Tabs>
-    <div v-else-if="mode === 'edit' && mode === 'editSubform'" class="text-grey">{{ $t('form.placeholder.pleaseadd',{'target':$t('page.tab')}) }}</div>
+    <div v-else-if="mode === 'edit' || mode === 'editSubform'" class="text-grey">{{ $t('form.placeholder.pleaseadd',{'target':$t('page.tab')}) }}</div>
     <FormItemKeyDialog v-if="isShowFormItemKeyDialog" :formItemList="formItemList" @close="closeFormItemKeyDialog"></FormItemKeyDialog>
   </div>
 </template>

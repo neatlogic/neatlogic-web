@@ -22,6 +22,17 @@
           @getSelected="getSelected"
           @operation="operation"
         >
+          <template v-slot:operation="{ row, index }">
+            <div class="flex-center">
+              <span
+                v-if="!config.disableAddData && !readonly && !disabled"
+                :class="canDeleteRow ? 'mr-nm' : ''"
+                class="tsfont-plus text-action"
+                @click.stop="showTableSelectorDialog(index)"
+              ></span>
+              <span v-if="canDeleteRow" class="tsfont-close text-action" @click.stop="deleteItem(row)"></span>
+            </div>
+          </template>
           <template
             v-for="(extra) in extraList"
             v-slot:[extra.uuid]="{row,index}"
@@ -44,16 +55,6 @@
                   changeRowItem(val, row, extra.uuid)
                 }"
               ></FormItem>
-            </div>
-          </template>
-          <template v-slot:action="{ row }">
-            <div class="tstable-action">
-              <ul v-if="!config.disableDeleteData && !readonly && !disabled" class="tstable-action-ul">
-                <li
-                  class="tsfont-trash-o"
-                  @click="deleteItem(row)"
-                >{{ $t('page.delete') }}</li>
-              </ul>
             </div>
           </template>
         </TsTable>
@@ -360,6 +361,11 @@ export default {
   computed: {
     theadList() {
       const theadList = [];
+      if (!this.disabled && !this.readonly) {
+        if (!(this.config.disableDeleteData && this.config.disableAddData)) {
+          theadList.push({ key: 'operation' });
+        }
+      }
       if (!this.config.disableDeleteData && !this.disabled && !this.readonly) {
         theadList.push({ key: 'selection' });
       }
@@ -376,11 +382,13 @@ export default {
           }
         });
       }
-      theadList.push({ key: 'action' });
       return theadList;
     },
     extraList() {
       return this.config.dataConfig.filter(d => d.isExtra && d.isPC);
+    },
+    canDeleteRow() {
+      return !!((!this.config.disableDeleteData && !this.readonly && !this.disabled));
     }
   },
   watch: {
