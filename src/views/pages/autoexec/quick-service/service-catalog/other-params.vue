@@ -37,6 +37,85 @@
         ></Component>
       </TsFormItem>
     </div>
+    <TsFormItem :label="$t('term.deploy.actuatorgrouptag')">
+      <div :class="runnerGroupTag.mappingMode == 'formattr' || runnerGroupTag.mappingMode == 'constant' ? 'form-wrap-box' : ''">
+        <template v-if="runnerGroupTag.mappingMode == 'runtimeparam'">
+          <RunnerGroupTagSetting
+            ref="runnerGroupTag"
+            :config="runnerGroupTag"
+            :readonly="true"
+            :runtimeParamList="paramsList"
+          ></RunnerGroupTagSetting>
+        </template>
+        <template v-else>
+          <div v-if="runnerGroupTag.mappingMode==='constant'">
+            <RunnerGroupTagSetting
+              ref="runnerGroupTag"
+              :config="runnerGroupTag"
+              :runtimeParamList="paramsList"
+              :readonly="true"
+            ></RunnerGroupTagSetting>
+          </div>
+          <TsFormSelect
+            v-else-if="runnerGroupTag.mappingMode == 'formattr'"
+            ref="runnerGroupTag"
+            v-model="runnerGroupTag.value"
+            :dataList="formDataList"
+            valueName="uuid"
+            textName="label"
+            transfer
+            border="border"
+            class="pr-sm form-li-width"
+            :validateList="['required']"
+          ></TsFormSelect>
+        </template>
+      </div>
+      <div class="text-tip">
+        {{ $t('page.autoexeccomboprunnergrouptagtips') }}
+      </div>
+    </TsFormItem>
+    <TsFormItem :label="$t('page.autoexeccomboprunnergrouplabel')">
+      <div>
+        <template v-if="dataConfig && dataConfig.existRunnerOrSqlExecMode && runnerGroup">
+          <template v-if="runnerGroup.mappingMode==='runtimeparam'">
+            <RunnerGroupSetting
+              ref="runnerGroup"
+              :config="runnerGroup"
+              :runtimeParamList="paramsList"
+              :readonly="true"
+            >
+            </RunnerGroupSetting>
+          </template>
+          <div :class="runnerGroup.mappingMode==='constant' || runnerGroup.mappingMode =='formattr' ? 'form-wrap-box' : ''">
+            <RunnerGroupSetting
+              v-if="runnerGroup.mappingMode==='constant'"
+              ref="runnerGroup"
+              :config="runnerGroup"
+              :runtimeParamList="paramsList"
+              :readonly="true"
+            ></RunnerGroupSetting>
+            <TsFormSelect
+              v-else-if="runnerGroup.mappingMode == 'formattr'"
+              ref="runnerGroup"
+              v-model="runnerGroup.value"
+              :dataList="formDataList"
+              valueName="uuid"
+              textName="label"
+              transfer
+              border="border"
+              class="pr-sm form-li-width"
+              :validateList="['required']"
+            ></TsFormSelect>
+          </div>
+        </template>
+        <div v-if="dataConfig && !dataConfig.existRunnerOrSqlExecMode" class="text-tip">
+          {{ $t('message.autoexec.norunnerphaserunnergrouptips') }}
+        </div>
+        <div v-else class="text-tip">
+          {{ $t('page.autoexeccomboprunnergrouptips') }}
+        </div>
+      </div>
+    </TsFormItem>
     <TsFormItem :label="$t('term.autoexec.executetarget')">
       <TsFormSelect
         v-if="executeNode.mappingMode == 'formattr'"
@@ -61,7 +140,7 @@
         :needBorder="needExecuteUser|| needProtocol"
         :filterSearchValue="filterSearchValue"
       ></AddTarget>
-      <div v-else class="box-block text-tip">
+      <div v-else class="text-tip">
         <div v-if="dataConfig && dataConfig.allPhasesAreRunnerOrSqlExecMode">
           {{ $t('message.autoexec.executerunnertip') }}
         </div>
@@ -83,6 +162,8 @@ export default {
     TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue'),
     SaveSetting: () => import('@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'),
     AddTarget: () => import('@/views/pages/autoexec/detail/runnerDetail/add-target.vue'),
+    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
+    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
     ...Component
   },
   props: {
@@ -115,6 +196,12 @@ export default {
       paramsList: [],
       combopId: null,
       executeNode: {},
+      runnerGroupTag: {
+        mappingMode: 'constant'
+      },
+      runnerGroup: {
+        mappingMode: 'constant'
+      },
       formList: {
         type: 'select',
         valueName: 'uuid',
@@ -285,7 +372,7 @@ export default {
           await this.getCombopDetail();
         }
         let {config = {}} = this.serviceData || {};
-        let {executeNodeConfig = {}} = config || {};
+        let {executeNodeConfig = {}, runnerGroup = {}, runnerGroupTag = {}} = config || {};
         let {value = '', mappingMode} = executeNodeConfig || {};
         if (mappingMode == 'constant') {
           if (!this.$utils.isEmpty(value)) {
@@ -296,6 +383,8 @@ export default {
           this.$set(this.executeNode, 'mappingMode', mappingMode);
           this.$set(this.executeNode, 'value', value || {});
         }
+        this.runnerGroup = runnerGroup;
+        this.runnerGroupTag = runnerGroupTag;
       }
       if (!this.$utils.isEmpty(this.serviceData)) {
       // 其他参数值回显
@@ -370,6 +459,9 @@ export default {
             this.needProtocol = this.dataConfig.needProtocol;
             this.needRoundCount = this.dataConfig.needRoundCount;
             this.executeConfig = this.dataConfig.config.executeConfig || {};
+            if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
+              this.$set(this.executeConfig, 'executeNodeConfig', {});
+            }
             if (this.paramsList && !this.$utils.isEmpty(this.paramsList)) {
               this.initConfig(); // 设置作业参数值
             }
