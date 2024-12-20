@@ -459,6 +459,9 @@ export default {
             this.needProtocol = this.dataConfig.needProtocol;
             this.needRoundCount = this.dataConfig.needRoundCount;
             this.executeConfig = this.dataConfig.config.executeConfig || {};
+            if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
+              this.$set(this.executeConfig, 'executeNodeConfig', {});
+            }
             if (this.paramsList && !this.$utils.isEmpty(this.paramsList)) {
               this.initConfig(); // 设置作业参数值
             }

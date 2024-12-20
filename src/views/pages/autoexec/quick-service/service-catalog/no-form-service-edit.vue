@@ -465,14 +465,19 @@ export default {
             this.dataConfig = res.Return;
             let {config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false} = this.dataConfig || {};
             let {executeConfig = {}, scenarioList = [], combopPhaseList = []} = config || {};
-            let {executeUser: configexecuteUser, protocolId = null} = executeConfig || {};
+            let {executeUser: configexecuteUser, protocolId = null, executeNodeConfig = {}} = executeConfig || {};
+            const {filter = {}} = executeNodeConfig;
             this.stepList = combopPhaseList;
             this.needExecuteNode = needExecuteNode;
             this.needExecuteUser = needExecuteUser;
             this.needProtocol = needProtocol;
             this.needRoundCount = needRoundCount;
             this.executeConfig = executeConfig;
-            this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue); // 执行目标回显
+            if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
+              this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue || {});
+            } else {
+              this.filterSearchValue = !this.$utils.isEmpty(this.filterSearchValue) ? this.filterSearchValue : filter || {};
+            }
             this.runtimeParamList = this.dataConfig.config.runtimeParamList.filter((item) => {
               return this.paramKeyList.includes(item.key);
             });
@@ -533,7 +538,7 @@ export default {
         planStartTime: data ? data.planStartTime : null,
         triggerType: data ? data.triggerType : null
       };
-      let executeNode = this.$refs.executeNodeConfig ? this.$refs.executeNodeConfig.getValue() : ''; // 执行目标
+      let executeNode = this.$refs.ref_executeNodeConfig ? this.$refs.ref_executeNodeConfig.getValue() : ''; // 执行目标
       let runtimeParamMap = {};
       this.runtimeParamList && this.runtimeParamList.forEach((item) => {
         if (item && item.key) {

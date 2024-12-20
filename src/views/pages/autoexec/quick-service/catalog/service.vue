@@ -472,24 +472,26 @@ export default {
         value: 2
       }, // 分批数量
       runnerGroup: {
+        // 执行器组
         mappingMode: 'constant',
         value: '-1'
       },
       runnerGroupTag: {
+        // 执行器组标签
         mappingMode: 'constant',
         value: null
       },
-      protocol: {
+      protocol: { // 协议
         mappingMode: 'constant',
         value: null
-      }, // 执行目标
+      },
       executeUser: {
         // 执行账户
         mappingMode: 'constant',
         value: ''
       },
       executeNode: {
-        // 连接协议
+        // 执行目标
         mappingMode: 'constant',
         value: null
       },
@@ -1080,7 +1082,8 @@ export default {
             dataInfo = res.Return;
             const {config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false } = res.Return || {};
             const {combopPhaseList = [], runtimeParamList = [], executeConfig = {}, scenarioList = [], defaultScenarioId = null} = config;
-            const {runnerGroup = '', runnerGroupTag = {}} = executeConfig;
+            const {runnerGroup = '', runnerGroupTag = {}, executeNodeConfig = {}} = executeConfig;
+            const {filter = {}} = executeNodeConfig;
             this.dataConfig = dataInfo;
             this.stepList = combopPhaseList;
             this.paramsList = runtimeParamList || [];
@@ -1100,7 +1103,6 @@ export default {
             }
             // 场景
             this.scenarioList = scenarioList;
-            this.filterSearchValue = this.executeConfig.executeNodeConfig && this.executeConfig.executeNodeConfig.filter ? this.executeConfig.executeNodeConfig.filter : {};
             if (this.executeConfig.roundCount == 0 || !this.$utils.isEmpty(this.executeConfig.roundCount)) {
               if (this.$utils.isEmpty(this.roundCount.value)) {
                 this.$set(this.roundCount, 'value', this.executeConfig.roundCount);
@@ -1108,8 +1110,10 @@ export default {
               this.$set(this.roundCountForm, 'disabled', true);
               this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
             }
-            if (this.executeConfig.whenToSpecify == 'runtime' && this.$utils.isEmpty(this.executeConfig)) { // 过滤器运行在执行，需要把执行目标值清空
-              this.$set(this.executeConfig, 'executeNodeConfig', {});
+            if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
+              this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue || {});
+            } else {
+              this.filterSearchValue = !this.$utils.isEmpty(this.filterSearchValue) ? this.filterSearchValue : filter || {};
             }
             this.scenarioId = defaultScenarioId;
             if (executeConfig && !this.$utils.isEmptyObj(executeConfig)) {
