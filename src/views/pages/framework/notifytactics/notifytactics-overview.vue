@@ -112,18 +112,21 @@
       @on-success="search(1)"
     />
     <TsDialog
+      v-if="showDefaultPolicyDialog"
       :title="$t('term.framework.defultpolicysetting')"
       type="modal"
-      width="370px"
-      :isShow.sync="showDefaultPolicyDialog"
+      width="small"
+      :isShow="true"
       @on-close="showDefaultPolicyDialog = false"
       @on-ok="saveDefaultPolicy"
     >
-      <TsFormSelect
-        ref="defaultPolicyFormSelect"
-        v-model="defaultPolicyFormSelectValue"
-        v-bind="defaultPolicyFormSelect"
-      ></TsFormSelect>
+      <TsFormItem label="策略">
+        <TsFormSelect
+          ref="defaultPolicyFormSelect"
+          v-model="defaultPolicyFormSelectValue"
+          v-bind="defaultPolicyFormSelect"
+        ></TsFormSelect>
+      </TsFormItem>
     </TsDialog>
   </div>
 </template>
@@ -138,6 +141,7 @@ export default {
     TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     TimingTask
   },
