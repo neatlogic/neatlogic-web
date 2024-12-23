@@ -2,8 +2,8 @@
   <div>
     <TsDialog v-bind="integrationDialogConfig" @on-close="close">
       <template v-slot:header>
-        <div v-if="integrationData.uuid">{{ $t('page.edit') }}</div>
-        <div v-if="!integrationData.uuid">{{ isCopy ? $t('page.copy') : $t('page.add') }}</div>
+        <div v-if="integrationData.uuid">{{ $t('dialog.title.edittarget', { target: $t('page.integration') }) }}</div>
+        <div v-if="!integrationData.uuid">{{ isCopy ? $t('dialog.title.copytarget', { target: $t('page.integration') }) : $t('dialog.title.addtarget', { target: $t('page.integration') }) }}</div>
       </template>
       <template v-slot>
         <TsForm ref="integrationForm" :item-list="integrationFormConfig">
