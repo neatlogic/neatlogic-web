@@ -6,8 +6,17 @@ let commercialModule = './src/commercial-module';
 let localUrl = '../neatlogic-web/src/resources';
 let pageTitle = 'neatlogic'; //页面标题名称
 const { tenantName, urlPrefix } = require('./apiconfig.json');
-let importDefaultConfig = glob.sync(`${commercialModule}/**/defaultconfig.js`) || [];
-console.log('11111', importDefaultConfig);
+let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || [];
+importCustomConfig.forEach((filePath) => {
+  if (filePath) {
+    let {tableStyle, title, loginTitle, home} = require(filePath);
+    process.env.LOGINTITLE = String(loginTitle);
+    process.env.TABLESTRYLE = String(tableStyle);
+    process.env.PAGETITLE = String(title);
+    baseImg = home;
+    console.log('importCustomConfig', tableStyle);
+  }
+});
 function getPages(pageList) {
   const pages = {};
   if (!pageList) {

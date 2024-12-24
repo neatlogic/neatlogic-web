@@ -10,15 +10,14 @@ let pageTitle = 'neatlogic';
 let login_Title = 'welcome';
 let table_style = 'border';
 let imgModule = './public/resource';
-let importDefaultConfig = glob.sync(`${commercialModule}/**/defaultconfig.js`) || [];
-importDefaultConfig.forEach((filePath) => {
+let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || [];
+importCustomConfig.forEach((filePath) => {
   if (filePath) {
     let {tableStyle, title, loginTitle, home} = require(filePath);
     login_Title = String(loginTitle);
     table_style = String(tableStyle);
     pageTitle = String(title);
     imgModule = home;
-    console.log('22222', tableStyle, title, loginTitle, home);
   }
 });
 const resolve = dir => path.resolve(__dirname, dir);
