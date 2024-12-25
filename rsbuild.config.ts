@@ -13,11 +13,11 @@ let imgModule = './public/resource';
 let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || [];
 importCustomConfig.forEach((filePath) => {
   if (filePath) {
-    let {tableStyle, title, loginTitle, home} = require(filePath);
+    let {tableStyle, title, loginTitle, imgPath} = require(filePath);
     login_Title = String(loginTitle);
     table_style = String(tableStyle);
     pageTitle = String(title);
-    imgModule = home;
+    imgModule = imgPath;
   }
 });
 const resolve = dir => path.resolve(__dirname, dir);

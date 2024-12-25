@@ -1,5 +1,7 @@
 const path = require('path');
 const glob = require('glob');
+const CopyPlugin = require('copy-webpack-plugin');
+let copyPath = '';
 let src = './src';
 let baseImg = './public/resource';
 let commercialModule = './src/commercial-module';
@@ -9,12 +11,12 @@ const { tenantName, urlPrefix } = require('./apiconfig.json');
 let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || [];
 importCustomConfig.forEach((filePath) => {
   if (filePath) {
-    let {tableStyle, title, loginTitle, home} = require(filePath);
-    process.env.LOGINTITLE = String(loginTitle);
-    process.env.TABLESTRYLE = String(tableStyle);
-    process.env.PAGETITLE = String(title);
-    baseImg = home;
-    console.log('importCustomConfig', tableStyle);
+    let {tableStyle, title, loginTitle, imgPath, publicPath = ''} = require(filePath);
+    process.env.VUE_APP_LOGINTITLE = loginTitle;
+    process.env.VUE_APP_TABLESTRYLE = tableStyle;
+    pageTitle = title;
+    copyPath = publicPath;
+    baseImg = imgPath;
   }
 });
 function getPages(pageList) {
@@ -119,7 +121,28 @@ module.exports = {
   configureWebpack: {
     performance: {
       hints: false
-    }
+    },
+    plugins: copyPath ? [
+      new CopyPlugin({
+        patterns: [
+          {
+            from: path.resolve(__dirname, copyPath), // 需要复制的目录
+            to: path.resolve(__dirname, 'dist/'), // 复制到目标目录
+            filter: (resourcePath) => {
+              // 只复制 .html 文件
+              return resourcePath.endsWith('.html');
+            }
+          },
+          {
+            from: path.resolve(__dirname, copyPath),
+            to: path.resolve(__dirname, 'dist/resource/'),
+            filter: (resourcePath) => {
+              return !resourcePath.endsWith('.html');
+            }
+          }
+        ]
+      })
+    ] : []
   },
   chainWebpack: config => {
     config.module.rule('vue').use('vue-path-injector').loader(require.resolve('./vue-path-injector.js')).after('vue-loader').end();
