@@ -30,16 +30,14 @@
         </template>
       </div>
     </div>
-    <div class="image-preview-box">
-      <template v-if="preview">
-        <ImageViewer
-          v-if="showViewer"
-          :z-index="zIndex"
-          :initial-index="imageIndex"
-          :on-close="closeViewer"
-          :url-list="urlList"
-        ></ImageViewer>
-      </template>
+    <div v-if="preview" class="image-preview-box">
+      <ImageViewer
+        v-if="showViewer"
+        :z-index="zIndex"
+        :initial-index="imageIndex"
+        :on-close="closeViewer"
+        :url-list="urlList"
+      ></ImageViewer>
     </div>
   </div>
 </template>
