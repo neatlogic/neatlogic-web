@@ -766,7 +766,6 @@ export default {
     },
     clearComboptoolValue() {
       // 切换不同的组合工具，需要清空值
-      this.formUuid = '';
       this.scenarioId = null; // 场景id
       this.needExecuteUser = false;
       this.needProtocol = false;
