@@ -356,7 +356,7 @@ try {
   const routerContext = require.context('@/commercial-module', true, /router.js$/);
   routerContext.keys().forEach(filePath => {
     const moduleName = filePath?.split('/')[1]?.split('-')?.pop() || filePath?.split('/')[1];
-    if (moduleName && config?.module && (moduleName == config.module || moduleName == 'suzhoubank')) {
+    if (moduleName && config?.module && moduleName == config.module) {
       importRouterList = routerContext(filePath).default || [];
     }
   });
