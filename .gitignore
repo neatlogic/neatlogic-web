@@ -21,3 +21,4 @@ yarn.lock
 *.code-workspace
 pnpm-lock.yaml
 public/version.md
+*.zip

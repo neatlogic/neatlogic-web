@@ -5,10 +5,21 @@ let commercialModule = './src/commercial-module';
 import path from 'path';
 import glob from 'glob';
 const { tenantName, urlPrefix } = require('./apiconfig.json');
-
 const src = './src';
-const pageTitle = 'neatlogic';
-
+let pageTitle = 'neatlogic';
+let login_Title = 'welcome';
+let table_style = 'border';
+let imgModule = './public/resource';
+let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || [];
+importCustomConfig.forEach((filePath) => {
+  if (filePath) {
+    let {tableStyle, title, loginTitle, imgPath} = require(filePath);
+    login_Title = String(loginTitle);
+    table_style = String(tableStyle);
+    pageTitle = String(title);
+    imgModule = imgPath;
+  }
+});
 const resolve = dir => path.resolve(__dirname, dir);
 
 function getModuleName(moduleName) {
@@ -17,7 +28,7 @@ function getModuleName(moduleName) {
 
 function getAllModuleList(modulePathList = []) {
   return modulePathList.map(filePath => {
-    const moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
+    const moduleName = filePath ? filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1] : '';
     return getModuleName(moduleName);
   });
 }
@@ -56,9 +67,6 @@ function getPages(pageList) {
 
   return pages;
 }
-
-console.log(JSON.stringify(getPages(process.env.VUE_APP_PAGE_LIST), null, 2));
-
 const pages = getPages(process.env.VUE_APP_PAGE_LIST);
 let tenantNames = process.env.NODE_ENV === 'development' ? tenantName : '';
 const ent = Object.fromEntries(Object.keys(pages).map(key => [tenantNames + '/' + key, pages[key].entry]));
@@ -78,8 +86,8 @@ export default defineConfig({
         new rspack.DefinePlugin({
           'GLOBAL_VERSION': "'3.0.0'",
           'GLOBAL_PAGELIST': "''",
-          'GLOBAL_TABLESTRYLE': '"border"',
-          'GLOBAL_LOGINTITLE': '"welcome"'
+          'GLOBAL_TABLESTRYLE': JSON.stringify(table_style),
+          'GLOBAL_LOGINTITLE': JSON.stringify(login_Title)
         })
       ]
     },
@@ -101,7 +109,7 @@ export default defineConfig({
     alias: {
       '@': resolve('./src'),
       'base-module': resolve('../neatlogic-web/src/resources'),
-      '@img-module': resolve('./public/resource'),
+      '@img-module': resolve(imgModule),
       'assets': resolve('./src/resources/assets'),
       '@publics': resolve('./public/resource'),
       'components': resolve('./src/resources/components'),
