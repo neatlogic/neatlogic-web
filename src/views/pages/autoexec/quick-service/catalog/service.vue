@@ -1091,7 +1091,7 @@ export default {
             this.needExecuteUser = needExecuteUser;
             this.needProtocol = needProtocol;
             this.needRoundCount = needRoundCount;
-            this.executeConfig = executeConfig || {};
+            this.executeConfig = this.$utils.deepClone(executeConfig) || {};
             this.runnerGroup = !this.$utils.isEmpty(this.runnerGroup) && (!this.$utils.isEmpty(this.runnerGroup['value']) || this.runnerGroup['mappingMode'] == 'notsetup') ? this.runnerGroup : runnerGroup;
             this.runnerGroupTag = !this.$utils.isEmpty(this.runnerGroupTag) && (!this.$utils.isEmpty(this.runnerGroupTag['value']) || this.runnerGroupTag['mappingMode'] == 'notsetup') ? this.runnerGroupTag : runnerGroupTag;
             if (this.paramsList && !this.$utils.isEmpty(this.paramsList)) {
@@ -1116,14 +1116,16 @@ export default {
               this.filterSearchValue = !this.$utils.isEmpty(this.filterSearchValue) ? this.filterSearchValue : filter || {};
             }
             this.scenarioId = defaultScenarioId;
-            if (executeConfig && !this.$utils.isEmptyObj(executeConfig)) {
+            if (executeConfig && !this.$utils.isEmpty(executeConfig)) {
               // 连接协议和执行账户回显
-              let {executeUser = {}, protocolId = ''} = executeConfig;
+              let {executeUser = {}, protocolId = ''} = executeConfig || {};
               let {mappingMode = ''} = executeUser || {};
               this.executeValue['executeUser'] = executeUser;
               this.executeValue['protocolId'] = protocolId;
+              let {config: serviceDataConfig = {}} = this.serviceData || {};
               if (!this.$utils.isEmpty(mappingMode)) {
-                this.executeUser.mappingMode = this.executeUser.mappingMode || mappingMode; // 执行用户回显
+                // 执行用户为空，就用组合工具设置的默认值
+                this.executeUser.mappingMode = this.$utils.isEmpty(this.serviceData) || this.$utils.isEmpty(serviceDataConfig) || (serviceDataConfig.hasOwnProperty('executeUser') && this.$utils.isEmpty(serviceDataConfig['executeUser']['mappingMode'])) ? mappingMode : this.executeUser.mappingMode; // 执行用户回显
               }
               this.executeUser.value = (this.executeUser && this.executeUser.value ? this.executeUser.value : executeConfig['executeUser'] ? executeConfig['executeUser']['value'] : '');
               this.protocol.value = (this.protocol && this.protocol.value ? this.protocol.value : executeConfig['protocolId']);

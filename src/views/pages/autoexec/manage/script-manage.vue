@@ -90,6 +90,17 @@
                 <template slot="action" slot-scope="{ row }">
                   <div class="tstable-action">
                     <ul class="tstable-action-ul">
+                      <li>
+                        <ReferenceSelect
+                          :id="row.id"
+                          calleeType="script"
+                          numberClassName="text-href bg-op"
+                          :title="$t('page.referencelist')"
+                          :referenceCount="row.referenceCount"
+                          :isShowStatus="true"
+                          :isIcon="true"
+                        ></ReferenceSelect>
+                      </li>
                       <li
                         v-for="operate in row.operateList"
                         :key="operate.value"
@@ -138,6 +149,7 @@ export default {
     CombineSearcher,
     ScriptEdit,
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
     UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue')
   },
   filters: {
