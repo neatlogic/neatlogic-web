@@ -13,5 +13,5 @@ export default {
   stepLogCommon,
   cmdbsync,
   createjob,
-  ...ComponentManager.getStepLogComponent()
+  ...(ComponentManager.getStepLogComponent() || {})
 };

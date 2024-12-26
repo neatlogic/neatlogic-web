@@ -4,5 +4,5 @@ import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   CmdbDispatcher,
   DefaultDispatcher,
-  ...ComponentManager.getDispatcherComponent()
+  ...(ComponentManager.getDispatcherComponent() || {})
 };
