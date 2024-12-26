@@ -14,7 +14,7 @@
       </div>
     </div>
     <div v-if="serviceChannel != null">
-      <div class="block-contnet">
+      <div class="block-content">
         <span v-if="serviceChannel.currentPage > 1 && serviceChannel.pageCount > 1" class="left arrow arrow-left" @click="goLeft()">
         </span>
         <span v-if="serviceChannel.currentPage < serviceChannel.pageCount && serviceChannel.pageCount > 1" class="right arrow arrow-right" @click="goRight()">
