@@ -28,12 +28,87 @@
 .ck.ck-sticky-panel .ck-sticky-panel__content_sticky {
   position: static; // ckeditor计算top有问题，导致工具栏位置偏移
 }
-.theme(@op-color, @title-color, @text-color, @icon-color, @dividing-color, @mongolia-color, @background-color, @blockbg-color, @gray-color, @border-color-base, @boxshadow-main, @boxshadow-bolck, @disable-color, @primary-grey, @selected-bg , @placeholder-color, @topo-node, @footer-btn-bg, @shadow, @main-shadow) {
+.theme(
+  @op-color,
+  @title-color,
+  @text-color,
+  @icon-color,
+  @dividing-color,
+  @mongolia-color,
+  @background-color,
+  @blockbg-color,
+  @gray-color,
+  @border-color-base,
+  @boxshadow-main,
+  @boxshadow-bolck,
+  @disable-color,
+  @primary-grey,
+  @selected-bg,
+  @placeholder-color,
+  @topo-node,
+  @footer-btn-bg,
+  @shadow,
+  @main-shadow,
+  @primary-color,
+  @primary-hover-color,
+  ) {
   .ck.ck-reset_all,
   .ck.ck-reset_all * {
     color: @text-color;
   }
-
+  .ck.ck-input {
+    background: var(--bg-op, @op-color);
+    background-color: var(--bg-op, @op-color); // 输入框背景颜色是白色问题
+    border-color: var(--border-color, @border-color-base);
+  }
+  .ck.ck-input:focus {
+    // 输入框聚焦时，边框颜色
+    border: 1px solid var(--primary-color, @primary-color);
+    box-shadow: 0 0 0 0 var(--primary-color, @primary-color), 0 0;
+  }
+  .ck.ck-list__item .ck-button.ck-on:hover:not(.ck-disabled) {
+    background: var(--primary-grey, @primary-grey);
+  }
+  .ck.ck-list__item .ck-button.ck-on:focus:not(.ck-switchbutton):not(.ck-disabled) {
+    border-color: var(--selected-bg, @selected-bg);
+  }
+  .ck.ck-list__item .ck-button:hover:not(.ck-disabled) {
+    background: var(--selected-bg, @selected-bg);
+  }
+  .ck.ck-list__item .ck-button:hover:not(.ck-disabled) {
+    // 按钮鼠标经过颜色
+    background: var(--primary-grey, @primary-grey);
+  }
+  .ck.ck-button:active,
+  .ck.ck-button:focus,
+  a.ck.ck-button:active,
+  a.ck.ck-button:focus {
+    border: 1px solid var(--primary-hover-color, @primary-hover-color);
+  }
+  .ck.ck-color-grid__tile:focus:not(.ck-disabled),
+  .ck.ck-color-grid__tile:hover:not(.ck-disabled) {
+    box-shadow: inset 0 0 0 1px var(--primary-hover-color, @primary-hover-color), 0 0 0 2px var(--primary-hover-color, @primary-hover-color);
+  }
+  .ck.ck-button.ck-on,
+  a.ck.ck-button.ck-on {
+    color: var(--primary-color, @primary-color);
+  }
+  .ck .ck-insert-table-dropdown-grid-box.ck-on {
+    // 表格选中时，边框颜色
+    background: var(--primary-color, @primary-color);
+    border-color: var(--primary-color, @primary-color);
+  }
+  .ck.ck-button.ck-on:not(.ck-disabled):hover,
+  a.ck.ck-button.ck-on:not(.ck-disabled):hover {
+    background: var(--selected-bg, @selected-bg);
+  }
+  .ck.ck-editor__editable.ck-focused:not(.ck-editor__nested-editable) {
+    border: 1px solid var(--primary-hover-color, @primary-hover-color);
+  }
+  .ck.ck-button.ck-on:not(.ck-disabled):active,
+  a.ck.ck-button.ck-on:not(.ck-disabled):active {
+    background: var(--selected-bg, @selected-bg);
+  }
   .ck.ck-button:not(.ck-disabled):hover,
   a.ck.ck-button:not(.ck-disabled):hover {
     background-color: @blockbg-color;
@@ -49,17 +124,23 @@
   }
 
   .ck.ck-list__item .ck-button:hover:not(.ck-disabled) {
-    background-color: @selected-bg;
+    background-color: var(--selected-bg, @selected-bg);
   }
 
   .ck.ck-list__item .ck-button.ck-on {
-    background: @selected-bg;
-    color: @primary-color;
+    background: var(--selected-bg, @selected-bg);
+    color: var(--primary-color, @primary-color);
   }
 
   .ck.ck-dropdown__panel {
     background: @blockbg-color;
-    border-color: var(--border-color, @border-color-base);
+    border: 1px solid var(--border-color, @border-color-base);
+  }
+  .ck.ck-button:active,
+  .ck.ck-button:focus,
+  a.ck.ck-button:active,
+  a.ck.ck-button:focus {
+    box-shadow: 0 0 0 3px var(--selected-bg, @selected-bg), 0 0;
   }
 
   .ck-content .table table td,
@@ -86,9 +167,54 @@
 }
 
 html {
-  .theme(@default-op, @default-title, @default-text, @default-icon, @default-dividing, @default-mongolia, @default-background, @default-blockbg, @default-gray, @default-border, @default-boxshadow-main, @default-boxshadow-bolck, @default-disable, @primary-grey, @default-selectbg, @default-placeholder, @default-op, @default-footer-btn-bg, @default-shadow, @default-main-shadow);
-
+  .theme(
+      @default-op,
+      @default-title,
+      @default-text,
+      @default-icon,
+      @default-dividing,
+      @default-mongolia,
+      @default-background,
+      @default-blockbg,
+      @default-gray,
+      @default-border,
+      @default-boxshadow-main,
+      @default-boxshadow-bolck,
+      @default-disable,
+      @primary-grey,
+      @default-selectbg,
+      @default-placeholder,
+      @default-op,
+      @default-footer-btn-bg,
+      @default-shadow,
+      @default-main-shadow,
+      @default-primary-color,
+      @default-primary-hover-color
+   );
   &.theme-dark {
-    .theme(@dark-op, @dark-title, @dark-text, @dark-icon, @dark-dividing, @dark-mongolia, @dark-background, @dark-blockbg, @dark-gray, @dark-border, @dark-boxshadow-main, @dark-boxshadow-bolck, @dark-disable, @menu-background, @dark-selectbg, @dark-placeholder, @dark-dividing, @dark-footer-btn-bg, @dark-shadow, @dark-main-shadow);
+    .theme(
+        @dark-op,
+        @dark-title,
+        @dark-text,
+        @dark-icon,
+        @dark-dividing,
+        @dark-mongolia,
+        @dark-background,
+        @dark-blockbg,
+        @dark-gray,
+        @dark-border,
+        @dark-boxshadow-main,
+        @dark-boxshadow-bolck,
+        @dark-disable,
+        @menu-background,
+        @dark-selectbg,
+        @dark-placeholder,
+        @dark-dividing,
+        @dark-footer-btn-bg,
+        @dark-shadow,
+        @dark-main-shadow,
+        @dark-primary-color,
+        @dark-primary-hover-color
+      );
   }
 }
