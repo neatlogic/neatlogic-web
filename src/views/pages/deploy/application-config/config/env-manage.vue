@@ -52,7 +52,7 @@ export default {
     EnvAutoConfigList: () => import('./env/env-autoconfig-list'), // autoconfig
     EnvDbConfigList: () => import('./env/env-db-config-list'), // autoconfig
     EnvAttr: () => import('./env/env-attr'),
-    ...ComponentManager.getDeployAppConfigEnvTabComponent()
+    ...(ComponentManager.getDeployAppConfigEnvTabComponent() || {})
   },
   props: {
     params: {

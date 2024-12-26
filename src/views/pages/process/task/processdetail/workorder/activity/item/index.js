@@ -44,5 +44,5 @@ export default {
   focususerHandler, //修改工单关注人
   automaticinfoHandler,
   cmdbsyncmessageHandler,
-  ...ComponentManager.getTimeLineComponent()
+  ...(ComponentManager.getTimeLineComponent() || {})
 };
