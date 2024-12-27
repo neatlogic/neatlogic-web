@@ -926,8 +926,8 @@ export default {
           const textParts = newtext.split(','); // 分割文本以准备高亮处理
           if (textParts.length > 1) { // 如果分割后有多个部分，说明存在关键字需要高亮
             newTextArr = [];
-            textParts.forEach((txt, index) => {
-              if (txt && txt.toLowerCase() == query.toLowerCase()) {
+            textParts.forEach(txt => {
+              if (txt && txt.toLowerCase() === query.toLowerCase()) {
                 newTextArr.push({ value: txt, Highlight: true });
               } else if (txt) {
                 newTextArr.push({ value: txt, Highlight: false });
