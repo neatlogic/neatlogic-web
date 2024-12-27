@@ -13,7 +13,7 @@ importCustomConfig.forEach((filePath) => {
   if (filePath) {
     let {tableStyle, title, loginTitle, imgPath, publicPath = ''} = require(filePath);
     process.env.VUE_APP_LOGINTITLE = loginTitle;
-    process.env.VUE_APP_TABLESTRYLE = tableStyle;
+    process.env.VUE_APP_TABLESTRYLE = tableStyle || 'welcome';
     pageTitle = title;
     copyPath = publicPath;
     baseImg = imgPath;

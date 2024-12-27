@@ -14,7 +14,7 @@ let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || 
 importCustomConfig.forEach((filePath) => {
   if (filePath) {
     let {tableStyle, title, loginTitle, imgPath} = require(filePath);
-    login_Title = String(loginTitle);
+    login_Title = String(loginTitle) || 'welcome';
     table_style = String(tableStyle);
     pageTitle = String(title);
     imgModule = imgPath;
