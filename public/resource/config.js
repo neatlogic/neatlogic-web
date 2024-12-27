@@ -21,7 +21,7 @@ const COMMERCIAL_MODULES = []; //已激活的商业模块
 var HTTP_RESPONSE_STATUS_CODE = ''; // http返回状态码，用于错误回显
 var GLOBAL_PAGELIST = '';
 var GLOBAL_TABLESTRYLE = '';
-var GLOBAL_LOGINTITLE = 'welcome';
+var GLOBAL_LOGINTITLE = '';
 var ISAUTODIRECT = false; // 是否需要自动跳转
 var REDIRECTURL = ''; // 重定向url
 setCookie('neatlogic_language', BASELANGUAGES, 7); // 设置cookie，解决部署首次，没有默认多语言问题
