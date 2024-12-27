@@ -91,7 +91,7 @@ export default {
   computed: {
     isHasAppConfigEnvTabHandler() {
       const Items = ComponentManager.getDeployAppConfigEnvTabComponent && ComponentManager.getDeployAppConfigEnvTabComponent();
-      return !!Items['appConfigEnvTabHandler'];
+      return !!(Items && Items['appConfigEnvTabHandler']);
     }
   },
   watch: {}
