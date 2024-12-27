@@ -501,7 +501,7 @@ export default {
               if (this.isEdit && !this.$utils.isEmpty(this.config)) {
                 // 处理定时任务编辑回显
                 this.setJobParams(this.config);
-                if (this.executeConfig.whenToSpecify) {
+                if (this.executeConfig.whenToSpecify && this.executeConfig.whenToSpecify !== 'runtimeparam') {
                   this.$set(this.executeConfig, 'whenToSpecify', 'runtime');
                 }
               }
