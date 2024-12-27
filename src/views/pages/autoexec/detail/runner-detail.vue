@@ -159,7 +159,7 @@
                       :runtimeParamList="runtimeParamList"
                     ></ExecuteuserSetting>
                   </div>
-                  <div v-else>
+                  <div v-else-if="executeValue.executeUser">
                     <TsFormInput
                       ref="executeUser"
                       v-model="executeValue.executeUser.value"
@@ -405,6 +405,7 @@ export default {
       }
     }
     this.init();
+    console.log('this.config', this.config);
   },
   async beforeMount() {
     await this.getParamsTypeLit();
@@ -488,6 +489,9 @@ export default {
                   let keyConfig = this.dataConfig.config.executeConfig[key];
                   if (key === 'executeUser') {
                     if (!this.$utils.isEmpty(keyConfig)) {
+                      if (!this.executeValue.executeUser) {
+                        this.executeValue.executeUser = {};
+                      } 
                       this.$set(this.executeValue.executeUser, 'mappingMode', keyConfig.mappingMode);
                       this.$set(this.executeValue.executeUser, 'value', keyConfig.value);
                     }
@@ -501,7 +505,7 @@ export default {
               if (this.isEdit && !this.$utils.isEmpty(this.config)) {
                 // 处理定时任务编辑回显
                 this.setJobParams(this.config);
-                if (this.executeConfig.whenToSpecify) {
+                if (this.executeConfig.whenToSpecify && this.executeConfig.whenToSpecify !== 'runtimeparam') {
                   this.$set(this.executeConfig, 'whenToSpecify', 'runtime');
                 }
               }
