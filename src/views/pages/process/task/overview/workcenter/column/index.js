@@ -16,5 +16,5 @@ export default {
   focususersHandler,
   currentstepnameHandler,
   currentstepworkerHandler,
-  ...ComponentManager.getWorkCenterColumnComponent()
+  ...(ComponentManager.getWorkCenterColumnComponent() || {})
 };

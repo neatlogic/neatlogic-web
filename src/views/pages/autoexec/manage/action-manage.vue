@@ -95,6 +95,17 @@
                         <!-- 执行作业 -->
                         <TimeJobClickText :id="row.id" :isShow="true" :disable="!row.executable || !row.isActive"></TimeJobClickText>
                       </li>
+                      <li>
+                        <ReferenceSelect
+                          :id="row.id"
+                          calleeType="combop"
+                          numberClassName="text-href bg-op"
+                          :title="$t('page.referencelist')"
+                          :referenceCount="row.referenceCount"
+                          :isShowStatus="true"
+                          :isIcon="true"
+                        ></ReferenceSelect>
+                      </li>
                       <li class="icon tsfont-change" @click.stop="openRecord(row)">{{ $t('term.autoexec.executionrecord') }}</li>
                       <li
                         class="icon tsfont-trash-o"
@@ -162,6 +173,7 @@ export default {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     RecordList: () => import('./action/record-list'),
     NoticeSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
     SingleUploadDialog: () => import('./action/single-upload-dialog.vue')
   },
   directives: { download },

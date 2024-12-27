@@ -405,6 +405,7 @@ export default {
           const parentNode = !this.$utils.isEmpty(this.selectedTreeData) ? this.selectedTreeData : null;
           zTreeObj.addNodes(parentNode, treeNode);
           this.selectedTreeId = treeNode.id;
+          this.selectedTreeData = treeNode;
         } else if (type === 'edit') {
           zTreeObj.updateNode(treeNode);
         } else if (type === 'delete') {

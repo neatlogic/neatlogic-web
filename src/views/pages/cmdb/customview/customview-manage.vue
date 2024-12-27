@@ -55,6 +55,17 @@
               <template slot="action" slot-scope="{ row }">
                 <div class="tstable-action">
                   <ul class="tstable-action-ul">
+                    <li>
+                      <ReferenceSelect
+                        :id="row.id"
+                        calleeType="cmdbcustomview"
+                        numberClassName="text-href bg-op"
+                        :title="$t('page.referencelist')"
+                        :referenceCount="row.referenceCount"
+                        :isShowStatus="true"
+                        :isIcon="true"
+                      ></ReferenceSelect>
+                    </li>
                     <li class="tsfont-edit" @click.stop="editCustomView(row)">{{ $t('page.edit') }}</li>
                     <li class="tsfont-trash-o" @click.stop="deleteCustomView(row)">{{ $t('page.delete') }}</li>
                   </ul>
@@ -113,6 +124,7 @@ export default {
     TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
     UserCard
   },
   props: {},

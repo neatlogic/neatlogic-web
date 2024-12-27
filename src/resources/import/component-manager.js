@@ -19,14 +19,20 @@
  * formVersionList 表单版本列表（用户自定义组件，新加配置，存量数据不会跟着改变的问题）
  * deployAppConfigEnvTab 部署应用配置环境tab
  * loginPage 登录页
+ * router 跨模块路由 
+ *   使用方法：getRouterComponent(moduleName)，moduleName为模块名称
+ *   注册方法：registerRouterComponent({
+ *     moduleName: routerList // moduleName为模块名称，routerList为路由列表
+ *   })
  */
 class ComponentManager {
-  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'loginPage', 'formVersionList'];
+  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'loginPage', 'formVersionList', 'router'];
   static categoryConfig = {};
   static generateMethods() {
     this.categoryList.forEach(category => {
-      const methodName = `register${category.charAt(0).toUpperCase() + category.slice(1)}Component`;
-      let getMethodName = `get${category.charAt(0).toUpperCase() + category.slice(1)}Component`;
+      const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
+      const methodName = `register${categoryName}Component`;
+      let getMethodName = `get${categoryName}Component`;
       this[methodName] = component => {
         // 分类方法
         if (this.categoryConfig[category]) {
@@ -34,15 +40,25 @@ class ComponentManager {
           if (Array.isArray(component)) {
             this.categoryConfig[category].push(...component);
           } else {
-            Object.assign(this.categoryConfig[category], component);
+            for (let key in component) {
+              if (this.categoryConfig[category].hasOwnProperty(key) && Array.isArray(component[key]) && component[key].length > 0) {
+                this.categoryConfig[category][key].push(...component[key]);
+              } else {
+                this.categoryConfig[category][key] = component[key];
+              }
+            }
           }
         } else {
           this.categoryConfig[category] = component;
         }
       };
-      this[getMethodName] = () => {
+      this[getMethodName] = (moduleName) => {
         // 根据分类获取数据
-        return this.categoryConfig[category] || {};
+        if (moduleName) {
+          return this.categoryConfig[category] ? this.categoryConfig[category][moduleName] : '';
+        } else {
+          return this.categoryConfig[category];
+        }
       };
     });
   }

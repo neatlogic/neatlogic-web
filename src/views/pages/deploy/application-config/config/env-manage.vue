@@ -58,7 +58,7 @@ export default {
     EnvAutoConfigList: () => import('./env/env-autoconfig-list'), // autoconfig
     EnvDbConfigList: () => import('./env/env-db-config-list'), // autoconfig
     EnvAttr: () => import('./env/env-attr'),
-    ...ComponentManager.getDeployAppConfigEnvTabComponent()
+    ...(ComponentManager.getDeployAppConfigEnvTabComponent() || {})
   },
   props: {
     params: {
@@ -97,7 +97,7 @@ export default {
   computed: {
     isHasAppConfigEnvTabHandler() {
       const Items = ComponentManager.getDeployAppConfigEnvTabComponent && ComponentManager.getDeployAppConfigEnvTabComponent();
-      return !!Items['appConfigEnvTabHandler'];
+      return !!(Items && Items['appConfigEnvTabHandler']);
     }
   },
   watch: {}

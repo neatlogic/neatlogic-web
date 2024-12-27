@@ -526,7 +526,7 @@ export default {
     styleType: {
       //table样式类型,支持多个类型空格隔开的字符串。跟type的区别是type针对排版块状还是列表，styleType针对普通的table常用的样式比如线条还是斑马支持多个字符串  [border,stripe]
       type: String,
-      default: GLOBAL_TABLESTRYLE || 'border'
+      default: 'border'
     },
     loading: {
       type: Boolean,
@@ -575,7 +575,6 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
       resizeTimer: null,
       scrollTimmer: null,
@@ -602,10 +601,11 @@ export default {
       isMultiple: false,
       bigDataPageList: [], //分页区间数据
       isNextDisabled: false, //下一页是否可被点击
-      bigDataPageSize: _this.pageSize, //分页
+      bigDataPageSize: this.pageSize, //分页
       isRendered: true, //表格渲染需要时间导致第一次取值有问题，这里标记是否需要从新计算offsetWidth的值
       resizeEvent: null,
-      visible: false //控制表头排序是否显示的poptip是否显示
+      visible: false, //控制表头排序是否显示的poptip是否显示
+      tableRowStyle: GLOBAL_TABLESTRYLE || (process.env && process.env.VUE_APP_TABLESTRYLE)
     };
   },
   beforeCreate() {},
@@ -1155,7 +1155,7 @@ export default {
         classlist += ' tstable-' + this.type;
       }
       if (this.styleType) {
-        classlist += ' ' + this.styleType;
+        classlist += ' ' + (this.tableRowStyle || this.styleType);
       }
       classlist += '' + this.border && typeof this.border == 'string' ? ' tstable-' + this.border + 'border' : !this.border ? ' tstable-noborder' : '';
       if (this.disabledHover) {
