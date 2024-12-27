@@ -40,6 +40,12 @@
         :tabSelectedName="tabSelectedName"
         :appData="params"
       ></div>
+      <div
+        :is="'appConfigEnvAutoTestTabHandler'"
+        v-if="isHasAppConfigEnvTabHandler"
+        :tabSelectedName="tabSelectedName"
+        :appData="params"
+      ></div>
     </Tabs>
   </div>
 </template>
