@@ -179,7 +179,10 @@
                       :content="typeof node['_disabled'] === 'string' ? node['_disabled'] : disabledHoverTitle"
                       style="width:100%"
                     >
-                      <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
+                      <div v-if="node._showtxtList" class="overflow">
+                        <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                      </div>
+                      <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
                     </Tooltip>
                     <Tooltip
                       v-else-if="node[tooltipName]"
@@ -190,14 +193,21 @@
                       :content="node[tooltipName]"
                       style="width:100%"
                     >
-                      <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
+                      <div v-if="node._showtxtList" class="overflow">
+                        <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                      </div>
+                      <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
                     </Tooltip>
                     <div
                       v-else
                       class="overflow"
-                      :title="dropdownMenuMaxWidth && (node._showtxt ? node._showtxt : node[showName ? showName : textName])"
-                      v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"
-                    ></div>
+                      :title="dropdownMenuMaxWidth && (node[showName ? showName : textName])"
+                    >
+                      <div v-if="node._showtxtList" class="overflow">
+                        <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                      </div>
+                      <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
+                    </div>
                   </slot>
                 </li>
               </template>
@@ -259,7 +269,10 @@
                           :content="typeof node['_disabled'] === 'string' ? node['_disabled'] : disabledHoverTitle"
                           style="width:100%"
                         >
-                          <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
+                          <div v-if="node._showtxtList" class="overflow">
+                            <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                          </div>
+                          <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
                         </Tooltip>
                         <Tooltip
                           v-else-if="node[tooltipName]"
@@ -270,14 +283,20 @@
                           :content="node[tooltipName]"
                           style="width:100%"
                         >
-                          <div class="overflow" v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"></div>
-                        </Tooltip>
+                          <div v-if="node._showtxtList" class="overflow">
+                            <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                          </div>
+                          <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div> </Tooltip>
                         <div
                           v-else
                           class="overflow"
-                          :title="dropdownMenuMaxWidth && (node._showtxt ? node._showtxt : node[showName ? showName : textName])"
-                          v-html="node._showtxt ? node._showtxt : node[showName ? showName : textName]"
-                        ></div>
+                          :title="dropdownMenuMaxWidth && (node[showName ? showName : textName])"
+                        >
+                          <div v-if="node._showtxtList" class="overflow">
+                            <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                          </div>
+                          <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
+                        </div>
                       </slot>
                     </li>
                   </template>
@@ -896,17 +915,34 @@ export default {
           return true;
         }
       });
+      let newTextArr;
       if (filterNode) {
         this.$set(item, '_isHidden', false);
+        const currentItemText = item[this.liHtml];
         if (query) {
-          let newtext = item[this.liHtml].replace(new RegExp('(' + query + ')', 'ig'), '<b class="text-primary">$1</b>');
-          this.$set(item, '_showtxt', newtext);
-        } else {
-          this.$set(item, '_showtxt', item[this.liHtml]);
+          // let newtext = item[this.liHtml].replace(new RegExp('(' + query + ')', 'ig'), '<b class="text-primary">$1</b>');
+          // 匹配关键字并高亮显示
+          let newtext = currentItemText.replace(new RegExp('(' + query + ')', 'ig'), ',$1,');
+          const textParts = newtext.split(','); // 分割文本以准备高亮处理
+          if (textParts.length > 1) { // 如果分割后有多个部分，说明存在关键字需要高亮
+            newTextArr = [];
+            textParts.forEach((txt, index) => {
+              if (txt && txt.toLowerCase() == query.toLowerCase()) {
+                newTextArr.push({ value: txt, Highlight: true });
+              } else if (txt) {
+                newTextArr.push({ value: txt, Highlight: false });
+              }
+            });
+          } else { // 如果没有关键字，则不显示高亮
+            newTextArr = [{ value: currentItemText, Highlight: false }];
+          }
+        } else { // 如果没有关键字，则不显示高亮
+          newTextArr = [{ value: currentItemText, Highlight: false }];
         }
+        this.$set(item, '_showtxtList', newTextArr);
       } else {
         this.$set(item, '_isHidden', true);
-        this.$set(item, '_showtxt', item[this.liHtml]);
+        this.$set(item, '_showtxtList', newTextArr);
         this.hiddenLength++;
       }
     },
