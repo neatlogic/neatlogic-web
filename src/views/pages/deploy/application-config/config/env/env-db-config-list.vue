@@ -277,7 +277,7 @@ export default {
 <style lang="less" scoped>
 .env-db-config-list {
   height: calc(100vh - 50px - 50px - 32px - 16px); // （头部高度 + 导航高度 + tab高度 + 底部间隙高度）
-  overflow: hidden;
+  overflow: scroll;
   border-radius: 0 10px 10px;
   .add-text-box {
     padding-top: 20px;

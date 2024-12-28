@@ -22,5 +22,5 @@ export default {
   ...cmdb,
   timer,
   createjob,
-  ...ComponentManager.getFlowNodeComponent()
+  ...(ComponentManager.getFlowNodeComponent() || {})
 };

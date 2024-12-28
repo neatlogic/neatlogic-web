@@ -19,5 +19,5 @@ export default {
   timer,
   cmdbsync,
   createjob,
-  ...ComponentManager.getTaskDetailComponent()
+  ...(ComponentManager.getTaskDetailComponent() || {})
 };

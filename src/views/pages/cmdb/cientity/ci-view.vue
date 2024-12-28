@@ -197,6 +197,7 @@ export default {
       this.switchCi(ci);
     },
     switchCi(ci) {
+      this.currentTab = 'cientity';
       this.ciId = String(ci.id);
       this.init();
     },

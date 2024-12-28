@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import '@/resources/base.js'; // 需要先把base.js引入进来，router.j才可以拿到registerRouterComponent方法的路由
 import Process from './process.vue';
 import routers from './router.js';
 import store from '@/resources/store';
@@ -9,7 +10,6 @@ import api from '@/resources/api/api.js';
 import LocalStore from '@/resources/assets/js/localStore.js';
 
 //公共的全局组件、样式等
-import '@/resources/base.js';
 import {initRouter, initI18n} from '@/resources/init.js';
 
 Vue.use(VueRouter);
