@@ -774,7 +774,7 @@ export default {
       this.scenarioList = [];
       this.valueConfig = {}; //所有值对应的集合
       this.itemConfig = {};//所以组件对应的渲染config集合
-      this.roundCount = {mappingMode: 'constant', value: 2}; // 分批数量
+      this.roundCount = {mappingMode: 'constant', value: null}; // 分批数量
       this.protocol = {mappingMode: 'constant', value: null}; // 执行目标
       this.executeUser = {mappingMode: 'constant', value: ''};// 执行用户
       this.executeNode = {mappingMode: 'constant', value: null};// 连接协议
@@ -1104,7 +1104,7 @@ export default {
             this.scenarioList = scenarioList;
             if (this.executeConfig.roundCount == 0 || !this.$utils.isEmpty(this.executeConfig.roundCount)) {
               if (this.$utils.isEmpty(this.roundCount.value)) {
-                this.$set(this.roundCount, 'value', this.executeConfig.roundCount);
+                this.$set(this.roundCount, 'value', this.executeConfig.roundCount || 2);
               }
               this.$set(this.roundCountForm, 'disabled', true);
               this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
