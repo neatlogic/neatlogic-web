@@ -187,14 +187,22 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    window.addEventListener('resize', this.handleVisible);
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleVisible);
+  },
   destroyed() {},
   methods: {
+    handleVisible() {
+      // 处理窗口改变的时候，关闭Dropdown内容
+      this.isVisible = false;
+    },
     updatePosition() {
       if (this.$el) {
         this.$refs.dropdownContain && this.$refs.dropdownContain.$refs.drop && this.$refs.dropdownContain.$refs.drop.update();
@@ -217,17 +225,17 @@ export default {
         if (res.Status == 'OK') {
           this.pageCount = res.Return.pageCount;
           this.isReference = true;
-          let newList = res.Return.list;
+          let newList = res.Return.list || [];
           if (currentPage > 1) {
             this.referenceList.push(...newList);
           } else {
             this.referenceList = newList;
+            this.updatePosition(); // 处理第一个请求的时候，才更新位置
           }
-          this.updatePosition();
         }
       });
     },
-    getReferenceList: function(visible) {
+    getReferenceList(visible) {
       //引用列表
       if (!visible[0]) {
         return;
