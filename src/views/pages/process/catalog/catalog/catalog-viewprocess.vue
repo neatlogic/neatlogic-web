@@ -36,9 +36,12 @@
           </div>
           <div class="content">
             <div class="bg-block bg-border-radius">
-              <div class="step border-color">
+              <div class="step border-color overflow">
                 <span class="title text-grey">{{ $t('term.process.associatedsteps') }}</span>
-                <span v-for="(citem, cindex) in item.processStepUuidList" :key="cindex" class="name text-default">{{ correlationList[citem] }}</span>
+                <span
+                  :title="getProcessStepUuidList(item.processStepUuidList)"
+                  class="name text-default"
+                >{{ getProcessStepUuidList(item.processStepUuidList) }}</span>
               </div>
 
               <div class="step border-color overflow">
@@ -540,6 +543,11 @@ export default {
           config = selectConfig;
         }
         return config;
+      };
+    },
+    getProcessStepUuidList() {
+      return (list) => {
+        return list.map(d => this.correlationList[d]).join('、');
       };
     }
   },
