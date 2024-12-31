@@ -547,6 +547,9 @@ export default {
     },
     getProcessStepUuidList() {
       return (list) => {
+        if (this.$utils.isEmpty(list)) {
+          return '';
+        }
         return list.map(d => this.correlationList[d]).join('、');
       };
     }
