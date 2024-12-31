@@ -34,7 +34,7 @@
           <div :class="hitem.key == 'action' ? (hideAction ? 'action-div' : 'action-div nohide') : ''" :style="hitem.key == 'action' ? getActionPostion(offsetWidth, scrollLeft) : ''">
             <slot :name="hitem.key" :row="bitem" :index="bindex">
               <div
-                v-if="hitem.key == 'selection'"
+                v-if="hitem.key === 'selection'"
                 class="radius-mi"
                 :class="getSection(bitem.isDisabled || false, selectList.indexOf(bitem[keyName] || bindex) > -1 || false)"
                 @click.stop="selectOne(bitem, bindex)"
