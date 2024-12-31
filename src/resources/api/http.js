@@ -5,10 +5,59 @@ import utils from '@/resources/assets/js/util';
 import { $t } from '@/resources/init.js';
 
 Vue.prototype.$axios = axios;
-const tip = (msg, onClose, name, title, type = 'error') => {
+const tip = ({desc, onClose, name, title, type = 'error', duration = 4.5, errorDetail = ''}) => {
+  const state = Vue.observable({ // 将普通对象转为响应式对象
+    isExpanded: false
+  });
   let config = {
     title: title || '接口异常',
-    desc: msg
+    duration: duration,
+    render: h => {
+      return h('div', [
+        h('div', {
+          style: {
+            display: 'flex',
+            justifyContent: 'space-between'
+          }
+        }, [
+          h('span', {
+            class: errorDetail ? ['cursor-pointer', state.isExpanded ? 'tsfont-drop-down' : 'tsfont-drop-right'] : [],
+            style: {
+              marginLeft: errorDetail ? '-4px' : 0
+            },
+            on: {
+              click: () => {
+                state.isExpanded = !state.isExpanded;
+              }
+            }
+          }, desc),
+          errorDetail 
+            ? h('span', {
+              class: ['tsfont-copy', 'text-action'],
+              on: {
+                click: () => {
+                  utils.copyText('', errorDetail);
+                }
+              }
+            }, '复制') : null
+        ]),
+        state.isExpanded && errorDetail ? h('div', {
+          style: {
+            overflow: 'scroll',
+            maxHeight: '300px',
+            marginTop: '10px'
+          }
+        }, [
+          h('p', {
+            class: ['pr-sm'],
+            style: {
+              fontSize: '12px'
+            }
+          }, errorDetail)
+        ]) : null
+      ]
+      );
+    }
   };
   onClose &&
     Object.assign(config, {
@@ -129,7 +178,7 @@ instance.interceptors.response.use(
       return Promise.reject(error);
     } else if (!error) {
       if (!window.navigator.onLine) {
-        tip('网络连接失败');
+        tip({desc: '网络连接失败'});
       } else {
         return Promise.reject(error);
       }
@@ -156,9 +205,11 @@ const errorHandle = res => {
       toLogin();
       break;
     case 403:
-      tip($t('message.sessionexpired'), () => {
-        Vue.prototype.$utils.removeCookie('neatlogic_authorization');
-        toLogin();
+      tip({
+        desc: $t('message.sessionexpired'), onClose: () => {
+          Vue.prototype.$utils.removeCookie('neatlogic_authorization');
+          toLogin();
+        }
       });
       break;
     case 404:
@@ -166,11 +217,20 @@ const errorHandle = res => {
       break;
     case 429:
       // 接口设置访问次数限制
-      tip(rejectSource, null, res.config.url, '提示', 'info');
+      tip({
+        desc: rejectSource,
+        name: res.config.url,
+        title: '提示',
+        type: 'info'
+      });
       throw rejectSource;
     case 500:
       //未知的接口问题
-      tip('服务器错误');
+      tip({
+        desc: '服务器错误',
+        duration: 0,
+        errorDetail: res.data.Message
+      });
       throw res.data.Message; //把后端返回的错误信息抛出到页面中，这样页面可以catch这些错误做一些处理
     case 502:
       //已知的接口问题
@@ -202,7 +262,13 @@ const errorHandle = res => {
     case 524: // 重复提交表单
     case 525: // 认证类型不存在
     case 550: // license 认证失败
-      tip(other, null, res.config.url, '提示', 'info');
+      tip({
+        desc: other,
+        name: res.config.url,
+        title: '提示',
+        type: 'info'
+      }
+      );
       throw res;
     case 527:
       //会话已超时或已被终止,重新登录
