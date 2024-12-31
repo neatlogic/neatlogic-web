@@ -26,7 +26,7 @@
         </TsRow>
       </template>
       <div slot="content" class="catalog-content">
-        <div class="service-contnet">
+        <div class="service-content">
           <!-- 收藏模块 -->
           <div class="service-block">
             <div v-show="!$utils.isEmpty(favoriteData.tbodyList)" class="block-top">

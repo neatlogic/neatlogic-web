@@ -32,7 +32,7 @@
                 <span v-show="favoriteData.pageCount > 1">{{ $t('page.viewmore') }}</span>
               </div>
             </div>
-            <div class="block-contnet">
+            <div class="block-content">
               <!-- 当前页大于1并且总页数大于1 -->
               <div v-if="favoriteData.currentPage > 1 && favoriteData.pageCount > 1" class="left arrow arrow-left" @click="goLeft()">
               </div>
@@ -549,7 +549,7 @@ export default {
           cursor: pointer;
         }
       }
-      .block-contnet {
+      .block-content {
         position: relative;
         .left {
           position: absolute;

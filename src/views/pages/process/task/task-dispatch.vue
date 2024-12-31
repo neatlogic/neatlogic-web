@@ -150,7 +150,8 @@ export default {
         file: true,
         handlerStepInfo: true
       },
-      hideDispatchTaskList: true //隐藏工单上报页左侧任务列表
+      hideDispatchTaskList: true, //隐藏工单上报页左侧任务列表
+      cancelTokenSource: null// 下榻页面返回，处理请求未取消，导致定时保存的接口报错
     };
   },
   beforeCreate() {},
@@ -406,11 +407,14 @@ export default {
       return new Promise((resolve, reject) => {
         if (!this.disabledConfig.saving) {
           this.disabledConfig.saving = true;
+          let cancelTokenSource = this.cancelTokenSource ? {
+            cancelToken: this.cancelTokenSource.token
+          } : {};
           this.$api.process.processtask
-            .save(workdata)
+            .save(workdata, cancelTokenSource)
             .then(res => {
               this.disabledConfig.saving = false;
-              if (res.Status == 'OK') {
+              if (res && res.Status == 'OK') {
                 let data = res.Return;
                 _this.processTaskId = data.processTaskId;
                 _this.processTaskStepId = data.processTaskStepId;
@@ -589,6 +593,10 @@ export default {
     clearTimer() {
       if (this.timer) {
         this.timer.clear();
+        // 取消正在进行的请求
+        const CancelToken = this.$https.CancelToken;
+        this.cancelTokenSource = CancelToken.source();
+        this.cancelTokenSource.cancel('定时器关闭，取消post请求');
       }
     },
     toggleSiderHide(isSiderHide) {
