@@ -262,7 +262,7 @@ export default {
   border-radius: 10px !important;
 }
 .service-catalog-manage-wrap {
-  .service-contnet {
+  .service-content {
     padding: 0 16px;
     .load-more-text {
       text-align: center;

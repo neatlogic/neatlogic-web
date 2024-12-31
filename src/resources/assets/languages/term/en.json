@@ -2816,6 +2816,7 @@
     "graceperiod": "Delay grace days"
   },
   "alert": {
-    "alerttype": "Alarm Type "
+    "alerttype": "Alarm Type ",
+    "alert": "give an alarm"
   }
 }

@@ -212,7 +212,7 @@ export default {
     deletePolicyAudit(row) {
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: this.$t('dialog.contetn.deletetargetconfirm', { target: this.$t('term.autoexec.executionrecord') }),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: this.$t('term.autoexec.executionrecord') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.pbc.policy.deletePolicyAudit(row.id).then(res => {

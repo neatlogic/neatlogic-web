@@ -21,7 +21,7 @@
         </TsRow>
       </template>
       <div slot="content" class="catalog-content">
-        <div class="service-contnet">
+        <div class="service-content">
           <!-- 收藏模块 -->
           <div class="service-block">
             <div v-show="favoriteData.channelList != ''" class="block-top">
@@ -509,7 +509,7 @@ export default {
   .top-title {
     font-size: @font-size-large;
   }
-  .service-contnet {
+  .service-content {
     padding: 0 16px;
     .clickMore {
       text-align: center;

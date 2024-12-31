@@ -2816,6 +2816,7 @@
     "graceperiod": "超时宽限天数"
   },
   "alert": {
-    "alerttype": "告警类型"
+    "alerttype": "告警类型",
+    "alert": "告警"
   }
 }
