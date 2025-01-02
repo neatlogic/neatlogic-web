@@ -579,3 +579,4 @@
 .tsfont-scale-to-original:before { content: '\ea41'; } /* '' */
 .tsfont-zoom-in:before { content: '\ea42'; } /* '' */
 .tsfont-zoom-out:before { content: '\ea43'; } /* '' */
+.tsfont-snapshot:before { content: '\ea44'; } /* '' */
