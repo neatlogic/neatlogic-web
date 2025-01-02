@@ -365,6 +365,7 @@ export default {
     },
     //添加子地域
     addChildren(treeNode) {
+      this.currentTab = 'info';
       this.regionName = this.$t('dialog.title.addtarget', { target: this.$t('page.subdirectory') });
       this.$set(this.regionData, 'parentId', treeNode.id);
       this.$set(this.regionData, 'id', null);
