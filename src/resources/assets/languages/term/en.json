@@ -623,7 +623,9 @@
     "savetransfer": "Save and transfer",
     "savetransfertip": "Save the current form and forward it",
     "thirdpartyapi": "Third party callback interface",
-    "reactivatestep": "Reactivation steps"
+    "reactivatestep": "Reactivation steps",
+    "seeprocessconfig": "View the current work order process configuration",
+    "editprocessconfig": "Edit the current work order process configuration"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
