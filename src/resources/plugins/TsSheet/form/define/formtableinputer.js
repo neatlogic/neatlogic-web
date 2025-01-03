@@ -23,6 +23,7 @@ export default {
     isCanDrag: true,
     lineNumber: 1,
     isCanAdd: true,
+    isShowImportExportBtn: true, // 是否显示导出/导入(模板、表格)选项按钮
     uniqueRuleConfig: [] // 唯一规则配置
   },
   reaction: {
