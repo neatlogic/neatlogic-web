@@ -64,9 +64,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-    this.getAllFileList();
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -80,7 +78,6 @@ export default {
       this.$api.process.processtask.getProcesstaskFileList(this.searchParams).then(res => {
         if (res.Status == 'OK') {
           this.fileTable = res.Return;
-          this.$emit('updateTabStatus', this.fileTable); // 更新外部附件清单tab是否显示
         }
       });
     },
@@ -107,7 +104,17 @@ export default {
       };
     }
   },
-  watch: {}
+  watch: {
+    value: {
+      handler(val) {
+        if (val) {
+          this.fileTable = this.$utils.deepClone(val);
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less">
