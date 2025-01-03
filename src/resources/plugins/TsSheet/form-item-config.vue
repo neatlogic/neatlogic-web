@@ -32,6 +32,7 @@
               :source="source"
               class="mb-sm"
               @editSubForm="editSubForm"
+              @setValue="(value)=> updateComponentConfig(formItem.handler, value)"
             ></component>
             <component
               :is="formItem.customName"
@@ -155,7 +156,7 @@ export default {
           validateList: ['required'],
           value: this.formItem.label,
           maxlength: 50,
-          disabled: this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit || this.source === 'scene',
+          disabled: !!(this.formItem.hasOwnProperty('inherit') || !!this.formItem.inherit || this.source === 'scene' || this.formItem.handler == 'formlabel'),
           onChange: val => {
             this.$set(this.formItem, 'label', val);
           }
@@ -443,6 +444,15 @@ export default {
     },
     editSubForm() {
       this.$emit('editSubForm');
+    },
+    updateComponentConfig(handler, value) {
+      if (handler === 'formlabel') {
+        const labelConfig = this.formConfig.find(v => v.name === 'label');
+        if (labelConfig) {
+          this.$set(labelConfig, 'value', value);
+          this.$set(this.formItem, 'label', value);
+        }
+      }
     }
   },
   filter: {},
