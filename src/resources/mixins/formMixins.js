@@ -259,6 +259,9 @@ export default {
                     value.push(item);
                   }
                 });
+              } else if (typeof currentValue === 'object' && currentValue[this.valueName]) {
+                // 兼容值为对象类型时，值回显异常问题
+                value = [currentValue[this.valueName]];
               }
             } else {
               value = [].concat(currentValue);

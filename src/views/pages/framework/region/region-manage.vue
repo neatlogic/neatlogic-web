@@ -149,7 +149,7 @@ export default {
         rootName: 'tbodyList',
         valueName: 'id',
         textName: 'name',
-        onChange: this.treeSelected,
+        onChange: (toValue, valueObject, selectItem) => this.treeSelected(selectItem),
         placeholder: this.$t('page.search'),
         transfer: true,
         border: 'bottom'
@@ -250,9 +250,12 @@ export default {
       this.$set(this.regionData, 'workTimeUuid', workTimeUuid);
       this.$set(this.regionData, 'parentId', parentId);
     },
-    treeSelected(id) {
+    treeSelected(selectItem) {
       //树select选择中
-      this.$set(this.regionData, 'id', id);
+      let {id = null} = selectItem || {};
+      if (id) {
+        this.clickNode(null, selectItem);
+      }
     },
     //添加根目录按钮
     addRoot() {
@@ -365,6 +368,7 @@ export default {
     },
     //添加子地域
     addChildren(treeNode) {
+      this.currentTab = 'info';
       this.regionName = this.$t('dialog.title.addtarget', { target: this.$t('page.subdirectory') });
       this.$set(this.regionData, 'parentId', treeNode.id);
       this.$set(this.regionData, 'id', null);

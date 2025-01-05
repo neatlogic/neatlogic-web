@@ -45,6 +45,19 @@
       :title="$t('page.paste')"
       @click="paste()"
     ></div>
+    <div v-if="readonly && canEdit" class="action-item"><Divider type="vertical"></Divider></div>
+    <div
+      v-if="canEdit"
+      class="action-item tsfont-edit"
+      :title="$t('term.process.editprocessconfig')"
+      @click.stop="openFlow()"
+    ></div>
+    <div
+      v-if="canEdit"
+      class="action-item tsfont-snapshot"
+      :title="$t('term.process.seeprocessconfig')"
+      @click.stop="openFlow(true)"
+    ></div>
   </div>
 </template>
 <script>
@@ -67,7 +80,12 @@ export default {
     readonly: { type: Boolean, default: false },
     graph: { type: Graph }, //图形实例，非数据
     selectedNode: { type: Node },
-    selectedEdge: { type: Edge }
+    selectedEdge: { type: Edge },
+    flowUuid: { // 流程uuid
+      type: String,
+      default: ''
+    },
+    processTaskId: { type: [Number, String] } // 流程任务id
   },
   data() {
     return {
@@ -139,10 +157,24 @@ export default {
         this.graph.stopBatch('paste');
         this.graph.select(newCells);
       }
+    },
+    openFlow(isView) {
+      if (this.flowUuid) {
+        let url = HOME + '/process.html#/flow-edit?uuid=' + this.flowUuid; 
+        if (isView) {
+        //查看当前工单的流程图配置，需要传递工单id
+          url = HOME + '/process.html#/flow-edit?uuid=' + this.flowUuid + '&processTaskId=' + this.processTaskId;
+        }
+        window.open(url, '_blank');
+      }
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    canEdit() {
+      return this.readonly && this.$AuthUtils.hasRole('PROCESS_MODIFY');
+    }
+  },
   watch: {
     showMinimap: {
       handler: function(val) {

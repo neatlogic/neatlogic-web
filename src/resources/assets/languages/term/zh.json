@@ -623,7 +623,9 @@
     "savetransfer": "保存并转交",
     "savetransfertip": "保存当前表单并转交",
     "thirdpartyapi": "第三方回调接口",
-    "reactivatestep": "重新激活步骤"
+    "reactivatestep": "重新激活步骤",
+    "seeprocessconfig": "查看当前工单流程配置",
+    "editprocessconfig": "编辑当前工单流程配置"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -1326,7 +1328,8 @@
     "allowdelete": "可删除",
     "mqtype": "消息队列类型",
     "notavailable": "不可用",
-    "mqhandler": "消息队列组件"
+    "mqhandler": "消息队列组件",
+    "importexporttableoption": "导出/导入(模版、表格)选项"
   },
   "knowledge": {
     "document": "文档",

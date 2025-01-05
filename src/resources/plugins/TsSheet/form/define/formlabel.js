@@ -12,7 +12,8 @@ export default {
   config: {
     width: '100%',
     isMask: false,
-    isHide: false
+    isHide: false,
+    content: ''
   },
   reaction: { mask: {}, hide: {}, display: {} }
 };

@@ -3466,5 +3466,11 @@
     "css": "tsfont-zoom-out",
     "hexCodepoint": "0xea43",
     "codepoint": 59971
+  },
+  {
+    "name": "snapshot",
+    "css": "tsfont-snapshot",
+    "hexCodepoint": "0xea44",
+    "codepoint": 59972
   }
 ]

@@ -8,6 +8,20 @@
         :disabled="disabled"
       ></TsFormSwitch>
     </TsFormItem>
+    <TsFormItem
+      labelWidth="250"
+      :label="$t('term.framework.importexporttableoption')"
+      tooltip="是否显示导出/导入(模板、表格)选项"
+      labelPosition="left"
+      contentAlign="right"
+    >
+      <TsFormSwitch
+        v-model="config.isShowImportExportBtn"
+        :trueValue="true"
+        :falseValue="false"
+        :disabled="disabled"
+      ></TsFormSwitch>
+    </TsFormItem>
     <TsFormItem :label="$t('page.ordernumber')" labelPosition="left" contentAlign="right">
       <TsFormSwitch
         v-model="config.isShowNumber"

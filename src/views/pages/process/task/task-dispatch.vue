@@ -205,9 +205,11 @@ export default {
         this.$delete(newData, 'formAttributeDataList');
         this.$delete(newData, 'hidecomponentList');
         this.$delete(newData, 'readcomponentList');
-        this.$delete(oldData, 'formAttributeDataList');
-        this.$delete(oldData, 'hidecomponentList');
-        this.$delete(oldData, 'readcomponentList');
+        if (!this.$utils.isEmpty(oldData)) {
+          this.$delete(oldData, 'formAttributeDataList');
+          this.$delete(oldData, 'hidecomponentList');
+          this.$delete(oldData, 'readcomponentList');
+        }
         return this.$utils.isSame(oldData, newData);
       }
     },
