@@ -1328,7 +1328,8 @@
     "allowdelete": "Can be deleted",
     "mqtype": "Message queue type",
     "notavailable": "Not available",
-    "mqhandler": "Message queue component"
+    "mqhandler": "Message queue component",
+    "showimportexporttemplatetableoptions": "Display export/import (template, table) options"
   },
   "knowledge": {
     "document": "Document",
