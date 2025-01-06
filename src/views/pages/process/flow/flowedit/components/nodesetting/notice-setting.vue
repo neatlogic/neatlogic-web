@@ -217,7 +217,7 @@ export default {
     },
     getData() { //获取数据
       let data = {
-        handler: this.notifyPolicyConfig.handler || '',
+        handler: this.notifyPolicyConfig.handler || this.handler,
         isCustom: this.isActive,
         paramMappingList: this.notifyPolicyConfig.paramMappingList || [],
         excludeTriggerList: this.notifyPolicyConfig.excludeTriggerList || []
