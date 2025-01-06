@@ -121,20 +121,6 @@
           <slot :name="item.tabValue"></slot>
         </div>
       </template>
-      <template v-else-if="item.tabValue == 'changeDetails'">
-        <div class="mb-xs">
-          <span>{{ item.label }}</span>
-          <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-        </div>
-        <div class="padding">
-          <!-- 变更创建s -->
-          <slot name="changecreate"></slot>
-          <!-- 变更创建end -->
-          <!-- 变更处理s -->
-          <slot name="changehandle"></slot>
-          <!-- 变更处理end -->
-        </div>
-      </template>
       <template v-else>
         <div class="mb-xs">
           <span>{{ item.label }}</span>
@@ -154,6 +140,7 @@
           :repeatList="repeatList"
           :handlerStepInfo="autoexechandlerStepInfo"
           :formConfig="formConfig"
+          :fileTable="fileTable"
           @closeRepeatTab="closeRepeatTab"
           @upActivityList="updateStepActive()"
           @updataActive="(val)=>updataActive(val)"
@@ -171,206 +158,220 @@
         name="tab1"
         @on-click="clickTabValue"
       >
-        <TabPane
-          v-if="hasForm"
-          :label="render => getTabPaneLabel(render, 'report', 'ContentDetails')"
-          name="report"
-          class="tab-content"
-          tab="tab1"
-        >
-          <!-- 内容详情 -->
-          <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig)" class="pt-nm pb-nm">
-            <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
-              <template v-if="processTaskConfig.formConfig._type == 'new'">
-                <TsSheet
-                  v-if="isShowForm"
-                  ref="formSheet"
-                  mode="read"
-                  :value="formConfig"
-                  :formSceneUuid="formSceneUuid"
-                  :data="formAttributeDataMap"
-                  :readonly="!actionConfig.save || !formEdit"
-                  :externalData="externalData"
-                  class="pl-sm pr-sm"
-                  style="width: 100%"
-                  @emit="formSheetEmitData"
-                  @updateHiddenComponentList="updateHiddenComponentList"
-                  @setValue="setFormAttributeDataMap"
-                ></TsSheet>
-              </template>
-              <template v-else>
-                <FormPreview
-                  ref="FormPreview"
-                  :content="filterCustommergeprocess(formConfig)"
-                  :isEdit="formEdit"
-                  :isReadonly="actionConfig.save ? false : true"
-                  :stephidetrList="stephidetrList"
-                  :stepreadtrList="stepreadtrList"
-                  :formAttributeHideList="formAttributeHideList"
-                ></FormPreview>
-              </template>
-            </div>
-            <div v-else-if="processTaskConfig.isHasOldFormProp == 1" class="form-view">
-              <FormPreviewHtml
-                ref="FormPreview"
-                class="block-content"
-                lass="order-list"
+        <template v-for="(tab, index) in tabList">
+          <template v-if="!tab.top && tab.key === 'report'">
+            <TabPane
+              v-if="hasForm"
+              :key="index"
+              :label="render => getTabPaneLabel(render, 'report', 'ContentDetails')"
+              name="report"
+              class="tab-content"
+              tab="tab1"
+            >
+              <!-- 内容详情 -->
+              <div class="pt-nm pb-nm">
+                <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
+                  <template v-if="processTaskConfig.formConfig._type == 'new'">
+                    <TsSheet
+                      v-if="isShowForm"
+                      ref="formSheet"
+                      mode="read"
+                      :value="formConfig"
+                      :formSceneUuid="formSceneUuid"
+                      :data="formAttributeDataMap"
+                      :readonly="!actionConfig.save || !formEdit"
+                      :externalData="externalData"
+                      class="pl-sm pr-sm"
+                      style="width: 100%"
+                      @emit="formSheetEmitData"
+                      @updateHiddenComponentList="updateHiddenComponentList"
+                      @setValue="setFormAttributeDataMap"
+                    ></TsSheet>
+                  </template>
+                  <template v-else>
+                    <FormPreview
+                      ref="FormPreview"
+                      :content="filterCustommergeprocess(formConfig)"
+                      :isEdit="formEdit"
+                      :isReadonly="actionConfig.save ? false : true"
+                      :stephidetrList="stephidetrList"
+                      :stepreadtrList="stepreadtrList"
+                      :formAttributeHideList="formAttributeHideList"
+                    ></FormPreview>
+                  </template>
+                </div>
+                <div v-else-if="processTaskConfig.isHasOldFormProp == 1" class="form-view">
+                  <FormPreviewHtml
+                    ref="FormPreview"
+                    class="block-content"
+                    lass="order-list"
+                    :processTaskId="processTaskId"
+                  ></FormPreviewHtml>
+                </div>
+              </div>
+            </TabPane>
+          </template>
+          <template v-else-if="!tab.top && tab.key === 'preNode'">
+            <template v-for="step in viewStepData">
+              <TabPane
+                v-if="fixedPageTab[`showStep${step.id}`]"
+                :key="index + '_' + step.id"
+                :label="render => renderTabPaneLabel(render, 'showStep' + step.id, step.name, step)"
+                class="padding tab-content"
+                :name="'showStep' + step.id"
+                tab="tab1"
+              >
+                <stepitems
+                  :is="getSteptype(step)"
+                  :item="step"
+                  :handlerStepInfo="step.handlerStepInfo"
+                ></stepitems>
+              </TabPane>
+            </template>
+          </template>
+          <template v-else-if="!tab.top && tab.key === 'node'">
+            <!-- 节点详情 -->
+            <template v-for="s in unfixedSlotList">
+              <TabPane
+                v-if="$slots[s.name]"
+                :key="index + '_' +s.name"
+                :name="s.name"
+                class="tab-content"
+                tab="tab1"
+                :label="render => renderTabPaneLabel(render, s.name, s.label)"
+              >
+                <div class="padding">
+                  <slot :name="s.name"></slot>
+                </div>
+              </TabPane>
+            </template>
+            <template v-for="subStep in taskConfigList">
+              <TabPane
+                v-if="fixedPageTab[`subTask${subStep.id}`]"
+                :key="index + '_' + subStep.id"
+                :label="subTask(subStep)"
+                :name="'subTask' + subStep.id"
+                tab="tab1"
+              >
+                <!-- 子任务策略 -->
+                <StrategyDetail
+                  :processTaskId="processTaskId"
+                  :processTaskStepId="processTaskStepId"
+                  :actionConfig="actionConfig"
+                  :config="subStep"
+                  @getStepList="getStepList"
+                ></StrategyDetail>
+                <!-- 子任务策略end -->
+              </TabPane>
+            </template>
+            <!-- 节点详情end -->
+          </template>
+          <template v-else-if="!tab.top && tab.key === 'step'">
+            <TabPane
+              v-if="fixedPageTab.step"
+              :key="index"
+              :label="renderStepList()"
+              name="step"
+              class="padding tab-content"
+              tab="tab1"
+            >
+              <!--步骤日志 -->
+              <div v-if="tabValue === 'step' && stepData && stepData.length > 0">
+                <StepOverview
+                  :processTaskId="processTaskId"
+                  :processTaskStepId="processTaskStepId"
+                  :defaultStepData="stepData"
+                  :currentStepId="defaultProcessTaskStepId"
+                  :processTaskConfig="processTaskConfig"
+                ></StepOverview>
+              </div>
+            </TabPane>
+          </template>
+          <template v-else-if="!tab.top && tab.key === 'activity'">
+            <TabPane
+              v-if="fixedPageTab.activity"
+              id="CurrentProcessTaskStep"
+              :key="index"
+              :label="renderactivity()"
+              name="activity"
+              class="padding tab-content"
+              tab="tab1"
+            >
+              <!-- 时间线 -->
+              <ActivityOverview
+                v-if="tabValue === 'activity'"
                 :processTaskId="processTaskId"
-              ></FormPreviewHtml>
-            </div>
-          </div>
-        </TabPane>
-        <template v-for="step in viewStepData">
-          <TabPane
-            v-if="fixedPageTab[`showStep${step.id}`]"
-            :key="step.id"
-            :label="render => renderTabPaneLabel(render, 'showStep' + step.id, step.name, step)"
-            class="padding tab-content"
-            :name="'showStep' + step.id"
-            tab="tab1"
-          >
-            <stepitems
-              :is="getSteptype(step)"
-              :item="step"
-              :handlerStepInfo="step.handlerStepInfo"
-            ></stepitems>
-          </TabPane>
+                :stepDataList="stepData"
+                :defaultActiveData="activeData"
+                :formConfig="processTaskConfig.formConfig"
+                @updataActive="(val)=>updataActive(val)"
+              ></ActivityOverview>
+            </TabPane>
+          </template>
+          <template v-else-if="!tab.top && tab.key === 'relevance'">
+            <TabPane
+              v-if="showRelationDetail(actionConfig.tranferreport, processTaskConfig.processTaskRelationCount) && fixedPageTab.relevance"
+              :key="index"
+              :label="render => getTabPaneLabel(render, 'relevance', 'Relationlist')"
+              name="relevance"
+              class="tab-content"
+              tab="tab1"
+            >
+              <!-- 关联工单 -->
+              <RelationDetail
+                v-if="tabValue === 'relevance'"
+                :processTaskConfig="processTaskConfig"
+                :relationAuth="actionConfig.tranferreport"
+                @upActivityList="updateStepActive()"
+              ></RelationDetail>
+            </TabPane>
+          </template>
+          <template v-else-if="!tab.top && tab.key === 'markrepeat'">
+            <TabPane
+              v-if="(actionConfig.markrepeat || repeatList.length > 0) && fixedPageTab.markrepeat"
+              :key="index"
+              :label="render => renderTabPaneLabel(render, 'markrepeat', $t('term.process.repeatedevent'))"
+              name="markrepeat"
+              class="tab-content"
+              tab="tab1"
+            >
+              <!-- 重复事件 -->
+              <MarkRepeat
+                v-if="tabValue === 'markrepeat'"
+                :processTaskId="processTaskId"
+                :actionConfig="actionConfig"
+                :repeatList="repeatList"
+                @closeRepeatTab="closeRepeatTab"
+              ></MarkRepeat>
+            </TabPane>
+          </template>
+          <template v-else-if="!tab.top && tab.key === 'file'">
+            <TabPane
+              v-if="hasAccessoriesList && fixedPageTab.file"
+              :key="index"
+              :label="render => renderTabPaneLabel(render, 'file', $t('term.process.accessorieslist'))"
+              name="file"
+              class="padding tab-content"
+              tab="tab1"
+            >
+              <!-- 附件清单 -->
+              <AccessoriesList ref="processTaskFile" :processTaskId="processTaskId" :fileTable="fileTable"></AccessoriesList>
+            </TabPane>
+          </template>
+          <template v-else-if="!tab.top && tab.key === 'reportingHistory'">
+            <TabPane
+              v-if="fixedPageTab.reportingHistory"
+              :key="index"
+              :label="render => renderTabPaneLabel(render, 'reportingHistory', $t('term.process.reportinghistory'))"
+              name="reportingHistory"
+              class="padding tab-content"
+              tab="tab1"
+            >
+              <!-- 上报历史 -->
+              <ReportingHistory v-if="tabValue === 'reportingHistory'" :processTaskConfig="processTaskConfig"></ReportingHistory>
+            </TabPane>
+          </template>
         </template>
-        <TabPane
-          v-for="s in unfixedSlotList"
-          :key="s.name"
-          :name="s.name"
-          class="tab-content"
-          tab="tab1"
-          :label="render => renderTabPaneLabel(render, s.name, s.label)"
-        >
-          <div class="padding">
-            <slot :name="s.name"></slot>
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.changeDetails && ($slots.changecreate || $slots.changehandle)"
-          :label="render => renderTabPaneLabel(render, 'changeDetails', $t('term.process.changedetail'))"
-          name="changeDetails"
-          class="tab-content"
-          tab="tab1"
-        >
-          <div class="padding">
-            <!-- 变更创建s -->
-            <slot name="changecreate"></slot>
-            <!-- 变更创建end -->
-            <!-- 变更处理s -->
-            <slot name="changehandle"></slot>
-            <!-- 变更处理end -->
-          </div>
-        </TabPane>
-        <template v-for="subStep in taskConfigList">
-          <TabPane
-            v-if="fixedPageTab[`subTask${subStep.id}`]"
-            :key="subStep.id"
-            :label="subTask(subStep)"
-            :name="'subTask' + subStep.id"
-            tab="tab1"
-          >
-            <!-- 子任务策略 -->
-            <StrategyDetail
-              :processTaskId="processTaskId"
-              :processTaskStepId="processTaskStepId"
-              :actionConfig="actionConfig"
-              :config="subStep"
-              @getStepList="getStepList"
-            ></StrategyDetail>
-            <!-- 子任务策略end -->
-          </TabPane>
-        </template>
-
-        <TabPane
-          v-if="fixedPageTab.step"
-          :label="renderStepList()"
-          name="step"
-          class="padding tab-content"
-          tab="tab1"
-        >
-          <!--步骤日志 -->
-          <div v-if="tabValue === 'step' && stepData && stepData.length > 0">
-            <StepOverview
-              :processTaskId="processTaskId"
-              :processTaskStepId="processTaskStepId"
-              :defaultStepData="stepData"
-              :currentStepId="defaultProcessTaskStepId"
-              :processTaskConfig="processTaskConfig"
-            ></StepOverview>
-          </div>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.activity"
-          id="CurrentProcessTaskStep"
-          :label="renderactivity()"
-          name="activity"
-          class="padding tab-content"
-          tab="tab1"
-        >
-          <!-- 时间线 -->
-          <ActivityOverview
-            v-if="tabValue === 'activity'"
-            :processTaskId="processTaskId"
-            :stepDataList="stepData"
-            :defaultActiveData="activeData"
-            :formConfig="processTaskConfig.formConfig"
-            @updataActive="(val)=>updataActive(val)"
-          ></ActivityOverview>
-        </TabPane>
-        <TabPane
-          v-if="showRelationDetail(actionConfig.tranferreport, processTaskConfig.processTaskRelationCount) && fixedPageTab.relevance"
-          :label="render => getTabPaneLabel(render, 'relevance', 'Relationlist')"
-          name="relevance"
-          class="tab-content"
-          tab="tab1"
-        >
-          <!-- 关联工单 -->
-          <RelationDetail
-            v-if="tabValue === 'relevance'"
-            :processTaskConfig="processTaskConfig"
-            :relationAuth="actionConfig.tranferreport"
-            @upActivityList="updateStepActive()"
-          ></RelationDetail>
-        </TabPane>
-        <TabPane
-          v-if="(actionConfig.markrepeat || repeatList.length > 0) && fixedPageTab.markrepeat"
-          :label="render => renderTabPaneLabel(render, 'markrepeat', $t('term.process.repeatedevent'))"
-          name="markrepeat"
-          class="tab-content"
-          tab="tab1"
-        >
-          <!-- 重复事件 -->
-          <MarkRepeat
-            v-if="tabValue === 'markrepeat'"
-            :processTaskId="processTaskId"
-            :actionConfig="actionConfig"
-            :repeatList="repeatList"
-            @closeRepeatTab="closeRepeatTab"
-          ></MarkRepeat>
-        </TabPane>
-        <TabPane
-          v-if="hasAccessoriesList && fixedPageTab.file"
-          :label="render => renderTabPaneLabel(render, 'file', $t('term.process.accessorieslist'))"
-          name="file"
-          class="padding tab-content"
-          tab="tab1"
-        >
-          <!-- 附件清单 -->
-          <AccessoriesList ref="processTaskFile" :processTaskId="processTaskId" @updateTabStatus="updateAccessoriesList"></AccessoriesList>
-        </TabPane>
-        <TabPane
-          v-if="fixedPageTab.reportingHistory"
-          :label="render => renderTabPaneLabel(render, 'reportingHistory', $t('term.process.reportinghistory'))"
-          name="reportingHistory"
-          class="padding tab-content"
-          tab="tab1"
-        >
-          <!-- 上报历史 -->
-          <ReportingHistory v-if="tabValue === 'reportingHistory'" :processTaskConfig="processTaskConfig"></ReportingHistory>
-        </TabPane>
       </Tabs>
     </div>
     <!-- 中间选项卡内容end -->
@@ -487,8 +488,7 @@ export default {
         relevance: true,
         markrepeat: true,
         file: true,
-        reportingHistory: true,
-        changeDetails: true
+        reportingHistory: true
       },
       loadingShow: false, // 解决固定页面之后，tab的顺序改变了，不是渲染前的顺序
       fixedPageList: [],
@@ -550,7 +550,54 @@ export default {
       externalData: {
         processTaskId: this.defaultProcessTaskId //工单id
       },
-      formAttributeDataMap: this.processTaskConfig && this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap)
+      formAttributeDataMap: this.processTaskConfig && this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap),
+      tabList: [],
+      defaultTabList: [
+        {
+          key: 'report', //上报内容
+          labelKey: 'ContentDetails',
+          top: false
+        },
+        {
+          key: 'preNode', //步骤信息
+          top: true
+        },
+        {
+          key: 'node', //节点信息
+          top: false
+        },
+        {
+          key: 'step', //步骤信息
+          labelKey: 'Steplist',
+          top: false
+        },
+        {
+          key: 'activity', //时间线
+          labelKey: 'TimeLine',
+          top: false
+        },
+        {
+          key: 'relevance', //关联工单
+          labelKey: 'Relationlist',
+          top: false
+        },
+        {
+          key: 'markrepeat', //重复事件
+          labelName: this.$t('term.process.repeatedevent'),
+          top: false
+        },
+        {
+          key: 'file', //附件清单
+          labelName: this.$t('term.process.accessorieslist'),
+          top: false
+        },
+        {
+          key: 'reportingHistory', //上报历史
+          labelName: this.$t('term.process.reportinghistory'),
+          top: false
+        }
+      ],
+      fileTable: null //附件清单
     };
   },
   created() {
@@ -563,12 +610,6 @@ export default {
     //场景表单：步骤进行中展示设置的节点场景或者默认场景
     if (this.processTaskStepConfig && this.processTaskStepConfig.formSceneUuid) {
       this.formSceneUuid = this.processTaskStepConfig.formSceneUuid;
-    }
-    //补充动态slot进fixedPageTab
-    if (this.slotList && this.slotList.length > 0) {
-      this.slotList.forEach(d => {
-        this.fixedPageTab[d.name] = true;
-      });
     }
   },
   mounted() {
@@ -591,16 +632,116 @@ export default {
     });
   },
   methods: {
+    initTabList() {
+      this.tabList = [];
+      this.fixedPageList = [];
+      let layoutList = this.processTaskConfig.processTaskTabLayout && this.processTaskConfig.processTaskTabLayout.layoutList || [];
+      if (!this.$utils.isEmpty(layoutList)) {
+        let tabValue = '';
+        layoutList = this.$utils.uniqueByField([...layoutList, ...this.defaultTabList], 'key');
+        layoutList.forEach(item => {
+          const tab = this.defaultTabList.find(val => val.key === item.key);
+          if (item.key === 'preNode') {
+            if (!this.$utils.isEmpty(this.viewStepData)) {
+              if (item.top) {
+                //前置步骤信息
+                this.viewStepData.forEach(step => {
+                  this.fixedPageList.push({
+                    tabValue: 'showStep' + step.id,
+                    label: step.name,
+                    item: step
+                  });
+                });
+              } else {
+                if (!tabValue) {
+                  tabValue = 'showStep' + this.viewStepData[0].id;
+                }
+              }
+            }
+          } else if (item.key === 'node') {
+            if (!this.$utils.isEmpty(this.slotList)) {
+              if (item.top) {
+                this.slotList.forEach(d => {
+                  this.fixedPageTab[d.name] = false;
+                  this.fixedPageList.push({
+                    tabValue: d.name,
+                    label: d.label
+                  });
+                });
+              } else { 
+              //补充动态slot进fixedPageTab
+                if (this.slotList && this.slotList.length > 0) {
+                  this.slotList.forEach(d => {
+                    this.fixedPageTab[d.name] = true;
+                  });
+                }
+              }
+            } 
+            if (!this.$utils.isEmpty(this.taskConfigList)) {
+              if (item.top) {
+                this.taskConfigList.forEach(d => {
+                  this.fixedPageTab[`subTask${d.id}`] = false;
+                  this.fixedPageList.push({
+                    tabValue: `subTask${d.id}`,
+                    label: this.subTask(d)
+                  });
+                });
+              }
+            }
+          } else {
+            if (item.top) {
+              let label = tab.labelName;
+              if (tab.labelKey) {
+                label = this.getTabPaneLabel('', item.key, tab.labelKey);
+              }
+              this.fixedPageList.push({
+                tabValue: item.key,
+                label: label
+              });
+            } else if (!tabValue) {
+              if (item.key === 'report') {
+                if (this.haveProcessTask(this.haveComment, this.startHandler, this.formConfig, this.processTaskConfig) && !this.$utils.isEmpty(this.formConfig)) {
+                  tabValue = item.key;
+                }
+              } else if (item.key === 'relevance') {
+                if (this.showRelationDetail(this.actionConfig.tranferreport, this.processTaskConfig.processTaskRelationCount)) {
+                  tabValue = item.key;
+                }
+              } else if (item.key === 'markrepeat') {
+                if (this.actionConfig.markrepeat || this.repeatList.length > 0) {
+                  tabValue = item.key;
+                }
+              } else {
+                tabValue = item.key;
+              }
+            }
+          }
+          this.tabList.push({
+            ...tab,
+            ...item
+          });
+        });
+        if (tabValue) {
+          this.tabValue = tabValue;
+        }
+      } else {
+        this.tabList = this.defaultTabList;
+      }
+    },
     async validFormRequired() {
       // 首次加载时需要判断表单是否必填，没填写时，需要高亮tab
       let valid = await this.formValid(this.processTaskConfig);
       return valid;
     },
-    updateAccessoriesList(val) {
-      this.hasAccessoriesList = true;
-      if (this.$utils.isEmpty(val) && this.$utils.isEmpty(val.tbodyList)) {
-        this.hasAccessoriesList = false;
-      }
+    getAllFileList() {
+      this.$api.process.processtask.getProcesstaskFileList({processTaskId: this.processTaskId}).then(res => {
+        if (res.Status == 'OK') {
+          this.fileTable = res.Return;
+          if (this.$utils.isEmpty(res.Return) || this.$utils.isEmpty(res.Return.tbodyList)) {
+            this.hasAccessoriesList = false;
+          }
+        }
+      });
     },
     filterCustommergeprocess(formConfig) {
       // 过滤银行定制批量合并上报组件
@@ -630,9 +771,11 @@ export default {
     initData() {
       this.wipeCenterDetail();
       this.getActivityList();
+      this.getAllFileList();
       this.getStepStatusList();
       this.getTaskComment();
       this.getRepeatList();
+      this.initTabList();
       this.$nextTick(() => {
         this.update();
       });
@@ -751,6 +894,7 @@ export default {
                   if (!this.$utils.isEmpty(step)) {
                     this.viewStepData.push(step);
                     this.fixedPageTab['showStep' + step.id] = false;
+                    //前置步骤信息
                     this.fixedPageList.push({
                       tabValue: 'showStep' + step.id,
                       label: step.name,
@@ -948,7 +1092,8 @@ export default {
       this.getActivityList();
       this.getStepStatusList();
       //更新附件清单
-      this.$refs.processTaskFile && this.$refs.processTaskFile.getAllFileList();
+      this.getAllFileList();
+      this.initTabList();
     },
     setStepform() {
       //拼接接口返回当前步骤uuid跟流程的表单授权跟表单的最终结果
@@ -1098,7 +1243,7 @@ export default {
         {
           on: { mouseover: () => this.handleMouseover(tabName), mouseleave: this.handleMouseleave }
         },
-        [h('span', { class: this.hasPendingTasks && tabName == 'changeDetails' ? 'require-label' : '' }, labelName), h('span', { class: this.mouseoverTabName == tabName || this.tabValue == tabName ? 'tsfont tsfont-pin-angle-o pl-sm' : '', attrs: { title: this.$t('page.fixedpage') }, on: { click: e => this.handleFixedPage(e, tabName, labelName, item) } })]
+        [h('span', { class: this.hasPendingTasks ? 'require-label' : '' }, labelName), h('span', { class: this.mouseoverTabName == tabName || this.tabValue == tabName ? 'tsfont tsfont-pin-angle-o pl-sm' : '', attrs: { title: this.$t('page.fixedpage') }, on: { click: e => this.handleFixedPage(e, tabName, labelName, item) } })]
       );
     },
     getTabPaneLabel(h, tabName, labelName) {
@@ -1123,6 +1268,10 @@ export default {
       if (this.processTaskConfig.formAttributeDataMap) {
         //表单重新渲染时，获取表单最新数据
         this.formAttributeDataMap = this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap);
+      }
+      let findTab = this.tabList.find(item => item.key === tabValue);
+      if (findTab) {
+        this.$set(findTab, 'top', true);
       }
       this.fixedPageList.push({
         tabValue: tabValue,
@@ -1160,6 +1309,16 @@ export default {
           });
         }
       }
+
+      // tabList中，取消固定页面时，将top设置为false
+      let findTab = this.tabList.find(item => item.key === tabValue);
+      if (!findTab) {
+        if (this.slotList.find(s => s.name === tabValue)) {
+          //步骤节点信息
+          findTab = this.tabList.find(item => item.key === 'node');
+        }
+      } 
+      findTab && this.$set(findTab, 'top', false);
     },
     handleMouseover(tabValue) {
       this.mouseoverTabName = '';
