@@ -10,8 +10,8 @@
     </TsFormItem>
     <TsFormItem
       labelWidth="250"
-      :label="$t('term.framework.importexporttableoption')"
-      tooltip="是否显示导出/导入(模板、表格)选项"
+      :label="$t('page.batchoperation')"
+      :tooltip="$t('term.framework.showimportexporttemplatetableoptions')"
       labelPosition="left"
       contentAlign="right"
     >

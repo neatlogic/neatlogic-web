@@ -1329,7 +1329,7 @@
     "mqtype": "Message queue type",
     "notavailable": "Not available",
     "mqhandler": "Message queue component",
-    "importexporttableoption": "Export/Import (Template, Table) Options"
+    "showimportexporttemplatetableoptions": "Display export/import (template, table) options"
   },
   "knowledge": {
     "document": "Document",

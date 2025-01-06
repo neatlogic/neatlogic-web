@@ -27,7 +27,7 @@
           {{ $t('term.framework.exporttable') }}
         </span>
       </template>
-      <template v-if="canAdd && canShowImportExportBtn">
+      <template v-if="canShowImportExportBtn">
         <Upload
           ref="upload"
           :show-upload-list="false"
