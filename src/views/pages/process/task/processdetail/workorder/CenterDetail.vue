@@ -477,10 +477,6 @@ export default {
     defaultTabValue: {
       type: String,
       default: ''
-    },
-    processTaskTabLayout: {
-      type: Array, //工单详情页全局默认tab布局
-      default: () => []
     }
   },
   data() {
@@ -492,8 +488,7 @@ export default {
         relevance: true,
         markrepeat: true,
         file: true,
-        reportingHistory: true,
-        changeDetails: true
+        reportingHistory: true
       },
       loadingShow: false, // 解决固定页面之后，tab的顺序改变了，不是渲染前的顺序
       fixedPageList: [],
@@ -616,7 +611,6 @@ export default {
     if (this.processTaskStepConfig && this.processTaskStepConfig.formSceneUuid) {
       this.formSceneUuid = this.processTaskStepConfig.formSceneUuid;
     }
-    // this.initData();
   },
   mounted() {
     this.$nextTick(() => {
@@ -1100,7 +1094,6 @@ export default {
       //更新附件清单
       this.getAllFileList();
       this.initTabList();
-      console.log('更新活动和步骤');
     },
     setStepform() {
       //拼接接口返回当前步骤uuid跟流程的表单授权跟表单的最终结果
