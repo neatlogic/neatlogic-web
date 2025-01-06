@@ -1329,7 +1329,7 @@
     "mqtype": "消息队列类型",
     "notavailable": "不可用",
     "mqhandler": "消息队列组件",
-    "importexporttableoption": "导出/导入(模版、表格)选项"
+    "showimportexporttemplatetableoptions": "是否显示导出/导入(模板、表格)选项"
   },
   "knowledge": {
     "document": "文档",
