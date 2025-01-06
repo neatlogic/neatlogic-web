@@ -140,6 +140,7 @@
           :repeatList="repeatList"
           :handlerStepInfo="autoexechandlerStepInfo"
           :formConfig="formConfig"
+          :fileTable="fileTable"
           @closeRepeatTab="closeRepeatTab"
           @upActivityList="updateStepActive()"
           @updataActive="(val)=>updataActive(val)"
@@ -344,7 +345,7 @@
               ></MarkRepeat>
             </TabPane>
           </template>
-          <template v-else-if="!tab.top && tabValue === 'file'">
+          <template v-else-if="!tab.top && tab.key === 'file'">
             <TabPane
               v-if="hasAccessoriesList && fixedPageTab.file"
               :key="index"
@@ -354,7 +355,7 @@
               tab="tab1"
             >
               <!-- 附件清单 -->
-              <AccessoriesList ref="processTaskFile" :processTaskId="processTaskId" :value="fileTable"></AccessoriesList>
+              <AccessoriesList ref="processTaskFile" :processTaskId="processTaskId" :fileTable="fileTable"></AccessoriesList>
             </TabPane>
           </template>
           <template v-else-if="!tab.top && tab.key === 'reportingHistory'">
@@ -680,9 +681,6 @@ export default {
                     this.fixedPageTab[d.name] = true;
                   });
                 }
-                // if (!tabValue && this.$slots[this.slotList[0].name]) {
-                //   tabValue = this.slotList[0].name;
-                // }
               }
             } 
             if (!this.$utils.isEmpty(this.taskConfigList)) {
@@ -694,10 +692,6 @@ export default {
                     label: this.subTask(d)
                   });
                 });
-              } else { 
-                // if (!tabValue) {
-                //   tabValue = `subTask${this.taskConfigList[0].id}`;
-                // }
               }
             }
           } else {
@@ -721,10 +715,6 @@ export default {
                 }
               } else if (item.key === 'markrepeat') {
                 if (this.actionConfig.markrepeat || this.repeatList.length > 0) {
-                  tabValue = item.key;
-                }
-              } else if (item.key === 'file') {
-                if (this.hasAccessoriesList) {
                   tabValue = item.key;
                 }
               } else {
