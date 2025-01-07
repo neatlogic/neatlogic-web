@@ -173,7 +173,6 @@
                 <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
                   <template v-if="processTaskConfig.formConfig._type == 'new'">
                     <TsSheet
-                      v-if="isShowForm"
                       ref="formSheet"
                       mode="read"
                       :value="formConfig"
@@ -550,7 +549,6 @@ export default {
       taskConfigList: [], //子任务策略
       autoexechandlerStepInfo: null, // 自动化信息
       lastFormConfig: null,
-      isShowForm: true,
       formSceneUuid: 'defaultSceneUuid',
       externalData: {
         processTaskId: this.defaultProcessTaskId //工单id
@@ -1472,18 +1470,18 @@ export default {
       if (name === 'report') {
         if (this.hasForm) {
           //重现渲染表单组件（重新计算），避免表单宽度为0
-          this.isShowForm = false;
+          this.$set(this.resizeStatusConfig, 'isReady', false);
           if (this.processTaskConfig.formAttributeDataMap) {
             //表单重新渲染时，获取表单最新数据
             this.formAttributeDataMap = this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap);
           }
           this.$nextTick(() => {
-            this.isShowForm = true;
-            this.$nextTick(async() => {
-              if (this.$refs.formSheet) {
-                await this.formValid(this.processTaskConfig);
-              }
-            });
+            this.$set(this.resizeStatusConfig, 'isReady', true);
+            // this.$nextTick(async() => {
+            //   if (this.$refs.formSheet) {
+            //     await this.formValid(this.processTaskConfig);
+            //   }
+            // });
           });
         }
       } else if (name === 'collection') {
