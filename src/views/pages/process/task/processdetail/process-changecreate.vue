@@ -75,6 +75,7 @@
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
                   :hasPendingTasks="hasPendingTasks"
+                  :slotList="[{ name: 'changecreate', label: $t('term.process.changedetail') }]"
                   @update="update"
                   @changeDisableCommet="(val)=>{
                     isDisableCommet = val

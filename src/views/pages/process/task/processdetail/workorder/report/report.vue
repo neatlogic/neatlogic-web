@@ -450,7 +450,13 @@ export default {
       return this.$api.process.processtask.updateChange(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
-          this.$emit('upActivityList');
+          this.$router.push({
+            path: '/task-detail',
+            query: {
+              processTaskId: this.processTaskId,
+              type: Date.now()
+            }
+          });
         }
       });
     },

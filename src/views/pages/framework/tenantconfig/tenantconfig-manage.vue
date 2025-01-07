@@ -55,11 +55,13 @@ export default {
         },
         {
           key: 'value',
-          title: this.$t('page.value')
+          title: this.$t('page.value'),
+          maxLength: 200
         },
         {
           key: 'description',
-          title: this.$t('page.description')
+          title: this.$t('page.description'),
+          maxLength: 200
         }
       ],
       tableData: {},

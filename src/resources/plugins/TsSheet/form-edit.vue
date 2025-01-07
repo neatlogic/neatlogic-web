@@ -610,8 +610,23 @@ export default {
               if (!findItem) {
                 this.$delete(t, 'component');
               } else {
-                this.$set(t.component, 'key', findItem.component.key);
-                this.$set(t.component, 'label', findItem.component.label);
+                let { component = {} } = findItem || {};
+                let {key = '', label = '', config = {}, currentVersion = '', customName = '', componentList = []} = component || {};
+                let {version = ''} = config || {};
+                this.$set(t.component, 'key', key);
+                this.$set(t.component, 'label', label);
+                if (t.component.hasOwnProperty('currentVersion')) {
+                  this.$set(t.component, 'currentVersion', currentVersion);
+                }
+                if (t.component.hasOwnProperty('customName')) {
+                  this.$set(t.component, 'customName', customName);
+                }
+                if (t.component.hasOwnProperty('componentList')) {
+                  this.$set(t.component, 'componentList', componentList);
+                }
+                if (t.component.hasOwnProperty('config')) {
+                  this.$set(t.component.config, 'version', version);
+                }
               }
             }
           });

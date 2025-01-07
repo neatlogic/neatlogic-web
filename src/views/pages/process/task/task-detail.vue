@@ -140,7 +140,7 @@ export default {
   props: {},
   data() {
     return {
-      processTaskData: {processTaskStepId: null, processTaskId: null},
+      processTaskData: {processTaskStepId: null, processTaskId: null, processTaskTabLayout: []},
       isMoreStep: true, //是否有多个可处理的步骤
       defaultStartList: [], //可处理的步骤列表
       actionList: [], //按钮权限列表
@@ -161,7 +161,8 @@ export default {
       replaceableTextConfig: {}, //文案替换
       setTimeGetData: null, //定时器
       isShowReasonDialog: false,
-      taskActionType: ''
+      taskActionType: '',
+      processTaskTabLayout: [] //工单详情页全局默认tab布局
     };
   },
   beforeCreate() {},
@@ -251,6 +252,7 @@ export default {
         if (res.Status == 'OK') {
           let processTask = res.Return.processTask;
           this.processTask = processTask;
+          this.$set(this.processTask, 'processTaskTabLayout', res.Return.processTaskTabLayout);
           this.$set(this.processTask, 'processTaskRelationCount', res.Return.processTaskRelationCount);
           if (processTask.currentProcessTaskStep) {
             this.handler = processTask.currentProcessTaskStep.handler;

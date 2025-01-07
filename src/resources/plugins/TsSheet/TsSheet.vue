@@ -427,7 +427,12 @@
         </span>
       </div>
     </div>
-    <FormItemKeyDialog v-if="isShowFormItemKeyDialog" :formItemList="formItemList" @close="closeFormItemKeyDialog"></FormItemKeyDialog>
+    <FormItemKeyDialog
+      v-if="isShowFormItemKeyDialog"
+      :formItemList="formItemList"
+      :copyedCell="copyedCell"
+      @close="closeFormItemKeyDialog"
+    ></FormItemKeyDialog>
   </div>
 </template>
 <script>
@@ -442,6 +447,13 @@ export default {
     return {
       enqueueReaction: this.enqueueReaction
     };
+  },
+  inject: {
+    resizeStatusConfig: { //表单宽度是否需要更新
+      default: () => ({
+        isReady: true
+      })
+    }
   },
   mixins: [conditionMixin],
   props: {
@@ -623,7 +635,9 @@ export default {
         } else if (this.handlerCell.component) {
           this.actionType = 'copy';
           this.copyedCell.component = this.$utils.deepClone(this.handlerCell.component);
-          this.isShowFormItemKeyDialog = true;
+          if (!this.copyedCell.component.notUniqueKey || !this.$utils.isEmpty(this.copyedCell.component.component)) {
+            this.isShowFormItemKeyDialog = true;
+          }
         }
       }
     },
@@ -2020,7 +2034,7 @@ export default {
         });
       }
     },
-    closeFormItemKeyDialog(key) {
+    closeFormItemKeyDialog(key, copyedCell) {
       this.isShowFormItemKeyDialog = false;
       if (this.actionType === 'add') {
         if (key) {
@@ -2031,6 +2045,8 @@ export default {
           this.copyedCell.component.key = key;
           this.copyedCell.component.uuid = this.$md5(key);
           this.updateCellAttrUuid(this.copyedCell);
+        } else if (copyedCell) {
+          this.copyedCell = copyedCell;
         } else {
           this.copyedCell = null;
         }
@@ -2440,6 +2456,14 @@ export default {
     hideComponentList: {
       handler(val) {
         this.$emit('updateHideComponentList', val);
+      },
+      deep: true
+    },
+    resizeStatusConfig: {
+      handler(val) {
+        if (val) {
+          this.calcContainerHeight();
+        }
       },
       deep: true
     }

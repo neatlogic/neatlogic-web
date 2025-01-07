@@ -12,8 +12,8 @@ let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || 
 importCustomConfig.forEach((filePath) => {
   if (filePath) {
     let {tableStyle, title, loginTitle, imgPath, publicPath = ''} = require(filePath);
-    process.env.VUE_APP_LOGINTITLE = loginTitle;
-    process.env.VUE_APP_TABLESTRYLE = tableStyle || 'welcome';
+    process.env.VUE_APP_LOGINTITLE = loginTitle || 'welcome';
+    process.env.VUE_APP_TABLESTRYLE = tableStyle;
     pageTitle = title;
     copyPath = publicPath;
     baseImg = imgPath;
