@@ -668,6 +668,9 @@ export default {
                     label: d.label
                   });
                 });
+                if (this.tabValue && this.slotList.find(d => d.name === this.tabValue)) {
+                  this.tabValue = '';
+                }
               } else { 
               //补充动态slot进fixedPageTab
                 if (this.slotList && this.slotList.length > 0) {
@@ -721,7 +724,7 @@ export default {
             ...item
           });
         });
-        if (tabValue) {
+        if (tabValue && !this.tabValue) {
           this.tabValue = tabValue;
         }
       } else {
