@@ -436,6 +436,11 @@ export default {
     ReplyContent: () => import('./CenterDetailComponent/reply-content'), // 回复内容
     ReportingHistory: () => import('./CenterDetailComponent/reporting-history') // 上报历史
   },
+  provide() { //有些表单可能需要这些参数，表单里面会接收这些参数
+    return {
+      resizeStatusConfig: this.resizeStatusConfig
+    };
+  },
   directives: { imgViewer, scrollHidden, download },
   mixins: [dealFormMix],
   props: {
@@ -597,7 +602,10 @@ export default {
           top: false
         }
       ],
-      fileTable: null //附件清单
+      fileTable: null, //附件清单
+      resizeStatusConfig: { //表单宽度是否需要更新
+        isReady: true 
+      }
     };
   },
   created() {
@@ -1478,6 +1486,12 @@ export default {
             });
           });
         }
+      } else if (name === 'collection') {
+        //工单集合，重新计算表单组件，避免表单宽度为0
+        this.$set(this.resizeStatusConfig, 'isReady', false);
+        this.$nextTick(() => {
+          this.$set(this.resizeStatusConfig, 'isReady', true);
+        });
       }
     },
     updateFormSheetCalc() {
