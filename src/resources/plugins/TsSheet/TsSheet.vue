@@ -448,6 +448,13 @@ export default {
       enqueueReaction: this.enqueueReaction
     };
   },
+  inject: {
+    resizeStatusConfig: { //表单宽度是否需要更新
+      default: () => ({
+        isReady: true
+      })
+    }
+  },
   mixins: [conditionMixin],
   props: {
     disabled: {
@@ -2449,6 +2456,14 @@ export default {
     hideComponentList: {
       handler(val) {
         this.$emit('updateHideComponentList', val);
+      },
+      deep: true
+    },
+    resizeStatusConfig: {
+      handler(val) {
+        if (val) {
+          this.calcContainerHeight();
+        }
       },
       deep: true
     }
