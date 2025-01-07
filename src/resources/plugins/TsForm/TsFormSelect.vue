@@ -58,7 +58,7 @@
             @blur="onSelectBlur"
           >
             <div ref="topHead" class="tag-contian" :class="{ 'nowselect-nowrap': multiple && nowrapHead, 'flex-start': isNowrap }">
-              <template v-if="multiple || isSingel">
+              <template v-if="multiple || isUseTagShow">
                 <Tag
                   v-for="(selected, nindex) in selectedList"
                   :key="nindex"
@@ -574,7 +574,7 @@ export default {
       addItem: null,
       readonlyTitle: null,
       hiddenLength: 0,
-      isSingel: false, // 单选，true单选，false否
+      isUseTagShow: false, //是否用标签显示
       moreSearchTip: {
         [this.showName ? this.showName : this.textName]: this.$t('page.searchformore'),
         [this.valueName]: 'moreSearchFlag',
@@ -716,7 +716,7 @@ export default {
         this.multiple ? (this.currentValue = [this.nodeList[0][this.valueName]]) : (this.currentValue = this.nodeList[0][this.valueName]);
         //是单选,进行赋值处理
         this.searchKeyWord = !this.multiple ? '' : '';
-        this.isSingel = !!(this.isSquare && this.currentSearch);
+        this.handleTagShow();
         this.onChangeValue();
       }
     },
@@ -744,7 +744,7 @@ export default {
         this.getDataByAjax(params, this.url, 'cancelAxios1').then(res => {
           this.nodeList = res.nodeList || [];
           this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
-          this.isSingel = !!(this.isSquare && this.currentSearch); // 可搜索时，并且显示tag标签时，才使用tag标签的样式
+          this.handleTagShow();
           this.setDefaultValue(); //默认选中第一个
           this.initValueByNodeList();
         });
@@ -775,7 +775,7 @@ export default {
         this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
         this.setDefaultValue();
         this.initValueByNodeList();
-        this.isSingel = !!(this.isSquare && this.currentSearch); // 可搜索并且是tag标签时，才显示tag标签的样式
+        this.handleTagShow();
         this.handleEchoFailedDefaultValue();
       }
     },
@@ -987,7 +987,7 @@ export default {
         if (!this.multiple) {
           //是单选,进行赋值处理
           this.searchKeyWord = '';
-          this.isSingel = !!(this.isSquare && this.currentSearch);
+          this.handleTagShow();
         }
         if (this.needCallback) {
           //成功回调设置为false
@@ -1181,7 +1181,7 @@ export default {
         this.multiple ? this.currentValue.splice(index, 1) : (this.currentValue = null);
       }
       this.multiple ? (this.searchKeyWord = '') : this.hideOption();
-      this.isSingel = !!(this.isSquare && this.currentSearch);
+      this.handleTagShow();
       this.onChangeValue();
       this.scrollTop();
     },
@@ -1438,6 +1438,10 @@ export default {
         utils.equalStr(arr, str) && (index = 0);
       }
       return index;
+    },
+    handleTagShow() {
+      // 处理下拉框选中内容后，是否用tag展示
+      this.isUseTagShow = !!this.isSquare;
     }
   },
   computed: {
@@ -1517,7 +1521,7 @@ export default {
           style.display = 'none';
         }
         if (!this.multiple) {
-          if (keyword || this.getPlaceholder || (this.isSingel && this.selectedList.length > 0) || (!this.multiple && this.currentSearch && !this.isSquare)) {
+          if (keyword || this.getPlaceholder || (this.isUseTagShow && this.selectedList.length > 0) || (!this.multiple && this.currentSearch && !this.isSquare)) {
             Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
           } else {
             style.width = '100%';
