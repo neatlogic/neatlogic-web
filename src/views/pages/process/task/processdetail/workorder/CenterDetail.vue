@@ -617,6 +617,12 @@ export default {
     if (this.processTaskStepConfig && this.processTaskStepConfig.formSceneUuid) {
       this.formSceneUuid = this.processTaskStepConfig.formSceneUuid;
     }
+    //补充动态slot进fixedPageTab
+    if (this.slotList && this.slotList.length > 0) {
+      this.slotList.forEach(d => {
+        this.$set(this.fixedPageTab, d.name, true);
+      });
+    }
   },
   mounted() {
     this.$nextTick(() => {
