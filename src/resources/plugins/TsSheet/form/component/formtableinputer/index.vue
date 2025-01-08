@@ -2,10 +2,10 @@
   <div v-if="!loadingShow">
     <div v-if="!disabled && !readonly" class="mb-sm action-group">
       <div v-if="canAdd" class="action-item">
-        <Button @click="addData()">{{ $t('dialog.title.addtarget',{'target':$t('page.data')}) }}</Button>
+        <Button @click="addData()">{{ $t('dialog.title.addtarget', { target: $t('page.data') }) }}</Button>
       </div>
       <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tableData.tbodyList)" class="action-item">
-        <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget',{'target':$t('page.data')}) }}</Button>
+        <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget', { target: $t('page.data') }) }}</Button>
       </div>
       <template v-if="canShowImportExportBtn">
         <span v-if="isShowExportExcelTemplate" class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
@@ -40,7 +40,7 @@
           type="drag"
           action=""
           class="forminputtable-upload ml-sm"
-          style="display: inline-block;"
+          style="display: inline-block"
         >
           <span class="tsfont-import">{{ $t('term.framework.importtable') }}</span>
         </Upload>
@@ -64,7 +64,7 @@
         </div>
       </template>
       <template v-if="config.isShowNumber" v-slot:number="{ index }">
-        {{ index+1 }}
+        {{ index + 1 }}
       </template>
       <template v-for="extra in extraList" :slot="extra.uuid" slot-scope="{ row, index }">
         <div :key="extra.uuid" @click.stop>
@@ -72,7 +72,7 @@
             :ref="'formitem_' + extra.uuid + '_' + index"
             :formItem="getExtraFormItem(extra, row)"
             :value="getDefaultValue(extra.uuid, row)"
-            :formData="{...filterUuid(initFormData), ...row}"
+            :formData="{ ...filterUuid(initFormData), ...row }"
             :formItemList="$utils.deepClone(extraList.concat(formItemList))"
             :showStatusIcon="false"
             mode="read"
@@ -83,11 +83,13 @@
             :isClearSpecifiedAttr="isClearSpecifiedAttr"
             :externalData="externalData"
             :rowUuid="row.uuid"
-            style="min-width:130px"
-            @change="(val)=>changeRow(val,extra.uuid, row)"
-            @updateCurrentRow="(data)=>{
-              updateCurrentRow(row, data);
-            }"
+            style="min-width: 130px"
+            @change="val => changeRow(val, extra.uuid, row)"
+            @updateCurrentRow="
+              data => {
+                updateCurrentRow(row, data);
+              }
+            "
           ></FormItem>
         </div>
       </template>
@@ -164,7 +166,7 @@ export default {
               if (findKey) {
                 //根据uuid不存在时根据key取值
                 this.$set(element, findKey.uuid, element[key]);
-              } 
+              }
               this.$delete(element, key);
             }
           }
@@ -251,12 +253,12 @@ export default {
       if (this.readonly) {
         this.$set(formItem.config, 'isReadOnly', true);
       }
-      return {...formItem};
+      return { ...formItem };
     },
     validConfig() {
       const errorList = [];
       if (!this.config.dataConfig || this.config.dataConfig.length == 0) {
-        errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseadd', {'target': this.$t('page.thead')}) });
+        errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseadd', { target: this.$t('page.thead') }) });
       } else {
         let isKey = true;
         this.config.dataConfig.forEach(element => {
@@ -266,22 +268,22 @@ export default {
           }
           if (['formselect', 'formradio', 'formcheckbox'].includes(element.handler)) {
             if (config.dataSource === 'static' && (!config.dataList || config.dataList.filter(d => d.value).length === 0)) {
-              errorList.push({ field: 'dataConfig', error: this.$t('form.validate.leastonetarget', {'target': this.$t('page.staticdatasource')}) });
+              errorList.push({ field: 'dataConfig', error: this.$t('form.validate.leastonetarget', { target: this.$t('page.staticdatasource') }) });
             } else if (config.dataSource === 'matrix') {
               if (!config.matrixUuid) {
-                errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.matrix')}) });
+                errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.matrix') }) });
               }
               if (!config.mapping.value) {
-                errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.framework.valfieldmapping')}) });
+                errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', { target: this.$t('term.framework.valfieldmapping') }) });
               }
               if (!config.mapping.text) {
-                errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.framework.showtextfieldmapping')}) });
+                errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', { target: this.$t('term.framework.showtextfieldmapping') }) });
               }
             } else if (config.dataSource === 'formtableinputer') {
               //选择表单输入组件
               let findItem = this.formItemList.find(item => item.uuid === config.formtableinputerUuid);
               if (!findItem) {
-                errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('message.framework.datasourceselectmessage')});
+                errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('message.framework.datasourceselectmessage') });
               } else {
                 if (findItem.config && findItem.config.dataConfig) {
                   let isValidMapping = true;
@@ -294,19 +296,19 @@ export default {
                     isValidMapping = false;
                   }
                   if (!isValidMapping) {
-                    errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.fieldmapping')}) });
+                    errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('form.placeholder.pleaseselect', { target: this.$t('page.fieldmapping') }) });
                   }
                 }
               }
             }
           } else if (['formdate', 'formtime'].includes(element.handler)) {
             if (!config.format) {
-              errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.format')}) });
+              errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.format') }) });
             }
           }
         });
         if (!isKey) {
-          errorList.push({ field: 'dataConfig', error: this.$t('form.validate.required', {'target': this.$t('term.framework.compkeyname')}) });
+          errorList.push({ field: 'dataConfig', error: this.$t('form.validate.required', { target: this.$t('term.framework.compkeyname') }) });
         }
       }
       return errorList;
@@ -338,15 +340,15 @@ export default {
     validAttrUnique() {
       // 校验属性是否唯一
       let errorList = [];
-      let {uniqueRuleConfig = [], dataConfig = []} = this.config || {};
+      let { uniqueRuleConfig = [], dataConfig = [] } = this.config || {};
       if (uniqueRuleConfig.length == 0) {
         //如果存在设置唯一标识的字段则校验是否重复
-        const uniqueRuleList = dataConfig.filter((v) => v.config && v.config['isUnique']);
+        const uniqueRuleList = dataConfig.filter(v => v.config && v.config['isUnique']);
         if (!this.$utils.isEmpty(uniqueRuleList)) {
           let existMap = {};
-          this.tableData.tbodyList.forEach((row) => {
+          this.tableData.tbodyList.forEach(row => {
             if (!this.$utils.isEmpty(row)) {
-              Object.keys(row).forEach((key) => {
+              Object.keys(row).forEach(key => {
                 const findUnunique = uniqueRuleList.find(d => d.uuid === key);
                 if (findUnunique && row[key]) {
                   if (existMap[key] && existMap[key].includes(row[key])) {
@@ -362,10 +364,13 @@ export default {
         return errorList;
       } else {
         //组合属性是否唯一
-        let attrLabel = dataConfig.filter((v) => v['uuid'] && uniqueRuleConfig.includes(v['uuid']) && v.label).map((item) => item.label).join(',');
+        let attrLabel = dataConfig
+          .filter(v => v['uuid'] && uniqueRuleConfig.includes(v['uuid']) && v.label)
+          .map(item => item.label)
+          .join(',');
         let tempValue = '';
         let existList = [];
-        this.tableData.tbodyList.forEach((row) => {
+        this.tableData.tbodyList.forEach(row => {
           if (!this.$utils.isEmpty(row)) {
             tempValue = '';
             Object.keys(row).forEach((key, index) => {
@@ -400,7 +405,7 @@ export default {
       // 设置表头
       let theadList = [];
       let theadUuidList = [];
-      this.tableData.theadList.forEach((item) => {
+      this.tableData.theadList.forEach(item => {
         if (item?.key && item?.title) {
           if (item.key != 'number' && !this.handleExcludeTable(item.key)) {
             // 序号是否需要显示
@@ -421,7 +426,7 @@ export default {
           bold: true,
           size: 12,
           name: '微软雅黑',
-          color: {argb: '000'}
+          color: { argb: '000' }
         };
         cell.alignment = {
           horizontal: 'center',
@@ -438,7 +443,7 @@ export default {
       for (let [index, item] of this.extraList.entries()) {
         if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
           // 遍历每一行，设置数据有效性
-          let {dataSource = '', dataList = [] } = item.config || {};
+          let { dataSource = '', dataList = [] } = item.config || {};
           let formulaeList = dataSource === 'matrix' ? resultConfig[item.uuid] || [] : this.handleDataList(dataList);
           let columnsIndex = index + 1;
           _worksheetDataSource.getColumn(columnsIndex).values = formulaeList; // 设置数据有效性
@@ -455,7 +460,7 @@ export default {
         }
       }
       // 导出表格
-      _workbook.xlsx.writeBuffer().then((buffer) => {
+      _workbook.xlsx.writeBuffer().then(buffer => {
         let _file = new Blob([buffer], {
           type: 'application/octet-stream'
         });
@@ -466,7 +471,7 @@ export default {
           } catch (error) {
             reject(this.$t('page.fail'));
           }
-        }).finally((message) => {
+        }).finally(message => {
           this.isShowExportExcelTemplate = true;
         });
       });
@@ -479,7 +484,7 @@ export default {
       let ajaxRequest = [];
       for (let [index, item] of this.extraList.entries()) {
         if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
-          let {dataSource, matrixUuid = '', mapping = {}} = item.config || {};
+          let { dataSource, matrixUuid = '', mapping = {} } = item.config || {};
           if (dataSource === 'matrix') {
             ajaxResult.push(item.uuid);
             ajaxConfig[item.uuid] = {
@@ -498,10 +503,10 @@ export default {
         const resultList = await Promise.all(ajaxRequest);
         if (resultList && resultList.length > 0) {
           resultList.forEach((res, index) => {
-            let {Status = '', Return = {}} = res || {};
-            let {dataList = []} = Return || {};
+            let { Status = '', Return = {} } = res || {};
+            let { dataList = [] } = Return || {};
             if (Status && Status == 'OK') {
-              resultConfig[ajaxResult[index]] = dataList.filter((a) => this.handleSpecialValue(a.text)).map((b) => this.handleSpecialValue(b.text));
+              resultConfig[ajaxResult[index]] = dataList.filter(a => this.handleSpecialValue(a.text)).map(b => this.handleSpecialValue(b.text));
             }
           });
         }
@@ -511,9 +516,7 @@ export default {
       return resultConfig;
     },
     handleDataList(dataList) {
-      const resultArray = dataList
-        .filter(item => item?.text)
-        .map(item => item.text);
+      const resultArray = dataList.filter(item => item?.text).map(item => item.text);
       return resultArray;
     },
     async exportExcel() {
@@ -523,7 +526,7 @@ export default {
       const _sheet1 = _workbook.addWorksheet('sheet1'); // 添加工作表
       let columnsList = [];
       let theadUuidList = []; // 获取所有表头的uuid列表
-      this.tableData.theadList.forEach((item) => {
+      this.tableData.theadList.forEach(item => {
         if (item?.key && item?.title) {
           if (item.key != 'number' && !this.handleExcludeTable(item.key)) {
             columnsList.push({
@@ -543,7 +546,7 @@ export default {
           bold: true,
           size: 12,
           name: '微软雅黑',
-          color: {argb: '000'}
+          color: { argb: '000' }
         };
         cell.alignment = {
           horizontal: 'center',
@@ -552,30 +555,31 @@ export default {
         };
       });
       let tbodyList = this.$utils.deepClone(this.tableData.tbodyList);
-      if (this.selectedIndexList.length > 0) { // 选中行导出
+      if (this.selectedIndexList.length > 0) {
+        // 选中行导出
         tbodyList = tbodyList.filter((v, index) => this.selectedIndexList.includes(index));
       }
-      tbodyList.forEach((item) => {
+      tbodyList.forEach(item => {
         // 添加数据
         if (item) {
           for (let key in item) {
             if (key != 'uuid' && key != '_selected') {
-              let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == key);
-              let {handler = ''} = selectedItem || {};
+              let selectedItem = this.extraList.find(extraItem => extraItem.uuid == key);
+              let { handler = '' } = selectedItem || {};
               if (handler == 'formtable') {
                 this.$set(item, [key], null);
-              } else if ((handler == 'formradio' || handler == 'formcheckbox' || handler == 'formselect')) {
+              } else if (handler == 'formradio' || handler == 'formcheckbox' || handler == 'formselect') {
                 this.$set(item, [key], this.handleSpecialValue(item[key]));
               } else if (handler == 'formupload') {
                 if (item[key] && item[key].length > 0) {
-                  this.$set(item, [key], item[key].map((v) => v.name).join(';'));
+                  this.$set(item, [key], item[key].map(v => v.name).join(';'));
                 } else {
                   this.$set(item, [key], '');
                 }
               }
             }
           }
-          _sheet1.addRow({...item});
+          _sheet1.addRow({ ...item });
         }
       });
       // 数据验证
@@ -587,7 +591,7 @@ export default {
       for (let [index, item] of this.extraList.entries()) {
         if (theadUuidList.includes(item.uuid) && selectCpmponentList.includes(item.handler)) {
           // 遍历每一行，设置数据有效性
-          let {dataSource = '', dataList = [] } = item.config || {};
+          let { dataSource = '', dataList = [] } = item.config || {};
           let formulaeList = dataSource === 'matrix' ? resultConfig[item.uuid] || [] : this.handleDataList(dataList);
           let columnsIndex = index + 1;
           _worksheetDataSource.getColumn(columnsIndex).values = formulaeList; // 设置数据有效性
@@ -604,7 +608,7 @@ export default {
         }
       }
       // 导出表格
-      _workbook.xlsx.writeBuffer().then((buffer) => {
+      _workbook.xlsx.writeBuffer().then(buffer => {
         let _file = new Blob([buffer], {
           type: 'application/octet-stream'
         });
@@ -615,7 +619,7 @@ export default {
           } catch (error) {
             reject(this.$t('page.fail'));
           }
-        }).finally((message) => {
+        }).finally(message => {
           this.isShowExportExcel = true;
         });
       });
@@ -623,7 +627,7 @@ export default {
     handleCellType(uuid) {
       // 设置单元格类型
       let componentsList = ['formdate', 'formtime'];
-      const foundItem = this.extraList.find((item) => {
+      const foundItem = this.extraList.find(item => {
         return item.uuid && item.uuid === uuid && componentsList.includes(item.handler);
       });
       const formatObj = foundItem ? { numFmt: '@' } : {};
@@ -632,7 +636,7 @@ export default {
     handleExcludeTable(uuid) {
       // 处理排除表格输入组件
       let componentsList = ['formtable'];
-      const foundItem = this.extraList.find((item) => {
+      const foundItem = this.extraList.find(item => {
         return item.uuid && item.uuid === uuid && componentsList.includes(item.handler);
       });
       return foundItem;
@@ -655,46 +659,47 @@ export default {
       } else if (typeof value == 'object' && value?.['text']) {
         return value['text'];
       } else if (Array.isArray(value)) {
-        valueList = value.map((item) => item['text']).filter(Boolean);
+        valueList = value.map(item => item['text']).filter(Boolean);
       }
       return valueList.join(',');
     },
     handleFormatError(file) {
       this.$Notice.warning({
         title: this.$t('message.incorrectformat'),
-        desc: this.$t('form.validate.fileformat', {target: file.name})
+        desc: this.$t('form.validate.fileformat', { target: file.name })
       });
     },
     handleMaxSize(file) {
       this.$Notice.warning({
-        title: this.$t('page.uploadfilelimit', {target: this.maxSize / 1024}),
+        title: this.$t('page.uploadfilelimit', { target: this.maxSize / 1024 }),
         desc: `${file.name}`
       });
     },
     handleBeforeUpload(file) {
       const workbook = new ExcelJS.Workbook();
-      workbook.xlsx.load(file).then((workbook) => {
+      workbook.xlsx.load(file).then(workbook => {
         workbook?.eachSheet((sheet, id) => {
+          if (id != 1) return; //只需要读取第一个sheet的内容，后面的sheet内容是做数据引用的，不需要读取
           sheet?.eachRow(async(row, rowIndex) => {
-            if (rowIndex != 1) {
-              let rowValue = {};
-              let rowValuesList = this.$utils.deepClone(row.values);
-              rowValuesList.splice(0, 1); // 删除excel第一列的序号
-              for (let tIndex = 0; tIndex < this.tableData.theadList.length; tIndex++) {
-                if (this.tableData.theadList[tIndex] && this.tableData.theadList[tIndex].key != 'selection' && this.tableData.theadList[tIndex].key != 'number') {
-                  let value = await this.byComponentTypeSetValue(this.tableData.theadList[tIndex].key, rowValuesList[tIndex - 2]);
-                  this.loading = false;
-                  this.$set(rowValue, [this.tableData.theadList[tIndex].key], value);
-                }
-              }
-              let item = {...(this.tableData.tbodyList[rowIndex - 2] || {}), ...rowValue};
-              if (!this.$utils.isEmpty(this.tableData.tbodyList[rowIndex - 2])) {
-                // 不为空时，修改数组对象里面的值
-                this.tableData.tbodyList.splice(rowIndex - 2, 1, item);
-              } else {
-                // 空数组时，新增一条新的数据
-                this.tableData.tbodyList.push({...item, uuid: this.$utils.setUuid() });
-              }
+            if (rowIndex === 1) return; // 跳过第一行
+            let rowValue = {};
+            const rowValuesList = this.$utils.deepClone(row.values).slice(1); // 删除第一列序号
+            let tbodyIndex = rowIndex - 2;
+            let tbodyRow = this.tableData.tbodyList[tbodyIndex];
+            let theadList = this.tableData.theadList.filter(v => v.key != 'selection' && v.key != 'number');
+            for (let tIndex = 0; tIndex < theadList.length; tIndex++) {
+              let theadKey = theadList[tIndex].key;
+              let value = await this.byComponentTypeSetValue(theadKey, rowValuesList[tIndex - 1]);
+              this.loading = false;
+              this.$set(rowValue, [theadKey], value);
+            }
+            let item = { ...(tbodyRow || {}), ...rowValue };
+            if (!this.$utils.isEmpty(tbodyRow)) {
+              // 不为空时，修改数组对象里面的值
+              this.tableData.tbodyList.splice(tbodyIndex, 1, item);
+            } else {
+              // 空数组时，新增一条新的数据
+              this.tableData.tbodyList.push({ ...item, uuid: this.$utils.setUuid() });
             }
           });
         });
@@ -703,12 +708,12 @@ export default {
     async byComponentTypeSetValue(uuid, value) {
       // 根据组件的类型，设置回显值
       let resultValue;
-      let selectedItem = this.extraList.find((extraItem) => extraItem.uuid == uuid);
-      let {config = {}, handler = ''} = selectedItem || {};
+      let selectedItem = this.extraList.find(extraItem => extraItem.uuid == uuid);
+      let { config = {}, handler = '' } = selectedItem || {};
       if (!this.$utils.isEmpty(value)) {
-        let {dataSource = '', isMultiple = false, matrixUuid = '', mapping = {}} = config || {};
+        let { dataSource = '', isMultiple = false, matrixUuid = '', mapping = {} } = config || {};
         if (dataSource === 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox')) {
-        // 矩阵
+          // 矩阵
           resultValue = [];
           if (matrixUuid && !this.$utils.isEmpty(mapping) && mapping.text && mapping.value) {
             this.loading = true;
@@ -722,10 +727,10 @@ export default {
                 }
               ]
             };
-            await this.$api.framework.form.searchMatrixColumnData(params).then((res) => {
+            await this.$api.framework.form.searchMatrixColumnData(params).then(res => {
               if (res && res.Status == 'OK') {
-                let tbodyList = res.Return && res.Return.tbodyList || [];
-                tbodyList.forEach((item) => {
+                let tbodyList = (res.Return && res.Return.tbodyList) || [];
+                tbodyList.forEach(item => {
                   if (item && item.dataList) {
                     resultValue.push(...item.dataList);
                   }
@@ -733,7 +738,7 @@ export default {
               }
             });
           }
-        } else if (dataSource == 'static' && (isMultiple || (handler == 'formcheckbox'))) {
+        } else if (dataSource == 'static' && (isMultiple || handler == 'formcheckbox')) {
           resultValue = [];
           resultValue = typeof value == 'string' ? value.split(',') : [typeof value == 'number' ? String(value) : value];
         } else {
@@ -742,7 +747,8 @@ export default {
       }
       return resultValue;
     },
-    getConditionFormItemList() { //获取可以作为联动的条件的组件(外部组件和当前行下组件的属性)
+    getConditionFormItemList() {
+      //获取可以作为联动的条件的组件(外部组件和当前行下组件的属性)
       this.conditionFormItemUuidList = [];
       let allFormItem = this.formItemList.concat(this.formItem.config.dataConfig);
       let formItemList = allFormItem.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
@@ -768,7 +774,7 @@ export default {
   filter: {},
   computed: {
     hasColumn() {
-      if (this.mode != 'edit' && (this.mode != 'editSubform') && this.config.dataConfig && this.config.dataConfig.length > 0) {
+      if (this.mode != 'edit' && this.mode != 'editSubform' && this.config.dataConfig && this.config.dataConfig.length > 0) {
         return true;
       }
       return false;
@@ -797,7 +803,7 @@ export default {
               if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
                 const defaultValueField = dataConfig.config.defaultValueField;
                 const defaultTextField = dataConfig.config.defaultTextField;
-                return {text: row[defaultValueField], value: row[defaultTextField]};
+                return { text: row[defaultValueField], value: row[defaultTextField] };
               } else {
                 return row[defaultValue];
               }
