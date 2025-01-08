@@ -102,7 +102,9 @@
         @select="selectFormItem"
         @setExtendValue="setExtendValue"
       ></component>
-      <div v-else class="text-warning">{{ $t('page.commercialcomponent') }}</div>
+      <div v-else class="text-warning">
+        {{ getComponentTip(formItem) }}
+      </div>
     </template>
     <CustomItem
       v-else-if="isShowComponent(formItem) && formItem.type === 'custom'"
@@ -603,6 +605,14 @@ export default {
         component = false;
       }
       return component;
+    },
+    getComponentTip() {
+      return (formItem) => {
+        const { label = '', customName = '' } = formItem || {};
+        const nameParts = customName.split('-');
+        const componentName = nameParts.length > 1 ? nameParts[0] : customName;
+        return `【${label}(${componentName})】${this.$t('term.framework.componentnoexist')}`;
+      };
     }
   },
   watch: {}

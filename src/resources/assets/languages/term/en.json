@@ -1329,7 +1329,8 @@
     "mqtype": "Message queue type",
     "notavailable": "Not available",
     "mqhandler": "Message queue component",
-    "showimportexporttemplatetableoptions": "Display export/import (template, table) options"
+    "showimportexporttemplatetableoptions": "Display export/import (template, table) options",
+    "componentnoexist": "component does not exist"
   },
   "knowledge": {
     "document": "Document",
