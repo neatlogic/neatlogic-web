@@ -668,7 +668,7 @@ export default {
             if (!this.$utils.isEmpty(this.slotList)) {
               if (item.top) {
                 this.slotList.forEach(d => {
-                  this.fixedPageTab[d.name] = false;
+                  this.$set(this.fixedPageTab, d.name, false);
                   this.fixedPageList.push({
                     tabValue: d.name,
                     label: d.label
@@ -681,7 +681,7 @@ export default {
               //补充动态slot进fixedPageTab
                 if (this.slotList && this.slotList.length > 0) {
                   this.slotList.forEach(d => {
-                    this.fixedPageTab[d.name] = true;
+                    this.$set(this.fixedPageTab, d.name, true);
                   });
                 }
               }
