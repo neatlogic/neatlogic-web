@@ -47,7 +47,7 @@
             ></component>
             <div v-else>
               <Alert show-icon>
-                {{ $t('page.commercialcomponenttip') }}
+                {{ getComponentTip(formItem) }}
               </Alert>
             </div>
           </template>
@@ -481,6 +481,14 @@ export default {
           component = false;
         }
         return component;
+      };
+    },
+    getComponentTip() {
+      return (formItem) => {
+        const { label = '', customName = '' } = formItem || {};
+        const nameParts = customName.split('-');
+        const componentName = nameParts.length > 1 ? nameParts[0] : customName;
+        return `【${label}(${componentName})】${this.$t('term.framework.componentnoexist')}`;
       };
     }
   },
