@@ -707,6 +707,9 @@ export default {
                 tabValue: item.key,
                 label: label
               });
+              if (item.top && this.tabValue === item.key) {
+                this.tabValue = '';
+              }
             } else if (!tabValue) {
               if (item.key === 'report') {
                 if (this.haveProcessTask(this.haveComment, this.startHandler, this.formConfig, this.processTaskConfig) && !this.$utils.isEmpty(this.formConfig)) {
