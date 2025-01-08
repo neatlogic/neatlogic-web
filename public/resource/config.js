@@ -77,7 +77,8 @@ function getUrlParams(url) {
       const keyValue = pair.split('=');
       const key = decodeURIComponent(keyValue[0]);
       const value = keyValue.length > 1 ? decodeURIComponent(keyValue[1]) : '';
-      params[key] = value;
+      const newKey = key.replace(/_/g, '-');// Nginx 默认会过滤掉包含下划线的 HTTP 头部字段。这是因为 Nginx 将 HTTP 头部字段中的下划线视为不符合标准的分隔符。
+      params[newKey] = value;
     }
   }
   return params;
