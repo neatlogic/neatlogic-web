@@ -336,6 +336,19 @@
               ></TsFormDatePicker>
             </TsFormItem>
           </template>
+          <template v-else-if="propertyLocal.handler === 'formtable'" v-slot:config>
+            <TsFormItem :label="$t('term.framework.thsetting')" required>
+              <TableConfig
+                ref="formitem_table"
+                :formItemList="allFormItemList"
+                :config="propertyLocal.config"
+                :source="source"
+                @setDataConfig="(dataConfig)=>{
+                  $set(propertyLocal.config, 'dataConfig', dataConfig);
+                }"
+              ></TableConfig>
+            </TsFormItem>
+          </template>
           <template v-else-if="propertyLocal.handler === 'formexpression'" v-slot:config>
             <TsFormItem :label="$t('term.cmdb.expression')">
               <ExpressionSetting
@@ -499,13 +512,19 @@ export default {
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
     ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue'),
     FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
-    ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue')
+    ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue'),
+    TableConfig: () => import('@/resources/plugins/TsSheet/form/config/formtableinputer-conf/formtableinputer-table-config.vue')
   },
   props: {
     formItemUuid: { type: String }, //表单组件uuid
     formItemConfig: { type: Object }, //表单组件配置
     property: { type: Object }, //属性配置
-    formItemList: {typeof: Array}
+    formItemList: {typeof: Array},
+    isNeedTable: { //是否需要引用table
+      type: Boolean,
+      default: true
+    },
+    source: {type: String, default: ''}
   },
   data() {
     return {
@@ -741,6 +760,16 @@ export default {
           this.$set(this.propertyLocal, 'isDynamicValue', true);
         }
       }
+      if (this.isNeedTable) {
+        let findFormItem = this.formConfig.find(item => item.name === 'handler');
+        if (findFormItem) {
+          findFormItem.dataList.push({ text: 'table', value: 'formtable' });
+        }
+      }
+      if (this.propertyLocal.handler != 'formtable') {
+        this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
+        this.$set(this.propertyLocal.reaction, 'setvalue', this.propertyLocal.reaction.setvalue || {});
+      }
       this.handleUniqueAttrHidden(this.propertyLocal.handler);
     },
     close() {
@@ -913,6 +942,13 @@ export default {
           this.$set(this.propertyLocal, 'isDynamicValue', true);
         } else {
           this.$set(this.propertyLocal, 'isDynamicValue', false);
+        }
+        if (val != 'formtable') {
+          this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
+          this.$set(this.propertyLocal.reaction, 'setvalue', {});
+        } else {
+          this.$delete(this.reactionName, 'setvalue');
+          this.$delete(this.propertyLocal.reaction, 'setvalue');
         }
       });
     }
