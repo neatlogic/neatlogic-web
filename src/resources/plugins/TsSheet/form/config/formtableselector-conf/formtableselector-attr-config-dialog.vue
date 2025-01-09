@@ -21,7 +21,7 @@
               :disabled="propertyLocal.handler === 'formexpression'? true : false"
             ></TsFormSwitch>
           </template>
-          <template v-if="['formtext', 'formtextarea'].includes(propertyLocal.handler)" v-slot:config>
+          <template v-if="['formtext', 'formtextarea', 'formpassword'].includes(propertyLocal.handler)" v-slot:config>
             <TsFormItem v-if="propertyLocal.handler=== 'formtext'" :label="$t('form.placeholder.checkrule')">
               <TsFormSelect
                 v-model="propertyLocal.config.validate"
@@ -92,6 +92,18 @@
                   :type="propertyLocal.handler.replace('form', '')"
                 ></TsFormInput>
               </div>
+            </TsFormItem>
+            <TsFormItem v-if="propertyLocal.handler === 'formpassword'" :label="$t('page.viewtarget',{'target':$t('page.auth')})">
+              <UserSelect
+                :value="propertyLocal.config.viewPasswordAuthorityList"
+                :multiple="true"
+                :transfer="true"
+                :groupList="['user', 'role', 'team']"
+                @on-change="val => {
+                  $set(propertyLocal.config, 'viewPasswordAuthorityList', val)
+
+                }"
+              ></UserSelect>
             </TsFormItem>
           </template>
           <template v-else-if="['formselect', 'formradio', 'formcheckbox'].includes(propertyLocal.handler)" v-slot:config>
@@ -481,6 +493,7 @@ export default {
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
     StaticDataEditor: () => import('../common/static-data-editor.vue'),
     ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
@@ -569,6 +582,7 @@ export default {
           dataList: [
             { text: this.$t('page.input'), value: 'formtext' },
             { text: this.$t('page.textfield'), value: 'formtextarea' },
+            { text: this.$t('page.password'), value: 'formpassword' },
             { text: this.$t('page.select'), value: 'formselect' },
             { text: this.$t('page.radio'), value: 'formradio' },
             { text: this.$t('page.checkbox'), value: 'formcheckbox' },
