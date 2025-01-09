@@ -137,10 +137,17 @@
                 textName="name"
                 valueName="uuid"
                 transfer
-                @on-change="(val)=>{
-                  changeMatrixUuid(val);
+                @on-change="(val, valueConfig, selectItem)=>{
+                  changeMatrixUuid({value: val, selectItem: selectItem});
                 }"
-              ></TsFormSelect>
+              >
+                <template v-slot:option="{item}">
+                  <div>
+                    {{ item.name }}
+                    <span v-if="item.type" class="text-grey cen-align">({{ item.type }})</span>
+                  </div>
+                </template>
+              </TsFormSelect>
             </TsFormItem>
             <TsFormItem v-if="propertyLocal.config.dataSource === 'matrix' && propertyLocal.config.matrixUuid && mappingDataList.length > 0" :label="$t('page.fieldmapping')">
               <div class="bg-block padding-md radius-md">
@@ -175,6 +182,16 @@
                   </Col>
                 </Row>
               </div>
+            </TsFormItem>
+            <TsFormItem v-if="canShowAddBtn(propertyLocal)" :label="$t('page.newtarget',{'target':$t('page.data')})" :tooltip="$t('term.framework.custommaxtrixselectaddbtndesc')">
+              <TsFormSwitch
+                :value="propertyLocal.config.isAddData"
+                :trueValue="true"
+                :falseValue="false"
+                @change="(val)=> {
+                  $set(propertyLocal.config,'isAddData',val);
+                }"
+              ></TsFormSwitch>
             </TsFormItem>
             <TsFormItem :label="$t('page.hiddenattr')">
               <TsFormSelect
@@ -833,10 +850,13 @@ export default {
       }
       return isValid;
     },
-    changeMatrixUuid(val) {
+    changeMatrixUuid({value, selectItem}) {
       this.$set(this.propertyLocal.config, 'defaultValue', null);
       this.$set(this.propertyLocal.config, 'mapping', {});
-      if (val) {
+      this.$set(this.propertyLocal.config, 'isAddData', false);
+      let {type = ''} = selectItem || {};
+      this.$set(this.propertyLocal.config, 'matrixType', type);
+      if (value) {
         this.$set(this.propertyLocal.reaction, 'filter', {});
       } else {
         this.$delete(this.propertyLocal.reaction, 'filter');
@@ -992,6 +1012,13 @@ export default {
         }
       });
       return newList;
+    },
+    canShowAddBtn() {
+      return (propertyLocal) => {
+        let {handler = '', config = {}} = propertyLocal || {};
+        let {matrixType = ''} = config || {};
+        return !!((handler == 'formselect' && matrixType == 'custom')); // 下拉框并且是自定义矩阵，才显示新增按钮
+      };
     }
   },
   watch: {
