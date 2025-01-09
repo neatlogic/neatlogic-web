@@ -30,7 +30,7 @@ export default {
   },
   oldSetting: {
     shape: 'L-rectangle-50%:R-rectangle-50%',
-    icon: '#tsfont-auto'
+    icon: '#tsfont-duixiangcunchu'
   },
   validateEdge({ edge, editor, sourceCell, targetCell }) {
     const allNextNodeIdList = editor.getAllNextNodeId(targetCell, 'forward');
