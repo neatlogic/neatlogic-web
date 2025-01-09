@@ -701,6 +701,9 @@ export default {
                     label: this.subTask(d)
                   });
                 });
+              } else {
+                tabValue = 'subTask' + this.taskConfigList[0].id;
+                this.tabValue = '';
               }
             }
           } else {
