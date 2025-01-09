@@ -169,6 +169,7 @@
       :formItemConfig="config"
       :property="currentProperty"
       :formItemList="formItemList"
+      :source="source"
       @close="closeAttrConfigDialog"
     ></AttrConfigDialog>
   </div>
