@@ -839,7 +839,7 @@ const methods = {
   },
   copyText(id, copyText) {
     // 复制内容
-    const dom = id ? document.querySelector(id) : '';
+    const dom = id ? document.querySelector(id) : null;
     let copyContent = dom && dom.innerText ? dom.innerText.trim() : copyText;
     if (copyContent) {
       const textarea = document.createElement('textarea');

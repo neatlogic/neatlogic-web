@@ -209,7 +209,6 @@ export default {
   destroyed() {},
   methods: {
     copySql(id) {
-      console.log(id, 'id');
       this.$utils.copyText(id);
     },
     openStatusDialog() {
