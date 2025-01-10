@@ -21,7 +21,7 @@
               :disabled="propertyLocal.handler === 'formexpression'? true : false"
             ></TsFormSwitch>
           </template>
-          <template v-if="['formtext', 'formtextarea'].includes(propertyLocal.handler)" v-slot:config>
+          <template v-if="['formtext', 'formtextarea', 'formpassword'].includes(propertyLocal.handler)" v-slot:config>
             <TsFormItem v-if="propertyLocal.handler=== 'formtext'" :label="$t('form.placeholder.checkrule')">
               <TsFormSelect
                 v-model="propertyLocal.config.validate"
@@ -93,6 +93,18 @@
                 ></TsFormInput>
               </div>
             </TsFormItem>
+            <TsFormItem v-if="propertyLocal.handler === 'formpassword'" :label="$t('page.viewtarget',{'target':$t('page.auth')})">
+              <UserSelect
+                :value="propertyLocal.config.viewPasswordAuthorityList"
+                :multiple="true"
+                :transfer="true"
+                :groupList="['user', 'role', 'team']"
+                @on-change="val => {
+                  $set(propertyLocal.config, 'viewPasswordAuthorityList', val)
+
+                }"
+              ></UserSelect>
+            </TsFormItem>
           </template>
           <template v-else-if="['formselect', 'formradio', 'formcheckbox'].includes(propertyLocal.handler)" v-slot:config>
             <TsFormItem :label="$t('page.multipleselection')">
@@ -137,10 +149,17 @@
                 textName="name"
                 valueName="uuid"
                 transfer
-                @on-change="(val)=>{
-                  changeMatrixUuid(val);
+                @on-change="(val, valueConfig, selectItem)=>{
+                  changeMatrixUuid({value: val, selectItem: selectItem});
                 }"
-              ></TsFormSelect>
+              >
+                <template v-slot:option="{item}">
+                  <div>
+                    {{ item.name }}
+                    <span v-if="item.type" class="text-grey cen-align">({{ item.type }})</span>
+                  </div>
+                </template>
+              </TsFormSelect>
             </TsFormItem>
             <TsFormItem v-if="propertyLocal.config.dataSource === 'matrix' && propertyLocal.config.matrixUuid && mappingDataList.length > 0" :label="$t('page.fieldmapping')">
               <div class="bg-block padding-md radius-md">
@@ -175,6 +194,16 @@
                   </Col>
                 </Row>
               </div>
+            </TsFormItem>
+            <TsFormItem v-if="canShowAddBtn(propertyLocal)" :label="$t('page.newtarget',{'target':$t('page.data')})" :tooltip="$t('term.framework.custommaxtrixselectaddbtndesc')">
+              <TsFormSwitch
+                :value="propertyLocal.config.isAddData"
+                :trueValue="true"
+                :falseValue="false"
+                @change="(val)=> {
+                  $set(propertyLocal.config,'isAddData',val);
+                }"
+              ></TsFormSwitch>
             </TsFormItem>
             <TsFormItem :label="$t('page.hiddenattr')">
               <TsFormSelect
@@ -305,6 +334,19 @@
                 :type="propertyLocal.handler.replace('form', '')"
                 :format="propertyLocal.config.format"
               ></TsFormDatePicker>
+            </TsFormItem>
+          </template>
+          <template v-else-if="propertyLocal.handler === 'formtable'" v-slot:config>
+            <TsFormItem :label="$t('term.framework.thsetting')" required>
+              <TableConfig
+                ref="formitem_table"
+                :formItemList="allFormItemList"
+                :config="propertyLocal.config"
+                :source="source"
+                @setDataConfig="(dataConfig)=>{
+                  $set(propertyLocal.config, 'dataConfig', dataConfig);
+                }"
+              ></TableConfig>
             </TsFormItem>
           </template>
           <template v-else-if="propertyLocal.handler === 'formexpression'" v-slot:config>
@@ -464,18 +506,25 @@ export default {
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
     StaticDataEditor: () => import('../common/static-data-editor.vue'),
     ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
     ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue'),
     FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
-    ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue')
+    ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue'),
+    TableConfig: () => import('@/resources/plugins/TsSheet/form/config/formtableinputer-conf/formtableinputer-table-config.vue')
   },
   props: {
     formItemUuid: { type: String }, //表单组件uuid
     formItemConfig: { type: Object }, //表单组件配置
     property: { type: Object }, //属性配置
-    formItemList: {typeof: Array}
+    formItemList: {typeof: Array},
+    isNeedTable: { //是否需要引用table
+      type: Boolean,
+      default: true
+    },
+    source: {type: String, default: ''}
   },
   data() {
     return {
@@ -552,6 +601,7 @@ export default {
           dataList: [
             { text: this.$t('page.input'), value: 'formtext' },
             { text: this.$t('page.textfield'), value: 'formtextarea' },
+            { text: this.$t('page.password'), value: 'formpassword' },
             { text: this.$t('page.select'), value: 'formselect' },
             { text: this.$t('page.radio'), value: 'formradio' },
             { text: this.$t('page.checkbox'), value: 'formcheckbox' },
@@ -710,6 +760,16 @@ export default {
           this.$set(this.propertyLocal, 'isDynamicValue', true);
         }
       }
+      if (this.isNeedTable) {
+        let findFormItem = this.formConfig.find(item => item.name === 'handler');
+        if (findFormItem) {
+          findFormItem.dataList.push({ text: 'table', value: 'formtable' });
+        }
+      }
+      if (this.propertyLocal.handler != 'formtable') {
+        this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
+        this.$set(this.propertyLocal.reaction, 'setvalue', this.propertyLocal.reaction.setvalue || {});
+      }
       this.handleUniqueAttrHidden(this.propertyLocal.handler);
     },
     close() {
@@ -833,10 +893,13 @@ export default {
       }
       return isValid;
     },
-    changeMatrixUuid(val) {
+    changeMatrixUuid({value, selectItem}) {
       this.$set(this.propertyLocal.config, 'defaultValue', null);
       this.$set(this.propertyLocal.config, 'mapping', {});
-      if (val) {
+      this.$set(this.propertyLocal.config, 'isAddData', false);
+      let {type = ''} = selectItem || {};
+      this.$set(this.propertyLocal.config, 'matrixType', type);
+      if (value) {
         this.$set(this.propertyLocal.reaction, 'filter', {});
       } else {
         this.$delete(this.propertyLocal.reaction, 'filter');
@@ -879,6 +942,13 @@ export default {
           this.$set(this.propertyLocal, 'isDynamicValue', true);
         } else {
           this.$set(this.propertyLocal, 'isDynamicValue', false);
+        }
+        if (val != 'formtable') {
+          this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
+          this.$set(this.propertyLocal.reaction, 'setvalue', {});
+        } else {
+          this.$delete(this.reactionName, 'setvalue');
+          this.$delete(this.propertyLocal.reaction, 'setvalue');
         }
       });
     }
@@ -992,6 +1062,13 @@ export default {
         }
       });
       return newList;
+    },
+    canShowAddBtn() {
+      return (propertyLocal) => {
+        let {handler = '', config = {}} = propertyLocal || {};
+        let {matrixType = ''} = config || {};
+        return !!((handler == 'formselect' && matrixType == 'custom')); // 下拉框并且是自定义矩阵，才显示新增按钮
+      };
     }
   },
   watch: {

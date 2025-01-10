@@ -2,7 +2,7 @@
   <div>
     <component
       :is="itemMap[conditionItem.type]"
-      :readonly="readonly"
+      :disabled="readonly"
       v-bind="conditionItem.config"
       :value="finalValue"
       @on-change="changeValue"

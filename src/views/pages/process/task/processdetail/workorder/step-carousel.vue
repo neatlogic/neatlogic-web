@@ -26,6 +26,16 @@
                       <UserCard v-bind="object.originalUserVo" :iconSize="20"></UserCard>
                       <span style="vertical-align: bottom;">）</span>
                     </span>
+                    <ul v-if="!$utils.isEmpty(handleMinorUser(object))" class="mt-xs">
+                      <li
+                        v-for="(minoruserItem, minoruserIndex) in handleMinorUser(object)"
+                        :key="minoruserIndex"
+                        class="mb-xs"
+                      >
+                        <UserCard v-bind="minoruserItem.userVo" :iconSize="20"></UserCard>
+                        <span v-if="object.name" class="fz10 text-tip">({{ object.name }})</span>
+                      </li>
+                    </ul>
                   </div>
                 </template>
                 <template v-else-if="item.value == 'workerList' && item.textConfig.length > 0">
@@ -246,6 +256,13 @@ export default {
           }
         });
         return list;
+      };
+    },
+    handleMinorUser() {
+      // 处理协助处理人
+      return (obj) => {
+        const { minorUserList = [] } = obj || {};
+        return minorUserList.filter((v) => v && v.status === 'doing');
       };
     },
     timeShow() {

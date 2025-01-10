@@ -68,7 +68,7 @@
             <template v-else>
               <FormPreview
                 ref="FormPreview"
-                :content="filterCustommergeprocess(formConfig)"
+                :content="formConfig"
                 :isEdit="formEdit"
                 :isReadonly="actionConfig.save ? false : true"
                 :stephidetrList="stephidetrList"
@@ -173,7 +173,6 @@
                 <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
                   <template v-if="processTaskConfig.formConfig._type == 'new'">
                     <TsSheet
-                      v-if="isShowForm"
                       ref="formSheet"
                       mode="read"
                       :value="formConfig"
@@ -191,7 +190,7 @@
                   <template v-else>
                     <FormPreview
                       ref="FormPreview"
-                      :content="filterCustommergeprocess(formConfig)"
+                      :content="formConfig"
                       :isEdit="formEdit"
                       :isReadonly="actionConfig.save ? false : true"
                       :stephidetrList="stephidetrList"
@@ -436,6 +435,11 @@ export default {
     ReplyContent: () => import('./CenterDetailComponent/reply-content'), // 回复内容
     ReportingHistory: () => import('./CenterDetailComponent/reporting-history') // 上报历史
   },
+  provide() { //有些表单可能需要这些参数，表单里面会接收这些参数
+    return {
+      resizeStatusConfig: this.resizeStatusConfig
+    };
+  },
   directives: { imgViewer, scrollHidden, download },
   mixins: [dealFormMix],
   props: {
@@ -545,7 +549,6 @@ export default {
       taskConfigList: [], //子任务策略
       autoexechandlerStepInfo: null, // 自动化信息
       lastFormConfig: null,
-      isShowForm: true,
       formSceneUuid: 'defaultSceneUuid',
       externalData: {
         processTaskId: this.defaultProcessTaskId //工单id
@@ -597,7 +600,10 @@ export default {
           top: false
         }
       ],
-      fileTable: null //附件清单
+      fileTable: null, //附件清单
+      resizeStatusConfig: { //表单宽度是否需要更新
+        isReady: true 
+      }
     };
   },
   created() {
@@ -610,6 +616,12 @@ export default {
     //场景表单：步骤进行中展示设置的节点场景或者默认场景
     if (this.processTaskStepConfig && this.processTaskStepConfig.formSceneUuid) {
       this.formSceneUuid = this.processTaskStepConfig.formSceneUuid;
+    }
+    //补充动态slot进fixedPageTab
+    if (this.slotList && this.slotList.length > 0) {
+      this.slotList.forEach(d => {
+        this.$set(this.fixedPageTab, d.name, true);
+      });
     }
   },
   mounted() {
@@ -662,17 +674,20 @@ export default {
             if (!this.$utils.isEmpty(this.slotList)) {
               if (item.top) {
                 this.slotList.forEach(d => {
-                  this.fixedPageTab[d.name] = false;
+                  this.$set(this.fixedPageTab, d.name, false);
                   this.fixedPageList.push({
                     tabValue: d.name,
                     label: d.label
                   });
                 });
+                if (this.tabValue && this.slotList.find(d => d.name === this.tabValue)) {
+                  this.tabValue = '';
+                }
               } else { 
               //补充动态slot进fixedPageTab
                 if (this.slotList && this.slotList.length > 0) {
                   this.slotList.forEach(d => {
-                    this.fixedPageTab[d.name] = true;
+                    this.$set(this.fixedPageTab, d.name, true);
                   });
                 }
               }
@@ -686,6 +701,9 @@ export default {
                     label: this.subTask(d)
                   });
                 });
+              } else {
+                tabValue = 'subTask' + this.taskConfigList[0].id;
+                this.tabValue = '';
               }
             }
           } else {
@@ -698,6 +716,9 @@ export default {
                 tabValue: item.key,
                 label: label
               });
+              if (item.top && this.tabValue === item.key) {
+                this.tabValue = '';
+              }
             } else if (!tabValue) {
               if (item.key === 'report') {
                 if (this.haveProcessTask(this.haveComment, this.startHandler, this.formConfig, this.processTaskConfig) && !this.$utils.isEmpty(this.formConfig)) {
@@ -721,7 +742,7 @@ export default {
             ...item
           });
         });
-        if (tabValue) {
+        if (tabValue && !this.tabValue) {
           this.tabValue = tabValue;
         }
       } else {
@@ -742,19 +763,6 @@ export default {
           }
         }
       });
-    },
-    filterCustommergeprocess(formConfig) {
-      // 过滤银行定制批量合并上报组件
-      let data = this.$utils.deepClone(formConfig);
-      if (formConfig && formConfig.controllerList instanceof Array && formConfig.controllerList.length > 0 && GLOBAL_LOGINTITLE && GLOBAL_LOGINTITLE == 'neatlogic') {
-        let arr = formConfig.controllerList.filter(val => {
-          return val.handler != 'custommergeprocess';
-        });
-        data.controllerList = arr;
-        return data;
-      } else {
-        return data;
-      }
     },
     update() {
       //更新初始化数据,主要是 用来对比，因为使用require加载的vue 模块，需要特殊的处理
@@ -1461,20 +1469,26 @@ export default {
       if (name === 'report') {
         if (this.hasForm) {
           //重现渲染表单组件（重新计算），避免表单宽度为0
-          this.isShowForm = false;
+          this.$set(this.resizeStatusConfig, 'isReady', false);
           if (this.processTaskConfig.formAttributeDataMap) {
             //表单重新渲染时，获取表单最新数据
             this.formAttributeDataMap = this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap);
           }
           this.$nextTick(() => {
-            this.isShowForm = true;
-            this.$nextTick(async() => {
-              if (this.$refs.formSheet) {
-                await this.formValid(this.processTaskConfig);
-              }
-            });
+            this.$set(this.resizeStatusConfig, 'isReady', true);
+            // this.$nextTick(async() => {
+            //   if (this.$refs.formSheet) {
+            //     await this.formValid(this.processTaskConfig);
+            //   }
+            // });
           });
         }
+      } else if (name === 'collection') {
+        //工单集合，重新计算表单组件，避免表单宽度为0
+        this.$set(this.resizeStatusConfig, 'isReady', false);
+        this.$nextTick(() => {
+          this.$set(this.resizeStatusConfig, 'isReady', true);
+        });
       }
     },
     updateFormSheetCalc() {

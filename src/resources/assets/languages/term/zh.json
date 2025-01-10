@@ -1329,7 +1329,9 @@
     "mqtype": "消息队列类型",
     "notavailable": "不可用",
     "mqhandler": "消息队列组件",
-    "showimportexporttemplatetableoptions": "是否显示导出/导入(模板、表格)选项"
+    "showimportexporttemplatetableoptions": "是否显示导出/导入(模板、表格)选项",
+    "componentnoexist": "组件不存在",
+    "custommaxtrixselectaddbtndesc": "当选择自定义矩阵类型并新增数据时，下拉框将显示“+”按钮。"
   },
   "knowledge": {
     "document": "文档",

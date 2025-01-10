@@ -133,7 +133,7 @@
         :label="$t('page.newtarget',{'target':$t('page.data')})"
         labelPosition="left"
         contentAlign="right"
-        tooltip="当选择自定义矩阵类型并新增数据时，下拉框将显示“+”按钮。"
+        :tooltip="$t('term.framework.custommaxtrixselectaddbtndesc')"
       >
         <!-- 自定义矩阵类型才显示 -->
         <TsFormSwitch

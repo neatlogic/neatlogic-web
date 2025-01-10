@@ -22,7 +22,7 @@
                 <TsFormSelect
                   :dataList="attrList"
                   search
-                  :readonly="readonly"
+                  :disabled="readonly"
                   :value="conItem.name"
                   :transfer="true"
                   valueName="name"
@@ -39,7 +39,7 @@
             <Col :span="isNeedAttrValue(conItem) ? 4 : 10">
               <div class>
                 <TsFormSelect
-                  :readonly="readonly"
+                  :disabled="readonly"
                   :value="conItem.expression"
                   :dataList="getExpressionList(conItem)"
                   :transfer="true"
@@ -86,7 +86,7 @@
                     v-model="conditionGroup.conditionRelList[conditionIndex]"
                     :dataList="joinTypeList"
                     :clearable="false"
-                    :readonly="readonly"
+                    :disabled="readonly"
                     border="none"
                     size="small"
                     :transfer="true"
@@ -105,7 +105,7 @@
             <div class="condition-joinType text-href">
               <TsFormSelect
                 v-model="rule.conditionGroupRelList[groupIndex]"
-                :readonly="readonly"
+                :disabled="readonly"
                 :dataList="joinTypeList"
                 :clearable="false"
                 border="none"
