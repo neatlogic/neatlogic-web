@@ -49,6 +49,8 @@
                 :showStatusIcon="false"
                 mode="read"
                 isCustomValue
+                :externalData="externalData"
+                :rowUuid="row.uuid"
                 :isClearSpecifiedAttr="isClearSpecifiedAttr"
                 style="min-width:100px"
                 @change="(val)=>{
@@ -71,6 +73,7 @@
         :filter="filter"
         :disabled="disabled"
         :readonly="readonly"
+        :externalData="externalData"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
         @resize="$emit('resize')"
         @change="getSelectedData"
@@ -84,6 +87,7 @@
       :mode="mode"
       :filter="filter"
       :formItemList="formItemList"
+      :externalData="externalData"
       @close="closeTableSelectorDialog"
     ></DataDialog>
   </div>
