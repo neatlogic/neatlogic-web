@@ -68,7 +68,7 @@
             <template v-else>
               <FormPreview
                 ref="FormPreview"
-                :content="filterCustommergeprocess(formConfig)"
+                :content="formConfig"
                 :isEdit="formEdit"
                 :isReadonly="actionConfig.save ? false : true"
                 :stephidetrList="stephidetrList"
@@ -190,7 +190,7 @@
                   <template v-else>
                     <FormPreview
                       ref="FormPreview"
-                      :content="filterCustommergeprocess(formConfig)"
+                      :content="formConfig"
                       :isEdit="formEdit"
                       :isReadonly="actionConfig.save ? false : true"
                       :stephidetrList="stephidetrList"
@@ -763,19 +763,6 @@ export default {
           }
         }
       });
-    },
-    filterCustommergeprocess(formConfig) {
-      // 过滤银行定制批量合并上报组件
-      let data = this.$utils.deepClone(formConfig);
-      if (formConfig && formConfig.controllerList instanceof Array && formConfig.controllerList.length > 0 && GLOBAL_LOGINTITLE && GLOBAL_LOGINTITLE == 'neatlogic') {
-        let arr = formConfig.controllerList.filter(val => {
-          return val.handler != 'custommergeprocess';
-        });
-        data.controllerList = arr;
-        return data;
-      } else {
-        return data;
-      }
     },
     update() {
       //更新初始化数据,主要是 用来对比，因为使用require加载的vue 模块，需要特殊的处理
