@@ -247,12 +247,16 @@ export default {
   },
   mounted() {},
   created() {
+    let isShowStepList = true;
+    if (this.processTaskConfig && this.processTaskConfig.hasOwnProperty('isShowStepList')) { //根据后端接口返回字段，判断是否默认收起所有
+      isShowStepList = !!this.processTaskConfig.isShowStepList;
+    }
     this.stepData.forEach((step) => {
       Object.assign(step, {
-        expand: true
+        expand: isShowStepList
       });
     });
-    this.expandAll = true;
+    this.expandAll = isShowStepList;
   },
   methods: {
     expandChange(item, index) {
