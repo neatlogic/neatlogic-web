@@ -307,8 +307,7 @@
 <script>
 import formMixins from '@/resources/mixins/formMixins.js';
 import formScrollMixins from '@/resources/mixins/formScrollMixins.js';
-import { directive as ClickOutside } from '../../directives/v-click-outside-x.js';
-import utils from '@/resources/assets/js/util.js';
+import { directive as ClickOutside } from '@/resources/directives/v-click-outside-x.js';
 export default {
   name: 'TsFormSelect',
   tagComponent: 'TsForm',
@@ -538,7 +537,6 @@ export default {
       addItem: null,
       readonlyTitle: null,
       hiddenLength: 0,
-      isUseTagShow: false, //是否用标签显示
       moreSearchTip: {
         [this.showName ? this.showName : this.textName]: this.$t('page.searchformore'),
         [this.valueName]: 'moreSearchFlag',
@@ -680,7 +678,6 @@ export default {
         this.multiple ? (this.currentValue = [this.nodeList[0][this.valueName]]) : (this.currentValue = this.nodeList[0][this.valueName]);
         //是单选,进行赋值处理
         this.searchKeyWord = !this.multiple ? '' : '';
-        this.handleTagShow();
         this.onChangeValue();
       }
     },
@@ -708,7 +705,6 @@ export default {
         this.getDataByAjax(params, this.url, 'cancelAxios1').then(res => {
           this.nodeList = res.nodeList || [];
           this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
-          this.handleTagShow();
           this.setDefaultValue(); //默认选中第一个
           this.initValueByNodeList();
         });
@@ -739,7 +735,6 @@ export default {
         this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
         this.setDefaultValue();
         this.initValueByNodeList();
-        this.handleTagShow();
         this.handleEchoFailedDefaultValue();
       }
     },
@@ -951,7 +946,6 @@ export default {
         if (!this.multiple) {
           //是单选,进行赋值处理
           this.searchKeyWord = '';
-          this.handleTagShow();
         }
         if (this.needCallback) {
           //成功回调设置为false
@@ -1145,7 +1139,6 @@ export default {
         this.multiple ? this.currentValue.splice(index, 1) : (this.currentValue = null);
       }
       this.multiple ? (this.searchKeyWord = '') : this.hideOption();
-      this.handleTagShow();
       this.onChangeValue();
       this.scrollTop();
     },
@@ -1395,17 +1388,13 @@ export default {
       let index = -1;
       if (arr instanceof Array) {
         arr.find((item, i) => {
-          utils.equalStr(this.isCustomValue && item[this.valueName] ? item[this.valueName] : item, str) && (index = i);
+          this.$utils.equalStr(this.isCustomValue && item[this.valueName] ? item[this.valueName] : item, str) && (index = i);
           return index >= 0;
         });
       } else {
-        utils.equalStr(arr, str) && (index = 0);
+        this.$utils.equalStr(arr, str) && (index = 0);
       }
       return index;
-    },
-    handleTagShow() {
-      // 处理下拉框选中内容后，是否用tag展示
-      this.isUseTagShow = true;
     }
   },
   computed: {
@@ -1485,7 +1474,7 @@ export default {
           style.display = 'none';
         }
         if (!this.multiple) {
-          if (keyword || this.getPlaceholder || (this.isUseTagShow && this.selectedList.length > 0) || (!this.multiple && this.currentSearch)) {
+          if (keyword || this.getPlaceholder || (this.selectedList.length > 0) || (!this.multiple && this.currentSearch)) {
             Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
           } else {
             style.width = '100%';
