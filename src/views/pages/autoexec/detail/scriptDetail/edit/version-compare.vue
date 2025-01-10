@@ -158,7 +158,6 @@ export default {
         valueName: 'id',
         transfer: true,
         search: true,
-        isSquare: false,
         border: 'none'
       }
     };

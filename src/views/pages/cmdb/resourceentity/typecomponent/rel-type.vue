@@ -84,7 +84,6 @@ export default {
         valueName: 'name',
         textName: 'label',
         placeholder: this.$t('page.attribute'),
-        isSquare: false,
         transfer: true
       },
       dataList: [

@@ -8,7 +8,6 @@
     >
       <template v-if="multiple">
         <template v-if="selectedList.length > 0">
-          <!--<span v-html="getReadonlyText(selectedList)"></span>-->
           <Tag v-for="(item, index) in selectedList" :key="index">
             <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ item[textName] }}</span>
             <template v-else>{{ item[textName] }}</template>
@@ -17,7 +16,6 @@
         <span v-else class="text-grey">-</span>
       </template>
       <template v-else>
-        <!--{{ selectedList[0] ? selectedList[0][textName] : '-' }}-->
         <Tag v-if="selectedList.length > 0">
           <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ selectedList[0][textName] }}</span>
           <template v-else>{{ selectedList[0][textName] }}</template>
@@ -58,74 +56,46 @@
             @blur="onSelectBlur"
           >
             <div ref="topHead" class="tag-contian" :class="{ 'nowselect-nowrap': multiple && nowrapHead, 'flex-start': isNowrap }">
-              <template v-if="multiple || isUseTagShow">
-                <Tag
-                  v-for="(selected, nindex) in selectedList"
-                  :key="nindex"
-                  :name="selected[valueName]"
-                  :closable="!disabled"
-                  :fade="false"
-                  @click.native.stop="handleOpen"
-                  @on-close="deleteSeleted(nindex, selected[valueName])"
+              <Tag
+                v-for="(selected, nindex) in selectedList"
+                :key="nindex"
+                :name="selected[valueName]"
+                :closable="!disabled"
+                :fade="false"
+                @click.native.stop="handleOpen"
+                @on-close="deleteSeleted(nindex, selected[valueName])"
+              >
+                <Tooltip
+                  v-if="(disabled && disabledHoverTitle) || selected[textName]"
+                  placement="top-start"
+                  max-width="300"
+                  transfer
+                  theme="light"
+                  style="width: 100%"
+                  :content="(disabled ? disabledHoverTitle : '') || selected[textName]"
                 >
-                  <Tooltip
-                    v-if="(disabled && disabledHoverTitle) || selected[textName]"
-                    placement="top-start"
-                    max-width="300"
-                    transfer
-                    theme="light"
-                    style="width: 100%"
-                    :content="(disabled ? disabledHoverTitle : '') || selected[textName]"
-                  >
-                    <div class="overflow disabled-title-box">{{ selected[textName] }}</div>
-                  </Tooltip>
-                </Tag>
+                  <div class="overflow disabled-title-box">{{ selected[textName] }}</div>
+                </Tooltip>
+              </Tag>
+              <template v-if="selectedList.length <= 0">
+                <Tooltip
+                  v-if="disabled && disabledHoverTitle"
+                  placement="top-start"
+                  max-width="300"
+                  transfer
+                  theme="light"
+                  style="width: 100%"
+                  :content="disabledHoverTitle"
+                >
+                  <div class="overflow disabled-title-box"></div>
+                </Tooltip>
                 <span
-                  v-if="selectedList.length <= 0 && (!currentSearch || !isShowInput)"
+                  v-else-if="!currentSearch || !isShowInput"
                   :placeholder="!currentSearch || !isShowInput? getPlaceholder : ''"
                   class="empty-placeholder"
                   :class="[disabled ? 'empty-placeholder-disable' : '']"
                   style="line-height: 30px;"
                 ></span>
-              </template>
-              <template v-else-if="disabled || readonly || !currentSearch || !isShowInput || (!multiple && currentSearch && !isSquare)">
-                <span
-                  v-if="selectedList[0]"
-                  :placeholder="!currentSearch || !isShowInput ? getPlaceholder : ''"
-                  class="overflow empty-placeholder"
-                  :class="[disabled ? 'empty-placeholder-disable' : '', !(!multiple && currentSearch && !isSquare) ? 'single-span' : '']"
-                >
-                  <Tooltip
-                    v-if="disabledHoverTitle || selectedList[0][textName]"
-                    placement="top-start"
-                    max-width="300"
-                    transfer
-                    theme="light"
-                    style="width: 100%"
-                    :content="(disabled ? disabledHoverTitle : '') || selectedList[0][textName]"
-                  >
-                    <div class="overflow disabled-title-box">{{ selectedList[0][textName] }}</div>
-                  </Tooltip>
-                </span>
-                <template v-else>
-                  <Tooltip
-                    v-if="disabled && disabledHoverTitle"
-                    placement="top-start"
-                    max-width="300"
-                    transfer
-                    theme="light"
-                    style="width: 100%"
-                    :content="disabledHoverTitle"
-                  >
-                    <div class="overflow disabled-title-box"></div>
-                  </Tooltip>
-                  <span
-                    v-else
-                    :placeholder="!currentSearch || !isShowInput ? getPlaceholder : ''"
-                    class="empty-placeholder"
-                    :class="[disabled ? 'empty-placeholder-disable' : '']"
-                  ></span>
-                </template>
               </template>
               <input
                 v-if="!(disabled || readonly) && currentSearch"
@@ -234,7 +204,6 @@
           >
             <slot name="first-ul"></slot>
             <li v-if="firstLi" class="tsfont-plus text-href first-slot" @click="first">{{ firstText }}</li>
-            <!-- <li class="tsfont-plus text-href first-slot" @click="addDataSource()">数据源</li> -->
             <li v-if="allowCreate && addItem" class="ivu-dropdown-item overflow" @click.stop="toggleSelect(addItem)">
               {{ addItem[showName ? showName : textName] }}
               <i class="tsfont-arrow-corner-left text-primary"></i>
@@ -523,11 +492,6 @@ export default {
       //当出现多选的时候，不换行显示，如果数据过多时则显示不全
       type: Boolean,
       default: false
-    },
-    isSquare: {
-      // 单选的时候，选中数据，显示是有灰色背景方块样式，还是没有样式，纯文本展示
-      type: Boolean,
-      default: true
     },
     isNowrap: {
       // 单选时候，是否换行
@@ -1441,7 +1405,7 @@ export default {
     },
     handleTagShow() {
       // 处理下拉框选中内容后，是否用tag展示
-      this.isUseTagShow = !!this.isSquare;
+      this.isUseTagShow = true;
     }
   },
   computed: {
@@ -1521,7 +1485,7 @@ export default {
           style.display = 'none';
         }
         if (!this.multiple) {
-          if (keyword || this.getPlaceholder || (this.isUseTagShow && this.selectedList.length > 0) || (!this.multiple && this.currentSearch && !this.isSquare)) {
+          if (keyword || this.getPlaceholder || (this.isUseTagShow && this.selectedList.length > 0) || (!this.multiple && this.currentSearch)) {
             Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
           } else {
             style.width = '100%';
