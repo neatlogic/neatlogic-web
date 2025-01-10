@@ -13,6 +13,7 @@
           :value="value"
           :mode="mode"
           :filter="filter"
+          :externalData="externalData"
           :formItemList="formItemList"
           @change="getSelectedData"
         ></DataList>
@@ -32,7 +33,12 @@ export default {
     formItem: { type: Object },
     filter: {type: Array},
     formItemList: { type: Array },
-    formData: { type: Object }
+    formData: { type: Object },
+    externalData: {
+      // 外部数据，非表单数据，例如工单上报人数据等
+      type: Object,
+      default: () => {}
+    }
   },
   data() {
     return {

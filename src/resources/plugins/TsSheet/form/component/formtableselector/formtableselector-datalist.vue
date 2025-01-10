@@ -48,6 +48,8 @@
             :showStatusIcon="false"
             mode="read"
             :readonly="readonly"
+            :externalData="externalData"
+            :rowUuid="row.uuid"
             isCustomValue
             :isClearSpecifiedAttr="isClearSpecifiedAttr"
             @change="(val)=>{changeRow(row, extra.uuid, val)}"
