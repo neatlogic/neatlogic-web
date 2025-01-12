@@ -35,7 +35,6 @@ export default {
 </script>
 <style lang="less" scoped>
 .current-step {
-  // width: 100%;
   position: relative;
   &.will-or-is-expired {
     .carouse-user-list {
