@@ -58,7 +58,7 @@
                 @theadPopTipSettingClick="showTheadSetting"
               >
                 <template v-for="(tbody, tindex) in filtertheadList(tableConfig.theadList)" :slot="tbody.key" slot-scope="{ row }">
-                  <div :key="tindex" :style="(tbody.config && tbody.config.isNewLine == 1)?'':tbody.key == 'currentstep' ? {overflow: 'hidden', height: '50px',display: 'flex',alignItems: 'center'} : {overflow: 'hidden',height: '50px',lineHeight: '50px'}">
+                  <div :key="tindex" :style="(tbody.config && tbody.config.isNewLine == 1)?'':tbody.key == 'currentstep' ? {} : {overflow: 'hidden',height: '50px',lineHeight: '50px'}">
                     <WorkcenterColumnHandler
                       v-if="typeof row[tbody.key] === 'object' && tbody.key != 'action'"
                       :key="tindex"

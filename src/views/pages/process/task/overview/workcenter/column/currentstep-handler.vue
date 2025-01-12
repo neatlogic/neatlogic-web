@@ -1,6 +1,5 @@
 <template>
   <div
-    :style="getCurrentType(rowData) === 'scored' && rowData.score ? 'width:260px' : 'width:220px'"
     class="current-step"
     :class="{ 'will-or-is-expired': ['will-be-expired', 'is-expired'].includes(rowData.expireStatus) }"
   >
@@ -8,11 +7,11 @@
   </div>
 </template>
 <script>
-import tditem from '../../tditem';
+import currentStepComponent from '@/views/pages/process/task/overview/workcenter/column/currentstep/index.js';
 import mixin from '../column/mixin';
 export default {
   components: {
-    ...tditem
+    ...currentStepComponent
   },
   mixins: [mixin],
   computed: {
@@ -20,7 +19,7 @@ export default {
       return function(item) {
         let type = '';
         if (item && item.status && item.status.value) {
-          if (Object.keys(tditem).indexOf(item.status.value) > -1) {
+          if (Object.keys(currentStepComponent).indexOf(item.status.value) > -1) {
             type = item.status.value;
           } else {
             type = 'common';
@@ -36,8 +35,6 @@ export default {
 </script>
 <style lang="less" scoped>
 .current-step {
-  height: 47px;
-  overflow: hidden;
   position: relative;
   &.will-or-is-expired {
     .carouse-user-list {
