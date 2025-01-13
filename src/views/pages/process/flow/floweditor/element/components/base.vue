@@ -38,6 +38,10 @@ export default {
           return 'bg-success-grey';
         } else if (this.data.status === 'running') {
           return 'bg-primary';
+        } else if (this.data.status === 'hang') {
+          return 'bg-warning-grey';
+        } else if (this.data.status === 'failed') {
+          return 'bg-error-grey';
         }
       }
       return 'bg-node-grey';
