@@ -1033,5 +1033,7 @@
     "rank": "weight",
     "alived": "survival"
   },
-  "uniquenotedit": "The unique identifier cannot be modified after being set"
+  "uniquenotedit": "The unique identifier cannot be modified after being set",
+  "formstyle": "form sheet ",
+  "cellspacing": "Cell spacing"
 }
