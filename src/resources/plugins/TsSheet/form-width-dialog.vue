@@ -77,11 +77,7 @@ export default {
   methods: {
     init() {
       if (!this.$utils.isEmpty(this.formWidth)) {
-        Object.keys(this.formWidth).forEach((key) => {
-          if (this.formStyleData.hasOwnProperty(key) && this.$utils.isEmpty(this.formWidth[key])) {
-            this.formStyleData[key] = this.$utils.deepClone(this.formWidth[key]);
-          }
-        });
+        this.formStyleData = this.$utils.deepClone(this.formWidth);
       }
       if (this.formStyleData.type === '%') {
         this.formConfig.width.label = this.$t('page.width') + '(%)';
@@ -91,6 +87,9 @@ export default {
         this.formConfig.width.max = Infinity;
       } else if (this.formStyleData.type === 'inherit') {
         this.formConfig.width.isHidden = true;
+      }
+      if (!this.formStyleData.hasOwnProperty('cellSpacing')) {
+        this.formStyleData.cellSpacing = 0;
       }
     },
     okDialog() {
