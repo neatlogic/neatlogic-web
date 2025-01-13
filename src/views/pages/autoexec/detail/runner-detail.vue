@@ -671,7 +671,8 @@ export default {
       this.$set(data, 'runnerGroupTag', this.runnerGroupTag);
       return data;
     },
-    setJobParams(config) {
+    setJobParams(obj) {
+      let config = this.$utils.deepClone(obj);
       this.nameForm.itemList.name.value = config.name;
       this.paramValue = config.param || {};
       this.scenarioId = config.scenarioId;
