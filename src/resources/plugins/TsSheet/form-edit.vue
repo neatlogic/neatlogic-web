@@ -103,7 +103,7 @@
             </div>
             <div class="action-item text-action tsfont-lightning" @click="openReactionDialog()">{{ $t('term.framework.rowreaction') }}</div>
             <template v-if="formDataQueue.length <= 1">
-              <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('term.framework.formwidth') }}</div>
+              <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('page.formstyle') }}</div>
               <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
               <div class="action-item text-action tsfont-circulation-s" @click="previewForm()">{{ $t('page.preview') }}</div>
               <div class="action-item">
