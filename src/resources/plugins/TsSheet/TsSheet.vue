@@ -5,7 +5,7 @@
     class="tssheet-container"
     :class="{ resizing: !!resizeColumn || !!resizeRow || isDragging }"
     tabindex="0"
-    @contextmenu.prevent
+    @contextmenu="handleContextMenu"
     @mousemove="doDrag"
     @mouseup="endResize"
     @click="
@@ -2054,6 +2054,12 @@ export default {
         }
       }
       this.actionType = '';
+    },
+    handleContextMenu(event) {
+      //编辑表单时，阻止浏览器右键菜单弹出
+      if (this.mode === 'edit') {
+        event.preventDefault();
+      }
     }
   },
   filter: {},
