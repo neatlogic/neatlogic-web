@@ -673,11 +673,18 @@ export default {
     },
     setJobParams(obj) {
       let config = this.$utils.deepClone(obj);
-      this.nameForm.itemList.name.value = config.name;
-      this.paramValue = config.param || {};
-      this.scenarioId = config.scenarioId;
-      this.roundCount = config.roundCount || 2;
-      this.executeConfig = config.executeConfig || {};
+      let {name = '', param = {}, roundCount = 2, scenarioId = null, executeConfig = {}, runnerGroupTag = null, runnerGroup = null} = config || {};
+      this.nameForm.itemList.name.value = name;
+      this.paramValue = param;
+      this.scenarioId = scenarioId;
+      this.roundCount = roundCount;
+      this.executeConfig = executeConfig;
+      this.runnerGroupTag = runnerGroupTag || {
+        mappingMode: 'constant',
+        value: null
+      };
+      this.runnerGroup = runnerGroup || { mappingMode: 'constant',
+        value: '-1'};
       for (let key in this.executeForm.itemList) {
         // 链接协议和执行用户
         let item = this.executeForm.itemList[key];
