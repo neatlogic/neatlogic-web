@@ -667,7 +667,10 @@ export default {
       if (this.dataConfig.existRunnerOrSqlExecMode) {
         this.$set(data, 'runnerGroup', this.runnerGroup);
       }
-      this.$set(this, 'runnerGroupTag', this.$refs.runnerGroupTag.save());
+      let runnerGroupTag = this.$refs.runnerGroupTag;
+      if (runnerGroupTag) {
+        this.$set(this, 'runnerGroupTag', runnerGroupTag.save());
+      }
       this.$set(data, 'runnerGroupTag', this.runnerGroupTag);
       return data;
     },
