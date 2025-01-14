@@ -2,8 +2,6 @@ import axios from '@/resources/api/http.js';
 export default {
   methods: {
     upload(url, params, headers, successFn, failedFn, startFn, processingFn) {
-      let _this = this;
-      let method = 'post';
       const formData = new FormData();
       if (params && typeof params === 'object') {
         for (let k in params) {
@@ -29,7 +27,10 @@ export default {
       }
       axios
         .post(url, formData, {
-          headers: headers || {},
+          headers: {
+            ...(headers || {}),
+            'Content-Type': 'multipart/form-data' // 设置文件上传格式，在axios1.7.7版本中，不会自动设置请求头类型，需要手动设置，否则会导致文件上传失败
+          },
           responseType: 'blob',
           contentType: 'multipart/form-data',
           onDownloadProgress: (progressEvent) => {
@@ -39,9 +40,11 @@ export default {
           }
         })
         .then(async res => {
-          if (res.status == '200') {
-            if (res.data.type == 'application/json') {
-              const text = await res.data.text();
+          let {status = '', data = {}} = res || {};
+          let {type = ''} = data || {};
+          if (status == '200') {
+            if (data && (type == 'application/json')) {
+              const text = await data.text();
               const jsonText = await JSON.parse(text);
               if (successFn && typeof successFn == 'function') {
                 successFn(jsonText);
@@ -49,7 +52,7 @@ export default {
             } else {
               //处理返回的文件流
               const aLink = document.createElement('a');
-              let blob = new Blob([res.data], {
+              let blob = new Blob([data], {
                 type: 'application/octet-stream'
               });
               aLink.href = URL.createObjectURL(blob);
@@ -68,8 +71,10 @@ export default {
           }
         })
         .catch(async error => {
-          if (error.data.type === 'application/json') {
-            const text = await error.data.text();
+          let {data = {}} = error || {};
+          let {type = ''} = data || {};
+          if (type === 'application/json') {
+            const text = await data.text();
             const jsonText = await JSON.parse(text);
             ViewUI.Notice.error({
               title: '',
