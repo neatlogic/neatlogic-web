@@ -1035,5 +1035,7 @@
     "rank": "权重",
     "alived": "存活"
   },
-  "uniquenotedit": "唯一标识设置后不能修改"
+  "uniquenotedit": "唯一标识设置后不能修改",
+  "formstyle": "表单样式",
+  "cellspacing": "单元格间距"
 }

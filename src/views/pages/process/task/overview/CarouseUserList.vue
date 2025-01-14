@@ -154,7 +154,6 @@ export default {
   height: 100%;
   width: 100%;
   .no-current-step {
-    margin-left: 20px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -171,8 +170,7 @@ export default {
   .item-img {
     text-align: center;
   }
-}
-.Carousel {
+  .Carousel {
   width: 100%;
   height: 82px;
 
@@ -242,4 +240,6 @@ export default {
     }
   }
 }
+}
+
 </style>

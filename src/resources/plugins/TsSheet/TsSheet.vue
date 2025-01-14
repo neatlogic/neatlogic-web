@@ -5,7 +5,7 @@
     class="tssheet-container"
     :class="{ resizing: !!resizeColumn || !!resizeRow || isDragging }"
     tabindex="0"
-    @contextmenu.prevent
+    @contextmenu="handleContextMenu"
     @mousemove="doDrag"
     @mouseup="endResize"
     @click="
@@ -216,7 +216,7 @@
           </tr>
         </tbody>
       </table>
-      <table class="tssheet-main" :class="{ 'bg-op': mode === 'edit' }" :style="{ width: mode === 'edit' ? tableSize.width + 'px' : isFormSubassembly ? 'inherit' : containerWidth + 'px', height: tableSize.height + 'px', margin: mode === 'edit' ? 0 : '0 auto' }">
+      <table class="tssheet-main" :class="{ 'bg-op': mode === 'edit','cell-spacing':mode !== 'edit' && formStyleData.cellSpacing }" :style="{ width: mode === 'edit' ? tableSize.width + 'px' : isFormSubassembly ? 'inherit' : containerWidth + 'px', height: tableSize.height + 'px', margin: mode === 'edit' ? 0 : '0 auto', '--padding': formStyleData.cellSpacing + 'px' || '0px'}">
         <colgroup>
           <col v-if="mode === 'edit'" :style="{ width: minWidth + 'px' }" />
           <col
@@ -560,7 +560,8 @@ export default {
       isShowFormItemKeyDialog: false, //设置唯一标识弹框
       currentEventItem: null, //当前单元格获取的新组件
       actionType: '', //当前操作类型,'add'新增组件，'copy'复制组件
-      windowKeypressHandler: null // 用于存储事件处理函数的引用
+      windowKeypressHandler: null, // 用于存储事件处理函数的引用
+      formStyleData: {} //表单样式设置
     };
   },
   beforeCreate() {
@@ -729,6 +730,7 @@ export default {
           this.$set(this.config, 'hiddenRowList', []);
         }
         this.componentIndex = this.config.tableList.filter(d => !!d.component && !this.$utils.isEmpty(d.component)).length;
+        this.formStyleData = this.value.formWidth || {};
       } else {
         this.initTable();
       }
@@ -2052,6 +2054,12 @@ export default {
         }
       }
       this.actionType = '';
+    },
+    handleContextMenu(event) {
+      //编辑表单时，阻止浏览器右键菜单弹出
+      if (this.mode === 'edit') {
+        event.preventDefault();
+      }
     }
   },
   filter: {},
@@ -2472,4 +2480,9 @@ export default {
 </script>
 <style lang="less" scoped>
 @import './TsSheet.less';
+.cell-spacing {
+  border-collapse: separate !important;
+  border-spacing: var(--padding) var(--padding);
+  table-layout: fixed;
+}
 </style>
