@@ -203,10 +203,10 @@
                       class="overflow"
                       :title="dropdownMenuMaxWidth && (node[showName ? showName : textName])"
                     >
-                      <div v-if="node._showtxtList" class="overflow">
+                      <div v-if="node._showtxtList" class="overflow pb-icon">
                         <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
                       </div>
-                      <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
+                      <div v-else class="overflow pb-icon">{{ node[showName ? showName : textName] }}</div>
                     </div>
                   </slot>
                 </li>
@@ -269,7 +269,7 @@
                           :content="typeof node['_disabled'] === 'string' ? node['_disabled'] : disabledHoverTitle"
                           style="width:100%"
                         >
-                          <div v-if="node._showtxtList" class="overflow">
+                          <div v-if="node._showtxtList" class="overflow pb-xs">
                             <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
                           </div>
                           <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>

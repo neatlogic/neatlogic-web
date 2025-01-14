@@ -52,4 +52,62 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import (reference) '~@/resources/assets/css/variable.less';
+.will-or-is-expired {
+  .carouse-user-list {
+    position: absolute;
+    top: -60px;
+    left: 0;
+  }
+}
+.expired {
+  height: 47px;
+  display: flex;
+  align-items: center;
+  &-status {
+    font-size: 12px;
+    margin-right: 5px;
+  }
+  &-duration {
+    font-size: 30px;
+    height: 42px;
+    line-height: 42px;
+  }
+}
+.theme(@tip-color, @title-color) {
+  .expired-slaname {
+    color: @tip-color;
+  }
+  .expired {
+    height: 47px;
+    &-status {
+      color: @tip-color;
+    }
+    &-duration {
+      color: @title-color;
+    }
+  }
+}
+
+html {
+  .theme(@default-tip, @default-title);
+  &.theme-dark {
+    .theme(@white, @white);
+  }
+}
+
+tr.trtype-is-expired, tr.trtype-will-be-expired{
+  &:hover {
+    &.will-be-expired,
+    &.is-expired,
+    &.will-or-is-expired {
+      .carouse-user-list {
+        top: 0;
+      }
+      .expired {
+        display: none;
+      }
+    }
+  }
+}
 </style>
