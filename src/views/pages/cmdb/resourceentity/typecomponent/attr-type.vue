@@ -58,7 +58,6 @@ export default {
         validateList: ['required'],
         valueName: 'name',
         textName: 'label',
-        isSquare: false,
         transfer: true
       },
       dataList: [
