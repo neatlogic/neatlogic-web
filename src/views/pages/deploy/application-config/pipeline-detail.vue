@@ -26,7 +26,7 @@
       </template>
       <template v-slot:topRight>
         <div v-if="hasEditAuth" class="action-group no-line">
-          <span class="action-item tsfont-download" @click="importPipeline">{{ $t('page.import') }}</span>
+          <span class="action-item tsfont-upload" @click="importPipeline">{{ $t('page.import') }}</span>
           <span
             v-if="!isExportPipeline"
             v-download="exportPipeline"
