@@ -8,15 +8,19 @@ let commercialModule = './src/commercial-module';
 let localUrl = '../neatlogic-web/src/resources';
 let pageTitle = 'neatlogic'; //页面标题名称
 const { tenantName, urlPrefix } = require('./apiconfig.json');
+let faviconIcon = './public/resource/img/common/tsfavicon.png';
 let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || [];
 importCustomConfig.forEach((filePath) => {
   if (filePath) {
-    let {tableStyle, title, loginTitle, imgPath, publicPath = ''} = require(filePath);
+    let {tableStyle, title, loginTitle, imgPath, publicPath = '', faviconIconPath} = require(filePath);
     process.env.VUE_APP_LOGINTITLE = loginTitle || 'welcome';
     process.env.VUE_APP_TABLESTRYLE = tableStyle;
     pageTitle = title;
     copyPath = publicPath;
     baseImg = imgPath;
+    if (faviconIconPath) {
+      faviconIcon = faviconIconPath;
+    }
   }
 });
 function getPages(pageList) {
@@ -95,6 +99,34 @@ function getAllModuleList(defaultModuleList, modulePathList = []) {
 function resolve(dir) {
   return path.join(__dirname, dir);
 }
+const copyRsPack = copyPath ? [
+  {
+    from: resolve(copyPath), // 需要复制的目录
+    to: resolve('dist/'), // 复制到目标目录
+    force: true,
+    filter: (resourcePath) => {
+      return resourcePath.endsWith('.html'); // 只复制 .html 文件
+    },
+    noErrorOnMissing: true // 当没有找到对应的文件或目录时，忽略错误
+  },
+  {
+    from: resolve(copyPath),
+    to: resolve('dist/resource/'),
+    filter: (resourcePath) => {
+      return !resourcePath.endsWith('.html');
+    },
+    force: true,
+    noErrorOnMissing: true
+  }
+] : [];
+const copyFavicon = faviconIcon ? [
+  {
+    from: resolve(faviconIcon),
+    to: resolve('dist/resource/img/common/'),
+    force: true,
+    noErrorOnMissing: true
+  }
+] : [];
 module.exports = {
   css: {
     loaderOptions: {
@@ -122,27 +154,11 @@ module.exports = {
     performance: {
       hints: false
     },
-    plugins: copyPath ? [
+    plugins: [
       new CopyPlugin({
-        patterns: [
-          {
-            from: path.resolve(__dirname, copyPath), // 需要复制的目录
-            to: path.resolve(__dirname, 'dist/'), // 复制到目标目录
-            filter: (resourcePath) => {
-              // 只复制 .html 文件
-              return resourcePath.endsWith('.html');
-            }
-          },
-          {
-            from: path.resolve(__dirname, copyPath),
-            to: path.resolve(__dirname, 'dist/resource/'),
-            filter: (resourcePath) => {
-              return !resourcePath.endsWith('.html');
-            }
-          }
-        ]
-      })
-    ] : []
+        patterns: [...copyRsPack, ...copyFavicon]
+      }) 
+    ]
   },
   chainWebpack: config => {
     config.module.rule('vue').use('vue-path-injector').loader(require.resolve('./vue-path-injector.js')).after('vue-loader').end();
