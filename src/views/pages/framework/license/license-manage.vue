@@ -115,7 +115,7 @@ export default {
         if (this.licenseData) {
           this.licenseData.moduleList = this.licenseData.moduleList.filter(module => module !== null);
           this.tableConfig.tbodyList = res.Return.modulesPolicy;
-          this.tableConfig.tbodyList.forEach(element => {
+          this.tableConfig.tbodyList && this.tableConfig.tbodyList.forEach(element => {
             if (element.isEnd || element.isInvalidPolicy) {
               element.expiredClass = 'bg-error-grey';
             } else {
