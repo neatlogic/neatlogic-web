@@ -16,11 +16,19 @@ let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || 
 importCustomConfig.forEach((filePath) => {
   if (filePath) {
     let {tableStyle, title, loginTitle, imgPath, publicPath, faviconIconPath} = require(filePath);
-    login_Title = String(loginTitle) || 'welcome';
-    table_style = String(tableStyle);
-    pageTitle = String(title);
-    imgModule = imgPath;
     copyPath = publicPath;
+    if (loginTitle) {
+      login_Title = String(loginTitle);
+    }
+    if (tableStyle) {
+      table_style = String(tableStyle);
+    }
+    if (title) {
+      pageTitle = String(title);
+    }
+    if (imgPath) {
+      imgModule = imgPath;
+    }
     if (faviconIconPath) {
       faviconPath = faviconIconPath; 
     }

@@ -13,11 +13,19 @@ let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || 
 importCustomConfig.forEach((filePath) => {
   if (filePath) {
     let {tableStyle, title, loginTitle, imgPath, publicPath = '', faviconIconPath} = require(filePath);
-    process.env.VUE_APP_LOGINTITLE = loginTitle || 'welcome';
-    process.env.VUE_APP_TABLESTRYLE = tableStyle;
-    pageTitle = title;
     copyPath = publicPath;
-    baseImg = imgPath;
+    if (loginTitle) {
+      process.env.VUE_APP_LOGINTITLE = loginTitle || 'welcome';
+    }
+    if (tableStyle) {
+      process.env.VUE_APP_TABLESTRYLE = tableStyle;
+    }
+    if (title) {
+      pageTitle = title;
+    }
+    if (imgPath) {
+      baseImg = imgPath;
+    }
     if (faviconIconPath) {
       faviconIcon = faviconIconPath;
     }
