@@ -6,7 +6,7 @@
     </template>
     <template v-slot:topLeft>
       <div class="action-group">
-        <span v-if="!downloadLoading" v-download="exportWord" class="tsfont-export action-item">{{ $t('term.autoexec.libraryusageinstructions') }}</span>
+        <span v-if="!downloadLoading" v-download="exportWord" class="tsfont-download action-item">{{ $t('term.autoexec.libraryusageinstructions') }}</span>
         <span v-if="downloadLoading" class="action-item disable" :title="$t('page.downloadloadingtip')">
           <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
           {{ $t('term.autoexec.libraryusageinstructions') }}
@@ -177,7 +177,7 @@ export default {
       actionIcons: {
         generateToCombop: 'tsfont-tool',
         copy: 'tsfont-copy',
-        export: 'tsfont-export',
+        export: 'tsfont-download',
         delete: 'tsfont-trash-o',
         test: 'tsfont-test'
       },

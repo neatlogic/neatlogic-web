@@ -11,9 +11,9 @@
       </div>
       <div slot="topRight" class="bar-top">
         <div class="bar-top-right action-group text-right">
-          <span v-if="tableData && tableData.tbodyList && tableData.tbodyList.length>0" v-download="downurl" class="action-item tsfont-export">{{ $t('term.pbc.exportdata') }}</span>
-          <span v-else class="action-item disable tsfont-export">{{ $t('term.pbc.exportdata') }}</span>
-          <span class="action-item tsfont-export" @click="exportMatrix">{{ $t('page.export') }}</span>
+          <span v-if="tableData && tableData.tbodyList && tableData.tbodyList.length>0" v-download="downurl" class="action-item tsfont-download">{{ $t('term.pbc.exportdata') }}</span>
+          <span v-else class="action-item disable tsfont-download">{{ $t('term.pbc.exportdata') }}</span>
+          <span class="action-item tsfont-download" @click="exportMatrix">{{ $t('page.export') }}</span>
           <span class="action-item tsfont-edit" @click="editMatrix()">{{ $t('page.edit') }}</span>
           <span v-if="tableData" class="action-item block-item">
             <ReferenceSelect
