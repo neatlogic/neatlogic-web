@@ -8,7 +8,7 @@
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget', { target: $t('page.data') }) }}</Button>
       </div>
       <template v-if="canShowImportExportBtn">
-        <span v-if="isShowExportExcelTemplate" class="action-item tsfont-export" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
+        <span v-if="isShowExportExcelTemplate" class="action-item tsfont-download" @click="exportExcelTemplate">{{ $t('term.pbc.exporttemplate') }}</span>
         <span v-else class="action-item">
           <Icon
             type="ios-loading"
@@ -17,7 +17,7 @@
           ></Icon>
           {{ $t('term.pbc.exporttemplate') }}
         </span>
-        <span v-if="isShowExportExcel" class="action-item tsfont-export" @click="exportExcel">{{ $t('term.framework.exporttable') }}</span>
+        <span v-if="isShowExportExcel" class="action-item tsfont-download" @click="exportExcel">{{ $t('term.framework.exporttable') }}</span>
         <span v-else class="action-item">
           <Icon
             type="ios-loading"
@@ -42,7 +42,7 @@
           class="forminputtable-upload ml-sm"
           style="display: inline-block"
         >
-          <span class="tsfont-import">{{ $t('term.framework.importtable') }}</span>
+          <span class="tsfont-upload">{{ $t('term.framework.importtable') }}</span>
         </Upload>
       </template>
     </div>

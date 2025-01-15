@@ -26,11 +26,11 @@
       </template>
       <template v-slot:topRight>
         <div v-if="hasEditAuth" class="action-group no-line">
-          <span class="action-item tsfont-import" @click="importPipeline">{{ $t('page.import') }}</span>
+          <span class="action-item tsfont-download" @click="importPipeline">{{ $t('page.import') }}</span>
           <span
             v-if="!isExportPipeline"
             v-download="exportPipeline"
-            class="action-item tsfont-export"
+            class="action-item tsfont-download"
           >{{ $t('page.export') }}</span>
           <span v-else class="action-item">
             <Icon type="ios-loading" size="16" class="loading"></Icon>

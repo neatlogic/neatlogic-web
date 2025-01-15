@@ -14,7 +14,7 @@
             @click="addAction"
           >{{ $t('term.autoexec.combinationtool') }}</span>
           <span
-            class="action-item tsfont-import"
+            class="action-item tsfont-upload"
             :class="{ 'text-disabled': !hasAuth }"
             :title="!hasAuth ? $t('page.notauthrelationadmin') : ''"
             @click="uploadAction()"
@@ -23,9 +23,9 @@
             v-if="hasAuth"
             v-download="downloadUrl"
             v-download:prevent="preventDownload"
-            class="action-item tsfont-export"
+            class="action-item tsfont-download"
           >{{ $t('page.export') }}</span>
-          <span v-else class="action-item tsfont-export text-disabled" :title="$t('page.notauthrelationadmin')">{{ $t('page.export') }}</span>
+          <span v-else class="action-item tsfont-download text-disabled" :title="$t('page.notauthrelationadmin')">{{ $t('page.export') }}</span>
         </div>
       </template>
       <template slot="topRight">

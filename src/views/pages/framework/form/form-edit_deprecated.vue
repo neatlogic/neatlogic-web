@@ -89,7 +89,7 @@
                   <div class="tsfont-formstaticlist referenceCount disable">{{ $t('page.referencelist') }}</div>
                 </DropdownItem>
                 <!-- <DropdownItem @click.native="$refs.uploadDialog.showDialog">
-                  <span class="tsfont-import">导入</span>
+                  <span class="tsfont-download">导入</span>
                   <UploadDialog
                     ref="uploadDialog"
                     :beforeUpload="beforeUpload"
@@ -99,7 +99,7 @@
                   />
                 </DropdownItem>
                 <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
-                  <div class="tsfont-export">导出</div>
+                  <div class="tsfont-download">导出</div>
                 </DropdownItem> -->
               </DropdownMenu>
             </Dropdown>

@@ -15,7 +15,7 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <span v-if="!downloadLoading" v-download="exportExcel" class="tsfont-export action-item">{{ $t('term.inspect.exporttargetrule') }}</span>
+          <span v-if="!downloadLoading" v-download="exportExcel" class="tsfont-download action-item">{{ $t('term.inspect.exporttargetrule') }}</span>
           <span v-if="downloadLoading" class="action-item disable" :title="$t('page.downloadloadingtip')">
             <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
             {{ $t('term.inspect.exporttargetrule') }}

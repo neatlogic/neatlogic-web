@@ -30,7 +30,7 @@
               v-download="downloadUrl"
               ghost
               type="default"
-            ><span class="tsfont-import"></span>
+            ><span class="tsfont-download"></span>
             </Button>
           </div>
         </div>
