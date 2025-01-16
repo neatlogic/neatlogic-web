@@ -39,6 +39,9 @@ const apppipeline = {
   coverPipeline(param) {
     // 覆盖流水线
     return axios.post('/api/binary/deploy/app/pipeline/import', param, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
       contentType: 'multipart/form-data'
     });
   }
