@@ -99,6 +99,10 @@ const assignValid = {
                             policyList[i].config.handlerConfig[item.name] = null;
                           }
                         }
+                        if (!view.$utils.validParamValue(policyList[i].config.handlerConfig[item.name], item.validateList)) {
+                          isChecked = 0;
+                          errorText = $t('term.process.assignconfigvalid');
+                        }
                       });
                     }
                     let row = policyList[i].config.handlerConfig;
@@ -141,7 +145,6 @@ const assignValid = {
         }
       }
     }
-
     return validList;
   }
 };
