@@ -106,7 +106,7 @@
           :isDelete="isDelete || config.isDelete"
         />
         <template v-if="!hideName">
-          <span :class="hideAvatar && getUserStatus ? 'text-grey' : ''" class="user-name-box" style="position: relative;">  {{ showName() }}
+          <span :class="hideAvatar && getUserStatus ? 'text-grey' : ''" style="position: relative;">  {{ showName() }}
             <UserStatus
               v-if="hideAvatar && !hideStatusIcon"
               :vipLevel="vipLevel || config.vipLevel"
