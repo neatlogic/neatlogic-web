@@ -41,6 +41,7 @@
                 :class="[hideAvatar && getUserStatus ? 'text-grey' : '', alignMode == 'vertical' ? 'overflow' : '']"
                 :title="alignMode == 'vertical' ? showName() : ''"
                 :style="alignMode == 'vertical' ? {width: `${iconSize + 8}px`,display: 'inline-block'} : {}"
+                class="user-name-flag"
                 style="position: relative;"
               >
                 {{ showName() }}
@@ -105,7 +106,7 @@
           :isDelete="isDelete || config.isDelete"
         />
         <template v-if="!hideName">
-          <span :class="hideAvatar && getUserStatus ? 'text-grey' : ''" style="position: relative;">  {{ showName() }}
+          <span :class="hideAvatar && getUserStatus ? 'text-grey' : ''" class="user-name-box" style="position: relative;">  {{ showName() }}
             <UserStatus
               v-if="hideAvatar && !hideStatusIcon"
               :vipLevel="vipLevel || config.vipLevel"
