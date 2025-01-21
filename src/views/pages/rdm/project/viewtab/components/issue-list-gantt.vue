@@ -65,7 +65,10 @@
                     @click="toggleChildIssue(row)"
                   ></span>
                   <span class="overflow">
-                    <a href="javascript:void(0)" @click="openIssueDetail(row)">{{ row.name }}</a>
+                    <a href="javascript:void(0)" @click="openIssueDetail(row)">
+                      <span v-if="!issueData.wordList || issueData.wordList === 0">{{ row.name }}</span>
+                      <span v-else v-html="highlightKeywords(row.name, issueData.wordList)"></span>
+                    </a>
                   </span>
                 </div>
                 <IssueStatus v-else-if="getAttr(th.key).type === '_status'" :scale="0.8" :issueData="row"></IssueStatus>
@@ -172,6 +175,15 @@ export default {
   },
   destroyed() {},
   methods: {
+    highlightKeywords(text, wordList) {
+      if (!wordList || wordList.length === 0) return text;
+      const escapedWords = wordList.map(word => this.escapeRegExp(word));
+      const regex = new RegExp(`(${escapedWords.join('|')})`, 'gi'); // 匹配关键字，忽略大小写
+      return text.replace(regex, '<span class="highlight text-error">$1</span>'); // 使用span加上高亮样式
+    },
+    escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
+    },
     toggleChildIssue(row) {
       this.$emit('toggleChildIssue', row);
     },
@@ -481,5 +493,11 @@ html {
   line-height: 40px;
   text-align: right;
   grid-column: 1 / -1;
+}
+/deep/.highlight {
+  font-weight: bold;
+  /* 保证和普通文字对齐 */
+  line-height: 1; /* 确保高亮的行高与文字一致 */
+  vertical-align: baseline; /* 水平对齐方式 */
 }
 </style>

@@ -8,5 +8,6 @@ export { default as datetimerangeattr } from './datetimerange-attr.vue';
 export { default as selectattr } from './select-attr.vue';
 export { default as hyperlinkattr } from './hyperlink-attr.vue';
 export { default as textareaattr } from './textarea-attr.vue';
+export { default as textattr } from './text-attr.vue';
 export { default as numberattr } from './number-attr.vue';
 export { default as setattr } from './set-attr.vue';
