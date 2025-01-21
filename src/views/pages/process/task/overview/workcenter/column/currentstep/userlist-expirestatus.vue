@@ -1,7 +1,12 @@
 <template>
   <div style="height:100%;">
-    <UserList :row="row" :type="type" class="carouse-user-list"></UserList>
     <CenterExpireStatus v-if="row.expireStatus !== 'no-expired-time'" :row="row"></CenterExpireStatus>
+    <UserList
+      v-else
+      :row="row"
+      :type="type"
+      class="carouse-user-list"
+    ></UserList>
   </div>
 </template>
 <script>

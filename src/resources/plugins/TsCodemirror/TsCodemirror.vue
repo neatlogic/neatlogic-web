@@ -137,7 +137,7 @@ export default {
     return {
       validMesage: this.errorMessage || '',
       currentValidList: this.filterValid(this.validateList) || [],
-      currentValue: this.value,
+      currentValue: '',
       classCodeStyle: this.classCode,
       cmOptions: {
         mode: this.codeMode, //模式

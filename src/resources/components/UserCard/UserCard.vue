@@ -41,6 +41,7 @@
                 :class="[hideAvatar && getUserStatus ? 'text-grey' : '', alignMode == 'vertical' ? 'overflow' : '']"
                 :title="alignMode == 'vertical' ? showName() : ''"
                 :style="alignMode == 'vertical' ? {width: `${iconSize + 8}px`,display: 'inline-block'} : {}"
+                class="user-name-flag"
                 style="position: relative;"
               >
                 {{ showName() }}

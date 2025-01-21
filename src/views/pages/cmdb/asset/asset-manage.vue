@@ -225,7 +225,10 @@
       v-if="isExportAssetDialog"
       :selectList="selectList"
       :typeId="selectType.typeId"
-      :exportCondition="searchVal"
+      :exportCondition="{
+        ...(searchVal || {}),
+        batchSearchList: searchVal && searchVal.batchSearchList ? searchVal.batchSearchList.split('\n') : []
+      }"
       @close="isExportAssetDialog = false"
     ></ExportAsset>
     <TreeEdit v-if="isShowTreeEdit" :ciId="treeTypeRootCiId" @close="closeTreeEdit"></TreeEdit>

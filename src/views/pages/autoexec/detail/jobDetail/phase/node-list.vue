@@ -11,7 +11,7 @@
             <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">{{ $t('page.execute') }}</span>
           </template>
           <template v-if="canExportNode">
-            <span v-if="!downloadLoadingNode" v-download="downloadNodeUrl" class="action-item tsfont-export">{{ $t('term.autoexec.exportnode') }}</span>
+            <span v-if="!downloadLoadingNode" v-download="downloadNodeUrl" class="action-item tsfont-download">{{ $t('term.autoexec.exportnode') }}</span>
             <span v-if="downloadLoadingNode" class="action-item disable" :title="$t('page.downloadloadingtip')">
               <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
               {{ $t('term.autoexec.exportnode') }}

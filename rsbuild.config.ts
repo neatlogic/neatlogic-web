@@ -10,14 +10,28 @@ let pageTitle = 'neatlogic';
 let login_Title = 'welcome';
 let table_style = 'border';
 let imgModule = './public/resource';
+let copyPath = '';
+let faviconPath = './public/resource/img/common/tsfavicon.png';
 let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || [];
 importCustomConfig.forEach((filePath) => {
   if (filePath) {
-    let {tableStyle, title, loginTitle, imgPath} = require(filePath);
-    login_Title = String(loginTitle) || 'welcome';
-    table_style = String(tableStyle);
-    pageTitle = String(title);
-    imgModule = imgPath;
+    let {tableStyle, title, loginTitle, imgPath, publicPath, faviconIconPath} = require(filePath);
+    copyPath = publicPath;
+    if (loginTitle) {
+      login_Title = String(loginTitle);
+    }
+    if (tableStyle) {
+      table_style = String(tableStyle);
+    }
+    if (title) {
+      pageTitle = String(title);
+    }
+    if (imgPath) {
+      imgModule = imgPath;
+    }
+    if (faviconIconPath) {
+      faviconPath = faviconIconPath; 
+    }
   }
 });
 const resolve = dir => path.resolve(__dirname, dir);
@@ -70,12 +84,41 @@ function getPages(pageList) {
 const pages = getPages(process.env.VUE_APP_PAGE_LIST);
 let tenantNames = process.env.NODE_ENV === 'development' ? tenantName : '';
 const ent = Object.fromEntries(Object.keys(pages).map(key => [tenantNames + '/' + key, pages[key].entry]));
-
+const copyRsPack = copyPath ? [
+  {
+    from: resolve(copyPath), // 需要复制的目录
+    to: resolve('/dist/'), // 复制到目标目录
+    force: true,
+    filter: (resourcePath) => {
+      // 只复制 .html 文件
+      return resourcePath.endsWith('.html');
+    },
+    noErrorOnMissing: true // 当没有找到对应的文件或目录时，忽略错误
+  },
+  {
+    from: resolve(copyPath),
+    to: resolve('dist/resource/'),
+    filter: (resourcePath) => {
+      return !resourcePath.endsWith('.html');
+    },
+    force: true,
+    noErrorOnMissing: true
+  }
+] : [];
+const copyFavicon = faviconPath ? [
+  {
+    from: resolve(faviconPath),
+    to: resolve('dist/resource/img/common/'),
+    force: true,
+    noErrorOnMissing: true // 忽略文件不存在的错误
+  }
+] : [];
 export default defineConfig({
   plugins: [pluginVue2()],
   html: {
     template: './public/rs-index.html',
-    title: pageTitle
+    title: pageTitle,
+    favicon: faviconPath
   },
   dev: {
     assetPrefix: '/'
@@ -88,7 +131,10 @@ export default defineConfig({
           'GLOBAL_PAGELIST': "''",
           'GLOBAL_TABLESTRYLE': JSON.stringify(table_style),
           'GLOBAL_LOGINTITLE': JSON.stringify(login_Title)
-        })
+        }),
+        new rspack.CopyRspackPlugin({
+          patterns: [...copyRsPack, ...copyFavicon]
+        }) 
       ]
     },
     less: {

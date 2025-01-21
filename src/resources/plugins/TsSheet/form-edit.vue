@@ -117,7 +117,7 @@
                       <div class="action-item tsfont-formstaticlist referenceCount disable">{{ $t('page.referencelist') }}</div>
                     </DropdownItem>
                     <DropdownItem @click.native="$refs.uploadDialog.showDialog">
-                      <span class="tsfont-import">{{ $t('page.import') }}</span>
+                      <span class="tsfont-upload">{{ $t('page.import') }}</span>
                       <UploadDialog
                         ref="uploadDialog"
                         :beforeUpload="beforeUpload"
@@ -127,7 +127,7 @@
                       />
                     </DropdownItem>
                     <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
-                      <div class="tsfont-export">{{ $t('page.export') }}</div>
+                      <div class="tsfont-download">{{ $t('page.export') }}</div>
                     </DropdownItem>
                     <DropdownItem v-if="!processTaskId">
                       <div

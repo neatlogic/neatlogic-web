@@ -825,6 +825,7 @@ export default {
   },
   computed: {
     downloadUrl() {
+      let {batchSearchList = ''} = this.$utils.deepClone(this.searchVal) || {};
       return {
         url: 'api/binary/inspect/new/problem/report/export',
         method: 'post',
@@ -832,7 +833,8 @@ export default {
           isNeedAlertDetail: 1,
           inspectStatusList: this.inspectStatusList,
           ...this.searchVal,
-          ...this.selectType
+          ...this.selectType,
+          batchSearchList: batchSearchList ? batchSearchList.split('\n') : []
         },
         changeStatus: status => {
           if (status == 'start') {
