@@ -185,6 +185,9 @@
                   :runtimeParamList="paramsList"
                   :isCreateJob="true"
                   :disabled="false"
+                  @updateRunnergroup="(obj)=>{
+                    runnerGroup.value = obj.value;
+                  }"
                 ></RunnerGroupSetting>
               </template>
               <TsFormSelect

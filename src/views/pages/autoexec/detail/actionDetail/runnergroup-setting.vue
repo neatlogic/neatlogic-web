@@ -58,7 +58,7 @@
   </div>
 </template>
 <script>
-import { sync } from '../../../pbc/policy/phase';
+
 export default {
   name: '',
   inject: {
@@ -204,6 +204,7 @@ export default {
     },
     updateRunnerGroupText(val, valObj) {
       this.runnerGroup.text = valObj.text;
+      this.$emit('updateRunnergroup', this.runnerGroup);
     }
   },
   filter: {},
