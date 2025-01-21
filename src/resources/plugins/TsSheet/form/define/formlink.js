@@ -8,7 +8,6 @@ export default {
   icon: 'tsfont-formlink',
   override_config: {},
   hasValue: false,
-  notUniqueKey: true, //不需要唯一标识key
   config: {
     description: '',
     width: '100%',
