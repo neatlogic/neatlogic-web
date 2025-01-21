@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!$utils.isEmpty(serviceData)">
+  <div v-if="isReady && !$utils.isEmpty(serviceData)">
     <TsForm
       v-model="basicInfoFormValue"
       class="other-params-wrap"
@@ -176,6 +176,7 @@ export default {
   },
   data() {
     return {
+      isReady: false,
       basicInfoFormValue: {
         name: '',
         isActive: 0,
@@ -383,8 +384,13 @@ export default {
           this.$set(this.executeNode, 'mappingMode', mappingMode);
           this.$set(this.executeNode, 'value', value || {});
         }
-        this.runnerGroup = runnerGroup;
-        this.runnerGroupTag = runnerGroupTag;
+        // 如果有值，则用服务目录接口返回的值
+        if (!this.$utils.isEmpty(runnerGroup)) {
+          this.runnerGroup = runnerGroup;
+        }
+        if (!this.$utils.isEmpty(runnerGroupTag)) {
+          this.runnerGroupTag = runnerGroupTag;
+        }
       }
       if (!this.$utils.isEmpty(this.serviceData)) {
       // 其他参数值回显
@@ -417,6 +423,9 @@ export default {
           }
         }
       }
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
     },
     getConfigByMappingMode(configKey, item) {
       // 根据映射关系，设置配置信息
@@ -459,6 +468,7 @@ export default {
             this.needProtocol = this.dataConfig.needProtocol;
             this.needRoundCount = this.dataConfig.needRoundCount;
             this.executeConfig = this.dataConfig.config.executeConfig || {};
+            this.runnerGroupTag = this.executeConfig.runnerGroupTag || {};
             if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
               this.$set(this.executeConfig, 'executeNodeConfig', {});
             }
