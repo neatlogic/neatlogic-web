@@ -39,7 +39,6 @@
 export default {
   name: '',
   components: {
-    TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
     MqSubscribeList: () => import('./mq-subscribe-list.vue'),
     MqTopicList: () => import('./mq-topic-list.vue')
   },

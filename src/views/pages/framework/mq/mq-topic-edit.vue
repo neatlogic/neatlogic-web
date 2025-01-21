@@ -34,7 +34,7 @@
   </TsDialog>
 </template>
 <script>
-import config from '@/views/pages/framework/mq/config/index.js';
+import config from '@/views/pages/framework/mq/topic/config/index.js';
 export default {
   name: '',
   components: {
