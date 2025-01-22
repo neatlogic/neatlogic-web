@@ -3,7 +3,7 @@
     <div
       ref="userCon"
       class="flex1 shrink"
-      style="position: relative; overflow: hidden;"
+      style="position: relative;"
       @click.stop
     >
       <div
@@ -155,7 +155,6 @@ export default {
 
 .Carousel {
   width: 100%;
-  height: 82px;
   /*margin-right: 2px;*/
   background-color: #fff;
   border-bottom: 1px solid @default-dividing;

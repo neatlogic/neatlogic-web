@@ -6,6 +6,7 @@
         ref="attrHandler"
         :handler="handler"
         :mode="mode"
+        :wordList="wordList"
         :ciEntity="ciEntity"
         :attrEntity="attrEntity"
         :authData="authData"
@@ -41,6 +42,7 @@ export default {
     handler: { type: String },
     ciEntity: { type: Object },
     attrEntity: { type: Object },
+    wordList: { type: Array }, //分词结果
     authData: { type: Object } //权限数据
   },
   data() {

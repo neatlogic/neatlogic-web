@@ -9,7 +9,7 @@
           <span class="tsfont-edit action-item" @click="goPages('batchResetcred')">{{ $t('term.framework.batchresetcred') }}</span>
           <span class="tsfont-anzhuangbao action-item" @click="goPages('installationPackage')">{{ $t('term.framework.installpackage') }}</span>
           <span class="tsfont-question-s action-item" @click="openInstallTipsDialog">{{ $t('term.framework.tagentinstall') }}</span>
-          <span class="tsfont-export action-item" @click="exportExcel">{{ $t('page.export') }}</span>
+          <span class="tsfont-download action-item" @click="exportExcel">{{ $t('page.export') }}</span>
         </div>
       </template>
       <template v-slot:topRight>

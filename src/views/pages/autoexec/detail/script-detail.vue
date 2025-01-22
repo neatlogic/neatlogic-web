@@ -157,7 +157,7 @@ export default {
       actionIcons: {
         generateToCombop: 'tsfont-tool',
         copy: 'tsfont-copy',
-        export: 'tsfont-export',
+        export: 'tsfont-download',
         delete: 'tsfont-trash-o',
         compare: 'tsfont-compare',
         submit: 'tsfont-check-o',

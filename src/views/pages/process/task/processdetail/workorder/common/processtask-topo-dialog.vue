@@ -2,8 +2,7 @@
   <TsDialog v-bind="dialogConfig" @on-close="close()">
     <template v-slot:header>
       <div>
-        <span class="text-action pr-xs" @click="openFlow()">{{ title }}</span>
-        <span class="tsfont-eye text-tip-active" title="查看当前工单流程配置" @click="openFlow(true)"></span>
+        <span class="pr-xs">{{ title }}</span>
       </div>
     </template>
     <template v-slot>
@@ -14,6 +13,8 @@
             :needMinimap="true"
             mode="graph"
             :readonly="true"
+            :flowUuid="flowUuid"
+            :processTaskId="processTaskId"
           ></FlowEditorToolbar>
         </div>
         <div style="height: calc(100vh - 334px)">
@@ -152,16 +153,6 @@ export default {
           this.graph.centerContent();
         }, 500);
       });
-    },
-    openFlow(isView) {
-      if (this.flowUuid) {
-        let url = HOME + '/process.html#/flow-edit?uuid=' + this.flowUuid; 
-        if (isView) {
-        //查看当前工单的流程图配置，需要传递工单id
-          url = HOME + '/process.html#/flow-edit?uuid=' + this.flowUuid + '&processTaskId=' + this.processTaskId;
-        }
-        window.open(url, '_blank');
-      }
     }
   },
   filter: {},

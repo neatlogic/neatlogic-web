@@ -62,10 +62,12 @@
                 <span class="tsfont-option-vertical text-grey" style="cursor: move" @mousedown.stop></span>
                 <span><AppIcon :appType="issue.appType" size="small" :appColor="issue.appColor"></AppIcon></span>
                 <span
+                  v-if="!issueData.wordList || issueData.wordList === 0"
                   class="cursor text-href"
                   @mousedown.stop
                   @click.stop="toIssueDetail(issue)"
                 >{{ issue.name }}</span>
+                <span v-else v-html="highlightKeywords(issue.name, issueData.wordList)"></span>
               </div>
               <div class="mt-xs mb-xs text-grey fz10">{{ issue.createDate | formatDate('yyyy-mm-dd') }}</div>
               <div class="flex">
@@ -192,6 +194,15 @@ export default {
   },
   destroyed() {},
   methods: {
+    highlightKeywords(text, wordList) {
+      if (!wordList || wordList.length === 0) return text;
+      const escapedWords = wordList.map(word => this.escapeRegExp(word));
+      const regex = new RegExp(`(${escapedWords.join('|')})`, 'gi'); // 匹配关键字，忽略大小写
+      return text.replace(regex, '<span class="highlight text-error">$1</span>'); // 使用span加上高亮样式
+    },
+    escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
+    },
     startDrag(e) {
       this.isDragging = true;
       this.oldX = e.clientX;
@@ -441,5 +452,11 @@ html {
   line-height: 40px;
   text-align: right;
   grid-column: 1 / -1;
+}
+/deep/.highlight {
+  font-weight: bold;
+  /* 保证和普通文字对齐 */
+  line-height: 1; /* 确保高亮的行高与文字一致 */
+  vertical-align: baseline; /* 水平对齐方式 */
 }
 </style>

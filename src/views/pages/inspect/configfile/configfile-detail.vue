@@ -103,7 +103,6 @@ export default {
         valueName: 'id',
         transfer: true,
         search: true,
-        isSquare: false,
         clearable: false,
         border: 'none',
         validateList: ['required']

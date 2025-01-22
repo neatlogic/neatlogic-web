@@ -6,7 +6,7 @@
         <div v-if="!id">{{ $t('dialog.title.addtarget', { target: $t('term.framework.subscribe') }) }}</div>
       </template>
       <template v-slot>
-        <TsForm ref="form" :item-list="formConfig">
+        <TsForm ref="form" v-model="subscribeData" :item-list="formConfig">
           <template v-slot:handler>
             <TsFormRadio
               v-if="handlerList && handlerList.length > 0"
@@ -22,6 +22,16 @@
               "
             ></TsFormRadio>
             <span v-else class="text-grey">没有可用的消息队列</span>
+          </template>
+          <template v-slot:config>
+            <div>
+              <component
+                :is="subscribeData.subscribeHandlerName + '_config'"
+                v-if="subscribeData && subscribeData.subscribeHandlerName"
+                ref="configComponent"
+                :config="subscribeData.config"
+              ></component>
+            </div>
           </template>
           <template v-slot:topicName>
             <span v-if="!subscribeData.handler" class="text-grey">请先选择消息队列类型</span>
@@ -51,12 +61,14 @@
   </div>
 </template>
 <script>
+import handlers from '@/views/pages/framework/mq/subscribe/config/index.js';
 export default {
   name: '',
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    ...handlers
   },
   props: {
     id: { type: Number }
@@ -70,6 +82,7 @@ export default {
         isShow: true,
         width: 'small'
       },
+      currentHandler: null,
       topicList: [],
       handlerList: [],
       subscribeData: {},
@@ -94,14 +107,18 @@ export default {
           type: 'select',
           name: 'className',
           label: this.$t('page.handler'),
-          width: '100%',
           url: '/api/rest/mq/subscribehandler/list',
           valueName: 'className',
           validateList: ['required'],
-          textName: 'name',
-          onChange: name => {
-            this.subscribeData.className = name;
+          textName: 'label',
+          onChange: (name, opt, item) => {
+            this.$set(this.subscribeData, 'className', name);
+            this.$set(this.subscribeData, 'subscribeHandlerName', item.name);
           }
+        },
+        {
+          type: 'slot',
+          name: 'config'
         },
         {
           type: 'slot',
@@ -182,7 +199,16 @@ export default {
     },
     save() {
       const form = this.$refs['form'];
-      if (form.valid()) {
+      const configComponent = this.$refs['configComponent'];
+      let isValid = true;
+      if (form && !form.valid()) {
+        isValid = false;
+      }
+      if (configComponent && !configComponent.valid()) {
+        isValid = false;
+      }
+      if (isValid) {
+        this.subscribeData.config = configComponent && configComponent.getConfig();
         this.$api.framework.mq.saveSubscribe(this.subscribeData).then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
@@ -195,9 +221,9 @@ export default {
       if (this.id) {
         await this.$api.framework.mq.getSubscribeById(this.id).then(res => {
           this.subscribeData = res.Return;
-          this.formConfig.forEach(element => {
+          /*this.formConfig.forEach(element => {
             this.$set(element, 'value', this.subscribeData[element.name]);
-          });
+          });*/
         });
       }
     }

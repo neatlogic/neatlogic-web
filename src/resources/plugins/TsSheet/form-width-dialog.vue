@@ -6,7 +6,7 @@
   >
     <template v-slot>
       <TsForm
-        v-model="formWidthData"
+        v-model="formStyleData"
         :item-list="formConfig"
       ></TsForm>
     </template>
@@ -48,11 +48,17 @@ export default {
           label: this.$t('page.width') + '(%)',
           type: 'number',
           validateList: ['required']
+        },
+        cellSpacing: {
+          label: this.$t('page.cellspacing'),
+          type: 'number',
+          max: 50
         }
       },
-      formWidthData: {
+      formStyleData: {
         type: '%',
-        width: 100
+        width: 100,
+        cellSpacing: 0
       }
     };
   },
@@ -71,39 +77,42 @@ export default {
   methods: {
     init() {
       if (!this.$utils.isEmpty(this.formWidth)) {
-        this.formWidthData = this.$utils.deepClone(this.formWidth);
+        this.formStyleData = this.$utils.deepClone(this.formWidth);
       }
-      if (this.formWidthData.type === '%') {
+      if (this.formStyleData.type === '%') {
         this.formConfig.width.label = this.$t('page.width') + '(%)';
         this.formConfig.width.max = 100;
-      } else if (this.formWidthData.type === 'px') {
+      } else if (this.formStyleData.type === 'px') {
         this.formConfig.width.label = this.$t('page.width') + '(px)';
         this.formConfig.width.max = Infinity;
-      } else if (this.formWidthData.type === 'inherit') {
+      } else if (this.formStyleData.type === 'inherit') {
         this.formConfig.width.isHidden = true;
+      }
+      if (!this.formStyleData.hasOwnProperty('cellSpacing')) {
+        this.formStyleData.cellSpacing = 0;
       }
     },
     okDialog() {
-      this.$emit('close', this.formWidthData);
+      this.$emit('close', this.formStyleData);
     },
     closeDialog() {
       this.$emit('close');
     },
     changeType(val) {
-      this.formWidthData.type = val;
+      this.formStyleData.type = val;
       if (val === '%') {
         this.formConfig.width.label = this.$t('page.width') + '(%)';
         this.formConfig.width.max = 100;
-        this.formWidthData.width = 100;
+        this.formStyleData.width = 100;
         this.formConfig.width.isHidden = false;
       } else if (val === 'px') {
         this.formConfig.width.label = this.$t('page.width') + '(px)';
         this.formConfig.width.max = Infinity;
-        this.formWidthData.width = 1000;
+        this.formStyleData.width = 1000;
         this.formConfig.width.isHidden = false;
       } else if (val === 'inherit') {
         this.formConfig.width.isHidden = true;
-        this.formWidthData.width = '';
+        this.formStyleData.width = '';
       }
     }
   },

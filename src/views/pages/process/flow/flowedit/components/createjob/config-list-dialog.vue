@@ -112,6 +112,9 @@ export default {
         this.configList = this.$utils.deepClone(this.list);
         this.configList.forEach(item => {
           this.$set(item, 'isShow', true);
+          if (!item.type) {
+            item.type = 'combop';
+          }
         });
       } else {
         this.addAutoexecList();
@@ -149,7 +152,7 @@ export default {
         scenarioParamMappingGroupList: [], // 场景参数列表
         formAttributeMappingList: [],
         isShow: true,
-        type: '', // 组合工具、服务
+        type: 'combop', // 组合工具、服务
         formAttributeUuid: '' // 表单属性，自动化服务的uuid
       };
       this.configList.push(config);

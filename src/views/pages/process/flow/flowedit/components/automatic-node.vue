@@ -715,7 +715,8 @@ export default {
       //参数条件选择
       let data = {
         formUuid: this.formUuid,
-        tag: this.formTag || 'common'
+        tag: this.formTag || 'common',
+        isAll: 1
       };
       if (this.flowObj && this.flowObj.processTaskId) {
         data.processTaskId = this.flowObj.processTaskId;

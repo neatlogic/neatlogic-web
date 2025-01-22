@@ -17,7 +17,7 @@
   </div>
 </template>
 <script>
-import { ConfigBase } from '@/views/pages/framework/mq/config/config.base.js';
+import { ConfigBase } from '@/views/pages/framework/mq/topic/config/config.base.js';
 
 export default {
   name: '',

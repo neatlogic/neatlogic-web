@@ -837,13 +837,13 @@ const methods = {
       //}
     }
   },
-  copyText(id) {
+  copyText(id, copyText) {
     // 复制内容
-    const dom = document.querySelector(id);
-    if (dom && dom.innerText) {
-      const value = dom.innerText.trim();
+    const dom = id ? document.querySelector(id) : null;
+    let copyContent = dom && dom.innerText ? dom.innerText.trim() : copyText;
+    if (copyContent) {
       const textarea = document.createElement('textarea');
-      textarea.value = value;
+      textarea.value = copyContent;
       document.body.appendChild(textarea);
       textarea.select();
       document.execCommand('copy');

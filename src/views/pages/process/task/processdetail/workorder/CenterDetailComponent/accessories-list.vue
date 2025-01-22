@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsTable
-      v-bind="fileTable"
+      v-bind="tableData"
       :theadList="theadList"
       @changeCurrent="changeCurrentFlie"
       @changePageSize="changePageSizeFile"
@@ -29,7 +29,7 @@ export default {
   directives: {download},
   props: {
     processTaskId: Number,
-    value: {
+    fileTable: {
       type: Object,
       default: function() {
         return {};
@@ -57,16 +57,14 @@ export default {
           key: 'action'
         }
       ],
-      fileTable: {}, //所有的附件
+      tableData: {}, //所有的附件
       searchParams: {
         processTaskId: this.processTaskId
       }
     };
   },
   beforeCreate() {},
-  created() {
-    this.getAllFileList();
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -79,8 +77,7 @@ export default {
     getAllFileList() {
       this.$api.process.processtask.getProcesstaskFileList(this.searchParams).then(res => {
         if (res.Status == 'OK') {
-          this.fileTable = res.Return;
-          this.$emit('updateTabStatus', this.fileTable); // 更新外部附件清单tab是否显示
+          this.tableData = res.Return;
         }
       });
     },
@@ -107,7 +104,17 @@ export default {
       };
     }
   },
-  watch: {}
+  watch: {
+    fileTable: {
+      handler(val) {
+        if (val) {
+          this.tableData = this.$utils.deepClone(val);
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less">

@@ -137,7 +137,7 @@ export default {
     return {
       validMesage: this.errorMessage || '',
       currentValidList: this.filterValid(this.validateList) || [],
-      currentValue: this.value,
+      currentValue: '',
       classCodeStyle: this.classCode,
       cmOptions: {
         mode: this.codeMode, //模式
@@ -244,7 +244,6 @@ export default {
     getOption() {
       let cmOptions = Object.assign(this.cmOptions, this.config);
       this.$set(cmOptions, 'mode', cmOptions.mode && this.modeMappingConfig[cmOptions.mode] ? this.modeMappingConfig[cmOptions.mode] : 'text/javascript');
-      console.log(JSON.stringify(cmOptions, null, 2));
       return cmOptions;
     }
   },

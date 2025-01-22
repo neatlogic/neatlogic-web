@@ -22,7 +22,7 @@
                 <TsFormSelect
                   :dataList="attrList"
                   search
-                  :readonly="readonly"
+                  :disabled="readonly"
                   :value="conItem.name"
                   :transfer="true"
                   valueName="name"
@@ -39,7 +39,7 @@
             <Col :span="isNeedAttrValue(conItem) ? 4 : 10">
               <div class>
                 <TsFormSelect
-                  :readonly="readonly"
+                  :disabled="readonly"
                   :value="conItem.expression"
                   :dataList="getExpressionList(conItem)"
                   :transfer="true"
@@ -64,25 +64,6 @@
                   }
                 "
               ></ConditionItem>
-              <!-- <TsFormSelect
-                v-if="getSelectConfig(conItem)"
-                v-bind="getSelectConfig(conItem)"
-                :value="conItem.valueList"
-                :transfer="true"
-                @change="
-                  val => {
-                    setAttrValue(conItem, val);
-                  }
-                "
-              ></TsFormSelect>
-              <TsFormInput
-                v-else
-                :value="conItem.valueList && conItem.valueList[0]"
-                border="border"
-                @on-change="val => {
-                  setAttrValue(conItem, val);
-                }"
-              ></TsFormInput>-->
             </Col>
             <Col v-if="!readonly" span="2">
               <div class="btn-group text-grey">
@@ -105,7 +86,7 @@
                     v-model="conditionGroup.conditionRelList[conditionIndex]"
                     :dataList="joinTypeList"
                     :clearable="false"
-                    :readonly="readonly"
+                    :disabled="readonly"
                     border="none"
                     size="small"
                     :transfer="true"
@@ -124,7 +105,7 @@
             <div class="condition-joinType text-href">
               <TsFormSelect
                 v-model="rule.conditionGroupRelList[groupIndex]"
-                :readonly="readonly"
+                :disabled="readonly"
                 :dataList="joinTypeList"
                 :clearable="false"
                 border="none"
@@ -146,8 +127,6 @@
 export default {
   name: '',
   components: {
-    //TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    //AttrSearcher: () => import('@/views/pages/cmdb/cientity/attr-searcher.vue'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     ConditionItem: () => import('@/resources/components/Condition/condition-item.vue')
   },
@@ -170,6 +149,10 @@ export default {
         like: '包含',
         notlike: '不包含',
         range: '范围',
+        gt: '大于',
+        lt: '小于',
+        gte: '大于等于',
+        lte: '小于等于',
         'is-null': '为空',
         'is-not-null': '不为空'
       },

@@ -1107,11 +1107,12 @@ export default {
     },
     updateFormWidth() {
       //更新表单宽度
-      setTimeout(() => {
-        if (this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.$el && this.$refs.TaskCenterDetail.$el.__vue__.$refs.formSheet) {
-          this.$refs.TaskCenterDetail.$el.__vue__.$refs.formSheet.initContainerWidth();
-        }
-      }, 300); //动画有延迟
+      if (this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.resizeStatusConfig) {
+        this.$set(this.$refs.TaskCenterDetail.resizeStatusConfig, 'isReady', false);
+        setTimeout(() => {
+          this.$set(this.$refs.TaskCenterDetail.resizeStatusConfig, 'isReady', true);
+        }, 300); //动画有延迟
+      }
     },
     comment() {
       this.$refs.TaskCenterDetail.comment();

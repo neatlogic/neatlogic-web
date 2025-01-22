@@ -314,15 +314,15 @@ export default {
       currentPage: 1,
       isShowCombineSearcher: false,
       searchConfig: {
-        search: false,
+        search: true,
         labelPosition: 'left',
         searchMode: 'clickBtnSearch',
         searchList: [
-          {
+          /*{
             type: 'text',
             name: 'keyword',
             label: this.$t('page.keyword')
-          },
+          },*/
           { type: 'text', name: 'issueId', label: 'id' },
           {
             type: 'radio',

@@ -319,6 +319,7 @@
             <div v-if="row.attrEntityData[head.key]">
               <AttrViewer
                 :ciEntity="row"
+                :wordList="ciEntityData.keywordList"
                 :handler="row.attrEntityData[head.key].type"
                 :attrEntity="row.attrEntityData[head.key]"
                 :authData="row.authData"

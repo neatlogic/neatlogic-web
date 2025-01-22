@@ -154,11 +154,12 @@ export default {
   },
 
   beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {
+  created() {
+    this.getConditionNode();
     this.init();
   },
+  beforeMount() {},
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -166,26 +167,23 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    async init() {
-      await this.getConditionNode();
-      await this.getDefaultPolicyId();
-      let handler = this.defaultDeepCloneConfig.handler || this.handler;
-      this.notifySelectConfig.params.handler = handler;
-      this.isActive = this.defaultDeepCloneConfig.isCustom || 0;
-      this.$set(this.notifyPolicyConfig, 'paramMappingList', this.defaultDeepCloneConfig.paramMappingList);
-      this.$set(this.notifyPolicyConfig, 'isCustom', this.defaultDeepCloneConfig.isCustom);
-      this.$set(this.notifyPolicyConfig, 'excludeTriggerList', this.defaultDeepCloneConfig.excludeTriggerList);
-      this.$set(this.notifyPolicyConfig, 'handler', handler);
-      this.defaultPolicyId && this.$set(this.notifyPolicyConfig, 'policyId', this.defaultPolicyId);
-      this.defaultPolicyName && this.$set(this.notifyPolicyConfig, 'policyName', this.defaultPolicyName);
-      if (this.defaultDeepCloneConfig.hasOwnProperty('policyId') && this.defaultDeepCloneConfig.policyId) {
-        this.$set(this.notifyPolicyConfig, 'policyId', this.defaultDeepCloneConfig.policyId);
+    init() {
+      let {handler = '', isCustom = 0, paramMappingList = [], excludeTriggerList = [], policyId = null, policyName = '', policyPath = ''} = this.defaultDeepCloneConfig || {};
+      let defaultHandler = handler || this.handler;
+      this.notifySelectConfig.params.handler = defaultHandler;
+      this.isActive = isCustom || 0;
+      this.$set(this.notifyPolicyConfig, 'paramMappingList', paramMappingList);
+      this.$set(this.notifyPolicyConfig, 'isCustom', isCustom);
+      this.$set(this.notifyPolicyConfig, 'excludeTriggerList', excludeTriggerList);
+      this.$set(this.notifyPolicyConfig, 'handler', defaultHandler);
+      if (this.defaultDeepCloneConfig.hasOwnProperty('policyId') && policyId) {
+        this.$set(this.notifyPolicyConfig, 'policyId', policyId);
       }
       if (this.defaultDeepCloneConfig.hasOwnProperty('policyName')) {
-        this.$set(this.notifyPolicyConfig, 'policyName', this.defaultDeepCloneConfig.policyName);
+        this.$set(this.notifyPolicyConfig, 'policyName', policyName);
       }
       if (this.defaultDeepCloneConfig.hasOwnProperty('policyPath')) {
-        this.$set(this.notifyPolicyConfig, 'policyPath', this.defaultDeepCloneConfig.policyPath);
+        this.$set(this.notifyPolicyConfig, 'policyPath', policyPath);
       }
     },
     //跳转策略编辑页面
@@ -209,7 +207,7 @@ export default {
         return false;
       }
       let formData = { formUuid: this.formUuid, notifyPolicyHandler: handler};
-      return this.$api.framework.tactics.notifySystemParamList(formData).then(res => {
+      this.$api.framework.tactics.notifySystemParamList(formData).then(res => {
         if (res.Status == 'OK') {
           this.conditionNodeList = res.Return.tbodyList || [];
         }
@@ -217,7 +215,7 @@ export default {
     },
     getData() { //获取数据
       let data = {
-        handler: this.notifyPolicyConfig.handler || '',
+        handler: this.notifyPolicyConfig.handler || this.handler,
         isCustom: this.isActive,
         paramMappingList: this.notifyPolicyConfig.paramMappingList || [],
         excludeTriggerList: this.notifyPolicyConfig.excludeTriggerList || []
@@ -251,11 +249,12 @@ export default {
         this.notifyPolicyConfig.excludeTriggerList = [];
       } else if (!isActive) {
         // 为空时，需要设置默认参数值
-        this.$set(this.notifyPolicyConfig, 'policyId', this.defaultPolicyId);
-        this.$set(this.notifyPolicyConfig, 'paramMappingList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.paramMappingList : []);
-        this.$set(this.notifyPolicyConfig, 'excludeTriggerList', !this.defaultDeepCloneConfig.isCustom ? this.defaultDeepCloneConfig.excludeTriggerList : []);
-        this.$set(this.notifyPolicyConfig, 'policyName', this.defaultPolicyName);
-        this.$set(this.notifyPolicyConfig, 'handler', this.defaultDeepCloneConfig.handler);
+        let {isCustom = 0, paramMappingList = [], excludeTriggerList = [], handler = ''} = this.defaultDeepCloneConfig || {};
+        this.$set(this.notifyPolicyConfig, 'policyId', null);
+        this.$set(this.notifyPolicyConfig, 'paramMappingList', !isCustom ? paramMappingList : []);
+        this.$set(this.notifyPolicyConfig, 'excludeTriggerList', !isCustom ? excludeTriggerList : []);
+        this.$set(this.notifyPolicyConfig, 'policyName', '');
+        this.$set(this.notifyPolicyConfig, 'handler', handler);
       }
       this.isActive = isActive;
       this.notifyPolicyConfig.isCustom = this.isActive;
@@ -270,25 +269,6 @@ export default {
         this.tacticsData = tacticsData;
         Object.assign(this.notifyPolicyConfig, tacticsData);
       }
-    },
-    getDefaultPolicyId() {
-      // 获取默认通知策略信息
-      let data = {
-        handler: this.defaultDeepCloneConfig.handler || this.handler
-      };
-      if (!data.handler) {
-        return false;
-      }
-      this.defaultPolicyId = null;
-      this.defaultPolicyName = '';
-      return this.$api.framework.tactics.getDefaultPolicy(data).then(res => {
-        if (res.Status == 'OK') {
-          if (res.Return) {
-            this.defaultPolicyId = res.Return.id;
-            this.defaultPolicyName = res.Return.name;
-          }
-        }
-      });
     },
     changePolicyId(policyId, valueObject) {
       if (policyId == this.defaultDeepCloneConfig.policyId) {

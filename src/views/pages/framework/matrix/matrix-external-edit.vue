@@ -10,7 +10,7 @@
         ></navTopLeft>
       </div><div slot="topRight">
         <div class="bar-top-right action-group text-right">
-          <span class="action-item tsfont-export" @click="exportMatrix">{{ $t('page.export') }}</span>
+          <span class="action-item tsfont-download" @click="exportMatrix">{{ $t('page.export') }}</span>
           <span class="action-item tsfont-edit" @click="editMatrix()">{{ $t('page.edit') }}</span>
           <span v-if="tableData" class="action-item block-item">
             <ReferenceSelect

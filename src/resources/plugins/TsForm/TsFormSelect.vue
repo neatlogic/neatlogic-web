@@ -8,7 +8,6 @@
     >
       <template v-if="multiple">
         <template v-if="selectedList.length > 0">
-          <!--<span v-html="getReadonlyText(selectedList)"></span>-->
           <Tag v-for="(item, index) in selectedList" :key="index">
             <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ item[textName] }}</span>
             <template v-else>{{ item[textName] }}</template>
@@ -17,7 +16,6 @@
         <span v-else class="text-grey">-</span>
       </template>
       <template v-else>
-        <!--{{ selectedList[0] ? selectedList[0][textName] : '-' }}-->
         <Tag v-if="selectedList.length > 0">
           <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ selectedList[0][textName] }}</span>
           <template v-else>{{ selectedList[0][textName] }}</template>
@@ -58,74 +56,46 @@
             @blur="onSelectBlur"
           >
             <div ref="topHead" class="tag-contian" :class="{ 'nowselect-nowrap': multiple && nowrapHead, 'flex-start': isNowrap }">
-              <template v-if="multiple || isSingel">
-                <Tag
-                  v-for="(selected, nindex) in selectedList"
-                  :key="nindex"
-                  :name="selected[valueName]"
-                  :closable="!disabled"
-                  :fade="false"
-                  @click.native.stop="handleOpen"
-                  @on-close="deleteSeleted(nindex, selected[valueName])"
+              <Tag
+                v-for="(selected, nindex) in selectedList"
+                :key="nindex"
+                :name="selected[valueName]"
+                :closable="!disabled"
+                :fade="false"
+                @click.native.stop="handleOpen"
+                @on-close="deleteSeleted(nindex, selected[valueName])"
+              >
+                <Tooltip
+                  v-if="(disabled && disabledHoverTitle) || selected[textName]"
+                  placement="top-start"
+                  max-width="300"
+                  transfer
+                  theme="light"
+                  style="width: 100%"
+                  :content="(disabled ? disabledHoverTitle : '') || selected[textName]"
                 >
-                  <Tooltip
-                    v-if="(disabled && disabledHoverTitle) || selected[textName]"
-                    placement="top-start"
-                    max-width="300"
-                    transfer
-                    theme="light"
-                    style="width: 100%"
-                    :content="(disabled ? disabledHoverTitle : '') || selected[textName]"
-                  >
-                    <div class="overflow disabled-title-box">{{ selected[textName] }}</div>
-                  </Tooltip>
-                </Tag>
+                  <div class="overflow disabled-title-box">{{ selected[textName] }}</div>
+                </Tooltip>
+              </Tag>
+              <template v-if="selectedList.length <= 0">
+                <Tooltip
+                  v-if="disabled && disabledHoverTitle"
+                  placement="top-start"
+                  max-width="300"
+                  transfer
+                  theme="light"
+                  style="width: 100%"
+                  :content="disabledHoverTitle"
+                >
+                  <div class="overflow disabled-title-box"></div>
+                </Tooltip>
                 <span
-                  v-if="selectedList.length <= 0 && (!currentSearch || !isShowInput)"
+                  v-else-if="!currentSearch || !isShowInput"
                   :placeholder="!currentSearch || !isShowInput? getPlaceholder : ''"
                   class="empty-placeholder"
                   :class="[disabled ? 'empty-placeholder-disable' : '']"
                   style="line-height: 30px;"
                 ></span>
-              </template>
-              <template v-else-if="disabled || readonly || !currentSearch || !isShowInput || (!multiple && currentSearch && !isSquare)">
-                <span
-                  v-if="selectedList[0]"
-                  :placeholder="!currentSearch || !isShowInput ? getPlaceholder : ''"
-                  class="overflow empty-placeholder"
-                  :class="[disabled ? 'empty-placeholder-disable' : '', !(!multiple && currentSearch && !isSquare) ? 'single-span' : '']"
-                >
-                  <Tooltip
-                    v-if="disabledHoverTitle || selectedList[0][textName]"
-                    placement="top-start"
-                    max-width="300"
-                    transfer
-                    theme="light"
-                    style="width: 100%"
-                    :content="(disabled ? disabledHoverTitle : '') || selectedList[0][textName]"
-                  >
-                    <div class="overflow disabled-title-box">{{ selectedList[0][textName] }}</div>
-                  </Tooltip>
-                </span>
-                <template v-else>
-                  <Tooltip
-                    v-if="disabled && disabledHoverTitle"
-                    placement="top-start"
-                    max-width="300"
-                    transfer
-                    theme="light"
-                    style="width: 100%"
-                    :content="disabledHoverTitle"
-                  >
-                    <div class="overflow disabled-title-box"></div>
-                  </Tooltip>
-                  <span
-                    v-else
-                    :placeholder="!currentSearch || !isShowInput ? getPlaceholder : ''"
-                    class="empty-placeholder"
-                    :class="[disabled ? 'empty-placeholder-disable' : '']"
-                  ></span>
-                </template>
               </template>
               <input
                 v-if="!(disabled || readonly) && currentSearch"
@@ -203,10 +173,10 @@
                       class="overflow"
                       :title="dropdownMenuMaxWidth && (node[showName ? showName : textName])"
                     >
-                      <div v-if="node._showtxtList" class="overflow">
+                      <div v-if="node._showtxtList" class="overflow pb-icon">
                         <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
                       </div>
-                      <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
+                      <div v-else class="overflow pb-icon">{{ node[showName ? showName : textName] }}</div>
                     </div>
                   </slot>
                 </li>
@@ -234,7 +204,6 @@
           >
             <slot name="first-ul"></slot>
             <li v-if="firstLi" class="tsfont-plus text-href first-slot" @click="first">{{ firstText }}</li>
-            <!-- <li class="tsfont-plus text-href first-slot" @click="addDataSource()">数据源</li> -->
             <li v-if="allowCreate && addItem" class="ivu-dropdown-item overflow" @click.stop="toggleSelect(addItem)">
               {{ addItem[showName ? showName : textName] }}
               <i class="tsfont-arrow-corner-left text-primary"></i>
@@ -338,8 +307,7 @@
 <script>
 import formMixins from '@/resources/mixins/formMixins.js';
 import formScrollMixins from '@/resources/mixins/formScrollMixins.js';
-import { directive as ClickOutside } from '../../directives/v-click-outside-x.js';
-import utils from '@/resources/assets/js/util.js';
+import { directive as ClickOutside } from '@/resources/directives/v-click-outside-x.js';
 export default {
   name: 'TsFormSelect',
   tagComponent: 'TsForm',
@@ -524,11 +492,6 @@ export default {
       type: Boolean,
       default: false
     },
-    isSquare: {
-      // 单选的时候，选中数据，显示是有灰色背景方块样式，还是没有样式，纯文本展示
-      type: Boolean,
-      default: true
-    },
     isNowrap: {
       // 单选时候，是否换行
       type: Boolean,
@@ -574,7 +537,6 @@ export default {
       addItem: null,
       readonlyTitle: null,
       hiddenLength: 0,
-      isSingel: false, // 单选，true单选，false否
       moreSearchTip: {
         [this.showName ? this.showName : this.textName]: this.$t('page.searchformore'),
         [this.valueName]: 'moreSearchFlag',
@@ -716,7 +678,6 @@ export default {
         this.multiple ? (this.currentValue = [this.nodeList[0][this.valueName]]) : (this.currentValue = this.nodeList[0][this.valueName]);
         //是单选,进行赋值处理
         this.searchKeyWord = !this.multiple ? '' : '';
-        this.isSingel = !!(this.isSquare && this.currentSearch);
         this.onChangeValue();
       }
     },
@@ -744,7 +705,6 @@ export default {
         this.getDataByAjax(params, this.url, 'cancelAxios1').then(res => {
           this.nodeList = res.nodeList || [];
           this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
-          this.isSingel = !!(this.isSquare && this.currentSearch); // 可搜索时，并且显示tag标签时，才使用tag标签的样式
           this.setDefaultValue(); //默认选中第一个
           this.initValueByNodeList();
         });
@@ -775,7 +735,6 @@ export default {
         this.nodeList && this.nodeList.length > 20 && this.search === null ? (this.currentSearch = true) : (this.currentSearch = this.search); //当search参数值不存在时  如果长度大于20增加搜索功能，
         this.setDefaultValue();
         this.initValueByNodeList();
-        this.isSingel = !!(this.isSquare && this.currentSearch); // 可搜索并且是tag标签时，才显示tag标签的样式
         this.handleEchoFailedDefaultValue();
       }
     },
@@ -987,7 +946,6 @@ export default {
         if (!this.multiple) {
           //是单选,进行赋值处理
           this.searchKeyWord = '';
-          this.isSingel = !!(this.isSquare && this.currentSearch);
         }
         if (this.needCallback) {
           //成功回调设置为false
@@ -1181,7 +1139,6 @@ export default {
         this.multiple ? this.currentValue.splice(index, 1) : (this.currentValue = null);
       }
       this.multiple ? (this.searchKeyWord = '') : this.hideOption();
-      this.isSingel = !!(this.isSquare && this.currentSearch);
       this.onChangeValue();
       this.scrollTop();
     },
@@ -1431,11 +1388,11 @@ export default {
       let index = -1;
       if (arr instanceof Array) {
         arr.find((item, i) => {
-          utils.equalStr(this.isCustomValue && item[this.valueName] ? item[this.valueName] : item, str) && (index = i);
+          this.$utils.equalStr(this.isCustomValue && item[this.valueName] ? item[this.valueName] : item, str) && (index = i);
           return index >= 0;
         });
       } else {
-        utils.equalStr(arr, str) && (index = 0);
+        this.$utils.equalStr(arr, str) && (index = 0);
       }
       return index;
     }
@@ -1517,7 +1474,7 @@ export default {
           style.display = 'none';
         }
         if (!this.multiple) {
-          if (keyword || this.getPlaceholder || (this.isSingel && this.selectedList.length > 0) || (!this.multiple && this.currentSearch && !this.isSquare)) {
+          if (keyword || this.getPlaceholder || (this.selectedList.length > 0) || (!this.multiple && this.currentSearch)) {
             Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
           } else {
             style.width = '100%';

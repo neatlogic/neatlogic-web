@@ -18,15 +18,17 @@
  * formComponent 表单组件
  * formVersionList 表单版本列表（用户自定义组件，新加配置，存量数据不会跟着改变的问题）
  * deployAppConfigEnvTab 部署应用配置环境tab
+ * mqTopicConfig 消息主题配置组件
+ * mqSubscribeConfig 消息订阅配置组件
  * loginPage 登录页
- * router 跨模块路由 
+ * router 跨模块路由
  *   使用方法：getRouterComponent(moduleName)，moduleName为模块名称
  *   注册方法：registerRouterComponent({
  *     moduleName: routerList // moduleName为模块名称，routerList为路由列表
  *   })
  */
 class ComponentManager {
-  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'loginPage', 'formVersionList', 'router', 'deployAppConfigModule'];
+  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'mqTopicConfig', 'mqSubscribeConfig', 'loginPage', 'formVersionList', 'router', 'deployAppConfigModule'];
   static categoryConfig = {};
   static generateMethods() {
     this.categoryList.forEach(category => {
@@ -52,7 +54,7 @@ class ComponentManager {
           this.categoryConfig[category] = component;
         }
       };
-      this[getMethodName] = (moduleName) => {
+      this[getMethodName] = moduleName => {
         // 根据分类获取数据
         if (moduleName) {
           return this.categoryConfig[category] ? this.categoryConfig[category][moduleName] : '';

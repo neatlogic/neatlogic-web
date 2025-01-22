@@ -623,7 +623,9 @@
     "savetransfer": "Save and transfer",
     "savetransfertip": "Save the current form and forward it",
     "thirdpartyapi": "Third party callback interface",
-    "reactivatestep": "Reactivation steps"
+    "reactivatestep": "Reactivation steps",
+    "seeprocessconfig": "View the current work order process configuration",
+    "editprocessconfig": "Edit the current work order process configuration"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
@@ -1326,7 +1328,10 @@
     "allowdelete": "Can be deleted",
     "mqtype": "Message queue type",
     "notavailable": "Not available",
-    "mqhandler": "Message queue component"
+    "mqhandler": "Message queue component",
+    "showimportexporttemplatetableoptions": "Display export/import (template, table) options",
+    "componentnoexist": "component does not exist",
+    "custommaxtrixselectaddbtndesc": "When selecting a custom matrix type and adding data, the dropdown menu will display a \"+\" button."
   },
   "knowledge": {
     "document": "Document",

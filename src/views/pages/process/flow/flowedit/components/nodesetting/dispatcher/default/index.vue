@@ -8,13 +8,29 @@
       :labelWidth="79"
       labelPosition="left"
       :item-list="itemList"
-    ></TsForm>
+    >
+      <template v-for="(item, index) in currentFormitemList" v-slot:[item.name]>
+        <TsFormSelect
+          :key="index"
+          ref="item"
+          v-bind="item"
+          v-model="formData[item.name]"
+          :dataList="allFormitemList"
+          :firstSelect="false"
+          textName="label"
+          valueName="uuid"
+          border="border"
+          transfer
+        ></TsFormSelect>
+      </template>
+    </TsForm>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
@@ -33,13 +49,18 @@ export default {
     readonly: {
       type: Boolean,
       default: false
+    },
+    allFormitemList: { // 所有表单组件列表，用于下拉选择
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
       formData: {},
       itemList: [],
-      loadingShow: true
+      loadingShow: true,
+      currentFormitemList: []
     };
   },
   beforeCreate() {},
@@ -56,19 +77,43 @@ export default {
   destroyed() {},
   methods: {
     init() {
-      this.itemList = this.formConfig || [];
       this.formData = {};
+      this.initItem();
       if (!this.$utils.isEmpty(this.value)) {
         Object.assign(this.formData, this.value);
       }
       this.getPrevNodes();
       this.loadingShow = false;
     },
+    initItem() {
+      this.itemList = this.$utils.deepClone(this.formConfig) || [];
+      this.currentFormitemList = [];
+      if (this.itemList.length > 0) {
+        this.itemList.forEach(v => {
+          if (v.type === 'formselect') {
+            // 如果是formselect，则不渲染，而是在插槽中渲染，下拉列表为流程设置选中的表单组件
+            this.currentFormitemList.push(v);
+            v.type = 'slot';
+          }
+          v.readonly = this.readonly;
+          v.border = 'border';
+          v.transfer = true;
+        });
+      }
+    },
     valid() {
       let form = this.$refs.form;
       let isValid = true;
       if (form && !form.valid()) {
         isValid = false;
+      }
+      let itemList = this.$refs.item;
+      if (itemList) {
+        itemList.forEach(v => {
+          if (v && v.valid && !v.valid()) {
+            isValid = false;
+          }
+        });
       }
       return isValid;
     },
@@ -100,12 +145,7 @@ export default {
       handler(list) {
         let itemList = list || [];
         if (!this.$utils.isEmpty(itemList)) {
-          this.itemList = itemList.map((v) => ({
-            ...v,
-            readonly: this.readonly,
-            border: 'border',
-            transfer: true
-          }));
+          this.initItem();
         } else {
           this.itemList = [];
         }

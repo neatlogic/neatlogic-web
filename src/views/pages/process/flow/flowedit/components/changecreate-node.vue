@@ -228,7 +228,7 @@ export default {
       let querySelect = href.substring(1);
       this.$nextTick(() => {
         if (querySelect != 'assignData') {
-          this.$refs[`${querySelect}`].valid();
+          this.$refs[`${querySelect}`] && this.$refs[`${querySelect}`].valid();
         } else {
           this.$refs.assignData.assignValid();
         }

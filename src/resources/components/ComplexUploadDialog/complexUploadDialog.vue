@@ -189,6 +189,9 @@ export default {
       formData.append('file', this.uploadSuccessFile.file);
       formData.append('userSelection', JSON.stringify(userSelectedData));
       axios.post(this.url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
         contentType: 'multipart/form-data'
       }).then(res => {
         if (res.Status == 'OK') {

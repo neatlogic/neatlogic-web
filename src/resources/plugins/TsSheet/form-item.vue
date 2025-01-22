@@ -102,7 +102,9 @@
         @select="selectFormItem"
         @setExtendValue="setExtendValue"
       ></component>
-      <div v-else class="text-warning">{{ $t('page.commercialcomponent') }}</div>
+      <div v-else class="text-warning">
+        {{ getComponentTip(formItem) }}
+      </div>
     </template>
     <CustomItem
       v-else-if="isShowComponent(formItem) && formItem.type === 'custom'"
@@ -257,7 +259,7 @@ export default {
     },
     //初始化组件状态
     initStatus() {
-      if (!this.$utils.isEmpty(this.formItem.override_config)) {
+      if (this.formItem && !this.$utils.isEmpty(this.formItem.override_config)) {
         if (this.formItem.override_config.isHide) {
           this.formItem.config.isHide = true;
         }
@@ -577,7 +579,7 @@ export default {
     isShowComponent() {
       return (formItem) => {
         let isShow = true;
-        if (this.currentItemHide || ((this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing || (formItem.override_config && formItem.override_config.isHide)) {
+        if (this.currentItemHide || (formItem && (this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing || (formItem.override_config && formItem.override_config.isHide)) {
           isShow = false;
         }
         return isShow;
@@ -603,6 +605,14 @@ export default {
         component = false;
       }
       return component;
+    },
+    getComponentTip() {
+      return (formItem) => {
+        const { label = '', customName = '' } = formItem || {};
+        const nameParts = customName.split('-');
+        const componentName = nameParts.length > 1 ? nameParts[0] : customName;
+        return `【${label}(${componentName})】${this.$t('term.framework.componentnoexist')}`;
+      };
     }
   },
   watch: {}

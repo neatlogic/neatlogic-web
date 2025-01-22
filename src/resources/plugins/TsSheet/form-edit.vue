@@ -103,7 +103,7 @@
             </div>
             <div class="action-item text-action tsfont-lightning" @click="openReactionDialog()">{{ $t('term.framework.rowreaction') }}</div>
             <template v-if="formDataQueue.length <= 1">
-              <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('term.framework.formwidth') }}</div>
+              <div class="action-item text-action tsfont-width" @click="editFormWidth()">{{ $t('page.formstyle') }}</div>
               <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
               <div class="action-item text-action tsfont-circulation-s" @click="previewForm()">{{ $t('page.preview') }}</div>
               <div class="action-item">
@@ -117,7 +117,7 @@
                       <div class="action-item tsfont-formstaticlist referenceCount disable">{{ $t('page.referencelist') }}</div>
                     </DropdownItem>
                     <DropdownItem @click.native="$refs.uploadDialog.showDialog">
-                      <span class="tsfont-import">{{ $t('page.import') }}</span>
+                      <span class="tsfont-upload">{{ $t('page.import') }}</span>
                       <UploadDialog
                         ref="uploadDialog"
                         :beforeUpload="beforeUpload"
@@ -127,7 +127,7 @@
                       />
                     </DropdownItem>
                     <DropdownItem v-if="currentVersion.uuid" @click.native.stop="exportFile">
-                      <div class="tsfont-export">{{ $t('page.export') }}</div>
+                      <div class="tsfont-download">{{ $t('page.export') }}</div>
                     </DropdownItem>
                     <DropdownItem v-if="!processTaskId">
                       <div
@@ -610,8 +610,23 @@ export default {
               if (!findItem) {
                 this.$delete(t, 'component');
               } else {
-                this.$set(t.component, 'key', findItem.component.key);
-                this.$set(t.component, 'label', findItem.component.label);
+                let { component = {} } = findItem || {};
+                let {key = '', label = '', config = {}, currentVersion = '', customName = '', componentList = []} = component || {};
+                let {version = ''} = config || {};
+                this.$set(t.component, 'key', key);
+                this.$set(t.component, 'label', label);
+                if (t.component.hasOwnProperty('currentVersion')) {
+                  this.$set(t.component, 'currentVersion', currentVersion);
+                }
+                if (t.component.hasOwnProperty('customName')) {
+                  this.$set(t.component, 'customName', customName);
+                }
+                if (t.component.hasOwnProperty('componentList')) {
+                  this.$set(t.component, 'componentList', componentList);
+                }
+                if (t.component.hasOwnProperty('config')) {
+                  this.$set(t.component.config, 'version', version);
+                }
               }
             }
           });

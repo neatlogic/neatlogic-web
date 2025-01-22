@@ -107,7 +107,6 @@ export default {
         dealDataByUrl: this.dealDataByUrl,
         transfer: true,
         search: true,
-        isSquare: false,
         clearable: false,
         border: 'none'
       },

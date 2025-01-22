@@ -6,7 +6,13 @@
         <div class="action-group">
           <span v-auth="'INSPECT_EXECUTE'" class="action-item tsfont-apps" @click="batchInspection()">{{ $t('term.inspect.batchinspect') }}</span>
           <span v-auth="'INSPECT_SCHEDULE_EXECUTE'" class="action-item tsfont-sla" @click="openInspectionScheduleDialog()">{{ $t('term.inspect.scheduleinspect') }}</span>
-          <span v-if="reportData && reportData.tbodyList && reportData.tbodyList.length > 0" class="action-item tsfont-download" @click="exportAsset">{{ $t('page.export') }}</span>
+          <template v-if="reportData && reportData.tbodyList && reportData.tbodyList.length > 0">
+            <span v-if="!downloadLoading" class="action-item tsfont-download" @click="exportAsset">{{ $t('page.export') }}</span>
+            <span v-if="downloadLoading" class="action-item disable" :title="$t('page.downloadloadingtip')">
+              <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
+              {{ $t('page.export') }}
+            </span>
+          </template>
         </div>
       </template>
       <template v-slot:topRight>
@@ -161,6 +167,7 @@ export default {
   props: {},
   data() {
     return {
+      downloadLoading: false,
       currentTypeId: null,
       isShowRuleThresholdDialog: false,
       appSystemId: null,
@@ -761,10 +768,28 @@ export default {
       window.open(HOME + '/cmdb.html#/asset-manage', '_blank');
     },
     exportAsset() {
+      let {batchSearchList = ''} = this.$utils.deepClone(this.searchValue) || {};
+      let batchIpList = [];
+      if (batchSearchList) {
+        if (batchSearchList.includes(',')) {
+          batchIpList = batchSearchList.split(',');
+        } else {
+          batchIpList = batchSearchList.split('\n');
+        }
+      }
       let data = {
         url: 'api/binary/inspect/resource/report/export',
         params: {
-          ...this.searchParam, ...this.searchValue
+          ...this.searchParam,
+          ...this.searchValue,
+          batchSearchList: batchIpList
+        },
+        changeStatus: status => {
+          if (status === 'start') {
+            this.downloadLoading = true;
+          } else if (status === 'success' || status === 'error') {
+            this.downloadLoading = false;
+          }
         }
       };
       this.download(data);

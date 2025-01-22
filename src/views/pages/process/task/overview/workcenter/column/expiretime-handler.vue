@@ -44,16 +44,6 @@ export default {
   .expired-slaname {
     color: @tip-color;
   }
-  .expired {
-    padding-left: 20px;
-    height: 47px;
-    &-status {
-      color: @tip-color;
-    }
-    &-duration {
-      color: @title-color;
-    }
-  }
 }
 
 html {
@@ -70,9 +60,6 @@ tr.trtype-is-expired, tr.trtype-will-be-expired{
     &.will-or-is-expired {
       .carouse-user-list {
         top: 0;
-      }
-      .expired {
-        display: none;
       }
     }
   }

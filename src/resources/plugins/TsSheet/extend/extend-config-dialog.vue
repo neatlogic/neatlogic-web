@@ -41,7 +41,7 @@
                     ></TsCodemirror>  
                   </TabPane>
                   <TabPane label="数据配置" :name="'dataConfig' + index" :tab="'data' + index">
-                    <div v-if="!item._tab || item._tab === 'dataConfig' + index">
+                    <div v-if="item._tab === 'dataConfig' + index">
                       <ConfigHelp></ConfigHelp>
                       <TsCodemirror
                         :id="'code' + index"

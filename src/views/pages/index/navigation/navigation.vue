@@ -2,7 +2,7 @@
   <div v-if="moduleList.length" class="navigation">
     <h2 class="title text-default">What can we do</h2>
     <h3 class="subtitle text-title">{{ $t('message.whatdo') }}</h3>
-    <div v-if="moduleList && moduleList.length>0" class="module-list">
+    <div v-if="moduleList && moduleList.length > 0" class="module-list">
       <a
         v-for="module in moduleList"
         :key="module.moduleId"

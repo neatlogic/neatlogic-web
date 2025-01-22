@@ -8,6 +8,21 @@
         :disabled="disabled"
       ></TsFormSwitch>
     </TsFormItem>
+    <TsFormItem
+      labelWidth="250"
+      :label="$t('page.batchoperation')"
+      :tooltip="$t('term.framework.showimportexporttemplatetableoptions')"
+      labelPosition="left"
+      contentAlign="right"
+      class="batch-operation-box"
+    >
+      <TsFormSwitch
+        v-model="config.isShowImportExportBtn"
+        :trueValue="true"
+        :falseValue="false"
+        :disabled="disabled"
+      ></TsFormSwitch>
+    </TsFormItem>
     <TsFormItem :label="$t('page.ordernumber')" labelPosition="left" contentAlign="right">
       <TsFormSwitch
         v-model="config.isShowNumber"
@@ -259,6 +274,11 @@ export default {
 .th-setting {
   .title {
     display: flex;
+  }
+}
+.batch-operation-box {
+  /deep/ .text-tip-active {
+    line-height: inherit;
   }
 }
 

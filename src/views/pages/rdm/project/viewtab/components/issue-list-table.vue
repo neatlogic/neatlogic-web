@@ -40,11 +40,14 @@
           <span
             v-if="mode === 'level' && row.childrenCount"
             class="cursor text-href"
-            :class="{ 'tsfont-down': row['_expand'], 'tsfont-right': !row['_expand'] }"
+            :class="{ 'tsfont-drop-down': row['_expand'], 'tsfont-drop-right': !row['_expand'] }"
             @click="toggleChildIssue(row)"
           ></span>
           <span class="overflow">
-            <a href="javascript:void(0)" @click="openIssueDetail(row)">{{ row.name }}</a>
+            <a href="javascript:void(0)" @click="openIssueDetail(row)">
+              <span v-if="!issueData.wordList || issueData.wordList === 0">{{ row.name }}</span>
+              <span v-else v-html="highlightKeywords(row.name, issueData.wordList)"></span>
+            </a>
           </span>
         </div>
         <IssueStatus v-else-if="attr.type === '_status'" :scale="0.8" :issueData="row"></IssueStatus>
@@ -85,7 +88,8 @@ export default {
     parentId: { type: Number }, //父任务id，传入parentId代表这里显示的是子任务
     fromId: { type: Number }, //来源任务id
     toId: { type: Number }, //目标任务id
-    fixedHeader: { // 固定表头，默认true
+    fixedHeader: {
+      // 固定表头，默认true
       type: Boolean,
       default: true
     }
@@ -104,6 +108,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    highlightKeywords(text, wordList) {
+      if (!wordList || wordList.length === 0) return text;
+      const escapedWords = wordList.map(word => this.escapeRegExp(word));
+      const regex = new RegExp(`(${escapedWords.join('|')})`, 'gi'); // 匹配关键字，忽略大小写
+      return text.replace(regex, '<span class="highlight text-error">$1</span>'); // 使用span加上高亮样式
+    },
+    escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
+    },
     updateSort(sort) {
       this.$emit('updateSort', sort);
     },
@@ -148,9 +161,15 @@ export default {
     }
   },
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 };
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+/deep/.highlight {
+  font-weight: bold;
+  /* 保证和普通文字对齐 */
+  line-height: 1; /* 确保高亮的行高与文字一致 */
+  vertical-align: baseline; /* 水平对齐方式 */
+}
+</style>
