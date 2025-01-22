@@ -60,7 +60,7 @@
           </TsCard>
         </div>
       </div>
-    </tscontain>
+    </TsContain>
     <TsDialog
       type="modal"
       :isShow.sync="addModel"

@@ -11,7 +11,7 @@
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
+        <Button type="primary" :loading="saveLoading" @click="save()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -33,7 +33,8 @@ export default {
         isShow: true,
         width: 'medium',
         title: this.$t('term.deploy.addbatchjob')
-      }
+      },
+      saveLoading: false
     };
   },
   beforeCreate() {},
@@ -51,8 +52,11 @@ export default {
     save() {
       const form = this.$refs['form'];
       if (form.validateForm()) {
+        this.saveLoading = true;
         form.submitForm().then(() => {
           this.close();
+        }).finally(() => {
+          this.saveLoading = false;
         });
       }
     },

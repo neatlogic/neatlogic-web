@@ -107,7 +107,7 @@ export default {
       }
     },
     close() {
-      showDialog = false;
+      this.showDialog = false;
     }
   },
   computed: {
