@@ -21,7 +21,12 @@
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
-        <Button v-if="createMethod === 'pipeline'" type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
+        <Button
+          v-if="createMethod === 'pipeline'"
+          type="primary"
+          :loading="saveLoading"
+          @click="save()"
+        >{{ $t('page.confirm') }}</Button>
         <Button v-if="createMethod === 'custom'" type="primary" @click="nextStep()">{{ $t('page.thenextstep') }}</Button>
       </template>
     </TsDialog>
@@ -86,7 +91,8 @@ export default {
             this.pipelineId = val;
           }
         }
-      }
+      },
+      saveLoading: false
     };
   },
   beforeCreate() {},
@@ -119,8 +125,11 @@ export default {
       if ((dialogForm && !dialogForm.valid()) || (pipelineForm && !pipelineForm.validateForm())) {
         return false;
       }
+      this.saveLoading = true;
       pipelineForm.submitForm().then(() => {
         this.close(true);
+      }).finally(() => {
+        this.saveLoading = false;
       });
     },
     close(needRefresh = false) {

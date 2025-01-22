@@ -153,7 +153,12 @@
     <!--校验 -->
     <PublishingValid v-model="isShowValidDialog" :validList="validList" @jumpToItem="jumpToItem"></PublishingValid>
     <!-- 执行 -->
-    <SaveSetting v-if="isSaveDialog" v-model="isSaveDialog" @on-ok="okSave"></SaveSetting>
+    <SaveSetting
+      v-if="isSaveDialog"
+      v-model="isSaveDialog"
+      :isCreating="saveLoading"
+      @on-ok="okSave"
+    ></SaveSetting>
     <ResultDialog v-if="isShowResultDialog" :resultList="resultList" @close="isShowResultDialog=false"></ResultDialog>
   </div>
 </template>
@@ -208,7 +213,8 @@ export default {
       disabledBtn: true,
       jobId: null, //作业id
       jobConfig: {},
-      paramValue: {}
+      paramValue: {},
+      saveLoading: false
     };
   },
   beforeCreate() {},
@@ -427,10 +433,13 @@ export default {
     },
     okSave(val) { //保存
       let data = Object.assign(val, this.saveJobData());
+      this.saveLoading = true;
       this.$api.deploy.job.createDeployJob(data).then(res => {
         if (res.Status == 'OK') {
           this.openResultDialog(res.Return);
         }
+      }).finally(() => {
+        this.saveLoading = false;  
       });
     },
     openResultDialog(list) {
