@@ -212,6 +212,7 @@ export default {
     changeValue(val) {
       this.searchVal = this.$utils.deepClone(val);
       this.getDataList('currentPage', 1);
+      this.complexModeSearchValue = {};
     },
     advancedModeSearch(complexModeSearchValue, currentPage, pageSize) {
       this.complexModeSearchValue = complexModeSearchValue;

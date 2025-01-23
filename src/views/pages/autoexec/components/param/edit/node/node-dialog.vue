@@ -23,7 +23,7 @@
             ></PoptipSelect>
           </Col>
           <Col span="10">
-            <FilterSearch :defaultValue="searchVal" @changeValue="changeValue"></FilterSearch>
+            <FilterSearch :defaultValue="searchVal" @changeValue="changeValue" @advancedModeSearch="(value) => advancedModeSearch(value)"></FilterSearch>
           </Col>
         </TsRow>
       </div>
@@ -260,6 +260,10 @@ export default {
     },
     changeValue(val) {
       this.searchVal = this.$utils.deepClone(val);
+      this.getDataList('currentPage', 1);
+    },
+    advancedModeSearch(searchVal) {
+      this.searchVal = this.$utils.deepClone(searchVal);
       this.getDataList('currentPage', 1);
     },
     validSetting(type) { //true不需要提示校验信息
