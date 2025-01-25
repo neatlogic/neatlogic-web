@@ -38,6 +38,11 @@
         </template>
       </TsTable>
     </div>
+    <div
+      :is="'appConfigModuleAutoTestHandler'"
+      v-if="isHasAppConfigModuleHandler"
+      :appData="params"
+    ></div>
     <ModuleEdit
       v-if="isShowModuleInfoEdit"
       :runnerId="runnerId"
@@ -48,12 +53,14 @@
   </div>
 </template>
 <script>
+import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     ModuleEdit: () => import('./module/module-edit'),
-    ModuleInfo: () => import('./module/module-info')
+    ModuleInfo: () => import('./module/module-info'),
+    ...(ComponentManager.getDeployAppConfigModuleComponent() || {})
   },
   props: {
     params: {
@@ -157,7 +164,12 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    isHasAppConfigModuleHandler() {
+      const Items = ComponentManager.getDeployAppConfigModuleComponent && ComponentManager.getDeployAppConfigModuleComponent();
+      return !!(Items && Items['appConfigModuleAutoTestHandler']);
+    }
+  },
   watch: {}
 };
 </script>

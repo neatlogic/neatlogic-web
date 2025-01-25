@@ -249,8 +249,9 @@ export default {
       this.searchVal = this.$utils.deepClone(val);
       this.changePageSize();
     },
-    advancedModeSearch(searchVal, currentPage = 1, pageSize = 10) {
+    advancedModeSearch(searchVal, currentPage, pageSize) {
       // 复杂模式搜索
+      this.searchVal = this.$utils.deepClone(searchVal);
       let params = {
         currentPage: currentPage || this.currentPage,
         pageSize: pageSize || this.pageSize,

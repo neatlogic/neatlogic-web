@@ -445,6 +445,9 @@ export default {
             } else if (k && typeof this.totalText[k].toString() == 'string' && this.$utils.isEmpty(this.totalText[k])) {
             // 清除为空的字符串，避免回显为空情况
               this.$delete(this.totalText, k);
+            } else if (k === this.keywordName && this.$utils.isEmpty(this.keywordValue)) {
+              // 清除关键字为空的情况
+              this.$delete(this.totalText, k);
             }  
           }
         }
@@ -595,11 +598,11 @@ export default {
               let keywordName = this.keywordName;
               if (val[keywordName]) {
                 let { keywordName, ...params} = val;
-                this.updateVal(params);
                 this.keywordValue = this.$utils.deepClone(val[keywordName]);
+                this.updateVal(params);
               } else {
-                this.updateVal(val);
                 this.keywordValue = '';
+                this.updateVal(val);
               }
             }
           } else {

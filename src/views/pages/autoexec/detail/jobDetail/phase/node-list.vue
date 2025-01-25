@@ -277,7 +277,7 @@ export default {
         aborted: ['ignore', 'reset', 'refire'],
         aborting: ['ignore', 'reset', 'refire'],
         paused: ['ignore', 'reset', 'refire'],
-        ignored: ['reset', 'refire']
+        ignored: ['reset']
       },
       actionMap: {
         refire: {

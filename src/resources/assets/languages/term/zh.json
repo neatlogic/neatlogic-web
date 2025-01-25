@@ -482,7 +482,7 @@
     "enablechangetodotip": "即变更处理节点激活时，将所有变更步骤设为待办",
     "enablechange": "变更步骤激活时",
     "readychange": "变更就绪时",
-    "successjudgmenttip": "默认按状态码判断，2xx和3xx表示成功",
+    "successjudgmenttip": "默认按状态码判断，2xx和3xx表示成功.如果非默认，则需要配置集成出参作为判断条件",
     "failurejudgmenttip": "默认按状态码判断，4xx和5xx表示失败",
     "extcallnoparamtip": "外部调用没有回参，不允许自定义",
     "echotemplate": "回显模板",

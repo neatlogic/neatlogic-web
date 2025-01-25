@@ -460,7 +460,14 @@ export default {
     },
     switchMode() {
       // 切换模式
+      this.searchVal = {};
+      this.complexSearchVal = {};
       this.isSimpleMode = !this.isSimpleMode;
+      if (this.isSimpleMode) {
+        this.simpleModeSearch({});
+      } else {
+        this.advancedModeSearch({}); 
+      }
       this.$refs.advancedModeSearch && this.$refs.advancedModeSearch.openDropdown(); // 切换到简单模式，把高级模式关闭
       this.$nextTick(() => {
         this.$refs.combineSearcher && this.$refs.combineSearcher.handleToggleOpen(); // 打开简单模式面板
