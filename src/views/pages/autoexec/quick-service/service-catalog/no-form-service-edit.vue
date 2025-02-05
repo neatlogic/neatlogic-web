@@ -358,8 +358,8 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  async mounted() {
-    await this.initData();
+  mounted() {
+    this.initData();
     this.defaultValue();
     this.$nextTick(() => {
       this.isReady = true;
@@ -378,7 +378,7 @@ export default {
         for (let key in deepCloneData) {
           if (this.hasOwnProperty(key)) {
             this[key] = deepCloneData[key];
-          } else if (key == 'name') {
+          } else if (key == 'name' && deepCloneData[key]) {
             this.jobName = deepCloneData[key];
           }
         }
@@ -423,7 +423,7 @@ export default {
       this.needExecuteUser = '';
       this.needProtocol = '';
     },
-    initData() {
+    async initData() {
       // 初始化
       this.defaultInitData();
       let defaultData = this.$utils.deepClone(this.defaultData);
@@ -460,7 +460,10 @@ export default {
           this.jobName = combopName;
         }
         if (this.combopId) {
-          return this.getCombopDetail();
+          await this.getCombopDetail();
+          if (!this.needExecuteNode) { //不需要执行目标时，不需要把执行目标显示出来
+            this.hasServiceValue.executeNodeConfig = false;
+          }
         }
       }
     },

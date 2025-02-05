@@ -75,20 +75,20 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    initData() {
+    async initData() {
       // 初始化
       this.formUuid = '';
       this.defaultData = {};
       this.loadingShow = true;
-      this.$api.autoexec.catalogManage.getSeriveInfo({id: this.serviceId}).then(res => {
+      await this.$api.autoexec.catalogManage.getSeriveInfo({id: this.serviceId}).then(async res => {
         if (res.Status == 'OK') {
           let dataInfo = res.Return;
-          this.formUuid = dataInfo && dataInfo.formUuid ? 'form' : 'noform';
           this.defaultData = dataInfo;
           if (this.defaultData && this.defaultData.combopId) {
             // 根据组合工具id获取组合工具名称
-            this.getCombopNamebyId(this.defaultData.combopId);
+            await this.getCombopNamebyId(this.defaultData.combopId);
           }
+          this.formUuid = dataInfo && dataInfo.formUuid ? 'form' : 'noform';
         }
       }).finally(() => {
         this.loadingShow = false;
@@ -97,7 +97,7 @@ export default {
     getCombopNamebyId(combopId) {
       // 根据组合工具id获取组合名称，作为作业名称默认值
       if (combopId) {
-        this.$api.autoexec.action.getCombopExecutableList({defaultValue: [combopId]}).then((res) => {
+        return this.$api.autoexec.action.getCombopExecutableList({defaultValue: [combopId]}).then((res) => {
           if (res && res.Status == 'OK') {
             this.$set(this.defaultData, 'combopName', !this.$utils.isEmpty(res.Return.tbodyList) ? res.Return.tbodyList[0].name : '');
           }
