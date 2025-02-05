@@ -4,7 +4,11 @@
       <div v-if="propertyLocal.isExtra">
         <TsForm ref="formitem_base" v-model="propertyLocal" :item-list="formConfig">
           <template v-slot:isUnique>
-            <TsFormSwitch v-model="propertyLocal.config.isUnique" :trueValue="true" :falseValue="false"></TsFormSwitch>
+            <TsFormSwitch
+              v-model="propertyLocal.config.isUnique"
+              :trueValue="true"
+              :falseValue="false"
+            ></TsFormSwitch>
           </template>
           <template v-slot:isRequired>
             <TsFormSwitch v-model="propertyLocal.config.isRequired" :trueValue="true" :falseValue="false"></TsFormSwitch>
@@ -14,27 +18,25 @@
               v-model="propertyLocal.config.isReadOnly"
               :trueValue="true"
               :falseValue="false"
-              :disabled="propertyLocal.handler === 'formexpression' ? true : false"
+              :disabled="propertyLocal.handler === 'formexpression'? true : false"
             ></TsFormSwitch>
           </template>
           <template v-if="['formtext', 'formtextarea', 'formpassword'].includes(propertyLocal.handler)" v-slot:config>
-            <TsFormItem v-if="propertyLocal.handler === 'formtext'" :label="$t('form.placeholder.checkrule')">
+            <TsFormItem v-if="propertyLocal.handler=== 'formtext'" :label="$t('form.placeholder.checkrule')">
               <TsFormSelect
                 v-model="propertyLocal.config.validate"
                 :dataList="ruleList"
                 transfer
                 border="border"
-                @on-change="
-                  validateRule => {
-                    if (validateRule !== 'custom') {
-                      $set(propertyLocal.config, 'regex', '');
-                      $set(propertyLocal.config, 'regexMessage', '');
-                    }
+                @on-change="(validateRule)=> {
+                  if(validateRule !== 'custom'){
+                    $set(propertyLocal.config,'regex','');
+                    $set(propertyLocal.config,'regexMessage','');
                   }
-                "
+                }"
               ></TsFormSelect>
             </TsFormItem>
-            <template v-if="propertyLocal && propertyLocal.config && propertyLocal.config.validate == 'custom'">
+            <template v-if="propertyLocal && propertyLocal.config && (propertyLocal.config.validate == 'custom')">
               <TsFormItem :label="$t('message.framework.regex')" :tooltip="$t('message.framework.regextip')">
                 <TsFormInput
                   ref="formitem_regex"
@@ -44,25 +46,23 @@
                   prepend="/"
                   append="/"
                   class="regex-input"
-                  @on-change="
-                    val => {
-                      $set(propertyLocal.config, 'regex', val);
-                    }
-                  "
-                ></TsFormInput>
+                  @on-change="val => {
+                    $set(propertyLocal.config,'regex', val);
+                  }"
+                >
+                </TsFormInput>
               </TsFormItem>
               <TsFormItem :label="$t('message.framework.validtip')" :tooltip="$t('message.framework.regexvalidtip')">
                 <TsFormInput
                   ref="formitem_regexMessage"
                   :value="propertyLocal.config.regexMessage"
-                  :validateList="!$utils.isEmpty(propertyLocal.config.regex) ? ['required'] : []"
+                  :validateList="!$utils.isEmpty(propertyLocal.config.regex)? ['required']:[]"
                   :placeholder="$t('message.framework.regexvalidplaceholder')"
-                  @on-change="
-                    val => {
-                      $set(propertyLocal.config, 'regexMessage', val);
-                    }
-                  "
-                ></TsFormInput>
+                  @on-change="val => {
+                    $set(propertyLocal.config,'regexMessage', val);
+                  }"
+                >
+                </TsFormInput>
               </TsFormItem>
             </template>
             <TsFormItem :label="$t('page.inputtip')">
@@ -88,22 +88,21 @@
                 <TsFormInput
                   v-else-if="propertyLocal.config.defaultValueType === 'custom'"
                   v-model="propertyLocal.config.defaultValue"
-                  :validateList="propertyLocal.config.validate ? [propertyLocal.config.validate] : []"
+                  :validateList="propertyLocal.config.validate?[propertyLocal.config.validate]:[]"
                   :type="propertyLocal.handler.replace('form', '')"
                 ></TsFormInput>
               </div>
             </TsFormItem>
-            <TsFormItem v-if="propertyLocal.handler === 'formpassword'" :label="$t('page.viewtarget', { target: $t('page.auth') })">
+            <TsFormItem v-if="propertyLocal.handler === 'formpassword'" :label="$t('page.viewtarget',{'target':$t('page.auth')})">
               <UserSelect
                 :value="propertyLocal.config.viewPasswordAuthorityList"
                 :multiple="true"
                 :transfer="true"
                 :groupList="['user', 'role', 'team']"
-                @on-change="
-                  val => {
-                    $set(propertyLocal.config, 'viewPasswordAuthorityList', val);
-                  }
-                "
+                @on-change="val => {
+                  $set(propertyLocal.config, 'viewPasswordAuthorityList', val)
+
+                }"
               ></UserSelect>
             </TsFormItem>
           </template>
@@ -111,16 +110,18 @@
             <TsFormItem :label="$t('page.multipleselection')">
               <TsFormSwitch v-model="propertyLocal.config.isMultiple" :trueValue="true" :falseValue="false"></TsFormSwitch>
             </TsFormItem>
-            <TsFormItem v-if="propertyLocal.handler === 'formselect'" :label="$t('page.isdefaultselectd')" :tooltip="$t('page.defaultselectdonlyvalue')">
+            <TsFormItem
+              v-if="propertyLocal.handler === 'formselect'"
+              :label="$t('page.isdefaultselectd')"
+              :tooltip="$t('page.defaultselectdonlyvalue')"
+            >
               <TsFormSwitch
                 :value="propertyLocal.config.isAutoSelectdOnlyValue || false"
                 :trueValue="true"
-                :falseValue="false"
-                @change="
-                  val => {
-                    $set(propertyLocal.config, 'isAutoSelectdOnlyValue', val);
-                  }
-                "
+                :falseValue="false "
+                @change="(val)=>{
+                  $set(propertyLocal.config, 'isAutoSelectdOnlyValue', val);
+                }"
               ></TsFormSwitch>
             </TsFormItem>
             <TsFormItem :label="$t('page.datasource')">
@@ -148,13 +149,11 @@
                 textName="name"
                 valueName="uuid"
                 transfer
-                @on-change="
-                  (val, valueConfig, selectItem) => {
-                    changeMatrixUuid({ value: val, selectItem: selectItem });
-                  }
-                "
+                @on-change="(val, valueConfig, selectItem)=>{
+                  changeMatrixUuid({value: val, selectItem: selectItem});
+                }"
               >
-                <template v-slot:option="{ item }">
+                <template v-slot:option="{item}">
                   <div>
                     {{ item.name }}
                     <span v-if="item.type" class="text-grey cen-align">({{ item.type }})</span>
@@ -196,16 +195,14 @@
                 </Row>
               </div>
             </TsFormItem>
-            <TsFormItem v-if="canShowAddBtn(propertyLocal)" :label="$t('page.newtarget', { target: $t('page.data') })" :tooltip="$t('term.framework.custommaxtrixselectaddbtndesc')">
+            <TsFormItem v-if="canShowAddBtn(propertyLocal)" :label="$t('page.newtarget',{'target':$t('page.data')})" :tooltip="$t('term.framework.custommaxtrixselectaddbtndesc')">
               <TsFormSwitch
                 :value="propertyLocal.config.isAddData"
                 :trueValue="true"
                 :falseValue="false"
-                @change="
-                  val => {
-                    $set(propertyLocal.config, 'isAddData', val);
-                  }
-                "
+                @change="(val)=> {
+                  $set(propertyLocal.config,'isAddData',val);
+                }"
               ></TsFormSwitch>
             </TsFormItem>
             <TsFormItem :label="$t('page.hiddenattr')">
@@ -216,11 +213,9 @@
                 :transfer="true"
                 multiple
                 isCustomValue
-                @change="
-                  val => {
-                    changeHiddenFieldList(val);
-                  }
-                "
+                @change="(val)=>{
+                  changeHiddenFieldList(val);
+                }"
               ></TsFormSelect>
             </TsFormItem>
             <TsFormItem v-if="propertyLocal.config.dataSource === 'matrix' && propertyLocal.config.matrixUuid" :label="$t('page.filtercondition')">
@@ -242,7 +237,7 @@
                         border="border"
                       ></TsFormSelect>
                     </Col>
-                    <Col span="2" style="text-align: center" class="text-grey">{{ $t('term.expression.eq') }}</Col>
+                    <Col span="2" style="text-align:center" class="text-grey">{{ $t('term.expression.eq') }}</Col>
                     <Col span="10">
                       <TsFormSelect
                         ref="formitem_valuecolumn"
@@ -251,14 +246,11 @@
                         :validateList="validateList"
                         transfer
                         border="border"
-                      ></TsFormSelect>
-                    </Col>
-                    <Col span="2" style="text-align: center"><span class="tsfont-trash-o text-action" @click="removeSourceColumn(index)"></span></Col>
+                      ></TsFormSelect></Col>
+                    <Col span="2" style="text-align:center"><span class="tsfont-trash-o text-action" @click="removeSourceColumn(index)"></span></Col>
                   </Row>
                 </div>
-                <Button @click="addSourceColumn">
-                  <span class="tsfont-plus">{{ $t('page.filtercondition') }}</span>
-                </Button>
+                <Button @click="addSourceColumn"><span class="tsfont-plus">{{ $t('page.filtercondition') }}</span></Button>
               </div>
             </TsFormItem>
             <TsFormItem v-if="propertyLocal.handler === 'formselect'" :label="$t('page.inputtip')">
@@ -353,11 +345,9 @@
                 :formItemList="allFormItemList"
                 :config="propertyLocal.config"
                 :source="source"
-                @setDataConfig="
-                  dataConfig => {
-                    $set(propertyLocal.config, 'dataConfig', dataConfig);
-                  }
-                "
+                @setDataConfig="(dataConfig)=>{
+                  $set(propertyLocal.config, 'dataConfig', dataConfig);
+                }"
               ></TableConfig>
             </TsFormItem>
           </template>
@@ -370,18 +360,16 @@
                 :attrUuid="propertyLocal.uuid"
                 :value="propertyLocal.config.expression"
                 isRequired
-                @setConfig="
-                  val => {
-                    changeExpression(val);
-                  }
-                "
+                @setConfig="(val)=>{
+                  changeExpression(val);
+                }"
               ></ExpressionSetting>
             </TsFormItem>
           </template>
           <template v-slot:reaction>
             <Tabs v-if="propertyLocal.reaction && isReady">
               <TabPane
-                v-for="key in Object.keys(reactionTabList)"
+                v-for="(key) in Object.keys(reactionTabList)"
                 :key="key"
                 :label="getReactionLabel(key)"
                 :name="key"
@@ -406,11 +394,9 @@
                   :value="propertyLocal.reaction[key]"
                   :formItemList="allFormItemList"
                   :formItem="propertyLocal"
-                  @reactionValid="
-                    isValid => {
-                      reactionValid(key, isValid);
-                    }
-                  "
+                  @reactionValid="(isValid)=>{
+                    reactionValid(key, isValid)
+                  }"
                   @input="
                     rule => {
                       setReaction(key, rule);
@@ -473,8 +459,7 @@
                     @change="
                       val => {
                         $set(propertyLocal.reaction[key], 'valueList', val);
-                      }
-                    "
+                      }"
                   ></ReactionSetValueOtherSetting>
                 </div>
               </TabPane>
@@ -483,7 +468,7 @@
         </TsForm>
       </div>
       <div v-else>
-        <TsFormItem :label="$t('dialog.title.createtarget', { target: $t('page.hyperlink') })">
+        <TsFormItem :label="$t('dialog.title.createtarget',{'target':$t('page.hyperlink')})">
           <TsFormSwitch
             v-model="isActive"
             :trueValue="true"
@@ -491,7 +476,7 @@
             @on-change="changeActive"
           ></TsFormSwitch>
         </TsFormItem>
-        <TsFormItem v-if="isActive" :label="'URL' + $t('page.attribute')" :validateList="validateList">
+        <TsFormItem v-if="isActive" :label="'URL'+ $t('page.attribute')" :validateList="validateList">
           <TsFormSelect
             ref="formitem_urlAttributeValue"
             v-model="propertyLocal.config.urlAttributeValue"
@@ -536,24 +521,23 @@ export default {
     formItemUuid: { type: String }, //表单组件uuid
     formItemConfig: { type: Object }, //表单组件配置
     property: { type: Object }, //属性配置
-    formItemList: { typeof: Array },
-    isNeedTable: {
-      //是否需要引用table
+    formItemList: {typeof: Array},
+    isNeedTable: { //是否需要引用table
       type: Boolean,
       default: true
     },
-    source: { type: String, default: '' }
+    source: {type: String, default: ''}
   },
   data() {
     return {
       isReady: true,
       propertyLocal: null,
       reaction: {
-        mask: {},
-        hide: {},
-        display: {},
-        readonly: {},
-        disable: {},
+        mask: {}, 
+        hide: {}, 
+        display: {}, 
+        readonly: {}, 
+        disable: {}, 
         required: {},
         clearValue: {},
         setvalue: {},
@@ -592,15 +576,14 @@ export default {
           name: 'key',
           label: this.$t('page.englishname'),
           maxlength: 50,
-          validateList: [
-            'required',
+          validateList: ['required',
             {
               name: 'regex',
               pattern: /^[A-Za-z\d_]+$/,
               message: this.$t('message.plugin.enName')
             }
           ],
-          onChange: val => {
+          onChange: (val) => {
             this.valieKey();
           }
         },
@@ -626,10 +609,10 @@ export default {
             { text: this.$t('page.checkbox'), value: 'formcheckbox' },
             { text: this.$t('page.date'), value: 'formdate' },
             { text: this.$t('page.time'), value: 'formtime' },
-            { text: this.$t('term.cmdb.expression'), value: 'formexpression' }
+            {text: this.$t('term.cmdb.expression'), value: 'formexpression' }
           ],
           validateList: ['required'],
-          onChange: val => {
+          onChange: (val) => {
             this.handleUniqueAttrHidden(val);
           }
         },
@@ -721,7 +704,7 @@ export default {
         {
           name: 'tomore',
           trigger: 'change',
-          message: this.$t('message.pleaseentertruetarget', { target: this.$t('message.framework.regularexpression') }),
+          message: this.$t('message.pleaseentertruetarget', {'target': this.$t('message.framework.regularexpression')}),
           validator: (rule, value) => {
             if (this.$utils.isEmpty(value)) {
               return true;
@@ -767,7 +750,7 @@ export default {
       if (!this.propertyLocal.reaction) {
         this.$set(this.propertyLocal, 'reaction', this.$utils.deepClone(this.reaction));
       } else {
-        Object.keys(this.reaction).forEach(key => {
+        Object.keys(this.reaction).forEach((key) => {
           if (!this.propertyLocal.reaction.hasOwnProperty(key)) {
             this.$set(this.propertyLocal.reaction, key, this.reaction[key]);
           }
@@ -816,7 +799,7 @@ export default {
                   this.$set(this.reactionError, arrKey[1], true);
                 }
               }
-            }
+            } 
           } else if (key === 'assignmentValue') {
             let formitem = null;
             if (this.$refs[key] instanceof Array) {
@@ -895,29 +878,28 @@ export default {
     changeActive() {
       this.propertyLocal.config.urlAttributeValue = '';
     },
-    valieKey() {
-      //校验英文名称唯一
+    valieKey() { //校验英文名称唯一
       let isValid = true;
       if (this.propertyLocal && this.propertyLocal.key) {
         let findKeyItem = this.formItemConfig.dataConfig.find(item => item.uuid != this.propertyLocal.uuid && item.key === this.propertyLocal.key);
         this.formConfig.forEach(item => {
           if (item.name === 'key') {
             if (findKeyItem) {
-              this.$set(item, 'errorMessage', this.$t('message.targetisexists', { target: this.$t('term.framework.compkeyname') }));
+              this.$set(item, 'errorMessage', this.$t('message.targetisexists', {'target': this.$t('term.framework.compkeyname')}));
               isValid = false;
             } else {
               this.$set(item, 'errorMessage', '');
             }
-          }
+          } 
         });
       }
       return isValid;
     },
-    changeMatrixUuid({ value, selectItem }) {
+    changeMatrixUuid({value, selectItem}) {
       this.$set(this.propertyLocal.config, 'defaultValue', null);
       this.$set(this.propertyLocal.config, 'mapping', {});
       this.$set(this.propertyLocal.config, 'isAddData', false);
-      let { type = '' } = selectItem || {};
+      let {type = ''} = selectItem || {};
       this.$set(this.propertyLocal.config, 'matrixType', type);
       if (value) {
         this.$set(this.propertyLocal.reaction, 'filter', {});
@@ -934,7 +916,7 @@ export default {
     },
     handleUniqueAttrHidden(handler) {
       // 判断唯一属性是否显示
-      let findItem = this.formConfig.find(v => v.name == 'isUnique');
+      let findItem = this.formConfig.find((v) => v.name == 'isUnique');
       if (findItem) {
         findItem.isHidden = !(handler && !['formupload', 'formexpression', 'formtable'].includes(handler));
       }
@@ -1028,7 +1010,7 @@ export default {
       return dataList;
     },
     getAttrList() {
-      return mappingDataList => {
+      return (mappingDataList) => {
         let list = [];
         if (!this.$utils.isEmpty(mappingDataList)) {
           list = mappingDataList.map(i => {
@@ -1084,10 +1066,10 @@ export default {
       return newList;
     },
     canShowAddBtn() {
-      return propertyLocal => {
-        let { handler = '', config = {} } = propertyLocal || {};
-        let { matrixType = '' } = config || {};
-        return !!(handler == 'formselect' && matrixType == 'custom'); // 下拉框并且是自定义矩阵，才显示新增按钮
+      return (propertyLocal) => {
+        let {handler = '', config = {}} = propertyLocal || {};
+        let {matrixType = ''} = config || {};
+        return !!((handler == 'formselect' && matrixType == 'custom')); // 下拉框并且是自定义矩阵，才显示新增按钮
       };
     }
   },
