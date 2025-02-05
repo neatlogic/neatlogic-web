@@ -308,7 +308,9 @@
                 v-model="propertyLocal.config.format"
                 :validateList="validateList"
                 :dataList="[
+                  { value: 'yyyy/MM/dd', text: 'yyyy/MM/dd' },
                   { value: 'yyyy-MM-dd', text: 'yyyy-MM-dd' },
+                  { value: 'yyyy/MM', text: 'yyyy/MM' },
                   { value: 'yyyy-MM', text: 'yyyy-MM' },
                   { value: 'yyyy', text: 'yyyy' }
                 ]"
