@@ -21,6 +21,7 @@
       <table class="tstable-body">
         <thead>
           <tr>
+            <th>{{ $t('page.dragrow') }}</th>
             <th style="width:20%">{{ $t('page.name') }}</th>
             <th style="width:20%">{{ $t('term.framework.paramtype') }}</th>
             <th style="width:20%">{{ $t('term.report.datatype.name') }}</th>
@@ -33,8 +34,18 @@
             </th>
           </tr>
         </thead>
-        <tbody v-if="allowEditParam == 1 && paramList && paramList.length > 0">
-          <tr v-for="(item, index) in paramList" :key="index">
+        <Draggable
+          v-if="allowEditParam == 1 && paramList && paramList.length > 0"
+          :list="paramList"
+          :animation="150"
+          tag="tbody"
+          handle=".drag-handle"
+          draggable="tr"
+        >
+          <tr v-for="(item, index) in paramList" :key="item.uuid || index">
+            <td class="drag-handle">
+              <span class="tsfont-drag" style="cursor:move;"></span>
+            </td>
             <td>
               <TsFormInput ref="txtParamName" v-model="item.name" :maxlength="30"></TsFormInput>
             </td>
@@ -61,15 +72,11 @@
               <TsFormInput v-model="item.description" :maxlength="200" transfer></TsFormInput>
             </td>
             <td style="width:50px">
-              <a href="javascript:void(0)" style="margin-right:5px" @click="addParam">
-                <i class="tsfont-plus-o"></i>
-              </a>
-              <a href="javascript:void(0)" @click="delParam(index)">
-                <i class="tsfont-minus-o"></i>
-              </a>
+              <span class="tsfont-plus-o text-action mr-xs" @click.stop="addRowParam(index)"></span>
+              <span class="tsfont-minus-o text-action" @click.stop="delParam(index)"></span>
             </td>
           </tr>
-        </tbody>
+        </Draggable>
         <tbody v-if="allowEditParam == 0 && handlerPattern && handlerPattern.length > 0">
           <tr v-for="(item, index) in handlerPattern" :key="index">
             <td>
@@ -98,8 +105,13 @@
 <script>
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
+import Draggable from 'vuedraggable';
 export default {
-  components: { TsFormInput, TsFormSelect },
+  components: {
+    Draggable,
+    TsFormInput,
+    TsFormSelect
+  },
   props: {
     integration: { type: Object },
     allowEditParam: { type: Number },
@@ -146,10 +158,13 @@ export default {
         }
       });
     },
-    addParam: function() {
-      this.paramList.push({});
+    addRowParam(index) {
+      this.paramList.splice(index + 1, 0, {uuid: this.$utils.setUuid()});
     },
-    delParam: function(index) {
+    addParam() {
+      this.paramList.push({uuid: this.$utils.setUuid()});
+    },
+    delParam(index) {
       this.paramList.splice(index, 1);
     }
   },
