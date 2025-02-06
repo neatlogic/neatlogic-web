@@ -43,6 +43,15 @@
               v-bind="tableConfig"
               :theadList="theadList"
             >
+              <template slot="authority" slot-scope="{ row }">
+                <div v-for="(item, index) in row.authorityList" :key="index" :class="index != row.authorityList.length - 1 ? 'mb-xs' : ''">
+                  <template v-if="item.displayName">
+                    <span>{{ item.displayName }}</span>
+                    <span class="text-grey">·</span>
+                  </template>
+                  <span v-if="item.name" class="text-grey">{{ item.name }}</span>
+                </div>
+              </template>
             </TsTable>
           </div>
           <template v-else>
@@ -162,7 +171,8 @@ export default {
       isMenu: 0, //0(目录)/1(菜单)
       catalogName: this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') }),
       parentId: null,
-      selectSaveId: null //是否存在，判断是否是新建
+      selectSaveId: null, //是否存在，判断是否是新建
+      authList: [] // 权限列表，用于根据权限名称去获取英文名
     };
   },
   beforeCreate() {},
@@ -182,6 +192,7 @@ export default {
   methods: {
     async init(isFirst) {
       try {
+        await this.getAuthList();
         await this.getTreeList(isFirst);
       } catch (error) {
         console.error(error);
@@ -191,6 +202,13 @@ export default {
         return;
       }
       this.getMenuTreeNode();
+    },
+    getAuthList() {
+      return this.$api.framework.auth
+        .getAuthList()
+        .then(res => {
+          this.authList = res.Return || [];
+        });
     },
     getTreeList(isFirst) {
       return this.$api.framework.extramenu.getMenuTreeList().then(res => {
@@ -284,10 +302,12 @@ export default {
         childrenList.forEach((item) => {
           let findItem = moduleAuthList.find((v) => item.id.indexOf(v.name) > 0);
           if (findItem) {
+            let {authority = ''} = findItem || {};
             this.tableConfig.tbodyList.push({
               menuName: item.name,
               moduleName: node.moduleName,
-              authority: findItem.authority
+              authority: authority,
+              authorityList: this.getAuthorityName(authority)
             });
           }
         });
@@ -442,7 +462,7 @@ export default {
             title: item.meta.title,
             name: item.name,
             path: item.path,
-            authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
+            authority: item.meta.authority
           }));
         if (menuList.length) {
           routerConfig[moduleId] = menuList;
@@ -475,7 +495,8 @@ export default {
                     moduleId: item.moduleId,
                     moduleName: item.moduleName,
                     menuName: n.name,
-                    authority: this.getMenuAuthority(item.moduleId, n.path)
+                    authority: this.getMenuAuthority(item.moduleId, n.path),
+                    authorityList: this.getAuthorityName(this.getMenuAuthority(item.moduleId, n.path))
                   });
                 }
               });
@@ -505,6 +526,19 @@ export default {
           ]
         }
       ];
+    },
+    getAuthorityName() {
+      return (authority) => {
+        if (typeof authority !== 'string' && !Array.isArray(authority)) {
+          return [];
+        }
+        const authItems = Array.isArray(authority) ? authority : [authority];
+        return authItems.map(item => {
+          const authItem = this.authList.find(v => v.name === item);
+          const { displayName = '', name = '' } = authItem || {};
+          return { displayName, name: name || item };
+        });
+      };
     }
   },
   watch: {}
