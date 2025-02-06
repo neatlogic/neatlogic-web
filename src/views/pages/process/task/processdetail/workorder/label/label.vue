@@ -10,7 +10,7 @@
       v-model="tagKeywork"
       v-bind="selectConfig"
       class="select-style"
-      @on-blur="onBlur"
+      @inputBlur="onBlur"
       @on-change="change"
       @on-create="create"
     ></TsFormSelect>
