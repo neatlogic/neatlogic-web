@@ -17,7 +17,8 @@ export default {
     isHide: false,
     isReadOnly: false,
     isDisabled: false,
-    type: 'line'
+    type: 'line',
+    isShowComponentLabel: false // 是否显示组件label
   },
   reaction: { mask: {}, hide: {}, display: {}, readonly: {}, disable: {} }
 };

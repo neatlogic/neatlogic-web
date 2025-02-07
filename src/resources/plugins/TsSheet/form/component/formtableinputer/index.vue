@@ -46,55 +46,57 @@
         </Upload>
       </template>
     </div>
-    <TsTable
-      v-if="hasColumn"
-      v-bind="tableData"
-      :loading="loading"
-      :multiple="true"
-      :fixedHeader="false"
-      :canDrag="!disabled && !readonly && config.isCanDrag"
-      :readonlyTextIsHighlight="readonlyTextIsHighlight"
-      @updateRowSort="updateRowSort"
-      @getSelected="getSelectedItem"
-    >
-      <template v-slot:delete="{ row, index }">
-        <div class="flex-start">
-          <span class="tsfont-plus text-action mr-nm" @click.stop="addRow(index)"></span>
-          <span class="tsfont-close text-action" @click.stop="deleteItem(row)"></span>
-        </div>
-      </template>
-      <template v-if="config.isShowNumber" v-slot:number="{ index }">
-        {{ index + 1 }}
-      </template>
-      <template v-for="extra in extraList" :slot="extra.uuid" slot-scope="{ row, index }">
-        <div :key="extra.uuid" @click.stop>
-          <FormItem
-            :ref="'formitem_' + extra.uuid + '_' + index"
-            :formItem="getExtraFormItem(extra, row)"
-            :value="getDefaultValue(extra.uuid, row)"
-            :formData="{ ...filterUuid(initFormData), ...row }"
-            :formItemList="$utils.deepClone(extraList.concat(formItemList))"
-            :showStatusIcon="false"
-            mode="read"
-            :readonly="readonly"
-            :disabled="disabled"
-            :isClearEchoFailedDefaultValue="true"
-            :isCustomValue="true"
-            :isClearSpecifiedAttr="isClearSpecifiedAttr"
-            :externalData="externalData"
-            :rowUuid="row.uuid"
-            style="min-width: 130px"
-            @change="val => changeRow(val, extra.uuid, row)"
-            @updateCurrentRow="
-              data => {
-                updateCurrentRow(row, data);
-              }
-            "
-          ></FormItem>
-        </div>
-      </template>
-    </TsTable>
-    <TsTable v-else :theadList="tableData.theadList"></TsTable>
+    <template v-if="showTable">
+      <TsTable
+        v-if="hasColumn"
+        v-bind="tableData"
+        :loading="loading"
+        :multiple="true"
+        :fixedHeader="false"
+        :canDrag="!disabled && !readonly && config.isCanDrag"
+        :readonlyTextIsHighlight="readonlyTextIsHighlight"
+        @updateRowSort="updateRowSort"
+        @getSelected="getSelectedItem"
+      >
+        <template v-slot:delete="{ row, index }">
+          <div class="flex-start">
+            <span class="tsfont-plus text-action mr-nm" @click.stop="addRow(index)"></span>
+            <span class="tsfont-close text-action" @click.stop="deleteItem(row)"></span>
+          </div>
+        </template>
+        <template v-if="config.isShowNumber" v-slot:number="{ index }">
+          {{ index + 1 }}
+        </template>
+        <template v-for="extra in extraList" :slot="extra.uuid" slot-scope="{ row, index }">
+          <div :key="extra.uuid" @click.stop>
+            <FormItem
+              :ref="'formitem_' + extra.uuid + '_' + index"
+              :formItem="getExtraFormItem(extra, row)"
+              :value="getDefaultValue(extra.uuid, row)"
+              :formData="{ ...filterUuid(initFormData), ...row }"
+              :formItemList="$utils.deepClone(extraList.concat(formItemList))"
+              :showStatusIcon="false"
+              mode="read"
+              :readonly="readonly"
+              :disabled="disabled"
+              :isClearEchoFailedDefaultValue="true"
+              :isCustomValue="true"
+              :isClearSpecifiedAttr="isClearSpecifiedAttr"
+              :externalData="externalData"
+              :rowUuid="row.uuid"
+              style="min-width: 130px"
+              @change="val => changeRow(val, extra.uuid, row)"
+              @updateCurrentRow="
+                data => {
+                  updateCurrentRow(row, data);
+                }
+              "
+            ></FormItem>
+          </div>
+        </template>
+      </TsTable>
+      <TsTable v-else :theadList="tableData.theadList"></TsTable>
+    </template>
   </div>
 </template>
 <script>
@@ -823,6 +825,9 @@ export default {
     },
     formDataForWatch() {
       return JSON.parse(JSON.stringify(this.formData));
+    },
+    showTable() {
+      return this.config.isShowHeader && this.tableData.tbodyList.length != 0;
     }
   },
   watch: {

@@ -11,6 +11,7 @@
       </div>
       <div>
         <TsTable
+          v-if="showTable"
           :multiple="true"
           :theadList="theadList"
           :tbodyList="tbodyList"
@@ -393,6 +394,9 @@ export default {
     },
     canDeleteRow() {
       return !!((!this.config.disableDeleteData && !this.readonly && !this.disabled));
+    },
+    showTable() {
+      return this.config.isShowHeader && this.tbodyList.length != 0;
     }
   },
   watch: {

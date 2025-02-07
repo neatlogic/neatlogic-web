@@ -8,6 +8,13 @@
         <TabListSetting v-model="config.tabList" :formItemList="formItemList" :disabled="disabled"></TabListSetting>
       </div>
     </TsFormItem>
+    <TsFormItem label="显示组件名称" labelPosition="left" contentAlign="right">
+      <TsFormSwitch
+        v-model="config.isShowComponentLabel"
+        :falseValue="false"
+        :trueValue="true"
+      ></TsFormSwitch>
+    </TsFormItem>
   </div>
 </template>
 <script>
@@ -18,7 +25,8 @@ export default {
   components: {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TabListSetting: () => import('./tab-list-setting.vue'),
-    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   extends: base,
   props: {},

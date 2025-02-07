@@ -39,6 +39,19 @@
         :disabled="disabled"
       ></TsFormSwitch>
     </TsFormItem>
+    <TsFormItem
+      label="显示表头"
+      tooltip="无数据时是否显示表头"
+      labelPosition="left"
+      contentAlign="right"
+    >
+      <TsFormSwitch
+        v-model="config.isShowHeader"
+        :trueValue="true"
+        :falseValue="false"
+        :disabled="disabled"
+      ></TsFormSwitch>
+    </TsFormItem>
     <div class="th-setting pb-sm">
       <div class="title pb-sm">
         <div class="require-label pr-xs text-title">{{ $t('term.framework.thsetting') }}</div>
