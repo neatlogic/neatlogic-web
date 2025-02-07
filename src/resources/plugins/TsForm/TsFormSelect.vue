@@ -1166,6 +1166,7 @@ export default {
           }
         }
         this.hideOption(typeof this.$listeners['enter-search'] == 'function' && !this.multiple);
+        this.onSelectBlur(); // 点击外部，把失去焦点方法传递出去
       }
     },
     updatePosition() {
