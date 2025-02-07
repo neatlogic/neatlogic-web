@@ -2426,14 +2426,12 @@ export default {
           //将后台的数据格式转换回原始的数据格式
           this.formData = {};
           val.forEach(element => {
-            if (element.attributeUuid) {
+            const item = this.formItemList.find(d => d.key && element.key && d.key === element.key);
+            if (element.key && item) {
+              this.$set(this.formData, item.uuid, element.dataList);
+            } else if (element.attributeUuid && this.formItemList.find(item => item.uuid === element.attributeUuid)) {
               this.$set(this.formData, element.attributeUuid, element.dataList);
-            } else if (element.key) {
-              const item = this.formItemList.find(d => d.key && d.key === element.key);
-              if (item) {
-                this.$set(this.formData, item.uuid, element.dataList);
-              }
-            }
+            } 
           });
         } else if (val && val instanceof Object) {
           //这里一定要检查formData和data是否一样，如果一样的情况下还继续复制对象，在@setValue中设置TsSheet的data对象的情况下，会导致死循环。
