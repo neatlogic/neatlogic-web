@@ -707,8 +707,12 @@ export default {
             this.$emit('node:click', node);
           }
         });
-        this.graph.on('node:mouseenter', ({ node }) => {});
-        this.graph.on('node:mouseleave', ({ node }) => {});
+        this.graph.on('node:mouseenter', ({ node, e }) => {
+          this.$emit('node:mouseenter', node, e);
+        });
+        this.graph.on('node:mouseleave', ({ node, e}) => {
+          this.$emit('node:mouseleave', node, e);
+        });
         this.graph.on('node:selected', ({ node }) => {
           //创建改变形状选中框
           //this.graph.createTransformWidget(node);
