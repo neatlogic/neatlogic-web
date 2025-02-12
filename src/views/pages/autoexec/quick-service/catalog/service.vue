@@ -774,6 +774,7 @@ export default {
       this.needProtocol = false;
       this.needRoundCount = false;
       this.needExecuteNode = false;
+      this.roundCountForm.disabled = false;
       this.scenarioList = [];
       this.valueConfig = {}; //所有值对应的集合
       this.itemConfig = {};//所以组件对应的渲染config集合
