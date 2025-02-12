@@ -44,6 +44,7 @@
         styleType="button"
         className="smallUpload"
         :multiple="true"
+        :hasScreenshotFromClipboard="true"
         :defaultList="defaultFileList"
         @remove="getFileList"
         @getFileList="getFileList"
