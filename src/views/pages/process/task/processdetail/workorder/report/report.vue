@@ -400,8 +400,9 @@ export default {
           Object.keys(this.changecreateConfig).forEach(key => {
             this.changecreateConfig[key] = this.handlerStepInfo[key];
           });
-        this.defaultTaskFileList = this.handlerStepInfo.fileList || [];
-        this.draftFile = this.handlerStepInfo.fileList || [];
+        const {fileList = []} = this.handlerStepInfo || {}; // 处理文件列表为空的时候，控制台报错
+        this.defaultTaskFileList = fileList;
+        this.draftFile = fileList;
       } else {
         Object.keys(this.omnipotentConfig).forEach(key => {
           this.omnipotentConfig[key] = this.dataConfig.content;
@@ -526,12 +527,14 @@ export default {
     },
     //获取当前登录用户信息
     getUser() {
-      let _this = this;
       this.$api.framework.user.getUser().then(res => {
         if (res.Status == 'OK') {
           let userDetail = res.Return;
-          _this.changecreateConfig.owner = 'user#' + userDetail.uuid;
-          this.$set(this.handlerStepInfo, 'owner', _this.changecreateConfig.owner);
+          this.changecreateConfig.owner = 'user#' + userDetail.uuid;
+          if (this.handlerStepInfo == null) {
+            this.handlerStepInfo = {}; // 处理为null时，使用$set报错Cannot read properties of null (reading '__ob__')
+          }
+          this.$set(this.handlerStepInfo, 'owner', this.changecreateConfig.owner);
         }
       });
     },

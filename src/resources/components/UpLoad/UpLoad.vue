@@ -49,7 +49,9 @@
           </div>
         </slot>
       </Upload>
-      <Button v-if="hasScreenshotFromClipboard" style="margin-left: 6px !important;" @click.stop="openDialog"><span class="tsfont-paste">从剪切板获取截图</span></Button>
+      <Button v-if="hasScreenshotFromClipboard" style="margin-left: 6px !important;" @click.stop="openDialog">
+        <span class="tsfont-paste">{{ $t('page.getscreenshotfromclipboard') }}</span>
+      </Button>
     </div>
     <slot name="tips"></slot>
     <div v-if="uploadList.length" class="upload_block">
@@ -90,22 +92,23 @@
       }"
     >
     </ImagePreview>
-    <PasteImageDialog
+    <GetScreenshotFromClipboardDialog
       v-if="isShowDialog"
       url="/api/binary/file/upload"
       :fileParam="filedata"
-      @close="closePasteImageDialog"
+      @close="closeGetScreenshotFromClipboardDialog"
     />
   </div>
 </template>
 
 <script>
 import download from '@/resources/directives/download.js';
+import GetScreenshotFromClipboardDialog from '@/resources/components/UpLoad/get-screenshot-from-clipboard-dialog.vue';
 export default {
   name: '',
   components: {
     ImagePreview: () => import('@/resources/components/image-preview/index.vue'),
-    PasteImageDialog: () => import('@/resources/components/UpLoad/paste-image-dialog.vue')
+    GetScreenshotFromClipboardDialog
   },
   directives: { download },
   props: {
@@ -264,6 +267,7 @@ export default {
         responseType: 'blob'
       },
       uploadList: [],
+      clipboardScreenshotList: [], // 剪切板截图列表
       defaultFileList: [],
       fileStatus: 'normal',
       headerConfig: {
@@ -283,23 +287,28 @@ export default {
   created() {},
   methods: {
     async openDialog() {
-      const clipboardItems = await navigator.clipboard.read();
-      if (clipboardItems.length === 0) {
-        this.$Message.error('剪贴板中没有数据');
-        return;
-      }
-      let hasImage = false;
-      for (const item of clipboardItems) {
-        if (item.types.includes('image/png') || item.types.includes('image/jpeg')) {
-          hasImage = true;
-          break;
+      try {
+        const clipboardItems = navigator.clipboard ? await navigator.clipboard.read() : [];
+        if (clipboardItems.length === 0) {
+          this.$Message.error(this.$t('page.nodatafoundintheclipboard'));
+          return;
         }
+        let hasImage = false;
+        for (const item of clipboardItems) {
+          if (item.types.includes('image/png') || item.types.includes('image/jpeg')) {
+            hasImage = true;
+            break;
+          }
+        }
+        if (!hasImage) {
+          this.$Message.error(this.$t('page.noimageresourcesfoundintheclipboard'));
+          return;
+        }
+        this.isShowDialog = true;
+      } catch (error) {
+        console.error('读取剪贴板数据时出错:', error);
+        this.$Message.error(this.$t('page.errorreadingclipboarddata'));
       }
-      if (!hasImage) {
-        this.$Message.error('剪贴板中没有图片资源');
-        return;
-      }
-      this.isShowDialog = true;
     },
     handlePreview(index) {
       this.initialIndex = index;
@@ -339,6 +348,9 @@ export default {
             }
             fileList.push(file);
             //this.$refs.upload.fileList = fileList;
+          }
+          if (this.clipboardScreenshotList.length > 0) {
+            fileList = fileList.concat(this.clipboardScreenshotList);
           }
           if (isFinish) {
             if (!this.silent) {
@@ -433,9 +445,30 @@ export default {
     handleClearFiles() {
       this.$refs.upload.fileList.splice(0);
     },
-    closePasteImageDialog(imgObj) {
-      if (!this.$utils.isEmpty(imgObj)) {
-        this.uploadList.push(imgObj);
+    closeGetScreenshotFromClipboardDialog(file) {
+      if (!this.$utils.isEmpty(file)) {
+        const {id = '', name = '', size = ''} = file || {};
+        const fileInfo = {
+          // 构造和Upload组件上传成功fileList一致的数据结构
+          id: id,
+          status: 'finished',
+          name: name,
+          size: size,
+          percentage: 100,
+          showProgress: false,
+          uid: this.$utils.setUuid(),
+          response: {
+            Status: 'OK',
+            Return: {
+              ...(file || {})
+            }
+          }
+        };
+        this.uploadList.push(fileInfo);
+        this.clipboardScreenshotList = [
+          fileInfo
+        ];
+        this.$emit('getFileList', this.uploadList, id);
       }
       this.isShowDialog = false;
     }

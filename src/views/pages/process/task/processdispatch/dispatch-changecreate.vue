@@ -138,6 +138,7 @@
         className="smallUpload"
         :multiple="true"
         :defaultList="defaultFileList"
+        :hasScreenshotFromClipboard="true"
         dataType="change"
       ></TsUpLoad>
     </div>
