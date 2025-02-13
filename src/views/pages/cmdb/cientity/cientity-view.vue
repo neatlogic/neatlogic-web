@@ -1,6 +1,16 @@
 <template>
   <div>
+    <Alert
+      v-if="isNotFound"
+      show-icon
+      class="margin-lg"
+      type="error"
+    >
+      {{ $t('page.exception') }}
+      <span slot="desc">{{ $t('term.cmdb.cientityisnotfound') }}</span>
+    </Alert>
     <TsContain
+      v-else
       :hideHeader="hideHeader"
       :enableCollapse="!ciEntityData.isVirtual"
       border="border"
@@ -268,6 +278,7 @@ export default {
   data() {
     return {
       isLoading: false,
+      isNotFound: false, //配置项是否不存在
       isCustomViewShow: false, //配置视图窗口
       showContent: 'main',
       ciId: null,
@@ -435,6 +446,11 @@ export default {
             }
           })
           .finally(() => {
+            if (!this.ciEntityData || !this.ciEntityData.id) {
+              this.isNotFound = true;
+            } else {
+              this.isNotFound = false;
+            }
             this.isLoading = false;
           });
       }

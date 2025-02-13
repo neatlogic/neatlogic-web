@@ -244,7 +244,8 @@
     "batchimport": "批量上传",
     "errordetail": "异常详情",
     "collect": "采集",
-    "pause": "停止"
+    "pause": "停止",
+    "cientityisnotfound": "配置项不存在"
   },
   "process": {
     "workordercenter": "工单中心",

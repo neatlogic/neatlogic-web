@@ -243,7 +243,8 @@
     "batchimport": "Batch upload",
     "errordetail": "Exception Details",
     "collect": "collection",
-    "pause": "stop it"
+    "pause": "stop it",
+    "cientityisnotfound": "Configuration item does not exist"
   },
   "process": {
     "workordercenter": "Work Center",
