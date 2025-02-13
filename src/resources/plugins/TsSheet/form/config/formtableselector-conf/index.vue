@@ -23,7 +23,7 @@
       ></TsFormSwitch>
     </TsFormItem>
     <TsFormItem
-      label="数据为空隐藏表头"
+      :label="$t('term.framework.hideheaderwhendataempty')"
       labelPosition="left"
       contentAlign="right"
       labelWidth="180"

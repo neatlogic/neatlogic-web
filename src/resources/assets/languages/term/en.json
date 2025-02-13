@@ -1332,7 +1332,8 @@
     "showimportexporttemplatetableoptions": "Display export/import (template, table) options",
     "componentnoexist": "component does not exist",
     "custommaxtrixselectaddbtndesc": "When selecting a custom matrix type and adding data, the dropdown menu will display a \"+\" button.",
-    "showcomponentnamesintab": "Display the component names dragged into the Tab tab"
+    "showcomponentnamesintab": "Display the component names dragged into the Tab tab",
+    "hideheaderwhendataempty": "Hide header when data is empty"
   },
   "knowledge": {
     "document": "Document",
