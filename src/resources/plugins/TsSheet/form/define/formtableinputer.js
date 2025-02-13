@@ -23,9 +23,10 @@ export default {
     isCanDrag: true,
     lineNumber: 1,
     isCanAdd: true,
-    isShowImportExportBtn: true, // 是否显示导出/导入(模板、表格)选项按钮
+    isShowImportExportBtn: false, // 显示导出/导入(模板、表格)选项按钮
     uniqueRuleConfig: [], // 唯一规则配置
-    isAddData: false // 自定义矩阵并且是下拉框类型，下拉列表加一个+号按钮
+    isAddData: false, // 自定义矩阵并且是下拉框类型，下拉列表加一个+号按钮
+    hideHeaderWhenDataEmpty: true // 数据为空隐藏表头
   },
   reaction: {
     mask: {},
