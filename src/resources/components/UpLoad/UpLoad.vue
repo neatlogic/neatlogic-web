@@ -1,53 +1,58 @@
 <template>
   <div class="upload" :class="className">
-    <Upload
-      ref="upload"
-      :type="type"
-      :format="format"
-      :accept="accept"
-      :multiple="multiple"
-      :data="filedata"
-      :on-format-error="FormatError"
-      :on-progress="progress"
-      :before-upload="before"
-      :onSuccess="success"
-      :on-error="error"
-      :action="action"
-      :show-upload-list="false"
-      :max-size="maxsize"
-      :on-exceeded-size="exceeded"
-      :default-file-list="defaultFileList"
-      :headers="headerConfig"
-    >
-      <slot>
-        <div v-if="!readonly && styleType === 'button'">
-          <Button
-            v-if="className === 'smallUpload'"
-            :disabled="disabled"
-            :title="disabledTitle"
-            icon="tsfont tsfont-upload"
-          >{{ $t('page.uploadfile') }}</Button>
-        </div>
-        <div v-else-if="!readonly && styleType === 'text'">
-          <span v-if="className === 'smallUpload'" class="text text-grey text-btn text-left tsfont-plus">
-            {{ $t('page.uploadattachment') }}
-          </span>
-        </div>
-        <div v-else-if="!readonly" class="padding-md" :style="{ height: height ? height + 'px' : null }">
-          <p v-if="title" class="title">{{ title }}</p>
-          <div v-if="type == 'drag'" class="drag">
-            <!-- <i class="icon-tip tsfont-plus"></i> -->
-            <div class="upload-icon">
-              <div class="tsfont-tianjiawenjian text-info" style="font-size:25px"></div>
-              <!--<img src="../UploadDialog/upload-icon.png" :alt="$t('page.importicon')" />-->
-              <p class="text-grey">{{ $t('page.clickanddragfile') }}</p>
-            </div>
-            <!-- <p>上传附件</p> -->
+    <div :class="hasScreenshotFromClipboard ? 'flex' : ''">
+      <Upload
+        ref="upload"
+        :type="type"
+        :format="format"
+        :accept="accept"
+        :multiple="multiple"
+        :data="filedata"
+        :on-format-error="FormatError"
+        :on-progress="progress"
+        :before-upload="before"
+        :onSuccess="success"
+        :on-error="error"
+        :action="action"
+        :show-upload-list="false"
+        :max-size="maxsize"
+        :on-exceeded-size="exceeded"
+        :default-file-list="defaultFileList"
+        :headers="headerConfig"
+      >
+        <slot>
+          <div v-if="!readonly && styleType === 'button'">
+            <Button
+              v-if="className === 'smallUpload'"
+              :disabled="disabled"
+              :title="disabledTitle"
+              icon="tsfont tsfont-upload"
+            >{{ $t('page.uploadfile') }}</Button>
           </div>
-          <Button v-else :disabled="disabled">{{ $t('page.clicktoupload') }}</Button>
-        </div>
-      </slot>
-    </Upload>
+          <div v-else-if="!readonly && styleType === 'text'">
+            <span v-if="className === 'smallUpload'" class="text text-grey text-btn text-left tsfont-plus">
+              {{ $t('page.uploadattachment') }}
+            </span>
+          </div>
+          <div v-else-if="!readonly" class="padding-md" :style="{ height: height ? height + 'px' : null }">
+            <p v-if="title" class="title">{{ title }}</p>
+            <div v-if="type == 'drag'" class="drag">
+              <!-- <i class="icon-tip tsfont-plus"></i> -->
+              <div class="upload-icon">
+                <div class="tsfont-tianjiawenjian text-info" style="font-size:25px"></div>
+                <!--<img src="../UploadDialog/upload-icon.png" :alt="$t('page.importicon')" />-->
+                <p class="text-grey">{{ $t('page.clickanddragfile') }}</p>
+              </div>
+            <!-- <p>上传附件</p> -->
+            </div>
+            <Button v-else :disabled="disabled">{{ $t('page.clicktoupload') }}</Button>
+          </div>
+        </slot>
+      </Upload>
+      <Button v-if="hasScreenshotFromClipboard" style="margin-left: 6px !important;" @click.stop="openDialog">
+        <span class="tsfont-paste">{{ $t('page.getscreenshotfromclipboard') }}</span>
+      </Button>
+    </div>
     <slot name="tips"></slot>
     <div v-if="uploadList.length" class="upload_block">
       <TsRow :style="rowStyle">
@@ -87,15 +92,23 @@
       }"
     >
     </ImagePreview>
+    <GetScreenshotFromClipboardDialog
+      v-if="isShowDialog"
+      url="/api/binary/file/upload"
+      :fileParam="filedata"
+      @close="closeGetScreenshotFromClipboardDialog"
+    />
   </div>
 </template>
 
 <script>
 import download from '@/resources/directives/download.js';
+import GetScreenshotFromClipboardDialog from '@/resources/components/UpLoad/get-screenshot-from-clipboard-dialog.vue';
 export default {
   name: '',
   components: {
-    ImagePreview: () => import('@/resources/components/image-preview/index.vue')
+    ImagePreview: () => import('@/resources/components/image-preview/index.vue'),
+    GetScreenshotFromClipboardDialog
   },
   directives: { download },
   props: {
@@ -237,6 +250,11 @@ export default {
       // 只读模式下，文件列表是否需要高亮显示
       type: Boolean,
       default: false
+    },
+    hasScreenshotFromClipboard: {
+      // 是否从剪切板获取截图
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -249,13 +267,15 @@ export default {
         responseType: 'blob'
       },
       uploadList: [],
+      clipboardScreenshotList: [], // 剪切板截图列表
       defaultFileList: [],
       fileStatus: 'normal',
       headerConfig: {
         Authorization: sessionStorage.getItem('neatlogic_authorization') ? sessionStorage.getItem('neatlogic_authorization') : ''
       },
       srcList: [],
-      initialIndex: 0
+      initialIndex: 0,
+      isShowDialog: false
     };
   },
   beforeMount() {},
@@ -266,6 +286,30 @@ export default {
   },
   created() {},
   methods: {
+    async openDialog() {
+      try {
+        const clipboardItems = navigator.clipboard ? await navigator.clipboard.read() : [];
+        if (clipboardItems.length === 0) {
+          this.$Message.error(this.$t('page.nodatafoundintheclipboard'));
+          return;
+        }
+        let hasImage = false;
+        for (const item of clipboardItems) {
+          if (item.types.includes('image/png') || item.types.includes('image/jpeg')) {
+            hasImage = true;
+            break;
+          }
+        }
+        if (!hasImage) {
+          this.$Message.error(this.$t('page.noimageresourcesfoundintheclipboard'));
+          return;
+        }
+        this.isShowDialog = true;
+      } catch (error) {
+        console.error('读取剪贴板数据时出错:', error);
+        this.$Message.error(this.$t('page.errorreadingclipboarddata'));
+      }
+    },
     handlePreview(index) {
       this.initialIndex = index;
       this.srcList = this.uploadList;
@@ -304,6 +348,9 @@ export default {
             }
             fileList.push(file);
             //this.$refs.upload.fileList = fileList;
+          }
+          if (this.clipboardScreenshotList.length > 0) {
+            fileList = fileList.concat(this.clipboardScreenshotList);
           }
           if (isFinish) {
             if (!this.silent) {
@@ -397,6 +444,33 @@ export default {
     // 清除upload方法
     handleClearFiles() {
       this.$refs.upload.fileList.splice(0);
+    },
+    closeGetScreenshotFromClipboardDialog(file) {
+      if (!this.$utils.isEmpty(file)) {
+        const {id = '', name = '', size = ''} = file || {};
+        const fileInfo = {
+          // 构造和Upload组件上传成功fileList一致的数据结构
+          id: id,
+          status: 'finished',
+          name: name,
+          size: size,
+          percentage: 100,
+          showProgress: false,
+          uid: this.$utils.setUuid(),
+          response: {
+            Status: 'OK',
+            Return: {
+              ...(file || {})
+            }
+          }
+        };
+        this.uploadList.push(fileInfo);
+        this.clipboardScreenshotList = [
+          fileInfo
+        ];
+        this.$emit('getFileList', this.uploadList, id);
+      }
+      this.isShowDialog = false;
     }
   },
   computed: {
@@ -560,6 +634,9 @@ export default {
       border: none;
       background: transparent;
     }
+  }
+  .flex {
+    display: flex;
   }
 }
 </style>
