@@ -740,10 +740,12 @@ export default {
       this.$nextTick(() => {
         this.currentEdge = edge;
         this.currentEdgeData = edge.getData();
-        if (this.activeTab !== 'linksetting') {
-          this.activeTab = 'linksetting';
-        }
         this.isSelected = true;
+        this.$nextTick(() => {
+          if (this.activeTab !== 'linksetting') {
+            this.activeTab = 'linksetting';
+          }
+        });
       });
     },
     edgeConnected() {
@@ -784,10 +786,12 @@ export default {
       this.$nextTick(() => {
         this.currentNode = node;
         this.currentNodeData = node.getData();
-        if (this.activeTab !== 'nodesetting') {
-          this.activeTab = 'nodesetting';
-        }
         this.isSelected = true;
+        this.$nextTick(() => {
+          if (this.activeTab !== 'nodesetting') {
+            this.activeTab = 'nodesetting';
+          }
+        });
       });
     },
     /**
@@ -1691,5 +1695,8 @@ export default {
     padding: 6px 10px;
     border-radius: 6px;
   }
+}
+::v-deep .ivu-tabs-nav{
+  transition: none;
 }
 </style>

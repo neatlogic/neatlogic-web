@@ -747,6 +747,7 @@ export default {
         }
       } else {
         this.tabList = this.defaultTabList;
+        this.changeTabValue();
       }
     },
     async validFormRequired() {
