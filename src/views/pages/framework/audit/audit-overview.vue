@@ -167,7 +167,12 @@ export default {
   },
   data() {
     return {
-      searchVal: {},
+      searchVal: {
+        dateRange: { // 日期默认查询一周
+          timeRange: '1',
+          timeUnit: 'week'
+        }
+      },
       searchConfig: {
         searchList: [
           {
