@@ -317,8 +317,8 @@ export default {
       this.isValid = true;
       return this.isValid;
     },
-    async saveFormJob(isRout) {
-      if (!this.valid) {
+    async saveFormJob() {
+      if (!this.valid()) {
         return false;
       }
       let data = this.getData();

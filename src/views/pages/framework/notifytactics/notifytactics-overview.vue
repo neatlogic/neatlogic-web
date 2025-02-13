@@ -228,7 +228,7 @@ export default {
   methods: {
     async getData() {
       let handlerList = await this.getHandler();
-      if (handlerList && handlerList.length > 0 && this.handler != this.$t('page.scheduledtask')) {
+      if (handlerList && handlerList.length > 0 && this.handler !== 'schedule') {
         this.search(1);
       }
     },
