@@ -210,12 +210,9 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    let {addNotify = false, handler = null} = this.$route.query || {};
+    let {addNotify = false} = this.$route.query || {};
     if (addNotify) {
       this.tacticsDialog = true;
-    }
-    if (handler) { // 加个判断，解决下榻页面回显值被替换的问题
-      this.handler = handler;
     }
     this.getData();
   },
@@ -228,6 +225,7 @@ export default {
   methods: {
     async getData() {
       let handlerList = await this.getHandler();
+      // this.$addHistoryData('handler', this.handler);
       if (handlerList && handlerList.length > 0 && this.handler !== 'schedule') {
         this.search(1);
       }
@@ -495,6 +493,7 @@ export default {
       return text;
     },
     changeTab(val) {
+      this.$addHistoryData('handler', val);
       let handlerConfig = null;
       this.handlerList.forEach(item => {
         if (item.value == val) { handlerConfig = item; }
