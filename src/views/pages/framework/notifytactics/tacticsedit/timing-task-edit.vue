@@ -5,7 +5,7 @@
       <div slot="top">
         <Row>
           <Col span="14">
-            <span class="span-black tsfont-left" @click="validChangData">{{ $t('page.tasklist') }}</span>
+            <span v-if="$hasBack()" class="span-black tsfont-left" @click="$back()">{{ $getFromPage() }}</span>
             <div class="input-contain">
               <TsFormInput
                 ref="formNameInput"
@@ -278,10 +278,7 @@ export default {
     },
     toPrevpath() {
       this.$router.push({
-        path: './notifytactics-overview',
-        query: {
-          handler: 'schedule'
-        }
+        path: './notifytactics-overview'
       });
     },
     validChangData() {
@@ -317,8 +314,8 @@ export default {
       this.isValid = true;
       return this.isValid;
     },
-    async saveFormJob(isRout) {
-      if (!this.valid) {
+    async saveFormJob() {
+      if (!this.valid()) {
         return false;
       }
       let data = this.getData();
