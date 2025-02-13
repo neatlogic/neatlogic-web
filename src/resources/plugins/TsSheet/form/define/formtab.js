@@ -18,7 +18,7 @@ export default {
     isReadOnly: false,
     isDisabled: false,
     type: 'line',
-    isShowComponentLabel: false // 是否显示组件label
+    isShowComponentNameInTab: false // 显示拖入Tab选项卡内的组件名称
   },
   reaction: { mask: {}, hide: {}, display: {}, readonly: {}, disable: {} }
 };

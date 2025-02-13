@@ -827,7 +827,9 @@ export default {
       return JSON.parse(JSON.stringify(this.formData));
     },
     showTable() {
-      return this.config.isShowHeader && this.tableData.tbodyList.length != 0;
+      const { hideHeaderWhenDataEmpty = false } = this.config || {};
+      const { tbodyList = [] } = this.tableData || {};
+      return hideHeaderWhenDataEmpty ? tbodyList.length > 0 : true;
     }
   },
   watch: {

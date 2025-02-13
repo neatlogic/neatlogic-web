@@ -23,13 +23,13 @@
       ></TsFormSwitch>
     </TsFormItem>
     <TsFormItem
-      label="显示表头"
-      tooltip="无数据时是否显示表头"
+      label="数据为空隐藏表头"
       labelPosition="left"
       contentAlign="right"
+      labelWidth="180"
     >
       <TsFormSwitch
-        v-model="config.isShowHeader"
+        v-model="config.hideHeaderWhenDataEmpty"
         :trueValue="true"
         :falseValue="false"
         :disabled="disabled"

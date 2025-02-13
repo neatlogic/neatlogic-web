@@ -35,7 +35,7 @@
                 :readonly="readonly || tab.isReadOnly"
                 :isClearSpecifiedAttr="isClearSpecifiedAttr"
                 :externalData="externalData"
-                :needLabel="config.isShowComponentLabel"
+                :needLabel="config.isShowComponentNameInTab"
                 @resize="$emit('resize')"
                 @emit="
                   val => {

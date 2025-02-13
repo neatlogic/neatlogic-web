@@ -1,5 +1,18 @@
 <template>
   <div>
+    <TsFormItem
+      :label="$t('term.framework.showcomponentnamesintab')"
+      labelWidth="200px"
+      labelPosition="left"
+      contentAlign="right"
+    >
+      <TsFormSwitch
+        v-model="config.isShowComponentNameInTab"
+        :falseValue="false"
+        :trueValue="true"
+        :disabled="disabled"
+      ></TsFormSwitch>
+    </TsFormItem>
     <TsFormItem :label="$t('page.style')" labelPosition="top">
       <TsFormRadio v-model="config.type" :dataList="typeList" :disabled="disabled"></TsFormRadio>
     </TsFormItem>
@@ -8,13 +21,7 @@
         <TabListSetting v-model="config.tabList" :formItemList="formItemList" :disabled="disabled"></TabListSetting>
       </div>
     </TsFormItem>
-    <TsFormItem label="显示组件名称" labelPosition="left" contentAlign="right">
-      <TsFormSwitch
-        v-model="config.isShowComponentLabel"
-        :falseValue="false"
-        :trueValue="true"
-      ></TsFormSwitch>
-    </TsFormItem>
+  
   </div>
 </template>
 <script>

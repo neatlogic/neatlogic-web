@@ -396,7 +396,8 @@ export default {
       return !!((!this.config.disableDeleteData && !this.readonly && !this.disabled));
     },
     showTable() {
-      return this.config.isShowHeader && this.tbodyList.length != 0;
+      const { hideHeaderWhenDataEmpty = false } = this.config || {};
+      return hideHeaderWhenDataEmpty ? this.tbodyList.length > 0 : true;
     }
   },
   watch: {
