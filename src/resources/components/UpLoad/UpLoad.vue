@@ -49,7 +49,7 @@
           </div>
         </slot>
       </Upload>
-      <Button v-if="hasScreenshotFromClipboard" style="margin-left: 6px !important;" @click.stop="openDialog">
+      <Button v-if="hasScreenshotFromClipboard" style="margin-left: 6px !important" @click.stop="openDialog">
         <span class="tsfont-paste">{{ $t('page.getscreenshotfromclipboard') }}</span>
       </Button>
     </div>
@@ -68,7 +68,7 @@
               v-if="!readonly && !disabled"
               class="tsfont-close file_del text-action"
               :title="$t('page.delete')"
-              @click="handleRemove(item)"
+              @click="handleRemove(item, index)"
             ></i>
             <Progress
               v-if="item.showProgress"
@@ -92,8 +92,8 @@
       }"
     >
     </ImagePreview>
-    <GetScreenshotFromClipboardDialog
-      v-if="isShowDialog"
+    <ScreenshotFromClipboardDialog
+      v-if="isShowScreenshotFromClicpboardDialog"
       url="/api/binary/file/upload"
       :fileParam="filedata"
       @close="closeGetScreenshotFromClipboardDialog"
@@ -103,12 +103,12 @@
 
 <script>
 import download from '@/resources/directives/download.js';
-import GetScreenshotFromClipboardDialog from '@/resources/components/UpLoad/get-screenshot-from-clipboard-dialog.vue';
+import ScreenshotFromClipboardDialog from '@/resources/components/UpLoad/screenshot-from-clipboard-dialog.vue';
 export default {
   name: '',
   components: {
     ImagePreview: () => import('@/resources/components/image-preview/index.vue'),
-    GetScreenshotFromClipboardDialog
+    ScreenshotFromClipboardDialog
   },
   directives: { download },
   props: {
@@ -275,7 +275,7 @@ export default {
       },
       srcList: [],
       initialIndex: 0,
-      isShowDialog: false
+      isShowScreenshotFromClicpboardDialog: false
     };
   },
   beforeMount() {},
@@ -286,29 +286,8 @@ export default {
   },
   created() {},
   methods: {
-    async openDialog() {
-      try {
-        const clipboardItems = navigator.clipboard ? await navigator.clipboard.read() : [];
-        if (clipboardItems.length === 0) {
-          this.$Message.error(this.$t('page.nodatafoundintheclipboard'));
-          return;
-        }
-        let hasImage = false;
-        for (const item of clipboardItems) {
-          if (item.types.includes('image/png') || item.types.includes('image/jpeg')) {
-            hasImage = true;
-            break;
-          }
-        }
-        if (!hasImage) {
-          this.$Message.error(this.$t('page.noimageresourcesfoundintheclipboard'));
-          return;
-        }
-        this.isShowDialog = true;
-      } catch (error) {
-        console.error('读取剪贴板数据时出错:', error);
-        this.$Message.error(this.$t('page.errorreadingclipboarddata'));
-      }
+    openDialog() {
+      this.isShowScreenshotFromClicpboardDialog = true;
     },
     handlePreview(index) {
       this.initialIndex = index;
@@ -364,7 +343,6 @@ export default {
     },
     //上传失败
     error: function(res, file, fileList) {
-      //console.log('上传失败', res, file, fileList);
       if (file.Status == 'ERROR') {
         this.$Notice.error({
           title: this.$t('message.uploadfailed'),
@@ -375,8 +353,7 @@ export default {
     //上传时的接口
     progress: function(event, file) {},
     //移除
-    handleRemove: function(item) {
-      const fileList = this.$refs.upload.fileList;
+    handleRemove(item, index) {
       if (this.isDeleteRemote) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
@@ -391,17 +368,21 @@ export default {
             this.$api.framework.file.deleteFile(p).then(res => {
               if (res.Status == 'OK') {
                 vnode.isShow = false;
-                this.$refs.upload.fileList.splice(fileList.indexOf(item), 1);
-                this.$emit('remove', this.$refs.upload.fileList, item.id);
+                this.handleRemoveFile(item, index);
               }
             });
           }
         });
       } else {
-        this.$refs.upload.fileList.splice(fileList.indexOf(item), 1);
-        this.$emit('remove', this.$refs.upload.fileList, item.id);
+        this.handleRemoveFile(item, index);
       }
       return false;
+    },
+    handleRemoveFile(item, index) {
+      const fileList = this.$refs.upload.fileList;
+      this.$refs.upload.fileList.splice(fileList.indexOf(item), 1);
+      this.$emit('remove', this.$refs.upload.fileList, item.id);
+      this.uploadList.splice(index, 1);
     },
     //下载请求
     fileDownload: function(item) {
@@ -444,10 +425,11 @@ export default {
     // 清除upload方法
     handleClearFiles() {
       this.$refs.upload.fileList.splice(0);
+      this.uploadList = [];
     },
     closeGetScreenshotFromClipboardDialog(file) {
       if (!this.$utils.isEmpty(file)) {
-        const {id = '', name = '', size = ''} = file || {};
+        const { id = '', name = '', size = '' } = file || {};
         const fileInfo = {
           // 构造和Upload组件上传成功fileList一致的数据结构
           id: id,
@@ -465,12 +447,10 @@ export default {
           }
         };
         this.uploadList.push(fileInfo);
-        this.clipboardScreenshotList = [
-          fileInfo
-        ];
+        this.clipboardScreenshotList = [fileInfo];
         this.$emit('getFileList', this.uploadList, id);
       }
-      this.isShowDialog = false;
+      this.isShowScreenshotFromClicpboardDialog = false;
     }
   },
   computed: {
