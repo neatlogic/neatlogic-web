@@ -1046,5 +1046,8 @@
   "screenshot": "screenshot",
   "errorreadingclipboarddata": "Error reading clipboard data",
   "noimageresourcesfoundintheclipboard": "There are no image resources in the clipboard",
-  "nodatafoundintheclipboard": "There is no data in the clipboard"
+  "nodatafoundintheclipboard": "There is no data in the clipboard",
+  "pleasepastescreenshotfromtheclipboard": "Please paste a screenshot of the clipboard",
+  "pastethescreenshotfromtheclipboardintotheinputboxbelow": "Copy and paste the screenshot of the clipboard into the input box below:",
+  "pastethescreenshotfromtheclipboard": "Paste clipboard screenshot"
 }
