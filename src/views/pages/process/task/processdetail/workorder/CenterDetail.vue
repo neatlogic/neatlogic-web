@@ -551,7 +551,8 @@ export default {
       lastFormConfig: null,
       formSceneUuid: 'defaultSceneUuid',
       externalData: {
-        processTaskId: this.defaultProcessTaskId //工单id
+        processTaskId: this.defaultProcessTaskId, //工单id
+        isStartStep: this.startProcessTaskStep.id === this.defaultProcessTaskStepId //是否为开始节点
       },
       formAttributeDataMap: this.processTaskConfig && this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap),
       tabList: [],

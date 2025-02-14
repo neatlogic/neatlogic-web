@@ -102,7 +102,9 @@ export default {
       isShowForm: false,
       validateList: ['required'],
       priorityList: [],
-      externalData: {}
+      externalData: {
+        isStartStep: true //是否为开始节点
+      }
     };
   },
   created() {},
