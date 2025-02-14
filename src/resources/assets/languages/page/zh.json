@@ -1048,5 +1048,6 @@
   "screenshot": "截图",
   "errorreadingclipboarddata": "读取剪贴板数据时出错",
   "noimageresourcesfoundintheclipboard": "剪贴板中没有图片资源",
-  "nodatafoundintheclipboard": "剪贴板中没有数据"
+  "nodatafoundintheclipboard": "剪贴板中没有数据",
+  "sendsucceed": "发送成功"
 }

@@ -1046,5 +1046,6 @@
   "screenshot": "screenshot",
   "errorreadingclipboarddata": "Error reading clipboard data",
   "noimageresourcesfoundintheclipboard": "There are no image resources in the clipboard",
-  "nodatafoundintheclipboard": "There is no data in the clipboard"
+  "nodatafoundintheclipboard": "There is no data in the clipboard",
+  "sendsucceed": "Sent successfully"
 }

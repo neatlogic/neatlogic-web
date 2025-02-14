@@ -19,7 +19,6 @@
       v-if="isShow"
       v-bind="setting"
       :isShow="isShow"
-      :okBtnDisable="disabledTest"
       @on-close="close"
       @on-cancel="close"
       @on-ok="testSend()"
@@ -198,9 +197,11 @@ export default {
         this.$api.framework.mailserver
           .test(data)
           .then(res => {
-            if (res.Status == 'OK') {
-              this.$Message.success(this.$t('message.refreshsuccess'));
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('page.sendsucceed'));
             }
+          }).finally(() => {
+            this.isShow = false;
             this.disabledTest = false;
           });
       }
