@@ -68,7 +68,7 @@
               v-if="!readonly && !disabled"
               class="tsfont-close file_del text-action"
               :title="$t('page.delete')"
-              @click="handleRemove(item, index)"
+              @click="handleRemove(item)"
             ></i>
             <Progress
               v-if="item.showProgress"
@@ -353,7 +353,7 @@ export default {
     //上传时的接口
     progress: function(event, file) {},
     //移除
-    handleRemove(item, index) {
+    handleRemove(item) {
       if (this.isDeleteRemote) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
@@ -368,21 +368,20 @@ export default {
             this.$api.framework.file.deleteFile(p).then(res => {
               if (res.Status == 'OK') {
                 vnode.isShow = false;
-                this.handleRemoveFile(item, index);
+                this.handleRemoveFile(item);
               }
             });
           }
         });
       } else {
-        this.handleRemoveFile(item, index);
+        this.handleRemoveFile(item);
       }
       return false;
     },
-    handleRemoveFile(item, index) {
+    handleRemoveFile(item) {
       const fileList = this.$refs.upload.fileList;
       this.$refs.upload.fileList.splice(fileList.indexOf(item), 1);
       this.$emit('remove', this.$refs.upload.fileList, item.id);
-      this.uploadList.splice(index, 1);
     },
     //下载请求
     fileDownload: function(item) {
