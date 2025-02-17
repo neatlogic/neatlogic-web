@@ -485,6 +485,9 @@ export default {
             this.executeConfig = executeConfig;
             if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
               this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue || {});
+              if (this.$utils.isEmpty(this.filterSearchValue)) {
+                this.filterSearchValue = filter; // 处理运行时指定执行目标值回显的问题
+              }
             } else {
               this.filterSearchValue = !this.$utils.isEmpty(this.filterSearchValue) ? this.filterSearchValue : filter || {};
             }
