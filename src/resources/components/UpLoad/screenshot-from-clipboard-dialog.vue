@@ -71,6 +71,7 @@ export default {
       uploadFile: null,
       loading: false,
       isEmptyImage: false,
+      fileBlob: null,
       formData: { screenshotName: '' },
       dialogConfig: {
         type: 'modal',
@@ -121,12 +122,11 @@ export default {
           const blob = items[i].getAsFile();
           if (blob) {
             // 将 Blob 转换为 File
-            this.formData.screenshotName = `${this.$t('page.screenshot')}_${this.$utils.getCurrenttime('yyyyMMddHHmmss')}`;
-            let screenshotName = this.formData.screenshotName ? `${this.formData.screenshotName}.png` : `${this.$t('page.screenshot')}_${this.$utils.getCurrenttime('yyyyMMddHHmmss')}.png`;
-            this.uploadFile = new File([blob], screenshotName, { type: blob.type });
+            let uploadFile = this.handleFile(blob);
+            this.fileBlob = blob;
 
             // 将 File 对象转换为 imgUrl
-            this.imgUrl = URL.createObjectURL(this.uploadFile);
+            this.imgUrl = URL.createObjectURL(uploadFile);
             this.hasImage = true;
             break;
           }
@@ -139,6 +139,15 @@ export default {
           this.isEmptyImage = false;
         }
       }
+    },
+    handleFile(blob) {
+      let {screenshotName = ''} = this.formData || {};
+      if (!screenshotName) {
+        this.formData.screenshotName = `${this.$t('page.screenshot')}_${this.$utils.getCurrenttime('yyyyMMddHHmmss')}`;
+      }
+      let fileName = this.formData.screenshotName ? `${this.formData.screenshotName}.png` : `${this.$t('page.screenshot')}_${this.$utils.getCurrenttime('yyyyMMddHHmmss')}.png`;
+      let uploadFile = new File([blob], fileName, { type: blob.type });
+      return uploadFile;
     },
     handleDelete() {
       this.imgUrl = '';
@@ -161,9 +170,10 @@ export default {
         this.isEmptyImage = true;
         return false;
       }
+      let uploadFile = this.handleFile(this.fileBlob);
       let formData = new FormData();
       let { param } = this.fileParam;
-      formData.append([param], this.uploadFile);
+      formData.append([param], uploadFile);
       for (let key in this.fileParam) {
         formData.append(key, this.fileParam[key]);
       }
