@@ -1,18 +1,17 @@
 <template>
-  <div class="wechat-edit">
-    <div class="text-right">
-      <Button
-        type="primary"
-        ghost
-        class="mr-sm"
-        @click="test()"
-      >{{ $t('page.test') }}</Button>
-      <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
-    </div>
-    <div slot="content">
-      <div class="form">
+  <div>
+    <div>
+      <div style="width:50%">
         <TsForm ref="form" :itemList="formData"></TsForm>
-        <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
+        <div class="mt-md" style="text-align: right">
+          <Button
+            type="primary"
+            ghost
+            class="mr-md"
+            @click="test()"
+          >{{ $t('page.test') }}</Button>
+          <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
+        </div>
       </div>
     </div>
     <TsDialog
@@ -68,7 +67,7 @@ export default {
         {
           type: 'text',
           name: 'toUser',
-          label: 'toUser',
+          label: '用户',
           desc: this.$t('message.framework.editwechattouser'),
           validateList: ['required']
         }

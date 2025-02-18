@@ -1,17 +1,14 @@
 <template>
-  <div class="mailserver-edit">
-    <div class="text-right">
-      <Button
-        type="primary"
-        ghost
-        class="mr-sm"
-        @click="test()"
-      >{{ $t('term.framework.emailtest') }}</Button>
-      <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
-    </div>
-    <div slot="content" class="content border-color">
-      <div class="form">
-        <TsForm ref="form" :itemList="formData"></TsForm>
+  <div>
+    <div style="width:50%">
+      <TsForm ref="form" :itemList="formData"></TsForm>
+      <div class="mt-md" style="text-align: right">
+        <Button
+          type="primary"
+          ghost
+          class="mr-md"
+          @click="test()"
+        >{{ $t('page.test') }}</Button>
         <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
       </div>
     </div>
@@ -69,7 +66,10 @@ export default {
           label: this.$t('term.framework.smptsslenable'),
           value: '',
           defaultValue: 'false',
-          dataList: [{ value: 'true', text: this.$t('page.yes')}, { value: 'false', text: this.$t('page.no')}],
+          dataList: [
+            { value: 'true', text: this.$t('page.yes') },
+            { value: 'false', text: this.$t('page.no') }
+          ],
           validateList: ['required']
         },
         {
@@ -103,7 +103,7 @@ export default {
           value: '',
           defaultValue: '',
           validateList: [
-            { name: 'required', message: this.$t('form.placeholder.pleaseinput', {'target': this.$t('page.password')}) }
+            { name: 'required', message: this.$t('form.placeholder.pleaseinput', { target: this.$t('page.password') }) }
             // {
             //   name: 'passcode',
             //   message: '请输入长度在8~20之间的字符串，至少有字母、数字、特殊字符其中2种组合'
@@ -131,7 +131,7 @@ export default {
           validateList: ['required', 'mail']
         }
       ],
-      testVal: {emailAddress: ''},
+      testVal: { emailAddress: '' },
       disabledTest: false
     };
   },
@@ -163,28 +163,24 @@ export default {
       let form = this.$refs.form;
       if (form.valid()) {
         let data = form.getFormValue();
-        this.$api.framework.mailserver
-          .save(data)
-          .then(res => {
-            if (res.Status == 'OK') {
-              this.$Message.success(this.$t('message.savesuccess'));
-            }
-          });
+        this.$api.framework.mailserver.save(data).then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+          }
+        });
       }
     },
     getData() {
-      this.$api.framework.mailserver
-        .get()
-        .then(res => {
-          if (res.Status == 'OK') {
-            const obj = res.Return;
-            if (obj) {
-              this.formData.forEach(item => {
-                item.value = obj[item.name];
-              });
-            }
+      this.$api.framework.mailserver.get().then(res => {
+        if (res.Status == 'OK') {
+          const obj = res.Return;
+          if (obj) {
+            this.formData.forEach(item => {
+              item.value = obj[item.name];
+            });
           }
-        });
+        }
+      });
     },
     test() {
       this.isShow = true;
@@ -200,7 +196,8 @@ export default {
             if (res.Status === 'OK') {
               this.$Message.success(this.$t('page.sendsucceed'));
             }
-          }).finally(() => {
+          })
+          .finally(() => {
             this.isShow = false;
             this.disabledTest = false;
           });
@@ -220,7 +217,7 @@ export default {
   watch: {}
 };
 </script>
-<style lang='less' scoped>
+<style lang="less" scoped>
 .mailserver-edit {
   .form {
     width: 40%;

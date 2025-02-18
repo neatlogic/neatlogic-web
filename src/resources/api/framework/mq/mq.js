@@ -38,6 +38,9 @@ const mq = {
   },
   deleteTopic(name) {
     return axios.post('/api/rest/mq/topic/delete', { name: name });
+  },
+  testTopic(param) {
+    return axios.post('/api/rest/mq/topic/test', param);
   }
 };
 export default mq;

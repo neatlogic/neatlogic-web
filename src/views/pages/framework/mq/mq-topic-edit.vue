@@ -70,11 +70,6 @@ export default {
         isActive: {
           type: 'switch',
           label: this.$t('term.report.isactive')
-        },
-        description: {
-          type: 'textarea',
-          label: this.$t('page.explain'),
-          maxlength: 500
         }
       },
       dialogConfig: {
