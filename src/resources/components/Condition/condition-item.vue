@@ -1,16 +1,16 @@
 <template>
   <div>
     <component
-      :is="itemMap[conditionItem.type]"
+      :is="itemMap[conditionItem.type + 'ConditionHandler']"
       :disabled="readonly"
       v-bind="conditionItem.config"
       :value="finalValue"
-      @on-change="changeValue"
+      @change="changeValue"
     ></component>
   </div>
 </template>
 <script>
-import * as handlers from '@/resources/components/Condition/item-list.js';
+import * as handlers from '@/resources/components/Condition/components/index.js';
 
 export default {
   name: '',
@@ -24,22 +24,7 @@ export default {
   },
   data() {
     return {
-      itemMap: {
-        text: 'TsFormInput', //text类型
-        number: 'TsFormInput', //number
-        select: 'TsFormSelect', //下拉选择框
-        radio: 'TsFormRadio', //radio
-        switch: 'TsFormSwitch', //
-        checkbox: 'TsFormCheckbox',
-        date: 'TsFormDatePicker', //年-月-日 时：分：秒
-        datetime: 'TsFormDatePicker', //年-月-日 时：分：秒
-        daterange: 'TsFormDatePicker', //年-月-日   范围
-        datetimerange: 'TsFormDatePicker', //年-月-日 时：分：秒   范围
-        time: 'TsFormDatePicker', //时间 时：分：秒
-        timerange: 'TsFormDatePicker', //时间 时：分：秒  范围
-        userselect: 'UserSelect', //用户授权
-        timeselect: 'TimeSelect'
-      }
+      itemMap: handlers
     };
   },
   beforeCreate() {},
