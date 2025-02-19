@@ -125,11 +125,13 @@ export default {
     valid() {
       let isValid = true;
       const list = this.$refs.formItem;
-      list.forEach(item => {
-        if (item.valid && !item.valid()) {
-          isValid = false;
-        }
-      });
+      if (list && list.length > 0) {
+        list.forEach(item => {
+          if (item.valid && !item.valid()) {
+            isValid = false;
+          }
+        });
+      }
       return isValid;
     }
   },
