@@ -76,11 +76,11 @@ export default {
       directionConfig: {
         dataList: [
           {
-            text: 'from',
+            text: '上游',
             value: 'from'
           },
           {
-            text: 'to',
+            text: '下游',
             value: 'to'
           }
         ],
@@ -124,12 +124,11 @@ export default {
     },
     valid() {
       let isValid = true;
-      const validList = this.$refs.formItem.map(item => {
-        return item.valid();
-      });
-      isValid = validList.every(item => {
-        if (!item) return false;
-        else return true;
+      const list = this.$refs.formItem;
+      list.forEach(item => {
+        if (item.valid && !item.valid()) {
+          isValid = false;
+        }
       });
       return isValid;
     }

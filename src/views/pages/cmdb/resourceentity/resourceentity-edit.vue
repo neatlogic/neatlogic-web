@@ -153,7 +153,7 @@ export default {
         }
       });
       this.$set(this.resourceEntityData.config, 'fieldMappingList', fieldMappingList);
-      this.$set(this.resourceEntityData, 'relNode', this.ciList[0]);
+      this.$set(this.resourceEntityData.config, 'relNode', this.ciList[0]);
       this.$api.cmdb.resourceentity.saveResourceEntity(this.resourceEntityData).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
@@ -166,7 +166,7 @@ export default {
     },
     updateCiList(list) {
       this.$set(this.resourceEntityData.config, 'mainCi', list[0].ciName);
-      this.ciList = list;
+      this.ciList = this.$utils.deepClone(list);
     }
   },
   filter: {},

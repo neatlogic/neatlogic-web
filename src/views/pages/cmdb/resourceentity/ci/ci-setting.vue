@@ -98,7 +98,7 @@ export default {
       if (this.$refs.mainCi && !this.$refs.mainCi[0].valid()) {
         isValid = false;
       }
-      if (this.$refs.subCiTree && this.$refs.subCiTree[0].valid()) {
+      if (this.$refs.subCiTree && !this.$refs.subCiTree[0].valid()) {
         isValid = false;
       }
       return isValid;
