@@ -15,6 +15,7 @@
         v-model="item.attr"
         v-bind="getAttrConfig(item.ciName)"
         :placeholder="$t('page.attribute')"
+        :dealDataByUrl="dealDataByUrl"
       ></TsFormSelect>
     </template>
   </div>
@@ -33,7 +34,41 @@ export default {
   },
   data() {
     return {
-      list: []
+      list: [],
+      dataList: [
+        {
+          name: '_id',
+          label: 'ID'
+        },
+        {
+          name: '_uuid',
+          label: 'UUID'
+        },
+        {
+          name: '_name',
+          label: this.$t('page.name')
+        },
+        {
+          name: '_fcu',
+          label: this.$t('page.creator')
+        },
+        {
+          name: '_fcd',
+          label: this.$t('page.createdate')
+        },
+        {
+          name: '_lcu',
+          label: this.$t('page.fcu')
+        },
+        {
+          name: '_lcd',
+          label: this.$t('page.lcu')
+        },
+        {
+          name: '_typeId',
+          label: this.$t('page.type') + 'ID'
+        }
+      ]
     };
   },
   beforeCreate() {},
@@ -64,6 +99,17 @@ export default {
         }
       });
       return isValid;
+    },
+    dealDataByUrl(nodeList) {
+      let columlist = this.$utils.deepClone(this.dataList); //需要补上一些固有属性选项
+      if (nodeList && nodeList.length > 0) {
+        nodeList.forEach(item => {
+          if (item.type != 'select') {
+            columlist.push(item);
+          }
+        });
+      }
+      return columlist;
     }
   },
   filter: {},
