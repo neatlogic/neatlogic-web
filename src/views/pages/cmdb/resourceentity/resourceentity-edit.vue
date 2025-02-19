@@ -17,16 +17,13 @@
         </template> -->
         <template v-slot:mainCi>
           <template v-if="resourceEntityData.config">
-            <TsFormTree
-              ref="mainCi"
-              v-model="resourceEntityData.config.mainCi"
-              v-bind="treeConfig"
-            ></TsFormTree>
+            <CiSetting ref="ciSetting" :children="ciList" @updateCiList="updateCiList"></CiSetting>
             <MappingSetting
               v-if="!$utils.isEmpty(resourceEntityData)"
               ref="mappingSetting"
               :data="resourceEntityData"
               :mainCi="resourceEntityData.config.mainCi"
+              :ciList="ciList"
               class="pt-nm"
             ></MappingSetting>
           </template>
@@ -45,8 +42,8 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     // TsCodemirror:()=>import('@/resources/plugins/TsCodemirror/TsCodemirror.vue'),
-    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree'),
-    MappingSetting: () => import('./mapping-setting.vue')
+    MappingSetting: () => import('./mapping-setting.vue'),
+    CiSetting: () => import('./ci/ci-setting.vue')
   },
   props: {name: {type: String}},
   data() {
@@ -96,7 +93,8 @@ export default {
         transfer: true,
         showPath: true,
         validateList: ['required']
-      }
+      },
+      ciList: []
     };
   },
   beforeCreate() {},
@@ -118,6 +116,22 @@ export default {
           if (!this.resourceEntityData.config) {
             this.$set(this.resourceEntityData, 'config', {});
             this.$set(this.resourceEntityData.config, 'mainCi', '');
+            this.ciList = [];
+          } else {
+            if (!this.$utils.isEmpty(this.resourceEntityData.config.relNode)) {
+              this.ciList = [{
+                ...this.resourceEntityData.config.relNode
+              }];
+            } else if (this.resourceEntityData.config.mainCi) {
+              this.ciList = [{
+                uuid: this.$utils.setUuid(),
+                ciName: this.resourceEntityData.config.mainCi,
+                ciLabel: this.resourceEntityData.config.mainCi,
+                children: []
+              }];
+            } else {
+              this.ciList = [];
+            }
           }
         });
       }
@@ -125,7 +139,7 @@ export default {
     save() {
       // console.log(JSON.stringify(this.resourceEntityData, null, 2));
       let isValid = true;
-      isValid = this.$refs.mainCi.valid() && isValid;
+      isValid = this.$refs.ciSetting.valid() && isValid;
       isValid = this.$refs.mappingSetting.valid() && isValid;
       if (!isValid) {
         return;
@@ -139,6 +153,7 @@ export default {
         }
       });
       this.$set(this.resourceEntityData.config, 'fieldMappingList', fieldMappingList);
+      this.$set(this.resourceEntityData, 'relNode', this.ciList[0]);
       this.$api.cmdb.resourceentity.saveResourceEntity(this.resourceEntityData).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
@@ -148,6 +163,10 @@ export default {
     },
     close(needRefresh) {
       this.$emit('close', needRefresh);
+    },
+    updateCiList(list) {
+      this.$set(this.resourceEntityData.config, 'mainCi', list[0].ciName);
+      this.ciList = list;
     }
   },
   filter: {},
