@@ -1,16 +1,14 @@
 <template>
-  <div class="team-treeview findUuid">
+  <div>
     <div
       v-for="(cd, index) in childrenList"
       :key="cd.uuid"
       :uuid="cd.uuid"
       :parentUuid="cd.parentUuid"
       :index="index"
-      class="findUuid"
     >
-      <span class="sub-line"></span>
-      <div class="flex-between ci-list bg-op">
-        <div style="width: 100%;flex: 1;">
+      <div class="ci-list bg-op">
+        <div class="ci-item">
           <TsFormTree
             ref="mainCi"
             v-model="cd.ciName"
@@ -126,9 +124,16 @@ export default {
 </script>
 <style lang="less" scoped>
 .ci-list {
+  display: flex;
+  align-items: start;
+  justify-content: flex-start;
   padding: 10px 20px;
   margin-bottom: 8px;
   border-radius: 10px;
+  .ci-item {
+    width: 100%;
+    flex: 1;
+  }
   .btn-list {
     width: 120px;
     padding-left: 10px;

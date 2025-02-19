@@ -8,8 +8,8 @@
       :index="index"
     >
       <span class="sub-line"></span>
-      <div class="flex-between ci-list bg-op">
-        <div style="width: 100%;flex: 1;">
+      <div class="ci-list bg-op">
+        <div class="ci-item">
           <TsRow :gutter="8">
             <Col span="6">
               <TsFormSelect
@@ -66,7 +66,7 @@ export default {
   data() {
     return {
       treeConfig: {
-        url: 'api/rest/cmdb/ci/listtree',
+        url: '/api/rest/cmdb/ci/listtree',
         valueName: 'name',
         textName: 'label',
         transfer: true,
@@ -76,11 +76,11 @@ export default {
       directionConfig: {
         dataList: [
           {
-            text: '上游',
+            text: this.$t('term.cmdb.fromci'),
             value: 'from'
           },
           {
-            text: '下游',
+            text: this.$t('term.cmdb.toci'),
             value: 'to'
           }
         ],
@@ -180,9 +180,16 @@ export default {
   }
 }
 .ci-list {
+  display: flex;
+  align-items: start;
+  justify-content: flex-start;
   padding: 10px 20px;
   margin-bottom: 8px;
   border-radius: 10px;
+  .ci-item {
+    width: 100%;
+    flex: 1;
+  }
   .btn-list {
     width: 120px;
     padding-left: 10px;
