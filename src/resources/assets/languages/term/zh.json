@@ -2825,6 +2825,7 @@
   },
   "alert": {
     "alerttype": "告警类型",
-    "alert": "告警"
+    "alert": "告警",
+    "isnormalattr": "作为普通属性展示"
   }
 }
