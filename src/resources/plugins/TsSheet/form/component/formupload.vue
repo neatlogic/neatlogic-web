@@ -1,15 +1,15 @@
 <template>
   <div>
-    <div :style="{width: config.width}">
+    <div :style="{ width: config.width }">
       <TsUpLoad
         ref="formitem"
         styleType="button"
         className="smallUpload"
         type="drag"
         :rowSpan="24"
-        :uploadCount="config.uploadType == 'one'?1:5"
-        :multiple="config.uploadType == 'one'? false : true"
-        :disabled="disabled" 
+        :uploadCount="config.uploadType == 'one' ? 1 : 0"
+        :multiple="config.uploadType == 'one' ? false : true"
+        :disabled="disabled"
         :readonly="readonly"
         :defaultList="actualValue"
         :readonlyTextIsHighlight="readonlyTextIsHighlight"
@@ -48,8 +48,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -82,7 +81,7 @@ export default {
     actualValue() {
       if (this.value && this.value instanceof Array) {
         return this.value;
-      } 
+      }
       return [];
     }
   },
