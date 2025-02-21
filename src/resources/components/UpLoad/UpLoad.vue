@@ -205,7 +205,7 @@ export default {
     uploadCount: {
       //上传文件数量
       type: Number,
-      default: 5
+      default: 0
     },
     params: {
       //额外参数
@@ -298,7 +298,7 @@ export default {
     },
     before: function(file) {
       this.fileStatus = 'normal';
-      if (this.uploadCount == this.uploadList.length) {
+      if (this.uploadCount && (this.uploadCount == this.uploadList.length)) {
         this.$Notice.warning({
           title: this.$t('form.validate.filecount', { target: this.uploadCount })
         });
