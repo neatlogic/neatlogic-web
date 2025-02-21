@@ -14,6 +14,15 @@ const resourceentity = {
   },
   getResourceEntityViewDataList(params) {
     return axios.post('/api/rest/resourcecenter/resourceentity/viewdata/list', params);
+  },
+  getAssetlist() {
+    return axios.post('/api/rest/resourcecenter/assetlist/display/get', {});
+  },
+  getResourcetypeTree(params) {
+    return axios.post('/api/rest/resourcecenter/resourcetype/listtree', params);
+  },
+  saveAssetlistData(params) {
+    return axios.post('/api/rest/resourcecenter/assetlist/display/save', params);
   }
 };
 export default resourceentity;

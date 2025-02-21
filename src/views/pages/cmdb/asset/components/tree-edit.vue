@@ -1,14 +1,32 @@
-
 <template>
   <TsDialog v-bind="dialogConfig" @on-close="close">
     <template v-slot>
-      <div v-if="!topCi">
-        <span>{{ $t('term.cmdb.resourcetypetreenosettingdesc') }}</span>
-        <br>
-        <a class="text-href" href="javascript:void(0);" @click.stop="gotoResourceentityManagePage()">{{ $t('term.cmdb.gotoresourceentitymanagepage') }}</a>
+      <div v-if="isReady">
+        <div v-if="$utils.isEmpty(tbodyList)">
+          <span>{{ $t('term.cmdb.resourcetypetreenosettingdesc') }}</span>
+          <br>
+          <a class="text-href" href="javascript:void(0);" @click.stop="gotoResourceentityManagePage()">{{ $t('term.cmdb.gotoresourceentitymanagepage') }}</a>
+        </div>
+        <TsFormItem :label="$t('term.cmdb.ci')" required>
+          <TsRow :gutter="8">
+            <Col span="8">
+              <TsFormTree
+                ref="formTree"
+                v-model="formData.rootCiName"
+                v-bind="treeConfig"
+              ></TsFormTree>
+            </Col>
+            <Col span="14">
+              <TsFormSelect
+                ref="formItem"
+                v-model="formData.fieldList"
+                v-bind="attrConfig"
+                class="mr-sm"
+              ></TsFormSelect>
+            </Col>
+          </TsRow>
+        </TsFormItem>
       </div>
-      <TsForm v-if="topCi && topCi.id" ref="form" :item-list="formConfig">
-      </TsForm>
     </template>
     <template v-slot:footer>
       <Button @click="close()">{{ $t('page.cancel') }}</Button>
@@ -20,7 +38,9 @@
 export default {
   name: '',
   components: {
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
   props: {
     ciId: {
@@ -30,56 +50,55 @@ export default {
   data() {
     const _this = this;
     return {
-      formData: {
-        ciId: this.ciId
-      },
-      topCi: {
-        id: null,
-        name: null,
-        label: null
-      },
+      isReady: false,
+      id: null,
+      formData: {},
       dialogConfig: {
         title: this.$t('page.setting'),
         type: 'modal',
         maskClose: false,
         isShow: true,
-        width: 'small'
+        width: 'medium'
       },
-      formConfig: [
-        {
-          name: 'ciId',
-          _belong: 'realci',
-          type: 'tree',
-          label: this.$t('term.cmdb.ci'),
-          value: this.ciId,
-          width: '100%',
-          validateList: ['required'],
-          url: 'api/rest/cmdb/ci/listtree',
-          params: { rootCiId: null },
-          valueName: 'id',
-          textName: 'label',
-          transfer: true,
-          showPath: true,
-          desc: '',
-          onChange: name => {
-            if (name) {
-              this.$set(_this.formData, 'ciId', name);
-            } else {
-              this.$set(_this.formData, 'ciId', null);
-            }
-          }
-        }
-      ]
+      treeConfig: {
+        name: 'rootCiName',
+        type: 'tree',
+        placeholder: '选择根模型',
+        width: '100%',
+        validateList: ['required'],
+        value: '',
+        dataList: [],
+        valueName: 'name',
+        textName: 'label',
+        transfer: true,
+        showPath: true,
+        search: true,
+        border: 'border'
+      },
+      attrConfig: {
+        url: '/api/rest/resourcecenter/assetlist/theadlist',
+        rootName: 'tbodyList',
+        textName: 'text',
+        valueName: 'value',
+        multiple: true,
+        transfer: true,
+        border: 'border',
+        validateList: ['required'],
+        placeholder: '选择表头字段'
+      }
     };
   },
   beforCreate() {
   },
-  async created() {
-    await this.getResourceEntity();
-  },
+  created() {},
   beforeMount() {},
-  mounted() {
-
+  async mounted() {
+    await this.getResourcetypeTree();
+    if (!this.$utils.isEmpty(this.tbodyList)) {
+      this.getResourceEntity();
+    } else {
+      this.isReady = true;
+    }
   },
   beforedUpdate() {},
   updated() {},
@@ -88,37 +107,49 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    async getResourceEntity() {
-      await this.$api.cmdb.resourceentity.getResourceEntity('scence_ipobject_detail').then(res => {
+    getResourcetypeTree() {
+      return this.$api.cmdb.resourceentity.getResourcetypeTree().then(res => {
         if (res.Status == 'OK') {
-          this.topCi = res.Return?.ci;
-          if (this.topCi) {
-            if (this.topCi.id) {
-              this.$set(this.formConfig[0].params, 'rootCiId', this.topCi.id);
-              if (this.ciId == null) {
-                this.$set(this.formConfig[0], 'value', this.topCi.id);
-                this.$set(this.formData, 'ciId', this.topCi.id);
-              }
-            }
-            this.$set(this.formConfig[0], 'desc', this.$t('term.cmdb.resourcetypetreesettingdesc'));
-            // this.$set(this.formConfig[0], 'desc', this.$t('term.cmdb.resourcetypetreesettingdesc', { label: this.topCi.label, name: this.topCi.name }));
-          }
+          this.tbodyList = res.Return.tbodyList || [];
+          this.treeConfig.dataList = this.tbodyList;
         }
+      });
+    },
+    getResourceEntity() {
+      this.$api.cmdb.resourceentity.getAssetlist().then(res => {
+        if (res.Status == 'OK') {
+          this.id = res.Return.id;
+          this.$set(this.formData, 'rootCiName', res.Return.rootCiName || '');
+          this.$set(this.formData, 'fieldList', res.Return.config && res.Return.config.fieldList || []);
+        }
+      }).finally(() => {
+        this.$nextTick(() => {
+          this.isReady = true;
+        });
       });
     },
     close(action) {
       this.$emit('close', action);
     },
     save() {
-      const form = this.$refs['form'];
-      if (!form.valid()) {
+      const formItems = this.$refs;
+      let isValid = true;
+      Object.keys(formItems).forEach(key => {
+        if (formItems[key].valid && !formItems[key].valid()) {
+          isValid = false;
+        }
+      });
+      if (!isValid) {
         return false;
       }
-      if (this.ciId == this.formData.ciId) {
-        this.close();
-        return false;
-      }
-      this.$api.cmdb.asset.saveResourceType(this.formData).then(res => {
+      let data = {
+        id: this.id,
+        rootCiName: this.formData.rootCiName,
+        config: {
+          fieldList: this.formData.fieldList
+        }
+      };
+      this.$api.cmdb.resourceentity.saveAssetlistData(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
           this.close('refresh');
