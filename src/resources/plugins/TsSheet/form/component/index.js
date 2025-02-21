@@ -24,6 +24,7 @@ import formtab from './formtab.vue';
 import formcollapse from './formcollapse.vue';
 import formtable from './formtable.vue';
 import formexpression from './formexpression.vue';
+import formscript from './formscript.vue';
 
 import * as cmdbComponent from '@/views/pages/cmdb/form/component';
 import * as autoexecComponent from '@/views/pages/autoexec/form/component';
@@ -33,7 +34,7 @@ let formComponentConfig = {};
 for (let key in formComponent) {
   if (key && formComponent[key] instanceof Array && formComponent[key].length > 0) {
     formComponent[key].forEach(item => {
-      let {version = '', component} = item || {};
+      let { version = '', component } = item || {};
       if (version) {
         formComponentConfig[`${key}-${version}`] = component;
       }
@@ -71,6 +72,7 @@ export default {
   formcollapse,
   formtable,
   formexpression,
+  formscript,
   ...cmdbComponent,
   ...autoexecComponent,
   ...formComponentConfig

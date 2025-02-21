@@ -2825,6 +2825,7 @@
   },
   "alert": {
     "alerttype": "Alarm Type ",
-    "alert": "give an alarm"
+    "alert": "give an alarm",
+    "isnormalattr": "As a regular attribute display"
   }
 }

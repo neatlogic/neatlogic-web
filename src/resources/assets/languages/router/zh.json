@@ -149,7 +149,7 @@
     "auditmanage": "操作审计",
     "jobmanage": "定时作业",
     "filemanage": "附件管理",
-    "fullTextIndexmanage": "重建索引",
+    "fullTextIndexmanage": "索引管理",
     "databaseView": "重建数据库视图",
     "modulemanage": "模块管理",
     "tenantconfigmanage": "系统参数",

@@ -22,6 +22,7 @@ import formdivider from './formdivider-conf.vue';
 import formcube from './formcube-conf.vue';
 import formtab from './formtab-conf';
 import formcollapse from './formcollapse-conf.vue';
+import formscript from './formscript-conf.vue';
 
 // import * as hideComponent from './hide/index.js';
 
@@ -34,7 +35,7 @@ let formComponentConfig = {};
 for (let key in formComponent) {
   if (key && formComponent[key] instanceof Array && formComponent[key].length > 0) {
     formComponent[key].forEach(item => {
-      let {version, component} = item;
+      let { version, component } = item;
       formComponentConfig[`${key}-${version}`] = component;
     });
     let findDefaultVersionItem = formComponent[key].find(item => item.version === 'defaultVersion');
@@ -68,6 +69,7 @@ export default {
   formcube,
   formtab,
   formcollapse,
+  formscript,
   // ...hideComponent,
   ...cmdbComponent,
   ...autoexecComponent,

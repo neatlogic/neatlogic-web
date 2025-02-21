@@ -149,7 +149,7 @@
     "auditmanage": "Audit",
     "jobmanage": "Scheduled Jobs",
     "filemanage": "Attachments",
-    "fullTextIndexmanage": "Rebuild Index",
+    "fullTextIndexmanage": "Index management",
     "databaseView": "Rebuild database view",
     "modulemanage": "Modules",
     "tenantconfigmanage": "Configuration information management",

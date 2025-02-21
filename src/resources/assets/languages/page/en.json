@@ -1050,5 +1050,7 @@
   "sendsucceed": "Sent successfully",
   "pleasepastescreenshotfromtheclipboard": "Please paste a screenshot of the clipboard",
   "pastethescreenshotfromtheclipboardintotheinputboxbelow": "Copy and paste the screenshot of the clipboard into the input box below:",
-  "pastethescreenshotfromtheclipboard": "Paste clipboard screenshot"
+  "pastethescreenshotfromtheclipboard": "Paste clipboard screenshot",
+  "scriptlanguage": "scripting language",
+  "example": "for example"
 }
