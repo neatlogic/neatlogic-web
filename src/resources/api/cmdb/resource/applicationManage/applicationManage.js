@@ -39,6 +39,15 @@ const applicationManage = {
   getAppmoduleById(params) {
     // 根据模块id，获取模块信息
     return axios.post('api/rest/resourcecenter/appmodule/get', params);
+  },
+  getApplicationlistSetting() { //获取应用清单显示设置
+    return axios.post('/api/rest/resourcecenter/applicationlist/display/get', {});
+  },
+  saveApplicationlistSetting(params) { //保存应用清单显示设置
+    return axios.post('/api/rest/resourcecenter/applicationlist/display/save', params);
+  },
+  getAppResourceList(params) { 
+    return axios.post('/api/rest/resourcecenter/app/resource/list', params);
   }
 };
 export default applicationManage;
