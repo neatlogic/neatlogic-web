@@ -57,9 +57,11 @@ export default {
         width: 'medium'
       },
       treeConfig: {
-        url: '/api/rest/resourcecenter/resourcetype/tree',
+        url: '/api/rest/resourcecenter/resourcetype/listtree',
+        rootName: 'tbodyList',
         valueName: 'name',
         textName: 'label',
+        placeholder: '选择模型',
         transfer: true,
         showPath: true,
         search: true,
@@ -71,6 +73,7 @@ export default {
         rootName: 'tbodyList',
         textName: 'text',
         valueName: 'value',
+        placeholder: '选择表头字段',
         multiple: true,
         transfer: true,
         border: 'border',
