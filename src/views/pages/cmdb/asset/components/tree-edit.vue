@@ -1,5 +1,5 @@
 <template>
-  <TsDialog v-bind="dialogConfig" @on-close="close">
+  <TsDialog v-bind="dialogConfig" :loading="isSaveLoading" @on-close="close">
     <template v-slot>
       <div v-if="isReady">
         <div v-if="$utils.isEmpty(tbodyList)">
@@ -48,9 +48,9 @@ export default {
     }
   },
   data() {
-    const _this = this;
     return {
       isReady: false,
+      isSaveLoading: false,
       id: null,
       formData: {},
       dialogConfig: {
@@ -142,6 +142,7 @@ export default {
       if (!isValid) {
         return false;
       }
+      this.isSaveLoading = true;
       let data = {
         id: this.id,
         rootCiName: this.formData.rootCiName,
@@ -154,6 +155,8 @@ export default {
           this.$Message.success(this.$t('message.savesuccess'));
           this.close('refresh');
         }
+      }).finally(() => {
+        this.isSaveLoading = false;
       });
     },
     gotoResourceentityManagePage() {
