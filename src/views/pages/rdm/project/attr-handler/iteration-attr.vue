@@ -6,7 +6,7 @@
       :readonly="readonly"
       transfer
       :search="true"
-      :params="{ projectId: projectId }"
+      :params="{ projectId: projectId, isOpen: 1 }"
       dynamicUrl="/api/rest/rdm/iteration/search"
       :border="border"
       :dynamicDefaultValue="[iteration]"
