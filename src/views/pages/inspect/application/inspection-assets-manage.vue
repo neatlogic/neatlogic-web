@@ -32,7 +32,7 @@
           @changePageSize="(pageSize) => changePageSize(pageSize,item, index)"
         >
           <template v-slot:ip="{ row }">
-            <span class="text-href" @click="toCientityView(row)">
+            <span class="text-href" @click="gotoDetails(row)">
               <span>{{ row.ip }}</span>
               <span v-if="row.port">:{{ row.port }}</span>
             </span>
@@ -278,6 +278,9 @@ export default {
           this.$router.push({ path: './inspect-status-detail-' + row.id});
         }
       }
+    },
+    gotoDetails(row) {
+      this.$router.push({ path: './assets-detail-' + row.id });
     },
     selectedEnv(name) {
       let envId = null;
