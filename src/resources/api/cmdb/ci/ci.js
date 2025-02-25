@@ -219,6 +219,9 @@ const ci = {
   },
   searchCiListAttr(params) {
     return axios.post('/api/rest/cmdb/ci/listattr', params);
+  },
+  validateRel(data) {
+    return axios.post('/api/rest/cmdb/rel/validate', data);
   }
 };
 
