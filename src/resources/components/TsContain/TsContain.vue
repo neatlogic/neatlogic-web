@@ -23,7 +23,7 @@
           ></span>
           <Divider v-if="siderHide && $slots.topLeft" type="vertical" />
         </div>
-        <div>
+        <div ref="containTopRight">
           <slot name="top">
             <div :style="getTopStyle" style="white-space: nowrap; display: grid">
               <div><slot name="topLeft"></slot></div>
