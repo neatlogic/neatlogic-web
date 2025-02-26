@@ -244,7 +244,9 @@
     "errordetail": "Exception Details",
     "collect": "collection",
     "pause": "stop it",
-    "cientityisnotfound": "Configuration item does not exist"
+    "cientityisnotfound": "Configuration item does not exist",
+    "testaccount": "test result",
+    "repeataccount": "The same protocol and username cannot bind multiple accounts with the same protocol and username to the same asset."
   },
   "process": {
     "workordercenter": "Work Center",

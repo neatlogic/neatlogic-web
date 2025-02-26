@@ -54,14 +54,24 @@
               </div>
             </div>
             <div class="text-href tsfont-plus" @click="openPrivateAccount">{{ $t('page.privateaccount') }}</div>
-            <ul v-if="connectTestResultList && connectTestResultList.length > 0" class="mt-xs">
-              <!-- 测试连接，失败原因 -->
-              <li v-for="(item, index) in connectTestResultList" :key="index" :class="getConnectStatus(item.exitValue)">
-                <span class="valid-icon" :class="item.exitValue == 0 ? 'tsfont-check-s' : 'tsfont-close-s'"></span>
-                <span>{{ getConnectResultText(item) }} {{ getReasonText(item.exitValue) }}</span>
-              </li>
-            </ul>
           </div>
+        </template>
+        <template v-slot:testRunner>
+          <TsFormSelect
+            ref="formSelect"
+            v-model="testRunner"
+            v-bind="settingForm.testRunner"
+            @first="gotoRunner"
+            @searchCallback="refreshSuccess()"
+          >
+          </TsFormSelect>
+          <ul v-if="connectTestResultList && connectTestResultList.length > 0" class="mt-xs">
+            <!-- 测试连接，失败原因 -->
+            <li v-for="(item, index) in connectTestResultList" :key="index" :class="getConnectStatus(item.exitValue)">
+              <span class="valid-icon" :class="item.exitValue == 0 ? 'tsfont-check-s' : 'tsfont-close-s'"></span>
+              <span>'{{ getConnectResultText(item) }}' 通过执行器 '{{ connectTestRunner }}' 测试{{ getReasonText(item) }}</span>
+            </li>
+          </ul>
         </template>
       </TsForm>
       <template v-slot:footer>
@@ -96,6 +106,8 @@ export default {
   },
   data() {
     return {
+      testRunner: null,
+      connectTestRunner: null,
       isShowNewAccount: false,
       accountId: null,
       publicAccountList: [], // 公共账号列表
@@ -145,6 +157,21 @@ export default {
           type: 'slot',
           name: 'privateAccount',
           label: this.$t('page.privateaccount')
+        },
+        testRunner: {
+          type: 'slot',
+          name: 'testRunner',
+          desc: '如果不指定则会通过ip根据网段匹配执行器组自动分配执行器',
+          label: this.$t('page.test') + this.$t('term.deploy.actuator'),
+          transfer: true,
+          multiple: false,
+          firstText: this.$t('dialog.title.addtarget', {'target': this.$t('term.deploy.actuator')}),
+          firstLi: true,
+          dynamicUrl: '/api/rest/runner/search',
+          rootName: 'tbodyList',
+          valueName: 'id',
+          textName: 'name',
+          needCallback: false
         }
       }
     };
@@ -241,6 +268,7 @@ export default {
       if (accountIdList && accountIdList.length == 0) {
         this.$Notice.error({ title: this.$t('page.tip'), desc: this.$t('term.cmdb.publicprivateaccountchooseoneaccountdesc') });
         this.connectTestResultList = [];
+        this.connectTestRunner = '';
         return false;
       }
       return true;
@@ -342,6 +370,9 @@ export default {
     gotoAccount() {
       window.open(HOME + '/cmdb.html#/account-manage?isNewAccountShow=' + true, '_blank');
     },
+    gotoRunner() {
+      window.open(HOME + '/framework.html#/runnergroup-manage', '_blank');
+    },
     editAccount() {
       window.open(HOME + '/cmdb.html#/account-manage', '_blank');
     },
@@ -360,10 +391,11 @@ export default {
       if (this.resourceId) {
         this.loadingShow = true;
         this.$api.cmdb.asset
-          .testConnectAccount({ resourceId: this.resourceId, accountIdList: this.getAccountIdList() })
+          .testConnectAccount({ resourceId: this.resourceId, accountIdList: this.getAccountIdList(), runnerId: this.testRunner })
           .then(res => {
             if (res && res.Status == 'OK') {
-              this.connectTestResultList = res.Return || [];
+              this.connectTestRunner = res.Return.runner;
+              this.connectTestResultList = res.Return.result || [];
               if (this.connectTestResultList.every(item => item.exitValue == 0)) {
                 this.$Message.success(this.$t('message.executesuccess'));
               }
@@ -403,7 +435,7 @@ export default {
     getItem() {
       return function(value) {
         if (value.length > 1) {
-          return value.join('、') + '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。 ';
+          return value.join('、') + this.$t('term.cmdb.repeataccount');
         } else {
           return;
         }
@@ -424,13 +456,11 @@ export default {
     getReasonText() {
       // 测试连接，成功失败原因
       return function(value) {
-        let reasonObj = {
-          0: '成功',
-          1: '失败，连接错误',
-          2: '失败，暂时不支持该协议测试连接，请创建作业测试。',
-          3: '失败，节点信息错误，node的json缺少属性'
-        };
-        return reasonObj[value];
+        if (value.exitValue == 0) {
+          return this.$t('page.success');
+        } else {
+          return this.$t('page.fail') + ':' + value.msgError;
+        }
       };
     }
   },
