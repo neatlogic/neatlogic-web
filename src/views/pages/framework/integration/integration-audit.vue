@@ -8,14 +8,13 @@
     >
       <template v-slot>
         <Row class="mb-md">
-          <Col span="8">
-          </Col>
+          <Col span="8"></Col>
           <Col span="4">
             <UserSelect
               v-model="userSelectSetting.value"
               v-bind="userSelectSetting"
               class="mr-md bg-op radius-sm"
-              style="white-space: nowrap;"
+              style="white-space: nowrap"
               @change="handleChange"
             ></UserSelect>
           </Col>
@@ -36,9 +35,7 @@
             ></TimeSelect>
           </Col>
         </Row>
-        <div
-          ref="tableMain"
-        >
+        <div ref="tableMain">
           <TsTable
             v-if="auditData"
             v-bind="auditData"
@@ -47,16 +44,17 @@
             @changePageSize="pageSize => searchAudit(1, pageSize)"
           >
             <template slot="startTime" slot-scope="{ row }">
-              {{ row.startTime|formatDate }}
+              {{ row.startTime | formatDate }}
             </template>
             <template slot="endTime" slot-scope="{ row }">
-              {{ row.endTime|formatDate }}
+              {{ row.endTime | formatDate }}
             </template>
             <template slot="timeCost" slot-scope="{ row }">
-              {{ row.timeCost|formatTimeCost }}
+              {{ row.timeCost | formatTimeCost }}
             </template>
             <template slot="status" slot-scope="{ row }">
-              {{ statusData[row.status] }}
+              <span v-if="row.status === 'succeed'" class="text-success">{{ $t('page.success') }}</span>
+              <span v-else class="text-error">{{ $t('page.fail') }}</span>
             </template>
             <template slot="param" slot-scope="{ row }">
               <a v-if="row.paramFilePath" href="#" @click="showAuditDetail(row.paramFilePath)">{{ $t('page.param') }}</a>
@@ -114,7 +112,7 @@ export default {
     TimeSelect
   },
   props: {
-    uuid: {type: String}
+    uuid: { type: String }
   },
   data() {
     return {
@@ -124,7 +122,6 @@ export default {
       detailData: {},
       auditData: {},
       contentHeight: '100',
-      statusData: {'succeed': this.$t('page.success'), 'failed': this.$t('page.fail')},
       userSelectSetting: {
         // 用户选择
         groupList: ['user'],
@@ -220,7 +217,7 @@ export default {
   methods: {
     getStatusList() {
       // 获取状态列表
-      this.$api.framework.integration.getStatusList({ enumClass: 'neatlogic.framework.restful.enums.IntegrationAuditStatus', needPage: false }).then((res) => {
+      this.$api.framework.integration.getStatusList({ enumClass: 'neatlogic.framework.restful.enums.IntegrationAuditStatus', needPage: false }).then(res => {
         if (res.Status == 'OK') {
           this.selectSetting.dataList = res.Return || [];
           this.selectSetting.dataList.unshift({
@@ -243,7 +240,7 @@ export default {
       this.$emit('close');
     },
     searchAudit: function(currentPage, pageSize) {
-      let params = {integrationUuid: this.uuid};
+      let params = { integrationUuid: this.uuid };
       if (currentPage) {
         params['currentPage'] = currentPage;
       }
@@ -296,5 +293,4 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>
