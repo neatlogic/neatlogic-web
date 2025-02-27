@@ -1494,13 +1494,6 @@ export default {
         });
       }
     },
-    updateFormSheetCalc() {
-      if (this.$refs.formSheet) {
-        this.$nextTick(() => {
-          this.$refs.formSheet.calcContainerHeight && this.$refs.formSheet.calcContainerHeight();
-        });
-      }
-    },
     changeTabValue(val) {
       // 更新当前tabValue
       this.$nextTick(() => {
@@ -1517,7 +1510,10 @@ export default {
         }
         if (val === 'report') {
         //流转校验，更新表单布局
-          this.updateFormSheetCalc();
+          this.$set(this.resizeStatusConfig, 'isReady', false);
+          this.$nextTick(() => {
+            this.$set(this.resizeStatusConfig, 'isReady', true);
+          });
         } 
       });
     }
