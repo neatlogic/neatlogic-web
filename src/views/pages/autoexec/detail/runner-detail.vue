@@ -664,7 +664,7 @@ export default {
         this.$set(this, 'runnerGroup', this.$refs.runnerGroup.save());
       }
       //补充runnerGroup
-      if (this.dataConfig.existRunnerOrSqlExecMode) {
+      if (this.dataConfig && this.dataConfig.existRunnerOrSqlExecMode) {
         this.$set(data, 'runnerGroup', this.runnerGroup);
       }
       let runnerGroupTag = this.$refs.runnerGroupTag;
