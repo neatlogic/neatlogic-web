@@ -1052,5 +1052,6 @@
   "pastethescreenshotfromtheclipboardintotheinputboxbelow": "Copy and paste the screenshot of the clipboard into the input box below:",
   "pastethescreenshotfromtheclipboard": "Paste clipboard screenshot",
   "scriptlanguage": "scripting language",
-  "example": "for example"
+  "example": "for example",
+  "copyerrorinfo": "Copy error message"
 }
