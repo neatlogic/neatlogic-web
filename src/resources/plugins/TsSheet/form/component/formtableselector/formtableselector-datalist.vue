@@ -122,6 +122,12 @@ export default {
       }
     },
     searchMatrixData(currentPage) {
+      //编辑模式
+      if (this.mode.includes('edit')) {
+        this.loadingShow = false;
+        this.$emit('resize');
+        return;
+      }
       if (this.config.dataConfig) {
         this.config.dataConfig.forEach(d => {
           if (!d.isExtra && !this.matrixAttrUuidMap.hasOwnProperty(d.uuid)) {
@@ -169,75 +175,69 @@ export default {
         this.searchParam.filterList.push(...this.searchConditionConfig.sourceColumnList);
       }
       this.$api.framework.matrix.getNewMatrixDataForTable(this.searchParam).then(res => {
-        //编辑模式下只显示表头
-        if (this.mode === 'read') {
-          this.matrixData = res.Return;
-          if (!this.$utils.isEmpty(this.matrixData.tbodyList)) {
-            let tbodyList = [];
-            this.matrixData.tbodyList.forEach(d => {
-              let td = {};
-              //矩阵回来的数据包含了text,type,value三个属性，表格显示时只需要text属性
-              for (let k in d) {
-                d[k] = d[k].text;
-              }
-              if (d.uuid) {
-                td.uuid = d.uuid;
-              }
-              Object.keys(this.matrixAttrUuidMap).forEach(uuid => {
-                td[uuid] = d[this.matrixAttrUuidMap[uuid]];
-              });
-              tbodyList.push(td);
+        this.matrixData = res.Return;
+        if (!this.$utils.isEmpty(this.matrixData.tbodyList)) {
+          let tbodyList = [];
+          this.matrixData.tbodyList.forEach(d => {
+            let td = {};
+            //矩阵回来的数据包含了text,type,value三个属性，表格显示时只需要text属性
+            for (let k in d) {
+              d[k] = d[k].text;
+            }
+            if (d.uuid) {
+              td.uuid = d.uuid;
+            }
+            Object.keys(this.matrixAttrUuidMap).forEach(uuid => {
+              td[uuid] = d[this.matrixAttrUuidMap[uuid]];
             });
-            tbodyList.forEach(d => {
-              if (!this.$utils.isEmpty(this.config.dataConfig.length)) {
-                this.config.dataConfig.forEach(column => {
-                  if (column.isExtra && column.isPC) {
-                    this.$set(d, column.uuid, null);
-                  }
-                });
-              }
-              if (this.value && this.value.length > 0) {
-                const valueitem = this.value.find(valuedata => valuedata.uuid === d.uuid);
-                if (valueitem) {
-                  d['_selected'] = true;
-                  for (let key in valueitem) {
-                    const column = this.config.dataConfig.find(c => c.uuid === key);
-                    if (column && column.isExtra && column.isPC) {
-                      this.$set(d, key, valueitem[key]);
-                    }
+            tbodyList.push(td);
+          });
+          tbodyList.forEach(d => {
+            if (!this.$utils.isEmpty(this.config.dataConfig.length)) {
+              this.config.dataConfig.forEach(column => {
+                if (column.isExtra && column.isPC) {
+                  this.$set(d, column.uuid, null);
+                }
+              });
+            }
+            if (this.value && this.value.length > 0) {
+              const valueitem = this.value.find(valuedata => valuedata.uuid === d.uuid);
+              if (valueitem) {
+                d['_selected'] = true;
+                for (let key in valueitem) {
+                  const column = this.config.dataConfig.find(c => c.uuid === key);
+                  if (column && column.isExtra && column.isPC) {
+                    this.$set(d, key, valueitem[key]);
                   }
                 }
               }
-              //disableDeleteData 已选择的数据禁止删除
-              if (d['_selected'] && this.config.disableDeleteData) {
-                d['isDisabled'] = true;
-              }
-              //disableAddData 未选的数据禁止选择
-              if (!d['_selected'] && this.config.disableAddData) {
-                d['isDisabled'] = true;
-              }
-            });
-            this.matrixData.tbodyList = tbodyList;
-          }
+            }
+            //disableDeleteData 已选择的数据禁止删除
+            if (d['_selected'] && this.config.disableDeleteData) {
+              d['isDisabled'] = true;
+            }
+            //disableAddData 未选的数据禁止选择
+            if (!d['_selected'] && this.config.disableAddData) {
+              d['isDisabled'] = true;
+            }
+          });
+          this.matrixData.tbodyList = tbodyList;
+        }
    
-          if (!this.$utils.isEmpty(this.matrixData.searchColumnDetailList)) {
-            this.matrixData.searchColumnDetailList.forEach(item => {
-              if (!this.searchConditionValueList.find(s => s.uuid === item.uuid)) {
-                let isFilter = !!this.filter.find(f => f.uuid === item.uuid);
-                this.searchConditionValueList.push({
-                  uuid: item.uuid,
-                  expression: '',
-                  valueList: null,
-                  isFilter: isFilter
-                });
-              }
-            });
-          }
+        if (!this.$utils.isEmpty(this.matrixData.searchColumnDetailList)) {
+          this.matrixData.searchColumnDetailList.forEach(item => {
+            if (!this.searchConditionValueList.find(s => s.uuid === item.uuid)) {
+              let isFilter = !!this.filter.find(f => f.uuid === item.uuid);
+              this.searchConditionValueList.push({
+                uuid: item.uuid,
+                expression: '',
+                valueList: null,
+                isFilter: isFilter
+              });
+            }
+          });
         }
       }).finally(() => {
-        if (this.mode === 'edit') {
-          this.$emit('resize');
-        }
         this.loadingShow = false;
       });
     },
