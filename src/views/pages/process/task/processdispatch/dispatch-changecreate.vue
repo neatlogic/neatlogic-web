@@ -116,7 +116,6 @@
         <TsCkeditor
           ref="TsCkeditor"
           v-model="changeReport.content"
-          :editorDataS="changeReport.content"
           :showIconToggle="true"
           width="100%"
           :placeholder="ckeditorPlaceholder"
