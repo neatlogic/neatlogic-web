@@ -16,7 +16,12 @@
         </div>
         <div style="text-align: right" class="action-group">
           <div v-if="!isAdvancedSearch && needExport" class="action-item">
-            <Button type="primary" :ghost="true" @click="isExportDialogShow = true">{{ $t('page.export') }}</Button>
+            <Button
+              v-auth="'CIENTITY_EXPORT'"
+              type="primary"
+              :ghost="true"
+              @click="isExportDialogShow = true"
+            >{{ $t('page.export') }}</Button>
           </div>
           <div v-if="needCondition" class="action-item">
             <TsFormInput
@@ -203,6 +208,7 @@
           </TsRow>
           <div style="text-align: right" class="mt-md">
             <Button
+              v-auth="'CIENTITY_EXPORT'"
               type="primary"
               :ghost="true"
               class="mr-md"
@@ -220,6 +226,7 @@
           <DslEditor v-model="searchParam.dsl" :suggestList="suggestList"></DslEditor>
           <div style="text-align: right" class="mt-md">
             <Button
+              v-auth="'CIENTITY_EXPORT'"
               type="primary"
               :ghost="true"
               class="mr-md"
