@@ -61,10 +61,6 @@ export default {
       type: Boolean,
       default: false
     },
-    editorDataS: {
-      type: String,
-      default: ''
-    }, //初始数据
     placeholder: {
       type: String,
       default() {

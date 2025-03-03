@@ -63,15 +63,43 @@
             v-bind="settingForm.testRunner"
             @first="gotoRunner"
             @searchCallback="refreshSuccess()"
-          >
-          </TsFormSelect>
-          <ul v-if="connectTestResultList && connectTestResultList.length > 0" class="mt-xs">
-            <!-- 测试连接，失败原因 -->
-            <li v-for="(item, index) in connectTestResultList" :key="index" :class="getConnectStatus(item.exitValue)">
-              <span class="valid-icon" :class="item.exitValue == 0 ? 'tsfont-check-s' : 'tsfont-close-s'"></span>
-              <span>'{{ getConnectResultText(item) }}' 通过执行器 '{{ connectTestRunner }}' 测试{{ getReasonText(item) }}</span>
-            </li>
-          </ul>
+          ></TsFormSelect>
+     
+        </template>
+        <template v-slot:testResult>
+          <div v-if="connectTestResultList && connectTestResultList.length > 0">
+            <span v-if="hasErrorInfo(connectTestResultList)" class="tsfont-copy text-action mb-xs" @click.stop="handleCopy">{{ $t('page.copyerrorinfo') }}</span>
+            <TsTable
+              :hideAction="false"
+              :showPager="false"
+              :showTotal="false"
+              height="auto"
+              :theadList="theadList"
+              :canExpand="true"
+              :tbodyList="connectTestResultList"
+            >
+              <template v-slot:showInnerTable="{ row }">
+                <span
+                  v-if="row.msgError"
+                  :class="{ 'tsfont-right': !row._expand, 'tsfont-down open': row._expand }"
+                  class="cursor-pointer text-error"
+                  @click.stop="openInnerTable(row)"
+                ></span>
+              </template>
+              <template slot="status" slot-scope="{row}">
+                <span :class="row && (row.exitValue == 0) ? 'text-success' : 'text-error'">{{ getReasonText(row) }}</span>
+              </template>
+              <template slot="accountName" slot-scope="{row}">
+                <span>{{ getConnectResultText(row) }}</span>
+              </template>
+              <template slot="runner" slot-scope="{}">
+                <span>{{ connectTestRunner }}</span>
+              </template>
+              <template v-slot:expand="{ row }">
+                <div v-if="row._expand" class="text-error" style="margin-left: 55px;">{{ row.msgError }}</div>
+              </template>
+            </TsTable>
+          </div>
         </template>
       </TsForm>
       <template v-slot:footer>
@@ -95,6 +123,7 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     PrivateAccountEditDialog: () => import('./private-account-edit-dialog')
   },
   filters: {},
@@ -124,8 +153,27 @@ export default {
         isShow: true,
         title: this.$t('page.accountsmanage'),
         maskClose: false,
-        width: '700px'
+        width: 'medium'
       },
+      theadList: [
+        {
+          title: '',
+          width: 50,
+          key: 'showInnerTable'
+        },
+        {
+          title: this.$t('page.status'),
+          key: 'status'
+        },
+        {
+          title: this.$t('page.account'),
+          key: 'accountName'
+        },
+        {
+          title: this.$t('term.deploy.actuator'),
+          key: 'runner'
+        }
+      ],
       settingConfig: {
         accountList: []
       },
@@ -141,7 +189,7 @@ export default {
           label: this.$t('page.publicaccount'),
           transfer: true,
           multiple: true,
-          firstText: this.$t('dialog.title.addtarget', {'target': this.$t('page.account')}),
+          firstText: this.$t('dialog.title.addtarget', { target: this.$t('page.account') }),
           firstLi: true,
           dynamicUrl: '/api/rest/resourcecenter/account/search',
           rootName: 'tbodyList',
@@ -165,13 +213,18 @@ export default {
           label: this.$t('page.test') + this.$t('term.deploy.actuator'),
           transfer: true,
           multiple: false,
-          firstText: this.$t('dialog.title.addtarget', {'target': this.$t('term.deploy.actuator')}),
+          firstText: this.$t('dialog.title.addtarget', { target: this.$t('term.deploy.actuator') }),
           firstLi: true,
           dynamicUrl: '/api/rest/runner/search',
           rootName: 'tbodyList',
           valueName: 'id',
           textName: 'name',
           needCallback: false
+        },
+        testResult: {
+          type: 'slot',
+          label: '测试结果',
+          isHidden: true // 默认隐藏，点击【测试连接】之后才显示
         }
       }
     };
@@ -191,6 +244,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleCopy() {
+      let errorList = this.connectTestResultList.filter(v => v.exitValue != 0);
+      let errorInfo = errorList.map(v => `${this.getConnectResultText(v)}通过执行器${this.connectTestRunner}测试${this.getReasonText(v)}${v.msgError}`).join('\n');
+      this.$utils.copyText('', errorInfo);
+    },
+    openInnerTable(row) {
+      // 展开收起内嵌表格
+      this.$set(row, '_expand', !row._expand);
+    },
     getValidMessage(list) {
       if (list.length == 0) {
         this.validMessage = '';
@@ -269,6 +331,7 @@ export default {
         this.$Notice.error({ title: this.$t('page.tip'), desc: this.$t('term.cmdb.publicprivateaccountchooseoneaccountdesc') });
         this.connectTestResultList = [];
         this.connectTestRunner = '';
+        this.settingForm.testResult.isHidden = true;
         return false;
       }
       return true;
@@ -310,8 +373,8 @@ export default {
           duration: 10,
           render: h => {
             return h('div', [
-              h('div', { class: 'text-success pb-md' }, [h('span', { class: 'text-success valid-icon tsfont-check-s' }, ''), this.$t('term.cmdb.successfullyboundaccountforassetstarget', {target: this.successCount || 0})]),
-              h('div', { class: 'text-danger pb-md' }, [h('span', { class: 'valid-icon tsfont-close-s' }, ''), this.$t('term.cmdb.failedtobindaccountforassetstarget', {target: this.failureCount || 0})]),
+              h('div', { class: 'text-success pb-md' }, [h('span', { class: 'text-success valid-icon tsfont-check-s' }, ''), this.$t('term.cmdb.successfullyboundaccountforassetstarget', { target: this.successCount || 0 })]),
+              h('div', { class: 'text-danger pb-md' }, [h('span', { class: 'valid-icon tsfont-close-s' }, ''), this.$t('term.cmdb.failedtobindaccountforassetstarget', { target: this.failureCount || 0 })]),
               h(
                 'ul',
                 { class: 'pb-md', style: { lineHeight: '20px', display: this.failureReasonList && this.failureReasonList.length > 0 ? 'block' : 'none' } },
@@ -336,7 +399,7 @@ export default {
       if (row && row.value) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', {target: row.text }),
+          content: this.$t('dialog.content.deleteconfirm', { target: row.text }),
           btnType: 'error',
           okText: this.$t('page.delete'),
           'on-ok': vnode => {
@@ -396,6 +459,9 @@ export default {
             if (res && res.Status == 'OK') {
               this.connectTestRunner = res.Return.runner;
               this.connectTestResultList = res.Return.result || [];
+              if (this.connectTestResultList && this.connectTestResultList.length > 0) {
+                this.settingForm.testResult.isHidden = false;
+              }
               if (this.connectTestResultList.every(item => item.exitValue == 0)) {
                 this.$Message.success(this.$t('message.executesuccess'));
               }
@@ -459,8 +525,13 @@ export default {
         if (value.exitValue == 0) {
           return this.$t('page.success');
         } else {
-          return this.$t('page.fail') + ':' + value.msgError;
+          return this.$t('page.fail');
         }
+      };
+    },
+    hasErrorInfo() {
+      return (connectTestResultList) => {
+        return connectTestResultList.some(v => v.exitValue != 0);
       };
     }
   },

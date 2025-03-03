@@ -397,7 +397,7 @@
         </Dropdown>
       </div>
       <!-- 底部添加的隐藏组件 -->
-      <div class="form-footer mt-nm">
+      <div class="form-footer" :class="mode === 'edit'?'mt-nm':''">
         <span v-for="(item, index) in hideComponentList" :key="index">
           <Tag
             v-if="mode === 'edit'"

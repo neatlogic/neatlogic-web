@@ -84,7 +84,6 @@
           ref="taskContent"
           v-model="newTaskContent"
           :showIconToggle="true"
-          :editorDataS="defaultTaskContent"
           width="100%"
         ></TsCkeditor>
       </div>

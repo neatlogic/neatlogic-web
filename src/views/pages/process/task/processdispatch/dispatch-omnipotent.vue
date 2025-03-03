@@ -24,7 +24,6 @@
           ref="TsCkeditor"
           v-model="workData.content"
           :showIconToggle="true"
-          :editorDataS="workData.content"
           width="100%"
           class="editor"
           :placeholder="ckeditorPlaceholder"
