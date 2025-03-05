@@ -498,7 +498,7 @@ export default {
     },
     historyValue: {
       // 历史值(Object包含text,value)存在时，用历史值回显数据（在dynamicUrl初始化时，不调用接口）
-      type: [string, Array, Object],
+      type: [String, Array, Object],
       default: null
     }
   },
