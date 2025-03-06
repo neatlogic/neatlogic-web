@@ -11,7 +11,6 @@
       class="other-params-wrap"
       :item-list="otherParamItemList"
     ></TsForm>
-    <!-- 作业参数 -->
     <div class="other-params-wrap">
       <TsFormItem v-for="(item, pIndex) in paramsList" :key="pIndex" :label="item.name">
         <TsFormSelect
@@ -29,7 +28,7 @@
           :is="handleType(item.type)"
           v-else
           v-model="valueConfig[item.key]"
-          style="margin-left:4px;"
+          style="margin-left: 4px"
           :readonly="true"
           :defaultValue="item.defaultValue"
           :config="itemConfig[item.key]"
@@ -47,27 +46,38 @@
             :runtimeParamList="paramsList"
           ></RunnerGroupTagSetting>
         </template>
-        <template v-else>
-          <div v-if="runnerGroupTag.mappingMode==='constant'">
+        <template v-else-if="runnerGroupTag.mappingMode == 'formattr'">
+          <template v-if="!$utils.isEmpty(runnerGroupTag.value)">
+            <TsFormSelect
+              ref="runnerGroupTag"
+              v-model="runnerGroupTag.value"
+              :dataList="formDataList"
+              valueName="uuid"
+              textName="label"
+              transfer
+              border="border"
+              class="pr-sm form-li-width"
+              :validateList="['required']"
+            ></TsFormSelect>
+          </template>
+          <template v-else>
+            <span class="text-tip">{{ $t('page.form') }}</span>
+            <span class="text-tip ml-nm">-</span>
+          </template>
+        </template>
+        <template v-else-if="runnerGroupTag.mappingMode === 'constant'">
+          <template v-if="!$utils.isEmpty(runnerGroupTag.value)">
             <RunnerGroupTagSetting
               ref="runnerGroupTag"
               :config="runnerGroupTag"
               :runtimeParamList="paramsList"
               :readonly="true"
             ></RunnerGroupTagSetting>
-          </div>
-          <TsFormSelect
-            v-else-if="runnerGroupTag.mappingMode == 'formattr'"
-            ref="runnerGroupTag"
-            v-model="runnerGroupTag.value"
-            :dataList="formDataList"
-            valueName="uuid"
-            textName="label"
-            transfer
-            border="border"
-            class="pr-sm form-li-width"
-            :validateList="['required']"
-          ></TsFormSelect>
+          </template>
+          <template v-else>
+            <span class="text-tip">{{ $t('page.constant') }}</span>
+            <span class="text-tip ml-nm">-</span>
+          </template>
         </template>
       </div>
       <div class="text-tip">
@@ -77,18 +87,17 @@
     <TsFormItem :label="$t('page.autoexeccomboprunnergrouplabel')">
       <div>
         <template v-if="dataConfig && dataConfig.existRunnerOrSqlExecMode && runnerGroup">
-          <template v-if="runnerGroup.mappingMode==='runtimeparam'">
+          <template v-if="runnerGroup.mappingMode === 'runtimeparam'">
             <RunnerGroupSetting
               ref="runnerGroup"
               :config="runnerGroup"
               :runtimeParamList="paramsList"
               :readonly="true"
-            >
-            </RunnerGroupSetting>
+            ></RunnerGroupSetting>
           </template>
-          <div :class="runnerGroup.mappingMode==='constant' || runnerGroup.mappingMode =='formattr' ? 'form-wrap-box' : ''">
+          <div :class="runnerGroup.mappingMode === 'constant' || runnerGroup.mappingMode == 'formattr' ? 'form-wrap-box' : ''">
             <RunnerGroupSetting
-              v-if="runnerGroup.mappingMode==='constant'"
+              v-if="runnerGroup.mappingMode === 'constant'"
               ref="runnerGroup"
               :config="runnerGroup"
               :runtimeParamList="paramsList"
@@ -132,12 +141,12 @@
         v-else-if="needExecuteNode"
         :id="combopId"
         ref="addTarget"
-        :value="executeConfig ? executeConfig.executeNodeConfig:{}"
+        :value="executeConfig ? executeConfig.executeNodeConfig : {}"
         :canEdit="false"
-        :type="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify: 'runtime'"
+        :type="executeConfig && executeConfig.whenToSpecify ? executeConfig.whenToSpecify : 'runtime'"
         :executeConfig="executeValue"
         :runtimeParamList="paramsList"
-        :needBorder="needExecuteUser|| needProtocol"
+        :needBorder="needExecuteUser || needProtocol"
         :filterSearchValue="filterSearchValue"
       ></AddTarget>
       <div v-else class="text-tip">
@@ -377,9 +386,9 @@ export default {
         if (this.combopId) {
           await this.getCombopDetail();
         }
-        let {config = {}} = this.serviceData || {};
-        let {executeNodeConfig = {}, runnerGroup = {}, runnerGroupTag = {}} = config || {};
-        let {value = '', mappingMode} = executeNodeConfig || {};
+        let { config = {} } = this.serviceData || {};
+        let { executeNodeConfig = {}, runnerGroup = {}, runnerGroupTag = {} } = config || {};
+        let { value = '', mappingMode } = executeNodeConfig || {};
         if (mappingMode == 'constant') {
           if (!this.$utils.isEmpty(value)) {
             this.filterSearchValue = value || {}; // 执行目标值回显
@@ -398,11 +407,11 @@ export default {
         }
       }
       if (!this.$utils.isEmpty(this.serviceData)) {
-      // 其他参数值回显
+        // 其他参数值回显
         for (let key in this.serviceData) {
           if (key != 'config' && this.serviceData[key]) {
             if (this.basicInfoFormValue.hasOwnProperty(key)) {
-              this.$set(this.basicInfoFormValue, [key], (this.serviceData[key] || '-'));
+              this.$set(this.basicInfoFormValue, [key], this.serviceData[key] || '-');
             }
           }
         }
@@ -415,12 +424,12 @@ export default {
               } else {
                 this.$set(this.otherParamFormValue, [configKey], this.serviceData['config'][configKey]['value']);
               }
-              this.otherFormList.forEach((item) => {
+              this.otherFormList.forEach(item => {
                 if (item.name == configKey) {
                   this.otherParamItemList.push({
                     name: item.name,
                     label: item.label,
-                    ... (this.getConfigByMappingMode(configKey, item)) // 场景没有表单映射的情况
+                    ...this.getConfigByMappingMode(configKey, item) // 场景没有表单映射的情况
                   });
                 }
               });
@@ -444,14 +453,17 @@ export default {
     getFormListByFormUuid(uuid) {
       // 根据表单id获取表单列表
       this.formList.dataList = [];
-      return this.$api.framework.form.getFormByVersionUuid({uuid: uuid}).then(res => {
+      return this.$api.framework.form.getFormByVersionUuid({ uuid: uuid }).then(res => {
         if (res.Status == 'OK') {
           let formConfig = res.Return.formConfig;
-          formConfig && formConfig.tableList && formConfig.tableList.length > 0 && formConfig.tableList.forEach((item) => {
-            if (item && !this.$utils.isEmpty(item.component) && item.component.hasValue) {
-              this.formList.dataList.push(item.component);
-            }
-          });
+          formConfig &&
+            formConfig.tableList &&
+            formConfig.tableList.length > 0 &&
+            formConfig.tableList.forEach(item => {
+              if (item && !this.$utils.isEmpty(item.component) && item.component.hasValue) {
+                this.formList.dataList.push(item.component);
+              }
+            });
         }
       });
     },
@@ -475,7 +487,8 @@ export default {
             this.executeConfig = this.dataConfig.config.executeConfig || {};
             this.runnerGroup = this.executeConfig.runnerGroup || {};
             this.runnerGroupTag = this.executeConfig.runnerGroupTag || {};
-            if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
+            if (this.executeConfig.whenToSpecify == 'runtime') {
+              // 过滤器运行在执行，需要把执行目标值清空
               this.$set(this.executeConfig, 'executeNodeConfig', {});
             }
             if (this.paramsList && !this.$utils.isEmpty(this.paramsList)) {
@@ -488,11 +501,12 @@ export default {
             }
             // 场景
             if (this.dataConfig && this.dataConfig.config && this.dataConfig.config.scenarioList) {
-              this.otherFormList && this.otherFormList.forEach((item) => {
-                if (item.name == 'scenarioId') {
-                  this.$set(item.constantMappingMode, 'dataList', this.dataConfig.config.scenarioList);
-                }
-              });
+              this.otherFormList &&
+                this.otherFormList.forEach(item => {
+                  if (item.name == 'scenarioId') {
+                    this.$set(item.constantMappingMode, 'dataList', this.dataConfig.config.scenarioList);
+                  }
+                });
             }
           }
         })
@@ -509,7 +523,7 @@ export default {
       if (!this.$utils.isEmpty(this.serviceData)) {
         for (let key in this.serviceData) {
           if (key == 'config' && this.serviceData[key] && !this.$utils.isEmpty(this.serviceData[key]['runtimeParamList'])) {
-            this.serviceData[key]['runtimeParamList'].forEach((item) => {
+            this.serviceData[key]['runtimeParamList'].forEach(item => {
               this.$set(saveValue, [item.key], item.value);
               this.$set(mappingModeData, [item.key], item.mappingMode);
             });
@@ -526,7 +540,7 @@ export default {
           }
           this.$set(data, 'mappingMode', mappingModeData[data.key]);
           this.$set(this.itemConfig, data.key, config);
-          this.$set(this.valueConfig, data.key, !this.$utils.isEmpty(saveValue) ? (saveValue[data.key] || this.defaultValueByType(data.type)) : (data.defaultValue || this.defaultValueByType(data.type)));
+          this.$set(this.valueConfig, data.key, !this.$utils.isEmpty(saveValue) ? saveValue[data.key] || this.defaultValueByType(data.type) : data.defaultValue || this.defaultValueByType(data.type));
         });
     },
     defaultValueByType(type) {
@@ -545,14 +559,14 @@ export default {
   filter: {},
   computed: {
     handleType() {
-      return (value) => {
+      return value => {
         let type = value + 'Handler';
         type = Component[type] ? type : 'defaultInput';
         return type;
       };
     },
     getPhaseList() {
-      return (phaseList) => {
+      return phaseList => {
         let list = [];
         if (phaseList && phaseList.length > 0) {
           list = phaseList.map(item => {
