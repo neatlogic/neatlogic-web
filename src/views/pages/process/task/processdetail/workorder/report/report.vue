@@ -222,7 +222,12 @@ export default {
         content: {
           type: 'ckeditor',
           label: this.$t('page.description'),
-          isHidden: false
+          isHidden: false,
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       },
       changecreateConfig: {
@@ -281,7 +286,12 @@ export default {
           type: 'ckeditor',
           label: this.$t('page.description'),
           value: '',
-          isHidden: false
+          isHidden: false,
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       },
       uploadMultiple: true,

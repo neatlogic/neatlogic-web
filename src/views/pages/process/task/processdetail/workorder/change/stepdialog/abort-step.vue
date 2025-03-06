@@ -52,7 +52,6 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
       processTaskId: null,
       processTaskStepId: null,
@@ -69,7 +68,12 @@ export default {
           width: '90%',
           value: '',
           label: this.$t('page.reply'),
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       ],
       actionType: 'abortchangestep'

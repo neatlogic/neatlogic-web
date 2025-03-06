@@ -26,6 +26,11 @@
           :showIconToggle="true"
           width="100%"
           class="editor"
+          :params="{
+            uploadVideoConfig: {
+              type: 'itsm',
+            }
+          }"
           :placeholder="ckeditorPlaceholder"
           :validateList="ckeditorValidateList"
         ></TsCkeditor>

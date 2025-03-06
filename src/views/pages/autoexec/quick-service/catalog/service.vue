@@ -612,7 +612,12 @@ export default {
           type: 'ckeditor',
           name: 'description',
           label: this.$t('term.autoexec.servicedescription'),
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'autoexec'
+            }
+          }
         },
         {
           type: 'slot',

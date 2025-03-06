@@ -25,6 +25,11 @@
             <TsCkeditor
               ref="taskStepContent"
               v-model="content"
+              :params="{
+                uploadVideoConfig: {
+                  type: 'itsm',
+                }
+              }"
               @change="commentContent"
             ></TsCkeditor>
             <transition name="fade">

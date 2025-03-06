@@ -7,11 +7,9 @@
       :style="{ 'z-index': viewerZIndex }"
     >
       <div class="image-preview-box-viewer-mask" @click.self="handleMaskClick"></div>
-      <!-- CLOSE -->
       <span class="image-preview-box-viewer-btn image-preview-box-viewer-close" @click="hide">
         <i class="tsfont-close"></i>
       </span>
-      <!-- ARROW -->
       <template v-if="!isSingle">
         <span
           class="image-preview-box-viewer-btn image-preview-box-viewer-prev"
@@ -28,7 +26,6 @@
           <i class="tsfont-right" />
         </span>
       </template>
-      <!-- ACTIONS -->
       <div class="image-preview-box-viewer-btn image-preview-box-viewer-actions">
         <div class="image-preview-box-viewer-actions-inner">
           <i class="tsfont-zoom-out" @click="handleActions('zoomOut')"></i>
@@ -38,20 +35,35 @@
           <i class="tsfont-rotate-right" @click="handleActions('clocelise')"></i>
         </div>
       </div>
-      <!-- CANVAS -->
       <div class="image-preview-box-viewer-canvas">
         <template v-for="(url, i) in urlList">
-          <img
-            v-if="i === index"
-            ref="img"
-            :key="url"
-            class="image-preview-box-viewer__img"
-            :src="currentImg"
-            :style="imgStyle"
-            @load="handleImgLoad"
-            @error="handleImgError"
-            @mousedown="handleMouseDown"
-          >
+          <template v-if="isVideo(url)">
+            <video
+              v-if="i === index"
+              ref="img"
+              :key="url"
+              class="image-preview-box-viewer__img"
+              :src="currentImg"
+              :style="imgStyle"
+              controls="true"
+              @loadeddata="handleImgLoad"
+              @error="handleImgError"
+              @mousedown="handleMouseDown"
+            ></video>
+          </template>
+          <template v-else>
+            <img
+              v-if="i === index"
+              ref="img"
+              :key="url"
+              class="image-preview-box-viewer__img"
+              :src="currentImg"
+              :style="imgStyle"
+              @load="handleImgLoad"
+              @error="handleImgError"
+              @mousedown="handleMouseDown"
+            >
+          </template>
         </template>
       </div>
     </div>
@@ -73,11 +85,26 @@ const Mode = {
 };
 const mousewheelEventName = isFirefox() ? 'DOMMouseScroll' : 'mousewheel';
 export default {
-  name: 'ElImageViewer',
+  name: 'ImageViewer',
   props: {
     urlList: {
       type: Array,
       default: () => []
+    },
+    fileList: {
+      // 附件列表
+      type: Array,
+      default: () => []
+    },
+    fileName: {
+      // 附件名称字段名
+      type: String,
+      default: 'name'
+    },
+    idName: {
+      // 附件id字段名
+      type: String,
+      default: 'id'
     },
     zIndex: {
       type: Number,
@@ -92,14 +119,17 @@ export default {
       default: () => {}
     },
     initialIndex: {
+      // 初始显示索引
       type: Number,
       default: 0
     },
     appendToBody: {
+      // 是否将弹层插入至 body 元素上
       type: Boolean,
       default: true
     },
     maskClosable: {
+      // 点击遮罩层是否关闭
       type: Boolean,
       default: true
     }
@@ -125,11 +155,9 @@ export default {
     if (this.appendToBody) {
       document.body.appendChild(this.$el);
     }
-    // add tabindex then wrapper can be focusable via Javascript
-    this.$refs['image-preview-box-viewer-wrapper'].focus();
+    this.$refs['image-preview-box-viewer-wrapper'] && this.$refs['image-preview-box-viewer-wrapper'].focus();
   },
   destroyed() {
-    // if appendToBody is true, remove DOM node after destroy
     if (this.appendToBody && this.$el && this.$el.parentNode) {
       this.$el.parentNode.removeChild(this.$el);
     }
@@ -198,7 +226,7 @@ export default {
     },
     handleImgError(e) {
       this.loading = false;
-      e.target.alt = '加载失败';
+      e.target.alt = this.$t('page.loadingfailed');
     },
     handleMouseDown(e) {
       if (this.loading || e.button !== 0) return;
@@ -305,6 +333,16 @@ export default {
     viewerZIndex() {
       const nextZIndex = PopupManager.nextZIndex();
       return this.zIndex > nextZIndex ? this.zIndex : nextZIndex;
+    },
+    isVideo() {
+      return url => {
+        if (!url) {
+          return false;
+        }
+        const id = url.split('?id=')[1];
+        let findItem = this.fileList && this.fileList.find(item => item[this.idName] == id);
+        return (findItem && this.$utils.isVideo(findItem[this.fileName]));
+      };
     }
   },
   watch: {
@@ -317,7 +355,9 @@ export default {
     currentImg(val) {
       this.$nextTick(_ => {
         const $img = this.$refs.img[0];
-        if (!$img.complete) {
+        if ($img.tagName === 'VIDEO' && $img.readyState < 4) {
+          this.loading = true;
+        } else if ($img.tagName === 'IMG' && !$img.complete) {
           this.loading = true;
         }
       });

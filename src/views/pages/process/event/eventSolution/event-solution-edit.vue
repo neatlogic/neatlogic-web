@@ -85,6 +85,11 @@ export default {
           type: 'ckeditor',
           label: this.$t('page.content'),
           validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          },
           onChange(value) {
             vm.solutionConfig.content = value;
           }

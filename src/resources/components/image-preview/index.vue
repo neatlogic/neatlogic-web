@@ -34,9 +34,12 @@
       <ImageViewer
         v-if="showViewer"
         :z-index="zIndex"
+        :fileName="fileName"
+        :idName="idName"
         :initial-index="imageIndex"
         :on-close="closeViewer"
         :url-list="urlList"
+        :file-list="fileList"
       ></ImageViewer>
     </div>
   </div>
@@ -106,7 +109,9 @@ export default {
       imageWidth: 0,
       imageHeight: 0,
       showViewer: false,
-      urlList: []
+      isShowVideoViewer: false,
+      urlList: [],
+      videoUrlList: []
     };
   },
   mounted() {
@@ -116,7 +121,7 @@ export default {
   methods: {
     handlePreview(id) {
       let initSrcUrl = `${HOME}${this.fileDownloadUrl}?id=`;
-      let srcList = this.fileList.filter((a) => a && a[this.idName] !== id && this.$utils.isImage(a[this.fileName])).map((v) =>
+      let srcList = this.fileList.filter((a) => a && a[this.idName] !== id && (this.$utils.isImage(a[this.fileName]) || this.$utils.isVideo(a[this.fileName]))).map((v) =>
         `${initSrcUrl}${v.id}`
       );
       let url = `${initSrcUrl}${id}`;
@@ -157,9 +162,14 @@ export default {
       this.showViewer = false;
       this.$emit('close');
     },
+    closeVideoViewer() {
+      document.body.style.overflow = prevOverflow;
+      this.isShowVideoViewer = false;
+      this.$emit('close');
+    },
     getSrcList() {
       let initSrcUrl = `${HOME}${this.fileDownloadUrl}?id=`;
-      let srcList = this.fileList.filter((a) => a && a[this.idName] && this.$utils.isImage(a[this.fileName])).map((v) =>
+      let srcList = this.fileList.filter((a) => a && a[this.idName] && (this.$utils.isImage(a[this.fileName]) || this.$utils.isVideo(a[this.fileName]))).map((v) =>
         `${initSrcUrl}${v[this.idName]}`
       );
       return srcList;
