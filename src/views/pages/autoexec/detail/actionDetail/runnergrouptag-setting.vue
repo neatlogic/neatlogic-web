@@ -45,7 +45,7 @@
       </Col>
     </TsRow>
     <div v-else>
-      <template v-if="runnerGroupTag.value">
+      <template v-if="runnerGroupTag && !$utils.isEmpty(runnerGroupTag.value)">
         <span class="text-tip pr-nm">{{ mappingModeLabel[runnerGroupTag.mappingMode] }}</span>
         <span v-if="runnerGroupTag.mappingMode === 'runtimeparam'">{{ getParamLabel(runnerGroupTag.value) }}</span>
         <span v-else>{{ runnerGroupTag.text }}</span>
