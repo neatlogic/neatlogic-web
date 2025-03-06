@@ -291,7 +291,12 @@ export default {
           type: 'ckeditor',
           name: 'description',
           label: this.$t('page.directorydescription'),
-          readonly: true
+          readonly: true,
+          params: {
+            uploadVideoConfig: {
+              type: 'autoexec'
+            }
+          }
         },
         {
           type: 'select',

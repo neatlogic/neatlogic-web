@@ -90,6 +90,7 @@
             v-model="newTaskContent"
             width="100%"
             :showIconToggle="true"
+            :params="{ uploadVideoConfig: { type: 'itsm'} }"
           ></TsCkeditor>
         </div>
         <TsUpLoad

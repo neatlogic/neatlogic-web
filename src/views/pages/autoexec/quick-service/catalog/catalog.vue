@@ -80,7 +80,12 @@ export default {
           type: 'ckeditor',
           name: 'description',
           width: '75%',
-          label: this.$t('page.description')
+          label: this.$t('page.description'),
+          params: {
+            uploadVideoConfig: {
+              type: 'autoexec'
+            }
+          }
         }
       ]
     };

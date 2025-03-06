@@ -6,7 +6,16 @@
   >
     <template v-slot>
       <div>
-        <TsCkeditor ref="editor" v-model="comment.content" :validateList="['required']"></TsCkeditor>
+        <TsCkeditor
+          ref="editor"
+          v-model="comment.content"
+          :params="{
+            uploadVideoConfig: {
+              type: 'rdm' 
+            }
+          }"
+          :validateList="['required']"
+        ></TsCkeditor>
       </div>
     </template>
   </TsDialog>

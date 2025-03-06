@@ -120,6 +120,11 @@
           width="100%"
           :placeholder="ckeditorPlaceholder"
           :validateList="ckeditorValidateList"
+          :params="{
+            uploadVideoConfig: {
+              type: 'itsm',
+            }
+          }"
         ></TsCkeditor>
       </div>
     </div>

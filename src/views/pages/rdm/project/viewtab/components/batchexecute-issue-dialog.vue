@@ -42,7 +42,12 @@ export default {
         },
         comment: {
           label: this.$t('page.reply'),
-          type: 'ckeditor'
+          type: 'ckeditor',
+          params: {
+            uploadVideoConfig: {
+              type: 'rdm'
+            }
+          }
         }
       },
       dialogConfig: {

@@ -65,7 +65,12 @@ export default {
           name: 'content',
           label: this.$t('page.reply'),
           width: '100%',
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       ],
       stepList: [],

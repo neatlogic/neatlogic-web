@@ -95,6 +95,11 @@
               v-model="item.CkeditorContent"
               :showIconToggle="true"
               width="100%"
+              :params="{
+                uploadVideoConfig: {
+                  type: 'itsm',
+                }
+              }"
               @change="commentContent(item, item.CkeditorContent)"
             ></TsCkeditor>
           </div>

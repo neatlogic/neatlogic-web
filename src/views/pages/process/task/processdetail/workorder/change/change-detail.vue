@@ -188,6 +188,7 @@
                     :ref="`commentChangeStep${index}`"
                     width="100%"
                     class="editor"
+                    :params="{ uploadVideoConfig: { type: 'itsm'} }"
                     :showIconToggle="true"
                   ></TsCkeditor>
                 </div>

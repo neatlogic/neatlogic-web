@@ -48,7 +48,12 @@ export default {
           type: 'ckeditor',
           label: this.$t('page.content'),
           value: '',
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'framework'
+            }
+          }
         },
         recipientList: {
           type: 'userselect',

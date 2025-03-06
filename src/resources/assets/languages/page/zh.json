@@ -1055,5 +1055,6 @@
   "pastethescreenshotfromtheclipboard": "粘贴剪切板截图",
   "scriptlanguage": "脚本语言",
   "example": "例如",
-  "copyerrorinfo": "复制错误信息"
+  "copyerrorinfo": "复制错误信息",
+  "loadingfailed": "加载失败"
 }

@@ -1053,5 +1053,6 @@
   "pastethescreenshotfromtheclipboard": "Paste clipboard screenshot",
   "scriptlanguage": "scripting language",
   "example": "for example",
-  "copyerrorinfo": "Copy error message"
+  "copyerrorinfo": "Copy error message",
+  "loadingfailed": "Load Fail"
 }

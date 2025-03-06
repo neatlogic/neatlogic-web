@@ -161,7 +161,12 @@ export default {
           label: this.$t('page.content'),
           width: '100%',
           name: 'content',
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       ],
       systemTypeFrom:

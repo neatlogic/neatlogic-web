@@ -1,5 +1,10 @@
 <template>
-  <TsCkeditor :value="content" :readonly="true" width="100%"></TsCkeditor>
+  <TsCkeditor
+    :value="content"
+    :params="{ uploadVideoConfig: { type: 'knowledge' } }"
+    :readonly="true"
+    width="100%"
+  ></TsCkeditor>
 </template>
 <script>
 import TsCkeditor from '@/resources/plugins/TsCkeditor/TsCkeditor.vue';

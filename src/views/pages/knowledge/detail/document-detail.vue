@@ -54,15 +54,27 @@
           ></div>
         </div>
         <div v-if="config.fileList && config.fileList.length > 0">
-          <div id="id_file" class="fileContain">
+          <div id="id_file" class="file-contain">
             <h6>{{ $t('page.accessory') }}</h6>
-            <div v-for="file in config.fileList" :key="file.id" class="file-list overflow">
+            <div v-for="(file, index) in config.fileList" :key="file.id" class="file-list overflow">
               <span v-download="downurl('/api/binary/file/download', file.id)" class="tsfont-attachment text-action">{{ file.name }}</span>
+              <span :title="$t('page.preview')" class="tsfont-eye text-action pl-icon" @click.stop="handlePreview(file, index)"></span>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <ImagePreview 
+      :isShow="srcList.length > 0"
+      :fileList="srcList"
+      :fileDownloadUrl="fileDownurl"
+      :fileDownloadParam="fileDownParam"
+      :initialIndex="initialIndex"
+      @close="()=> {
+        srcList = []
+      }"
+    >
+    </ImagePreview>
   </div>
 </template>
 <script>
@@ -74,6 +86,7 @@ export default {
   name: '',
   components: {
     TagList: () => import('@/views/pages/knowledge/common/tag-list.vue'),
+    ImagePreview: () => import('@/resources/components/image-preview/index.vue'),
     LeftNav,
     ...items
   },
@@ -88,7 +101,13 @@ export default {
       collectCount: 1,
       isFavor: 0, //点赞
       favorCount: 0,
-      navUuid: null
+      navUuid: null,
+      initialIndex: 0,
+      srcList: [],
+      fileDownurl: '/api/binary/file/download',
+      fileDownParam: {
+        id: ''
+      }
     };
   },
   beforeCreate() {},
@@ -102,6 +121,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handlePreview(file, index) {
+      //图片预览
+      const { fileList = [] } = this.config || {};
+      const { id = '' } = file || {};
+      this.initialIndex = index;
+      this.fileDownParam.id = id;
+      this.srcList = fileList;
+    },
     toggleCollect() {
       //收藏
       if (this.isCollect == 1) {
@@ -246,6 +273,31 @@ export default {
         font-style: italic; // 保留倾斜原有样式
       }
     }
+    .file-contain {
+      margin-top: 30px;
+      h6 {
+        font-size: 16px;
+        position: relative;
+        padding-left: 12px;
+        line-height: 30px;
+        &::before {
+          content: '';
+          width: 4px;
+          z-index: 1;
+          position: absolute;
+          top: 7px;
+          bottom: 7px;
+          left: 0px;
+        }
+      }
+      > div {
+        padding-left: 32px;
+        .file-list {
+          line-height: 20px;
+          min-height: 20px;
+        }
+      }
+    }
   }
   .document-path {
     padding-bottom: 10px;
@@ -255,4 +307,5 @@ export default {
   display: flex;
   justify-content: space-between;
 }
+
 </style>

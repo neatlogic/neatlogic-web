@@ -13,8 +13,24 @@
     ></component>
     <div v-else>
       <div v-if="editMode === 'edit'">
-        <TsCkeditor v-if="autoSave" v-model="issueData.content"></TsCkeditor>
-        <TsCkeditor v-else v-model="content"></TsCkeditor>
+        <TsCkeditor
+          v-if="autoSave"
+          v-model="issueData.content"
+          :params="{
+            uploadVideoConfig: {
+              type: 'rdm',
+            }
+          }"
+        ></TsCkeditor>
+        <TsCkeditor
+          v-else
+          v-model="content"
+          :params="{
+            uploadVideoConfig: {
+              type: 'rdm',
+            }
+          }"
+        ></TsCkeditor>
       </div>
       <div
         v-else

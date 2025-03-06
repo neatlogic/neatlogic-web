@@ -10,7 +10,11 @@
     <div ref="editorEditor" class="editor-editor" contenteditable="false">
       <div class="bg-op">
         <div class="tool bg-op shadow"><span class="tsfont-trash-s" :title="$t('dialog.title.deletetarget', {target: $t('term.knowledge.editor')})" @click="removeItem"></span></div>
-        <TsCkeditor v-model="value" width="100%"></TsCkeditor>
+        <TsCkeditor
+          v-model="value"
+          :params="{ uploadVideoConfig: { type: 'knowledge' } }"
+          width="100%"
+        ></TsCkeditor>
       </div>
     </div>
     <span
