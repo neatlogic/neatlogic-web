@@ -602,7 +602,6 @@ export default {
             attrList.forEach(attr => {
               this.suggestList.push(attr.name);
             });
-            console.log(JSON.stringify(this.suggestList, null, 2));
           }
         });
       }
