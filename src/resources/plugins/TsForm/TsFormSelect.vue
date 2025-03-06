@@ -6,24 +6,14 @@
       :title="readonlyTitle"
       :style="{ display: 'inline-block', width: '100%' }"
     >
-      <template v-if="multiple">
-        <template v-if="selectedList.length > 0">
-          <Tag v-for="(item, index) in selectedList" :key="index">
-            <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ item[textName] }}</span>
-            <template v-else>{{ item[textName] }}</template>
-          </Tag>
-        </template>
-        <span v-else class="text-grey">-</span>
-      </template>
-      <template v-else>
-        <Tag v-if="selectedList.length > 0">
-          <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ selectedList[0][textName] }}</span>
-          <template v-else>{{ selectedList[0][textName] }}</template>
+      <template v-if="selectedList.length > 0">
+        <Tag v-for="(item, index) in selectedList" :key="index">
+          <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ item[textName] }}</span>
+          <template v-else>{{ item[textName] }}</template>
         </Tag>
-        <span v-else class="text-grey">-</span>
       </template>
+      <span v-else class="text-grey">-</span>
     </span>
-
     <div
       v-else
       :class="borderClass"
@@ -505,6 +495,11 @@ export default {
       //是否自动选中唯一值
       type: Boolean,
       default: false
+    },
+    historyValue: {
+      // 历史值(Object包含text,value)存在时，用历史值回显数据（在dynamicUrl初始化时，不调用接口）
+      type: [String, Array, Object],
+      default: null
     }
   },
   data() {
@@ -900,6 +895,22 @@ export default {
           let obj = {};
           obj[this.valueName] = obj[this.textName] = item;
           this.selectedList.push(obj);
+        });
+        return;
+      } else if (!this.$utils.isEmpty(this.historyValue)) {
+        //历史值回显
+        let historyValueList = Array.isArray(this.historyValue) ? this.historyValue : [this.historyValue];
+        historyValueList.forEach(item => {
+          if (!this.$utils.isEmpty(item)) {
+            let obj = {};
+            if (typeof item === 'object') {
+              obj[this.valueName] = item.value;
+              obj[this.textName] = item.text;
+            } else {
+              obj[this.valueName] = obj[this.textName] = item;
+            }
+            this.selectedList.push(obj);
+          }
         });
         return;
       }

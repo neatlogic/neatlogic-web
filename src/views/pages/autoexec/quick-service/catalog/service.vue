@@ -96,7 +96,7 @@
         <span>{{ $t('term.deploy.actuatorgrouptag') }}</span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.runnerGroupTag ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('runnerGroupTag')"></span>
       </div>
-      <TsFormItem v-show="unfoldAndFold.runnerGroupTag" :label="$t('term.deploy.actuatorgrouptag')">
+      <TsFormItem v-show="unfoldAndFold.runnerGroupTag" :label="$t('term.deploy.actuatorgrouptag')" :required="runnerGroupTagIsRequired(runnerGroupTag.mappingMode)">
         <div id="positioningkey_runnerGroupTag" :class="runnerGroupTag.mappingMode == 'formattr' || runnerGroupTag.mappingMode == 'constant' ? 'form-wrap-box' : ''">
           <template v-if="runnerGroupTag.mappingMode == 'runtimeparam'">
             <RunnerGroupTagSetting
@@ -1169,9 +1169,21 @@ export default {
       };
     },
     hasRequired() {
-      // 是否必填,mappingMode映射关系为常量或者表单时，必填，否则不必填
+      // 是否必填：当mappingMode映射关系为常量、表单或为空时，字段为必填项；否则，不必填
       return (mappingMode) => {
-        return !!((mappingMode == 'constant' || mappingMode == 'formattr'));
+        if (this.$utils.isEmpty(mappingMode) || mappingMode == 'constant' || mappingMode == 'formattr') {
+          return true;
+        }
+        return false;
+      };
+    },
+    runnerGroupTagIsRequired() {
+      // 是否必填：映射关系为空时必填，否则不必填
+      return (mappingMode) => {
+        if (this.$utils.isEmpty(mappingMode)) {
+          return true;
+        }
+        return false;
       };
     },
     jobParamIsRequired() {
