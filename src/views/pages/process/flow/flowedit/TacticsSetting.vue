@@ -30,8 +30,16 @@
           <span :title="getCalculateHandlerName(item.calculateHandler)">{{ getCalculateHandlerName(item.calculateHandler) }}</span>
         </div>
 
-        <div v-for="(citem, cindex) in item.calculatePolicyList" :key="cindex" class="condition_wrapper">
-          <div v-show="citem.conditionGroupList && citem.conditionGroupList.length > 0" class="condition border-color" :content-data="$t('term.framework.or')">
+        <div
+          v-for="(citem, cindex) in item.calculatePolicyList"
+          :key="cindex"
+          class="condition_wrapper"
+          :content-data="$t('term.framework.or')"
+        >
+          <div
+            v-show="citem.conditionGroupList && citem.conditionGroupList.length > 0"
+            class="condition border-color"
+          >
             <!-- <div class="con_left">
                 <div v-if="citem.ruleList.length == '1'" class="left_text">如果</div>
                 <div v-else class="left_text" v-html="citem.connectType == 'and' ? '并且' : '或者'"></div>
@@ -1737,6 +1745,28 @@ export default {
                 display: inline-block;
                 padding-right: 12px;
               }
+            }
+          }
+          .condition-joinType {
+            position: relative;
+            width: 60px;
+            height: 28px;
+            line-height: 28px;
+            &:before,
+            &:after {
+              content: '';
+              position: absolute;
+              left: 14px;
+              width: 0px;
+              height: 6px;
+              border-left: 1px solid;
+              z-index: 9;
+            }
+            &:before {
+              top: 0;
+            }
+            &:after {
+              bottom: 0;
             }
           }
         }
