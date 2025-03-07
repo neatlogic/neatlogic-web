@@ -1338,7 +1338,11 @@
     "showcomponentnamesintab": "Display the component names dragged into the Tab tab",
     "hideheaderwhendataempty": "Hide header when data is empty",
     "formsubassemblytabname": "Tab Name",
-    "formsubassemblytabnametip": "The values and hidden attributes of text boxes and drop-down boxes can be used as tab names"
+    "formsubassemblytabnametip": "The values and hidden attributes of text boxes and drop-down boxes can be used as tab names",
+    "tagentupgrade": "Upgrade Package Management",
+    "tagentupgradepkg": "Upgrade Package",
+    "selecttagentupgradepkg": "Select an existing upgrade package",
+    "tagentuploadupgradepkg": "Upload upgrade package"
   },
   "knowledge": {
     "document": "Document",

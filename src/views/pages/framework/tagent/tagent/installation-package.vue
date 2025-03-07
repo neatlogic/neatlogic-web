@@ -75,6 +75,7 @@
                 data-type="TAGENT"
                 styleType="button"
                 className="smallUpload"
+                :format="['tar']"
                 @getFileList="getFileList(...arguments)"
                 @remove="getFileList(...arguments)"
               ></TsUpLoad>
@@ -197,9 +198,9 @@ export default {
         },
         installPackage: {
           type: 'radio',
-          label: this.$t('page.package'),
+          label: this.$t('term.framework.tagentupgradepkg'),
           value: 1,
-          dataList: [{text: this.$t('term.framework.selectpackage'), value: 1}, {text: this.$t('page.uploadfile'), value: 2}],
+          dataList: [{text: this.$t('term.framework.selecttagentupgradepkg'), value: 1}, {text: this.$t('term.framework.tagentuploadupgradepkg'), value: 2}],
           tooltip: this.$t('message.framework.installpackagetip'),
           onChange: function(val) {
             _this.hasFile = val == 1;

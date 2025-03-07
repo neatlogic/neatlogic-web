@@ -7,7 +7,7 @@
           <span class="tsfont-refresh action-item" @click="goPages('batchUpgrade')">{{ $t('term.framework.batchupgrade') }}</span>
           <span class="tsfont-restart action-item" @click="goPages('batchReboot')">{{ $t('term.framework.batchreboot') }}</span>
           <span class="tsfont-edit action-item" @click="goPages('batchResetcred')">{{ $t('term.framework.batchresetcred') }}</span>
-          <span class="tsfont-anzhuangbao action-item" @click="goPages('installationPackage')">{{ $t('term.framework.installpackage') }}</span>
+          <span class="tsfont-anzhuangbao action-item" @click="goPages('installationPackage')">{{ $t('term.framework.tagentupgrade') }}</span>
           <span class="tsfont-question-s action-item" @click="openInstallTipsDialog">{{ $t('term.framework.tagentinstall') }}</span>
           <span class="tsfont-download action-item" @click="exportExcel">{{ $t('page.export') }}</span>
         </div>

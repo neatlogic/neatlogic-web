@@ -168,7 +168,7 @@
     "tagentconfirm": "是否确认重启Tagent？",
     "tagentresetpwd": "是否确认重置Tagent密码？",
     "addtagentpla": "匹配分组、网段IP、代理名称或代理地址",
-    "installpackagetip": "安装包用于agent升级，升级时，将根据目标主机的OS类型、CPU架构，找到匹配的安装包。下列选项中的【CPU架构】可选择‘default’，被标识为‘default’的安装包，可适配所有的CPU架构。",
+    "installpackagetip": "升级包用于agent升级，升级时，将根据目标主机的OS类型、CPU架构，找到匹配的安装包。下列选项中的【CPU架构】可选择‘default’，被标识为‘default’的安装包，可适配所有的CPU架构。注意：升级包仅包含源码，且只能压缩成tar",
     "isreplacepkg": "安装包已存在，是否替换",
     "linuxpkg": "Linux｜Unix安装包：tagent_linux.tar",
     "windowspkg": "Windows安装包：tagent_windows_x32.tar、tagent_windows_x64.tar（windows安装包内嵌了Perl运行时和7z工具）",
