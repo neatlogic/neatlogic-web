@@ -143,6 +143,7 @@ export default {
             h('span', {
               class: {
                 'text-grey': true,
+                fz10: true,
                 'tsfont-minus': true
               }
             }),
@@ -158,6 +159,7 @@ export default {
             h('span', {
               class: {
                 'text-grey': true,
+                fz10: true,
                 'tsfont-arrow-right': true
               }
             }),
@@ -184,8 +186,7 @@ export default {
               'span',
               {
                 class: {
-                  'text-grey': true,
-                  fz10: true
+                  'text-grey': true
                 }
               },
               data.fromLabel
