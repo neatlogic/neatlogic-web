@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="line-height: 1.3 !important">
     <Tree
       v-if="relListLocal && relListLocal.length > 0"
       :data="relListLocal"
@@ -18,7 +18,7 @@ export default {
   components: {},
   props: {
     ciId: { type: Number },
-    ciRelList: {type: Array}
+    ciRelList: { type: Array }
   },
   data() {
     return {
@@ -55,7 +55,7 @@ export default {
           relObj.selected = false;
           relObj.excludeCiIdList = parentObj.excludeCiIdList ? JSON.parse(JSON.stringify(parentObj.excludeCiIdList)) : [];
           relObj.path = parentObj.path ? JSON.parse(JSON.stringify(parentObj.path)) : [];
-        
+
           if (parentObj.ciId) {
             relObj.excludeCiIdList.push(parentObj.ciId);
           }
@@ -67,10 +67,7 @@ export default {
           let isExists = false;
           for (let i = 0; i < relObj.excludeCiIdList.length; i++) {
             const cid = relObj.excludeCiIdList[i];
-            if (
-              (relVo.direction === 'from' && relVo.toCiId === cid) ||
-            (relVo.direction === 'to' && relVo.fromCiId === cid)
-            ) {
+            if ((relVo.direction === 'from' && relVo.toCiId === cid) || (relVo.direction === 'to' && relVo.fromCiId === cid)) {
               isExists = true;
               break;
             }
@@ -146,7 +143,6 @@ export default {
             h('span', {
               class: {
                 'text-grey': true,
-                fz10: true,
                 'tsfont-minus': true
               }
             }),
@@ -154,8 +150,7 @@ export default {
               'span',
               {
                 class: {
-                  'text-grey': true,
-                  fz10: true
+                  'text-grey': true
                 }
               },
               data.toLabel
@@ -163,7 +158,6 @@ export default {
             h('span', {
               class: {
                 'text-grey': true,
-                fz10: true,
                 'tsfont-arrow-right': true
               }
             }),
@@ -221,7 +215,7 @@ export default {
     getRelByCiId(ciId) {
       this.$api.cmdb.ci.getRelByCiId(ciId).then(res => {
         const relList = res.Return;
-         
+
         relList.forEach(rel => {
           rel.children = [];
           rel.loading = false;
@@ -340,11 +334,15 @@ export default {
         if (val) {
           console.log('relList', JSON.stringify(val, null, 2));
           this.relListLocal = val;
-        } 
+        }
       },
       deep: true
     }
   }
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped>
+/deep/ .ivu-tree-title-selected {
+  font-weight: bold;
+}
+</style>
