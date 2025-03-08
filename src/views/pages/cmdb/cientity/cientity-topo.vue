@@ -596,7 +596,6 @@ export default {
                       if (g && color) {
                         const img = g.select('image');
                         const bbox = img.node().getBBox();
-                        console.log(bbox.x);
                         //图标底色
                         g.insert('circle', ':first-child')
                           .attr('r', 24)
@@ -778,7 +777,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import '../public/graphviz.less';
+@import '@/views/pages/cmdb/public/graphviz.less';
 </style>
 <style lang="less" scoped>
 .grid {

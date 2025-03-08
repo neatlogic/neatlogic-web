@@ -1,11 +1,14 @@
 @import (reference) '~@/resources/assets/css/variable.less';
-.theme(@layer-color, @edge-stroke, @node-fill, @node-name, @link-stroke, @anchor-color, @mask-color, @cluster-color) {
+.theme(@layer-color, @edge-stroke, @node-fill, @node-name, @link-stroke, @anchor-color, @mask-color, @cluster-color,@core-color) {
   @node-removeIcon: @link-stroke;
   .graph .layer text {
     fill: @layer-color;
   }
   .graph .normalnode text {
     fill: @layer-color;
+  }
+  .graph .corenode text {
+    fill: @core-color;
   }
   .graph .selectednode text {
     fill: @cluster-color !important;
@@ -55,9 +58,9 @@
 }
 
 html {
-  .theme(@default-text, @default-bg-code, @default-dividing, @default-title, @default-icon, @default-blockbg, @default-background, @default-primary-color);
+  .theme(@default-text, @default-bg-code, @default-dividing, @default-title, @default-icon, @default-blockbg, @default-background, @default-primary-color,@default-error-color);
 
   &.theme-dark {
-    .theme(@dark-text, @dark-invert-bg, @dark-dividing, @dark-title, @dark-icon, @dark-blockbg, @dark-background, @dark-primary-color);
+    .theme(@dark-text, @dark-invert-bg, @dark-dividing, @dark-title, @dark-icon, @dark-blockbg, @dark-background, @dark-primary-color,@dark-error-color);
   }
 }
