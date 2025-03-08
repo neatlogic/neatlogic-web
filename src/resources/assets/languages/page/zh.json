@@ -1056,5 +1056,6 @@
   "scriptlanguage": "脚本语言",
   "example": "例如",
   "copyerrorinfo": "复制错误信息",
-  "loadingfailed": "加载失败"
+  "loadingfailed": "加载失败",
+  "topo": "拓扑图"
 }
