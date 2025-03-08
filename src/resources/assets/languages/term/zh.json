@@ -1338,7 +1338,11 @@
     "showcomponentnamesintab": "显示拖入Tab选项卡内的组件名称",
     "hideheaderwhendataempty": "数据为空隐藏表头",
     "formsubassemblytabname": "选项卡名称",
-    "formsubassemblytabnametip": "文本框、下拉框的值和隐藏属性，可作为选项卡名称"
+    "formsubassemblytabnametip": "文本框、下拉框的值和隐藏属性，可作为选项卡名称",
+    "tagentupgrade": "升级包管理",
+    "tagentupgradepkg": "升级包",
+    "selecttagentupgradepkg": "选择已有的升级包",
+    "tagentuploadupgradepkg": "上传升级包"
   },
   "knowledge": {
     "document": "文档",
