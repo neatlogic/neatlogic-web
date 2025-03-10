@@ -597,13 +597,11 @@ export default {
             if (!isSame) {
               let keywordName = this.keywordName;
               if (val[keywordName]) {
-                let { keywordName, ...params} = val;
                 this.keywordValue = this.$utils.deepClone(val[keywordName]);
-                this.updateVal(params);
               } else {
                 this.keywordValue = '';
-                this.updateVal(val);
               }
+              this.updateVal(val);
             }
           } else {
             let fullSearch = this.getFullSearch();
