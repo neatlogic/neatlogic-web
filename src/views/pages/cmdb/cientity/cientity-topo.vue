@@ -201,6 +201,7 @@ export default {
     ciEntityId: { type: Number },
     ciId: { type: Number },
     height: { type: Number },
+    templateId: {type: Number},
     globalAttrFilter: { type: Array }
   },
   data() {
@@ -272,7 +273,12 @@ export default {
     await this.getCiTopoTemplateByCiId();
     this.$set(this.searchParam, 'level', 3);
     if (this.ciTopoTemplateList && this.ciTopoTemplateList.length > 0) {
-      const template = this.ciTopoTemplateList.find(d => d.isActive && d.isDefault);
+      let template;
+      if (this.templateId) {
+        template = this.ciTopoTemplateList.find(d => d.id === this.templateId);
+      } else {
+        template = this.ciTopoTemplateList.find(d => d.isActive && d.isDefault);
+      }
       if (template) {
         this.showTopoTemplate(template);
       }

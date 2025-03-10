@@ -117,6 +117,9 @@ const ci = {
     }
     return axios.post('/api/rest/cmdb/ci/listglobalattr', param);
   },
+  getGlobalAttrItemByAttrId(params) {
+    return axios.post('/api/rest/cmdb/globalattritem/search', params);
+  },
   getGlobalAttrByIdList(idList, params) {
     let param = {
       idList: idList
