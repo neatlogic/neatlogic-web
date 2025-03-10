@@ -57,7 +57,7 @@
       </template>
       <template slot-scope="{ row }">
         <div :dataId="row.id" :style="moreFlag[row.id.toString()] != -1 ? 'max-height:300px' : ''" class="container">
-          <div v-if="row.event === 'Push Hook' && row.data.commits && row.data.commits.length > 0">
+          <div v-if="row.event === 'Push Hook' && row.data && row.data.commits && row.data.commits.length > 0">
             <div v-for="(commit, cindex) in row.data.commits" :key="cindex">
               <div class="mb-sm">
                 <a class="fz10" :href="commit.url" target="_blank">{{ commit.message }}</a>
