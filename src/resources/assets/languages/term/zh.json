@@ -245,7 +245,9 @@
     "errordetail": "异常详情",
     "collect": "采集",
     "pause": "停止",
-    "cientityisnotfound": "配置项不存在"
+    "cientityisnotfound": "配置项不存在",
+    "testaccount": "测试结果",
+    "repeataccount": "协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -1334,7 +1336,13 @@
     "componentnoexist": "组件不存在",
     "custommaxtrixselectaddbtndesc": "当选择自定义矩阵类型并新增数据时，下拉框将显示“+”按钮。",
     "showcomponentnamesintab": "显示拖入Tab选项卡内的组件名称",
-    "hideheaderwhendataempty": "数据为空隐藏表头"
+    "hideheaderwhendataempty": "数据为空隐藏表头",
+    "formsubassemblytabname": "选项卡名称",
+    "formsubassemblytabnametip": "文本框、下拉框的值和隐藏属性，可作为选项卡名称",
+    "tagentupgrade": "升级包管理",
+    "tagentupgradepkg": "升级包",
+    "selecttagentupgradepkg": "选择已有的升级包",
+    "tagentuploadupgradepkg": "上传升级包"
   },
   "knowledge": {
     "document": "文档",

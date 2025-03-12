@@ -71,7 +71,12 @@ export default {
           },
           description: {
             label: '描述',
-            type: 'ckeditor'
+            type: 'ckeditor',
+            params: {
+              uploadVideoConfig: {
+                type: 'framework'
+              }
+            }
           }
         }
       },

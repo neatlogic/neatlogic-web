@@ -168,7 +168,12 @@ export default {
           type: 'ckeditor',
           label: this.$t('page.content'),
           name: 'content',
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       ],
       systemTypeFrom:

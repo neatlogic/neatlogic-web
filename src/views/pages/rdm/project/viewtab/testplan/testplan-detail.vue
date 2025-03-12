@@ -80,7 +80,15 @@
             </TsFormItem>
 
             <TsFormItem v-bind="formItemConf" :label="$t('page.reply')">
-              <TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor>
+              <TsCkeditor
+                v-model="issueData.comment"
+                :params="{
+                  uploadVideoConfig: {
+                    type: 'issue'
+                  }
+                }"
+                :width="'100%'"
+              ></TsCkeditor>
             </TsFormItem>
 
             <TsFormItem v-bind="formItemConf" label="">

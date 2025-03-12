@@ -81,7 +81,12 @@ export default {
           width: '100%',
           value: '',
           label: this.$t('page.description'),
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       ],
       assignableWorkerStepList: [], //需指派的步骤列表
@@ -116,7 +121,12 @@ export default {
           value: '',
           width: '100%',
           label: this.$t('page.reason'),
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       ],
       backList: [
@@ -131,7 +141,12 @@ export default {
           value: '',
           width: '100%',
           label: this.$t('page.reply'),
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       ],
       //可以迁移到retrest-dialog.vue？
@@ -151,7 +166,12 @@ export default {
           value: '',
           label: this.$t('page.reply'),
           width: '100%',
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       ],
       retreatList: null, //可撤回步骤列表
@@ -410,7 +430,7 @@ export default {
       }
     },
     getData() {
-      let data = this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.getData() || {};
+      let data = (this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.getData()) || {};
       //检查子组件是否有myGetData方法
       if (this.$options.mixins && this.$options.mixins.length > 0) {
         for (let i = 0; i < this.$options.mixins.length; i++) {
@@ -469,7 +489,7 @@ export default {
       this.wipeData();
       this.getAllData();
     },
-    
+
     saveTask(val) {
       //暂存 数据对比
       if (this.$refs.TaskCenterDetail) {
@@ -1001,7 +1021,7 @@ export default {
       }
       this.validList = [];
       this.validCardOpen = false;
-     
+
       if (this.handler == 'changecreate') {
         let changeValidList = [];
         if (this.startHandler == 'changecreate') {

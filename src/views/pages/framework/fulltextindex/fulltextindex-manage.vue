@@ -32,7 +32,7 @@
               <template v-slot:action="{ row }">
                 <div class="tstable-action">
                   <ul class="tstable-action-ul">
-                    <li :class="row.status == 'doing' ? 'disabled' : ''" class="tsfont-restart" @click="rebuildIndex(row)">{{ $t('page.rebuildindex') }}</li>
+                    <li :class="row.status === 'doing' ? 'text-disabled' : ''" class="tsfont-restart" @click="rebuildIndex(row)">{{ $t('page.rebuildindex') }}</li>
                   </ul>
                 </div>
               </template>
@@ -66,8 +66,9 @@
               </template>
               <template v-slot:action="{ row }">
                 <div class="tstable-action">
+                
                   <ul class="tstable-action-ul">
-                    <li :class="row.status == 'doing' ? 'disabled' : ''" class="tsfont-restart" @click="rebuildIndex(row)">{{ $t('page.rebuildindex') }}</li>
+                    <li :class="row.status === 'doing' ? 'text-disabled' : ''" class="tsfont-restart" @click="rebuildIndex(row)">{{ $t('page.rebuildindex') }}</li>
                   </ul>
                 </div>
               </template>
@@ -138,8 +139,10 @@ export default {
       }
     },
     rebuildIndex(audit) {
-      this.currentAudit = audit;
-      this.isRebuildDialogShow = true;
+      if (audit.status !== 'doing') {
+        this.currentAudit = audit;
+        this.isRebuildDialogShow = true;
+      }
     },
     getFullTextIndexRebuildAuditList(handler) {
       this.$api.framework.fulltextindex.getFullTextIndexRebuildAuditList({ handler: handler }).then(res => {

@@ -32,7 +32,14 @@
           </TsRow>
         </div>
         <Divider />
-        <TsCkeditor v-model="iterationData.description"></TsCkeditor>
+        <TsCkeditor
+          v-model="iterationData.description"
+          :params="{
+            uploadVideoConfig: {
+              type: 'rdm'
+            }
+          }"
+        ></TsCkeditor>
       </div>
     </template>
   </TsDialog>

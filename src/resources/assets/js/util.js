@@ -1101,11 +1101,21 @@ const methods = {
     }
     return error;
   },
+  getFileExtension(fileName) {
+    // 提取文件扩展名的辅助函数
+    return fileName && fileName.split('.').pop()?.toLowerCase();
+  },
   isImage(fileName) {
     // 判断是否是图片
-    const fileExtension = fileName.split('.').pop().toLowerCase(); // 使用split方法根据点（.）分割文件名，[-1]获取最后一个元素，即后缀
-    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico'];
-    return imageExtensions.includes(fileExtension);
+    const fileExtension = this.getFileExtension(fileName); // 使用split方法根据点（.）分割文件名，[-1]获取最后一个元素，即后缀
+    const imageExtensions = new Set(['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'ico']);
+    return imageExtensions.has(fileExtension);
+  },
+  isVideo(fileName) {
+    // 判断是否是视频
+    const fileExtension = this.getFileExtension(fileName); // 使用split方法根据点（.）分割文件名，[-1]获取最后一个元素，即后缀
+    const videoExtensions = new Set(['mp4', 'mkv', 'avi', 'mov', 'webm', 'flv', 'f4v', 'mpg', 'mpeg', 'ts', 'm2ts', 'mts', 'wmv', 'rm', 'rmvb', '3pg', '3g2']);
+    return videoExtensions.has(fileExtension);
   },
   setInterval(callback, delay, alwaysRun = false) {
     let timer;

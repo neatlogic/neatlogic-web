@@ -6,7 +6,7 @@ const download = {
     if (!binding.arg && binding.value) {
       el.downparam = binding.value;
     }
-    const downloadUrl = function(params) {
+    const downloadUrl = params => {
       let url = '';
       let param = {};
       let method = 'post';
@@ -26,15 +26,17 @@ const download = {
         aLink.href = url + '?' + qs.stringify(param, { skipNulls: true });
         document.body.appendChild(aLink);
         aLink.click();
-        aLink.remove();   
+        aLink.remove();
       } else {
-        params.changeStatus && params.changeStatus('start', null);//开始导出时调用的 ,主要用来标志导出的状态，用来外部的操作
+        params.changeStatus && params.changeStatus('start', null); //开始导出时调用的 ,主要用来标志导出的状态，用来外部的操作
         axios
           .post(url, param, {
             responseType: 'blob',
-            onDownloadProgress: function(progressEvent) { // `onDownloadProgress` 允许为下载处理进度事件
-              params.changeStatus && params.changeStatus('progress', progressEvent);//数据正在导出
-            }})
+            onDownloadProgress: progressEvent => {
+              // `onDownloadProgress` 允许为下载处理进度事件
+              params.changeStatus && params.changeStatus('progress', progressEvent); //数据正在导出
+            }
+          })
           .then(res => {
             el._tsDownloadsuccess_ && el._tsDownloadsuccess_();
             if (res.status == '200') {
@@ -51,14 +53,15 @@ const download = {
               aLink.download = fileName;
               document.body.appendChild(aLink);
               aLink.click();
-              aLink.remove();  
+              aLink.remove();
               URL.revokeObjectURL(aLink);
             }
             params.changeStatus && params.changeStatus('success', null);
           })
           .catch(async error => {
             el._tsDownloaderror_ && el._tsDownloaderror_(error);
-            if (error.data && error.data.type === 'application/json') { // 修复控制台报错问题
+            if (error.data && error.data.type === 'application/json') {
+              // 修复控制台报错问题
               const text = await error.data.text();
               const jsonText = await JSON.parse(text);
               ViewUI.Notice.error({
@@ -66,17 +69,14 @@ const download = {
                 desc: jsonText.Message || '下载失败'
               });
             } else {
-              ViewUI.Notice.error({
-                title: '',
-                desc: '下载失败'
-              });
+              console.error('文件下载失败：', error);
             }
             params.changeStatus && params.changeStatus('error', null);
-          }); 
+          });
       }
     };
 
-    const clickDownload = function(e) {
+    const clickDownload = e => {
       if (el._tsPreventDownload_ === true) return;
       //这里的先判断是否有拓展参数再根据拓展参数写死判断是成功还是失败事件（不然会有值错误或者方法返回错误导致的异常和脚本注入）
       if (!binding.arg) {

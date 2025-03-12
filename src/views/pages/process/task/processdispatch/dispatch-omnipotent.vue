@@ -24,9 +24,13 @@
           ref="TsCkeditor"
           v-model="workData.content"
           :showIconToggle="true"
-          :editorDataS="workData.content"
           width="100%"
           class="editor"
+          :params="{
+            uploadVideoConfig: {
+              type: 'itsm',
+            }
+          }"
           :placeholder="ckeditorPlaceholder"
           :validateList="ckeditorValidateList"
         ></TsCkeditor>

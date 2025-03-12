@@ -7,7 +7,14 @@
     >
       <template v-slot>
         <div>
-          <TsCkeditor v-model="content"></TsCkeditor>
+          <TsCkeditor
+            v-model="content"
+            :params="{
+              uploadVideoConfig: {
+                type: 'rdm',
+              }
+            }"
+          ></TsCkeditor>
         </div>
       </template>
     </TsDialog>
