@@ -291,7 +291,7 @@ export default {
       this.$emit('updateSort', stepList);
     },
     getPrevOutputList(stepList, index) {
-      //获取当前节点的上游节点输出参数
+      //更新排序，获取当前节点的上游节点输出参数
       let prevOutputList = [];
       let prevList = stepList.filter((s, sindex) => {
         return sindex < index;
@@ -304,15 +304,9 @@ export default {
                 let item = p.operation.outputParamList;
                 item.forEach(i => {
                   prevOutputList.push({
-                    ...i,
-                    combopName: l.name,
-                    combopId: l.id,
-                    combopUuid: l.uuid,
-                    operationId: p.operationId,
-                    operationName: p.operationName,
-                    operationUuid: p.uuid,
-                    operationLetter: p.letter || null,
-                    operationDes: p.description
+                    combopUuid: l.uuid, //阶段
+                    operationUuid: p.uuid, //工具
+                    key: i.key //参数
                   });
                 });
               }

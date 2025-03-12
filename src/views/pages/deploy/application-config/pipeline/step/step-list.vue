@@ -311,8 +311,8 @@ export default {
     },
     dragEnd() {
       let stepList = this.getUpdateSort();
-      stepList.forEach((item) => {
-        let prevOutputList = this.getPrev(item, stepList);
+      stepList.forEach((item, index) => {
+        let prevOutputList = this.getPrevOutputList(stepList, index);
         if (item.config && !this.$utils.isEmpty(item.config.phaseOperationList)) {
           item.config.phaseOperationList.forEach(p => {
             if (p.config && !this.$utils.isEmpty(p.config.paramMappingList)) {
@@ -332,6 +332,32 @@ export default {
         }
       });
       this.$emit('updateSort', stepList);
+    },
+    getPrevOutputList(stepList, index) {
+      //更新排序，获取当前节点的上游节点输出参数
+      let prevOutputList = [];
+      let prevList = stepList.filter((s, sindex) => {
+        return sindex < index;
+      });
+      if (prevList && prevList.length) {
+        prevList.forEach(l => {
+          if (l.config && l.config.phaseOperationList && l.config.phaseOperationList.length) {
+            l.config.phaseOperationList.forEach(p => {
+              if (p.operation.outputParamList && p.operation.outputParamList.length) {
+                let item = p.operation.outputParamList;
+                item.forEach(i => {
+                  prevOutputList.push({
+                    combopUuid: l.uuid, //阶段
+                    operationUuid: p.uuid, //工具
+                    key: i.key //参数
+                  });
+                });
+              }
+            });
+          }
+        });
+      }
+      return prevOutputList;
     },
     changeOperation(list, step) {
       if (!step.config) {
