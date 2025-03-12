@@ -45,7 +45,7 @@ export default {
     TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree')
   },
   props: {
-    data: Object,
+    resourceEntityData: Object,
     mainCi: {
       type: String,
       default: ''
@@ -104,11 +104,11 @@ export default {
   methods: {
     init() {
       this.list = [];
-      if (this.data) {
-        this.fieldList = this.data.fieldList || [];
-        if (this.data.config && !this.$utils.isEmpty(this.data.config.fieldMappingList)) {
+      if (this.resourceEntityData) {
+        this.fieldList = this.resourceEntityData.fieldList || [];
+        if (this.resourceEntityData.config && !this.$utils.isEmpty(this.resourceEntityData.config.fieldMappingList)) {
           this.fieldList.forEach(item => {
-            let findItem = this.data.config.fieldMappingList.find(f => f.field === item.value);
+            let findItem = this.resourceEntityData.config.fieldMappingList.find(f => f.field === item.value);
             if (findItem) {
               this.list.push(findItem);
             } else {
@@ -184,7 +184,7 @@ export default {
       return (name) => {
         let text = '';
         if (this.fieldList) {
-          let findItem = this.data.fieldList.find(item => item.value === name);
+          let findItem = this.resourceEntityData.fieldList.find(item => item.value === name);
           if (findItem) {
             text = findItem.text;
           }

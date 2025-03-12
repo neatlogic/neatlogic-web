@@ -1,7 +1,9 @@
 <template>
   <div>
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template v-slot:topLeft>
+        <span class="tsfont-plus text-href" @click="addData()">{{ $t('term.cmdb.view') }}</span>
       </template>
       <template v-slot:topRight>
         <InputSearcher v-model="keyword"></InputSearcher>
@@ -59,6 +61,7 @@ export default {
   props: {},
   data() {
     return {
+      loadingShow: true,
       keyword: '',
       currentEntityId: null,
       isEditShow: false,
@@ -110,8 +113,11 @@ export default {
       this.isEditShow = true;
     },
     getResourceEntityList() {
+      this.loadingShow = true;
       this.$api.cmdb.resourceentity.searchResourceEntity().then(res => {
         this.tbodyList = res.Return;
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
     viewData(currentPage, pageSize, name) {
@@ -141,6 +147,10 @@ export default {
       if (needRefresh) {
         this.getResourceEntityList();
       }
+    },
+    addData() {
+      this.currentEntityName = '';
+      this.isEditShow = true; 
     }
   },
   filter: {},

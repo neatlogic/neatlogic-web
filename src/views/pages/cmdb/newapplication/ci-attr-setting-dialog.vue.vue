@@ -13,11 +13,12 @@
       <div v-for="(item,index) in tableSettingList" :key="index" class="pb-xs">
         <TsRow :gutter="8">
           <Col span="10">
-            <TsFormTree
+            <TsFormSelect
               ref="formItem"
-              v-model="item.ciName"
-              v-bind="treeConfig"
-            ></TsFormTree>
+              v-model="item.viewName"
+              v-bind="viewConfig"
+              :dealDataByUrl="(nodeList)=>dealDataByViewList(nodeList, item.viewName)"
+            ></TsFormSelect>
           </Col>
           <Col span="12">
             <TsFormSelect
@@ -40,7 +41,6 @@
 export default {
   name: '',
   components: {
-    TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   filters: {},
@@ -56,11 +56,9 @@ export default {
         title: '设置',
         width: 'medium'
       },
-      treeConfig: {
-        url: '/api/rest/resourcecenter/resourcetype/listtree',
+      viewConfig: {
+        dynamicUrl: '/api/rest/resourcecenter/application/assetlist/view/list',
         rootName: 'tbodyList',
-        valueName: 'name',
-        textName: 'label',
         placeholder: '选择模型',
         transfer: true,
         showPath: true,
@@ -106,9 +104,9 @@ export default {
     },
     addData(index) {
       if (index) {
-        this.tableSettingList.splice(index, 0, { ciName: '', fieldList: [] });
+        this.tableSettingList.splice(index, 0, { viewName: '', fieldList: [] });
       } else {
-        this.tableSettingList.push({ ciName: '', fieldList: [] });
+        this.tableSettingList.push({ viewName: '', fieldList: [] });
       }
     },
     deleteItem(index) {
@@ -145,6 +143,16 @@ export default {
       }).finally(() => {
         this.isSaveLoading = false;
       });
+    },
+    dealDataByViewList(nodeList, viewName) {
+      nodeList.forEach(item => {
+        if (item.value !== viewName && this.tableSettingList.find(i => i.viewName == item.value)) {
+          this.$set(item, '_disabled', true);
+        } else {
+          this.$set(item, '_disabled', false);
+        }
+      });
+      return nodeList;
     }
   },
   computed: {},

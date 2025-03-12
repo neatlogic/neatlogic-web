@@ -4,6 +4,7 @@
     @on-close="close()"
   >
     <template v-slot>
+      <Loading :loadingShow="loadingShow" type="fix"></Loading>
       <TsForm
         v-model="resourceEntityData"
         :item-list="formConfig"
@@ -15,13 +16,23 @@
             codeMode="xml"
           ></TsCodemirror>
         </template> -->
+        <template v-slot:sceneTemplateName>
+          <TsFormSelect
+            v-if="resourceEntityData.config"
+            v-model="resourceEntityData.config.sceneTemplateName"
+            v-bind="sceneTemplateNameConfig"
+            :readonly="!!name"
+            @on-change="(val, item, selectItem) => { 
+              changeSceneTemplateName(selectItem);
+            }"
+          ></TsFormSelect>
+        </template>
         <template v-slot:mainCi>
-          <template v-if="resourceEntityData.config">
+          <template v-if="isReady">
             <CiSetting ref="ciSetting" :children="ciList" @updateCiList="updateCiList"></CiSetting>
             <MappingSetting
-              v-if="!$utils.isEmpty(resourceEntityData)"
               ref="mappingSetting"
-              :data="resourceEntityData"
+              :resourceEntityData="resourceEntityData"
               :mainCi="resourceEntityData.config.mainCi"
               :ciList="ciList"
               class="pt-nm"
@@ -42,12 +53,15 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     // TsCodemirror:()=>import('@/resources/plugins/TsCodemirror/TsCodemirror.vue'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     MappingSetting: () => import('./mapping-setting.vue'),
     CiSetting: () => import('./ci/ci-setting.vue')
   },
   props: {name: {type: String}},
   data() {
     return {
+      loadingShow: true,
+      isReady: false,
       resourceEntityData: {},
       dialogConfig: {
         title: this.$t('term.cmdb.viewsetting'),
@@ -60,7 +74,8 @@ export default {
           name: 'name',
           label: this.$t('term.cmdb.view'),
           type: 'text',
-          readonly: true
+          readonly: true,
+          validateList: ['required', 'unique_ident', { name: 'searchUrl', url: '/api/rest/resourcecenter/resourceentity/save', key: 'name' }]
         },
         {
           name: 'label',
@@ -80,6 +95,12 @@ export default {
         //   type: 'slot'
         // },
         {
+          name: 'sceneTemplateName',
+          label: this.$t('page.template'),
+          type: 'slot',
+          validateList: ['required']
+        },
+        {
           name: 'mainCi',
           label: this.$t('term.cmdb.mainci'),
           type: 'slot',
@@ -93,6 +114,14 @@ export default {
         transfer: true,
         showPath: true,
         validateList: ['required']
+      },
+      sceneTemplateNameConfig: {
+        dynamicUrl: '/api/rest/resourcecenter/suportmultipleview/scenetemplate',
+        rootName: 'tbodyList',
+        textName: 'label',
+        valueName: 'name',
+        validateList: ['required'],
+        transfer: true
       },
       ciList: []
     };
@@ -133,7 +162,42 @@ export default {
               this.ciList = [];
             }
           }
+          if (!this.resourceEntityData.isMultiple) {
+            let findItem = this.formConfig.find(item => item.name === 'sceneTemplateName');
+            if (findItem) {
+              this.$set(findItem, 'isHidden', true);
+            }
+          }
+        }).finally(() => {
+          this.isReady = true;
+          this.loadingShow = false;
         });
+      } else {
+        //新增
+        this.formConfig.forEach(item => {
+          if (item.hasOwnProperty('readonly')) {
+            this.$set(item, 'readonly', false);
+          } 
+        });
+        this.resourceEntityData = {
+          name: '',
+          label: '',
+          description: '',
+          fieldList: [],
+          config: {
+            sceneTemplateName: '',
+            mainCi: '',
+            fieldMappingList: []
+          }
+        };
+        this.ciList = [{
+          uuid: this.$utils.setUuid(),
+          ciName: '',
+          ciLabel: '',
+          children: []
+        }];
+        this.isReady = true;
+        this.loadingShow = false;
       }
     },
     save() {
@@ -167,6 +231,13 @@ export default {
     updateCiList(list) {
       this.$set(this.resourceEntityData.config, 'mainCi', list[0].ciName);
       this.ciList = this.$utils.deepClone(list);
+    },
+    changeSceneTemplateName(selectItem) {
+      this.isReady = false;
+      this.$set(this.resourceEntityData, 'fieldList', selectItem && selectItem.fieldList || []);
+      this.$nextTick(() => {
+        this.isReady = true; 
+      });
     }
   },
   filter: {},
