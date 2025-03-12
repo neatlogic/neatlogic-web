@@ -30,7 +30,12 @@
               :title="canEdit ? $t('term.deploy.dragtochangetheorder') : ''"
               @click.stop
             ></span>
-            <ul>
+            <draggable
+              tag="ul"
+              :list="ary"
+              handle=".tsfont-bar"
+              @end="dragEnd"
+            >
               <li
                 v-for="step in ary"
                 :id="step.uuid == value ? 'stepActive' : ''"
@@ -40,7 +45,15 @@
                 @click="selectStep(step)"
               >
                 <div class="radius-lg padding-sm" :class="step.uuid == value ? 'active bg-selected' : 'border border-color'">
-                  <div class="stepName name overflow text-action" :class="{ 'text-primary': step.uuid == value }" :title="step.name && step.name.length > 9 ? step.name : ''">{{ step.name || '-' }}</div>
+                  <div class="stepName name overflow text-action" :class="{ 'text-primary': step.uuid == value }" :title="step.name && step.name.length > 9 ? step.name : ''">
+                    <span
+                      v-if="canEdit && ary.length > 1"
+                      class="tsfont-bar move"
+                      :title="canEdit ? '阶段组内拖拽排序' : ''"
+                      @click.stop
+                    ></span>
+                    <span>{{ step.name || '-' }}</span>
+                  </div>
                   <!-- <div class="text-grey overflow" style="line-height:2">{{ step.name || '-' }}</div> -->
                   <div class="stepType">
                     <span class="text-grey fz10">{{ getExecModeText(step.execMode) }}</span>
@@ -59,7 +72,7 @@
                   </div>
                 </div>
               </li>
-            </ul>
+            </draggable>
           </li>
         </template>
       </draggable>
@@ -254,8 +267,54 @@ export default {
     },
     dragEnd() {
       let stepList = this.getUpdateSort();
+      stepList.forEach((item, index) => {
+        let prevOutputList = this.getPrevOutputList(stepList, index);
+        if (item.config && !this.$utils.isEmpty(item.config.phaseOperationList)) {
+          item.config.phaseOperationList.forEach(p => {
+            if (p.config && !this.$utils.isEmpty(p.config.paramMappingList)) {
+              p.config.paramMappingList.forEach(m => {
+                //如果上游节点不存在，则清空参数
+                if (!this.$utils.isEmpty(m.value) && m.mappingMode.indexOf('prenode') == 0) {
+                  if (prevOutputList.length && !prevOutputList.find(p => p.combopUuid == m.value[0] && p.operationUuid === m.value[1] && p.key === m.value[2])) {
+                    this.$set(m, 'value', []);
+                  } else if (!prevOutputList.length) {
+                    this.$set(m, 'mappingMode', '');
+                    this.$set(m, 'value', null);
+                  }
+                }
+              });
+            }
+          });
+        }
+      });
       this.updatedCombopGroupList(stepList);
       this.$emit('updateSort', stepList);
+    },
+    getPrevOutputList(stepList, index) {
+      //更新排序，获取当前节点的上游节点输出参数
+      let prevOutputList = [];
+      let prevList = stepList.filter((s, sindex) => {
+        return sindex < index;
+      });
+      if (prevList && prevList.length) {
+        prevList.forEach(l => {
+          if (l.config && l.config.phaseOperationList && l.config.phaseOperationList.length) {
+            l.config.phaseOperationList.forEach(p => {
+              if (p.operation.outputParamList && p.operation.outputParamList.length) {
+                let item = p.operation.outputParamList;
+                item.forEach(i => {
+                  prevOutputList.push({
+                    combopUuid: l.uuid, //阶段
+                    operationUuid: p.uuid, //工具
+                    key: i.key //参数
+                  });
+                });
+              }
+            });
+          }
+        });
+      }
+      return prevOutputList;
     },
     getUpdateSort() {
       let stepUuidList = [];
@@ -570,9 +629,16 @@ ul.stepList {
           flex: 1;
         }
       }
+      .move {
+        display: none;
+      }
       &:hover {
         .stepBtn {
           display: block;
+        }
+        .move {
+          display: inline;
+          cursor: ns-resize;
         }
       }
     }
