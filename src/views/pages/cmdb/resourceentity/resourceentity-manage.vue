@@ -3,7 +3,7 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template v-slot:topLeft>
-        <span class="tsfont-plus text-href" @click="addData()">{{ $t('term.cmdb.view') }}</span>
+        <span class="text-action tsfont-plus" @click="addData()">{{ $t('term.cmdb.view') }}</span>
       </template>
       <template v-slot:topRight>
         <InputSearcher v-model="keyword"></InputSearcher>
