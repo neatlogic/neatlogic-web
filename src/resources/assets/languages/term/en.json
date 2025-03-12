@@ -2834,6 +2834,7 @@
   "alert": {
     "alerttype": "Alarm Type ",
     "alert": "give an alarm",
-    "isnormalattr": "As a regular attribute display"
+    "isnormalattr": "As a regular attribute display",
+    "closesuccess": "Close successfully"
   }
 }
