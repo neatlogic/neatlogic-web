@@ -396,7 +396,7 @@ export default {
     setHandler(handler) {
       const newFormItem = FORMITEMS.find(d => d.handler === handler);
       this.$set(this.formItem, 'handler', handler);
-      this.$set(this.formItem, 'config', newFormItem.config);
+      this.$set(this.formItem, 'config', this.$utils.deepClone(newFormItem.config));
     },
     setConfig(attrName, attrValue) {
       if (attrName.indexOf('.') == -1) {
