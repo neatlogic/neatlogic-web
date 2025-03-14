@@ -93,22 +93,14 @@ export default {
           name: 'userName',
           label: this.$t('page.username'),
           value: '',
-          defaultValue: '',
-          validateList: ['required']
+          defaultValue: ''
         },
         {
           type: 'password',
           name: 'password',
           label: this.$t('page.password'),
           value: '',
-          defaultValue: '',
-          validateList: [
-            { name: 'required', message: this.$t('form.placeholder.pleaseinput', { target: this.$t('page.password') }) }
-            // {
-            //   name: 'passcode',
-            //   message: '请输入长度在8~20之间的字符串，至少有字母、数字、特殊字符其中2种组合'
-            // }
-          ]
+          defaultValue: ''
         },
         {
           type: 'text',
