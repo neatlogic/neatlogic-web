@@ -34,9 +34,8 @@
             ></TsFormInput>
           </div>
           <div v-if="needCondition && attrList && attrList.length > 0" class="action-item">
-            <span @click="isAdvancedSearch = !isAdvancedSearch">
+            <span :class="isAdvancedSearch ? 'tsfont-drop-down' : 'tsfont-drop-right'" @click="isAdvancedSearch = !isAdvancedSearch">
               {{ $t('page.advancesearch') }}
-              <i :class="isAdvancedSearch ? 'tsfont-drop-up' : 'tsfont-drop-down'"></i>
             </span>
           </div>
         </div>
