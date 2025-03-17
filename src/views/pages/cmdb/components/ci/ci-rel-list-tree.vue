@@ -343,7 +343,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ .ivu-tree-title-selected {
+::v-deep .ivu-tree-title-selected {
   font-weight: bold;
 }
 </style>
