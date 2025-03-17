@@ -146,7 +146,7 @@ export default {
       right: 20px;
       top:30px;
       z-index: 1;
-      /deep/ .ts-avatar .vip-icon {
+      ::v-deep .ts-avatar .vip-icon {
         width: 16px !important;
         bottom: 0px !important;
         right: 2px !important;

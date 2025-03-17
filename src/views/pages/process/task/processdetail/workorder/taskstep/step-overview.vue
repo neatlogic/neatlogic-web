@@ -379,7 +379,7 @@ export default {
       padding-right: 18px; // 处理收起之后，右边不对齐问题
     }
   }
-  /deep/ .activity-step {
+  ::v-deep .activity-step {
   margin-left: 150px;
   .step-log-common-box {
    .ivu-timeline-item-tail {
@@ -448,7 +448,7 @@ export default {
     }
   }
   .activity-box-list{
-    /deep/ .image > img {
+    ::v-deep .image > img {
       max-width: 100%;
     }
   }

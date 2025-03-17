@@ -52,16 +52,16 @@ ol {
 }
 ol {
   list-style: decimal inside;
-  /deep/ li {
+  ::v-deep li {
     word-break: break-all;
     list-style: decimal;
   }
   &.cjk-ideographic {
-    /deep/ li {
+    ::v-deep li {
       list-style: cjk-ideographic;
     }
   }
-  /deep/span.line-through {
+  ::v-deep span.line-through {
     text-decoration: line-through;
     vertical-align: baseline;
   }

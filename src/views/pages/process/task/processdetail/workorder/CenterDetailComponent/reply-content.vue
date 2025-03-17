@@ -449,7 +449,7 @@ export default {
 .comment-box {
   .content-template {
     position: relative;
-    /deep/ .template-pop {
+    ::v-deep .template-pop {
       position: absolute;
       right: 120px;
     }
@@ -474,7 +474,7 @@ export default {
   }
 }
 .eventEdit {
-  /deep/ .ivu-input {
+  ::v-deep .ivu-input {
     background: transparent;
     cursor: pointer;
     border: none;
@@ -488,7 +488,7 @@ export default {
   }
   .solution-select-clearbtn-align {
     // 解决方案图标对齐
-    /deep/ .select-top .clearBtn {
+    ::v-deep .select-top .clearBtn {
       right: -4px !important;
       top: 45% !important;
     }

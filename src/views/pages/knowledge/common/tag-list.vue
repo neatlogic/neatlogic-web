@@ -44,7 +44,7 @@ export default {
   .icon-padding {
     padding-right: 10px;
   }
-  /deep/ .ivu-tag {
+  ::v-deep .ivu-tag {
     margin-right: 10px;
     margin-bottom: 6px;
   }

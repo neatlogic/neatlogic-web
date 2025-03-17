@@ -825,7 +825,7 @@ html {
 <style lang="less" scoped>
 .userselect-container {
   // width: 100%;
-  /deep/ .ivu-select-dropdown {
+  ::v-deep .ivu-select-dropdown {
     max-height: 200px;
     overflow: auto;
     &.ivu-select-dropdown-transfer {
@@ -880,7 +880,7 @@ html {
     display: inline-block;
     position: relative;
   }
-  /deep/ .ivu-tag {
+  ::v-deep .ivu-tag {
     // 解决宽度超出组件边界，超出隐藏问题
     position: relative;
     max-width: 100%;
@@ -935,7 +935,7 @@ html {
   .tsform-select-disabled {
     .select-top {
       cursor: not-allowed;
-      /deep/ .ivu-tag .ivu-tag-text {
+      ::v-deep .ivu-tag .ivu-tag-text {
         margin-right: 0px;
       }
     }

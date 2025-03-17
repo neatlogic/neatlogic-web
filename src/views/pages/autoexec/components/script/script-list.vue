@@ -480,7 +480,7 @@ export default {
           }
         }
       }
-      /deep/ .script-detail {
+      ::v-deep .script-detail {
         padding: 0 16px;
         .failPolicy-item{
           .ivu-radio-wrapper:not(:last-of-type){
@@ -508,7 +508,7 @@ export default {
         border-color: transparent !important;
         padding-bottom: 6px;
       }
-      /deep/ .script-detail {
+      ::v-deep .script-detail {
         display: none;
       }
     }
@@ -538,7 +538,7 @@ export default {
     }
   }
 }
-/deep/.list-title {
+::v-deep .list-title {
   margin: 16px 0;
 }
 .script-title {

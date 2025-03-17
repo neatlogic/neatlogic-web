@@ -317,15 +317,15 @@ export default {
   .list-main{
     padding-bottom: 10px;
   }
-  /deep/ .ivu-scroll-container {
+  ::v-deep .ivu-scroll-container {
     height: auto !important;
     max-height: 190px;
     padding-left: 6px;
   }
-  /deep/ .ivu-dropdown-item{
+  ::v-deep .ivu-dropdown-item{
     padding: 0;
   }
-  /deep/ a{
+  ::v-deep a{
     display: block;
     padding: 8px 16px;
   }

@@ -749,9 +749,10 @@ export default {
   .ivu-input-word-count {
     background: #fff;
   }
-  /deep/tr {
-    th, td{
-      &:first-child{
+  ::v-deep tr {
+    th,
+    td {
+      &:first-child {
         padding-left: 8px;
       }
     }
@@ -777,7 +778,6 @@ export default {
     right: 32px;
     z-index: 100;
   }
-
 }
 
 .table {

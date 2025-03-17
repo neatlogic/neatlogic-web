@@ -93,11 +93,11 @@ export default {
       padding: 0px 4px;
       line-height: 32px;
       height: 32px;
-      /deep/.TsFormSelect .ivu-input{
+      ::v-deep .TsFormSelect .ivu-input{
         text-align: right;
       }
     }
-   /deep/ .ck-editor__editable:hover, .ck-editor__editable:focus {
+   ::v-deep .ck-editor__editable:hover, .ck-editor__editable:focus {
       border-color: #dcdee1 !important;
     }
   }

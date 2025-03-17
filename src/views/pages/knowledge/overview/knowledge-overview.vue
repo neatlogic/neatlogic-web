@@ -436,7 +436,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/deep/.tscontain-header {
+::v-deep .tscontain-header {
   height: 55px !important;
 }
 .knowledge-overview {
@@ -486,7 +486,7 @@ export default {
         width: 90%;
         margin: 9px 0 9px 16px;
       }
-      /deep/ .menu-tree {
+      ::v-deep .menu-tree {
         .node-title {
           .number-circle {
             display: flex;
@@ -510,7 +510,7 @@ export default {
       .current-path {
         margin: 10px 5px 5px 10px;
       }
-      /deep/ .table {
+      ::v-deep .table {
         .th-isCollect {
           width: 30px;
         }
@@ -547,7 +547,7 @@ export default {
       }
     }
   }
-  /deep/ .ivu-badge-count {
+  ::v-deep .ivu-badge-count {
     line-height: 1;
     height: inherit;
     padding: 0 4px;

@@ -1382,7 +1382,7 @@ export default {
 <style lang="less" scoped>
 @import '~@/resources/assets/css/variable.less';
 
-/deep/.bg-table {
+::v-deep .bg-table {
   // 兼容暗黑模式
   padding-right: 0px !important;
 }
@@ -1419,7 +1419,7 @@ export default {
     }
   }
 }
-/deep/.ivu-card-body {
+::v-deep .ivu-card-body {
   .clearfix {
     height: initial !important;
   }

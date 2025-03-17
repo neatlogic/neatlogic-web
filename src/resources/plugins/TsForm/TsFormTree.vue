@@ -676,7 +676,7 @@ function setWidth($contain, $target, transfer) {
   .ivu-dropdown {
     position: relative;
   }
-  /deep/ .ivu-select-dropdown {
+  ::v-deep .ivu-select-dropdown {
     min-width: 100%;
     width: auto;
     max-height: 200px;
@@ -722,7 +722,7 @@ function setWidth($contain, $target, transfer) {
           display: block;
         }
       }
-      /deep/.ivu-tag {
+      ::v-deep .ivu-tag {
         margin-top: 4px;
         float: left;
         .ivu-icon-ios-close {

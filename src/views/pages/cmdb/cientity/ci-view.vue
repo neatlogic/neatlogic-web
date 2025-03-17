@@ -268,11 +268,11 @@ export default {
 .border8 {
   border-radius: 0px 8px 8px 8px;
 }
-/deep/ .right-top {
+::v-deep .right-top {
   height: 58px !important;
   padding: 0 16px 0 0px !important;
 }
-/deep/.action-item {
+::v-deep .action-item {
   padding: 0 16px 0 0px !important;
 }
 .pad0 {

@@ -70,12 +70,12 @@ export default {
     .score-content{
       padding-left: 16px;
     }
-    /deep/ .image > img {
+    ::v-deep .image > img {
       max-width: 100%;
     }
   }
 }
-/deep/.ivu-rate-star{
+::v-deep .ivu-rate-star{
   margin-right: 6px;
 }
 </style>

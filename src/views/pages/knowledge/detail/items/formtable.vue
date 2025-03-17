@@ -4,8 +4,7 @@
     type="formtable"
     class="table-color"
     v-html="content"
-  >
-  </section>
+  ></section>
 </template>
 <script>
 export default {
@@ -19,14 +18,12 @@ export default {
     config: Object
   },
   data() {
-    return {
-    };
+    return {};
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -37,21 +34,19 @@ export default {
   computed: {},
   watch: {
     config: {
-      handler(val) {
-      },
+      handler(val) {},
       immediate: true,
       deep: true
     }
   }
 };
-
 </script>
 <style lang="less" scoped>
 @import '~@/resources/plugins/TsCkeditor/ckeditor.less';
 section {
   position: relative;
 }
-/deep/.sheet-table {
+::v-deep .sheet-table {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0px;
@@ -63,7 +58,7 @@ section {
   tbody {
     tr {
       td {
-        border:1px solid;
+        border: 1px solid;
         vertical-align: middle;
         padding: 3px;
         height: 40px;
@@ -75,43 +70,39 @@ section {
       }
     }
   }
-  
 }
 .tstable-container .tstable-body tbody tr:hover {
-    background: transparent !important;
+  background: transparent !important;
 }
 
-.table-color{
-   //静态列表样式
-  /deep/ 
-      .tstable-container {
-        overflow: auto;
-        border-top: 0px !important;
-        .table-list {
-          width:100%;
-          border-top: none;
-          border-collapse: collapse;
-          table-layout: fixed;
-        }
-        .table-list > thead,
-        .table-list > thead > tr > th {
-          visibility: visible !important;
-          border: none !important;
-          vertical-align: middle;
-          height: 38px;
-          padding-top: 0px;
-          padding-bottom: 0px;
-          text-align: left;
-        }
-        .table-list > tbody > tr > td {
-          border-left: none !important;
-          border-right: none !important;
-          border-bottom: none !important;
-          border-top: none !important;
-          vertical-align: top;
-        }
-      }
-
+.table-color {
+  //静态列表样式
+  ::v-deep .tstable-container {
+    overflow: auto;
+    border-top: 0px !important;
+    .table-list {
+      width: 100%;
+      border-top: none;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    .table-list > thead,
+    .table-list > thead > tr > th {
+      visibility: visible !important;
+      border: none !important;
+      vertical-align: middle;
+      height: 38px;
+      padding-top: 0px;
+      padding-bottom: 0px;
+      text-align: left;
+    }
+    .table-list > tbody > tr > td {
+      border-left: none !important;
+      border-right: none !important;
+      border-bottom: none !important;
+      border-top: none !important;
+      vertical-align: top;
+    }
+  }
 }
-   
 </style>

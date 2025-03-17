@@ -423,7 +423,7 @@ export default {
       width: 100%;
       overflow-x: auto;
       @import (reference) '~@/resources/assets/css/theme.less';
-      /deep/ .fz-h1 {
+      ::v-deep .fz-h1 {
         position: relative;
         font-size: 16px;
         font-weight: bold;

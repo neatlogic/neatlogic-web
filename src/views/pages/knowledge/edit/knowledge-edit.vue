@@ -339,10 +339,10 @@ export default {
 .padding-t{
   padding-top:4px;
 }
-/deep/.left-sider{
+::v-deep .left-sider{
   border-right: 0px solid #ccc!important;
 }
-/deep/.bg-three{
+::v-deep .bg-three{
   background:transparent!important;
 }
 </style>

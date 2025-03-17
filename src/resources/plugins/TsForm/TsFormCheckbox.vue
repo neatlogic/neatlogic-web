@@ -336,7 +336,7 @@ export default {
     color: @default-op;
   }
     //隐藏多选框
-  /deep/ .ivu-checkbox {
+  ::v-deep .ivu-checkbox {
     display: none;
   }
 }

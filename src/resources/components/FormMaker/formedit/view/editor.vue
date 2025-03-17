@@ -166,7 +166,7 @@ function setButtonContain(el) {
       margin-right: 3px;
     }
   }
-  /deep/ .noborder input{
+  ::v-deep .noborder input{
     border: none !important;
   }
 }

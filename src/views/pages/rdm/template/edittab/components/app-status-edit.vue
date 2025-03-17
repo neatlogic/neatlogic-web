@@ -368,7 +368,7 @@ export default {
   left: 50%;
   width: 50%;
 }
-/deep/.folder-tr > td {
+::v-deep .folder-tr > td {
   padding: 0px;
 }
 </style>

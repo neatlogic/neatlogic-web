@@ -360,7 +360,7 @@ export default {
   &:not(:last-of-type) {
     border-bottom: 1px solid;
   }
-  /deep/ .tsform-readonly {
+  ::v-deep .tsform-readonly {
     cursor: default !important;
   }
   .btn-list {

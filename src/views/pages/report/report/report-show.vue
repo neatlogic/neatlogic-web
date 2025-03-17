@@ -258,7 +258,7 @@ export default {
 @import '~@/resources/assets/css/report/report.less';
 </style>
 <style lang="less" scoped>
-/deep/ .report-show-formitem {
+::v-deep .report-show-formitem {
   min-height: 53px;
 }
 </style>

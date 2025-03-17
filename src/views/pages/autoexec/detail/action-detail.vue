@@ -1672,10 +1672,10 @@ export default {
   min-width: 66px;
   padding: 0 8px;
 }
-/deep/ .ivu-dropdown {
+::v-deep .ivu-dropdown {
   display: block;
 }
-/deep/ .sort-class {
+::v-deep .sort-class {
   border: 1px solid;
   border-radius: 50%;
   padding: 0 4px;

@@ -382,7 +382,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ .ivu-checkbox-wrapper {
+ ::v-deep .ivu-checkbox-wrapper {
   margin-right: 0;
 }
 .matrix-btn {

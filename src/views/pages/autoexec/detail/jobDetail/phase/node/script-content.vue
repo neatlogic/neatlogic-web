@@ -88,7 +88,7 @@ export default {
     text-align: center;
     opacity: 0.8;
   }
-  /deep/.sql-code-box{
+  ::v-deep .sql-code-box{
     overflow: auto;
     white-space: pre-wrap;
     word-break: break-all;

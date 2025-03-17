@@ -268,10 +268,10 @@ export default {
 </script>
 <style lang="less" scoped>
 .channeltype-color {
-  /deep/ .ivu-poptip-arrow {
+  ::v-deep .ivu-poptip-arrow {
     display: none;
   }
-  /deep/ .ivu-poptip-inner {
+  ::v-deep .ivu-poptip-inner {
     transform: translateY(-8px);
   }
   .color-block {

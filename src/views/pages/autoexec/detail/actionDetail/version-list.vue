@@ -268,7 +268,7 @@ export default {
   .time{
     padding-left: 4px;
   }
-  /deep/ .usercard{
+  ::v-deep .usercard{
     font-size: 12px !important;
   }
   .version-content-top{
@@ -283,14 +283,14 @@ export default {
       text-overflow: ellipsis;
     }
   }
-  /deep/ .tscard-body{
+  ::v-deep .tscard-body{
     min-height: auto;
   }
-  /deep/ .tscard-li{
+  ::v-deep .tscard-li{
     padding: 3px 6px !important;
   }
 }
-/deep/ .ivu-poptip-rel{
+::v-deep .ivu-poptip-rel{
   top: -1px
 }
 </style>

@@ -694,7 +694,7 @@ export default {
       }
     }
   }
-  /deep/ .ivu-input-wrapper {
+  ::v-deep .ivu-input-wrapper {
     display: block;
     .ivu-input {
       height: 30px;
@@ -723,7 +723,7 @@ export default {
       margin-right: 2px;
     }
   }
-  /deep/ .ivu-tag-text{
+  ::v-deep .ivu-tag-text{
     >*{
       vertical-align: initial;
     }

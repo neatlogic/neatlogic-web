@@ -182,10 +182,10 @@ export default {
 <style lang="less" scoped>
 .auth-edit-wrap {
   display: flex;
-  /deep/ .ivu-checkbox-group {
+  ::v-deep .ivu-checkbox-group {
     width: 100%;
   }
-  /deep/ .ivu-checkbox-wrapper {
+  ::v-deep .ivu-checkbox-wrapper {
     width: 128px;
     white-space: nowrap;
   }

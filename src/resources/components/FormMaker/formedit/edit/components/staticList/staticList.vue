@@ -315,7 +315,7 @@ function getDefaultValue(list, value, index) {
     }
     &.td-check {
       padding-top: 8px;
-      /deep/ .ivu-checkbox-checked .ivu-checkbox-inner:after {
+      ::v-deep .ivu-checkbox-checked .ivu-checkbox-inner:after {
         top: -2px;
         left: -2px;
       }

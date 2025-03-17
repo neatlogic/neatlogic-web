@@ -333,7 +333,7 @@ export default {
       vertical-align: middle;
     }
   }
-  /deep/.btn-icon{
+  ::v-deep .btn-icon{
     vertical-align: baseline;
     margin: 0px;
     &::before{

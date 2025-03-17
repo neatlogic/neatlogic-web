@@ -898,7 +898,7 @@ html {
   }
 }
 .workcenter-table {
-  /deep/ .table-action {
+  ::v-deep .table-action {
     .icon-setting {
       padding-right: 9px;
       padding-left: 4px;
@@ -907,19 +907,19 @@ html {
 }
 .tstable-box {
   // 修复关注工单列左右间隙过大问题
-  /deep/ td:nth-of-type(1) {
+  ::v-deep td:nth-of-type(1) {
     padding-right: 0 !important;
   }
-  /deep/ td:nth-of-type(2) {
+  ::v-deep td:nth-of-type(2) {
     padding-right: 0 !important;
   }
-  /deep/ td:nth-of-type(2) {
+  ::v-deep td:nth-of-type(2) {
     padding-left: 4px !important;
   }
-  /deep/ th:nth-of-type(3) {
+  ::v-deep th:nth-of-type(3) {
     padding-left: 0 !important;
   }
-  /deep/ td:nth-of-type(3) {
+  ::v-deep td:nth-of-type(3) {
     padding-left: 0 !important;
   }
   .text-wrap {

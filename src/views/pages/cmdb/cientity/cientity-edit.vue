@@ -588,7 +588,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/.ivu-alert-with-desc {
+::v-deep .ivu-alert-with-desc {
   padding: 6px;
 }
 </style>

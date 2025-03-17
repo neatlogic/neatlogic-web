@@ -59,13 +59,13 @@ export default {
 </script>
 <style lang="less" scoped>
 .dark{
-  /deep/.ivu-switch.ivu-switch-checked{
+  ::v-deep .ivu-switch.ivu-switch-checked{
     background-color: var(--dark-switch, #96BEF8);
     border-color: var(--dark-switch, #96BEF8);
   }
 }
 .light{
-  /deep/.ivu-switch.ivu-switch-checked{
+  ::v-deep .ivu-switch.ivu-switch-checked{
      background-color: var(--light-switch, #0D4E5D);
      border-color: var(--light-switch, #0D4E5D);
   }

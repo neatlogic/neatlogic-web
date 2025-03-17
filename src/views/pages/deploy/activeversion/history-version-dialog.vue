@@ -145,14 +145,14 @@ export default {
       border: 2px solid @primary-grey;
       margin: 0 auto;
     }
-    /deep/ .ivu-timeline-item {
+    ::v-deep .ivu-timeline-item {
       padding-bottom: 30px;
     }
-    /deep/ .ivu-timeline-item-head {
+    ::v-deep .ivu-timeline-item-head {
       background: transparent !important;
        margin-top: 8px;
     }
-    /deep/ .ivu-timeline-item-tail {
+    ::v-deep .ivu-timeline-item-tail {
       border-left: 2px solid  @primary-grey !important;
       top: 8px !important;
     }

@@ -568,7 +568,7 @@ export default {
   text-decoration: none;
 }
 .nodeListLiqu {
-  /deep/.ivu-progress-bg {
+  ::v-deep .ivu-progress-bg {
     background-color: @default-disable!important;
   }
 }

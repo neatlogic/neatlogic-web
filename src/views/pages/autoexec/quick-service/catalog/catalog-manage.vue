@@ -431,13 +431,13 @@ export default {
 </script>
 <style lang="less" scoped>
 .service-management {
-  /deep/.tscontain-body {
+  ::v-deep .tscontain-body {
     padding-left: 0px !important;
   }
-  /deep/ .ivu-layout-content {
+  ::v-deep .ivu-layout-content {
     overflow-y: hidden;
   }
-  /deep/ .content {
+  ::v-deep .content {
     height: 100%;
     overflow: auto;
   }

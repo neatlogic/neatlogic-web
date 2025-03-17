@@ -665,7 +665,7 @@ export default {
   }
   .card-box {
     padding-top: 16px;
-    /deep/ .tscard-body {
+    ::v-deep .tscard-body {
       padding: 0 !important;
     }
   }
@@ -713,7 +713,7 @@ export default {
     overflow: hidden;
     border-left: 1px solid;
     padding-left: 24px;
-    /deep/ .ivu-alert {
+    ::v-deep .ivu-alert {
       padding: 8px;
     }
     .param-search {
@@ -736,7 +736,7 @@ export default {
       z-index: 2;
     }
     .param-card {
-      /deep/ .tscard-body {
+      ::v-deep .tscard-body {
         padding: 0 !important;
         position: relative;
         overflow: initial;
@@ -785,12 +785,12 @@ export default {
   }
   .form-box {
     .title-code {
-      /deep/ .CodeMirror-lines {
+      ::v-deep .CodeMirror-lines {
         min-height: 160px !important;
       }
     }
     .content-code {
-      /deep/ .CodeMirror-lines {
+      ::v-deep .CodeMirror-lines {
         min-height: 260px !important;
       }
     }

@@ -343,7 +343,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/.tstable-container tbody td{
+::v-deep .tstable-container tbody td{
     white-space: inherit!important;
 }
 .reportinstance-edit {

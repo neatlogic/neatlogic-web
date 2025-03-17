@@ -1729,10 +1729,10 @@ function getParent(node) {
 }
 </style>
 <style lang="less" scoped>
-// /deep/.ivu-tabs-bar {
+// ::v-deep .ivu-tabs-bar {
 //   margin-bottom: 0px !important;
 // }
-/deep/ .subTask-label {
+::v-deep .subTask-label {
   font-size: 12px;
   margin-left: 4px;
   border-radius: 16px;

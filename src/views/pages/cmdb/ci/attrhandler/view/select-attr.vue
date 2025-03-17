@@ -143,7 +143,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/.highlight {
+::v-deep .highlight {
   font-weight: bold;
   /* 保证和普通文字对齐 */
   line-height: 1; /* 确保高亮的行高与文字一致 */

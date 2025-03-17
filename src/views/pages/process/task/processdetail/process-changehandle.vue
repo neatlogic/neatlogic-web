@@ -888,7 +888,7 @@ export default {
   margin-right: 4px;
   border-radius: 20px;
 }
-/deep/ .ivu-layout-content{
+::v-deep .ivu-layout-content{
   overflow-y: scroll !important;
 }
 .line-bottom{

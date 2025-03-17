@@ -173,7 +173,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/.tscard-container .tscard-ul .tscard-li .tscard-body {
+::v-deep .tscard-container .tscard-ul .tscard-li .tscard-body {
   padding: 0px;
   .rel-container {
     text-align: right;

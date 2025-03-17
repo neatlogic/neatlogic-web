@@ -386,11 +386,11 @@ export default {
     }
   }
   .formItem {
-    /deep/ .ivu-input {
+    ::v-deep .ivu-input {
       background: transparent;
       cursor: pointer;
     }
-    /deep/ .ivu-input-suffix {
+    ::v-deep .ivu-input-suffix {
       .ivu-icon-ios-time-outline{
         display: none;
       }

@@ -476,7 +476,7 @@ export default {
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 .upload {
-  // /deep/ .ivu-upload {
+  // ::v-deep .ivu-upload {
   //   width: 125px;
   //   height: 125px;
   // }
@@ -508,7 +508,7 @@ export default {
   .upload_block {
     position: relative;
     margin-top: 8px;
-    /deep/ .ivu-upload {
+    ::v-deep .ivu-upload {
       width: 100%;
       height: 100%;
     }
@@ -543,20 +543,20 @@ export default {
     }
   }
   &.smallUpload {
-    /deep/ .ivu-upload {
+    ::v-deep .ivu-upload {
       width: 125px;
       height: 125px;
     }
-    /deep/ button {
+    ::v-deep button {
       margin: 0 !important;
     }
-    /deep/ .ivu-upload {
+    ::v-deep .ivu-upload {
       width: auto;
       height: auto;
       text-align: left;
       border-radius: 4px;
     }
-    /deep/ .ivu-upload-drag {
+    ::v-deep .ivu-upload-drag {
       border: none;
       background: transparent;
     }

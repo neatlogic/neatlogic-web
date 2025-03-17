@@ -615,7 +615,7 @@ html {
 }
 </style>
 <style lang="less" scoped>
-/deep/.tscard-footer {
+::v-deep .tscard-footer {
   background-color: transparent!important;
 }
 .workcenter-card-item{
@@ -629,10 +629,10 @@ html {
     visibility:visible;
   }
 }
-/deep/.userWidth{
+::v-deep .userWidth{
   max-width: inherit!important;
 }
-/deep/ .score-container {
+::v-deep .score-container {
   text-align: left;
   margin-top: -6px;
   .score-content {

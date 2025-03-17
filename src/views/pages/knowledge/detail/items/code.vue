@@ -45,7 +45,7 @@ export default {
 <style lang="less" scoped>
 .edit-code{
   padding:10px 0px ;
-  /deep/.tscodemirror.disabled .CodeMirror-line{
+  ::v-deep .tscodemirror.disabled .CodeMirror-line{
     opacity: 1;
   }
 }

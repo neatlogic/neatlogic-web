@@ -467,16 +467,16 @@ export default {
       margin-left: 8px;
       &.user-select {
         width: 100px;
-        /deep/ .ivu-dropdown {
+        ::v-deep .ivu-dropdown {
           display: block;
         }
       }
       &.date-range {
         width: 225px;
-        /deep/ .timeselect-contain {
+        ::v-deep .timeselect-contain {
           display: block;
         }
-        /deep/ .search-input {
+        ::v-deep .search-input {
           height: 32px;
         }
       }
@@ -489,7 +489,7 @@ export default {
   .menu-tree {
     padding-left: 12px;
   }
-  /deep/ .ivu-layout-content {
+  ::v-deep .ivu-layout-content {
     padding-right: 16px;
   }
 }

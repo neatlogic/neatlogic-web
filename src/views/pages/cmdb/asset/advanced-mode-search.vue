@@ -932,7 +932,7 @@ export default {
     }
   }
 .ivu-dropdown {
-  /deep/ .ivu-select-dropdown {
+  ::v-deep .ivu-select-dropdown {
     width: 100%;
   }
  }

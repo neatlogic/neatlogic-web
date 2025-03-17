@@ -171,13 +171,13 @@ export default {
 <style lang="less" scoped>
 @import "./src/common.less";
 .runner-relate-wrap {
-  /deep/ .tscontain-header {
+  ::v-deep .tscontain-header {
     height: 0;
   }
-  /deep/ .tstable-body {
+  ::v-deep .tstable-body {
     height: 0;
   }
-  /deep/ .tscontain-body {
+  ::v-deep .tscontain-body {
     padding-left: 0 !important;
     padding-right: 0 !important;
   }

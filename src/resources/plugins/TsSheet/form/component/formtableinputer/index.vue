@@ -876,7 +876,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .forminputtable-upload {
-  /deep/ .ivu-upload-drag {
+  ::v-deep .ivu-upload-drag {
     border: none;
     background: transparent;
   }

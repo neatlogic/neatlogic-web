@@ -316,7 +316,7 @@ export default {
     white-space: nowrap;
   }
   .db-user-text-box {
-    /deep/ .form-li {
+    ::v-deep .form-li {
       display: inline-block;
     }
   }

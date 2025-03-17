@@ -1615,7 +1615,7 @@ function setWidth($contain, $target, transfer) {
       white-space: nowrap;
     }
   }
-  /deep/ .ivu-select-dropdown {
+  ::v-deep .ivu-select-dropdown {
     width: auto;
     max-height: 200px;
     overflow: auto;
@@ -1670,7 +1670,7 @@ function setWidth($contain, $target, transfer) {
         display: block;
       }
     }
-    /deep/ .ivu-tag {
+    ::v-deep .ivu-tag {
       max-width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1709,7 +1709,7 @@ function setWidth($contain, $target, transfer) {
   .tsform-select-disabled {
     .select-top {
       cursor: not-allowed;
-      /deep/ .ivu-tag .ivu-tag-text {
+      ::v-deep .ivu-tag .ivu-tag-text {
         margin-right: 0px;
       }
     }

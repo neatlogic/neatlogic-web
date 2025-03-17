@@ -531,7 +531,7 @@ export default {
       border: none;
     }
   }
-  /deep/.notify-card {
+  ::v-deep .notify-card {
     .search-box {
       display: flex;
       justify-content: space-between;
@@ -577,7 +577,7 @@ export default {
   .notifytactics-card {
     position: relative;
   }
-  /deep/.ivu-tabs-bar {
+  ::v-deep .ivu-tabs-bar {
     margin-bottom: 0px !important;
   }
 }

@@ -291,13 +291,13 @@ export default {
     }
   }
   .form-wrap {
-    /deep/.ivu-btn > span {
+    ::v-deep .ivu-btn > span {
       vertical-align: top;
     }
   }
   .login-int {
     width: 336px;
-    /deep/.ivu-input {
+    ::v-deep .ivu-input {
       border: 1px solid var(--input-border, @input-border) !important;
       height: 42px;
       line-height: 42px;
@@ -305,21 +305,21 @@ export default {
       background: var(--bg-op, @bg-op);
       color: var(--text-color, @text-color);
     }
-    /deep/.ivu-input:focus {
+    ::v-deep .ivu-input:focus {
       box-shadow: 0 0 0 2px var(--bg-op, @bg-op) !important;
       background: transparent !important;
     }
-    /deep/ input:-webkit-autofill,
-    /deep/ input:-webkit-autofill:hover,
-    /deep/ input:-webkit-autofill:focus,
-    /deep/ input:-webkit-autofill:active {
+    ::v-deep input:-webkit-autofill,
+    ::v-deep input:-webkit-autofill:hover,
+    ::v-deep input:-webkit-autofill:focus,
+    ::v-deep input:-webkit-autofill:active {
       box-shadow: 0 0 0 1000px var(--bg-op, @bg-op) inset !important; // 自动填充背景颜色，用阴影来填充
       transition-delay: 99999s; // 延迟
       transition: color 99999s ease-out, background-color 99999s ease-out;
       -webkit-text-fill-color: var(--text-color, @text-color) !important; // 自动填充，字体的颜色
     }
-    /deep/.ivu-input-prefix i,
-    /deep/.ivu-input-suffix i {
+    ::v-deep .ivu-input-prefix i,
+    ::v-deep .ivu-input-suffix i {
       line-height: 40px;
     }
   }

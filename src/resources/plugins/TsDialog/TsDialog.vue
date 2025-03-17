@@ -513,7 +513,7 @@ function getWidth(width) {
 @import './dialog.less';
 </style>
 <style lang="less" scoped>
-/deep/.ivu-btn-icon-only {
+::v-deep .ivu-btn-icon-only {
   padding: 0 15px;
   width: initial;
 }

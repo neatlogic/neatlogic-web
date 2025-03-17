@@ -111,7 +111,7 @@ export default {
 .formsetting-block{
   position: relative;
 }
-/deep/.ivu-upload{
+::v-deep .ivu-upload{
   position: absolute;
   top: 3px;
   left: 32px;

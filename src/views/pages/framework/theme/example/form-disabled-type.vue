@@ -85,7 +85,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .dark{
-   /deep/ .ivu-checkbox-disabled,.ivu-checkbox-wrapper-disabled {
+   ::v-deep .ivu-checkbox-disabled,.ivu-checkbox-wrapper-disabled {
     &.ivu-checkbox-checked {
       .ivu-checkbox-inner {
         background-color: var(--dark-form-disabled, #0D4E5D);
@@ -93,7 +93,7 @@ export default {
       }
     }
   }
-  /deep/ .ivu-radio-disabled,.ivu-radio-wrapper-disabled {
+  ::v-deep .ivu-radio-disabled,.ivu-radio-wrapper-disabled {
       &.ivu-radio-checked {
         .ivu-radio-inner {
           background-color: var(--dark-form-disabled, #0D4E5D);
@@ -103,7 +103,7 @@ export default {
     }
 }
 .light{
-  /deep/ .ivu-checkbox-disabled,.ivu-checkbox-wrapper-disabled {
+  ::v-deep .ivu-checkbox-disabled,.ivu-checkbox-wrapper-disabled {
     &.ivu-checkbox-checked {
       .ivu-checkbox-inner {
         background-color: var(--light-form-disabled, #96BEF8);
@@ -111,7 +111,7 @@ export default {
       }
     }
   }
-   /deep/ .ivu-radio-disabled,.ivu-radio-wrapper-disabled {
+   ::v-deep .ivu-radio-disabled,.ivu-radio-wrapper-disabled {
       &.ivu-radio-checked {
         .ivu-radio-inner {
           background-color: var(--light-form-disabled, #96BEF8) !important;

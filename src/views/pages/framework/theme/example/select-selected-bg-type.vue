@@ -1,10 +1,6 @@
 <template>
   <div>
-    <TsFormSelect
-      v-model="value"
-      :dataList="dataList"
-      :class="type"
-    ></TsFormSelect>
+    <TsFormSelect v-model="value" :dataList="dataList" :class="type"></TsFormSelect>
   </div>
 </template>
 <script>
@@ -13,7 +9,7 @@ export default {
   components: {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
-  props: {item: Object, type: String},
+  props: { item: Object, type: String },
   data() {
     return {
       dataList: [
@@ -56,31 +52,33 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.dark{
-  /deep/ .ivu-input:not([disabled]):focus, /deep/ .ivu-input:not([disabled]):hover {
+.dark {
+  ::v-deep .ivu-input:not([disabled]):focus,
+  ::v-deep .ivu-input:not([disabled]):hover {
     border-color: var(--dark-select-selected-bg, #1670f0);
   }
-  /deep/.ivu-dropdown-item {
-    &:hover{
-      background-color: var(--dark-select-selected-bg, #F0F0F0)!important;
+  ::v-deep .ivu-dropdown-item {
+    &:hover {
+      background-color: var(--dark-select-selected-bg, #f0f0f0) !important;
     }
     &.selected {
       color: #212121;
-      background-color: var(--dark-select-selected-bg, #F0F0F0);
+      background-color: var(--dark-select-selected-bg, #f0f0f0);
     }
   }
 }
-.light{
-   /deep/ .ivu-input:not([disabled]):focus, /deep/ .ivu-input:not([disabled]):hover {
+.light {
+  ::v-deep .ivu-input:not([disabled]):focus,
+  ::v-deep .ivu-input:not([disabled]):hover {
     border-color: var(--light-select-selected-bg, #1670f0);
   }
-  /deep/.ivu-dropdown-item {
-    &:hover{
-      background-color: var(--light-select-selected-bg, #F0F0F0)!important;
+  ::v-deep .ivu-dropdown-item {
+    &:hover {
+      background-color: var(--light-select-selected-bg, #f0f0f0) !important;
     }
     &.selected {
       color: #212121;
-      background-color: var(--light-select-selected-bg, #F0F0F0);
+      background-color: var(--light-select-selected-bg, #f0f0f0);
     }
   }
 }

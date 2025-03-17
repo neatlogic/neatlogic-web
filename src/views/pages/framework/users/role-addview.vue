@@ -725,15 +725,15 @@ export default {
 <style lang="less" scoped>
 @import '~@/resources/assets/css/framework/manage.less';
 .role-addview {
-  /deep/ .top {
+  ::v-deep .top {
     button {
       margin-left: 8px;
     }
   }
-  /deep/.tscontain-body{
+  ::v-deep .tscontain-body{
     overflow: hidden;
   }
-  /deep/ .content {
+  ::v-deep .content {
     height: 100%;
     .step {
       width: 50%;
@@ -753,13 +753,13 @@ export default {
       }
     }
   }
-  /deep/ .ivu-tabs-nav .ivu-tabs-tab {
+  ::v-deep .ivu-tabs-nav .ivu-tabs-tab {
     padding: 0px;
   }
-  /deep/ .ivu-tabs-bar {
+  ::v-deep .ivu-tabs-bar {
     border: none;
   }
-  /deep/ .ivu-tabs {
+  ::v-deep .ivu-tabs {
     height: 100%;
   }
 }
@@ -767,7 +767,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  /deep/ .ivu-modal {
+  ::v-deep .ivu-modal {
     top: 12px;
   }
 }

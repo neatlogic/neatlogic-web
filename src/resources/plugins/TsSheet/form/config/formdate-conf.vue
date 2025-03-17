@@ -475,10 +475,10 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ .ivu-radio-group {
+::v-deep .ivu-radio-group {
   width: 100%;
 }
-/deep/ .ivu-radio-group-item  {
+::v-deep .ivu-radio-group-item  {
   width: calc(50% - 16px);
 }
 .filter-row {

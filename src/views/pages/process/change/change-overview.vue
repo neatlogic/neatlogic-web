@@ -263,7 +263,7 @@ export default {
 };
 </script>
 <style lang='less' scoped>
-/deep/.tscard-header{
+::v-deep .tscard-header{
   right: 10px !important;
   opacity: 1 !important;
 }

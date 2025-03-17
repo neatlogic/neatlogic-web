@@ -27,7 +27,11 @@
                       <Tag class="ivu-tag">{{ team.name }}</Tag>
                       <div slot="content">
                         <div v-for="(item, index) in team.teamList" :key="index">
-                          <p v-if="item.name && item.childrenTeamName">{{ item.name }} <span class="tsfont-arrow-right"></span> {{ item.childrenTeamName }}</p>
+                          <p v-if="item.name && item.childrenTeamName">
+                            {{ item.name }}
+                            <span class="tsfont-arrow-right"></span>
+                            {{ item.childrenTeamName }}
+                          </p>
                           <p v-else>{{ item.name || item.childrenTeamName }}</p>
                         </div>
                       </div>
@@ -37,11 +41,9 @@
                 <template v-slot:token>
                   <div>
                     <span class="mr-md">{{ userToken }}</span>
-                    <span><Button
-                      size="small"
-                      type="default"
-                      @click="resetCurrentUserToken()"
-                    >{{ $t('term.framework.recreate') }}</Button></span>
+                    <span>
+                      <Button size="small" type="default" @click="resetCurrentUserToken()">{{ $t('term.framework.recreate') }}</Button>
+                    </span>
                   </div>
                 </template>
               </TsForm>
@@ -56,11 +58,7 @@
               <div v-show="paneName === 'convenience'">
                 <div class="convenience">
                   <p class="title">{{ $t('term.framework.popupalert') }}</p>
-                  <TsTable
-                    v-bind="tableConfig"
-                    :theadList="theadList"
-                    :hideAction="false"
-                  >
+                  <TsTable v-bind="tableConfig" :theadList="theadList" :hideAction="false">
                     <template v-slot:checked="{ row }">
                       <i-switch
                         v-model="row.checked"
@@ -238,7 +236,7 @@ export default {
           maxlength: 50,
           width: 250,
           label: this.$t('page.username'),
-          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('page.username')}) }, { name: 'name-special' }]
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', { target: this.$t('page.username') }) }, { name: 'name-special' }]
         },
         {
           type: 'tel',
@@ -251,7 +249,7 @@ export default {
           maxlength: 11,
           width: 250,
           label: this.$t('page.phone'),
-          validateList: [{ name: 'phone', message: this.$t('message.pleaseentertruetarget', {target: this.$t('page.phonenumber')}) }]
+          validateList: [{ name: 'phone', message: this.$t('message.pleaseentertruetarget', { target: this.$t('page.phonenumber') }) }]
         },
         {
           type: 'email',
@@ -264,7 +262,7 @@ export default {
           maxlength: 50,
           width: 250,
           label: this.$t('page.email'),
-          validateList: [{ name: 'mail', message: this.$t('message.pleaseentertruetarget', {target: this.$t('page.email')}) }]
+          validateList: [{ name: 'mail', message: this.$t('message.pleaseentertruetarget', { target: this.$t('page.email') }) }]
         },
         {
           type: 'slot',
@@ -294,7 +292,7 @@ export default {
           width: 250,
           label: this.$t('term.framework.currentpwd'),
           showPassword: true,
-          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.framework.currentpwd')}) }]
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', { target: this.$t('term.framework.currentpwd') }) }]
         },
         {
           type: 'password',
@@ -308,7 +306,7 @@ export default {
           label: this.$t('term.framework.newpwd'),
           showPassword: true,
           validateList: [
-            { name: 'required', message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.framework.newpwd')}) },
+            { name: 'required', message: this.$t('form.placeholder.pleaseinput', { target: this.$t('term.framework.newpwd') }) },
             {
               name: 'passcode',
               message: this.$t('message.passcode')
@@ -517,13 +515,11 @@ export default {
     },
     //个性化保存
     saveProfile: function(data) {
-      this.$api.framework.user
-        .saveProfile(data)
-        .then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.executesuccess'));
-          }
-        });
+      this.$api.framework.user.saveProfile(data).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.executesuccess'));
+        }
+      });
     }
   },
   computed: {
@@ -541,7 +537,7 @@ export default {
       return this.$store.state.topMenu.moduleList;
     },
     canShow() {
-      return this.hasAuth && !this.$utils.isEmpty(this.moduleList) && this.moduleList.some((v) => v.moduleId == 'process');
+      return this.hasAuth && !this.$utils.isEmpty(this.moduleList) && this.moduleList.some(v => v.moduleId == 'process');
     }
   }
 };
@@ -551,8 +547,8 @@ export default {
 .user_setting {
   position: relative;
   .user_content {
-    // /deep/.ivu-tabs {
-    //   /deep/.ivu-tabs-bar{
+    // ::v-deep .ivu-tabs {
+    //   ::v-deep .ivu-tabs-bar{
     //     border-bottom: 0px solid #ccc!important;
     //   }
     // }
@@ -617,13 +613,13 @@ export default {
 }
 </style>
 <style lang="less" scoped>
-/deep/.ivu-tabs-bar{
-  border-bottom: 0px solid #ccc!important;
+::v-deep .ivu-tabs-bar {
+  border-bottom: 0px solid #ccc !important;
 }
-.tsfont-arrow-right{
+.tsfont-arrow-right {
   font-size: 12px;
 }
-/deep/ .tscontain-body{
+::v-deep .tscontain-body {
   height: calc(100vh - 50px - 16px) !important;
 }
 </style>

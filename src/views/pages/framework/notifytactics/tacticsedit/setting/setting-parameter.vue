@@ -315,7 +315,7 @@ export default {
   }
   .card-box {
     padding-top: 16px;
-    /deep/ .tscard-body {
+    ::v-deep .tscard-body {
       overflow: initial;
       padding: 0 !important;
       position: relative;
