@@ -1,7 +1,7 @@
 <template>
   <div>
     <div :class="{ padding: mode === 'window' }">
-      <div v-if="needToolbar" class="grid-deprecated">
+      <div v-if="needToolbar">
         <div class="action-group">
           <div class="action-item">
             <Dropdown placement="bottom-start">
@@ -94,8 +94,8 @@
           </div>
         </div>
         <Divider orientation="left">
-          <span class="text-href" @click="isShowFilter = !isShowFilter">过滤</span>
-          <span class="text-href" :class="{ 'tsfont-drop-down': !isShowFilter, 'tsfont-drop-up': isShowFilter }" @click="isShowFilter = !isShowFilter"></span>
+          <span class="text-href" :class="{ 'tsfont-drop-right': !isShowFilter, 'tsfont-drop-down': isShowFilter }" @click="isShowFilter = !isShowFilter"></span>
+          <span class="text-href" @click="isShowFilter = !isShowFilter">{{ $t('page.filters') }}</span>
         </Divider>
         <div v-if="isShowFilter">
           <TsFormItem label="关键字">
@@ -126,22 +126,6 @@
           <Divider></Divider>
         </div>
       </div>
-      <!--<div v-if="needToolbar && globalAttrList && globalAttrList.length > 0" class="mb-md">
-        <span v-for="(attr, index) in globalAttrList" :key="index" class="mr-md mb-md">
-          <span class="mr-md">
-            <b class="text-grey">{{ attr.label }}</b>
-          </span>
-          <Tag
-            v-for="(item, iindex) in attr.itemList"
-            :key="iindex"
-            :color="isAttrActive(attr, item) ? 'primary' : 'default'"
-            class="cursor"
-            @click.native="toggleAttr(attr, item)"
-          >
-            {{ item.value }}
-          </Tag>
-        </span>
-      </div>-->
       <div style="position: relative">
         <div v-if="needToolbar && currentTemplate && currentTemplate.config && currentTemplate.config.ciRelList && currentTemplate.config.ciRelList.length > 0" class="mb-md">
           <span v-for="(p, pindex) in currentTemplate.config.ciRelList" :key="pindex">
@@ -216,7 +200,9 @@ export default {
     needToolbar: { type: Boolean, default: true },
     ciEntityId: { type: Number },
     ciId: { type: Number },
-    height: { type: Number }
+    height: { type: Number },
+    templateId: {type: Number},
+    globalAttrFilter: { type: Array }
   },
   data() {
     return {
@@ -272,7 +258,14 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.globalAttrFilter && this.globalAttrFilter.length > 0) {
+      this.searchParam.globalAttrFilterList = this.globalAttrFilter;
+      this.globalAttrFilter.forEach(d => {
+        this.searchParam.globalAttrFilterList.push({ ...d, expression: 'like' });
+      });
+    }
+  },
   beforeMount() {},
   async mounted() {
     this.searchGlobalAttr();
@@ -280,7 +273,12 @@ export default {
     await this.getCiTopoTemplateByCiId();
     this.$set(this.searchParam, 'level', 3);
     if (this.ciTopoTemplateList && this.ciTopoTemplateList.length > 0) {
-      const template = this.ciTopoTemplateList.find(d => d.isActive && d.isDefault);
+      let template;
+      if (this.templateId) {
+        template = this.ciTopoTemplateList.find(d => d.id === this.templateId);
+      } else {
+        template = this.ciTopoTemplateList.find(d => d.isActive && d.isDefault);
+      }
       if (template) {
         this.showTopoTemplate(template);
       }
@@ -384,7 +382,6 @@ export default {
       if (item && item.length > 0) {
         valueList = item.map(d => d.id);
       }
-      //if (!this.isAttrActive(attr, item)) {
       if (!this.searchParam.globalAttrFilterList.find(d => d.attrId === attr.id)) {
         this.searchParam.globalAttrFilterList.push({ attrId: attr.id, expression: 'like', valueList: valueList });
       } else {
@@ -393,18 +390,6 @@ export default {
           this.$set(a, 'valueList', valueList);
         }
       }
-      /*} else {
-        const aindex = this.searchParam.globalAttrFilterList.findIndex(d => d.attrId === attr.id);
-        if (aindex > -1) {
-          const index = this.searchParam.globalAttrFilterList[aindex].valueList.findIndex(d => d === item.id);
-          if (index > -1) {
-            this.searchParam.globalAttrFilterList[aindex].valueList.splice(index, 1);
-          }
-          if (this.searchParam.globalAttrFilterList[aindex].valueList.length === 0) {
-            this.searchParam.globalAttrFilterList.splice(aindex, 1);
-          }
-        }
-      }*/
     },
     searchGlobalAttr() {
       this.$api.cmdb.globalattr.searchGlobalAttr({ isActive: 1 }).then(res => {
@@ -587,7 +572,7 @@ export default {
                     this.toCiEntityView(ids[1], ids[2]);
                   }
                 });
-                
+
                 /*d3.selectAll('.cinode').each(function() {
                   const g = d3.select(this);
                   const img = g.select('image');
@@ -617,38 +602,25 @@ export default {
                       if (g && color) {
                         const img = g.select('image');
                         const bbox = img.node().getBBox();
-                        console.log(bbox.x);
                         //图标底色
                         g.insert('circle', ':first-child')
                           .attr('r', 24)
                           .attr('fill', 'red')
                           .attr('class', 'cientitybg')
-                          .attr('cx', bbox.x + 18) 
-                          .attr('cy', bbox.y + 18); 
+                          .attr('cx', bbox.x + 18)
+                          .attr('cy', bbox.y + 18);
                         const warnCircle = g
                           .insert('circle', ':first-child')
-                          .attr('cx', bbox.x + 18) 
-                          .attr('cy', bbox.y + 18) 
+                          .attr('cx', bbox.x + 18)
+                          .attr('cy', bbox.y + 18)
                           .attr('r', 24)
                           .attr('fill', color)
                           .attr('stroke-width', 0)
                           .attr('fill-opacity', 1);
 
-                        warnCircle
-                          .append('animate') 
-                          .attr('attributeName', 'r')
-                          .attr('from', 24)
-                          .attr('to', 40)
-                          .attr('dur', '1s')
-                          .attr('repeatCount', 'indefinite');
+                        warnCircle.append('animate').attr('attributeName', 'r').attr('from', 24).attr('to', 40).attr('dur', '1s').attr('repeatCount', 'indefinite');
 
-                        warnCircle 
-                          .append('animate') 
-                          .attr('attributeName', 'fill-opacity')
-                          .attr('from', 0.7)
-                          .attr('to', 0)
-                          .attr('dur', '1s')
-                          .attr('repeatCount', 'indefinite');
+                        warnCircle.append('animate').attr('attributeName', 'fill-opacity').attr('from', 0.7).attr('to', 0).attr('dur', '1s').attr('repeatCount', 'indefinite');
                       }
                     });
                   }, 1000);
@@ -811,7 +783,7 @@ export default {
 };
 </script>
 <style lang="less">
-@import '../public/graphviz.less';
+@import '@/views/pages/cmdb/public/graphviz.less';
 </style>
 <style lang="less" scoped>
 .grid {

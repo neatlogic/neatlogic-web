@@ -8,7 +8,12 @@
           :config="topicData.config"
           @setConfig="setConfig"
         ></component>
-        <TsForm v-else-if="!topicData || !topicData.isEmbed" v-model="topicData" :item-list="formConfig">
+        <TsForm
+          v-else-if="!topicData || !topicData.isEmbed"
+          ref="formConfig"
+          v-model="topicData"
+          :item-list="formConfig"
+        >
           <template v-slot:handler>
             <TsFormRadio
               v-if="handlerList && handlerList.length > 0"
@@ -70,11 +75,6 @@ export default {
         isActive: {
           type: 'switch',
           label: this.$t('term.report.isactive')
-        },
-        description: {
-          type: 'textarea',
-          label: this.$t('page.explain'),
-          maxlength: 500
         }
       },
       dialogConfig: {
@@ -116,6 +116,9 @@ export default {
       this.$emit('close', needRefresh);
     },
     confirm() {
+      if (this.$refs.formConfig && !this.$refs.formConfig.valid()) {
+        return;
+      }
       this.topicData.config = this.configLocal;
       this.$api.framework.mq.saveTopic(this.topicData).then(res => {
         if (res.Status === 'OK') {

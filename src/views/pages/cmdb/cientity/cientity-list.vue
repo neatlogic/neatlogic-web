@@ -16,7 +16,12 @@
         </div>
         <div style="text-align: right" class="action-group">
           <div v-if="!isAdvancedSearch && needExport" class="action-item">
-            <Button type="primary" :ghost="true" @click="isExportDialogShow = true">{{ $t('page.export') }}</Button>
+            <Button
+              v-auth="'CIENTITY_EXPORT'"
+              type="primary"
+              :ghost="true"
+              @click="isExportDialogShow = true"
+            >{{ $t('page.export') }}</Button>
           </div>
           <div v-if="needCondition" class="action-item">
             <TsFormInput
@@ -29,9 +34,8 @@
             ></TsFormInput>
           </div>
           <div v-if="needCondition && attrList && attrList.length > 0" class="action-item">
-            <span @click="isAdvancedSearch = !isAdvancedSearch">
+            <span :class="isAdvancedSearch ? 'tsfont-drop-down' : 'tsfont-drop-right'" @click="isAdvancedSearch = !isAdvancedSearch">
               {{ $t('page.advancesearch') }}
-              <i :class="isAdvancedSearch ? 'tsfont-drop-up' : 'tsfont-drop-down'"></i>
             </span>
           </div>
         </div>
@@ -203,6 +207,7 @@
           </TsRow>
           <div style="text-align: right" class="mt-md">
             <Button
+              v-auth="'CIENTITY_EXPORT'"
               type="primary"
               :ghost="true"
               class="mr-md"
@@ -220,6 +225,7 @@
           <DslEditor v-model="searchParam.dsl" :suggestList="suggestList"></DslEditor>
           <div style="text-align: right" class="mt-md">
             <Button
+              v-auth="'CIENTITY_EXPORT'"
               type="primary"
               :ghost="true"
               class="mr-md"
@@ -595,7 +601,6 @@ export default {
             attrList.forEach(attr => {
               this.suggestList.push(attr.name);
             });
-            console.log(JSON.stringify(this.suggestList, null, 2));
           }
         });
       }

@@ -19,6 +19,7 @@
       <TsTable
         v-bind="tableConfig"
         :theadList="envTheadList"
+        :fixedHeader="false"
         @changeCurrent="changeCurrentAutoConfig"
         @changePageSize="changePageSizeAutoConfig"
       >
@@ -57,6 +58,7 @@
           v-bind="tableConfig"
           :theadList="envTheadList"
           :tbodyList="item.keyValueList"
+          :fixedHeader="false"
         >
           <template slot="value" slot-scope="{row}">
             <span>{{ row.hasOwnProperty('value') && !row.value ? $t('page.settonull') : (row.value || '-') }}</span>
@@ -259,6 +261,7 @@ export default {
 <style lang="less" scoped>
 .env-autoconfig-box {
   height: calc(100vh - 50px - 50px - 32px - 16px);
+  overflow-y: auto;
   &.env-autoconfig-radius {
   border-radius: 0 10px 10px;
   }

@@ -23,7 +23,11 @@
           @changePageSize="updatePagesize"
         >
           <template slot="name" slot-scope="{ row }">
-            <a href="#" @click="showReport(row.id)">{{ row.name }}</a>
+            <!-- 
+               <a href="#" @click="showReport(row.id)">{{ row.name }}</a>
+               在a标签上，同时有href和点击事件时，点击事件会先执行，然后才会执行默认的href行为，所以会跳转两次，最后跳转到report.html#/
+             -->
+            <span class="text-href cursor" @click="showReport(row.id)">{{ row.name }}</span>
           </template>
           <template slot="isActive" slot-scope="{ row }">
             <span v-if="row.isActive" class="text-success">{{ $t('page.yes') }}</span>

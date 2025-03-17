@@ -29,6 +29,11 @@
         width="100%"
         :showIconToggle="true"
         :placeholder="$t('term.process.workordersuggestion')"
+        :params="{
+          uploadVideoConfig: {
+            type: 'itsm',
+          }
+        }"
         @on-change="content = $event"
       ></TsCkeditor>
     </div>

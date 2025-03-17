@@ -34,22 +34,24 @@
             </div>
           </template>
           <template v-slot:topicName>
-            <span v-if="!subscribeData.handler" class="text-grey">请先选择消息队列类型</span>
-            <TsFormSelect
-              v-else
-              :value="subscribeData.topicName"
-              :dataList="topicList"
-              transfer
-              border="border"
-              valueName="name"
-              :validateList="['required']"
-              textName="label"
-              @on-change="
-                name => {
-                  subscribeData.topicName = name;
-                }
-              "
-            ></TsFormSelect>
+            <div>
+              <span v-if="!subscribeData.handler" class="text-grey">请先选择消息队列类型</span>
+              <TsFormSelect
+                v-else
+                :value="subscribeData.topicName"
+                :dataList="topicList"
+                transfer
+                border="border"
+                valueName="name"
+                :validateList="['required']"
+                textName="label"
+                @on-change="
+                  name => {
+                    $set(subscribeData,'topicName', name);
+                  }
+                "
+              ></TsFormSelect>
+            </div>
           </template>
         </TsForm>
       </template>

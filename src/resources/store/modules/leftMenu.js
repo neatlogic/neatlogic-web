@@ -13,6 +13,7 @@ const state = {
   isKnowledgeCircleUpdated: true, //知识圈是否更新了Data
   cmdbCustomViewCount: 0, //CMDB自定义视图数量
   rdmProjectCount: 0, //RDM项目数量
+  alertViewCount: 0, //告警视图数量
   workCenterMenuData: null, //工单分类接口返回数据
   workcenterList: null,
   dashboardCount: 0, //仪表板数量
@@ -112,6 +113,13 @@ const mutations = {
       state.rdmProjectCount++;
     } else {
       state.rdmProjectCount--;
+    }
+  },
+  setAlertViewCount(state, data) {
+    if (data === 'add') {
+      state.alertViewCount++;
+    } else {
+      state.alertViewCount--;
     }
   },
   setDashboardCount(state, data) {

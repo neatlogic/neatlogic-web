@@ -36,13 +36,22 @@
                 @on-change="toggleTopicActive(row)"
               ></TsFormSwitch>
             </li>
-            <li v-if="row.hasConfig" @click="editTopic(row)">{{ $t('page.edit') }}</li>
+            <li @click="testTopic(row)">{{ $t('page.test') }}</li>
+            <li v-if="!row.isEmbed" @click="editTopic(row)">{{ $t('page.edit') }}</li>
             <li v-if="!row.isEmbed" @click="deleteTopic(row)">{{ $t('page.delete') }}</li>
           </ul>
         </div>
       </template>
     </TsTable>
     <MqTopicEdit v-if="isShowEdit" :name="currentTopicName" @close="closeTopicEdit"></MqTopicEdit>
+    <TopicTestDialog
+      v-if="isShowTest"
+      :name="currentTopicName"
+      @close="
+        isShowTest = false;
+        currentTopicName = null;
+      "
+    ></TopicTestDialog>
   </div>
 </template>
 <script>
@@ -51,12 +60,14 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    MqTopicEdit: () => import('@/views/pages/framework/mq/mq-topic-edit.vue')
+    MqTopicEdit: () => import('@/views/pages/framework/mq/mq-topic-edit.vue'),
+    TopicTestDialog: () => import('@/views/pages/framework/mq/mq-topic-test-dialog.vue')
   },
   props: {},
   data() {
     return {
       isShowEdit: false,
+      isShowTest: false,
       currentTopicName: null,
       topicData: {
         theadList: [
@@ -64,7 +75,6 @@ export default {
           { key: 'label', title: this.$t('page.name') },
           { key: 'handlerName', title: this.$t('term.framework.mqhandler') },
           { key: 'isActive', title: this.$t('page.enable') },
-          { key: 'description', title: this.$t('page.explain') },
           { key: 'action', title: '' }
         ]
       }
@@ -91,6 +101,10 @@ export default {
         this.currentTopicName = null;
       }
     },
+    testTopic(topic) {
+      this.isShowTest = true;
+      this.currentTopicName = topic.name;
+    },
     closeTopicEdit(needRefresh) {
       this.isShowEdit = false;
       this.currentTopicName = null;
@@ -114,7 +128,7 @@ export default {
     deleteTopic(topic) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {'target': this.$t('page.theme')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.theme') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.mq.deleteTopic(topic.name).then(res => {

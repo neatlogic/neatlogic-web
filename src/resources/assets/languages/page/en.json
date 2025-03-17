@@ -1046,5 +1046,19 @@
   "screenshot": "screenshot",
   "errorreadingclipboarddata": "Error reading clipboard data",
   "noimageresourcesfoundintheclipboard": "There are no image resources in the clipboard",
-  "nodatafoundintheclipboard": "There is no data in the clipboard"
+  "nodatafoundintheclipboard": "There is no data in the clipboard",
+  "sendsucceed": "Sent successfully",
+  "pleasepastescreenshotfromtheclipboard": "Please paste a screenshot of the clipboard",
+  "pastethescreenshotfromtheclipboardintotheinputboxbelow": "Copy and paste the screenshot of the clipboard into the input box below:",
+  "pastethescreenshotfromtheclipboard": "Paste clipboard screenshot",
+  "scriptlanguage": "scripting language",
+  "example": "for example",
+  "copyerrorinfo": "Copy error message",
+  "loadingfailed": "Load Fail",
+  "topo": "Topology Map",
+  "movetothetop": "Move to the top level",
+  "movetothebottom": "Move to the bottom layer",
+  "pastehere": "Paste here",
+  "dragthecanvas": "Drag and drop canvas",
+  "rubberband": "Frame Select"
 }

@@ -1,20 +1,30 @@
 <template>
   <div class="job-detail border-radius">
-    <TsContain :siderWidth="258" :enableCollapse="true">
+    <TsContain
+      ref="jobDetailContain"
+      :siderWidth="258"
+      :enableCollapse="true"
+      @toggleSiderHide="toggleSiderHide"
+    >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
         <div class="action-group">
           <div class="action-item">
-            <strong class="text-grey">{{ jobData.name }}</strong>
+            <strong
+              :title="jobData.name"
+              class="text-grey overflow"
+              style="display: inline-block;line-height: normal;vertical-align: middle;"
+              :style="{maxWidth: jobNameWidth + 'px'}"
+            >{{ jobData.name }}</strong>
           </div>
           <div class="action-item" style="padding: 0px"><Divider type="vertical" style="margin: 0px" /></div>
-          <div class="action-item">
+          <div ref="userRef" class="action-item">
             <UserCard :uuid="jobData.execUser"></UserCard>
           </div>
           <div class="action-item" style="padding: 0px"><Divider type="vertical" style="margin: 0px" /></div>
-          <div class="action-item"><Status
+          <div ref="statusRef" class="action-item"><Status
             v-if="jobData.status"
             :statusName="jobData.statusName"
             :statusValue="jobData.status"
@@ -23,7 +33,7 @@
         </div>
       </template>
       <template v-slot:topRight>
-        <div class="div-btn-contain action-group">
+        <div ref="topRightRef" class="div-btn-contain action-group">
           <span v-if="jobData.extraInfo && jobData.extraInfo.isHasLock == 1" class="tsfont-lock text-action action-item text-warning" @click="globalLockShow">{{ $t('term.autoexec.resourcelock') }}</span>
           <span class="action-item tsfont-accessendpoint" @click="isShowFlow = true">流程图</span>
           <span class="action-item tsfont-console" @click="isShowConsoleLogDialog = true">{{ $t('term.autoexec.controlpanel') }}</span>
@@ -209,7 +219,8 @@ export default {
         id: null
       },
       versionId: null,
-      hasOperationVersionAndProductManagerAuth: false
+      hasOperationVersionAndProductManagerAuth: false,
+      jobNameWidth: 0
     };
   },
   beforeCreate() {},
@@ -222,18 +233,39 @@ export default {
     this.getPhaseList();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.calculateJobNameMaxWidth();
+    window.addEventListener('resize', this.calculateJobNameMaxWidth);
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {
     this.clearTimmer();
+    // 移除窗口大小改变事件监听器
+    window.removeEventListener('resize', this.calculateJobNameMaxWidth);
   },
   destroyed() {
     mutations.setSearchParam({});
   },
   methods: {
+    toggleSiderHide() {
+      this.calculateJobNameMaxWidth();
+    },
+    calculateJobNameMaxWidth() {
+      setTimeout(() => {
+        const divideWidth = 2; // 分割线宽度
+        const topRightRef = this.$refs.topRightRef;
+        const jobDetailContainRef = this.$refs.jobDetailContain;
+        const statusRef = this.$refs.statusRef;
+        const userRef = this.$refs.userRef;
+        const {containTopRight} = jobDetailContainRef?.$refs || {};
+        if (containTopRight) {
+          this.jobNameWidth = containTopRight.offsetWidth - topRightRef.offsetWidth - statusRef.offsetWidth - userRef.offsetWidth - divideWidth;
+        }
+      }, 200); // 延迟200毫秒执行，确保能拿到用户和状态的宽度，使用nextTick会导致计算不准确
+    },
     async getJobById() {
       await this.$api.autoexec.job.getJobById(this.jobParam.jobId).then(res => {
         this.jobData = res.Return;

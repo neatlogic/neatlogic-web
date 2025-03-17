@@ -6,24 +6,14 @@
       :title="readonlyTitle"
       :style="{ display: 'inline-block', width: '100%' }"
     >
-      <template v-if="multiple">
-        <template v-if="selectedList.length > 0">
-          <Tag v-for="(item, index) in selectedList" :key="index">
-            <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ item[textName] }}</span>
-            <template v-else>{{ item[textName] }}</template>
-          </Tag>
-        </template>
-        <span v-else class="text-grey">-</span>
-      </template>
-      <template v-else>
-        <Tag v-if="selectedList.length > 0">
-          <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ selectedList[0][textName] }}</span>
-          <template v-else>{{ selectedList[0][textName] }}</template>
+      <template v-if="selectedList.length > 0">
+        <Tag v-for="(item, index) in selectedList" :key="index">
+          <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ item[textName] }}</span>
+          <template v-else>{{ item[textName] }}</template>
         </Tag>
-        <span v-else class="text-grey">-</span>
       </template>
+      <span v-else class="text-grey">-</span>
     </span>
-
     <div
       v-else
       :class="borderClass"
@@ -39,7 +29,7 @@
       >
         <Dropdown
           ref="dropdownContain"
-          style="width:100%"
+          style="width: 100%"
           trigger="custom"
           :transfer-class-name="transfer && hasLoadMore ? 'tsform-select-transfer-class-name' : ''"
           :visible="isVisible"
@@ -91,10 +81,10 @@
                 </Tooltip>
                 <span
                   v-else-if="!currentSearch || !isShowInput"
-                  :placeholder="!currentSearch || !isShowInput? getPlaceholder : ''"
+                  :placeholder="!currentSearch || !isShowInput ? getPlaceholder : ''"
                   class="empty-placeholder"
                   :class="[disabled ? 'empty-placeholder-disable' : '']"
-                  style="line-height: 30px;"
+                  style="line-height: 30px"
                 ></span>
               </template>
               <input
@@ -147,10 +137,10 @@
                       transfer
                       theme="light"
                       :content="typeof node['_disabled'] === 'string' ? node['_disabled'] : disabledHoverTitle"
-                      style="width:100%"
+                      style="width: 100%"
                     >
                       <div v-if="node._showtxtList" class="overflow">
-                        <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                        <span v-for="(tex, tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight ? 'text-bold text-primary' : ''">{{ tex.value }}</span>
                       </div>
                       <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
                     </Tooltip>
@@ -161,20 +151,16 @@
                       transfer
                       theme="light"
                       :content="node[tooltipName]"
-                      style="width:100%"
+                      style="width: 100%"
                     >
                       <div v-if="node._showtxtList" class="overflow">
-                        <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                        <span v-for="(tex, tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight ? 'text-bold text-primary' : ''">{{ tex.value }}</span>
                       </div>
                       <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
                     </Tooltip>
-                    <div
-                      v-else
-                      class="overflow"
-                      :title="dropdownMenuMaxWidth && (node[showName ? showName : textName])"
-                    >
+                    <div v-else class="overflow" :title="dropdownMenuMaxWidth && node[showName ? showName : textName]">
                       <div v-if="node._showtxtList" class="overflow pb-icon">
-                        <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                        <span v-for="(tex, tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight ? 'text-bold text-primary' : ''">{{ tex.value }}</span>
                       </div>
                       <div v-else class="overflow pb-icon">{{ node[showName ? showName : textName] }}</div>
                     </div>
@@ -236,10 +222,10 @@
                           transfer
                           theme="light"
                           :content="typeof node['_disabled'] === 'string' ? node['_disabled'] : disabledHoverTitle"
-                          style="width:100%"
+                          style="width: 100%"
                         >
                           <div v-if="node._showtxtList" class="overflow">
-                            <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                            <span v-for="(tex, tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight ? 'text-bold text-primary' : ''">{{ tex.value }}</span>
                           </div>
                           <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
                         </Tooltip>
@@ -250,19 +236,16 @@
                           transfer
                           theme="light"
                           :content="node[tooltipName]"
-                          style="width:100%"
+                          style="width: 100%"
                         >
                           <div v-if="node._showtxtList" class="overflow">
-                            <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                            <span v-for="(tex, tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight ? 'text-bold text-primary' : ''">{{ tex.value }}</span>
                           </div>
-                          <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div> </Tooltip>
-                        <div
-                          v-else
-                          class="overflow"
-                          :title="dropdownMenuMaxWidth && (node[showName ? showName : textName])"
-                        >
+                          <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
+                        </Tooltip>
+                        <div v-else class="overflow" :title="dropdownMenuMaxWidth && node[showName ? showName : textName]">
                           <div v-if="node._showtxtList" class="overflow">
-                            <span v-for="(tex,tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight? 'text-bold text-primary':''">{{ tex.value }}</span>
+                            <span v-for="(tex, tIndex) in node._showtxtList" :key="tIndex" :class="tex.Highlight ? 'text-bold text-primary' : ''">{{ tex.value }}</span>
                           </div>
                           <div v-else class="overflow">{{ node[showName ? showName : textName] }}</div>
                         </div>
@@ -319,7 +302,7 @@ export default {
   },
   props: {
     name: String,
-    overflow: {type: Boolean, default: true},
+    overflow: { type: Boolean, default: true },
     mode: { type: String, default: 'normal' }, //normal或group，group代表分组下拉框
     value: {
       //默认值
@@ -508,9 +491,15 @@ export default {
       type: String,
       default: ''
     },
-    isAutoSelectdOnlyValue: { //是否自动选中唯一值
+    isAutoSelectdOnlyValue: {
+      //是否自动选中唯一值
       type: Boolean,
       default: false
+    },
+    historyValue: {
+      // 历史值(Object包含text,value)存在时，用历史值回显数据（在dynamicUrl初始化时，不调用接口）
+      type: [String, Array, Object],
+      default: null
     }
   },
   data() {
@@ -645,7 +634,8 @@ export default {
         if (returnData && returnData.pageCount > 0) {
           this.reachPage = nodeList.length == 0 ? returnData.pageCount : returnData.currentPage;
           this.pageCount = returnData.pageCount;
-          if (returnData.pageCount > 1 && (!this.$utils.isEmpty(nodeList) && nodeList.length > 0)) { // nodeList为空，后端接口pageCount大于1，表格输入组件，/*  */会默认选中第一个更多请搜索的选项
+          if (returnData.pageCount > 1 && !this.$utils.isEmpty(nodeList) && nodeList.length > 0) {
+            // nodeList为空，后端接口pageCount大于1，表格输入组件，/*  */会默认选中第一个更多请搜索的选项
             nodeList.push(this.moreSearchTip);
           }
         } else {
@@ -656,20 +646,15 @@ export default {
         // 请求被取消后，res为空，没有收到服务器响应
         isCancelToken = true;
       }
-      return {nodeList, isCancelToken};
+      return { nodeList, isCancelToken };
     },
     setDefaultValue() {
       //默认选中第一个的判断 ,1、defaultValueIsFirst; 2、必填且nodeList长度为1; 3、自动选中第一个值
-      if (this.nodeList.length <= 0) { // 处理禁用(只读)状态下，默认值不生效的问题
+      if (this.nodeList.length <= 0) {
+        // 处理禁用(只读)状态下，默认值不生效的问题
         return;
       }
-      if (this.$utils.isEmpty(this.currentValue) && 
-      (
-        this.defaultValueIsFirst || 
-      (this.firstSelect && this.isRequired && this.nodeList.length == 1 && !this.nodeList[0]._disabled) ||
-      (this.isAutoSelectdOnlyValue && this.nodeList.length == 1)
-      )
-      ) {
+      if (this.$utils.isEmpty(this.currentValue) && (this.defaultValueIsFirst || (this.firstSelect && this.isRequired && this.nodeList.length == 1 && !this.nodeList[0]._disabled) || (this.isAutoSelectdOnlyValue && this.nodeList.length == 1))) {
         if (this.mode == 'normal') {
           this.selectedList = [this.nodeList[0]];
         } /*else {
@@ -723,11 +708,9 @@ export default {
             //初始化：只读且没有选中时，不需要调接口
             return;
           }
-          if (!isSearch &&
-            (this.isRequired || this.isAutoSelectdOnlyValue)
-          ) {
+          if (!isSearch && (this.isRequired || this.isAutoSelectdOnlyValue)) {
             //1、值为空 必填 需要通过调用接口判断是否只有一个下拉值；2、自动选中第一个值
-            this.dynamicSearch('', true); 
+            this.dynamicSearch('', true);
           }
         }
       } else {
@@ -748,7 +731,7 @@ export default {
       let valueList = this.multiple ? this.currentValue : this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
       let selectedList = [];
       if (this.mode == 'normal') {
-        this.nodeList.forEach((item) => {
+        this.nodeList.forEach(item => {
           this.ArrIndexOf(valueList, item[this.valueName]) >= 0 && selectedList.push(item);
         });
       } else if (this.mode == 'group') {
@@ -863,14 +846,7 @@ export default {
     selectMatchItem(query, item) {
       let searchNameList = this.$utils.isEmpty(this.filterName) ? [this.textName, this.valueName] : typeof this.filterName == 'string' ? [this.filterName] : this.filterName;
       let filterNode = searchNameList.find(search => {
-        if (
-          !query ||
-          (item[search] &&
-            item[search]
-              .toString()
-              .toLowerCase()
-              .indexOf(query.toLowerCase()) >= 0)
-        ) {
+        if (!query || (item[search] && item[search].toString().toLowerCase().indexOf(query.toLowerCase()) >= 0)) {
           return true;
         }
       });
@@ -883,7 +859,8 @@ export default {
           // 匹配关键字并高亮显示
           let newtext = currentItemText.replace(new RegExp('(' + query + ')', 'ig'), ',$1,');
           const textParts = newtext.split(','); // 分割文本以准备高亮处理
-          if (textParts.length > 1) { // 如果分割后有多个部分，说明存在关键字需要高亮
+          if (textParts.length > 1) {
+            // 如果分割后有多个部分，说明存在关键字需要高亮
             newTextArr = [];
             textParts.forEach(txt => {
               if (txt && txt.toLowerCase() === query.toLowerCase()) {
@@ -892,10 +869,12 @@ export default {
                 newTextArr.push({ value: txt, Highlight: false });
               }
             });
-          } else { // 如果没有关键字，则不显示高亮
+          } else {
+            // 如果没有关键字，则不显示高亮
             newTextArr = [{ value: currentItemText, Highlight: false }];
           }
-        } else { // 如果没有关键字，则不显示高亮
+        } else {
+          // 如果没有关键字，则不显示高亮
           newTextArr = [{ value: currentItemText, Highlight: false }];
         }
         this.$set(item, '_showtxtList', newTextArr);
@@ -916,6 +895,22 @@ export default {
           let obj = {};
           obj[this.valueName] = obj[this.textName] = item;
           this.selectedList.push(obj);
+        });
+        return;
+      } else if (!this.$utils.isEmpty(this.historyValue)) {
+        //历史值回显
+        let historyValueList = Array.isArray(this.historyValue) ? this.historyValue : [this.historyValue];
+        historyValueList.forEach(item => {
+          if (!this.$utils.isEmpty(item)) {
+            let obj = {};
+            if (typeof item === 'object') {
+              obj[this.valueName] = item.value;
+              obj[this.textName] = item.text;
+            } else {
+              obj[this.valueName] = obj[this.textName] = item;
+            }
+            this.selectedList.push(obj);
+          }
         });
         return;
       }
@@ -959,7 +954,7 @@ export default {
         return this.currentValue == valueName;
       }
       if (this.currentValue instanceof Array) {
-        return this.currentValue.find((item) => item[this.valueName] == valueName);
+        return this.currentValue.find(item => item[this.valueName] == valueName);
       } else if (typeof this.currentValue == 'string') {
         return this.currentValue == valueName;
       } else if (typeof this.currentValue == 'object' && this.currentValue) {
@@ -1177,7 +1172,7 @@ export default {
     },
     hideOption(isEnterSearch) {
       this.isVisible = false;
-      this.isShowInput = false;  
+      this.isShowInput = false;
       if (!isEnterSearch) {
         !this.multiple ? (this.searchKeyWord = '') : (this.searchKeyWord = '');
       }
@@ -1467,7 +1462,7 @@ export default {
       };
     },
     setInputwidth() {
-      return (keyword) => {
+      return keyword => {
         let style = {};
         if (this.isShowInput) {
           style.display = 'inline-block';
@@ -1475,7 +1470,7 @@ export default {
           style.display = 'none';
         }
         if (!this.multiple) {
-          if (keyword || this.getPlaceholder || (this.selectedList.length > 0) || (!this.multiple && this.currentSearch)) {
+          if (keyword || this.getPlaceholder || this.selectedList.length > 0 || (!this.multiple && this.currentSearch)) {
             Object.assign(style, { maxWidth: '100%', minWidth: '14px', width: this.calculateInputWidth(keyword) * 14 + 14 + 'px' });
           } else {
             style.width = '100%';
@@ -1565,7 +1560,7 @@ export default {
       if (this.multiple == true && typeof this.currentValue == 'string') {
         this.currentValue = [this.currentValue];
       } else if (this.multiple == false && typeof this.currentValue == 'object') {
-        this.currentValue = this.currentValue && this.currentValue[0] || null;
+        this.currentValue = (this.currentValue && this.currentValue[0]) || null;
       }
       this.searchKeyWord = '';
     },

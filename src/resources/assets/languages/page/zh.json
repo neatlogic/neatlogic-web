@@ -1048,5 +1048,19 @@
   "screenshot": "截图",
   "errorreadingclipboarddata": "读取剪贴板数据时出错",
   "noimageresourcesfoundintheclipboard": "剪贴板中没有图片资源",
-  "nodatafoundintheclipboard": "剪贴板中没有数据"
+  "nodatafoundintheclipboard": "剪贴板中没有数据",
+  "sendsucceed": "发送成功",
+  "pleasepastescreenshotfromtheclipboard": "请粘贴剪切板截图",
+  "pastethescreenshotfromtheclipboardintotheinputboxbelow": "剪切板截图粘贴在下面输入框：",
+  "pastethescreenshotfromtheclipboard": "粘贴剪切板截图",
+  "scriptlanguage": "脚本语言",
+  "example": "例如",
+  "copyerrorinfo": "复制错误信息",
+  "loadingfailed": "加载失败",
+  "topo": "拓扑图",
+  "movetothetop": "移至顶层",
+  "movetothebottom": "移至底层",
+  "pastehere": "在此粘贴",
+  "dragthecanvas": "拖拽画布",
+  "rubberband": "框选"
 }

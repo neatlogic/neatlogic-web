@@ -291,7 +291,7 @@
                 style="position: absolute; top: 0px; left: 0px; z-index: 10; font-size: 12px"
                 class="text-grey"
                 :class="cell.component.icon"
-              ></div>
+              >{{ getComponentTopLeftTip(cell.component) }}</div>
               <div
                 v-if="mode === 'edit' && !$utils.isEmpty(cell.component) && !$utils.isEmpty(cell.component.config) && !$utils.isEmpty(cell.component.config.version)"
                 style="position: absolute; top: 0px; left: 16px; z-index: 10; font-size: 12px"
@@ -397,7 +397,7 @@
         </Dropdown>
       </div>
       <!-- 底部添加的隐藏组件 -->
-      <div class="form-footer mt-nm">
+      <div class="form-footer" :class="mode === 'edit'?'mt-nm':''">
         <span v-for="(item, index) in hideComponentList" :key="index">
           <Tag
             v-if="mode === 'edit'"
@@ -2381,6 +2381,14 @@ export default {
           width -= 2;
         }
         return (width / this.tableSize.width) * this.containerWidth + 'px';
+      };
+    },
+    getComponentTopLeftTip() {
+      // 获取组件左上角提示信息文案，例如脚本组件，需要显示脚本类型名称
+      return (component) => {
+        let {config = {}} = component || {};
+        let {componentTopLeftTip = ''} = config;
+        return componentTopLeftTip;
       };
     }
   },

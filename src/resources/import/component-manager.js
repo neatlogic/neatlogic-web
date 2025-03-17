@@ -21,6 +21,9 @@
  * mqTopicConfig 消息主题配置组件
  * mqSubscribeConfig 消息订阅配置组件
  * loginPage 登录页
+ * diagramWidget 架构图图元组件
+ * diagramWidgetConfig 架构图图元编辑组件
+ * diagramWidgetCustomConfig 结构图图元自定义编辑组件
  * router 跨模块路由
  *   使用方法：getRouterComponent(moduleName)，moduleName为模块名称
  *   注册方法：registerRouterComponent({
@@ -28,7 +31,7 @@
  *   })
  */
 class ComponentManager {
-  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'mqTopicConfig', 'mqSubscribeConfig', 'loginPage', 'formVersionList', 'router', 'deployAppConfigModule'];
+  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'mqTopicConfig', 'mqSubscribeConfig', 'loginPage', 'formVersionList', 'router', 'deployAppConfigModule', 'diagramWidget', 'diagramWidgetConfig', 'diagramWidgetCustomConfig'];
   static categoryConfig = {};
   static generateMethods() {
     this.categoryList.forEach(category => {

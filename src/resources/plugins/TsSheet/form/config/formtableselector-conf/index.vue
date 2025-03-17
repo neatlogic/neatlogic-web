@@ -22,6 +22,19 @@
         }"
       ></TsFormSwitch>
     </TsFormItem>
+    <TsFormItem
+      :label="$t('term.framework.hideheaderwhendataempty')"
+      labelPosition="left"
+      contentAlign="right"
+      labelWidth="180"
+    >
+      <TsFormSwitch
+        v-model="config.hideHeaderWhenDataEmpty"
+        :trueValue="true"
+        :falseValue="false"
+        :disabled="disabled"
+      ></TsFormSwitch>
+    </TsFormItem>
     <TsFormItem :label="$t('term.framework.selectmode')" labelPosition="left" contentAlign="right">
       <TsFormRadio v-model="config.mode" :dataList="modeList" :disabled="disabled"></TsFormRadio>
     </TsFormItem>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="line-height: 1.3 !important">
     <Tree
       v-if="relListLocal && relListLocal.length > 0"
       :data="relListLocal"
@@ -18,7 +18,7 @@ export default {
   components: {},
   props: {
     ciId: { type: Number },
-    relList: { type: Array } //回显的时候才需要传入
+    ciRelList: { type: Array }
   },
   data() {
     return {
@@ -26,11 +26,13 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-    if (!this.relList && this.ciId) {
+  async created() {
+    if (this.ciId && !this.ciRelList) {
       this.getRelByCiId(this.ciId);
     } else {
-      this.relListLocal = this.relList;
+      const root = {};
+      await this.generateData(root, 0, this.ciRelList, this.ciId);
+      this.relListLocal = root['children'];
     }
   },
   beforeMount() {},
@@ -42,6 +44,92 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    async generateData(parentObj, level, ciRelList, ciId) {
+      try {
+        const relList = await this.getRelList(ciId);
+        const relObjList = [];
+        for (const relVo of relList) {
+          const relObj = JSON.parse(JSON.stringify(relVo)); // 深拷贝 relVo
+          relObj.children = [];
+          relObj.loading = false;
+          relObj.selected = false;
+          relObj.excludeCiIdList = parentObj.excludeCiIdList ? JSON.parse(JSON.stringify(parentObj.excludeCiIdList)) : [];
+          relObj.path = parentObj.path ? JSON.parse(JSON.stringify(parentObj.path)) : [];
+
+          if (parentObj.ciId) {
+            relObj.excludeCiIdList.push(parentObj.ciId);
+          }
+
+          if (parentObj.id && relVo.id === parentObj.id) {
+            continue;
+          }
+
+          let isExists = false;
+          for (let i = 0; i < relObj.excludeCiIdList.length; i++) {
+            const cid = relObj.excludeCiIdList[i];
+            if ((relVo.direction === 'from' && relVo.toCiId === cid) || (relVo.direction === 'to' && relVo.fromCiId === cid)) {
+              isExists = true;
+              break;
+            }
+          }
+
+          if (isExists) {
+            continue;
+          }
+
+          const relPathObj = {
+            relId: relVo.id,
+            direction: relVo.direction
+          };
+
+          if (relVo.direction === 'from') {
+            Object.assign(relPathObj, {
+              relName: relVo.toName,
+              relLabel: relVo.toLabel,
+              ciName: relVo.fromCiName,
+              ciLabel: relVo.fromCiLabel,
+              ciId: relVo.fromCiId,
+              targetCiId: relVo.toCiId,
+              targetCiName: relVo.toCiName,
+              targetCiLabel: relVo.toCiLabel
+            });
+          } else {
+            Object.assign(relPathObj, {
+              relName: relVo.fromName,
+              relLabel: relVo.fromLabel,
+              ciName: relVo.toCiName,
+              ciLabel: relVo.toCiLabel,
+              ciId: relVo.toCiId,
+              targetCiId: relVo.fromCiId,
+              targetCiName: relVo.fromCiName,
+              targetCiLabel: relVo.fromCiLabel
+            });
+          }
+
+          relObj.path.push(relPathObj);
+
+          if (ciRelList && ciRelList.length > level) {
+            const ciRelObj = ciRelList[level];
+            if (relVo.id === ciRelObj.relId && relVo.direction === ciRelObj.direction) {
+              level++;
+              if (level < ciRelList.length) {
+                await this.generateData(relObj, level, ciRelList, ciRelObj.targetCiId);
+              } else {
+                relObj.selected = true;
+              }
+            }
+          }
+
+          relObjList.push(relObj);
+        }
+
+        parentObj.children = relObjList;
+        parentObj.expand = true;
+      } catch (error) {
+        console.error('Error generating data:', error);
+      }
+    },
+
     renderName(h, { data }) {
       if (data.direction === 'from') {
         return h(
@@ -63,8 +151,7 @@ export default {
               'span',
               {
                 class: {
-                  'text-grey': true,
-                  fz10: true
+                  'text-grey': true
                 }
               },
               data.toLabel
@@ -99,8 +186,7 @@ export default {
               'span',
               {
                 class: {
-                  'text-grey': true,
-                  fz10: true
+                  'text-grey': true
                 }
               },
               data.fromLabel
@@ -120,9 +206,17 @@ export default {
     selectNode(node) {
       this.$emit('select', node);
     },
+    async getRelList(ciId) {
+      let relList = [];
+      await this.$api.cmdb.ci.getRelByCiId(ciId).then(res => {
+        relList = res.Return;
+      });
+      return relList;
+    },
     getRelByCiId(ciId) {
       this.$api.cmdb.ci.getRelByCiId(ciId).then(res => {
         const relList = res.Return;
+
         relList.forEach(rel => {
           rel.children = [];
           rel.loading = false;
@@ -239,12 +333,17 @@ export default {
     relList: {
       handler: function(val) {
         if (val) {
+          console.log('relList', JSON.stringify(val, null, 2));
           this.relListLocal = val;
-        } 
+        }
       },
       deep: true
     }
   }
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped>
+/deep/ .ivu-tree-title-selected {
+  font-weight: bold;
+}
+</style>

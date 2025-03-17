@@ -2,13 +2,34 @@
   <div>
     <div v-if="mode === 'edit'">
       <TsFormItem label="前置条件" labelPosition="top" :labelStrong="true">
-        <TsCkeditor v-model="condition"></TsCkeditor>
+        <TsCkeditor
+          v-model="condition"
+          :params="{
+            uploadVideoConfig: {
+              type: 'rdm'
+            }
+          }"
+        ></TsCkeditor>
       </TsFormItem>
       <TsFormItem label="用例步骤" labelPosition="top" :labelStrong="true">
-        <TsCkeditor v-model="step"></TsCkeditor>
+        <TsCkeditor
+          v-model="step"
+          :params="{
+            uploadVideoConfig: {
+              type: 'rdm'
+            }
+          }"
+        ></TsCkeditor>
       </TsFormItem>
       <TsFormItem label="预期结果" labelPosition="top" :labelStrong="true">
-        <TsCkeditor v-model="result"></TsCkeditor>
+        <TsCkeditor
+          v-model="result"
+          :params="{
+            uploadVideoConfig: {
+              type: 'rdm'
+            }
+          }"
+        ></TsCkeditor>
       </TsFormItem>
     </div>
     <div v-else>
@@ -61,7 +82,7 @@ export default {
           this.step = contentObj.step;
           this.result = contentObj.result;
         } catch (e) {
-        //
+          //
         }
       }
     },

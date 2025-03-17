@@ -137,6 +137,7 @@
             width="100%"
             :validateList="isRequiredContent? validateList : []"
             :toolbar="$AuthUtils.hasRole('KNOWLEDGE_BASE') ? ['KnowledgeSelect'] : []"
+            :params="{ uploadVideoConfig: { type: 'itsm'} }"
             @change="changeCommentContent"
           >
           </TsCkeditor>

@@ -168,7 +168,7 @@
     "tagentconfirm": "Are you sure to restart Tagent?",
     "tagentresetpwd": "Are you sure you want to reset the Tagent password?",
     "addtagentpla": "Match packet, segment IP, proxy name, or proxy address",
-    "installpackagetip": "The installation package is used for agent upgrade. During the upgrade, a matching installation package will be found based on the OS type and CPU architecture of the target host. \"In the following options, you can select 'default' for [CPU Architecture]. The installation package identified as' default 'can be adapted to all CPU architectures.\".",
+    "installpackagetip": "The upgrade package is used for agent upgrades. During the upgrade, the matching installation package will be identified based on the target host's OS type and CPU architecture‌. In the options below, ‌[CPU architecture]‌ can be set to 'default'. Packages marked as 'default' are compatible with all CPU architectures‌.‌Note:‌ The upgrade package contains only source code and must be compressed into a tar archive‌",
     "isreplacepkg": "The installation package already exists, do you want to replace it",
     "linuxpkg": "Linux | Unix installation package: agent_ linux.tar",
     "windowspkg": "Windows installation package: agent_ windows_ x32.tar、tagent_ windows_ X64.tar (the Windows installation package contains the Perl runtime and 7z tools)",

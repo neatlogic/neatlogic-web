@@ -30,6 +30,7 @@
         :readonly="isReadonly || false" 
         :maxlength="setting.config.editorMaxlength" 
         :placeholder="setting.config.placeholder"
+        :params="{ uploadVideoConfig: { type: 'itsm' } }"
         @changeVal="getEditVal(currentValue)"
       ></TsCkeditor>
       <template v-else>
@@ -43,6 +44,7 @@
           :disabled="isReadonly" 
           :maxlength="setting.config.editorMaxlength" 
           :placeholder="setting.config.placeholder"
+          :params="{ uploadVideoConfig: { type: 'itsm' } }"
           @changeVal="getEditVal(currentValue)"
         ></TsCkeditor>
       </template>

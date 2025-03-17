@@ -39,7 +39,15 @@
                 </div>
               </div>
               <div v-if="replayTo['c_' + row.id]" class="mt-md">
-                <TsCkeditor v-model="replayTo['c_' + row.id].content" :width="'99%'"></TsCkeditor>
+                <TsCkeditor
+                  v-model="replayTo['c_' + row.id].content"
+                  :params="{
+                    uploadVideoConfig: {
+                      type: 'rdm'
+                    }
+                  }"
+                  :width="'99%'"
+                ></TsCkeditor>
                 <div class="mt-sm">
                   <Button
                     size="small"

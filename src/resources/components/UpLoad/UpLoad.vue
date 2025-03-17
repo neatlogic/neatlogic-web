@@ -1,53 +1,58 @@
 <template>
   <div class="upload" :class="className">
-    <Upload
-      ref="upload"
-      :type="type"
-      :format="format"
-      :accept="accept"
-      :multiple="multiple"
-      :data="filedata"
-      :on-format-error="FormatError"
-      :on-progress="progress"
-      :before-upload="before"
-      :onSuccess="success"
-      :on-error="error"
-      :action="action"
-      :show-upload-list="false"
-      :max-size="maxsize"
-      :on-exceeded-size="exceeded"
-      :default-file-list="defaultFileList"
-      :headers="headerConfig"
-    >
-      <slot>
-        <div v-if="!readonly && styleType === 'button'">
-          <Button
-            v-if="className === 'smallUpload'"
-            :disabled="disabled"
-            :title="disabledTitle"
-            icon="tsfont tsfont-upload"
-          >{{ $t('page.uploadfile') }}</Button>
-        </div>
-        <div v-else-if="!readonly && styleType === 'text'">
-          <span v-if="className === 'smallUpload'" class="text text-grey text-btn text-left tsfont-plus">
-            {{ $t('page.uploadattachment') }}
-          </span>
-        </div>
-        <div v-else-if="!readonly" class="padding-md" :style="{ height: height ? height + 'px' : null }">
-          <p v-if="title" class="title">{{ title }}</p>
-          <div v-if="type == 'drag'" class="drag">
-            <!-- <i class="icon-tip tsfont-plus"></i> -->
-            <div class="upload-icon">
-              <div class="tsfont-tianjiawenjian text-info" style="font-size:25px"></div>
-              <!--<img src="../UploadDialog/upload-icon.png" :alt="$t('page.importicon')" />-->
-              <p class="text-grey">{{ $t('page.clickanddragfile') }}</p>
-            </div>
-            <!-- <p>上传附件</p> -->
+    <div v-show="!uploadCount || (uploadCount && uploadCount > uploadList.length)" :class="hasScreenshotFromClipboard ? 'flex' : ''">
+      <Upload
+        ref="upload"
+        :type="type"
+        :format="format"
+        :accept="accept"
+        :multiple="multiple"
+        :data="filedata"
+        :on-format-error="FormatError"
+        :on-progress="progress"
+        :before-upload="before"
+        :onSuccess="success"
+        :on-error="error"
+        :action="action"
+        :show-upload-list="false"
+        :max-size="maxsize"
+        :on-exceeded-size="exceeded"
+        :default-file-list="defaultFileList"
+        :headers="headerConfig"
+      >
+        <slot>
+          <div v-if="!readonly && styleType === 'button'">
+            <Button
+              v-if="className === 'smallUpload'"
+              :disabled="disabled"
+              :title="disabledTitle"
+              icon="tsfont tsfont-upload"
+            >{{ $t('page.uploadfile') }}</Button>
           </div>
-          <Button v-else :disabled="disabled">{{ $t('page.clicktoupload') }}</Button>
-        </div>
-      </slot>
-    </Upload>
+          <div v-else-if="!readonly && styleType === 'text'">
+            <span v-if="className === 'smallUpload'" class="text text-grey text-btn text-left tsfont-plus">
+              {{ $t('page.uploadattachment') }}
+            </span>
+          </div>
+          <div v-else-if="!readonly" class="padding-md" :style="{ height: height ? height + 'px' : null }">
+            <p v-if="title" class="title">{{ title }}</p>
+            <div v-if="type == 'drag'" class="drag">
+              <!-- <i class="icon-tip tsfont-plus"></i> -->
+              <div class="upload-icon">
+                <div class="tsfont-tianjiawenjian text-info" style="font-size: 25px"></div>
+                <!--<img src="../UploadDialog/upload-icon.png" :alt="$t('page.importicon')" />-->
+                <p class="text-grey">{{ $t('page.clickanddragfile') }}</p>
+              </div>
+              <!-- <p>上传附件</p> -->
+            </div>
+            <Button v-else :disabled="disabled">{{ $t('page.clicktoupload') }}</Button>
+          </div>
+        </slot>
+      </Upload>
+      <Button v-if="hasScreenshotFromClipboard" style="margin-left: 6px !important" @click.stop="openDialog">
+        <span class="tsfont-paste">{{ $t('page.getscreenshotfromclipboard') }}</span>
+      </Button>
+    </div>
     <slot name="tips"></slot>
     <div v-if="uploadList.length" class="upload_block">
       <TsRow :style="rowStyle">
@@ -76,26 +81,35 @@
         </Col>
       </TsRow>
     </div>
-    <ImagePreview 
+    <ImagePreview
       :isShow="srcList.length > 0"
       :fileList="srcList"
       :fileDownloadUrl="fileDownurl"
       :fileDownloadParam="fileDownParam"
       :initialIndex="initialIndex"
-      @close="()=> {
-        srcList = []
-      }"
-    >
-    </ImagePreview>
+      @close="
+        () => {
+          srcList = [];
+        }
+      "
+    ></ImagePreview>
+    <ScreenshotFromClipboardDialog
+      v-if="isShowScreenshotFromClicpboardDialog"
+      url="/api/binary/file/upload"
+      :fileParam="filedata"
+      @close="closeGetScreenshotFromClipboardDialog"
+    />
   </div>
 </template>
 
 <script>
 import download from '@/resources/directives/download.js';
+import ScreenshotFromClipboardDialog from '@/resources/components/UpLoad/screenshot-from-clipboard-dialog.vue';
 export default {
   name: '',
   components: {
-    ImagePreview: () => import('@/resources/components/image-preview/index.vue')
+    ImagePreview: () => import('@/resources/components/image-preview/index.vue'),
+    ScreenshotFromClipboardDialog
   },
   directives: { download },
   props: {
@@ -182,7 +196,7 @@ export default {
     },
     rowSpan: {
       type: [String, Number],
-      default: '12'
+      default: '24'
     },
     isSumbit: {
       //是否立即提交文件，设置为false后只会返回一堆文件内容
@@ -192,7 +206,7 @@ export default {
     uploadCount: {
       //上传文件数量
       type: Number,
-      default: 5
+      default: 0
     },
     params: {
       //额外参数
@@ -237,6 +251,11 @@ export default {
       // 只读模式下，文件列表是否需要高亮显示
       type: Boolean,
       default: false
+    },
+    hasScreenshotFromClipboard: {
+      // 是否从剪切板获取截图
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -249,13 +268,15 @@ export default {
         responseType: 'blob'
       },
       uploadList: [],
+      clipboardScreenshotList: [], // 剪切板截图列表
       defaultFileList: [],
       fileStatus: 'normal',
       headerConfig: {
         Authorization: sessionStorage.getItem('neatlogic_authorization') ? sessionStorage.getItem('neatlogic_authorization') : ''
       },
       srcList: [],
-      initialIndex: 0
+      initialIndex: 0,
+      isShowScreenshotFromClicpboardDialog: false
     };
   },
   beforeMount() {},
@@ -266,6 +287,9 @@ export default {
   },
   created() {},
   methods: {
+    openDialog() {
+      this.isShowScreenshotFromClicpboardDialog = true;
+    },
     handlePreview(index) {
       this.initialIndex = index;
       this.srcList = this.uploadList;
@@ -275,7 +299,7 @@ export default {
     },
     before: function(file) {
       this.fileStatus = 'normal';
-      if (this.uploadCount == this.uploadList.length) {
+      if (this.uploadCount && this.uploadCount == this.uploadList.length) {
         this.$Notice.warning({
           title: this.$t('form.validate.filecount', { target: this.uploadCount })
         });
@@ -305,6 +329,9 @@ export default {
             fileList.push(file);
             //this.$refs.upload.fileList = fileList;
           }
+          if (this.clipboardScreenshotList.length > 0) {
+            fileList = fileList.concat(this.clipboardScreenshotList);
+          }
           if (isFinish) {
             if (!this.silent) {
               this.$Message.success(this.$t('message.uploadsuccess'));
@@ -317,7 +344,6 @@ export default {
     },
     //上传失败
     error: function(res, file, fileList) {
-      //console.log('上传失败', res, file, fileList);
       if (file.Status == 'ERROR') {
         this.$Notice.error({
           title: this.$t('message.uploadfailed'),
@@ -328,8 +354,7 @@ export default {
     //上传时的接口
     progress: function(event, file) {},
     //移除
-    handleRemove: function(item) {
-      const fileList = this.$refs.upload.fileList;
+    handleRemove(item) {
       if (this.isDeleteRemote) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
@@ -344,17 +369,20 @@ export default {
             this.$api.framework.file.deleteFile(p).then(res => {
               if (res.Status == 'OK') {
                 vnode.isShow = false;
-                this.$refs.upload.fileList.splice(fileList.indexOf(item), 1);
-                this.$emit('remove', this.$refs.upload.fileList, item.id);
+                this.handleRemoveFile(item);
               }
             });
           }
         });
       } else {
-        this.$refs.upload.fileList.splice(fileList.indexOf(item), 1);
-        this.$emit('remove', this.$refs.upload.fileList, item.id);
+        this.handleRemoveFile(item);
       }
       return false;
+    },
+    handleRemoveFile(item) {
+      const fileList = this.$refs.upload.fileList;
+      this.$refs.upload.fileList.splice(fileList.indexOf(item), 1);
+      this.$emit('remove', this.$refs.upload.fileList, item.id);
     },
     //下载请求
     fileDownload: function(item) {
@@ -397,6 +425,32 @@ export default {
     // 清除upload方法
     handleClearFiles() {
       this.$refs.upload.fileList.splice(0);
+      this.uploadList = [];
+    },
+    closeGetScreenshotFromClipboardDialog(file) {
+      if (!this.$utils.isEmpty(file)) {
+        const { id = '', name = '', size = '' } = file || {};
+        const fileInfo = {
+          // 构造和Upload组件上传成功fileList一致的数据结构
+          id: id,
+          status: 'finished',
+          name: name,
+          size: size,
+          percentage: 100,
+          showProgress: false,
+          uid: this.$utils.setUuid(),
+          response: {
+            Status: 'OK',
+            Return: {
+              ...(file || {})
+            }
+          }
+        };
+        this.uploadList.push(fileInfo);
+        this.clipboardScreenshotList = [fileInfo];
+        this.$emit('getFileList', this.uploadList, id);
+      }
+      this.isShowScreenshotFromClicpboardDialog = false;
     }
   },
   computed: {
@@ -560,6 +614,9 @@ export default {
       border: none;
       background: transparent;
     }
+  }
+  .flex {
+    display: flex;
   }
 }
 </style>

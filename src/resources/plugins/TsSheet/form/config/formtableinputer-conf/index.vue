@@ -10,8 +10,7 @@
     </TsFormItem>
     <TsFormItem
       labelWidth="250"
-      :label="$t('page.batchoperation')"
-      :tooltip="$t('term.framework.showimportexporttemplatetableoptions')"
+      :label="$t('term.framework.showimportexporttemplatetableoptions')"
       labelPosition="left"
       contentAlign="right"
       class="batch-operation-box"
@@ -34,6 +33,19 @@
     <TsFormItem :label="$t('page.dragsort')" labelPosition="left" contentAlign="right">
       <TsFormSwitch
         v-model="config.isCanDrag"
+        :trueValue="true"
+        :falseValue="false"
+        :disabled="disabled"
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem
+      :label="$t('term.framework.hideheaderwhendataempty')"
+      labelPosition="left"
+      contentAlign="right"
+      labelWidth="180"
+    >
+      <TsFormSwitch
+        v-model="config.hideHeaderWhenDataEmpty"
         :trueValue="true"
         :falseValue="false"
         :disabled="disabled"

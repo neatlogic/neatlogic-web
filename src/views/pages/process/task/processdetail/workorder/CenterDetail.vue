@@ -413,7 +413,7 @@ import download from '@/resources/directives/download.js';
 import dealFormMix from '@/views/pages/process/task/taskcommon/dealNewFormData.js';
 import Component from './CenterDetailComponent/index.js';
 import stepitems from './taskstep/item/index.js';
-
+import {store, mutations} from '@/views/pages/process/task/processdetail/processStore.js';
 export default {
   name: 'CenterDetail',
   components: {
@@ -551,7 +551,8 @@ export default {
       lastFormConfig: null,
       formSceneUuid: 'defaultSceneUuid',
       externalData: {
-        processTaskId: this.defaultProcessTaskId //工单id
+        processTaskId: this.defaultProcessTaskId, //工单id
+        isStartStep: this.startProcessTaskStep.id === this.defaultProcessTaskStepId //是否为开始节点
       },
       formAttributeDataMap: this.processTaskConfig && this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap),
       tabList: [],
@@ -747,6 +748,7 @@ export default {
         }
       } else {
         this.tabList = this.defaultTabList;
+        this.changeTabValue();
       }
     },
     async validFormRequired() {
@@ -888,6 +890,7 @@ export default {
       this.$api.process.processtask.getStepStatusList(data).then(res => {
         if (res.Status == 'OK') {
           this.stepData = res.Return;
+          mutations.setStepList(res.Return);
           !this.stepSortIcon && this.stepData.reverse();
           if (this.stepData && this.stepData.length > 0) {
             this.stepData.forEach(item => {
@@ -1491,13 +1494,6 @@ export default {
         });
       }
     },
-    updateFormSheetCalc() {
-      if (this.$refs.formSheet) {
-        this.$nextTick(() => {
-          this.$refs.formSheet.calcContainerHeight && this.$refs.formSheet.calcContainerHeight();
-        });
-      }
-    },
     changeTabValue(val) {
       // 更新当前tabValue
       this.$nextTick(() => {
@@ -1514,7 +1510,10 @@ export default {
         }
         if (val === 'report') {
         //流转校验，更新表单布局
-          this.updateFormSheetCalc();
+          this.$set(this.resizeStatusConfig, 'isReady', false);
+          this.$nextTick(() => {
+            this.$set(this.resizeStatusConfig, 'isReady', true);
+          });
         } 
       });
     }

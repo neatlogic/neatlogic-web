@@ -148,7 +148,12 @@ export default {
           type: 'ckeditor',
           name: 'description',
           label: this.$t('term.rdm.peojectdesc'),
-          maxlength: 500
+          maxlength: 500,
+          params: {
+            uploadVideoConfig: {
+              type: 'rdm'
+            }
+          }
         }
       ],
       appType: { cardList: [] },

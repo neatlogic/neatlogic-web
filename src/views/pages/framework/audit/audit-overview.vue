@@ -21,7 +21,7 @@
               v-model="searchVal"
               class="search"
               v-bind="searchConfig"
-              @change="searchAudit()"
+              @change="changeCombineSearcher()"
             ></CombineSearcher>
           </Col>
         </TsRow>
@@ -167,7 +167,12 @@ export default {
   },
   data() {
     return {
-      searchVal: {},
+      searchVal: {
+        dateRange: { // 日期默认查询一天
+          timeRange: '1',
+          timeUnit: 'day'
+        }
+      },
       searchConfig: {
         searchList: [
           {
@@ -270,22 +275,25 @@ export default {
       isDrawerShow: false
     };
   },
-  created() {
-    this.getTree();
+  async created() {
+    await this.getTree();
+    let firstNode = this.treeList[0].children[0];
+    this.searchParams.moduleGroup = firstNode.moduleGroup;
     this.searchAudit();
   },
   methods: {
     changeCurrent(current) {
-      this.searchAudit({ currentPage: current });
+      this.searchParams.currentPage = current;
+      this.searchAudit();
     },
     changePageSize(pageSize) {
       this.searchParams.pageSize = pageSize;
       this.searchAudit();
     },
     // 获取目录树数据
-    getTree() {
+    async getTree() {
       const params = { menuType: 'audit' };
-      this.$api.framework.audit.getTree(params).then(res => {
+      await this.$api.framework.audit.getTree(params).then(res => {
         if (res.Status === 'OK') {
           const moduleGroupList = res.Return.map(module => {
             const { moduleGroupName: title, moduleGroup, funcList } = module;
@@ -312,6 +320,7 @@ export default {
             });
             return { title, moduleGroup, funcId: null, children };
           });
+          moduleGroupList[0].selected = true;
           this.treeList[0].children = moduleGroupList;
         }
       });
@@ -353,22 +362,56 @@ export default {
     },
     // 处理目录树选项更改
     handleTreeSelectChange(nodeList, node) {
-      const params = {
-        moduleGroup: node.selected ? node.moduleGroup : null,
-        funcId: node.selected ? node.funcId : null,
-        currentPage: 1
-      };
-      this.searchAudit(params);
+      this.searchParams.currentPage = 1;
+      if (node.selected) {
+        this.searchParams.moduleGroup = node.moduleGroup;
+        this.searchParams.funcId = node.funcId;
+      } else {
+        this.searchParams.moduleGroup = null;
+        this.searchParams.funcId = null;
+      }
+      this.searchAudit();
+    },
+    changeCombineSearcher(data) {
+      this.searchParams.currentPage = 1;
+      this.searchAudit();
     },
     // 查询审计记录
-    searchAudit(data) {
+    searchAudit() {
       this.isLoading = true;
-      let dateRange = {};
-      let params = data || {};
-      if (this.searchVal.dateRange) {
-        dateRange = this.searchVal.dateRange;
+      if (this.searchVal) {
+        if (this.searchVal.keyword) {
+          this.searchParams.keyword = this.searchVal.keyword;
+        } else {
+          this.searchParams.keyword = null;
+        }
+        if (this.searchVal.dateRange) {
+          if (this.searchVal.dateRange.timeRange) {
+            this.searchParams.timeRange = this.searchVal.dateRange.timeRange;
+          } else {
+            this.searchParams.timeRange = null;
+          }
+          if (this.searchVal.dateRange.timeUnit) {
+            this.searchParams.timeUnit = this.searchVal.dateRange.timeUnit;
+          } else {
+            this.searchParams.timeUnit = null;
+          }
+        } else {
+          this.searchParams.timeRange = null;
+          this.searchParams.timeUnit = null;
+        }
+        if (this.searchVal.operationType) {
+          this.searchParams.operationType = this.searchVal.operationType;
+        } else {
+          this.searchParams.operationType = null;
+        }
+        if (this.searchVal.userUuid) {
+          this.searchParams.userUuid = this.searchVal.userUuid;
+        } else {
+          this.searchParams.userUuid = null;
+        }
       }
-      this.searchParams = { ...this.searchVal, ...dateRange, ...params, orderType: this.orderBy };
+      this.searchParams.orderType = this.orderBy;
       this.$api.framework.audit
         .searchAudit(this.searchParams)
         .then(res => {
@@ -438,6 +481,7 @@ export default {
   watch: {
     orderBy: {
       handler: function(val) {
+        this.searchParams.currentPage = 1;
         this.searchAudit();
       }
     }

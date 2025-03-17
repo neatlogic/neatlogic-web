@@ -390,13 +390,15 @@ export default {
           type: 'ckeditor',
           name: 'desc',
           label: '服务说明',
-          tooltip: '用于【服务目录】菜单下服务说明'
+          tooltip: '用于【服务目录】菜单下服务说明',
+          removePlugins: ['UploadVideo']
         },
         {
           type: 'ckeditor',
           name: 'contentHelp',
           label: '描述帮助',
-          tooltip: '用于【服务上报】页中的描述说明提示'
+          tooltip: '用于【服务上报】页中的描述说明提示',
+          removePlugins: ['UploadVideo']
         }
       ],
       initValue: {

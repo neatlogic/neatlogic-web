@@ -5,6 +5,7 @@
     :readonly="readonly"
     :disabled="disabled"
     :readonlyTextIsHighlight="readonlyTextIsHighlight"
+    :params="{ uploadVideoConfig: { type: 'framework'} }"
     @ready="$emit('resize')"
     @change="
       val => {
