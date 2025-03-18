@@ -26,7 +26,8 @@
             ></span>
             <div>
               <span class="text-action tsfont-plus pr-xs" @click="addData(index+1)"></span>
-              <span class="text-action tsfont-minus" @click="deleteItem(index)"></span>
+              <span class="text-action tsfont-trash-o pr-xs" @click="deleteItem(index)"></span>
+              <span class="text-action" :class="item._isShow?'tsfont-down':'tsfont-up'" @click="toggleshow(item)"></span>
             </div>
           </div>
           <div class="padding-sm">
@@ -39,39 +40,41 @@
                 @on-change="(val)=>changeViewName(val, item)"
               ></TsFormSelect>
             </TsFormItem>
-            <TsFormItem label="表头属性" labelPosition="left">
-              <div>
-                <Tag
-                  v-for="(a,aindex) in assetTheadlist"
-                  :key="aindex"
-                  :checked="item.fieldList.includes(a.value)"
-                  checkable
-                  color="primary"
-                  size="medium"
-                  class="border-color tag"
-                  @on-change="selectItem(a.value, item)"
-                >{{ a.text }}</Tag>
-              </div>
-              <div v-if="$utils.isEmpty(item.fieldList)" class="text-error">{{ $t('form.placeholder.pleaseselect',{'target':$t('page.attribute')}) }}</div>
-            </TsFormItem>
-            <template v-if="item.fieldList && item.fieldList.length > 0">
-              <Divider orientation="left" style="font-size: 14px">{{ $t('term.process.attrdragtip') }}</Divider>
-              <draggable
-                class="clearfix"
-                tag="div"
-                :list="item.fieldList"
-                handle=".move"
-              >
-                <Tag
-                  v-for="value in item.fieldList"
-                  :key="value"
-                  :name="value"
-                  closable
-                  size="medium"
-                  @on-close="handleClose(value, item)"
-                ><span class="move tsfont-bar"></span> {{ getAssetTheadLabel(value) }}</Tag>
-              </draggable>
-            </template>
+            <div v-show="item._isShow">
+              <TsFormItem label="表头属性" labelPosition="left">
+                <div>
+                  <Tag
+                    v-for="(a,aindex) in assetTheadlist"
+                    :key="aindex"
+                    :checked="item.fieldList.includes(a.value)"
+                    checkable
+                    color="primary"
+                    size="medium"
+                    class="border-color tag"
+                    @on-change="selectItem(a.value, item)"
+                  >{{ a.text }}</Tag>
+                </div>
+                <div v-if="$utils.isEmpty(item.fieldList)" class="text-error">{{ $t('form.placeholder.pleaseselect',{'target':$t('page.attribute')}) }}</div>
+              </TsFormItem>
+              <template v-if="item.fieldList && item.fieldList.length > 0">
+                <Divider orientation="left" style="font-size: 14px">{{ $t('term.process.attrdragtip') }}</Divider>
+                <draggable
+                  class="clearfix"
+                  tag="div"
+                  :list="item.fieldList"
+                  handle=".move"
+                >
+                  <Tag
+                    v-for="value in item.fieldList"
+                    :key="value"
+                    :name="value"
+                    closable
+                    size="medium"
+                    @on-close="handleClose(value, item)"
+                  ><span class="move tsfont-bar"></span> {{ getAssetTheadLabel(value) }}</Tag>
+                </draggable>
+              </template>
+            </div>
           </div>
         </div>
       </draggable>
@@ -135,6 +138,11 @@ export default {
           this.id = res.Return.id || null;
           this.config = res.Return.config || {};
           this.tableSettingList = this.config.tableSettingList || [];
+          if (this.tableSettingList.length) {
+            this.tableSettingList.forEach(item => {
+              this.$set(item, '_isShow', true);
+            }); 
+          }
         }
       });
     },
@@ -218,6 +226,9 @@ export default {
     },
     handleClose(value, item) {
       item.fieldList.splice(item.fieldList.indexOf(value), 1); 
+    },
+    toggleshow(item) {
+      this.$set(item, '_isShow', !item._isShow); 
     }
   },
   computed: {

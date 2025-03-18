@@ -108,7 +108,12 @@
           </template>
           <template v-slot:businessGroupList="{ row }">
             <div v-if="!$utils.isEmpty(row.businessGroupList)">
-              <Tag v-for="(b, bindex) in row.businessGroupList" :key="bindex">
+              <Tag
+                v-for="(b, bindex) in row.businessGroupList"
+                :key="bindex"
+                class="cursor-pointer"
+                @click.native="toCientityView(b)"
+              >
                 {{ b.name }}
               </Tag>
             </div>
@@ -122,7 +127,12 @@
           </template>
           <template v-slot:ownerList="{ row }">
             <div v-if="!$utils.isEmpty(row.ownerList)">
-              <Tag v-for="(o, oindex) in row.ownerList" :key="oindex">
+              <Tag
+                v-for="(o, oindex) in row.ownerList"
+                :key="oindex"
+                class="cursor-pointer"
+                @click.native="toCientityView(o);"
+              >
                 {{ o.name }}
               </Tag>
             </div>
@@ -132,7 +142,7 @@
             <!-- 模型 -->
             <div v-if="!$utils.isEmpty(row.ci)" class="text-href" @click="toCiView(row.ci)">
               <span class="tsfont-ci-o"></span>
-              <span>{{ row.ci.name }}</span>
+              <span>{{ row.ci.label }}</span>
             </div>
           </template>
           <template v-slot:dataCenter="{ row }">
@@ -307,12 +317,12 @@ export default {
     toCientityView(row) {
       // 应用清单详情
       if (row && !this.$utils.isEmptyObj(row)) {
-        this.$router.push({ path: './ci/' + row.ciId + '/cientity-view/' + row.id });
+        window.open(HOME + '/cmdb.html#/ci/' + row.ciId + '/cientity-view/' + row.id, '_blank');
       }
     },
     toCiView(ci) {
       if (ci && !this.$utils.isEmptyObj(ci)) {
-        this.$router.push({ path: '/ci-view/' + ci.id });
+        window.open(HOME + '/cmdb.html#/ci-view/' + ci.id, '_blank');
       }
     },
     toInspectStatusDetail(row) {
@@ -320,11 +330,11 @@ export default {
       if (row && !this.$utils.isEmptyObj(row)) {
         if (this.moduleName == 'inspect') {
           // inspect模块
-          this.$router.push({ path: './assets-detail-' + row.id});
+          window.open(HOME + '/inspect.html#/assets-detail-' + row.id, '_blank');
         } else {
           // cmdb模块
           if (this.$AuthUtils.hasRole('INSPECT_BASE')) {
-            this.$router.push({ path: './inspect-status-detail-' + row.id});
+            window.open(HOME + '/cmdb.html#/inspect.html#/inspect-status-detail-' + row.id, '_blank');
           }
         }
       }

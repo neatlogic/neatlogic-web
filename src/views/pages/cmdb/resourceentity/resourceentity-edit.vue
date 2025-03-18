@@ -246,6 +246,7 @@ export default {
     changeSceneTemplateName(selectItem) {
       this.isReady = false;
       this.$set(this.resourceEntityData, 'fieldList', selectItem && selectItem.fieldList || []);
+      this.$set(this.resourceEntityData.config, 'fieldMappingList', []);
       this.$nextTick(() => {
         this.isReady = true; 
       });
