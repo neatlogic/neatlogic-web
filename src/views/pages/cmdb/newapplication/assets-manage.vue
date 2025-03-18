@@ -95,9 +95,13 @@
             </div>
           </template>
           <template v-slot:appEnvironment="{ row }">
-            <div v-if="!$utils.isEmpty(row.appEnvironment)" class="text-href" @click="toGlobalAttrManage()">
+            <Tag
+              v-if="!$utils.isEmpty(row.appEnvironment)"
+              class="cursor-pointer"
+              @click.native="toGlobalAttrManage()"
+            >
               {{ row.appEnvironment.value }}
-            </div>
+            </Tag>
           </template>
           <template v-slot:appSystem="{row}">
             <!-- 应用系统 -->
@@ -121,9 +125,13 @@
           </template>
           <template v-slot:state="{row}">
             <!-- 资产状态 -->
-            <div v-if="!$utils.isEmpty(row.state)" class="text-href" @click="toCientityView(row.state)">
+            <Tag
+              v-if="!$utils.isEmpty(row.state)"
+              class="cursor-pointer"
+              @click.native="toCientityView(row.state)"
+            >
               {{ row.state.name }}
-            </div>
+            </Tag>
           </template>
           <template v-slot:ownerList="{ row }">
             <div v-if="!$utils.isEmpty(row.ownerList)">
@@ -141,7 +149,7 @@
           <template v-slot:ci="{row}">
             <!-- 模型 -->
             <div v-if="!$utils.isEmpty(row.ci)" class="text-href" @click="toCiView(row.ci)">
-              <span :class="row.ci.ciIcon"></span>
+              <span :class="row.ci.icon"></span>
               <span>{{ row.ci.label }}</span>
             </div>
           </template>
