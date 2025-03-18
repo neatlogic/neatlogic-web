@@ -37,7 +37,9 @@
                 <div class="upload-limit text-tip">
                   {{ uploadFilelimitTips(multiple, formatList) }}
                   <br />
-                  {{ $t('page.uploadfilelimit', {target: maxSize}) }}
+                  <template v-if="maxSize">
+                    {{ $t('page.uploadfilelimit', {target: maxSize}) }}
+                  </template>
                 </div>
               </div>
             </Upload>
@@ -210,7 +212,7 @@ export default {
     data: { type: Object, default: () => {} }, //上传时附带的额外参数
     dataType: { type: String, default: 'file' },
     formatList: { type: Array, default: () => [] },
-    maxSize: { type: Number, default: 10 }, //文件大小限制，单位为MB
+    maxSize: { type: Number, default: 0 }, //文件大小限制，单位为MB
     multiple: { type: Boolean, default: true },
     beforeUpload: { type: Function, default: null }, //自定义的上传前处理函数
     immediatelyUpload: { type: Boolean, default: false },
@@ -289,6 +291,13 @@ export default {
       }
     };
   },
+  destroyed() {
+    // 清空上传组件
+    const uploadRef = this.$refs.upload;
+    if (uploadRef) {
+      uploadRef.clearFiles();
+    }
+  },
   methods: {
     async showDialog() {
       this.fileList = [...this.fileList, ...this.defaultFileList];
@@ -301,6 +310,16 @@ export default {
     },
     hideDialog() {
       this.isModalShow = false;
+      let uploadRef = this.$refs.upload;
+      this.fileList.forEach(item => {
+        if (item && typeof item.Status == 'number' && item.Status != 0 && item.Status < 100 && item.xhr) {
+          if (uploadRef) {
+            uploadRef.handleCancelAjax({
+              ...item
+            });
+          }
+        }
+      });
       this.fileList = [];
       this.validConfig = {
         failureCount: 0,
@@ -352,7 +371,10 @@ export default {
       return this.immediatelyUpload;
     },
     handleProgress(event, file, fileList) {
-      this.fileList.find(item => item.file.name === file.name).Status = event.percent;
+      let findFileItem = this.fileList.find(item => item.file.name === file.name);
+      if (findFileItem) {
+        findFileItem.Status = event.percent;
+      }
     },
     handleSuccess(response, file) {
       let desc = '';
@@ -422,11 +444,21 @@ export default {
           title: this.$t('message.importfailed'),
           desc: response.Message
         });
-        this.fileList.find(item => item.file.name === file.name).Status = response.Status;
+        let findFileItem = this.fileList.find(item => item.file.name === file.name);
+        if (findFileItem) {
+          findFileItem.Status = response.Status;
+        }
       }
     },
     removeFile(file) {
       this.fileList.splice(this.fileList.indexOf(file), 1);
+      let uploadRef = this.$refs.upload;
+      if (uploadRef && file.Status > 0 && file.Status < 100) {
+        uploadRef.handleCancelAjax({
+          ...file,
+          status: file.Status == 100 ? 'finsihed' : 'uploading'
+        });
+      }
       this.$emit('update:defaultFileList', this.fileList);
       this.$emit('on-remove-file', file, this.fileList);
     },
@@ -443,8 +475,12 @@ export default {
       }
       this.fileList
         .filter(item => item.Status !== 'OK' && item.Status !== 'ERROR')
-        .map(item => {
-          this.$refs.upload.post(item.file);
+        .forEach(item => {
+          let { xhr = '', status = '' } = this.$refs.upload.post(item.file);
+          if (xhr) {
+            item.xhr = xhr;
+            item.status = status;
+          }
         });
       this.$nextTick(() => {
         this.isImport = true;
