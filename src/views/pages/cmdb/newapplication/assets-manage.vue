@@ -90,7 +90,7 @@
           </template>
           <template v-slot:appModule="{ row }">
             <div v-if="!$utils.isEmpty(row.appModule)" class="text-href" @click="toCientityView(row.appModule)">
-              <span class="tsfont-ci-o"></span>
+              <span :class="row.appModule.ciIcon"></span>
               <span>{{ row.appModule.name }}</span>
             </div>
           </template>
@@ -141,7 +141,7 @@
           <template v-slot:ci="{row}">
             <!-- 模型 -->
             <div v-if="!$utils.isEmpty(row.ci)" class="text-href" @click="toCiView(row.ci)">
-              <span class="tsfont-ci-o"></span>
+              <span :class="row.ci.ciIcon"></span>
               <span>{{ row.ci.label }}</span>
             </div>
           </template>
