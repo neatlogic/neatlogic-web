@@ -753,8 +753,9 @@
   "lastday": "Last Day",
   "lastweek": "Last week",
   "lasthalfmonth": "Last Half Month",
+  "last3month": "Last 3 month",
   "lastmonth": "Last month",
-  "lastsixmonths": "Last six months",
+  "lastsixmonths": "Last 6 months",
   "lastyear": "Last year",
   "eg": "Example",
   "count": "quantity",
@@ -1055,5 +1056,10 @@
   "example": "for example",
   "copyerrorinfo": "Copy error message",
   "loadingfailed": "Load Fail",
-  "topo": "Topology Map"
+  "topo": "Topology Map",
+  "movetothetop": "Move to the top level",
+  "movetothebottom": "Move to the bottom layer",
+  "pastehere": "Paste here",
+  "dragthecanvas": "Drag and drop canvas",
+  "rubberband": "Frame Select"
 }

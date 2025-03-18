@@ -2834,6 +2834,7 @@
   "alert": {
     "alerttype": "告警类型",
     "alert": "告警",
-    "isnormalattr": "作为普通属性展示"
+    "isnormalattr": "作为普通属性展示",
+    "closesuccess": "关闭成功"
   }
 }

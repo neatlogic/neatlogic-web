@@ -358,9 +358,7 @@ export default {
       if (this.graph) {
         const graphData = this.graph.toJSON();
         if (needTransfer) {
-          const topoData = {
-            canvas: { uuid: this.$utils.setUuid() }
-          };
+          const topoData = {};
           //处理节点
           const nodeList = [];
           graphData.cells

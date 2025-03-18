@@ -756,6 +756,7 @@
   "lastday": "最近一天",
   "lastweek": "最近一周",
   "lasthalfmonth": "最近半个月",
+  "last3month": "最近三个月",
   "lastmonth": "最近一个月",
   "lastsixmonths": "最近半年",
   "lastyear": "最近一年",
@@ -1057,5 +1058,10 @@
   "example": "例如",
   "copyerrorinfo": "复制错误信息",
   "loadingfailed": "加载失败",
-  "topo": "拓扑图"
+  "topo": "拓扑图",
+  "movetothetop": "移至顶层",
+  "movetothebottom": "移至底层",
+  "pastehere": "在此粘贴",
+  "dragthecanvas": "拖拽画布",
+  "rubberband": "框选"
 }
