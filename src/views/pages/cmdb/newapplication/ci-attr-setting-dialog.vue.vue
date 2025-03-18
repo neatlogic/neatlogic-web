@@ -10,37 +10,81 @@
       <div>
         <Button class="mb-sm" @click="addData()">{{ $t('term.pbc.adddata') }}</Button>
       </div>
-      <div v-for="(item,index) in tableSettingList" :key="index" class="pb-xs">
-        <TsRow :gutter="8">
-          <Col span="10">
-            <TsFormSelect
-              ref="formItem"
-              v-model="item.viewName"
-              v-bind="viewConfig"
-              :dealDataByUrl="(nodeList)=>dealDataByViewList(nodeList, item.viewName)"
-            ></TsFormSelect>
-          </Col>
-          <Col span="12">
-            <TsFormSelect
-              ref="formItem"
-              v-model="item.fieldList"
-              v-bind="attrConfig"
-              class="mr-sm"
-            ></TsFormSelect>
-          </Col>
-          <Col span="2">
-            <span class="text-action tsfont-plus pr-xs" @click="addData(index+1)"></span>
-            <span class="text-action tsfont-minus" @click="deleteItem(index)"></span>
-          </Col>
-        </TsRow>
-      </div>
+      <draggable
+        v-if="tableSettingList && tableSettingList.length"
+        class="clearfix"
+        tag="div"
+        :list="tableSettingList"
+        handle=".move"
+      >
+        <div v-for="(item,index) in tableSettingList" :key="index" class="bg-op radius-sm mb-md">
+          <div class="flex-between border-base-bottom padding-sm">
+            <span
+              class="move tsfont-bar pr-xs"
+              :title="$t('term.deploy.dragtochangetheorder')"
+              @click.stop
+            ></span>
+            <div>
+              <span class="text-action tsfont-plus pr-xs" @click="addData(index+1)"></span>
+              <span class="text-action tsfont-minus" @click="deleteItem(index)"></span>
+            </div>
+          </div>
+          <div class="padding-sm">
+            <TsFormItem label="资产清单" labelPosition="left">
+              <TsFormSelect
+                ref="formItem"
+                v-model="item.viewName"
+                v-bind="viewConfig"
+                :dealDataByUrl="(nodeList)=>dealDataByViewList(nodeList, item.viewName)"
+                @on-change="(val)=>changeViewName(val, item)"
+              ></TsFormSelect>
+            </TsFormItem>
+            <TsFormItem label="表头属性" labelPosition="left">
+              <div>
+                <Tag
+                  v-for="(a,aindex) in assetTheadlist"
+                  :key="aindex"
+                  :checked="item.fieldList.includes(a.value)"
+                  checkable
+                  color="primary"
+                  size="medium"
+                  class="border-color tag"
+                  @on-change="selectItem(a.value, item)"
+                >{{ a.text }}</Tag>
+              </div>
+              <div v-if="$utils.isEmpty(item.fieldList)" class="text-error">{{ $t('form.placeholder.pleaseselect',{'target':$t('page.attribute')}) }}</div>
+            </TsFormItem>
+            <template v-if="item.fieldList && item.fieldList.length > 0">
+              <Divider orientation="left" style="font-size: 14px">{{ $t('term.process.attrdragtip') }}</Divider>
+              <draggable
+                class="clearfix"
+                tag="div"
+                :list="item.fieldList"
+                handle=".move"
+              >
+                <Tag
+                  v-for="value in item.fieldList"
+                  :key="value"
+                  :name="value"
+                  closable
+                  size="medium"
+                  @on-close="handleClose(value, item)"
+                ><span class="move tsfont-bar"></span> {{ getAssetTheadLabel(value) }}</Tag>
+              </draggable>
+            </template>
+          </div>
+        </div>
+      </draggable>
     </div>
   </TsDialog>
 </template>
 <script>
+import draggable from 'vuedraggable';
 export default {
   name: '',
   components: {
+    draggable,
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   filters: {},
@@ -53,7 +97,8 @@ export default {
       config: {},
       tableSettingList: [],
       setting: {
-        title: '设置',
+        title: this.$t('page.setting'),
+        type: 'slider',
         width: 'medium'
       },
       viewConfig: {
@@ -66,22 +111,13 @@ export default {
         border: 'border',
         validateList: ['required']
       },
-      attrConfig: {
-        url: '/api/rest/resourcecenter/assetlist/theadlist',
-        rootName: 'tbodyList',
-        textName: 'text',
-        valueName: 'value',
-        placeholder: '选择表头字段',
-        multiple: true,
-        transfer: true,
-        border: 'border',
-        validateList: ['required']
-      },
-      isSaveLoading: false
+      isSaveLoading: false,
+      assetTheadlist: []
     };
   },
   beforeCreate() {},
   created() {
+    this.getAppAssetTheadlist();
     this.getApplicationlistSetting();
   },
   beforeMount() {},
@@ -123,6 +159,11 @@ export default {
           isValid = false;
         }
       });
+      this.tableSettingList.forEach(item => {
+        if (this.$utils.isEmpty(item.fieldList)) {
+          isValid = false;
+        } 
+      });
       if (!isValid) {
         return;
       }
@@ -153,10 +194,55 @@ export default {
         }
       });
       return nodeList;
+    },
+    getAppAssetTheadlist() {
+      this.$api.cmdb.applicationManage.getAppAssetTheadlist().then(res => {
+        if (res.Status == 'OK' && res.Return) {
+          this.assetTheadlist = res.Return.tbodyList || [];
+        }
+      }); 
+    },
+    changeViewName(val, item) {
+      if (val) {
+        this.$set(item, 'fieldList', this.$utils.mapArray(this.assetTheadlist, 'value'));
+      } else {
+        this.$set(item, 'fieldList', []);
+      }
+    },
+    selectItem(value, item) {
+      if (item.fieldList.includes(value)) {
+        item.fieldList.splice(item.fieldList.indexOf(value), 1);
+      } else {
+        item.fieldList.push(value);
+      }
+    },
+    handleClose(value, item) {
+      item.fieldList.splice(item.fieldList.indexOf(value), 1); 
     }
   },
-  computed: {},
+  computed: {
+    getAssetTheadLabel() {
+      return (value) => {
+        let label = '';
+        this.assetTheadlist.forEach(item => {
+          if (item.value == value) {
+            label = item.text;
+          }
+        }); 
+        return label;
+      };
+    }
+  },
   watch: {}
 };
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.tag {
+  border-width: 1px !important;
+  border-style: solid !important;
+  cursor: pointer;
+}
+.move {
+  cursor: move;
+}
+</style>

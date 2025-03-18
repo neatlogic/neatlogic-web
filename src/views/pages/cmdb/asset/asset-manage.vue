@@ -106,6 +106,7 @@
           v-if="!loadingShow"
           v-model="selectList"
           v-bind="tableConfig"
+          :theadList="theadList"
           :multiple="true"
           :selectedRemain="selectedRemain"
           :loading="loading"

@@ -29,6 +29,8 @@
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
+                <li v-if="row.isMultiple" class="tsfont-copy" @click="copyEntity(row)">{{ $t('page.copy') }}</li>
+                <li v-if="row.isMultiple" class="tsfont-trash-o" @click="deleteEntity(row)">{{ $t('page.delete') }}</li>
                 <li class="tsfont-circulation-s" @click="viewData(1, 10, row.name)">{{ $t('page.viewdata') }}</li>
               </ul>
             </div>
@@ -36,7 +38,12 @@
         </TsTable>
       </template>
     </TsContain>
-    <ResourceEditDialog v-if="isEditShow" :name="currentEntityName" @close="closeEntityDialog"></ResourceEditDialog>
+    <ResourceEditDialog
+      v-if="isEditShow"
+      :name="currentEntityName"
+      :isCopy="isCopy"
+      @close="closeEntityDialog"
+    ></ResourceEditDialog>
     <TsDialog
       v-bind="dialogConfig"
       @on-close="close"
@@ -92,7 +99,8 @@ export default {
         currentPage: 1,
         pageSize: 10,
         name: ''
-      }
+      },
+      isCopy: false
     };
   },
   beforeCreate() {},
@@ -144,6 +152,7 @@ export default {
     },
     closeEntityDialog(needRefresh) {
       this.isEditShow = false;
+      this.isCopy = false;
       if (needRefresh) {
         this.getResourceEntityList();
       }
@@ -151,6 +160,27 @@ export default {
     addData() {
       this.currentEntityName = '';
       this.isEditShow = true; 
+    },
+    copyEntity(row) {
+      this.currentEntityName = row.name;
+      this.isCopy = true;
+      this.isEditShow = true;
+    },
+    deleteEntity(row) {
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deletetargetconfirm', {'target': row.name}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.$api.cmdb.resourceentity.deleteResourceentityData({name: row.name}).then(res => {
+            if (res.Status == 'OK') {
+              vnode.isShow = false;
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.getResourceEntityList();
+            }
+          });
+        }
+      });
     }
   },
   filter: {},

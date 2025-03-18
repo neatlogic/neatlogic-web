@@ -48,6 +48,9 @@ const applicationManage = {
   },
   getAppResourceList(params) { 
     return axios.post('/api/rest/resourcecenter/app/resource/list', params);
+  },
+  getAppAssetTheadlist() {
+    return axios.post('/api/rest/resourcecenter/app/assetlist/theadlist', {});
   }
 };
 export default applicationManage;

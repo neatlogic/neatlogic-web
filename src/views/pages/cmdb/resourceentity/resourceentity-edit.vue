@@ -21,7 +21,7 @@
             v-if="resourceEntityData.config"
             v-model="resourceEntityData.config.sceneTemplateName"
             v-bind="sceneTemplateNameConfig"
-            :readonly="!!name"
+            :readonly="!!name && !isCopy"
             @on-change="(val, item, selectItem) => { 
               changeSceneTemplateName(selectItem);
             }"
@@ -57,7 +57,10 @@ export default {
     MappingSetting: () => import('./mapping-setting.vue'),
     CiSetting: () => import('./ci/ci-setting.vue')
   },
-  props: {name: {type: String}},
+  props: {
+    name: {type: String},
+    isCopy: {type: Boolean}
+  },
   data() {
     return {
       loadingShow: true,
@@ -140,6 +143,11 @@ export default {
   methods: {
     getResourceEntityData() {
       if (this.name) {
+        this.formConfig.forEach(item => {
+          if (item.hasOwnProperty('readonly') && (['label', 'description'].includes(item.name) || this.isCopy)) {
+            this.$set(item, 'readonly', false);
+          } 
+        });
         this.$api.cmdb.resourceentity.getResourceEntity(this.name).then(res => {
           this.resourceEntityData = res.Return || {};
           if (!this.resourceEntityData.config) {
@@ -167,6 +175,9 @@ export default {
             if (findItem) {
               this.$set(findItem, 'isHidden', true);
             }
+          }
+          if (this.isCopy) {
+            this.$set(this.resourceEntityData, 'name', this.resourceEntityData.name + '_copy');
           }
         }).finally(() => {
           this.isReady = true;

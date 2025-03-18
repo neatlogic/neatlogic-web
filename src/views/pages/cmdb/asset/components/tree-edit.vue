@@ -8,23 +8,11 @@
           <a class="text-href" href="javascript:void(0);" @click.stop="gotoResourceentityManagePage()">{{ $t('term.cmdb.gotoresourceentitymanagepage') }}</a>
         </div>
         <TsFormItem :label="$t('term.cmdb.ci')" required>
-          <TsRow :gutter="8">
-            <Col span="8">
-              <TsFormTree
-                ref="formTree"
-                v-model="formData.rootCiName"
-                v-bind="treeConfig"
-              ></TsFormTree>
-            </Col>
-            <Col span="14">
-              <TsFormSelect
-                ref="formItem"
-                v-model="formData.fieldList"
-                v-bind="attrConfig"
-                class="mr-sm"
-              ></TsFormSelect>
-            </Col>
-          </TsRow>
+          <TsFormTree
+            ref="formTree"
+            v-model="formData.rootCiName"
+            v-bind="treeConfig"
+          ></TsFormTree>
         </TsFormItem>
       </div>
     </template>
@@ -38,7 +26,6 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
@@ -74,17 +61,6 @@ export default {
         showPath: true,
         search: true,
         border: 'border'
-      },
-      attrConfig: {
-        url: '/api/rest/resourcecenter/assetlist/theadlist',
-        rootName: 'tbodyList',
-        textName: 'text',
-        valueName: 'value',
-        multiple: true,
-        transfer: true,
-        border: 'border',
-        validateList: ['required'],
-        placeholder: '选择表头字段'
       }
     };
   },
@@ -117,10 +93,9 @@ export default {
     },
     getResourceEntity() {
       this.$api.cmdb.resourceentity.getAssetlist().then(res => {
-        if (res.Status == 'OK') {
+        if (res.Status == 'OK' && res.Return) {
           this.id = res.Return.id;
           this.$set(this.formData, 'rootCiName', res.Return.rootCiName || '');
-          this.$set(this.formData, 'fieldList', res.Return.config && res.Return.config.fieldList || []);
         }
       }).finally(() => {
         this.$nextTick(() => {
@@ -146,9 +121,7 @@ export default {
       let data = {
         id: this.id,
         rootCiName: this.formData.rootCiName,
-        config: {
-          fieldList: this.formData.fieldList
-        }
+        config: {}
       };
       this.$api.cmdb.resourceentity.saveAssetlistData(data).then(res => {
         if (res.Status == 'OK') {

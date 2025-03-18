@@ -23,6 +23,9 @@ const resourceentity = {
   },
   saveAssetlistData(params) {
     return axios.post('/api/rest/resourcecenter/assetlist/display/save', params);
+  },
+  deleteResourceentityData(params) {
+    return axios.post('/api/rest/resourcecenter/resourceentity/delete', params);
   }
 };
 export default resourceentity;
