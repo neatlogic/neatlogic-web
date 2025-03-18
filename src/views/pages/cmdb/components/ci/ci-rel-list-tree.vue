@@ -29,7 +29,7 @@ export default {
   async created() {
     if (this.ciId && !this.ciRelList) {
       this.getRelByCiId(this.ciId);
-    } else {
+    } else if (this.ciId && this.ciRelList) {
       const root = {};
       await this.generateData(root, 0, this.ciRelList, this.ciId);
       this.relListLocal = root['children'];

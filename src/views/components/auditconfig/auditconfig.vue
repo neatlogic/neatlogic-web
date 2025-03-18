@@ -39,6 +39,7 @@ export default {
         border: 'border',
         placement: 'bottom-start',
         clearable: false,
+        isCustomDay: true,
         transfer: true,
         width: '100%',
         isMore: false,
