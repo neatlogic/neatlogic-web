@@ -37,13 +37,10 @@
           <div v-else-if="!readonly" class="padding-md" :style="{ height: height ? height + 'px' : null }">
             <p v-if="title" class="title">{{ title }}</p>
             <div v-if="type == 'drag'" class="drag">
-              <!-- <i class="icon-tip tsfont-plus"></i> -->
               <div class="upload-icon">
-                <div class="tsfont-tianjiawenjian text-info" style="font-size: 25px"></div>
-                <!--<img src="../UploadDialog/upload-icon.png" :alt="$t('page.importicon')" />-->
+                <div class="tsfont-tianjiawenjian text-info" style="font-size:25px"></div>
                 <p class="text-grey">{{ $t('page.clickanddragfile') }}</p>
               </div>
-              <!-- <p>上传附件</p> -->
             </div>
             <Button v-else :disabled="disabled">{{ $t('page.clicktoupload') }}</Button>
           </div>
@@ -178,7 +175,7 @@ export default {
     },
     maxsize: {
       type: Number,
-      default: 1000000
+      default: 0
     },
     defaultList: {
       type: Array,
@@ -286,6 +283,12 @@ export default {
     Object.assign(this.filedata, this.params);
   },
   created() {},
+  destroyed() {
+    const uploadRef = this.$refs.upload;
+    if (uploadRef) {
+      uploadRef.clearFiles();
+    }
+  },
   methods: {
     openDialog() {
       this.isShowScreenshotFromClicpboardDialog = true;
@@ -382,6 +385,7 @@ export default {
     handleRemoveFile(item) {
       const fileList = this.$refs.upload.fileList;
       this.$refs.upload.fileList.splice(fileList.indexOf(item), 1);
+      this.$refs.upload.handleCancelAjax(item);
       this.$emit('remove', this.$refs.upload.fileList, item.id);
     },
     //下载请求

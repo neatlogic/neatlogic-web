@@ -19,7 +19,7 @@
     "edittarget": "Edit {target}",
     "deletetarget": "Delete {target}",
     "choosetarget": "Choose {target}",
-    "logsavedeadline": "Log retention period",
+    "logsavedeadline": "Data retention period",
     "rollbacktarget": "Rollback {target}",
     "versioncomparison": "Version comparison",
     "copytarget": "Copy {target}",

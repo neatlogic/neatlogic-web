@@ -1159,8 +1159,9 @@ export default {
               if (this.$utils.isEmpty(this.roundCount.value)) {
                 this.$set(this.roundCount, 'value', this.executeConfig.roundCount || 2);
               }
-              this.$set(this.roundCountForm, 'disabled', true);
-              this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
+              //组合工具设置了分批数，编辑服务需要支持修改
+              // this.$set(this.roundCountForm, 'disabled', true);
+              // this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
             }
             if (this.executeConfig.whenToSpecify == 'runtime') {
               // 过滤器运行在执行，需要把执行目标值清空
