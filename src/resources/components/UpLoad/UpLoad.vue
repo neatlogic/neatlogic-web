@@ -387,7 +387,7 @@ export default {
       if (uploadRef) {
         let fileList = uploadRef.fileList;
         fileList.splice(fileList.indexOf(item), 1);
-        uploadRef.handleCancelAjax(item);
+        uploadRef.handleCancelAjax && uploadRef.handleCancelAjax(item);
         this.$emit('remove', fileList, item.id);
       }
     },
