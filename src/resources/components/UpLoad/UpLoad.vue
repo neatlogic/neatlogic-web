@@ -383,10 +383,13 @@ export default {
       return false;
     },
     handleRemoveFile(item) {
-      const fileList = this.$refs.upload.fileList;
-      this.$refs.upload.fileList.splice(fileList.indexOf(item), 1);
-      this.$refs.upload.handleCancelAjax(item);
-      this.$emit('remove', this.$refs.upload.fileList, item.id);
+      const uploadRef = this.$refs.upload;
+      if (uploadRef) {
+        let fileList = uploadRef.fileList;
+        fileList.splice(fileList.indexOf(item), 1);
+        uploadRef.handleCancelAjax(item);
+        this.$emit('remove', fileList, item.id);
+      }
     },
     //下载请求
     fileDownload: function(item) {
