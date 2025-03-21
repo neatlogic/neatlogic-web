@@ -120,7 +120,7 @@
   }
 
   .ck.ck-list {
-    background-color: @blockbg-color;
+    background: @blockbg-color;
   }
 
   .ck.ck-list__item .ck-button:hover:not(.ck-disabled) {
@@ -130,6 +130,15 @@
   .ck.ck-list__item .ck-button.ck-on {
     background: var(--selected-bg, @selected-bg);
     color: var(--primary-color, @primary-color);
+  }
+  .ck.ck-button.ck-list-item-button,
+  .ck.ck-button.ck-list-item-button.ck-on {
+    background: @blockbg-color;
+  }
+  .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content {
+    border: solid var(--border-color, @border-color-base);
+    border-radius: 10px 10px 0 0;
+    border-width: 1px 1px 0;
   }
 
   .ck.ck-dropdown__panel {
