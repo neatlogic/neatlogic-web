@@ -1,6 +1,5 @@
 <template>
   <div class="latest-question-manage-box padding">
-    2
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <div class="action-group text-right pb-sm">
       <span :class="isExpandCollapse ? 'tsfont-up' : 'tsfont-down'" class="action-item" @click="handleExpandCollapseAll()">

@@ -1,7 +1,6 @@
 <template>
   <div class="inspection-assets-manage-wrap padding">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    1
     <div v-if="envList && envList.length > 0" class="pb-sm li-box">
       <Row :gutter="16">
         <Col
