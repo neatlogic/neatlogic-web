@@ -181,6 +181,7 @@ export default {
       editor: ClassicEditor, //引用类型，基础模式
       editorConfig: {
         //基本配置
+        licenseKey: "GPL",
         language: BASELANGUAGES == 'zh' ? 'zh-cn' : 'en-gb',
         removePlugins: this.removePlugins,
         ckfinder: {
