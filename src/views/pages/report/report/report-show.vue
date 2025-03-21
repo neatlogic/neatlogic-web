@@ -200,20 +200,33 @@ export default {
           this.loadingShow = false;
         });
     },
-    getReportById: function() {
-      if (this.id) {
-        this.$api.report.report.getReportById(this.id).then(res => {
-          let d = res.Return;
-          if (d && d.paramList && d.paramList.length > 0) {
-            d.paramList.forEach(element => {
-              if (element.config && element.config.defaultValue) {
-                this.searchParam[element.name] = element.config.defaultValue;
-              }
-            });
-          }
-          this.reportData = d;
-        });
+    getReportById() {
+      if (!this.id) {
+        return false;
       }
+      let query = this.$route.query || {};
+      let queryKeyList = Object.keys(query);
+      this.$api.report.report.getReportById(this.id).then(res => {
+        let d = res.Return;
+        if (d && d.paramList && d.paramList.length > 0) {
+          d.paramList.forEach(element => {
+            if (element.config && element.config.defaultValue) {
+              this.searchParam[element.name] = element.config.defaultValue;
+            } else {
+              if (element.name && queryKeyList.includes(element.name)) {
+              // 处理从地址栏传递过来的参数，并设置默认值
+                this.searchParam[element.name] = query[element.name];
+                if (element.hasOwnProperty('config')) {
+                  element.config.defaultValue = query[element.name];
+                } else {
+                  element.config = { defaultValue: query[element.name] };
+                }
+              }
+            }
+          });
+        }
+        this.reportData = d;
+      });
     },
     setParam: function(paramName, paramValue) {
       let obj = {};
