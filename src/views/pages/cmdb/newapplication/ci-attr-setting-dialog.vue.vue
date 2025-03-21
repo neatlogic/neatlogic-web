@@ -134,7 +134,7 @@ export default {
   methods: {
     getApplicationlistSetting() {
       this.$api.cmdb.applicationManage.getApplicationlistSetting().then(res => {
-        if (res.Status == 'OK') {
+        if (res.Status == 'OK' && res.Return) {
           this.id = res.Return.id || null;
           this.config = res.Return.config || {};
           this.tableSettingList = this.config.tableSettingList || [];
@@ -148,9 +148,9 @@ export default {
     },
     addData(index) {
       if (index) {
-        this.tableSettingList.splice(index, 0, { viewName: '', fieldList: [] });
+        this.tableSettingList.splice(index, 0, { viewName: '', fieldList: [], _isShow: true });
       } else {
-        this.tableSettingList.push({ viewName: '', fieldList: [] });
+        this.tableSettingList.push({ viewName: '', fieldList: [], _isShow: true });
       }
     },
     deleteItem(index) {

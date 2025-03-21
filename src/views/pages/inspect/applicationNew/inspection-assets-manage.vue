@@ -1,6 +1,7 @@
 <template>
-  <div class="assets-manage-wrap padding">
+  <div class="inspection-assets-manage-wrap padding">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
+    1
     <div v-if="envList && envList.length > 0" class="pb-sm li-box">
       <Row :gutter="16">
         <Col
@@ -26,18 +27,15 @@
       <div v-for="(item, index) in tableList" :key="index">
         <div class="h3 padding-sm">{{ item.viewLabel }}</div>
         <TsTable
-          :fixedHeader="false"
-          :theadList="item.theadList"
           v-bind="filterTypeFields(item)"
           @changeCurrent="(currentPage) => changeCurrent(currentPage, item, index)"
           @changePageSize="(pageSize) => changePageSize(pageSize,item, index)"
         >
           <template v-slot:ip="{ row }">
-            <span v-if="!$utils.isEmpty(row.ip)" class="text-href" @click="toCientityView(row.ip)">
+            <span class="text-href" @click.stop="gotoDetails(row)">
               <span>{{ row.ip.ip }}</span>
               <span v-if="row.ip.port">:{{ row.ip.port }}</span>
             </span>
-            <span v-else></span>
           </template>
           <template v-slot:allIpList="{ row }">
             <div v-if="!$utils.isEmpty(row.allIpList)">
@@ -55,18 +53,14 @@
           <template v-slot:lcu="{row}">
             <UserCard v-bind="row.lcu" :hideAvatar="true"></UserCard>
           </template>
+          <template v-slot:lcd="{ row }">
+            <div v-if="row.lcd">{{ row.lcd | formatDate }}</div>
+          </template>
           <template v-slot:fcu="{ row }">
             <UserCard v-bind="row.fcu" :hideAvatar="true"></UserCard>
           </template>
-          <template v-slot:vendor="{ row }">
-            <Tag
-              v-if="!$utils.isEmpty(row.vendor)"
-              class="cursor-pointer"
-              @click.native="toCientityView(row.vendor)"
-            >
-              {{ row.vendor.name }}
-            </Tag>
-            <span v-else></span>
+          <template v-slot:fcd="{ row }">
+            <div v-if="row.fcd">{{ row.fcd | formatDate }}</div>
           </template>
           <template v-slot:monitor="{ row }">
             <!-- 监控状态 -->
@@ -86,7 +80,28 @@
                 {{ handleTimes(row.inspect.time) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
               </span>
             </span>
+            <span v-else>
+              <span>-</span>
+            </span>
+          </template>
+          <template v-slot:taskStatus="{ row }">
+            <CommonStatus
+              v-if="row.taskStatus"
+              :statusName="row.taskStatus.text"
+              :statusValue="row.taskStatus.value"
+              type="text"
+            ></CommonStatus>
             <span v-else>-</span>
+          </template>
+          <template v-slot:vendor="{ row }">
+            <Tag
+              v-if="!$utils.isEmpty(row.vendor)"
+              class="cursor-pointer"
+              @click.native="toCientityView(row.vendor)"
+            >
+              {{ row.vendor.name }}
+            </Tag>
+            <span v-else></span>
           </template>
           <template v-slot:appModule="{ row }">
             <div v-if="!$utils.isEmpty(row.appModule)" class="text-href" @click="toCientityView(row.appModule)">
@@ -109,6 +124,19 @@
               <span :class="row.appSystem.ciIcon"></span>
               <span>{{ row.appSystem.name }}</span>
             </div>
+          </template>
+          <template v-slot:ownerList="{ row }">
+            <div v-if="!$utils.isEmpty(row.ownerList)">
+              <Tag
+                v-for="(o, oindex) in row.ownerList"
+                :key="oindex"
+                class="cursor-pointer"
+                @click.native="toCientityView(o);"
+              >
+                {{ o.name }}
+              </Tag>
+            </div>
+            <div v-else></div>
           </template>
           <template v-slot:businessGroupList="{ row }">
             <div v-if="!$utils.isEmpty(row.businessGroupList)">
@@ -133,26 +161,6 @@
               {{ row.state.name }}
             </Tag>
           </template>
-          <template v-slot:ownerList="{ row }">
-            <div v-if="!$utils.isEmpty(row.ownerList)">
-              <Tag
-                v-for="(o, oindex) in row.ownerList"
-                :key="oindex"
-                class="cursor-pointer"
-                @click.native="toCientityView(o);"
-              >
-                {{ o.name }}
-              </Tag>
-            </div>
-            <div v-else></div>
-          </template>
-          <template v-slot:ci="{row}">
-            <!-- 模型 -->
-            <div v-if="!$utils.isEmpty(row.ci)" class="text-href" @click="toCiView(row.ci)">
-              <span :class="row.ci.icon"></span>
-              <span>{{ row.ci.label }}</span>
-            </div>
-          </template>
           <template v-slot:dataCenter="{ row }">
             <!-- 数据中心 -->
             <Tag
@@ -164,28 +172,49 @@
             </Tag>
             <span v-else></span>
           </template>
-          <template v-slot:fcd="{ row }">
-            <div v-if="row.fcd">{{ row.fcd | formatDate }}</div>
+          <template v-slot:ci="{row}">
+            <!-- 模型 -->
+            <div v-if="!$utils.isEmpty(row.ci)" class="text-href" @click="toCiView(row.ci)">
+              <span :class="row.ci.icon"></span>
+              <span>{{ row.ci.label }}</span>
+            </div>
           </template>
-          <template v-slot:lcd="{ row }">
-            <div v-if="row.lcd">{{ row.lcd | formatDate }}</div>
+          <template v-slot:action="{row}">
+            <div class="tstable-action">
+              <ul class="tstable-action-ul">
+                <li v-if="row && row.jobPhaseNodeVo && row.jobPhaseNodeVo.jobId" class="tsfont-history" @click="toJobDetail(row)">{{ $t('term.inspect.jobdetail') }}</li>
+                <li v-auth="'INSPECT_EXECUTE'" class="tsfont-inspection" @click="doInspection(row)">{{ $t('term.inspect.inspect') }}</li>
+                <li class="tsfont-setting" @click="openRuleThresholdDialog(row)">{{ $t('term.inspect.thresholdrule') }}</li>
+              </ul>
+            </div>
           </template>
-          <!-- <template v-slot:clusterName="{row}">
-            所在集群 
-            <span v-if="row" class="text-href" @click="gotoCluster(row)">{{ row.clusterName }}</span>
-          </template> -->
         </TsTable>
       </div>
     </div>
     <NoData v-else></NoData>
+    <InspectionDialog
+      v-if="isShowInspectionDialog"
+      :ciEntityData="currentCiEntity"
+      @close="closeInspectionDialog"
+    ></InspectionDialog>
+    <RuleOfThresholdDialog
+      v-if="isShowRuleThresholdDialog"
+      :appSystemId="appSystemId"
+      :resourceId="resourceId"
+      @close="closeRuleOfThresholdDialog"
+    ></RuleOfThresholdDialog>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
+    InspectionDialog: () => import('../assetsInspect/inspection-dialog.vue'), // 单个巡检
+    RuleOfThresholdDialog: () => import('./threshold/rule-of-threshold-dialog.vue'), //阈值规则
+    CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue')
+    
   },
   filters: {},
   props: {
@@ -205,7 +234,11 @@ export default {
   data() {
     return {
       loadingShow: false,
+      isShowInspectionDialog: false,
+      isShowRuleThresholdDialog: false,
       envId: '',
+      resourceId: null,
+      currentCiEntity: null,
       envList: [],
       tableList: [],
       tableData: {
@@ -226,7 +259,8 @@ export default {
       //   { key: 'networkArea', title: this.$t('page.networkarea')},
       //   { key: 'ownerList', title: this.$t('page.owner')},
       //   { key: 'bgList', title: this.$t('term.autoexec.subordinatedepartment')},
-      //   { key: 'maintenanceWindow', title: this.$t('term.deploy.maintenancewindow')}
+      //   { key: 'maintenanceWindow', title: this.$t('term.deploy.maintenancewindow')},
+      //   { key: 'action'}
       // ]
     };
   },
@@ -243,6 +277,25 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toJobDetail(row) {
+      // 打开新的作业详情
+      if (row && row.jobPhaseNodeVo) {
+        window.open(HOME + '/inspect.html#/job-detail?id=' + row.jobPhaseNodeVo.jobId + '&status=' + row.jobPhaseNodeVo.status, '_blank');
+       
+        // this.$router.push({path: '/job-detail?id=' + row.jobPhaseNodeVo.jobId + '&status=' + row.jobPhaseNodeVo.status});
+      }
+    },
+    doInspection(row) {
+      // 巡检
+      this.isShowInspectionDialog = true;
+      if (row) {
+        this.currentCiEntity = row;
+      }
+    },
+    closeInspectionDialog() {
+      this.isShowInspectionDialog = false;
+      this.currentCiEntity = null;
+    },
     restoreHistory(historyData) {
       this.envId = historyData['envId'];
     },
@@ -251,6 +304,12 @@ export default {
       let currentRow = this.$utils.deepClone(row);
       if (currentRow && currentRow.hasOwnProperty('type')) {
         delete currentRow.type;
+      }
+      if (currentRow && currentRow.hasOwnProperty('theadList')) {
+        currentRow.theadList.push({
+          title: '',
+          key: 'action'
+        });
       }
       return currentRow;
     },
@@ -293,7 +352,7 @@ export default {
         appSystemId: this.appSystemId,
         appModuleId: this.appModuleId,
         envId: this.envId,
-        viewName: row && row.viewName ? row.viewName : null,
+        typeId: row && row.type ? row.type.id : null,
         currentPage: this.tableData.currentPage,
         pageSize: this.tableData.pageSize
       };
@@ -303,7 +362,7 @@ export default {
         return false;
       }
       this.loadingShow = true;
-      this.$api.cmdb.applicationManage.getAppResourceList(params).then(res => {
+      this.$api.inspect.applicationInspect.getNewapplicationInspectList(params).then(res => {
         if (res.Status == 'OK') {
           if (row && !this.$utils.isEmptyObj(row)) {
             // 内嵌列表翻页
@@ -318,35 +377,31 @@ export default {
         this.loadingShow = false;
       });
     },
-    gotoCluster(row) {
-      // 集群跳转
-      if (row && !this.$utils.isEmptyObj(row)) {
-        this.$router.push({ path: './ci/' + row.clusterTypeId + '/cientity-view/' + row.clusterId });
-      }
-    },
     toCientityView(row) {
       // 应用清单详情
       if (row && !this.$utils.isEmptyObj(row)) {
-        window.open(HOME + '/cmdb.html#/ci/' + row.ciId + '/cientity-view/' + row.id, '_blank');
-      }
-    },
-    toCiView(ci) {
-      if (ci && !this.$utils.isEmptyObj(ci)) {
-        window.open(HOME + '/cmdb.html#/ci-view/' + ci.id, '_blank');
+        window.open(HOME + '/inspect.html#/ci/' + row.ciId + '/cientity-view/' + row.id, '_blank');
+      
+        // this.$router.push({ path: './ci/' + row.typeId + '/cientity-view/' + row.id });
       }
     },
     toInspectStatusDetail(row) {
       // 巡检状态详情
       if (row && !this.$utils.isEmptyObj(row)) {
-        // cmdb模块
-        if (this.$AuthUtils.hasRole('INSPECT_BASE')) {
-          window.open(HOME + '/cmdb.html#/inspect.html#/inspect-status-detail-' + row.id, '_blank');
-        }
+        window.open(HOME + '/inspect.html#/assets-detail-' + row.id, '_blank');
       }
+    },
+    gotoDetails(row) {
+      window.open(HOME + '/inspect.html#/assets-detail-' + row.id, '_blank');
     },
     toGlobalAttrManage() {
       //全局属性管理
       window.open(HOME + '/cmdb.html#/global-attr-manage', '_blank');
+    },
+    toCiView(ci) {
+      if (ci && !this.$utils.isEmptyObj(ci)) {
+        window.open(HOME + '/cmdb.html#/ci-view/' + ci.id, '_blank');
+      }
     },
     selectedEnv(name) {
       let envId = null;
@@ -365,6 +420,15 @@ export default {
         data = Date.parse(new Date()) - time;
       }
       return data;
+    },
+    openRuleThresholdDialog(row) {
+      if (row && row.id) {
+        this.resourceId = row.id;
+        this.isShowRuleThresholdDialog = true;
+      }
+    },
+    closeRuleOfThresholdDialog() {
+      this.isShowRuleThresholdDialog = false;
     }
   },
   computed: {},
@@ -379,7 +443,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.assets-manage-wrap {
+.inspection-assets-manage-wrap {
   .li-box {
     margin-bottom: -10px;
   .li-item {
