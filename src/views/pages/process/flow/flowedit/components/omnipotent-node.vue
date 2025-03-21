@@ -61,7 +61,7 @@
       </div>
     </div>
     <CompleteSetting v-model="activeSetting.autoComplete"></CompleteSetting>
-    <!-- <ApprovalSetting v-model="activeSetting.autoApproval"></ApprovalSetting> -->
+    <ApprovalSetting v-if="activeSetting.showAutoApproval == 1" v-model="activeSetting.autoApproval"></ApprovalSetting>
     <div v-if="isStart" class="settingList">
       <div class="control-box">
         <div class="control-setting">
@@ -160,7 +160,7 @@ export default {
     StrategySetting: () => import('./nodesetting/strategy-setting.vue'), // 创建子任务
     TagSetting: () => import('./nodesetting/tag-setting.vue'), // 标签
     CompleteSetting: () => import('./nodesetting/complete-setting.vue'), // 自动流转
-    // ApprovalSetting: () => import('./nodesetting/approval-setting.vue'), // 自动审批
+    ApprovalSetting: () => import('./nodesetting/approval-setting.vue'), // 自动审批
     FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
   },
   mixins: [nodemixin, itemmixin],
@@ -179,6 +179,7 @@ export default {
         enableReapproval: 0, //重审
         autoComplete: 0, //自动流转
         autoApproval: 0, //自动审批
+        showAutoApproval: 0, //显示自动审批
         actionSetting: 0 // 动作设置
         // isStrategy: 0 //子任务节点是否开启，如果说有子任务节点id就开启，没有就关闭
       },
@@ -253,6 +254,7 @@ export default {
       this.activeSetting.enableReapproval = config.stepConfig ? config.stepConfig.enableReapproval : 0;
       this.activeSetting.autoComplete = config.stepConfig ? config.stepConfig.autoComplete : 0;
       this.activeSetting.autoApproval = config.stepConfig ? config.stepConfig.autoApproval : 0;
+      this.activeSetting.showAutoApproval = config.stepConfig ? config.stepConfig.showAutoApproval : 0;
     },
     getCopyPrevNodes() {
       //所有节点数据筛选
