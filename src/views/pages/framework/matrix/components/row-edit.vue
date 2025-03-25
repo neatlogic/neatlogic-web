@@ -128,6 +128,7 @@ export default {
                   type: 'datetime',
                   maxlength: 50,
                   valueType: 'format',
+                  format: this.getFormat(item.config),
                   transfer: true
                 };
                 break;
@@ -236,6 +237,16 @@ export default {
   },
   filter: {},
   computed: {
+    getFormat() {
+      return (config) => {
+        if (config && config.format) {
+          let styleType = config.styleType || '-';
+          return config.format.replace(/\-/g, styleType);
+        } else {
+          return 'yyyy-MM-dd HH:mm:ss';
+        }
+      };
+    }
   },
   watch: {}
 };
