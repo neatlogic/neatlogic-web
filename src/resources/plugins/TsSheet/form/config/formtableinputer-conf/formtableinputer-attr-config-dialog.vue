@@ -269,7 +269,9 @@
                 v-model="propertyLocal.config.format"
                 :validateList="validateList"
                 :dataList="[
+                  { value: 'yyyy/MM/dd HH:mm', text: 'yyyy/MM/dd HH:mm' },
                   { value: 'yyyy/MM/dd', text: 'yyyy/MM/dd' },
+                  { value: 'yyyy-MM-dd HH:mm', text: 'yyyy-MM-dd HH:mm' },
                   { value: 'yyyy-MM-dd', text: 'yyyy-MM-dd' },
                   { value: 'yyyy/MM', text: 'yyyy/MM' },
                   { value: 'yyyy-MM', text: 'yyyy-MM' },
@@ -294,7 +296,7 @@
               <TsFormDatePicker
                 v-model="propertyLocal.config.defaultValue"
                 transfer
-                :type="propertyLocal.handler.replace('form', '')"
+                :type="getType(propertyLocal.handler)"
                 :format="propertyLocal.config.format"
               ></TsFormDatePicker>
             </TsFormItem>
@@ -1043,6 +1045,28 @@ export default {
       return (propertyLocal) => {
         let {handler = '', matrixType = ''} = propertyLocal || {};
         return !!((handler == 'formselect' && matrixType == 'custom')); // 下拉框并且是自定义矩阵，才显示新增按钮
+      };
+    },
+    getType() {
+      return (handler) => {
+        let { config } = this.propertyLocal || {};
+        let { format } = config || {};
+        if (handler == 'formtime') {
+          return 'time';
+        }
+        let type = 'datetime';
+        if (format) {
+          if (format.indexOf('HH') >= 0) {
+            type = 'datetime';
+          } else if (format.indexOf('dd') > 0) {
+            type = 'date';
+          } else if (format.indexOf('MM') > 0) {
+            type = 'month';
+          } else if (format.indexOf('yyyy') > 0) {
+            type = 'year';
+          } 
+        }
+        return type;
       };
     }
   },
