@@ -177,12 +177,13 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.init(true);
-    this.updateMenu();
     this.routerAuth = this.handleRouterAuth();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.init(true);
+    this.updateMenu();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -204,10 +205,19 @@ export default {
       this.getMenuTreeNode();
     },
     getAuthList() {
-      return this.$api.framework.auth
-        .getAuthList()
+      return this.$api.common
+        .getAuthGrouplist()
         .then(res => {
-          this.authList = res.Return || [];
+          this.authList = [];
+          let { Status, Return } = res || {};
+          let {authGroupList = []} = Return || {};
+          if (Status == 'OK') {
+            authGroupList.forEach((item) => {
+              if (item && item.authVoList && item.authVoList.length > 0) {
+                this.authList.push(...(item.authVoList || []));
+              }
+            });
+          }
         });
     },
     getTreeList(isFirst) {
@@ -285,8 +295,20 @@ export default {
       }
     },
     getMenuAuthority(moduleId, menu) {
-      let authorityItem = moduleId && this.routerAuth[moduleId] && this.routerAuth[moduleId].find((v) => menu.indexOf(v.name) != -1);
-      return authorityItem && authorityItem.authority;
+      if (!moduleId || !this.routerAuth[moduleId] || menu === '/') {
+        return '';
+      }
+      let authList = this.routerAuth[moduleId] || [];
+      let findItem = authList.find((v) => {
+        if (menu && v.authority) {
+          if (v.path && menu.indexOf(v.path) != -1) {
+            return v;
+          } else if (v.name && menu.indexOf(v.name) != -1) {
+            return v;
+          }
+        }
+      });
+      return findItem ? findItem.authority : '';
     },
     handleMenuAuth(node) {
       this.menuType = 'innerMenu';
@@ -301,7 +323,7 @@ export default {
         let childrenList = this.flattenArrayWithChildren(this.$utils.deepClone(Array.isArray(node.children) && !this.$utils.isEmpty(node.children) ? node.children : [node]));
         let moduleAuthList = this.routerAuth[node.moduleId] && this.routerAuth[node.moduleId] || []; // 获取点击的模块菜单权限
         childrenList.forEach((item) => {
-          let findItem = moduleAuthList.find((v) => item.id.indexOf(v.name) > 0);
+          let findItem = moduleAuthList.find((v) => (item.id.indexOf(v.path) != -1) || item.id.indexOf(v.name) > 0);
           if (findItem) {
             let {authority = ''} = findItem || {};
             this.tableConfig.tbodyList.push({
@@ -534,10 +556,10 @@ export default {
           return [];
         }
         const authItems = Array.isArray(authority) ? authority : [authority];
-        return authItems.map(item => {
-          const authItem = this.authList.find(v => v.name === item);
-          const { displayName = '', name = '' } = authItem || {};
-          return { displayName, name: name || item };
+        return authItems.map(authorityEnName => {
+          const authItem = this.authList.find(v => v.name && authorityEnName && v.name === authorityEnName);
+          let {displayName, name} = authItem || {};
+          return { displayName, name: name || authorityEnName };
         });
       };
     }
