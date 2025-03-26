@@ -291,7 +291,7 @@
                 style="position: absolute; top: 0px; left: 0px; z-index: 10; font-size: 12px"
                 class="text-grey"
                 :class="cell.component.icon"
-              ></div>
+              >{{ getComponentTopLeftTip(cell.component) }}</div>
               <div
                 v-if="mode === 'edit' && !$utils.isEmpty(cell.component) && !$utils.isEmpty(cell.component.config) && !$utils.isEmpty(cell.component.config.version)"
                 style="position: absolute; top: 0px; left: 16px; z-index: 10; font-size: 12px"
@@ -397,7 +397,7 @@
         </Dropdown>
       </div>
       <!-- 底部添加的隐藏组件 -->
-      <div class="form-footer mt-nm">
+      <div class="form-footer" :class="mode === 'edit'?'mt-nm':''">
         <span v-for="(item, index) in hideComponentList" :key="index">
           <Tag
             v-if="mode === 'edit'"
@@ -2382,6 +2382,14 @@ export default {
         }
         return (width / this.tableSize.width) * this.containerWidth + 'px';
       };
+    },
+    getComponentTopLeftTip() {
+      // 获取组件左上角提示信息文案，例如脚本组件，需要显示脚本类型名称
+      return (component) => {
+        let {config = {}} = component || {};
+        let {componentTopLeftTip = ''} = config;
+        return componentTopLeftTip;
+      };
     }
   },
   watch: {
@@ -2426,14 +2434,12 @@ export default {
           //将后台的数据格式转换回原始的数据格式
           this.formData = {};
           val.forEach(element => {
-            if (element.attributeUuid) {
+            const item = this.formItemList.find(d => d.key && element.key && d.key === element.key);
+            if (element.key && item) {
+              this.$set(this.formData, item.uuid, element.dataList);
+            } else if (element.attributeUuid && this.formItemList.find(item => item.uuid === element.attributeUuid)) {
               this.$set(this.formData, element.attributeUuid, element.dataList);
-            } else if (element.key) {
-              const item = this.formItemList.find(d => d.key && d.key === element.key);
-              if (item) {
-                this.$set(this.formData, item.uuid, element.dataList);
-              }
-            }
+            } 
           });
         } else if (val && val instanceof Object) {
           //这里一定要检查formData和data是否一样，如果一样的情况下还继续复制对象，在@setValue中设置TsSheet的data对象的情况下，会导致死循环。

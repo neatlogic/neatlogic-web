@@ -26,10 +26,20 @@
           </template>
           <template v-slot:config>
             <Tabs v-model="activedTab" name="integrationEditTabs">
-              <TabPane :label="$t('page.authentication')" name="authentication" tab="integrationEditTabs">
+              <TabPane
+                :key="1"
+                :label="$t('page.authentication')"
+                name="authentication"
+                tab="integrationEditTabs"
+              >
                 <Authentication :integration="integrationData" @setAuthentication="setAuthentication"></Authentication>
               </TabPane>
-              <TabPane :label="$t('page.paramdesc')" name="param" tab="integrationEditTabs">
+              <TabPane
+                :key="2"
+                :label="$t('page.paramdesc')"
+                name="param"
+                tab="integrationEditTabs"
+              >
                 <ParamEdit
                   :allow-edit-param="allowEditParam"
                   :integration="integrationData"
@@ -37,10 +47,20 @@
                   @setParam="setParam"
                 ></ParamEdit>
               </TabPane>
-              <TabPane :label="$t('term.framework.head')" name="head" tab="integrationEditTabs">
+              <TabPane
+                :key="3"
+                :label="$t('term.framework.head')"
+                name="head"
+                tab="integrationEditTabs"
+              >
                 <HeaderEdit :integration="integrationData" @setHead="setHead"></HeaderEdit>
               </TabPane>
-              <TabPane :label="$t('term.framework.inputtrans')" name="input" tab="integrationEditTabs">
+              <TabPane
+                :key="4"
+                :label="$t('term.framework.inputtrans')"
+                name="input"
+                tab="integrationEditTabs"
+              >
                 <InputTransform
                   :integration="integrationData"
                   :allow-edit-param="allowEditParam"
@@ -48,7 +68,12 @@
                   @setInput="setInput"
                 ></InputTransform>
               </TabPane>
-              <TabPane :label="$t('term.framework.outputtrans')" name="output" tab="integrationEditTabs">
+              <TabPane
+                :key="5"
+                :label="$t('term.framework.outputtrans')"
+                name="output"
+                tab="integrationEditTabs"
+              >
                 <OutputTransform
                   :integration="integrationData"
                   :allow-edit-param="allowEditParam"
@@ -56,10 +81,20 @@
                   @setOutput="setOutput"
                 ></OutputTransform>
               </TabPane>
-              <TabPane :label="$t('page.othersetting')" name="other" tab="integrationEditTabs">
+              <TabPane
+                :key="6"
+                :label="$t('page.othersetting')"
+                name="other"
+                tab="integrationEditTabs"
+              >
                 <Other :integration="integrationData" @setOtherSetting="setOtherSetting"></Other>
               </TabPane>
-              <TabPane :label="$t('page.test')" name="test" tab="integrationEditTabs">
+              <TabPane
+                :key="7"
+                :label="$t('page.test')"
+                name="test"
+                tab="integrationEditTabs"
+              >
                 <Test ref="testComponent" :integration="integrationData" :handler-pattern="handlerInputPattern"></Test>
               </TabPane>
             </Tabs>
@@ -132,7 +167,7 @@ export default {
         type: 'modal',
         maskClose: false,
         isShow: true,
-        width: 'medium'
+        width: 'large'
       },
       integrationFormConfig: [
         {

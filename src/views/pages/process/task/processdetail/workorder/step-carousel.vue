@@ -120,6 +120,7 @@
   </div>
 </template>
 <script>
+import {store} from '@/views/pages/process/task/processdetail/processStore.js';
 export default {
   name: '',
   components: {
@@ -193,9 +194,7 @@ export default {
     this.$route.query.processTaskStepId && (this.processTaskStepId = parseInt(this.$route.query.processTaskStepId));
   },
   beforeMount() {},
-  mounted() {
-    this.getStepStatusList();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -206,24 +205,17 @@ export default {
     getStepStatusList() {
       //步骤
       this.isShow = false;
-      let data = {
-        processTaskId: this.processTaskId
-      };
-      this.$api.process.processtask.getStepStatusList(data).then(res => {
-        if (res.Status == 'OK') {
-          let list = res.Return || [];
-          let stepDataList = list.filter(i => {
-            return i.isInTheCurrentStepTab == 1;
-          });
-          if (stepDataList.length > 0) {
-            let findIndex = -1;
-            this.stepList = this.$utils.deepClone(stepDataList);
-            this.processTaskStepId && (findIndex = this.stepList.findIndex(f => f.id == this.processTaskStepId));
-            findIndex > -1 && (this.value = findIndex);
-            this.isShow = true;
-          }
-        }
+      let list = this.stepDataList || [];
+      let stepDataList = list.filter(i => {
+        return i.isInTheCurrentStepTab == 1;
       });
+      if (stepDataList.length > 0) {
+        let findIndex = -1;
+        this.stepList = this.$utils.deepClone(stepDataList);
+        this.processTaskStepId && (findIndex = this.stepList.findIndex(f => f.id == this.processTaskStepId));
+        findIndex > -1 && (this.value = findIndex);
+        this.isShow = true;
+      }
     },
     getSlaStatus(type, expireTime) {
       let statusObj = {
@@ -288,9 +280,20 @@ export default {
       return (sIndex) => {
         return !this.$utils.isEmpty(this.slaTimeList[sIndex]) && this.slaTimeList.length > 0 ? [this.slaTimeList[sIndex]] : [];
       };
+    },
+    stepDataList() {
+      return store.stepDataList;
     }
   },
-  watch: {}
+  watch: {
+    stepDataList: {
+      handler(val) {
+        this.getStepStatusList();
+      },
+      immediate: true,
+      deep: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

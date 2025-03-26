@@ -21,7 +21,10 @@
               <UserCard alignMode="vertical" :iconSize="32" :uuid="row.fcu"></UserCard>
             </div>
             <div>
-              <div v-imgViewer class="comment-content" v-html="row.content"></div>
+              <TsCkeditor
+                :readonly="true"
+                :value="row.content"
+              ></TsCkeditor>
               <div v-if="commentReady['c_' + row.id] && row.childCount > 0" class="mt-md">
                 <CommentList
                   :issueData="issueData"
@@ -39,7 +42,15 @@
                 </div>
               </div>
               <div v-if="replayTo['c_' + row.id]" class="mt-md">
-                <TsCkeditor v-model="replayTo['c_' + row.id].content" :width="'99%'"></TsCkeditor>
+                <TsCkeditor
+                  v-model="replayTo['c_' + row.id].content"
+                  :params="{
+                    uploadVideoConfig: {
+                      type: 'rdm'
+                    }
+                  }"
+                  :width="'99%'"
+                ></TsCkeditor>
                 <div class="mt-sm">
                   <Button
                     size="small"
@@ -59,10 +70,9 @@
   </div>
 </template>
 <script>
-import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
   name: '',
-  directives: { imgViewer },
+  directives: {},
   components: {
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
@@ -190,9 +200,6 @@ export default {
   display: grid;
   grid-template-columns: 50px calc(100% - 50px - 20px); // auto时，由内容撑开，不受父级元素的影响，导致图片没有自适应宽度
   grid-gap: 20px;
-}
-.comment-content {
-  min-height: 25px;
 }
 .comment-grid:hover {
   .comment-action {

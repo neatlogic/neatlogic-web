@@ -191,7 +191,7 @@
                 <div slot="content" class="pt-lg pb-lg" style="margin: 0 auto">
                   <Tag
                     v-for="cientity in ciEntityList"
-                    :key="cientity.id" 
+                    :key="cientity.id"
                     closable
                     @on-close="removeCiEntity(cientity)"
                   >{{ cientity.name }}</Tag>
@@ -297,18 +297,20 @@ export default {
         needCommit: needCommit,
         description: this.ciEntityData.description
       };
+      //console.log(JSON.stringify(this.checkData, null, 2));
+      //console.log(JSON.stringify(this.ciEntityData, null, 2));
       for (let k in this.checkData) {
         if (this.checkData[k]) {
-          if (this.ciEntityData.attrEntityData[k]) {
+          if (this.ciEntityData.attrEntityData && this.ciEntityData.attrEntityData[k]) {
             params.attrEntityData[k] = this.ciEntityData.attrEntityData[k];
-          } else if (this.ciEntityData.relEntityData[k]) {
+          } else if (this.ciEntityData.relEntityData && this.ciEntityData.relEntityData[k]) {
             params.relEntityData[k] = this.ciEntityData.relEntityData[k];
             if (params.relEntityData[k].action && params.relEntityData[k].valueList && params.relEntityData[k].valueList.length > 0) {
               params.relEntityData[k].valueList.forEach(v => {
                 v.action = params.relEntityData[k].action;
               });
             }
-          } else if (this.ciEntityData.globalAttrEntityData[k]) {
+          } else if (this.ciEntityData.globalAttrEntityData && this.ciEntityData.globalAttrEntityData[k]) {
             params.globalAttrEntityData[k] = this.ciEntityData.globalAttrEntityData[k];
           }
         }

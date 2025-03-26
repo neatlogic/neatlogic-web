@@ -29,7 +29,12 @@
               :title="canEdit?$t('term.deploy.dragtochangetheorder'):''"
               @click.stop
             ></span>
-            <ul>
+            <draggable
+              tag="ul"
+              :list="ary"
+              handle=".tsfont-bar"
+              @end="dragEnd"
+            >
               <li
                 v-for="step in ary"
                 :id="'step_' + step.uuid"
@@ -47,6 +52,12 @@
                     >
                       <div class="step-content-top" @click="showStep(step)">
                         <div class="stepName name overflow" :class="{'text-primary':step.uuid == currentStep.uuid}" :title="step.name && step.name.length > 9 ? step.name : ''">
+                          <span
+                            v-if="canEdit && ary.length > 1"
+                            class="tsfont-bar move"
+                            :title="canEdit ? '阶段组内拖拽排序' : ''"
+                            @click.stop
+                          ></span>
                           <span>{{ step.name || '-' }}</span>
                           <template v-if="appModuleId || envId">
                             <CommonStatus
@@ -105,7 +116,7 @@
                   </div>
                 </div>
               </li>
-            </ul>
+            </draggable>
           </li>
         </template>
       </draggable>
@@ -299,7 +310,54 @@ export default {
       this.editId = null;
     },
     dragEnd() {
-      this.$emit('updateSort', this.getUpdateSort());
+      let stepList = this.getUpdateSort();
+      stepList.forEach((item, index) => {
+        let prevOutputList = this.getPrevOutputList(stepList, index);
+        if (item.config && !this.$utils.isEmpty(item.config.phaseOperationList)) {
+          item.config.phaseOperationList.forEach(p => {
+            if (p.config && !this.$utils.isEmpty(p.config.paramMappingList)) {
+              p.config.paramMappingList.forEach(m => {
+                //如果上游节点不存在，则清空参数
+                if (!this.$utils.isEmpty(m.value) && m.mappingMode.indexOf('prenode') == 0) {
+                  if (prevOutputList.length && !prevOutputList.find(p => p.combopUuid == m.value[0] && p.operationUuid === m.value[1] && p.key === m.value[2])) {
+                    this.$set(m, 'value', []);
+                  } else if (!prevOutputList.length) {
+                    this.$set(m, 'mappingMode', '');
+                    this.$set(m, 'value', null);
+                  }
+                }
+              });
+            }
+          });
+        }
+      });
+      this.$emit('updateSort', stepList);
+    },
+    getPrevOutputList(stepList, index) {
+      //更新排序，获取当前节点的上游节点输出参数
+      let prevOutputList = [];
+      let prevList = stepList.filter((s, sindex) => {
+        return sindex < index;
+      });
+      if (prevList && prevList.length) {
+        prevList.forEach(l => {
+          if (l.config && l.config.phaseOperationList && l.config.phaseOperationList.length) {
+            l.config.phaseOperationList.forEach(p => {
+              if (p.operation.outputParamList && p.operation.outputParamList.length) {
+                let item = p.operation.outputParamList;
+                item.forEach(i => {
+                  prevOutputList.push({
+                    combopUuid: l.uuid, //阶段
+                    operationUuid: p.uuid, //工具
+                    key: i.key //参数
+                  });
+                });
+              }
+            });
+          }
+        });
+      }
+      return prevOutputList;
     },
     changeOperation(list, step) {
       if (!step.config) {
@@ -520,9 +578,16 @@ ul.stepList {
         top: 0;
         display: none;
       }
+      .move {
+        display: none;
+      }
       &:hover {
         .stepBtn {
           display: block;
+        }
+        .move {
+          display: inline;
+          cursor: ns-resize;
         }
       }
     }

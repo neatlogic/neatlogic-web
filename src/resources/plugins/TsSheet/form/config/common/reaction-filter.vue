@@ -79,7 +79,7 @@ export default {
     return {
       filter: this.value || {},
       validateList: [{ name: 'required', message: ' ' }],
-      filterComponentList: ['formselect', 'formradio', 'formcheckbox', 'formuserselect', 'formdispatchowner']
+      filterComponentList: ['formselect', 'formradio', 'formcheckbox', 'formuserselect', 'formdispatchowner', 'formdate', 'formtime']
     };
   },
   beforeCreate() {},

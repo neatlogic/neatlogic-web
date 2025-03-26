@@ -1,4 +1,3 @@
-<!-- 授权 -->
 <template>
   <div class="form-li">
     <div v-if="disabled || readonly" :class="readonlyClass">{{ showText }}</div>
@@ -201,6 +200,7 @@ export default {
         this.timeValue = null;
         this.showText = '';
       }
+      this.$emit('change-label', this.showText); // 修复combineSearch 组件内容回显在tag上的问题
     },
     onChange(value, item) {
       if (item.selected) {

@@ -23,7 +23,8 @@ const tip = ({desc, onClose, name, title, type = 'error', duration = 4.5, errorD
           h('span', {
             class: errorDetail ? ['cursor-pointer', state.isExpanded ? 'tsfont-drop-down' : 'tsfont-drop-right'] : [],
             style: {
-              marginLeft: errorDetail ? '-4px' : 0
+              marginLeft: errorDetail ? '-4px' : 0,
+              wordBreak: 'break-all'// 允许任意字符串内换行
             },
             on: {
               click: () => {
@@ -178,7 +179,7 @@ instance.interceptors.response.use(
       return Promise.reject(error);
     } else if (!error) {
       if (!window.navigator.onLine) {
-        tip({desc: '网络连接失败'});
+        tip({ desc: '网络连接失败' });
       } else {
         return Promise.reject(error);
       }
@@ -206,7 +207,8 @@ const errorHandle = res => {
       break;
     case 403:
       tip({
-        desc: $t('message.sessionexpired'), onClose: () => {
+        desc: $t('message.sessionexpired'),
+        onClose: () => {
           Vue.prototype.$utils.removeCookie('neatlogic_authorization');
           toLogin();
         }
@@ -267,8 +269,7 @@ const errorHandle = res => {
         name: res.config.url,
         title: '提示',
         type: 'info'
-      }
-      );
+      });
       throw res;
     case 527:
       //会话已超时或已被终止,重新登录

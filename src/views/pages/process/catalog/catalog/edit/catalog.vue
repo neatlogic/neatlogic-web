@@ -80,7 +80,8 @@ export default {
           type: 'ckeditor',
           name: 'desc',
           width: '75%',
-          label: this.$t('page.description')
+          label: this.$t('page.description'),
+          removePlugins: ['UploadVideo']
         }
       ],
       initValue: {

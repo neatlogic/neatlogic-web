@@ -18,7 +18,7 @@
     </div>
     <FormItem
       :ref="'formitem_' + formItem.uuid"
-      :needLabel="true"
+      :needLabel="needLabel"
       :formItem="formItem"
       :formData="formData"
       :formItemList="formItemList"
@@ -60,6 +60,11 @@ export default {
       // 外部数据，非表单数据，例如工单上报人数据等
       type: Object,
       default: () => {}
+    },
+    needLabel: {
+      // 是否需要label
+      type: Boolean,
+      default: false
     }
   },
   data() {

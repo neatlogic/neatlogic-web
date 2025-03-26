@@ -1,10 +1,9 @@
 <template>
   <div class="mt-md">
-    <TsContain hideHeader>
-      <template v-slot:content>
+    <TsContain>
+      <template v-slot:topLeft>
         <Tabs
           v-model="currentTab"
-          class="block-tabs"
           :animated="false"
         >
           <TabPane
@@ -13,25 +12,17 @@
             :label="tab.text"
             :name="tab.value"
           >
-            <div class="padding">
-              <div v-if="currentTab == 'subscribe'">
-                <MqSubscribeList></MqSubscribeList>
-              </div>
-              <div v-else-if="currentTab == 'topic'">
-                <MqTopicList></MqTopicList>
-              </div>
-            </div>
           </TabPane>
         </Tabs>
       </template>
-      <div slot="content" style="padding-top:20px">
-        <div v-if="currentTab == 'subscribe'">
+      <template v-slot:content>
+        <div v-if="currentTab === 'subscribe'">
           <MqSubscribeList></MqSubscribeList>
         </div>
-        <div v-else-if="currentTab == 'topic'">
+        <div v-else-if="currentTab === 'topic'">
           <MqTopicList></MqTopicList>
         </div>
-      </div>
+      </template>
     </TsContain>
   </div>
 </template>

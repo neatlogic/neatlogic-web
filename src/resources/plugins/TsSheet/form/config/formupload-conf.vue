@@ -34,7 +34,7 @@
         className="smallUpload"
         type="drag"
         :rowSpan="24"
-        :uploadCount="config.uploadType == 'one'?1:5"
+        :uploadCount="config.uploadType == 'one' ? 1 : 0"
         :multiple="false"
         :defaultList="config.templateList || []"
         :disabled="disabled"
@@ -64,7 +64,7 @@ export default {
       uploadType: '',
       uploadTypeList: [
         { text: this.$t('page.onefile'), value: 'one' },
-        { text: this.$t('page.morefile'), value: 'more', description: this.$t('form.validate.filecount', { target: '5' })}
+        { text: this.$t('page.morefile'), value: 'more'}
       ]
     };
   },

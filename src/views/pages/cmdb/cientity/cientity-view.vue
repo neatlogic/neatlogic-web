@@ -435,6 +435,12 @@ export default {
             }
           })
           .finally(() => {
+            if (!this.ciEntityData || !this.ciEntityData.id) {
+              this.$router.push({
+                path: '/no-authority',
+                query: { des: this.$t('term.cmdb.cientityisnotfound') }
+              });
+            } 
             this.isLoading = false;
           });
       }

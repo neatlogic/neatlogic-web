@@ -94,6 +94,7 @@
 <script>
 import items from './knowledge/index.js';
 import vuedraggable from 'vuedraggable';
+import {store} from '@/views/pages/process/task/processdetail/processStore.js';
 export default {
   name: '',
   components: {
@@ -152,7 +153,6 @@ export default {
   beforeCreate() {},
   created() {
     this.processTaskId = this.$route.query.processTaskId;
-    this.getStepStatusList();
   },
   beforeMount() {},
   mounted() {},
@@ -244,33 +244,26 @@ export default {
     },
     getStepStatusList() {
       //步骤状态
-      let data = {
-        processTaskId: this.processTaskId
-      };
-      this.$api.process.processtask.getStepStatusList(data).then(res => {
-        if (res.Status == 'OK') {
-          let stepDataList = res.Return || [];
-          let commentList = [];
-          if (stepDataList.length > 0) {
-            stepDataList.forEach(item => {
-              if (item.commentList.length > 0) {
-                var newCommentList = item.commentList.map((item, index) => {
-                  return Object.assign(item, { isChecked: 1 });
-                });
-                let obj = {
-                  name: item.name,
-                  isChecked: 1,
-                  list: newCommentList
-                };
-                commentList.push(obj);
-              }
+      let stepDataList = this.stepDataList || [];
+      let commentList = [];
+      if (stepDataList.length > 0) {
+        stepDataList.forEach(item => {
+          if (item.commentList.length > 0) {
+            var newCommentList = item.commentList.map((item, index) => {
+              return Object.assign(item, { isChecked: 1 });
             });
+            let obj = {
+              name: item.name,
+              isChecked: 1,
+              list: newCommentList
+            };
+            commentList.push(obj);
           }
-          if (commentList.length > 0) {
-            this.commentList = commentList;
-          }
-        }
-      });
+        });
+      }
+      if (commentList.length > 0) {
+        this.commentList = commentList;
+      }
     },
     changeSelect(item) {
       if (item.list && item.list.length > 0) {
@@ -368,7 +361,11 @@ export default {
       this.saveDraftDocument();
     }
   },
-  computed: {},
+  computed: {
+    stepDataList() {
+      return store.stepDataList;
+    }
+  },
   watch: {
     isShow(val) {
       this.isShowModal = val;
@@ -376,6 +373,13 @@ export default {
         this.processTaskId = this.processTaskConfig.id;
         this.initData();
       }
+    },
+    stepDataList: {
+      handler(val) {
+        this.getStepStatusList();
+      },
+      deep: true,
+      immediate: true
     }
   }
 };

@@ -93,7 +93,11 @@
           <div class="content-text">
             <div v-show="!cd.editContent" class="comment-content">
               <div class="order-list">
-                <TsCkeditor width="100%" :showIconToggle="true"></TsCkeditor>
+                <TsCkeditor
+                  width="100%"
+                  :showIconToggle="true"
+                  :params="{ uploadVideoConfig: { type: 'itsm' } }"
+                ></TsCkeditor>
               </div>
               <TsUpLoad
                 ref="uploadFile"

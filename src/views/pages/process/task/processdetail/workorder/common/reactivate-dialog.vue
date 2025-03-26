@@ -19,7 +19,10 @@
             ></TsFormRadio>
           </div>
           <TsFormItem :label="$t('page.reason')" labelPosition="top">
-            <TsCkeditor v-model="content"></TsCkeditor>
+            <TsCkeditor
+              v-model="content"
+              :params="{ uploadVideoConfig: { type: 'itsm'} }"
+            ></TsCkeditor>
           </TsFormItem>
         </div>
       </template>

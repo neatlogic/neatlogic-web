@@ -474,8 +474,9 @@ export default {
             } else {
               if (!this.$utils.isEmpty(this.executeConfig.roundCount)) {
                 this.roundCount = this.executeConfig.roundCount;
-                this.$set(this.roundCountForm, 'disabled', true);
-                this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
+                //组合工具设置了分批数，创建作业时支持修改
+                // this.$set(this.roundCountForm, 'disabled', true);
+                // this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
               }
               if (this.executeConfig.whenToSpecify == 'runtime') {
                 this.$set(this.executeConfig, 'executeNodeConfig', {});
@@ -664,7 +665,7 @@ export default {
         this.$set(this, 'runnerGroup', this.$refs.runnerGroup.save());
       }
       //补充runnerGroup
-      if (this.dataConfig.existRunnerOrSqlExecMode) {
+      if (this.dataConfig && this.dataConfig.existRunnerOrSqlExecMode) {
         this.$set(data, 'runnerGroup', this.runnerGroup);
       }
       let runnerGroupTag = this.$refs.runnerGroupTag;

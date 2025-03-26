@@ -1,19 +1,21 @@
 <template>
-  <div class="notifyconfig-manage">
-    <TsContain hideHeader>
-      <template v-slot:content>
-        <Tabs v-model="currentTab" class="block-tabs" :animated="false">
-          <TabPane :label="$t('page.mail')" name="mail">
-            <div v-if="currentTab == 'mail'" class="padding">
-              <MailServerEdit></MailServerEdit>
-            </div>
-          </TabPane>
-          <TabPane :label="$t('page.wechat')" name="wechat">
-            <div v-if="currentTab == 'wechat'" class="padding">
-              <WechatEdit></WechatEdit>
-            </div>
-          </TabPane>
+  <div>
+    <TsContain>
+      <template v-slot:topLeft>
+        <Tabs v-model="currentTab" :animated="false">
+          <TabPane :label="$t('page.mail')" name="mail"></TabPane>
+          <TabPane :label="$t('page.wechat')" name="wechat"></TabPane>
         </Tabs>
+      </template>
+      <template v-slot:content>
+        <div>
+          <div v-if="currentTab == 'mail'" class="padding">
+            <MailServerEdit></MailServerEdit>
+          </div>
+          <div v-if="currentTab == 'wechat'" class="padding">
+            <WechatEdit></WechatEdit>
+          </div>
+        </div>
       </template>
     </TsContain>
   </div>

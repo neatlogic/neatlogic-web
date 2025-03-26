@@ -17,7 +17,7 @@
             :processTaskId="processTaskId"
           ></FlowEditorToolbar>
         </div>
-        <div style="height: calc(100vh - 334px)">
+        <div ref="flowBox" style="height: calc(100vh - 334px)">
           <FlowEditor
             ref="flowEditor"
             :config="flowConfig"
@@ -25,7 +25,48 @@
             :readonly="true"
             :grid="false"
             @ready="ready"
+            @node:mouseenter="mouseenter"
+            @node:mouseleave="mouseleave"
           ></FlowEditor>
+          <div class="tooltip-box">
+            <div
+              v-if="isShowStepTooltip && stepTooltipConfig"
+              class="tooltip tipright"
+              :style="{left: tooltipStyle.x, top: tooltipStyle.y, }"
+            >
+              <div class="tooltip-title">{{ stepTooltipConfig.name }}</div>
+              <ul class="tooltip-content">
+                <li v-if="stepTooltipConfig.statusVo" class="tooltip-list">
+                  <span class="label">{{ $t('page.status') }}</span>
+                  <span :style="{ color: stepTooltipConfig.statusVo.color }">{{ stepTooltipConfig.statusVo.text }}</span>
+                </li>
+                <li v-if="stepTooltipConfig.startTime" class="tooltip-list">
+                  <span class="label">{{ $t('page.starttime') }}</span>
+                  <span>{{ stepTooltipConfig.startTime | formatDate }}</span>
+                </li>
+                <li v-if="stepTooltipConfig.endTime" class="tooltip-list">
+                  <span class="label">{{ $t('page.endtime') }}</span>
+                  <span>{{ stepTooltipConfig.endTime | formatDate }}</span>
+                </li>
+                <li v-if="stepTooltipConfig.majorUser" class="tooltip-list">
+                  <span class="label">{{ $t('term.process.dealwithuser') }}</span>
+                  <span>
+                    <UserCard v-bind="stepTooltipConfig.majorUser.userVo" hideAvatar></UserCard>
+                  </span>
+                </li>
+                <li v-if="stepTooltipConfig.minorUserList && stepTooltipConfig.minorUserList.length > 0" class="tooltip-list">
+                  <span class="label">
+                    <!-- 步骤处理人 -->
+                  </span>
+                  <span>{{ userList(stepTooltipConfig.minorUserList, 'minorUser') }}</span>
+                </li>
+                <li v-if="!stepTooltipConfig.majorUser && stepTooltipConfig.workerList && stepTooltipConfig.workerList.length > 0" class="tooltip-list">
+                  <span class="label">{{ $t('term.process.pendinguser') }}</span>
+                  <span>{{ userList(stepTooltipConfig.workerList, 'worker') }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -36,9 +77,11 @@
 </template>
 <script>
 import FlowUtil from '@/views/pages/process/flow/flow-utils.js';
+import UserCard from '@/resources/components/UserCard/UserCard.vue';
 export default {
   name: '',
   components: {
+    UserCard,
     FlowEditor: () => import('@/views/pages/process/flow/floweditor/flow-editor.vue'),
     FlowEditorToolbar: () => import('@/views/pages/process/flow/floweditor/flow-editor-toolbar.vue')
   },
@@ -58,7 +101,10 @@ export default {
       flowData: null,
       stepList: [],
       relList: [],
-      isFlowReady: false //流程数据就绪，用于激活finalFlowData重新计算
+      isFlowReady: false, //流程数据就绪，用于激活finalFlowData重新计算
+      isShowStepTooltip: false,
+      stepTooltipConfig: null,
+      tooltipStyle: {}
     };
   },
   beforeCreate() {},
@@ -153,6 +199,35 @@ export default {
           this.graph.centerContent();
         }, 500);
       });
+    },
+    mouseenter(node, e) {
+      const findStep = this.stepList.find(s => s.processStepUuid === node.id);
+      this.stepTooltipConfig = this.$utils.deepClone(findStep);
+      const parent = this.$refs.flowBox.getBoundingClientRect();
+      const size = node.size();
+      this.tooltipStyle.x = (e.clientX + size.width + 20 - e.offsetX / 2 - parent.x) + 'px';
+      this.tooltipStyle.y = (e.clientY + size.height - parent.y) + 'px';
+      this.isShowStepTooltip = true;
+    },
+    mouseleave() {
+      this.isShowStepTooltip = false;
+      this.stepTooltipConfig = null;
+    },
+    userList(arr, type) {
+      //处理人
+      let userList = arr;
+      let textList = [];
+      userList.forEach(item => {
+        if (type == 'minorUser') { //处理人
+          let userText = item.userName;
+          item.taskType && (userText += '(' + item.taskType + ')');
+          textList.push(userText);
+        } else if (type == 'worker') { //待处理人
+          textList.push(item.name);
+        }
+      });
+      textList = textList.join('、');
+      return textList;
     }
   },
   filter: {},

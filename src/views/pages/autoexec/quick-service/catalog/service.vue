@@ -64,7 +64,7 @@
             border="border"
             :class="roundCount.mappingMode == 'formattr' || roundCount.mappingMode == 'constant' ? 'pr-sm' : ''"
             :validateList="['required']"
-            @change="(mappingMode) => changeMappingMode(mappingMode, 'roundCount')"
+            @change="mappingMode => changeMappingMode(mappingMode, 'roundCount')"
           ></TsFormSelect>
           <TsFormSelect
             v-if="roundCount.mappingMode == 'formattr'"
@@ -96,7 +96,7 @@
         <span>{{ $t('term.deploy.actuatorgrouptag') }}</span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.runnerGroupTag ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('runnerGroupTag')"></span>
       </div>
-      <TsFormItem v-show="unfoldAndFold.runnerGroupTag" :label="$t('term.deploy.actuatorgrouptag')">
+      <TsFormItem v-show="unfoldAndFold.runnerGroupTag" :label="$t('term.deploy.actuatorgrouptag')" :required="runnerGroupTagIsRequired(runnerGroupTag.mappingMode)">
         <div id="positioningkey_runnerGroupTag" :class="runnerGroupTag.mappingMode == 'formattr' || runnerGroupTag.mappingMode == 'constant' ? 'form-wrap-box' : ''">
           <template v-if="runnerGroupTag.mappingMode == 'runtimeparam'">
             <RunnerGroupTagSetting
@@ -117,16 +117,20 @@
               :width="runnerGroupTag.mappingMode == 'formattr' || runnerGroupTag.mappingMode == 'constant' ? 100 : '100%'"
               :class="runnerGroupTag.mappingMode == 'formattr' || runnerGroupTag.mappingMode == 'constant' ? 'pr-sm' : ''"
               :validateList="['required']"
-              @change="(mappingMode) => changeMappingMode(mappingMode, 'runnerGroupTag')"
+              @change="mappingMode => changeMappingMode(mappingMode, 'runnerGroupTag')"
             ></TsFormSelect>
-            <div v-if="runnerGroupTag.mappingMode==='constant'">
+            <div v-if="runnerGroupTag.mappingMode === 'constant'">
               <RunnerGroupTagSetting
                 ref="runnerGroupTag"
                 :config="runnerGroupTag"
                 :runtimeParamList="paramsList"
                 :isCreateJob="true"
                 :disabled="false"
-                @change="(val)=> { runnerGroupTag = val }"
+                @change="
+                  val => {
+                    runnerGroupTag = val;
+                  }
+                "
               ></RunnerGroupTagSetting>
             </div>
             <TsFormSelect
@@ -155,17 +159,16 @@
       <TsFormItem v-show="unfoldAndFold.runnerGroup" :label="$t('page.autoexeccomboprunnergrouplabel')" :required="hasRequired(runnerGroup.mappingMode)">
         <div id="positioningkey_runnerGroup">
           <template v-if="dataConfig && dataConfig.existRunnerOrSqlExecMode && runnerGroup">
-            <template v-if="runnerGroup.mappingMode==='runtimeparam'">
+            <template v-if="runnerGroup.mappingMode === 'runtimeparam'">
               <RunnerGroupSetting
                 ref="runnerGroup"
                 :config="runnerGroup"
                 :runtimeParamList="paramsList"
                 :isCreateJob="true"
                 :disabled="false"
-              >
-              </RunnerGroupSetting>
+              ></RunnerGroupSetting>
             </template>
-            <div :class="runnerGroup.mappingMode==='constant' || runnerGroup.mappingMode =='formattr' ? 'form-wrap-box' : ''">
+            <div :class="runnerGroup.mappingMode === 'constant' || runnerGroup.mappingMode == 'formattr' ? 'form-wrap-box' : ''">
               <TsFormSelect
                 ref="executeNodemappingMode"
                 v-model="runnerGroup.mappingMode"
@@ -176,18 +179,20 @@
                 :width="runnerGroup.mappingMode == 'formattr' || runnerGroup.mappingMode == 'constant' ? 100 : '100%'"
                 :class="runnerGroup.mappingMode == 'formattr' || runnerGroup.mappingMode == 'constant' ? 'pr-sm' : ''"
                 :validateList="['required']"
-                @change="(mappingMode) => changeMappingMode(mappingMode, 'runnerGroup')"
+                @change="mappingMode => changeMappingMode(mappingMode, 'runnerGroup')"
               ></TsFormSelect>
-              <template v-if="runnerGroup.mappingMode==='constant'">
+              <template v-if="runnerGroup.mappingMode === 'constant'">
                 <RunnerGroupSetting
                   ref="runnerGroup"
                   :config="runnerGroup"
                   :runtimeParamList="paramsList"
                   :isCreateJob="true"
                   :disabled="false"
-                  @updateRunnergroup="(obj)=>{
-                    runnerGroup.value = obj.value;
-                  }"
+                  @updateRunnergroup="
+                    obj => {
+                      runnerGroup.value = obj.value;
+                    }
+                  "
                 ></RunnerGroupSetting>
               </template>
               <TsFormSelect
@@ -203,7 +208,7 @@
                 :validateList="['required']"
               ></TsFormSelect>
             </div>
-            <div v-if="runnerGroup.mappingMode=='constant'" class="text-tip tips">
+            <div v-if="runnerGroup.mappingMode == 'constant'" class="text-tip tips">
               {{ $t('term.autoexec.runnergroupprocesstips') }}
             </div>
           </template>
@@ -234,7 +239,7 @@
             :width="executeNode.mappingMode == 'formattr' || executeNode.mappingMode == 'constant' ? 100 : '100%'"
             :class="executeNode.mappingMode == 'formattr' || executeNode.mappingMode == 'constant' ? 'pr-sm' : ''"
             :validateList="['required']"
-            @change="(mappingMode) => changeMappingMode(mappingMode, 'executeNode')"
+            @change="mappingMode => changeMappingMode(mappingMode, 'executeNode')"
           ></TsFormSelect>
           <TsFormSelect
             v-if="executeNode.mappingMode == 'formattr'"
@@ -249,17 +254,17 @@
             class="pr-sm form-li-width"
             :validateList="['required']"
           ></TsFormSelect>
-          <div v-else style="width: 100%;">
+          <div v-else style="width: 100%">
             <AddTarget
               v-if="!loadingShow && executeNode.mappingMode == 'constant'"
               :id="combopId"
               ref="executeTarget"
-              :value="executeConfig ? executeConfig.executeNodeConfig:{}"
+              :value="executeConfig ? executeConfig.executeNodeConfig : {}"
               :canEdit="canEditaddTarget(executeConfig)"
-              :type="executeConfig && executeConfig.whenToSpecify? executeConfig.whenToSpecify: 'runtime'"
+              :type="executeConfig && executeConfig.whenToSpecify ? executeConfig.whenToSpecify : 'runtime'"
               :executeConfig="executeValue"
               :runtimeParamList="paramsList"
-              :needBorder="needExecuteUser|| needProtocol"
+              :needBorder="needExecuteUser || needProtocol"
               :filterSearchValue="filterSearchValue"
               :isRequired="hasRequired(executeNode.mappingMode)"
             ></AddTarget>
@@ -285,7 +290,7 @@
               :width="protocol.mappingMode == 'formattr' || protocol.mappingMode == 'constant' ? 100 : '100%'"
               :class="protocol.mappingMode == 'formattr' || protocol.mappingMode == 'constant' ? 'pr-sm' : ''"
               :validateList="['required']"
-              @change="(mappingMode) => changeMappingMode(mappingMode, 'protocol')"
+              @change="mappingMode => changeMappingMode(mappingMode, 'protocol')"
             ></TsFormSelect>
             <TsFormSelect
               v-if="protocol.mappingMode == 'formattr'"
@@ -330,9 +335,9 @@
                 transfer
                 border="border"
                 :class="executeUser.mappingMode == 'formattr' || executeUser.mappingMode == 'constant' ? 'pr-sm' : ''"
-                :width="executeUser.mappingMode == 'formattr' || executeUser.mappingMode == 'constant' ? 100: '100%'"
+                :width="executeUser.mappingMode == 'formattr' || executeUser.mappingMode == 'constant' ? 100 : '100%'"
                 :validateList="['required']"
-                @change="(mappingMode) => changeMappingMode(mappingMode, 'executeUser')"
+                @change="mappingMode => changeMappingMode(mappingMode, 'executeUser')"
               ></TsFormSelect>
               <TsFormSelect
                 v-if="executeUser.mappingMode == 'formattr'"
@@ -385,7 +390,7 @@
                 :class="item.mappingMode == 'formattr' || item.mappingMode == 'constant' ? 'pr-sm' : ''"
                 :validateList="['required']"
                 :disabled="canEdit(item)"
-                @change="(mappingMode) => changejobparamMappingMode(item, item.key, mappingMode)"
+                @change="mappingMode => changejobparamMappingMode(item, item.key, mappingMode)"
               ></TsFormSelect>
               <TsFormSelect
                 v-if="item.mappingMode == 'formattr'"
@@ -484,7 +489,8 @@ export default {
         mappingMode: 'constant',
         value: null
       },
-      protocol: { // 协议
+      protocol: {
+        // 协议
         mappingMode: 'constant',
         value: null
       },
@@ -568,7 +574,7 @@ export default {
         textName: 'name',
         rootName: 'tbodyList',
         validateList: ['required'],
-        onChange: (id) => {
+        onChange: id => {
           this.hasCombopId = !!id;
           this.combopId = id;
           this.getCombopDetail();
@@ -581,12 +587,16 @@ export default {
           placeholder: '',
           maxlength: 50,
           label: this.$t('page.name'),
-          validateList: ['required', 'name-special', {
-            name: 'searchUrl',
-            url: '/api/rest/autoexec/service/save',
-            key: 'name',
-            params: {}
-          }]
+          validateList: [
+            'required',
+            'name-special',
+            {
+              name: 'searchUrl',
+              url: '/api/rest/autoexec/service/save',
+              key: 'name',
+              params: {}
+            }
+          ]
         },
         {
           type: 'switch',
@@ -596,7 +606,7 @@ export default {
           isHidden: false,
           label: this.$t('page.enable'),
           validateList: ['required'],
-          onChange: (isActive) => {
+          onChange: isActive => {
             this.updateActiveStatus(this.id, isActive);
           }
         },
@@ -612,7 +622,12 @@ export default {
           type: 'ckeditor',
           name: 'description',
           label: this.$t('term.autoexec.servicedescription'),
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'autoexec'
+            }
+          }
         },
         {
           type: 'slot',
@@ -625,12 +640,13 @@ export default {
           falseValue: 0,
           trueValue: 1,
           label: this.$t('term.autoexec.citeform'),
-          onChange: (isOPen) => {
-            this.basicFormItemList && this.basicFormItemList.forEach((item) => {
-              if (item && item.name == 'formUuid') {
-                this.$set(item, 'isHidden', !isOPen);
-              }
-            });
+          onChange: isOPen => {
+            this.basicFormItemList &&
+              this.basicFormItemList.forEach(item => {
+                if (item && item.name == 'formUuid') {
+                  this.$set(item, 'isHidden', !isOPen);
+                }
+              });
             if (!isOPen) {
               this.clearMappingMode();
             }
@@ -652,7 +668,7 @@ export default {
           clearable: true,
           transfer: true,
           validateList: ['required'],
-          onChange: (uuid) => {
+          onChange: uuid => {
             this.formUuid = !!uuid;
             if (uuid) {
               this.mappingModeDataList = this.citeFormMappingModeList;
@@ -716,7 +732,7 @@ export default {
       } else if (mappingMode == 'constant' || mappingMode == 'formattr') {
         this.$set(this.itemConfig[key], 'validateList', ['required']);
         if (mappingMode != 'constant') {
-        // 映射关系切换成其他的方式时，需要把默认值清空，否则校验会有问题
+          // 映射关系切换成其他的方式时，需要把默认值清空，否则校验会有问题
           this.$set(this.valueConfig, [key], '');
           this.$set(item, 'defaultValue', '');
         }
@@ -737,18 +753,19 @@ export default {
       this.formUuid = '';
       this.$set(this.basicFormValue, 'formUuid', '');
       let clearAttrList = ['roundCount', 'protocol', 'executeUser', 'executeNode'];
-      clearAttrList.forEach((item) => {
+      clearAttrList.forEach(item => {
         if (this[item] && this[item].mappingMode && this[item].mappingMode == 'formattr') {
           this.$set(this[item], 'mappingMode', 'constant');
           this.$set(this[item], 'value', null);
         }
       });
-      this.paramsList && this.paramsList.forEach((item) => {
-        if (item && item.mappingMode == 'formattr') {
-          this.$set(item, 'mappingMode', 'constant');
-          this.$set(this.valueConfig, item.key, item.defaultValue);
-        }
-      });
+      this.paramsList &&
+        this.paramsList.forEach(item => {
+          if (item && item.mappingMode == 'formattr') {
+            this.$set(item, 'mappingMode', 'constant');
+            this.$set(this.valueConfig, item.key, item.defaultValue);
+          }
+        });
       this.mappingModeDataList = this.nociteFormMappingModeList;
     },
     defaultIniData() {
@@ -758,12 +775,13 @@ export default {
       }
       this.combopId = null; // 自动化组合工具id
       this.hasCombopId = false; // 是否有组合工具id
-      this.basicFormValue = {isActive: 0, citeForm: 0};
-      this.basicFormItemList && this.basicFormItemList.forEach((item) => {
-        if (item && item.name == 'formUuid') {
-          this.$set(item, 'isHidden', true);
-        }
-      });
+      this.basicFormValue = { isActive: 0, citeForm: 0 };
+      this.basicFormItemList &&
+        this.basicFormItemList.forEach(item => {
+          if (item && item.name == 'formUuid') {
+            this.$set(item, 'isHidden', true);
+          }
+        });
       this.mappingModeDataList = this.nociteFormMappingModeList;
       this.clearComboptoolValue();
     },
@@ -774,15 +792,16 @@ export default {
       this.needProtocol = false;
       this.needRoundCount = false;
       this.needExecuteNode = false;
+      this.roundCountForm.disabled = false;
       this.scenarioList = [];
       this.valueConfig = {}; //所有值对应的集合
-      this.itemConfig = {};//所以组件对应的渲染config集合
-      this.roundCount = {mappingMode: 'constant', value: null}; // 分批数量
-      this.protocol = {mappingMode: 'constant', value: null}; // 执行目标
-      this.executeUser = {mappingMode: 'constant', value: ''};// 执行用户
-      this.executeNode = {mappingMode: 'constant', value: null};// 连接协议
-      this.runnerGroup = {mappingMode: 'constant', value: '-1'}; // 执行器组
-      this.runnerGroupTag = {mappingMode: 'constant', value: null}; // 执行器组标签
+      this.itemConfig = {}; //所以组件对应的渲染config集合
+      this.roundCount = { mappingMode: 'constant', value: null }; // 分批数量
+      this.protocol = { mappingMode: 'constant', value: null }; // 执行目标
+      this.executeUser = { mappingMode: 'constant', value: '' }; // 执行用户
+      this.executeNode = { mappingMode: 'constant', value: null }; // 连接协议
+      this.runnerGroup = { mappingMode: 'constant', value: '-1' }; // 执行器组
+      this.runnerGroupTag = { mappingMode: 'constant', value: null }; // 执行器组标签
       this.executeConfig = {};
       this.executeValue = {};
       this.filterSearchValue = {};
@@ -793,9 +812,9 @@ export default {
     async initData() {
       this.defaultIniData();
       if (!this.id) {
-        this.basicFormItemList.forEach((item) => {
+        this.basicFormItemList.forEach(item => {
           if (item && item.name == 'name') {
-            item.validateList.forEach((v) => {
+            item.validateList.forEach(v => {
               if (v && v.name) {
                 v.params = {};
                 this.$set(v.params, 'parentId', this.selectedTreeNode.id || 0);
@@ -807,9 +826,9 @@ export default {
         this.serviceData = {};
         return false;
       }
-      this.basicFormItemList.forEach((item) => {
+      this.basicFormItemList.forEach(item => {
         if (item && item.name == 'name') {
-          item.validateList.forEach((v) => {
+          item.validateList.forEach(v => {
             if (v && v.name) {
               this.$set(v.params, 'id', this.id);
               this.$set(v.params, 'parentId', this.selectedTreeNode.id);
@@ -819,78 +838,86 @@ export default {
       });
       // 初始化
       this.loadingShow = true;
-      await this.$api.autoexec.catalogManage.getSeriveInfo({id: this.id}).then(async res => {
-        if (res.Status == 'OK') {
-          let itemValue = res.Return;
-          let {config} = res.Return || {};
-          let {executeNodeConfig = {}, runtimeParamList = []} = config || {};
-          this.serviceData = itemValue;
-          itemValue.description = this.escape2Html(itemValue.description);
-          this.$set(this.basicFormValue, 'name', itemValue.name);
-          this.$set(this.basicFormValue, 'isActive', itemValue.isActive);
-          this.$set(this.basicFormValue, 'authorityList', itemValue.authorityList);
-          this.$set(this.basicFormValue, 'description', itemValue.description);
-          this.$set(this.basicFormValue, 'citeForm', (itemValue.formUuid ? 1 : 0));
-          this.$set(this.basicFormValue, 'combopId', (itemValue.combopId || null));
-          this.$set(this.basicFormValue, 'formUuid', (itemValue.formUuid || ''));
-          this.hasCombopId = !!itemValue.combopId;
-          this.combopId = itemValue.combopId || null;
-          if (config) {
-            for (let key in config) {
-              if (!this.$utils.isEmpty(config[key])) {
-                this[key] = config[key]; // 分批数量，执行目标，执行器组标签，执行器组
+      await this.$api.autoexec.catalogManage
+        .getSeriveInfo({ id: this.id })
+        .then(async res => {
+          if (res.Status == 'OK') {
+            let itemValue = res.Return;
+            let { config } = res.Return || {};
+            let { executeNodeConfig = {}, runtimeParamList = [] } = config || {};
+            this.serviceData = itemValue;
+            itemValue.description = this.escape2Html(itemValue.description);
+            this.$set(this.basicFormValue, 'name', itemValue.name);
+            this.$set(this.basicFormValue, 'isActive', itemValue.isActive);
+            this.$set(this.basicFormValue, 'authorityList', itemValue.authorityList);
+            this.$set(this.basicFormValue, 'description', itemValue.description);
+            this.$set(this.basicFormValue, 'citeForm', itemValue.formUuid ? 1 : 0);
+            this.$set(this.basicFormValue, 'combopId', itemValue.combopId || null);
+            this.$set(this.basicFormValue, 'formUuid', itemValue.formUuid || '');
+            this.hasCombopId = !!itemValue.combopId;
+            this.combopId = itemValue.combopId || null;
+            if (config) {
+              for (let key in config) {
+                if (!this.$utils.isEmpty(config[key])) {
+                  this[key] = config[key]; // 分批数量，执行目标，执行器组标签，执行器组
+                }
+              }
+              if (config && !this.$utils.isEmpty(runtimeParamList)) {
+                runtimeParamList.forEach(item => {
+                  if (item.key) {
+                    this.$set(this.jobParamValue, [item.key], item.value);
+                    if (item.mappingMode) {
+                      // 作业参数映射关系值回显
+                      this.$set(this.jobParamsMappingMode, [item.key], item.mappingMode);
+                    }
+                  }
+                });
+              }
+              if (executeNodeConfig && executeNodeConfig.mappingMode == 'constant') {
+                this.filterSearchValue = executeNodeConfig.value || {}; // 执行目标值回显
+              } else {
+                this.$set(this.executeNode, 'mappingMode', executeNodeConfig.mappingMode || 'constant');
+                this.$set(this.executeNode, 'value', executeNodeConfig.value);
               }
             }
-            if (config && !this.$utils.isEmpty(runtimeParamList)) {
-              runtimeParamList.forEach((item) => {
-                if (item.key) {
-                  this.$set(this.jobParamValue, [item.key], item.value);
-                  if (item.mappingMode) { // 作业参数映射关系值回显
-                    this.$set(this.jobParamsMappingMode, [item.key], item.mappingMode);
-                  }
+            this.basicFormItemList &&
+              this.basicFormItemList.forEach(item => {
+                if (item && item.name == 'formUuid' && itemValue.formUuid) {
+                  this.$set(item, 'isHidden', !itemValue.formUuid);
                 }
               });
-            }
-            if (executeNodeConfig && (executeNodeConfig.mappingMode == 'constant')) {
-              this.filterSearchValue = executeNodeConfig.value || {}; // 执行目标值回显
+            this.formUuid = itemValue.formUuid;
+            if (itemValue.formUuid) {
+              this.mappingModeDataList = this.citeFormMappingModeList;
+              this.getFormListByFormUuid(itemValue.formUuid);
             } else {
-              this.$set(this.executeNode, 'mappingMode', executeNodeConfig.mappingMode || 'constant');
-              this.$set(this.executeNode, 'value', executeNodeConfig.value); 
+              this.mappingModeDataList = this.nociteFormMappingModeList;
+            }
+            await this.getCombopDetail(true);
+            if (this.positioningKey) {
+              // 定位到具体失效的key的位置
+              this.toJobParamLocation(this.positioningKey);
             }
           }
-          this.basicFormItemList && this.basicFormItemList.forEach((item) => {
-            if (item && item.name == 'formUuid' && itemValue.formUuid) {
-              this.$set(item, 'isHidden', !itemValue.formUuid);
-            }
-          });
-          this.formUuid = itemValue.formUuid;
-          if (itemValue.formUuid) {
-            this.mappingModeDataList = this.citeFormMappingModeList;
-            this.getFormListByFormUuid(itemValue.formUuid);
-          } else {
-            this.mappingModeDataList = this.nociteFormMappingModeList;
-          }
-          await this.getCombopDetail(true);
-          if (this.positioningKey) {
-            // 定位到具体失效的key的位置
-            this.toJobParamLocation(this.positioningKey);
-          }
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
+        })
+        .finally(() => {
+          this.loadingShow = false;
+        });
     },
     getFormListByFormUuid(uuid) {
       // 根据表单id获取表单列表
       this.formDataList = [];
-      this.$api.framework.form.getFormByVersionUuid({uuid: uuid}).then(res => {
+      this.$api.framework.form.getFormByVersionUuid({ uuid: uuid }).then(res => {
         if (res.Status == 'OK') {
           let formConfig = res.Return.formConfig;
-          formConfig && formConfig.tableList && formConfig.tableList.length > 0 && formConfig.tableList.forEach((item) => {
-            if (item && !this.$utils.isEmpty(item.component) && item.component.hasValue) {
-              this.formDataList.push(item.component);
-            }
-          });
+          formConfig &&
+            formConfig.tableList &&
+            formConfig.tableList.length > 0 &&
+            formConfig.tableList.forEach(item => {
+              if (item && !this.$utils.isEmpty(item.component) && item.component.hasValue) {
+                this.formDataList.push(item.component);
+              }
+            });
         }
       });
     },
@@ -898,26 +925,27 @@ export default {
       // 初始化作业参数列表数据
       this.itemConfig = {};
       this.valueConfig = {};
-      this.paramsList instanceof Array && this.paramsList.forEach(data => {
-        let config = Object.assign({}, data.config ? data.config : data);
-        config.desc = data.description;
-        if (config.validateList && !config.validateList.includes('required')) {
-          data.isRequired && config.validateList.push('required');
-        } else if (this.$utils.isEmpty(config.validateList)) {
-          config.validateList = data.isRequired ? ['required'] : [];
-        }
-        if (data.type == 'file') {
-          config.showNumber = 6;
-        }
-        if (data.type == 'node') {
-          config.showNumber = 6;
-        }
-        config.type = data.type;
-        this.$set(data, 'mappingMode', !this.$utils.isEmpty(this.jobParamsMappingMode) ? (this.jobParamsMappingMode[data.key] || 'constant') : 'constant');
-        this.$set(this.itemConfig, data.key, config);
-        // 对象为空显示默认值，否则显示回显值
-        this.$set(this.valueConfig, data.key, this.handleValueConfig(data));
-      });
+      this.paramsList instanceof Array &&
+        this.paramsList.forEach(data => {
+          let config = Object.assign({}, data.config ? data.config : data);
+          config.desc = data.description;
+          if (config.validateList && !config.validateList.includes('required')) {
+            data.isRequired && config.validateList.push('required');
+          } else if (this.$utils.isEmpty(config.validateList)) {
+            config.validateList = data.isRequired ? ['required'] : [];
+          }
+          if (data.type == 'file') {
+            config.showNumber = 6;
+          }
+          if (data.type == 'node') {
+            config.showNumber = 6;
+          }
+          config.type = data.type;
+          this.$set(data, 'mappingMode', !this.$utils.isEmpty(this.jobParamsMappingMode) ? this.jobParamsMappingMode[data.key] || 'constant' : 'constant');
+          this.$set(this.itemConfig, data.key, config);
+          // 对象为空显示默认值，否则显示回显值
+          this.$set(this.valueConfig, data.key, this.handleValueConfig(data));
+        });
     },
     handleValueConfig(data) {
       // 处理作业参数值回显
@@ -946,55 +974,61 @@ export default {
       let formList = ['basicForm', 'scenarioForm', 'roundCountForm', 'executeTarget', 'executeUserForm', 'protocolForm'];
       let jobParamFormList = this.$refs.jobParamForm || [];
       let mappingModeFormList = ['roundCountmappingMode', 'executeNodemappingMode', 'protocolmappingMode', 'executeUsermappingMode']; // 映射关系下拉列表
-      !this.$utils.isEmpty(formList) && formList.forEach((item) => {
-        if (this.$refs[item] && !this.$refs[item].valid()) {
-          if (!this.unfoldAndFold[item]) {
-            if (!this.unfoldAndFold['executeAccountForm'] && (item == 'executeUserForm' || item == 'protocolForm')) {
-              this.handleUnfoldAndFold('executeAccountForm');
-            } else {
-              this.handleUnfoldAndFold(item);
+      !this.$utils.isEmpty(formList) &&
+        formList.forEach(item => {
+          if (this.$refs[item] && !this.$refs[item].valid()) {
+            if (!this.unfoldAndFold[item]) {
+              if (!this.unfoldAndFold['executeAccountForm'] && (item == 'executeUserForm' || item == 'protocolForm')) {
+                this.handleUnfoldAndFold('executeAccountForm');
+              } else {
+                this.handleUnfoldAndFold(item);
+              }
             }
+            isValid = false;
           }
-          isValid = false;
-        }
-      });
-      !this.$utils.isEmpty(jobParamFormList) && jobParamFormList.forEach((item) => {
-        // 作业参数必填校验
-        if (item && !item.valid()) {
-          if (!this.unfoldAndFold['jobParam']) { // 用户关闭作业参数模块，验证不通过，需要打开对应模块
-            this.handleUnfoldAndFold('jobParam');
+        });
+      !this.$utils.isEmpty(jobParamFormList) &&
+        jobParamFormList.forEach(item => {
+          // 作业参数必填校验
+          if (item && !item.valid()) {
+            if (!this.unfoldAndFold['jobParam']) {
+              // 用户关闭作业参数模块，验证不通过，需要打开对应模块
+              this.handleUnfoldAndFold('jobParam');
+            }
+            isValid = false;
           }
-          isValid = false;
-        }
-      });
-      !this.$utils.isEmpty(mappingModeFormList) && mappingModeFormList.forEach((item) => {
-        // 表单映射关系
-        if (this.$refs[item] && this.$refs[item].valid && !this.$refs[item].valid()) {
-          isValid = false;
-        }
-      });
-      !this.$utils.isEmpty(this.$refs.jobParammappingMode) && this.$refs.jobParammappingMode.forEach((item) => {
-        // 作业参数映射关系
-        if (item && item.valid && !item.valid()) {
-          isValid = false;
-        }
-      });
+        });
+      !this.$utils.isEmpty(mappingModeFormList) &&
+        mappingModeFormList.forEach(item => {
+          // 表单映射关系
+          if (this.$refs[item] && this.$refs[item].valid && !this.$refs[item].valid()) {
+            isValid = false;
+          }
+        });
+      !this.$utils.isEmpty(this.$refs.jobParammappingMode) &&
+        this.$refs.jobParammappingMode.forEach(item => {
+          // 作业参数映射关系
+          if (item && item.valid && !item.valid()) {
+            isValid = false;
+          }
+        });
       return isValid;
     },
     saveService() {
       let executeNode = this.$refs.executeTarget ? this.$refs.executeTarget.getValue() : ''; // 执行目标
       let runtimeParamList = [];
-      this.paramsList && this.paramsList.forEach((item) => {
-        if (item && item.key) {
-          runtimeParamList.push({
-            name: item.name,
-            type: item.type,
-            key: item.key,
-            mappingMode: item.mappingMode,
-            value: this.valueConfig[item.key]
-          });
-        }
-      });
+      this.paramsList &&
+        this.paramsList.forEach(item => {
+          if (item && item.key) {
+            runtimeParamList.push({
+              name: item.name,
+              type: item.type,
+              key: item.key,
+              mappingMode: item.mappingMode,
+              value: this.valueConfig[item.key]
+            });
+          }
+        });
       let params = {
         ...this.basicFormValue,
         type: 'service',
@@ -1044,6 +1078,17 @@ export default {
         // 组合工具，执行器组标签如果是作业参数，不需要传递给后端
         delete params.config.runnerGroupTag;
       }
+      if (params && params.config) {
+        // 删除额外的属性，不需要传递给后端
+        const { runnerGroupTag, runnerGroup } = params.config;
+        const removeTextProperty = (obj) => {
+          if (obj && obj.hasOwnProperty('text')) {
+            delete obj.text;
+          }
+        };
+        removeTextProperty(runnerGroupTag);
+        removeTextProperty(runnerGroup); 
+      }
       if (!this.valid()) {
         return false;
       } else {
@@ -1055,13 +1100,15 @@ export default {
       if (key) {
         this.$utils.jumpTo('#positioningkey_' + key);
         let jobParamFormList = this.$refs.jobParamForm || [];
-        !this.$utils.isEmpty(jobParamFormList) && jobParamFormList.forEach((item) => {
-          if (item && item.$attrs && item.$attrs.locatedKey == key && !item.valid()) {
-            if (!this.unfoldAndFold['jobParam']) { // 打开作业参数收起按钮
-              this.handleUnfoldAndFold('jobParam');
+        !this.$utils.isEmpty(jobParamFormList) &&
+          jobParamFormList.forEach(item => {
+            if (item && item.$attrs && item.$attrs.locatedKey == key && !item.valid()) {
+              if (!this.unfoldAndFold['jobParam']) {
+                // 打开作业参数收起按钮
+                this.handleUnfoldAndFold('jobParam');
+              }
             }
-          }
-        });
+          });
       }
     },
     async getCombopDetail(isEdit = false) {
@@ -1082,10 +1129,10 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             dataInfo = res.Return;
-            const {config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false } = res.Return || {};
-            const {combopPhaseList = [], runtimeParamList = [], executeConfig = {}, scenarioList = [], defaultScenarioId = null} = config;
-            const {runnerGroup = '', runnerGroupTag = {}, executeNodeConfig = {}} = executeConfig;
-            const {filter = {}} = executeNodeConfig;
+            const { config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false } = res.Return || {};
+            const { combopPhaseList = [], runtimeParamList = [], executeConfig = {}, scenarioList = [], defaultScenarioId = null } = config;
+            const { runnerGroup = '', runnerGroupTag = {}, executeNodeConfig = {} } = executeConfig;
+            const { filter = {} } = executeNodeConfig;
             this.dataConfig = dataInfo;
             this.stepList = combopPhaseList;
             this.paramsList = runtimeParamList || [];
@@ -1094,8 +1141,11 @@ export default {
             this.needProtocol = needProtocol;
             this.needRoundCount = needRoundCount;
             this.executeConfig = this.$utils.deepClone(executeConfig) || {};
-            this.runnerGroup = !this.$utils.isEmpty(this.runnerGroup) && (!this.$utils.isEmpty(this.runnerGroup['value']) || this.runnerGroup['mappingMode'] == 'notsetup') ? this.runnerGroup : runnerGroup;
-            this.runnerGroupTag = !this.$utils.isEmpty(this.runnerGroupTag) && (!this.$utils.isEmpty(this.runnerGroupTag['value']) || this.runnerGroupTag['mappingMode'] == 'notsetup') ? this.runnerGroupTag : runnerGroupTag;
+            const shouldUseCurrentValue = (obj) => {
+              return !this.$utils.isEmpty(obj) && (!this.$utils.isEmpty(obj['value']) || obj['mappingMode'] === 'notsetup' || !this.$utils.isEmpty(obj['mappingMode'])); // 处理值为空，还是以自动化存储的值为主
+            };
+            this.runnerGroup = shouldUseCurrentValue(this.runnerGroup) ? this.runnerGroup : runnerGroup;
+            this.runnerGroupTag = shouldUseCurrentValue(this.runnerGroupTag) ? this.runnerGroupTag : runnerGroupTag;
             if (this.paramsList && !this.$utils.isEmpty(this.paramsList)) {
               this.initConfig(); // 设置作业参数值
             }
@@ -1109,10 +1159,12 @@ export default {
               if (this.$utils.isEmpty(this.roundCount.value)) {
                 this.$set(this.roundCount, 'value', this.executeConfig.roundCount || 2);
               }
-              this.$set(this.roundCountForm, 'disabled', true);
-              this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
+              //组合工具设置了分批数，编辑服务需要支持修改
+              // this.$set(this.roundCountForm, 'disabled', true);
+              // this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
             }
-            if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
+            if (this.executeConfig.whenToSpecify == 'runtime') {
+              // 过滤器运行在执行，需要把执行目标值清空
               this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue || {});
             } else {
               this.filterSearchValue = !this.$utils.isEmpty(this.filterSearchValue) ? this.filterSearchValue : filter || {};
@@ -1120,17 +1172,17 @@ export default {
             this.scenarioId = defaultScenarioId;
             if (executeConfig && !this.$utils.isEmpty(executeConfig)) {
               // 连接协议和执行账户回显
-              let {executeUser = {}, protocolId = ''} = executeConfig || {};
-              let {mappingMode = ''} = executeUser || {};
+              let { executeUser = {}, protocolId = '' } = executeConfig || {};
+              let { mappingMode = '' } = executeUser || {};
               this.executeValue['executeUser'] = executeUser;
               this.executeValue['protocolId'] = protocolId;
-              let {config: serviceDataConfig = {}} = this.serviceData || {};
+              let { config: serviceDataConfig = {} } = this.serviceData || {};
               if (!this.$utils.isEmpty(mappingMode)) {
                 // 执行用户为空，就用组合工具设置的默认值
                 this.executeUser.mappingMode = this.$utils.isEmpty(this.serviceData) || this.$utils.isEmpty(serviceDataConfig) || (serviceDataConfig.hasOwnProperty('executeUser') && this.$utils.isEmpty(serviceDataConfig['executeUser']['mappingMode'])) ? mappingMode : this.executeUser.mappingMode; // 执行用户回显
               }
-              this.executeUser.value = (this.executeUser && this.executeUser.value ? this.executeUser.value : executeConfig['executeUser'] ? executeConfig['executeUser']['value'] : '');
-              this.protocol.value = (this.protocol && this.protocol.value ? this.protocol.value : executeConfig['protocolId']);
+              this.executeUser.value = this.executeUser && this.executeUser.value ? this.executeUser.value : executeConfig['executeUser'] ? executeConfig['executeUser']['value'] : '';
+              this.protocol.value = this.protocol && this.protocol.value ? this.protocol.value : executeConfig['protocolId'];
             }
           }
         })
@@ -1142,14 +1194,14 @@ export default {
   filter: {},
   computed: {
     handleType() {
-      return (value) => {
+      return value => {
         let type = value + 'Handler';
         type = Component[type] ? type : 'defaultInput';
         return type;
       };
     },
     getPhaseList() {
-      return (phaseList) => {
+      return phaseList => {
         let list = [];
         if (phaseList && phaseList.length > 0) {
           list = phaseList.map(item => {
@@ -1163,15 +1215,27 @@ export default {
       };
     },
     hasRequired() {
-      // 是否必填,mappingMode映射关系为常量或者表单时，必填，否则不必填
-      return (mappingMode) => {
-        return !!((mappingMode == 'constant' || mappingMode == 'formattr'));
+      // 是否必填：当mappingMode映射关系为常量、表单或为空时，字段为必填项；否则，不必填
+      return mappingMode => {
+        if (this.$utils.isEmpty(mappingMode) || mappingMode == 'constant' || mappingMode == 'formattr') {
+          return true;
+        }
+        return false;
+      };
+    },
+    runnerGroupTagIsRequired() {
+      // 是否必填：映射关系为空时必填，否则不必填
+      return mappingMode => {
+        if (this.$utils.isEmpty(mappingMode)) {
+          return true;
+        }
+        return false;
       };
     },
     jobParamIsRequired() {
       // 作业参数必填
       return (isRequired, mappingMode, key) => {
-        if (isRequired || (mappingMode == 'constant' || mappingMode == 'formattr')) {
+        if (isRequired || mappingMode == 'constant' || mappingMode == 'formattr') {
           if (mappingMode == 'notsetup') {
             // 作业参数必填，但是映射关系是不设置时，需要把必填去掉
             if (key == 'file' || key == 'node') {
@@ -1188,18 +1252,18 @@ export default {
     },
     canEdit() {
       // 作业参数在组合工具设置不可编辑，这里也不可编辑
-      return (item) => {
+      return item => {
         return item.hasOwnProperty('editable') ? !item.editable : false;
       };
     },
     canEditaddTarget() {
       // 执行目标是否可以编辑
-      return (executeConfig) => {
-        return (executeConfig && executeConfig.whenToSpecify) ? executeConfig.whenToSpecify == 'runtime' : true;
+      return executeConfig => {
+        return executeConfig && executeConfig.whenToSpecify ? executeConfig.whenToSpecify == 'runtime' : true;
       };
     },
     getMappingmodeList() {
-      return (isRequired) => {
+      return isRequired => {
         if (isRequired && this.formUuid) {
           // 必填+引用表单
           return this.citeFormMappingModeList;
@@ -1221,7 +1285,7 @@ export default {
       // 获取服务失效，原因key列表
       let keyList = [];
       if (!this.$utils.isEmpty(this.serviceData.configExpired) && !this.$utils.isEmpty(this.serviceData.configExpiredReason)) {
-        this.serviceData.configExpiredReason.reasonList.forEach((item) => {
+        this.serviceData.configExpiredReason.reasonList.forEach(item => {
           if (item.key) {
             keyList.push(item.key);
           }
@@ -1242,7 +1306,7 @@ export default {
   display: flex;
 }
 .form-li-width {
- width: 100%;
+  width: 100%;
 }
 .service-container {
   .grid {

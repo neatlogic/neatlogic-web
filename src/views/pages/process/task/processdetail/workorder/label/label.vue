@@ -24,7 +24,6 @@
 </template>
 <script>
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
-// import handler from '../../../../dashboard/widget/handler';
 export default {
   name: '',
   components: {
@@ -90,7 +89,7 @@ export default {
     addTag() {
       this.editTag = true;
       this.$nextTick(() => {
-        this.$refs.selectInput.$refs.input && this.$refs.selectInput.$refs.input.focus();
+        this.$refs.selectInput?.handleOpen();
       });
     },
     closeTag(index) {

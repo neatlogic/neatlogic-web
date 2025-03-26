@@ -1,6 +1,5 @@
 import TsDialog from './TsDialog.vue';
-import {$t} from '@/resources/init.js';
-
+import { $t } from '@/resources/init.js';
 TsDialog.install = function(_Vue, options) {
   _Vue.prototype.$createDialog = config => {
     let instance = null;

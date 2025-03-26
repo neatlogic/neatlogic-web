@@ -269,14 +269,15 @@ export default {
       if (node.isMenu || node.menuType == 'innerMenu') {
         this.handleMenuAuth(node);
       } else {
-        this.isMenu = node.type;
-        this.selectedTreeId = node.id;
-        this.selectSaveId = node.id;
-        this.parentId = node.parentId;
-        if (node.type == 0) {
+        const { type = 0, id = null, parentId } = node || {};
+        this.isMenu = type;
+        this.selectedTreeId = id;
+        this.selectSaveId = id;
+        this.parentId = parentId == 2 ? null : parentId;
+        if (type == 0) {
         // 编辑目录
           this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') });
-        } else if (node.type == 1) {
+        } else if (type == 1) {
         // 编辑菜单
           this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('page.menu')});
         }
@@ -362,7 +363,7 @@ export default {
       }
       let data = this.$refs.editComponent.save();
       this.$set(data, 'type', this.isMenu);
-      this.parentId && this.$set(data, 'parentId', this.parentId);
+      this.$set(data, 'parentId', this.parentId);
       if (this.selectSaveId) {
         this.$set(data, 'id', this.selectSaveId);
       }

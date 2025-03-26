@@ -53,8 +53,9 @@
         <!-- 附件 -->
         <div v-if="fileList && fileList.length > 0" class="fileContain" data_id="file">
           <h6>{{ $t('page.accessory') }}</h6>
-          <div v-for="file in fileList" :key="file.id" class="file-list overflow">
+          <div v-for="(file,index) in fileList" :key="file.id" class="file-list overflow">
             <span v-download="downurl('/api/binary/file/download', file.id)" class="tsfont-attachment text-action">{{ file.name }}</span>
+            <span :title="$t('page.preview')" class="tsfont-eye text-action pl-icon" @click.stop="handlePreview(file, index)"></span>
             <span class="tsfont-close text-tip-active remove-padding" @click="removeFile(file)"></span>
           </div>
         </div>
@@ -62,7 +63,17 @@
     </div>
     <!-- 附件导入 -->
     <UploadDialog ref="uploadDialog" v-bind="selectUpload" @on-success="uploadSuccess" />
-    <!-- 选择模板 -->
+    <ImagePreview 
+      :isShow="srcList.length > 0"
+      :fileList="srcList"
+      :fileDownloadUrl="fileDownurl"
+      :fileDownloadParam="fileDownParam"
+      :initialIndex="initialIndex"
+      @close="()=> {
+        srcList = []
+      }"
+    >
+    </ImagePreview>
   </div>
 </template>
 <script>
@@ -83,6 +94,7 @@ export default {
     selectTemplate: () => import('./main-selecttemplate'),
     selectType: () => import('./main-select'),
     UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
+    ImagePreview: () => import('@/resources/components/image-preview/index.vue'),
     editorTool,
     editorTip,
     ...items,
@@ -114,7 +126,6 @@ export default {
     }
   },
   data() {
-    let _this = this;
     return {
       menuList: [],
       dataList: [], //组件渲染的数据
@@ -154,6 +165,12 @@ export default {
           title: this.$t('dialog.title.addtarget', {target: this.$t('page.image')})
         }
       },
+      initialIndex: 0,
+      srcList: [],
+      fileDownurl: '/api/binary/file/download',
+      fileDownParam: {
+        id: ''
+      },
       uplaodType: 'file',
       selectUpload: {}, //选择上传的配置
       fileList: [],
@@ -192,6 +209,13 @@ export default {
   },
   destroyed() {},
   methods: {
+    handlePreview(file, index) {
+      //图片预览
+      const { id = '' } = file || {};
+      this.initialIndex = index;
+      this.fileDownParam.id = id;
+      this.srcList = this.fileList;
+    },
     anchor(uuid) {
       //定位右侧锚点
       let _this = this;

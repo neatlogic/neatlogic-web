@@ -26,7 +26,8 @@ export default {
     mapping: {},
     pageSize: 10,
     needPage: true,
-    isAddData: false // 自定义矩阵并且是下拉框类型，下拉列表加一个+号按钮
+    isAddData: false, // 自定义矩阵并且是下拉框类型，下拉列表加一个+号按钮
+    hideHeaderWhenDataEmpty: true // 数据为空隐藏表头
   },
   reaction: {
     mask: {},

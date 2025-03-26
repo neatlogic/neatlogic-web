@@ -116,11 +116,15 @@
         <TsCkeditor
           ref="TsCkeditor"
           v-model="changeReport.content"
-          :editorDataS="changeReport.content"
           :showIconToggle="true"
           width="100%"
           :placeholder="ckeditorPlaceholder"
           :validateList="ckeditorValidateList"
+          :params="{
+            uploadVideoConfig: {
+              type: 'itsm',
+            }
+          }"
         ></TsCkeditor>
       </div>
     </div>
@@ -138,6 +142,7 @@
         className="smallUpload"
         :multiple="true"
         :defaultList="defaultFileList"
+        :hasScreenshotFromClipboard="true"
         dataType="change"
       ></TsUpLoad>
     </div>

@@ -170,7 +170,18 @@
               :projectId="projectId"
               :issueData="issueData"
             ></StatusRequiredAttrList></TsFormItem>
-            <TsFormItem v-bind="formItemConf" :label="$t('page.reply')"><TsCkeditor v-model="issueData.comment" :width="'100%'"></TsCkeditor></TsFormItem>
+            <TsFormItem v-bind="formItemConf" :label="$t('page.reply')">
+              <TsCkeditor
+                v-model="issueData.comment"
+                :params="{
+                  uploadVideoConfig: {
+                    type: 'issue',
+                    issueId: id
+                  }
+                }"
+                :width="'100%'"
+              ></TsCkeditor>
+            </TsFormItem>
             <TsFormItem v-bind="formItemConf" label="">
               <Button :disabled="!isTransferReady" type="primary" @click="goToNext()">{{ $t('term.process.circulation') }}</Button>
             </TsFormItem>

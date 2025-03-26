@@ -80,7 +80,12 @@ export default {
           value: '',
           label: this.$t('page.reply'),
           width: '100%',
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       ],
       disabledTransferring: false

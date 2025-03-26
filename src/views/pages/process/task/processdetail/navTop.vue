@@ -74,6 +74,7 @@
   </div>
 </template>
 <script>
+import {store} from '@/views/pages/process/task/processdetail/processStore.js';
 export default {
   name: '',
   provide() {
@@ -175,44 +176,37 @@ export default {
       }
       this.slaTimeList = [];
       let tempSlaTimeList = [];
-      let data = {
-        processTaskId: this.processTaskId
-      };
-      this.$api.process.processtask.getStepStatusList(data).then(res => {
-        if (res.Status === 'OK') {
-          this.baseTime = Date.now();
-          let slaTimeList = [];
-          let stepList = res.Return || [];
-          let hasDoingStatus = false;
-          stepList && stepList.forEach((item) => {
-            if (item.isInTheCurrentStepTab === 1) {
-              if (!this.$utils.isEmpty(item.slaTimeList)) { // 当前步骤关联多个SLA时，仅仅显示最紧迫的一个(默认第一个，后端已排序)
-                tempSlaTimeList.push(item.slaTimeList[0]);
-              }
-              slaTimeList = [...slaTimeList, ...(item.slaTimeList || [])];
-              item.slaTimeList.forEach(v => {
-                if (v.status === 'doing') {
-                  hasDoingStatus = true;
-                }
-              });
+      this.baseTime = Date.now();
+      let slaTimeList = [];
+      let stepList = this.stepDataList || [];
+      let hasDoingStatus = false;
+      stepList && stepList.forEach((item) => {
+        if (item.isInTheCurrentStepTab === 1) {
+          if (!this.$utils.isEmpty(item.slaTimeList)) { // 当前步骤关联多个SLA时，仅仅显示最紧迫的一个(默认第一个，后端已排序)
+            tempSlaTimeList.push(item.slaTimeList[0]);
+          }
+          slaTimeList = [...slaTimeList, ...(item.slaTimeList || [])];
+          item.slaTimeList.forEach(v => {
+            if (v.status === 'doing') {
+              hasDoingStatus = true;
             }
           });
-          this.$store.commit('setTaskSlaTimeList', slaTimeList); // 设置工单时效
-          this.getElementWidth();
-          this.slaUpdateTimer = setTimeout(() => {
-            this.UpdateSlaTimeDoing(hasDoingStatus);
-          }, 60 * 1000);
-          if (!this.$utils.isEmpty(tempSlaTimeList)) {
-            if (tempSlaTimeList.length === 1) {
-              this.slaTimeList = tempSlaTimeList;
-            } else if (tempSlaTimeList.length > 1) {
-              this.slaTimeList = [tempSlaTimeList[0]];
-            } else {
-              this.slaTimeList = [];
-            }
-          }
         }
       });
+      this.$store.commit('setTaskSlaTimeList', slaTimeList); // 设置工单时效
+      this.getElementWidth();
+      this.slaUpdateTimer = setTimeout(() => {
+        this.UpdateSlaTimeDoing(hasDoingStatus);
+      }, 60 * 1000);
+      if (!this.$utils.isEmpty(tempSlaTimeList)) {
+        if (tempSlaTimeList.length === 1) {
+          this.slaTimeList = tempSlaTimeList;
+        } else if (tempSlaTimeList.length > 1) {
+          this.slaTimeList = [tempSlaTimeList[0]];
+        } else {
+          this.slaTimeList = [];
+        }
+      }
     }
   },
   filter: {},
@@ -231,6 +225,9 @@ export default {
     },
     getClassName() {
       return (remainTime) => (remainTime) >= 0 ? 'text-success' : 'text-danger';
+    },
+    stepDataList() {
+      return store.stepDataList;
     }
   },
   watch: {
@@ -246,17 +243,9 @@ export default {
       },
       immediate: true
     },
-    processTaskConfig: {
-      handler(newVal) {
-        let {id = ''} = newVal || {};
-        if (!this.$utils.isEmpty(id)) {
-          if (!this.$utils.isSame(this.processTaskId, id)) { 
-            this.processTaskId = this.$utils.deepClone(id);
-            this.UpdateSlaTimeDoing(true);
-          }
-        } else {
-          this.$store.commit('setTaskSlaTimeList', []); // 清空工单时效
-        }
+    stepDataList: {
+      handler(val) {
+        this.UpdateSlaTimeDoing(true);
       },
       immediate: true,
       deep: true

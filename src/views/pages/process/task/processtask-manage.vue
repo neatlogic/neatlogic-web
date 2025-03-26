@@ -196,7 +196,12 @@ export default {
           value: '',
           width: '95%',
           label: this.$t('page.reason'),
-          validateList: ['required']
+          validateList: ['required'],
+          params: {
+            uploadVideoConfig: {
+              type: 'itsm'
+            }
+          }
         }
       },
       okBtnDisable: false,

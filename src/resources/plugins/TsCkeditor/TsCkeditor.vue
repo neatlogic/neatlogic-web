@@ -1,20 +1,43 @@
 <template>
-  <div class="form-li" id="new_ckeditor" :class="{ toggle: toggle }">
-    <div v-if="readonly" v-imgViewer :class="readonlyTextIsHighlight ? 'text-warning' : ''"
-      v-html="currentValue ? currentValue : '-'"></div>
+  <div id="new_ckeditor" class="form-li" :class="{ toggle: toggle }">
+    <div
+      v-if="readonly"
+      v-imgViewer
+      :class="readonlyTextIsHighlight ? 'text-warning' : ''"
+      class="ckeditor-readonly-content-box"
+      v-html="currentValue ? currentValue : '-'"
+    ></div>
     <div v-else :class="getClass" :style="getStyle">
-      <ckeditor ref="tsckeditor" @ready="$emit('ready')" v-model="currentValue" :editor="editor" :config="editorConfig"
-        tag-name="textarea" :disabled="disabled" :placeholder="placeholder" @blur="onBlur"></ckeditor>
+      <ckeditor
+        ref="tsckeditor"
+        v-model="currentValue"
+        :editor="editor"
+        :config="editorConfig"
+        tag-name="textarea"
+        :disabled="disabled"
+        :placeholder="placeholder"
+        @ready="$emit('ready')"
+        @blur="onBlur"
+      ></ckeditor>
       <!-- <i class="ck-expandedbtn tsfont-up text-action" @click="isHidebar = !isHidebar;"></i> -->
       <div v-if="desc && !descType" class="text-tip tips">{{ desc }}</div>
       <Alert v-else-if="desc && descType" :type="descType">{{ desc }}</Alert>
       <transition name="fade">
         <slot name="validMessage">
-          <span v-if="validMesage != ''" class="form-error-tip" :title="validMesage" v-html="validMesage"></span>
+          <span
+            v-if="validMesage != ''"
+            class="form-error-tip"
+            :title="validMesage"
+            v-html="validMesage"
+          ></span>
         </slot>
       </transition>
-      <span v-if="showIconToggle" class="isToolbar"
-        :class="[{ 'tsfont-collapse': toggle }, { 'tsfont-expand': !toggle }]" @click="toggleIcon"></span>
+      <span
+        v-if="showIconToggle"
+        class="isToolbar"
+        :class="[{ 'tsfont-collapse': toggle }, { 'tsfont-expand': !toggle }]"
+        @click="toggleIcon"
+      ></span>
     </div>
   </div>
 </template>
@@ -61,10 +84,6 @@ export default {
       type: Boolean,
       default: false
     },
-    editorDataS: {
-      type: String,
-      default: ''
-    }, //初始数据
     placeholder: {
       type: String,
       default() {
@@ -78,20 +97,106 @@ export default {
       default: () => []
     },
     removePlugins: {
+      /*
+      * 移除的插件列表。
+      * 注意：在 `removePlugins` 数组中指定要移除的插件名称时，插件名称的首字母必须大写。
+      * 例如，如果要移除视频上传插件，应使用 'UploadVideo' 而不是 'uploadVideo'。
+      * 示例用法:
+      * removePlugins: ['UploadVideo']
+      */
       type: Array,
       default: () => []
+    },
+    params: {
+      /*
+      参数：
+       上传视频配置：
+        uploadVideoConfig:{
+          type: '', // 用于后台文档管理，文件分类等
+          fileKey: '', // file对象的key，传递给后端参数的key，默认file
+          uniqueKey: '', // 如果不为空，代表附件名唯一，相同名称的附件只会保留最新的一个
+          formatList: [], // 支持上传的视频格式，默认值有：['mp4', 'mkv', 'avi', 'mov', 'webm', 'flv', 'f4v', 'mpg', 'mpeg', 'ts', 'm2ts', 'mts', 'wmv', 'rm', 'rmvb', '3pg', '3g2']
+          ...restParams // 其他额外的参数，类型是对象
+        }
+       */
+      type: Object,
+      default: () => {}
     }
   },
   data() {
-    let baseToolBar = ['undo', 'redo', '|', 'heading', '|', 'fontSize', 'fontColor', 'fontBackgroundColor', '|', 'bold', 'italic', 'strikethrough', 'code', 'link', 'blockQuote', '|', 'uploadImage', '|', 'insertTable', '|', 'bulletedList', 'numberedList', 'outdent', 'indent', '|'];
+    let baseToolBar = [
+      'undo',
+      'redo',
+      '|',
+      'heading',
+      '|',
+      'fontSize',
+      'fontColor',
+      'fontBackgroundColor',
+      '|',
+      'bold',
+      'italic',
+      'strikethrough',
+      'code',
+      'link',
+      'blockQuote',
+      '|',
+      'uploadImage',
+      'uploadVideo',
+      '|',
+      'insertTable',
+      '|',
+      'bulletedList',
+      'numberedList',
+      'outdent',
+      'indent',
+      '|'
+    ];
+    const { uploadVideoConfig = {} } = this.params || {};
+    const { 
+      type = '', 
+      fileKey = 'file',
+      uniqueKey = '',
+      formatList = [
+        'mp4',
+        'mkv',
+        'avi',
+        'mov',
+        'webm',
+        'flv',
+        'f4v',
+        'mpg',
+        'mpeg',
+        'ts',
+        'm2ts',
+        'mts',
+        'wmv',
+        'rm',
+        'rmvb',
+        '3pg',
+        '3g2'
+      ],
+      ...restParams
+    } = uploadVideoConfig || {};
     return {
       editor: ClassicEditor, //引用类型，基础模式
       editorConfig: {
         //基本配置
+        licenseKey: "GPL",
         language: BASELANGUAGES == 'zh' ? 'zh-cn' : 'en-gb',
         removePlugins: this.removePlugins,
         ckfinder: {
           uploadUrl: BASEURLPREFIX + '/api/binary/image/upload'
+        },
+        uploadVideoConfig: {
+          url: BASEURLPREFIX + '/api/binary/file/upload',
+          formatList: formatList, // 支持上传的视频格式，例如mp4
+          params: {
+            type: type, // 用于后台文档管理，标识模块或者功能等
+            fileKey: fileKey, // file对象的key，传递给后端参数的key
+            uniqueKey: uniqueKey, // 如果不为空，代表附件名唯一，相同名称的附件只会保留最新的一个
+            ...(restParams || {})
+          }
         },
         knowledgeSelect: {
           //选择知识库插件配置
@@ -156,10 +261,10 @@ export default {
     }
   },
   watch: {
-    value: function (val) {
+    value: function(val) {
       this.currentValue = val || '';
     },
-    currentValue: function (newValue, oldValue) {
+    currentValue: function(newValue, oldValue) {
       //当值改变时触发的方法
       if (newValue != oldValue) {
         this.valid();

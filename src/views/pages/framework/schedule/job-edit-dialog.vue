@@ -56,7 +56,7 @@
                   v-else
                   v-model="row.value"
                   border="border"
-                  maxlength="50"
+                  maxlength="200"
                 ></TsFormInput>
               </template>
               <!-- <template v-slot:action="{ row }">
