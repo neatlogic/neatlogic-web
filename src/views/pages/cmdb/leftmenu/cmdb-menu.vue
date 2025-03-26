@@ -1,10 +1,10 @@
 <template>
   <div class="OverviewMenu menu_link">
     <div>
-      <div class="title text-grey">
+      <div v-if="$AuthUtils.hasRole('PRIVATE_CUSTOMVIEW_MODIFY')" class="title text-grey">
         {{ $t('term.cmdb.customview') }}
       </div>
-      <div class="link">
+      <div v-if="$AuthUtils.hasRole('PRIVATE_CUSTOMVIEW_MODIFY')" class="link">
         <Dropdown>
           <a href="javascript:void(0)" class="tsfont-plus text-primary">
             <span class="text-primary">{{ $t('page.new') }}</span>

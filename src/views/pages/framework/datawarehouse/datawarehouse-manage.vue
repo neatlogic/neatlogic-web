@@ -77,6 +77,9 @@
               <div v-else>{{ row.statusText }}</div>
             </div>
           </template>
+          <template v-slot:dataCount="{ row }">
+            <Badge :count="row.dataCount" type="primary"></Badge>
+          </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
