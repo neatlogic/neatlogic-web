@@ -27,10 +27,14 @@
       :validateList="validateList"
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
       :icon="isShowPasssork? 'ios-eye-outline':'ios-eye-off-outline'"
+      @on-blur="
+        val => {
+          setValue(val);
+        }
+      "
       @change="
         val => {
           isShowPoptip = false;
-          setValue(val);
         }
       "
       @clickIcon="viewPasswork()"
