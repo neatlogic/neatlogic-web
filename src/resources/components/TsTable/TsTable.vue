@@ -14,7 +14,7 @@
         class="bg-table"
       >
         <table class="table-top tstable-body" :style="setLayout" :class="{ fixtop: scrollTop && scrollTop > 0 }">
-          <ColGroup :list="colsList" :canResize="canResize"></ColGroup>
+          <ColGroup :list="$utils.deepClone(colsList)" :canResize="canResize"></ColGroup>
           <THead
             ref="theadRef"
             :columnList="columnList"
@@ -94,7 +94,7 @@
         @mousewheel.stop
       >
         <table ref="tstable" class="table-main tstable-body" :style="setLayout">
-          <ColGroup :list="colsList"></ColGroup>
+          <ColGroup :list="$utils.deepClone(colsList)"></ColGroup>
           <THead
             ref="theadRef"
             :theme="theme"
@@ -293,6 +293,7 @@
           </div>
         </div>
       </Poptip>
+      <div v-show="showResizeLine" ref="resizeLine" class="ivu-table-resize-line"></div>
     </div>
     <div v-if="isBigDataPage" ref="tablepage" class="tstable-page text-right">
       <!-- 大数据模式显示分页数据 -->
@@ -605,7 +606,8 @@ export default {
       isRendered: true, //表格渲染需要时间导致第一次取值有问题，这里标记是否需要从新计算offsetWidth的值
       resizeEvent: null,
       visible: false, //控制表头排序是否显示的poptip是否显示
-      tableRowStyle: GLOBAL_TABLESTRYLE || (process.env && process.env.VUE_APP_TABLESTRYLE)
+      tableRowStyle: GLOBAL_TABLESTRYLE || (process.env && process.env.VUE_APP_TABLESTRYLE),
+      showResizeLine: false
     };
   },
   beforeCreate() {},

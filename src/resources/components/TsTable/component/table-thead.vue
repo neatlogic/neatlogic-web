@@ -49,7 +49,13 @@
               <span v-if="getSort(hitem)" :class="setSortclass(hitem,sortConfig)" @click="switchStatus(hitem)"></span>
             </div>
           </slot>
-          <div v-if="canResize" class="btn-resize"></div>
+          <div
+            v-if="canResize && list[ hindex + 1].key !== 'action'"
+            class="btn-resize"
+            @mousedown="handleMouseDown(hitem, $event)"
+            @mousemove="handleMouseMove(hitem, $event)"
+            @mouseout="handleMouseOut"
+          ></div>
         </template>
       </th>
     </tr>
@@ -96,7 +102,10 @@ export default {
   },
   data() {
     return {
-      scrollLeft: 0
+      scrollLeft: 0,
+      draggingColumn: null,
+      dragging: false,
+      dragState: {}
     };
   },
   beforeCreate() {},
@@ -155,6 +164,95 @@ export default {
     },
     switchStatus(item) {
       this.$emit('switchStatus', item);
+    },
+    handleMouseDown(column, event) {
+      if (this.draggingColumn) {
+        this.dragging = true;
+
+        const table = this.$parent;
+        const tableEl = table.$el;
+        const tableLeft = tableEl.getBoundingClientRect().left;
+        const columnEl = this.$el.querySelector(`.th-${column.key}`);
+        const columnRect = columnEl.getBoundingClientRect();
+        const minLeft = columnRect.left - tableLeft + 30;
+
+        table.showResizeLine = true;
+
+        this.dragState = {
+          startMouseLeft: event.clientX,
+          startLeft: columnRect.right - tableLeft,
+          startColumnLeft: columnRect.left - tableLeft,
+          tableLeft
+        };
+
+        const resizeProxy = table.$refs.resizeLine;
+        resizeProxy.style.left = this.dragState.startLeft + 'px';
+
+        document.onselectstart = function() {
+          return false;
+        };
+        document.ondragstart = function() {
+          return false;
+        };
+
+        const handleMouseMove = event => {
+          const deltaLeft = event.clientX - this.dragState.startMouseLeft;
+          const proxyLeft = this.dragState.startLeft + deltaLeft;
+
+          resizeProxy.style.left = Math.max(minLeft, proxyLeft) + 'px';
+        };
+
+        const handleMouseUp = () => {
+          if (this.dragging) {
+            const { startColumnLeft, startLeft } = this.dragState;
+
+            const finalLeft = parseInt(resizeProxy.style.left, 10);
+            const columnWidth = finalLeft - startColumnLeft;
+
+            const _column = table.colsList.find(item => item.key === column.key + 'Width');
+            if (_column) {
+              this.$set(_column, 'width', columnWidth);
+            }
+            // table.$emit('on-column-width-resize', _column.width, startLeft - startColumnLeft, column, event);
+            this.dragging = false;
+            this.draggingColumn = null;
+            this.dragState = {};
+
+            table.showResizeLine = false;
+          }
+
+          document.removeEventListener('mousemove', handleMouseMove);
+          document.removeEventListener('mouseup', handleMouseUp);
+          document.onselectstart = null;
+          document.ondragstart = null;
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+      }
+    },
+    handleMouseMove(column, event) {
+      console.log('ppp');
+      let target = event.target;
+
+      while (target && target.tagName !== 'TH') {
+        target = target.parentNode;
+      }
+
+      if (!column || !this.canResize) return;
+
+      if (!this.dragging) {
+        let rect = target.getBoundingClientRect();
+
+        if (rect.width > 12 && rect.right - event.pageX < 8) {
+          this.draggingColumn = column;
+        } else if (!this.dragging) {
+          this.draggingColumn = null;
+        }
+      }
+    },
+    handleMouseOut() {
+      //
     }
   },
   computed: {
