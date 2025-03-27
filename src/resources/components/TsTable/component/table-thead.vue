@@ -50,11 +50,10 @@
             </div>
           </slot>
           <div
-            v-if="canResize && list[ hindex + 1].key !== 'action'"
+            v-if="canResize"
             class="btn-resize"
             @mousedown="handleMouseDown(hitem, $event)"
             @mousemove="handleMouseMove(hitem, $event)"
-            @mouseout="handleMouseOut"
           ></div>
         </template>
       </th>
@@ -213,7 +212,7 @@ export default {
             if (_column) {
               this.$set(_column, 'width', columnWidth);
             }
-            // table.$emit('on-column-width-resize', _column.width, startLeft - startColumnLeft, column, event);
+            table.$emit('on-column-width-resize', _column.width, startLeft - startColumnLeft, column, event);
             this.dragging = false;
             this.draggingColumn = null;
             this.dragState = {};
@@ -232,7 +231,6 @@ export default {
       }
     },
     handleMouseMove(column, event) {
-      console.log('ppp');
       let target = event.target;
 
       while (target && target.tagName !== 'TH') {
@@ -250,9 +248,6 @@ export default {
           this.draggingColumn = null;
         }
       }
-    },
-    handleMouseOut() {
-      //
     }
   },
   computed: {

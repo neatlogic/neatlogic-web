@@ -410,7 +410,7 @@ export default {
       default: false
     },
     canResize: {
-      //是否可拖拽改变宽度
+      //是否可拖拽改变宽度,拖拽调整列宽时触发on-column-width-resize(newWidth, oldWidth, column, event)
       type: Boolean,
       default: false
     },
