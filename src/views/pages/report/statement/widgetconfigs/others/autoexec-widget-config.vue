@@ -1,22 +1,22 @@
 <template>
   <div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('page.fontsize') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormSelect
+    <TsFormItem :label="$t('page.fontsize')" labelPosition="top">
+      <div class="pl-sm pr-sm">
+        <Slider
           :value="config.fontsize"
-          :dataList="dataList"
-          transfer
-          border="border"
-          @on-change="val => {
-            setConfigValue('fontsize', val);
-          }"
-        ></TsFormSelect>
+          :min="12"
+          :max="50"
+          :step="1"
+          @on-change="
+            val => {
+              setConfigValue('fontsize', val);
+            }
+          "
+        ></Slider>
       </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('page.fontcolor') }}</label>
-      <div class="ivu-form-item-content">
+    </TsFormItem>
+    <TsFormItem :label="$t('page.fontcolor')" labelPosition="top">
+      <div>
         <ColorPicker
           :value="config.fontcolor"
           :transfer="true"
@@ -29,34 +29,20 @@
           }"
         />
       </div>
-    </div>
+    </TsFormItem>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
   props: {
     config: { type: Object }
   },
   data() {
     return {
-      dataList: [
-        {
-          text: '小（12像素)',
-          value: 12
-        },
-        {
-          text: '中（16像素）',
-          value: 16
-        },
-        {
-          text: '大（20像素）',
-          value: 20
-        }
-      ]
     };
   },
   beforeCreate() {},

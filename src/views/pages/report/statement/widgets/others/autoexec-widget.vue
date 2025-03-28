@@ -1,45 +1,65 @@
 <template>
-  <div :style="getTimeStyle">
-    <div class="progress flex-start align-center">
+  <div class="autoexec-widget" :style="getTimeStyle">
+    <div class="progress flex-start align-center" :style="{'margin-top': widget.border === 'gradient' ? '24px' : '0px'}">
       <div class="pr-xs">总进度</div>
       <div style="flex: 1; width: 80%;">
         <Progress
-          :percent="45"
+          v-if="isReady"
+          :percent="percentData"
           :stroke-width="strokeWidth"
           status="active"
           text-inside
         /></div>
     </div>
     <div v-if="dataList && dataList.length>0" class="job-detail">
+      <div class="item-list border-color">
+        <div class="step-content">
+          <div class="animate-spin step-node border-base radius-sm border-color-success text-success">
+            <span>开始</span>
+          </div>
+        </div>
+        <span class="step_a tsfont-arrow-down text-success"></span>
+      </div>
       <div
         v-for="(item,index) in dataList"
         :key="index"
         class="item-list border-color"
       >
         <div
-          v-for="(litem,lindex) in item.children"
+          v-for="(litem,lindex) in item"
+          :id="'step_' + litem.id"
+          :ref="'step_' + litem.id"
           :key="lindex"
           class="step-content"
         >
-          <div class="step-node border-base radius-sm" :title="litem.name">
+          <div class="step-node border-base radius-sm" :class="litem.status && statusMapClass[litem.status]" :title="litem.name">
             <span>{{ litem.name }}</span>
           </div>
         </div>
-        <span v-if="index < dataList.length-1" class="step_a tsfont-arrow-down text-success"></span>
+        <span class="step_a tsfont-arrow-down text-success"></span>
+      </div>
+      <div class="item-list border-color">
+        <div class="step-content">
+          <div class="step-node border-base radius-sm">
+            <span>结束</span>
+          </div>
+        </div>
       </div>
     </div>
+    <div v-else><no-data></no-data></div>
     <div class="action-group no-line">
       <span class="block-item">
         <span class="color-tip bg-gray"></span>
-        <span class="fz10">未开始</span></span>
-      <span class="block-item">
-        <span class="color-tip bg-info"></span>
-        <span class="fz10">进行中</span>
+        <span class="fz10">未开始</span>
       </span>
       <span class="block-item">
         <span class="color-tip bg-warning"></span>
-        <span class="fz10">已禁用</span>
+        <span class="fz10"> 进行中</span>
       </span>
+      <!-- <span class="block-item">
+        <span class="color-tip bg-gray"></span>
+        <span class="fz10">已禁用</span>
+      </span> -->
       <span class="block-item">
         <span class="color-tip bg-error"></span>
         <span class="fz10">失败</span>
@@ -62,29 +82,34 @@ export default {
   },
   data() {
     return {
-      strokeWidthMap: {
-        13: 10,
-        16: 14,
-        20: 18
+      isReady: true,
+      statusMapClass: {
+        // pending: 'pending border-color-info',
+        success: 'success border-color-success text-success',
+        running: 'running border-color-warning text-warning',
+        failed: 'failed border-color-error text-error'
+        // disabled: 'bg-gray'
       },
-      dataList: [
-        {
-          children: [
-            {name: '步骤一', status: 'success'},
-            {name: '步骤二', status: 'success'},
-            {name: '步骤三', status: 'success'},
-            {name: '步骤四', status: 'success'}
-          ]
-        },
-        {
-          children: [
-            {name: '步骤一', status: 'success'},
-            {name: '步骤二', status: 'success'},
-            {name: '步骤三', status: 'success'},
-            {name: '步骤四', status: 'success'}
-          ]
-        }
-      ]
+      dataList: [],
+      stepList: [
+        {name: '步骤一', groupSort: 0, status: 'success'},
+        {name: '步骤二', groupSort: 0, status: 'success'},
+        {name: '步骤三', groupSort: 0, status: 'success'},
+        {name: '步骤四', groupSort: 0, status: 'success'},     
+        {name: '步骤一', groupSort: 0, status: 'success'},
+        {name: '步骤二', groupSort: 1, status: 'failed'},
+        {name: '步骤三', groupSort: 1, status: 'success'},
+        {name: '步骤四', groupSort: 2, status: 'success'},
+        {name: '步骤一', groupSort: 2, status: 'success'},
+        {name: '步骤二', groupSort: 2, status: 'success'},
+        {name: '步骤三', groupSort: 3, status: 'success'},
+        {name: '步骤四', groupSort: 4, status: 'success'},     
+        {name: '步骤一', groupSort: 4, status: 'success'},
+        {name: '步骤二', groupSort: 5, status: 'success'},
+        {name: '步骤三', groupSort: 6, status: 'pending'},
+        {name: '步骤四', groupSort: 6, status: 'running', id: '123456'}
+      ],
+      percentData: 0
     };
   },
   beforeCreate() {},
@@ -102,7 +127,76 @@ export default {
   },
   destroyed() {},
   methods: {
-    
+    createRandomData() {
+      // this.isReady = false;
+      this.dataList = this.getStepList(this.stepList); 
+      this.getPercentData(this.stepList);
+      this.$nextTick(() => {
+        this.stepScrollIntoView(this.stepList);
+        this.isReady = true;
+      });
+    },
+    changeData() {
+      if (this.data && this.data.length > 0) {
+        // this.isReady = false;
+        this.dataList = this.getStepList(this.data); 
+        this.getPercentData(this.data);
+        this.$nextTick(() => {
+          this.stepScrollIntoView(this.data);
+          this.isReady = true;
+        });
+      }
+    },
+    getStepList(stepList) {
+      let list = [];
+      if (stepList.length) {
+        let groupSortList = stepList.filter(l => !this.$utils.isEmpty(l.groupSort));
+        if (groupSortList && groupSortList.length) {
+          for (let sort = 0, index = 0; index < groupSortList.length;) {
+            let arr = [];
+            groupSortList.filter(l => {
+              if (l.groupSort == sort) {
+                arr.push(l);
+                index++;
+                return true;
+              }
+            });
+            sort++;
+            arr.length && list.push(arr);
+          }
+        }
+      }
+      return list;
+    },
+    stepScrollIntoView(dataList) {
+      for (let i = 0; i < dataList.length; i++) {
+        if (dataList[i].status === 'running' && this.$refs['#step_' + dataList[i].id]) {
+          document.querySelector('#step_' + dataList[i].id).scrollIntoView({
+            behavior: 'smooth', // 平滑过渡
+            block: 'start' // start 上边框 center 中间 end 底部边框 与视窗顶部平齐
+          });
+          break;
+        } 
+      }
+    },
+    getPercentData(list) {
+      //作业进度
+      this.percentData = 0;
+      if (list && list.length) {
+        let i = 0;
+        list.forEach(item => {
+          if (item.status === 'success') {
+            i += 1;
+          }
+        });
+        if (i === list.length) {
+          this.percentData = 100;
+        } else {
+          let num = i / list.length;
+          this.percentData = num.toFixed(2) * 100;
+        }
+      }
+    }
   },
   filter: {},
   computed: {
@@ -113,7 +207,7 @@ export default {
       };
     },
     strokeWidth() {
-      return this.widget && this.widget.config && this.widget.config.fontsize ? this.strokeWidthMap[this.widget.config.fontsize] : 10; 
+      return this.widget && this.widget.config && this.widget.config.fontsize ? this.widget.config.fontsize - 3 : 10; 
     }
   },
   watch: {
@@ -121,43 +215,61 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.progress {
-  margin-bottom: 30px;
-}
-.color-tip {
-  width: 12px;
-  height: 12px;
-  display: inline-block;
-  margin-right: 4px;
-}
-.job-detail{
-  width: 100%;
-  margin: 0 auto;
-}
-.item-list {
+@import (reference) '@/resources/assets/css/variable.less';
+.autoexec-widget{
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 30px;
-  .step-content {
-    position: relative;
+  padding-bottom: 10px;
+  .progress {
+    width: 100%;
+    padding-bottom: 30px;
+  }
+  .color-tip {
+    width: 12px;
+    height: 12px;
     display: inline-block;
-    width: 20%;
-    padding: 0 10px;
-    .step-node {
-      text-align: center;
-      line-height: 69px;
-      width: 100%;
-      height: 69px;
+    margin-right: 4px;
+  }
+  .job-detail{
+    width: 100%;
+    margin: 0 auto;
+  }
+  .item-list {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    .step-content {
+      position: relative;
       display: inline-block;
+      width: 20%;
+      padding: 0 10px;
+      .step-node {
+        text-align: center;
+        line-height: 50px;
+        width: 100%;
+        height: 50px;
+        display: inline-block;
+      }
     }
   }
+  .step_a {
+    position: absolute;
+    left: 49%;
+    transform: translateY(-49%);
+    top: 64px;
+  }
 }
-.step_a {
-  position: absolute;
-  left: 49%;
-  transform: translateY(-49%);
-  top: 85px;
+.pending{
+  background-color: rgba(22, 144, 255, .1);
+}
+.success {
+  background-color: rgba(37, 184, 100, .1);
+}
+.running{
+  background-color: rgba(255, 186, 90, .1);
+}
+.failed {
+  background-color: rgba(243, 59, 59, .1);
 }
 </style>

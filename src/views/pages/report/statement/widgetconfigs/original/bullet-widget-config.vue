@@ -9,128 +9,112 @@
         }"
       ></TsFormRadio>
     </TsFormItem>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.yaxisshow') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormSwitch
-          :value="config.yAxis ? true : false"
-          :true-value="true"
-          :false-value="false"
-          @change="
+    <TsFormItem :label="$t('term.report.axis.yaxisshow') " labelPosition="top">
+      <TsFormSwitch
+        :value="config.yAxis ? true : false"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            if (val) {
+              setConfigValue('yAxis', {
+                label: {
+                  autoHide: true,
+                  autoEllipsis: true
+                },
+                title: { text: '' }
+              });
+            } else {
+              setConfigValue('yAxis', val);
+            }
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem v-if="config.yAxis" :label="$t('term.report.axis.yaxistitle') " labelPosition="top">
+      <TsFormInput
+        :value="config.yAxis.title && config.yAxis.title.text"
+        border="border"
+        @change="
+          val => {
+            setConfigValue('yAxis.title.text', val);
+          }
+        "
+      ></TsFormInput>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.axis.xaxisshow') " labelPosition="top">
+      <TsFormSwitch
+        :value="config.xAxis ? true : false"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            if (val) {
+              setConfigValue('xAxis', { title: { text: '' } });
+            } else {
+              setConfigValue('xAxis', val);
+            }
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem v-if="config.xAxis" :label="$t('term.report.axis.xaxistitle') " labelPosition="top">
+      <TsFormInput
+        :value="config.xAxis.title && config.xAxis.title.text"
+        border="border"
+        @change="
+          val => {
+            setConfigValue('xAxis.title.text', val);
+          }
+        "
+      ></TsFormInput>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.customcolor') " labelPosition="top">
+      <div class="pl-md pr-md">
+        <div class="text-grey">{{ $t('page.background') }}</div>
+        <ColorPicker
+          :value="config.color && config.color.range"
+          :transfer="true"
+          alpha
+          recommend
+          class="colorPicker"
+          transfer-class-name="color-picker-transfer-class"
+          @on-change="
             val => {
-              if (val) {
-                setConfigValue('yAxis', {
-                  label: {
-                    autoHide: true,
-                    autoEllipsis: true
-                  },
-                  title: { text: '' }
-                });
-              } else {
-                setConfigValue('yAxis', val);
-              }
+              setConfigValue('color.range', val);
             }
           "
-        ></TsFormSwitch>
-      </div>
-    </div>
-    <div v-if="config.yAxis" class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.yaxistitle') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormInput
-          :value="config.yAxis.title && config.yAxis.title.text"
-          border="border"
-          @change="
+        />
+        <div class="text-grey">{{ $t('term.dashboard.frontend') }}</div>
+        <ColorPicker
+          :value="config.color && config.color.measure"
+          :transfer="true"
+          alpha
+          recommend
+          class="colorPicker"
+          transfer-class-name="color-picker-transfer-class"
+          @on-change="
             val => {
-              setConfigValue('yAxis.title.text', val);
+              setConfigValue('color.measure', val);
             }
           "
-        ></TsFormInput>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.xaxisshow') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormSwitch
-          :value="config.xAxis ? true : false"
-          :true-value="true"
-          :false-value="false"
-          @change="
+        />
+        <div class="text-grey">{{ $t('term.dashboard.target') }}</div>
+        <ColorPicker
+          :value="config.color && config.color.target"
+          :transfer="true"
+          alpha
+          recommend
+          class="colorPicker"
+          transfer-class-name="color-picker-transfer-class"
+          @on-change="
             val => {
-              if (val) {
-                setConfigValue('xAxis', { title: { text: '' } });
-              } else {
-                setConfigValue('xAxis', val);
-              }
+              setConfigValue('color.target', val);
             }
           "
-        ></TsFormSwitch>
+        />
       </div>
-    </div>
-    <div v-if="config.xAxis" class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.xaxistitle') }}</label>
-      <div class="ivu-form-item-content">
-        <TsFormInput
-          :value="config.xAxis.title && config.xAxis.title.text"
-          border="border"
-          @change="
-            val => {
-              setConfigValue('xAxis.title.text', val);
-            }
-          "
-        ></TsFormInput>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.customcolor') }}</label>
-      <div class="ivu-form-item-content">
-        <div class="pl-md pr-md">
-          <div class="text-grey">{{ $t('page.background') }}</div>
-          <ColorPicker
-            :value="config.color && config.color.range"
-            :transfer="true"
-            alpha
-            recommend
-            class="colorPicker"
-            transfer-class-name="color-picker-transfer-class"
-            @on-change="
-              val => {
-                setConfigValue('color.range', val);
-              }
-            "
-          />
-          <div class="text-grey">{{ $t('term.dashboard.frontend') }}</div>
-          <ColorPicker
-            :value="config.color && config.color.measure"
-            :transfer="true"
-            alpha
-            recommend
-            class="colorPicker"
-            transfer-class-name="color-picker-transfer-class"
-            @on-change="
-              val => {
-                setConfigValue('color.measure', val);
-              }
-            "
-          />
-          <div class="text-grey">{{ $t('term.dashboard.target') }}</div>
-          <ColorPicker
-            :value="config.color && config.color.target"
-            :transfer="true"
-            alpha
-            recommend
-            class="colorPicker"
-            transfer-class-name="color-picker-transfer-class"
-            @on-change="
-              val => {
-                setConfigValue('color.target', val);
-              }
-            "
-          />
-        </div>
-
-      </div>
-    </div>
+    </TsFormItem>
   </div>
 </template>
 <script>

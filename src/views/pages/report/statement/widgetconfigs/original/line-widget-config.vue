@@ -128,18 +128,20 @@
       />
     </TsFormItem>
     <TsFormItem label="统计数据字体大小" labelPosition="top">
-      <TsFormSelect
-        :value="config.labelFontSize || 12"
-        :dataList="axisFontSizeList"
-        border="border"
-        transfer
-        @change="
-          val => {
-            setConfigValue('labelFontSize', val || 12);
-            setConfigValue('label.style.fontSize', val || 12);
-          }
-        "
-      ></TsFormSelect>
+      <div class="pl-sm pr-sm">
+        <Slider
+          :value="config.labelFontSize || 12"
+          :min="12"
+          :max="50"
+          :step="1"
+          @on-change="
+            val => {
+              setConfigValue('labelFontSize', val || 12);
+              setConfigValue('label.style.fontSize', val || 12);
+            }
+          "
+        ></Slider>
+      </div>
     </TsFormItem>
     <TsFormItem label="辅助线" labelPosition="top">
       <TsFormSwitch
@@ -154,21 +156,23 @@
       ></TsFormSwitch>
     </TsFormItem>
     <TsFormItem label="坐标轴字体大小" labelPosition="top">
-      <TsFormSelect
-        :value="config.axisFontSize || 12"
-        :dataList="axisFontSizeList"
-        border="border"
-        transfer
-        @change="
-          val => {
-            setConfigValue('axisFontSize', val || defaultFontSize);
-            setConfigValue('xAxis.title.style.fontSize', val || defaultFontSize);
-            setConfigValue('xAxis.label.style.fontSize', val || defaultFontSize);
-            setConfigValue('yAxis.label.style.fontSize', val || defaultFontSize);
-            setConfigValue('yAxis.title.style.fontSize', val || defaultFontSize);
-          }
-        "
-      ></TsFormSelect>
+      <div class="pl-sm pr-sm">
+        <Slider
+          :value="config.axisFontSize || 12"
+          :min="12"
+          :max="50"
+          :step="1"
+          @on-change="
+            val => {
+              setConfigValue('axisFontSize', val || defaultFontSize);
+              setConfigValue('xAxis.title.style.fontSize', val || defaultFontSize);
+              setConfigValue('xAxis.label.style.fontSize', val || defaultFontSize);
+              setConfigValue('yAxis.label.style.fontSize', val || defaultFontSize);
+              setConfigValue('yAxis.title.style.fontSize', val || defaultFontSize);
+            }
+          "
+        ></Slider>
+      </div>
     </TsFormItem>
   </div>
 </template>
@@ -179,8 +183,7 @@ export default {
   components: {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: WidgetBaseConfig,
   props: { config: { type: Object } },
