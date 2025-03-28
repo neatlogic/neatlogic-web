@@ -36,6 +36,15 @@
                 :theadList="theadList"
                 :tbodyList="menuAuthList"
               >
+                <template slot="authority" slot-scope="{ row }">
+                  <div v-for="(item, index) in row.authorityList" :key="index" :class="index != row.authorityList.length - 1 ? 'mb-xs' : ''">
+                    <template v-if="item.displayName">
+                      <span>{{ item.displayName }}</span>
+                      <span class="text-grey">·</span>
+                    </template>
+                    <span v-if="item.name" class="text-grey">{{ item.name }}</span>
+                  </div>
+                </template>
               </TsTable>
             </div>
           </TsContain>
@@ -61,6 +70,7 @@ export default {
       routerConfig: {},
       moduleList: [],
       groupList: [],
+      authList: [],
       tableConfig: {
         currentPage: 1,
         pageSize: 20
@@ -86,6 +96,7 @@ export default {
   beforeMount() {},
   async mounted() {
     await this.searchModule();
+    await this.getAuthList();
     this.updateMenu();
     this.getRouterConfig();
   },
@@ -96,6 +107,22 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getAuthList() {
+      return this.$api.common
+        .getAuthGrouplist()
+        .then(res => {
+          this.authList = [];
+          let { Status, Return } = res || {};
+          let {authGroupList = []} = Return || {};
+          if (Status == 'OK') {
+            authGroupList.forEach((item) => {
+              if (item && item.authVoList && item.authVoList.length > 0) {
+                this.authList.push(...(item.authVoList || []));
+              }
+            });
+          }
+        });
+    },
     updateMenu() {
       // 获取自定义菜单
       this.$store.dispatch('updateMenu');
@@ -135,8 +162,9 @@ export default {
             menuName: item.meta.title,
             menu: item.name,
             moduleName: '',
+            path: item.path,
             module: moduleId,
-            authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
+            authority: item.meta.authority
           }));
         if (menuList.length) {
           routerConfig[moduleId] = menuList;
@@ -145,8 +173,20 @@ export default {
       this.routerConfig = routerConfig;
     },
     getMenuAuthority(moduleId, menu) {
-      let authorityItem = moduleId && this.routerConfig[moduleId] && this.routerConfig[moduleId].find((v) => menu.indexOf(v.menu) != -1);
-      return authorityItem && authorityItem.authority;
+      if (!moduleId || !this.routerConfig[moduleId] || menu === '/') {
+        return '';
+      }
+      let authList = this.routerConfig[moduleId] || [];
+      let findItem = authList.find((v) => {
+        if (menu && v.authority) {
+          if (v.path && menu.indexOf(v.path) != -1) {
+            return v;
+          } else if (v.menu && menu.indexOf(v.menu) != -1) {
+            return v;
+          }
+        }
+      });
+      return findItem ? findItem.authority : '';
     }
   },
   filter: {},
@@ -163,7 +203,8 @@ export default {
                     moduleId: item.moduleId,
                     moduleName: item.moduleName,
                     menuName: n.name,
-                    authority: this.getMenuAuthority(item.moduleId, n.path)
+                    authority: this.getMenuAuthority(item.moduleId, n.path),
+                    authorityList: this.getAuthorityName(this.getMenuAuthority(item.moduleId, n.path))
                   });
                 }
               });
@@ -188,6 +229,19 @@ export default {
         );
       }
       return menuAuthList;
+    },
+    getAuthorityName() {
+      return (authority) => {
+        if (typeof authority !== 'string' && !Array.isArray(authority)) {
+          return [];
+        }
+        const authItems = Array.isArray(authority) ? authority : [authority];
+        return authItems.map(authorityEnName => {
+          const authItem = this.authList.find(v => v.name && authorityEnName && v.name === authorityEnName);
+          let {displayName, name} = authItem || {};
+          return { displayName, name: name || authorityEnName };
+        });
+      };
     }
   },
   watch: {}

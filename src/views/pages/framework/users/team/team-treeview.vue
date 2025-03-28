@@ -24,24 +24,20 @@
       >
         <span class="sub-line"></span>
         <div class="card-item bg-op block-container">
-          <div class="title-block">
-            <i class="tsfont-bar move"></i>
-            <span v-if="cd.name.length > 28" class="text-title overflow" :title="cd.name">
-              {{ cd.name.substr(0, 28) }}...
-            </span>
-
-            <span v-else class="text-title overflow" :title="cd.name">
+          <div class="title-block overflow">
+            <span class="tsfont-bar move"></span>
+            <span
+              v-if="showOpen(cd)"
+              class="cursor ml-xs"
+              :class="cd.isShow ? 'tsfont-drop-down' : 'tsfont-drop-right'"
+              @click="isOpen(cd)"
+            ></span>
+            <span :title="cd.name">
               {{ cd.name }}
             </span>
-            <i
-              v-if="showOpen(cd)"
-              class="text-action"
-              :class="cd.isShow ? 'tsfont-up' : 'tsfont-down'"
-              @click="isOpen(cd)"
-            ></i>
           </div>
           <div class="cuont-block">
-            {{ cd.userCount }}
+            <Badge :count="cd.userCount" type="primary"></Badge>
           </div>
           <div class="btn-list">
             <ul class="action-group">

@@ -27,6 +27,12 @@
       </template>
       <div slot="content">
         <TsTable v-bind="tableConfig" :theadList="theadList">
+          <template v-slot:userCount="{ row }">
+            <Badge :count="row.userCount" type="primary"></Badge>
+          </template>
+          <template v-slot:roleCount="{ row }">
+            <Badge :count="row.roleCount" type="primary"></Badge>
+          </template>
           <template slot="displayName" slot-scope="{ row }">
             <div>
               <span>{{ row.displayName }}</span>

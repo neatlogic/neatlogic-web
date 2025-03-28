@@ -474,8 +474,9 @@ export default {
             } else {
               if (!this.$utils.isEmpty(this.executeConfig.roundCount)) {
                 this.roundCount = this.executeConfig.roundCount;
-                this.$set(this.roundCountForm, 'disabled', true);
-                this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
+                //组合工具设置了分批数，创建作业时支持修改
+                // this.$set(this.roundCountForm, 'disabled', true);
+                // this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
               }
               if (this.executeConfig.whenToSpecify == 'runtime') {
                 this.$set(this.executeConfig, 'executeNodeConfig', {});

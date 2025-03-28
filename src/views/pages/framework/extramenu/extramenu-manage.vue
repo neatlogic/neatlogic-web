@@ -43,6 +43,15 @@
               v-bind="tableConfig"
               :theadList="theadList"
             >
+              <template slot="authority" slot-scope="{ row }">
+                <div v-for="(item, index) in row.authorityList" :key="index" :class="index != row.authorityList.length - 1 ? 'mb-xs' : ''">
+                  <template v-if="item.displayName">
+                    <span>{{ item.displayName }}</span>
+                    <span class="text-grey">·</span>
+                  </template>
+                  <span v-if="item.name" class="text-grey">{{ item.name }}</span>
+                </div>
+              </template>
             </TsTable>
           </div>
           <template v-else>
@@ -162,17 +171,19 @@ export default {
       isMenu: 0, //0(目录)/1(菜单)
       catalogName: this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') }),
       parentId: null,
-      selectSaveId: null //是否存在，判断是否是新建
+      selectSaveId: null, //是否存在，判断是否是新建
+      authList: [] // 权限列表，用于根据权限名称去获取英文名
     };
   },
   beforeCreate() {},
   created() {
-    this.init(true);
-    this.updateMenu();
     this.routerAuth = this.handleRouterAuth();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.init(true);
+    this.updateMenu();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -182,6 +193,7 @@ export default {
   methods: {
     async init(isFirst) {
       try {
+        await this.getAuthList();
         await this.getTreeList(isFirst);
       } catch (error) {
         console.error(error);
@@ -191,6 +203,22 @@ export default {
         return;
       }
       this.getMenuTreeNode();
+    },
+    getAuthList() {
+      return this.$api.common
+        .getAuthGrouplist()
+        .then(res => {
+          this.authList = [];
+          let { Status, Return } = res || {};
+          let {authGroupList = []} = Return || {};
+          if (Status == 'OK') {
+            authGroupList.forEach((item) => {
+              if (item && item.authVoList && item.authVoList.length > 0) {
+                this.authList.push(...(item.authVoList || []));
+              }
+            });
+          }
+        });
     },
     getTreeList(isFirst) {
       return this.$api.framework.extramenu.getMenuTreeList().then(res => {
@@ -267,8 +295,20 @@ export default {
       }
     },
     getMenuAuthority(moduleId, menu) {
-      let authorityItem = moduleId && this.routerAuth[moduleId] && this.routerAuth[moduleId].find((v) => menu.indexOf(v.name) != -1);
-      return authorityItem && authorityItem.authority;
+      if (!moduleId || !this.routerAuth[moduleId] || menu === '/') {
+        return '';
+      }
+      let authList = this.routerAuth[moduleId] || [];
+      let findItem = authList.find((v) => {
+        if (menu && v.authority) {
+          if (v.path && menu.indexOf(v.path) != -1) {
+            return v;
+          } else if (v.name && menu.indexOf(v.name) != -1) {
+            return v;
+          }
+        }
+      });
+      return findItem ? findItem.authority : '';
     },
     handleMenuAuth(node) {
       this.menuType = 'innerMenu';
@@ -283,12 +323,14 @@ export default {
         let childrenList = this.flattenArrayWithChildren(this.$utils.deepClone(Array.isArray(node.children) && !this.$utils.isEmpty(node.children) ? node.children : [node]));
         let moduleAuthList = this.routerAuth[node.moduleId] && this.routerAuth[node.moduleId] || []; // 获取点击的模块菜单权限
         childrenList.forEach((item) => {
-          let findItem = moduleAuthList.find((v) => item.id.indexOf(v.name) > 0);
+          let findItem = moduleAuthList.find((v) => (item.id.indexOf(v.path) != -1) || item.id.indexOf(v.name) > 0);
           if (findItem) {
+            let {authority = ''} = findItem || {};
             this.tableConfig.tbodyList.push({
               menuName: item.name,
               moduleName: node.moduleName,
-              authority: findItem.authority
+              authority: authority,
+              authorityList: this.getAuthorityName(authority)
             });
           }
         });
@@ -443,7 +485,7 @@ export default {
             title: item.meta.title,
             name: item.name,
             path: item.path,
-            authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : (typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '')) : ''
+            authority: item.meta.authority
           }));
         if (menuList.length) {
           routerConfig[moduleId] = menuList;
@@ -476,7 +518,8 @@ export default {
                     moduleId: item.moduleId,
                     moduleName: item.moduleName,
                     menuName: n.name,
-                    authority: this.getMenuAuthority(item.moduleId, n.path)
+                    authority: this.getMenuAuthority(item.moduleId, n.path),
+                    authorityList: this.getAuthorityName(this.getMenuAuthority(item.moduleId, n.path))
                   });
                 }
               });
@@ -506,6 +549,19 @@ export default {
           ]
         }
       ];
+    },
+    getAuthorityName() {
+      return (authority) => {
+        if (typeof authority !== 'string' && !Array.isArray(authority)) {
+          return [];
+        }
+        const authItems = Array.isArray(authority) ? authority : [authority];
+        return authItems.map(authorityEnName => {
+          const authItem = this.authList.find(v => v.name && authorityEnName && v.name === authorityEnName);
+          let {displayName, name} = authItem || {};
+          return { displayName, name: name || authorityEnName };
+        });
+      };
     }
   },
   watch: {}

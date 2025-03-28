@@ -32,12 +32,11 @@
           }"
         ></TsCkeditor>
       </div>
-      <div
+      <TsCkeditor
         v-else
-        v-imgViewer
-        class="content"
-        v-html="issueData.content"
-      ></div>
+        :readonly="true"
+        :value="issueData.content"
+      ></TsCkeditor>
     </div>
     <div v-if="editMode === 'edit' && !autoSave" class="mt-md" style="text-align: right">
       <Button class="mr-md" type="primary" @click="saveIssue()">{{ $t('page.confirm') }}</Button>
@@ -47,10 +46,9 @@
 </template>
 <script>
 import * as handlers from './index.js';
-import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
   name: '',
-  directives: { imgViewer },
+  directives: {},
   components: {
     ...handlers,
     TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue')
@@ -136,11 +134,5 @@ export default {
 }
 /deep/ ul {
   padding-left: revert;
-}
-</style>
-<style lang="less">
-.content img {
-  // width: 100%; // 在非编辑模式下，图片被放大变形问题
-  cursor: pointer;
 }
 </style>
