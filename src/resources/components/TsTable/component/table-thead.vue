@@ -207,12 +207,23 @@ export default {
 
             const finalLeft = parseInt(resizeProxy.style.left, 10);
             const columnWidth = finalLeft - startColumnLeft;
-
             const _column = table.colsList.find(item => item.key === column.key + 'Width');
+            const oldWidth = startLeft - startColumnLeft;
             if (_column) {
               this.$set(_column, 'width', columnWidth);
+              const tableWidth = table.$refs.tstable.getBoundingClientRect().width;
+              let width = 0;
+              table.colsList.forEach(item => {
+                if (item.width) {
+                  width += item.width;
+                }
+              });
+              if (width < tableWidth) {
+                width = tableWidth + (_column.width - oldWidth);
+              }
+              this.$set(table, 'totalWidth', width);
             }
-            table.$emit('on-column-width-resize', _column.width, startLeft - startColumnLeft, column, event);
+            table.$emit('on-column-width-resize', _column.width, oldWidth, column, event);
             this.dragging = false;
             this.draggingColumn = null;
             this.dragState = {};

@@ -293,7 +293,7 @@
           </div>
         </div>
       </Poptip>
-      <div v-show="showResizeLine" ref="resizeLine" class="ivu-table-resize-line"></div>
+      <div v-show="showResizeLine" ref="resizeLine" class="table-resize-line border-color-primary"></div>
     </div>
     <div v-if="isBigDataPage" ref="tablepage" class="tstable-page text-right">
       <!-- 大数据模式显示分页数据 -->
@@ -607,7 +607,8 @@ export default {
       resizeEvent: null,
       visible: false, //控制表头排序是否显示的poptip是否显示
       tableRowStyle: GLOBAL_TABLESTRYLE || (process.env && process.env.VUE_APP_TABLESTRYLE),
-      showResizeLine: false
+      showResizeLine: false,
+      totalWidth: 0 //canResize时，计算总宽
     };
   },
   beforeCreate() {},
@@ -1192,9 +1193,13 @@ export default {
       return styles;
     },
     setLayout() {
-      return {
+      let style = {
         'table-layout': this.layout || ''
       };
+      if (this.canResize && this.totalWidth) {
+        style.width = this.totalWidth + 'px';
+      }
+      return style;
     },
     colsList() {
       const columnList = this.columnList; 
@@ -1430,5 +1435,13 @@ export default {
       vertical-align: baseline !important;
     }
   }
+}
+.table-resize-line{
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  border-right: 1px solid;
 }
 </style>
