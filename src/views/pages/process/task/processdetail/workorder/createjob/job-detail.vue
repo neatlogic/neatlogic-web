@@ -143,13 +143,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.more-btn {
-  position: absolute;
-  right: 8px;
-  top: 0px;
-}
-.td-div {
-  word-break:break-all;
-  white-space:break-spaces
-}
 </style>
