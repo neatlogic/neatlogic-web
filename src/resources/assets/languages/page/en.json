@@ -1061,5 +1061,6 @@
   "movetothebottom": "Move to the bottom layer",
   "pastehere": "Paste here",
   "dragthecanvas": "Drag and drop canvas",
-  "rubberband": "Frame Select"
+  "rubberband": "Frame Select",
+  "actualpath": "actual path"
 }
