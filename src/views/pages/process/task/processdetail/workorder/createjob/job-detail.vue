@@ -1,13 +1,24 @@
 <template>
   <div v-if="handlerStepInfo">
-    <Alert v-if="!$utils.isEmpty(handlerStepInfo.errorList)" type="error">
-      <template slot="desc">
-        <div v-for="(e,eindex) in handlerStepInfo.errorList" :key="eindex" class="text-word-break">
-          {{ $t('term.autoexec.targetjoberror',{target: e.jobName}) }}：{{ e.error.length > 500 && !e.isMore? e.error.slice(0,500) : e.error }}
-          <span v-if="e.error.length > 500" class="text-href pl-sm" @click="viewDetail(e)">{{ !e.isMore?$t('page.viewmore'):$t('page.packup') }}</span>
-        </div>
-      </template>
-    </Alert>
+    <div v-if="!$utils.isEmpty(handlerStepInfo.errorList)" type="error">
+      <!-- <div v-for="(e,eindex) in handlerStepInfo.errorList" :key="eindex"> -->
+      <TsTable
+        :theadList="columnList"
+        :tbodyList="handlerStepInfo.errorList"
+      >
+        <template slot="status" slot-scope="{ row }">
+          <div class="text-error">{{ row.status || $t('page.fail') }}</div>
+        </template>
+        <template slot="action" slot-scope="{ row }">
+          <div class="tstable-action">
+            <ul class="tstable-action-ul">
+              <li class="tsfont-eye" @click="viewError(row)">{{ $t('page.viewtarget',{'target':$t('page.exception')}) }}</li>
+            </ul>
+          </div>
+        </template>
+      </TsTable>
+      <!-- </div> -->
+    </div>
     <TsTable
       v-if="handlerStepInfo.jobList && handlerStepInfo.jobList.length > 0"
       :theadList="theadList"
@@ -73,7 +84,26 @@ export default {
           title: this.$t('term.autoexec.executionsituation'),
           key: 'completionRate'
         }
-      ]
+      ],
+      columnList: [
+        {
+          key: 'jobName',
+          title: this.$t('page.jobname')
+        },
+        {
+          title: this.$t('page.status'),
+          key: 'status'
+        },
+        {
+          key: 'message',
+          title: this.$t('term.framework.errorinfo'),
+          maxLength: 50
+        },
+        {
+          key: 'action'
+        }
+      ],
+      isMore: false
     };
   },
   beforeCreate() {},
@@ -90,8 +120,14 @@ export default {
     gotoJopDetail(job) { //查看作业
       window.open(HOME + '/autoexec.html#/job-detail?id=' + job.id, '_blank');
     },
-    viewDetail(e) {
-      this.$set(e, 'isMore', !e.isMore);
+    viewError(row) {
+      this.$createDialog({
+        title: this.$t('term.framework.errorinfo'),
+        content: row.message,
+        width: 'medium',
+        hasFooter: false,
+        maskClose: true
+      });
     }
   },
   filter: {},
@@ -108,5 +144,14 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.more-btn {
+  position: absolute;
+  right: 8px;
+  top: 0px;
+}
+.td-div {
+  word-break:break-all;
+  white-space:break-spaces
+}
 </style>
