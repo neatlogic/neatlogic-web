@@ -1234,7 +1234,17 @@ export default {
     theadList: {
       handler(val, oldval) {
         let alllist = val;
-        this.thList = alllist;
+        if (this.canResize) {
+          this.thList = alllist.map(item => {
+            const _column = this.colsList.find(c => c.key === item.key + 'Width');
+            return {
+              ...item,
+              width: _column && _column.width ? _column.width : item.width
+            };
+          });
+        } else {
+          this.thList = alllist;
+        }
         let isMultiple = this.multiple;
         if (val && val.length) {
           let canSelect = val.find(t => {
