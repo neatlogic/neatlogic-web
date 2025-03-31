@@ -11,6 +11,7 @@
       <th
         v-for="(hitem, hindex) in list"
         :key="hindex"
+        :data-key="hitem.key"
         :class="[`th-${hitem.key}`, getReadonlyTheadBgClass, hitem.className]"
         :style="setTh()"
       >
@@ -212,6 +213,15 @@ export default {
             if (_column) {
               this.$set(_column, 'width', columnWidth);
               const tableWidth = table.$refs.tstable.getBoundingClientRect().width;
+              const headers = table.$refs.tstable.querySelectorAll('th');
+              headers.forEach((th, index) => {
+                // 获取每个表头单元格的宽度
+                const width = th.offsetWidth;
+                let findTh = table.colsList.find(c => c.key.includes(th.dataset['key']));
+                if (findTh && !findTh.width) {
+                  this.$set(findTh, 'width', width);
+                }
+              });
               let width = 0;
               table.colsList.forEach(item => {
                 if (item.width) {
