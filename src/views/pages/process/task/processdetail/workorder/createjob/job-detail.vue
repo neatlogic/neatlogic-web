@@ -1,7 +1,6 @@
 <template>
   <div v-if="handlerStepInfo">
     <div v-if="!$utils.isEmpty(handlerStepInfo.errorList)" type="error">
-      <!-- <div v-for="(e,eindex) in handlerStepInfo.errorList" :key="eindex"> -->
       <TsTable
         :theadList="columnList"
         :tbodyList="handlerStepInfo.errorList"
@@ -17,7 +16,6 @@
           </div>
         </template>
       </TsTable>
-      <!-- </div> -->
     </div>
     <TsTable
       v-if="handlerStepInfo.jobList && handlerStepInfo.jobList.length > 0"
