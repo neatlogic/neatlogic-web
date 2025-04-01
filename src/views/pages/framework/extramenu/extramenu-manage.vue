@@ -448,16 +448,14 @@ export default {
             menuType: 'innerMenu',
             moduleId: moduleId,
             moduleName: moduleName,
-            children: item.menuList.map((v) => {
-              return {
-                id: `${moduleId}_${v.path}`,
-                name: v.name,
-                menuType: 'innerMenu',
-                isMenu: true,
-                moduleId: moduleId,
-                moduleName: moduleName
-              };
-            }
+            children: item.menuList.map((v) => ({
+              id: `${moduleId}_${v.path}`,
+              name: v.name,
+              menuType: 'innerMenu',
+              isMenu: true,
+              moduleId: moduleId,
+              moduleName: moduleName
+            })
             )
           });
         }
