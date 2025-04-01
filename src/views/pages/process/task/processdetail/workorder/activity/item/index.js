@@ -20,6 +20,7 @@ import eventinfoHandler from './list-handler';
 import focususerHandler from './focususer-handler';
 import automaticinfoHandler from './automaticinfo-handler';
 import cmdbsyncmessageHandler from './cmdbsyncmessage-handler';
+import autoexecmessageHandler from './autoexecmessage-handler';
 import ComponentManager from '@/resources/import/component-manager.js';
 
 export default {
@@ -44,5 +45,6 @@ export default {
   focususerHandler, //修改工单关注人
   automaticinfoHandler,
   cmdbsyncmessageHandler,
+  autoexecmessageHandler,
   ...(ComponentManager.getTimeLineComponent() || {})
 };
