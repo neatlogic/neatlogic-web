@@ -5,12 +5,12 @@
         <span v-if="$hasBack()" class="text-action tsfont-left" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <div class="action-group">
+        <!--<div class="action-group">
           <span class="action-item">
             <i-switch v-model="isTopoShow" :true-value="true" :false-value="false"></i-switch>
             <span class="actionText" style="padding-left: 4px" v-html="isTopoShow ? '隐藏拓扑' : '显示拓扑'"></span>
           </span>
-        </div>
+        </div>-->
       </template>
       <template v-slot:sider>
         <ViewCiEntityList :viewId="viewId" :ciEntityId="ciEntityId"></ViewCiEntityList>
