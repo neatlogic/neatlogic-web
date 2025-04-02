@@ -5,6 +5,7 @@
         <div class="action-group">
           <span v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item tsfont-plus" @click="addApp()">{{ $t('page.apply') }}</span>
           <span v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item tsfont-plus" @click="addAppModule()">{{ $t('page.module') }}</span>
+          <span class="action-item tsfont-plus" @click="addSettingDialog()">{{ $t('page.setting') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
@@ -31,6 +32,7 @@
           <TabPane :label="$t('term.inspect.assetlist')" name="assetsList">
             <AssetsManage
               v-if="tabValue == 'assetsList'"
+              ref="assetsManage"
               class="assets-manage-box"
               :appSystemId="appSystemId"
               :appModuleId="appModuleId"
@@ -70,6 +72,7 @@
       :ciEntityId="deleteCiEntityId"
       @close="closeDeleteDialog"
     ></DeleteCiEntityDialog>
+    <CiAttrSettingDialog v-if="isSettingDialogShow" @close="closeSettingDialog"></CiAttrSettingDialog>
   </div>
 </template>
 <script>
@@ -82,7 +85,8 @@ export default {
     AppModuleEditDialog: () => import('./appmodule-edit-dialog.vue'),
     DeleteCiEntityDialog: () => import('../cientity/cientity-delete-dialog.vue'),
     AssetsManage: () => import('./assets-manage'), // 资产清单
-    AppModuleTree: () => import('./app-module-tree') // 应用模块树
+    AppModuleTree: () => import('./app-module-tree'), // 应用模块树
+    CiAttrSettingDialog: () => import('./ci-attr-setting-dialog.vue')
   },
   props: {},
   data() {
@@ -101,7 +105,9 @@ export default {
       selectedApp: null,
       selectedModule: null,
       appModueData: {},
-      ciEntityData: {} // 添加模块时，用于锁定应用
+      ciEntityData: {}, // 添加模块时，用于锁定应用
+      isSettingDialogShow: false 
+
     };
   },
   beforeCreate() {},
@@ -220,6 +226,17 @@ export default {
             });
             this.ciEntityData = { uuid: this.$utils.setUuid(), relEntityData: relEntityData };
           });
+      }
+    },
+    addSettingDialog() {
+      this.isSettingDialogShow = true;
+    },
+    closeSettingDialog(needRefresh) {
+      this.isSettingDialogShow = false;
+      if (needRefresh) {
+        if (this.tabValue === 'assetsList') {
+          this.$refs.assetsManage.initData();
+        }
       }
     }
   },

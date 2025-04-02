@@ -151,9 +151,9 @@ export default {
     AppModuleEditDialog: () => import('@/views/pages/cmdb/application/appmodule-edit-dialog.vue'),
     DeleteCiEntityDialog: () => import('@/views/pages/cmdb/cientity/cientity-delete-dialog.vue'),
     InspectionScheduleDialog: () => import('./inspection-schedule-dialog.vue'),
-    InspectionAssetsManage: () => import('@/views/pages/inspect/application/inspection-assets-manage'), // 资产清单
     AppModuleTree: () => import('@/views/pages/cmdb/application/app-module-tree'), // 应用模块树
     LatestQuestionsManage: () => import('./latest-questions-manage'), // 最新问题
+    InspectionAssetsManage: () => import('./inspection-assets-manage'), // 资产清单
     BatchSystemInspectionDialog: () => import('./batch-system-inspection-dialog'), // 批量应用巡检
     BatchModuleInspectionDialog: () => import('./batch-module-inspection-dialog') // 批量模块巡检
   },

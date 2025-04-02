@@ -1,7 +1,9 @@
 <template>
   <div>
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template v-slot:topLeft>
+        <span class="text-action tsfont-plus" @click="addData()">{{ $t('term.cmdb.view') }}</span>
       </template>
       <template v-slot:topRight>
         <InputSearcher v-model="keyword"></InputSearcher>
@@ -27,6 +29,8 @@
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
+                <li v-if="row.isMultiple" class="tsfont-copy" @click="copyEntity(row)">{{ $t('page.copy') }}</li>
+                <li v-if="row.isMultiple" class="tsfont-trash-o" @click="deleteEntity(row)">{{ $t('page.delete') }}</li>
                 <li class="tsfont-circulation-s" @click="viewData(1, 10, row.name)">{{ $t('page.viewdata') }}</li>
               </ul>
             </div>
@@ -34,7 +38,12 @@
         </TsTable>
       </template>
     </TsContain>
-    <ResourceEditDialog v-if="isEditShow" :name="currentEntityName" @close="closeEntityDialog"></ResourceEditDialog>
+    <ResourceEditDialog
+      v-if="isEditShow"
+      :name="currentEntityName"
+      :isCopy="isCopy"
+      @close="closeEntityDialog"
+    ></ResourceEditDialog>
     <TsDialog
       v-bind="dialogConfig"
       @on-close="close"
@@ -59,6 +68,7 @@ export default {
   props: {},
   data() {
     return {
+      loadingShow: true,
       keyword: '',
       currentEntityId: null,
       isEditShow: false,
@@ -68,6 +78,7 @@ export default {
           title: this.$t('term.cmdb.view')
         },
         { key: 'label', title: this.$t('page.name') },
+        { key: 'moduleName', title: this.$t('term.framework.belongmodule') },
         { key: 'status', title: this.$t('page.status') },
         { key: 'initTime', title: this.$t('page.inittime'), type: 'time' },
         { key: 'description', title: this.$t('page.description') },
@@ -89,7 +100,8 @@ export default {
         currentPage: 1,
         pageSize: 10,
         name: ''
-      }
+      },
+      isCopy: false
     };
   },
   beforeCreate() {},
@@ -110,8 +122,11 @@ export default {
       this.isEditShow = true;
     },
     getResourceEntityList() {
+      this.loadingShow = true;
       this.$api.cmdb.resourceentity.searchResourceEntity().then(res => {
         this.tbodyList = res.Return;
+      }).finally(() => {
+        this.loadingShow = false;
       });
     },
     viewData(currentPage, pageSize, name) {
@@ -138,9 +153,35 @@ export default {
     },
     closeEntityDialog(needRefresh) {
       this.isEditShow = false;
+      this.isCopy = false;
       if (needRefresh) {
         this.getResourceEntityList();
       }
+    },
+    addData() {
+      this.currentEntityName = '';
+      this.isEditShow = true; 
+    },
+    copyEntity(row) {
+      this.currentEntityName = row.name;
+      this.isCopy = true;
+      this.isEditShow = true;
+    },
+    deleteEntity(row) {
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deletetargetconfirm', {'target': row.name}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.$api.cmdb.resourceentity.deleteResourceentityData({name: row.name}).then(res => {
+            if (res.Status == 'OK') {
+              vnode.isShow = false;
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.getResourceEntityList();
+            }
+          });
+        }
+      });
     }
   },
   filter: {},

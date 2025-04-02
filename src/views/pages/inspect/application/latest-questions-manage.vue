@@ -37,12 +37,11 @@
     </div>
     <div v-if="tableList && tableList.length > 0 ">
       <div v-for="(item, tIndex) in tableList" :key="tIndex">
-        <div class="h3 padding-sm">{{ item.type.label }}</div>
+        <div class="h3 padding-sm">{{ item.viewLabel }}</div>
         <div>
           <TsTable
             v-if="!loadingShow"
             v-bind="filterTypeFields(item)"
-            :theadList="theadList"
             :fixedHeader="false"
             keyName="id"
             canExpand
@@ -52,15 +51,30 @@
           >
             <template v-slot:ip="{ row }">
               <span class="text-href" @click.stop="toAssetsDetail(row)">
-                <span>{{ row.ip }}</span>
-                <span v-if="row.port">:{{ row.port }}</span>
+                <span>{{ row.ip.ip }}</span>
+                <span v-if="row.ip.port">:{{ row.ip.port }}</span>
               </span>
             </template>
-            <template v-slot:monitorTime="{ row }">
+            <template v-slot:allIpList="{ row }">
+              <div v-if="!$utils.isEmpty(row.allIpList)">
+                <Tag
+                  v-for="(v, vindex) in row.allIpList"
+                  :key="vindex"
+                  class="cursor-pointer"
+                  @click.native="toCientityView(v)"
+                >
+                  {{ v.name }}
+                </Tag>
+              </div>
+              <div v-else></div>
+            </template>
+            <template v-slot:monitor="{ row }">
               <!-- 监控状态 -->
-              <span v-if="row.monitorStatusJson && row.monitorTime" :title="row.monitorTime | formatDate">
-                <span :class="[row.monitorStatusJson.cssClass, { 'background-FATAL': row.monitorStatusJson.value == 'FATAL' }]" class="mr-xs cursor">{{ row.monitorStatusJson.text }}</span>
-                <span class="text-title">{{ handleTime(row.monitorTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}{{ $t('page.before') }}</span>
+              <span v-if="row.monitor && row.monitor.time" :title="row.monitor.time | formatDate">
+                <span :class="[row.monitor.cssClass, {'background-FATAL': row.monitor.value== 'FATAL'}]" class="vertical">{{ row.monitor.text }} </span>
+                <span class="text-title">
+                  {{ handleTime(row.monitor.time) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
+                </span>
               </span>
               <span v-else>
                 <span>-</span>
@@ -68,37 +82,141 @@
             </template>
             <template v-slot:taskStatus="{ row }">
               <CommonStatus
-                v-if="row.jobPhaseNodeVo"
-                :statusName="row.jobPhaseNodeVo.statusName"
-                :statusValue="row.jobPhaseNodeVo.status"
+                v-if="row.taskStatus"
+                :statusName="row.taskStatus.text"
+                :statusValue="row.taskStatus.value"
                 type="text"
               ></CommonStatus>
               <span v-else>-</span>
             </template>
-            <template v-slot:inspectTime="{ row }">
+            <template v-slot:inspect="{ row }">
               <!-- 巡检状态 -->
-              <span v-if="row.inspectStatusJson && row.inspectTime" :title="row.inspectTime | formatDate">
-                <span :class="[row.inspectStatusJson.cssClass, { 'background-FATAL': row.inspectStatusJson.value == 'FATAL' }]" class="mr-xs cursor" @click.stop="toAssetsDetail(row)">{{ row.inspectStatusJson.text }}</span>
-                <span class="text-title">{{ handleTime(row.inspectTime) | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'minute' }) }}{{ $t('page.before') }}</span>
+              <span v-if="row.inspect && row.inspect.time" :title="row.inspect.time | formatDate">
+                <span :class="[row.inspect.cssClass, {'background-FATAL': row.inspect.value== 'FATAL'}]" class="vertical cursor" @click="toAssetsDetail(row)">{{ row.inspect.text }} </span>
+                <span class="text-title">
+                  {{ handleTime(row.inspect.time) | formatTimeCost({unitNumber: 1, language: 'zh',unit: 'minute'}) }} {{ $t('page.before') }}
+                </span>
               </span>
               <span v-else>
                 <span>-</span>
               </span>
             </template>
+            <template v-slot:lcu="{row}">
+              <UserCard v-bind="row.lcu" :hideAvatar="true"></UserCard>
+            </template>
+            <template v-slot:lcd="{ row }">
+              <div v-if="row.lcd">{{ row.lcd | formatDate }}</div>
+            </template>
+            <template v-slot:fcu="{ row }">
+              <UserCard v-bind="row.fcu" :hideAvatar="true"></UserCard>
+            </template>
+            <template v-slot:fcd="{ row }">
+              <div v-if="row.fcd">{{ row.fcd | formatDate }}</div>
+            </template>
+            
+            <template v-slot:vendor="{ row }">
+              <!-- 厂商 -->
+              <Tag
+                v-if="!$utils.isEmpty(row.vendor)"
+                class="cursor-pointer"
+                @click.native="toCientityView(row.vendor)"
+              >
+                {{ row.vendor.name }}
+              </Tag>
+              <span v-else></span>
+            </template>
+            <template v-slot:appSystem="{row}">
+              <!-- 应用系统 -->
+              <div v-if="!$utils.isEmpty(row.appSystem)" class="text-href" @click="toCientityView(row.appSystem)">
+                <span :class="row.appSystem.ciIcon"></span>
+                <span>{{ row.appSystem.name }}</span>
+              </div>
+            </template>
+            <template v-slot:appModule="{ row }">
+              <!-- 应用模块 -->
+              <div v-if="!$utils.isEmpty(row.appModule)" class="text-href" @click="toCientityView(row.appModule)">
+                <span :class="row.appModule.ciIcon"></span>
+                <span>{{ row.appModule.name }}</span>
+              </div>
+            </template>
+            <template v-slot:appEnvironment="{ row }">
+              <!-- 环境 -->
+              <Tag
+                v-if="!$utils.isEmpty(row.appEnvironment)"
+                class="cursor-pointer"
+                @click.native="toGlobalAttrManage()"
+              >
+                {{ row.appEnvironment.value }}
+              </Tag>
+            </template>
+            <template v-slot:state="{row}">
+              <!-- 资产状态 -->
+              <Tag
+                v-if="!$utils.isEmpty(row.state)"
+                class="cursor-pointer"
+                @click.native="toCientityView(row.state)"
+              >
+                {{ row.state.name }}
+              </Tag>
+            </template>
+            <template v-slot:ownerList="{ row }">
+              <div v-if="!$utils.isEmpty(row.ownerList)">
+                <Tag
+                  v-for="(o, oindex) in row.ownerList"
+                  :key="oindex"
+                  class="cursor-pointer"
+                  @click.native="toCientityView(o);"
+                >
+                  {{ o.name }}
+                </Tag>
+              </div>
+              <div v-else></div>
+            </template>
+            <template v-slot:businessGroupList="{ row }">
+              <div v-if="!$utils.isEmpty(row.businessGroupList)">
+                <Tag
+                  v-for="(b, bindex) in row.businessGroupList"
+                  :key="bindex"
+                  class="cursor-pointer"
+                  @click.native="toCientityView(b)"
+                >
+                  {{ b.name }}
+                </Tag>
+              </div>
+              <div v-else></div>
+            </template>
+            <template v-slot:ci="{row}">
+              <!-- 模型 -->
+              <div v-if="!$utils.isEmpty(row.ci)" class="text-href" @click="toCiView(row.ci)">
+                <span :class="row.ci.icon"></span>
+                <span>{{ row.ci.label }}</span>
+              </div>
+            </template>
+            <template v-slot:dataCenter="{ row }">
+              <!-- 数据中心 -->
+              <Tag
+                v-if="!$utils.isEmpty(row.dataCenter)"
+                class="cursor-pointer"
+                @click.native="toCientityView(row.dataCenter)"
+              >
+                {{ row.dataCenter.name }}
+              </Tag>
+              <span v-else></span>
+            </template>
             <template v-slot:expandCollapseArrow="{ row ,index}">
               <span :class="{ 'tsfont-right': !row._expand, 'tsfont-down open': row._expand }" class="table-icon" @click.stop="openInnerTable(row, tIndex, index)"></span>
+            </template>
+            <template v-slot:expand="{ row }">
+              <ExpandTable v-if="row._expand" style="margin-left: 40px;" :inspectResultList="getInnerTbodyList(row.inspectResult)"></ExpandTable>
             </template>
             <template v-slot:action="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
                   <li class="tsfont-setting" @click="openRuleThresholdDialog(row)">{{ $t('term.inspect.thresholdrule') }}</li>
                   <li v-if="row && row.jobPhaseNodeVo && row.jobPhaseNodeVo.jobId" class="tsfont-history" @click="toJobDetail(row)">{{ $t('term.inspect.jobdetail') }}</li>
-                  <li class="tsfont-ci" @click="toCientityView(row)">{{ $t('term.cmdb.viewcientity') }}</li>
+                  <li v-if="row.ip" class="tsfont-ci" @click="toCientityView(row.ip)">{{ $t('term.cmdb.viewcientity') }}</li>
                 </ul>
               </div>
-            </template>
-            <template v-slot:expand="{ row }">
-              <ExpandTable v-if="row._expand" style="margin-left: 40px;" :inspectResultList="getInnerTbodyList(row.inspectResult)"></ExpandTable>
             </template>
           </TsTable>
         </div>
@@ -127,11 +245,12 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
     ExpandTable: () => import('@/views/pages/inspect/recentIssues/component/expand-table.vue'),
     SendEmail: () => import('@/views/pages/inspect/recentIssues/component/send-email.vue'),
-    RuleOfThresholdDialog: () => import('@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue')
+    RuleOfThresholdDialog: () => import('./threshold/rule-of-threshold-dialog.vue')
   },
   directives: { download },
   props: {
@@ -164,75 +283,75 @@ export default {
         pageSize: 20,
         currentPage: 1,
         rowNum: null
-      },
-      theadList: [
-        {
-          title: '',
-          key: 'expandCollapseArrow' // 展开收起箭头
-        },
-        {
-          title: this.$t('page.ipaddress'),
-          key: 'ip'
-        },
-        {
-          title: this.$t('page.type'),
-          key: 'typeLabel'
-        },
-        {
-          title: this.$t('page.name'),
-          key: 'name'
-        },
-        {
-          title: this.$t('term.inspect.monitoringstate'),
-          key: 'monitorTime'
-        },
-        {
-          title: this.$t('term.autoexec.inspectstatus'),
-          key: 'inspectTime'
-        },
-        {
-          title: this.$t('term.inspect.inspectionjobstatus'),
-          key: 'taskStatus'
-        },
-        {
-          title: this.$t('term.inspect.iplist'),
-          key: 'allIp',
-          type: 'tag',
-          valueKey: 'ip'
-        },
-        {
-          title: this.$t('term.autoexec.subordinatedepartment'),
-          key: 'bgList',
-          type: 'tag',
-          valueKey: 'bgName'
-        },
-        {
-          title: this.$t('page.owner'),
-          key: 'ownerList',
-          type: 'usercards'
-        },
-        {
-          title: this.$t('term.autoexec.assetstatus'),
-          key: 'stateName'
-        },
-        {
-          title: this.$t('page.networkarea'),
-          key: 'networkArea'
-        },
-        {
-          title: this.$t('page.tag'),
-          key: 'tagList',
-          type: 'tag'
-        },
-        {
-          title: this.$t('term.deploy.maintenancewindow'),
-          key: 'maintenanceWindow'
-        },
-        {
-          title: '',
-          key: 'action'
-        }
-      ]
+      }
+      // theadList: [
+      //   {
+      //     title: '',
+      //     key: 'expandCollapseArrow' // 展开收起箭头
+      //   },
+      //   {
+      //     title: this.$t('page.ipaddress'),
+      //     key: 'ip'
+      //   },
+      //   {
+      //     title: this.$t('page.type'),
+      //     key: 'typeLabel'
+      //   },
+      //   {
+      //     title: this.$t('page.name'),
+      //     key: 'name'
+      //   },
+      //   {
+      //     title: this.$t('term.inspect.monitoringstate'),
+      //     key: 'monitorTime'
+      //   },
+      //   {
+      //     title: this.$t('term.autoexec.inspectstatus'),
+      //     key: 'inspectTime'
+      //   },
+      //   {
+      //     title: this.$t('term.inspect.inspectionjobstatus'),
+      //     key: 'taskStatus'
+      //   },
+      //   {
+      //     title: this.$t('term.inspect.iplist'),
+      //     key: 'allIp',
+      //     type: 'tag',
+      //     valueKey: 'ip'
+      //   },
+      //   {
+      //     title: this.$t('term.autoexec.subordinatedepartment'),
+      //     key: 'bgList',
+      //     type: 'tag',
+      //     valueKey: 'bgName'
+      //   },
+      //   {
+      //     title: this.$t('page.owner'),
+      //     key: 'ownerList',
+      //     type: 'usercards'
+      //   },
+      //   {
+      //     title: this.$t('term.autoexec.assetstatus'),
+      //     key: 'stateName'
+      //   },
+      //   {
+      //     title: this.$t('page.networkarea'),
+      //     key: 'networkArea'
+      //   },
+      //   {
+      //     title: this.$t('page.tag'),
+      //     key: 'tagList',
+      //     type: 'tag'
+      //   },
+      //   {
+      //     title: this.$t('term.deploy.maintenancewindow'),
+      //     key: 'maintenanceWindow'
+      //   },
+      //   {
+      //     title: '',
+      //     key: 'action'
+      //   }
+      // ]
     };
   },
   beforeCreate() {},
@@ -249,6 +368,7 @@ export default {
   destroyed() {},
   methods: {
     async initData() {
+      this.tableConfig.currentPage = 1;
       await this.getEnvList();
       await this.getInspectStatusList();
       await this.getTableData();
@@ -299,7 +419,7 @@ export default {
       this.$addHistoryData('expandCollapseIdList', this.expandCollapseIdList);
       this.$addHistoryData('envId', this.envId);
       this.loadingShow = true;
-      this.$api.inspect.applicationInspect.getapplicationInspectList(params).then(res => {
+      this.$api.inspect.applicationInspect.getNewapplicationInspectList(params).then(res => {
         if (res.Status == 'OK') {
           if (row && !this.$utils.isEmptyObj(row)) {
             // 内嵌列表翻页
@@ -383,6 +503,7 @@ export default {
     },
     changePageSize(pageSize, item, index) {
       this.tableConfig.pageSize = pageSize;
+      this.tableConfig.currentPage = 1;
       this.getTableData(item, index);
     },
     restoreHistory(historyData) {
@@ -400,6 +521,7 @@ export default {
         }
       });
       this.envId = envId;
+      this.tableConfig.currentPage = 1;
       this.getTableData();
     },
     filterTypeFields(row) {
@@ -407,6 +529,16 @@ export default {
       let currentRow = this.$utils.deepClone(row);
       if (currentRow && currentRow.hasOwnProperty('type')) {
         delete currentRow.type;
+      }
+      if (currentRow && currentRow.hasOwnProperty('theadList')) {
+        currentRow.theadList.unshift({
+          title: '',
+          key: 'expandCollapseArrow' // 展开收起箭头
+        });
+        currentRow.theadList.push({
+          title: '',
+          key: 'action'
+        });
       }
       return currentRow;
     },
@@ -485,17 +617,27 @@ export default {
     },
     toAssetsDetail(row) {
       // 跳转巡检报告页面
-      this.$router.push({
-        path: './assets-detail-' + row.id
-      });
+      window.open(HOME + '/inspect.html#/assets-detail-' + row.id, '_blank');
     },
     toJobDetail(row) {
       // 工作详情
-      this.$router.push({path: '/job-detail?id=' + row.jobPhaseNodeVo.jobId + '&status=' + row.jobPhaseNodeVo.status});
+      if (row && row.jobPhaseNodeVo) {
+        window.open(HOME + '/inspect.html#/job-detail?id=' + row.jobPhaseNodeVo.jobId + '&status=' + row.jobPhaseNodeVo.status, '_blank');
+       
+        // this.$router.push({path: '/job-detail?id=' + row.jobPhaseNodeVo.jobId + '&status=' + row.jobPhaseNodeVo.status});
+      }
     },
     toCientityView(row) {
       // 跳转查看配置项页面
-      this.$router.push({path: '/ci/' + row.typeId + '/cientity-view/' + row.id});
+      if (row && !this.$utils.isEmptyObj(row)) {
+        window.open(HOME + '/inspect.html#/ci/' + row.ciId + '/cientity-view/' + row.id, '_blank');
+      }
+      // this.$router.push({path: '/ci/' + row.typeId + '/cientity-view/' + row.id});
+    },
+    toCiView(ci) {
+      if (ci && !this.$utils.isEmptyObj(ci)) {
+        window.open(HOME + '/cmdb.html#/ci-view/' + ci.id, '_blank');
+      }
     },
     openRuleThresholdDialog(row) {
       if (row && row.id) {
