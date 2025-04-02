@@ -155,11 +155,7 @@
                 "verticalLimitLength": 0.3333333333333333
             },
             "circle": {
-                "title": {
-                    "style": {
-                        "fill": "rgba(241, 241, 241, 1)"
-                    }
-                },
+                "title": null,
                 "grid": {
                     "line": {
                         "type": "line",
@@ -649,6 +645,13 @@
             }
         },
         "autoRotate": true
+    },
+    "StatisticText": {
+        "content": {
+            "style":{
+                "fill": "#fff"
+            }
+        }
     },
     "bottom-axis-subTick-line": false,
     "styleSheet": {

@@ -37,6 +37,7 @@ import { default as heatmap } from './define/heatmap.js';
 import { default as wordcloud } from './define/wordcloud.js';
 import { default as columnline } from './define/columnline.js';
 import { default as time } from './define/time.js';
+import { default as autoexec } from './define/autoexec.js';
 
 export const WIDGETS = [
   text,
@@ -69,5 +70,6 @@ export const WIDGETS = [
   heatmap,
   wordcloud,
   columnline,
-  time
+  time,
+  autoexec
 ];

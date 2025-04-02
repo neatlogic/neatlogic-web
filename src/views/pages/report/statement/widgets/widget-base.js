@@ -28,6 +28,13 @@ export const WidgetBase = {
       //生成随机数据，返回data，由子组件继承
     },
     async getData(isFirstGetData) {
+      if (!this.widget.datasourceId) {
+        if (this.timer) {
+          clearTimeout(this.timer);
+          this.timer = null;
+        }
+        return false;
+      }
       const data = [];
       const params = {
         dataSourceId: this.widget.datasourceId,

@@ -1,106 +1,81 @@
 <template>
   <div class="pb-nm">
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.axis.yaxisshow') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <TsFormSwitch
-          :value="config.yAxis?true:false"
-          :true-value="true"
-          :false-value="false"
-          @change="
+    <TsFormItem :label="$t('term.report.axis.yaxisshow')" labelPosition="top">
+      <TsFormSwitch
+        :value="config.yAxis?true:false"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            if (val) {
+              setConfigValue('yAxis', {
+                label: {
+                  autoHide: true,
+                  autoEllipsis: true
+                },
+                title: { text: '' }
+              });
+            } else {
+              setConfigValue('yAxis', val);
+            }
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.axis.yaxistitle')" labelPosition="top">
+      <TsFormInput
+        :value="config.yAxis.title && config.yAxis.title.text"
+        border="border"
+        @change="
+          val => {
+            setConfigValue('yAxis.title.text', val);
+          }
+        "
+      ></TsFormInput>
+    </TsFormItem>
+    <TsFormItem :label=" $t('term.report.axis.xaxisshow')" labelPosition="top">
+      <TsFormSwitch
+        :value="config.xAxis?true:false"
+        :true-value="true"
+        :false-value="false"
+        @change="
+          val => {
+            if (val) {
+              setConfigValue('xAxis', { title: { text: '' } });
+            } else {
+              setConfigValue('xAxis', val);
+            }
+          }
+        "
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.axis.xaxistitle') " labelPosition="top">
+      <TsFormInput
+        :value="config.xAxis.title && config.xAxis.title.text"
+        border="border"
+        @change="
+          val => {
+            setConfigValue('xAxis.title.text', val);
+          }
+        "
+      ></TsFormInput>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.axis.columnwidth')" labelPosition="top">
+      <div class="pl-md pr-md">
+        <Slider
+          :value="config.barWidthRatio"
+          :min="0.1"
+          :max="0.9"
+          :step="0.1"
+          show-tip="never"
+          @on-change="
             val => {
-              if (val) {
-                setConfigValue('yAxis', {
-                  label: {
-                    autoHide: true,
-                    autoEllipsis: true
-                  },
-                  title: { text: '' }
-                });
-              } else {
-                setConfigValue('yAxis', val);
-              }
+              setConfigValue('barWidthRatio', val);
             }
           "
-        ></TsFormSwitch>
+        ></Slider>
       </div>
-    </div>
-    <div v-if="config.yAxis" class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.axis.yaxistitle') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <TsFormInput
-          :value="config.yAxis.title && config.yAxis.title.text"
-          border="border"
-          @change="
-            val => {
-              setConfigValue('yAxis.title.text', val);
-            }
-          "
-        ></TsFormInput>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.axis.xaxisshow') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <TsFormSwitch
-          :value="config.xAxis?true:false"
-          :true-value="true"
-          :false-value="false"
-          @change="
-            val => {
-              if (val) {
-                setConfigValue('xAxis', { title: { text: '' } });
-              } else {
-                setConfigValue('xAxis', val);
-              }
-            }
-          "
-        ></TsFormSwitch>
-      </div>
-    </div>
-    <div v-if="config.xAxis" class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.axis.xaxistitle') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <TsFormInput
-          :value="config.xAxis.title && config.xAxis.title.text"
-          border="border"
-          @change="
-            val => {
-              setConfigValue('xAxis.title.text', val);
-            }
-          "
-        ></TsFormInput>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.axis.columnwidth') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <div class="pl-md pr-md">
-          <Slider
-            :value="config.barWidthRatio"
-            :min="0.1"
-            :max="0.9"
-            :step="0.1"
-            show-tip="never"
-            @on-change="
-              val => {
-                setConfigValue('barWidthRatio', val);
-              }
-            "
-          ></Slider>
-        </div>
-      </div>
-    </div>
+    </TsFormItem>
     <TsFormItem :label="$t('term.report.customcolor')" labelPosition="top">
       <ColorPicker
         :value="config.color"
@@ -131,18 +106,20 @@
       />
     </TsFormItem>
     <TsFormItem label="统计数据字体大小" labelPosition="top">
-      <TsFormSelect
-        :value="config.labelFontSize || 12"
-        :dataList="axisFontSizeList"
-        border="border"
-        transfer
-        @change="
-          val => {
-            setConfigValue('labelFontSize', val || 12);
-            setConfigValue('label.style.fontSize', val || 12);
-          }
-        "
-      ></TsFormSelect>
+      <div class="pl-sm pr-sm">
+        <Slider
+          :value="config.labelFontSize || 12"
+          :min="12"
+          :max="50"
+          :step="1"
+          @on-change="
+            val => {
+              setConfigValue('labelFontSize', val|| 12);
+              setConfigValue('label.style.fontSize', val || 12);
+            }
+          "
+        ></Slider>
+      </div>
     </TsFormItem>
     <TsFormItem label="辅助线" labelPosition="top">
       <TsFormSwitch
@@ -157,21 +134,23 @@
       ></TsFormSwitch>
     </TsFormItem>
     <TsFormItem label="坐标轴字体大小" labelPosition="top">
-      <TsFormSelect
-        :value="config.axisFontSize || 12"
-        :dataList="axisFontSizeList"
-        border="border"
-        transfer
-        @change="
-          val => {
-            setConfigValue('axisFontSize', val || defaultFontSize);
-            setConfigValue('xAxis.title.style.fontSize', val || defaultFontSize);
-            setConfigValue('xAxis.label.style.fontSize', val || defaultFontSize);
-            setConfigValue('yAxis.label.style.fontSize', val || defaultFontSize);
-            setConfigValue('yAxis.title.style.fontSize', val || defaultFontSize);
-          }
-        "
-      ></TsFormSelect>
+      <div class="pl-sm pr-sm">
+        <Slider
+          :value="config.axisFontSize || 12"
+          :min="12"
+          :max="50"
+          :step="1"
+          @on-change="
+            val => {
+              setConfigValue('axisFontSize', val || defaultFontSize);
+              setConfigValue('xAxis.title.style.fontSize', val || defaultFontSize);
+              setConfigValue('xAxis.label.style.fontSize', val || defaultFontSize);
+              setConfigValue('yAxis.label.style.fontSize', val || defaultFontSize);
+              setConfigValue('yAxis.title.style.fontSize', val || defaultFontSize);
+            }
+          "
+        ></Slider>
+      </div>
     </TsFormItem>
   </div>
 </template>
@@ -182,8 +161,7 @@ export default {
   components: {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: WidgetBaseConfig,
   props: { config: { type: Object } },

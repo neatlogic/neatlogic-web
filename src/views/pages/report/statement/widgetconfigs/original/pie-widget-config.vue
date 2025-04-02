@@ -1,118 +1,90 @@
 <template>
   <div class="pb-nm">
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.innerradius') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <div class="pl-md pr-md">
-          <Slider
-            :value="config.innerRadius"
-            :min="0"
-            :max="0.9"
-            :step="0.1"
-            show-tip="never"
-            @on-change="val => {
-              setConfigValue('innerRadius', val);
-            }"
-          ></Slider>
-        </div>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.axis.showlegend') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <TsFormSwitch
-          :value="config.legend.visible"
-          :true-value="true"
-          :false-value="false"
-          @change="val => {
-            setConfigValue('legend.visible', val);
+    <TsFormItem :label="$t('term.report.innerradius')" labelPosition="top">
+      <div class="pl-sm pr-sm">
+        <Slider
+          :value="config.innerRadius"
+          :min="0"
+          :max="0.9"
+          :step="0.1"
+          show-tip="never"
+          @on-change="val => {
+            setConfigValue('innerRadius', val);
           }"
-        ></TsFormSwitch>
+        ></Slider>
       </div>
-    </div>
-    <div v-if="config.legend.visible" class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.axis.legendlayout') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <TsFormRadio
-          :value="config.legend.layout"
-          :dataList="layoutList"
-          @change="val => {
-            setConfigValue('legend.layout', val);
-          }"
-        ></TsFormRadio>
-      </div>
-    </div>
-    <div v-if="config.legend.visible" class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.axis.legendposition') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <TsFormSelect
-          :value="config.legend.position"
-          :transfer="true"
-          :clearable="false"
-          :dataList="positionList"
-          @change="val => {
-            setConfigValue('legend.position', val);
-          }"
-        ></TsFormSelect>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.datalayout') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <TsFormRadio
-          :value="config.label.type"
-          :dataList="labelTypeList"
-          @change="val => {
-            setConfigValue('label.type', val);
-          }"
-        ></TsFormRadio>
-      </div>
-    </div>
-    <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">
-        {{ $t('term.report.statisticcolor') }}
-      </label>
-      <div class="ivu-form-item-content">
-        <div class="pl-md pr-md">
-          <ColorPicker
-            :value="config.label && config.label.style && config.label.style.fill || ''"
-            :transfer="true"
-            alpha
-            recommend
-            class="colorPicker"
-            transfer-class-name="color-picker-transfer-class"
-            @on-change="
-              val => {
-                setConfigValue('label.style.fill', val || 12);
-              }
-            "
-          />
-        </div>
-      </div>
-    </div>
-    <TsFormItem label="统计数据字体大小" labelPosition="top">
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.axis.showlegend')" labelPosition="top">
+      <TsFormSwitch
+        :value="config.legend.visible"
+        :true-value="true"
+        :false-value="false"
+        @change="val => {
+          setConfigValue('legend.visible', val);
+        }"
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.axis.legendlayout')" labelPosition="top">
+      <TsFormRadio
+        :value="config.legend.layout"
+        :dataList="layoutList"
+        @change="val => {
+          setConfigValue('legend.layout', val);
+        }"
+      ></TsFormRadio>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.axis.legendposition')" labelPosition="top">
       <TsFormSelect
-        :value="config.labelFontSize || 12"
-        :dataList="axisFontSizeList"
-        border="border"
-        transfer
-        @change="
+        :value="config.legend.position"
+        :transfer="true"
+        :clearable="false"
+        :dataList="positionList"
+        @change="val => {
+          setConfigValue('legend.position', val);
+        }"
+      ></TsFormSelect>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.datalayout')" labelPosition="top">
+      <TsFormRadio
+        :value="config.label.type"
+        :dataList="labelTypeList"
+        @change="val => {
+          setConfigValue('label.type', val);
+        }"
+      ></TsFormRadio>
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.statisticcolor')" labelPosition="top">
+      <ColorPicker
+        :value="config.label && config.label.style && config.label.style.fill || ''"
+        :transfer="true"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="
           val => {
-            setConfigValue('labelFontSize', val || 12);
-            setConfigValue('label.style.fontSize', val || 12);
+            setConfigValue('label.style.fill', val || defaultSizeColor);
+            setConfigValue('statistic.title.style.color', val);
+            setConfigValue('statistic.content.style.color', val);
           }
         "
-      ></TsFormSelect>
+      />
+    </TsFormItem>
+    <TsFormItem label="统计数据字体大小" labelPosition="top">
+      <div class="pl-sm pr-sm">
+        <Slider
+          :value="config.labelFontSize || 12"
+          :min="12"
+          :max="50"
+          :step="1"
+          @on-change="
+            val => {
+              setConfigValue('labelFontSize', val|| 12);
+              setConfigValue('label.style.fontSize', val || 12);
+            }
+          "
+        ></Slider>
+      </div>
     </TsFormItem>
   </div>
 </template>

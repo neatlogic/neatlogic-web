@@ -26,3 +26,4 @@ export { default as wordcloudWidgetConfig } from './others/wordcloud-widget-conf
 export { default as pointWidgetConfig } from './others/point-widget-config.vue';
 export { default as customWidgetConfig } from './others/custom-widget-config.vue';
 export { default as timeWidgetConfig } from './others/time-widget-config.vue';
+export { default as autoexecWidgetConfig } from './others/autoexec-widget-config.vue';

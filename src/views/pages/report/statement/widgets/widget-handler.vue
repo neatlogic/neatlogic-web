@@ -103,7 +103,7 @@
       <div v-if="widget.border" class="widget-border">
         <WidgetBorder
           :type="widget.border"
-          :config="widget.borderConfig||getBorderComponentConfigByName(widget.border)"
+          :config="$utils.deepClone(widget.borderConfig)||getBorderComponentConfigByName(widget.border)"
           :style="{
             position:'absolute',
             top:'0px',

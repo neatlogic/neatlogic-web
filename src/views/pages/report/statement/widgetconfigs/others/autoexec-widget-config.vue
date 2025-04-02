@@ -16,17 +16,19 @@
       </div>
     </TsFormItem>
     <TsFormItem :label="$t('page.fontcolor')" labelPosition="top">
-      <ColorPicker
-        :value="config.fontcolor"
-        :transfer="true"
-        recommend
-        format="hex"
-        class="colorPicker"
-        transfer-class-name="color-picker-transfer-class"
-        @on-change="val => {
-          setConfigValue('fontcolor', val);
-        }"
-      />
+      <div>
+        <ColorPicker
+          :value="config.fontcolor"
+          :transfer="true"
+          recommend
+          format="hex"
+          class="colorPicker"
+          transfer-class-name="color-picker-transfer-class"
+          @on-change="val => {
+            setConfigValue('fontcolor', val);
+          }"
+        />
+      </div>
     </TsFormItem>
   </div>
 </template>
@@ -40,7 +42,8 @@ export default {
     config: { type: Object }
   },
   data() {
-    return {};
+    return {
+    };
   },
   beforeCreate() {},
   created() {},

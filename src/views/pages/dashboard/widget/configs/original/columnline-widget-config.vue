@@ -70,20 +70,6 @@ export default {
         { value: 'right-top', text: this.$t('term.report.positions.righttop') },
         { value: 'right', text: this.$t('term.report.positions.right') },
         { value: 'right-bottom', text: this.$t('term.report.positions.rightbottom') }
-      ],
-      axisFontSizeList: [
-        {
-          text: '小',
-          value: 12
-        },
-        {
-          text: '中',
-          value: 16
-        },
-        {
-          text: '大',
-          value: 20
-        }
       ]
     };
   },
