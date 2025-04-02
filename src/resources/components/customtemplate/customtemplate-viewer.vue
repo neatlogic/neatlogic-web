@@ -1,7 +1,8 @@
 <template>
   <div>
     <div v-if="!error" id="div">
-      <CustomtemplateViewer v-if="isReady"></CustomtemplateViewer>
+      <div :is="'CustomtemplateViewer'+ uuid" v-if="isReady"></div>
+      <!-- <CustomtemplateViewer v-if="isReady"></CustomtemplateViewer> -->
     </div>
     <div v-else>{{ error }}</div>
   </div>
@@ -29,6 +30,7 @@ export default {
   },
   data() {
     return {
+      uuid: this.$utils.setUuid(),
       isReady: false,
       error: null,
       templateData: {}
@@ -142,8 +144,8 @@ export default {
           //new Vue()没有定义$t,导致翻译报错
           // const component = new Vue(this.templateData);
           // component.$mount('#div');
-
-          Vue.component('CustomtemplateViewer', {
+          //增加uuid,防止组件名称重复导致之前的模板被替换
+          Vue.component('CustomtemplateViewer' + this.uuid, {
             data() {
               return data;
             },

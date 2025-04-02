@@ -29,5 +29,17 @@ export const BORDER_LIST = [
       delay: 20,
       width: 0
     }
+  },
+  {
+    name: 'gradient',
+    label: '梯形边框',
+    config: {
+      titlefontsize: 13,
+      titlecolor: '#02a6b5',
+      cornersize: 8,
+      width: 2,
+      color: '#02a6b5',
+      cocolor: 'rgba(229,229,229,0.2)'
+    }
   }
 ];

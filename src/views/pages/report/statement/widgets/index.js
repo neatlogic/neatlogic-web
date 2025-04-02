@@ -29,3 +29,4 @@ export { default as mapareawidget } from './geography/maparea-widget.vue';
 export { default as districtwidget } from './geography/district-widget.vue';
 export { default as pointwidget } from './others/point-widget.vue';
 export { default as timewidget } from './others/time-widget.vue';
+export { default as autoexecwidget } from './others/autoexec-widget.vue';

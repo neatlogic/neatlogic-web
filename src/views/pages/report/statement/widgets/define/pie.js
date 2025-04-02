@@ -30,8 +30,7 @@ export default {
         style: { 
           overflow: 'hidden', 
           textOverflow: 'ellipsis', 
-          fontSize: 12, 
-          color: '' 
+          fontSize: 12
         } 
       } 
     } 

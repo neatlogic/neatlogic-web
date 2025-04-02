@@ -86,8 +86,9 @@ export default {
           valueName: 'name',
           textName: 'label',
           dataList: BORDER_LIST,
-          onChange: val => {
+          onChange: (val, item, selectObj) => {
             this.$set(this.currentWidget, 'border', val);
+            this.$set(this.currentWidget, 'borderConfig', selectObj && selectObj.config);
           }
         },
         borderConfig: {

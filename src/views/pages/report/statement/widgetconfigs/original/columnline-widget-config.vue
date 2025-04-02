@@ -45,24 +45,26 @@
       />
     </TsFormItem>
     <TsFormItem label="统计数据字体大小" labelPosition="top">
-      <TsFormSelect
-        :value="config.labelFontSize || 12"
-        :dataList="axisFontSizeList"
-        border="border"
-        transfer
-        @change="
-          val => {
-            if(!config.geometryOptions[0].label.style){
-              $set(config.geometryOptions[0].label, 'style', {});
+      <div class="pl-sm pr-sm">
+        <Slider
+          :value="config.labelFontSize || 12"
+          :min="12"
+          :max="50"
+          :step="1"
+          @on-change="
+            val => {
+              if(!config.geometryOptions[0].label.style){
+                $set(config.geometryOptions[0].label, 'style', {});
+              }
+              if(!config.geometryOptions[1].label.style){
+                $set(config.geometryOptions[1].label, 'style', {});
+              }
+              $set(config.geometryOptions[0].label.style, 'fontSize', val || 12);
+              $set(config.geometryOptions[1].label.style, 'fontSize', val || 12)
             }
-            if(!config.geometryOptions[1].label.style){
-              $set(config.geometryOptions[1].label, 'style', {});
-            }
-            $set(config.geometryOptions[0].label.style, 'fontSize', val || 12);
-            $set(config.geometryOptions[1].label.style, 'fontSize', val || 12)
-          }
-        "
-      ></TsFormSelect>
+          "
+        ></Slider>
+      </div>
     </TsFormItem>
   </div>
 </template>

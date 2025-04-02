@@ -136,12 +136,22 @@ export default {
     dealDataByUrl(nodeList) {
       let dataList = [];
       if (nodeList) {
-        nodeList.forEach(item => {
-          dataList.push({
-            value: item.id,
-            text: item.ip ? (item.port ? (item.name ? `${item.ip}:${item.port}[${item.name}]` : `${item.ip}:${item.port}`) : item.name ? `${item.ip}[${item.name}]` : item.ip) : ''
+        let filterNodeList = nodeList.filter(item => item.ip);
+        if (filterNodeList.length > 0) {
+          dataList = filterNodeList.map((item) => {
+            let baseText = item.ip;
+            if (item.port) {
+              baseText += `:${item.port}`;
+            }
+            if (item.name) {
+              baseText += `[${item.name}]`;
+            }
+            return {
+              value: item.id,
+              text: baseText
+            };
           });
-        });
+        }
       }
       return dataList;
     },
