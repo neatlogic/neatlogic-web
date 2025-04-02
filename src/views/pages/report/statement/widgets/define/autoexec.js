@@ -2,9 +2,9 @@ import { $t } from '@/resources/init.js';
 
 export default {
   name: 'autoexec',
-  label: $t('page.autoexec'),
+  label: $t('term.deploy.flowchart'),
   type: 'autoexec',
-  icon: 'tsfont-zidonghua',
+  icon: 'tsfont-topo',
   widgetType: 'other',
   hasCustomConfig: true,
   width: 500,
