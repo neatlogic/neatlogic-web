@@ -58,9 +58,9 @@
         </div>
         <div v-show="matrixAttributeList.length > 0" class="item-right">
           <TsForm ref="attributeDialogForm" :item-list="attributeDialogForm" :label-width="70"></TsForm>
-          <div v-if="matrixAttributeSelectData && matrixAttributeSelectData.type == 'select'" class="dataList">
+          <div v-if="matrixAttributeSelectData && matrixAttributeSelectData.type == 'select'" class="dataList mt-nm">
             <!-- start_静态数据源 -->
-            <div class="static-main bg-op">
+            <div class="static-main bg-op radius-sm">
               <div class="input-border">
                 <div class="static-title">
                   <label class="formsetting-label text-grey require-label" style="line-height: 1;margin-bottom: 8px;width: 148px;">{{ $t('page.value') }}</label>
@@ -145,6 +145,34 @@
               </TsFormSelect>
             </TsFormItem>
           </div>
+          <div v-if="matrixAttributeSelectData && matrixAttributeSelectData.type === 'date'" class="mt-nm">
+            <div class="padding-sm bg-op radius-sm">
+              <TsFormItem :label="$t('page.displayformat')" labelPosition="top">
+                <TsFormRadio
+                  :value="matrixAttributeSelectData.config && matrixAttributeSelectData.config.format"
+                  :dataList="formatList"
+                  allowToggle
+                  @on-change="(val)=>{ 
+                    setConfig('format', val);
+                  }"
+                ></TsFormRadio>
+              </TsFormItem>
+              <TsFormItem
+                v-if="matrixAttributeSelectData.config && matrixAttributeSelectData.config.format"
+                :label="$t('page.css')"
+                labelPosition="top"
+                class="mt-sm"
+              >
+                <TsFormRadio
+                  :value="matrixAttributeSelectData.config && matrixAttributeSelectData.config.styleType"
+                  :dataList="getShowTypeList(matrixAttributeSelectData.config.format)"
+                  @on-change="(val)=>{
+                    setConfig('styleType', val);
+                  }"
+                ></TsFormRadio>
+              </TsFormItem>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -158,7 +186,8 @@ export default {
     vuedraggable: () => import('vuedraggable'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {
     matrixUuid: { type: String }
@@ -204,8 +233,9 @@ export default {
           transfer: true,
           dealDataByUrl: this.dealDataByUrl,
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.type')}) }, { name: 'name-special' }],
-          onChange() {
+          onChange: () => {
             _this.dataList = [{ value: '', text: '' }];
+            _this.$set(this.matrixAttributeSelectData, 'config', {});
           }
         }
         // {
@@ -238,7 +268,13 @@ export default {
         textName: 'name',
         valueName: 'label',
         border: 'border'
-      }
+      },
+      formatList: [
+        { value: 'yyyy-MM-dd HH:mm', text: this.$t('page.year') + '-' + this.$t('page.month') + '-' + this.$t('page.da') + ' ' + this.$t('page.hou') + ':' + this.$t('page.minu') },
+        { value: 'yyyy-MM-dd', text: this.$t('page.year') + '-' + this.$t('page.month') + '-' + this.$t('page.da') },
+        { value: 'yyyy-MM', text: this.$t('page.year') + '-' + this.$t('page.month') },
+        { value: 'yyyy', text: this.$t('page.year') }
+      ]
     };
   },
   beforeCreate() {},
@@ -509,10 +545,76 @@ export default {
         return a.sort - b.sort;
       });
       return list;
+    },
+    setConfig(key, val) {
+      if (!this.matrixAttributeSelectData.config) {
+        this.$set(this.matrixAttributeSelectData, 'config', {});
+      }
+      this.$set(this.matrixAttributeSelectData.config, key, val);
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getShowTypeList() {
+      return (format) => {
+        let dataList = [];
+        if (format == 'yyyy-MM-dd HH:mm') {
+          dataList = [
+            {
+              text: 'yyyy-MM-dd HH:mm',
+              value: '-'
+            },
+            {
+              text: 'yyyy/MM/dd HH:mm',
+              value: '/'
+            },
+            {
+              text: 'yyyy|MM|dd HH:mm',
+              value: '|'
+            }
+          ];
+        } else if (format == 'yyyy-MM-dd') {
+          dataList = [
+            {
+              text: 'yyyy-MM-dd',
+              value: '-'
+            },
+            {
+              text: 'yyyy/MM/dd',
+              value: '/'
+            },
+            {
+              text: 'yyyy|MM|dd',
+              value: '|'
+            }
+          ];
+        } else if (format == 'yyyy-MM') {
+          dataList = [
+            {
+              text: 'yyyy-MM',
+              value: '-'
+            },
+            {
+              text: 'yyyy/MM',
+              value: '/'
+            },
+            {
+              text: 'yyyy|MM',
+              value: '|'
+            }
+          ];
+        } else if (format == 'yyyy') {
+          dataList = [
+            {
+              text: 'yyyy',
+              value: ''
+            }
+          ];
+        }
+        return dataList;
+      };
+    }
+  },
   watch: {
     dataList: {
       handler: function(newVal) {

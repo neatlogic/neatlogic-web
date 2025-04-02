@@ -1,12 +1,16 @@
 <template>
   <div>
     <div>
-      <span style="padding-right:8px;">{{ newContentJson.integrationName }}</span>
-      <span :class="newContentJson.succeed == true?'text-success':'text-danger'">{{ newContentJson.statusText }}</span>
+      <span class="pr-xs">{{ newContentJson.integrationName }}</span>
+      <span :class="newContentJson.succeed == true ? 'text-success' : 'text-danger'" class="pr-xs">{{ newContentJson.statusText }}</span>
       <Dropdown>
         <span class="tsfont-option-horizontal"></span>
-        <DropdownMenu slot="list">
-          <DropdownItem><span class="left-label-text text-grey">{{ $t('term.process.triggertime', {target: newContentJson.triggerText}) }}</span></DropdownItem>
+        <DropdownMenu slot="list" :transfer="true" style="max-height: 400px;max-width: 400px;overflow:scroll;">
+          <DropdownItem>
+            <span class="text-grey content-detail-text">
+              {{ $t('term.process.triggertime', { target: newContentJson.triggerText }) }}
+            </span>
+          </DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </div>
@@ -14,7 +18,6 @@
       <span v-if="newContentJson.error" class="text-href look-btn" @click="lookFailed(newContentJson.error)">{{ $t('page.failreason') }}</span>
       <!-- <span><pre>{{ newContentJson.error }}</pre></span> -->
     </div>
-    
     <TsDialog
       type="modal"
       :isShow.sync="failedModal"
@@ -89,5 +92,9 @@ export default {
   watch: {}
 };
 </script>
-<style lang='less' scoped>
+<style lang="less" scoped>
+.content-detail-text {
+  display: inline-block;
+  white-space: normal;
+}
 </style>

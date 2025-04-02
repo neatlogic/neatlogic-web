@@ -1142,7 +1142,7 @@ export default {
             this.needRoundCount = needRoundCount;
             this.executeConfig = this.$utils.deepClone(executeConfig) || {};
             const shouldUseCurrentValue = (obj) => {
-              return !this.$utils.isEmpty(obj) && (!this.$utils.isEmpty(obj['value']) || obj['mappingMode'] === 'notsetup' || !this.$utils.isEmpty(obj['mappingMode'])); // 处理值为空，还是以自动化存储的值为主
+              return !this.$utils.isEmpty(obj) && !this.$utils.isEmpty(obj['value']) && (obj['mappingMode'] === 'notsetup' || !this.$utils.isEmpty(obj['mappingMode'])); // 处理值为空，还是以自动化存储的值为主
             };
             this.runnerGroup = shouldUseCurrentValue(this.runnerGroup) ? this.runnerGroup : runnerGroup;
             this.runnerGroupTag = shouldUseCurrentValue(this.runnerGroupTag) ? this.runnerGroupTag : runnerGroupTag;
@@ -1159,8 +1159,9 @@ export default {
               if (this.$utils.isEmpty(this.roundCount.value)) {
                 this.$set(this.roundCount, 'value', this.executeConfig.roundCount || 2);
               }
-              this.$set(this.roundCountForm, 'disabled', true);
-              this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
+              //组合工具设置了分批数，编辑服务需要支持修改
+              // this.$set(this.roundCountForm, 'disabled', true);
+              // this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
             }
             if (this.executeConfig.whenToSpecify == 'runtime') {
               // 过滤器运行在执行，需要把执行目标值清空

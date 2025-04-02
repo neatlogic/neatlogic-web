@@ -840,7 +840,7 @@
     "lastcompletetime": "last completed time",
     "pleaseinputversionname": "Please enter a version name",
     "addjob": "Add job",
-    "batchcountdisabledesc": "Divide the execution target into N batches according to the quantity, and execute them successively. After the combination tool sets the batch quantity, the batch quantity cannot be modified when creating a job",
+    "batchcountdisabledesc": "Divide the execution target into N batches by quantity and execute them sequentially.",
     "choosethetime": "Choose the time",
     "nowriteusertooltip": "If you do not fill in the user here, the current stage will inherit the combination tool execution user by default. If you fill in the user here, the current stage will use the execution user filled in here; when executing, the execution user cannot be modified",
     "batchcountprioritydesc": "Divide the execution target into N batches according to the quantity, and execute them successively. The priority of the number of batches set in the stage is higher than the number of batches set in the combination tool or job",

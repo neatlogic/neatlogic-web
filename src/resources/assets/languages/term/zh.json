@@ -840,7 +840,7 @@
     "lastcompletetime": "最近完成时间",
     "pleaseinputversionname": "请输入版本名称",
     "addjob": "添加作业",
-    "batchcountdisabledesc": "将执行目标按数量等分为N个批次，先后执行，组合工具设置分批数量后，创建作业时不可修改分批数量",
+    "batchcountdisabledesc": "将执行目标按数量等分为N个批次，先后执行。",
     "choosethetime": "选择时机",
     "nowriteusertooltip": "若此处不填用户，当前阶段默认继承组合工具执行用户，若此处填写用户，当前阶段将采用此处填写的执行用户；执行时，不可修改执行用户",
     "batchcountprioritydesc": "将执行目标按数量等分为N个批次，先后执行，阶段设置的分批数量优先级高于组合工具或作业中设置的分批数",

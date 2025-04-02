@@ -56,7 +56,7 @@ selectedRemain|Boolean|false|否|是否分页保留每一页选中状态|如果�
 disabledHover|Boolean|false|否|是否禁用tr移上去背景颜色效果|-
 canEdit|Boolean|false|否|是否可编辑表头|包括显示隐藏行、拖拽排序
 canDrag|Boolean|false|否|是否可拖拽列排序|-
-~~canResize~~|Boolean|false|否|是否可调整行宽|该功能还没开发完成
+canResize|Boolean|false|否|是否可调整行宽|拖拽调整列宽时触发on-column-width-resize(newWidth, oldWidth, column, event)
 sortMulti|Boolean|true|否|是否支持表头多个字段排序|-
 canExpand|Boolean|false|否|是否有展开行查看更多（tr的下一个tr里显示）的功能|需配合expand的插槽使用，每一条数据通过改变_expand属性显示或者收起更多折叠信息
 mode|String|window|否|显示模式|如果是window模式，会使用100vh来计算高度，如果是弹窗中使用，则需要使用dialog模式，则高度变成100%，避免弹窗下有大量留白

@@ -12,7 +12,7 @@
     :disabled="disabled"
     :validateList="getValidateList"
     :readonlyTextIsHighlight="readonlyTextIsHighlight"
-    @change="
+    @on-change="
       val => {
         setValue(val);
       }
@@ -62,7 +62,7 @@ export default {
   filter: {},
   computed: {
     actualValue() {
-      if (this.value) {
+      if (!this.$utils.isEmpty(this.value)) {
         if (this.value instanceof Array && this.value.length > 0) {
           return Number(this.value[0]);
         } else {
