@@ -326,7 +326,7 @@ export default {
     }
   }
 }
-/deep/ .ivu-poptip-rel,
+::v-deep .ivu-poptip-rel,
 .ivu-poptip{
   width: 100%;
 }

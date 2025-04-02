@@ -198,7 +198,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .config-help-box {
-  /deep/ .ivu-poptip {
+  ::v-deep .ivu-poptip {
     margin-top: -5px;
   }
 }

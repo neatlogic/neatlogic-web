@@ -675,7 +675,7 @@ export default {
   display: inline-block;
   margin-left: 10px;
 }
-/deep/ .ivu-form-item-content{
+::v-deep .ivu-form-item-content{
   .square {
     border: 1px solid;
     border-radius: 5px;

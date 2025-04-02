@@ -155,7 +155,7 @@ export default {
 <style lang="less" scoped>
 .activity-show-box {
   margin-left: 145px;
-  /deep/ .image > img {
+  ::v-deep .image > img {
     max-width: 100%;
   }
 }
@@ -173,13 +173,13 @@ export default {
   font-size: 22px;
 }
 .activity-box {
-  /deep/ .left-label-text {
+  ::v-deep .left-label-text {
     display: inline-block;
     width: 72px;
     margin-right: 15px;
     text-align: right;
   }
-  /deep/ .ivu-timeline-item-tail {
+  ::v-deep .ivu-timeline-item-tail {
     left: 3px; // 解决时间线不对齐问题
   }
 }

@@ -1142,7 +1142,7 @@ export default {
             this.needRoundCount = needRoundCount;
             this.executeConfig = this.$utils.deepClone(executeConfig) || {};
             const shouldUseCurrentValue = (obj) => {
-              return !this.$utils.isEmpty(obj) && (!this.$utils.isEmpty(obj['value']) || obj['mappingMode'] === 'notsetup' || !this.$utils.isEmpty(obj['mappingMode'])); // 处理值为空，还是以自动化存储的值为主
+              return !this.$utils.isEmpty(obj) && !this.$utils.isEmpty(obj['value']) && (obj['mappingMode'] === 'notsetup' || !this.$utils.isEmpty(obj['mappingMode'])); // 处理值为空，还是以自动化存储的值为主
             };
             this.runnerGroup = shouldUseCurrentValue(this.runnerGroup) ? this.runnerGroup : runnerGroup;
             this.runnerGroupTag = shouldUseCurrentValue(this.runnerGroupTag) ? this.runnerGroupTag : runnerGroupTag;

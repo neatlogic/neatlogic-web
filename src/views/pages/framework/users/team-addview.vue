@@ -567,7 +567,7 @@ export default {
   .ivu-tabs-nav .ivu-tabs-tab {
     padding: 0px;
   }
-  /deep/ .ivu-tabs-bar {
+  ::v-deep .ivu-tabs-bar {
     border-bottom: none;
   }
   .bar-top-right {

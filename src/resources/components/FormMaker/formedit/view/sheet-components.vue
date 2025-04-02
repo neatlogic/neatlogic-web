@@ -211,7 +211,7 @@ export default {
 }
 .tscompontent-container {
   position: relative;
-  /deep/ .require-tip {
+  ::v-deep .require-tip {
     color: #f71010;
     position: absolute;
     left: -8px;

@@ -326,7 +326,7 @@ export default {
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 
-/deep/.ivu-split-trigger-con {
+::v-deep .ivu-split-trigger-con {
   display: none;
 }
 div {

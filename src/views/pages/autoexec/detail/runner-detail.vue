@@ -759,10 +759,10 @@ export default {
 .runner-detail {
   &.remove-tsform-header {
     // 解决工具参数，样式多余问题
-    /deep/ .tscontain-header {
+    ::v-deep .tscontain-header {
       display: none;
     }
-    /deep/ .tscontain-body {
+    ::v-deep .tscontain-body {
       padding-left: 0 !important;
       padding-right: 0 !important;
     }
@@ -792,7 +792,7 @@ export default {
       vertical-align: middle;
     }
   }
-  /deep/.btn-icon{
+  ::v-deep .btn-icon{
     vertical-align: baseline;
     margin: 0px;
     &::before{

@@ -358,13 +358,13 @@ export default {
 };
 </script>
 <style lang='less' scoped>
-/deep/.ivu-select-dropdown{
+::v-deep .ivu-select-dropdown{
   max-height: 400px;
   overflow-y: auto;
   padding: 8px;
   left: -150px!important;
 }
-/deep/.ivu-dropdown-item{
+::v-deep .ivu-dropdown-item{
   padding: 8px 30px!important;
 }
 .SopSetting {

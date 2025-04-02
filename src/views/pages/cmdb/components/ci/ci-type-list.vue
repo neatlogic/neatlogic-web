@@ -316,7 +316,7 @@ export default {
 .tsbg-block {
   border-radius: 6px;
 }
-/deep/.icon-pr-6 {
+::v-deep .icon-pr-6 {
   &::before {
     padding-right: 6px;
   }

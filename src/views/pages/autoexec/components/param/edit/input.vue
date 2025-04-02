@@ -65,7 +65,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ .tsform-input-readonly {
+::v-deep .tsform-input-readonly {
   opacity: 1;
   cursor: text;
   .tsform-readonly {

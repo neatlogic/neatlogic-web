@@ -314,24 +314,24 @@ export default {
     display: inline-block;
     padding-right: 10px;
   }
-  /deep/ .step-container {
+  ::v-deep .step-container {
     padding: 16px 10px 10px 0 !important;
   }
-  /deep/ .top {
+  ::v-deep .top {
     button {
       margin-left: 8px;
     }
   }
-  /deep/ .content {
+  ::v-deep .content {
     height: 100%;
   }
-  /deep/ .ivu-tabs-nav .ivu-tabs-tab {
+  ::v-deep .ivu-tabs-nav .ivu-tabs-tab {
     padding: 0px;
   }
-  /deep/ .ivu-tabs-bar {
+  ::v-deep .ivu-tabs-bar {
     border: none;
   }
-  /deep/ .ivu-tabs {
+  ::v-deep .ivu-tabs {
     height: 100%;
   }
   .runner-detail {

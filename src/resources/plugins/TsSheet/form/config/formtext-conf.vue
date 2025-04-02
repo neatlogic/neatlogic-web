@@ -127,7 +127,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ .regex-input {
+::v-deep .regex-input {
   .ivu-input {
     border-radius: 0px !important;
   }

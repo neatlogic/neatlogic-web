@@ -519,7 +519,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .advanced-mode-search-filter-btn {
-  /deep/ .btn-filter, /deep/ .btn-remove {
+  ::v-deep .btn-filter, ::v-deep .btn-remove {
     top: 1px !important; // 修复由于外层嵌套一个form-item 导致按钮错位问题
   }
 }

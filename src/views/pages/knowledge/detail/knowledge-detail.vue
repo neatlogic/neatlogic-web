@@ -331,7 +331,7 @@ export default {
   }
 }
 .KnowledgeDetail {
-  /deep/ .ivu-poptip-body {
+  ::v-deep .ivu-poptip-body {
     padding: 8px 0;
   }
 }

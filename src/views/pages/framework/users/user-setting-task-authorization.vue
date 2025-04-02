@@ -398,11 +398,11 @@ export default {
     margin-left: 16px;
   }
 }
-// /deep/.ivu-dropdown .ivu-select-dropdown{
+// ::v-deep .ivu-dropdown .ivu-select-dropdown{
 //   max-height: 300px;
 //   overflow: auto;
 // }
-// /deep/.ivu-cascader{
+// ::v-deep .ivu-cascader{
 //   width:calc(100%-140px)!important;
 // }
 

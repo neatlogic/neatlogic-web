@@ -161,7 +161,7 @@ export default {
   border-style: solid !important;
   cursor: pointer;
 }
-/deep/.tstable-tr td{
+::v-deep .tstable-tr td{
   vertical-align:top;
 }
 </style>

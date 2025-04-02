@@ -235,7 +235,7 @@ export default {
     margin-right: 10px;
   }
   .radioblock{
-    /deep/ .ivu-radio-group-item{
+    ::v-deep .ivu-radio-group-item{
       cursor: pointer;
       border-radius: 4px;
       padding: 5px;

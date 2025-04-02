@@ -423,19 +423,19 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/deep/.ivu-checkbox{
+::v-deep .ivu-checkbox{
   vertical-align: text-bottom;
 }
 
 .flowOverview {
-  /deep/ .tscard-container {
+  ::v-deep .tscard-container {
     .tscard-body {
       .overvivew-main {
         cursor: pointer;
       }
     }
   }
-  /deep/ .ivu-checkbox-wrapper{
+  ::v-deep .ivu-checkbox-wrapper{
     margin-right: 0;
   }
 }

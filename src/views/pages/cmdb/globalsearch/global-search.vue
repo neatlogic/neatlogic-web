@@ -190,7 +190,7 @@ export default {
     }
   }
   .hide-border-bottom-tabs {
-    /deep/ .ivu-tabs-bar {
+    ::v-deep .ivu-tabs-bar {
       border-bottom: none;
     }
   }

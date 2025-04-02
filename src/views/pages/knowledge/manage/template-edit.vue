@@ -256,10 +256,10 @@ export default {
 
 <style lang="less" scoped>
 .template-edit {
-  // /deep/.block-container{
+  // ::v-deep .block-container{
   //   box-shadow: 0px 0px 0px 0px;
   // }
-  // /deep/.block-container:hover{
+  // ::v-deep .block-container:hover{
   //   box-shadow:  @default-shadow!important;
   // }
   .dividing {

@@ -855,7 +855,7 @@ export default {
   font-size: 12px;
 }
 .combine-searcher-text-align {
-  /deep/ .tag-item {
+  ::v-deep .tag-item {
     line-height: 0 !important;
   }
 }

@@ -177,14 +177,14 @@ export default {
       font-size: 12px;
       background: transparent;
     }
-    /deep/ .recover .ivu-timeline-item-head {
+    ::v-deep .recover .ivu-timeline-item-head {
       background-color: #f66 !important;
     }
-    /deep/ .ivu-timeline-item-tail {
+    ::v-deep .ivu-timeline-item-tail {
       border: 1px dashed @timeline-color !important;
       border-width: 1px !important;
     }
-    /deep/ .ivu-timeline-item-head {
+    ::v-deep .ivu-timeline-item-head {
       border-width: 2px;
     }
   }

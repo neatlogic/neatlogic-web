@@ -125,12 +125,12 @@ export default {
 .value-div{
   .dataList {
     &:not(:last-child) {
-        /deep/.value-item{
+        ::v-deep .value-item{
         padding-bottom: 10px;
       }
     }
   }
-  /deep/.value-item{
+  ::v-deep .value-item{
     .ivu-tooltip-rel{
       margin-left:3px;
     }

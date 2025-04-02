@@ -527,7 +527,7 @@ export default {
 
 }
 .page-tabs {
-  /deep/ .ivu-tabs-bar {
+  ::v-deep .ivu-tabs-bar {
     width: calc(100% - 280px);
   }
 }

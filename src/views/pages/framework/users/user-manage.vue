@@ -578,7 +578,7 @@ export default {
   .actionText {
     padding-left: 5px;
   }
-  /deep/ .table {
+  ::v-deep .table {
     .table-top {
       th:first-of-type {
         div {

@@ -583,16 +583,16 @@ export default {
       }
     }
   }
-  /deep/ .ivu-form-item {
+  ::v-deep .ivu-form-item {
     &:not(:last-child) {
       margin-bottom: 10px;
     }
   }
   .tooltips-box {
-    /deep/ &.ivu-tooltip {
+    ::v-deep &.ivu-tooltip {
       width: 100%;
     }
-    /deep/ .ivu-tooltip-rel {
+    ::v-deep .ivu-tooltip-rel {
       width: 100%;
     }
     .width-box {

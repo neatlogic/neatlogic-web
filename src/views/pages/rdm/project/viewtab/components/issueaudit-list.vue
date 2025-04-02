@@ -237,7 +237,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ td {
+::v-deep td {
   vertical-align: top !important;
 }
 </style>

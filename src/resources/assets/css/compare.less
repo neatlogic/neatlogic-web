@@ -2,54 +2,54 @@
 .theme(@success-color, @success-bg-color, @warning-bg-color,@error-color,@error-bg-color,@text){
   .compare {
     padding-bottom: 16px;
-    /deep/ .bg-insert{
+    ::v-deep .bg-insert{
       background:  @success-bg-color;
       color: @text;
     }
-    /deep/ .bg-delete{
+    ::v-deep .bg-delete{
       background: @error-bg-color;
       color: @text;
     }
-    /deep/ .bg-update{
+    ::v-deep .bg-update{
       background: @warning-bg-color;
       color: @text;
     }
-    /deep/ .bg-fillblank{
+    ::v-deep .bg-fillblank{
       opacity: 0;
     }
-    /deep/ .insert {
+    ::v-deep .insert {
       color: @success-color;
     }
-    /deep/ .delete {
+    ::v-deep .delete {
       color: @error-color;
     
     }
-    /deep/ .update {
+    ::v-deep .update {
       color: @warning-color;
     }
-    /deep/ .fillblank {
+    ::v-deep .fillblank {
       opacity: 0;
       pointer-events: none;
     }
-    /deep/ tr.insert{
+    ::v-deep tr.insert{
       background:  @success-bg-color;
     }
-    /deep/ tr.update{
+    ::v-deep tr.update{
       background:  @warning-bg-color;
     }
-    /deep/ tr.delete{
+    ::v-deep tr.delete{
       background:  @error-bg-color;
     }
-    /deep/ .nav-insert {
+    ::v-deep .nav-insert {
       background:  @success-bg-color;
     }
-    /deep/ .nav-change {
+    ::v-deep .nav-change {
     background:  @warning-bg-color;
     }
-    /deep/ .nav-update {
+    ::v-deep .nav-update {
       background:  @warning-bg-color;
     }
-    /deep/ .nav-delete {
+    ::v-deep .nav-delete {
       background:  @error-bg-color;
     }
     .table-insert {

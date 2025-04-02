@@ -36,22 +36,21 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-
-/deep/.ivu-input-wrapper {
+::v-deep .ivu-input-wrapper {
   cursor: pointer;
 }
-/deep/.ivu-input-icon {
+::v-deep .ivu-input-icon {
   display: none;
 }
-/deep/.ivu-input {
+::v-deep .ivu-input {
   border: none !important; // 护眼模式下，有边框的问题
   padding: 0;
   height: initial;
   cursor: pointer;
   border-radius: 0 !important;
 }
-/deep/.ivu-color-picker-color div,
-/deep/.ivu-color-picker-color {
+::v-deep .ivu-color-picker-color div,
+::v-deep .ivu-color-picker-color {
   width: 32px;
   height: 32px;
   border-radius: 0px;

@@ -61,12 +61,12 @@ ol {
 }
 ol {
   list-style: decimal inside;
-  /deep/ li {
+  ::v-deep li {
     word-break: break-all;
     list-style: decimal;
   }
   &.cjk-ideographic {
-    /deep/ li {
+    ::v-deep li {
       list-style: cjk-ideographic;
     }
   }

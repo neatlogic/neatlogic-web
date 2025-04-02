@@ -295,11 +295,11 @@ export default {
   display: inline-block;
   float: right;
 }
-/deep/.ivu-radio-wrapper {
+::v-deep .ivu-radio-wrapper {
   background: transparent !important;
   color: @default-title;
 }
-/deep/.ivu-radio-wrapper-checked {
+::v-deep .ivu-radio-wrapper-checked {
   color: @default-info-color!important;
 }
 </style>

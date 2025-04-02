@@ -241,7 +241,7 @@ export default {
   padding-left: 6px;
   border: 1px solid;
 }
- /deep/ .row-select {
+ ::v-deep .row-select {
       position: relative;
       display: block;
       line-height: 31px;
@@ -250,7 +250,7 @@ export default {
       padding-right: 20px;
       min-height: 32px;
   }
- /deep/ .icon-select {
+ ::v-deep .icon-select {
       position: absolute;
       top: 50%;
       right: 8px;

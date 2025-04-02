@@ -321,7 +321,7 @@ export default {
     display: none !important;
   }
 }
-/deep/.ivu-input-small {
+::v-deep .ivu-input-small {
   /*由于设置了size不生效，所以补一个样式 */
   height: 24px !important;
   font-size: 12px !important;

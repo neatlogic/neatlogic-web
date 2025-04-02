@@ -556,7 +556,7 @@ export default {
 @import '~@/resources/assets/css/variable.less';
 //条件节点弹框
 .transparentSelect {
-  /deep/ .ivu-input {
+  ::v-deep .ivu-input {
     background: transparent !important;
     background-color: transparent !important;
   }

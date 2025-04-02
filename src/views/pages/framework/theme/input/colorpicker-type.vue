@@ -34,7 +34,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ .ivu-color-picker-confirm-color-editable {
+::v-deep .ivu-color-picker-confirm-color-editable {
   top: 4px;
 }
 </style>

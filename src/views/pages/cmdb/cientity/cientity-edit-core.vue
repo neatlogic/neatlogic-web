@@ -650,22 +650,22 @@ export default {
 .ivu-form-item {
   margin-bottom: 24px !important;
 }
-/deep/.tstabs {
+::v-deep .tstabs {
   .tstable-main {
     max-height: initial !important;
   }
 }
-/deep/.ivu-collapse {
+::v-deep .ivu-collapse {
   border-top: 0px;
   border-bottom: 0px;
 }
-/deep/.ivu-collapse-header {
+::v-deep .ivu-collapse-header {
   border-bottom: 0px;
 }
-/deep/.ivu-collapse-content-box {
+::v-deep .ivu-collapse-content-box {
   padding-bottom: 0px;
 }
-/deep/.ivu-collapse-content {
+::v-deep .ivu-collapse-content {
   padding: 0px;
 }
 </style>
