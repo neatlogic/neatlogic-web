@@ -41,6 +41,9 @@
         :tbodyList="tbodyList"
         :theadList="theadList"
       >
+        <template slot="name" slot-scope="{ row }">
+          <span v-if="row.name" class="text-href" @click.stop="toCiview(row)">{{ row.name }}</span>
+        </template>
         <template slot="version" slot-scope="{ row }">
           <span v-if="row && row.version">{{ row.version }}</span>
           <span v-else>-</span>
@@ -158,6 +161,10 @@ export default {
       } else {
         this.tbodyList = this.defaultTbodyList;
       }
+    },
+    toCiview(row) {
+      const {typeId, id} = row || {};
+      window.open(HOME + '/cmdb.html#/ci/' + typeId + '/cientity-view/' + id, '_blank');
     }
   },
   filter: {},
