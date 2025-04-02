@@ -104,7 +104,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ .tsform-date-readonly {
+::v-deep .tsform-date-readonly {
   opacity: 1;
   cursor: text;
   .tsform-readonly {

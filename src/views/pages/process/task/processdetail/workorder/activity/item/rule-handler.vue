@@ -187,12 +187,12 @@ export default {
       top: 0;
     }
   }
-  /deep/ .flew-box {
+  ::v-deep .flew-box {
     display: flex;
     justify-content: center;
     align-items: center;
   }
-  /deep/ .ivu-tooltip-rel {
+  ::v-deep .ivu-tooltip-rel {
     display: -webkit-box;
     text-overflow: -o-ellipsis-lastline;
     overflow: hidden;

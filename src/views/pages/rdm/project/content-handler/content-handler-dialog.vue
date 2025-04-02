@@ -71,16 +71,16 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ ol li {
+::v-deep ol li {
   list-style-type: decimal !important;
 }
-/deep/ ol {
+::v-deep ol {
   padding-left: revert;
 }
-/deep/ ul li {
+::v-deep ul li {
   list-style-type: disc !important;
 }
-/deep/ ul {
+::v-deep ul {
   padding-left: revert;
 }
 </style>

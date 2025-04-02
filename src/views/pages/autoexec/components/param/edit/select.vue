@@ -239,7 +239,7 @@ export default {
     &:not(:last-child){
       margin-right: 8px
     }
-    /deep/ .tsform-readonly{
+    ::v-deep .tsform-readonly{
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;

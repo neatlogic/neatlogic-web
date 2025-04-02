@@ -724,7 +724,7 @@ export default {
 <style lang="less" scoped>
 .script-detail {
   position: relative;
-  /deep/ .goprev-right {
+  ::v-deep .goprev-right {
     padding-left: 0;
   }
   .action-title {

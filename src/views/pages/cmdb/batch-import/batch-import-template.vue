@@ -94,11 +94,11 @@ export default {
 @import (reference) '~@/resources/assets/css/variable.less';
 .batch-import-template {
   // padding-right: 16px;
-  /deep/.ivu-layout-content {
+  ::v-deep .ivu-layout-content {
     padding-left: 32px;
     padding-top: 11px;
   }
-  /deep/.tscontain-body {
+  ::v-deep .tscontain-body {
     padding-left: 0 !important;
     padding-right: 0 !important;
     .tscontain-sider {
@@ -108,10 +108,10 @@ export default {
   .padt16 {
     padding-top: 10px;
   }
-  // /deep/.radius-lg{
+  // ::v-deep .radius-lg{
   //   margin-top: 16px;
   // }
-  /deep/ .tree {
+  ::v-deep .tree {
     padding-left: 10px;
     .ivu-tree-arrow {
       transform: translateY(-2px);

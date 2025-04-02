@@ -123,14 +123,14 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ .tsform-input-readonly {
+::v-deep .tsform-input-readonly {
   opacity: 1;
   cursor: text;
   .tsform-readonly {
     cursor: text;
   }
 }
-/deep/ textarea{
+::v-deep textarea{
   padding: 4px 8px !important;
 }
 </style>

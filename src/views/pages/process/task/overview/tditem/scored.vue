@@ -47,10 +47,10 @@ export default {
 </script>
 <style lang="less" scoped>
 .score-container {
-  /deep/.ivu-rate-star.ivu-rate-star-zero {
+  ::v-deep .ivu-rate-star.ivu-rate-star-zero {
     display: none;
   }
-  /deep/.ivu-rate-star{
+  ::v-deep .ivu-rate-star{
     margin-right: 4px;
     font-size: 16px!important;
     line-height: 1.8!important;

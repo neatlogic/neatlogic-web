@@ -382,13 +382,12 @@ export default {
 <style lang="less" scoped>
 @import '~@/resources/assets/css/variable.less';
 //条件节点弹框
-/deep/.transparentSelect .ivu-input {
+::v-deep .transparentSelect .ivu-input {
   background-color: transparent !important;
 }
 
 .edit-condition {
   position: relative;
-
   .add-btn {
     position: absolute;
     left: 80px;
@@ -396,7 +395,6 @@ export default {
     cursor: pointer;
     line-height: 20px;
   }
-
   .group-border {
     position: relative;
     width: 100%;
@@ -409,11 +407,9 @@ export default {
     .group-content {
       padding: @space-md;
     }
-
     .condition-content {
       position: relative;
       border-radius: 2px;
-
       .btn-group {
         width: 100%;
         height: 32px;
@@ -427,11 +423,9 @@ export default {
     .groupJoinType {
       left: 8px;
     }
-
     .conditionJoinType {
       left: 268px;
     }
-
     .delGroup {
       display: none;
       position: absolute;

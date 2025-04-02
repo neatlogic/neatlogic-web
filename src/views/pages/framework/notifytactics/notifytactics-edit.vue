@@ -665,7 +665,7 @@ export default {
   }
 }
 .trigger-card {
-  /deep/ .tscard-body {
+  ::v-deep .tscard-body {
     padding: 0 !important;
     overflow: initial !important;
   }

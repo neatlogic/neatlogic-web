@@ -45,7 +45,7 @@ export default {
 }
 p{
   word-break: break-all;
-  /deep/span.line-through{
+  ::v-deep span.line-through{
     text-decoration:line-through;
     vertical-align: baseline;
   }

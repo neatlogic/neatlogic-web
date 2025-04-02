@@ -8,12 +8,12 @@
               <a v-if="!currentTemplate" href="javascript:void(0)">
                 {{ $t('term.cmdb.extendlevel') }}
                 <b class="ml-xs">{{ searchParam.level }}</b>
-                <Icon class="ml-xs" type="ios-arrow-down"></Icon>
+                <span class="tsfont-drop-down"></span>
               </a>
               <a v-else>
                 {{ $t('page.scene') }}
                 <b class="ml-xs">{{ currentTemplate.name }}</b>
-                <Icon class="ml-xs" type="ios-arrow-down"></Icon>
+                <span class="tsfont-drop-down"></span>
               </a>
               <DropdownMenu slot="list">
                 <DropdownItem v-if="filterCiTopoTemplateList.length > 0" disabled>{{ $t('term.cmdb.expandbyscene') }}</DropdownItem>
@@ -41,7 +41,7 @@
               <a href="javascript:void(0)">
                 <span v-if="currentLayout">
                   {{ layoutList.find(d => d.engine === currentLayout).name }}
-                  <Icon type="ios-arrow-down"></Icon>
+                  <span class="tsfont-drop-down"></span>
                 </span>
                 <span v-else>{{ $t('term.cmdb.pleaseselectlayout') }}</span>
               </a>
@@ -209,6 +209,7 @@ export default {
       isShowFilter: false,
       keyword: '',
       maxLevel: 5,
+      defaultLevel: 1,
       isloading: false,
       currentLayout: 'dot',
       //inspectCiEntityList: [],
@@ -271,7 +272,7 @@ export default {
     this.searchGlobalAttr();
     this.initGraph();
     await this.getCiTopoTemplateByCiId();
-    this.$set(this.searchParam, 'level', 3);
+    this.$set(this.searchParam, 'level', this.defaultLevel);
     if (this.ciTopoTemplateList && this.ciTopoTemplateList.length > 0) {
       let template;
       if (this.templateId) {
@@ -291,6 +292,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    resetTopo() {
+      this.graph.graphviz.fit();
+    },
     toggleRelShow(p) {
       const relId = p.relId.toString();
       if (!this.searchParam.templateConfig[relId]) {
@@ -328,7 +332,7 @@ export default {
               this.getCiTopoTemplateByCiId();
               if (this.searchParam.templateId) {
                 this.$delete(this.searchParam, 'templateId');
-                this.$set(this.searchParam, 'level', 3);
+                this.$set(this.searchParam, 'level', this.defaultLevel);
               }
               vnode.isShow = false;
             }

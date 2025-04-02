@@ -441,7 +441,7 @@ export default {
       let label = this.multiple ? this.selectedList.map(s => s[this.textName]) 
         : this.selectedList.length > 0 ? this.selectedList[0][this.textName] : '';
       let valueObject = this.selectedList.map((item) => { 
-        return { 'value': item[this.valueName], 'text': item[this.textName] }; 
+        return { ...item || {}, 'value': item[this.valueName], 'text': item[this.textName] }; 
       });
       valueObject = this.multiple ? valueObject : (valueObject[0] || {});
       this.$emit('change', this.currentValue, valueObject);
@@ -676,7 +676,7 @@ function setWidth($contain, $target, transfer) {
   .ivu-dropdown {
     position: relative;
   }
-  /deep/ .ivu-select-dropdown {
+  ::v-deep .ivu-select-dropdown {
     min-width: 100%;
     width: auto;
     max-height: 200px;
@@ -722,7 +722,7 @@ function setWidth($contain, $target, transfer) {
           display: block;
         }
       }
-      /deep/.ivu-tag {
+      ::v-deep .ivu-tag {
         margin-top: 4px;
         float: left;
         .ivu-icon-ios-close {

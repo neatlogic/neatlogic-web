@@ -123,7 +123,7 @@ export default {
 <style lang="less" scoped>
 .radio-main{
   padding-bottom: 16px;
-  /deep/ .ivu-radio-wrapper{
+  ::v-deep .ivu-radio-wrapper{
     margin-right: 16px;
   }
 }

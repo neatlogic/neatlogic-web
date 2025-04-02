@@ -587,10 +587,10 @@ export default {
 .other-params-wrap {
   display: flex;
   flex-wrap: wrap;
-  /deep/ .tsform-item {
+  ::v-deep .tsform-item {
     width: 30% !important;
   }
-  /deep/ .node-main .list {
+  ::v-deep .node-main .list {
     max-width: 40% !important;
   }
 }

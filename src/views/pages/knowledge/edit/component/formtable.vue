@@ -8,10 +8,10 @@
     @paste.stop.prevent
   >
     <div ref="editorForm" class="editor-form" contenteditable="false">
-      <div class="tool bg-op shadow"><span class="tsfont-trash-s" :title="$t('dialog.title.deletetarget', {target: $t('page.table')})" @click="removeItem"></span></div>
+      <div class="tool bg-op shadow"><span class="tsfont-trash-s" :title="$t('dialog.title.deletetarget', { target: $t('page.table') })" @click="removeItem"></span></div>
       <div
         class="bg-op table-color"
-        style="outline: none;"
+        style="outline: none"
         contenteditable
         v-html="content"
       ></div>
@@ -75,7 +75,7 @@ export default {
 @import '~@/resources/plugins/TsCkeditor/ckeditor.less';
 section {
   position: relative;
-  /deep/.editor-form {
+  ::v-deep .editor-form {
     position: relative;
     padding: 10px;
     &:hover {
@@ -88,7 +88,7 @@ section {
       padding: 0px 4px;
       line-height: 32px;
       height: 32px;
-      /deep/.TsFormSelect .ivu-input {
+      ::v-deep .TsFormSelect .ivu-input {
         text-align: right;
       }
     }
@@ -99,36 +99,35 @@ section {
       word-break: break-all;
       display: block;
     }
-      //静态列表样式
-  
-      .tstable-container {
-        overflow: auto;
-        border-top: 0px !important;
-        .table-list {
-          width:100%;
-          border-top: none;
-          border-collapse: collapse;
-          table-layout: fixed;
-        }
-        .table-list > thead,
-        .table-list > thead > tr > th {
-          visibility: visible !important;
-          border: none !important;
-          vertical-align: middle;
-          height: 38px;
-          padding-top: 0px;
-          padding-bottom: 0px;
-          text-align: left;
-        }
-        .table-list > tbody > tr > td {
-          border-left: none !important;
-          border-right: none !important;
-          border-bottom: none !important;
-          border-top: none !important;
-          vertical-align: top;
-        }
-      }
+    //静态列表样式
 
+    .tstable-container {
+      overflow: auto;
+      border-top: 0px !important;
+      .table-list {
+        width: 100%;
+        border-top: none;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+      .table-list > thead,
+      .table-list > thead > tr > th {
+        visibility: visible !important;
+        border: none !important;
+        vertical-align: middle;
+        height: 38px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        text-align: left;
+      }
+      .table-list > tbody > tr > td {
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: none !important;
+        border-top: none !important;
+        vertical-align: top;
+      }
+    }
   }
   &:hover {
     border: 1px solid transparent !important;
@@ -142,9 +141,9 @@ section {
     border-radius: 2px;
     padding: 5px;
     display: none;
-     &>span{
-          padding: 7px 8px;
-          cursor: pointer;
+    & > span {
+      padding: 7px 8px;
+      cursor: pointer;
     }
   }
   .editorSpan {
@@ -157,7 +156,7 @@ section {
     z-index: 3;
   }
 }
-/deep/.sheet-table {
+::v-deep .sheet-table {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0px;

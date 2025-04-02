@@ -285,7 +285,7 @@ export default {
 }
 .menu-select {
   width: 50%;
-  /deep/ .ivu-select-selection {
+  ::v-deep .ivu-select-selection {
     border: 1px solid @border-color-base !important;
   }
 }

@@ -5,6 +5,10 @@ const applicationInspect = {
     // 获取应用巡检列表
     return axios.post('/api/rest/inspect/appmodule/report/search', params);
   },
+  getNewapplicationInspectList(params) {
+    // 获取新的应用巡检列表
+    return axios.post('/api/rest/inspect/app/resource/list', params);
+  },
   getResourceTypeList(params) {
     // 发起应用巡检
     return axios.post('/api/rest/resourcecenter/appmodule/resource/type/list', params);

@@ -382,7 +382,7 @@ export default {
 };
 </script>
 <style lang='less' scoped>
-/deep/ .tscontain-container {
+::v-deep .tscontain-container {
   .tscontain-body {
     min-height: 200px;
     max-height: 410px;

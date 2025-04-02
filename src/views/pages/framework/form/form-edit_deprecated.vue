@@ -1022,7 +1022,7 @@ function getActiveVersionUuid(versionList) {
   .formedit-content {
     padding-left: 185px;
   }
-  /deep/ .tscontain-container .tscontain-body {
+  ::v-deep .tscontain-container .tscontain-body {
     height: calc(100vh - 50px - 50px);
   }
 }

@@ -412,7 +412,7 @@ export default {
         padding-left: 8px;
         font-size: 13px;
       }
-      /deep/ .select-top.ivu-input {
+      ::v-deep .select-top.ivu-input {
         padding-right: 30px;
       }
     }
@@ -446,7 +446,7 @@ export default {
       margin-bottom: 10px;
     }
   }
-  /deep/ .soptemplate-list {
+  ::v-deep .soptemplate-list {
     .btn-box {
       display: none;
     }

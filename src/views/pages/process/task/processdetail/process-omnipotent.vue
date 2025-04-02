@@ -541,7 +541,7 @@ export default {
   margin-right: 4px;
   border-radius: 20px;
 }
-// /deep/ .ivu-layout-sider {
+// ::v-deep .ivu-layout-sider {
 //   transition: none;
 // }
 </style>

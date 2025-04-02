@@ -10,8 +10,8 @@
         class="radius-md"
         :class="{
           'padding-sm': padding,
-          'bg-op': level % 2 === 0,
-          'bg-grey': level % 2 !== 0,
+          'bg-op': level % 2 !== 0,
+          'bg-grey': level % 2 === 0,
           'border-base': border
         }"
       >
@@ -353,7 +353,10 @@ export default {
 <style lang="less" scoped>
 @import '~@/resources/assets/css/variable.less';
 //条件节点弹框
-/deep/.transparentSelect .ivu-input {
+::v-deep .transparentSelect .ivu-input {
+  background-color: transparent !important;
+}
+::v-deep .transparentSelect .ivu-tag-default {
   background-color: transparent !important;
 }
 

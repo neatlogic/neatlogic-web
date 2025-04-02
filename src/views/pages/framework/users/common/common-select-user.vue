@@ -167,7 +167,7 @@ export default {
   }
 }
 
-/deep/.ivu-tabs-bar{
+::v-deep .ivu-tabs-bar{
   border-bottom: 0px solid #DBDBDB;
 }
 </style>

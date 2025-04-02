@@ -256,10 +256,10 @@ export default {
 .editor-editor{
      position: relative;
      padding: 10px;
-     /deep/ .markdown-body table {
+     ::v-deep .markdown-body table {
       display: table;
      }
-    /deep/ .markdown-body em {
+    ::v-deep .markdown-body em {
       font-style: italic; // 修复markdown中的倾斜样式不生效问题
     }
     &:hover{
@@ -295,20 +295,20 @@ export default {
       height: 16px;
     }
   }
-  /deep/ .hljs {
+  ::v-deep .hljs {
     background: transparent;
   }
   .knowledge-markdown-editor {
-    /deep/ textarea {
+    ::v-deep textarea {
     background-color: transparent;
    }
-   /deep/ &.v-note-wrapper {
+   ::v-deep &.v-note-wrapper {
     z-index: 2; // 修改层级，会导致选择表格行列会被遮挡
    }
   }
   .theme(@text-color) {
     .knowledge-markdown-editor {
-        /deep/ .auto-textarea-wrapper .auto-textarea-input {
+        ::v-deep .auto-textarea-wrapper .auto-textarea-input {
           color: @text-color;
         }
       }

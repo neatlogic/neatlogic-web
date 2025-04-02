@@ -203,12 +203,12 @@ export default {
 .param-div{
   .list {
     &:not(:last-child) {
-        /deep/.param-item{
+        ::v-deep .param-item{
         padding-bottom: 10px;
       }
     }
   }
-  /deep/.param-item{
+  ::v-deep .param-item{
     .ivu-tooltip-rel{
       margin-left:3px;
     }

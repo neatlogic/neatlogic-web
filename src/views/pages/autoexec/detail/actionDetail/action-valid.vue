@@ -88,7 +88,7 @@ export default {
     .icon{
       font-size: 20px;
     }
-    /deep/ .ivu-cell-item{
+    ::v-deep .ivu-cell-item{
       position: relative;
       padding-left: 30px;
       word-break: initial;

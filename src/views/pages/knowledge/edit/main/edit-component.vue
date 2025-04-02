@@ -784,7 +784,7 @@ function childParent(node, isLast) {
 </script>
 <style lang="less" scoped>
 .edit-component-wrap {
-  /deep/ i {
+  ::v-deep i {
    font-style: italic; // 解决全局样式把i标签默认倾斜样式去掉，导致知识库设置i标签倾斜样式无效的问题
  }
 }

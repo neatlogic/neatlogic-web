@@ -233,7 +233,7 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      /deep/ .ivu-tabs {
+      ::v-deep .ivu-tabs {
         color: @white;
         .ivu-tabs-bar {
           margin: 0;

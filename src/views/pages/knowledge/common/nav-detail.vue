@@ -156,7 +156,7 @@ ul.nav-detail{
         white-space: pre;
         .nav-text{
           display: inline-block;
-          /deep/ span{
+          ::v-deep span{
             vertical-align: baseline;
           }
         }

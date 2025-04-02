@@ -171,7 +171,7 @@ export default {
   }
 }
 .overflow-ellipsis {
-  /deep/ .ivu-radio-group {
+  ::v-deep .ivu-radio-group {
     max-width: 100%;
     > label {
       max-width: 100%;

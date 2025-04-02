@@ -1540,7 +1540,7 @@ export default {
 </script>
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
-/deep/ .usertxt-ul {
+::v-deep .usertxt-ul {
   //用户列表纯文字展示
   .usertxt-li {
     word-break: break-all;
@@ -1613,7 +1613,7 @@ export default {
   overflow: hidden;
   border-radius: 10px;
 }
-/deep/ .setting-box {
+::v-deep .setting-box {
   .tip-text {
     font-size: @font-size-small;
   }

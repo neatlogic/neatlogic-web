@@ -449,7 +449,7 @@ export default {
             moduleId: moduleId,
             moduleName: moduleName,
             children: item.menuList.map((v) => ({
-              id: v.path,
+              id: `${moduleId}_${v.path}`,
               name: v.name,
               menuType: 'innerMenu',
               isMenu: true,

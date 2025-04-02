@@ -41,7 +41,7 @@ export default {
   components: {},
   props: {
     resourceId: {
-      type: Number
+      type: [Number, String]
     }
   },
   data() {

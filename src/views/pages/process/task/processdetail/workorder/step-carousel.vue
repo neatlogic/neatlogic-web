@@ -300,10 +300,10 @@ export default {
 .Carousel {
   width: 248px;
   height: auto;
-  /deep/.ivu-carousel-item {
+  ::v-deep .ivu-carousel-item {
     padding: 0 1px;
   }
-  /deep/.ivu-carousel-dots {
+  ::v-deep .ivu-carousel-dots {
     bottom: 0px;
     position: relative;
     li {

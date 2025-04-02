@@ -135,7 +135,7 @@ export default {
     margin-right: 10px;
     border-radius: 4px;
   }
-  /deep/ .tag-item-text{
+  ::v-deep .tag-item-text{
     margin-bottom: 10px;
   }
 }

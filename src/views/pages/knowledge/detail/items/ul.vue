@@ -52,21 +52,21 @@ ul {
 }
 ul {
   // list-style: disc inside;
-  /deep/ li {
+  ::v-deep li {
     word-break: break-all;
     list-style: disc;
   }
   &.circle {
-    /deep/ li {
+    ::v-deep li {
       list-style: circle;
     }
   }
   &.square {
-    /deep/ li {
+    ::v-deep li {
       list-style: square;
     }
   }
-  /deep/span.line-through{
+  ::v-deep span.line-through{
     text-decoration:line-through;
     vertical-align: baseline;
   }

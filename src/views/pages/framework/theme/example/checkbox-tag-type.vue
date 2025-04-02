@@ -71,12 +71,12 @@ export default {
 </script>
 <style lang="less" scoped>
 .dark{
-  /deep/.block-span .ivu-checkbox-wrapper-checked{
+  ::v-deep .block-span .ivu-checkbox-wrapper-checked{
     background: var(--dark-checkbox-tag-color, #6ac0ff) !important;
   }
 }
 .light{
-  /deep/.block-span .ivu-checkbox-wrapper-checked{
+  ::v-deep .block-span .ivu-checkbox-wrapper-checked{
     background: var(--light-checkbox-tag-color, #6ac0ff) !important;
   }
 }

@@ -958,12 +958,12 @@ export default {
   font-size: 12px;
 }
 .user-addview {
-  /deep/ .top {
+  ::v-deep .top {
     button {
       margin-left: 8px;
     }
   }
-  /deep/ .content {
+  ::v-deep .content {
     height: 100%;
     .step {
       width: 50%;
@@ -986,13 +986,13 @@ export default {
       }
     }
   }
-  /deep/ .ivu-tabs-nav .ivu-tabs-tab {
+  ::v-deep .ivu-tabs-nav .ivu-tabs-tab {
     padding: 0px;
   }
-  /deep/ .ivu-tabs-bar {
+  ::v-deep .ivu-tabs-bar {
     border: none;
   }
-  /deep/ .ivu-tabs {
+  ::v-deep .ivu-tabs {
     height: 100%;
   }
 }

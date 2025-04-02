@@ -205,7 +205,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .iteration-container {
-  /deep/ .ivu-layout-content{
+  ::v-deep .ivu-layout-content{
   overflow-y: hidden !important;
  }
 }

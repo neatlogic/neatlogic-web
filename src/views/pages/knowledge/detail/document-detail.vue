@@ -269,7 +269,7 @@ export default {
       text-align: right;
     }
     .config-item-wrap {
-      /deep/ i {
+      ::v-deep i {
         font-style: italic; // 保留倾斜原有样式
       }
     }

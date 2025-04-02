@@ -232,7 +232,7 @@ export default {
 </style>
 <style lang="less" scoped>
 .reportinstance-show-wrap {
-  /deep/ .report-instance-show-formitem{
+  ::v-deep .report-instance-show-formitem{
     min-height: 53px;
   }
   .padding8{

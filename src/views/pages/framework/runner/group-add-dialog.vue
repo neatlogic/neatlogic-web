@@ -157,7 +157,7 @@ export default {
 <style lang="less" scoped>
 @import './src/runner-group.less';
 @import './src/common.less';
-/deep/ .ivu-steps .ivu-steps-title {
+::v-deep .ivu-steps .ivu-steps-title {
   font-weight: normal;
 }
 </style>

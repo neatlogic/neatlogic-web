@@ -371,10 +371,10 @@ export default {
       }
     }
   }
-  /deep/ .ivu-checkbox {
+  ::v-deep .ivu-checkbox {
     line-height: revert;
   }
-  /deep/ .ivu-checkbox-checked .ivu-checkbox-inner:after {
+  ::v-deep .ivu-checkbox-checked .ivu-checkbox-inner:after {
     top: -1px;
   }
 }

@@ -286,12 +286,12 @@ export default {
 </script>
 <style lang="less" scoped>
 .rule-amount {
-  /deep/ .ivu-badge .ivu-badge-count {
+  ::v-deep .ivu-badge .ivu-badge-count {
     padding: 0 6px;
   }
 }
 .rule-container {
-  /deep/ .btn-actionbtn {
+  ::v-deep .btn-actionbtn {
     line-height: 32px;
     height: 32px;
     width: 50%;
@@ -301,7 +301,7 @@ export default {
       opacity: 1;
     }
   }
-  /deep/ .rule-item {
+  ::v-deep .rule-item {
     padding: 4px 0;
   }
   .expression-container {
@@ -323,7 +323,7 @@ export default {
     padding: 4px 8px;
     margin-bottom: 10px;
     border: 1px solid;
-    /deep/ .btn-removerule {
+    ::v-deep .btn-removerule {
       position: absolute;
       top: 8px;
       right: 8px;
@@ -336,7 +336,7 @@ export default {
       opacity: 0.6;
     }
     &:hover {
-      /deep/ .btn-removerule {
+      ::v-deep .btn-removerule {
         display: block;
         &:hover {
           opacity: 1;
@@ -344,7 +344,7 @@ export default {
       }
     }
   }
-  /deep/ .div-rule {
+  ::v-deep .div-rule {
     padding: 8px;
     position: relative;
 
@@ -364,12 +364,12 @@ export default {
         }
       }
     }
-    /deep/.row-select {
+    ::v-deep .row-select {
       border: 1px solid;
       padding-left: 4px;
       
     }
-    /deep/.icon-select {
+    ::v-deep .icon-select {
       position: absolute;
       top: 50%;
       right: 8px;

@@ -137,7 +137,7 @@ export default {
     margin-bottom:10px;
   }
   .tscard-container {
-     /deep/.tscard-body{
+     ::v-deep .tscard-body{
       min-height: initial!important;
       padding: 16px 6px 0px 6px!important;
    }

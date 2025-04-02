@@ -578,7 +578,7 @@ export default {
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/theme.less';
 
-/deep/ .tsmodal-wrap .tsmodal-content {
+::v-deep .tsmodal-wrap .tsmodal-content {
   padding: 10px 24px;
 }
 .upload-dialog {
@@ -602,7 +602,7 @@ export default {
           width: 270px;
           height: 100%;
         }
-        /deep/ .ivu-upload-drag{
+        ::v-deep .ivu-upload-drag{
           height: 100%;
         }
         .drag-area {

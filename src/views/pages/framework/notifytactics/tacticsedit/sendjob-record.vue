@@ -144,7 +144,7 @@ export default {
 </script>
 <style lang="less">
 .sendjob-box {
-  /deep/ .tsslider-content {
+  ::v-deep .tsslider-content {
     padding: 0;
   }
 }

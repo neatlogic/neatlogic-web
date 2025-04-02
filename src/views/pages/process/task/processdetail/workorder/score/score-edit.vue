@@ -156,7 +156,7 @@ export default {
 	}
 	.editor {
     padding-bottom: 16px;
-		/deep/ .ck-content {
+		::v-deep .ck-content {
 			min-height: 90px;
 		}
 	}

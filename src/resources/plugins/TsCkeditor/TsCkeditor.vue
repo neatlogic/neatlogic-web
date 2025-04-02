@@ -291,7 +291,7 @@ export default {
 </style>
 <style lang="less" scoped>
 .toggle {
-  /deep/.ck-toolbar__items {
+  ::v-deep .ck-toolbar__items {
     visibility: hidden;
   }
 }

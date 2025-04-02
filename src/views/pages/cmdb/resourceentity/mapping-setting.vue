@@ -27,6 +27,7 @@
             ref="item"
             :item="item"
             :mainCi="mainCi"
+            :ciList="ciList"
             @change="(val,attr)=>{setConfig(val, attr, item)}"
           ></Items>
         </template>
@@ -44,10 +45,14 @@ export default {
     TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree')
   },
   props: {
-    data: Object,
+    resourceEntityData: Object,
     mainCi: {
       type: String,
       default: ''
+    },
+    ciList: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -70,6 +75,10 @@ export default {
         {
           text: this.$t('term.cmdb.globalattr'),
           value: 'globalAttr'
+        },
+        {
+          text: '新关系',
+          value: 'newRel'
         },
         {
           text: this.$t('term.expression.empty'),
@@ -95,11 +104,11 @@ export default {
   methods: {
     init() {
       this.list = [];
-      if (this.data) {
-        this.fieldList = this.data.fieldList || [];
-        if (this.data.config && !this.$utils.isEmpty(this.data.config.fieldMappingList)) {
+      if (this.resourceEntityData) {
+        this.fieldList = this.resourceEntityData.fieldList || [];
+        if (this.resourceEntityData.config && !this.$utils.isEmpty(this.resourceEntityData.config.fieldMappingList)) {
           this.fieldList.forEach(item => {
-            let findItem = this.data.config.fieldMappingList.find(f => f.field === item.value);
+            let findItem = this.resourceEntityData.config.fieldMappingList.find(f => f.field === item.value);
             if (findItem) {
               this.list.push(findItem);
             } else {
@@ -145,7 +154,29 @@ export default {
           type: ''
         });
       });
+    },
+    updatedNewRelItem() { //更新新关系字段时更新list
+      if (!this.$utils.isEmpty(this.list)) {
+        this.list = this.list.map(item => {
+          if (item.type === 'newRel') {
+            return {
+              field: item.field,
+              type: ''
+            };
+          } else {
+            return item;
+          }
+        });
+        this.list.forEach(item => {
+          if (item.type === 'newRel') {
+            this.$set(item, 'ci', '');
+            this.$set(item, 'rel', '');
+            this.$set(item, 'attr', '');
+          }
+        });
+      }
     }
+
   },
   filter: {},
   computed: {
@@ -153,7 +184,7 @@ export default {
       return (name) => {
         let text = '';
         if (this.fieldList) {
-          let findItem = this.data.fieldList.find(item => item.value === name);
+          let findItem = this.resourceEntityData.fieldList.find(item => item.value === name);
           if (findItem) {
             text = findItem.text;
           }
@@ -180,6 +211,15 @@ export default {
         }
       },
       immediate: true
+    },
+    ciList: {
+      handler(val) {
+        if (!this.$utils.isSame(val, this.initCiList)) {
+          this.initCiList = this.$utils.deepClone(val);
+          this.updatedNewRelItem();
+        }
+      },
+      deep: true
     }
   }
 };

@@ -128,15 +128,15 @@ export default {
        .prop-col{
          width: 50%;
        }
-       /deep/.ivu-form-item{
+       ::v-deep .ivu-form-item{
          margin-bottom: 10px;
        }
     }
-    /deep/.jquery-dashboard{
+    ::v-deep .jquery-dashboard{
       height: auto !important;
     }
 
-    /deep/.formcontainer{
+    ::v-deep .formcontainer{
 
       //table
         .table{
@@ -528,8 +528,7 @@ export default {
   }
   .theme-form(@border-color,@default-primary-color,@error-color,@gray-color,@title-color){
   .formViewHtml{
-      /deep/.formcontainer{
-
+      ::v-deep .formcontainer{
         //table
           .table{
             thead {

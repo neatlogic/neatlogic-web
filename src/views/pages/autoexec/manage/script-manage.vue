@@ -664,7 +664,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .script-manage{
-  /deep/.ivu-tabs-bar{
+  ::v-deep .ivu-tabs-bar{
     margin-bottom: 0px;
   }
   .description{

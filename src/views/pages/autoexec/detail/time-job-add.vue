@@ -351,7 +351,7 @@ export default {
 .time-job-add {
   .runner-detail-wrap {
     height: calc(100vh - 100px - 130px);
-    /deep/ .left-top-no-border-radius {
+    ::v-deep .left-top-no-border-radius {
       border-radius: 10px;
     }
   }
@@ -363,10 +363,10 @@ export default {
     display: inline-block;
     padding-right: 10px;
   }
-  /deep/ .step-container {
+  ::v-deep .step-container {
     padding: 10px 10px 10px 0 !important;
   }
-  /deep/ .top {
+  ::v-deep .top {
     button {
       margin-left: 8px;
     }
@@ -374,7 +374,7 @@ export default {
   .content-padding {
     padding: 0 24px 24px;
   }
-  /deep/ .content {
+  ::v-deep .content {
     height: 100%;
     .step {
       width: 60%;
@@ -394,13 +394,13 @@ export default {
       }
     }
   }
-  /deep/ .ivu-tabs-nav .ivu-tabs-tab {
+  ::v-deep .ivu-tabs-nav .ivu-tabs-tab {
     padding: 0px;
   }
-  /deep/ .ivu-tabs-bar {
+  ::v-deep .ivu-tabs-bar {
     border: none;
   }
-  /deep/ .ivu-tabs {
+  ::v-deep .ivu-tabs {
     height: 100%;
   }
 }

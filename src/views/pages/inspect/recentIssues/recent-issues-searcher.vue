@@ -624,10 +624,10 @@ export default {
   white-space: pre-wrap;
 }
 .ivu-dropdown {
-  /deep/ .ivu-dropdown-rel {
+  ::v-deep .ivu-dropdown-rel {
     display: flex;
   }
-  /deep/ .ivu-select-dropdown {
+  ::v-deep .ivu-select-dropdown {
     width: 100%;
   }
  }

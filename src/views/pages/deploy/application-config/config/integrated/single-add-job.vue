@@ -539,10 +539,10 @@ export default {
       }
   }
   .tooltips-box {
-    /deep/ &.ivu-tooltip {
+    ::v-deep &.ivu-tooltip {
       width: 100%;
     }
-    /deep/ .ivu-tooltip-rel {
+    ::v-deep .ivu-tooltip-rel {
       width: 100%;
     }
     .width-box {

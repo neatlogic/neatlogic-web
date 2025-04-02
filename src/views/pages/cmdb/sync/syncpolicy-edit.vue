@@ -355,12 +355,12 @@ export default {
     margin-right: 16px;
   }
 }
-/deep/.tscontain-body {
+::v-deep .tscontain-body {
   position: inherit;
   z-index: inherit;
 }
 .tableEdit {
-  /deep/.ivu-form-item-content {
+  ::v-deep .ivu-form-item-content {
     position: inherit;
   }
 }
