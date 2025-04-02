@@ -356,7 +356,7 @@ export default {
 ::v-deep .transparentSelect .ivu-input {
   background-color: transparent !important;
 }
-/deep/.transparentSelect .ivu-tag-default {
+::v-deep .transparentSelect .ivu-tag-default {
   background-color: transparent !important;
 }
 
