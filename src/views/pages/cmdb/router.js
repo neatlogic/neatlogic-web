@@ -21,7 +21,6 @@ const customViewManage = () => import('./customview/customview-manage.vue');
 const assetManage = () => import('./asset/asset-manage.vue');
 const accountManage = () => import('./account/account-manage.vue');
 const applicationManage = () => import('./application/application-manage.vue');
-const newApplicationManage = () => import('./newapplication/application-manage.vue'); //新的应用清单
 const tagManage = () => import('./Tag/tag-manage.vue');
 const syncCiCollectionManage = () => import('./sync/sync-manage.vue');
 //const syncWizard = () => import('./sync/sync-wizard.vue');
@@ -145,18 +144,6 @@ let routerArr = [
       authority: ['AUTOEXEC_BASE', 'DEPLOY_BASE', 'INSPECT_BASE', 'DR_BASE'] //只有cmdb模块权限不显示
     }
   },
-  {
-    path: '/new-application-manage',
-    name: 'new-application-manage',
-    component: newApplicationManage,
-    meta: {
-      type: 'resourceCenter',
-      title: '新的应用清单',
-      ismenu: true,
-      icon: 'tsfont-app',
-      authority: ['AUTOEXEC_BASE', 'DEPLOY_BASE', 'INSPECT_BASE', 'DR_BASE'] //只有cmdb模块权限不显示
-    }
-  }, 
   {
     path: '/asset-manage',
     name: 'asset-manage',

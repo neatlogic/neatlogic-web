@@ -21,7 +21,6 @@ const ciEntityView = () => import('@/views/pages/cmdb/cientity/cientity-view.vue
 const ciEntityEdit = () => import('@/views/pages/cmdb/cientity/cientity-edit.vue');//配置项编辑
 
 const applicationManage = () => import('./application/application-manage.vue');//应用巡检
-const applicationManageNew = () => import('./applicationNew/application-manage.vue');//新的应用巡检
 const configfileManage = () => import('./configfile/configfile-manage.vue');
 const configfileDetail = () => import('./configfile/configfile-detail.vue');
 const configfileListManage = () => import('./configfile/configfile-list-manage.vue');
@@ -136,18 +135,6 @@ export default [
     component: applicationManage,
     meta: {
       title: $t('router.inspect.applicationinspection'),
-      ismenu: true,
-      icon: 'tsfont-app',
-      authority: 'INSPECT_BASE',
-      type: 'inspectmanage'
-    }
-  }, 
-  {
-    path: '/application-manage-new',
-    name: 'application-manage-new',
-    component: applicationManageNew,
-    meta: {
-      title: '新的应用巡检',
       ismenu: true,
       icon: 'tsfont-app',
       authority: 'INSPECT_BASE',
