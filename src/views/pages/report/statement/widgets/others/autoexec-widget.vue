@@ -14,7 +14,7 @@
     <div v-if="dataList && dataList.length>0" class="job-detail">
       <div class="item-list border-color">
         <div class="step-content">
-          <div class="animate-spin step-node border-base radius-sm border-color-success text-success">
+          <div class="animate-spin step-node border-base radius-sm success border-color-success text-success">
             <span>开始</span>
           </div>
         </div>
@@ -39,7 +39,7 @@
       </div>
       <div class="item-list border-color">
         <div class="step-content">
-          <div class="step-node border-base radius-sm" :class="percentData == 100? 'border-color-success text-success':''">
+          <div class="step-node border-base radius-sm" :class="percentData == 100? 'success border-color-success text-success':'pending border-color'">
             <span>结束</span>
           </div>
         </div>
@@ -85,29 +85,20 @@ export default {
       isReady: true,
       statusMapClass: {
         pending: 'pending',
-        completed: 'completed border-color-success text-success',
-        running: 'running border-color-info text-info',
-        failed: 'failed border-color-error text-error',
-        aborted: 'border-color-warning text-warning'
+        completed: 'success border-color-success text-success', //成功
+        running: 'running border-color-info text-info', //运行中
+        failed: 'failed border-color-error text-error', //失败
+        aborted: 'aborted border-color-warning text-warning' //中止
       },
       dataList: [],
       stepList: [
-        {jobPhaseName: '步骤一', jobGroupSort: 0, jobPhaseStatus: 'success'},
-        {jobPhaseName: '步骤二', jobGroupSort: 0, jobPhaseStatus: 'success'},
-        {jobPhaseName: '步骤三', jobGroupSort: 0, jobPhaseStatus: 'success'},
-        {jobPhaseName: '步骤四', jobGroupSort: 0, jobPhaseStatus: 'success'},     
-        {jobPhaseName: '步骤一', jobGroupSort: 0, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤一', jobGroupSort: 0, jobPhaseStatus: 'completed'},
+        {jobPhaseName: '步骤二', jobGroupSort: 0, jobPhaseStatus: 'completed'},
+        {jobPhaseName: '步骤三', jobGroupSort: 0, jobPhaseStatus: 'completed'},
+        {jobPhaseName: '步骤四', jobGroupSort: 0, jobPhaseStatus: 'completed'},     
+        {jobPhaseName: '步骤一', jobGroupSort: 0, jobPhaseStatus: 'completed'},
         {jobPhaseName: '步骤二', jobGroupSort: 1, jobPhaseStatus: 'failed'},
-        {jobPhaseName: '步骤三', jobGroupSort: 1, jobPhaseStatus: 'success'},
-        {jobPhaseName: '步骤四', jobGroupSort: 2, jobPhaseStatus: 'success'},
-        {jobPhaseName: '步骤一', jobGroupSort: 2, jobPhaseStatus: 'success'},
-        {jobPhaseName: '步骤二', jobGroupSort: 2, jobPhaseStatus: 'success'},
-        {jobPhaseName: '步骤三', jobGroupSort: 3, jobPhaseStatus: 'success'},
-        {jobPhaseName: '步骤四', jobGroupSort: 4, jobPhaseStatus: 'success'},     
-        {jobPhaseName: '步骤一', jobGroupSort: 4, jobPhaseStatus: 'success'},
-        {jobPhaseName: '步骤二', jobGroupSort: 5, jobPhaseStatus: 'success'},
-        {jobPhaseName: '步骤三', jobGroupSort: 6, jobPhaseStatus: 'pending'},
-        {jobPhaseName: '步骤四', jobGroupSort: 6, jobPhaseStatus: 'running'}
+        {jobPhaseName: '步骤三', jobGroupSort: 1, jobPhaseStatus: 'running'}
       ],
       percentData: 0
     };
@@ -186,7 +177,7 @@ export default {
       if (list && list.length) {
         let i = 0;
         list.forEach(item => {
-          if (item.jobPhaseStatus === 'completed') {
+          if (['checked', 'success', 'completed'].includes(item.jobPhaseStatus)) {
             i += 1;
           }
         });
@@ -281,13 +272,16 @@ export default {
     top: 64px;
   }
 }
-// .pending{
-//   background-color: rgba(232, 232, 232, .1);
-// }
+.pending{
+  background-color: rgba(232, 232, 232, .1);
+}
 .success {
   background-color: rgba(37, 184, 100, .1);
 }
 .running{
+  background-color: rgba(22, 112, 240, .1);
+}
+.aborted{
   background-color: rgba(255, 186, 90, .1);
 }
 .failed {
