@@ -10,7 +10,7 @@
     :disabled="disabled"
     :validateList="actualValidateList"
     :readonlyTextIsHighlight="readonlyTextIsHighlight"
-    @change="
+    @on-blur="
       val => {
         setValue(val);
       }

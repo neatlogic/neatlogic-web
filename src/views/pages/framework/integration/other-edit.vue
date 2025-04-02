@@ -23,6 +23,14 @@ export default {
           type: 'number',
           width: '100%',
           value: ''
+        },
+        chartset: {
+          label: '字符编码',
+          type: 'select',
+          dataList: [
+            { value: 'UTF-8', text: 'UTF-8' },
+            { value: 'GBK', text: 'GBK' }
+          ]
         }
       }
     };

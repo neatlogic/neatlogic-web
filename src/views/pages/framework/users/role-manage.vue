@@ -29,7 +29,13 @@
             @changeCurrent="changeCurrent"
             @changePageSize="changePageSize"
           >
-            <template slot="action" slot-scope="{row}">
+            <template v-slot:userCount="{ row }">
+              <Badge :count="row.userCount" type="primary"></Badge>
+            </template>
+            <template v-slot:teamCount="{ row }">
+              <Badge :count="row.teamCount" type="primary"></Badge>
+            </template>
+            <template v-slot:action="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
                   <li class="tsfont-edit text-action" @click="editRole(row, 'role')">{{ $t('page.edit') }}</li>

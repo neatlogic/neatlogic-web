@@ -9,11 +9,57 @@
     }
   }
 }
+.ckeditor-readonly-content-box {
+  // 处理只读模式下，有些样式丢失的问题，只读模式下没有ck-content类名
+  code {
+    background-color: hsla(0, 0%, 78%, 0.3);
+    border-radius: 2px;
+    padding: 0.15em;
+  }
+  blockquote {
+    border-left: 5px solid #ccc;
+    font-style: italic;
+    margin-left: 0;
+    margin-right: 0;
+    overflow: hidden;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+  }
+  figure {
+    &.image {
+      img {
+        display: block;
+        height: auto;
+        margin: 0 auto;
+        max-width: 100%;
+      }
+    }
+  }
+  p {
+    word-wrap: break-word;
+  }
+}
 .ck-content {
   min-height: 130px;
-  // >p{
-  //   margin-top: 0;
-  // }
+  ul,
+  ol {
+    padding-inline-start: 40px;
+  }
+  ul {
+    list-style: disc;
+    li {
+      list-style: disc;
+    }
+  }
+  ol {
+    list-style: decimal;
+    li {
+      list-style: decimal;
+    }
+  }
+  i {
+    font-style: italic;
+  }
 }
 .ck .ck-placeholder:before,
 .ck.ck-placeholder:before {
@@ -137,13 +183,16 @@
   }
   .ck.ck-editor__top .ck-sticky-panel .ck-sticky-panel__content {
     border: solid var(--border-color, @border-color-base);
-    border-radius: 10px 10px 0 0;
+    border-radius: 10px 10px 0 0 !important;
     border-width: 1px 1px 0;
   }
 
   .ck.ck-dropdown__panel {
     background: @blockbg-color;
     border: 1px solid var(--border-color, @border-color-base);
+  }
+  .ck.ck-labeled-field-view > .ck.ck-labeled-field-view__input-wrapper > .ck.ck-label {
+    background: @blockbg-color;
   }
   .ck.ck-button:active,
   .ck.ck-button:focus,
