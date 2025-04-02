@@ -27,20 +27,19 @@
       >
         <div
           v-for="(litem,lindex) in item"
-          :id="'step_' + litem.id"
-          :ref="'step_' + litem.id"
+          :id="'step_' + litem.jobGroupSort + '_' + litem.jobPhaseName"
           :key="lindex"
           class="step-content"
         >
-          <div class="step-node border-base radius-sm" :class="litem.status && statusMapClass[litem.status]" :title="litem.name">
-            <span>{{ litem.name }}</span>
+          <div class="step-node border-base radius-sm" :class="getStatusClassName(litem.jobPhaseStatus)" :title="litem.jobPhaseName">
+            <span>{{ litem.jobPhaseName }}</span>
           </div>
         </div>
         <span class="step_a tsfont-arrow-down text-success"></span>
       </div>
       <div class="item-list border-color">
         <div class="step-content">
-          <div class="step-node border-base radius-sm">
+          <div class="step-node border-base radius-sm" :class="percentData == 100? 'border-color-success text-success':''">
             <span>结束</span>
           </div>
         </div>
@@ -49,17 +48,17 @@
     <div v-else><no-data></no-data></div>
     <div class="action-group no-line">
       <span class="block-item">
-        <span class="color-tip bg-gray"></span>
+        <span class="color-tip bg-pending"></span>
         <span class="fz10">未开始</span>
       </span>
       <span class="block-item">
-        <span class="color-tip bg-warning"></span>
+        <span class="color-tip bg-info"></span>
         <span class="fz10"> 进行中</span>
       </span>
-      <!-- <span class="block-item">
-        <span class="color-tip bg-gray"></span>
-        <span class="fz10">已禁用</span>
-      </span> -->
+      <span class="block-item">
+        <span class="color-tip bg-warning"></span>
+        <span class="fz10">已终止</span>
+      </span>
       <span class="block-item">
         <span class="color-tip bg-error"></span>
         <span class="fz10">失败</span>
@@ -82,32 +81,33 @@ export default {
   },
   data() {
     return {
+      isFirst: true,
       isReady: true,
       statusMapClass: {
-        // pending: 'pending border-color-info',
-        success: 'success border-color-success text-success',
-        running: 'running border-color-warning text-warning',
-        failed: 'failed border-color-error text-error'
-        // disabled: 'bg-gray'
+        pending: 'pending',
+        completed: 'completed border-color-success text-success',
+        running: 'running border-color-info text-info',
+        failed: 'failed border-color-error text-error',
+        aborted: 'border-color-warning text-warning'
       },
       dataList: [],
       stepList: [
-        {name: '步骤一', groupSort: 0, status: 'success'},
-        {name: '步骤二', groupSort: 0, status: 'success'},
-        {name: '步骤三', groupSort: 0, status: 'success'},
-        {name: '步骤四', groupSort: 0, status: 'success'},     
-        {name: '步骤一', groupSort: 0, status: 'success'},
-        {name: '步骤二', groupSort: 1, status: 'failed'},
-        {name: '步骤三', groupSort: 1, status: 'success'},
-        {name: '步骤四', groupSort: 2, status: 'success'},
-        {name: '步骤一', groupSort: 2, status: 'success'},
-        {name: '步骤二', groupSort: 2, status: 'success'},
-        {name: '步骤三', groupSort: 3, status: 'success'},
-        {name: '步骤四', groupSort: 4, status: 'success'},     
-        {name: '步骤一', groupSort: 4, status: 'success'},
-        {name: '步骤二', groupSort: 5, status: 'success'},
-        {name: '步骤三', groupSort: 6, status: 'pending'},
-        {name: '步骤四', groupSort: 6, status: 'running', id: '123456'}
+        {jobPhaseName: '步骤一', jobGroupSort: 0, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤二', jobGroupSort: 0, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤三', jobGroupSort: 0, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤四', jobGroupSort: 0, jobPhaseStatus: 'success'},     
+        {jobPhaseName: '步骤一', jobGroupSort: 0, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤二', jobGroupSort: 1, jobPhaseStatus: 'failed'},
+        {jobPhaseName: '步骤三', jobGroupSort: 1, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤四', jobGroupSort: 2, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤一', jobGroupSort: 2, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤二', jobGroupSort: 2, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤三', jobGroupSort: 3, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤四', jobGroupSort: 4, jobPhaseStatus: 'success'},     
+        {jobPhaseName: '步骤一', jobGroupSort: 4, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤二', jobGroupSort: 5, jobPhaseStatus: 'success'},
+        {jobPhaseName: '步骤三', jobGroupSort: 6, jobPhaseStatus: 'pending'},
+        {jobPhaseName: '步骤四', jobGroupSort: 6, jobPhaseStatus: 'running'}
       ],
       percentData: 0
     };
@@ -128,7 +128,7 @@ export default {
   destroyed() {},
   methods: {
     createRandomData() {
-      // this.isReady = false;
+      this.isReady = false;
       this.dataList = this.getStepList(this.stepList); 
       this.getPercentData(this.stepList);
       this.$nextTick(() => {
@@ -137,8 +137,9 @@ export default {
       });
     },
     changeData() {
+      this.isFirst = false;
       if (this.data && this.data.length > 0) {
-        // this.isReady = false;
+        this.isReady = false;
         this.dataList = this.getStepList(this.data); 
         this.getPercentData(this.data);
         this.$nextTick(() => {
@@ -150,12 +151,12 @@ export default {
     getStepList(stepList) {
       let list = [];
       if (stepList.length) {
-        let groupSortList = stepList.filter(l => !this.$utils.isEmpty(l.groupSort));
+        let groupSortList = stepList.filter(l => !this.$utils.isEmpty(l.jobGroupSort));
         if (groupSortList && groupSortList.length) {
           for (let sort = 0, index = 0; index < groupSortList.length;) {
             let arr = [];
             groupSortList.filter(l => {
-              if (l.groupSort == sort) {
+              if (l.jobGroupSort == sort) {
                 arr.push(l);
                 index++;
                 return true;
@@ -170,7 +171,7 @@ export default {
     },
     stepScrollIntoView(dataList) {
       for (let i = 0; i < dataList.length; i++) {
-        if (dataList[i].status === 'running' && this.$refs['#step_' + dataList[i].id]) {
+        if (dataList[i].jobPhaseStatus === 'running' && this.$refs['#step_' + dataList[i].jobGroupSort + '_' + dataList[i].jobPhaseName]) {
           document.querySelector('#step_' + dataList[i].id).scrollIntoView({
             behavior: 'smooth', // 平滑过渡
             block: 'start' // start 上边框 center 中间 end 底部边框 与视窗顶部平齐
@@ -185,7 +186,7 @@ export default {
       if (list && list.length) {
         let i = 0;
         list.forEach(item => {
-          if (item.status === 'success') {
+          if (item.jobPhaseStatus === 'completed') {
             i += 1;
           }
         });
@@ -208,14 +209,34 @@ export default {
     },
     strokeWidth() {
       return this.widget && this.widget.config && this.widget.config.fontsize ? this.widget.config.fontsize - 3 : 10; 
+    },
+    getStatusClassName() {
+      return (jobPhaseStatus) => {
+        let className = this.statusMapClass[jobPhaseStatus] || '';
+        if (jobPhaseStatus && !className) {
+          if (['pausing', 'paused', 'aborting', 'waitInput'].includes(jobPhaseStatus)) {
+            className = this.statusMapClass['aborted'];
+          } else if (['checked', 'success'].includes(jobPhaseStatus)) {
+            className = this.statusMapClass['completed']; 
+          }
+        }
+        return className;
+      };
     }
   },
   watch: {
+    data: {
+      handler() {
+        if (this.isFirst) {
+          this.changeData();
+        }
+      },
+      deep: true
+    }
   }
 };
 </script>
 <style lang="less" scoped>
-@import (reference) '@/resources/assets/css/variable.less';
 .autoexec-widget{
   position: relative;
   padding-bottom: 10px;
@@ -260,9 +281,9 @@ export default {
     top: 64px;
   }
 }
-.pending{
-  background-color: rgba(22, 144, 255, .1);
-}
+// .pending{
+//   background-color: rgba(232, 232, 232, .1);
+// }
 .success {
   background-color: rgba(37, 184, 100, .1);
 }
