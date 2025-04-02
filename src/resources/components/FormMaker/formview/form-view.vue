@@ -1246,20 +1246,20 @@ export default {
   }
   // 解决sheet-table 添加间距，导致单选和复选框勾选样式不对的问题
   td[type='formradio'] {
-    /deep/ .ivu-radio-inner:after {
+    ::v-deep .ivu-radio-inner:after {
       top: 50%! important;
       left: 50% !important;
       transform: translate(-50%, -50%) scale(.38);
     }
   }
   td[type='formcheckbox'] {
-    /deep/ .ivu-checkbox-inner:after {
+    ::v-deep .ivu-checkbox-inner:after {
       top: -9px !important;
       left: -9px !important;
     }
   }
   // 解决复选框和文字对不齐问题
- /deep/ .overflow-ellipsis .ivu-checkbox-group > label > span.ivu-checkbox {
+ ::v-deep .overflow-ellipsis .ivu-checkbox-group > label > span.ivu-checkbox {
     top: 0;
   }
 }

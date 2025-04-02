@@ -222,11 +222,11 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ .ivu-timeline-item-head-custom {
+::v-deep .ivu-timeline-item-head-custom {
   left: -7px;
   font-size: 22px;
 }
-/deep/ .ivu-timeline-item-tail {
+::v-deep .ivu-timeline-item-tail {
   left: 12px;
 }
 .text-uppercase {

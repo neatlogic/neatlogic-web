@@ -116,7 +116,7 @@ export default {
 
 </script>
 <style lang="less" scoped>
-/deep/ .tsform-readonly{
+::v-deep .tsform-readonly{
   cursor: text;
 }
 </style>

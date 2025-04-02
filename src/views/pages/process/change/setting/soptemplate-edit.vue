@@ -226,7 +226,7 @@ export default {
     display: inline-block;
   }
 
-  /deep/ .select-top.ivu-input {
+  ::v-deep .select-top.ivu-input {
     padding-right: 30px;
   }
   .info-list {

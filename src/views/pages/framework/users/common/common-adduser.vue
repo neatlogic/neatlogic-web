@@ -685,7 +685,7 @@ export default {
   }
 
 }
-/deep/.tscard-body{
+::v-deep .tscard-body{
   padding: 0!important;
   // border-radius: 0px!important;
 }

@@ -476,7 +476,7 @@ function findParent(node) {
 @import (reference) '~@/resources/assets/css/theme.less';
 .theme(@border-color-base,@warning-color,@gray-color,@placeholder-color ,@blockbg,@dividing-color,@add-bg,@primary-color) {
   .sider-container {
-    /deep/#rightSider {
+    ::v-deep #rightSider {
       // white-space: pre-wrap;解决markdown预览会有一个空白行的问题
       >:first-of-type{
         // .tool{
@@ -519,10 +519,10 @@ function findParent(node) {
         border: 1px solid var(--border-color, @border-color-base);
       }
     }
-    /deep/.span-add{
+    ::v-deep .span-add{
       background: @add-bg;
     }
-    /deep/.tool-container{
+    ::v-deep .tool-container{
         .tool{
           &.tool-line{
             &::before{
@@ -589,7 +589,7 @@ html {
     padding-left: 24px;
     display: none;
   }
-  /deep/#rightSider {
+  ::v-deep #rightSider {
     min-height: 300px;
     outline: none;
     height: 100%;
@@ -676,7 +676,7 @@ html {
       vertical-align: baseline;
     }
   }
-  /deep/input {
+  ::v-deep input {
     outline: none;
   }
 }

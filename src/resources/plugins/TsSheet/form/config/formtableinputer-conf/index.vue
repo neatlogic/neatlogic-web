@@ -275,11 +275,11 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/ .ivu-checkbox-wrapper {
+::v-deep .ivu-checkbox-wrapper {
   margin-right: 0;
 }
 .checkbox-unique-rule-box {
-  /deep/ .ivu-checkbox-wrapper {
+  ::v-deep .ivu-checkbox-wrapper {
     margin-right: 8px;
   }
 }
@@ -289,7 +289,7 @@ export default {
   }
 }
 .batch-operation-box {
-  /deep/ .text-tip-active {
+  ::v-deep .text-tip-active {
     line-height: inherit;
   }
 }

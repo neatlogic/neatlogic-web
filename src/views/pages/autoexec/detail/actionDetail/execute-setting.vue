@@ -340,7 +340,7 @@ export default {
 .execute-main {
   padding: 16px 0;
 }
-/deep/ span.ivu-radio + * {
+::v-deep span.ivu-radio + * {
   margin-left: 4px;
   margin-right: 31px;
 }

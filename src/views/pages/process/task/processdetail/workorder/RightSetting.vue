@@ -608,8 +608,8 @@ export default {
        }
       }
       .usergroup-name,
-      /deep/ .ivu-tooltip,
-       /deep/ .ivu-tooltip-rel{
+      ::v-deep .ivu-tooltip,
+       ::v-deep .ivu-tooltip-rel{
         max-width: 100%;
       }
       .task-id {

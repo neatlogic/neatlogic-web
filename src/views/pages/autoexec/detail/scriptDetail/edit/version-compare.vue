@@ -262,7 +262,7 @@ export default {
   .text-tip{
     padding-bottom: 10px;
   }
-  /deep/ .top-content{
+  ::v-deep .top-content{
     text-align: center;
     padding-bottom: 16px;
   }

@@ -84,10 +84,10 @@ export default {
 </script>
 <style lang="less" scoped>
 .input-searcher-box {
-  /deep/ .ivu-input {
+  ::v-deep .ivu-input {
     padding: 0 26px 0 26px !important;
   }
-  /deep/ .ivu-input-prefix {
+  ::v-deep .ivu-input-prefix {
     left: 8px;
     i {
       font-size: 14px !important;

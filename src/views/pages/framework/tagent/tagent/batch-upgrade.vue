@@ -283,16 +283,16 @@ export default {
 .network {
   display: flex;
    position: relative;
-  /deep/ div:first-of-type {
+  ::v-deep div:first-of-type {
   //  解决网段IP和掩码有错误提示，高度不对齐问题
     height: 50px;
     line-height: 40px;
   }
-  /deep/ .form-error-tip {
+  ::v-deep .form-error-tip {
     position: absolute;
     top: 34px;
   }
-  /deep/ .ivu-input-icon {
+  ::v-deep .ivu-input-icon {
     line-height: 38px;
   }
 }
@@ -304,12 +304,12 @@ export default {
     line-height: 39px;
   }
   .inner-table{
-    /deep/ .tstable-container .tstable-body tbody tr .action-div {
+    ::v-deep .tstable-container .tstable-body tbody tr .action-div {
       // 解决操作一栏一直显示问题
       display: block !important;
       position: relative;
     }
-    /deep/ .tstable-container .tstable-body .action-tr {
+    ::v-deep .tstable-container .tstable-body .action-tr {
       opacity: 1;
     }
   }

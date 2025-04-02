@@ -340,7 +340,7 @@ html {
 }
 </style>
 <style lang="less" scoped>
-/deep/.tscard-container {
+::v-deep .tscard-container {
   .tscard-ul {
     .tscard-li {
       .tscard-inner {

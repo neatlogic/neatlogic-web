@@ -483,11 +483,11 @@ export default {
 </script>
 <style lang="less" scoped>
 @import '../public/common.less';
-/deep/.ivu-checkbox {
+::v-deep .ivu-checkbox {
   vertical-align: text-bottom;
 }
-/deep/.ivu-checkbox-wrapper,
-/deep/.ivu-radio-wrapper {
+::v-deep .ivu-checkbox-wrapper,
+::v-deep .ivu-radio-wrapper {
   margin-right: 16px;
 }
 .ci-left {
@@ -496,11 +496,11 @@ export default {
 .right-block {
   padding: 0px !important;
 }
-/deep/.action-item {
+::v-deep .action-item {
   padding: 0 16px 0 0px !important;
 }
 .ci-del-btn {
-  /deep/ &.action-item {
+  ::v-deep &.action-item {
     padding: 0 !important;
   }
 }

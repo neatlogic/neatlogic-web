@@ -745,20 +745,20 @@ export default {
 .userInfoStyle {
   position: relative;
   padding: 10px 16px 20px 16px !important;
-  /deep/.tscard-body {
+  ::v-deep .tscard-body {
     min-height: 42px !important;
   }
-  /deep/.ivu-dropdown {
+  ::v-deep .ivu-dropdown {
     display: block !important;
   }
-  /deep/.text-action:before {
+  ::v-deep .text-action:before {
     margin-right: 0px !important;
   }
 }
 
 .control-box {
   display: flex;
-  /deep/.tsfont:before {
+  ::v-deep .tsfont:before {
     vertical-align: text-top;
   }
 }
@@ -780,7 +780,7 @@ export default {
 .testLinksBox {
   display: flex;
   // padding: 8px 0;
-  /deep/.tsfont:before {
+  ::v-deep .tsfont:before {
     vertical-align: text-top;
   }
   .itemLinks {
@@ -802,7 +802,7 @@ export default {
     padding: 0 !important;
   }
 }
-/deep/.reference-main {
+::v-deep .reference-main {
   height: 18px;
 }
 </style>

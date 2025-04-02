@@ -252,7 +252,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/deep/.ivu-spin-fix{
+::v-deep .ivu-spin-fix{
   background:transparent!important;
 }
 .dashboard-title {

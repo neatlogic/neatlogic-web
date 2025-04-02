@@ -118,7 +118,7 @@ export default {
 .param-main{
   margin-bottom: 16px;
   .content{
-    /deep/ .ivu-checkbox-wrapper{
+    ::v-deep .ivu-checkbox-wrapper{
       margin-right: 32px;
       .ivu-checkbox {
         margin-right: 4px;

@@ -1,6 +1,6 @@
-import { rspack } from '@rsbuild/core';
-import { defineConfig } from '@rsbuild/core';
+import { rspack, defineConfig } from '@rsbuild/core';
 import { pluginVue2 } from '@rsbuild/plugin-vue2';
+import { pluginLess } from '@rsbuild/plugin-less';
 let commercialModule = './src/commercial-module';
 import path from 'path';
 import glob from 'glob';
@@ -114,7 +114,21 @@ const copyFavicon = faviconPath ? [
   }
 ] : [];
 export default defineConfig({
-  plugins: [pluginVue2()],
+  plugins: [pluginVue2(), pluginLess({
+    lessLoaderOptions: {
+      lessOptions: {
+        javascriptEnabled: true,
+        globalVars: {
+          'top-height': '50px',
+          'actionbar-height': '50px',
+          'space-normal': '16px',
+          'space-md': '12px',
+          'space-sm': '10px',
+          'space-icon': '3px'
+        }
+      }
+    }
+  })],
   html: {
     template: './public/rs-index.html',
     title: pageTitle,
@@ -136,19 +150,6 @@ export default defineConfig({
           patterns: [...copyRsPack, ...copyFavicon]
         }) 
       ]
-    },
-    less: {
-      lessOptions: {
-        javascriptEnabled: true,
-        globalVars: {
-          'top-height': '50px',
-          'actionbar-height': '50px',
-          'space-normal': '16px',
-          'space-md': '12px',
-          'space-sm': '10px',
-          'space-icon': '3px'
-        }
-      }
     }
   },
   source: {
@@ -216,6 +217,18 @@ export default defineConfig({
       js: 'resource/js',
       wasm: 'resource/js',
       css: 'resource/css'
+    }
+  },
+  resolve: {
+    alias: {
+      /**
+       * 解决报错：You are using the runtime-only build of Vue where the template compiler is not available. Either pre-compile the templates into render functions, or use the compiler-included build.
+       * vue/dist/vue.esm.js 表示完整版的vue文件，同时包含编辑器和运行时的版本
+       * 
+       * 解决错误的原理：通过设置这个别名，让项目从引入 Runtime-only 版本转变为引入包含编译器的 vue.esm.js 文件。
+       *                 这样，当代码中使用 template 选项定义模板字符串时，在运行时 Vue 就可以使用其自带的编译器将模板字符串编译成渲染函数，从而避免了因缺少编译器而产生的错误
+       *  */ 
+      'vue$': 'vue/dist/vue.esm.js' // 将vue的模式改成运行时才编译，解决template动态编译模板的问题
     }
   }
 });

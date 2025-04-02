@@ -469,7 +469,7 @@ export default {
   height: 100%;
   overflow-y: hidden;
 }
-/deep/ .ivu-layout-content{
+::v-deep .ivu-layout-content{
   overflow-y: hidden !important;
 }
 </style>

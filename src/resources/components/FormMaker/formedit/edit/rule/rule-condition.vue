@@ -297,7 +297,7 @@ export default {
     &:after {
       bottom: 0;
     }
-    /deep/ .ivu-input {
+    ::v-deep .ivu-input {
       background: transparent;
     }
   }

@@ -135,8 +135,8 @@ export default {
     width: 100%;
   }
    .tooltip-box {
-    /deep/ &.ivu-tooltip,
-    /deep/ .ivu-tooltip-rel {
+    ::v-deep &.ivu-tooltip,
+    ::v-deep .ivu-tooltip-rel {
       max-width: 100%;
       width: 100%;
     }

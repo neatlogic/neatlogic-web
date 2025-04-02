@@ -546,7 +546,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .job-detail {
-  /deep/.job-tab {
+  ::v-deep .job-tab {
     .block-tabs2 > .ivu-tabs-bar {
       background: #fff;
       border-bottom: none;
@@ -559,7 +559,7 @@ export default {
       overflow-y: hidden;
     }
   }
-  /deep/.goprev-right {
+  ::v-deep .goprev-right {
     padding-left: 0px;
   }
 }

@@ -223,7 +223,7 @@ export default {
 @padding-left:16px;
   .edit-code{
     position: relative;
-    /deep/.codeMain{
+    ::v-deep .codeMain{
       white-space:pre-wrap;
       overflow: auto;
       counter-reset:section;
@@ -250,10 +250,10 @@ export default {
        content:attr(data-placeholder)
       }
     }
-    /deep/ .critical{
+    ::v-deep .critical{
       background: fade(@error-color, 20%);
     }
-    /deep/ .warning{
+    ::v-deep .warning{
       background: fade(@warning-color, 20%);
     }
   }

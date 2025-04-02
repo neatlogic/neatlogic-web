@@ -270,8 +270,8 @@ export default {
       padding-left: 10px;
       overflow:hidden;
       .valid-text,
-      /deep/ .ivu-tooltip,
-       /deep/ .ivu-tooltip-rel{
+      ::v-deep .ivu-tooltip,
+       ::v-deep .ivu-tooltip-rel{
         max-width: 100%;
       }
     }

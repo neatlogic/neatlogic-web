@@ -126,7 +126,7 @@ export default {
   }
 }
 .treeCur{
-  /deep/.select-top{
+  ::v-deep .select-top{
     cursor: not-allowed!important;
   }
 }

@@ -207,14 +207,14 @@ export default {
     display: inline-block;
     vertical-align: bottom;
   }
-  /deep/ .usercard-container{
+  ::v-deep .usercard-container{
     .noCursor {
       line-height: initial;
     }
   }
 }
 .detail-main{
-  /deep/ .image > img {
+  ::v-deep .image > img {
     max-width: 100%;
   }
 }

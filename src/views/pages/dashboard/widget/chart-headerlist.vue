@@ -141,7 +141,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/deep/.ivu-tree ul li{
+::v-deep .ivu-tree ul li{
   border-radius: 8px;
 }
 </style>

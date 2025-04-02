@@ -75,7 +75,7 @@ export default {
   width: 80%;
 }
 .dark{
-  /deep/.ivu-btn-primary{
+  ::v-deep .ivu-btn-primary{
     border-color: var(--dark-primaryBtn, #c6d9f6);
     background-color: var(--dark-primaryBtn, #F0F0F0);
     &:hover {
@@ -83,10 +83,10 @@ export default {
       background-color: var(--dark-primaryBtnHover, #c6d9f6);
     }
   }
-  /deep/.ivu-input:not([disabled]):hover{
+  ::v-deep .ivu-input:not([disabled]):hover{
     border-color: var(--dark-primaryBtn, #c6d9f6);
   }
-  /deep/.ivu-btn-default{
+  ::v-deep .ivu-btn-default{
     border-color: var(--dark-primaryBtnHover, #c6d9f6);
     color: var(--dark-primaryBtn, #c6d9f6);
   }
@@ -98,7 +98,7 @@ export default {
   }
 }
 .light{
-  /deep/.ivu-btn-primary{
+  ::v-deep .ivu-btn-primary{
     background-color: var(--light-primaryBtn, #c6d9f6);
     border-color: var(--light-primaryBtn, #c6d9f6);
     &:hover {
@@ -106,10 +106,10 @@ export default {
       background-color: var(--light-primaryBtn, #c6d9f6);
     }
   }
-  /deep/.ivu-input:not([disabled]):hover{
+  ::v-deep .ivu-input:not([disabled]):hover{
     border-color: var(--light-primaryBtn, #c6d9f6);
   }
-  /deep/.ivu-btn-default{
+  ::v-deep .ivu-btn-default{
     border-color: var(--light-primaryBtnHover, #c6d9f6);
     color: var(--light-primaryBtn, #c6d9f6);
   }

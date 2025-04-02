@@ -613,15 +613,15 @@ export default {
 </script>
 <style lang="less" scoped>
 .app-config-tree {
-  /deep/ .ivu-tree-title {
+  ::v-deep .ivu-tree-title {
     height: 32px;
     padding: 7px 10px 7px 20px;
     border-radius: 6px;
   }
-  /deep/ .ivu-tree-arrow {
+  ::v-deep .ivu-tree-arrow {
     padding-top: 5px;
   }
-  /deep/ .ivu-icon-ios-arrow-forward:before {
+  ::v-deep .ivu-icon-ios-arrow-forward:before {
     font-family: 'tsfont';
     content: '\e899'; // tsfont-drop-right字体图标
   }

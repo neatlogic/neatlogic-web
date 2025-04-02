@@ -117,7 +117,7 @@ export default {
     margin-bottom: 10px;
   }
 }
-/deep/ .help-tips{
+::v-deep .help-tips{
   font-size: 10px;
   padding: 4px 4px 4px 20px;
   .table-container{

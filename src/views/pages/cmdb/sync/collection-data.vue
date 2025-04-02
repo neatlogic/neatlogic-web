@@ -185,13 +185,13 @@ export default {
 .top {
   vertical-align: top;
 }
-/deep/.jv-light {
+::v-deep .jv-light {
   background: transparent !important;
 }
-/deep/.jv-code {
+::v-deep .jv-code {
   padding: 0px !important;
 }
-/deep/.top {
+::v-deep .top {
   vertical-align: top !important;
 }
 .table td {

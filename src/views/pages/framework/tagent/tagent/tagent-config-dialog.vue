@@ -119,7 +119,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .config-detail-box {
-  /deep/ .require-label::before {
+  ::v-deep .require-label::before {
     font-size: 21px;
   }
   .config-detail-li {

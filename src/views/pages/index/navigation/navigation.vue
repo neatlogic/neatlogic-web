@@ -172,7 +172,7 @@ export default {
         align-items: flex-start;
       }
 
-      /deep/ .ivu-card-body {
+      ::v-deep .ivu-card-body {
         padding: 0;
       }
     }

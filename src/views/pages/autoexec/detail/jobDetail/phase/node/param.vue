@@ -271,7 +271,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/.tstable-container {
+::v-deep .tstable-container {
   position: inherit;
 }
 .popTipContent {

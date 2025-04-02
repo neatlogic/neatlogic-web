@@ -293,7 +293,7 @@ export default {
         position: relative;
         display: block;
         padding-right: 80px;
-        /deep/.stepStatues {
+        ::v-deep .stepStatues {
           padding: 0px 4px;
           position: absolute;
           right: 0px;

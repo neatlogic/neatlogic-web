@@ -556,13 +556,13 @@ export default {
 }
 .theme(@background-color) {
   .formitem-container {
-    /deep/ .ivu-collapse-content {
+    ::v-deep .ivu-collapse-content {
       background-color: @background-color;
       > .ivu-collapse-content-box {
         padding-top: 0;
       }
     }
-    /deep/ .ivu-collapse {
+    ::v-deep .ivu-collapse {
       border: none;
     }
   }

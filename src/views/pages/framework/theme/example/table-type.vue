@@ -1,10 +1,6 @@
 <template>
   <div class="padding" :class="type">
-    <TsTable
-      v-bind="tableConfig"
-      :theadList="theadList"
-    >
-    </TsTable>
+    <TsTable v-bind="tableConfig" :theadList="theadList"></TsTable>
   </div>
 </template>
 <script>
@@ -13,7 +9,7 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
-  props: {item: Object, type: String, list: Array},
+  props: { item: Object, type: String, list: Array },
   data() {
     return {
       tableConfig: {
@@ -21,11 +17,11 @@ export default {
         pageSize: 20,
         currentPage: 1,
         tbodyList: [
-          {name: 'test', url: 'NANSHAN', referenceCount: 100},
-          {name: 'test1', url: 'LUOHU', referenceCount: 200},
-          {name: 'test2', url: 'FUTIAN', referenceCount: 10},
-          {name: 'test3', url: 'BAOAN', referenceCount: 0},
-          {name: 'test4', url: 'LONGGANG', referenceCount: 60}
+          { name: 'test', url: 'NANSHAN', referenceCount: 100 },
+          { name: 'test1', url: 'LUOHU', referenceCount: 200 },
+          { name: 'test2', url: 'FUTIAN', referenceCount: 10 },
+          { name: 'test3', url: 'BAOAN', referenceCount: 0 },
+          { name: 'test4', url: 'LONGGANG', referenceCount: 60 }
         ]
       },
       theadList: [
@@ -115,71 +111,75 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.dark{
-  .bg-table{
-    background:var(--dark-tableHover, #ECEDF0) !important;
+.dark {
+  .bg-table {
+    background: var(--dark-tableHover, #ecedf0) !important;
   }
-  /deep/.tstable-body{
-    thead, th{
-      background:var(--dark-thbg-color, #151824) !important;
+  ::v-deep .tstable-body {
+    thead,
+    th {
+      background: var(--dark-thbg-color, #151824) !important;
     }
-    tbody > tr.selected{
-      background: var(--dark-primaryGrey, #E7F0FF) !important;
+    tbody > tr.selected {
+      background: var(--dark-primaryGrey, #e7f0ff) !important;
     }
-    tbody > tr:hover, .tstable-tr:hover{
-      background:var(--dark-tableHover, #ECEDF0) !important;
+    tbody > tr:hover,
+    .tstable-tr:hover {
+      background: var(--dark-tableHover, #ecedf0) !important;
     }
-    &.selected{
-      background: var(--dark-primaryGrey, #E7F0FF) !important;
+    &.selected {
+      background: var(--dark-primaryGrey, #e7f0ff) !important;
       .action-bg {
-        background: var(--dark-primaryGrey, #E7F0FF) !important;
+        background: var(--dark-primaryGrey, #e7f0ff) !important;
       }
       .tstable-action {
         .tstable-action-ul {
-          background: var(--dark-primaryGrey, #E7F0FF) !important;
-          .mask{
-            background: var(--dark-primaryGrey, #E7F0FF) !important;
+          background: var(--dark-primaryGrey, #e7f0ff) !important;
+          .mask {
+            background: var(--dark-primaryGrey, #e7f0ff) !important;
           }
         }
       }
     }
   }
-
 }
-.light{
-  .bg-table{
-    background:var(--light-tableHover, #EFF0F3) !important;
+.light {
+  .bg-table {
+    background: var(--light-tableHover, #eff0f3) !important;
   }
-  .bg-table-header{
-    background-color:var(--light-thbg-color, #EFF0F3) !important;
+  .bg-table-header {
+    background-color: var(--light-thbg-color, #eff0f3) !important;
   }
-  /deep/.tstable-body{
-    thead, th{
-      background:var(--light-thbg-color, #EFF0F3) !important;
+  ::v-deep .tstable-body {
+    thead,
+    th {
+      background: var(--light-thbg-color, #eff0f3) !important;
     }
-    tbody > tr.selected{
-      background: var(--light-primaryGrey, #E7F0FF) !important;
+    tbody > tr.selected {
+      background: var(--light-primaryGrey, #e7f0ff) !important;
     }
-    tbody > tr:hover, .tstable-tr:hover{
-      background:var(--light-tableHover, #EFF0F3) !important;
+    tbody > tr:hover,
+    .tstable-tr:hover {
+      background: var(--light-tableHover, #eff0f3) !important;
     }
-    &.selected{
-        background: var(--light-primaryGrey, #E7F0FF) !important;
-        .action-bg {
-          background: var(--light-primaryGrey, #E7F0FF) !important;
-        }
-        .tstable-action {
-          .tstable-action-ul {
-            background: var(--light-primaryGrey, #E7F0FF) !important;
-            .mask{
-              background: var(--light-primaryGrey, #E7F0FF) !important;
-            }
+    &.selected {
+      background: var(--light-primaryGrey, #e7f0ff) !important;
+      .action-bg {
+        background: var(--light-primaryGrey, #e7f0ff) !important;
+      }
+      .tstable-action {
+        .tstable-action-ul {
+          background: var(--light-primaryGrey, #e7f0ff) !important;
+          .mask {
+            background: var(--light-primaryGrey, #e7f0ff) !important;
           }
         }
       }
-    >tr {
-      &:hover ,&.selected:hover{
-        background:var(--light-tableHover, #EFF0F3) !important;
+    }
+    > tr {
+      &:hover,
+      &.selected:hover {
+        background: var(--light-tableHover, #eff0f3) !important;
       }
     }
   }

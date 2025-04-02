@@ -553,11 +553,11 @@ export default {
 }
 .nopadding {
   padding: 0 !important;
-  /deep/ .search {
+  ::v-deep .search {
     width: 100%;
   }
 }
-/deep/ .tag-item-text{
+::v-deep .tag-item-text{
   display: block !important;
   &:not(:last-of-type){
     margin-right: 0 !important;

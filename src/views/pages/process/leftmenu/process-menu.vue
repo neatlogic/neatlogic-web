@@ -429,7 +429,7 @@ export default {
         height: 16px;
         min-width: 18px;
         border-radius: 8px;
-        /deep/span {
+        ::v-deep span {
           display: block;
         }
       }

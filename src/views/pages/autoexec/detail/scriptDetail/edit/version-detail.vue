@@ -140,7 +140,7 @@ export default {
   position: relative;
   height: 100%;
   overflow-y: auto;
-  /deep/ .version-top{
+  ::v-deep .version-top{
     display: flex;
     justify-content: space-between;
     padding-bottom: 16px;
@@ -155,7 +155,7 @@ export default {
       }
     }
   }
-  /deep/ .item-list{
+  ::v-deep .item-list{
     padding-bottom: 16px;
     .text-title{
       padding-bottom: 8px;

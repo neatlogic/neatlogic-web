@@ -601,7 +601,7 @@ export default {
     padding: 0 4px;
   }
 }
-/deep/.tsslider-body {
+::v-deep .tsslider-body {
   overflow-x: hidden;
 }
 .changeDispatch {

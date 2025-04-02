@@ -180,16 +180,16 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/deep/.ivu-color-picker-picker{
+::v-deep .ivu-color-picker-picker{
   width:260px;
 }
-/deep/.ivu-color-picker-picker-panel, /deep/.ivu-color-picker-picker-hue-slider{
+::v-deep .ivu-color-picker-picker-panel, ::v-deep.ivu-color-picker-picker-hue-slider{
   display:none;
 }
-/deep/ .sheet-style-setting-bg .ivu-color-picker-confirm-color {
+::v-deep .sheet-style-setting-bg .ivu-color-picker-confirm-color {
   display: none;
 }
-/deep/ .ivu-color-picker-confirm .ivu-btn-default{
+::v-deep .ivu-color-picker-confirm .ivu-btn-default{
   // 调整按钮间距
   margin-right: 16px;
 }
