@@ -107,7 +107,7 @@
                 :name="processName"
                 :formConfig="formConfig"
                 :stepList="stepList"
-                :processConfig="processConfig"
+                :processConfig="isNew ? newProcessConfig : processConfig"
                 @changeFlowName="updateFlowName"
                 @updateformitemList="updateformitemList"
                 @changeRelateForm="changeRelateForm"
@@ -259,7 +259,8 @@ export default {
       flowConfig: {}, //流程设计器的设置
       flowData: { process: { formConfig: {} } }, //流程数据
       allowDispatchStepWorkerNode: [], //允许指派任务的节点
-      processTaskId: null
+      processTaskId: null,
+      newProcessConfig: null
     };
   },
   beforeCreate() {},
@@ -1061,6 +1062,10 @@ export default {
       await this.$api.process.process.processComponent().then(res => {
         this.nodeList = res.Return;
         this.allowDispatchStepWorkerNode = this.nodeList.filter(item => item.allowDispatchStepWorker).map(item => item.handler);
+        const processConfig = this.nodeList.find((item) => item.handler == 'end')?.config?.processConfig;
+        if (!this.$utils.isEmpty(processConfig) && this.isNew) {
+          this.newProcessConfig = processConfig;
+        }
       });
     },
     selectDraftRow(row) {
