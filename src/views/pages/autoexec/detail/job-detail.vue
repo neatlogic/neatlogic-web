@@ -389,7 +389,7 @@ export default {
           this.$set(this.jobData, 'status', res.Return['status']);
           this.$set(this.jobData, 'statusName', res.Return['statusName']);
           if (this.jobData && this.jobData.extraInfo) {
-            this.$set(this.jobData.extraInfo, 'isHasLock', res.Return['isHasLock']);
+            this.$set(this.jobData, 'extraInfo', res.Return['extraInfo']);
           }
           if (this.jobData && this.jobData.phaseList) {
             const phaseIdList = [];
@@ -399,9 +399,10 @@ export default {
               }
             });
             if (phaseIdList.length > 0) {
-              this.timmer = setTimeout(() => {
-                this.refreshPhaseList(phaseIdList);
-              }, 5000);
+              //refreshPhaseList存在定时器
+              // this.timmer = setTimeout(() => {
+              this.refreshPhaseList(phaseIdList);
+              // }, 5000);
             }
           }
         })
@@ -436,7 +437,7 @@ export default {
             }
           });
           if (this.jobData && this.jobData.extraInfo) {
-            this.$set(this.jobData.extraInfo, 'isHasLock', res.Return['isHasLock']);
+            this.$set(this.jobData, 'extraInfo', res.Return['extraInfo']);
           }
           if (phaseIdList.length > 0) {
             this.timmer = setTimeout(() => {
