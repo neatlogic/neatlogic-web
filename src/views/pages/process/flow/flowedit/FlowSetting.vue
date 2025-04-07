@@ -307,7 +307,7 @@ export default {
           uuid: this.uuid,
           notifyPolicyConfig: this.notifyPolicyConfig,
           actionConfig: this.actionConfig,
-          enableAuthority: this.configData.enableAuthority || 0,
+          enableAuthority: this.configData?.enableAuthority || 0,
           authorityList: this.flowAuthorityConifig.authorityList,
           enableMarkRepeat: this.activeSetting.enableMarkRepeat
         },
