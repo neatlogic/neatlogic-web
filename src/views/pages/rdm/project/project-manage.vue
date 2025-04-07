@@ -78,14 +78,9 @@ export default {
           key: 'endDate',
           title: this.$t('page.enddate')
         },
-
         {
           key: 'color',
           title: this.$t('page.color')
-        },
-        {
-          key: 'description',
-          title: this.$t('page.description')
         }
       ],
       projectData: {},
