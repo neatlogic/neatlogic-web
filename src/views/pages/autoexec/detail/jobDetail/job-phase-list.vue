@@ -40,6 +40,10 @@
                   </template>
                 </Tooltip>
               </div>
+              <div v-if="phase.startTime || phase.endTime" class="pt-xs text-grey">
+                {{ phase.startTime | formatDate('mm-dd hh:mm') }}~
+                <template v-if="phase.endTime">{{ phase.endTime | formatDate('mm-dd hh:mm') }}</template>
+              </div>
             </li>
           </ul>
         </li>
@@ -260,7 +264,7 @@ export default {
     li {
       position: relative;
       margin-bottom: 16px;
-      padding: 16px 10px;
+      padding: 10px;
 
       > ul {
         > li {
@@ -288,7 +292,7 @@ export default {
         }
       }
       .stepProcess {
-        padding-top: 10px;
+        padding-top: 6px;
         line-height: @iconWidth;
         position: relative;
         display: block;
@@ -297,7 +301,7 @@ export default {
           padding: 0px 4px;
           position: absolute;
           right: 0px;
-          top: 10px;
+          top: 4px;
         }
       }
     }
