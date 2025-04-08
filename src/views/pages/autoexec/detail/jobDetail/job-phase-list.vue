@@ -40,9 +40,22 @@
                   </template>
                 </Tooltip>
               </div>
-              <div v-if="phase.startTime || phase.endTime" class="pt-xs text-grey">
-                {{ phase.startTime | formatDate('mm-dd hh:mm') }}~
-                <template v-if="phase.endTime">{{ phase.endTime | formatDate('mm-dd hh:mm') }}</template>
+              <div>
+                <Tooltip
+                  v-if="phase.startTime || phase.endTime"
+                  theme="light"
+                  max-width="300"
+                  transfer
+                >
+                  <div class="pt-xs text-grey" style="">
+                    {{ phase.startTime | formatDate('hh:mm:ss') }}<template v-if="phase.endTime"> ~ {{ phase.endTime | formatDate('hh:mm:ss') }}</template>
+                  </div>
+                  <div slot="content">
+                    <div>
+                      {{ phase.startTime | formatDate() }}<template v-if="phase.endTime"> ~ {{ phase.endTime | formatDate() }}</template>
+                    </div>
+                  </div>
+                </Tooltip>
               </div>
             </li>
           </ul>
