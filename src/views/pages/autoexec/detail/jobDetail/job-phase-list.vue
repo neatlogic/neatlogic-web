@@ -47,7 +47,7 @@
                   max-width="300"
                   transfer
                 >
-                  <div class="pt-xs text-grey" style="">
+                  <div class="pt-xs text-grey">
                     {{ phase.startTime | formatDate('hh:mm:ss') }}<template v-if="phase.endTime"> ~ {{ phase.endTime | formatDate('hh:mm:ss') }}</template>
                   </div>
                   <div slot="content">
