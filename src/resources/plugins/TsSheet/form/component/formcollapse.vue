@@ -93,7 +93,7 @@ export default {
         this.$emit('resize');
       }, 300);
     },
-    dropFormItem(event, panel) {
+    dropFormItem(event, tab) {
       if (this.mode === 'edit' || this.mode === 'editSubform') {
         if (this.formItem.hasOwnProperty('inherit')) {
           return false;
@@ -104,7 +104,7 @@ export default {
           return false;
         }
        
-        if (panel && item) {
+        if (tab && item) {
           if (!tab.component) {
             this.$set(tab, 'component', []);
           }
@@ -114,7 +114,7 @@ export default {
               this.formItem.component.push(item);
               tab.component.push(item.uuid);
             } else {
-              this.currentTabObj = panel;
+              this.currentTabObj = tab;
               this.currentEventItem = item;
               this.isShowFormItemKeyDialog = true;
             }
