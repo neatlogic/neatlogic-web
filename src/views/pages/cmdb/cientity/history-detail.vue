@@ -72,7 +72,7 @@
           </template>
         </TsTable>
         <Divider v-if="transactionData.description" orientation="left">{{ $t('page.memo') }}</Divider>
-        <div v-if="transactionData.description" class="fz10 text-grey">{{ transactionData.description }}</div>
+        <div v-if="transactionData.description" class="fz10 text-grey" v-html="transactionData.description"></div>
       </template>
       <template v-slot:footer>
         <Button v-if="allowRecover" type="primary" @click="recoverCiEntity()">{{ $t('page.recover') }}</Button>
@@ -107,7 +107,7 @@ export default {
       authData: {},
       allowRecover: false, //是否允许恢复事务
       dialogConfig: {
-        title: this.$t('page.detail'),
+        title: '修改详情',
         type: 'modal',
         maskClose: true,
         isShow: true,

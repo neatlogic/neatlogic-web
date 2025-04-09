@@ -45,10 +45,10 @@
               <span v-if="transaction.description.length > 50">
                 <Tooltip max-width="200" :transfer="true" placement="left-start">
                   <div>{{ transaction.description.substr(0, 50) }}...</div>
-                  <div slot="content">{{ transaction.description }}</div>
+                  <div slot="content" v-html="transaction.description"></div>
                 </Tooltip>
               </span>
-              <span v-else>{{ transaction.description }}</span>
+              <span v-else v-html="transaction.description"></span>
             </div>
           </div>
         </TimelineItem>
