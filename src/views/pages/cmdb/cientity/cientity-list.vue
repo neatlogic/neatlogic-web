@@ -331,7 +331,7 @@
                 :authData="row.authData"
               ></AttrViewer>
             </div>
-            <div v-else>-</div>
+            <div v-else class="text-grey">-</div>
           </div>
           <div v-else-if="head.key.startsWith('global_') && row.globalAttrEntityData" :key="index">
             <div v-if="row.globalAttrEntityData[head.key]">
@@ -339,16 +339,20 @@
                 {{ v.value }}
               </Tag>
             </div>
+            <div v-else class="text-grey">-</div>
           </div>
           <div v-else-if="head.key.startsWith('const_')" :key="index" v-html="row[head.key.replace('const_', '')]"></div>
-          <div v-else-if="(head.key.startsWith('relto_') || head.key.startsWith('relfrom_')) && row.relEntityData && row.relEntityData[head.key] && row.relEntityData[head.key]['valueList']" :key="index">
-            <span v-for="(relentity, rindex) in row.relEntityData[head.key]['valueList']" :key="rindex" class="mr-xs">
-              <a v-if="row.maxRelEntityCount > rindex" href="javascript:void(0)" @click="toCiEntity(relentity.ciEntityId, relentity.ciId)">
-                <span class="tsfont-ci-o"></span>
-                <span>{{ relentity.ciEntityName }}</span>
-              </a>
-            </span>
-            <span v-if="row.relEntityData[head.key]['valueList'].length > 0 && row.relEntityData[head.key]['valueList'].length > row.maxRelEntityCount" class="text-href tsfont-option-horizontal" @click="showMoreRelCiEntity(row.relEntityData[head.key])"></span>
+          <div v-else-if="(head.key.startsWith('relto_') || head.key.startsWith('relfrom_'))" :key="index">
+            <div v-if="row.relEntityData && row.relEntityData[head.key] && row.relEntityData[head.key]['valueList'] && row.relEntityData[head.key]['valueList'].length > 0">
+              <span v-for="(relentity, rindex) in row.relEntityData[head.key]['valueList']" :key="rindex" class="mr-xs">
+                <a v-if="row.maxRelEntityCount > rindex" href="javascript:void(0)" @click="toCiEntity(relentity.ciEntityId, relentity.ciId)">
+                  <span class="tsfont-ci-o"></span>
+                  <span>{{ relentity.ciEntityName }}</span>
+                </a>
+              </span>
+              <span v-if="row.relEntityData[head.key]['valueList'].length > row.maxRelEntityCount" class="text-href tsfont-option-horizontal" @click="showMoreRelCiEntity(row.relEntityData[head.key])"></span>
+            </div>
+            <div v-else class="text-grey">-</div>
           </div>
         </template>
         <template slot="action" slot-scope="{ row }">

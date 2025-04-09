@@ -155,12 +155,13 @@
                                   :authData="ciEntityData.authData"
                                   mode="detail"
                                 ></AttrViewer>
-                                <div v-else>-</div>
+                                <div v-else class="text-grey">-</div>
                               </div>
                               <div v-else-if="attr._type === 'global'">
                                 <div v-if="attr.valueList && attr.valueList.length > 0">
                                   <Tag v-for="(v, vindex) in attr.valueList" :key="vindex">{{ v.value }}</Tag>
                                 </div>
+                                <div v-else class="text-grey">-</div>
                               </div>
                               <div v-else-if="attr._type === 'const'" class="content" v-html="ciEntityData[attr.name.replace('_', '')] || '-'"></div>
                             </div>
