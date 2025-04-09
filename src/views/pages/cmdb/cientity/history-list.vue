@@ -42,13 +42,13 @@
             </div>
             <Divider v-if="transaction.description" style="margin: 3px 0px; font-size: 12px" orientation="start">{{ $t('term.cmdb.changememo') }}</Divider>
             <div v-if="transaction.description" class="text-grey">
-              <span v-if="transaction.description.length > 50">
+              <!--<span v-if="transaction.description.length > 50">
                 <Tooltip max-width="200" :transfer="true" placement="left-start">
                   <div>{{ transaction.description.substr(0, 50) }}...</div>
                   <div slot="content" v-html="transaction.description"></div>
                 </Tooltip>
-              </span>
-              <span v-else v-html="transaction.description"></span>
+              </span>-->
+              <span v-html="transaction.description"></span>
             </div>
           </div>
         </TimelineItem>
