@@ -295,13 +295,16 @@ export default {
     addHistory(isActive, isFallback) {
       //给恢复队列增加历史数据
       const dashboardData = this.$utils.deepClone(this.dashboard);
-      dashboardData.widgetList.forEach(widget => {
-        for (let key in widget) {
-          if (key.startsWith('_')) {
-            this.$delete(widget, key);
+      if (dashboardData && dashboardData.widgetList && dashboardData.widgetList.length > 0) {
+        dashboardData.widgetList.forEach(widget => {
+          for (let key in widget) {
+            if (key.startsWith('_')) {
+              this.$delete(widget, key);
+            }
           }
-        }
-      });
+        });
+      }
+   
       //如果已经是恢复途中，则把isInUse后面的数据先清除再Push
       const inUseIndex = this.recoverQueue.findIndex(d => d.isInUse);
       if (inUseIndex > -1) {
@@ -404,14 +407,16 @@ export default {
       const newWidget = this.$utils.deepClone(widget);
       let maxI = 0;
       let maxY = 0;
-      this.dashboard.widgetList.forEach(element => {
-        if (maxI < element.i) {
-          maxI = element.i;
-        }
-        if (maxY < element.y) {
-          maxY = element.y;
-        }
-      });
+      if (this.dashboard && this.dashboard.widgetList && this.dashboard.widgetList.length > 0) {
+        this.dashboard.widgetList.forEach(element => {
+          if (maxI < element.i) {
+            maxI = element.i;
+          }
+          if (maxY < element.y) {
+            maxY = element.y;
+          }
+        });
+      }
       newWidget.name = newWidget.name + '_copy';
       newWidget.i = maxI + 1;
       newWidget.x = 0;
@@ -419,20 +424,30 @@ export default {
       newWidget._selected = false;
       newWidget.uuid = this.$utils.setUuid(); //前端使用uuid作为唯一标识
       this.addHistory(true);
+      if (this.$utils.isEmpty(this.dashboard)) {
+        this.dashboard = {
+          name: '',
+          isActive: 1,
+          widgetList: []
+        };
+      } else if (!this.dashboard.hasOwnProperty('widgetList')) {
+        this.$set(this.dashboard, 'widgetList', []);
+      } 
       this.dashboard.widgetList.push(newWidget);
     },
     addWidget(widget) {
       let maxI = 0;
       let maxY = 0;
-      this.dashboard.widgetList.forEach(element => {
-        if (maxI < element.i) {
-          maxI = element.i;
-        }
-        if (maxY < element.y) {
-          maxY = element.y;
-        }
-      });
-
+      if (this.dashboard && this.dashboard.widgetList && this.dashboard.widgetList.length > 0) {
+        this.dashboard.widgetList.forEach(element => {
+          if (maxI < element.i) {
+            maxI = element.i;
+          }
+          if (maxY < element.y) {
+            maxY = element.y;
+          }
+        });
+      }
       const newWidget = {
         type: widget.type,
         w: widget.width,
@@ -452,6 +467,15 @@ export default {
       }
       newWidget.uuid = this.$utils.setUuid(); //前端使用uuid作为唯一标识
       this.addHistory(true);
+      if (this.$utils.isEmpty(this.dashboard)) {
+        this.dashboard = {
+          name: '',
+          isActive: 1,
+          widgetList: []
+        };
+      } else if (!this.dashboard.hasOwnProperty('widgetList')) {
+        this.$set(this.dashboard, 'widgetList', []);
+      }
       this.dashboard.widgetList.push(newWidget);
     },
     fullscreen() {
