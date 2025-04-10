@@ -392,6 +392,7 @@
         :handler="handler"
         :actionConfig="actionConfig"
         :commentObj="commentObj"
+        :isStepRequired="isStepRequired"
         :processTaskStepConfig="processTaskStepConfig"
         :isDisableCommet.sync="isDisableCommet"
         :isShowProcessTaskStepCommentEditorToolbar="!!processTaskConfig.isShowProcessTaskStepCommentEditorToolbar"
@@ -413,7 +414,7 @@ import download from '@/resources/directives/download.js';
 import dealFormMix from '@/views/pages/process/task/taskcommon/dealNewFormData.js';
 import Component from './CenterDetailComponent/index.js';
 import stepitems from './taskstep/item/index.js';
-import {store, mutations} from '@/views/pages/process/task/processdetail/processStore.js';
+import { store, mutations } from '@/views/pages/process/task/processdetail/processStore.js';
 export default {
   name: 'CenterDetail',
   components: {
@@ -501,7 +502,6 @@ export default {
       toolbar: [],
       tabValue: this.defaultTabValue, // 不给默认值，默认为第一项的name
       isStepRequired: 0, //回复必填：1必填，0非必填
-      validateList: ['required'],
       taskLoading: true,
       haveComment: false, //是否存在上报内容
       defaultTaskFileList: [], //上报附件
@@ -1017,6 +1017,11 @@ export default {
       return val;
     },
     async comment() {
+      let replyContent = this.$refs.replyContent;
+      if (replyContent && !replyContent.valid()) {
+        // 回复校验必填
+        return false;
+      }
       let complete = await this.submitComment();
       if (complete) {
         this.saveTaskD();
@@ -1517,9 +1522,16 @@ export default {
         } 
       });
     }
-     
   },
   computed: {
+    isRequiredContent() {
+      //回复必填判断
+      let valid = false;
+      if (this.isStepRequired) {
+        valid = true;
+      }
+      return valid;
+    },
     unfixedSlotList() {
       if (this.slotList && this.slotList.length > 0 && !this.loadingShow) {
         return this.slotList.filter(d => this.fixedPageTab[d.name]);
@@ -1664,13 +1676,12 @@ export default {
     },
     processTaskStepConfig: {
       handler(val) {
-        if (val && val.comment) {
-          if ((val.comment.fileList && val.comment.fileList.length > 0) || val.comment.content) {
-            this.commentObj = val.comment;
-            this.isDisableCommet = false;
-          } else {
-            this.isDisableCommet = true;
-          }
+        const { comment } = val || {};
+        const { fileList = [], content = '' } = comment || {};
+        this.isDisableCommet = true;
+        if ((fileList && fileList.length > 0) || content) {
+          this.commentObj = comment;
+          this.isDisableCommet = false;
         }
       },
       deep: true,

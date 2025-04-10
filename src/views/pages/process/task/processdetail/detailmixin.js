@@ -1082,23 +1082,10 @@ export default {
       if (this.isStepRequired && this.handler != 'event') {
         let taskContent = null;
         this.$refs.TaskCenterDetail && (taskContent = this.$refs.TaskCenterDetail.getTaskStepContent());
-        if (!taskContent && !this.processTaskStepConfig.commentList.length) {
+        if (!taskContent) {
           this.validList.push(contentObj);
           this.validCardOpen = true;
           isComplete = false;
-        } else if (!taskContent && this.processTaskStepConfig.commentList.length) {
-          let valid = false;
-          if (this.processTaskStepConfig.commentList.length) {
-            //考虑回退的场景
-            let startTime = this.processTaskStepConfig.startTime;
-            let lcd = this.processTaskStepConfig.commentList[0].lcd;
-            startTime > lcd && (valid = true);
-            if (valid) {
-              this.validList.push(contentObj);
-              this.validCardOpen = true;
-              isComplete = false;
-            }
-          }
         }
       }
       this.completeValid();
