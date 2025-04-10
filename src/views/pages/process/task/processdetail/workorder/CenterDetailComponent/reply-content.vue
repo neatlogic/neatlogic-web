@@ -135,7 +135,7 @@
             v-model="commentContent.content"
             :showIconToggle="!isShowProcessTaskStepCommentEditorToolbar"
             width="100%"
-            :validateList="isRequiredContent? validateList : []"
+            :validateList="isRequiredContent? ['required'] : []"
             :toolbar="$AuthUtils.hasRole('KNOWLEDGE_BASE') ? ['KnowledgeSelect'] : []"
             :params="{ uploadVideoConfig: { type: 'itsm'} }"
             @change="changeCommentContent"
@@ -185,6 +185,9 @@ export default {
       //是否展示富文本框工具栏
       type: Boolean,
       default: false
+    },
+    isStepRequired: {
+      type: [Number, Boolean]
     }
   },
   data() {
@@ -339,7 +342,8 @@ export default {
         validList.push(o);
       }
       if (this.isRequiredContent) {
-        if (!this.$refs.taskStepContent.valid()) {
+        let taskStepContent = this.$refs.taskStepContent;
+        if (taskStepContent && !taskStepContent.valid()) {
           let o = {
             focus: '#event',
             msg: this.$t('form.validate.required', { target: this.$t('page.content') })
@@ -348,6 +352,16 @@ export default {
         }
       }
       return validList;
+    },
+    valid() {
+      let isValidPass = true;
+      if (this.isRequiredContent) {
+        let taskStepContent = this.$refs.taskStepContent;
+        if (taskStepContent && !taskStepContent.valid()) {
+          isValidPass = false;
+        }
+      }
+      return isValidPass;
     },
     changeEventTypeId(val) {
       this.eventTypeId = val || null;
@@ -399,13 +413,7 @@ export default {
       //回复必填判断
       let valid = false;
       if (this.isStepRequired) {
-        if (!this.processTaskStepConfig.commentList.length) {
-          valid = true;
-        } else if (this.processTaskStepConfig.commentList.length) {
-          let startTime = this.processTaskStepConfig.startTime;
-          let lcd = this.processTaskStepConfig.commentList[0].lcd;
-          startTime > lcd && (valid = true);
-        }
+        valid = true;
       }
       return valid;
     }
