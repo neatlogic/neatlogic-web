@@ -24,7 +24,6 @@ export default {
         },
         {
           title: this.$t('page.status'),
-          width: 120,
           key: 'statusVo'
         },
         {
