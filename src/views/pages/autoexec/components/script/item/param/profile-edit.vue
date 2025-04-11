@@ -132,7 +132,6 @@ export default {
       this.isShow = false;
       if (needRefresh) {
         this.refreshProfile();
-        this.getProfileList();
       }
     },
     refreshProfile(isMessage) { //刷新
