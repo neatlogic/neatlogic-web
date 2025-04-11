@@ -9,9 +9,9 @@ const applicationInspect = {
     // 获取新的应用巡检列表
     return axios.post('/api/rest/inspect/app/resource/list', params);
   },
-  getResourceTypeList(params) {
+  getInspectAppModuleEnvList(params) {
     // 发起应用巡检
-    return axios.post('/api/rest/resourcecenter/appmodule/resource/type/list', params);
+    return axios.post('/api/rest/inspect/appmodule/env/list', params);
   },
   getCombopIdByTypeId(params) {
     // 获取组合工具id通过typeId
