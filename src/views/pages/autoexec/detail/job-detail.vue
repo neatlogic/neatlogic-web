@@ -24,12 +24,40 @@
             <UserCard :uuid="jobData.execUser"></UserCard>
           </div>
           <div class="action-item" style="padding: 0px"><Divider type="vertical" style="margin: 0px" /></div>
-          <div ref="statusRef" class="action-item"><Status
-            v-if="jobData.status"
-            :statusName="jobData.statusName"
-            :statusValue="jobData.status"
-            class="job-status"
-          ></Status></div>
+          <div v-if="jobData.status" ref="statusRef" class="action-item">
+            <Tooltip
+              v-if="jobData.status === 'queue' "
+              theme="light"
+              max-width="400"
+              placement="right"
+              transfer
+              @on-popper-show="handlejobStatus()"
+              @on-popper-hide="()=> {
+                tableConfig.tbodyList = [];
+              }"
+            >
+              <Status
+                v-if="jobData.status"
+                :statusName="jobData.statusName"
+                :statusValue="jobData.status"
+                class="job-status"
+              ></Status>
+              <template slot="content">
+                <TsTable
+                  v-bind="tableConfig"
+                  :loading="isLoading"
+                  :theadList="theadList"
+                >
+                </TsTable>
+              </template>
+            </Tooltip>
+            <Status
+              v-else
+              :statusName="jobData.statusName"
+              :statusValue="jobData.status"
+              class="job-status"
+            ></Status>
+          </div>
         </div>
       </template>
       <template v-slot:topRight>
@@ -137,6 +165,7 @@ export default {
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     ...ContentItem,
     Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     ExtrainfoDetail: () => import('./jobDetail/extrainfo-detail.vue'),
     JobPhaseFlow: () => import('@/views/pages/autoexec/detail/jobDetail/job-phase-flow.vue'),
     ProjectDirectoryDialog: () => import('@/views/pages/deploy/version/project-directory-dialog'), // 工程目录
@@ -164,6 +193,26 @@ export default {
       selectStepId: null,
       isShowJobParam: false, //显示参数弹框
       phaseEndingStatusList: ['completed', 'aborted', 'failed', 'paused'], //终点状态节点列表，非终点状态列表的需要定时刷新。
+      isLoading: false,
+      theadList: [
+        {
+          title: '排队号',
+          key: 'sort'
+        },
+        {
+          title: '执行器',
+          key: 'runner'
+        },
+        {
+          title: '排队时间',
+          key: 'fcd'
+        }
+      ],
+      tableConfig: {
+        tbodyList: [],
+        currentPage: 1,
+        pageSize: 10
+      },
       statusActionMapping: {
         pending: ['abort'], //未开始：
         running: ['pause', 'abort'], //运行中： 暂停  终止
@@ -250,6 +299,20 @@ export default {
     mutations.setSearchParam({});
   },
   methods: {
+    async handlejobStatus() {
+      this.isLoading = true;
+      await this.$api.autoexec.job.getJobQueueStatus({
+        jobId: this.jobData.id,
+        currentPage: 1,
+        pageSize: 100
+      }).then(res => {
+        if (res && res.Status == 'OK') {
+          this.tableConfig = res.Return;
+        }
+      }).finally(() => {
+        this.isLoading = false;
+      });
+    },
     toggleSiderHide() {
       this.calculateJobNameMaxWidth();
     },

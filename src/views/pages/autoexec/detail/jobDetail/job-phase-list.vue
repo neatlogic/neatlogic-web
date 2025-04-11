@@ -21,9 +21,9 @@
                 <div class="overflow">
                   <span :class="{ 'text-primary': activePhaseId && phase.id == activePhaseId }" :title="phase.name || '-'">{{ phase.name || '-' }}</span>
                 </div>
-                <div>
+                <div v-if="!$utils.isEmpty(phase.statusVo) ">
                   <Tooltip
-                    v-if="!$utils.isEmpty(phase.statusVo)"
+                    v-if="tableConfig.tbodyList.length > 0"
                     theme="light"
                     max-width="400"
                     placement="right"
@@ -47,6 +47,13 @@
                       </TsTable>
                     </template>
                   </Tooltip>
+                  <Status
+                    v-else
+                    :statusValue="phase.statusVo.name"
+                    :statusName="phase.statusVo.text"
+                    class="step-status"
+                    @click="() => handlePhaseStatus(phase)"
+                  ></Status>
                 </div>
               </div>
               <div class="stepProcess">
@@ -114,16 +121,12 @@ export default {
       isLoading: false,
       theadList: [
         {
-          title: '节点名称',
-          key: 'nodeName'
+          title: '排队号',
+          key: 'sort'
         },
         {
-          title: '主机',
-          key: 'runnerHost'
-        },
-        {
-          title: '端口',
-          key: 'runnerPort'
+          title: '执行器',
+          key: 'runner'
         }
       ],
       tableConfig: {
@@ -161,14 +164,14 @@ export default {
       }
     },
     async handlePhaseStatus(phase) {
-      const { groupId, jobId, id } = phase || {};
+      const {jobId, id } = phase || {};
       if (!jobId || !id) {
         this.$Message.error('作业ID或阶段ID为空');
         return; 
       }
       this.isLoading = true;
-      await this.$api.autoexec.job.searchPhaseNode({
-        groupId: groupId,
+      await this.$api.autoexec.job.getJobQueueStatus({
+        groupSort: phase.jobGroupVo.sort,
         jobId: jobId,
         jobPhaseId: id,
         currentPage: 1,
