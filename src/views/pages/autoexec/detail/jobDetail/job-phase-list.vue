@@ -21,7 +21,33 @@
                 <div class="overflow">
                   <span :class="{ 'text-primary': activePhaseId && phase.id == activePhaseId }" :title="phase.name || '-'">{{ phase.name || '-' }}</span>
                 </div>
-                <div><Status :statusValue="phase.statusVo.name" :statusName="phase.statusVo.text" class="step-status"></Status></div>
+                <div>
+                  <Tooltip
+                    v-if="!$utils.isEmpty(phase.statusVo)"
+                    theme="light"
+                    max-width="400"
+                    placement="right"
+                    transfer
+                    @on-popper-show="handlePhaseStatus(phase)"
+                    @on-popper-hide="()=> {
+                      tableConfig.tbodyList = [];
+                    }"
+                  >
+                    <Status
+                      :statusValue="phase.statusVo.name"
+                      :statusName="phase.statusVo.text"
+                      class="step-status"
+                    ></Status>
+                    <template slot="content">
+                      <TsTable
+                        v-bind="tableConfig"
+                        :loading="isLoading"
+                        :theadList="theadList"
+                      >
+                      </TsTable>
+                    </template>
+                  </Tooltip>
+                </div>
               </div>
               <div class="stepProcess">
                 <Liquid :size="7" :percent="phase.completionRate" :config="{ status: phase.status }"></Liquid>
@@ -69,7 +95,8 @@
 export default {
   components: {
     Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue'),
-    Status: () => import('@/resources/components/Status/CommonStatus.vue')
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   filters: {},
   model: {
@@ -82,7 +109,28 @@ export default {
   data() {
     return {
       fixedPhaseId: null,
-      activePhaseId: null
+      activePhaseId: null,
+      currentPhaseConfig: null,
+      isLoading: false,
+      theadList: [
+        {
+          title: '节点名称',
+          key: 'nodeName'
+        },
+        {
+          title: '主机',
+          key: 'runnerHost'
+        },
+        {
+          title: '端口',
+          key: 'runnerPort'
+        }
+      ],
+      tableConfig: {
+        tbodyList: [],
+        currentPage: 1,
+        pageSize: 10
+      }
     };
   },
   beforeCreate() {},
@@ -111,6 +159,27 @@ export default {
           this.$el.scrollTop = $select.offsetTop - config.height / 2 + 130;
         }
       }
+    },
+    async handlePhaseStatus(phase) {
+      const { groupId, jobId, id } = phase || {};
+      if (!jobId || !id) {
+        this.$Message.error('作业ID或阶段ID为空');
+        return; 
+      }
+      this.isLoading = true;
+      await this.$api.autoexec.job.searchPhaseNode({
+        groupId: groupId,
+        jobId: jobId,
+        jobPhaseId: id,
+        currentPage: 1,
+        pageSize: 100
+      }).then(res => {
+        if (res && res.Status == 'OK') {
+          this.tableConfig = res.Return;
+        }
+      }).finally(() => {
+        this.isLoading = false;
+      });
     }
   },
   computed: {
