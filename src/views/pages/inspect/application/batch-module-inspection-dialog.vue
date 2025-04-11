@@ -164,7 +164,7 @@ export default {
       this.$set(this.dialogSetting, 'isShow', true);
       this.loadingShow = true;
       this.$api.inspect.applicationInspect
-        .getResourceTypeList({ appModuleId: this.inspectionData.id })
+        .getInspectAppModuleEnvList({ appSystemId: this.appSystemId, appModuleId: this.inspectionData.id })
         .then(res => {
           if (res && res.Status == 'OK') {
             this.envList = res.Return;

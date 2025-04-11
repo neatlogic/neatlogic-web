@@ -34,8 +34,8 @@ export default {
       myConfig: {},
       formatList: [
         { value: 'yyyy-MM-dd HH:mm:ss', text: 'yyyy-MM-dd HH:mm:ss' },
-        { value: 'yyyy-MM-dd HH:mm', text: 'yyyy-MM-dd HH:mm' },
-        { value: 'yyyy-MM-dd HH', text: 'yyyy-MM-dd HH' }
+        { value: 'yyyy-MM-dd HH:mm', text: 'yyyy-MM-dd HH:mm' }//,
+        //{ value: 'yyyy-MM-dd HH', text: 'yyyy-MM-dd HH' }
       ],
       formConfig: {
         format: {
