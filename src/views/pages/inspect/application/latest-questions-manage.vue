@@ -647,6 +647,12 @@ export default {
     },
     closeRuleOfThresholdDialog() {
       this.isShowRuleThresholdDialog = false;
+    },
+    updateInitData() {
+      this.expandCollapseIdList = [];
+      this.isExpandCollapse = true;
+      this.isBack = false;
+      this.initData();
     }
   },
   filter: {},
@@ -672,19 +678,11 @@ export default {
   },
   watch: {
     appModuleId(id) {
-      if (id) {
-        this.expandCollapseIdList = [];
-        this.isExpandCollapse = true;
-        this.isBack = false;
-        this.initData();
-      }
+      this.updateInitData();
     },
     appSystemId(id) {
       if (id && this.$utils.isEmpty(this.appModuleId)) {
-        this.expandCollapseIdList = [];
-        this.isExpandCollapse = true;
-        this.isBack = false;
-        this.initData();
+        this.updateInitData();
       }
     }
   }
