@@ -2,7 +2,7 @@
 <template>
   <div>
     <template v-if="value && !$utils.isEmpty(value)">
-      <div :title="value">
+      <div style="white-space: normal;word-break: break-word;" :title="value">
         {{ value }}
       </div>
     </template>
