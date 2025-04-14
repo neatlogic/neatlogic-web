@@ -14,7 +14,7 @@
       <span class="anthor-top-right" :class="{ 'text-info': formItem._selected, 'text-grey': formItem._hovered }">◼</span>
       <span class="anthor-bottom-left" :class="{ 'text-info': formItem._selected, 'text-grey': formItem._hovered }">◼</span>
       <span class="anthor-bottom-right" :class="{ 'text-info': formItem._selected, 'text-grey': formItem._hovered }">◼</span>
-      <span v-if="formItem._selected && !disabled" class="remove-btn tsfont-trash-o text-href" @mousedown.stop="removeFormItem"></span>
+      <span v-if="formItem._selected && !disabled && !disabledDelete" class="remove-btn tsfont-trash-o text-href" @mousedown.stop="removeFormItem"></span>
     </div>
     <FormItem
       :ref="'formitem_' + formItem.uuid"
@@ -63,6 +63,11 @@ export default {
     },
     needLabel: {
       // 是否需要label
+      type: Boolean,
+      default: false
+    },
+    disabledDelete: {
+      // 是否禁用删除
       type: Boolean,
       default: false
     }
