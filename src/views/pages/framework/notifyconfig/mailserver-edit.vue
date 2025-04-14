@@ -1,23 +1,30 @@
 <template>
   <div>
-    <div style="width:50%">
-      <TsForm ref="form" :itemList="formData"></TsForm>
-      <div class="mt-md" style="text-align: right">
+    <TsDialog v-bind="editDialogSetting" @on-close="close">
+      <template v-slot:header>
+        <div v-if="id">{{ $t('page.edit') }}</div>
+        <div v-if="!id">{{ $t('page.add') }}</div>
+      </template>
+      <div>
+        <TsForm ref="form" :itemList="formData"></TsForm>
+      </div>
+      <template v-slot:footer>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
         <Button
           type="primary"
           ghost
           class="mr-md"
           @click="test()"
         >{{ $t('page.test') }}</Button>
-        <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
-      </div>
-    </div>
+        <Button type="primary" @click="submit()">{{ $t('page.save') }} </Button>
+      </template>
+    </TsDialog>
     <TsDialog
       v-if="isShow"
       v-bind="setting"
       :isShow="isShow"
-      @on-close="close"
-      @on-cancel="close"
+      @on-close="closeTest"
+      @on-cancel="closeTest"
       @on-ok="testSend()"
     >
       <TsForm ref="testform" v-model="testVal" :itemList="testForm"></TsForm>
@@ -31,7 +38,11 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue')
   },
-  props: [],
+  props: {
+    id: {
+      type: Number
+    }
+  },
   data() {
     return {
       canBack: false,
@@ -110,6 +121,12 @@ export default {
           defaultValue: ''
         }
       ],
+      editDialogSetting: {
+        type: 'modal',
+        maskClose: true,
+        isShow: true,
+        width: 'small'
+      },
       isShow: false,
       setting: {
         maskClose: true,
@@ -131,7 +148,9 @@ export default {
   beforeCreate() {},
 
   created() {
-    this.getData();
+    if (this.id) {
+      this.getData();
+    }
   },
 
   beforeMount() {},
@@ -155,15 +174,17 @@ export default {
       let form = this.$refs.form;
       if (form.valid()) {
         let data = form.getFormValue();
+        data.id = this.id;
         this.$api.framework.mailserver.save(data).then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
+            this.close(true);
           }
         });
       }
     },
     getData() {
-      this.$api.framework.mailserver.get().then(res => {
+      this.$api.framework.mailserver.get({id: this.id}).then(res => {
         if (res.Status == 'OK') {
           const obj = res.Return;
           if (obj) {
@@ -195,7 +216,10 @@ export default {
           });
       }
     },
-    close() {
+    close(needRefresh) {
+      this.$emit('close', needRefresh);
+    },
+    closeTest() {
       this.isShow = false;
       this.disabledTest = false;
       this.$set(this.testVal, 'emailAddress', '');

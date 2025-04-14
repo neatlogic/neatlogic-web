@@ -4,8 +4,8 @@ const mailserver = {
   // search(data) {
   //   return axios.post('/api/rest/mailserver/search', data);
   // },
-  get() {
-    return axios.post('/api/rest/mailserver/get', {});
+  get(data) {
+    return axios.post('/api/rest/mailserver/get', data);
   },
   save(data) {
     return axios.post('/api/rest/mailserver/save', data);
@@ -18,6 +18,18 @@ const mailserver = {
   // },
   test(data) {
     return axios.post('/api/rest/mailserver/test', data);
+  },
+  searchMailServerList(data) {
+    return axios.post('/api/rest/mailserver/list', data);
+  },
+  updateMailServerIsActive(data) {
+    return axios.post('/api/rest/mailserver/isactive/update', data);
+  },
+  updateMailServerIsDefault(data) {
+    return axios.post('/api/rest/mailserver/isdefault/update', data);
+  },
+  deleteMailServer(data) {
+    return axios.post('/api/rest/mailserver/delete', data);
   }
 };
 export default mailserver;

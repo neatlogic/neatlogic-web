@@ -10,7 +10,7 @@
       <template v-slot:content>
         <div>
           <div v-if="currentTab == 'mail'" class="padding">
-            <MailServerEdit></MailServerEdit>
+            <MailServerManage></MailServerManage>
           </div>
           <div v-if="currentTab == 'wechat'" class="padding">
             <WechatEdit></WechatEdit>
@@ -25,7 +25,7 @@ export default {
   name: '',
   components: {
     TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
-    MailServerEdit: () => import('./mailserver-edit.vue'),
+    MailServerManage: () => import('./mailserver-manage.vue'),
     WechatEdit: () => import('./wechat-edit.vue')
   },
   props: {},
