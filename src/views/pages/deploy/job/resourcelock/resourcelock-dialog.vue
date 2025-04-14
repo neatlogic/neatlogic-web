@@ -33,7 +33,20 @@
               
             </template>
             <template v-slot:jobName="{ row }">
+              <Tooltip
+                v-if="isCurrentJob(row.jobId)"
+                placement="top"
+                theme="light"
+                :transfer="true"
+                max-width="300"
+              >
+                <div>{{ row.jobName }}</div>
+                <div slot="content">
+                  <div>{{ $t('page.currentjob') }}</div>
+                </div>
+              </Tooltip>
               <span
+                v-else
                 class="text-href"
                 @click="toJobDetail(row)"
               >{{ row.jobName }}</span>
@@ -176,7 +189,14 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    isCurrentJob() {
+      const { jobId } = this.keywordParam || {};
+      return (currentjobId) => {
+        return currentjobId ? currentjobId == jobId : false;
+      };
+    }
+  },
   watch: {}
 };
 </script>
