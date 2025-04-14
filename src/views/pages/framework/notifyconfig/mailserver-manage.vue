@@ -81,27 +81,27 @@ export default {
           key: 'isDefault'
         },
         {
-          title: this.$t('smtp主机'),
+          title: this.$t('term.framework.smtphost'),
           key: 'host'
         },
         {
-          title: this.$t('smtp端口'),
+          title: this.$t('term.framework.smptport'),
           key: 'port'
         },
         {
-          title: this.$t('使用SSL'),
+          title: this.$t('term.framework.smptsslenable'),
           key: 'sslEnable'
         },
         {
-          title: this.$t('邮箱地址'),
+          title: this.$t('page.emailaddress'),
           key: 'fromAddress'
         },
         {
-          title: this.$t('用户名'),
+          title: this.$t('page.username'),
           key: 'userName'
         },
         {
-          title: this.$t('应用服务器地址'),
+          title: this.$t('page.homeurl'),
           key: 'homeUrl'
         },
         {
