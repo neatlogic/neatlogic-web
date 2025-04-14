@@ -151,10 +151,7 @@ export default {
       this.searchData(1);
     },
     toJobDetail(row) {
-      this.$router.push({
-        path: '/job-detail',
-        query: { id: row.jobId }
-      });
+      window.open(HOME + '/autoexec.html#/job-detail?id=' + row.jobId, '_blank');
     },
     deleteLock(buttonType, row) {
       this.$createDialog({
