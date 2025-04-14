@@ -28,6 +28,7 @@
                 :disabled="disabled"
                 :readonly="readonly"
                 :externalData="externalData"
+                :disabledDelete="formItem.hasOwnProperty('inherit')"
                 @resize="$emit('resize')"
                 @emit="
                   val => {
