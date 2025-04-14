@@ -24,8 +24,8 @@ const job = {
   searchPhaseNode(params) {
     return axios.post('/api/rest/autoexec/job/phase/node/search', params);
   },
-  getJobQueueStatus(params) {
-    return axios.post('/api/rest/autoexec/job/queue/status/get', params);
+  getJobWaitingDetail(params) {
+    return axios.post('/api/rest/autoexec/job/waiting/detail/get', params);
   },
   //获取runner节点，通过作业对应的阶段
   getRunnerByPhase(params) {

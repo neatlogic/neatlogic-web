@@ -170,7 +170,7 @@ export default {
         return; 
       }
       this.isLoading = true;
-      await this.$api.autoexec.job.getJobQueueStatus({
+      await this.$api.autoexec.job.getJobWaitingDetail({
         groupSort: phase.jobGroupVo.sort,
         jobId: jobId,
         jobPhaseId: id,

@@ -26,7 +26,7 @@
           <div class="action-item" style="padding: 0px"><Divider type="vertical" style="margin: 0px" /></div>
           <div v-if="jobData.status" ref="statusRef" class="action-item">
             <Tooltip
-              v-if="jobData.status === 'queue' "
+              v-if="jobData.status === 'waiting' "
               theme="light"
               max-width="400"
               placement="right"
@@ -223,7 +223,8 @@ export default {
         completed: ['refire', 'valid'], //已成功：重跑
         failed: ['refire'], //已失败：继续
         ready: ['execute', 'revoke'], //已就绪 撤销 执行
-        waitInput: ['abort']
+        waitInput: ['abort'],
+        waiting: ['abort']
       },
       actionMap: {
         valid: {
@@ -301,7 +302,7 @@ export default {
   methods: {
     async handlejobStatus() {
       this.isLoading = true;
-      await this.$api.autoexec.job.getJobQueueStatus({
+      await this.$api.autoexec.job.getJobWaitingDetail({
         jobId: this.jobData.id,
         currentPage: 1,
         pageSize: 100
