@@ -200,7 +200,8 @@ export default {
         keyValueList.push({
           key: item.key,
           type: item.type === '' ? null : item.type,
-          value: item.value
+          value: item.value,
+          isEmpty: item.isEmpty
         });
       });
       let params = {
