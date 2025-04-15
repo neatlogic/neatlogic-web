@@ -1,20 +1,23 @@
 <template>
   <div class="env-autoconfig-box bg-op env-autoconfig-radius">
-    <ul class="pt-nm pl-nm">
-      <li v-if="hasAutoConfig && hasEditConfigAuth" class="tsfont-edit text-href" @click="editAutoConfig">{{ $t('page.edit') }}</li>
-      <template v-else>
-        <Tooltip
-          max-width="400"
-          placement="right"
-          transfer
-        >
-          <span class="tsfont-edit text-disabled action-item">{{ $t('page.edit') }}</span>
-          <ul slot="content">
-            <li>{{ $t('term.deploy.noconfigauthtip') }}</li>
-          </ul>
-        </Tooltip>
-      </template>
-    </ul>
+    <div class="text-right">
+      <ul class="pt-nm pr-nm action-group">
+        <li v-if="hasAutoConfig && hasEditConfigAuth" class="action-item tsfont-edit text-href" @click="editAutoConfig">{{ $t('page.edit') }}</li>
+        <template v-else>
+          <Tooltip
+            max-width="400"
+            placement="right"
+            transfer
+          >
+            <span class="tsfont-edit text-disabled action-item">{{ $t('page.edit') }}</span>
+            <ul slot="content">
+              <li>{{ $t('term.deploy.noconfigauthtip') }}</li>
+            </ul>
+          </Tooltip>
+        </template>
+        <li v-if="hasAutoConfig && hasEditConfigAuth" class="action-item tsfont-formtextarea text-href" @click="editAutoConfigForTextarea">{{ '文本编辑' }}</li>
+      </ul>
+    </div>
     <div v-if="hasAutoConfig" :class="hasAutoConfig ? 'padding': ''">
       <TsTable
         v-bind="tableConfig"
@@ -24,9 +27,12 @@
         @changePageSize="changePageSizeAutoConfig"
       >
         <template slot="value" slot-scope="{row}">
-          <span v-if="row.type==='password' && row.value">******</span>
+          <span v-if="row.isEmpty==1">{{ $t('page.settonull') }}</span>
+          <span v-else-if="row.type==='password' && row.value">******</span>
+          <span v-else>{{ row.value }}</span>
+          <!-- <span v-if="row.type==='password' && row.value">******</span>
           <span v-else-if="row.type==='password' && !row.value">{{ $t('page.settonull') }}</span>
-          <span v-else>{{ row.hasOwnProperty('value') && !row.value ? $t('page.settonull') :(row.value || '-') }}</span>
+          <span v-else>{{ row.hasOwnProperty('value') && !row.value ? $t('page.settonull') :(row.value || '-') }}</span> -->
         </template>
       </TsTable>
     </div>
@@ -74,6 +80,14 @@
       @close="closeAutoConfigEdit"
       @save="saveAutoConfig"
     ></EnvAutoconfigEdit>
+    <EnvAutoconfigEditTextarea
+      v-if="isShowEnvEditForTextarea"
+      :isEdit="hasAutoConfig"
+      :tableData="tableData"
+      :params="params"
+      @close="closeAutoConfigEdit"
+      @save="saveAutoConfig"
+    ></EnvAutoconfigEditTextarea>
     <EnvAutoconfigInstanceDifferenceEdit
       v-if="isShowEnvDifferenceEdit"
       :instanceId="instanceId"
@@ -87,6 +101,7 @@ export default {
   name: '', // 配置文件适配列表
   components: {
     EnvAutoconfigEdit: () => import('./env-autoconfig-edit'),
+    EnvAutoconfigEditTextarea: () => import('./env-autoconfig-edit-textarea'),
     EnvAutoconfigInstanceDifferenceEdit: () => import('./env-autoconfig-instance-difference-edit'), // 添加实例差异
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
@@ -106,6 +121,7 @@ export default {
   data() {
     return {
       isShowEnvEdit: false,
+      isShowEnvEditForTextarea: false,
       isShowEnvDifferenceEdit: false,
       hasInstance: false, // 是否存在实例差异
       hasAutoConfig: false,
@@ -167,8 +183,12 @@ export default {
     editAutoConfig() {
       this.isShowEnvEdit = true;
     },
+    editAutoConfigForTextarea() {
+      this.isShowEnvEditForTextarea = true;
+    },
     closeAutoConfigEdit(needRefresh) {
       this.isShowEnvEdit = false;
+      this.isShowEnvEditForTextarea = false;
       if (needRefresh) {
         this.getEnvInfo();
       }
@@ -199,7 +219,8 @@ export default {
               key: v.key,
               type: v.type,
               value: v.hasOwnProperty('value') ? v.value : '',
-              isEmpty: (!v.hasOwnProperty('value') || (v.value == '')) ? 1 : 0, // 没有value的属性，或者为空字符串，设为空打开
+              isEmpty: v.isEmpty,
+              // isEmpty: (!v.hasOwnProperty('value') || (v.value == '')) ? 1 : 0, // 没有value的属性，或者为空字符串，设为空打开
               delOperation: ''
             });
           });
