@@ -15,22 +15,21 @@
               style="position: relative"
               @click="selectPhase(phase)"
             >
-              <!-- 进度百分比 -->
               <div v-if="fixedPhaseId && fixedPhaseId === phase.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
               <div class="name-grid">
                 <div class="overflow">
                   <span :class="{ 'text-primary': activePhaseId && phase.id == activePhaseId }" :title="phase.name || '-'">{{ phase.name || '-' }}</span>
                 </div>
-                <div v-if="!$utils.isEmpty(phase.statusVo) ">
+                <div v-if="!$utils.isEmpty(phase.statusVo)">
                   <Tooltip
-                    v-if="tableConfig.tbodyList.length > 0"
+                    v-if="waitingTableConfig.tbodyList.length > 0"
                     theme="light"
                     max-width="400"
                     placement="right"
                     transfer
                     @on-popper-show="handlePhaseStatus(phase)"
                     @on-popper-hide="()=> {
-                      tableConfig.tbodyList = [];
+                      waitingTableConfig.tbodyList = [];
                     }"
                   >
                     <Status
@@ -40,7 +39,7 @@
                     ></Status>
                     <template slot="content">
                       <TsTable
-                        v-bind="tableConfig"
+                        v-bind="waitingTableConfig"
                         :loading="isLoading"
                         :theadList="theadList"
                       >
@@ -52,26 +51,55 @@
                     :statusValue="phase.statusVo.name"
                     :statusName="phase.statusVo.text"
                     class="step-status"
-                    @click="() => handlePhaseStatus(phase)"
+                    @mouseenter="() => handlePhaseStatus(phase)"
                   ></Status>
                 </div>
               </div>
               <div class="stepProcess">
                 <Liquid :size="7" :percent="phase.completionRate" :config="{ status: phase.status }"></Liquid>
-                <Tooltip
-                  v-if="getExceptionTips(phase)"
-                  transfer
-                  class="stepStatues com-status"
-                  placement="bottom"
-                  theme="light"
-                >
-                  <span class="tsfont-warning-o" :class="getExceptionTips(phase).class"></span>
-                  <template v-slot:content>
-                    <div>
-                      <div v-for="title in getExceptionTips(phase).titles" :key="title">{{ title }}</div>
-                    </div>
+                <div class="notice-box">
+                  <template v-if="hasWaitingNumber(phase)">
+                    <Tooltip
+                      transfer
+                      placement="right"
+                      theme="light"
+                      @on-popper-show="handleWaitingNumber(phase)"
+                      @on-popper-hide="()=> {
+                        waitingTableConfig.tbodyList = [];
+                      }"
+                    >
+                      <CircleLoading
+                        :size="14"
+                        class="mr-xs"
+                        style="margin-top: -2px;"
+                        color="#ffba5a"
+                      ></CircleLoading>
+                      <template v-slot:content>
+                        <div>
+                          <TsTable
+                            v-bind="waitingTableConfig"
+                            :theadList="theadList"
+                          >
+                          </TsTable>
+                        </div>
+                      </template>
+                    </Tooltip>
                   </template>
-                </Tooltip>
+                  <Tooltip
+                    v-if="getExceptionTips(phase)"
+                    transfer
+                    class="com-status"
+                    placement="bottom"
+                    theme="light"
+                  >
+                    <span class="tsfont-warning-o" :class="getExceptionTips(phase).class"></span>
+                    <template v-slot:content>
+                      <div>
+                        <div v-for="title in getExceptionTips(phase).titles" :key="title">{{ title }}</div>
+                      </div>
+                    </template>
+                  </Tooltip>
+                </div>
               </div>
               <div>
                 <Tooltip
@@ -103,7 +131,8 @@ export default {
   components: {
     Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue'),
     Status: () => import('@/resources/components/Status/CommonStatus.vue'),
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CircleLoading: () => import('@/resources/components/loading/CircleLoading.vue')
   },
   filters: {},
   model: {
@@ -129,10 +158,10 @@ export default {
           key: 'runner'
         }
       ],
-      tableConfig: {
+      waitingTableConfig: {
         tbodyList: [],
         currentPage: 1,
-        pageSize: 10
+        pageSize: 100
       }
     };
   },
@@ -178,11 +207,14 @@ export default {
         pageSize: 100
       }).then(res => {
         if (res && res.Status == 'OK') {
-          this.tableConfig = res.Return;
+          this.waitingTableConfig = res.Return;
         }
       }).finally(() => {
         this.isLoading = false;
       });
+    },
+    handleWaitingNumber(phase) {
+      console.log('handleWaitingNumber', phase);
     }
   },
   computed: {
@@ -225,6 +257,12 @@ export default {
           };
         }
         return null;
+      };
+    },
+    hasWaitingNumber() {
+      // 排队进程数量
+      return (phase) => {
+        return phase?.waitingPhaseCount > 0;
       };
     }
   },
@@ -377,16 +415,15 @@ export default {
         }
       }
       .stepProcess {
+        display: grid;
+        grid-template-columns: calc(100% - 70px) 70px;
+        justify-content: space-between;
         padding-top: 6px;
+        padding-right: 6px;
         line-height: @iconWidth;
-        position: relative;
-        display: block;
-        padding-right: 80px;
-        ::v-deep .stepStatues {
-          padding: 0px 4px;
-          position: absolute;
-          right: 0px;
-          top: 4px;
+        .notice-box {
+          display: flex;
+          justify-content: end;
         }
       }
     }
