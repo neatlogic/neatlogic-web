@@ -714,7 +714,7 @@ export default {
       let { config = {}, handler = '' } = selectedItem || {};
       if (!this.$utils.isEmpty(value)) {
         let { dataSource = '', isMultiple = false, matrixUuid = '', mapping = {} } = config || {};
-        if (dataSource === 'matrix' && (isMultiple || handler == 'formradio' || handler == 'formcheckbox')) {
+        if (dataSource === 'matrix') {
           // 矩阵
           resultValue = [];
           if (matrixUuid && !this.$utils.isEmpty(mapping) && mapping.text && mapping.value) {
@@ -733,16 +733,39 @@ export default {
               if (res && res.Status == 'OK') {
                 let tbodyList = (res.Return && res.Return.tbodyList) || [];
                 tbodyList.forEach(item => {
-                  if (item && item.dataList) {
-                    resultValue.push(...item.dataList);
+                  if (item && item.dataList && item.dataList.length > 0) {
+                    if ((isMultiple || handler == 'formcheckbox')) {
+                      resultValue.push(...item.dataList);
+                    } else {
+                      resultValue = item.dataList[0];
+                    }
                   }
                 });
               }
             });
           }
-        } else if (dataSource == 'static' && (isMultiple || handler == 'formcheckbox')) {
+        } else if (dataSource == 'static') {
           resultValue = [];
-          resultValue = typeof value == 'string' ? value.split(',') : [typeof value == 'number' ? String(value) : value];
+          if ((isMultiple || handler == 'formcheckbox')) {
+            if (typeof value == 'string') {
+              resultValue = value.split(',').map((v) => ({
+                text: v,
+                value: v
+              }));
+            } else if (typeof value == 'number') {
+              resultValue = [{ text: String(value), value: value }];
+            } else {
+              resultValue = [{
+                text: value,
+                value: value
+              }];
+            }
+          } else {
+            resultValue = {
+              text: value,
+              value: value
+            };
+          }
         } else {
           resultValue = typeof value == 'number' ? String(value) : value;
         }
