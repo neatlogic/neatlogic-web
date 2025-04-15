@@ -1064,5 +1064,6 @@
   "pastehere": "在此粘贴",
   "dragthecanvas": "拖拽画布",
   "rubberband": "框选",
-  "actualpath": "实际路径"
+  "actualpath": "实际路径",
+  "currentjob": "当前作业"
 }
