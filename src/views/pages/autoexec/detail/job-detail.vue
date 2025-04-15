@@ -256,13 +256,13 @@ export default {
     calculateJobNameMaxWidth() {
       setTimeout(() => {
         const divideWidth = 2; // 分割线宽度
-        const topRightRef = this.$refs.topRightRef;
-        const jobDetailContainRef = this.$refs.jobDetailContain;
-        const statusRef = this.$refs.statusRef;
-        const userRef = this.$refs.userRef;
-        const {containTopRight} = jobDetailContainRef?.$refs || {};
-        if (containTopRight) {
-          this.jobNameWidth = containTopRight.offsetWidth - topRightRef.offsetWidth - statusRef.offsetWidth - userRef.offsetWidth - divideWidth;
+        const getElementWidth = (ref) => this.$refs?.[ref]?.offsetWidth || 0;
+        const topRightWidth = getElementWidth('topRightRef');
+        const statusWidth = getElementWidth('statusRef');
+        const userWidth = getElementWidth('userRef');
+        const containTopRightWidth = this.$refs?.jobDetailContain?.$refs?.containTopRight?.offsetWidth || 0;
+        if (containTopRightWidth) {
+          this.jobNameWidth = containTopRightWidth - topRightWidth - statusWidth - userWidth - divideWidth;
         }
       }, 200); // 延迟200毫秒执行，确保能拿到用户和状态的宽度，使用nextTick会导致计算不准确
     },
