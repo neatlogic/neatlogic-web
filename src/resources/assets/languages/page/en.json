@@ -1062,5 +1062,6 @@
   "pastehere": "Paste here",
   "dragthecanvas": "Drag and drop canvas",
   "rubberband": "Frame Select",
-  "actualpath": "actual path"
+  "actualpath": "actual path",
+  "currentjob": "CURRENT JOB"
 }
