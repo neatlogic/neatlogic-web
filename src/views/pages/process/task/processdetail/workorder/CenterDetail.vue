@@ -2,7 +2,7 @@
   <div class="CenterDetail">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <!-- 头部描述内容 -->
-    <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig)" class="mb-nm">
+    <div v-if="haveProcessTask(haveComment, startHandler)" class="mb-nm">
       <div>
         <Report
           ref="taskReport"
@@ -48,7 +48,7 @@
           <span>{{ item.label }}</span>
           <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage('report')"></span>
         </div>
-        <div v-if="haveProcessTask(haveComment, startHandler, formConfig, processTaskConfig)" class="pt-nm pb-nm">
+        <div v-if="haveProcessTask(false, false, formConfig, processTaskConfig)" class="pt-nm pb-nm">
           <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
             <template v-if="formConfig._type == 'new'">
               <TsSheet
@@ -646,110 +646,157 @@ export default {
   },
   methods: {
     initTabList() {
+      // 初始化 tabList 和 fixedPageList
       this.tabList = [];
       this.fixedPageList = [];
-      let layoutList = this.processTaskConfig.processTaskTabLayout && this.processTaskConfig.processTaskTabLayout.layoutList || [];
+      // 获取布局列表
+      const layoutList = this.processTaskConfig.processTaskTabLayout && this.processTaskConfig.processTaskTabLayout.layoutList || [];
       if (!this.$utils.isEmpty(layoutList)) {
-        let tabValue = '';
-        layoutList = this.$utils.uniqueByField([...layoutList, ...this.defaultTabList], 'key');
-        layoutList.forEach(item => {
-          const tab = this.defaultTabList.find(val => val.key === item.key);
-          if (item.key === 'preNode') {
-            if (!this.$utils.isEmpty(this.viewStepData)) {
-              if (item.top) {
-                //前置步骤信息
-                this.viewStepData.forEach(step => {
-                  this.fixedPageList.push({
-                    tabValue: 'showStep' + step.id,
-                    label: step.name,
-                    item: step
-                  });
-                });
-              } else {
-                if (!tabValue) {
-                  tabValue = 'showStep' + this.viewStepData[0].id;
-                }
-              }
-            }
-          } else if (item.key === 'node') {
-            if (!this.$utils.isEmpty(this.slotList)) {
-              if (item.top) {
-                this.slotList.forEach(d => {
-                  this.$set(this.fixedPageTab, d.name, false);
-                  this.fixedPageList.push({
-                    tabValue: d.name,
-                    label: d.label
-                  });
-                });
-                if (this.tabValue && this.slotList.find(d => d.name === this.tabValue)) {
-                  this.tabValue = '';
-                }
-              } else { 
-              //补充动态slot进fixedPageTab
-                if (this.slotList && this.slotList.length > 0) {
-                  this.slotList.forEach(d => {
-                    this.$set(this.fixedPageTab, d.name, true);
-                  });
-                }
-              }
-            } 
-            if (!this.$utils.isEmpty(this.taskConfigList)) {
-              if (item.top) {
-                this.taskConfigList.forEach(d => {
-                  this.fixedPageTab[`subTask${d.id}`] = false;
-                  this.fixedPageList.push({
-                    tabValue: `subTask${d.id}`,
-                    label: this.subTask(d)
-                  });
-                });
-              } else {
-                tabValue = 'subTask' + this.taskConfigList[0].id;
-                this.tabValue = '';
-              }
-            }
-          } else {
-            if (item.top) {
-              let label = tab.labelName;
-              if (tab.labelKey) {
-                label = this.getTabPaneLabel('', item.key, tab.labelKey);
-              }
-              this.fixedPageList.push({
-                tabValue: item.key,
-                label: label
-              });
-              if (item.top && this.tabValue === item.key) {
-                this.tabValue = '';
-              }
-            } else if (!tabValue) {
-              if (item.key === 'report') {
-                if (this.haveProcessTask(this.haveComment, this.startHandler, this.formConfig, this.processTaskConfig) && !this.$utils.isEmpty(this.formConfig)) {
-                  tabValue = item.key;
-                }
-              } else if (item.key === 'relevance') {
-                if (this.showRelationDetail(this.actionConfig.tranferreport, this.processTaskConfig.processTaskRelationCount)) {
-                  tabValue = item.key;
-                }
-              } else if (item.key === 'markrepeat') {
-                if (this.actionConfig.markrepeat || this.repeatList.length > 0) {
-                  tabValue = item.key;
-                }
-              } else {
-                tabValue = item.key;
-              }
-            }
+        let defaultTabValue = '';
+        // 合并布局列表和默认 tab 列表，并去重
+        const combinedList = this.$utils.uniqueByField([...layoutList, ...this.defaultTabList], 'key');
+
+        // 处理每个 tab 项
+        combinedList.forEach(item => {
+          const defaultTab = this.defaultTabList.find(val => val.key === item.key);
+
+          // 根据不同的 key 处理不同的 tab 类型
+          switch (item.key) {
+            case 'preNode':
+              this.handlePreNodeTab(item, defaultTabValue);
+              break;
+            case 'node':
+              defaultTabValue = this.handleNodeTab(item, defaultTabValue);
+              break;
+            case 'report':
+              defaultTabValue = this.handleReportTab(item, defaultTab, defaultTabValue);
+              break;
+            default:
+              defaultTabValue = this.handleDefaultTab(item, defaultTab, defaultTabValue);
+              break;
           }
+          // 将处理后的 tab 项添加到 tabList 中
           this.tabList.push({
-            ...tab,
+            ...defaultTab,
             ...item
           });
         });
-        if (tabValue && !this.tabValue) {
-          this.tabValue = tabValue;
+        // 如果没有设置当前 tab 值，则使用默认值
+        if (defaultTabValue && !this.tabValue) {
+          this.tabValue = defaultTabValue;
         }
       } else {
+        // 如果布局列表为空，则使用默认 tab 列表
         this.tabList = this.defaultTabList;
         this.changeTabValue();
       }
+    },
+    // 处理 preNode tab
+    handlePreNodeTab(item, defaultTabValue) {
+      if (this.viewStepData.length > 0) {
+        if (item.top) {
+          // 前置步骤信息
+          this.viewStepData.forEach(step => {
+            this.fixedPageList.push({
+              tabValue: `showStep${step.id}`,
+              label: step.name,
+              item: step
+            });
+          });
+        } else if (!defaultTabValue) {
+          defaultTabValue = `showStep${this.viewStepData[0].id}`;
+        }
+      }
+      return defaultTabValue;
+    },
+    // 处理 node tab
+    handleNodeTab(item, defaultTabValue) {
+      if (this.slotList.length > 0) {
+        if (item.top) {
+          this.slotList.forEach(d => {
+            this.$set(this.fixedPageTab, d.name, false);
+            this.fixedPageList.push({
+              tabValue: d.name,
+              label: d.label
+            });
+          });
+          if (this.tabValue && this.slotList.find(d => d.name === this.tabValue)) {
+            this.tabValue = '';
+          }
+        } else {
+          // 补充动态 slot 进 fixedPageTab
+          this.slotList.forEach(d => {
+            this.$set(this.fixedPageTab, d.name, true);
+          });
+        }
+      }
+
+      if (this.taskConfigList.length > 0) {
+        if (item.top) {
+          this.taskConfigList.forEach(d => {
+            this.fixedPageTab[`subTask${d.id}`] = false;
+            this.fixedPageList.push({
+              tabValue: `subTask${d.id}`,
+              label: this.subTask(d)
+            });
+          });
+        } else {
+          defaultTabValue = `subTask${this.taskConfigList[0].id}`;
+          this.tabValue = '';
+        }
+      }
+
+      return defaultTabValue;
+    },
+    // 处理 report tab
+    handleReportTab(item, defaultTab, defaultTabValue) {
+      if (this.hasForm) {
+        let label = defaultTab.labelName;
+        if (defaultTab.labelKey) {
+          label = this.getTabPaneLabel('', item.key, defaultTab.labelKey);
+        }
+        if (item.top) {
+          this.fixedPageList.push({
+            tabValue: item.key,
+            label: label
+          });
+          if (item.top && this.tabValue === item.key) {
+            this.tabValue = '';
+          }
+        } else if (!defaultTabValue) {
+          defaultTabValue = item.key;
+        }
+      }
+      return defaultTabValue;
+    },
+    // 处理默认 tab
+    handleDefaultTab(item, defaultTab, defaultTabValue) {
+      if (item.top) {
+        let label = defaultTab.labelName;
+        if (defaultTab.labelKey) {
+          label = this.getTabPaneLabel('', item.key, defaultTab.labelKey);
+        }
+        this.fixedPageList.push({
+          tabValue: item.key,
+          label: label
+        });
+        if (item.top && this.tabValue === item.key) {
+          this.tabValue = '';
+        }
+      } else if (!defaultTabValue) {
+        if (item.key === 'relevance') {
+          if (this.showRelationDetail(this.actionConfig.tranferreport, this.processTaskConfig.processTaskRelationCount)) {
+            defaultTabValue = item.key;
+          }
+        } else if (item.key === 'markrepeat') {
+          if (this.actionConfig.markrepeat || this.repeatList.length > 0) {
+            defaultTabValue = item.key;
+          }
+        } else {
+          defaultTabValue = item.key;
+        }
+      }
+      return defaultTabValue;
     },
     async validFormRequired() {
       // 首次加载时需要判断表单是否必填，没填写时，需要高亮tab

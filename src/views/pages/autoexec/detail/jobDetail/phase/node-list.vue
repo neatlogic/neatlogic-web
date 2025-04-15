@@ -98,7 +98,7 @@
             'text-success': row.status == 'succeed',
             'text-error': row.status == 'failed',
             'text-grey': row.status == 'pending',
-            'text-warning': row.status == 'ignored' || row.status == 'aborted' || row.status == 'aborting' || row.status == 'waitInput' || row.status == 'paused' || row.status == 'invalid'
+            'text-warning': row.status == 'waiting' || row.status == 'ignored' || row.status == 'aborted' || row.status == 'aborting' || row.status == 'waitInput' || row.status == 'paused' || row.status == 'invalid'
           }"
         >
           <Tooltip
@@ -256,7 +256,6 @@ export default {
         },
         {
           title: this.$t('page.status'),
-          width: 120,
           key: 'statusVo'
         },
         {

@@ -36,6 +36,7 @@
                 :isClearSpecifiedAttr="isClearSpecifiedAttr"
                 :externalData="externalData"
                 :needLabel="config.isShowComponentNameInTab"
+                :disabledDelete="formItem.hasOwnProperty('inherit')"
                 @resize="$emit('resize')"
                 @emit="
                   val => {

@@ -33,7 +33,20 @@
               
             </template>
             <template v-slot:jobName="{ row }">
+              <Tooltip
+                v-if="isCurrentJob(row.jobId)"
+                placement="top"
+                theme="light"
+                :transfer="true"
+                max-width="300"
+              >
+                <div>{{ row.jobName }}</div>
+                <div slot="content">
+                  <div>{{ $t('page.currentjob') }}</div>
+                </div>
+              </Tooltip>
               <span
+                v-else
                 class="text-href"
                 @click="toJobDetail(row)"
               >{{ row.jobName }}</span>
@@ -151,10 +164,7 @@ export default {
       this.searchData(1);
     },
     toJobDetail(row) {
-      this.$router.push({
-        path: '/job-detail',
-        query: { id: row.jobId }
-      });
+      window.open(HOME + '/autoexec.html#/job-detail?id=' + row.jobId, '_blank');
     },
     deleteLock(buttonType, row) {
       this.$createDialog({
@@ -179,7 +189,14 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    isCurrentJob() {
+      const { jobId } = this.keywordParam || {};
+      return (currentjobId) => {
+        return currentjobId ? currentjobId == jobId : false;
+      };
+    }
+  },
   watch: {}
 };
 </script>
