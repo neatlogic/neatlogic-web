@@ -26,14 +26,14 @@
           <div class="action-item" style="padding: 0px"><Divider type="vertical" style="margin: 0px" /></div>
           <div v-if="jobData.status" ref="statusRef" class="action-item">
             <Tooltip
-              v-if="jobData.status === 'waiting' "
+              v-if="hasWaiting()"
               theme="light"
               max-width="400"
               placement="right"
               transfer
-              @on-popper-show="handlejobStatus()"
+              @on-popper-show="handleWaitingData()"
               @on-popper-hide="()=> {
-                tableConfig.tbodyList = [];
+                waitingTableConfig.tbodyList = [];
               }"
             >
               <Status
@@ -44,7 +44,7 @@
               ></Status>
               <template slot="content">
                 <TsTable
-                  v-bind="tableConfig"
+                  v-bind="waitingTableConfig"
                   :loading="isLoading"
                   :theadList="theadList"
                 >
@@ -110,7 +110,7 @@
         </div>
       </template>
       <template v-slot:sider>
-        <PhaseList :phaseList="jobData.phaseList" @change="changePhase"></PhaseList>
+        <PhaseList :phaseList="jobData.phaseList" :waitingDetail="jobData.waitingDetail" @change="changePhase"></PhaseList>
       </template>
       <template v-slot:content>
         <div>
@@ -208,7 +208,7 @@ export default {
           key: 'fcd'
         }
       ],
-      tableConfig: {
+      waitingTableConfig: {
         tbodyList: [],
         currentPage: 1,
         pageSize: 10
@@ -300,19 +300,8 @@ export default {
     mutations.setSearchParam({});
   },
   methods: {
-    async handlejobStatus() {
-      this.isLoading = true;
-      await this.$api.autoexec.job.getJobWaitingDetail({
-        jobId: this.jobData.id,
-        currentPage: 1,
-        pageSize: 100
-      }).then(res => {
-        if (res && res.Status == 'OK') {
-          this.tableConfig = res.Return;
-        }
-      }).finally(() => {
-        this.isLoading = false;
-      });
+    handleWaitingData() {
+      this.$set(this.waitingTableConfig, 'tbodyList', this.jobData.waitingDetail);
     },
     toggleSiderHide() {
       this.calculateJobNameMaxWidth();
@@ -452,6 +441,7 @@ export default {
           this.$set(this.jobData, 'phaseList', res.Return['phaseList']);
           this.$set(this.jobData, 'status', res.Return['status']);
           this.$set(this.jobData, 'statusName', res.Return['statusName']);
+          this.$set(this.jobData, 'waitingDetail', res.Return['waitingDetail']);
           if (this.jobData && this.jobData.extraInfo) {
             this.$set(this.jobData, 'extraInfo', res.Return['extraInfo']);
           }
@@ -603,6 +593,11 @@ export default {
             this.downloadLoading = false;
           }
         }
+      };
+    },
+    hasWaiting() {
+      return () => {
+        return this.jobData.waitingDetail && this.jobData.waitingDetail.length > 0;
       };
     }
   },

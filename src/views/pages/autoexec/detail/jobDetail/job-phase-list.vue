@@ -27,7 +27,7 @@
                     max-width="400"
                     placement="right"
                     transfer
-                    @on-popper-show="handlePhaseStatus(phase)"
+                    @on-popper-show="handleWaitingData(group)"
                     @on-popper-hide="()=> {
                       waitingTableConfig.tbodyList = [];
                     }"
@@ -51,19 +51,19 @@
                     :statusValue="phase.statusVo.name"
                     :statusName="phase.statusVo.text"
                     class="step-status"
-                    @mouseenter="() => handlePhaseStatus(phase)"
+                    @mouseenter="() => handleWaitingData(group)"
                   ></Status>
                 </div>
               </div>
               <div class="stepProcess">
                 <Liquid :size="7" :percent="phase.completionRate" :config="{ status: phase.status }"></Liquid>
                 <div class="notice-box">
-                  <template v-if="hasWaitingNumber(phase)">
+                  <template v-if="hasWaiting(group)">
                     <Tooltip
                       transfer
                       placement="right"
                       theme="light"
-                      @on-popper-show="handleWaitingNumber(phase)"
+                      @on-popper-show="handleWaitingData(group)"
                       @on-popper-hide="()=> {
                         waitingTableConfig.tbodyList = [];
                       }"
@@ -140,7 +140,8 @@ export default {
     event: 'change'
   },
   props: {
-    phaseList: { type: Array }
+    phaseList: { type: Array },
+    waitingDetail: { type: Array }
   },
   data() {
     return {
@@ -192,29 +193,8 @@ export default {
         }
       }
     },
-    async handlePhaseStatus(phase) {
-      const {jobId, id } = phase || {};
-      if (!jobId || !id) {
-        this.$Message.error('作业ID或阶段ID为空');
-        return; 
-      }
-      this.isLoading = true;
-      await this.$api.autoexec.job.getJobWaitingDetail({
-        groupSort: phase.jobGroupVo.sort,
-        jobId: jobId,
-        jobPhaseId: id,
-        currentPage: 1,
-        pageSize: 100
-      }).then(res => {
-        if (res && res.Status == 'OK') {
-          this.waitingTableConfig = res.Return;
-        }
-      }).finally(() => {
-        this.isLoading = false;
-      });
-    },
-    handleWaitingNumber(phase) {
-      console.log('handleWaitingNumber', phase);
+    handleWaitingData(group) {
+      this.$set(this.waitingTableConfig, 'tbodyList', this.waitingDetail.filter(t => t.groupSortList.includes(group.groupSort)));
     }
   },
   computed: {
@@ -224,7 +204,7 @@ export default {
         this.phaseList.forEach(phase => {
           let group = groupList.find(d => d.groupId == phase.groupId);
           if (!group) {
-            group = { groupId: phase.groupId, phaseList: [] };
+            group = { groupId: phase.groupId, phaseList: [], groupSort: phase.jobGroupVo.sort };
             groupList.push(group);
           }
           group['phaseList'].push(phase);
@@ -259,10 +239,9 @@ export default {
         return null;
       };
     },
-    hasWaitingNumber() {
-      // 排队进程数量
-      return (phase) => {
-        return phase?.waitingPhaseCount > 0;
+    hasWaiting() {
+      return (group) => {
+        return this.waitingDetail.some(t => t.groupSortList.includes(group.groupSort));
       };
     }
   },
