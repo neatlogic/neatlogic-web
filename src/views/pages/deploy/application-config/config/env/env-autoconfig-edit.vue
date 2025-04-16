@@ -139,11 +139,12 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.initData();
+  },
   beforeMount() {},
   async mounted() {
     await this.getParamsTypeLit();
-    this.initData();
   },
   beforeUpdate() {},
   updated() {},
