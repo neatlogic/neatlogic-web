@@ -55,6 +55,7 @@
             :offsetWidth="offsetWidth"
             :multiple="isMultiple"
             :readonlyTextIsHighlight="readonlyTextIsHighlight"
+            :canResize="canResize"
             @updateRowSort="updateRowSort"
             @clickTr="clickTr"
             @setWidth="setWidth"
@@ -140,6 +141,7 @@
             isMain
             :canExpand="canExpand"
             :disabled="disabled"
+            :canResize="canResize"
             @operation="operation"
             @updateRowSort="updateRowSort"
             @clickTr="clickTr"
