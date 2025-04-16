@@ -499,7 +499,7 @@ export default {
         let style = {};
         if (this.canResize) {
           let findCol = this.colsList.find(cc => cc.key == key + 'Width');
-          if (findCol && findCol._isResize) {
+          if (findCol && findCol.width) {
             style = {
               width: findCol.width + 'px',
               'white-space': 'nowrap', /* 防止文本换行 */

@@ -27,6 +27,7 @@
             :sortSetting="sortSetting"
             :sortConfig="sortConfig"
             :canResize="canResize"
+            :resizeKey="resizeKey"
             :canDrag="canDrag"
             :multiple="isMultiple"
             @toggleExpandAll="toggleExpandAll"
@@ -108,6 +109,7 @@
             :sortSetting="sortSetting"
             :sortConfig="sortConfig"
             :canResize="canResize"
+            :resizeKey="resizeKey"
             :canDrag="canDrag"
             :multiple="isMultiple"
             :isMain="fixedHeader"
@@ -415,6 +417,10 @@ export default {
       //是否可拖拽改变宽度,拖拽调整列宽时触发on-column-width-resize(newWidth, oldWidth, column, event)
       type: Boolean,
       default: false
+    },
+    resizeKey: { //canResize为true时，用于标识table的唯一标识，用于存储宽度信息和删除信息(clearResizeKey)
+      type: String,
+      default: ''
     },
     theadList: { type: Array }, //表头数据
     tbodyList: {
@@ -1107,6 +1113,11 @@ export default {
       this.visible = false;
       // 表格右上角tooltip thead的点击齿轮按钮
       this.$emit('theadPopTipSettingClick', th);
+    },
+    clearResizeKey() { //清除resizeKey
+      if (this.resizeKey) {
+        sessionStorage.removeItem('tstable_' + this.resizeKey);
+      }
     }
   },
   computed: {
@@ -1237,11 +1248,17 @@ export default {
       handler(val, oldval) {
         let alllist = val;
         if (this.canResize) {
+          let colsList = [];
+          if (this.resizeKey && sessionStorage.getItem('tstable_' + this.resizeKey)) {
+            colsList = JSON.parse(sessionStorage.getItem('tstable_' + this.resizeKey));
+          }
           this.thList = alllist.map(item => {
+            const storageCol = colsList.find(c => c.key === item.key + 'Width');
             const _column = this.colsList.find(c => c.key === item.key + 'Width');
             return {
               ...item,
-              width: _column && _column.width ? _column.width : item.width
+              width: storageCol && storageCol.width ? storageCol.width : _column && _column.width ? _column.width : item.width,
+              _isResize: storageCol ? storageCol._isResize : false
             };
           });
         } else {

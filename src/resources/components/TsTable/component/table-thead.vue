@@ -73,6 +73,7 @@ export default {
     list: Array,
     sortList: [Boolean, Array],
     canResize: Boolean,
+    resizeKey: String,
     canDrag: Boolean,
     tbodyList: Array,
     selectList: Array,
@@ -233,6 +234,9 @@ export default {
                 width = tableWidth + (_column.width - oldWidth);
               }
               this.$set(table, 'totalWidth', width);
+              if (this.resizeKey) {
+                sessionStorage.setItem('tstable_' + this.resizeKey, JSON.stringify(table.colsList));
+              }
             }
             table.$emit('on-column-width-resize', _column.width, oldWidth, column, event);
             this.dragging = false;
