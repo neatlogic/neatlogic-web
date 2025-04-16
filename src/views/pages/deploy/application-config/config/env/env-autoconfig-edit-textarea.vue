@@ -73,7 +73,10 @@ export default {
       if (this.tableData && this.tableData.tbodyList.length > 0) {
         let tbodyList = this.$utils.deepClone(this.tableData.tbodyList);
         tbodyList.forEach((item) => {
-          value = value + item.type + ':' + item.key + '=' + item.value + '\n';
+          if (value) {
+            value += '\n';
+          }
+          value = value + item.type + ':' + item.key + '=' + item.value;
         });
         this.allTypeKeyVlaue = value;
       }
@@ -85,20 +88,22 @@ export default {
         typeKeyValueList.forEach((typeKeyValue) => {
           if (typeKeyValue && typeKeyValue.trim() != '') {
             let typeAndKeyValueList = typeKeyValue.split(':');
-            let type = typeAndKeyValueList[0];
-            let keyValue = typeAndKeyValueList[1];
+            let type = typeAndKeyValueList[0].trim();
+            typeAndKeyValueList.shift();
+            let keyValue = typeAndKeyValueList.join(':').trim();
             let keyAndValueList = keyValue.split('=');
-            let key = keyAndValueList[0];
-            let value = keyAndValueList[1];
-            let isEmpty = 1;
-            if (value && value.trim() != '') {
-              isEmpty = 0;
-            }
+            let key = keyAndValueList[0].trim();
+            keyAndValueList.shift();
+            let value = keyAndValueList.join('=').trim();
+            // let isEmpty = 1;
+            // if (value && value.trim() != '') {
+            //   isEmpty = 0;
+            // }
             keyValueList.push({
               key: key,
               type: type === '' ? null : type,
               value: value,
-              isEmpty: isEmpty
+              isEmpty: 0
             });
           }
         });
