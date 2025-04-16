@@ -34,7 +34,7 @@
             ></i-switch>
           </template>
           <template slot="sslEnable" slot-scope="{ row }">
-            <span v-if="row.sslEnable" class="text-success">{{ $t('page.yes') }}</span>
+            <span v-if="row.sslEnable == 'true'" class="text-success">{{ $t('page.yes') }}</span>
             <span v-else class="text-grey">{{ $t('page.no') }}</span>
           </template>
           <template slot="action" slot-scope="{ row }">
