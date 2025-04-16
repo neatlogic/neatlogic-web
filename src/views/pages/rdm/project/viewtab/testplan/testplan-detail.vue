@@ -43,7 +43,7 @@
                   :canAppend="true"
                   :canSearch="true"
                   :canAction="true"
-                  :canBatch="true"
+                  :canBatch="false"
                   :fromId="id"
                   relType="extend"
                   relAppType="testcase"
