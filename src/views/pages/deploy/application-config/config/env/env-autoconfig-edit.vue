@@ -10,7 +10,7 @@
           <TsTable
             :theadList="theadList"
             :fixedHeader="false"
-            v-bind="tableData"
+            v-bind="currentTableData"
           >
             <template slot="key" slot-scope="{row}">
               <TsFormInput
@@ -98,6 +98,7 @@ export default {
   },
   data() {
     return {
+      currentTableData: {},
       dialogConfig: {
         type: 'modal',
         isShow: true,
@@ -142,6 +143,7 @@ export default {
   beforeMount() {},
   async mounted() {
     await this.getParamsTypeLit();
+    this.initData();
   },
   beforeUpdate() {},
   updated() {},
@@ -150,9 +152,12 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initData() {
+      this.currentTableData = this.$utils.deepClone(this.tableData);
+    },
     getParamConfig(index, config) {
       if (config) {
-        this.$set(this.tableData.tbodyList[index], 'config', config);
+        this.$set(this.currentTableData.tbodyList[index], 'config', config);
       }
     },
     getParamsTypeLit() {
@@ -171,7 +176,7 @@ export default {
       return this.paramsTypeList.find(item => item.value == type);
     },
     addVariable() {
-      this.tableData.tbodyList.push({
+      this.currentTableData.tbodyList.push({
         name: '',
         key: '',
         type: 'text',
@@ -183,8 +188,8 @@ export default {
       });
     },
     delVariable(row, index) {
-      if (this.tableData && this.tableData.tbodyList.length > 0) {
-        this.tableData.tbodyList.splice(index, 1);
+      if (this.currentTableData && this.currentTableData.tbodyList.length > 0) {
+        this.currentTableData.tbodyList.splice(index, 1);
       }
     },
     okDialog() {
@@ -192,7 +197,7 @@ export default {
         return false;
       }
       let keyValueList = [];
-      let tbodyList = this.$utils.deepClone(this.tableData.tbodyList);
+      let tbodyList = this.$utils.deepClone(this.currentTableData.tbodyList);
       tbodyList = tbodyList && tbodyList.filter((item) => {
         return item.key;
       });
@@ -217,40 +222,40 @@ export default {
       if (value) {
         let currentValue = this.$utils.deepClone(row);
         currentValue.value = '';
-        this.$set(this.tableData.tbodyList, index, currentValue);
+        this.$set(this.currentTableData.tbodyList, index, currentValue);
       }
     },
     validKeyRepeat() {
       const keysSet = new Set();
-      for (let i = 0; i < this.tableData.tbodyList.length; i++) {
-        if (this.$utils.isEmpty(this.tableData.tbodyList[i].key)) {
-          this.tableData.tbodyList[i]['errorMessage'] = this.$t('form.validate.pleaseenterthecontent');
+      for (let i = 0; i < this.currentTableData.tbodyList.length; i++) {
+        if (this.$utils.isEmpty(this.currentTableData.tbodyList[i].key)) {
+          this.currentTableData.tbodyList[i]['errorMessage'] = this.$t('form.validate.pleaseenterthecontent');
           return false;
-        } else if (keysSet.has(this.tableData.tbodyList[i].key)) {
+        } else if (keysSet.has(this.currentTableData.tbodyList[i].key)) {
           return false; // 存在重复
         }
-        keysSet.add(this.tableData.tbodyList[i].key);
+        keysSet.add(this.currentTableData.tbodyList[i].key);
       }
       return true;
     },
     inputChange(currentKey) {
-      let otherList = this.tableData.tbodyList.filter(item => !this.$utils.isEmpty(currentKey) && item.key == currentKey);
+      let otherList = this.currentTableData.tbodyList.filter(item => !this.$utils.isEmpty(currentKey) && item.key == currentKey);
       if (otherList.length > 1) {
         for (let index = 0; index < otherList.length; index++) {
           otherList[index].errorMessage = this.$t('form.validate.repeat', {target: currentKey});
         }
       } else {
-        for (let index = 0; index < this.tableData.tbodyList.length; index++) {
-          this.tableData.tbodyList[index].errorMessage = '';
+        for (let index = 0; index < this.currentTableData.tbodyList.length; index++) {
+          this.currentTableData.tbodyList[index].errorMessage = '';
         }
       }
     },
     validValueIsEmpty() {
       // 验证变量值是否为空，变量名有值+不是设为空+变量值为空，才需要验证必填
       let isValid = true;
-      for (let index = 0; index < this.tableData.tbodyList.length; index++) {
-        if (this.tableData.tbodyList[index].key && this.tableData.tbodyList[index].isEmpty == 0 && !this.tableData.tbodyList[index].value) {
-          this.$set(this.tableData.tbodyList, index, {...this.tableData.tbodyList[index], valueErrorMessage: this.$t('form.validate.pleaseenterthecontent')});
+      for (let index = 0; index < this.currentTableData.tbodyList.length; index++) {
+        if (this.currentTableData.tbodyList[index].key && this.currentTableData.tbodyList[index].isEmpty == 0 && !this.currentTableData.tbodyList[index].value) {
+          this.$set(this.currentTableData.tbodyList, index, {...this.currentTableData.tbodyList[index], valueErrorMessage: this.$t('form.validate.pleaseenterthecontent')});
           isValid = false;
         }
       }
@@ -260,7 +265,7 @@ export default {
       if (value) {
         let currentValue = this.$utils.deepClone(row);
         currentValue.value = '';
-        this.$set(this.tableData.tbodyList, index, currentValue);
+        this.$set(this.currentTableData.tbodyList, index, currentValue);
       }
     }
   },
