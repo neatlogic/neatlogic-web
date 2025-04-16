@@ -195,7 +195,8 @@ export default {
         keyValueList.push({
           key: item.key,
           value: item.value,
-          type: item.componentType
+          type: item.componentType,
+          isEmpty: item.isEmpty
         });
       });
       let {appSystemId, appModuleId, envId} = this.params;
