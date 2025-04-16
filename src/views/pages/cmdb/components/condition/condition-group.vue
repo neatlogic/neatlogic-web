@@ -26,7 +26,9 @@
                   "
                 >
                   <template v-slot:option="{ item }">
-                    <span class="text-grey">{{ item.type == 'attr' ? $t('page.attribute') : $t('page.relation') }}·</span>
+                    <span v-if="item.type === 'attr'" class="text-grey">{{ $t('page.attribute') }}·</span>
+                    <span v-else-if="item.type === 'global'" class="text-grey">{{ $t('term.cmdb.globalattr') }}·</span>
+                    <span v-else class="text-grey">{{ $t('page.relation') }}</span>
                     <span>{{ item.label }}</span>
                     <span class="text-grey">({{ item.name }})</span>
                   </template>
@@ -51,17 +53,33 @@
             </Col>
             <Col v-if="isNeedAttrValue(conItem)" span="8">
               <AttrSearcher
-                v-if="conItem.type == 'attr' && getAttrById(conItem.id)"
+                v-if="conItem.type === 'attr' && getAttrById(conItem.id)"
                 ref="attrHandler"
                 :valueList="conItem.valueList"
                 :attrData="getAttrById(conItem.id)"
                 @setData="setAttrValue(conItem, arguments[0])"
               ></AttrSearcher>
               <TsFormSelect
-                v-if="conItem.type == 'relfrom' || conItem.type == 'relto'"
+                v-else-if="conItem.type === 'relfrom' || conItem.type === 'relto'"
                 v-bind="getRelSelectConfig(conItem.id)"
                 :value="conItem.valueList"
                 :transfer="true"
+                @change="
+                  val => {
+                    setAttrValue(conItem, val);
+                  }
+                "
+              ></TsFormSelect>
+              <TsFormSelect
+                v-else-if="conItem.type === 'global' && getGlobalAttrById(conItem.id)"
+                :value="conItem.valueList"
+                dynamicUrl="/api/rest/cmdb/globalattritem/search"
+                :params="{ attrId: getGlobalAttrById(conItem.id).id }"
+                valueName="id"
+                textName="value"
+                transfer
+                border="border"
+                multiple
                 @change="
                   val => {
                     setAttrValue(conItem, val);
@@ -142,6 +160,7 @@ export default {
       ciAttrRelList: [],
       attrMap: {},
       relMap: {},
+      globalAttrMap: {},
       joinTypeList: [
         {
           text: '并且',
@@ -151,6 +170,15 @@ export default {
           text: '或者',
           value: 'or'
         }
+      ],
+      globalAttrExpressionList: [
+        {
+          value: 'like',
+          text: this.$t('term.expression.like')
+        },
+        { value: 'notlike', text: this.$t('term.expression.notlike') },
+        { value: 'is-null', text: this.$t('term.expression.empty') },
+        { value: 'is-not-null', text: this.$t('term.expression.notempty') }
       ]
     };
   },
@@ -192,6 +220,20 @@ export default {
         this.updateRule();
       }
     },
+    async getGlobalAttrByCiId(ciId) {
+      if (ciId) {
+        let attrList;
+        await this.$api.cmdb.ci.getGlobalAttrByCiId(ciId).then(res => {
+          attrList = res.Return;
+        });
+        attrList.forEach(attr => {
+          if (!this.globalAttrMap['global_' + attr.id]) {
+            this.$set(this.globalAttrMap, 'global_' + attr.id, attr);
+          }
+        });
+        return attrList;
+      }
+    },
     async getAttrByCiId(ciId) {
       if (ciId) {
         let attrList;
@@ -225,6 +267,10 @@ export default {
       if (this.ciId) {
         const attrList = await this.getAttrByCiId(this.ciId);
         const relList = await this.getRelByCiId(this.ciId);
+        const globalAttrList = await this.getGlobalAttrByCiId(this.ciId);
+        globalAttrList.forEach(attr => {
+          this.ciAttrRelList.push({ type: 'global', id: 'global_' + attr.id, name: attr.name, label: attr.label, expressionList: attr.expressionList});
+        });
         attrList.forEach(attr => {
           this.ciAttrRelList.push({ type: 'attr', id: 'attr_' + attr.id, name: attr.name, label: attr.label, expressionList: attr.expressionList });
         });
@@ -292,10 +338,12 @@ export default {
       this.updateRule();
     },
     getExpressionList(condition) {
-      if (condition.type == 'attr' && this.attrMap[condition.id]) {
+      if (condition.type === 'attr' && this.attrMap[condition.id]) {
         return this.attrMap[condition.id].expressionList;
-      } else if ((condition.type == 'relfrom' || condition.type == 'relto') && this.relMap[condition.id]) {
+      } else if ((condition.type === 'relfrom' || condition.type === 'relto') && this.relMap[condition.id]) {
         return this.relMap[condition.id].expressionList;
+      } else if (condition.type === 'global' && this.globalAttrMap[condition.id]) {
+        return this.globalAttrMap[condition.id].expressionList;
       }
       return [];
     },
@@ -347,6 +395,11 @@ export default {
     getAttrById() {
       return attrId => {
         return this.attrMap[attrId];
+      };
+    },
+    getGlobalAttrById() {
+      return globalAttrId => {
+        return this.globalAttrMap[globalAttrId];
       };
     },
     getRelById() {
