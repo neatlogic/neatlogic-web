@@ -212,6 +212,7 @@ export default {
             const oldWidth = startLeft - startColumnLeft;
             if (_column) {
               this.$set(_column, 'width', columnWidth);
+              this.$set(_column, '_isResize', true);
               const tableWidth = table.$refs.tstable.getBoundingClientRect().width;
               const headers = table.$refs.tstable.querySelectorAll('th');
               headers.forEach((th, index) => {

@@ -31,7 +31,7 @@
           :style="setTd()"
           @click="clickTd($event, bitem, hitem)"
         >
-          <div :class="hitem.key == 'action' ? (hideAction ? 'action-div' : 'action-div nohide') : ''" :style="hitem.key == 'action' ? getActionPostion(offsetWidth, scrollLeft) : ''">
+          <div :class="hitem.key == 'action' ? (hideAction ? 'action-div' : 'action-div nohide') : ''" :style="hitem.key == 'action' ? getActionPostion(offsetWidth, scrollLeft) : getResizeStyle(hitem.key)">
             <slot :name="hitem.key" :row="bitem" :index="bindex">
               <div
                 v-if="hitem.key === 'selection'"
@@ -492,6 +492,23 @@ export default {
       }
       return {
         transform: translateStyle
+      };
+    },
+    getResizeStyle() {
+      return (key) => {
+        let style = {};
+        if (this.canResize) {
+          let findCol = this.colsList.find(cc => cc.key == key + 'Width');
+          if (findCol && findCol._isResize) {
+            style = {
+              width: findCol.width + 'px',
+              'white-space': 'nowrap', /* 防止文本换行 */
+              'overflow': 'hidden',
+              'text-overflow': 'ellipsis'
+            };
+          }
+        }
+        return style;
       };
     }
   },
