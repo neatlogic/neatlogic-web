@@ -28,7 +28,6 @@
                 v-model="row.key"
                 :dataList="currentEnvKeyList"
                 :errorMessage="row.errorMessage"
-                :allowCreate="true"
                 :search="true"
                 border="border"
                 transfer
