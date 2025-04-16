@@ -123,7 +123,6 @@ export default {
       ],
       editDialogSetting: {
         type: 'modal',
-        maskClose: true,
         isShow: true,
         width: 'small'
       },
