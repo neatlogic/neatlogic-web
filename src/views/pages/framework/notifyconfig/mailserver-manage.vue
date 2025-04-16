@@ -6,14 +6,11 @@
           <span class="action-item tsfont-plus" @click="addMailServer()">{{ $t('page.add') }}</span>
         </div>
       </template>
-      <template slot="topRight">
-
-      </template>
       <div slot="content" ref="maintable">
         <TsTable 
           v-if="true"
           :theadList="theadList"
-          v-bind="tabelData"
+          v-bind="tableData"
         >
           <template slot="isActive" slot-scope="{ row }">
             <i-switch
@@ -110,7 +107,7 @@ export default {
           align: 'right'
         }
       ],
-      tabelData: null,
+      tableData: null,
       isShowMailServerEdit: false,
       editId: null
     };
@@ -131,7 +128,7 @@ export default {
     searchMailServerList() {
       this.$api.framework.mailserver.searchMailServerList({}).then(res => {
         if (res.Status == 'OK') {
-          this.tabelData = res.Return;
+          this.tableData = res.Return;
         }
       });
     },
