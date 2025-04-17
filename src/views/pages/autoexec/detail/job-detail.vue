@@ -484,6 +484,7 @@ export default {
           }
           this.$set(this.jobData, 'status', res.Return['status']);
           this.$set(this.jobData, 'statusName', res.Return['statusName']);
+          this.$set(this.jobData, 'waitingDetail', res.Return['waitingDetail']);
           const phaseIdList = [];
           this.jobData.phaseList.forEach(phase => {
             if (!this.phaseEndingStatusList.includes(phase.status)) {
