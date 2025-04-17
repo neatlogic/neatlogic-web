@@ -9,6 +9,7 @@
         v-model="allTypeKeyVlaue"
         type="textarea"
         height="400px"
+        :monospace="true"
       >
 
       </TsFormInput>
@@ -25,6 +26,9 @@ export default {
     isEdit: {
       type: Boolean,
       default: false
+    },
+    instanceId: {
+      type: [String, Number]
     },
     params: {
       type: Object,
@@ -72,11 +76,28 @@ export default {
       let value = '';
       if (this.tableData && this.tableData.tbodyList.length > 0) {
         let tbodyList = this.$utils.deepClone(this.tableData.tbodyList);
+        let maxLengthOfType = 0;
+        let maxLengthOfKey = 0;
+        tbodyList.forEach((item) => {
+          let typeLen = item.type.length;
+          maxLengthOfType = Math.max(maxLengthOfType, typeLen);
+          let keyLen = item.key.length;
+          maxLengthOfKey = Math.max(maxLengthOfKey, keyLen);
+        });
         tbodyList.forEach((item) => {
           if (value) {
             value += '\n';
           }
-          value = value + item.type + ':' + item.key + '=' + item.value;
+          let itemValue = '';
+          if (item.value.includes('\n')) {
+            itemValue = item.value.replaceAll('\n', '\\n');
+          } else {
+            itemValue = item.value;
+          }
+          let rowValue = item.type + ':';
+          rowValue = rowValue.padEnd(maxLengthOfType + 2);
+          rowValue += item.key.padEnd(maxLengthOfKey) + ' = ' + itemValue;
+          value = value + rowValue;
         });
         this.allTypeKeyVlaue = value;
       }
@@ -95,6 +116,9 @@ export default {
             let key = keyAndValueList[0].trim();
             keyAndValueList.shift();
             let value = keyAndValueList.join('=').trim();
+            if (value.includes('\\n')) {
+              value = value.replaceAll('\\n', '\n');
+            }
             // let isEmpty = 1;
             // if (value && value.trim() != '') {
             //   isEmpty = 0;
@@ -110,6 +134,7 @@ export default {
       }
       let params = {
         ...this.params,
+        instanceId: this.instanceId,
         keyValueList: keyValueList
       };
       this.$emit('save', params);

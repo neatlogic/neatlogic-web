@@ -37,6 +37,9 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
+    instanceId: {
+      type: [String, Number]
+    },
     params: {
       type: Object,
       default: function() {
@@ -114,6 +117,7 @@ export default {
         appSystemId: this.params.appSystemId,
         appModuleId: this.params.appModuleId,
         envId: this.params.envId,
+        instanceId: this.instanceId,
         currentPage: this.currentPage,
         pageSize: this.pageSize
       };
@@ -145,6 +149,7 @@ export default {
           appSystemId: this.params.appSystemId,
           appModuleId: this.params.appModuleId,
           envId: this.params.envId,
+          instanceId: this.instanceId,
           uuidList: selectdRowUuidList
         };
         this.$api.deploy.applicationConfig.fallbackEnvAutoConfig(data).then((res) => {
