@@ -9,13 +9,16 @@
         </div>
       </template>
       <template v-slot:topRight>
-        <div v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY') && selectedApp && !selectedModule" class="action-group">
-          <span class="action-item tsfont-edit" @click="editApp()">{{ $t('page.apply') }}</span>
-          <span class="action-item tsfont-trash-o" @click="deleteApp()">{{ $t('page.apply') }}</span>
-        </div>
-        <div v-else-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-group">
-          <span class="action-item tsfont-edit" @click="editAppModule()">{{ $t('page.module') }}</span>
-          <span class="action-item tsfont-trash-o" @click="deleteAppModule()">{{ $t('page.module') }}</span>
+        <div class="action-group">
+          <template v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY') && selectedApp && !selectedModule">
+            <span class="action-item tsfont-edit" @click="editApp()">{{ $t('page.apply') }}</span>
+            <span class="action-item tsfont-trash-o" @click="deleteApp()">{{ $t('page.apply') }}</span>
+          </template>
+          <template v-else-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')">
+            <span class="action-item tsfont-edit" @click="editAppModule()">{{ $t('page.module') }}</span>
+            <span class="action-item tsfont-trash-o" @click="deleteAppModule()">{{ $t('page.module') }}</span>
+          </template>
+          <span class="action-item tsfont-label" @click="handleTagManage">{{ $t('page.tagmanage') }}</span>
         </div>
       </template>
       <template v-slot:sider>
@@ -73,6 +76,7 @@
       @close="closeDeleteDialog"
     ></DeleteCiEntityDialog>
     <CiAttrSettingDialog v-if="isSettingDialogShow" @close="closeSettingDialog"></CiAttrSettingDialog>
+    <TagManageDialog v-if="isShowTagManageDialog" @close="closeTagManageDialog" />
   </div>
 </template>
 <script>
@@ -86,7 +90,8 @@ export default {
     DeleteCiEntityDialog: () => import('../cientity/cientity-delete-dialog.vue'),
     AssetsManage: () => import('./assets-manage'), // 资产清单
     AppModuleTree: () => import('./app-module-tree'), // 应用模块树
-    CiAttrSettingDialog: () => import('./ci-attr-setting-dialog.vue')
+    CiAttrSettingDialog: () => import('./ci-attr-setting-dialog.vue'),
+    TagManageDialog: () => import('./tag/tag-manage-dialog.vue')
   },
   props: {},
   data() {
@@ -106,7 +111,8 @@ export default {
       selectedModule: null,
       appModueData: {},
       ciEntityData: {}, // 添加模块时，用于锁定应用
-      isSettingDialogShow: false 
+      isSettingDialogShow: false,
+      isShowTagManageDialog: false // 标签管理
 
     };
   },
@@ -238,6 +244,12 @@ export default {
           this.$refs.assetsManage.initData();
         }
       }
+    },
+    handleTagManage() {
+      this.isShowTagManageDialog = true;
+    },
+    closeTagManageDialog() {
+      this.isShowTagManageDialog = false;
     }
   },
   filter: {},
