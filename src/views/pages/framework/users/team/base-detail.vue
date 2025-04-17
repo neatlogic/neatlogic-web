@@ -73,6 +73,19 @@ export default {
             }
           ]
         },
+        email: {
+          value: '',
+          label: '邮箱',
+          type: 'text',
+          maxlength: 100,
+          validateList: [{ name: 'mail', message: this.$t('message.pleaseentertruetarget', { target: this.$t('page.email') }) }]
+        },
+        phone: {
+          label: '电话',
+          type: 'text',
+          maxlength: 11,
+          validateList: [{ name: 'phone', message: this.$t('message.pleaseentertruetarget', { target: this.$t('page.phonenumber') }) }]
+        },
         level: {
           type: 'select',
           label: this.$t('page.hierarchy'),
