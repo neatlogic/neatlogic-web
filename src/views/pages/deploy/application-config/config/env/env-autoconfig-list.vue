@@ -15,7 +15,8 @@
             </ul>
           </Tooltip>
         </template>
-        <li v-if="hasAutoConfig && hasEditConfigAuth" class="action-item tsfont-formtextarea text-href" @click="editAutoConfigForTextarea">{{ '文本编辑' }}</li>
+        <li v-if="hasEditConfigAuth" class="action-item tsfont-formtextarea text-href" @click="editAutoConfigForTextarea">{{ '文本编辑' }}</li>
+        <li class="action-item tsfont-task text-href" @click="showEnvAutoConfigAudit">{{ '审计' }}</li>
       </ul>
     </div>
     <div v-if="hasAutoConfig" :class="hasAutoConfig ? 'padding': ''">
@@ -88,6 +89,12 @@
       @close="closeAutoConfigEdit"
       @save="saveAutoConfig"
     ></EnvAutoconfigEditTextarea>
+    <EnvAutoconfigAudit
+      v-if="isShowEnvAutoConfigAudit"
+      :params="params"
+      @close="closeAutoConfigAudit"
+      @save="saveAutoConfigAudit"
+    ></EnvAutoconfigAudit>
     <EnvAutoconfigInstanceDifferenceEdit
       v-if="isShowEnvDifferenceEdit"
       :instanceId="instanceId"
@@ -102,6 +109,7 @@ export default {
   components: {
     EnvAutoconfigEdit: () => import('./env-autoconfig-edit'),
     EnvAutoconfigEditTextarea: () => import('./env-autoconfig-edit-textarea'),
+    EnvAutoconfigAudit: () => import('./env-autoconfig-audit'),
     EnvAutoconfigInstanceDifferenceEdit: () => import('./env-autoconfig-instance-difference-edit'), // 添加实例差异
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
@@ -122,6 +130,7 @@ export default {
     return {
       isShowEnvEdit: false,
       isShowEnvEditForTextarea: false,
+      isShowEnvAutoConfigAudit: false,
       isShowEnvDifferenceEdit: false,
       hasInstance: false, // 是否存在实例差异
       hasAutoConfig: false,
@@ -272,6 +281,18 @@ export default {
           this.closeAutoConfigEdit(true);
         }
       });
+    },
+    showEnvAutoConfigAudit() {
+      this.isShowEnvAutoConfigAudit = true;
+    },
+    closeAutoConfigAudit(needRefresh) {
+      this.isShowEnvAutoConfigAudit = false;
+      if (needRefresh) {
+        this.getEnvInfo();
+      }
+    },
+    saveAutoConfigAudit(needRefresh) {
+      this.isShowEnvAutoConfigAudit = false;
     }
   },
   filter: {},
