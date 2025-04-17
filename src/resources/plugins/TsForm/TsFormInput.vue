@@ -23,7 +23,7 @@
         :suffix="suffix"
         :icon="icon"
         :search="search"
-        :style="setThemeColor()"
+        :style="[setThemeColor(), getFontStyle()]"
         :autocomplete="type == 'password'? 'new-password': 'off'"
         @on-change="onChangeValue"
         @on-focus="onFocusValue"
@@ -149,7 +149,11 @@ export default {
     max: {
       type: Number
     },
-    theme: Object //主题
+    theme: Object, //主题
+    monospace: { //是否等宽字体，只针对textarea
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -254,6 +258,13 @@ export default {
     },
     onClick() {
       this.$emit('clickIcon');
+    },
+    getFontStyle() {
+      let style = {};
+      if (this.monospace && this.type == 'textarea') {
+        style.fontFamily = 'monospace';
+      }
+      return style;
     }
   },
   computed: {
