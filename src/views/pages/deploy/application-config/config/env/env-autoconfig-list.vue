@@ -57,10 +57,10 @@
         <div class="operation-box pb-xs">
           <span>{{ getIPPortName(item) }}</span>
           <div v-show="hasEditConfigAuth" class="action-group">
-            <span class="action-item tsfont-edit text-action" @click="openEnvDifferenceEdit(item)"></span>
-            <span class="action-item tsfont-formtextarea text-action" @click="openEnvDifferenceEditForTextarea(item)"></span>
-            <span class="action-item tsfont-task text-action" @click="openEnvDifferenceAudit(item)"></span>
-            <span class="tsfont-trash-o text-action" @click="delEnvDifference(item, index)"></span>
+            <span class="action-item tsfont-edit text-action text-href" @click="openEnvDifferenceEdit(item)">{{ $t('page.edit') }}</span>
+            <span class="action-item tsfont-formtextarea text-action text-href" @click="openEnvDifferenceEditForTextarea(item)">{{ '文本编辑' }}</span>
+            <span class="action-item tsfont-task text-action text-href" @click="openEnvDifferenceAudit(item)">{{ '审计' }}</span>
+            <span class="tsfont-trash-o text-action text-href" @click="delEnvDifference(item, index)">{{ $t('page.delete') }}</span>
           </div>
         </div>
         <TsTable
