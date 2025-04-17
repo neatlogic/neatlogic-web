@@ -32,6 +32,14 @@ const applicationConfig = {
     // 保存应用环境autoconfig
     return axios.post('/api/rest/deploy/app/config/env/auto/config/save', params);
   },
+  getEnvAutoConfigAuditList(params) {
+    // 保存应用环境autoconfig
+    return axios.post('/api/rest/deploy/app/config/env/auto/config/audit/list', params);
+  },
+  fallbackEnvAutoConfig(params) {
+    // 保存应用环境autoconfig
+    return axios.post('/api/rest/deploy/app/config/env/auto/config/fallback', params);
+  },
   searchAppSystemList(params) {
     // 查询应用配置树
     return axios.post('/api/rest/deploy/app/config/appsystem/search', params);

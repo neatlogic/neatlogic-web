@@ -9,6 +9,7 @@
         v-model="allTypeKeyVlaue"
         type="textarea"
         height="400px"
+        :monospace="true"
       >
 
       </TsFormInput>
@@ -25,6 +26,9 @@ export default {
     isEdit: {
       type: Boolean,
       default: false
+    },
+    instanceId: {
+      type: [String, Number]
     },
     params: {
       type: Object,
@@ -72,8 +76,28 @@ export default {
       let value = '';
       if (this.tableData && this.tableData.tbodyList.length > 0) {
         let tbodyList = this.$utils.deepClone(this.tableData.tbodyList);
+        let maxLengthOfType = 0;
+        let maxLengthOfKey = 0;
         tbodyList.forEach((item) => {
-          value = value + item.type + ':' + item.key + '=' + item.value + '\n';
+          let typeLen = item.type.length;
+          maxLengthOfType = Math.max(maxLengthOfType, typeLen);
+          let keyLen = item.key.length;
+          maxLengthOfKey = Math.max(maxLengthOfKey, keyLen);
+        });
+        tbodyList.forEach((item) => {
+          if (value) {
+            value += '\n';
+          }
+          let itemValue = '';
+          if (item.value.includes('\n')) {
+            itemValue = item.value.replaceAll('\n', '\\n');
+          } else {
+            itemValue = item.value;
+          }
+          let rowValue = item.type + ':';
+          rowValue = rowValue.padEnd(maxLengthOfType + 2);
+          rowValue += item.key.padEnd(maxLengthOfKey) + ' = ' + itemValue;
+          value = value + rowValue;
         });
         this.allTypeKeyVlaue = value;
       }
@@ -85,26 +109,32 @@ export default {
         typeKeyValueList.forEach((typeKeyValue) => {
           if (typeKeyValue && typeKeyValue.trim() != '') {
             let typeAndKeyValueList = typeKeyValue.split(':');
-            let type = typeAndKeyValueList[0];
-            let keyValue = typeAndKeyValueList[1];
+            let type = typeAndKeyValueList[0].trim();
+            typeAndKeyValueList.shift();
+            let keyValue = typeAndKeyValueList.join(':').trim();
             let keyAndValueList = keyValue.split('=');
-            let key = keyAndValueList[0];
-            let value = keyAndValueList[1];
-            let isEmpty = 1;
-            if (value && value.trim() != '') {
-              isEmpty = 0;
+            let key = keyAndValueList[0].trim();
+            keyAndValueList.shift();
+            let value = keyAndValueList.join('=').trim();
+            if (value.includes('\\n')) {
+              value = value.replaceAll('\\n', '\n');
             }
+            // let isEmpty = 1;
+            // if (value && value.trim() != '') {
+            //   isEmpty = 0;
+            // }
             keyValueList.push({
               key: key,
               type: type === '' ? null : type,
               value: value,
-              isEmpty: isEmpty
+              isEmpty: 0
             });
           }
         });
       }
       let params = {
         ...this.params,
+        instanceId: this.instanceId,
         keyValueList: keyValueList
       };
       this.$emit('save', params);

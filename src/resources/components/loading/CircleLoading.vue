@@ -1,7 +1,12 @@
 <template>
-  <div :style="{ width: size + 'px', height: size + 'px' }" style="display:inline-block">
+  <div
+    :style="{ width: size + 'px', height: size + 'px' }"
+    style="display:inline-block"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+  >
     <div class="loading">
-      <div class="loading-circle" :style="{ width: size + 'px', height: size + 'px' }"></div>
+      <div class="loading-circle" :style="{ width: size + 'px', height: size + 'px', borderRightColor: color, borderTopColor: color}"></div>
     </div>
   </div>
 </template>
@@ -13,7 +18,19 @@ export default {
     size: {
       type: Number,
       default: 20
+    },
+    color: {
+      type: String,
+      default: ''
     }
+  },
+  methods: {
+    handleMouseEnter() {
+      this.$emit('mouseenter');
+    },
+    handleMouseLeave() {
+      this.$emit('mouseleave');
+    } 
   }
 };
 </script>
@@ -38,9 +55,8 @@ export default {
     border: 2px solid @border-color;
     border-top: 2px solid @primary-color;
     border-right: 2px solid @primary-color;
-    //border-bottom: 2px solid @primary-color;
     border-radius: 50%;
-    animation: spin 3s linear infinite;
+    animation: spin 10s linear infinite;
   }
 
   @keyframes spin {

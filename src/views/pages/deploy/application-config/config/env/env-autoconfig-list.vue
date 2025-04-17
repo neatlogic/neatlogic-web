@@ -15,7 +15,8 @@
             </ul>
           </Tooltip>
         </template>
-        <li v-if="hasAutoConfig && hasEditConfigAuth" class="action-item tsfont-formtextarea text-href" @click="editAutoConfigForTextarea">{{ '文本编辑' }}</li>
+        <li v-if="hasEditConfigAuth" class="action-item tsfont-formtextarea text-href" @click="editAutoConfigForTextarea">{{ '文本编辑' }}</li>
+        <li class="action-item tsfont-task text-href" @click="showEnvAutoConfigAudit">{{ '审计' }}</li>
       </ul>
     </div>
     <div v-if="hasAutoConfig" :class="hasAutoConfig ? 'padding': ''">
@@ -56,8 +57,10 @@
         <div class="operation-box pb-xs">
           <span>{{ getIPPortName(item) }}</span>
           <div v-show="hasEditConfigAuth" class="action-group">
-            <span class="action-item tsfont-edit text-action" @click="openEnvDifferenceEdit(item)"></span>
-            <span class="tsfont-trash-o text-action" @click="delEnvDifference(item, index)"></span>
+            <span class="action-item tsfont-edit text-action text-href" @click="openEnvDifferenceEdit(item)">{{ $t('page.edit') }}</span>
+            <span class="action-item tsfont-formtextarea text-action text-href" @click="openEnvDifferenceEditForTextarea(item)">{{ '文本编辑' }}</span>
+            <span class="action-item tsfont-task text-action text-href" @click="openEnvDifferenceAudit(item)">{{ '审计' }}</span>
+            <span class="tsfont-trash-o text-action text-href" @click="delEnvDifference(item, index)">{{ $t('page.delete') }}</span>
           </div>
         </div>
         <TsTable
@@ -83,17 +86,39 @@
     <EnvAutoconfigEditTextarea
       v-if="isShowEnvEditForTextarea"
       :isEdit="hasAutoConfig"
+      :instanceId="0"
       :tableData="tableData"
       :params="params"
       @close="closeAutoConfigEdit"
       @save="saveAutoConfig"
     ></EnvAutoconfigEditTextarea>
+    <EnvAutoconfigAudit
+      v-if="isShowEnvAutoConfigAudit"
+      :instanceId="0"
+      :params="params"
+      @close="closeAutoConfigAudit"
+    ></EnvAutoconfigAudit>
     <EnvAutoconfigInstanceDifferenceEdit
       v-if="isShowEnvDifferenceEdit"
       :instanceId="instanceId"
       :params="instanceParams"
       @close="closeEnvDifferenceEdit"
     ></EnvAutoconfigInstanceDifferenceEdit>
+    <EnvAutoconfigEditTextarea
+      v-if="isShowEnvDifferenceEditForTextarea"
+      :isEdit="true"
+      :instanceId="instanceId"
+      :tableData="instanceTableData"
+      :params="instanceParams"
+      @close="closeEnvDifferenceEditForTextarea"
+      @save="saveEnvDifferenceEditForTextarea"
+    ></EnvAutoconfigEditTextarea>
+    <EnvAutoconfigAudit
+      v-if="isShowEnvDifferenceAudit"
+      :instanceId="instanceId"
+      :params="instanceParams"
+      @close="closeEnvDifferenceAudit"
+    ></EnvAutoconfigAudit>
   </div>
 </template>
 <script>
@@ -102,6 +127,7 @@ export default {
   components: {
     EnvAutoconfigEdit: () => import('./env-autoconfig-edit'),
     EnvAutoconfigEditTextarea: () => import('./env-autoconfig-edit-textarea'),
+    EnvAutoconfigAudit: () => import('./env-autoconfig-audit'),
     EnvAutoconfigInstanceDifferenceEdit: () => import('./env-autoconfig-instance-difference-edit'), // 添加实例差异
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
@@ -122,7 +148,10 @@ export default {
     return {
       isShowEnvEdit: false,
       isShowEnvEditForTextarea: false,
+      isShowEnvAutoConfigAudit: false,
       isShowEnvDifferenceEdit: false,
+      isShowEnvDifferenceEditForTextarea: false,
+      isShowEnvDifferenceAudit: false,
       hasInstance: false, // 是否存在实例差异
       hasAutoConfig: false,
       instanceId: null,
@@ -146,7 +175,11 @@ export default {
       tableData: {
         hideAction: false,
         tbodyList: []
-      } //配置文件适配的变量
+      },
+      instanceTableData: {
+        hideAction: false,
+        tbodyList: []
+      }
     };
   },
   beforeCreate() {},
@@ -180,6 +213,90 @@ export default {
       }
       this.isShowEnvDifferenceEdit = true;
     },
+    openEnvDifferenceEditForTextarea(item) {
+      if (item) {
+        let {instanceId, keyValueList} = item;
+        this.instanceId = instanceId;
+        this.instanceParams = {
+          ...this.params,
+          keyValueList
+        };
+      } else {
+        this.instanceParams = {
+          ...this.params
+        };
+      }
+      let {appSystemId, appModuleId, envId} = this.params;
+      let params = {
+        appSystemId: appSystemId,
+        appModuleId: appModuleId,
+        envId: envId
+      };
+      this.$api.deploy.applicationConfig.getEnvInfo(params).then((res) => {
+        if (res && res.Status == 'OK') {
+          let returnData = res.Return;
+          this.currentEnvKeyList = [];
+          if (!this.instanceId) {
+            // 新增
+            this.tableData.tbodyList = [];
+            this.isShowEnvDifferenceEditForTextarea = true;
+          } else {
+            // 编辑
+            returnData.instanceAutoConfigList && returnData.instanceAutoConfigList.forEach((item) => {
+              if (item.instanceId == this.instanceId) {
+                item.keyValueList && item.keyValueList.forEach((v) => {
+                  this.instanceTableData.tbodyList.push({
+                    key: v.key,
+                    value: v.hasOwnProperty('value') ? v.value : '',
+                    isEmpty: v.isEmpty,
+                    type: v.type,
+                    delOperation: '',
+                    componentType: v.type
+                  });
+                });
+              }
+            });
+            this.isShowEnvDifferenceEditForTextarea = true;
+          }
+        }
+      });
+    },
+    closeEnvDifferenceEditForTextarea(needRefresh) {
+      this.isShowEnvDifferenceEditForTextarea = false;
+      this.instanceTableData.tbodyList = [];
+      if (needRefresh) {
+        this.getEnvInfo();
+      }
+    },
+    saveEnvDifferenceEditForTextarea(params) {
+      this.$api.deploy.applicationConfig.saveEnvAutoConfig(params).then((res) => {
+        if (res && res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.closeEnvDifferenceEditForTextarea(true);
+        }
+      });
+    },
+    openEnvDifferenceAudit(item) {
+      if (item) {
+        let {instanceId, keyValueList} = item;
+        this.instanceId = instanceId;
+        this.instanceParams = {
+          ...this.params,
+          keyValueList
+        };
+      } else {
+        this.instanceParams = {
+          ...this.params
+        };
+      }
+      this.isShowEnvDifferenceAudit = true;
+    },
+    closeEnvDifferenceAudit(needRefresh) {
+      this.isShowEnvDifferenceAudit = false;
+      if (needRefresh) {
+        this.getEnvInfo();
+      }
+    },
     editAutoConfig() {
       this.isShowEnvEdit = true;
     },
@@ -212,7 +329,6 @@ export default {
           } else {
             this.hasAutoConfig = false;
           }
-          //
           this.tableData.tbodyList = [];
           returnData.envAutoConfigList && returnData.envAutoConfigList.forEach((v) => {
             this.tableData.tbodyList.push({
@@ -272,6 +388,15 @@ export default {
           this.closeAutoConfigEdit(true);
         }
       });
+    },
+    showEnvAutoConfigAudit() {
+      this.isShowEnvAutoConfigAudit = true;
+    },
+    closeAutoConfigAudit(needRefresh) {
+      this.isShowEnvAutoConfigAudit = false;
+      if (needRefresh) {
+        this.getEnvInfo();
+      }
     }
   },
   filter: {},
