@@ -79,7 +79,7 @@
               <TsRow class="search-item">
                 <Col span="6" class="search-label text-grey overflow">{{ attr.label }}</Col>
                 <Col span="18" class="search-condition">
-                  <div v-if="attr.name == 'id'">
+                  <div v-if="attr.name === 'id'">
                     <TsFormInput
                       :value="searchParam['filterCiEntityId']"
                       @change="
@@ -93,7 +93,7 @@
                       "
                     ></TsFormInput>
                   </div>
-                  <div v-else-if="(attr.name = 'ci_id')">
+                  <div v-else-if="attr.name === 'ci_id'">
                     <TsFormSelect
                       :transfer="true"
                       :dataList="attr.itemList"
@@ -342,7 +342,7 @@
             <div v-else class="text-grey">-</div>
           </div>
           <div v-else-if="head.key.startsWith('const_')" :key="index" v-html="row[head.key.replace('const_', '')]"></div>
-          <div v-else-if="(head.key.startsWith('relto_') || head.key.startsWith('relfrom_'))" :key="index">
+          <div v-else-if="head.key.startsWith('relto_') || head.key.startsWith('relfrom_')" :key="index">
             <div v-if="row.relEntityData && row.relEntityData[head.key] && row.relEntityData[head.key]['valueList'] && row.relEntityData[head.key]['valueList'].length > 0">
               <span v-for="(relentity, rindex) in row.relEntityData[head.key]['valueList']" :key="rindex" class="mr-xs">
                 <a v-if="row.maxRelEntityCount > rindex" href="javascript:void(0)" @click="toCiEntity(relentity.ciEntityId, relentity.ciId)">
@@ -360,6 +360,12 @@
             <ul class="tstable-action-ul">
               <li v-if="mode == 'page'" class="tsfont-formtextarea" @click="toCiEntity(row.id, row.ciId)">{{ $t('page.detail') }}</li>
               <li v-if="row.authData && row.authData.accountmanagement" class="tsfont-userinfo" @click="openAccountEditDialog(row)">{{ $t('page.accountsmanage') }}</li>
+              <li
+                v-if="needAction && ciData && !ciData.isVirtual && !ciData.isAbstract"
+                class="tsfont-copy"
+                :class="!ciData.authData['cientityinsert'] ? 'disable' : ''"
+                @click="copyCiEntity(row)"
+              >{{ $t('page.copy') }}</li>
               <li
                 v-if="needAction"
                 class="tsfont-edit"
@@ -469,6 +475,7 @@ export default {
   directives: { download },
   props: {
     ciId: { type: Number },
+    ciData: { type: Object },
     rootCiId: { type: Number }, //根模型id，如果选中了子模型配置项，回显数据时就要利用此属性匹配模型，主要用在ITSM表单
     idList: { type: Array },
     displayColumnList: { type: Array, default: null }, //指定需要展示的属性列表，不指定代表全展示，成员：attr_xxx,relto_xxx,relfrom_xxx,const_xxx
@@ -918,6 +925,11 @@ export default {
         }
       }
       return null;
+    },
+    copyCiEntity(row) {
+      const id = row.id;
+      const ciId = row.ciId;
+      this.$router.push({ path: '/ci/' + ciId + '/cientity-copy/' + id });
     },
     editCiEntity(row) {
       if (!row.authData || !row.authData.cientityupdate) {
