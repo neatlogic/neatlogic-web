@@ -326,7 +326,7 @@ export default {
               this.validConfig[key] += config[key];
             }
           });
-          this.validConfig.failureCount = config.failed;
+          this.validConfig.failureCount = config?.failed || 0;
           if (config && config.update) {
             this.validConfig.successCount += config.update;
           }
