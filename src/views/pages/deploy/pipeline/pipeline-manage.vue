@@ -72,7 +72,7 @@ export default {
       isAddDeployJobDialogShow: false,
       isListDeployJobDialogShow: false,
       currentPipelineId: null,
-      searchParam: {keyword: '', type: ''},
+      searchParam: { keyword: '', type: '' },
       pipelineData: {},
       jobType: 'all',
       jobTypeDataList: []
@@ -105,7 +105,11 @@ export default {
       if (row.appSystemId) {
         this.$set(params, 'appSystemId', row.appSystemId);
       }
-      this.$router.push({ path: '/pipeline-edit', query: params});
+      this.$addHistoryData('searchParam', {
+        keyword: this.searchParam.keyword,
+        jobType: this.jobType
+      });
+      this.$router.push({ path: '/pipeline-edit', query: params });
     },
     addPipeline() {
       this.$router.push({ path: '/pipeline-edit' });
@@ -163,6 +167,12 @@ export default {
           });
         }
       });
+    },
+    restoreHistory(historyData) {
+      const { searchParam = {} } = historyData;
+      const { keyword = '', jobType = '' } = searchParam || {};
+      this.searchParam.keyword = keyword;
+      this.jobType = jobType;
     }
   },
   filter: {},
