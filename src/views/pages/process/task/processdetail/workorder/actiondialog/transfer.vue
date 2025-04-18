@@ -64,7 +64,16 @@ export default {
           groupList: ['user', 'team', 'role'],
           multiple: false,
           validateList: ['required'],
-          transfer: true
+          transfer: true,
+          onChange: () => {
+            this.transferList.forEach(item => {
+              if (item.name == 'workerList') {
+                if (item.hasOwnProperty('errorMessage')) {
+                  delete item.errorMessage;
+                }
+              }
+            });
+          }
         },
         {
           //步骤
@@ -150,9 +159,9 @@ export default {
               this.$emit('update:isShow', false);
               this.toTask();
             } else {
-              this.transferList.forEach(tr => {
-                if (tr.name == 'workerList') {
-                  tr.errorMessage = res.Message;
+              this.transferList.forEach(item => {
+                if (item.name == 'workerList') {
+                  this.$set(item, 'errorMessage', res.Message);
                 }
               });
             }
