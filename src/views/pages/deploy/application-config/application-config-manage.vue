@@ -10,6 +10,7 @@
         <div class="action-group">
           <!-- 应用层 -->
           <template v-if="configType == 'app' && canEdit">
+            <span class="action-item tsfont-setting" @click="editBlueSet()">{{ $t('term.deploy.blueset') }}</span>
             <span class="action-item tsfont-plus" @click="addModuleTree">{{ $t('page.module') }}</span>
             <span class="action-item tsfont-edit" @click="editAppTree">{{ $t('page.apply') }}</span>
             <span v-show="hasConfig && canShow" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('page.clearconfig') }}</span>
@@ -129,6 +130,10 @@
       :appSystemId="appSystemId"
       @close="closeImportPipelineConfig"
     ></ImportPipelineConfigDialog>
+    <BlueSetDialog
+      v-if="isShowBlueSetDialog"
+      @close="closeBlueSetDialog"
+    ></BlueSetDialog>
   </div>
 </template>
 <script>
@@ -145,7 +150,8 @@ export default {
     ModuleTreeEdit: () => import('./config/app/components/module-tree-edit'), // 编辑模块（应用配置树）
     EnvTreeEdit: () => import('./config/app/components/env-tree-edit'), // 编辑模块（应用配置树）
     ClearConfigDialog: () => import('./config/clear-config-dialog'), // 清空配置
-    ImportPipelineConfigDialog: () => import('pages/deploy/application-config/import-pipeline-config-dialog') // 导入流水线配置
+    ImportPipelineConfigDialog: () => import('pages/deploy/application-config/import-pipeline-config-dialog'), // 导入流水线配置
+    BlueSetDialog: () => import('./config/blueset-dialog.vue') // 蓝绿部署配置
   },
   props: {
     hideFucntionExcludeAppModuleRunner: {
@@ -176,7 +182,8 @@ export default {
       isShowClearConfigDialog: false,
       envParam: {},
       authList: [], // 应用配置所有权限列表
-      isHasAppSystemIdList: true //是否有应用列表
+      isHasAppSystemIdList: true, //是否有应用列表
+      isShowBlueSetDialog: false
     };
   },
   beforeCreate() {},
@@ -489,6 +496,13 @@ export default {
       if (needRefresh) {
         this.$refs?.appModuleList?.refreshApp(this.appSystemId);
       }
+    },
+    editBlueSet() {
+      // 编辑蓝绿配置
+      this.isShowBlueSetDialog = true;
+    },
+    closeBlueSetDialog() {
+      this.isShowBlueSetDialog = false;
     }
   },
   filter: {},

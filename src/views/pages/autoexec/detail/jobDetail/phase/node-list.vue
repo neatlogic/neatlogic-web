@@ -300,11 +300,16 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.jobData.source == 'deploy' || this.jobData.source == 'deployschedulegeneral') {
+    if (this.jobData.extraInfo && this.jobData.extraInfo.sourceType == 'deploy') {
       // 添加发布版本字段
       this.theadList.splice(1, 0, {
         title: this.$t('page.versions'),
         key: 'version'
+      });
+      //添加发布蓝绿
+      this.theadList.splice(1, 0, {
+        title: this.$t('term.deploy.blueSet'),
+        key: 'blueSet'
       });
     }
     if (this.jobData.isCanExecute) {

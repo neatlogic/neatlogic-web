@@ -103,20 +103,11 @@
         </div>
         <div>
           <Divider orientation="start" class="divier">{{ $t('term.autoexec.batchsetting') }}</Divider>
-          <div class="pr-nm pl-nm pb-nm">
-            <Slider
-              :value="roundIndex"
-              :min="0"
-              :max="10"
-              :step="1"
-              show-tip="never"
-              :marks="roundMark"
-              @on-change="
-                val => {
-                  $set(jobTemplateData, 'roundCount', roundList[val]);
-                }
-              "
-            ></Slider>
+          <div class="pb-nm">
+            <TsFormSelect
+              v-model="jobTemplateData.roundCount"
+              v-bind="roundCountForm"
+            ></TsFormSelect>
           </div>
         </div>
         <div>
@@ -154,7 +145,6 @@ export default {
   },
   data() {
     return {
-      roundList: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024],
       isLoading: false,
       jobTemplateData: {
         appSystemId: null,
@@ -186,6 +176,15 @@ export default {
           this.$set(this.jobTemplateData, 'appSystemId', val);
           this.$set(this.jobTemplateData, 'appSystemAbbrName', item.text);
         }
+      },
+      roundCountForm: {
+        border: 'border',
+        dataList: this.getRoundCountList(),
+        filterName: 'text',
+        search: true,
+        transfer: true,
+        desc: this.$t('term.autoexec.roundcountdescrition'),
+        validateList: ['required', 'maxNum']
       }
     };
   },
@@ -375,6 +374,16 @@ export default {
     },
     close() {
       this.$emit('close');
+    },
+    getRoundCountList() {
+      let list = [
+        {
+          value: -1,
+          text: '蓝绿执行'
+        }
+      ];
+      list.push(...this.$utils.getRoundCountList());
+      return list;
     }
   },
   filter: {},
@@ -387,19 +396,6 @@ export default {
         }
       }
       return '';
-    },
-    roundIndex() {
-      if (this.jobTemplateData.roundCount) {
-        return this.roundList.findIndex(d => d == this.jobTemplateData.roundCount);
-      }
-      return 0;
-    },
-    roundMark() {
-      const d = {};
-      this.roundList.forEach((val, index) => {
-        d[index] = val.toString();
-      });
-      return d;
     }
   },
   watch: {

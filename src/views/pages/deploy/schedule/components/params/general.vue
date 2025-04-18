@@ -160,9 +160,9 @@ export default {
       roundCountForm: {
         placeholder: this.$t('page.selectinput'),
         border: 'border',
-        dataList: this.$utils.getRoundCountList(),
+        dataList: this.getRoundCountList(),
         filterName: 'text',
-        allowCreate: true,
+        // allowCreate: true,
         search: true,
         transfer: true,
         desc: this.$t('term.autoexec.roundcountdescrition'),
@@ -360,6 +360,16 @@ export default {
         this.$set(data, 'param', this.$refs.param.getValue());
       }
       return data;
+    },
+    getRoundCountList() {
+      let list = [
+        {
+          value: -1,
+          text: '蓝绿执行'
+        }
+      ];
+      list.push(...this.$utils.getRoundCountList());
+      return list;
     }
   },
   filter: {},
