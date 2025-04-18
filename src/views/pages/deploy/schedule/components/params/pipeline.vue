@@ -119,8 +119,8 @@ export default {
       }
     },
     getSelectedAppSystemModuleVersion(indexList, itemList) {
-      this.jobData.appSystemModuleVersionList = [];
       if (itemList && itemList.length > 0) {
+        this.jobData.appSystemModuleVersionList = [];
         itemList.forEach(item => {
           this.jobData.appSystemModuleVersionList.push({
             appSystemId: item.appSystemId,
