@@ -4,11 +4,13 @@
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
-      <template v-slot:topLeft>{{ $t('dialog.title.addtarget', {target: $t('term.autoexec.timingjob')}) }}</template>
+      <template v-slot:topLeft>
+        <span>{{ $t('dialog.title.addtarget', { target: $t('term.autoexec.timingjob') }) }}</span>
+      </template>
       <template v-slot:topRight>
         <div class="action-group">
           <span v-if="current == 0" class="action-item">
-            <Button type="primary" ghost @click="next(current+1)">{{ $t('page.thenextstep') }}</Button>
+            <Button type="primary" ghost @click="next(current + 1)">{{ $t('page.thenextstep') }}</Button>
           </span>
           <template v-if="current > 0">
             <span class="action-item">
@@ -16,7 +18,7 @@
                 type="primary"
                 class="mr-md"
                 ghost
-                @click="next(current -= 1)"
+                @click="next((current -= 1))"
               >{{ $t('page.previousstep') }}</Button>
             </span>
             <span class="action-item">
@@ -30,19 +32,18 @@
           <div class="step">
             <Steps :current="current">
               <Step
-                v-for="(litem,lindex) in stepList"
+                v-for="(litem, lindex) in stepList"
                 :key="lindex"
                 :title="litem"
                 @click.native="next(lindex)"
-              >
-              </Step>
+              ></Step>
             </Steps>
           </div>
           <div class="content">
-            <div v-show="current===0" class="base-content pb-nm">
+            <div v-show="current === 0" class="base-content pb-nm">
               <JobBaseInfo id="jobBaseinfo" ref="jobBaseinfo"></JobBaseInfo>
             </div>
-            <div v-show="current===1" class="padding">
+            <div v-show="current === 1" class="padding">
               <JobParams ref="jobParams" :baseParams="baseParams"></JobParams>
             </div>
           </div>
@@ -138,7 +139,8 @@ export default {
         }
       });
     },
-    jumpToItem(obj) { //定位参数，校验定位
+    jumpToItem(obj) {
+      //定位参数，校验定位
       this.current = obj.current == 'basicInfo' ? 0 : 1;
       this.$utils.jumpTo(obj.id);
     }

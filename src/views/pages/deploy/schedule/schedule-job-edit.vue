@@ -5,7 +5,9 @@
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
-      <template v-slot:topLeft>{{ $t('dialog.title.edittarget', {target: $t('term.autoexec.timingjob')}) }}</template>
+      <template v-slot:topLeft>
+        <span>{{ $t('dialog.title.edittarget', { target: $t('term.autoexec.timingjob') }) }}</span>
+      </template>
       <template v-slot:topRight>
         <Button v-if="initData.editable" type="primary" @click="saveTimeJob()">{{ $t('page.save') }}</Button>
       </template>
@@ -18,11 +20,7 @@
             :animated="false"
             @on-click="changeTabValue"
           >
-            <TabPane
-              :label="$t('page.basicinfo')"
-              name="basicInfo"
-              tab="content"
-            >
+            <TabPane :label="$t('page.basicinfo')" name="basicInfo" tab="content">
               <div class="time-job-detail-form pl-nm pb-nm">
                 <JobBaseInfo
                   id="jobBaseinfo"
@@ -34,11 +32,7 @@
                 ></JobBaseInfo>
               </div>
             </TabPane>
-            <TabPane
-              :label="$t('term.autoexec.jobparam')"
-              name="jobParam"
-              tab="content"
-            >
+            <TabPane :label="$t('term.autoexec.jobparam')" name="jobParam" tab="content">
               <div class="runner-detail">
                 <JobParams ref="jobParams" :baseParams="initData" :disabled="!initData.editable"></JobParams>
               </div>
@@ -102,28 +96,31 @@ export default {
     },
     async init() {
       await this.getScheduleData();
-      this.$addWatchData({id: this.id, config: this.initData.config, ...this.baseParams });
+      this.$addWatchData({ id: this.id, config: this.initData.config, ...this.baseParams });
     },
     getScheduleData() {
-      return this.$api.deploy.schedule.getSchedule({id: this.id}).then(res => {
-        if (res.Status == 'OK') {
-          this.initData = res.Return || {};
-          Object.keys(this.initData).forEach(key => {
-            if (this.baseParams.hasOwnProperty(key)) {
-              this.baseParams[key] = this.initData[key];
+      return this.$api.deploy.schedule
+        .getSchedule({ id: this.id })
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.initData = res.Return || {};
+            Object.keys(this.initData).forEach(key => {
+              if (this.baseParams.hasOwnProperty(key)) {
+                this.baseParams[key] = this.initData[key];
+              }
+            });
+            if (this.initData.type == 'general') {
+              this.$set(this.baseParams, 'appSystemId', this.initData.appSystemId);
+              this.$set(this.baseParams, 'appModuleId', this.initData.appModuleId);
+            } else if (this.initData.type == 'pipeline') {
+              this.$set(this.baseParams, 'pipelineType', this.initData.pipelineType);
+              this.$set(this.baseParams, 'pipelineId', this.initData.pipelineId);
             }
-          });
-          if (this.initData.type == 'general') {
-            this.$set(this.baseParams, 'appSystemId', this.initData.appSystemId);
-            this.$set(this.baseParams, 'appModuleId', this.initData.appModuleId);
-          } else if (this.initData.type == 'pipeline') {
-            this.$set(this.baseParams, 'pipelineType', this.initData.pipelineType);
-            this.$set(this.baseParams, 'pipelineId', this.initData.pipelineId);
           }
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
+        })
+        .finally(() => {
+          this.loadingShow = false;
+        });
     },
     getSaveData() {
       let data = {
@@ -173,10 +170,9 @@ export default {
       }
       return isSuccess;
     },
-    changeTabValue() {
-
-    },
-    jumpToItem(obj) { //定位参数，校验定位
+    changeTabValue() {},
+    jumpToItem(obj) {
+      //定位参数，校验定位
       this.current = obj.current == 'basicInfo' ? 'basicInfo' : 'jobParam';
       this.$utils.jumpTo(obj.id);
     }
@@ -187,7 +183,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.schedule-edit{
+.schedule-edit {
   position: relative;
 }
 </style>

@@ -25,7 +25,6 @@
               :theadList="theadList"
               :tbodyList="propList"
             >
-
               <template v-slot:name="{ row }">
                 <span class="trigger-name">
                   {{ row.description }}
@@ -46,7 +45,7 @@
 
               <template v-slot:value="{ row }">
                 <TsFormInput
-                  v-if="row.dataType && (row.dataType.toLowerCase() == 'int' || row.dataType.toLowerCase() == 'integer' ||row.dataType.toLowerCase() == 'long' || row.dataType.toLowerCase() == 'double')"
+                  v-if="row.dataType && (row.dataType.toLowerCase() == 'int' || row.dataType.toLowerCase() == 'integer' || row.dataType.toLowerCase() == 'long' || row.dataType.toLowerCase() == 'double')"
                   v-model="row.value"
                   type="number"
                   border="border"
@@ -85,15 +84,15 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
-    jobUuid: {type: String},
-    isCopy: {type: Boolean, default: false}
+    jobUuid: { type: String },
+    isCopy: { type: Boolean, default: false }
   },
   data() {
     return {
       isSaving: false,
       dialogConfig: {
         type: 'modal',
-        title: (this.jobUuid && this.isCopy) ? this.$t('page.copy') : ((this.jobUuid && !this.isCopy) ? this.$t('page.edit') : this.$t('page.add')),
+        title: this.jobUuid && this.isCopy ? this.$t('page.copy') : this.jobUuid && !this.isCopy ? this.$t('page.edit') : this.$t('page.add'),
         maskClose: false,
         isShow: true,
         width: 'medium'
@@ -124,11 +123,14 @@ export default {
           defaultValue: '', //默认值
           maxlength: 20,
           label: this.$t('page.name'),
-          validateList: ['required', {
-            name: 'searchUrl',
-            url: 'api/rest/job/save',
-            params: () => ({uuid: this.jobUuid})
-          }]
+          validateList: [
+            'required',
+            {
+              name: 'searchUrl',
+              url: 'api/rest/job/save',
+              params: () => ({ uuid: this.jobUuid })
+            }
+          ]
         },
         handler: {
           type: 'select',
@@ -141,7 +143,7 @@ export default {
           valueName: 'className', //option渲染值
           textName: 'name', //text渲染值
           rootName: 'tbodyList',
-          onChange: (val) => {
+          onChange: val => {
             this.changeJobClass(val);
           }
         },
@@ -189,7 +191,7 @@ export default {
           defaultValue: '', //默认值
           label: this.$t('page.plantime'),
           showType: 'edit',
-          config: {direction: 'down'}
+          config: { direction: 'down' }
         },
         beginTime: {
           type: 'datetime',
@@ -248,13 +250,15 @@ export default {
       if (form.valid()) {
         let data = form.getFormValue();
         data.propList = [];
-        this.propList && this.propList.forEach((item) => {
-          if (item.value) {
-            data.propList.push(item);
-          }
-        });
+        this.propList &&
+          this.propList.forEach(item => {
+            if (item.value) {
+              data.propList.push(item);
+            }
+          });
         this.isSaving = true;
-        this.$api.framework.schedule.save(data)
+        this.$api.framework.schedule
+          .save(data)
           .then(res => {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.savesuccess'));
@@ -291,29 +295,27 @@ export default {
         let params = {
           uuid: this.jobUuid
         };
-        this.$api.framework.schedule
-          .get(params)
-          .then(async res => {
-            if (res.Status == 'OK') {
-              // let rsPropList = res.Return.propList || [];
-              // console.log('a');
-              // await this.changeJobClass(res.Return.handler);
-              // console.log('b');
-              // this.MergeData(rsPropList);
-              // console.log('c');
-              this.propList = res.Return.propList || [];
-              for (let key in this.formSetting) {
-                this.formSetting[key].value = res.Return[key];
-              }
-              this.formSetting['handler'].disabled = true;
-              if (this.isCopy) {
-                this.formSetting['uuid'].value = '';
-                this.formSetting['name'].value = res.Return['name'] + '_copy';
-              }
+        this.$api.framework.schedule.get(params).then(async res => {
+          if (res.Status == 'OK') {
+            // let rsPropList = res.Return.propList || [];
+            // console.log('a');
+            // await this.changeJobClass(res.Return.handler);
+            // console.log('b');
+            // this.MergeData(rsPropList);
+            // console.log('c');
+            this.propList = res.Return.propList || [];
+            for (let key in this.formSetting) {
+              this.formSetting[key].value = res.Return[key];
             }
-          });
+            this.formSetting['handler'].disabled = true;
+            if (this.isCopy) {
+              this.formSetting['uuid'].value = '';
+              this.formSetting['name'].value = res.Return['name'] + '_copy';
+            }
+          }
+        });
       }
-    }//,
+    } //,
     // addProp: function() {
     //   //添加属性
     //   let objProp = {
@@ -331,5 +333,4 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

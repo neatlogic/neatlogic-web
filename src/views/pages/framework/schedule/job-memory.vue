@@ -1,15 +1,12 @@
 <template>
   <div>
-    <TsDialog
-      v-bind="dialogConfig"
-      @on-close="closeDialog"
-    >
+    <TsDialog v-bind="dialogConfig" @on-close="closeDialog">
       <template v-slot>
         <div>
           <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
           <div class="clearfix">
             <TsRow>
-              <div class="mb-nm float-right" style="width:50%">
+              <div class="mb-nm float-right" style="width: 50%">
                 <Col :span="12">
                   <TsFormSelect v-model="searchParams.jobGroupName" v-bind="jobGroupNameSetting"></TsFormSelect>
                 </Col>
@@ -26,6 +23,13 @@
             @changeCurrent="changePage"
             @changePageSize="changePageSize"
           >
+            <template v-slot:cron="{ row }">
+              <TsQuartz
+                v-model="row.cron"
+                showType="read"
+                :transfer="true"
+              ></TsQuartz>
+            </template>
           </TsTable>
         </div>
       </template>
@@ -37,7 +41,8 @@ export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue')
   },
   props: {},
   data() {
@@ -53,7 +58,7 @@ export default {
         valueName: 'value',
         search: true,
         transfer: true,
-        onChange: (val) => {
+        onChange: val => {
           this.changeJobGroupName(val);
         }
       },
@@ -63,13 +68,13 @@ export default {
         value: '',
         placeholder: this.$t('page.jobname'),
         dynamicUrl: '/api/rest/scheduler/name/search',
-        params: {jobGroupName: ''},
+        params: { jobGroupName: '' },
         textName: 'text',
         valueName: 'value',
         search: true,
         transfer: true,
         disabled: true,
-        onChange: (val) => {
+        onChange: val => {
           this.changeJobName(val);
         }
       },
@@ -87,13 +92,16 @@ export default {
           maxLength: 40
         },
         {
-          title: 'cron',
+          title: '时间计划',
           key: 'cron'
         },
         {
           title: this.$t('page.type'),
           key: 'type'
         },
+        { key: 'state', title: '状态' },
+        { key: 'lastFireTime', title: '上次执行时间', type: 'time' },
+        { key: 'nextFireTime', title: '下次执行时间', type: 'time' },
         {
           title: this.$t('page.jobgroupname'),
           key: 'jobGroup',
@@ -156,27 +164,28 @@ export default {
     },
     searchMemoryJob() {
       this.isLoading = true;
-      this.$api.framework.schedule.searchMemoryJob(this.searchParams).then(res => {
-        if (res.Status == 'OK') {
-          let tenantLength = res.Return.tenant.length;
-          res.Return.tbodyList.forEach(co => {
-            if (co.jobName.startsWith(res.Return.tenant)) {
-              co.jobName = co.jobName.substr(tenantLength + 1);
-            }
-            co.jobGroup = co.jobGroup.substr(tenantLength + 1);
-          });
-          this.schedulerMemoryTableData = res.Return;
-        }
-      }).finally(() => {
-        this.isLoading = false;
-      });
+      this.$api.framework.schedule
+        .searchMemoryJob(this.searchParams)
+        .then(res => {
+          if (res.Status == 'OK') {
+            let tenantLength = res.Return.tenant.length;
+            res.Return.tbodyList.forEach(co => {
+              if (co.jobName.startsWith(res.Return.tenant)) {
+                co.jobName = co.jobName.substr(tenantLength + 1);
+              }
+              co.jobGroup = co.jobGroup.substr(tenantLength + 1);
+            });
+            this.schedulerMemoryTableData = res.Return;
+          }
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     }
   },
   filter: {},
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>
