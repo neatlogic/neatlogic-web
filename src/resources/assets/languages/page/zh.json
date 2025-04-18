@@ -1066,5 +1066,6 @@
   "rubberband": "框选",
   "actualpath": "实际路径",
   "currentjob": "当前作业",
-  "incompleteinformation": "信息不完整"
+  "incompleteinformation": "信息不完整",
+  "requiredparameterhasnullvalue": "必填参数项存在空值"
 }
