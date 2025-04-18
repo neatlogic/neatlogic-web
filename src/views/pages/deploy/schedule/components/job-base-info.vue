@@ -151,6 +151,20 @@ export default {
             this.handlePipelineId(val);
           }
         },
+        appSystemId: {
+          type: 'select',
+          label: this.$t('page.apply'),
+          value: null,
+          dynamicUrl: '/api/rest/deploy/app/config/appsystem/search',
+          dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, 'app'); },
+          rootName: 'tbodyList',
+          border: 'border',
+          isHidden: false,
+          onChange: (val) => {
+            this.pipelineFormConfig.pipelineId.params.appSystemId = val;
+            this.$set(this.pipelineFormConfig.pipelineId.params, 'appSystemId', val);
+          }
+        },
         pipelineId: {
           type: 'select',
           label: this.$t('term.autoexec.pipeline'),
@@ -258,6 +272,9 @@ export default {
       }
       if (this.$refs.pipelineFormConfig) {
         Object.assign(data, this.$refs.pipelineFormConfig.getFormValue());
+        if (data && data.hasOwnProperty('appSystemId') && data.pipelineType == 'global' && this.$utils.isEmpty(data.appSystemId)) {
+          delete data.appSystemId;
+        }
       }
       return data;
     },
@@ -273,6 +290,12 @@ export default {
     handlePipelineId(val) {
       this.$set(this.pipelineFormConfig.pipelineId, 'value', null);
       this.$set(this.pipelineFormConfig.pipelineId.params, 'type', val);
+      if (val && val === 'appsystem') {
+        this.$set(this.pipelineFormConfig.appSystemId, 'isHidden', false);
+      } else {
+        this.$set(this.pipelineFormConfig.appSystemId, 'isHidden', true);
+        this.$set(this.pipelineFormConfig.appSystemId, 'value', null);
+      }
     },
     dealPipelineData(nodeList) {
       let dataList = [];
@@ -307,8 +330,12 @@ export default {
             this.$set(this.pipelineFormConfig.pipelineId, 'disabled', true);
             if (this.baseParams.pipelineType == 'appsystem') {
               this.$set(this.pipelineFormConfig.pipelineId.params, 'type', 'appsystem');
+              this.$set(this.pipelineFormConfig.appSystemId, 'value', this.baseParams.appSystemId);
+              this.$set(this.pipelineFormConfig.appSystemId, 'disabled', true);
+              this.$set(this.pipelineFormConfig.appSystemId, 'isHidden', false);
             } else if (this.baseParams.pipelineType == 'global') {
               this.$set(this.pipelineFormConfig.pipelineId.params, 'type', 'global');
+              this.$set(this.pipelineFormConfig.appSystemId, 'isHidden', true);
             }
           }
         }
