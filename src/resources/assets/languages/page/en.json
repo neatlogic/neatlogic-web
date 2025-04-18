@@ -1063,5 +1063,6 @@
   "dragthecanvas": "Drag and drop canvas",
   "rubberband": "Frame Select",
   "actualpath": "actual path",
-  "currentjob": "Current Job"
+  "currentjob": "Current Job",
+  "incompleteinformation": "incomplete information"
 }

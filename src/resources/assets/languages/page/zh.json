@@ -1065,5 +1065,6 @@
   "dragthecanvas": "拖拽画布",
   "rubberband": "框选",
   "actualpath": "实际路径",
-  "currentjob": "当前作业"
+  "currentjob": "当前作业",
+  "incompleteinformation": "信息不完整"
 }
