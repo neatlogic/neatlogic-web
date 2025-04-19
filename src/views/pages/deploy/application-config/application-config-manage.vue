@@ -10,7 +10,7 @@
         <div class="action-group">
           <!-- 应用层 -->
           <template v-if="configType == 'app' && canEdit">
-            <span class="action-item tsfont-setting" @click="editBlueSet()">{{ $t('term.deploy.blueset') }}</span>
+            <span class="action-item tsfont-setting" @click="editBlueGreen()">{{ $t('term.deploy.blueset') }}</span>
             <span class="action-item tsfont-plus" @click="addModuleTree">{{ $t('page.module') }}</span>
             <span class="action-item tsfont-edit" @click="editAppTree">{{ $t('page.apply') }}</span>
             <span v-show="hasConfig && canShow" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('page.clearconfig') }}</span>
@@ -26,6 +26,7 @@
 
           <!-- 环境层 -->
           <template v-if="configType == 'env' && canEdit && canShow">
+            <span class="action-item tsfont-setting" @click="editBlueGreen()">{{ $t('term.deploy.blueset') }}</span>
             <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('page.clearconfig') }}</span>
             <span v-show="hasConfig && selectedEnv && selectedEnv.isDeletable" class="action-item tsfont-trash-o text-action" @click="delEnvConfig">{{ $t('term.deploy.deleteenv') }}</span>
             <span v-show="hasConfig" class="action-item tsfont-copy text-action" @click="openCopyConfig">{{ $t('term.deploy.copyconfig') }}</span>
@@ -130,10 +131,10 @@
       :appSystemId="appSystemId"
       @close="closeImportPipelineConfig"
     ></ImportPipelineConfigDialog>
-    <BlueSetDialog
-      v-if="isShowBlueSetDialog"
-      @close="closeBlueSetDialog"
-    ></BlueSetDialog>
+    <BlueGreenDialog
+      v-if="isShowBlueGreenDialog"
+      @close="closeBlueGreenDialog"
+    ></BlueGreenDialog>
   </div>
 </template>
 <script>
@@ -151,7 +152,7 @@ export default {
     EnvTreeEdit: () => import('./config/app/components/env-tree-edit'), // 编辑模块（应用配置树）
     ClearConfigDialog: () => import('./config/clear-config-dialog'), // 清空配置
     ImportPipelineConfigDialog: () => import('pages/deploy/application-config/import-pipeline-config-dialog'), // 导入流水线配置
-    BlueSetDialog: () => import('./config/blueset-dialog.vue') // 蓝绿部署配置
+    BlueGreenDialog: () => import('./config/bluegreen-dialog.vue') // 蓝绿部署配置
   },
   props: {
     hideFucntionExcludeAppModuleRunner: {
@@ -183,7 +184,7 @@ export default {
       envParam: {},
       authList: [], // 应用配置所有权限列表
       isHasAppSystemIdList: true, //是否有应用列表
-      isShowBlueSetDialog: false
+      isShowBlueGreenDialog: false
     };
   },
   beforeCreate() {},
@@ -497,12 +498,12 @@ export default {
         this.$refs?.appModuleList?.refreshApp(this.appSystemId);
       }
     },
-    editBlueSet() {
+    editBlueGreen() {
       // 编辑蓝绿配置
-      this.isShowBlueSetDialog = true;
+      this.isShowBlueGreenDialog = true;
     },
-    closeBlueSetDialog() {
-      this.isShowBlueSetDialog = false;
+    closeBlueGreenDialog() {
+      this.isShowBlueGreenDialog = false;
     }
   },
   filter: {},

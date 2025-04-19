@@ -152,17 +152,9 @@ const applicationConfig = {
     // 获取环境层配置信息
     return axios.post('/api/rest/deploy/app/config/env/attr/save', params);
   },
-  getBluesetList(params) {
-    // 获取蓝绿集列表
-    return axios.post('/api/rest/xx', params);
-  },
-  saveBlueset(params) {
+  saveInstanceBlueGreen(params) {
     // 保存蓝绿集
-    return axios.post('/api/rest/xx', params);
-  },
-  getBluesetDetail(params) {
-    // 获取蓝绿集详情
-    return axios.post('/api/rest/xx', params);
+    return axios.post('/api/rest/deploy/app/instance/bluegreen/save', params);
   }
 };
 

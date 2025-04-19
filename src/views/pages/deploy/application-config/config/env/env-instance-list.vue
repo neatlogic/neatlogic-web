@@ -57,17 +57,20 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="tsfont-plus text-action" @click="addBlueSet(row)">{{ $t('term.deploy.blueSet') }}</li>
+              <li class="tsfont-plus text-action" @click="addBlueGreen(row)">{{ $t('term.deploy.blueSet') }}</li>
             </ul>
           </div>
         </template>
       </TsTable>
     </div>
     <EnvInstanceEdit v-if="isShowEnInstanceEdit" :params="params" @close="closeEnvInstanceEdit"></EnvInstanceEdit>
-    <EnvInstanceBlueSetDialog
-      v-if="isShowInstanceBlueSetDialog"
-      @close="closeInstanceBlueSetDialog"
-    ></EnvInstanceBlueSetDialog>
+    <EnvInstanceBlueGreenDialog
+      v-if="isShowInstanceBlueGreenDialog"
+      :params="params"
+      :instanceId="instanceId"
+      :blueGreenId="blueGreenId"
+      @close="closeInstanceBlueGreenDialog"
+    ></EnvInstanceBlueGreenDialog>
   </div>
 </template>
 <script>
@@ -78,7 +81,7 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     EnvInstanceEdit: () => import('./env-instance-edit'),
-    EnvInstanceBlueSetDialog: () => import('./env-instance-blueset-dialog.vue')
+    EnvInstanceBlueGreenDialog: () => import('./env-instance-bluegreen-dialog.vue')
 
   },
   mixins: [handleTimeMixin],
@@ -109,7 +112,7 @@ export default {
         },
         {
           title: this.$t('term.deploy.blueSet'),
-          key: 'blueSet'
+          key: 'blueGreenName'
         },
         {
           title: this.$t('page.versions'),
@@ -132,7 +135,9 @@ export default {
           key: 'action'
         }
       ],
-      isShowInstanceBlueSetDialog: false
+      isShowInstanceBlueGreenDialog: false,
+      instanceId: null,
+      blueGreenId: null
     };
   },
   beforeCreate() {},
@@ -191,11 +196,14 @@ export default {
       const {typeId, id} = row || {};
       window.open(HOME + '/cmdb.html#/ci/' + typeId + '/cientity-view/' + id, '_blank');
     },
-    addBlueSet(row) {
-      this.isShowInstanceBlueSetDialog = true;
+    addBlueGreen(row) {
+      this.instanceId = row.id;
+      this.blueGreenId = row.blueGreenId;
+      this.isShowInstanceBlueGreenDialog = true;
     },
-    closeInstanceBlueSetDialog(needRefresh) {
-      this.isShowInstanceBlueSetDialog = false;
+    closeInstanceBlueGreenDialog(needRefresh) {
+      this.searchEnvList();
+      this.isShowInstanceBlueGreenDialog = false;
     }
   },
   filter: {},
