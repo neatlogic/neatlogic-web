@@ -33,7 +33,7 @@
               </div>
             </template>
           </TsTable>
-          <div class="tsfont-plus text-href pt-nm" @click.stop="addRow()">蓝绿</div>
+          <div class="tsfont-plus text-href pt-nm" @click.stop="addRow()">{{ $t('term.deploy.blueSet') }}</div>
         </div>
       </template>
     </TsDialog>
