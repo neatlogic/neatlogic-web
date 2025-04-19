@@ -289,7 +289,7 @@ export default {
       console.log(JSON.stringify(jobTemplateData, null, 2));
       if (!this.$utils.isEmpty(this.currentGroup)) {
         const index = this.currentGroup.jobTemplateList.findIndex(job => {
-          return job.id === jobTemplateData.id || job.uuid === jobTemplateData.uuid;
+          return (job.id && job.id === jobTemplateData.id) || (job.uuid && job.uuid === jobTemplateData.uuid);
         });
         if (index > -1) {
           this.$set(this.currentGroup.jobTemplateList, index, jobTemplateData);
