@@ -50,7 +50,7 @@
           <TabPane label="表达式(beta)" name="dsl"></TabPane>
         </Tabs>
         <Card
-          v-if="advencedSearchMode == 'condition'"
+          v-if="advencedSearchMode === 'condition'"
           dis-hover
           class="radius-md cientity-search-card"
           style="margin-bottom: 10px"
@@ -603,7 +603,7 @@ export default {
       this.relFilterList = historyData['relFilterList'] || {};
       this.sortConfig = historyData['sortConfig'] || {};
     },
-    getSuggestList(keywordData) {
+    /*getSuggestList(keywordData) {
       this.suggestList = [];
       if (keywordData.value) {
         this.$api.cmdb.ci.getAttrByCiId(this.ciId, { keyword: keywordData.value }).then(res => {
@@ -615,7 +615,7 @@ export default {
           }
         });
       }
-    },
+    },*/
     updateSort(sort) {
       this.sortConfig = sort;
       this.searchCiEntity();
@@ -717,8 +717,8 @@ export default {
     async init() {
       await this.searchCiEntity();
       this.tabloading = false;
-      await this.getAttrByCiId();
       await this.getGlobalAttrList();
+      await this.getAttrByCiId();
       await this.getRelByCiId();
       await this.getDownwardCiByCiId();
       this.searchGroup();
@@ -893,6 +893,11 @@ export default {
     async getGlobalAttrList() {
       await this.$api.cmdb.ci.getGlobalAttrByCiId(this.ciId, { isActive: 1, needAlias: 1 }).then(res => {
         this.globalAttrList = res.Return;
+        if (this.globalAttrList && this.globalAttrList.length > 0) {
+          this.globalAttrList.forEach(attr => {
+            this.suggestList.push({ value: attr.name, text: attr.name + '·' + attr.label });
+          });
+        }
       });
     },
     async getAttrByCiId() {
