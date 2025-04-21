@@ -41,8 +41,9 @@
                 >
                   <div
                     v-if="item.isEnable"
-                    class="li-item text-action"
+                    class="li-item text-action overflow"
                     :class="scenarioId == item.scenarioId?'li-active li-text border-primary':'border-base bg-op'"
+                    :title="item.scenarioName"
                     @click="changeSelect('scenario',item)"
                   >{{ item.scenarioName }}</div>
                   <Tooltip
