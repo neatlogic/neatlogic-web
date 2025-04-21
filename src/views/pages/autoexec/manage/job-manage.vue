@@ -313,6 +313,9 @@ export default {
             this.$set(parentRow, 'loading', false);
             this.jobData.tbodyList.splice(pIndex + 1, 0, ...jobList);
           }
+        } else {
+          this.$set(parentRow, 'showChildren', true);
+          this.$set(parentRow, 'loading', false);
         }
       });
     },
