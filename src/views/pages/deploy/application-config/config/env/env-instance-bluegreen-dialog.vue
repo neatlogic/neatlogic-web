@@ -32,8 +32,8 @@ export default {
         return {};
       }
     },
-    instanceId: { type: number},
-    blueGreenId: {type: number}
+    instanceId: { type: Number},
+    blueGreenId: {type: Number}
   },
   data() {
     return {

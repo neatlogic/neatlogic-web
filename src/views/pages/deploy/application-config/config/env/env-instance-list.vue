@@ -58,7 +58,7 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="tsfont-plus text-action" @click="addBlueGreen(row)">{{ $t('term.deploy.blueSet') }}</li>
+              <li class="tsfont-edit text-action" @click="addBlueGreen(row)">{{ $t('term.deploy.blueSet') }}</li>
             </ul>
           </div>
         </template>
