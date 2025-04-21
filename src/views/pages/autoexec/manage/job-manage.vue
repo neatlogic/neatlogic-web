@@ -38,7 +38,10 @@
             </span>
           </template>
           <template v-slot:name="{ row }">
-            <span v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'" class="text-href" @click="toBatchJobDetail(row)">
+            <!-- <span v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'" class="text-href" @click="toBatchJobDetail(row)">
+              {{ row.name }}
+            </span> -->
+            <span v-if="row.parentId && row.parentId == -1">
               {{ row.name }}
             </span>
             <span
@@ -115,7 +118,7 @@
                 <template v-if="row.isCanTakeOver">
                   <li class="icon tsfont-takeover" @click.stop="editRow(row, 'takeover')">{{ $t('page.takeover') }}</li>
                 </template>
-                <template v-if="row.source != 'batchdeploy'">
+                <template v-if="row.source != 'batchdeploy' && row.parentId != -1">
                   <li v-auth="'AUTOEXEC_JOB_MODIFY'" class="icon tsfont-trash-o" @click.stop="deleteRow(row)">{{ $t('page.delete') }}</li>
                 </template>
               </ul>
@@ -339,12 +342,12 @@ export default {
         query: { id: row.id }
       });
     },
-    toBatchJobDetail(row) {
-      this.$router.push({
-        path: '/batch-job-detail',
-        query: { id: row.id }
-      });
-    },
+    //toBatchJobDetail(row) {
+    //   this.$router.push({
+    //     path: '/batch-job-detail',
+    //     query: { id: row.id }
+    //   });
+    // },
     // toOperationDetail(row) {
     //   if (row.operationType == 'combop') {
     //     this.$router.push({
