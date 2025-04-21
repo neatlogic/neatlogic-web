@@ -2140,7 +2140,9 @@
     "pleasechoosedatabase": "Please select a database first",
     "currentenvbuildno": "{target} environment BuildNo",
     "buildnopending": "To be built",
-    "actuatorgrouptag": "Actuator group label"
+    "actuatorgrouptag": "Actuator group label",
+    "blueset": "Blue green setting",
+    "blueSet": "Blue Green"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
