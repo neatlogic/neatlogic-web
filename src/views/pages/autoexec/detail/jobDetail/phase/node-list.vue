@@ -64,6 +64,10 @@
         <span v-if="row && row.extraInfo && row.extraInfo.version">{{ row.extraInfo.version }}</span>
         <span v-else>-</span>
       </template>
+      <template v-slot:blueGreenName="{ row }">
+        <span v-if="row && row.extraInfo && row.extraInfo.blueGreenName">{{ row.extraInfo.blueGreenName }}({{ row.extraInfo.blueGreenSort }})</span>
+        <span v-else>-</span>
+      </template>
       <template v-slot:nodeName="{ row }">
         <span :class="{ 'text-grey': row.isDelete === 1 }">{{ row.nodeName }}</span>
       </template>
@@ -309,7 +313,7 @@ export default {
       //添加发布蓝绿
       this.theadList.splice(1, 0, {
         title: this.$t('term.deploy.blueSet'),
-        key: 'blueSet'
+        key: 'blueGreenName'
       });
     }
     if (this.jobData.isCanExecute) {

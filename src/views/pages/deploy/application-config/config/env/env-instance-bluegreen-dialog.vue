@@ -49,8 +49,7 @@ export default {
         border: 'border',
         dynamicUrl: '/api/rest/deploy/bluegreen/search',
         rootName: 'tbodyList',
-        valueName: 'id',
-        textName: 'name',
+        dealDataByUrl: this.dealDataByUrl,
         transfer: true
       }
     };
@@ -67,6 +66,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    dealDataByUrl(list) {
+      let columlist = [];
+      list &&
+      list.forEach(v => {
+        columlist.push({ text: v.name + '(' + v.sort + ')', value: v.id, config: v });
+      });
+      return columlist;
+    },
     okDialog() {
       if (!this.$refs.bluesetForm.valid()) {
         return false; 

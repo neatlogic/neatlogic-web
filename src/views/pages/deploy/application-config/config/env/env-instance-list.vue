@@ -51,8 +51,9 @@
         <template slot="maintenanceWindow" slot-scope="{ row }">
           <span v-if="row.maintenanceWindow">{{ handleTimerange(row.maintenanceWindow) }}</span>
         </template>
-        <template slot="blueSet" slot-scope="{ row }">
-          <div v-if="row">-</div>
+        <template slot="blueGreenName" slot-scope="{ row }">
+          <div v-if="row && row.blueGreenName">{{ row.blueGreenName }}({{ row.blueGreenSort }})</div>
+          <div v-else>-</div>
         </template>
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
