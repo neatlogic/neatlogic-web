@@ -10,7 +10,6 @@
         <div class="action-group">
           <!-- 应用层 -->
           <template v-if="configType == 'app' && canEdit">
-            <span class="action-item tsfont-setting" @click="editBlueGreen()">{{ $t('term.deploy.blueset') }}</span>
             <span class="action-item tsfont-plus" @click="addModuleTree">{{ $t('page.module') }}</span>
             <span class="action-item tsfont-edit" @click="editAppTree">{{ $t('page.apply') }}</span>
             <span v-show="hasConfig && canShow" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('page.clearconfig') }}</span>
