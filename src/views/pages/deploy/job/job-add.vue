@@ -41,8 +41,9 @@
                 >
                   <div
                     v-if="item.isEnable"
-                    class="li-item text-action"
+                    class="li-item text-action overflow"
                     :class="scenarioId == item.scenarioId?'li-active li-text border-primary':'border-base bg-op'"
+                    :title="item.scenarioName"
                     @click="changeSelect('scenario',item)"
                   >{{ item.scenarioName }}</div>
                   <Tooltip
@@ -192,9 +193,9 @@ export default {
       roundCountForm: {
         placeholder: this.$t('page.selectinput'),
         border: 'border',
-        dataList: this.$utils.getRoundCountList(),
+        dataList: this.getRoundCountList(),
         filterName: 'text',
-        allowCreate: true,
+        // allowCreate: true,
         search: true,
         transfer: true,
         desc: this.$t('term.autoexec.roundcountdescrition'),
@@ -555,6 +556,16 @@ export default {
         .finally(() => {
           this.$set(module, 'loadingShow', false);
         });
+    },
+    getRoundCountList() {
+      let list = [
+        {
+          value: -1,
+          text: '蓝绿执行'
+        }
+      ];
+      list.push(...this.$utils.getRoundCountList());
+      return list;
     }
   },
   filter: {},

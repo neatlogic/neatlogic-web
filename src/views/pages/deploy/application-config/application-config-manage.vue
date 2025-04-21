@@ -25,6 +25,7 @@
 
           <!-- 环境层 -->
           <template v-if="configType == 'env' && canEdit && canShow">
+            <span class="action-item tsfont-setting" @click="editBlueGreen()">{{ $t('term.deploy.blueset') }}</span>
             <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('page.clearconfig') }}</span>
             <span v-show="hasConfig && selectedEnv && selectedEnv.isDeletable" class="action-item tsfont-trash-o text-action" @click="delEnvConfig">{{ $t('term.deploy.deleteenv') }}</span>
             <span v-show="hasConfig" class="action-item tsfont-copy text-action" @click="openCopyConfig">{{ $t('term.deploy.copyconfig') }}</span>
@@ -129,6 +130,10 @@
       :appSystemId="appSystemId"
       @close="closeImportPipelineConfig"
     ></ImportPipelineConfigDialog>
+    <BlueGreenDialog
+      v-if="isShowBlueGreenDialog"
+      @close="closeBlueGreenDialog"
+    ></BlueGreenDialog>
   </div>
 </template>
 <script>
@@ -145,7 +150,8 @@ export default {
     ModuleTreeEdit: () => import('./config/app/components/module-tree-edit'), // 编辑模块（应用配置树）
     EnvTreeEdit: () => import('./config/app/components/env-tree-edit'), // 编辑模块（应用配置树）
     ClearConfigDialog: () => import('./config/clear-config-dialog'), // 清空配置
-    ImportPipelineConfigDialog: () => import('pages/deploy/application-config/import-pipeline-config-dialog') // 导入流水线配置
+    ImportPipelineConfigDialog: () => import('pages/deploy/application-config/import-pipeline-config-dialog'), // 导入流水线配置
+    BlueGreenDialog: () => import('./config/bluegreen-dialog.vue') // 蓝绿部署配置
   },
   props: {
     hideFucntionExcludeAppModuleRunner: {
@@ -176,7 +182,8 @@ export default {
       isShowClearConfigDialog: false,
       envParam: {},
       authList: [], // 应用配置所有权限列表
-      isHasAppSystemIdList: true //是否有应用列表
+      isHasAppSystemIdList: true, //是否有应用列表
+      isShowBlueGreenDialog: false
     };
   },
   beforeCreate() {},
@@ -489,6 +496,13 @@ export default {
       if (needRefresh) {
         this.$refs?.appModuleList?.refreshApp(this.appSystemId);
       }
+    },
+    editBlueGreen() {
+      // 编辑蓝绿配置
+      this.isShowBlueGreenDialog = true;
+    },
+    closeBlueGreenDialog() {
+      this.isShowBlueGreenDialog = false;
     }
   },
   filter: {},

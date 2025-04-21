@@ -1116,7 +1116,7 @@ export default {
     },
     clearResizeKey() { //清除resizeKey
       if (this.resizeKey) {
-        sessionStorage.removeItem('tstable_' + this.resizeKey);
+        localStorage.removeItem('tstable_' + this.resizeKey);
       }
     }
   },
@@ -1249,8 +1249,8 @@ export default {
         let alllist = val;
         if (this.canResize) {
           let colsList = [];
-          if (this.resizeKey && sessionStorage.getItem('tstable_' + this.resizeKey)) {
-            colsList = JSON.parse(sessionStorage.getItem('tstable_' + this.resizeKey));
+          if (this.resizeKey && localStorage.getItem('tstable_' + this.resizeKey)) {
+            colsList = JSON.parse(localStorage.getItem('tstable_' + this.resizeKey));
           }
           this.thList = alllist.map(item => {
             const storageCol = colsList.find(c => c.key === item.key + 'Width');

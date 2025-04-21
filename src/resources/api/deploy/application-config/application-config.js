@@ -151,6 +151,10 @@ const applicationConfig = {
   saveEnvAttr(params) {
     // 获取环境层配置信息
     return axios.post('/api/rest/deploy/app/config/env/attr/save', params);
+  },
+  saveInstanceBlueGreen(params) {
+    // 保存蓝绿集
+    return axios.post('/api/rest/deploy/app/instance/bluegreen/save', params);
   }
 };
 

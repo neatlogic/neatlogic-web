@@ -51,9 +51,27 @@
         <template slot="maintenanceWindow" slot-scope="{ row }">
           <span v-if="row.maintenanceWindow">{{ handleTimerange(row.maintenanceWindow) }}</span>
         </template>
+        <template slot="blueGreenName" slot-scope="{ row }">
+          <div v-if="row && row.blueGreenName">{{ row.blueGreenName }}({{ row.blueGreenSort }})</div>
+          <div v-else>-</div>
+        </template>
+        <template slot="action" slot-scope="{ row }">
+          <div class="tstable-action">
+            <ul class="tstable-action-ul">
+              <li class="tsfont-edit text-action" @click="addBlueGreen(row)">{{ $t('term.deploy.blueSet') }}</li>
+            </ul>
+          </div>
+        </template>
       </TsTable>
     </div>
     <EnvInstanceEdit v-if="isShowEnInstanceEdit" :params="params" @close="closeEnvInstanceEdit"></EnvInstanceEdit>
+    <EnvInstanceBlueGreenDialog
+      v-if="isShowInstanceBlueGreenDialog"
+      :params="params"
+      :instanceId="instanceId"
+      :blueGreenId="blueGreenId"
+      @close="closeInstanceBlueGreenDialog"
+    ></EnvInstanceBlueGreenDialog>
   </div>
 </template>
 <script>
@@ -63,7 +81,9 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
-    EnvInstanceEdit: () => import('./env-instance-edit')
+    EnvInstanceEdit: () => import('./env-instance-edit'),
+    EnvInstanceBlueGreenDialog: () => import('./env-instance-bluegreen-dialog.vue')
+
   },
   mixins: [handleTimeMixin],
   props: {
@@ -92,6 +112,10 @@ export default {
           key: 'name'
         },
         {
+          title: this.$t('term.deploy.blueSet'),
+          key: 'blueGreenName'
+        },
+        {
           title: this.$t('page.versions'),
           key: 'version'
         },
@@ -106,8 +130,15 @@ export default {
         {
           title: this.$t('term.deploy.maintenancewindow'),
           key: 'maintenanceWindow'
+        },
+        {
+          title: '',
+          key: 'action'
         }
-      ]
+      ],
+      isShowInstanceBlueGreenDialog: false,
+      instanceId: null,
+      blueGreenId: null
     };
   },
   beforeCreate() {},
@@ -165,6 +196,15 @@ export default {
     toCiview(row) {
       const {typeId, id} = row || {};
       window.open(HOME + '/cmdb.html#/ci/' + typeId + '/cientity-view/' + id, '_blank');
+    },
+    addBlueGreen(row) {
+      this.instanceId = row.id;
+      this.blueGreenId = row.blueGreenId;
+      this.isShowInstanceBlueGreenDialog = true;
+    },
+    closeInstanceBlueGreenDialog(needRefresh) {
+      this.searchEnvList();
+      this.isShowInstanceBlueGreenDialog = false;
     }
   },
   filter: {},

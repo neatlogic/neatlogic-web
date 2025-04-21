@@ -3,6 +3,7 @@ import applicationConfig from './application-config/application-config';
 import apppipeline from './application-config/pipeline.js'; //流水线
 import version from './version/version'; // 版本中心
 import env from './application-config/env'; // 环境
+import bluegreen from './application-config/bluegreen.js'; // 环境
 import job from './job/job'; //作业
 import pipeline from './pipeline/pipeline.js';
 import activeversion from './activeversion/activeversion.js';
@@ -21,6 +22,7 @@ export default {
   schedule,
   integrated,
   webhook,
-  toolclassification
+  toolclassification,
+  bluegreen
 };
 

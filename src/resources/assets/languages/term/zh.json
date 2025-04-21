@@ -2137,7 +2137,9 @@
     "pleasechoosedatabase": "请先选择数据库",
     "currentenvbuildno": "{target}环境BuildNo",
     "buildnopending": "待构建",
-    "actuatorgrouptag": "执行器组标签"
+    "actuatorgrouptag": "执行器组标签",
+    "blueset": "蓝绿设置",
+    "blueSet": "蓝绿"
   },
   "inspect": {
     "alarmprompt": "告警提示",
