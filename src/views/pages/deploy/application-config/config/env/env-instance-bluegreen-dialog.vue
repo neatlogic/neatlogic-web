@@ -9,7 +9,7 @@
         <div>
           <TsFormSelect
             ref="bluesetForm"
-            v-model="blueGreenId"
+            v-model="currentBlueGreenId"
             search
             v-bind="bluesetFormConfig"
           ></TsFormSelect>
@@ -45,17 +45,18 @@ export default {
       dataList: [],
       bluesetFormConfig: {
         dataList: [],
-        validateList: ['required'],
         border: 'border',
         dynamicUrl: '/api/rest/deploy/bluegreen/search',
         rootName: 'tbodyList',
         dealDataByUrl: this.dealDataByUrl,
         transfer: true
-      }
+      },
+      currentBlueGreenId: null
     };
   },
   beforeCreate() {},
   async created() {
+    this.currentBlueGreenId = this.blueGreenId;
   }, 
   beforeMount() {},
   mounted() {},
