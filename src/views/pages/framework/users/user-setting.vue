@@ -5,7 +5,7 @@
         <div class="user_content">
           <Tabs v-model="paneName">
             <TabPane :label="$t('page.basicinfo')" name="usersetting">
-              <TsForm ref="usersetting" :itemList="formSetting">
+              <TsForm ref="usersetting" v-model="formValue" :itemList="formSetting">
                 <template v-slot:avatar>
                   <AvatarSetting class="avatar-upload">
                     <TsAvatar
@@ -157,7 +157,6 @@ import AvatarSetting from './user-setting-avatar';
 import TsAvatar from 'components/TsAvatar/TsAvatar';
 export default {
   name: 'UserSetting',
-
   components: {
     TsForm,
     DefaultpageManage,
@@ -193,6 +192,8 @@ export default {
           key: 'userProfileOperateList'
         }
       ],
+      formValue: {},
+      userInfo: {},
       userToken: '', //用户令牌
       teamRoleList: [],
       paneName: this.$route.query.paneName || 'usersetting',
@@ -206,7 +207,6 @@ export default {
         {
           type: 'text',
           name: 'uuid',
-          value: '',
           readonly: true,
           disabled: true,
           isHidden: true,
@@ -217,7 +217,6 @@ export default {
         {
           type: 'text',
           name: 'userId',
-          value: '',
           readonly: true,
           disabled: true,
           isHidden: false,
@@ -228,7 +227,6 @@ export default {
         {
           type: 'text',
           name: 'userName',
-          value: '',
           readonly: false,
           disabled: false,
           isHidden: false,
@@ -241,7 +239,6 @@ export default {
         {
           type: 'tel',
           name: 'phone',
-          value: '',
           readonly: false,
           disabled: false,
           isHidden: false,
@@ -254,7 +251,6 @@ export default {
         {
           type: 'email',
           name: 'email',
-          value: '',
           readonly: false,
           disabled: false,
           isHidden: false,
@@ -338,12 +334,10 @@ export default {
   },
 
   created() {
-    this.initForm();
     this.getProfileList();
     this.getCurrentUserToken();
     this.getUserInfo();
   },
-
   methods: {
     resetCurrentUserToken() {
       this.$api.framework.user.resetCurrentUserToken().then(res => {
@@ -357,19 +351,20 @@ export default {
       let data = {};
       this.$api.framework.user.getUser(data).then(res => {
         if (res.Status == 'OK') {
-          this.teamRoleList = res.Return.teamRoleList;
+          const {teamRoleList = []} = res.Return || {};
+          this.teamRoleList = teamRoleList;
+          this.userInfo = res.Return || {};
+          this.formSetting.forEach(item => {
+            if (item && item.type != 'slot') {
+              this.$set(this.formValue, item.name, this.userInfo[item.name] || '');
+            }
+          });
         }
       });
     },
     getCurrentUserToken() {
       this.$api.common.getCurrentUserToken().then(res => {
         this.userToken = res.Return;
-      });
-    },
-    //初始化表单
-    initForm: function() {
-      this.formSetting.forEach(item => {
-        item.value = this.userInfo[item.name];
       });
     },
     //个性化查询
@@ -523,12 +518,6 @@ export default {
     }
   },
   computed: {
-    userInfo() {
-      return this.$store.state.userInfo;
-    },
-    avatar() {
-      return this.$store.getters.userAvatar;
-    },
     hasAuth() {
       //任务授权权限
       return this.$store.getters.userAuthList.includes('PROCESS_BASE');
