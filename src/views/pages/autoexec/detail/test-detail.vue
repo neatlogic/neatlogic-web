@@ -8,13 +8,11 @@
         <span>{{ $t('term.autoexec.addjob') }}</span>
       </template>
       <template v-slot:topRight>
-        <div class="div-btn-contain action-group" style="text-align: right;">
+        <div class="div-btn-contain action-group text-right">
           <span class="action-item last">
-            <Button
-              type="primary"
-              @click="openExecuteSetting"
-            >
-              <span class="tsfont-run btn-icon">{{ $t('page.execute') }}</span> </Button>
+            <Button type="primary" :loading="loading" @click="openExecuteSetting">
+              <span :class="!loading ? 'tsfont-run btn-icon' : ''">{{ $t('page.execute') }}</span>
+            </Button>
           </span>
         </div>
       </template>
@@ -95,18 +93,16 @@ export default {
     ArgumentParams: () => import('./runnerDetail/argument-params.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue')
-
   },
   filters: {},
   data() {
-    let _this = this;
     return {
       id: null,
       type: this.$route.query.type,
       targetShow: true,
       paramsList: [],
       dataConfig: null,
-      loading: true,
+      loading: false,
       nameForm: {
         labelWidth: 100,
         labelPosition: 'left',
@@ -126,7 +122,7 @@ export default {
         itemList: {
           protocolId: {
             type: 'select',
-            label: _this.$t('page.protocol'),
+            label: this.$t('page.protocol'),
             value: '',
             multiple: false,
             placeholder: this.$t('page.pleaseselect'),
@@ -137,7 +133,7 @@ export default {
           },
           executeUser: {
             type: 'slot',
-            label: _this.$t('page.executeuser'),
+            label: this.$t('page.executeuser'),
             validateList: ['required']
           }
         }
@@ -162,8 +158,7 @@ export default {
       }
     };
   },
-  beforeCreate() {
-  },
+  beforeCreate() {},
   created() {
     if (this.$route.query) {
       if (this.$route.query.id) {
@@ -183,8 +178,7 @@ export default {
   beforeMount() {
     this.getInitData();
   },
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -257,6 +251,7 @@ export default {
       if (this.$refs.argumentConfig) {
         val.argumentMappingList = this.$refs.argumentConfig.getValue();
       }
+      this.loading = true;
       this.$api.autoexec.script.testScript(val).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
@@ -266,6 +261,8 @@ export default {
             query: {id: res.Return.jobId}
           });
         }
+      }).finally(() => {
+        this.loading = false;
       });
     },
     getJobData() { //复制作业获取的数据
@@ -310,8 +307,7 @@ export default {
     }
   },
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
@@ -333,10 +329,10 @@ export default {
       vertical-align: middle;
     }
   }
-  ::v-deep .btn-icon{
+  ::v-deep .btn-icon {
     vertical-align: baseline;
     margin: 0px;
-    &::before{
+    &::before {
       margin-right: 5px;
     }
   }
