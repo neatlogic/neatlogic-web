@@ -902,7 +902,8 @@
     "setinputloopitems": "Please enter the loop item",
     "setinputloopoperations": "Settings: Please enter at least one tool",
     "runnergrouptagprocesstips": "If form assignment is required, please set the executor group to the \"Job Parameters\" type in the combination tool",
-    "runnergroupprocesstips": "If form assignment is required, please set the \"Executor Group\" to the \"Job Parameter\" type in the combination tool"
+    "runnergroupprocesstips": "If form assignment is required, please set the \"Executor Group\" to the \"Job Parameter\" type in the combination tool",
+    "resetrunnerphase": "Reset phase or not"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
