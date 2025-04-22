@@ -6,7 +6,7 @@ import commonApi from '@/resources/api/common/index.js';
 const Actions = {
   //从后台获取用户信息并保存在VUEX中
   async getUserInfo({ commit }) {
-    const res = await commonApi.getUser();
+    const res = await commonApi.getCurrentUser();
     commit('setUserInfo', res && res.Return ? res.Return : {});
     return res;
   },

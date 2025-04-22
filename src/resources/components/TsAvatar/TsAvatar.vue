@@ -35,6 +35,7 @@ export default {
     size: { type: [String, Number], default: 32 }, //头像大小
     pinyin: { type: String },
     name: { type: String },
+    userName: { type: String },
     isActive: {
       type: Number // 用户是激活还是禁用，1表示激活，0表示禁用
     },
@@ -75,7 +76,7 @@ export default {
     namePinyin() {
       let newName = '';
       let re = /^[\u4E00-\u9FA5]+$/;
-      let name = this.name;
+      let name = this.name || this.userName;
       if (name) {
         newName = name.slice(0, 1);//判断中文，如果是的话，就显示第一个文字
         if (!re.test(newName)) { // 不是，就显示前面两个字符
