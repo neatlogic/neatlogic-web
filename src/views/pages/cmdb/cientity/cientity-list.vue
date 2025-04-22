@@ -1311,7 +1311,7 @@ export default {
           Object.assign(this.searchParam, this.condition);
           this.searchParam['groupId'] = null;
           this.searchParam['ciId'] = this.ciId;
-          this.searchParam['idList'] = this.idList;
+          this.searchParam['idList'] = !this.$utils.isEmpty(this.idList) ? this.idList : null;
           this.searchParam['relId'] = this.relId;
           this.searchParam['relCiEntityId'] = this.relCiEntityId;
           this.searchParam['direction'] = this.direction;

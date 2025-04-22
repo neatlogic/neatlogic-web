@@ -6,6 +6,7 @@
           <span>{{ $t('page.warningmessage') }}</span>
           <span class="text-warning pl-icon">{{ phaseData.warnCount }}</span>
         </span>
+        <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="resetAllNode()">{{ $t('page.reset') }}</span>
         <span
           v-if="jobData.isCanExecute"
           class="action-item tsfont-minus-o"
@@ -58,6 +59,12 @@
       :phaseId="phaseData.id"
       @close="closeIgnorePhaseDialog"
     ></IgnorePhaseDialog>
+    <ResetRunnerDialog
+      v-if="jobData && isResetDialogShow"
+      :jobId="jobData.id"
+      :phaseId="phaseData.id"
+      @close="closeResetDialog"
+    ></ResetRunnerDialog>
   </div>
   <NoData v-else></NoData>
 </template>
@@ -67,7 +74,8 @@ export default {
   components: {
     NodeDetail: () => import('./node/node-detail.vue'),
     RefirePhaseDialog: () => import('../refire-phase-dialog.vue'),
-    IgnorePhaseDialog: () => import('./ignore-phase-dialog.vue')
+    IgnorePhaseDialog: () => import('./ignore-phase-dialog.vue'),
+    ResetRunnerDialog: () => import('../reset-runner-dialog.vue')
   },
   filters: {},
   props: {
@@ -76,6 +84,7 @@ export default {
   },
   data() {
     return {
+      isResetDialogShow: false,
       runnerData: null,
       nodeData: {},
       isRefireDialogShow: false,
@@ -101,6 +110,12 @@ export default {
   },
   destroyed() {},
   methods: {
+    closeResetDialog(needRefresh) {
+      this.isResetDialogShow = false;
+      if (needRefresh) {
+        this.$emit('refresh');
+      }
+    },
     refirePhase() {
       if (this.phaseData.status == 'running') {
         //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
@@ -119,6 +134,9 @@ export default {
         this.$emit('refresh');
       }
       this.isIgnorePhseeDialogShow = false;
+    },
+    resetAllNode() {
+      this.isResetDialogShow = true;
     },
     getRunner() {
       let params = {
