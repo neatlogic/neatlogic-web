@@ -6,7 +6,7 @@
           <span>{{ $t('page.warningmessage') }}</span>
           <span class="text-warning pl-icon">{{ phaseData.warnCount }}</span>
         </span>
-        <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="resetAllNode()">{{ $t('page.resetall') }}</span>
+        <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="resetAllNode()">{{ $t('page.reset') }}</span>
         <span
           v-if="jobData.isCanExecute"
           class="action-item tsfont-minus-o"
