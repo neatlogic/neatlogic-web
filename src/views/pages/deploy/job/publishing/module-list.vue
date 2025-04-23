@@ -261,10 +261,10 @@ export default {
             });
           }
           if (m.isSelectInstance) {
-            let selectNodeList = m.instanceList.filter(i => {
+            let selectNodeList = m.instanceList && m.instanceList.filter(i => {
               return i.isChecked;
             });
-            if (!selectNodeList.length) {
+            if (this.$utils.isEmpty(selectNodeList)) {
               validList.push({
                 text: this.$t('term.deploy.moduleconfigatleastselectainstance', {target: m.name}),
                 type: 'error',
