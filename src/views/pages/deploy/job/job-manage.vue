@@ -598,10 +598,15 @@ export default {
       });
     },
     toBatchJobDetail(row) {
-      this.$router.push({
-        path: '/batch-job-detail',
-        query: { id: row.id }
-      });
+      const {parentId = ''} = row || {};
+      if (parentId != -1) {
+        this.toJobDetail(row);
+      } else {
+        this.$router.push({
+          path: '/batch-job-detail',
+          query: { id: row.id }
+        });
+      }
     },
     // toOperationDetail(row) {
     //   if (row.operationType == 'combop') {

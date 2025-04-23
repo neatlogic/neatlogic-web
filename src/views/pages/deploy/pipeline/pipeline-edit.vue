@@ -20,7 +20,7 @@
         <div class="action-group">
           <span v-if="canEdit" class="action-item tsfont-auth" @click="editAuth()">{{ $t('page.authority') }}</span>
           <span v-if="canDelete" class="action-item tsfont-trash-o" @click="deleteJob()">{{ $t('page.delete') }}</span>
-          <span v-if="canEdit" class="action-item"><Button type="primary" @click="save()">{{ $t('page.save') }}</Button></span>
+          <span v-if="canEdit" class="action-item"><Button :loading="isSaving" type="primary" @click="save()">{{ $t('page.save') }}</Button></span>
         </div>
       </template>
       <template v-slot:content>
@@ -95,6 +95,7 @@
       :job="currentJob"
       :type="pipelineData.type"
       :appSystemId="pipelineData.appSystemId"
+      :isUpdateJobTemplate="isUpdateJobTemplate"
       @close="closeJobTemplateDialog"
       @insert="addJobTemplate"
       @update="updateJobTemplate"
@@ -160,7 +161,10 @@ export default {
             this.$set(this.pipelineData, 'planStartTime', val);
           }
         }
-      }
+      },
+      isSaving: false,
+      isUpdateJobTemplate: false, //true是从前端获取jobTemplate
+      jobTemplateMap: {} //编辑job时如果不存在则通过接口获取
     };
   },
   beforeCreate() {},
@@ -188,6 +192,11 @@ export default {
     editJob(job, group) {
       this.currentJob = job;
       this.currentGroup = group;
+      if (this.jobTemplateMap[job.uuid]) {
+        this.isUpdateJobTemplate = true;
+      } else {
+        this.isUpdateJobTemplate = false;
+      }
       this.isJobTemplateDialogShow = true;
     },
     editAuth() {
@@ -294,6 +303,7 @@ export default {
         if (index > -1) {
           this.$set(this.currentGroup.jobTemplateList, index, jobTemplateData);
         }
+        this.jobTemplateMap[jobTemplateData.uuid] = jobTemplateData;
       }
       this.closeJobTemplateDialog();
     },
@@ -301,10 +311,14 @@ export default {
       if (jobTemplateList) {
         console.log(JSON.stringify(jobTemplateList, null, 2));
         this.addJob(this.currentLane, this.currentGroup, jobTemplateList);
+        jobTemplateList.forEach(item => {
+          this.jobTemplateMap[item.uuid] = item;
+        });
       }
       this.closeJobTemplateDialog();
     },
     closeJobTemplateDialog() {
+      this.isUpdateJobTemplate = false;
       this.isJobTemplateDialogShow = false;
     },
     closeAuthDialog(authList) {
@@ -342,8 +356,9 @@ export default {
         if (inputName && inputName.valid()) {
           if (this.jobIdList.length == 0) {
             this.$Message.info(this.$t('term.deploy.atleastaddajob'));
-            return fales;
+            return false;
           }
+          this.isSaving = true;
           this.$api.deploy.pipeline.savePipeline(this.pipelineData).then(res => {
             if (res.Status == 'OK') {
               this.pipelineData = res.Return;
@@ -352,7 +367,10 @@ export default {
               this.pipelineData.laneList.forEach(lane => {
                 lane.groupList.push({ jobTemplateList: [] });
               });
+              this.jobTemplateMap = {};
             }
+          }).finally(() => {
+            this.isSaving = false;
           });
         }
       }

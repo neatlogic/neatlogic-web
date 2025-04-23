@@ -171,7 +171,8 @@ export default {
       runtimeParamList: [], //作业参数
       combopPhaseList: [],
       param: {},
-      defaultModuleList: [] //模块默认值
+      defaultModuleList: [], //模块默认值
+      moduleEnvInstanceMap: {}
     };
   },
   beforeCreate() {},
@@ -236,7 +237,7 @@ export default {
         }
       });
     },
-    getJobModuleList() {
+    getJobModuleList(type) {
       let data = {
         appSystemId: this.searchParams.appSystemId,
         envId: this.envId,
@@ -269,7 +270,7 @@ export default {
             }
           });
           //编辑定时作业
-          if (this.defaultModuleList.length > 0) {
+          if (!type && this.defaultModuleList.length > 0) {
             this.appModuleList.forEach(item => {
               let findItem = this.defaultModuleList.find(m => m.id == item.id);
               if (findItem) {
@@ -283,6 +284,22 @@ export default {
               }
             });
           }
+          if (type === 'env') { //环境改变时，实例改变
+            this.appModuleList.forEach(item => {
+              const key = 'app_' + item.id + '_' + this.envId;
+              this.$set(item, 'isSelectInstance', false);
+              if (this.moduleEnvInstanceMap[key] && !this.$utils.isEmpty(this.moduleEnvInstanceMap[key])) {
+                this.$set(item, 'loadingShow', true);
+                this.$set(item, 'instanceList', this.moduleEnvInstanceMap[key]);
+                this.$nextTick(() => {
+                  this.$set(item, 'isSelectInstance', true);
+                });
+              } else {
+                this.$set(item, 'instanceList', []);
+              }
+            });
+          }
+
           //编辑定时作业end
           this.updateSelectModuleList(this.appModuleList);
         }
@@ -303,10 +320,23 @@ export default {
         this.scenarioId = item.scenarioId;
         this.combopPhaseNameList = item.combopPhaseNameList;
       } else if (type == 'env') {
+        this.getModuleEnvInstanceMap(this.envId);
         this.envId = item.id;
         this.envName = item.name;
       }
-      this.getJobModuleList();
+      this.getJobModuleList(type);
+    },
+    getModuleEnvInstanceMap(envId) {
+      this.appModuleList.forEach(item => {
+        this.appModuleList.forEach(item => {
+          const key = 'app_' + item.id + '_' + envId;
+          if (item.isSelectInstance) {
+            this.$set(this.moduleEnvInstanceMap, key, item.instanceList || []);
+          } else {
+            this.$set(this.moduleEnvInstanceMap, key, []);
+          }
+        });
+      });
     },
     valid() {
       let validList = [];
