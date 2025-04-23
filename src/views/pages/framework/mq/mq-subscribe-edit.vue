@@ -206,7 +206,7 @@ export default {
       if (form && !form.valid()) {
         isValid = false;
       }
-      if (configComponent && !configComponent.valid()) {
+      if (configComponent && configComponent.valid && !configComponent.valid()) {
         isValid = false;
       }
       if (isValid) {
