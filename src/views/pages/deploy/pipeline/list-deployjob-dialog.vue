@@ -280,11 +280,11 @@ export default {
       });
     },
     toBatchJobDetail(row) {
-      if (row && row.id) {
-        this.$router.push({
-          path: '/batch-job-detail',
-          query: { id: row.id }
-        });
+      const {parentId = '', id = ''} = row || {};
+      if (parentId != -1) {
+        this.toJobDetail(row);
+      } else {
+        window.open(HOME + '/deploy.html#/batch-job-detail?id=' + id, '_blank');
       }
     }
   },
