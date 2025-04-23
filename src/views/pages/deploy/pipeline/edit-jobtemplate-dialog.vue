@@ -141,7 +141,11 @@ export default {
     id: { type: Number },
     job: {type: Object},
     appSystemId: {type: Number},
-    type: {type: String}
+    type: {type: String},
+    isUpdateJobTemplate: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -190,15 +194,15 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
+    if (this.id && !this.isUpdateJobTemplate) {
+      await this.getJobTemplateById();
+    } else if (this.job) {
+      this.jobTemplateData = this.job;
+    }
     if (this.appSystemId) {
       this.$set(this.jobTemplateData, 'appSystemId', this.appSystemId);
       this.$set(this.appSystemConfig, 'disabled', true);
-    }
-    if (this.id) {
-      this.getJobTemplateById();
-    } else if (this.job) {
-      this.jobTemplateData = this.job;
     }
   },
   beforeMount() {},
@@ -212,7 +216,7 @@ export default {
   methods: {
     getJobTemplateById() {
       if (this.id) {
-        this.$api.deploy.pipeline.getJobTemplateById(this.id).then(res => {
+        return this.$api.deploy.pipeline.getJobTemplateById(this.id).then(res => {
           this.jobTemplateData = res.Return;
         });
       }
@@ -305,7 +309,7 @@ export default {
                 const selectedModule = this.appModuleList.find(d => d.id === this.jobTemplateData.appModuleId);
                 if (selectedModule) {
                   this.$set(selectedModule, 'isChecked', true);
-                  if (this.jobTemplateData.config.selectNodeList && this.jobTemplateData.config.selectNodeList.length > 0) {
+                  if (this.jobTemplateData.config && this.jobTemplateData.config.selectNodeList && this.jobTemplateData.config.selectNodeList.length > 0) {
                     this.$set(selectedModule, 'isSelectInstance', true);
                     const instanceList = this.$utils.deepClone(this.jobTemplateData.config.selectNodeList);
                     instanceList.forEach(ins => {
@@ -367,6 +371,9 @@ export default {
         const moduleList = this.$refs?.moduleList.getData() || [];
         if (moduleList && moduleList.length == 1) {
           const module = moduleList[0];
+          if (!this.jobTemplateData.config) {
+            this.jobTemplateData.config = {};
+          }
           this.jobTemplateData.config.selectNodeList = module.selectNodeList;
           this.$emit('update', this.jobTemplateData);
         } else {
