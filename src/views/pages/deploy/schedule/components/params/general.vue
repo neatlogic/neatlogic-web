@@ -287,14 +287,14 @@ export default {
           if (type === 'env') { //环境改变时，实例改变
             this.appModuleList.forEach(item => {
               const key = 'app_' + item.id + '_' + this.envId;
+              this.$set(item, 'isSelectInstance', false);
               if (this.moduleEnvInstanceMap[key] && !this.$utils.isEmpty(this.moduleEnvInstanceMap[key])) {
-                this.$set(item, 'isSelectInstance', false);
+                this.$set(item, 'loadingShow', true);
                 this.$set(item, 'instanceList', this.moduleEnvInstanceMap[key]);
                 this.$nextTick(() => {
                   this.$set(item, 'isSelectInstance', true);
                 });
               } else {
-                this.$set(item, 'isSelectInstance', false);
                 this.$set(item, 'instanceList', []);
               }
             });
