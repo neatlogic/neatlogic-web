@@ -33,6 +33,7 @@ import _ from 'lodash';
 import store from '@/resources/store';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
+const FONT_UNICODE_LIST = require('@/resources/assets/font/tsfonts/codes.json');
 const methods = {
   getCookie: function (name) {
     if (name) {
@@ -1160,11 +1161,10 @@ const methods = {
   },
   getUnicodeByClassName(className) {
     // 根据className获取unicode
-    const unicodeList = require('@/resources/assets/font/tsfonts/codes.json');
-    if (!className || !Array.isArray(unicodeList) || unicodeList.length === 0) {
+    if (!className || !Array.isArray(FONT_UNICODE_LIST) || (FONT_UNICODE_LIST && FONT_UNICODE_LIST.length === 0)) {
       return '';
     }
-    const matchedItem = unicodeList.find(item => item.css === className);
+    const matchedItem = FONT_UNICODE_LIST.find(item => item.css === className);
     return matchedItem ? matchedItem.hexCodepoint : '';
   }
 };
