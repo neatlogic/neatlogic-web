@@ -277,7 +277,7 @@ export default {
       this.$api.deploy.job.getJobModuleList(data).then(res => {
         if (res && res.Status == 'OK') {
           let moduleList = res.Return || [];
-          this.appModuleList.forEach(async(item) => {
+          this.appModuleList.forEach((item) => {
             let findItem = moduleList.find(m => m.id == item.id);
             if (findItem) {
               this.$set(item, 'canSelectModule', true); //标识可选择的模块

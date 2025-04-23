@@ -342,7 +342,7 @@ export default {
         if (inputName && inputName.valid()) {
           if (this.jobIdList.length == 0) {
             this.$Message.info(this.$t('term.deploy.atleastaddajob'));
-            return fales;
+            return false;
           }
           this.$api.deploy.pipeline.savePipeline(this.pipelineData).then(res => {
             if (res.Status == 'OK') {

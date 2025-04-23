@@ -105,7 +105,6 @@ export default {
     return {
       showNumber: 4,
       isShowMoreDialog: false,
-      keyword: '',
       tableData: {},
       currentPage: 1,
       instanceList: []
@@ -138,8 +137,7 @@ export default {
         envId: this.envId,
         appModuleId: this.module.id,
         currentPage: currentPage || this.currentPage,
-        pageSize: 20,
-        keyword: this.keyword
+        pageSize: 100
       };
       currentPage && (this.currentPage = currentPage);
       this.$api.deploy.env.getInstanceList(data).then(res => {
@@ -273,7 +271,7 @@ export default {
 <style lang="less" scoped>
 ::v-deep .tscard-container {
   .tscard-body {
-    min-height: 24;
+    min-height: 24px;
   }
 }
 .instance-item{

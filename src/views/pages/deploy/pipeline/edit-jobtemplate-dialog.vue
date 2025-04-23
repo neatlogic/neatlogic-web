@@ -185,7 +185,8 @@ export default {
         transfer: true,
         desc: this.$t('term.autoexec.roundcountdescrition'),
         validateList: ['required', 'maxNum']
-      }
+      },
+      moduleEnvInstanceMap: {}
     };
   },
   beforeCreate() {},
@@ -209,7 +210,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    toggleCheckAllModule(val) {},
     getJobTemplateById() {
       if (this.id) {
         this.$api.deploy.pipeline.getJobTemplateById(this.id).then(res => {
@@ -332,11 +332,13 @@ export default {
       this.$set(this.jobTemplateData, 'scenarioName', scenario.scenarioName);
     },
     selectEnv(env) {
+      if (this.jobTemplateData && this.jobTemplateData.envId) {
+        this.getModuleEnvInstanceMap(this.jobTemplateData.envId);
+      }
+
       this.$set(this.jobTemplateData, 'envId', env.id);
       this.$set(this.jobTemplateData, 'envName', env.name);
-    },
-    checkAppModule(val) {
-      console.log(val);
+      this.updateInstanceList(env.id);
     },
     save() {
       if (!this.jobTemplateData.id && !this.jobTemplateData.uuid) {
@@ -384,6 +386,36 @@ export default {
       ];
       list.push(...this.$utils.getRoundCountList());
       return list;
+    },
+    getModuleEnvInstanceMap(envId) {
+      if (!envId) {
+        return;
+      }
+      this.appModuleList.forEach(item => {
+        const key = 'app_' + item.id + '_' + envId;
+        if (item.isSelectInstance) {
+          this.$set(this.moduleEnvInstanceMap, key, item.instanceList || []);
+        } else {
+          this.$set(this.moduleEnvInstanceMap, key, []);
+        }
+      });
+    },
+    updateInstanceList(envId) {
+      this.appModuleList.forEach(item => {
+        this.$set(item, 'isSelectInstance', false);
+        const key = 'app_' + item.id + '_' + envId;
+        if (this.moduleEnvInstanceMap[key] && !this.$utils.isEmpty(this.moduleEnvInstanceMap[key])) {
+          this.$set(item, 'isSelectInstance', false);
+          this.$set(item, 'loadingShow', true);
+          this.$set(item, 'instanceList', this.moduleEnvInstanceMap[key]);
+          this.$nextTick(() => {
+            this.$set(item, 'isSelectInstance', true);
+          });
+        } else {
+          this.$set(item, 'isSelectInstance', false);
+          this.$set(item, 'instanceList', []);
+        }
+      });
     }
   },
   filter: {},
