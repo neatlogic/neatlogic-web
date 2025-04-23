@@ -4,6 +4,11 @@
       <template v-if="selectedList.length > 0">
         <template v-for="(aitem, aindex) in selectedList">
           <span :key="aindex" class="userlist" :title="aitem.fullPath">
+            <i
+              v-if="isIcon"
+              :class="iconType(aitem.value)"
+              class="type-icon"
+            ></i>
             <!-- fullPath鼠标上移，显示全路径 -->
             {{ aitem.text.replace(/\(.*?\)/g, '') }}
             <span v-if="aindex < selectedList.length - 1" class="tsform-readonly-sperate">{{ sperateText }}</span>
@@ -50,7 +55,7 @@
               @click.stop
               @on-close="deleteSeleted(aindex, user.value, selectedList)"
             >
-              <i v-if="isIcon && groupList.length > 1" :class="iconType(user.value)" style="opacity:.6;"></i>
+              <i v-if="isIcon" :class="iconType(user.value)" style="opacity:.6;"></i>
               {{ user.text.replace(/\(.*?\)/g, '') }}
             </Tag>
           </template>
@@ -680,7 +685,7 @@ export default {
     },
     setInputwidth() {
       return function(keyword) {
-        let style = { maxWidth: '100%', minWidth: '30px' };
+        let style = { maxWidth: '100%', minWidth: '14px' };
         if (keyword) {
           let text_length = 0;
           for (var i = 0; i < keyword.length; i++) {
@@ -691,10 +696,10 @@ export default {
             }
           }
           Object.assign(style, {
-            width: text_length * 14 + 30 + 'px'
+            width: text_length * 14 + 'px'
           });
         } else {
-          let txtwidth = '30px';
+          let txtwidth = '14px';
           if (this.placeholder) {
             let text_length = 0;
             for (let i = 0; i < this.placeholder.length; i++) {
@@ -704,7 +709,7 @@ export default {
                 text_length = text_length + 0.5;
               }
             }
-            txtwidth = text_length * 14 + 30 + 'px';
+            txtwidth = text_length * 14 + 'px';
           }
           Object.assign(style, { width: txtwidth });
         }
@@ -898,6 +903,11 @@ html {
       top: 0;
       right: 3px;
     }
+  }
+  .type-icon {
+    padding-right: 4px;
+    font-size: 13px;
+    opacity: 0.6;
   }
 }
 .userselect-dropdown {
