@@ -38,7 +38,7 @@
             </span>
           </template>
           <template v-slot:name="{ row }">
-            <span v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'">
+            <span v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'" class="text-href" @click="toBatchJobDetail(row)">
               {{ row.name }}
             </span>
             <span
@@ -342,12 +342,14 @@ export default {
         query: { id: row.id }
       });
     },
-    //toBatchJobDetail(row) {
-    //   this.$router.push({
-    //     path: '/batch-job-detail',
-    //     query: { id: row.id }
-    //   });
-    // },
+    toBatchJobDetail(row) {
+      const {parentId = '', id = ''} = row || {};
+      if (parentId != -1) {
+        this.toJobDetail(row);
+      } else {
+        window.open(HOME + '/deploy.html#/batch-job-detail?id=' + id, '_blank');
+      }
+    },
     // toOperationDetail(row) {
     //   if (row.operationType == 'combop') {
     //     this.$router.push({
