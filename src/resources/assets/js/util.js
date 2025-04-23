@@ -27,6 +27,7 @@ getComposedPath(e)                           // 返回事件流中元素的事�
 removeHTMLTag(str)                           //去除html标签
 evalWithLineNumber(e, code)                  //利用eval解析时，具体报错信息和行号
 isImage(filename)                            //判断是否是图片
+getUnicodeByClassName(className)             //获取className的unicode编码
 */
 import _ from 'lodash';
 import store from '@/resources/store';
@@ -1156,6 +1157,15 @@ const methods = {
       sortedObj[key] = obj[key];
     });
     return sortedObj;
+  },
+  getUnicodeByClassName(className) {
+    // 根据className获取unicode
+    const unicodeList = require('@/resources/assets/font/tsfonts/codes.json');
+    if (!className || !Array.isArray(unicodeList) || unicodeList.length === 0) {
+      return '';
+    }
+    const matchedItem = unicodeList.find(item => item.css === className);
+    return matchedItem ? matchedItem.hexCodepoint : '';
   }
 };
 export default methods;
