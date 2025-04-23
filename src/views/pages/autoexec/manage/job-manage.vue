@@ -38,10 +38,7 @@
             </span>
           </template>
           <template v-slot:name="{ row }">
-            <!-- <span v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'" class="text-href" @click="toBatchJobDetail(row)">
-              {{ row.name }}
-            </span> -->
-            <span v-if="row.parentId && row.parentId == -1">
+            <span v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'">
               {{ row.name }}
             </span>
             <span
