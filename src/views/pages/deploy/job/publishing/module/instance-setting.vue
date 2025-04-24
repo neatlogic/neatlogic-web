@@ -126,7 +126,12 @@ export default {
     initData() {
       this.instanceList = [];
       if (this.module.instanceList && this.module.instanceList.length) {
-        this.instanceList = this.$utils.deepClone(this.module.instanceList);
+        this.instanceList = this.module.instanceList.map(m => {
+          return {
+            ...m,
+            isChecked: true
+          };
+        });
       }
       this.getInstanceList(1, true);
     },
