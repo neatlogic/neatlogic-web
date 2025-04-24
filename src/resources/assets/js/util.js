@@ -27,11 +27,13 @@ getComposedPath(e)                           // 返回事件流中元素的事�
 removeHTMLTag(str)                           //去除html标签
 evalWithLineNumber(e, code)                  //利用eval解析时，具体报错信息和行号
 isImage(filename)                            //判断是否是图片
+getUnicodeByClassName(className)             //获取className的unicode编码
 */
 import _ from 'lodash';
 import store from '@/resources/store';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
+const FONT_UNICODE_LIST = require('@/resources/assets/font/tsfonts/codes.json');
 const methods = {
   getCookie: function (name) {
     if (name) {
@@ -1156,6 +1158,14 @@ const methods = {
       sortedObj[key] = obj[key];
     });
     return sortedObj;
+  },
+  getUnicodeByClassName(className) {
+    // 根据className获取unicode
+    if (!className || !Array.isArray(FONT_UNICODE_LIST) || (FONT_UNICODE_LIST && FONT_UNICODE_LIST.length === 0)) {
+      return '';
+    }
+    const matchedItem = FONT_UNICODE_LIST.find(item => item.css === className);
+    return matchedItem ? matchedItem.hexCodepoint : '';
   }
 };
 export default methods;
