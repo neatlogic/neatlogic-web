@@ -110,7 +110,7 @@ export default {
           value: 1
         }
       ],
-      nameValid: ['required', 'name-special']
+      nameValid: ['required']
     };
   },
   beforeCreate() {},
