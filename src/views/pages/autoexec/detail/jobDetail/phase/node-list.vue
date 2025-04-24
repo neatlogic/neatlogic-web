@@ -42,20 +42,35 @@
             class="col-span custom-flex text-right"
             span="14"
           >
-            <span class="status-text text-pending">执行策略:{{ phaseData.jobGroupVo.policy }} </span>
-            <Tooltip max-width="320" theme="light" transfer>
+            <span v-if="phaseData.jobGroupVo.policy" class="status-text text-pending">执行策略:{{ phaseData.jobGroupVo.policy }} </span>
+            <Tooltip
+              v-if="roundCount"
+              max-width="320"
+              theme="light"
+              transfer
+            >
               <span class="status-text text-pending">分批数:{{ roundCount }} </span>
               <div slot="content">
                 分批数来源: {{ phaseData.roundCountFrom }}
               </div>
             </Tooltip>
-            <Tooltip max-width="320" theme="light" transfer>
+            <Tooltip
+              v-if="phaseData.userName"
+              max-width="320"
+              theme="light"
+              transfer
+            >
               <span class="status-text text-pending">执行用户:{{ phaseData.userName }} </span>
               <div slot="content">
                 执行用户来源: {{ phaseData.userNameFrom }}
               </div>
             </Tooltip>
-            <Tooltip max-width="320" theme="light" transfer>
+            <Tooltip
+              v-if="phaseData.protocol"
+              max-width="320"
+              theme="light"
+              transfer
+            >
               <span class="status-text text-pending">执行协议:{{ phaseData.protocol }}</span>
               <div slot="content">
                 执行协议来源: {{ phaseData.protocolFrom }}
