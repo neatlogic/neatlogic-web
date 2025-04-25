@@ -150,7 +150,7 @@ export default {
           this.runnerData.port = res.Return.runnerVo.host + ':' + res.Return.runnerVo.port;
           this.nodeData.status = res.Return.status;
           this.nodeData.warnCount = res.Return.warnCount;
-          if (res.Return.status == 'pending') {
+          if (res.Return.status == 'pending' || res.Return.status == 'running') {
             this.timmer = setTimeout(() => {
               this.getRunner();
             }, 3000);
