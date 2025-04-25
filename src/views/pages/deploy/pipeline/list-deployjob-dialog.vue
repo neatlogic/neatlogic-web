@@ -19,7 +19,7 @@
               @changePageSize="changePageSize"
             >
               <template v-slot:showChildren="{ row }">
-                <span v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'" class="text-href">
+                <span v-if="row.parentId == -1" class="text-href">
                   <span v-if="!row.loading" :class="{ 'tsfont-minus-square': row['showChildren'], 'tsfont-plus-square': !row['showChildren'] }" @click="toggleChildJob(row)"></span>
                   <Icon
                     v-else
@@ -31,14 +31,20 @@
               </template>
               <template v-slot:name="{ row }">
                 <span
-                  v-if="row.source === 'deploy' || row.source === 'deployschedulegeneral'"
+                  v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'"
                   class="text-href"
-                  :class="{ 'ml-nm': !!row.parentId }"
-                  @click="toJobDetail(row)"
-                >{{ row.name }}</span>
-                <span v-else-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'" class="text-href" @click="toBatchJobDetail(row)">
+                  @click="toBatchJobDetail(row)"
+                  @contextmenu="newTab($event, row, 'batch-job-detail')"
+                >
                   {{ row.name }}
                 </span>
+                <span
+                  v-else
+                  class="text-href"
+                  :class="{ 'ml-nm': (!!row.parentId && row.parentId != -1) }"
+                  @contextmenu="newTab($event, row, 'job-detail')"
+                  @click="toJobDetail(row)"
+                >{{ row.name }}</span>
                 <span><Status v-if="row.reviewStatus != 'passed'" :statusValue="row.reviewStatus" :statusName="row.reviewStatusName"></Status></span>
                 <Tooltip
                   v-if="row.warnCount > 0 || row.isHasIgnored > 0"
@@ -286,6 +292,16 @@ export default {
       } else {
         window.open(HOME + '/deploy.html#/batch-job-detail?id=' + id, '_blank');
       }
+    },
+    newTab(e, row, redirectPage) {
+      //鼠标右键打开新标签页
+      let base = this.$router.options.base;
+      let params = '';
+      if (row && row.id) {
+        params = `?id=${row.id}`;
+      }
+      let replaceStr = `<a href="${base}#${redirectPage}${params}" class="cursor">${row.name}</a>`;
+      e.currentTarget.innerHTML = replaceStr;
     }
   },
   filter: {},
