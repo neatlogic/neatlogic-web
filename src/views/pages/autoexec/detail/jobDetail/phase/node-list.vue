@@ -25,13 +25,59 @@
     </Row>
     <div v-if="phaseData.statusCountVoList && phaseData.statusCountVoList.length > 0" class="div-status">
       <div class="bg-tip-grey padding radius-md com-status">
-        <span
-          v-for="status in phaseData.statusCountVoList"
-          :key="status.status"
-          class="status-text"
-          :class="'text-' + status.status"
-          :style="{ color: status.statusVo.color }"
-        >{{ status.statusVo.text }} {{ status.count }}</span>
+        <Row class="block-div">
+          <Col
+            class="col-span custom-flex"
+            span="10"
+          >
+            <span
+              v-for="status in phaseData.statusCountVoList"
+              :key="status.status"
+              class="status-text"
+              :class="'text-' + status.status"
+              :style="{ color: status.statusVo.color }"
+            >{{ status.statusVo.text }} {{ status.count }}</span> 
+          </Col>
+          <Col
+            class="col-span custom-flex text-right"
+            span="14"
+          >
+            <span v-if="phaseData.jobGroupVo.policy" class="status-text text-pending">执行策略:{{ phaseData.jobGroupVo.policy }} </span>
+            <Tooltip
+              v-if="roundCount"
+              max-width="320"
+              theme="light"
+              transfer
+            >
+              <span class="status-text text-pending">分批数:{{ roundCount }} </span>
+              <div slot="content">
+                分批数来源: {{ phaseData.roundCountFrom }}
+              </div>
+            </Tooltip>
+            <Tooltip
+              v-if="phaseData.userName"
+              max-width="320"
+              theme="light"
+              transfer
+            >
+              <span class="status-text text-pending">执行用户:{{ phaseData.userName }} </span>
+              <div slot="content">
+                执行用户来源: {{ phaseData.userNameFrom }}
+              </div>
+            </Tooltip>
+            <Tooltip
+              v-if="phaseData.protocol"
+              max-width="320"
+              theme="light"
+              transfer
+            >
+              <span class="status-text text-pending">执行协议:{{ phaseData.protocol }}</span>
+              <div slot="content">
+                执行协议来源: {{ phaseData.protocolFrom }}
+              </div>
+            </Tooltip>
+          </Col>
+        </Row>
       </div>
     </div>
     <TsTable
@@ -532,6 +578,18 @@ export default {
     }
   },
   computed: {
+    roundCount() {
+      let roundCount = this.phaseData.roundCount;
+      if (roundCount == 0) {
+        return '全部串行';
+      } else if (roundCount == 1) {
+        return '全部并行';
+      } else if (roundCount == -1) {
+        return '蓝绿执行';
+      } else {
+        return roundCount;
+      }
+    },
     currentNode() {
       if (this.currentNodeId && this.nodeData && this.nodeData.tbodyList && this.nodeData.tbodyList.length > 0) {
         return this.nodeData.tbodyList.find(d => d.id === this.currentNodeId);

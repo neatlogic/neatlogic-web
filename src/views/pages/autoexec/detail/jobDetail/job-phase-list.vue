@@ -241,7 +241,7 @@ export default {
     },
     hasWaiting() {
       return (group) => {
-        return this.waitingDetail.some(t => t.groupSortList.includes(group.groupSort));
+        return this.waitingDetail && this.waitingDetail.some(t => t.groupSortList.includes(group.groupSort));
       };
     }
   },

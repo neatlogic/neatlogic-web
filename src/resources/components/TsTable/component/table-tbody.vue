@@ -13,7 +13,7 @@
   >
     <template v-for="(bitem, bindex) in list">
       <tr
-        :key="bitem.hasOwnProperty('uuid') && (typeof bitem['uuid'] == 'string' || typeof bitem['uuid'] == 'number') ? bitem['uuid']: bindex"
+        :key="getUniqueKey({list: list, row: bitem, index: bindex})"
         :class="setRowClass(bitem, selectList, bindex)"
         :style="setTr()"
         @click="clickTr(bitem, bindex, $event)"
@@ -509,6 +509,30 @@ export default {
           }
         }
         return style;
+      };
+    },
+    getUniqueKey() {
+      return ({list = [], row = {}, index = 0}) => {
+        if (this.$utils.isEmpty(list)) {
+          return index;
+        }
+        const getKeyByProp = (prop) => {
+          if (row && row.hasOwnProperty(prop)) {
+            const value = typeof row[prop] === 'string' || typeof row[prop] === 'number' ? row[prop] : '';
+            const count = list.filter(v => v[prop] === value).length;
+            return count === 1 ? value : index;
+          }
+          return null;
+        };
+        const uuidKey = getKeyByProp('uuid');
+        if (uuidKey !== null) {
+          return uuidKey;
+        }
+        const idKey = getKeyByProp('id');
+        if (idKey !== null) {
+          return idKey;
+        }
+        return index;
       };
     }
   },
