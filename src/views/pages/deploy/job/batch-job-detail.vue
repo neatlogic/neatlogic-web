@@ -303,6 +303,8 @@ export default {
           this.batchtimmer = setTimeout(() => {
             this.refreshBatchJobStatus();
           }, 5000);
+        } else {
+          this.getJobById();
         }
       });
     },
