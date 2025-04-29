@@ -368,7 +368,6 @@ export default {
     }
     if (this.jobData.isCanExecute) {
       this.theadList.unshift({ key: 'selection' });
-      this.theadList.push({ key: 'action' });
     }
     if (!this.$utils.isEmpty(mutations.getSearchParam())) {
       this.searchParam = mutations.getSearchParam();
