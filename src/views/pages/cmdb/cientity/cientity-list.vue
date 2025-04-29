@@ -250,7 +250,7 @@
         v-bind="ciEntityData"
         :loading="tabloading"
         canExpand
-        keyName="uuid"
+        :keyName="keyName"
         :fixedHeader="mode == 'dialog' || !fixedHeader ? false : true"
         :multiple="isMultiple"
         :showPager="needPage"
@@ -474,6 +474,7 @@ export default {
   },
   directives: { download },
   props: {
+    keyName: { type: String, default: 'uuid' }, //表格的默认唯一属性，用uuid是为了照顾表单控件的临时数据
     ciId: { type: Number },
     ciData: { type: Object },
     rootCiId: { type: Number }, //根模型id，如果选中了子模型配置项，回显数据时就要利用此属性匹配模型，主要用在ITSM表单
