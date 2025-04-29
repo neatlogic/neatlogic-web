@@ -3,8 +3,8 @@
     <div class="pb-nm">
       <TsRow>
         <Col :span="12">
-          <ul>
-            <li v-if="hasEditConfigAuth" class="tsfont-plus text-href mt-sm" @click="openEnvInstanceEdit">{{ $t('page.instance') }}</li>
+          <ul class="action-group">
+            <li v-if="hasEditConfigAuth" class="tsfont-plus text-href mt-sm text-action action-item" @click="openEnvInstanceEdit">{{ $t('page.instance') }}</li>
             <template v-else>
               <Tooltip
                 max-width="400"
@@ -17,6 +17,7 @@
                 </ul>
               </Tooltip>
             </template>
+            <li v-if="selectedInstanceIdList && selectedInstanceIdList.length > 0" class="tsfont-label text-href mt-sm text-action action-item" @click="batchAddBlueGreen">{{ $t('term.deploy.blueSet') }}</li>
           </ul>
         </Col>
         <Col :span="12">
@@ -40,6 +41,8 @@
         v-if="hasInstance"
         :tbodyList="tbodyList"
         :theadList="theadList"
+        :multiple="true"
+        @getSelected="getSelected"
       >
         <template slot="name" slot-scope="{ row }">
           <span v-if="row.name" class="text-href" @click.stop="toCiview(row)">{{ row.name }}</span>
@@ -58,19 +61,33 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="tsfont-edit text-action" @click="addBlueGreen(row)">{{ $t('term.deploy.blueSet') }}</li>
+              <li class="tsfont-label text-action" @click="addBlueGreen(row)">{{ $t('term.deploy.blueSet') }}</li>
+              <li class="tsfont-edit text-action" @click="editInstance(row)">{{ $t('page.edit') }}</li>
+              <li class="tsfont-trash-o text-action" @click="deleteInstance(row)">{{ $t('page.delete') }}</li>
             </ul>
           </div>
         </template>
       </TsTable>
     </div>
-    <EnvInstanceEdit v-if="isShowEnInstanceEdit" :params="params" @close="closeEnvInstanceEdit"></EnvInstanceEdit>
+    <EnvInstanceEdit 
+      v-if="isShowEnInstanceEdit" 
+      :params="params" 
+      :isEdit="isEdit" 
+      :instanceData="instanceData"
+      @close="closeEnvInstanceEdit"
+    ></EnvInstanceEdit>
     <EnvInstanceBlueGreenDialog
       v-if="isShowInstanceBlueGreenDialog"
       :params="params"
       :instanceId="instanceId"
       :blueGreenId="blueGreenId"
       @close="closeInstanceBlueGreenDialog"
+    ></EnvInstanceBlueGreenDialog>
+    <EnvInstanceBlueGreenDialog
+      v-if="isShowBatchInstanceBlueGreenDialog"
+      :params="params"
+      :instanceIdList="selectedInstanceIdList"
+      @close="closeBatchInstanceBlueGreenDialog"
     ></EnvInstanceBlueGreenDialog>
   </div>
 </template>
@@ -108,8 +125,15 @@ export default {
       defaultTbodyList: [],
       theadList: [
         {
+          key: 'selection'
+        },
+        {
           title: this.$t('page.name'),
           key: 'name'
+        },
+        {
+          title: this.$t('page.type'),
+          key: 'typeLabel'
         },
         {
           title: this.$t('term.deploy.blueSet'),
@@ -137,8 +161,12 @@ export default {
         }
       ],
       isShowInstanceBlueGreenDialog: false,
+      isShowBatchInstanceBlueGreenDialog: false,
       instanceId: null,
-      blueGreenId: null
+      blueGreenId: null,
+      selectedInstanceIdList: [],
+      isEdit: false,
+      instanceData: null
     };
   },
   beforeCreate() {},
@@ -159,6 +187,8 @@ export default {
     },
     closeEnvInstanceEdit(needRefresh) {
       this.isShowEnInstanceEdit = false;
+      this.instanceData = null;
+      this.isEdit = false;
       if (needRefresh) {
         this.searchEnvList();
       }
@@ -205,6 +235,63 @@ export default {
     closeInstanceBlueGreenDialog(needRefresh) {
       this.searchEnvList();
       this.isShowInstanceBlueGreenDialog = false;
+    },
+    batchAddBlueGreen() {
+      this.isShowBatchInstanceBlueGreenDialog = true;
+    },
+    closeBatchInstanceBlueGreenDialog(needRefresh) {
+      if (needRefresh) {
+        this.searchEnvList();
+      }
+      this.isShowBatchInstanceBlueGreenDialog = false;
+    },
+    editInstance(row) {
+      this.isEdit = true;
+      this.isShowEnInstanceEdit = true;
+      this.instanceData = {
+        ciId: row.typeId,
+        id: row.id,
+        name: row.name,
+        ip: row.ip,
+        port: row.port,
+        maintenanceWindow: row.maintenanceWindow
+      };
+    },
+    deleteInstance(row) {
+      if (row) {
+        let params = {
+          appSystemId: this.params.appSystemId,
+          appModuleId: this.params.appModuleId,
+          envId: this.params.envId,
+          instanceIdList: [
+            row.id
+          ]
+        };
+        this.$createDialog({
+          title: this.$t('dialog.title.deleteconfirm'),
+          content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.instance')}),
+          btnType: 'error',
+          'on-ok': vnode => {
+            vnode.isShow = false;
+            this.$nextTick(() => {
+              this.$api.deploy.applicationConfig.deleteEnvInstance(params).then((res) => {
+                if (res && res.Status == 'OK') {
+                  this.$Message.success(this.$t('message.deletesuccess'));
+                  this.searchEnvList();
+                }
+              });
+            });
+          }
+        });
+      }
+    },
+    getSelected(indexList, itemList) {
+      this.selectedInstanceIdList = [];
+      if (itemList && itemList.length > 0) {
+        itemList.forEach(item => {
+          this.selectedInstanceIdList.push(item.id);
+        });
+      }
     }
   },
   filter: {},
