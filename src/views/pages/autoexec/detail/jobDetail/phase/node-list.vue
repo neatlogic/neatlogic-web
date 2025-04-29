@@ -316,6 +316,10 @@ export default {
           title: this.$t('page.startstoptime'),
           width: 300,
           key: 'startTime'
+        },
+        {
+          title: '',
+          key: 'action'
         }
       ],
       statusActionMapping: {
