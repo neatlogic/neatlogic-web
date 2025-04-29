@@ -104,6 +104,7 @@ export default {
       default: true
     },
     defaultSearchParam: { type: Object },
+    defaultSearchValue: { type: Object },
     sortList: { type: Array },
     sortOrder: { type: Array },
     fixedHeader: { type: Boolean, default: true }
@@ -170,7 +171,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.searchJob(1);
+    this.searchJob(1, this.defaultSearchValue);
   },
   beforeMount() {},
   mounted() {},

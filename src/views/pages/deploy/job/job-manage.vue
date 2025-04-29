@@ -89,6 +89,7 @@
           <DeployPipelineTable
             ref="tableData"
             :defaultSearchParam="searchParam"
+            :defaultSearchValue="searchValue"
             :sortList="sortList"
             :sortOrder="sortOrder"
           ></DeployPipelineTable>
@@ -161,7 +162,6 @@ export default {
       sortOrder: [{planStartTime: 'DESC'}],
       noConfigInfo: false, // 无配置信息，模块和环境
       moduleList: [],
-      isLoading: false,
       isShowResourceLockDialog: false,
       appModuleData: {},
       searchValue: {},
@@ -238,9 +238,7 @@ export default {
     }
   },
   beforeMount() {},
-  mounted() {
-    this.searchJob();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
