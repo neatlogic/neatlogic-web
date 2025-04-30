@@ -3,7 +3,7 @@
     <TsDialog
       type="modal"
       :isShow="true"
-      :title="$t('dialog.title.addtarget', {target: $t('page.instance')})"
+      :title="dialogTitle"
       :ok-text="$t('page.confirm')"
       @on-ok="okDialog"
       @on-close="closeDialog"
@@ -35,11 +35,20 @@ export default {
     params: {
       type: Object,
       default: () => {}
+    },
+    isEdit: {
+      type: Boolean,
+      default: false
+    },
+    instanceData: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
     return {
       loadingShow: true,
+      dialogTitle: this.isEdit == true ? this.$t('dialog.title.edittarget', {target: this.$t('page.instance')}) : this.$t('dialog.title.addtarget', {target: this.$t('page.instance')}),
       formValue: {},
       formList: [],
       exampleList: [
@@ -47,9 +56,10 @@ export default {
           name: 'instance',
           type: 'radio',
           label: this.$t('page.instance'),
+          disabled: this.isEdit,
           dataList: [
             {
-              text: this.$t('dialog.title.addtarget', {target: this.$t('page.instance')}),
+              text: this.isEdit == true ? this.$t('dialog.title.edittarget', {target: this.$t('page.instance')}) : this.$t('dialog.title.addtarget', {target: this.$t('page.instance')}),
               value: 1
             },
             {
@@ -83,6 +93,7 @@ export default {
           transfer: true,
           textName: 'label',
           valueName: 'id',
+          disabled: this.isEdit,
           dataList: []
         }
       ],
@@ -109,6 +120,16 @@ export default {
     await this.getAppInstanceCiAttrList();
     this.formList = this.exampleList.concat(this.addformList);
     this.$set(this.formValue, 'instance', 1);
+    if (this.isEdit == true && this.instanceData) {
+      this.$set(this.formValue, 'ciId', this.instanceData.ciId);
+      this.$set(this.formValue, 'id', this.instanceData.id);
+      this.$set(this.formValue, 'name', this.instanceData.name);
+      this.$set(this.formValue, 'ip', this.instanceData.ip);
+      this.$set(this.formValue, 'port', this.instanceData.port);
+      if (this.instanceData.maintenanceWindow) {
+        this.$set(this.formValue, 'maintenanceWindow', this.handleMaintenanceWindowValue([this.instanceData.maintenanceWindow]));
+      }
+    }
     this.getCiList();
   },
   beforeUpdate() {},
@@ -181,6 +202,9 @@ export default {
       };
       if (formValue && formValue.maintenanceWindow) {
         params.maintenanceWindow = this.setMaintenanceWindowValue(formValue.maintenanceWindow);
+      }
+      if (this.isEdit == true) {
+        params.id = this.instanceData.id;
       }
       this.$api.deploy.applicationConfig.saveEnvInstance(params).then((res) => {
         if (res && res.Status == 'OK') {

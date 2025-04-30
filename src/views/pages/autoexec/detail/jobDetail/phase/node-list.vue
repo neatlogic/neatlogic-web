@@ -316,6 +316,10 @@ export default {
           title: this.$t('page.startstoptime'),
           width: 300,
           key: 'startTime'
+        },
+        {
+          title: '',
+          key: 'action'
         }
       ],
       statusActionMapping: {
@@ -364,7 +368,6 @@ export default {
     }
     if (this.jobData.isCanExecute) {
       this.theadList.unshift({ key: 'selection' });
-      this.theadList.push({ key: 'action' });
     }
     if (!this.$utils.isEmpty(mutations.getSearchParam())) {
       this.searchParam = mutations.getSearchParam();

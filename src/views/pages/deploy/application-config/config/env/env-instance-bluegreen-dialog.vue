@@ -33,6 +33,7 @@ export default {
       }
     },
     instanceId: { type: Number},
+    instanceIdList: { type: Array},
     blueGreenId: {type: Number}
   },
   data() {
@@ -79,20 +80,45 @@ export default {
       if (!this.$refs.bluesetForm.valid()) {
         return false; 
       }
-      let data = {
-        blueGreenId: this.$refs.bluesetForm.value,
-        resourceId: this.instanceId,
-        ...this.params
-      };
-      this.$api.deploy.applicationConfig.saveInstanceBlueGreen(data).then(res => {
-        if (res && res.Status == 'OK') {
-          this.$t('message.savesuccess');
-          this.closeDialog();
+      let blueGreenId = this.$refs.bluesetForm.value;
+      if (this.instanceId) {
+        let data = {
+          blueGreenId: blueGreenId,
+          resourceId: this.instanceId,
+          appSystemId: this.params.appSystemId,
+          appModuleId: this.params.appModuleId,
+          envId: this.params.envId
+        };
+        this.$api.deploy.applicationConfig.saveInstanceBlueGreen(data).then(res => {
+          if (res && res.Status == 'OK') {
+            this.$t('message.savesuccess');
+            this.closeDialog(true);
+          }
+        });
+      } else if (this.instanceIdList && this.instanceIdList.length > 0) {
+        if (blueGreenId) {
+          let data = {
+            blueGreenId: blueGreenId,
+            resourceIdList: this.instanceIdList,
+            appSystemId: this.params.appSystemId,
+            appModuleId: this.params.appModuleId,
+            envId: this.params.envId
+          };
+          this.$api.deploy.applicationConfig.batchSaveInstanceBlueGreen(data).then(res => {
+            if (res && res.Status == 'OK') {
+              this.$t('message.savesuccess');
+              this.closeDialog(true);
+            }
+          });
+        } else {
+          this.closeDialog(false);
         }
-      });
+      } else {
+        this.closeDialog(false);
+      }
     },
-    closeDialog() {
-      this.$emit('close');
+    closeDialog(needRefresh) {
+      this.$emit('close', needRefresh);
     }
   },
   filter: {},
