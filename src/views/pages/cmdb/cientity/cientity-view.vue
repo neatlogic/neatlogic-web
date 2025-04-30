@@ -4,8 +4,10 @@
       :hideHeader="hideHeader"
       :enableCollapse="!ciEntityData.isVirtual"
       border="border"
-      :rightWidth="220"
+      @toggleSiderHide="toggleSiderHide"
     >
+      :rightWidth="220"
+      >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
@@ -239,7 +241,7 @@
                 <div v-else-if="showContent === 'tree'">
                   <CiEntityTree
                     v-if="ciEntityData.id"
-                    ref="CiEntityTree"
+                    ref="ciEntityTree"
                     :ciEntityId="ciEntityData.id"
                     :ciId="ciEntityData.ciId"
                     :rootCiEntity="ciEntityData"
@@ -345,6 +347,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toggleSiderHide(isSiderHide) {
+      this.$nextTick(() => {
+        if (this.$refs['ciEntityTree']) {
+          this.$refs['ciEntityTree'].resize();
+        }
+      });
+    },
     showCustomViewData(customView) {
       if (customView._type === 'data') {
         if (customView.type === 'scene') {
@@ -509,6 +518,9 @@ export default {
         if (this.$refs['ciEntityTopo']) {
           this.$refs['ciEntityTopo'].resizeSVG();
         }
+        if (this.$refs['ciEntityTree']) {
+          this.$refs['ciEntityTree'].resize();
+        }
       }, 300);
     }
   },
@@ -575,6 +587,9 @@ export default {
         window.setTimeout(() => {
           if (this.$refs['ciEntityTopo']) {
             this.$refs['ciEntityTopo'].resizeSVG();
+          }
+          if (this.$refs['ciEntityTree']) {
+            this.$refs['ciEntityTree'].resize();
           }
         }, 300);
       }

@@ -39,19 +39,10 @@
           "
         ></TsFormSwitch>
       </div>
-      <!-- <div class="action-item">
-        <span :class="{ 'text-href': currentLayout === 'antv-dagre' }" @click="setLayout('antv-dagre')">层次布局</span>
-      </div>
-      <div class="action-item">
-        <span :class="{ 'text-href': currentLayout === 'circular' }" @click="setLayout('circular')">环形布局</span>
-      </div>
-      <div class="action-item">
-        <span :class="{ 'text-href': currentLayout === 'concentric' }" @click="setLayout('concentric')">环形布局</span>
-      </div> -->
     </div>
     <Loading v-if="isLoading" :loadingShow="true" type="fix"></Loading>
     <div style="position: relative">
-      <div ref="container" :class="{ padding: mode === 'window' }" style="height: calc(100vh - 170px); width: 100%"></div>
+      <div ref="container" class="pr-md pl-md" style="height: calc(100vh - 170px); width: 100%"></div>
       <div
         v-if="showMinimap"
         ref="minimap"
@@ -143,8 +134,9 @@ export default {
           nodeSize: 40,
           nodeSpacing: 20,
           preventOverlap: true
-        },
-        'compact-box': {
+        }
+        //以下布局可能会导致死循环，先禁用
+        /*'compact-box': {
           type: 'compact-box',
           name: '径向布局',
           radial: true,
@@ -179,7 +171,7 @@ export default {
           getHGap: () => {
             return 20;
           }
-        }
+        }*/
       }
     };
   },
@@ -196,6 +188,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    //供外部调用
+    resize() {
+      //触发resize事件就可以让图重新渲染
+      window.dispatchEvent(new Event('resize'));
+    },
     closeDialog(needRefresh) {
       this.isShowDialog = false;
       this.currentCiEntityIdList = [];
