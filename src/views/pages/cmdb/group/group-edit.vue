@@ -240,7 +240,7 @@ export default {
             this.groupData.name = value;
           }
         },
-        isActive: {
+        /*isActive: {
           type: 'radio',
           label: this.$t('page.enable'),
           dataList: [
@@ -251,7 +251,7 @@ export default {
           onChange: value => {
             this.groupData.isActive = value;
           }
-        },
+        },*/
         type: {
           type: 'radio',
           label: this.$t('page.type'),

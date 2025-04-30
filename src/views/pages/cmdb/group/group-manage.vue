@@ -178,7 +178,7 @@ export default {
           key: 'name',
           title: '名称'
         },
-        { key: 'isActive', title: '是否激活' },
+        //{ key: 'isActive', title: '是否激活' },
         { key: 'typeName', title: '类型' },
         { key: 'ciList', title: '关联模型' },
         { key: 'auth', title: '授权' },
