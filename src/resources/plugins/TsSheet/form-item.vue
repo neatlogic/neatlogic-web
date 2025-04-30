@@ -97,6 +97,7 @@
         :isCustomValue="isCustomValue"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
         :externalData="externalData"
+        :historyValue="isCustomValue ? formItemValue : ''"
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
@@ -200,6 +201,7 @@ export default {
       default: () => {}
     },
     rowUuid: { type: String } //行uuid，表格组件引用时需要
+    
   },
   data() {
     return {
