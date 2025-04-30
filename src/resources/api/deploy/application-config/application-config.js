@@ -84,6 +84,10 @@ const applicationConfig = {
     // 保存环境实例
     return axios.post('/api/rest/deploy/app/config/instance/save', params);
   },
+  deleteEnvInstance(params) {
+    // 删除环境实例
+    return axios.post('/api/rest/deploy/app/config/instance/delete', params);
+  },
   saveAppTree(params) {
     // 保存应用配置树（应用层）
     return axios.post('/api/rest/deploy/app/config/app/save', params);
@@ -155,6 +159,10 @@ const applicationConfig = {
   saveInstanceBlueGreen(params) {
     // 保存蓝绿集
     return axios.post('/api/rest/deploy/app/instance/bluegreen/save', params);
+  },
+  batchSaveInstanceBlueGreen(params) {
+    // 保存蓝绿集
+    return axios.post('/api/rest/deploy/app/instance/bluegreen/batchsave', params);
   }
 };
 
