@@ -176,6 +176,16 @@
         :ciId="ciId"
         @close="closeTopoTemplateDialog"
       ></CiTopoTemplateEdit>
+      <CiEntityDialog
+        v-if="isShowCiEntity"
+        :ciId="currentCiId"
+        :ciEntityId="currentCiEntityId"
+        @close="
+          isShowCiEntity = false;
+          currentCiId = null;
+          currentCiEntityId = null;
+        "
+      ></CiEntityDialog>
     </div>
   </div>
 </template>
@@ -193,6 +203,7 @@ export default {
     D3Tooltip: () => import('../asset/d3/d3-tooltip.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
+    CiEntityDialog: () => import('@/views/pages/cmdb/cientity/cientity-detail-dialog.vue'),
     CiTopoTemplateEdit: () => import('@/views/pages/cmdb/ci/ci-topo-template-edit-dialog.vue')
   },
   props: {
@@ -206,6 +217,9 @@ export default {
   },
   data() {
     return {
+      isShowCiEntity: false,
+      currentCiId: null,
+      currentCiEntityId: null,
       isShowFilter: false,
       keyword: '',
       maxLevel: 5,
@@ -720,9 +734,12 @@ export default {
     toCiEntityView(ciId, ciEntityId) {
       if (ciId && ciEntityId) {
         if (this.mode === 'window') {
-          this.$router.push({
+          /*this.$router.push({
             path: '/ci/' + ciId + '/cientity-view/' + ciEntityId
-          });
+          });*/
+          this.isShowCiEntity = true;
+          this.currentCiId = ciId;
+          this.currentCiEntityId = ciEntityId;
         } else {
           this.$emit('click', ciId, ciEntityId);
         }

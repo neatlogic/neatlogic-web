@@ -1165,7 +1165,7 @@ const methods = {
       return '';
     }
     const matchedItem = FONT_UNICODE_LIST.find(item => item.css === className);
-    return matchedItem ? matchedItem.hexCodepoint : '';
+    return matchedItem && String.fromCharCode(matchedItem.hexCodepoint);
   }
 };
 export default methods;

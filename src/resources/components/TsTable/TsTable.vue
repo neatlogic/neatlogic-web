@@ -845,7 +845,7 @@ export default {
           }
         }
         this.$forceUpdate();
-        this.getSelectList();
+        this.getSelectList(); 
       }
     },
     toggleExpand(row) {
@@ -1336,7 +1336,7 @@ export default {
             this.activeAutoScroll();
           }
         });
-        this.getSelectList();
+        //this.getSelectList();暂时注释，不注释会导致getSelect方法调用两次，先观察会影响什么功能再说
       },
       deep: true,
       immediate: true
