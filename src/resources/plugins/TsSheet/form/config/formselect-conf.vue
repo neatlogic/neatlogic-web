@@ -39,7 +39,13 @@
       required
     >
       <div class="radius-sm padding-md" :class="validClass('dataList')">
-        <StaticDataEditor v-model="config.dataList" :disabled="disabled"></StaticDataEditor>
+        <StaticDataEditor
+          :value="config.dataList"
+          :disabled="disabled"
+          @input="(val)=>{
+            changeDataList(val);
+          }"
+        ></StaticDataEditor>
       </div>
     </TsFormItem>
     <TsFormItem
@@ -277,6 +283,33 @@ export default {
         this.config.hiddenFieldList = this.config.hiddenFieldList.filter(item => {
           return item.uuid != val;
         });
+      }
+      this.$set(this.config, 'defaultValue', null);
+    },
+    changeDataList(val) {
+      this.$set(this.config, 'dataList', val);
+      if (val && val.length > 0) {
+        if (!this.$utils.isEmpty(this.config.defaultValue)) {
+          if (this.config.defaultValue instanceof Array) {
+            let list = [];
+            this.config.defaultValue.forEach(d => {
+              if (val.find(v => v.value == d.value && v.text == d.text)) {
+                list.push(d);
+              }
+            });
+            if (list.length > 0) {
+              this.$set(this.config, 'defaultValue', list);
+            } else {
+              this.$set(this.config, 'defaultValue', null);
+            }
+          } else {
+            if (!val.find(v => v.value == this.config.defaultValue.value && v.text == this.config.defaultValue.text)) {
+              this.$set(this.config, 'defaultValue', null);
+            }
+          }
+        }
+      } else {
+        this.$set(this.config, 'defaultValue', null);
       }
     }
   },
