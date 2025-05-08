@@ -68,6 +68,16 @@ export default {
             }
           }
         }
+      } else if (this.config.dataSource === 'tag') {
+        if (!this.config.tagKey) {
+          errorList.push({field: 'tagKey', error: $t('form.placeholder.pleaseselect', {'target': $t('page.tag')})});
+        }
+        if (!this.config.tableKey) {
+          errorList.push({field: 'tableKey', error: $t('form.placeholder.pleaseselect', {'target': $t('term.framework.tablecomponent')})});
+        }
+        if (!this.config.mapping.value || !this.config.mapping.text) {
+          errorList.push({field: 'mapping', error: $t('form.placeholder.pleaseselect', {'target': $t('page.fieldmapping')})});
+        }
       }
       return errorList;
     }

@@ -161,6 +161,15 @@
         ></DataSourceFilter>
       </div>
     </TsFormItem>
+    <template v-if="config.dataSource === 'tag'">
+      <TagSourceSetting
+        :config="config"
+        :disabled="disabled"
+        :extendConfigList="extendConfigList"
+        :error="error"
+        class="mb-nm"
+      ></TagSourceSetting>
+    </template>
     <!--<TsFormItem v-if="(config.dataSource === 'matrix' && config.matrixUuid) || (config.dataSource === 'static' && validatedDataList.length > 0)" label="默认值" labelPosition="top">
       <TsFormSelect
         v-model="config.defaultValue"
@@ -186,7 +195,8 @@ export default {
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     StaticDataEditor: () => import('./common/static-data-editor.vue'),
-    DataSourceFilter: () => import('./common/data-source-filter.vue')
+    DataSourceFilter: () => import('./common/data-source-filter.vue'),
+    TagSourceSetting: () => import('./common/tag-source-setting.vue')
   },
   extends: base,
   props: {},
@@ -194,7 +204,8 @@ export default {
     return {
       dataSourceList: [
         { value: 'static', text: this.$t('page.staticdatasource') },
-        { value: 'matrix', text: this.$t('page.matrix') }
+        { value: 'matrix', text: this.$t('page.matrix') },
+        { value: 'tag', text: this.$t('page.tag'), description: '数据来源为扩展数据'}
       ],
       defaultValueTypeList: [
         { value: 'self', text: this.$t('page.custom') },
@@ -250,6 +261,8 @@ export default {
     },
     clearConfigData() {
       this.$set(this.config, 'dataList', []);
+      this.$set(this.config, 'tagKey', '');
+      this.$set(this.config, 'tableKey', '');
       this.$set(this.config.mapping, 'value', '');
       this.$set(this.config.mapping, 'text', '');
       this.$set(this.config, 'sourceColumnList', []);

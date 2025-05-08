@@ -101,6 +101,66 @@ export default {
       } else {   
         return value;  
       }
+    },
+    getFormData(formData) {
+      const formItemList = [];
+      for (let key in formData) {
+        const formitem = this.formItemList.find(d => d.uuid === key);
+        if (formitem) {
+          formItemList.push({
+            attributeUuid: key,
+            key: formitem.key,
+            handler: formitem.handler,
+            dataList: formData[key]
+          });
+        }
+      }
+      return formItemList;
+    },
+    getFormCustomexend(formData) {
+      let list = [];
+      let currentData = this.getFormData(formData);
+      if (!this.$utils.isEmpty(this.extendConfigList)) {
+        this.extendConfigList.forEach(item => {
+          this.$ = {};
+          try {
+            if (item.extendMethods) {
+              // eslint-disable-next-line no-eval
+              const dataMethods = eval('(' + item.extendMethods + ')');
+              Object.keys(dataMethods).forEach(methodsName => {
+                if (typeof dataMethods[methodsName] === 'function' && !this.$.methodsName) {
+                  this.$[methodsName] = dataMethods[methodsName].bind(this);
+                }
+              });
+              if (currentData) {
+                let outinpuData = this.$.main(item.attributeList, currentData);
+                list.push(...outinpuData);
+              }
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        });
+      }
+      return list;
+    },
+    getTagDataList(formData) {
+      let list = this.getFormCustomexend(formData);
+      let dataList = [];
+      if (!this.$utils.isEmpty(list)) {
+        let findItem = list.find(item => item.tag === this.config.tagKey && item.key === this.config.tableKey);
+        if (findItem) {
+          findItem.dataList.forEach(item => {
+            if (item[this.config.mapping.value] && !dataList.find(d => d.value === item[this.config.mapping.value])) {
+              dataList.push({
+                value: item[this.config.mapping.value],
+                text: item[this.config.mapping.text]
+              });
+            }
+          });
+        }
+      }
+      return dataList;
     }
   },
   filter: {},
@@ -230,6 +290,8 @@ export default {
             }
           }
         }
+      } else if (this.config.dataSource === 'tag') {
+        setting.dataList = this.getTagDataList(this.formData);
       } else {
         setting.showName = 'text';
         setting.dataList = this.validatedDataList;

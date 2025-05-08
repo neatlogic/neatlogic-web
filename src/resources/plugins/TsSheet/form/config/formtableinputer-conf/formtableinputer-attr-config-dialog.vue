@@ -246,6 +246,15 @@
                 :formItemList="formItemList"
               ></FormtableinputDataSource>
             </template>
+            <template v-else-if="propertyLocal.config.dataSource === 'tag'">
+              <TagSourceSetting
+                ref="formitem_tag"
+                :config="propertyLocal.config"
+                :extendConfigList="extendConfigList"
+                labelPosition="right"
+                class="mb-nm"
+              ></TagSourceSetting>
+            </template>
             <TsFormItem v-if="propertyLocal.handler === 'formselect'" :label="$t('page.inputtip')">
               <TsFormInput v-model="propertyLocal.config.placeholder" :maxlength="50"></TsFormInput>
             </TsFormItem>
@@ -457,7 +466,8 @@ export default {
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
     FormtableinputDataSource: () => import('./formtableinput-data-source.vue'),
     ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue'),
-    ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue')
+    ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue'),
+    TagSourceSetting: () => import('../common/tag-source-setting.vue')
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -475,7 +485,11 @@ export default {
       default: () => []
     },
     formItemUuid: String,
-    source: { type: String, default: '' } //表单组件配置来源：scene(场景)
+    source: { type: String, default: '' }, //表单组件配置来源：scene(场景)
+    extendConfigList: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
@@ -518,7 +532,8 @@ export default {
       dataSourceList: [
         { value: 'static', text: this.$t('page.staticdatasource') },
         { value: 'matrix', text: this.$t('page.matrix') },
-        { value: 'formtableinputer', text: this.$t('term.framework.formtableinputercomponent') }
+        { value: 'formtableinputer', text: this.$t('term.framework.formtableinputercomponent') },
+        { value: 'tag', text: this.$t('page.tag')}
       ],
       formConfig: [
         {

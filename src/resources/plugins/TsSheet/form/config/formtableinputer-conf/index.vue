@@ -158,6 +158,7 @@
       :formItemList="formItemList"
       :formItemUuid="formItem.uuid"
       :source="source"
+      :extendConfigList="extendConfigList"
       @close="closeAttrConfigDialog"
     ></AttrConfigDialog>
   </div>

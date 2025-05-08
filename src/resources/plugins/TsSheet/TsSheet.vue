@@ -316,6 +316,7 @@
                   :formExtendData="formExtendData"
                   :isClearSpecifiedAttr="isClearSpecifiedAttr"
                   :externalData="externalData"
+                  :extendConfigList="extendConfigList"
                   :rowUuid="rowUuid"
                   class="padding-xs"
                   @changeConfig="addHistory()"
@@ -517,7 +518,12 @@ export default {
       type: Object,
       default: () => {}
     },
-    rowUuid: String //表单子组件行uuid
+    rowUuid: String, //表单子组件行uuid
+    defaultExtendConfigList: {
+      // 扩展配置列表
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
@@ -561,7 +567,8 @@ export default {
       currentEventItem: null, //当前单元格获取的新组件
       actionType: '', //当前操作类型,'add'新增组件，'copy'复制组件
       windowKeypressHandler: null, // 用于存储事件处理函数的引用
-      formStyleData: {} //表单样式设置
+      formStyleData: {}, //表单样式设置
+      extendConfigList: this.defaultExtendConfigList || [] //扩展配置列表
     };
   },
   beforeCreate() {
@@ -702,6 +709,9 @@ export default {
     //初始化表格
     initSheet() {
       this.hideComponentList = this.value?.hideComponentList || [];
+      if (this.value && this.value.formCustomExtendConfig && !this.$utils.isEmpty(this.value.formCustomExtendConfig.extendConfigList)) {
+        this.extendConfigList = this.value.formCustomExtendConfig.extendConfigList;
+      }
       if (this.value && this.value.lefterList && this.value.headerList && this.value.tableList) {
         /**
          * 编辑模式下，直接将外部数据赋值给config，这样在外部对数据做了修改，也能触发表格控件发生变化。

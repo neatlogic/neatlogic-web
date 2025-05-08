@@ -33,6 +33,11 @@ export default {
       // 外部数据，非表单数据，例如工单上报人数据等
       type: Object,
       default: () => {}
+    },
+    extendConfigList: {
+      // 扩展配置列表
+      type: Array,
+      default: () => []
     }
   },
   data() {

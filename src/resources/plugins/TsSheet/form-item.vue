@@ -71,6 +71,7 @@
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
         :externalData="externalData"
         :rowUuid="rowUuid"
+        :extendConfigList="extendConfigList"
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
@@ -199,7 +200,11 @@ export default {
       type: Object,
       default: () => {}
     },
-    rowUuid: { type: String } //行uuid，表格组件引用时需要
+    rowUuid: { type: String }, //行uuid，表格组件引用时需要
+    extendConfigList: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
