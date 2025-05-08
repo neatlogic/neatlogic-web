@@ -72,7 +72,7 @@ export default {
     return {
       isEditShow: false,
       currentSubscribeId: null,
-      searchParam: { ignoreServerId: true },
+      searchParam: { },
       subscribeData: {},
       theadList: [
         {
