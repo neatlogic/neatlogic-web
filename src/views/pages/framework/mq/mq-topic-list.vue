@@ -13,6 +13,10 @@
         <span v-if="row.isActive == 1" class="text-success">{{ $t('page.yes') }}</span>
         <span v-else class="text-grey">{{ $t('page.no') }}</span>
       </template>
+      <template v-slot:type="{ row }">
+        <span v-if="row.isEmbed">系统主题</span>
+        <span v-else>自定义主题</span>
+      </template>
       <template v-slot:handlerName="{ row }">
         <span>{{ row.handlerName }}</span>
         <Tooltip
@@ -37,7 +41,7 @@
               ></TsFormSwitch>
             </li>
             <li @click="testTopic(row)">{{ $t('page.test') }}</li>
-            <li v-if="!row.isEmbed" @click="editTopic(row)">{{ $t('page.edit') }}</li>
+            <li @click="editTopic(row)">{{ $t('page.edit') }}</li>
             <li v-if="!row.isEmbed" @click="deleteTopic(row)">{{ $t('page.delete') }}</li>
           </ul>
         </div>
@@ -73,6 +77,7 @@ export default {
         theadList: [
           { key: 'name', title: this.$t('page.uniquekey') },
           { key: 'label', title: this.$t('page.name') },
+          {key: 'type', title: this.$t('page.type')},
           { key: 'handlerName', title: this.$t('term.framework.mqhandler') },
           { key: 'isActive', title: this.$t('page.enable') },
           { key: 'action', title: '' }
