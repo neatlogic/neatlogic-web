@@ -10,7 +10,7 @@
         <span class="tsfont-plus text-action" @click="addRoot()">{{ $t('page.rootdirectory') }}</span>
       </template>
       <template v-slot:topLeft>
-        <span>{{ catalogName }}---{{ childrenCount }}</span>
+        <span>{{ catalogName }}</span>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
