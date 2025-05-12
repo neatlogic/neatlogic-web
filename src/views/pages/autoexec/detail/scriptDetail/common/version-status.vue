@@ -23,6 +23,7 @@
                 <CommonStatus v-if="currentVersion.statusVo" :statusValue="currentVersion.statusVo.value" :statusName="currentVersion.statusVo.text"></CommonStatus>
               </div>
             </div>
+            <div v-if="currentVersion.title" class="title">{{ currentVersion.title }}</div>
             <div class="text-tip fz10">
               <span class="user overflow">
                 <UserCard v-bind="currentVersion.lcuVo" hideAvatar></UserCard>
@@ -76,6 +77,7 @@
                 <div class="version-content-top">
                   <div>{{ $t('page.versions') }}{{ row.version }}</div>
                 </div>
+                <div v-if="row.title" class="title">{{ row.title }}</div>
                 <div class="text-tip fz10">
                   <span class="user overflow">
                     <UserCard v-bind="row.lcuVo" hideAvatar></UserCard>
