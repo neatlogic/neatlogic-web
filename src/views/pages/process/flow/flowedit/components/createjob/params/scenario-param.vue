@@ -198,9 +198,7 @@ export default {
         let dataList = [];
         if (this.allFormitemList && this.allFormitemList.length > 0) {
           if (type === 'formCommonComponent') { //表单普通组件
-            dataList = this.allFormitemList.filter(item => {
-              return item.handler != 'formtableselector' && item.handler != 'formtableinputer' && item.handler != 'formcube';
-            });
+            dataList = this.$utils.deepClone(this.allFormitemList);
           } else if (type === 'formTableComponent') { //table组件（表格数据组件、表单选择组件）
             dataList = this.allFormitemList.filter(item => {
               return item.handler === 'formtableselector' || item.handler === 'formtableinputer';
