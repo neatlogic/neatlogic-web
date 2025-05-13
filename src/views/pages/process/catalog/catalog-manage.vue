@@ -217,6 +217,7 @@ export default {
             this.catalogName = this.$t('dialog.title.edittarget', { target: this.$t('term.process.catalog') });
             this.channelData.parentUuid = node.parentUuid; // 编辑服务
             this.channelData.uuid = node.uuid;
+            this.childrenCount = node.childrenCount;
           }
         }
         return false;
@@ -427,7 +428,7 @@ export default {
   },
   computed: {
     handleClassName() {
-      return !!(!(this.childrenCount == undefined || this.childrenCount == 0) || this.disabledConfig.saving);
+      return this.childrenCount > 0 || this.disabledConfig.saving;
     }
   },
   watch: {}

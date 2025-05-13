@@ -1343,7 +1343,8 @@
     "tagentupgrade": "升级包管理",
     "tagentupgradepkg": "升级包",
     "selecttagentupgradepkg": "选择已有的升级包",
-    "tagentuploadupgradepkg": "上传升级包"
+    "tagentuploadupgradepkg": "上传升级包",
+    "versionremarks": "版本备注"
   },
   "knowledge": {
     "document": "文档",
