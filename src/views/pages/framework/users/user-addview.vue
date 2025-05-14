@@ -646,8 +646,7 @@ export default {
       }
       this.formShow = true;
       let data = {
-        userUuid: id,
-        isRuleRole: false
+        userUuid: id
       };
       this.$api.framework.user.getUserForEdit(data).then(res => {
         if (res.Status == 'OK') {
@@ -661,19 +660,6 @@ export default {
             });
           }
           this.teamRoleList = row.teamRoleList;
-          // 用户组角色主要用户回显，删除id，后端是动态生成的，为了处理下榻页面返回时，数据对比的问题
-          // this.teamRoleList.forEach((v) => {
-          //   if (v.id) {
-          //     delete v.id;
-          //   }
-          //   if (v && v.teamList && v.teamList.length > 0) {
-          //     v.teamList.forEach((team) => {
-          //       if (team.id) {
-          //         delete team.id;
-          //       } 
-          //     });
-          //   }
-          // });
           let obj = this.formData.find(d => d.name === 'teamUuidList');
           if (obj) {
             obj.value = row.teamUuidList;
