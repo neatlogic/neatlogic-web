@@ -111,7 +111,9 @@
         <span v-else>-</span>
       </template>
       <template v-slot:isModified="{row}">
-        {{ row.isModified == 1?$t('page.yes'):$t('page.no') }}
+        <span :class="{'text-warning': row.isModified == 1,'':row.isModified == 0}">
+          {{ row.isModified == 1?$t('page.yes'):$t('page.no') }}
+        </span>
       </template>
       <template v-slot:blueGreenName="{ row }">
         <span v-if="row && row.extraInfo && row.extraInfo.blueGreenName">{{ row.extraInfo.blueGreenName }}({{ row.extraInfo.blueGreenSort }})</span>
@@ -372,7 +374,7 @@ export default {
     if (this.phaseData.execMode == 'sqlfile') {
       // 添加发布版本字段
       this.theadList.splice(4, 0, {
-        title: '是否已更新',
+        title: this.$t('term.deploy.ismodified'),
         key: 'isModified'
       });
     }
