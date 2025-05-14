@@ -26,6 +26,7 @@
         :multiple="true"
         :transfer="true"
         :groupList="['user', 'role', 'team']"
+        :disabled="disabled"
         @on-change="val => {
           setConfig('viewPasswordAuthorityList', val);
         }"

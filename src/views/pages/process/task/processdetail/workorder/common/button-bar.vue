@@ -104,7 +104,7 @@
             {{ actionConfig.copyprocesstask }}
           </DropdownItem>
           <!-- 编辑表单 -->
-          <DropdownItem v-if="processTaskConfig && processTaskConfig.formConfig && $AuthUtils.hasRole('PROCESSTASK_MODIFY')" @click.native="editForm()">
+          <DropdownItem v-if="processTaskConfig && processTaskConfig.formConfig && ($AuthUtils.hasRole('PROCESSTASK_MODIFY') || actionConfig.update)" @click.native="editForm()">
             {{ $t('dialog.title.edittarget',{'target':$t('page.form')}) }}
           </DropdownItem>
           <!-- 转为知识 -->

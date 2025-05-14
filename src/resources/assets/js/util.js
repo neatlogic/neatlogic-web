@@ -34,6 +34,7 @@ import store from '@/resources/store';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
 const FONT_UNICODE_LIST = require('@/resources/assets/font/tsfonts/codes.json');
+const FONT_WOFF2_BASE64  = require('@/resources/assets/font/tsfonts/font/tsfont_woff2.json')
 const methods = {
   getCookie: function (name) {
     if (name) {
@@ -1166,6 +1167,18 @@ const methods = {
     }
     const matchedItem = FONT_UNICODE_LIST.find(item => item.css === className);
     return matchedItem && String.fromCharCode(matchedItem.hexCodepoint);
+  },
+  convertWoff2ToBase64() {
+    // 将woff2文件转换为base64
+    const fontWoff2Base64 = FONT_WOFF2_BASE64.woff2Base64;
+    return `@font-face {
+        font-family: 'tsfont';
+        src: url('data:font/woff2;charset=utf-8;base64,${fontWoff2Base64}') format('woff2');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+        max-width: 16px;
+      }`;
   }
 };
 export default methods;
