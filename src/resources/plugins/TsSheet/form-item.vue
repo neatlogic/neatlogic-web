@@ -200,8 +200,7 @@ export default {
       type: Object,
       default: () => {}
     },
-    rowUuid: { type: String } //行uuid，表格组件引用时需要
-    
+    rowUuid: { type: String } //行uuid，表格组件引用时需要    
   },
   data() {
     return {
