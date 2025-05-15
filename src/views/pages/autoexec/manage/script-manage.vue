@@ -261,7 +261,8 @@ export default {
         'generateToCombop': 'tsfont-tool',
         'copy': 'tsfont-copy',
         'export': 'tsfont-download',
-        'delete': 'tsfont-trash-o'
+        'delete': 'tsfont-trash-o',
+        'test': 'tsfont-test'
       },
       showEdit: false,
       editId: null,
@@ -494,7 +495,20 @@ export default {
         this.exportRow(row);
       } else if (type == 'delete') {
         this.deleteRow(item, row);
+      } else if (type == 'test') {
+        this.testRow(row);
       }
+    },
+    testRow(row) {
+      //跳转到测试页面
+      this.$router.push({
+        path: '/test-detail',
+        query: {
+          scriptId: row.id,
+          type: 'script',
+          execMode: row.execMode
+        }
+      });
     },
     close(isRefresh) {
       this.editId = null;

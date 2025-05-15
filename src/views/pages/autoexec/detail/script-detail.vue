@@ -332,7 +332,7 @@ export default {
         return false;
       }
       let data = this.saveData();
-      if (this.$utils.isSame(this.initData, data)) {
+      if (this.$utils.isSame(this.initData, data) || this.versionStatus === 'passed') {
         this.$router.push({
           path: '/test-detail',
           query: {

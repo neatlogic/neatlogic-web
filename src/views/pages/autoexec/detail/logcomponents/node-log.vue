@@ -15,7 +15,7 @@
           v-for="(log, index) in logContentList"
           :id="'content' + index"
           :key="index"
-          :class="log.anchor && log.anchor.replace(/[-\.\/]+?/gi, '_')"
+          :class="log.anchor && ('content_'+ log.anchor).replace(/[-\.\/]+?/gi, '_')"
           class="content-grid"
         >
           <div class="text-grey">{{ log.time }}</div>
@@ -301,7 +301,7 @@ export default {
     locationId: {
       handler: function(val) {
         if (val) {
-          this.$utils.jumpTo('.' + val, 'smooth', this.$refs['codeContent'], 'start');
+          this.$utils.jumpTo('.content_' + val, 'smooth', this.$refs['codeContent'], 'start');
         }
       }
     }
