@@ -2,7 +2,7 @@
   <div>
     <TsDialog
       v-bind="dialogSetting"
-      :title="isAddDbResource? $t('dialog.title.addtarget', {target: $t('page.database')}): $t('dialog.title.edittarget', {target: $t('page.database')})"
+      :title="isNewData? $t('dialog.title.addtarget', {target: $t('page.database')}): $t('dialog.title.edittarget', {target: $t('page.database')})"
       @on-ok="okDialog"
       @on-close="closeDialog"
     >
@@ -27,7 +27,7 @@ export default {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
-    isAddDbResource: {
+    isNewData: { // 是否新增数据
       type: Boolean,
       default: false
     },
@@ -61,9 +61,7 @@ export default {
           validateList: ['required'],
           multiple: false,
           transfer: true,
-          textName: 'label',
-          valueName: 'id',
-          disabled: !this.isAddDbResource,
+          disabled: !this.isNewData,
           dataList: []
         },
         {
@@ -86,7 +84,7 @@ export default {
           validateList: ['port']
         }
       ],
-      mainCi: null
+      ciId: null
     };
   },
   beforeCreate() {},
@@ -103,31 +101,35 @@ export default {
   destroyed() {},
   methods: {
     async initData() {
-      await this.getResourceEntityByCiid();
+      this.loadingShow = true;
+      await this.getResourceEntityByCiId();
       this.getCiList();
-      if (!this.$utils.isEmpty(this.dbResourceData)) {
+      if (!this.isNewData && !this.$utils.isEmpty(this.dbResourceData)) {
         this.$set(this.formValue, 'ciId', this.dbResourceData.typeId);
         this.$set(this.formValue, 'name', this.dbResourceData.name);
         this.$set(this.formValue, 'ip', this.dbResourceData.ip);
         this.$set(this.formValue, 'port', this.dbResourceData.port);
       }
+      this.$nextTick(() => {
+        this.loadingShow = false;
+      });
     },
-    getResourceEntityByCiid() {
+    getResourceEntityByCiId() {
       return this.$api.cmdb.applicationManage.getResourceEntityByName('scence_database_ip_port_env_appmodule').then(res => {
-        if (res.Return && res.Return.config && res.Return.config.mainCi) {
-          this.mainCi = res.Return.config.mainCi;
+        if (res.Return && res.Return.ciId) {
+          this.ciId = res.Return.ciId;
         }
       });
     },
     getCiList() {
-      if (!this.mainCi) {
+      if (!this.ciId) {
         return false;
       }
-      this.$api.common.updateCmdbMenu({ciNameList: [this.mainCi], isAbstract: 0}).then((res) => {
+      this.$api.cmdb.ci.getCiList({idList: [this.ciId], needChildren: 1, isAbstract: 0}).then((res) => {
         if (res && res.Status == 'OK') {
           this.formList.forEach((item) => {
             if (item.name == 'ciId') {
-              item.dataList = res.Return ? res.Return[0]['ciList'] : [];
+              item.dataList = res.Return || [];
             }
           });
         }
