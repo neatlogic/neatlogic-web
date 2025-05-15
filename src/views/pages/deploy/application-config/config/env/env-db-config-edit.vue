@@ -74,7 +74,7 @@
     </TsDialog>
     <DbResourceSettingDialog
       v-if="isShowDbResourceDialog"
-      :isNew="isAddDbResource"
+      :isNewData="isAddDbResource"
       :dbResourceData="dbResourceData"
       :params="params"
       @close="closeDbResourceSettingDialog"
