@@ -522,7 +522,7 @@ export default {
       this.isLoading = true;
       if (id && !this.dbResourceId) {
         this.$set(this.formValue, 'dbResourceId', id);
-        // this.changeDbResourceId(id);
+        this.changeDbResourceId(id);
       }
       this.isShowDbResourceDialog = false;
       this.$nextTick(() => {
