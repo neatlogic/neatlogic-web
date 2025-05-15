@@ -4,6 +4,8 @@
       ref="jobDetailContain"
       :siderWidth="258"
       :enableCollapse="true"
+      topLeftWidth="30%"
+      topRightWidth="70%"
       @toggleSiderHide="toggleSiderHide"
     >
       <template v-slot:navigation>
