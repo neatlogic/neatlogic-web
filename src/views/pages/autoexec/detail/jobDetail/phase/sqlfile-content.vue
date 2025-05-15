@@ -1,6 +1,23 @@
 
 <template>
-  <div class="content-main">
+  <div class="content-main sql-content">
+    <span class="action-item runner-show pl-nm pr-nm pt-nm text-right">
+      <Poptip transfer placement="bottom">
+        <span class="text-action">
+          <i class="tsfont-adapter pr-icon"></i><span>{{ $t('term.autoexec.actuatorinformation') }}</span>
+        </span>
+        <div slot="content">
+          <div>
+            <span class="text-title">{{ $t('page.name') }}</span>
+            <p class="text-default">{{ runnerData.name }}</p>
+          </div>
+          <div>
+            <span class="text-title">{{ $t('page.config') }}</span>
+            <p class="text-default">{{ runnerData.port }}</p>
+          </div>
+        </div>
+      </Poptip>
+    </span>
     <Tabs v-model="tabValue" class="tab-contain block-tabs2" :animated="false">
       <TabPane :label="$t('term.autoexec.standardoutput')" class="padding" name="standardOutput">
         <div style="display:grid;grid-template-columns:186px auto">
@@ -73,14 +90,14 @@ export default {
       isRefireDialogShow: false,
       interact: null, //配置waitinput对应的值
       timmer: null,
-      runnerData: null,
+      runnerData: {},
       nodeData: {},
       locationId: null //日志定位行id
     };
   },
   beforeCreate() {},
-  created() {
-    this.getRunner();
+  async created() {
+    await this.getRunner();
     this.getOperationList();
   },
   beforeMount() {},
@@ -124,12 +141,12 @@ export default {
         }
       });
     },
-    getRunner() {
+    async getRunner() {
       let params = {
         jobId: this.jobData.id,
         jobPhaseId: this.phaseData.id
       };
-      this.$api.autoexec.job.getRunnerByPhase(params).then(res => {
+      await this.$api.autoexec.job.getRunnerByPhase(params).then(res => {
         if (res.Return.runnerVo) {
           this.runnerData = {};
           this.runnerData.name = res.Return.runnerVo.name;
@@ -180,5 +197,15 @@ export default {
   width: 170px;
   border-width: 1px;
   border-style: solid;
+}
+.sql-content {
+  position: relative;
+  padding-top: 4px;
+}
+.runner-show{
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 </style>
