@@ -27,6 +27,10 @@ export default {
           key: 'statusVo'
         },
         {
+          title: this.$t('term.deploy.ismodified'),
+          key: 'isModified'
+        },
+        {
           title: this.$t('page.startstoptime'),
           width: 300,
           key: 'startTime'
@@ -34,6 +38,10 @@ export default {
         {
           title: this.$t('page.timecost'),
           key: 'costTime'
+        },
+        {
+          title: '',
+          key: 'action'
         }
       ]
     };

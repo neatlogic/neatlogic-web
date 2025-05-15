@@ -172,9 +172,8 @@
       <template v-slot:action="{ row }">
         <div class="tstable-action">
           <ul class="tstable-action-ul">
-            <li>
+            <li v-if="row.runnerHost && phaseData.execMode != 'sqlfile'">
               <Tooltip
-                v-if="row.runnerHost"
                 :transfer="true"
                 placement="bottom-start"
                 trigger="hover"
@@ -369,13 +368,6 @@ export default {
       this.theadList.splice(1, 0, {
         title: this.$t('term.deploy.blueSet'),
         key: 'blueGreenName'
-      });
-    }
-    if (this.phaseData.execMode == 'sqlfile') {
-      // 添加发布版本字段
-      this.theadList.splice(4, 0, {
-        title: this.$t('term.deploy.ismodified'),
-        key: 'isModified'
       });
     }
     if (this.jobData.isCanExecute) {
