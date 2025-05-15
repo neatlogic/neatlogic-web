@@ -43,6 +43,10 @@ const env = {
   getInstanceList(params) {
     // 实例列表
     return axios.post('/api/rest/deploy/app/module/env/auto/config/instance/search', params);
+  },
+  saveEnvDbResource(params) {
+    // 保存环境db资源
+    return axios.post('/api/rest/deploy/app/config/env/cientity/save', params);
   }
 };
 
