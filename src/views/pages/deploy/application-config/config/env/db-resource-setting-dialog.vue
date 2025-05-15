@@ -75,7 +75,7 @@ export default {
           name: 'ip',
           type: 'text',
           label: 'IP',
-          validateList: ['required', 'ip']
+          validateList: ['ip']
         },
         {
           name: 'port',
@@ -84,7 +84,8 @@ export default {
           validateList: ['port']
         }
       ],
-      ciId: null
+      ciId: null,
+      attrNameList: ['name', 'ip', 'port']
     };
   },
   beforeCreate() {},
@@ -103,6 +104,7 @@ export default {
     async initData() {
       this.loadingShow = true;
       await this.getResourceEntityByCiId();
+      await this.getAppInstanceCiAttrList(this.ciId);
       this.getCiList();
       if (!this.isNewData && !this.$utils.isEmpty(this.dbResourceData)) {
         this.$set(this.formValue, 'ciId', this.dbResourceData.typeId);
@@ -112,6 +114,36 @@ export default {
       }
       this.$nextTick(() => {
         this.loadingShow = false;
+      });
+    },
+    getAppInstanceCiAttrList(ciId) {
+      if (!this.ciId) {
+        return false; 
+      }
+      let params = {
+        isAll: 0,
+        attrNameList: this.attrNameList,
+        ciId: ciId
+      };
+      return this.$api.deploy.applicationConfig.getAppInstanceCiAttrList(params).then((res) => {
+        if (res.Status == 'OK') {
+          const attrObj = res.Return || {};
+          const validMap = {
+            name: ['name-special'],
+            ip: ['ip'],
+            port: ['port']
+          };
+          this.formList.forEach((item) => {
+            if (attrObj[item.name]) {
+              const attr = attrObj[item.name];
+              let validateList = validMap[item.name] || [];
+              if (attr.isRequired && attr.isRequired == 1) {
+                validateList.push('required');
+              } 
+              this.$set(item, 'validateList', validateList);
+            }
+          });
+        }
       });
     },
     getResourceEntityByCiId() {
