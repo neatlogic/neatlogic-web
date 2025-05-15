@@ -48,6 +48,7 @@ export default {
         dataList: [],
         border: 'border',
         dynamicUrl: '/api/rest/deploy/bluegreen/search',
+        params: {isActive: 1},
         rootName: 'tbodyList',
         dealDataByUrl: this.dealDataByUrl,
         transfer: true

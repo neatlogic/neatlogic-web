@@ -2144,7 +2144,8 @@
     "buildnopending": "To be built",
     "actuatorgrouptag": "Actuator group label",
     "blueset": "Blue green setting",
-    "blueSet": "Blue Green"
+    "blueSet": "Blue Green",
+    "ismodified": "Modified"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
