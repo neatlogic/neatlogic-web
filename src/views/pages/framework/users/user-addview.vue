@@ -15,7 +15,7 @@
       <div slot="topRight" class="top">
         <div class="bar-top">
           <div class="bar-top-right">
-            <div v-if="uuid == null">
+            <div v-if="$utils.isEmpty(uuid)">
               <Button v-show="current > 0" type="default" @click="current -= 1">{{ $t('page.previousstep') }}</Button>
               <Button v-show="current != 1" type="primary" @click="next()">{{ $t('page.thenextstep') }}</Button>
               <Button
@@ -33,12 +33,8 @@
         </div>
       </div>
       <div slot="content" class="content">
-        <div v-if="uuid == null">
+        <div v-if="$utils.isEmpty(uuid)">
           <div class="step">
-            <!-- <Steps :current="current" :status="stepStatus">
-              <Step title="基本信息" content=""></Step>
-              <Step title="授权" content=""></Step>
-            </Steps> -->
             <Steps :current="current" :status="stepStatus">
               <Step
                 v-for="(litem, lindex) in stepList"
@@ -61,7 +57,7 @@
                     :label="vipLevel"
                     class="vip-level-item"
                   >
-                    <img :src="getVipIconByLevel(vipLevel)" class="vip-icon">
+                    <img :src="getVipIconByLevel(vipLevel)" class="vip-icon" />
                   </Radio>
                 </RadioGroup>
               </template>
@@ -77,17 +73,17 @@
               type="primary"
               :loading="isLoading"
               @click="submit()"
-            >{{ $t('dialog.title.createtarget', {target: $t('page.user')}) }}</Button>
+            >{{ $t('dialog.title.createtarget', { target: $t('page.user') }) }}</Button>
           </div>
         </div>
         <div v-else style="heigth: 100%">
           <Tabs v-model="tabsName">
-            <TabPane :label="label1" name="user">
+            <TabPane :label="basicInfoTabLabelName" name="user">
               <div class="form">
                 <TsForm v-if="formShow" ref="userForm" :itemList="formData">
                   <template slot="vipLevel">
                     <RadioGroup v-model="formData[3].value" class="vip-level-item">
-                      <Radio :label="0" class="vip-level-item" :disabled="readonly?true:false">
+                      <Radio :label="0" class="vip-level-item" :disabled="readonly ? true : false">
                         <span>{{ $t('page.nothave') }}</span>
                       </Radio>
                       <Radio
@@ -95,9 +91,9 @@
                         :key="vipLevel"
                         :label="vipLevel"
                         class="vip-level-item"
-                        :disabled="readonly?true:false"
+                        :disabled="readonly ? true : false"
                       >
-                        <img :src="getVipIconByLevel(vipLevel)" class="vip-icon">
+                        <img :src="getVipIconByLevel(vipLevel)" class="vip-icon" />
                       </Radio>
                     </RadioGroup>
                   </template>
@@ -136,7 +132,7 @@
                 >{{ $t('page.save') }}</Button>
               </div>
             </TabPane>
-            <TabPane :label="label2" name="auth">
+            <TabPane :label="authTabLabelName" name="auth">
               <div v-if="authUserSelectList !== '{}'" class="auth">
                 <CommonAuth
                   v-if="!isRefreshCommonAuth"
@@ -207,13 +203,12 @@ export default {
   },
   props: [''],
   data() {
-    let _this = this;
     return {
       formData: [
         {
           type: 'text',
           name: 'uuid',
-          value: _this.uuid || null,
+          value: this.uuid || null,
           isHidden: true,
           disabled: true,
           label: 'uuid',
@@ -270,7 +265,7 @@ export default {
               message: this.$t('message.passcode')
             }
           ],
-          onChange: _this.psdChange
+          onChange: this.psdChange
         },
         {
           type: 'password',
@@ -289,7 +284,7 @@ export default {
               message: this.$t('message.passcode')
             }
           ],
-          onChange: _this.psdChange
+          onChange: this.psdChange
         },
         {
           type: 'email',
@@ -345,7 +340,7 @@ export default {
           width: '100%',
           transfer: true,
           groupList: ['role'],
-          onChange: _this.roleChange
+          onChange: this.roleChange
         },
         {
           type: 'slot',
@@ -376,11 +371,11 @@ export default {
       path: '', //跳转路径
       userData: null, //用户所有初始化数据
       userToken: '', //用户令牌
-      userTabsDataList: null, //用户基本信息数据
+      defaultUserDataTab: null, //用户基本信息数据
       userTabsAuthList: null, //用户授权信息数据
       submitModel: false, //提交成功模态框
-      label1: '',
-      label2: '',
+      basicInfoTabLabelName: '',
+      authTabLabelName: '',
       leaveName: '', //准备进入tabsname
       tabSaveTip: true,
       tabsaveModel: false,
@@ -398,9 +393,7 @@ export default {
       isRefreshCommonAuth: false // 是否刷新授权列表
     };
   },
-
   beforeCreate() {},
-
   created() {
     if (sessionStorage.getItem('useraddPrev')) {
       let prevsetting = JSON.parse(sessionStorage.getItem('useraddPrev'));
@@ -408,42 +401,64 @@ export default {
         this.prevPath = prevsetting;
       }
     }
-    let query = this.$route.query;
-
-    this.uuid = query.uuid || null;
-    this.userId = query.userId || null;
-    this.tabsName = query.key || null;
-    this.readonly = query.readonly || false;
-    if (this.readonly && this.uuid) {
-      let newConfig = this.formData.find(v => v.name === 'teamRoleList');
-      if (newConfig) {
-        newConfig.isHidden = false;
-      }
-    }
-    this.label1 = this.getLabel(this.$t('page.basicinfo'), 'user');
-    this.label2 = this.getLabel(this.$t('page.auth'), 'auth');
-    this.getRoleList();
-    this.getAuthList();
-    this.getProfile();
+    this.initData();
   },
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
+    initData() {
+      let { uuid = null, userId = null, key = null, readonly = false } = this.$route.query;
+      this.uuid = uuid;
+      this.userId = userId;
+      this.tabsName = key;
+      this.readonly = readonly;
+      this.handleDataByUuid();
+      this.handleReadonly();
+      this.basicInfoTabLabelName = this.getLabel(this.$t('page.basicinfo'), 'user');
+      this.authTabLabelName = this.getLabel(this.$t('page.auth'), 'auth');
+      this.getAuthList();
+      this.getProfile();
+    },
+    handleDataByUuid() {
+      if (!this.$utils.isEmpty(this.uuid)) {
+        this.getUserDetail(this.uuid);
+        this.getAuthSelect(this.uuid);
+        this.getUserToken(this.uuid);
+      }
+    },
+    handleReadonly() {
+      if (this.readonly) {
+        this.formData.forEach(item => {
+          item.disabled = true;
+        });
+        this.formData
+          .filter(d => d.name == 'roleUuidList' || d.name == 'teamUuidList')
+          .forEach(item => {
+            item.readonly = true;
+          });
+      } else {
+        this.formData.forEach(item => {
+          if (this.uuid && item.name == 'userId') {
+            item.disabled = true;
+          } else if (item.name != 'uuid') {
+            item.disabled = false;
+            item.readonly = false;
+          }
+        });
+      }
+      if (this.readonly && this.uuid) {
+        let findTeamRoleItem = this.formData.find(v => v.name === 'teamRoleList');
+        if (findTeamRoleItem) {
+          findTeamRoleItem.isHidden = false;
+        }
+      }
+    },
     //密码框改变
     psdChange: function(val) {
       if (this.userId != null) {
@@ -500,7 +515,6 @@ export default {
     },
     //下一步
     next() {
-      let _this = this;
       let data = this.$refs.userForm.getFormValue();
       if (!this.$refs.userForm.valid()) {
         this.stepStatus = 'error';
@@ -590,7 +604,7 @@ export default {
           .then(res => {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.savesuccess'));
-              this.userTabsDataList = this.$refs.userForm ? this.$refs.userForm.getFormValue() : null;
+              this.defaultUserDataTab = this.$refs.userForm ? this.$refs.userForm.getFormValue() : null;
               this.userData = this.getData();
             }
           })
@@ -618,7 +632,6 @@ export default {
     },
     //获取当前用户信息
     getUserDetail(id) {
-      let _this = this;
       let obj_name = this.formData.find(d => d.name === 'userId');
       let psd = this.formData.find(d => d.name === 'password');
       let newpwd = this.formData.find(d => d.name === 'confirmpwd');
@@ -633,10 +646,9 @@ export default {
       }
       this.formShow = true;
       let data = {
-        userUuid: id,
-        isRuleRole: false
+        userUuid: id
       };
-      this.$api.common.getUser(data).then(res => {
+      this.$api.framework.user.getUserForEdit(data).then(res => {
         if (res.Status == 'OK') {
           let row = res.Return;
           this.userDetail = row;
@@ -674,34 +686,16 @@ export default {
     //获取所有权限列表
     getAuthList: function() {
       let data = {};
-      let _this = this;
-      this.$api.common
-        .getAuthGrouplist(data)
-        .then(res => {
-          if (res.Status == 'OK') {
-            _this.authList = res.Return.authGroupList;
-            _this.$nextTick(() => {
-              setTimeout(() => {
-                _this.userData = _this.getData();
-                _this.userTabsDataList = _this.$refs.userForm.getFormValue();
-                _this.userTabsAuthList = JSON.parse(JSON.stringify(_this.$refs.commonAuth.authSelectList));
-              }, 500);
-            });
-          }
-        });
-    },
-    //获取角色列表
-    getRoleList: function() {
-      let data = {
-        needPage: false
-      };
-      this.$api.framework.role.roleList(data).then(res => {
+      this.$api.common.getAuthGrouplist(data).then(res => {
         if (res.Status == 'OK') {
-          let list = res.Return.tbodyList;
-          let newConfig = this.formData.find(d => d.name == 'roleUuidList');
-          if (newConfig) {
-            newConfig.dataList = list;
-          }
+          this.authList = res.Return.authGroupList;
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.userData = this.getData();
+              this.defaultUserDataTab = this.$refs.userForm?.getFormValue();
+              this.userTabsAuthList = JSON.parse(JSON.stringify(this.$refs.commonAuth.authSelectList));
+            }, 500);
+          });
         }
       });
     },
@@ -724,7 +718,7 @@ export default {
         if (this.tabsName != name) {
           if (name == 'auth') {
             let newData = this.$refs.userForm.getFormValue();
-            if (JSON.stringify(newData) == JSON.stringify(this.userTabsDataList)) {
+            if (this.$utils.isSame(newData, this.defaultUserDataTab)) {
               this.tabSaveTip = false; //可以跳转
             } else {
               this.tabSaveTip = true;
@@ -733,7 +727,7 @@ export default {
           }
           if (name == 'user') {
             let newData = this.$refs.commonAuth.authSelectList;
-            if (JSON.stringify(newData) == JSON.stringify(this.userTabsAuthList)) {
+            if (this.$utils.isSame(newData, this.userTabsAuthList)) {
               this.tabSaveTip = false; //可以跳转
             } else {
               this.tabSaveTip = true;
@@ -760,7 +754,6 @@ export default {
     },
     //自定义初始化tabs
     getLabel(label, name) {
-      var _this = this;
       return h => {
         return h(
           'div',
@@ -770,7 +763,7 @@ export default {
             },
             on: {
               click: e => {
-                var tip = _this.tabClick(name); // 判断条件是否满足
+                const tip = this.tabClick(name); // 判断条件是否满足
                 if (tip) {
                   e.stopPropagation(); // 不满足条件则阻止事件冒泡 本质是不让触发tab的on-click事件
                 }
@@ -872,46 +865,9 @@ export default {
       });
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {
-    uuid() {
-      if (this.uuid != undefined) {
-        let uuid = this.uuid;
-        this.getUserDetail(uuid);
-        this.getAuthSelect(uuid);
-        this.getUserToken(uuid);
-      }
-    },
-    // userId: function () {
-    //   if (this.userId != undefined) {
-    //     let userId = this.userId;
-    //   }
-    // },
-    readonly: function(newVal) {
-      if (newVal) {
-        this.formData.forEach(item => {
-          item.disabled = true;
-        });
-        this.formData
-          .filter(d => d.name == 'roleUuidList' || d.name == 'teamUuidList')
-          .forEach(item => {
-            item.readonly = true;
-          });
-      } else {
-        this.formData.forEach(item => {
-          if (this.uuid && item.name == 'userId') {
-            item.disabled = true;
-          } else if (item.name != 'uuid') {
-            item.disabled = false;
-            item.readonly = false;
-          }
-        });
-      }
-    }
   },
   //路由离开之前
   beforeRouteLeave(to, from, next, url) {
@@ -954,7 +910,7 @@ export default {
 </script>
 <style lang="less" scoped>
 @import '~@/resources/assets/css/framework/manage.less';
-.tsfont-arrow-right{
+.tsfont-arrow-right {
   font-size: 12px;
 }
 .user-addview {
