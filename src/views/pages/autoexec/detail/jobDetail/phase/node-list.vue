@@ -8,7 +8,7 @@
             <span class="action-item tsfont-minus-o" :class="{ disable: selectedNodeList.length <= 0 }" @click="ignoreNode()">{{ $t('page.ignore') }}</span>
             <span class="action-item tsfont-restart" :class="{ disable: selectedNodeList.length <= 0 }" @click="resetNode()">{{ $t('page.reset') }}</span>
             <span class="action-item tsfont-restart" :class="phaseData.status == 'running'?'disable':''" @click="resetAllNode()">{{ $t('page.resetall') }}</span>
-            <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">{{ $t('page.execute') }}</span>
+            <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">{{ $t('page.executeall') }}</span>
           </template>
           <template v-if="canExportNode">
             <span v-if="!downloadLoadingNode" v-download="downloadNodeUrl" class="action-item tsfont-download">{{ $t('term.autoexec.exportnode') }}</span>

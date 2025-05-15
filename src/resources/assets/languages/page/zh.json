@@ -1067,5 +1067,6 @@
   "actualpath": "实际路径",
   "currentjob": "当前作业",
   "incompleteinformation": "信息不完整",
-  "requiredparameterhasnullvalue": "必填参数项存在空值"
+  "requiredparameterhasnullvalue": "必填参数项存在空值",
+  "executeall": "执行所有"
 }
