@@ -110,6 +110,11 @@
         <span v-if="row && row.extraInfo && row.extraInfo.version">{{ row.extraInfo.version }}</span>
         <span v-else>-</span>
       </template>
+      <template v-slot:isModified="{row}">
+        <span :class="{'text-warning': row.isModified == 1,'':row.isModified == 0}">
+          {{ row.isModified == 1?$t('page.yes'):$t('page.no') }}
+        </span>
+      </template>
       <template v-slot:blueGreenName="{ row }">
         <span v-if="row && row.extraInfo && row.extraInfo.blueGreenName">{{ row.extraInfo.blueGreenName }}({{ row.extraInfo.blueGreenSort }})</span>
         <span v-else>-</span>
@@ -354,7 +359,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.jobData.extraInfo && this.jobData.extraInfo.sourceType == 'deploy') {
+    if (this.jobData.extraInfo && this.jobData.extraInfo.sourceType == 'deploy' && this.phaseData.execMode != 'sqlfile') {
       // 添加发布版本字段
       this.theadList.splice(1, 0, {
         title: this.$t('page.versions'),
@@ -364,6 +369,13 @@ export default {
       this.theadList.splice(1, 0, {
         title: this.$t('term.deploy.blueSet'),
         key: 'blueGreenName'
+      });
+    }
+    if (this.phaseData.execMode == 'sqlfile') {
+      // 添加发布版本字段
+      this.theadList.splice(4, 0, {
+        title: this.$t('term.deploy.ismodified'),
+        key: 'isModified'
       });
     }
     if (this.jobData.isCanExecute) {

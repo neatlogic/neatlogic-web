@@ -2141,7 +2141,8 @@
     "buildnopending": "待构建",
     "actuatorgrouptag": "执行器组标签",
     "blueset": "蓝绿设置",
-    "blueSet": "蓝绿"
+    "blueSet": "蓝绿",
+    "ismodified": "已修改"
   },
   "inspect": {
     "alarmprompt": "告警提示",
