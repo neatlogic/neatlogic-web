@@ -1066,5 +1066,6 @@
   "currentjob": "Current Job",
   "incompleteinformation": "incomplete information",
   "requiredparameterhasnullvalue": "The required parameter field has a null value",
-  "executeall": "Execute all"
+  "executeall": "Execute all",
+  "cache": "Cache"
 }
