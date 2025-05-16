@@ -17,30 +17,50 @@
             v-model="formValue"
             :item-list="formItemList"
           >
+            <template v-slot:dbResourceId>
+              <TsFormItem :label="$t('page.database')" :required="true">
+                <div class="flex-start">
+                  <TsFormSelect
+                    ref="formSelect"
+                    v-model="formValue.dbResourceId"
+                    v-bind="dbResourceSetting"
+                    style="flex: 1;"
+                    @first="addDbResource"
+                  >
+                  </TsFormSelect>
+                  <div v-if="formValue.dbResourceId">
+                    <span class="tsfont-edit text-tip-active pl-md" @click="editDbResource()"></span>
+                  </div>
+                </div>
+              </TsFormItem>
+            </template>
             <template v-slot:accountId>
-              <div class="action-icon text-right">
-                <template v-if="getDisabled">
-                  <Tooltip :content="$t('term.deploy.pleasechoosedatabase')" transfer>
-                    <span class="tsfont-rotate-right text-tip-active" :class="getDisabledClassName"></span>
-                  </Tooltip>
-                  <Tooltip :content="$t('term.deploy.pleasechoosedatabase')" transfer>
-                    <span class="tsfont-edit text-tip-active pl-md" :class="getDisabledClassName"></span>
-                  </Tooltip>
-                </template>
-                <template v-else>
-                  <span class="tsfont-rotate-right text-tip-active" @click="refreshAccountList"></span>
-                  <span class="tsfont-edit text-tip-active pl-md" :class="getDisabledClassName" @click="toAssetManageEditAccount"></span>
-                </template>
-              </div>
               <TsFormItem :label="$t('page.account')" :required="true">
-                <TsFormSelect
-                  ref="formSelect"
-                  v-model="formValue.accountId"
-                  v-bind="accountSetting"
-                  @first="toAssetManageEditAccount"
-                  @searchCallback="refreshSuccess()"
-                >
-                </TsFormSelect>
+                <div class="flex-start">
+                  <TsFormSelect
+                    ref="formSelect"
+                    v-model="formValue.accountId"
+                    v-bind="accountSetting"
+                    style="flex: 1;"
+                    @first="editAccount"
+                    @searchCallback="refreshSuccess()"
+                  >
+                  </TsFormSelect>
+                  <div class="pl-sm">
+                    <template v-if="getDisabled">
+                      <Tooltip :content="$t('term.deploy.pleasechoosedatabase')" transfer>
+                        <span class="tsfont-rotate-right text-tip-active" :class="getDisabledClassName"></span>
+                      </Tooltip>
+                      <Tooltip :content="$t('term.deploy.pleasechoosedatabase')" transfer>
+                        <span class="tsfont-edit text-tip-active pl-sm" :class="getDisabledClassName"></span>
+                      </Tooltip>
+                    </template>
+                    <template v-else>
+                      <span class="tsfont-rotate-right text-tip-active" @click="refreshAccountList"></span>
+                      <span class="tsfont-edit text-tip-active pl-sm" :class="getDisabledClassName" @click="editAccount"></span>
+                    </template>
+                  </div>
+                </div>
               </TsFormItem>
             </template>
           </TsForm>
@@ -52,6 +72,14 @@
         </div>
       </template>
     </TsDialog>
+    <DbResourceSettingDialog
+      v-if="isShowDbResourceDialog"
+      :isNewData="isAddDbResource"
+      :dbResourceData="dbResourceData"
+      :params="params"
+      @close="closeDbResourceSettingDialog"
+    ></DbResourceSettingDialog>
+    <AccountEditDialog v-if="isShowAccountEditDialog" :resourceId="resourceId" @close="closeAccountEditDialog"></AccountEditDialog>
   </div>
 </template>
 <script>
@@ -60,7 +88,9 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    DbResourceSettingDialog: () => import('./db-resource-setting-dialog.vue'),
+    AccountEditDialog: () => import('@/views/pages/cmdb/asset/components/account-edit-dialog')
   },
   props: {
     id: {
@@ -101,7 +131,6 @@ export default {
         validateList: ['required'],
         firstSelect: false
       },
-
       config: {},
       hasConfig: false,
       databaseList: [],
@@ -142,31 +171,9 @@ export default {
         },
         {
           name: 'dbResourceId',
-          type: 'select',
-          label: this.$t('page.database'),
-          validateList: ['required'],
-          dynamicUrl: '/api/rest/deploy/app/config/env/database/search',
-          params: {...this.params},
-          rootName: 'tbodyList',
-          firstSelect: false,
-          dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList); },
-          onChange: (dbResourceId) => {
-            this.getDBList(null);
-            if (dbResourceId) {
-              this.handleSpecialFields(dbResourceId);
-              this.dbResourceId = dbResourceId;
-              this.$set(this.accountSetting, 'disabled', false);
-              this.$set(this.accountSetting, 'disabledHoverTitle', '');
-              this.$set(this.accountSetting.params, 'resourceId', dbResourceId);
-              this.getAccountList();
-            } else {
-              this.dbResourceId = null;
-              this.$set(this.accountSetting, 'disabled', true);
-              this.$set(this.accountSetting, 'disabledHoverTitle', this.$t('form.placeholder.pleaseselect', {target: this.$t('page.database')}));
-              this.$set(this.accountSetting.params, 'resourceId', null);
-              this.$set(this.formValue, 'accountId', null); // 清空账号
-            }
-          }
+          type: 'slot',
+          label: '',
+          labelWidth: 1
         },
         {
           name: 'accountId',
@@ -283,7 +290,26 @@ export default {
           label: 'db2ProcTerminator',
           maxlength: 256
         }
-      ]
+      ],
+      dbResourceSetting: {
+        validateList: ['required'],
+        dynamicUrl: '/api/rest/deploy/app/config/env/database/search',
+        params: {...this.params},
+        rootName: 'tbodyList',
+        firstSelect: false,
+        firstLi: true,
+        firstText: this.$t('page.database'),
+        transfer: true,
+        dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList); },
+        onChange: (dbResourceId, item, selectItem) => {
+          this.changeDbResourceId(dbResourceId, selectItem);
+        }
+      },
+      dbResourceData: null,
+      isAddDbResource: false,
+      isShowDbResourceDialog: false,
+      isShowAccountEditDialog: false,
+      resourceId: null
     };
   },
   beforeCreate() {},
@@ -325,10 +351,14 @@ export default {
       if (nodeList && nodeList.length > 0) {
         nodeList.forEach(item => {
           databaseList.push({
+            ...item,
             text: this.getText(item),
             value: item.id
           });
         });
+        if (!this.dbResourceData && this.dbResourceId) {
+          this.dbResourceData = nodeList.find(item => item.id == this.dbResourceId);
+        }
       }
       return databaseList;
     },
@@ -438,12 +468,13 @@ export default {
     closeDialog(needRefresh = false) {
       this.$emit('close', needRefresh);
     },
-    toAssetManageEditAccount() {
-      // 跳转到资产清单页面，打开单个账号管理弹窗
+    editAccount() {
+      // 资产清单，打开单个账号管理弹窗
       if (this.getDisabled) {
         return false;
       }
-      window.open(HOME + '/cmdb.html#/asset-manage?resourceId=' + this.dbResourceId, '_blank');
+      this.resourceId = this.dbResourceId;
+      this.isShowAccountEditDialog = true;
     },
     refreshAccountList() {
       if (this.getDisabled) {
@@ -458,6 +489,51 @@ export default {
       this.$set(this.accountSetting, 'needCallback', false);
       if (this.accountSetting.params && this.accountSetting.params.hasOwnProperty('refreshUuid')) {
         delete this.accountSetting.params.refreshUuid;
+      }
+    },
+    changeDbResourceId(dbResourceId, selectItem) {
+      this.getDBList(null);
+      if (dbResourceId) {
+        this.handleSpecialFields(dbResourceId);
+        this.dbResourceId = dbResourceId;
+        this.$set(this.accountSetting, 'disabled', false);
+        this.$set(this.accountSetting, 'disabledHoverTitle', '');
+        this.$set(this.accountSetting.params, 'resourceId', dbResourceId);
+        this.getAccountList();
+        this.dbResourceData = selectItem;
+      } else {
+        this.dbResourceId = null;
+        this.$set(this.accountSetting, 'disabled', true);
+        this.$set(this.accountSetting, 'disabledHoverTitle', this.$t('form.placeholder.pleaseselect', {target: this.$t('page.database')}));
+        this.$set(this.accountSetting.params, 'resourceId', null);
+        this.$set(this.formValue, 'accountId', null); // 清空账号
+        this.dbResourceData = null;
+      }
+    },
+    addDbResource() {
+      this.isAddDbResource = true;
+      this.isShowDbResourceDialog = true;
+    },
+    editDbResource() {
+      this.isAddDbResource = false;
+      this.isShowDbResourceDialog = true;
+    },
+    closeDbResourceSettingDialog(id) {
+      this.isLoading = true;
+      if (id && !this.dbResourceId) {
+        this.$set(this.formValue, 'dbResourceId', id);
+        this.changeDbResourceId(id);
+      }
+      this.isShowDbResourceDialog = false;
+      this.$nextTick(() => {
+        this.isLoading = false;
+      });
+    },
+    closeAccountEditDialog(needFresh) {
+      this.resourceId = null;
+      this.isShowAccountEditDialog = false;
+      if (needFresh) {
+        this.refreshAccountList();
       }
     }
   },

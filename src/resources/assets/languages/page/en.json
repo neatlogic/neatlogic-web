@@ -1063,5 +1063,6 @@
   "actualpath": "actual path",
   "currentjob": "Current Job",
   "incompleteinformation": "incomplete information",
-  "requiredparameterhasnullvalue": "The required parameter field has a null value"
+  "requiredparameterhasnullvalue": "The required parameter field has a null value",
+  "executeall": "Execute all"
 }
