@@ -520,6 +520,7 @@ export default {
     },
     closeDbResourceSettingDialog(id) {
       this.isLoading = true;
+      this.dbResourceData = null;
       if (id && !this.dbResourceId) {
         this.$set(this.formValue, 'dbResourceId', id);
         this.changeDbResourceId(id);

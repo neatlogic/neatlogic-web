@@ -180,7 +180,7 @@ export default {
         ip: this.formValue.ip,
         port: this.formValue.port
       };
-      if (!this.$utils.isEmpty(this.dbResourceData)) {
+      if (!this.isNewData) {
         data.id = this.dbResourceData.id;
       }
       this.$api.deploy.env.saveEnvDbResource(data).then((res) => {
