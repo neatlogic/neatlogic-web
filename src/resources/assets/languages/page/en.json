@@ -1057,8 +1057,6 @@
   "copyerrorinfo": "Copy error message",
   "loadingfailed": "Load Fail",
   "topo": "Topology Map",
-  "movetothetop": "Move to the top level",
-  "movetothebottom": "Move to the bottom layer",
   "pastehere": "Paste here",
   "dragthecanvas": "Drag and drop canvas",
   "rubberband": "Frame Select",
