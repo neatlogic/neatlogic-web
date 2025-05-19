@@ -64,7 +64,8 @@ export default {
             },
             {
               text: this.$t('term.deploy.selectexistexample'),
-              value: 2
+              value: 2,
+              description: '1. 应用环境和关联模块数据为空的实例\n2. 应用环境为当前环境且关联模块数据为空的实例\n3. 应用环境数据为空且关联模块为当前模块的实例'
             }
           ],
           validateList: ['required'],
@@ -103,7 +104,7 @@ export default {
           multiple: true,
           transfer: true,
           validateList: ['required'],
-          params: {...this.params, isAutoConfig: 0},
+          params: {...this.params},
           rootName: 'tbodyList',
           dynamicUrl: 'api/rest/deploy/app/config/instance/search',
           dealDataByUrl: (list) => this.dealDataByUrl(list)
