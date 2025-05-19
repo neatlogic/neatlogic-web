@@ -98,5 +98,9 @@ export default {
   },
   clearUserSessionCache() { //删除用户会话缓存
     return axios.post('/api/rest/user/session/cache/clear');
+  },
+  getUserForEdit(params) {
+    // 获取用户信息(编辑页面回显专用)
+    return axios.post('api/rest/user/get/foredit', params);
   }
 };

@@ -64,7 +64,8 @@ export default {
             },
             {
               text: this.$t('term.deploy.selectexistexample'),
-              value: 2
+              value: 2,
+              description: '1. 应用环境和关联模块数据为空的实例\n2. 应用环境为当前环境且关联模块数据为空的实例\n3. 应用环境数据为空且关联模块为当前模块的实例'
             }
           ],
           validateList: ['required'],
@@ -91,8 +92,6 @@ export default {
           validateList: ['required'],
           multiple: false,
           transfer: true,
-          textName: 'label',
-          valueName: 'id',
           disabled: this.isEdit,
           dataList: []
         }
@@ -105,12 +104,13 @@ export default {
           multiple: true,
           transfer: true,
           validateList: ['required'],
-          params: {...this.params, isAutoConfig: 0},
+          params: {...this.params},
           rootName: 'tbodyList',
           dynamicUrl: 'api/rest/deploy/app/config/instance/search',
           dealDataByUrl: (list) => this.dealDataByUrl(list)
         }
-      ]
+      ],
+      ciId: null
     };
   },
   beforeCreate() {},
@@ -118,6 +118,7 @@ export default {
   beforeMount() {},
   async mounted() {
     await this.getAppInstanceCiAttrList();
+    await this.getResourceEntityByCiId();
     this.formList = this.exampleList.concat(this.addformList);
     this.$set(this.formValue, 'instance', 1);
     if (this.isEdit == true && this.instanceData) {
@@ -176,12 +177,22 @@ export default {
       }
       return dataList;
     },
+    getResourceEntityByCiId() {
+      return this.$api.cmdb.applicationManage.getResourceEntityByName('scence_appinstance_env_appmodule_appsystem').then(res => {
+        if (res.Return && res.Return.ciId) {
+          this.ciId = res.Return.ciId;
+        }
+      });
+    },
     getCiList() {
-      this.$api.common.updateCmdbMenu({ciNameList: ['AppIns'], isAbstract: 0}).then((res) => {
+      if (!this.ciId) {
+        return false;
+      }
+      this.$api.cmdb.ci.getCiList({idList: [this.ciId], needChildren: 1, isAbstract: 0}).then((res) => {
         if (res && res.Status == 'OK') {
           this.addformList.forEach((item) => {
             if (item.name == 'ciId') {
-              item.dataList = res.Return ? res.Return[0]['ciList'] : [];
+              item.dataList = res.Return || [];
             }
           });
         }
