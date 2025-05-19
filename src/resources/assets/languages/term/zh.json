@@ -903,7 +903,8 @@
     "setinputloopoperations": "设置：请输入至少一个工具",
     "runnergrouptagprocesstips": "如果需要表单赋值，请在组合工具设置“执行器组标签”为“作业参数”类型",
     "runnergroupprocesstips": "如果需要表单赋值，请在组合工具设置“执行器组”为“作业参数”类型",
-    "resetrunnerphase": "是否重置阶段"
+    "resetrunnerphase": "是否重置阶段",
+    "runnerGroupTooltip": "若此处不填写执行器组，当前阶段默认继承组合工具执行器组，若此处填写执行器组，当前阶段将采用此处填写的；执行时，不可修改阶段的执行器组"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",
@@ -2142,7 +2143,8 @@
     "actuatorgrouptag": "执行器组标签",
     "blueset": "蓝绿设置",
     "blueSet": "蓝绿",
-    "ismodified": "已修改"
+    "ismodified": "已修改",
+    "presetrunnergroup": "预设执行器组"
   },
   "inspect": {
     "alarmprompt": "告警提示",

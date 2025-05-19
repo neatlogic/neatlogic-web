@@ -98,29 +98,41 @@
             </div>
             <div v-if="editConfig.execMode ==='runner'">
               <TsFormItem
-                :label="$t('term.deploy.actuatorgrouptag')"
+                :label="$t('term.deploy.presetrunnergroup')"
                 labelPosition="left"
                 :labelWidth="115"
+                :tooltip="runnerGroupTooltip"
               >
-                <RunnerGroupTagSetting
-                  ref="runnerGroupTag"
-                  :config="executeConfig.runnerGroupTag"
-                  :disabled="!canEdit"
-                  :runtimeParamList="runtimeParamList"
-                ></RunnerGroupTagSetting>
+                <TsFormSwitch v-model="executeConfig.isPresetRunnerGroup" :disabled="!canEdit"></TsFormSwitch>
               </TsFormItem>
-              <TsFormItem
-                :label="$t('page.autoexeccomboprunnergrouplabel')"
-                labelPosition="left"
-                :labelWidth="115"
-              >
-                <RunnerGroupSetting
-                  ref="runnerGroup"
-                  :config="executeConfig.runnerGroup"
-                  :disabled="!canEdit"
-                  :runtimeParamList="runtimeParamList"
-                ></RunnerGroupSetting>
-              </TsFormItem>
+              <template v-if="executeConfig.isPresetRunnerGroup">
+                <TsFormItem
+                  :label="$t('term.deploy.actuatorgrouptag')"
+                  labelPosition="left"
+                  :labelWidth="115"
+                >
+                  <RunnerGroupTagSetting
+                    ref="runnerGroupTag"
+                    :config="executeConfig.runnerGroupTag"
+                    :disabled="!canEdit"
+                    :runtimeParamList="runtimeParamList"
+                    :isRequired="false"
+                  ></RunnerGroupTagSetting>
+                </TsFormItem>
+                <TsFormItem
+                  :label="$t('page.autoexeccomboprunnergrouplabel')"
+                  labelPosition="left"
+                  :labelWidth="115"
+                >
+                  <RunnerGroupSetting
+                    ref="runnerGroup"
+                    :config="executeConfig.runnerGroup"
+                    :disabled="!canEdit"
+                    :runtimeParamList="runtimeParamList"
+                    :isRequired="false"
+                  ></RunnerGroupSetting>
+                </TsFormItem>
+              </template>
             </div>
           </template>
         </div>
@@ -268,6 +280,7 @@ export default {
         roundCount: null,
         isPresetExecuteConfig: 0,
         executeNodeConfig: {},
+        isPresetRunnerGroup: 0,
         runnerGroup: null,
         runnerGroupTag: null
 
@@ -276,7 +289,8 @@ export default {
       resultList: [], //校验结果
       validateList: ['required'],
       executePolicyList: [],
-      executeTooltip: this.$t('term.autoexec.executeTooltip')
+      executeTooltip: this.$t('term.autoexec.executeTooltip'),
+      runnerGroupTooltip: this.$t('term.autoexec.runnerGroupTooltip')
     };
   },
   beforeCreate() {},
@@ -293,6 +307,9 @@ export default {
             this.executeConfig[key] = this.config.config.executeConfig[key];
           }
         });
+        if (!this.$utils.isEmpty(this.executeConfig.runnerGroup) || !this.$utils.isEmpty(this.executeConfig.runnerGroupTag)) {
+          this.$set(this.executeConfig, 'isPresetRunnerGroup', 1);
+        }
       }
     }
     for (let key in this.formItem) {
@@ -334,7 +351,7 @@ export default {
         if (editConfig.policy && (!this.groupConfig || this.groupConfig.policy != 'grayScale' || (this.editConfig.execMode && this.editConfig.execMode != 'runner' && this.editConfig.execMode != 'sqlfile'))) {
           this.$delete(editConfig, 'policy');
         }
-        this.$emit('close', editConfig, this.executeConfig.isPresetExecuteConfig || this.editConfig.execMode === 'runner' ? this.executeConfig : {});
+        this.$emit('close', editConfig, this.executeConfig.isPresetExecuteConfig || this.executeConfig.isPresetRunnerGroup ? this.executeConfig : {});
       }
     },
     checkExist(key, val) {
@@ -372,6 +389,7 @@ export default {
           protocolId: '',
           executeUser: {},
           executeNodeConfig: {},
+          isPresetRunnerGroup: 0,
           runnerGroup: null,
           runnerGroupTag: null
         };
