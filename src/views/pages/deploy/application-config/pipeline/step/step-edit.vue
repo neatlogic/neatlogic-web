@@ -91,30 +91,32 @@
               >
                 <TsFormSwitch v-model="executeConfig.isPresetRunnerGroup" :disabled="!canEdit"></TsFormSwitch>
               </TsFormItem>
-              <TsFormItem
-                :label="$t('term.deploy.actuatorgrouptag')"
-                labelPosition="left"
-                :labelWidth="115"
-              >
-                <RunnerGroupTagSetting
-                  ref="runnerGroupTag"
-                  :config="executeConfig.runnerGroupTag"
-                  :disabled="!canEdit"
-                  :runtimeParamList="runtimeParamList"
-                ></RunnerGroupTagSetting>
-              </TsFormItem>
-              <TsFormItem
-                :label="$t('page.autoexeccomboprunnergrouplabel')"
-                labelPosition="left"
-                :labelWidth="115"
-              >
-                <RunnerGroupSetting
-                  ref="runnerGroup"
-                  :config="executeConfig.runnerGroup"
-                  :disabled="!canEdit"
-                  :runtimeParamList="runtimeParamList"
-                ></RunnerGroupSetting>
-              </TsFormItem>
+              <template v-if="executeConfig.isPresetRunnerGroup">
+                <TsFormItem
+                  :label="$t('term.deploy.actuatorgrouptag')"
+                  labelPosition="left"
+                  :labelWidth="115"
+                >
+                  <RunnerGroupTagSetting
+                    ref="runnerGroupTag"
+                    :config="executeConfig.runnerGroupTag"
+                    :disabled="!canEdit"
+                    :runtimeParamList="runtimeParamList"
+                  ></RunnerGroupTagSetting>
+                </TsFormItem>
+                <TsFormItem
+                  :label="$t('page.autoexeccomboprunnergrouplabel')"
+                  labelPosition="left"
+                  :labelWidth="115"
+                >
+                  <RunnerGroupSetting
+                    ref="runnerGroup"
+                    :config="executeConfig.runnerGroup"
+                    :disabled="!canEdit"
+                    :runtimeParamList="runtimeParamList"
+                  ></RunnerGroupSetting>
+                </TsFormItem>
+              </template>
             </div>
           </template>
         </div>
