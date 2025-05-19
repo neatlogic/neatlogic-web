@@ -34,74 +34,77 @@
           </Tooltip>
         </template>
       </ul>
-      <div
-        v-for="(item, index) in dbConfigList"
-        :key="index"
-        class="pb-lg db-list-box border-color"
-        :class="index == 0 ? (!item.isShow ? 'pt-nm pb-nm' : 'pt-nm') : (!item.isShow ? 'pt-nm pb-nm' : 'pt-lg')"
-      >
-        <header class="header-box pl-nm pr-nm" :class="item.isShow ? 'pb-nm' : ''">
-          <div>
-            <span class="text-grey title">{{ $t('term.deploy.databaseschema') }}</span>
-            <span>{{ item.dbSchema }}</span>
-          </div>
-          <div class="action-group">
-            <span v-if="hasEditConfigAuth" class="action-item tsfont-edit" @click="editDbConfig(item.id)"></span>
-            <template v-else>
-              <Tooltip
-                max-width="400"
-                placement="right"
-                transfer
-              >
-                <span class="text-disabled action-item tsfont-edit"></span>
-                <ul slot="content">
-                  <li>{{ $t('term.deploy.noconfigauthtip') }}</li>
-                </ul>
-              </Tooltip>
-            </template>
-            <span v-if="hasEditConfigAuth" class="action-item tsfont-trash-o" @click="delDbConfig(item)"></span>
-            <template v-else>
-              <Tooltip
-                max-width="400"
-                placement="right"
-                transfer
-              >
-                <span class="text-disabled action-item tsfont-trash-o"></span>
-                <ul slot="content">
-                  <li>{{ $t('term.deploy.noconfigauthtip') }}</li>
-                </ul>
-              </Tooltip>
-            </template>
-            <span class="action-item" :class="item.isShow ? 'tsfont-down' : 'tsfont-up'" @click="handleDownUp(item, index)"></span>
-          </div>
-        </header>
-        <ul v-if="item.isShow" class="ul-box pl-nm pr-nm">
-          <li class="pb-nm">
-            <span class="text-grey title">{{ $t('page.database') }}</span>
-            <span class="db-user-text-box">
-              <TsFormSelect
-                v-model="item.dbResourceId"
-                v-bind="dbSetting"
-              ></TsFormSelect>
-            </span>
-          </li>
-          <li class="pb-nm flex-box">
-            <span class="text-grey title">{{ $t('page.account') }}</span>
-            <span class="db-user-text-box">
-              <TsFormSelect
-                v-model="item.accountId"
-                v-bind="userSetting"
-              ></TsFormSelect>
-            </span>
-          </li>
-          <template v-if="item.config">
-            <li v-for="(configItem, key , cIndex) of item.config" :key="cIndex" class="pb-nm">
-              <span class="text-grey title">{{ advancedConfig[key] }}</span>
-              <span>{{ handleShowText(key, configItem) }}</span>
+      <Loading :loadingShow="loadingShow" type="fix"></Loading>
+      <template v-if="!loadingShow">
+        <div
+          v-for="(item, index) in dbConfigList"
+          :key="index"
+          class="pb-lg db-list-box border-color"
+          :class="index == 0 ? (!item.isShow ? 'pt-nm pb-nm' : 'pt-nm') : (!item.isShow ? 'pt-nm pb-nm' : 'pt-lg')"
+        >
+          <header class="header-box pl-nm pr-nm" :class="item.isShow ? 'pb-nm' : ''">
+            <div>
+              <span class="text-grey title">{{ $t('term.deploy.databaseschema') }}</span>
+              <span>{{ item.dbSchema }}</span>
+            </div>
+            <div class="action-group">
+              <span v-if="hasEditConfigAuth" class="action-item tsfont-edit" @click="editDbConfig(item.id)"></span>
+              <template v-else>
+                <Tooltip
+                  max-width="400"
+                  placement="right"
+                  transfer
+                >
+                  <span class="text-disabled action-item tsfont-edit"></span>
+                  <ul slot="content">
+                    <li>{{ $t('term.deploy.noconfigauthtip') }}</li>
+                  </ul>
+                </Tooltip>
+              </template>
+              <span v-if="hasEditConfigAuth" class="action-item tsfont-trash-o" @click="delDbConfig(item)"></span>
+              <template v-else>
+                <Tooltip
+                  max-width="400"
+                  placement="right"
+                  transfer
+                >
+                  <span class="text-disabled action-item tsfont-trash-o"></span>
+                  <ul slot="content">
+                    <li>{{ $t('term.deploy.noconfigauthtip') }}</li>
+                  </ul>
+                </Tooltip>
+              </template>
+              <span class="action-item" :class="item.isShow ? 'tsfont-down' : 'tsfont-up'" @click="handleDownUp(item, index)"></span>
+            </div>
+          </header>
+          <ul v-if="item.isShow" class="ul-box pl-nm pr-nm">
+            <li class="pb-nm">
+              <span class="text-grey title">{{ $t('page.database') }}</span>
+              <span class="db-user-text-box">
+                <TsFormSelect
+                  v-model="item.dbResourceId"
+                  v-bind="dbSetting"
+                ></TsFormSelect>
+              </span>
             </li>
-          </template>
-        </ul>
-      </div>
+            <li class="pb-nm flex-box">
+              <span class="text-grey title">{{ $t('page.account') }}</span>
+              <span class="db-user-text-box">
+                <TsFormSelect
+                  v-model="item.accountId"
+                  v-bind="userSetting"
+                ></TsFormSelect>
+              </span>
+            </li>
+            <template v-if="item.config">
+              <li v-for="(configItem, key , cIndex) of item.config" :key="cIndex" class="pb-nm">
+                <span class="text-grey title">{{ advancedConfig[key] }}</span>
+                <span>{{ handleShowText(key, configItem) }}</span>
+              </li>
+            </template>
+          </ul>
+        </div>
+      </template>
     </template>
   
     <EnvDbConfigEdit
@@ -134,6 +137,7 @@ export default {
   },
   data() {
     return {
+      loadingShow: false,
       dbConfigId: null,
       isShowDbConfigEdit: false,
       hasDbConfig: false,
@@ -217,6 +221,7 @@ export default {
     },
     searchDbConfig() {
       if (this.params) {
+        this.loadingShow = true;
         this.$api.deploy.applicationConfig.getEnvInfo(this.params).then((res) => {
           if (res && res.Status == 'OK') {
             let {DBConfigList} = res.Return;
@@ -232,6 +237,8 @@ export default {
               this.dbConfigList = [];
             }
           }
+        }).finally(() => {
+          this.loadingShow = false;
         });
       }
     },

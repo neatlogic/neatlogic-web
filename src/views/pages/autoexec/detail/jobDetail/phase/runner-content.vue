@@ -136,6 +136,9 @@ export default {
       this.isIgnorePhseeDialogShow = false;
     },
     resetAllNode() {
+      if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
+        return false;
+      }
       this.isResetDialogShow = true;
     },
     getRunner() {

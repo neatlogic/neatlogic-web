@@ -1057,13 +1057,13 @@
   "copyerrorinfo": "Copy error message",
   "loadingfailed": "Load Fail",
   "topo": "Topology Map",
-  "movetothetop": "Move to the top level",
-  "movetothebottom": "Move to the bottom layer",
   "pastehere": "Paste here",
   "dragthecanvas": "Drag and drop canvas",
   "rubberband": "Frame Select",
   "actualpath": "actual path",
   "currentjob": "Current Job",
   "incompleteinformation": "incomplete information",
-  "requiredparameterhasnullvalue": "The required parameter field has a null value"
+  "requiredparameterhasnullvalue": "The required parameter field has a null value",
+  "executeall": "Execute all",
+  "cache": "Cache"
 }

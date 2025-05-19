@@ -5,10 +5,10 @@
       <Col :span="16">
         <div class="div-btn-contain action-group no-line">
           <template v-if="jobData.isCanExecute && nodeData">
-            <span class="action-item tsfont-minus-o" :class="{ disable: selectedNodeList.length <= 0 }" @click="ignoreNode()">{{ $t('page.ignore') }}</span>
-            <span class="action-item tsfont-restart" :class="{ disable: selectedNodeList.length <= 0 }" @click="resetNode()">{{ $t('page.reset') }}</span>
+            <span class="action-item tsfont-minus-o" :class="{ disable: selectedNodeList.length <= 0 || phaseData.status == 'running' }" @click="ignoreNode()">{{ $t('page.ignore') }}</span>
+            <span class="action-item tsfont-restart" :class="{ disable: selectedNodeList.length <= 0 || phaseData.status == 'running' }" @click="resetNode()">{{ $t('page.reset') }}</span>
             <span class="action-item tsfont-restart" :class="phaseData.status == 'running'?'disable':''" @click="resetAllNode()">{{ $t('page.resetall') }}</span>
-            <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">{{ $t('page.execute') }}</span>
+            <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">{{ $t('page.executeall') }}</span>
           </template>
           <template v-if="canExportNode">
             <span v-if="!downloadLoadingNode" v-download="downloadNodeUrl" class="action-item tsfont-download">{{ $t('term.autoexec.exportnode') }}</span>
@@ -172,9 +172,8 @@
       <template v-slot:action="{ row }">
         <div class="tstable-action">
           <ul class="tstable-action-ul">
-            <li>
+            <li v-if="row.runnerHost && phaseData.execMode != 'sqlfile'">
               <Tooltip
-                v-if="row.runnerHost"
                 :transfer="true"
                 placement="bottom-start"
                 trigger="hover"
@@ -183,7 +182,7 @@
                 <div slot="content">{{ row.runnerHost }}{{ row.runnerPort ? ':' + row.runnerPort : '' }}</div>
               </Tooltip>
             </li>
-            <template v-if="jobData.isCanExecute && row.isDelete != 1">
+            <template v-if="phaseData.status != 'running' && jobData.isCanExecute && row.isDelete != 1">
               <li
                 v-for="(action, index) in statusActionMapping[row.status]"
                 :key="index"
@@ -371,13 +370,6 @@ export default {
         key: 'blueGreenName'
       });
     }
-    if (this.phaseData.execMode == 'sqlfile') {
-      // 添加发布版本字段
-      this.theadList.splice(4, 0, {
-        title: this.$t('term.deploy.ismodified'),
-        key: 'isModified'
-      });
-    }
     if (this.jobData.isCanExecute) {
       this.theadList.unshift({ key: 'selection' });
     }
@@ -408,6 +400,9 @@ export default {
       this.searchNode(1);
     },
     ignoreNode(node) {
+      if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
+        return false;
+      }
       //如果node为空代表是批量模式，需要检查是否有选中数据
       if (!node && !this.selectedNodeList.length) {
         return;
@@ -423,6 +418,9 @@ export default {
       this.isIgnoreDialogShow = true;
     },
     resetNode(node) {
+      if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
+        return false;
+      }
       //如果node为空代表是批量模式，需要检查是否有选中数据
       if (!node && !this.selectedNodeList.length) {
         return;
@@ -439,6 +437,9 @@ export default {
       this.isResetDialogShow = true;
     },
     resetAllNode() {
+      if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
+        return false;
+      }
       this.actionParam = {};
       this.actionParam.jobId = this.jobData.id;
       this.actionParam.phaseId = this.phaseData.id;

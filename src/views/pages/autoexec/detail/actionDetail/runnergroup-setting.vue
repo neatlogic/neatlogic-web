@@ -7,6 +7,7 @@
           :dataList="mappingModeList"
           :disabled="disabled"
           :clearable="false"
+          border="border"
           transfer
           @change="changeMappingMode"
         ></TsFormSelect>
@@ -22,6 +23,7 @@
           :firstText="$t('term.autoexec.jobparam')"
           :firstSelect="false"
           :firstLi="isEditRuntimeParam"
+          border="border"
           @first="gotoAddParameter"
         ></TsFormSelect>
         <TsFormSelect
