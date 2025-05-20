@@ -73,6 +73,11 @@ export default {
     StepConfig: () => import('@/views/pages/autoexec/detail/actionDetail/step/step-config.vue'),
     StepGroup: () => import('@/views/pages/deploy/application-config/pipeline/step-group')
   },
+  provide() {
+    return {
+      getCombopConfig: this.combopConfig //流水线详情（阶段）
+    };
+  },
   props: {
     appSystemId: Number,
     envId: Number,
@@ -91,7 +96,11 @@ export default {
       currentGroupConfig: null,
       selectStepList: [],
       paramsTypeList: [],
-      loadingShow: true
+      loadingShow: true,
+      combopConfig: {
+        phaseList: [], //阶段
+        overrideProfileList: []
+      }
     };
   },
   beforeCreate() {},
@@ -122,9 +131,13 @@ export default {
       this.$api.deploy.apppipeline.getAppPipeline(data).then(res => {
         if (res && res.Status == 'OK') {
           let data = res.Return || {};
-          this.combopPhaseList = data.config.combopPhaseList || [];
-          this.combopGroupList = data.config.combopGroupList || [];
-          this.runtimeParamList = data.config.runtimeParamList || [];
+          const {config = {}} = data || {};
+          const {combopPhaseList = [], combopGroupList = [], runtimeParamList = [], overrideProfileList = []} = config || {};
+          this.combopPhaseList = combopPhaseList || [];
+          this.combopGroupList = combopGroupList || [];
+          this.runtimeParamList = runtimeParamList || [];
+          this.$set(this.combopConfig, 'overrideProfileList', overrideProfileList);
+          this.$set(this.combopConfig, 'phaseList', combopPhaseList);
           this.getSelectStepList();
         }
       }).finally(() => {

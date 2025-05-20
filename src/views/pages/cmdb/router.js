@@ -420,6 +420,16 @@ let routerArr = [
     }
   },
   {
+    path: '/ci/:ciId/cientity-copy/:id?',
+    name: 'cientity-copy',
+    component: ciEntityEdit,
+    meta: {
+      title: $t('router.cmdb.cientityedit'),
+      ismenu: false,
+      authority: 'CMDB_BASE'
+    }
+  },
+  {
     path: '/ci/:ciId/cientity-edit-batch/:ciEntityIdList',
     name: 'cientity-edit-batch',
     component: ciEntityEditBatch,

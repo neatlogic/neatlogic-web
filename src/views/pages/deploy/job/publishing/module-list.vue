@@ -54,43 +54,18 @@
           </template>
         </div>
         <div v-if="item.isChecked && item.isSelectInstance" class="instance-box mt-sm">
-          <div class="bg-op padding radius-lg">
+          <div class="bg-op padding-sm radius-lg">
             <Loading :loadingShow="item.loadingShow" type="fix"></Loading>
-            <div v-if="item.instanceList && item.instanceList.length > 0">
-              <div class="pb-sm">
-                <Checkbox
-                  :value="allInstanceCheck(item)"
-                  :indeterminate="allInstanceIndeterminate(item)"
-                  :disabled="disabled"
-                  @on-change="
-                    val => {
-                      checkAllInstance(item, val);
-                    }
-                  "
-                >
-                  <span>{{ $t('page.selectall') }}</span>
-                </Checkbox>
-              </div>
-              <div class="instance-ul">
-                <Row :gutter="16">
-                  <Col
-                    v-for="i in item.instanceList"
-                    :key="i.id"
-                    :xs="12"
-                    :sm="8"
-                    :md="6"
-                  >
-                    <div class="overflow instance-li">
-                      <Checkbox v-model="i.isChecked" :disabled="disabled" @on-change="checkInstance">
-                        <span v-if="i.name" class="text-tip">{{ i.name }}</span>
-                        <span v-if="i.ip" class="text-tip">[{{ i.ip }}]</span>
-                      </Checkbox>
-                    </div>
-                  </Col>
-                </Row>
-              </div>
-            </div>
-            <div v-else class="text-tip">{{ $t('term.deploy.moduleenvnotinstance', {modulename: item.name, envname: envName}) }}</div>
+            <InstanceSetting
+              :appSystemId="appSystemId"
+              :envId="envId"
+              :envName="envName"
+              :module="item"
+              :disabled="disabled"
+              @updateInstanceList="(val)=>{
+                updateInstanceList(item, val);
+              }"
+            ></InstanceSetting>
           </div>
         </div>
         <div v-if="item.canSelectModule && !item.isHasRunner" class="runner-tip pt-sm text-tip">
@@ -138,7 +113,8 @@ export default {
     AddVersionDialog: () => import('./module/add-version-dialog.vue'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    ModuleEdit: () => import('@/views/pages/deploy/application-config/config/module/module-edit')
+    ModuleEdit: () => import('@/views/pages/deploy/application-config/config/module/module-edit'),
+    InstanceSetting: () => import('./module/instance-setting.vue')
   },
   props: {
     appSystemId: Number,
@@ -230,52 +206,9 @@ export default {
       //筛选实例
       if (item.isSelectInstance) {
         this.$set(item, 'loadingShow', true);
-        this.getInstanceList(item);
+      } else {
+        this.$set(item, 'instanceList', []);
       }
-    },
-    getInstanceList(module) {
-      //获取实例列表
-      let data = {
-        needPage: false,
-        appSystemId: this.appSystemId,
-        envId: this.envId,
-        appModuleId: module.id
-      };
-      this.$api.deploy.env
-        .getInstanceList(data)
-        .then(res => {
-          if (res.Status == 'OK') {
-            if (res.Return && res.Return.tbodyList && res.Return.tbodyList.length) {
-              let instanceList = res.Return.tbodyList;
-              instanceList.forEach(i => {
-                //处理回显数据
-                if (module.instanceList) {
-                  if (module.instanceList.find(ins => ins.id === i.id)) {
-                    this.$set(i, 'isChecked', true);
-                  }
-                } else {
-                  this.$set(i, 'isChecked', true);
-                }
-              });
-              this.$set(module, 'instanceList', instanceList);
-            } else {
-              this.$set(module, 'instanceList', []);
-            }
-          }
-        })
-        .finally(() => {
-          this.$set(module, 'loadingShow', false);
-        });
-    },
-    checkAllInstance(module, isChecked) {
-      if (module.instanceList && module.instanceList.length) {
-        module.instanceList.forEach(i => {
-          this.$set(i, 'isChecked', isChecked);
-        });
-      }
-    },
-    checkInstance() {
-      this.$emit('updateSelectModuleList', this.appModuleListLocal);
     },
     getData() {
       //向外提供的取数接口
@@ -328,10 +261,10 @@ export default {
             });
           }
           if (m.isSelectInstance) {
-            let selectNodeList = m.instanceList.filter(i => {
+            let selectNodeList = m.instanceList && m.instanceList.filter(i => {
               return i.isChecked;
             });
-            if (!selectNodeList.length) {
+            if (this.$utils.isEmpty(selectNodeList)) {
               validList.push({
                 text: this.$t('term.deploy.moduleconfigatleastselectainstance', {target: m.name}),
                 type: 'error',
@@ -357,6 +290,9 @@ export default {
         }
       }
       this.isShowModuleInfoEdit = false;
+    },
+    updateInstanceList(module, val) {
+      this.$set(module, 'instanceList', val);
     }
   },
   filter: {},
@@ -387,30 +323,6 @@ export default {
         }
       }
       return false;
-    },
-    allInstanceCheck() {
-      return module => {
-        if (module.instanceList && module.instanceList.length > 0) {
-          const uncheckItem = module.instanceList.find(element => !element.isChecked);
-          const checkedItem = module.instanceList.find(element => element.isChecked);
-          if (!uncheckItem && checkedItem) {
-            return true;
-          }
-        }
-        return false;
-      };
-    },
-    allInstanceIndeterminate() {
-      return module => {
-        if (module.instanceList && module.instanceList.length > 0) {
-          const uncheckItem = module.instanceList.find(element => !element.isChecked);
-          const checkedItem = module.instanceList.find(element => element.isChecked);
-          if (uncheckItem && checkedItem) {
-            return true;
-          }
-        }
-        return false;
-      };
     }
   },
   watch: {

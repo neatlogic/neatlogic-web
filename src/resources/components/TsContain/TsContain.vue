@@ -5,7 +5,7 @@
     class="bg-grey"
     :style="{height: containHeight}"
   >
-    <div v-if="!hideHeader" :class="[{ 'pl-nm': true, 'pr-nm': true }, { 'tscontain-header': isBackgroung == true, 'tscontain-headerBg padding-lr': isBackgroung == false }, { 'input-border': border == 'border' }, { 'tsForm-border-none': border == 'none' }, { 'tscontain-headerbottom': navHeaderBottom == 'none' }]">
+    <div v-if="!hideHeader" :class="getHeaderClassName">
       <div :style="getCollapseStyle" style="display: grid">
         <div v-if="hasNavigation" style="white-space: nowrap">
           <slot name="navigation"></slot>
@@ -21,7 +21,7 @@
               });
             "
           ></span>
-          <Divider v-if="siderHide && $slots.topLeft" type="vertical" />
+          <Divider v-if="$slots.topLeft" type="vertical" />
         </div>
         <div ref="containTopRight">
           <slot name="top">
@@ -111,7 +111,10 @@ export default {
     clearStyle: { type: Boolean, default: false }, //是否需要清除侧边栏的样式（背景色、圆角，不包含右侧固定高度）
     rightWidth: { type: Number, default: 200 },
     mode: { type: String, default: 'window' }, //显示模式，有window和dialog两种，如果是dialog模式，高度强制变成100%
-    rightBtn: { type: Boolean, default: false } //右侧收起展开按钮
+    rightBtn: { type: Boolean, default: false }, //右侧收起展开按钮
+    topLeftWidth: { type: String, default: '' }, //左侧宽度
+    topCenterWidth: { type: String, default: '' }, //中间宽度
+    topRightWidth: { type: String, default: '' } //右侧宽度
   },
   data() {
     return {
@@ -225,27 +228,36 @@ export default {
       }
     },
     getTopStyle() {
-      if (this.$slots.topLeft && this.$slots.topCenter && this.$slots.topRight) {
+      const hasLeft = !!this.$slots.topLeft;
+      const hasCenter = !!this.$slots.topCenter;
+      const hasRight = !!this.$slots.topRight;
+
+      // 提取重复的宽度计算逻辑
+      const getDefaultWidth = (width, defaultValue) => width || defaultValue;
+      const threeEqualWidths = `${getDefaultWidth(this.topLeftWidth, '33.33%')} ${getDefaultWidth(this.topCenterWidth, '33.33%')} ${getDefaultWidth(this.topRightWidth, '33.33%')}`;
+      const twoEqualWidths = `${getDefaultWidth(this.topLeftWidth, '50%')} 0px ${getDefaultWidth(this.topRightWidth, '50%')}`;
+
+      if (hasLeft && hasCenter && hasRight) {
         //左中右
-        return { 'grid-template-columns': '33.33% 33.33% 33.33%' };
-      } else if (this.$slots.topLeft && this.$slots.topCenter && !this.$slots.topRight) {
+        return { 'grid-template-columns': threeEqualWidths };
+      } else if (hasLeft && hasCenter && !hasRight) {
         //左中
-        return { 'grid-template-columns': '33.33% 33.33% 33.33%' };
-      } else if (this.$slots.topLeft && !this.$slots.topCenter && !this.$slots.topRight) {
+        return { 'grid-template-columns': threeEqualWidths };
+      } else if (hasLeft && !hasCenter && !hasRight) {
         //左
-        return { 'grid-template-columns': 'auto 0px 0px' };
-      } else if (this.$slots.topLeft && !this.$slots.topCenter && this.$slots.topRight) {
+        return { 'grid-template-columns': `${getDefaultWidth(this.topLeftWidth, 'auto')} 0px 0px` };
+      } else if (hasLeft && !hasCenter && hasRight) {
         //左右
-        return { 'grid-template-columns': '50% 0px 50%' };
-      } else if (!this.$slots.topLeft && !this.$slots.topCenter && this.$slots.topRight) {
+        return { 'grid-template-columns': twoEqualWidths };
+      } else if (!hasLeft && !hasCenter && hasRight) {
         //右
-        return { 'grid-template-columns': '50% 0px 50%' };
-      } else if (!this.$slots.topLeft && this.$slots.topCenter && this.$slots.topRight) {
+        return { 'grid-template-columns': twoEqualWidths };
+      } else if (!hasLeft && hasCenter && hasRight) {
         //中右
-        return { 'grid-template-columns': '33.33% 33.33% 33.33%' };
-      } else if (!this.$slots.topLeft && this.$slots.topCenter && !this.$slots.topRight) {
+        return { 'grid-template-columns': threeEqualWidths };
+      } else if (!hasLeft && hasCenter && !hasRight) {
         //中
-        return { 'grid-template-columns': '33.33% 33.33% 33.33%' };
+        return { 'grid-template-columns': threeEqualWidths };
       }
       return {};
     },
@@ -261,14 +273,14 @@ export default {
         if (this.siderHide) {
           return { 'grid-template-columns': 'min-content min-content auto' };
         } else {
-          return { 'grid-template-columns': 'min-content auto calc(100% - ' + this.siderWidth + 'px)' };
+          return { 'grid-template-columns': 'min-content min-content auto' };
         }
       } else if (!this.hasNavigation && this.hasCollapse && this.hasTop) {
         //只有收起栏和内容
         if (this.siderHide) {
           return { 'grid-template-columns': 'min-content auto' };
         } else {
-          return { 'grid-template-columns': 'auto calc(100% - ' + this.siderWidth + 'px)' };
+          return { 'grid-template-columns': 'min-content auto' };
         }
       } else if (!this.hasNavigation && !this.hasCollapse && this.hasTop) {
         //只有内容
@@ -293,6 +305,15 @@ export default {
     },
     hasNavigation() {
       return !!this.$slots.navigation;
+    },
+    getHeaderClassName() {
+      return [
+        { 'pl-nm': true, 'pr-nm': true },
+        { 'tscontain-header': this.isBackgroung == true, 'tscontain-headerBg padding-lr': this.isBackgroung == false },
+        { 'input-border': this.border == 'border' },
+        { 'tsForm-border-none': this.border == 'none' },
+        { 'tscontain-headerbottom': this.navHeaderBottom == 'none' }
+      ];
     }
   },
   watch: {

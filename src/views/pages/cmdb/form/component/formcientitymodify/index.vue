@@ -215,6 +215,12 @@ export default {
       this.$api.cmdb.ci.getCiList({ idList: this.config.ciIdList }).then(res => {
         if (res.Status == 'OK') {
           this.ciList = res.Return || [];
+          if (['edit', 'editSubform'].includes(this.mode)) {
+            // 编辑模式下更新表单高度
+            this.$nextTick(() => {
+              this.$emit('resize');
+            });
+          }
         }
       });
     },

@@ -41,6 +41,7 @@
         keyName="version_buildNo"
         :theadList="theadList"
         v-bind="versionData"
+        :fixedHeader="false"
         @changeCurrent="searchVersionBuildno"
         @getSelected="(value,selectItem)=>{getSelectedVersion(selectItem)}"
       >

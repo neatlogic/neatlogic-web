@@ -235,7 +235,7 @@ export default {
               }
               this.$set(table, 'totalWidth', width);
               if (this.resizeKey) {
-                sessionStorage.setItem('tstable_' + this.resizeKey, JSON.stringify(table.colsList));
+                localStorage.setItem('tstable_' + this.resizeKey, JSON.stringify(table.colsList));
               }
             }
             table.$emit('on-column-width-resize', _column.width, oldWidth, column, event);

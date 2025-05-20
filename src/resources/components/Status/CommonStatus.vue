@@ -1,15 +1,29 @@
 <template>
   <div v-if="statusName && type == 'block'" class="com-status tips">
-    <div class="fz10 bg status-text" :class="className(statusValue)" @click="handleClick">{{ statusName }}</div>
+    <div
+      class="fz10 bg status-text"
+      :class="className(statusValue)"
+      @click="handleClick"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
+    >{{ statusName }}</div>
   </div>
   <div v-else-if="statusName && type == 'tag'" class="com-status tag-status">
-    <div class="fz10 bg status-text" :class="className(statusValue)" @click="handleClick">{{ statusName }}</div>
+    <div
+      class="fz10 bg status-text"
+      :class="className(statusValue)"
+      @click="handleClick"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
+    >{{ statusName }}</div>
   </div>
   <span
     v-else-if="statusName && type == 'text'"
     class="com-status "
     :class="'text-' + statusValue"
     @click="handleClick"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
   >{{ statusName }}</span>
 </template>
 <script>
@@ -51,6 +65,12 @@ export default {
   methods: {
     handleClick() {
       this.$emit('click');
+    },
+    handleMouseEnter() {
+      this.$emit('mouseenter');
+    },
+    handleMouseLeave() {
+      this.$emit('mouseleave');
     }
   },
   computed: {

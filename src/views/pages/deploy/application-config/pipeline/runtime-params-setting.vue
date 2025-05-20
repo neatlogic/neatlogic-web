@@ -58,7 +58,7 @@
                         v-model="item.name"
                         :disabled="!canEdit"
                         maxlength="50"
-                        :validateList="item.key?validateConfig.nameRequired:validateConfig.name"
+                        :validateList="item.key?validateConfig.nameRequired:[]"
                         :errorMessage="item.nameErrorMessage"
                         :placeholder="$t('term.autoexec.parameterchinesename')"
                         @on-change="changeName(item, index,'name')"
@@ -176,8 +176,7 @@ export default {
       validateConfig: {
         key: ['key-special'],
         keyRequired: ['required', 'key-special'],
-        name: ['name-special'],
-        nameRequired: ['required', 'name-special']
+        nameRequired: ['required']
       },
       isRepeatName: false, //参数名重复
       excludeTyptList: ['phase'], //过滤不需要默认值的组件类型

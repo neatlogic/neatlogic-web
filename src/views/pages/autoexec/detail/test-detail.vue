@@ -8,13 +8,11 @@
         <span>{{ $t('term.autoexec.addjob') }}</span>
       </template>
       <template v-slot:topRight>
-        <div class="div-btn-contain action-group" style="text-align: right;">
+        <div class="div-btn-contain action-group text-right">
           <span class="action-item last">
-            <Button
-              type="primary"
-              @click="openExecuteSetting"
-            >
-              <span class="tsfont-run btn-icon">{{ $t('page.execute') }}</span> </Button>
+            <Button type="primary" :loading="loading" @click="openExecuteSetting">
+              <span :class="!loading ? 'tsfont-run btn-icon' : ''">{{ $t('page.execute') }}</span>
+            </Button>
           </span>
         </div>
       </template>
@@ -95,18 +93,16 @@ export default {
     ArgumentParams: () => import('./runnerDetail/argument-params.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue')
-
   },
   filters: {},
   data() {
-    let _this = this;
     return {
       id: null,
       type: this.$route.query.type,
       targetShow: true,
       paramsList: [],
       dataConfig: null,
-      loading: true,
+      loading: false,
       nameForm: {
         labelWidth: 100,
         labelPosition: 'left',
@@ -126,7 +122,7 @@ export default {
         itemList: {
           protocolId: {
             type: 'select',
-            label: _this.$t('page.protocol'),
+            label: this.$t('page.protocol'),
             value: '',
             multiple: false,
             placeholder: this.$t('page.pleaseselect'),
@@ -137,7 +133,7 @@ export default {
           },
           executeUser: {
             type: 'slot',
-            label: _this.$t('page.executeuser'),
+            label: this.$t('page.executeuser'),
             validateList: ['required']
           }
         }
@@ -159,15 +155,18 @@ export default {
       runnerGroup: {
         mappingMode: 'constant',
         value: '-1'
-      }
+      },
+      scriptId: null
     };
   },
-  beforeCreate() {
-  },
+  beforeCreate() {},
   created() {
     if (this.$route.query) {
       if (this.$route.query.id) {
         this.id = parseInt(this.$route.query.id);
+      }
+      if (this.$route.query.scriptId) {
+        this.scriptId = parseInt(this.$route.query.scriptId);
       }
       if (this.$route.query.type) {
         this.type = this.$route.query.type;
@@ -183,8 +182,7 @@ export default {
   beforeMount() {
     this.getInitData();
   },
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -200,24 +198,37 @@ export default {
     },
     getData() {
       //根据id获取详情
-      if (!this.id) {
+      if (!this.id && !this.scriptId) {
         return;
       }
-      let param = { id: this.id, type: this.type};
+      let param = { type: this.type };
+      if (this.id) {
+        param.id = this.id;
+      } else if (this.scriptId) {
+        param.scriptId = this.scriptId;
+      }
       this.$api.autoexec.script.getTestDetail(param).then(res => {
         if (res.Status == 'OK' && res.Return) {
           this.dataConfig = res.Return;
           if (!this.jobId) {
             this.nameForm.itemList.name.value = this.dataConfig.name;
           }
+          if (!this.id) {
+            this.id = this.dataConfig.id;
+          }
         }
       });
     },
     getArgument() {
-      if (!this.id) {
+      if (!this.id && !this.scriptId) {
         return;
       }
-      let param = { id: this.id, type: this.type};
+      let param = { type: this.type };
+      if (this.id) {
+        param.id = this.id;
+      } else if (this.scriptId) {
+        param.scriptId = this.scriptId;
+      }
       this.$api.autoexec.script.getArgument(param).then(res => {
         if (res.Status == 'OK' && res.Return) {
           this.argumentConfig = res.Return || {};
@@ -257,6 +268,7 @@ export default {
       if (this.$refs.argumentConfig) {
         val.argumentMappingList = this.$refs.argumentConfig.getValue();
       }
+      this.loading = true;
       this.$api.autoexec.script.testScript(val).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
@@ -266,6 +278,8 @@ export default {
             query: {id: res.Return.jobId}
           });
         }
+      }).finally(() => {
+        this.loading = false;
       });
     },
     getJobData() { //复制作业获取的数据
@@ -310,8 +324,7 @@ export default {
     }
   },
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
@@ -333,10 +346,10 @@ export default {
       vertical-align: middle;
     }
   }
-  ::v-deep .btn-icon{
+  ::v-deep .btn-icon {
     vertical-align: baseline;
     margin: 0px;
-    &::before{
+    &::before {
       margin-right: 5px;
     }
   }

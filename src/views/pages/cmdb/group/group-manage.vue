@@ -5,14 +5,81 @@
         <span class="text-action tsfont-plus" @click="addGroup()">{{ $t('term.cmdb.group') }}</span>
       </template>
       <template slot="topRight">
-        <InputSearcher
-          v-model="searchParam.keyword"
-          @change="searchGroup(1)"
-        ></InputSearcher>
+        <InputSearcher v-model="searchParam.keyword" @change="searchGroup(1)"></InputSearcher>
       </template>
       <div slot="content" ref="maintable">
         <div class="flow-main">
-          <TsCard
+          <TsTable
+            v-bind="groupData"
+            :theadList="theadList"
+            @changeCurrent="searchGroup"
+            @changePageSize="
+              pageSize => {
+                searchParam.pageSize = pageSize;
+                searchGroup(1);
+              }
+            "
+          >
+            <template v-slot:ciEntityCount="{ row }">
+              <Badge v-if="row.ciEntityCount" :count="row.ciEntityCount" type="primary"></Badge>
+              <span v-else></span>
+            </template>
+            <template v-slot:isActive="{ row }">
+              <span v-if="row.isActive === 1" class="text-success">{{ $t('page.yes') }}</span>
+              <span v-else class="text-grey">{{ $t('page.no') }}</span>
+            </template>
+            <template v-slot:auth="{ row }">
+              <div v-if="row.groupAuthList && row.groupAuthList.length > 0">
+                <UserSelect
+                  :multiple="true"
+                  :transfer="true"
+                  :readonly="true"
+                  :value="row.groupAuthList.map(d=>d.authType +'#'+d.authUuid)"
+                  :groupList="[ 'user', 'role', 'team']"
+                ></UserSelect>
+              </div>
+              <div v-else class="text-grey">-</div>
+            </template>
+            <template v-slot:ciList="{ row }">
+              <div v-if="row.ciGroupList && row.ciGroupList.length > 0">
+                <Tag v-for="(ci, index) in row.ciGroupList" :key="index">
+                  <span :class="ci.ciIcon"></span>
+                  <span>{{ ci.ciLabel }}</span>
+                  <span>·{{ ci.ciName }}</span>
+                </Tag>
+              </div>
+              <div v-else class="text-grey">-</div>
+            </template>
+            <template v-slot:status="{ row }">
+              <div v-if="row.status === 'doing'" class="pl-md pr-md"><Progress
+                :percent="99"
+                :stroke-width="10"
+                status="active"
+                :hide-info="true"
+              /></div>
+              <span v-else-if="row.status === 'done' && row.error"><Tooltip
+                trigger="hover"
+                :content="row.error"
+                :transfer="true"
+                max-width="450"
+                theme="light"
+              >
+                <i class="tsfont-danger-s text-error"></i>
+              </Tooltip></span>
+              <span v-else class="text-success">{{ $t('page.completed') }}</span>
+            </template>
+            <template v-slot:action="{ row }">
+              <div class="tstable-action">
+                <ul class="tstable-action-ul">
+                  <li v-if="row.status === 'done'" class="tsfont-play-o" @click="execGroup(row.id)">{{ $t('page.apply') }}</li>
+                  <li class="tsfont-copy" @click="copyGroup(row.id)">{{ $t('page.copy') }}</li>
+                  <li class="tsfont-edit" @click="editGroup(row.id)">{{ $t('page.edit') }}</li>
+                  <li class="tsfont-trash-o" @click="delGroup(row)">{{ $t('page.delete') }}</li>
+                </ul>
+              </div>
+            </template>
+          </TsTable>
+          <!--<TsCard
             v-if="groupData.cardList"
             v-bind="groupData"
             :boxShadow="false"
@@ -78,12 +145,16 @@
                 <span>{{ $t('page.delete') }}</span>
               </div>
             </template>
-          </TsCard>
+          </TsCard>-->
         </div>
-
       </div>
     </TsContain>
-    <GroupEdit v-if="isGroupEditShow" :id="groupId" @close="close"></GroupEdit>
+    <GroupEdit
+      v-if="isGroupEditShow"
+      :id="groupId"
+      :isCopy="isCopy"
+      @close="close"
+    ></GroupEdit>
     <GroupExec v-if="isGroupExecShow" :id="groupId" @close="closeExec"></GroupExec>
   </div>
 </template>
@@ -93,26 +164,43 @@ export default {
   components: {
     GroupEdit: () => import('./group-edit.vue'),
     GroupExec: () => import('./group-exec.vue'),
-    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
+    //TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {},
   data() {
     return {
-      searchParam: {pageSize: 24},
+      isCopy: false,
+      theadList: [
+        {
+          key: 'name',
+          title: '名称'
+        },
+        //{ key: 'isActive', title: '是否激活' },
+        { key: 'typeName', title: '类型' },
+        { key: 'ciList', title: '关联模型' },
+        { key: 'auth', title: '授权' },
+        { key: 'ciEntityCount', title: '配置项数量' },
+        { key: 'status', title: '状态' },
+        { key: 'description', title: '说明' },
+        { key: 'action' }
+      ],
+      searchParam: {},
       isGroupEditShow: false,
       isGroupExecShow: false,
       timer: null, //定时器
       groupId: null,
       groupData: {},
-      doingIdList: []//刷新状态id列表
+      doingIdList: [] //刷新状态id列表
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   mounted() {
-    this.searchGroup();
+    this.searchGroup(1);
   },
   beforeUpdate() {},
   updated() {},
@@ -127,16 +215,14 @@ export default {
       this.clearTimer();
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
-      } else {
-        this.searchParam.currentPage = 1;
       }
       this.$api.cmdb.group.searchGroup(this.searchParam).then(res => {
         this.groupData = res.Return;
         //检查是否有进行中采集，如果有启动定时刷新
         this.doingIdList = [];
-        if (this.groupData.cardList) {
-          this.groupData.cardList.forEach(element => {
-            if (element.status == 'doing') {
+        if (this.groupData.tbodyList) {
+          this.groupData.tbodyList.forEach(element => {
+            if (element.status === 'doing') {
               this.doingIdList.push(element.id);
             }
           });
@@ -158,6 +244,7 @@ export default {
     addGroup() {
       this.isGroupEditShow = true;
       this.groupId = null;
+      this.isCopy = false;
     },
     close(needRefresh) {
       this.isGroupEditShow = false;
@@ -177,6 +264,12 @@ export default {
     editGroup(id) {
       this.groupId = id;
       this.isGroupEditShow = true;
+      this.isCopy = false;
+    },
+    copyGroup(id) {
+      this.groupId = id;
+      this.isGroupEditShow = true;
+      this.isCopy = true;
     },
     execGroup(id) {
       this.groupId = id;
@@ -185,16 +278,14 @@ export default {
     delGroup(group) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: group.name}),
+        content: this.$t('dialog.content.deleteconfirm', { target: group.name }),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.cmdb.group
-            .deleteGroup(group.id)
-            .then(res => {
-              this.$Message.success(this.$t('message.deletesuccess'));
-              vnode.isShow = false;
-              this.searchGroup();
-            });
+          this.$api.cmdb.group.deleteGroup(group.id).then(res => {
+            this.$Message.success(this.$t('message.deletesuccess'));
+            vnode.isShow = false;
+            this.searchGroup();
+          });
         },
         'on-cancel': vnode => {
           vnode.isShow = false;
@@ -204,11 +295,11 @@ export default {
     checkGroupStatusInterval() {
       this.clearTimer();
       if (this.doingIdList && this.doingIdList.length > 0) {
-        this.$api.cmdb.group.searchGroup({idList: this.doingIdList}).then(res => {
+        this.$api.cmdb.group.searchGroup({ idList: this.doingIdList }).then(res => {
           this.doingIdList = [];
           if (res.Return && res.Return.length > 0) {
             res.Return.forEach(element => {
-              const oldElement = this.groupData.cardList.find(a => a.id == element.id);
+              const oldElement = this.groupData.tbodyList.find(a => a.id == element.id);
               if (element.status == 'doing') {
                 this.doingIdList.push(element.id);
               }
@@ -242,8 +333,8 @@ export default {
 </script>
 <style lang="less" scope>
 @import (reference) '~@/resources/assets/css/variable.less';
-.width90{
-  max-width:calc(100% - 30px);
+.width90 {
+  max-width: calc(100% - 30px);
 }
 .group-manage {
   .tscard-container {

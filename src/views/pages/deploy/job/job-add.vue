@@ -41,8 +41,9 @@
                 >
                   <div
                     v-if="item.isEnable"
-                    class="li-item text-action"
+                    class="li-item text-action overflow"
                     :class="scenarioId == item.scenarioId?'li-active li-text border-primary':'border-base bg-op'"
+                    :title="item.scenarioName"
                     @click="changeSelect('scenario',item)"
                   >{{ item.scenarioName }}</div>
                   <Tooltip
@@ -192,9 +193,9 @@ export default {
       roundCountForm: {
         placeholder: this.$t('page.selectinput'),
         border: 'border',
-        dataList: this.$utils.getRoundCountList(),
+        dataList: this.getRoundCountList(),
         filterName: 'text',
-        allowCreate: true,
+        // allowCreate: true,
         search: true,
         transfer: true,
         desc: this.$t('term.autoexec.roundcountdescrition'),
@@ -214,7 +215,8 @@ export default {
       jobId: null, //作业id
       jobConfig: {},
       paramValue: {},
-      saveLoading: false
+      saveLoading: false,
+      moduleEnvInstanceMap: {}
     };
   },
   beforeCreate() {},
@@ -275,7 +277,7 @@ export default {
       this.$api.deploy.job.getJobModuleList(data).then(res => {
         if (res && res.Status == 'OK') {
           let moduleList = res.Return || [];
-          this.appModuleList.forEach(async(item) => {
+          this.appModuleList.forEach((item) => {
             let findItem = moduleList.find(m => m.id == item.id);
             if (findItem) {
               this.$set(item, 'canSelectModule', true); //标识可选择的模块
@@ -295,11 +297,19 @@ export default {
                 } else {
                   this.$set(item, 'isChecked', true);
                 }
-
-                this.$set(item, 'isSelectInstance', !!item.isSelectInstance);
-                if (item.isSelectInstance && type != 'scenario') { //场景改变时，实例不变
-                  this.$set(item, 'loadingShow', true);
-                  await this.getInstanceList(item);
+                if (type === 'env') { //环境改变时，实例改变
+                  const key = 'app_' + findItem.id + '_' + this.envId;
+                  if (this.moduleEnvInstanceMap[key] && !this.$utils.isEmpty(this.moduleEnvInstanceMap[key])) {
+                    this.$set(item, 'isSelectInstance', false);
+                    this.$set(item, 'loadingShow', true);
+                    this.$set(item, 'instanceList', this.moduleEnvInstanceMap[key]);
+                    this.$nextTick(() => {
+                      this.$set(item, 'isSelectInstance', true);
+                    });
+                  } else {
+                    this.$set(item, 'isSelectInstance', false);
+                    this.$set(item, 'instanceList', []);
+                  }
                 }
                 this.$set(item, 'disabled', false);
               } else {
@@ -336,6 +346,7 @@ export default {
         this.scenarioId = item.scenarioId;
         this.combopPhaseNameList = item.combopPhaseNameList;
       } else if (type == 'env') {
+        this.getModuleEnvInstanceMap(this.envId);
         this.envId = item.id;
         this.envName = item.name;
         //环境改变时，需要从新查询当前实例
@@ -348,6 +359,16 @@ export default {
       }
       this.disabledBtn = true;
       this.getJobModuleList(type);
+    },
+    getModuleEnvInstanceMap(envId) {
+      this.appModuleList.forEach(item => {
+        const key = 'app_' + item.id + '_' + envId;
+        if (item.isSelectInstance) {
+          this.$set(this.moduleEnvInstanceMap, key, item.instanceList || []);
+        } else {
+          this.$set(this.moduleEnvInstanceMap, key, []);
+        }
+      });
     },
     saveJobData() {
       let data = {
@@ -519,42 +540,15 @@ export default {
         }
       }
     },
-    getInstanceList(module) {
-      //获取实例列表
-      let data = {
-        needPage: false,
-        appSystemId: this.appSystemId,
-        envId: this.envId,
-        appModuleId: module.id
-      };
-      return this.$api.deploy.env
-        .getInstanceList(data)
-        .then(res => {
-          if (res.Status == 'OK') {
-            if (res.Return && res.Return.tbodyList && res.Return.tbodyList.length) {
-              let instanceList = res.Return.tbodyList;
-              instanceList.forEach(i => {
-                //处理回显数据
-                if (!this.$utils.isEmpty(module.instanceList)) {
-                  let findItem = module.instanceList.find(ins => ins.id === i.id);
-                  if (findItem) {
-                    this.$set(i, 'isChecked', !!findItem.isChecked);
-                  } else {
-                    this.$set(i, 'isChecked', true);
-                  }
-                } else {
-                  this.$set(i, 'isChecked', true);
-                }
-              });
-              this.$set(module, 'instanceList', instanceList);
-            } else {
-              this.$set(module, 'instanceList', []);
-            }
-          }
-        })
-        .finally(() => {
-          this.$set(module, 'loadingShow', false);
-        });
+    getRoundCountList() {
+      let list = [
+        {
+          value: -1,
+          text: '蓝绿执行'
+        }
+      ];
+      list.push(...this.$utils.getRoundCountList());
+      return list;
     }
   },
   filter: {},

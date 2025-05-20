@@ -32,6 +32,14 @@ const applicationConfig = {
     // 保存应用环境autoconfig
     return axios.post('/api/rest/deploy/app/config/env/auto/config/save', params);
   },
+  getEnvAutoConfigAuditList(params) {
+    // 保存应用环境autoconfig
+    return axios.post('/api/rest/deploy/app/config/env/auto/config/audit/list', params);
+  },
+  fallbackEnvAutoConfig(params) {
+    // 保存应用环境autoconfig
+    return axios.post('/api/rest/deploy/app/config/env/auto/config/fallback', params);
+  },
   searchAppSystemList(params) {
     // 查询应用配置树
     return axios.post('/api/rest/deploy/app/config/appsystem/search', params);
@@ -75,6 +83,10 @@ const applicationConfig = {
   saveEnvInstance(params) {
     // 保存环境实例
     return axios.post('/api/rest/deploy/app/config/instance/save', params);
+  },
+  deleteEnvInstance(params) {
+    // 删除环境实例
+    return axios.post('/api/rest/deploy/app/config/instance/delete', params);
   },
   saveAppTree(params) {
     // 保存应用配置树（应用层）
@@ -143,6 +155,14 @@ const applicationConfig = {
   saveEnvAttr(params) {
     // 获取环境层配置信息
     return axios.post('/api/rest/deploy/app/config/env/attr/save', params);
+  },
+  saveInstanceBlueGreen(params) {
+    // 保存蓝绿集
+    return axios.post('/api/rest/deploy/app/instance/bluegreen/save', params);
+  },
+  batchSaveInstanceBlueGreen(params) {
+    // 保存蓝绿集
+    return axios.post('/api/rest/deploy/app/instance/bluegreen/batchsave', params);
   }
 };
 

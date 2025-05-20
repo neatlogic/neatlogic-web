@@ -845,7 +845,7 @@ export default {
           }
         }
         this.$forceUpdate();
-        this.getSelectList();
+        this.getSelectList(); 
       }
     },
     toggleExpand(row) {
@@ -1116,7 +1116,7 @@ export default {
     },
     clearResizeKey() { //清除resizeKey
       if (this.resizeKey) {
-        sessionStorage.removeItem('tstable_' + this.resizeKey);
+        localStorage.removeItem('tstable_' + this.resizeKey);
       }
     }
   },
@@ -1249,8 +1249,8 @@ export default {
         let alllist = val;
         if (this.canResize) {
           let colsList = [];
-          if (this.resizeKey && sessionStorage.getItem('tstable_' + this.resizeKey)) {
-            colsList = JSON.parse(sessionStorage.getItem('tstable_' + this.resizeKey));
+          if (this.resizeKey && localStorage.getItem('tstable_' + this.resizeKey)) {
+            colsList = JSON.parse(localStorage.getItem('tstable_' + this.resizeKey));
           }
           this.thList = alllist.map(item => {
             const storageCol = colsList.find(c => c.key === item.key + 'Width');
@@ -1336,7 +1336,7 @@ export default {
             this.activeAutoScroll();
           }
         });
-        this.getSelectList();
+        //this.getSelectList();暂时注释，不注释会导致getSelect方法调用两次，先观察会影响什么功能再说
       },
       deep: true,
       immediate: true

@@ -119,8 +119,8 @@ export default {
       }
     },
     getSelectedAppSystemModuleVersion(indexList, itemList) {
-      this.jobData.appSystemModuleVersionList = [];
       if (itemList && itemList.length > 0) {
+        this.jobData.appSystemModuleVersionList = [];
         itemList.forEach(item => {
           this.jobData.appSystemModuleVersionList.push({
             appSystemId: item.appSystemId,
@@ -135,7 +135,8 @@ export default {
       return {
         dynamicUrl: '/api/rest/deploy/version/search',
         params: {
-          appSystemIdList: [jobTemplate.appSystemId]
+          appSystemIdList: [jobTemplate.appSystemId],
+          appModuleIdList: [jobTemplate.appModuleId]
         },
         rootName: 'tbodyList',
         transfer: true,

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="jquery-quartz-container" :class="{ 'quartz-show': showType != 'edit' }">
+    <div style="white-space: nowrap" class="jquery-quartz-container" :class="{ 'quartz-show': showType != 'edit' }">
       <div v-for="(controller, index) in controllerList" :key="index" class="cron-controller">
         <Poptip
           v-if="showType === 'edit' && controller.type !== 'label'"

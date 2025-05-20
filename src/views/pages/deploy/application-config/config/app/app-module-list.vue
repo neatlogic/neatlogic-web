@@ -445,7 +445,10 @@ export default {
           .searchAppSystemList(this.searchParam)
           .then(async res => {
             if (res && res.Status == 'OK') {
-              const dataList = res.Return.tbodyList || [];
+              let dataList = res.Return.tbodyList || [];
+              if (dataList && dataList.length > 0) {
+                dataList = dataList.filter((v) => v.abbrName || v.name);
+              }
               this.pageCount = res.Return.pageCount;
               const currentPage = Math.min(this.pageCount, this.searchParam.currentPage);
               if (dataList && dataList.length > 0) {

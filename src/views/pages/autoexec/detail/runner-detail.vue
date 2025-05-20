@@ -373,7 +373,7 @@ export default {
         placeholder: this.$t('page.selectinput'),
         border: 'border',
         filterName: 'text',
-        allowCreate: true,
+        // allowCreate: true, //与发布分批数设置保持一致
         search: true,
         transfer: true,
         desc: this.$t('term.autoexec.roundcountdescrition'),

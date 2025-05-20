@@ -5,9 +5,7 @@ const mq = {
     return axios.post('/api/rest/mq/subscribe/get', { id: id });
   },
   searchSubscribe(params) {
-    return axios.post('/api/rest/mq/subscribe/search', {
-      params: params
-    });
+    return axios.post('/api/rest/mq/subscribe/search', params);
   },
   getTopicByName(name) {
     return axios.post('/api/rest/mq/topic/get', { name: name });

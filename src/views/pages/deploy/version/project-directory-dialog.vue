@@ -17,6 +17,11 @@
           <VersionProduct :params="handleParams(params)" :has-bg="false" :hasAllAuth="hasAllAuth"></VersionProduct>
         </div>
       </template>
+      <template v-slot:footer>
+        <div class="action-group">
+          <Button @click="closeDialog">{{ $t('page.close') }}</Button>
+        </div>
+      </template>
     </TsDialog>
   </div>
 </template>

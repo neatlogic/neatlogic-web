@@ -66,6 +66,7 @@ export default {
   },
   data() {
     return {
+      isCopy: false,
       ciId: null,
       isLoading: false,
       tmpCiEntityData: {}, //临时数据，用于取消修改时还原
@@ -81,7 +82,9 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.isCopy = this.$route.name === 'cientity-copy';
+  },
   beforeMount() {},
   mounted() {
     this.ciId = Math.floor(this.$route.params['ciId']) || this.propCiId;
@@ -267,7 +270,7 @@ export default {
         this.$set(this.saveCiEntityMap, cientity.uuid, cientity);
       } else if (this.ciEntityQueue.length == 1) {
         const cientity = this.ciEntityQueue[0];
-        // 通过时间标记对象的设入顺序
+        // 通过时间标记对象的写入顺序
         cientity._lcd = new Date().getTime();
         this.$set(this.saveCiEntityMap, cientity.uuid, cientity);
         const ciEntityList = [];
@@ -379,6 +382,10 @@ export default {
       if (this.ciEntityId) {
         this.$api.cmdb.cientity.getCiEntityById(this.ciId, this.ciEntityId, true, false, false).then(async res => {
           let cientity = res.Return;
+          if (this.isCopy) {
+            cientity.id = null; //复制时需要清空id
+            cientity.uuid = this.$utils.setUuid(); //复制时需要重新生成uuid
+          }
           cientity['rootCiId'] = this.propRootCiId;
           //cientity['uuid'] = this.$utils.setUuid();//原来不知道为什么要更新uuid，如果uuid发生变化会导致表单临时数据匹配失败，先注释掉
           cientity['_elementList'] = await this.getElementByCiId(this.ciId);

@@ -41,46 +41,84 @@
               ></TsFormSelect>
             </TsFormItem>
           </div>
-          <div v-if="envId && editConfig.execMode !='runner' && editConfig.execMode !='sqlfile' && (!groupConfig || groupConfig.policy !='grayScale')" class="mt-lg">
-            <TsFormItem
-              :label="$t('term.deploy.presetexecutiontarget')"
-              labelPosition="left"
-              :labelWidth="115"
-              :tooltip="executeTooltip"
-            >
-              <TsFormSwitch v-model="executeConfig.isPresetExecuteConfig" :disabled="!canEdit"></TsFormSwitch>
-            </TsFormItem>
-            <template v-if="(!groupConfig || groupConfig.policy!='grayScale') && executeConfig.isPresetExecuteConfig">
-              <TsForm
-                ref="executeForm"
-                v-model="executeConfig"
-                :itemList="executeForm"
+          <template v-if="envId && (!groupConfig || groupConfig.policy !='grayScale')">
+            <div v-if="editConfig.execMode !='runner' && editConfig.execMode !='sqlfile'" class="mt-lg">
+              <TsFormItem
+                :label="$t('term.deploy.presetexecutiontarget')"
                 labelPosition="left"
-                tipPlacement="right"
                 :labelWidth="115"
+                :tooltip="executeTooltip"
               >
-                <template v-slot:executeUser>
-                  <ExecuteuserSetting
-                    ref="executeUser"
-                    :config="executeConfig.executeUser"
+                <TsFormSwitch v-model="executeConfig.isPresetExecuteConfig" :disabled="!canEdit"></TsFormSwitch>
+              </TsFormItem>
+              <template v-if="(!groupConfig || groupConfig.policy!='grayScale') && executeConfig.isPresetExecuteConfig">
+                <TsForm
+                  ref="executeForm"
+                  v-model="executeConfig"
+                  :itemList="executeForm"
+                  labelPosition="left"
+                  tipPlacement="right"
+                  :labelWidth="115"
+                >
+                  <template v-slot:executeUser>
+                    <ExecuteuserSetting
+                      ref="executeUser"
+                      :config="executeConfig.executeUser"
+                      :disabled="!canEdit"
+                      :runtimeParamList="runtimeParamList"
+                      :isEditRuntimeParam="false"
+                    ></ExecuteuserSetting>
+                  </template>
+                </TsForm>
+                <div class="pt-nm">
+                  <TargetDetail
+                    ref="targetDetail"
+                    :runtimeParamList="runtimeParamList"
+                    :canEdit="canEdit"
+                    :config="executeConfig.executeNodeConfig"
+                    :isAddParam="true"
+                    :labelWidth="115"
+                  ></TargetDetail>
+                </div>
+              </template>
+            </div>
+            <div v-if="editConfig.execMode ==='runner'">
+              <TsFormItem
+                :label="$t('term.deploy.presetrunnergroup')"
+                labelPosition="left"
+                :labelWidth="115"
+                :tooltip="runnerGroupTooltip"
+              >
+                <TsFormSwitch v-model="executeConfig.isPresetRunnerGroup" :disabled="!canEdit"></TsFormSwitch>
+              </TsFormItem>
+              <template v-if="executeConfig.isPresetRunnerGroup">
+                <TsFormItem
+                  :label="$t('term.deploy.actuatorgrouptag')"
+                  labelPosition="left"
+                  :labelWidth="115"
+                >
+                  <RunnerGroupTagSetting
+                    ref="runnerGroupTag"
+                    :config="executeConfig.runnerGroupTag"
                     :disabled="!canEdit"
                     :runtimeParamList="runtimeParamList"
-                    :isEditRuntimeParam="false"
-                  ></ExecuteuserSetting>
-                </template>
-              </TsForm>
-              <div class="pt-nm">
-                <TargetDetail
-                  ref="targetDetail"
-                  :runtimeParamList="runtimeParamList"
-                  :canEdit="canEdit"
-                  :config="executeConfig.executeNodeConfig"
-                  :isAddParam="true"
+                  ></RunnerGroupTagSetting>
+                </TsFormItem>
+                <TsFormItem
+                  :label="$t('page.autoexeccomboprunnergrouplabel')"
+                  labelPosition="left"
                   :labelWidth="115"
-                ></TargetDetail>
-              </div>
-            </template>
-          </div>
+                >
+                  <RunnerGroupSetting
+                    ref="runnerGroup"
+                    :config="executeConfig.runnerGroup"
+                    :disabled="!canEdit"
+                    :runtimeParamList="runtimeParamList"
+                  ></RunnerGroupSetting>
+                </TsFormItem>
+              </template>
+            </div>
+          </template>
         </div>
       </template>
       <template v-slot:footer>
@@ -114,7 +152,9 @@ export default {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TargetDetail: () => import('@/views/pages/autoexec/components/common/addTarget/target-detail'),
     TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
-    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue')
+    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
+    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
+    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue')
   },
   props: {
     canEdit: {
@@ -202,12 +242,16 @@ export default {
         executeUser: {},
         roundCount: null,
         isPresetExecuteConfig: 0,
-        executeNodeConfig: {}
+        executeNodeConfig: {},
+        isPresetRunnerGroup: 0,
+        runnerGroup: null,
+        runnerGroupTag: null
       },
       resultList: [], //执行目标校验结果
       isValid: true, //校验结果通过
       isShowTargetValid: false,
-      executeTooltip: this.$t('term.autoexec.executeTooltip')
+      executeTooltip: this.$t('term.autoexec.executeTooltip'),
+      runnerGroupTooltip: this.$t('term.autoexec.runnerGroupTooltip')
     };
   },
   beforeCreate() {},
@@ -234,6 +278,9 @@ export default {
               this.executeConfig[key] = this.editConfig.config.executeConfig[key];
             }
           });
+          if (!this.$utils.isEmpty(this.executeConfig.runnerGroup) || !this.$utils.isEmpty(this.executeConfig.runnerGroupTag)) {
+            this.$set(this.executeConfig, 'isPresetRunnerGroup', 1);
+          }
         }
       }
       for (let key in this.formItem) {
@@ -252,7 +299,7 @@ export default {
         if (!this.isValid) {
           return;
         }
-        if (this.executeConfig.isPresetExecuteConfig) {
+        if (this.executeConfig.isPresetExecuteConfig || this.executeConfig.isPresetRunnerGroup) {
           this.saveExecuteNodeConfig();
         } else if (this.editConfig.config) {
           this.$set(this.editConfig.config, 'executeConfig', {});
@@ -353,11 +400,17 @@ export default {
       if (this.$refs.executeUser) {
         this.$set(this.executeConfig, 'executeUser', this.$refs.executeUser.save());
       }
+      if (this.$refs.runnerGroupTag) {
+        this.$set(this.executeConfig, 'runnerGroupTag', this.$refs.runnerGroupTag.save());
+      }
+      if (this.$refs.runnerGroup) {
+        this.$set(this.executeConfig, 'runnerGroup', this.$refs.runnerGroup.save());
+      }
       if (this.$refs.targetDetail) {
         let executeNodeConfig = this.$refs.targetDetail.save();
         this.executeConfig.executeNodeConfig = executeNodeConfig;
-        this.$set(this.editConfig.config, 'executeConfig', this.executeConfig);
       }
+      this.$set(this.editConfig.config, 'executeConfig', this.executeConfig);
     },
     saveValid() {
       this.saveExecuteNodeConfig();

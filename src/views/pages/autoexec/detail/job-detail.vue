@@ -4,6 +4,8 @@
       ref="jobDetailContain"
       :siderWidth="258"
       :enableCollapse="true"
+      topLeftWidth="30%"
+      topRightWidth="70%"
       @toggleSiderHide="toggleSiderHide"
     >
       <template v-slot:navigation>
@@ -24,12 +26,40 @@
             <UserCard :uuid="jobData.execUser"></UserCard>
           </div>
           <div class="action-item" style="padding: 0px"><Divider type="vertical" style="margin: 0px" /></div>
-          <div ref="statusRef" class="action-item"><Status
-            v-if="jobData.status"
-            :statusName="jobData.statusName"
-            :statusValue="jobData.status"
-            class="job-status"
-          ></Status></div>
+          <div v-if="jobData.status" ref="statusRef" class="action-item">
+            <Tooltip
+              v-if="hasWaiting()"
+              theme="light"
+              max-width="400"
+              placement="right"
+              transfer
+              @on-popper-show="handleWaitingData()"
+              @on-popper-hide="()=> {
+                waitingTableConfig.tbodyList = [];
+              }"
+            >
+              <Status
+                v-if="jobData.status"
+                :statusName="jobData.statusName"
+                :statusValue="jobData.status"
+                class="job-status"
+              ></Status>
+              <template slot="content">
+                <TsTable
+                  v-bind="waitingTableConfig"
+                  :loading="isLoading"
+                  :theadList="theadList"
+                >
+                </TsTable>
+              </template>
+            </Tooltip>
+            <Status
+              v-else
+              :statusName="jobData.statusName"
+              :statusValue="jobData.status"
+              class="job-status"
+            ></Status>
+          </div>
         </div>
       </template>
       <template v-slot:topRight>
@@ -82,7 +112,7 @@
         </div>
       </template>
       <template v-slot:sider>
-        <PhaseList :phaseList="jobData.phaseList" @change="changePhase"></PhaseList>
+        <PhaseList :phaseList="jobData.phaseList" :waitingDetail="jobData.waitingDetail" @change="changePhase"></PhaseList>
       </template>
       <template v-slot:content>
         <div>
@@ -137,6 +167,7 @@ export default {
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     ...ContentItem,
     Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     ExtrainfoDetail: () => import('./jobDetail/extrainfo-detail.vue'),
     JobPhaseFlow: () => import('@/views/pages/autoexec/detail/jobDetail/job-phase-flow.vue'),
     ProjectDirectoryDialog: () => import('@/views/pages/deploy/version/project-directory-dialog'), // 工程目录
@@ -164,6 +195,26 @@ export default {
       selectStepId: null,
       isShowJobParam: false, //显示参数弹框
       phaseEndingStatusList: ['completed', 'aborted', 'failed', 'paused'], //终点状态节点列表，非终点状态列表的需要定时刷新。
+      isLoading: false,
+      theadList: [
+        {
+          title: '排队号',
+          key: 'sort'
+        },
+        {
+          title: '执行器',
+          key: 'runner'
+        },
+        {
+          title: '排队时间',
+          key: 'fcd'
+        }
+      ],
+      waitingTableConfig: {
+        tbodyList: [],
+        currentPage: 1,
+        pageSize: 10
+      },
       statusActionMapping: {
         pending: ['abort'], //未开始：
         running: ['pause', 'abort'], //运行中： 暂停  终止
@@ -174,7 +225,8 @@ export default {
         completed: ['refire', 'valid'], //已成功：重跑
         failed: ['refire'], //已失败：继续
         ready: ['execute', 'revoke'], //已就绪 撤销 执行
-        waitInput: ['abort']
+        waitInput: ['abort'],
+        waiting: ['abort']
       },
       actionMap: {
         valid: {
@@ -250,6 +302,9 @@ export default {
     mutations.setSearchParam({});
   },
   methods: {
+    handleWaitingData() {
+      this.$set(this.waitingTableConfig, 'tbodyList', this.jobData.waitingDetail);
+    },
     toggleSiderHide() {
       this.calculateJobNameMaxWidth();
     },
@@ -388,6 +443,7 @@ export default {
           this.$set(this.jobData, 'phaseList', res.Return['phaseList']);
           this.$set(this.jobData, 'status', res.Return['status']);
           this.$set(this.jobData, 'statusName', res.Return['statusName']);
+          this.$set(this.jobData, 'waitingDetail', res.Return['waitingDetail']);
           if (this.jobData && this.jobData.extraInfo) {
             this.$set(this.jobData, 'extraInfo', res.Return['extraInfo']);
           }
@@ -430,6 +486,7 @@ export default {
           }
           this.$set(this.jobData, 'status', res.Return['status']);
           this.$set(this.jobData, 'statusName', res.Return['statusName']);
+          this.$set(this.jobData, 'waitingDetail', res.Return['waitingDetail']);
           const phaseIdList = [];
           this.jobData.phaseList.forEach(phase => {
             if (!this.phaseEndingStatusList.includes(phase.status)) {
@@ -539,6 +596,11 @@ export default {
             this.downloadLoading = false;
           }
         }
+      };
+    },
+    hasWaiting() {
+      return () => {
+        return this.jobData.waitingDetail && this.jobData.waitingDetail.length > 0;
       };
     }
   },

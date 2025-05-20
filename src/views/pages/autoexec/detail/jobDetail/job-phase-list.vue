@@ -15,30 +15,91 @@
               style="position: relative"
               @click="selectPhase(phase)"
             >
-              <!-- 进度百分比 -->
               <div v-if="fixedPhaseId && fixedPhaseId === phase.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
               <div class="name-grid">
                 <div class="overflow">
                   <span :class="{ 'text-primary': activePhaseId && phase.id == activePhaseId }" :title="phase.name || '-'">{{ phase.name || '-' }}</span>
                 </div>
-                <div><Status :statusValue="phase.statusVo.name" :statusName="phase.statusVo.text" class="step-status"></Status></div>
+                <div v-if="!$utils.isEmpty(phase.statusVo)">
+                  <Tooltip
+                    v-if="waitingTableConfig.tbodyList.length > 0"
+                    theme="light"
+                    max-width="400"
+                    placement="right"
+                    transfer
+                    @on-popper-show="handleWaitingData(group)"
+                    @on-popper-hide="()=> {
+                      waitingTableConfig.tbodyList = [];
+                    }"
+                  >
+                    <Status
+                      :statusValue="phase.statusVo.name"
+                      :statusName="phase.statusVo.text"
+                      class="step-status"
+                    ></Status>
+                    <template slot="content">
+                      <TsTable
+                        v-bind="waitingTableConfig"
+                        :loading="isLoading"
+                        :theadList="theadList"
+                      >
+                      </TsTable>
+                    </template>
+                  </Tooltip>
+                  <Status
+                    v-else
+                    :statusValue="phase.statusVo.name"
+                    :statusName="phase.statusVo.text"
+                    class="step-status"
+                    @mouseenter="() => handleWaitingData(group)"
+                  ></Status>
+                </div>
               </div>
               <div class="stepProcess">
                 <Liquid :size="7" :percent="phase.completionRate" :config="{ status: phase.status }"></Liquid>
-                <Tooltip
-                  v-if="getExceptionTips(phase)"
-                  transfer
-                  class="stepStatues com-status"
-                  placement="bottom"
-                  theme="light"
-                >
-                  <span class="tsfont-warning-o" :class="getExceptionTips(phase).class"></span>
-                  <template v-slot:content>
-                    <div>
-                      <div v-for="title in getExceptionTips(phase).titles" :key="title">{{ title }}</div>
-                    </div>
+                <div class="notice-box">
+                  <template v-if="hasWaiting(group)">
+                    <Tooltip
+                      transfer
+                      placement="right"
+                      theme="light"
+                      @on-popper-show="handleWaitingData(group)"
+                      @on-popper-hide="()=> {
+                        waitingTableConfig.tbodyList = [];
+                      }"
+                    >
+                      <CircleLoading
+                        :size="14"
+                        class="mr-xs"
+                        style="margin-top: -2px;"
+                        color="#ffba5a"
+                      ></CircleLoading>
+                      <template v-slot:content>
+                        <div>
+                          <TsTable
+                            v-bind="waitingTableConfig"
+                            :theadList="theadList"
+                          >
+                          </TsTable>
+                        </div>
+                      </template>
+                    </Tooltip>
                   </template>
-                </Tooltip>
+                  <Tooltip
+                    v-if="getExceptionTips(phase)"
+                    transfer
+                    class="com-status"
+                    placement="bottom"
+                    theme="light"
+                  >
+                    <span class="tsfont-warning-o" :class="getExceptionTips(phase).class"></span>
+                    <template v-slot:content>
+                      <div>
+                        <div v-for="title in getExceptionTips(phase).titles" :key="title">{{ title }}</div>
+                      </div>
+                    </template>
+                  </Tooltip>
+                </div>
               </div>
               <div>
                 <Tooltip
@@ -69,7 +130,9 @@
 export default {
   components: {
     Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue'),
-    Status: () => import('@/resources/components/Status/CommonStatus.vue')
+    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    CircleLoading: () => import('@/resources/components/loading/CircleLoading.vue')
   },
   filters: {},
   model: {
@@ -77,12 +140,30 @@ export default {
     event: 'change'
   },
   props: {
-    phaseList: { type: Array }
+    phaseList: { type: Array },
+    waitingDetail: { type: Array }
   },
   data() {
     return {
       fixedPhaseId: null,
-      activePhaseId: null
+      activePhaseId: null,
+      currentPhaseConfig: null,
+      isLoading: false,
+      theadList: [
+        {
+          title: '排队号',
+          key: 'sort'
+        },
+        {
+          title: '执行器',
+          key: 'runner'
+        }
+      ],
+      waitingTableConfig: {
+        tbodyList: [],
+        currentPage: 1,
+        pageSize: 100
+      }
     };
   },
   beforeCreate() {},
@@ -111,6 +192,9 @@ export default {
           this.$el.scrollTop = $select.offsetTop - config.height / 2 + 130;
         }
       }
+    },
+    handleWaitingData(group) {
+      this.$set(this.waitingTableConfig, 'tbodyList', this.waitingDetail.filter(t => t.groupSortList.includes(group.groupSort)));
     }
   },
   computed: {
@@ -120,7 +204,7 @@ export default {
         this.phaseList.forEach(phase => {
           let group = groupList.find(d => d.groupId == phase.groupId);
           if (!group) {
-            group = { groupId: phase.groupId, phaseList: [] };
+            group = { groupId: phase.groupId, phaseList: [], groupSort: phase.jobGroupVo.sort };
             groupList.push(group);
           }
           group['phaseList'].push(phase);
@@ -154,6 +238,11 @@ export default {
         }
         return null;
       };
+    },
+    hasWaiting() {
+      return (group) => {
+        return this.waitingDetail && this.waitingDetail.some(t => t.groupSortList.includes(group.groupSort));
+      };
     }
   },
   watch: {
@@ -181,7 +270,7 @@ export default {
           //内容变化会影响高度，可能会因此产生滚动条，所以每次内容变化都要触发跳转，并且需要延时等待内容加载完毕才能进行定位
           if (this.activePhaseId) {
             setTimeout(() => {
-              const rect = this.$refs['phase_' + this.activePhaseId][0].getBoundingClientRect();
+              const rect = this.$refs['phase_' + this.activePhaseId][0]?.getBoundingClientRect();
               if (rect && (rect.top < 0 || rect.top > window.innerHeight)) {
                 this.$utils.jumpTo('#phase_' + this.activePhaseId, 'smooth');
               }
@@ -305,16 +394,15 @@ export default {
         }
       }
       .stepProcess {
+        display: grid;
+        grid-template-columns: calc(100% - 70px) 70px;
+        justify-content: space-between;
         padding-top: 6px;
+        padding-right: 6px;
         line-height: @iconWidth;
-        position: relative;
-        display: block;
-        padding-right: 80px;
-        ::v-deep .stepStatues {
-          padding: 0px 4px;
-          position: absolute;
-          right: 0px;
-          top: 4px;
+        .notice-box {
+          display: flex;
+          justify-content: end;
         }
       }
     }
