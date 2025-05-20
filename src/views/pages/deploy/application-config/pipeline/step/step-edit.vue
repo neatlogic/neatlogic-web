@@ -102,6 +102,7 @@
                     :config="executeConfig.runnerGroupTag"
                     :disabled="!canEdit"
                     :runtimeParamList="runtimeParamList"
+                    :isRequired="false"
                   ></RunnerGroupTagSetting>
                 </TsFormItem>
                 <TsFormItem
@@ -114,6 +115,7 @@
                     :config="executeConfig.runnerGroup"
                     :disabled="!canEdit"
                     :runtimeParamList="runtimeParamList"
+                    :isRequired="false"
                   ></RunnerGroupSetting>
                 </TsFormItem>
               </template>
