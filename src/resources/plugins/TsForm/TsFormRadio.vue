@@ -1,6 +1,6 @@
 <template>
   <div class="form-li">
-    <span v-if="readonly" :class="[readonlyClass, readonlyTextHighlightClass]">{{ getText }}</span>
+    <span v-if="readonly" :class="[readonlyClass, readonlyTextHighlightClass]">{{ getSelectedText(currentValue) }}</span>
     <div v-else :style="getStyle">
       <RadioGroup
         v-model="currentValue"
@@ -137,8 +137,12 @@ export default {
     this.cancelAxios && this.cancelAxios.cancel();
   },
   methods: {
-    initDataListByUrl: function() {
+    initDataListByUrl() {
       let _this = this;
+      if (this.readonly && !this.$utils.isEmpty(this.historyValue)) {
+        // 只读模式下不需要调接口获取数据
+        return false;
+      }
       if (_this.url) {
         let params = { pageSize: 100 };
         typeof _this.params == 'object' && (params = Object.assign(params, _this.params));
@@ -170,24 +174,40 @@ export default {
             _this.onChangeValue();
           } 
         }
-        
+        this.handleDisableNodeList();
         this.handleEchoFailedDefaultValue();
+      }
+    },
+    handleDisableNodeList() {
+      if (this.disabled && !this.$utils.isEmpty(this.historyValue)) {
+        const findItem = this.nodeList.find(item => item[this.valueName] == this.historyValue[this.valueName]);
+        const newItem = {
+          [this.textName]: this.historyValue[this.textName],
+          [this.valueName]: this.historyValue[this.valueName]
+        };
+        if (!findItem) {
+          if (Array.isArray(this.nodeList)) {
+            this.nodeList.unshift(newItem);
+          } else {
+            this.nodeList = [newItem];
+          }
+        }
       }
     },
     handleEchoFailedDefaultValue() {
       // 处理回显失败默认值，回显失败清空默认值
-      if (this.isClearEchoFailedDefaultValue && !this.$utils.isEmpty(this.nodeList)) {
-        let selectedList = [];
-        if (this.currentValue) {
-          let selectedItem = this.nodeList.find((item) => item[this.valueName] == this.currentValue);
-          if (!selectedItem) {
-            this.currentValue = null;
-          }
-        }
-        if (!this.$utils.isEmpty(selectedList)) {
-          this.onChangeValue();
-        }
-      }
+      // if (this.isClearEchoFailedDefaultValue && !this.$utils.isEmpty(this.nodeList)) {
+      //   let selectedList = [];
+      //   if (this.currentValue) {
+      //     let selectedItem = this.nodeList.find((item) => item[this.valueName] == this.currentValue);
+      //     if (!selectedItem) {
+      //       this.currentValue = null;
+      //     }
+      //   }
+      //   if (!this.$utils.isEmpty(selectedList)) {
+      //     this.onChangeValue();
+      //   }
+      // }
     },
     onChangeValue() {
       let isSame = this.$utils.isSame(this.value, this.currentValue); // 使用isSame比较两个字符串是否一致，避免 '' == 0 为true情况，导致没有emit on-change方法，form表单获取不到值问题
@@ -251,10 +271,6 @@ export default {
       let reslutClass = {};
       this.className && (reslutClass[this.className] = true);
       return reslutClass;
-    },
-    getText() {
-      let node = this.nodeList.find(item => item[this.valueName] == this.currentValue);
-      return node && node[this.textName] ? node[this.textName] : '-';
     }
   },
   watch: {
@@ -270,7 +286,8 @@ export default {
     dataList: {
       handler(newValue) {
         if (!this.url) {
-          this.$set(this, 'nodeList', newValue);
+          this.$set(this, 'nodeList', this.$utils.deepClone(newValue) || []);
+          this.handleDisableNodeList();
           this.setSelectList();
           this.handleEchoFailedDefaultValue();
         }

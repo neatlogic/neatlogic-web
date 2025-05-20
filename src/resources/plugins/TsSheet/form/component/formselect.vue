@@ -11,6 +11,7 @@
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
       :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
       :isCustomValue="isCustomValue"
+      :historyValue="value"
       border="border"
       search
       @first="addRow"
