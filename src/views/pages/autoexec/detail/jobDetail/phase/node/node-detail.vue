@@ -49,7 +49,7 @@
                     <div v-if="locationId === step.name.replace(/[-\.\/]+?/gi, '_') + '_' + step.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                     <div style="white-space:nowrap" class="overflow">
                       <span class="stepIndex tips icon-right" :class="getStepIndexClass(step)" @click.stop></span>
-                      <span class="stepName name" :class="{ 'text-primary': step.status == 'running' }" :title="step.name">{{ getOperationName(step) }}</span>
+                      <OperationTooltips :operation="step"></OperationTooltips>
                     </div>
                     <div v-if="step.description" class="stepType overflow description-pl">
                       <span class="text-tip fz10 tips" :title="step.description">{{ step.description }}</span>
@@ -84,7 +84,7 @@
                           <div v-if="locationId === item.name.replace(/[-\.\/]+?/gi, '_') + '_' + item.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                           <div style="white-space:nowrap" class="overflow">
                             <span class="stepIndex tips icon-right" :class="getStepIndexClass(item)" @click.stop></span>
-                            <span class="stepName name" :class="{ 'text-primary': item.status == 'running' }" :title="item.name">{{ getOperationName(item) }}</span>
+                            <OperationTooltips :operation="item"></OperationTooltips>
                           </div>
                           <div v-if="item.description" class="stepType overflow description-pl">
                             <span class="text-tip fz10 tips" :title="item.description">{{ item.description }}</span>
@@ -115,7 +115,7 @@
                           <div v-if="locationId === item.name.replace(/[-\.\/]+?/gi, '_') + '_' + item.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                           <div style="white-space:nowrap" class="overflow">
                             <span class="stepIndex tips icon-right" :class="getStepIndexClass(item)" @click.stop></span>
-                            <span class="stepName name" :class="{ 'text-primary': item.status == 'running' }" :title="item.name">{{ getOperationName(item) }}</span>
+                            <OperationTooltips :operation="item"></OperationTooltips>
                           </div>
                           <div v-if="item.description" class="stepType overflow description-pl">
                             <span class="text-tip fz10 tips" :title="item.description">{{ item.description }}</span>
@@ -133,7 +133,7 @@
                     <div v-if="locationId === step.name.replace(/[-\.\/]+?/gi, '_') + '_' + step.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                     <div style="white-space:nowrap" class="overflow">
                       <span class="stepIndex tips icon-right" :class="getStepIndexClass(step)" @click.stop></span>
-                      <span class="stepName name" :class="{ 'text-primary': step.status == 'running' }" :title="step.name">{{ getOperationName(step) }}</span>
+                      <OperationTooltips :operation="step"></OperationTooltips>
                     </div>
                     <div v-if="step.description" class="stepType overflow description-pl">
                       <span class="text-tip fz10 tips" :title="step.description">{{ step.description }}</span>
@@ -168,7 +168,7 @@
                           <div v-if="locationId === item.name.replace(/[-\.\/]+?/gi, '_') + '_' + item.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                           <div style="white-space:nowrap" class="overflow">
                             <span class="stepIndex tips icon-right" :class="getStepIndexClass(item)" @click.stop></span>
-                            <span class="stepName name" :class="{ 'text-primary': item.status == 'running' }" :title="item.name">{{ getOperationName(item) }}</span>
+                            <OperationTooltips :operation="item"></OperationTooltips>
                           </div>
                           <div v-if="item.description" class="stepType overflow description-pl">
                             <span class="text-tip fz10 tips" :title="item.description">{{ item.description }}</span>
@@ -186,7 +186,7 @@
                   <div v-if="locationId === step.name.replace(/[-\.\/]+?/gi, '_') + '_' + step.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                   <div style="white-space:nowrap" class="overflow">
                     <span class="stepIndex tips icon-right" :class="getStepIndexClass(step)" @click.stop></span>
-                    <span class="stepName name" :class="{ 'text-primary': step.status == 'running' }" :title="step.name">{{ getOperationName(step) }}</span>
+                    <OperationTooltips :operation="step"></OperationTooltips>
                   </div>
                   <div v-if="step.description" class="stepType overflow description-pl">
                     <span class="text-tip fz10 tips" :title="step.description">{{ step.description }}</span>
@@ -323,7 +323,8 @@ export default {
     NodeParam: () => import('./param.vue'),
     SqlContent: () => import('@/views/pages/autoexec/detail/logcomponents/sql-content.vue'), // 脚本内容
     ScriptContentDialog: () => import('@/views/pages/autoexec/detail/script-content-dialog.vue'),
-    CustomTemplateViewer: () => import('@/resources/components/customtemplate/customtemplate-viewer.vue')
+    CustomTemplateViewer: () => import('@/resources/components/customtemplate/customtemplate-viewer.vue'),
+    OperationTooltips: () => import('./operation-tooltips.vue')
   },
   filters: {},
   directives: {},
@@ -439,13 +440,6 @@ export default {
             }, 3000);
           }
         });
-      }
-    },
-    getOperationName(step) {
-      if (step.name) {
-        return step.name;
-      } else {
-        return '-';
       }
     },
     getjobCustomTemplateListList() { //自定义模板列表
