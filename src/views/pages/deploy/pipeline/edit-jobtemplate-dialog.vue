@@ -103,20 +103,11 @@
         </div>
         <div>
           <Divider orientation="start" class="divier">{{ $t('term.autoexec.batchsetting') }}</Divider>
-          <div class="pr-nm pl-nm pb-nm">
-            <Slider
-              :value="roundIndex"
-              :min="0"
-              :max="10"
-              :step="1"
-              show-tip="never"
-              :marks="roundMark"
-              @on-change="
-                val => {
-                  $set(jobTemplateData, 'roundCount', roundList[val]);
-                }
-              "
-            ></Slider>
+          <div class="pb-nm">
+            <TsFormSelect
+              v-model="jobTemplateData.roundCount"
+              v-bind="roundCountForm"
+            ></TsFormSelect>
           </div>
         </div>
         <div>
@@ -150,11 +141,14 @@ export default {
     id: { type: Number },
     job: {type: Object},
     appSystemId: {type: Number},
-    type: {type: String}
+    type: {type: String},
+    isUpdateJobTemplate: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
-      roundList: [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024],
       isLoading: false,
       jobTemplateData: {
         appSystemId: null,
@@ -186,19 +180,29 @@ export default {
           this.$set(this.jobTemplateData, 'appSystemId', val);
           this.$set(this.jobTemplateData, 'appSystemAbbrName', item.text);
         }
-      }
+      },
+      roundCountForm: {
+        border: 'border',
+        dataList: this.getRoundCountList(),
+        filterName: 'text',
+        search: true,
+        transfer: true,
+        desc: this.$t('term.autoexec.roundcountdescrition'),
+        validateList: ['required', 'maxNum']
+      },
+      moduleEnvInstanceMap: {}
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
+    if (this.id && !this.isUpdateJobTemplate) {
+      await this.getJobTemplateById();
+    } else if (this.job) {
+      this.jobTemplateData = this.job;
+    }
     if (this.appSystemId) {
       this.$set(this.jobTemplateData, 'appSystemId', this.appSystemId);
       this.$set(this.appSystemConfig, 'disabled', true);
-    }
-    if (this.id) {
-      this.getJobTemplateById();
-    } else if (this.job) {
-      this.jobTemplateData = this.job;
     }
   },
   beforeMount() {},
@@ -210,10 +214,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    toggleCheckAllModule(val) {},
     getJobTemplateById() {
       if (this.id) {
-        this.$api.deploy.pipeline.getJobTemplateById(this.id).then(res => {
+        return this.$api.deploy.pipeline.getJobTemplateById(this.id).then(res => {
           this.jobTemplateData = res.Return;
         });
       }
@@ -306,7 +309,7 @@ export default {
                 const selectedModule = this.appModuleList.find(d => d.id === this.jobTemplateData.appModuleId);
                 if (selectedModule) {
                   this.$set(selectedModule, 'isChecked', true);
-                  if (this.jobTemplateData.config.selectNodeList && this.jobTemplateData.config.selectNodeList.length > 0) {
+                  if (this.jobTemplateData.config && this.jobTemplateData.config.selectNodeList && this.jobTemplateData.config.selectNodeList.length > 0) {
                     this.$set(selectedModule, 'isSelectInstance', true);
                     const instanceList = this.$utils.deepClone(this.jobTemplateData.config.selectNodeList);
                     instanceList.forEach(ins => {
@@ -333,11 +336,13 @@ export default {
       this.$set(this.jobTemplateData, 'scenarioName', scenario.scenarioName);
     },
     selectEnv(env) {
+      if (this.jobTemplateData && this.jobTemplateData.envId) {
+        this.getModuleEnvInstanceMap(this.jobTemplateData.envId);
+      }
+
       this.$set(this.jobTemplateData, 'envId', env.id);
       this.$set(this.jobTemplateData, 'envName', env.name);
-    },
-    checkAppModule(val) {
-      console.log(val);
+      this.updateInstanceList(env.id);
     },
     save() {
       if (!this.jobTemplateData.id && !this.jobTemplateData.uuid) {
@@ -366,6 +371,9 @@ export default {
         const moduleList = this.$refs?.moduleList.getData() || [];
         if (moduleList && moduleList.length == 1) {
           const module = moduleList[0];
+          if (!this.jobTemplateData.config) {
+            this.jobTemplateData.config = {};
+          }
           this.jobTemplateData.config.selectNodeList = module.selectNodeList;
           this.$emit('update', this.jobTemplateData);
         } else {
@@ -375,6 +383,46 @@ export default {
     },
     close() {
       this.$emit('close');
+    },
+    getRoundCountList() {
+      let list = [
+        {
+          value: -1,
+          text: '蓝绿执行'
+        }
+      ];
+      list.push(...this.$utils.getRoundCountList());
+      return list;
+    },
+    getModuleEnvInstanceMap(envId) {
+      if (!envId) {
+        return;
+      }
+      this.appModuleList.forEach(item => {
+        const key = 'app_' + item.id + '_' + envId;
+        if (item.isSelectInstance) {
+          this.$set(this.moduleEnvInstanceMap, key, item.instanceList || []);
+        } else {
+          this.$set(this.moduleEnvInstanceMap, key, []);
+        }
+      });
+    },
+    updateInstanceList(envId) {
+      this.appModuleList.forEach(item => {
+        this.$set(item, 'isSelectInstance', false);
+        const key = 'app_' + item.id + '_' + envId;
+        if (this.moduleEnvInstanceMap[key] && !this.$utils.isEmpty(this.moduleEnvInstanceMap[key])) {
+          this.$set(item, 'isSelectInstance', false);
+          this.$set(item, 'loadingShow', true);
+          this.$set(item, 'instanceList', this.moduleEnvInstanceMap[key]);
+          this.$nextTick(() => {
+            this.$set(item, 'isSelectInstance', true);
+          });
+        } else {
+          this.$set(item, 'isSelectInstance', false);
+          this.$set(item, 'instanceList', []);
+        }
+      });
     }
   },
   filter: {},
@@ -387,19 +435,6 @@ export default {
         }
       }
       return '';
-    },
-    roundIndex() {
-      if (this.jobTemplateData.roundCount) {
-        return this.roundList.findIndex(d => d == this.jobTemplateData.roundCount);
-      }
-      return 0;
-    },
-    roundMark() {
-      const d = {};
-      this.roundList.forEach((val, index) => {
-        d[index] = val.toString();
-      });
-      return d;
     }
   },
   watch: {

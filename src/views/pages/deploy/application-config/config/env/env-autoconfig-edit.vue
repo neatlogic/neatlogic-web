@@ -195,6 +195,10 @@ export default {
     },
     okDialog() {
       if (!this.validKeyRepeat() || !this.validValueIsEmpty()) {
+        this.$Notice.warning({
+          title: this.$t('page.tip'),
+          desc: this.$t('page.requiredparameterhasnullvalue')
+        });
         return false;
       }
       let keyValueList = [];

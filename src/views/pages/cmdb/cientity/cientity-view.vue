@@ -4,8 +4,10 @@
       :hideHeader="hideHeader"
       :enableCollapse="!ciEntityData.isVirtual"
       border="border"
-      :rightWidth="220"
+      @toggleSiderHide="toggleSiderHide"
     >
+      :rightWidth="220"
+      >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
@@ -23,6 +25,25 @@
                 val => {
                   if (val) {
                     showContent = 'topo';
+                  } else {
+                    showContent = 'main';
+                  }
+                }
+              "
+            ></TsFormSwitch>
+          </div>
+          <div v-if="!ciEntityData.isVirtual" class="action-item">
+            <TsFormSwitch
+              :value="showContent === 'tree'"
+              :trueValue="true"
+              :falseValue="false"
+              trueText="隐藏拓扑(beta)"
+              falseText="显示拓扑(beta)"
+              :showStatus="true"
+              @on-change="
+                val => {
+                  if (val) {
+                    showContent = 'tree';
                   } else {
                     showContent = 'main';
                   }
@@ -103,7 +124,7 @@
           <div :class="!hideHistory && isHistoryShow && !ciEntityData.isVirtual ? '' : 'middleMax'" class="middle bg-block radius-lg">
             <div class="middle-main">
               <div class="middle-block">
-                <div v-if="showContent == 'main'">
+                <div v-if="showContent === 'main'">
                   <Card :bordered="false" dis-hover>
                     <div slot="title" class="card-top">
                       <div class="title text-grey">
@@ -209,7 +230,7 @@
                     </div>
                   </Card>
                 </div>
-                <div v-else-if="showContent == 'topo'">
+                <div v-else-if="showContent === 'topo'">
                   <CiEntityTopo
                     v-if="ciEntityData.id"
                     ref="ciEntityTopo"
@@ -217,7 +238,16 @@
                     :ciId="ciEntityData.ciId"
                   ></CiEntityTopo>
                 </div>
-                <div v-else-if="showContent == 'customview'" class="padding-md">
+                <div v-else-if="showContent === 'tree'">
+                  <CiEntityTree
+                    v-if="ciEntityData.id"
+                    ref="ciEntityTree"
+                    :ciEntityId="ciEntityData.id"
+                    :ciId="ciEntityData.ciId"
+                    :rootCiEntity="ciEntityData"
+                  ></CiEntityTree>
+                </div>
+                <div v-else-if="showContent === 'customview'" class="padding-md">
                   <CustomViewDetailData mode="particular" :viewId="customViewId" :ciEntityId="ciEntityId"></CustomViewDetailData>
                 </div>
               </div>
@@ -257,6 +287,7 @@ export default {
     CustomViewDialog: () => import('./ci-customview-dialog.vue'),
     HistoryList: () => import('./history-list.vue'),
     CiEntityTopo: () => import('./cientity-topo.vue'),
+    CiEntityTree: () => import('./cientity-tree.vue'),
     TransactionDialog: () => import('./transaction-dialog.vue')
   },
   props: {
@@ -296,8 +327,8 @@ export default {
   created() {},
   beforeMount() {},
   async mounted() {
-    this.ciId = Math.floor(this.$route.params['ciId']) || this.propCiId;
-    this.ciEntityId = Math.floor(this.$route.params['id']) || this.propCiEntityId;
+    this.ciId = this.propCiId || Math.floor(this.$route.params['ciId']);
+    this.ciEntityId = this.propCiEntityId || Math.floor(this.$route.params['id']);
     this.showContent = this.$route.query['show'] || this.showContent;
     await this.getCiEntityById();
     this.getAttrByCiId();
@@ -316,6 +347,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    toggleSiderHide(isSiderHide) {
+      this.$nextTick(() => {
+        if (this.$refs['ciEntityTree']) {
+          this.$refs['ciEntityTree'].resize();
+        }
+      });
+    },
     showCustomViewData(customView) {
       if (customView._type === 'data') {
         if (customView.type === 'scene') {
@@ -480,6 +518,9 @@ export default {
         if (this.$refs['ciEntityTopo']) {
           this.$refs['ciEntityTopo'].resizeSVG();
         }
+        if (this.$refs['ciEntityTree']) {
+          this.$refs['ciEntityTree'].resize();
+        }
       }, 300);
     }
   },
@@ -546,6 +587,9 @@ export default {
         window.setTimeout(() => {
           if (this.$refs['ciEntityTopo']) {
             this.$refs['ciEntityTopo'].resizeSVG();
+          }
+          if (this.$refs['ciEntityTree']) {
+            this.$refs['ciEntityTree'].resize();
           }
         }, 300);
       }

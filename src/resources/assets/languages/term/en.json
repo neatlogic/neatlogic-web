@@ -902,7 +902,9 @@
     "setinputloopitems": "Please enter the loop item",
     "setinputloopoperations": "Settings: Please enter at least one tool",
     "runnergrouptagprocesstips": "If form assignment is required, please set the executor group to the \"Job Parameters\" type in the combination tool",
-    "runnergroupprocesstips": "If form assignment is required, please set the \"Executor Group\" to the \"Job Parameter\" type in the combination tool"
+    "runnergroupprocesstips": "If form assignment is required, please set the \"Executor Group\" to the \"Job Parameter\" type in the combination tool",
+    "resetrunnerphase": "Reset phase or not",
+    "runnerGroupTooltip": "If the actuator group is not filled in here, the current stage will inherit the combination tool actuator group by default. If the actuator group is filled in here, the current stage will use the one filled in here; During execution, the executor group of the stage cannot be modified"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
@@ -1342,7 +1344,8 @@
     "tagentupgrade": "Upgrade Package Management",
     "tagentupgradepkg": "Upgrade Package",
     "selecttagentupgradepkg": "Select an existing upgrade package",
-    "tagentuploadupgradepkg": "Upload upgrade package"
+    "tagentuploadupgradepkg": "Upload upgrade package",
+    "versionremarks": "Version Remarks"
   },
   "knowledge": {
     "document": "Document",
@@ -2140,7 +2143,11 @@
     "pleasechoosedatabase": "Please select a database first",
     "currentenvbuildno": "{target} environment BuildNo",
     "buildnopending": "To be built",
-    "actuatorgrouptag": "Actuator group label"
+    "actuatorgrouptag": "Actuator group label",
+    "blueset": "Blue green setting",
+    "blueSet": "Blue Green",
+    "ismodified": "Modified",
+    "presetrunnergroup": "Preset actuator group"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",

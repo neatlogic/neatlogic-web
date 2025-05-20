@@ -241,7 +241,7 @@ export default {
     },
     hasWaiting() {
       return (group) => {
-        return this.waitingDetail.some(t => t.groupSortList.includes(group.groupSort));
+        return this.waitingDetail && this.waitingDetail.some(t => t.groupSortList.includes(group.groupSort));
       };
     }
   },
@@ -270,7 +270,7 @@ export default {
           //内容变化会影响高度，可能会因此产生滚动条，所以每次内容变化都要触发跳转，并且需要延时等待内容加载完毕才能进行定位
           if (this.activePhaseId) {
             setTimeout(() => {
-              const rect = this.$refs['phase_' + this.activePhaseId][0].getBoundingClientRect();
+              const rect = this.$refs['phase_' + this.activePhaseId][0]?.getBoundingClientRect();
               if (rect && (rect.top < 0 || rect.top > window.innerHeight)) {
                 this.$utils.jumpTo('#phase_' + this.activePhaseId, 'smooth');
               }

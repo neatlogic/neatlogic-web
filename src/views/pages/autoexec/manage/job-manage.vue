@@ -73,7 +73,7 @@
             </span>
           </template> -->
           <template slot="routeName" slot-scope="{ row }">
-            <div v-if="row.source == 'inspect' || row.source == 'inspectapp' || row.source == 'batchdeploy'" style="max-width:150px;" class="overflow">
+            <div v-if="row.source == 'inspect' || row.source == 'inspectapp'" style="max-width:150px;" class="overflow">
               {{ row.route && row.route.name }}
             </div>
             <div
@@ -115,7 +115,7 @@
                 <template v-if="row.isCanTakeOver">
                   <li class="icon tsfont-takeover" @click.stop="editRow(row, 'takeover')">{{ $t('page.takeover') }}</li>
                 </template>
-                <template v-if="row.source != 'batchdeploy'">
+                <template v-if="row.source != 'batchdeploy' && row.parentId != -1">
                   <li v-auth="'AUTOEXEC_JOB_MODIFY'" class="icon tsfont-trash-o" @click.stop="deleteRow(row)">{{ $t('page.delete') }}</li>
                 </template>
               </ul>
@@ -313,6 +313,9 @@ export default {
             this.$set(parentRow, 'loading', false);
             this.jobData.tbodyList.splice(pIndex + 1, 0, ...jobList);
           }
+        } else {
+          this.$set(parentRow, 'showChildren', true);
+          this.$set(parentRow, 'loading', false);
         }
       });
     },
@@ -340,10 +343,12 @@ export default {
       });
     },
     toBatchJobDetail(row) {
-      this.$router.push({
-        path: '/batch-job-detail',
-        query: { id: row.id }
-      });
+      const {parentId = '', id = ''} = row || {};
+      if (parentId != -1) {
+        this.toJobDetail(row);
+      } else {
+        window.open(HOME + '/deploy.html#/batch-job-detail?id=' + id, '_blank');
+      }
     },
     // toOperationDetail(row) {
     //   if (row.operationType == 'combop') {
@@ -386,7 +391,7 @@ export default {
       } else if (row.source == 'deploy') {
         window.open(HOME + '/deploy.html#/application-config-pipeline-detail?appSystemId=' + routeConfig.appSystemId, '_blank');
       } else if (row.source == 'batchdeploy') {
-        return;
+        window.open(HOME + '/deploy.html#/job-manage', '_blank');
       } else if (row.source == 'deployschedulegeneral' || row.source == 'deployschedulepipeline') {
         window.open(HOME + '/deploy.html#/schedule-job-edit?id=' + routeConfig.id, '_blank');
       } else if (row.source == 'deployci') {

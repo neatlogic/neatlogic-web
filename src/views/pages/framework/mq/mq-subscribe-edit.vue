@@ -27,7 +27,7 @@
             <div>
               <component
                 :is="subscribeData.subscribeHandlerName + '_config'"
-                v-if="subscribeData && subscribeData.subscribeHandlerName"
+                v-if="subscribeData && subscribeData.subscribeHandlerName && handlers[subscribeData.subscribeHandlerName + '_config']"
                 ref="configComponent"
                 :config="subscribeData.config"
               ></component>
@@ -78,6 +78,7 @@ export default {
   data() {
     const _this = this;
     return {
+      handlers: handlers,
       dialogConfig: {
         type: 'modal',
         maskClose: false,
@@ -206,11 +207,11 @@ export default {
       if (form && !form.valid()) {
         isValid = false;
       }
-      if (configComponent && !configComponent.valid()) {
+      if (configComponent && configComponent.valid && !configComponent.valid()) {
         isValid = false;
       }
       if (isValid) {
-        this.subscribeData.config = configComponent && configComponent.getConfig();
+        this.subscribeData.config = configComponent && configComponent.getConfig && configComponent.getConfig();
         this.$api.framework.mq.saveSubscribe(this.subscribeData).then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));

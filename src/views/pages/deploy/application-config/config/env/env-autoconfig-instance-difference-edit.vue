@@ -184,6 +184,10 @@ export default {
     okDialog() {
       let form = this.$refs.form;
       if ((form && !form.valid()) || !this.isRepeat() || !this.validValueIsEmpty()) {
+        this.$Notice.warning({
+          title: this.$t('page.tip'),
+          desc: this.$t('page.requiredparameterhasnullvalue')
+        });
         return false;
       }
       let keyValueList = [];

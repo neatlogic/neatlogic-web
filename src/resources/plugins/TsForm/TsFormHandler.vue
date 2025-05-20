@@ -62,12 +62,13 @@ export default {
   },
   computed: {},
   watch: {
-    /*valueLocal: {
-      handler() {
-        this.$emit('on-change', this.valueLocal);
+    value: {
+      handler(newValue) {
+        // 处理自定义数据，删除单选框值的时候，组件值没有被清空的问题
+        this.valueLocal = this.$utils.deepClone(newValue);
       },
       deep: true
-    }*/
+    }
   },
   render(h, cx) {
     let $handler;

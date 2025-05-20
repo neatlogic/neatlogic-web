@@ -35,6 +35,9 @@
           <span v-if="canRun" class="action-item">
             <Button type="primary" @click="runJob()">{{ $t('page.execute') }}</Button>
           </span>
+          <span v-if="canAbort" class="action-item">
+            <Button type="warning" @click="abortJob()">{{ $t('page.abort') }}</Button>
+          </span>
           <span v-if="canTakeOver" class="action-item">
             <Button type="primary" @click="takeOverJob()">{{ $t('page.takeover') }}</Button>
           </span>
@@ -151,6 +154,20 @@ export default {
   },
   destroyed() {},
   methods: {
+    abortJob() {
+      this.$createDialog({
+        title: this.$t('dialog.title.updateconfirm'),
+        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.abort'), name: this.$t('term.deploy.batchjob') }),
+        'on-ok': vnode => {
+          this.$api.autoexec.job.abortJob({ jobId: this.id }).then(res => {
+            if (res.Status == 'OK') {
+              vnode.isShow = false;
+              this.$Message.success(this.$t('message.executesuccess'));
+            }
+          });
+        }
+      });
+    },
     toJob(jobId) {
       this.$router.push({ path: '/job-detail?id=' + jobId });
     },
@@ -286,6 +303,8 @@ export default {
           this.batchtimmer = setTimeout(() => {
             this.refreshBatchJobStatus();
           }, 5000);
+        } else {
+          this.getJobById();
         }
       });
     },
@@ -379,6 +398,14 @@ export default {
     canRun() {
       if (!this.$utils.isEmpty(this.jobData)) {
         if (this.jobData.isCanExecute === 1) {
+          return true;
+        }
+      }
+      return false;
+    },
+    canAbort() {
+      if (!this.$utils.isEmpty(this.jobData)) {
+        if (this.jobData.isCanAbort === 1) {
           return true;
         }
       }

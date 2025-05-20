@@ -135,7 +135,8 @@ export default {
       return {
         dynamicUrl: '/api/rest/deploy/version/search',
         params: {
-          appSystemIdList: [jobTemplate.appSystemId]
+          appSystemIdList: [jobTemplate.appSystemId],
+          appModuleIdList: [jobTemplate.appModuleId]
         },
         rootName: 'tbodyList',
         transfer: true,

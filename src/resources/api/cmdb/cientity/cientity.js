@@ -16,6 +16,9 @@ const cientity = {
       responseType: 'blob'
     });
   },
+  getRelEntityCountByCiEntityId(ciEntityId) {
+    return axios.post('/api/rest/cmdb/cientity/relentity/get', { ciEntityId: ciEntityId });
+  },
   //批量修改配置项
   batchUpdateCiEntity(params) {
     return axios.post('/api/rest/cmdb/cientity/batchupdate', params);
@@ -114,7 +117,7 @@ const cientity = {
   },
   importCiEntity(data) {
     //上传文件
-    let config = { headers: { 'content-type': 'multipart/form-data' }, contentType: 'multipart/form-data'};
+    let config = { headers: { 'content-type': 'multipart/form-data' }, contentType: 'multipart/form-data' };
     return axios.post('api/binary/file/upload', data, config);
   }
 };

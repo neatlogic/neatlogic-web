@@ -89,9 +89,19 @@ export default {
     isDisabled(row) {
       // 继承角色权限，不允许取消授权
       let isDisabled = false;
-      let authRoleObj = JSON.stringify(this.authRoleSelectList);
-      let hasAuthRole = authRoleObj.indexOf(row.name);
-      isDisabled = hasAuthRole != '-1';
+      const {name = ''} = row || {};
+      if (this.$utils.isEmpty(name)) {
+        return false;
+      }
+      // 处理继承角色权限，之前是转成JSON字符串去匹配，导致匹配的权限不对，授权范围扩大了。
+      for (let key in this.authRoleSelectList) {
+        if (key && this.authRoleSelectList[key] && this.authRoleSelectList[key].length > 0 && Array.isArray(this.authRoleSelectList[key])) {
+          if (this.authRoleSelectList[key].some(authName => authName === row.name)) {
+            isDisabled = true;
+            break;
+          }
+        }
+      }
       return isDisabled;
     },
     isReadOnly() {

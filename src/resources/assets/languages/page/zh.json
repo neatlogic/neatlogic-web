@@ -1059,11 +1059,13 @@
   "copyerrorinfo": "复制错误信息",
   "loadingfailed": "加载失败",
   "topo": "拓扑图",
-  "movetothetop": "移至顶层",
-  "movetothebottom": "移至底层",
   "pastehere": "在此粘贴",
   "dragthecanvas": "拖拽画布",
   "rubberband": "框选",
   "actualpath": "实际路径",
-  "currentjob": "当前作业"
+  "currentjob": "当前作业",
+  "incompleteinformation": "信息不完整",
+  "requiredparameterhasnullvalue": "必填参数项存在空值",
+  "executeall": "执行所有",
+  "cache": "缓存"
 }

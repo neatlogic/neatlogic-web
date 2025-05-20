@@ -50,7 +50,7 @@
           <TabPane label="表达式(beta)" name="dsl"></TabPane>
         </Tabs>
         <Card
-          v-if="advencedSearchMode == 'condition'"
+          v-if="advencedSearchMode === 'condition'"
           dis-hover
           class="radius-md cientity-search-card"
           style="margin-bottom: 10px"
@@ -250,7 +250,7 @@
         v-bind="ciEntityData"
         :loading="tabloading"
         canExpand
-        keyName="uuid"
+        :keyName="keyName"
         :fixedHeader="mode == 'dialog' || !fixedHeader ? false : true"
         :multiple="isMultiple"
         :showPager="needPage"
@@ -474,6 +474,7 @@ export default {
   },
   directives: { download },
   props: {
+    keyName: { type: String, default: 'uuid' }, //表格的默认唯一属性，用uuid是为了照顾表单控件的临时数据
     ciId: { type: Number },
     ciData: { type: Object },
     rootCiId: { type: Number }, //根模型id，如果选中了子模型配置项，回显数据时就要利用此属性匹配模型，主要用在ITSM表单
@@ -603,7 +604,7 @@ export default {
       this.relFilterList = historyData['relFilterList'] || {};
       this.sortConfig = historyData['sortConfig'] || {};
     },
-    getSuggestList(keywordData) {
+    /*getSuggestList(keywordData) {
       this.suggestList = [];
       if (keywordData.value) {
         this.$api.cmdb.ci.getAttrByCiId(this.ciId, { keyword: keywordData.value }).then(res => {
@@ -615,7 +616,7 @@ export default {
           }
         });
       }
-    },
+    },*/
     updateSort(sort) {
       this.sortConfig = sort;
       this.searchCiEntity();
@@ -717,8 +718,8 @@ export default {
     async init() {
       await this.searchCiEntity();
       this.tabloading = false;
-      await this.getAttrByCiId();
       await this.getGlobalAttrList();
+      await this.getAttrByCiId();
       await this.getRelByCiId();
       await this.getDownwardCiByCiId();
       this.searchGroup();
@@ -893,6 +894,11 @@ export default {
     async getGlobalAttrList() {
       await this.$api.cmdb.ci.getGlobalAttrByCiId(this.ciId, { isActive: 1, needAlias: 1 }).then(res => {
         this.globalAttrList = res.Return;
+        if (this.globalAttrList && this.globalAttrList.length > 0) {
+          this.globalAttrList.forEach(attr => {
+            this.suggestList.push({ value: attr.name, text: attr.name + '·' + attr.label });
+          });
+        }
       });
     },
     async getAttrByCiId() {
@@ -1306,7 +1312,7 @@ export default {
           Object.assign(this.searchParam, this.condition);
           this.searchParam['groupId'] = null;
           this.searchParam['ciId'] = this.ciId;
-          this.searchParam['idList'] = this.idList;
+          this.searchParam['idList'] = !this.$utils.isEmpty(this.idList) ? this.idList : null;
           this.searchParam['relId'] = this.relId;
           this.searchParam['relCiEntityId'] = this.relCiEntityId;
           this.searchParam['direction'] = this.direction;

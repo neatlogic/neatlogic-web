@@ -7,6 +7,7 @@
           :dataList="mappingModeList"
           :disabled="disabled"
           :clearable="false"
+          border="border"
           transfer
           @change="changeMappingMode"
         ></TsFormSelect>
@@ -21,6 +22,7 @@
           transfer
           :firstText="$t('term.autoexec.jobparam')"
           :firstSelect="false"
+          border="border"
           :firstLi="isEditRuntimeParam"
           @first="gotoAddParameter"
         ></TsFormSelect>
@@ -55,7 +57,6 @@
   </div>
 </template>
 <script>
-import { sync } from '../../../pbc/policy/phase';
 export default {
   name: '',
   inject: {

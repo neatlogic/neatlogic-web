@@ -83,9 +83,11 @@
                                 v-bind="getGlobalSelectConfig(conItem.id)"
                                 :value="conItem.valueList"
                                 transfer
-                                @change="val=>{
-                                  setAttrValue(conItem, val);
-                                }"
+                                @change="
+                                  val => {
+                                    setAttrValue(conItem, val);
+                                  }
+                                "
                               ></TsFormSelect>
                               <AttrSearcher
                                 v-else-if="conItem.type === 'attr' && getAttrById(conItem.id)"
@@ -186,7 +188,8 @@ export default {
     AttrSearcher: () => import('../cientity/attr-searcher.vue')
   },
   props: {
-    id: { type: Number }
+    id: { type: Number },
+    isCopy: { type: Boolean }
   },
   data() {
     return {
@@ -237,7 +240,7 @@ export default {
             this.groupData.name = value;
           }
         },
-        isActive: {
+        /*isActive: {
           type: 'radio',
           label: this.$t('page.enable'),
           dataList: [
@@ -248,7 +251,7 @@ export default {
           onChange: value => {
             this.groupData.isActive = value;
           }
-        },
+        },*/
         type: {
           type: 'radio',
           label: this.$t('page.type'),
@@ -309,6 +312,10 @@ export default {
         this.$api.cmdb.group.getGroupById(this.id).then(res => {
           this.isLoading = false;
           this.groupData = res.Return;
+          if (this.isCopy) {
+            this.groupData.id = null;
+            this.groupData.name = this.groupData.name + '_copy';
+          }
           for (let key in this.formConfig) {
             //系统配置-》配置信息管理 is.resourcecenter.auth 控制是否显示 “操作类”
             if (key === 'type' && this.groupData.isResourcecenterAuth !== '1') {
@@ -583,7 +590,7 @@ export default {
       };
     },
     getGlobalSelectConfig() {
-      return (id) => {
+      return id => {
         const globalAttr = this.getGlobalAttrById(id);
         if (globalAttr) {
           return {
@@ -597,7 +604,7 @@ export default {
       };
     },
     getRelSelectConfig() {
-      return (id) => {
+      return id => {
         const rel = this.getRelById(id);
         if (rel) {
           return {

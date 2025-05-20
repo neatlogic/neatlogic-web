@@ -220,7 +220,7 @@ export default {
       formConfig: {
         version: {
           type: 'text',
-          label: this.$t('term.framework.pkgversion'),
+          label: this.$t('term.framework.versionremarks'),
           maxlength: 50,
           validateList: ['required']
         }
@@ -332,7 +332,7 @@ export default {
         return false;
       }
       let data = this.saveData();
-      if (this.$utils.isSame(this.initData, data)) {
+      if (this.$utils.isSame(this.initData, data) || this.versionStatus === 'passed') {
         this.$router.push({
           path: '/test-detail',
           query: {
@@ -385,7 +385,7 @@ export default {
     save() {
       //编辑保存
       this.typeDialog = 'save';
-      this.$set(this.versionFormData, 'version', this.name + '_' + this.$utils.getCurrenttime('MMdd'));
+      this.$set(this.versionFormData, 'version', this.title);
       this.isShowVersionDialog = true;
     },
     async handleSave(item, isLeave) {
@@ -417,7 +417,7 @@ export default {
     },
     submit() {
       this.typeDialog = 'submit';
-      this.$set(this.versionFormData, 'version', this.name + '_' + this.$utils.getCurrenttime('MMdd'));
+      this.$set(this.versionFormData, 'version', this.title);
       this.isShowVersionDialog = true;
     },
     async submitData(item) {

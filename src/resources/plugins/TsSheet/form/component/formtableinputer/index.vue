@@ -508,7 +508,7 @@ export default {
             let { Status = '', Return = {} } = res || {};
             let { dataList = [] } = Return || {};
             if (Status && Status == 'OK') {
-              resultConfig[ajaxResult[index]] = dataList.filter(a => this.handleSpecialValue(a.text)).map(b => this.handleSpecialValue(b.text));
+              resultConfig[ajaxResult[index]] = this.handleDataList(dataList);
             }
           });
         }
@@ -518,8 +518,21 @@ export default {
       return resultConfig;
     },
     handleDataList(dataList) {
-      const resultArray = dataList.filter(item => item?.text).map(item => item.text);
-      return resultArray;
+      let resultList = [];
+      for (const item of dataList) {
+        if (!this.$utils.isEmpty(item.value)) {
+          let combineValue = '';
+          if (this.$utils.isSame(item.text, item.value)) {
+            combineValue = item.value;
+          } else {
+            combineValue = item.text ? `${item.text}(${item.value})` : item.value;
+          }
+          if (!this.$utils.isEmpty(combineValue)) {
+            resultList.push(combineValue);
+          }
+        }
+      }
+      return resultList;
     },
     async exportExcel() {
       // 导出excel带表格数据
@@ -689,11 +702,29 @@ export default {
             let tbodyIndex = rowIndex - 2;
             let tbodyRow = this.tableData.tbodyList[tbodyIndex];
             let theadList = this.tableData.theadList.filter(v => v.key != 'selection' && v.key != 'number');
+            let matrixSearchParamsList = [];
             for (let tIndex = 0; tIndex < theadList.length; tIndex++) {
               let theadKey = theadList[tIndex].key;
-              let value = await this.byComponentTypeSetValue(theadKey, rowValuesList[tIndex - 1]);
+              let value = '';
+              if (this.getDataByUuid(theadKey).dataSource == 'matrix') {
+                if (!this.$utils.isEmpty(this.handleValueByMatrix(theadKey, rowValuesList[tIndex - 1]))) {
+                  matrixSearchParamsList.push({
+                    theadKey: theadKey,
+                    list: this.handleValueByMatrix(theadKey, rowValuesList[tIndex - 1])
+                  });
+                }
+              } else {
+                value = this.byComponentTypeSetValue(theadKey, rowValuesList[tIndex - 1]);
+              }
               this.loading = false;
               this.$set(rowValue, [theadKey], value);
+            }
+            let resultTemp = await this.getMatrixDataList(matrixSearchParamsList);
+            for (let matrixData of resultTemp) {
+              if (matrixData && matrixData.list && matrixData.list.length > 0) {
+                let {isMultiple = false, handler = ''} = this.getDataByUuid(matrixData['theadKey']);
+                this.$set(rowValue, matrixData['theadKey'], isMultiple == true || handler == 'formcheckbox' ? matrixData['list'] : matrixData['list'][0]);
+              }
             }
             let item = { ...(tbodyRow || {}), ...rowValue };
             if (!this.$utils.isEmpty(tbodyRow)) {
@@ -707,70 +738,129 @@ export default {
         });
       });
     },
-    async byComponentTypeSetValue(uuid, value) {
-      // 根据组件的类型，设置回显值
-      let resultValue;
+    getDataByUuid(uuid) {
       let selectedItem = this.extraList.find(extraItem => extraItem.uuid == uuid);
-      let { config = {}, handler = '' } = selectedItem || {};
-      if (!this.$utils.isEmpty(value)) {
-        let { dataSource = '', isMultiple = false, matrixUuid = '', mapping = {} } = config || {};
-        if (dataSource === 'matrix') {
-          // 矩阵
-          resultValue = [];
-          if (matrixUuid && !this.$utils.isEmpty(mapping) && mapping.text && mapping.value) {
-            this.loading = true;
-            let params = {
-              searchParamList: [
-                {
-                  matrixUuid: matrixUuid,
-                  textField: mapping.text,
-                  valueField: mapping.value,
-                  defaultValue: value instanceof Array ? value : typeof value == 'string' ? value.split(',') : [value] // 逗号处理多个选项时传递的值
-                }
-              ]
-            };
-            await this.$api.framework.form.searchMatrixColumnData(params).then(res => {
-              if (res && res.Status == 'OK') {
-                let tbodyList = (res.Return && res.Return.tbodyList) || [];
-                tbodyList.forEach(item => {
-                  if (item && item.dataList && item.dataList.length > 0) {
-                    if ((isMultiple || handler == 'formcheckbox')) {
-                      resultValue.push(...item.dataList);
-                    } else {
-                      resultValue = item.dataList[0];
-                    }
-                  }
-                });
-              }
+      let { config: {dataSource = '', isMultiple = false} = {}, handler = ''} = selectedItem || {};
+      return {
+        dataSource: dataSource,
+        isMultiple: isMultiple,
+        handler: handler
+      };
+    },
+    async getMatrixDataList(searchParamList) {
+      let configList = [];
+      let list = [];
+      if (searchParamList && searchParamList.length > 0) {
+        searchParamList.forEach((item) => {
+          if (item && item.list && item.list.length > 0) {
+            list.push(...item.list);
+          }
+          if (item && item.theadKey) {
+            configList.push({
+              theadKey: item.theadKey,
+              list: []
             });
           }
-        } else if (dataSource == 'static') {
-          resultValue = [];
-          if ((isMultiple || handler == 'formcheckbox')) {
-            if (typeof value == 'string') {
-              resultValue = value.split(',').map((v) => ({
-                text: v,
-                value: v
-              }));
-            } else if (typeof value == 'number') {
-              resultValue = [{ text: String(value), value: value }];
-            } else {
-              resultValue = [{
-                text: value,
-                value: value
-              }];
+        });
+      }
+      await this.$api.framework.form.searchMatrixColumnData({
+        searchParamList: list
+      }).then(res => {
+        if (res && res.Status == 'OK') {
+          let tbodyList = (res.Return && res.Return.tbodyList) || [];
+          tbodyList.forEach((item, index) => {
+            if (item && item.dataList && item.dataList.length > 0) {
+              configList[index].list = item.dataList;
             }
+          });
+        }
+      });
+      return configList;
+    },
+    handleValueByMatrix(uuid, value) {
+      // 处理矩阵数据源
+      if (this.$utils.isEmpty(value)) {
+        return [];
+      }
+      let list = [];
+      const selectedItem = this.extraList.find(extraItem => extraItem.uuid == uuid);
+      const { config: {dataSource = '', matrixUuid = '', mapping: {text: mappingText = '', value: mappingValue = ''} = {}} = {} } = selectedItem || {};
+      if (dataSource === 'matrix' && matrixUuid && mappingText && mappingValue) {
+        list = [{
+          matrixUuid: matrixUuid,
+          textField: mappingText,
+          valueField: mappingValue,
+          defaultValue: this.handleDefaultValue(value) || value
+        }];
+      }
+      return list;
+    },
+    handleDefaultValue(value) {
+      if (this.$utils.isEmpty(value)) {
+        return [];
+      }
+      let list = [];
+      if (value && Array.isArray(value)) {
+        value.forEach((v) => {
+          const currentValue = this.getValueInParentheses(v);
+          if (currentValue) {
+            list.push(currentValue);
           } else {
-            resultValue = {
-              text: value,
-              value: value
-            };
+            list.push(v);
+          }
+        });
+      } else if (typeof value == 'string') {
+        let tempList = value.split(',') || [];
+        tempList.forEach((v) => {
+          const currentValue = this.getValueInParentheses(v);
+          if (currentValue) {
+            list.push(currentValue);
+          } else if (!this.$utils.isEmpty(v)) {
+            list.push(v);
+          }
+        });
+      } else {
+        list = value ? [value] : [];
+      }
+      return list;
+    },
+    getValueInParentheses(str) {
+      // 若输入为字符串，直接处理
+      if (typeof str === 'string') {
+        const regex = /(.*?)\((.*?)\)/; // 获取：I级(e1605edbcd974284982cd69944adf2df) 括号前面的值和括号里面的值
+        const match = str.match(regex);
+        return match && match.length > 2 ? {text: match[1], value: match[2]} : '';
+      }
+      return '';
+    },
+    byComponentTypeSetValue(uuid, value) {
+      // 根据组件的类型，设置回显值
+      if (this.$utils.isEmpty(value)) {
+        return '';
+      }
+      const selectedItem = this.extraList.find(extraItem => extraItem.uuid == uuid);
+      const { config: { dataSource = '', isMultiple = false } = {}, handler = '' } = selectedItem || {};
+      const handleSingleValue = (val) => {
+        const { text: tempText, value: tempValue } = this.getValueInParentheses(val);
+        return {
+          text: tempText || val,
+          value: tempValue || val
+        };
+      };
+      if (dataSource == 'static') {
+        if ((isMultiple || handler == 'formcheckbox')) {
+          if (typeof value == 'string') {
+            return value.split(',').map(handleSingleValue);
+          } else if (typeof value == 'number') {
+            resultValue = [{ text: String(value), value: value }];
+          } else {
+            return [handleSingleValue(value)];
           }
         } else {
-          resultValue = typeof value == 'number' ? String(value) : value;
+          return [handleSingleValue(value)];
         }
       }
-      return resultValue;
+      return typeof value == 'number' ? String(value) : value;
     },
     getConditionFormItemList() {
       //获取可以作为联动的条件的组件(外部组件和当前行下组件的属性)
