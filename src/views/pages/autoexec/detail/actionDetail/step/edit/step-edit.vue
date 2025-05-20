@@ -126,7 +126,7 @@
                 >
                   <RunnerGroupSetting
                     ref="runnerGroup"
-                    :config="executeConfig.runnerGroup"
+                    :config="!$utils.isEmpty(executeConfig.runnerGroup)?executeConfig.runnerGroup : runnerGroup"
                     :disabled="!canEdit"
                     :runtimeParamList="runtimeParamList"
                     :isRequired="false"
@@ -290,7 +290,12 @@ export default {
       validateList: ['required'],
       executePolicyList: [],
       executeTooltip: this.$t('term.autoexec.executeTooltip'),
-      runnerGroupTooltip: this.$t('term.autoexec.runnerGroupTooltip')
+      runnerGroupTooltip: this.$t('term.autoexec.runnerGroupTooltip'),
+      runnerGroup: {
+        mappingMode: 'constant',
+        value: '',
+        text: ''
+      }
     };
   },
   beforeCreate() {},
