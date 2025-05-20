@@ -608,6 +608,16 @@ export default {
               id: '#id_' + step.uuid + '_' + p.uuid,
               current: 1
             });
+            if (this.$utils.isEmpty(p.config.ifList) && this.$utils.isEmpty(p.config.elseList)) {
+              validList.push({
+                text: this.$t('page.phase') + step.name + '【' + p.operationName + '】：' + this.$t('term.deploy.chooseatleastonetool'),
+                type: 'error',
+                stepUuid: step.uuid,
+                operationUuid: p.uuid,
+                id: '#id_' + step.uuid + '_' + p.uuid,
+                current: 1
+              });
+            }
             if (p.config.ifList && p.config.ifList.length) {
               let validIfList = this.validPhaseOperationList(step, p.config.ifList);
               validIfList.length && validList.push(...validIfList);
