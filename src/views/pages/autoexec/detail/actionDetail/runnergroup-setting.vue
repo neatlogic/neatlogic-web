@@ -119,7 +119,7 @@ export default {
         transfer: true,
         needCallback: false,
         border: 'border',
-        validateList: ['required'],
+        validateList: this.isRequired ? ['required'] : [],
         dealDataByUrl: this.$utils.getRunnerGroupList,
         dynamicUrl: '/api/rest/runnergroup/search',
         params: {
