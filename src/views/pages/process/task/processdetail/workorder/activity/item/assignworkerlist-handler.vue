@@ -55,6 +55,5 @@ export default {
   watch: {}
 };
 </script>
-<styple lang='less' scoped>
-
-</styple>
+<style lang='less' scoped>
+</style>
