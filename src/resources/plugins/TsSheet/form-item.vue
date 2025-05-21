@@ -98,6 +98,7 @@
         :isCustomValue="isCustomValue"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
         :externalData="externalData"
+        :historyValue="isCustomValue ? formItemValue : ''"
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"

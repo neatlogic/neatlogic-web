@@ -12,6 +12,7 @@
       :readonlyTextIsHighlight="readonlyTextIsHighlight"
       :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
       :isCustomValue="isCustomValue"
+      :historyValue="value"
       @change="
         val => {
           setValue(val);
