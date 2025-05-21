@@ -301,7 +301,7 @@ export default {
           if (index > -1) {
             this.$set(this.entityList, index, cientity);
           } else {
-            // this.entityList.push(cientity); // 编辑配置项时，追加自动采集里的数据，提交时，会额外新增一条数据
+            this.entityList.push(cientity);
           }
         });
       }
@@ -482,7 +482,7 @@ export default {
         if (this.entityList && this.entityList.length > 0) {
           const returnList = [];
           this.entityList.forEach(cientity => {
-            if (cientity.rootCiId === ciId && !cientity._isnew) {
+            if (cientity.rootCiId === ciId && !cientity._isnew && !cientity.flagRelId) {
               returnList.push(cientity);
             }
           });
