@@ -35,6 +35,10 @@
                 <span class="text-title">{{ $t('page.config') }}</span>
                 <p class="text-default">{{ runnerData.port }}</p>
               </div>
+              <div>
+                <span class="text-title">{{ $t('page.config') }}{{ $t('page.source') }}</span>
+                <p class="text-default">{{ runnerData.phaseRunnerGroupFrom }}</p>
+              </div>
             </div>
           </Poptip>
         </span>
@@ -151,6 +155,7 @@ export default {
           this.runnerData = {};
           this.runnerData.name = res.Return.runnerVo.name;
           this.runnerData.port = res.Return.runnerVo.host + ':' + res.Return.runnerVo.port;
+          this.runnerData.phaseRunnerGroupFrom = res.Return.phaseRunnerGroupFrom;
           this.nodeData.status = res.Return.status;
           this.nodeData.warnCount = res.Return.warnCount;
           if (res.Return.status == 'pending' || res.Return.status == 'running') {
