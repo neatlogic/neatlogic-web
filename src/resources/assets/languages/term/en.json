@@ -628,7 +628,8 @@
     "thirdpartyapi": "Third party callback interface",
     "reactivatestep": "Reactivation steps",
     "seeprocessconfig": "View the current work order process configuration",
-    "editprocessconfig": "Edit the current work order process configuration"
+    "editprocessconfig": "Edit the current work order process configuration",
+    "stepishandledby": "Step Handling Human"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

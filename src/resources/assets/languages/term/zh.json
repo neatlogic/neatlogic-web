@@ -628,7 +628,8 @@
     "thirdpartyapi": "第三方回调接口",
     "reactivatestep": "重新激活步骤",
     "seeprocessconfig": "查看当前工单流程配置",
-    "editprocessconfig": "编辑当前工单流程配置"
+    "editprocessconfig": "编辑当前工单流程配置",
+    "stepishandledby": "步骤处理人为"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
