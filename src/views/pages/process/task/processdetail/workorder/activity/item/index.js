@@ -7,6 +7,7 @@ import formHandler from './form-handler';
 import fileHandler from './file-handler';
 import restfulactionHandler from './restfulaction-handler';
 import workerlistHandler from './workerlist-handler';
+import assignworkerlistHandler from './assignworkerlist-handler';
 import workerHandler from './worker-handler';
 import causeHandler from './cause-handler';
 import ruleHandler from './rule-handler';
@@ -33,6 +34,7 @@ export default {
   restfulactionHandler, //动作激活
   workerHandler,
   workerlistHandler,
+  assignworkerlistHandler,
   causeHandler, //条件异常原因
   ruleHandler, //条件规则
   fromprocesstaskHandler, //原工单
