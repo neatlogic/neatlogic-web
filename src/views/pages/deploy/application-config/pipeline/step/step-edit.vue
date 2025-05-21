@@ -82,7 +82,7 @@
                 </div>
               </template>
             </div>
-            <div v-if="editConfig.execMode ==='runner'">
+            <!-- <div v-if="editConfig.execMode ==='runner'">
               <TsFormItem
                 :label="$t('term.deploy.presetrunnergroup')"
                 labelPosition="left"
@@ -119,7 +119,7 @@
                   ></RunnerGroupSetting>
                 </TsFormItem>
               </template>
-            </div>
+            </div> -->
           </template>
         </div>
       </template>
@@ -154,9 +154,9 @@ export default {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TargetDetail: () => import('@/views/pages/autoexec/components/common/addTarget/target-detail'),
     TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
-    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
-    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
-    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue')
+    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue')
+    // RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
+    // RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue')
   },
   props: {
     canEdit: {
