@@ -435,7 +435,8 @@ export default {
       //上报：普通节点
       let data = {
         processTaskId: this.processTaskId,
-        processTaskStepId: this.processTaskStepId
+        processTaskStepId: this.processTaskStepId,
+        source: 'pc'
       };
       Object.assign(data, this.dataConfig);
       return this.$api.process.processtask.updateWorkData(data).then(res => {
@@ -449,7 +450,8 @@ export default {
       //上报：变更创建节点
       let data = {
         processTaskStepId: this.processTaskStepId,
-        changeId: this.changeId
+        changeId: this.changeId,
+        source: 'pc'
       };
       if (JSON.stringify(this.draftFile) != JSON.stringify(this.defaultTaskFileList)) {
         let fileIdList = this.draftFile.map(f => {

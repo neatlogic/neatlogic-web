@@ -129,7 +129,8 @@ export default {
         btnType: 'error',
         'on-ok': function(vnode) {
           let data = {
-            processTaskRelationId: obj.id
+            processTaskRelationId: obj.id,
+            source: 'pc'
           };
           _this.$api.process.relation.delTaskRelation(data).then(res => {
             _this.$Message.success(_this.$t('message.executesuccess'));

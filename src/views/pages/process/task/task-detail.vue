@@ -174,7 +174,8 @@ export default {
     if (this.processTaskStepId && parseInt(this.$route.query.autoStart) == 1) {
       let param = {
         processTaskId: this.processTaskId,
-        processTaskStepId: this.processTaskStepId
+        processTaskStepId: this.processTaskStepId,
+        source: 'pc'
       };
       await this.$api.process.processtask.ifNecessaryStartTask(param);
     }

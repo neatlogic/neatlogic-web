@@ -203,7 +203,8 @@ export default {
           'on-ok': vnode => {
             this.$api.process.processtask
               .cancelTaskDetail({
-                processTaskId: data.config.taskid
+                processTaskId: data.config.taskid,
+                source: 'pc'
               })
               .then(res => {
                 if (res.Status === 'OK') {
@@ -253,7 +254,8 @@ export default {
       }
       const params = {
         processTaskId: row.id,
-        isFocus: isFocus
+        isFocus: isFocus,
+        source: 'pc'
       };
       this.$api.process.processtask
         .updateFocus(params)

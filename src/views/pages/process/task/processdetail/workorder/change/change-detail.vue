@@ -399,7 +399,8 @@ export default {
             planStartDate: select.planStartDate,
             startTimeWindow: select.startTimeWindow,
             endTimeWindow: select.endTimeWindow,
-            worker: select.worker
+            worker: select.worker,
+            source: 'pc'
           };
           this.$api.process.processtask.updateChangeStep(data).then(res => {
             if (res.Status == 'OK') {
@@ -441,7 +442,8 @@ export default {
         let data = {
           processTaskStepId: this.processTaskStepId,
           changeId: this.handlerStepInfo.id,
-          worker: this.worker
+          worker: this.worker,
+          source: 'pc'
         };
         this.$api.process.processtask.changeStepWorker(data).then(res => {
           if (res.Status == 'OK') {
@@ -503,7 +505,8 @@ export default {
     startchangestep(obj) {
       //开始
       let data = {
-        changeStepId: obj.id
+        changeStepId: obj.id,
+        source: 'pc'
       };
       this.$api.process.processtask.changeStepStart(data).then(res => {
         if (res.Status == 'OK') {
@@ -516,7 +519,8 @@ export default {
     completechangestep(obj) {
       //完成
       let data = {
-        changeStepId: obj.id
+        changeStepId: obj.id,
+        source: 'pc'
       };
       this.$api.process.processtask.changeStepComplete(data).then(res => {
         if (res.Status == 'OK') {
@@ -592,7 +596,8 @@ export default {
         let data = {
           id: obj.id,
           content: content,
-          fileIdList: []
+          fileIdList: [],
+          source: 'pc'
         };
         if (obj.draftFileList) {
           let fileIdList = obj.draftFileList.map(item => {
@@ -618,7 +623,8 @@ export default {
     delStepComment(obj, cd) {
       let _this = this;
       let data = {
-        id: obj.id
+        id: obj.id,
+        source: 'pc'
       };
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),

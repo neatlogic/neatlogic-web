@@ -107,7 +107,8 @@ export default {
     getFileList(fileId) {
       let data = {
         id: this.config.id,
-        fileId: fileId
+        fileId: fileId,
+        source: 'pc'
       };
       this.$api.process.process.saveTaskFile(data).then((res) => {
         if (res.Status == 'OK') {
@@ -118,7 +119,8 @@ export default {
     removeCommentFile(fileId) {
       let data = {
         id: this.config.id,
-        fileId: fileId
+        fileId: fileId,
+        source: 'pc'
       };
       this.$api.process.process.deleteTaskFile(data).then((res) => {
         if (res.Status == 'OK') {

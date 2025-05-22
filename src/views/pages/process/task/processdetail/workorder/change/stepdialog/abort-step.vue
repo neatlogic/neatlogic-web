@@ -111,7 +111,8 @@ export default {
       let data = {
         changeStepId: this.config.id,
         content: formData.content,
-        changeAction: this.actionType
+        changeAction: this.actionType,
+        source: 'pc'
       };
       this.$api.process.processtask.changeStepAbort(data).then(res => {
         if (res.Status == 'OK') {

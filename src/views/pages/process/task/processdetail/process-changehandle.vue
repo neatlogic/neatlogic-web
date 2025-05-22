@@ -663,6 +663,7 @@ export default {
             nextStepId: this.selectStepConfig.id,
             content: obj.content,
             action: 'complete',
+            source: 'pc',
             changeId: this.changeId,
             changeAction: this.changeCompletetype
           };
@@ -704,6 +705,7 @@ export default {
           nextStepId: this.nestStepId,
           content: conntent,
           action: 'complete',
+          source: 'pc',
           changeId: this.changeId,
           changeAction: this.changeCompletetype
         };
@@ -738,7 +740,8 @@ export default {
       if (!this.changeDisableConfig.starting) {
         this.changeDisableConfig.starting = true;
         let data = {
-          changeId: this.changeId
+          changeId: this.changeId,
+          source: 'pc'
         };
         this.$api.process.processtask.changeStart(data).then(res => {
           this.changeDisableConfig.starting = false;
@@ -784,6 +787,7 @@ export default {
         nextStepId: this.selectStepConfig.id,
         content: obj.content,
         action: 'complete',
+        source: 'pc',
         changeId: this.changeId,
         changeAction: this.changeCompletetype
       };
@@ -807,7 +811,8 @@ export default {
         if (pausechangeForm.valid()) {
           let data = {
             content: this.pausechangeForm[0].value,
-            changeId: this.changeId
+            changeId: this.changeId,
+            source: 'pc'
           };
           this.changeDisableConfig.pausing = true;
           this.$api.process.processtask.changePause(data).then(res => {
@@ -825,7 +830,8 @@ export default {
       if (!this.changeDisableConfig.recoverring) {
         this.changeDisableConfig.recoverring = true;
         let data = {
-          changeId: this.changeId
+          changeId: this.changeId,
+          source: 'pc'
         };
         this.$api.process.processtask.changeRecover(data).then(res => {
           this.changeDisableConfig.recoverring = false;
@@ -841,7 +847,8 @@ export default {
       if (!this.changeDisableConfig.restarting) {
         this.changeDisableConfig.restarting = true;
         let data = {
-          changeId: this.changeId
+          changeId: this.changeId,
+          source: 'pc'
         };
         this.$api.process.processtask.changeRestart(data).then(res => {
           this.changeDisableConfig.restarting = true;

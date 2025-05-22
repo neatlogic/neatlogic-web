@@ -410,7 +410,8 @@ export default {
         let data = {
           processTaskId: this.processTaskId,
           processTaskStepId: this.processTaskStepId,
-          title: val
+          title: val,
+          source: 'pc'
         };
         this.$api.process.processtask.updateWorkData(data).then(res => {
           if (res.Status == 'OK') {
@@ -584,7 +585,8 @@ export default {
             processTaskStepId: this.processTaskStepId,
             nextStepId: this.selectBackConfig.id,
             content: obj.content,
-            action: 'back'
+            action: 'back',
+            source: 'pc'
           };
           this.$api.process.processtask
             .complete(data)
@@ -617,7 +619,8 @@ export default {
         this.processTaskConfig.isFocus = this.processTaskConfig.isFocus ? 0 : 1;
         const params = {
           processTaskId: this.processTaskId,
-          isFocus: this.processTaskConfig.isFocus
+          isFocus: this.processTaskConfig.isFocus,
+          source: 'pc'
         };
         this.$api.process.processtask
           .updateFocus(params)
@@ -726,6 +729,7 @@ export default {
           let formList = retreatForm.getFormValue();
           this.$set(formList, 'processTaskStepId', this.retreatId);
           this.$set(formList, 'processTaskId', this.processTaskId);
+          this.$set(formList, 'source', 'pc');
           this.disabledConfig.retreating = true;
           this.$api.process.processtask
             .retreatTask(formList)
@@ -775,7 +779,8 @@ export default {
         let data = {
           processTaskId: this.processTaskId,
           processTaskStepId: this.processTaskStepId,
-          action: type
+          action: type,
+          source: 'pc'
         };
         this.$api.process.processtask
           .startTask(data)
@@ -834,7 +839,8 @@ export default {
       if (isStart) {
         let data = {
           processTaskId: this.processTaskId,
-          processTaskStepId: this.processTaskStepId
+          processTaskStepId: this.processTaskStepId,
+          source: 'pc'
         };
         this.$api.process.processtask.startTask(data).then(res => {
           if (res.Status == 'OK') {
@@ -916,7 +922,8 @@ export default {
       if (!this.disabledConfig.urging) {
         this.disabledConfig.urging = true;
         let data = {
-          processTaskId: this.processTaskId
+          processTaskId: this.processTaskId,
+          source: 'pc'
         };
         this.$api.process.processtask
           .urgeProcesssTask(data)
@@ -982,7 +989,8 @@ export default {
           this.disabledConfig.reapproval = true;
           let data = {
             processTaskId: this.processTaskId,
-            processTaskStepId: this.processTaskStepId
+            processTaskStepId: this.processTaskStepId,
+            source: 'pc'
           };
           this.$api.process.processtask
             .reapprovalTask(data)
@@ -1125,6 +1133,7 @@ export default {
       this.$refs.TaskCenterDetail.comment();
     },
     async saveTransferTask(data) {
+      this.$set(data, 'source', 'pc');
       //保存并转交工单
       await this.saveTaskData(true);
       this.$api.process.processtask.transferTaskDetail(data).then(res => {

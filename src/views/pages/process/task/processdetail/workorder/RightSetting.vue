@@ -455,7 +455,8 @@ export default {
       let data = {
         processTaskId: this.processTaskId,
         processTaskStepId: this.processTaskStepId,
-        priorityUuid: this.priorityUuid
+        priorityUuid: this.priorityUuid,
+        source: 'pc'
       };
       this.$api.process.processtask.updateWorkData(data).then(res => {
         if (res.Status == 'OK') {
@@ -472,7 +473,8 @@ export default {
     updateTagList(list) {
       const date = {
         tagList: list.map(item => item.text),
-        processTaskId: this.processTaskId
+        processTaskId: this.processTaskId,
+        source: 'pc'
       };
       this.$api.process.processtask.updateWorkData(date).then(res => {
         if (res.Status === 'OK') {
@@ -483,7 +485,8 @@ export default {
     updateFocusUserList(list) { //工单关注人
       const data = {
         processTaskId: this.processTaskId,
-        focusUserUuidList: list
+        focusUserUuidList: list,
+        source: 'pc'
       };
       // 去抖，防止每次修改工单关注人都调用接口
       clearTimeout(this.updatingFocusUser);

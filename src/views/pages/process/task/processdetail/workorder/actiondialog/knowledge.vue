@@ -349,7 +349,8 @@ export default {
       //知识活动
       let data = {
         processTaskId: this.processTaskId,
-        title: this.formItemConfig.title.value
+        title: this.formItemConfig.title.value,
+        source: 'pc'
       };
       this.$api.process.processtask.knowledgeAudit(data).then(res => {
         if (res.Status == 'OK') {

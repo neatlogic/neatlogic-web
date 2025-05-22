@@ -96,7 +96,8 @@ export default {
         // urgeProcesssTask
         this.$api.process.processtask
           .urgeProcesssTask({
-            processTaskId: data.config.taskid
+            processTaskId: data.config.taskid,
+            source: 'pc'
           })
           .then(res => {
             if (res.Status === 'OK') {

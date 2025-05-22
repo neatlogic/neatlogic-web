@@ -16,7 +16,8 @@ export default {
       rowData.focususers.isCurrentUserFocus = rowData.focususers.isCurrentUserFocus ? 0 : 1;
       const params = {
         processTaskId: rowData.id,
-        isFocus: rowData.focususers.isCurrentUserFocus
+        isFocus: rowData.focususers.isCurrentUserFocus,
+        source: 'pc'
       };
       this.$api.process.processtask
         .updateFocus(params)

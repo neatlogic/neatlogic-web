@@ -1082,6 +1082,7 @@ export default {
           processTaskStepId: this.processTaskStepId,
           content: this.getTaskStepContent(),
           auditId: this.auditId,
+          source: 'pc',
           commentTemplateId: this.commentTemplateId || null
         };
 

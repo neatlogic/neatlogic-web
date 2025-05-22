@@ -329,7 +329,10 @@ export default {
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.process.process
-            .deleteTask({processTaskStepTaskId: item.id})
+            .deleteTask({
+              processTaskStepTaskId: item.id,
+              source: 'pc'
+            })
             .then(res => {
               this.$Message.success(this.$t('message.deletesuccess'));
               vnode.isShow = false;
@@ -365,7 +368,8 @@ export default {
           processTaskStepId: this.processTaskStepId,
           taskConfigId: this.taskConfigId,
           content: this.subTaskContent.content,
-          stepTaskUserVoList: []
+          stepTaskUserVoList: [],
+          source: 'pc'
         };
         let stepTaskUserVoList = [];
         let userList = this.subTaskContent.userList || [];
@@ -416,7 +420,8 @@ export default {
     comment(item, btn) {
       let data = {
         id: item.id,
-        content: item.CkeditorContent
+        content: item.CkeditorContent,
+        source: 'pc'
       };
       let isValid = true;
       if (btn) {
@@ -445,7 +450,8 @@ export default {
       this.loadingShow = true;
       let data = {
         id: item.id,
-        fileId: fileId
+        fileId: fileId,
+        source: 'pc'
       };
       this.$api.process.process.saveTaskFile(data).then((res) => {
         if (res.Status == 'OK') {
@@ -457,7 +463,8 @@ export default {
       this.loadingShow = true;
       let data = {
         id: item.id,
-        fileId: fileId
+        fileId: fileId,
+        source: 'pc'
       };
       this.$api.process.process.deleteTaskFile(data).then((res) => {
         if (res.Status == 'OK') {

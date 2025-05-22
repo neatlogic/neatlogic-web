@@ -93,7 +93,8 @@ export default {
         let data = {
           processTaskId: this.processTaskConfig.id,
           processTaskStepId: this.selectConfig.id,
-          content: repoForm.getFormValue().content
+          content: repoForm.getFormValue().content,
+          source: 'pc'
         };
         this.$api.process.processtask.redoTask(data).then(res => {
           if (res.Status == 'OK') {

@@ -98,6 +98,7 @@ export default {
           let formList = retreatForm.getFormValue();
           this.$set(formList, 'processTaskStepId', this.retreatId);
           this.$set(formList, 'processTaskId', this.processTaskId);
+          this.$set(formList, 'source', 'pc');
           this.disabledConfig.retreating = true;
           this.$api.process.processtask
             .retreatTask(formList)

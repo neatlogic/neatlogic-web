@@ -209,7 +209,8 @@ export default {
     startchangestep(obj) {
       //开始
       let data = {
-        changeStepId: obj.id
+        changeStepId: obj.id,
+        source: 'pc'
       };
       this.$api.process.processtask.changeStepStart(data).then(res => {
         if (res.Status == 'OK') {
@@ -220,7 +221,8 @@ export default {
     completechangestep(obj) {
       //完成
       let data = {
-        changeStepId: obj.id
+        changeStepId: obj.id,
+        source: 'pc'
       };
       this.$api.process.processtask.changeStepComplete(data).then(res => {
         if (res.Status == 'OK') {
@@ -231,7 +233,8 @@ export default {
     abortchangestep(obj) {
       //取消
       let data = {
-        changeStepId: obj.id
+        changeStepId: obj.id,
+        source: 'pc'
       };
       this.$api.process.processtask.changeStepAbort(data).then(res => {
         if (res.Status == 'OK') {
@@ -244,7 +247,8 @@ export default {
       this.$set(obj, 'isShow', true);
       //评论
       let data = {
-        changeStepId: obj.id
+        changeStepId: obj.id,
+        source: 'pc'
       };
       this.$api.process.processtask.changeStepComment(data).then(res => {
         if (res.Status == 'OK') {

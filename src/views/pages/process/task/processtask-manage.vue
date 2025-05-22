@@ -608,7 +608,8 @@ export default {
         if (this.processTaskConfig.name === 'recoverprocessTask') {
           this.$api.process.processtask.recoverTaskDetail({
             processTaskId: this.processTaskConfig.config.taskid,
-            content: reasonForm.getFormValue().content
+            content: reasonForm.getFormValue().content,
+            source: 'pc'
           }).then(res => {
             if (res.Status === 'OK') {
               this.$Message.success(this.$t('message.executesuccess'));
@@ -620,7 +621,8 @@ export default {
         } else if (this.processTaskConfig.name === 'abortprocessTask') {
           this.$api.process.processtask.cancelTaskDetail({
             processTaskId: this.processTaskConfig.config.taskid,
-            content: reasonForm.getFormValue().content
+            content: reasonForm.getFormValue().content,
+            source: 'pc'
           }).then(res => {
             if (res.Status === 'OK') {
               this.$Message.success(this.$t('message.executesuccess'));

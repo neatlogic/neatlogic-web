@@ -406,6 +406,7 @@ export default {
           this.$set(workdata, 'reporter', reporter);
         }
       }
+      this.$set(workdata, 'source', 'pc');
       return new Promise((resolve, reject) => {
         if (!this.disabledConfig.saving) {
           this.disabledConfig.saving = true;
@@ -473,7 +474,8 @@ export default {
         let data = {
           processTaskId: this.processTaskId,
           nextStepId: this.nextStepId,
-          assignWorkerList: assignWorkerList
+          assignWorkerList: assignWorkerList,
+          source: 'pc'
         };
         this.$api.process.processtask
           .startprocess(data)

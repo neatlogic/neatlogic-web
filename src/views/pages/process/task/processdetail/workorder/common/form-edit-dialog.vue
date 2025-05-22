@@ -78,7 +78,8 @@ export default {
       let data = {
         processTaskId: this.processTaskConfig.id,
         formAttributeDataList: this.$refs.formSheet.getFormData(),
-        formExtendAttributeDataList: this.$refs.formSheet.getFormExtendData()
+        formExtendAttributeDataList: this.$refs.formSheet.getFormExtendData(),
+        source: 'pc'
       };
       if (this.priorityUuid) {
         data.priorityUuid = this.priorityUuid;

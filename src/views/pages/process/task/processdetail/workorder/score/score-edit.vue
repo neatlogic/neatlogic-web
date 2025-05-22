@@ -79,7 +79,8 @@ export default {
         processTaskId: this.processTaskId,
         scoreTemplateId: this.scoreTemplateId,
         scoreDimensionList: this.dimensionList,
-        content: this.content
+        content: this.content,
+        source: 'pc'
       };
       this.$api.process.scoreTemplate
         .submitScore(params)

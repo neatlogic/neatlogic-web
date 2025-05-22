@@ -396,7 +396,8 @@ export default {
             processTaskStepId: this.processTaskStepId,
             nextStepId: this.selectStepConfig.id,
             content: obj.content,
-            action: 'complete'
+            action: 'complete',
+            source: 'pc'
           };
           if (this.assignableWorkerStepList.length > 0) {
             let userArr = [];
@@ -435,7 +436,8 @@ export default {
           processTaskStepId: this.processTaskStepId,
           nextStepId: this.nestStepId,
           content: null,
-          action: 'complete'
+          action: 'complete',
+          source: 'pc'
         };
         let content = (this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.$refs.replyContent && this.$refs.TaskCenterDetail.$refs.replyContent.getEventData() && this.$refs.TaskCenterDetail.$refs.replyContent.getEventData().content) || null;
         this.$set(data, 'content', content);

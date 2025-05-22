@@ -151,7 +151,8 @@ export default {
             processTaskId: this.processTaskId,
             processTaskStepId: this.transferId,
             workerList: formList.workerList,
-            content: formList.reason
+            content: formList.reason,
+            source: 'pc'
           };
           this.disabledTransferring = true;
           this.$api.process.processtask.transferTaskDetail(data).then(res => {

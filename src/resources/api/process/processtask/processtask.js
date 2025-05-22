@@ -78,10 +78,12 @@ const processtask = {
   },
   deleteComment(data) {
     //删除回复
+    // 暂时没有用到这个接口
     return axios.post('/api/rest/processtask/comment/delete', data);
   },
   editComment(data) {
     //编辑回复
+    // 暂时没有用到这个接口
     return axios.post('/api/rest/processtask/comment/edit', data);
   },
   stepStatus(data) {

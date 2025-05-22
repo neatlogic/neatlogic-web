@@ -244,7 +244,8 @@ export default {
       let data = {
         processTaskId: this.processTaskId,
         channelTypeRelationId: this.channelTypeRelationId,
-        relationProcessTaskIdList: this.relationProcessTaskIdList
+        relationProcessTaskIdList: this.relationProcessTaskIdList,
+        source: 'pc'
       };
       this.$api.process.relation.saveTaskRelation(data).then(res => {
         if (res.Status == 'OK') {

@@ -280,7 +280,8 @@ export default {
     saveChangeInfo(obj, type) {
       let data = {
         processTaskStepId: this.processTaskStepId,
-        changeId: this.newHandlerStepInfo.id
+        changeId: this.newHandlerStepInfo.id,
+        source: 'pc'
       };
       data = Object.assign(data, obj);
       this.$api.process.processtask.updateChange(data).then(res => {

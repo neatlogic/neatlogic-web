@@ -91,6 +91,7 @@ export default {
       });
     },
     abortprocessTask(data) { //取消工单
+      this.$set(data, 'source', 'pc');
       this.$api.process.processtask.cancelTaskDetail(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
@@ -101,6 +102,7 @@ export default {
       });
     },
     recoverprocessTask(data) { //恢复工单
+      this.$set(data, 'source', 'pc');
       this.$api.process.processtask.recoverTaskDetail(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
@@ -112,6 +114,7 @@ export default {
     },
     pause(data) { //暂停步骤
       data.processTaskStepId = this.processTaskStepId;
+      this.$set(data, 'source', 'pc');
       this.$api.process.processtask.pauseTaskStep(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
@@ -123,6 +126,7 @@ export default {
     },
     recover(data) { //恢复步骤
       data.processTaskStepId = this.processTaskStepId;
+      this.$set(data, 'source', 'pc');
       this.$api.process.processtask.recoverTaskStep(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));

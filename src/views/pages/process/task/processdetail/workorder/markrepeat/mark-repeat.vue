@@ -210,7 +210,8 @@ export default {
         'on-ok': function(vnode) {
           let data = {
             processTaskId: _this.processTaskId,
-            repeatProcessTaskId: item.id
+            repeatProcessTaskId: item.id,
+            source: 'pc'
           };
           _this.$api.process.processtask.deleteRepeat(data).then(res => {
             _this.$Message.success(_this.$t('message.executesuccess'));
@@ -247,7 +248,8 @@ export default {
     saveData(list) { //保存重复事件：若被勾选的工单，已被标记过为重复工单，需二次弹窗提示
       let data = {
         processTaskId: this.processTaskId,
-        repeatProcessTaskIdList: list || this.selectedlist
+        repeatProcessTaskIdList: list || this.selectedlist,
+        source: 'pc'
       };
       this.$api.process.processtask.saveRepeat(data).then(res => {
         if (res.Status == 'OK') {

@@ -411,7 +411,8 @@ export default {
             processTaskStepId: this.processTaskStepId,
             nextStepId: this.selectStepConfig.id,
             content: obj.content,
-            action: 'complete'
+            action: 'complete',
+            source: 'pc'
           };
           if (this.assignableWorkerStepList.length > 0) {
             let userArr = [];
@@ -451,7 +452,8 @@ export default {
           processTaskStepId: this.processTaskStepId,
           nextStepId: this.nestStepId,
           content: conntent,
-          action: 'complete'
+          action: 'complete',
+          source: 'pc'
         };
         if (this.assignableWorkerStepList.length > 0) {
           let userArr = [];
