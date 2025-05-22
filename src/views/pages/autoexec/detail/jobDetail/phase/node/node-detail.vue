@@ -56,7 +56,7 @@
                     </div>
                   </div>
                   <div v-if="!$utils.isEmpty(step.ifList) || !$utils.isEmpty(step.elseList)" class="divide-line border-color"></div>
-                  <div v-if="!$utils.isEmpty(step.ifList)" class="padding-sm">
+                  <div class="padding-sm">
                     <div>
                       <div class="text-grey pb-xs">{{ $t('page.condition') }}</div>
                       <div class="overflow mb-sm" style="white-space: nowrap;" :title="step.condition">{{ step.condition }}</div>
