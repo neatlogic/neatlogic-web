@@ -58,6 +58,7 @@ export default {
         valueName: 'value',
         search: true,
         transfer: true,
+        border: 'border',
         onChange: val => {
           this.changeJobGroupName(val);
         }
@@ -74,6 +75,7 @@ export default {
         search: true,
         transfer: true,
         disabled: true,
+        border: 'border',
         onChange: val => {
           this.changeJobName(val);
         }
