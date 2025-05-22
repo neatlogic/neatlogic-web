@@ -118,7 +118,7 @@ export default {
       }
       return formItemList;
     },
-    getFormCustomexend(formData) {
+    getFormCustomexend(formData) { // 自定义扩展
       let list = [];
       let currentData = this.getFormData(formData);
       if (!this.$utils.isEmpty(this.extendConfigList)) {
@@ -145,7 +145,7 @@ export default {
       }
       return list;
     },
-    getTagDataList(formData) {
+    getTagDataList(formData) { //自定义标签扩展数据值
       let list = this.getFormCustomexend(formData);
       let dataList = [];
       if (!this.$utils.isEmpty(list)) {
