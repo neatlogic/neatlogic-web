@@ -30,6 +30,7 @@
               :disabled="!!formItem.inherit || disabled"
               :initFormItemList="initFormItemList"
               :source="source"
+              :extendConfigList="extendConfigList"
               class="mb-sm"
               @editSubForm="editSubForm"
               @setValue="(value)=> updateComponentConfig(formItem.handler, value)"
@@ -125,7 +126,11 @@ export default {
       type: Array,
       default: () => []
     },
-    source: { type: String, default: '' } //表单组件配置来源：scene(场景)
+    source: { type: String, default: '' }, //表单组件配置来源：scene(场景)
+    extendConfigList: { //扩展的表单组件列表
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     const _this = this;
