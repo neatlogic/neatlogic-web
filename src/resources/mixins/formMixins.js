@@ -287,8 +287,8 @@ export default {
       };
     },
     handleHistoryValue() {
-      let selectedList = [];
       return historyData => {
+        let selectedList = [];
         let historyValueList = Array.isArray(historyData) ? historyData : [historyData];
         historyValueList.forEach(item => {
           if (!this.$utils.isEmpty(item)) {
