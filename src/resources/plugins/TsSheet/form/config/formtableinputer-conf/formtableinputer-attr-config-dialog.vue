@@ -347,7 +347,7 @@
                 :value="propertyLocal.config.groupList"
                 v-bind="groupConfig"
                 @on-change="val => {
-                  $set(propertyLocal.config, 'groupList', val);
+                  changeGroupList(val);
                 }"
               ></TsFormSelect>
             </TsFormItem>
@@ -982,6 +982,10 @@ export default {
     },
     dealGroupConfigDataList(dataList) {
       return dataList && dataList.filter(data => data.value != 'common');
+    },
+    changeGroupList(val) {
+      this.$set(propertyLocal.config, 'groupList', val);
+      this.$set(propertyLocal.config, 'defaultValue', null);
     }
   },
   filter: {},
