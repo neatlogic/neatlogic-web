@@ -338,6 +338,28 @@
               ></ExpressionSetting>
             </TsFormItem>
           </template>
+          <template v-else-if="propertyLocal.handler === 'formuserselect'" v-slot:config>
+            <TsFormItem :label="$t('page.multipleselection')">
+              <TsFormSwitch v-model="propertyLocal.config.isMultiple" :trueValue="true" :falseValue="false"></TsFormSwitch>
+            </TsFormItem>
+            <TsFormItem :label="$t('page.group')" required>
+              <TsFormSelect
+                :value="propertyLocal.config.groupList"
+                v-bind="groupConfig"
+                @on-change="val => {
+                  $set(propertyLocal.config, 'groupList', val);
+                }"
+              ></TsFormSelect>
+            </TsFormItem>
+            <TsFormItem :label="$t('page.defaultvalue')">
+              <UserSelect
+                v-model="propertyLocal.config.defaultValue"
+                v-bind="defaultValueSetting"
+                :groupList="propertyLocal.config.groupList || []"
+                transfer
+              ></UserSelect>
+            </TsFormItem>
+          </template>
           <template v-slot:reaction>
             <Tabs v-if="propertyLocal.reaction && isReady">
               <TabPane
@@ -573,6 +595,7 @@ export default {
             { text: this.$t('page.checkbox'), value: 'formcheckbox' },
             { text: this.$t('page.date'), value: 'formdate' },
             { text: this.$t('page.time'), value: 'formtime' },
+            { text: this.$t('term.framework.userselect'), value: 'formuserselect' },
             { text: this.$t('page.uploadattachment'), value: 'formupload' },
             { text: this.$t('term.cmdb.expression'), value: 'formexpression' }
           ],
@@ -683,7 +706,16 @@ export default {
             }
           }
         }
-      ]
+      ],
+      groupConfig: {
+        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.group')}),
+        url: '/api/rest/groupsearch/list',
+        dealDataByUrl: this.dealGroupConfigDataList,
+        multiple: true,
+        border: 'border',
+        validateList: ['required'],
+        transfer: true
+      }
       //filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
     };
   },
@@ -886,6 +918,9 @@ export default {
           this.$delete(this.reactionName, 'setvalue');
           this.$delete(this.propertyLocal.reaction, 'setvalue');
         }
+        if (val === 'formuserselect') {
+          this.$set(this.propertyLocal.config, 'isMultiple', false);
+        }
         this.isReady = false;
         this.$nextTick(() => {
           this.isReady = true;
@@ -944,6 +979,9 @@ export default {
     },           
     reactionValid(key, isValid) {
       this.$set(this.reactionError, key, !isValid);
+    },
+    dealGroupConfigDataList(dataList) {
+      return dataList && dataList.filter(data => data.value != 'common');
     }
   },
   filter: {},
