@@ -339,26 +339,7 @@
             </TsFormItem>
           </template>
           <template v-else-if="propertyLocal.handler === 'formuserselect'" v-slot:config>
-            <TsFormItem :label="$t('page.multipleselection')">
-              <TsFormSwitch v-model="propertyLocal.config.isMultiple" :trueValue="true" :falseValue="false"></TsFormSwitch>
-            </TsFormItem>
-            <TsFormItem :label="$t('page.group')" required>
-              <TsFormSelect
-                :value="propertyLocal.config.groupList"
-                v-bind="groupConfig"
-                @on-change="val => {
-                  changeGroupList(val);
-                }"
-              ></TsFormSelect>
-            </TsFormItem>
-            <TsFormItem :label="$t('page.defaultvalue')">
-              <UserSelect
-                v-model="propertyLocal.config.defaultValue"
-                v-bind="defaultValueSetting"
-                :groupList="propertyLocal.config.groupList || []"
-                transfer
-              ></UserSelect>
-            </TsFormItem>
+            <FormuserselectSetting ref="formitem_userselectSetting" :propertyLocal="propertyLocal"></FormuserselectSetting>
           </template>
           <template v-slot:reaction>
             <Tabs v-if="propertyLocal.reaction && isReady">
@@ -489,7 +470,8 @@ export default {
     FormtableinputDataSource: () => import('./formtableinput-data-source.vue'),
     ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue'),
     ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue'),
-    TagSourceSetting: () => import('../common/tag-source-setting.vue')
+    TagSourceSetting: () => import('../common/tag-source-setting.vue'),
+    FormuserselectSetting: () => import('./formuserselect-setting.vue')
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -706,16 +688,7 @@ export default {
             }
           }
         }
-      ],
-      groupConfig: {
-        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.group')}),
-        url: '/api/rest/groupsearch/list',
-        dealDataByUrl: this.dealGroupConfigDataList,
-        multiple: true,
-        border: 'border',
-        validateList: ['required'],
-        transfer: true
-      }
+      ]
       //filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
     };
   },
@@ -979,14 +952,8 @@ export default {
     },           
     reactionValid(key, isValid) {
       this.$set(this.reactionError, key, !isValid);
-    },
-    dealGroupConfigDataList(dataList) {
-      return dataList && dataList.filter(data => data.value != 'common');
-    },
-    changeGroupList(val) {
-      this.$set(propertyLocal.config, 'groupList', val);
-      this.$set(propertyLocal.config, 'defaultValue', null);
     }
+    
   },
   filter: {},
   computed: {
