@@ -50,11 +50,12 @@ export default {
           label: this.$t('page.environment'),
           type: 'select',
           validateList: ['required'],
+          rootName: 'tbodyList',
           valueName: 'id',
           textName: 'name',
           multiple: true,
           transfer: true,
-          params: {...this.params, isHasEnv: 0},
+          params: {...this.params, isHasEnv: 0, needPage: true},
           dynamicUrl: 'api/rest/deploy/app/config/env/list'
         }
       }
