@@ -76,7 +76,7 @@ export default {
             {
               id: this.$utils.setUuid(),
               systemName: 'Windows',
-              WindowScripts: '#Open cmd.exec in Administrator mode\ncd "%Temp%"\n#use browser downlaod install.vbs to directory:%Temp%\n#http://192.168.0.26:8080/download/tagent-bootstrap/install.vbs\nset RUNNER_ADDR=http://10.68.10.60:8084\ncscript install.vbs /tenant:develop /pkgurl:%RUNNER_ADDR%/autoexecrunner/tagent/download/tagent_windows_x64.tar /serveraddr:%RUNNER_ADDR% /listenaddr:0.0.0.0 /port:3939'
+              WindowScripts: '#Open cmd.exe in Administrator mode\ncd "%Temp%"\n#use browser download install.vbs to directory:%Temp%\n#http://10.68.10.60:8084/autoexecrunner/tagent/download/install.vbs\nset RUNNER_ADDR=http://10.68.10.60:8084\ncscript install.vbs /tenant:develop /pkgurl:%RUNNER_ADDR%/autoexecrunner/tagent/download/tagent_windows_x64.tar /serveraddr:%RUNNER_ADDR% /listenaddr:0.0.0.0 /port:3939'
             }
           ]
         },
