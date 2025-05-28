@@ -82,10 +82,11 @@ export default {
           validateList: ['required'],
           multiple: true,
           transfer: true,
+          rootName: 'tbodyList',
           valueName: 'id',
           textName: 'name',
-          params: {...this.params, isHasEnv: 0},
-          url: '/api/rest/deploy/app/config/env/list'
+          params: {...this.params, isHasEnv: 0, needPage: true},
+          dynamicUrl: '/api/rest/deploy/app/config/env/list'
         }
       ],
       existingFormList: [ // 现有环境

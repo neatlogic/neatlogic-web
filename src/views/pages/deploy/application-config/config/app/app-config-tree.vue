@@ -163,7 +163,7 @@ export default {
         };
         this.$api.deploy.applicationConfig.getEnvTreeList(params).then(res => {
           if (res && res.Status == 'OK') {
-            const envList = res.Return || [];
+            const envList = res.Return.tbodyList || [];
             let children = [];
             children = envList.map(item => {
               return { title: item.name, appSystemId: currentNode.appSystemId, appModuleId: currentNode.appModuleId, envId: item.id, isConfig: currentNode.isConfig, configType: 'env', path: `${currentNode.path}/${item.name}`, isDeletable: item.isDeletable, isHasAllAuthority: currentNode.isHasAllAuthority, isConfigAuthority: currentNode.isConfigAuthority, authActionSet: currentNode.authActionSet || []};
@@ -401,7 +401,7 @@ export default {
         };
         this.$api.deploy.applicationConfig.getEnvTreeList(params).then(res => {
           if (res && res.Status == 'OK') {
-            const envList = res.Return || [];
+            const envList = res.Return.tbodyList || [];
             let children = [];
             let selectedTreeNode = {};
             children = envList.map(item => {
@@ -482,7 +482,7 @@ export default {
                             };
                             this.$api.deploy.applicationConfig.getEnvTreeList(params).then(res => {
                               if (res && res.Status == 'OK') {
-                                const envList = res.Return || [];
+                                const envList = res.Return.tbodyList || [];
                                 let children = [];
                                 children = envList.map(item => {
                                   return { title: item.name, appSystemId: appSystemId, appModuleId: appModuleId, envId: item.id, isConfig: isConfig, configType: 'env', path: `${path}/${item.name}`, isDeletable: item.isDeletable};
