@@ -5,6 +5,7 @@ let copyPath = '';
 let src = './src';
 let baseImg = './public/resource';
 let commercialModule = './src/commercial-module';
+let communityModule = './src/community-module';
 let localUrl = '../neatlogic-web/src/resources';
 let pageTitle = 'neatlogic'; //页面标题名称
 const { tenantName, urlPrefix } = require('./apiconfig.json');
@@ -35,10 +36,25 @@ function getPages(pageList) {
   const pages = {};
   if (!pageList) {
     const pagePath = glob.sync(src + '/views/pages/*/router.js');
-    let importModulePathList = glob.sync(`${commercialModule}/**/router.js`) || [];
     let pagePathList = [...pagePath];
-
     let defaultModuleList = getAllModuleList([], JSON.parse(JSON.stringify(pagePath)));
+
+    //加载开源模块路由
+    let importCommunityModulePathList = glob.sync(`${communityModule}/**/router.js`) || [];
+    let communityModuleList = [];
+    if (importCommunityModulePathList && importCommunityModulePathList.length > 0) {
+      importCommunityModulePathList.forEach(filePath => {
+        let moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
+        if (moduleName && !defaultModuleList.includes(getModuleName(moduleName))) {
+          // 剔除非模块的情况，如自定义页面或者自定义组件
+          pagePathList.push(filePath);
+          communityModuleList.push(getModuleName(moduleName));
+        }
+      });
+    }
+
+    //加载商业模块路由
+    let importModulePathList = glob.sync(`${commercialModule}/**/router.js`) || [];
     let commercialModuleList = [];
     if (importModulePathList && importModulePathList.length > 0) {
       importModulePathList.forEach(filePath => {
@@ -50,6 +66,7 @@ function getPages(pageList) {
         }
       });
     }
+
     pagePathList.forEach(filePath => {
       let moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
 
@@ -59,8 +76,14 @@ function getPages(pageList) {
       if (`${filename}` == 'login') {
         pageLogin = `${pageTitle}`;
       }
+      let entry = `${src}/views/pages/${filename}/${filename}.js`;
+      if (commercialModuleList.includes(filename)) {
+        entry = `${commercialModule}/${moduleName}/${filename}.js`;
+      } else if (communityModuleList.includes(filename)) {
+        entry = `${communityModule}/${moduleName}/${filename}.js`;
+      }
       newpage[filename] = {
-        entry: commercialModuleList.includes(filename) ? `${commercialModule}/${moduleName}/${filename}.js` : `${src}/views/pages/${filename}/${filename}.js`,
+        entry: entry,
         template: `public/index.html`,
         filename: `${filename}.html`,
         title: pageLogin, // 标题名称+参数
@@ -83,6 +106,7 @@ function getPages(pageList) {
       Object.assign(pages, newpage);
     });
   }
+  console.log('pages', JSON.stringify(pages));
   return pages;
 }
 function getModuleName(moduleName) {
