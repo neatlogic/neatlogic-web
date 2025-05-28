@@ -25,6 +25,7 @@
                   :disabled="readonly"
                   :value="conItem.name"
                   :transfer="true"
+                  border="border"
                   valueName="name"
                   textName="label"
                   :validateList="[{ name: 'required', message: ' ' }]"
@@ -43,6 +44,7 @@
                   :value="conItem.expression"
                   :dataList="getExpressionList(conItem)"
                   :transfer="true"
+                  border="border"
                   :validateList="[{ name: 'required', message: ' ' }]"
                   @change="
                     (value, option) => {

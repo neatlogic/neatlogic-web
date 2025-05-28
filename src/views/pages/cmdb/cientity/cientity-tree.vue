@@ -135,43 +135,6 @@ export default {
           nodeSpacing: 20,
           preventOverlap: true
         }
-        //以下布局可能会导致死循环，先禁用
-        /*'compact-box': {
-          type: 'compact-box',
-          name: '径向布局',
-          radial: true,
-          direction: 'RL',
-          getHeight: () => {
-            return 40;
-          },
-          getWidth: () => {
-            return 40;
-          },
-          getVGap: () => {
-            return 20;
-          },
-          getHGap: () => {
-            return 20;
-          }
-        },
-        'indented': {
-          type: 'indented',
-          name: '缩进树布局',
-          direction: 'H',
-          indent: 80,
-          getHeight: () => {
-            return 40;
-          },
-          getWidth: () => {
-            return 40;
-          },
-          getVGap: () => {
-            return 20;
-          },
-          getHGap: () => {
-            return 20;
-          }
-        }*/
       }
     };
   },
