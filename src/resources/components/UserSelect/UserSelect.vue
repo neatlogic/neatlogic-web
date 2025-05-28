@@ -93,6 +93,7 @@
                     :key="gindex + '_' + uindex"
                     placement="right"
                     theme="light"
+                    :disabled="$utils.isEmpty(user.parentPathList)"
                     transfer
                   >
                     <slot name="option" :row="user" :group="group">
@@ -111,8 +112,12 @@
                       :row="user"
                       :group="group"
                     >
-                      <!-- {{ user.text }} -->
-                      <Tooltip theme="light" placement="right" transfer>
+                      <Tooltip
+                        theme="light"
+                        placement="right"
+                        :disabled="(group.value === 'user' && $utils.isEmpty(user.team)) || $utils.isEmpty(user.text)"
+                        transfer
+                      >
                         <div class="overflow team-text">{{ user.text }}</div>
                         <div slot="content" class="team-tip">
                           <span v-if="group.value == 'user'" class="span-tip">{{ user.team }}</span>
