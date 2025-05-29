@@ -182,7 +182,7 @@
                 <div slot="content">{{ row.runnerHost }}{{ row.runnerPort ? ':' + row.runnerPort : '' }}</div>
               </Tooltip>
             </li>
-            <template v-if="phaseData.status != 'running' && jobData.isCanExecute && row.isDelete != 1">
+            <template v-if="jobData.isCanExecute && row.isDelete != 1">
               <li
                 v-for="(action, index) in statusActionMapping[row.status]"
                 :key="index"

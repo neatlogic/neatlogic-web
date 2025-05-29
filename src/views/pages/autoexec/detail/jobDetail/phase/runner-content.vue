@@ -36,7 +36,7 @@
                 <p class="text-default">{{ runnerData.port }}</p>
               </div>
               <div>
-                <span class="text-title">{{ $t('page.config') }}{{ $t('page.source') }}</span>
+                <span v-if="runnerData.phaseRunnerGroupFrom" class="text-title">{{ $t('page.config') }}{{ $t('page.source') }}</span>
                 <p class="text-default">{{ runnerData.phaseRunnerGroupFrom }}</p>
               </div>
             </div>
