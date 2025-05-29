@@ -400,9 +400,9 @@ export default {
       this.searchNode(1);
     },
     ignoreNode(node) {
-      if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
-        return false;
-      }
+      // if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
+      //   return false;
+      // }
       //如果node为空代表是批量模式，需要检查是否有选中数据
       if (!node && !this.selectedNodeList.length) {
         return;
@@ -418,9 +418,9 @@ export default {
       this.isIgnoreDialogShow = true;
     },
     resetNode(node) {
-      if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
-        return false;
-      }
+      // if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
+      //   return false;
+      // }
       //如果node为空代表是批量模式，需要检查是否有选中数据
       if (!node && !this.selectedNodeList.length) {
         return;
