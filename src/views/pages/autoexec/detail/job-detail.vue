@@ -92,6 +92,11 @@
                     {{ $t('term.autoexec.abortjob') }}
                   </div>
                 </DropdownItem>
+                <DropdownItem @click.native="viewRecord()">
+                  <div>
+                    {{ $t('page.actionaudit') }}
+                  </div>
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </span>
@@ -151,6 +156,7 @@
       :hasAllAuth="hasOperationVersionAndProductManagerAuth"
       @close="isShowProjectDirectoryDialog = false"
     ></ProjectDirectoryDialog>
+    <JobRecordDialog v-if="isShowJobRecordDialog" :id="jobParam.jobId" @close="isShowJobRecordDialog=false;"></JobRecordDialog>
   </div>
 </template>
 <script>
@@ -171,7 +177,8 @@ export default {
     ExtrainfoDetail: () => import('./jobDetail/extrainfo-detail.vue'),
     JobPhaseFlow: () => import('@/views/pages/autoexec/detail/jobDetail/job-phase-flow.vue'),
     ProjectDirectoryDialog: () => import('@/views/pages/deploy/version/project-directory-dialog'), // 工程目录
-    LockDialog: () => import('@/views/pages/deploy/job/resourcelock/resourcelock-dialog') //资源锁
+    LockDialog: () => import('@/views/pages/deploy/job/resourcelock/resourcelock-dialog'), //资源锁
+    JobRecordDialog: () => import('@/views/pages/autoexec/detail/jobDetail/job-record-dialog') // 操作记录
   },
   filters: {},
   directives: { download },
@@ -272,7 +279,8 @@ export default {
       },
       versionId: null,
       hasOperationVersionAndProductManagerAuth: false,
-      jobNameWidth: 0
+      jobNameWidth: 0,
+      isShowJobRecordDialog: false
     };
   },
   beforeCreate() {},
@@ -572,6 +580,9 @@ export default {
         path: path,
         query: { jobId: this.jobData.id }
       });
+    },
+    viewRecord() {
+      this.isShowJobRecordDialog = true;
     }
   },
   computed: {
