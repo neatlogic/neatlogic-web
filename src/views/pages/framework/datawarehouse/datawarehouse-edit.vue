@@ -247,11 +247,44 @@ export default {
           label: this.$t('page.dbtype'),
           dataList: [
             { value: 'mysql', text: 'mysql' },
-            { value: 'mongodb', text: 'mongodb' }
+            { value: 'mongodb', text: 'mongodb' },
+            { value: 'jdbc', text: 'jdbc' }
           ],
           validateList: [{ name: 'required' }],
           onChange: dbType => {
             this.reportDataSourceData.dbType = dbType;
+            if (this.reportDataSourceData.dbType == 'jdbc') {
+              this.formConfig.forEach(element => {
+                if (element.name == 'databaseId') {
+                  this.$set(element, 'isHidden', false);
+                  this.$set(element, 'params', {type: dbType, needPage: true});
+                }
+              });
+            } else {
+              this.reportDataSourceData.databaseId = null;
+              this.formConfig.forEach(element => {
+                if (element.name == 'databaseId') {
+                  this.$set(element, 'isHidden', true);
+                  this.$set(element, 'params', {});
+                }
+              });
+            }
+          }
+        },
+        {
+          type: 'select',
+          name: 'databaseId',
+          label: '数据源',
+          transfer: true,
+          rootName: 'tbodyList',
+          valueName: 'id',
+          textName: 'name',
+          params: {needPage: true},
+          dynamicUrl: '/api/rest/database/search',
+          isHidden: true,
+          validateList: [{ name: 'required' }],
+          onChange: databaseId => {
+            this.reportDataSourceData.databaseId = databaseId;
           }
         },
         {
@@ -370,6 +403,12 @@ export default {
               }
             } else if (element.name == 'params') {
               if (!this.reportDataSourceData.paramList || this.reportDataSourceData.paramList.length == 0) {
+                this.$set(element, 'isHidden', true);
+              } else {
+                this.$set(element, 'isHidden', false);
+              }
+            } else if (element.name == 'databaseId') {
+              if (!this.reportDataSourceData.databaseId || this.reportDataSourceData.databaseId == null) {
                 this.$set(element, 'isHidden', true);
               } else {
                 this.$set(element, 'isHidden', false);
