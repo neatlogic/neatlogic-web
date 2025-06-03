@@ -35,7 +35,7 @@
  */
 class ComponentManager {
   static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'mqTopicConfig', 'mqSubscribeConfig', 'loginPage', 'formVersionList', 'router', 'deployAppConfigModule', 'diagramWidget', 'diagramWidgetConfig', 'diagramWidgetCustomConfig', 'alertEventHandlerEdit', 'alertEventHandlerView', 'alertEventHandlerConfig'];
-  static categoryConfig = {};
+  static categoryConfig = {_template: {}};
   static generateMethods() {
     this.categoryList.forEach(category => {
       const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
@@ -69,6 +69,13 @@ class ComponentManager {
         }
       };
     });
+    //用于注册vue模板
+    this['registerVueTemplate'] = (name, template) => {
+      this.categoryConfig['_template'][name] = template;
+    };
+    this['getVueTemplate'] = (name, template) => {
+      return this.categoryConfig['_template'][name];
+    };
   }
 }
 ComponentManager.generateMethods();
