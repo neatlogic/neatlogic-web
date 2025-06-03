@@ -75,11 +75,19 @@ function getAllModuleList(modulePathList = []) {
 function getPages(pageList) {
   const pages = {};
   const pagePathList = glob.sync(src + '/views/pages/*/router.js');
-  const importModulePathList = glob.sync(`${commercialModule}/**/router.js`) || [];
+  const importCommercialModulePathList = glob.sync(`${commercialModule}/**/router.js`) || [];
   const importCommunityModulePathList = glob.sync(`${communityModule}/**/router.js`) || [];
   const defaultModuleList = getAllModuleList(pagePathList);
   const commercialModuleList = [];
   const communityModuleList = [];
+
+  importCommercialModulePathList.forEach(filePath => {
+    const moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
+    if (!defaultModuleList.includes(getModuleName(moduleName))) {
+      pagePathList.push(filePath);
+      commercialModuleList.push(getModuleName(moduleName));
+    }
+  });
 
   importCommunityModulePathList.forEach(filePath => {
     const moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
@@ -89,26 +97,17 @@ function getPages(pageList) {
     }
   });
 
-  importModulePathList.forEach(filePath => {
-    const moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
-    if (!defaultModuleList.includes(getModuleName(moduleName))) {
-      pagePathList.push(filePath);
-      commercialModuleList.push(getModuleName(moduleName));
-    }
-  });
-
   pagePathList.forEach(filePath => {
     const moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
     const filename = getModuleName(moduleName);
     const pageLogin = filename === 'login' ? pageTitle : `${pageTitle}-${filename}`;
 
     let entry = `${src}/views/pages/${filename}/${filename}.js`;
-    if (commercialModuleList.includes(filename)) {
-      entry = `${commercialModule}/${moduleName}/${filename}.js`;
-    } else if (communityModuleList.includes(filename)) {
+    if (communityModuleList.includes(filename)) {
       entry = `${communityModule}/${moduleName}/${filename}.js`;
-    }
-
+    } else if (commercialModuleList.includes(filename)) {
+      entry = `${commercialModule}/${moduleName}/${filename}.js`;
+    } 
     pages[filename] = {
       entry,
       template: `public/index.html`,
