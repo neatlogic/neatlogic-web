@@ -247,44 +247,19 @@ export default {
           label: this.$t('page.dbtype'),
           dataList: [
             { value: 'mysql', text: 'mysql' },
-            { value: 'mongodb', text: 'mongodb' },
-            { value: 'jdbc', text: 'jdbc' }
+            { value: 'mongodb', text: 'mongodb' }
           ],
           validateList: [{ name: 'required' }],
           onChange: dbType => {
-            this.reportDataSourceData.dbType = dbType;
-            if (this.reportDataSourceData.dbType == 'jdbc') {
-              this.formConfig.forEach(element => {
-                if (element.name == 'databaseId') {
-                  this.$set(element, 'isHidden', false);
-                  this.$set(element, 'params', {type: dbType, needPage: true});
-                }
-              });
+            if (dbType == 'mysql' || dbType == 'mongodb') {
+              this.reportDataSourceData.dbType = dbType;
             } else {
-              this.reportDataSourceData.databaseId = null;
-              this.formConfig.forEach(element => {
-                if (element.name == 'databaseId') {
-                  this.$set(element, 'isHidden', true);
-                  this.$set(element, 'params', {});
-                }
-              });
+              let index = dbType.lastIndexOf('-');
+              let type = dbType.substring(0, index);
+              let databaseId = dbType.substring(index + 1, dbType.length);
+              this.reportDataSourceData.dbType = type;
+              this.reportDataSourceData.databaseId = databaseId;
             }
-          }
-        },
-        {
-          type: 'select',
-          name: 'databaseId',
-          label: '数据源',
-          transfer: true,
-          rootName: 'tbodyList',
-          valueName: 'id',
-          textName: 'name',
-          params: {needPage: true},
-          dynamicUrl: '/api/rest/database/search',
-          isHidden: true,
-          validateList: [{ name: 'required' }],
-          onChange: databaseId => {
-            this.reportDataSourceData.databaseId = databaseId;
           }
         },
         {
@@ -338,6 +313,7 @@ export default {
   beforeCreate() {},
   created() {
     this.getModuleList();
+    this.getDatabaseList();
     this.getDatasourceById();
   },
   beforeMount() {},
@@ -350,6 +326,32 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getDatabaseList() {
+      let params = {
+        currentPage: 1,
+        pageSize: 100
+      };
+      this.$api.framework.datawarehouse.getDatabaseList(params).then(res => {
+        let tbodyList = res.Return.tbodyList;
+        let dataList = [
+          { value: 'mysql', text: 'mysql' },
+          { value: 'mongodb', text: 'mongodb' }
+        ];
+        tbodyList.forEach(item => {
+          let text = item.name;
+          let value = item.type + '-' + item.id;
+          dataList.push({
+            text: text,
+            value: value
+          });
+        });
+        this.formConfig.forEach(element => {
+          if (element.name == 'dbType') {
+            this.$set(element, 'dataList', dataList);
+          }
+        });
+      });
+    },
     getModuleList() {
       this.$api.framework.module.searchModule().then(res => {
         if (res.Return) {
@@ -393,6 +395,11 @@ export default {
       if (this.id) {
         this.$api.framework.datawarehouse.getDatasourceById(this.id).then(res => {
           this.reportDataSourceData = res.Return;
+          if (this.reportDataSourceData.dbType && this.reportDataSourceData.dbType != 'mysql' && this.reportDataSourceData.dbType != 'mongodb') {
+            if (this.reportDataSourceData.databaseId && this.reportDataSourceData.databaseId != null) {
+              this.reportDataSourceData.dbType = this.reportDataSourceData.dbType + '-' + this.reportDataSourceData.databaseId;
+            }
+          }
           this.formConfig.forEach(element => {
             this.$set(element, 'value', this.reportDataSourceData[element.name]);
             if (element.name == 'fields') {
@@ -403,12 +410,6 @@ export default {
               }
             } else if (element.name == 'params') {
               if (!this.reportDataSourceData.paramList || this.reportDataSourceData.paramList.length == 0) {
-                this.$set(element, 'isHidden', true);
-              } else {
-                this.$set(element, 'isHidden', false);
-              }
-            } else if (element.name == 'databaseId') {
-              if (!this.reportDataSourceData.databaseId || this.reportDataSourceData.databaseId == null) {
                 this.$set(element, 'isHidden', true);
               } else {
                 this.$set(element, 'isHidden', false);
