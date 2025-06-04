@@ -3,7 +3,7 @@
     <TsContain>
       <template slot="topLeft">
         <div class="action-group">
-          <span class="action-item tsfont-plus" @click="addDatabase()">{{ $t('page.database') }}</span>
+          <span class="action-item tsfont-plus" @click="addDatabase()">{{ $t('page.datasource') }}</span>
         </div>
       </template>
       <template slot="topRight">

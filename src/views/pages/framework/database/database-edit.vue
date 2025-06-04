@@ -58,7 +58,7 @@ export default {
         type: 'modal',
         maskClose: false,
         isShow: true,
-        title: !this.id ? this.$t('dialog.title.addtarget', { target: this.$t('page.database') }) : this.$t('dialog.title.edittarget', { target: this.$t('page.database') }),
+        title: !this.id ? this.$t('dialog.title.addtarget', { target: this.$t('page.datasource') }) : this.$t('dialog.title.edittarget', { target: this.$t('page.datasource') }),
         width: 'medium'
       },
       formConfig: [
