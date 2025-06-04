@@ -22,6 +22,7 @@ import mq from './mq/mq';//消息队列
 import fulltextindex from './fulltextindex/fulltextindex';//全局检索
 import healthcheck from './healthcheck/healthcheck';//健康检查
 import datawarehouse from './datawarehouse/datawarehouse';//数据仓库
+import database from './database/database';//数据库
 import theme from './theme/theme';//主题定制
 import auditconfig from './auditconfig/auditconfig';//审计配置
 import file from './file/file';//附件管理
@@ -60,6 +61,7 @@ export default {
   runner,
   healthcheck,
   datawarehouse,
+  database,
   auditconfig,
   file,
   module,
