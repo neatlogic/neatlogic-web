@@ -353,7 +353,8 @@ export default {
           fn: _this.resetNode
         }
       },
-      nodeTitle: null
+      nodeTitle: null,
+      refreshTimes: 3 //完成后刷新次数
     };
   },
   beforeCreate() {},
@@ -505,7 +506,7 @@ export default {
         clearTimeout(this.timmer);
         this.timmer = null;
       }
-      if (nodeIdList && nodeIdList.length > 0) {
+      if (!this.$utils.isEmpty(nodeIdList) || this.refreshTimes > 0) {
         this.$api.autoexec.job
           .searchPhaseNode({
             nodeIdList: nodeIdList,
@@ -529,7 +530,10 @@ export default {
                   node['isDisabled'] = true;
                 }
               });
-              if (nodeIdList.length > 0) {
+              if (this.$utils.isEmpty(nodeIdList)) {
+                this.refreshTimes--;
+              }
+              if (nodeIdList.length > 0 || this.refreshTimes > 0) {
                 this.timmer = setTimeout(() => {
                   this.refreshNode(nodeIdList);
                 }, 3000);
@@ -563,10 +567,11 @@ export default {
             });
           }
           if (nodeIdList.length > 0) {
-            this.timmer = setTimeout(() => {
-              this.refreshNode(nodeIdList);
-            }, 3000);
+            this.refreshTimes = 3;  
           }
+          this.timmer = setTimeout(() => {
+            this.refreshNode(nodeIdList);
+          }, 3000);
         }
         if (this.nodeData && this.nodeData.tbodyList && this.nodeData.tbodyList.length > 0) {
           // 节点被删除，复选框禁用

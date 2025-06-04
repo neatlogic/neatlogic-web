@@ -272,7 +272,8 @@ export default {
       },
       versionId: null,
       hasOperationVersionAndProductManagerAuth: false,
-      jobNameWidth: 0
+      jobNameWidth: 0,
+      refreshTimes: 3 //作业完成后刷新次数
     };
   },
   beforeCreate() {},
@@ -455,11 +456,11 @@ export default {
               }
             });
             if (phaseIdList.length > 0) {
-              //refreshPhaseList存在定时器
-              // this.timmer = setTimeout(() => {
-              this.refreshPhaseList(phaseIdList);
-              // }, 5000);
+              this.refreshTimes = 3;
             }
+            this.timmer = setTimeout(() => {
+              this.refreshPhaseList(phaseIdList);
+            }, 5000);
           }
         })
         .finally(() => {
@@ -474,7 +475,7 @@ export default {
     },
     refreshPhaseList(phaseIdList) {
       this.clearTimmer();
-      if (phaseIdList && phaseIdList.length > 0) {
+      if (!this.$utils.isEmpty(phaseIdList) || this.refreshTimes > 0) {
         this.$api.autoexec.job.getPhaseList({ jobId: this.jobParam.jobId, phaseIdList: phaseIdList }).then(res => {
           if (res.Return['phaseList'] && res.Return['phaseList'].length > 0) {
             res.Return['phaseList'].forEach(phase => {
@@ -496,7 +497,10 @@ export default {
           if (this.jobData && this.jobData.extraInfo) {
             this.$set(this.jobData, 'extraInfo', res.Return['extraInfo']);
           }
-          if (phaseIdList.length > 0) {
+          if (this.$utils.isEmpty(phaseIdList)) {
+            this.refreshTimes--;
+          }
+          if (phaseIdList.length > 0 || this.refreshTimes > 0) {
             this.timmer = setTimeout(() => {
               this.refreshPhaseList(phaseIdList);
             }, 5000);
