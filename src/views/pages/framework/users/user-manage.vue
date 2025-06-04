@@ -29,7 +29,7 @@
           >
             <template slot="userName" slot-scope="{row}">
               <UserCard :uuid="row.uuid" hideName></UserCard>
-              <span class="text-href" @click.stop="trClick(row)">{{ row.userName||'-' }}</span>
+              <span class="text-href" @click.stop="editUser(row, 'user')">{{ row.userName||'-' }}</span>
             </template>
             <template slot="roleDescriptionList" slot-scope="{ row }">
               <div @click.stop>
@@ -509,19 +509,6 @@ export default {
       this.$router.push({
         path: `user-addview`,
         query: { userId: userId, key: key, uuid: uuid }
-      });
-    },
-    //行点击
-    trClick: function(item) {
-      let userId = '';
-      let uuid = '';
-      if (item) {
-        userId = item.userId || '';
-        uuid = item.uuid || '';
-      }
-      this.$router.push({
-        path: `user-addview`,
-        query: { userId: userId, key: 'user', readonly: true, uuid: uuid }
       });
     },
     getVipIconByLevel(vipLevel) {
