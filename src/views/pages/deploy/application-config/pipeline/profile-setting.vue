@@ -74,10 +74,11 @@
                 <ul class="tstable-action-ul">
                   <li class="icon tsfont-tool">
                     <Dropdown
-                      :visible="isVisible"
-                      trigger="click"
+                      :visible="referenceListMap[row.id]"
+                      trigger="custom"
                       transfer
-                      @on-visible-change="(val)=>{getReferenceList(val, row, item)}"
+                      @click.native="getReferenceList(row, item)"
+                      @on-clickoutside="referenceListMap[row.id] = false"
                     >
                       <span class="text-action">{{ $t('term.deploy.referencequery') }}</span>
                       <DropdownMenu v-if="referenceList.length > 0" slot="list" class="dropdown">
@@ -203,7 +204,8 @@ export default {
       },
       isVisible: false,
       isHideAll: true,
-      profileMap: {} //预置参数id对应的参数列表
+      profileMap: {}, //预置参数id对应的参数列表
+      referenceListMap: {} //预置参数id对应的是否展示引用列表
     };
   },
   beforeCreate() {},
@@ -243,8 +245,16 @@ export default {
       let isAnyExpand = this.profileList.some(item => !item.isHide);
       this.isHideAll = !isAnyExpand;
     },
-    getReferenceList(val, row, item) {
-      if (!val) {
+    getReferenceList(row, item) {
+      Object.keys(this.referenceListMap).forEach(key => {
+        this.$set(this.referenceListMap, key, key == row.id ? !this.referenceListMap[key] : false);
+      });
+      // 如果当前row.id不存在，则设置为true
+      if (!(row.id in this.referenceListMap)) {
+        this.$set(this.referenceListMap, row.id, true);
+      }
+     
+      if (!this.referenceListMap[row.id]) {
         return;
       }
       let data = {
