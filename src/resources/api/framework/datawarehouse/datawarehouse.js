@@ -45,9 +45,6 @@ const datawarehouse = {
   },
   validXml(xml) {
     return axios.post('/api/rest/datawarehouse/datasource/validxml', {xml: xml});
-  },
-  getDatabaseList(params) {
-    return axios.post('/api/rest/database/search', params);
   }
 };
 

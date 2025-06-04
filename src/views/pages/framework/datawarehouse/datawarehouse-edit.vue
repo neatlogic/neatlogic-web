@@ -331,7 +331,7 @@ export default {
         currentPage: 1,
         pageSize: 100
       };
-      this.$api.framework.datawarehouse.getDatabaseList(params).then(res => {
+      this.$api.framework.database.searchDatabaseList(params).then(res => {
         let tbodyList = res.Return.tbodyList;
         let dataList = [
           { value: 'mysql', text: 'mysql' },

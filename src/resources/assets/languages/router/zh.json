@@ -130,6 +130,7 @@
     "formmanage": "表单管理",
     "integrationmanage": "集成管理",
     "datawarehousemanage": "数据仓库",
+    "database": "数据库",
     "historymanage": "历史消息",
     "subscriptionsetting": "订阅设置",
     "noticemanage": "系统公告",
