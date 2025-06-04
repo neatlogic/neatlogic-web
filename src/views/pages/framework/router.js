@@ -365,7 +365,7 @@ let routerList = [
     name: 'database-manage',
     component: databaseManage,
     meta: {
-      title: $t('router.framework.database'),
+      title: $t('router.framework.datasource'),
       icon: 'tsfont-db-cluster',
       ismenu: true,
       type: 'integration',
