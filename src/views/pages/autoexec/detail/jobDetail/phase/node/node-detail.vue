@@ -11,12 +11,34 @@
       <TabPane
         v-if="phaseData.execMode != 'sqlfile'"
         :label="$t('term.autoexec.standardoutput')"
-        class="padding"
         :class="getTabDetailClass()"
         name="standardOutput"
       >
-        <div style="display:grid;grid-template-columns:228px auto">
-          <div style="overflow-y: auto;" :style="{ height: 'calc(100vh - ' + (mode === 'page' ? !$utils.isEmptyObj(jobData.extraInfo) ? '310px': '215px' : '190px') + ')' }">
+        <div v-if="phaseData.execMode === 'runner'" class="pl-nm">
+          <div class="action-group line">
+            <span v-if="phaseData.warnCount > 0" class="block-item">
+              <span>{{ $t('page.warningmessage') }}</span>
+              <span class="text-warning pl-icon">{{ phaseData.warnCount }}</span>
+            </span>
+            <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="runnerAction('reset')">{{ $t('page.reset') }}</span>
+            <span
+              v-if="jobData.isCanExecute"
+              class="action-item tsfont-minus-o"
+              :class="phaseData.status != 'failed' ? 'disable' : 'text-action'"
+              @click="runnerAction('ignore')"
+            >{{ $t('page.ignore') }}
+            </span>
+            <span
+              v-if="jobData.isCanExecute"
+              class="action-item tsfont-run"
+              :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
+              @click="runnerAction('refire')"
+            >{{ $t('page.execute') }}
+            </span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:228px auto" class="padding">
+          <div style="overflow-y: auto;" :style="{ height: 'calc(100vh - ' + (mode === 'page' ? (!$utils.isEmptyObj(jobData.extraInfo) ? '330px': '235px') : '190px') + ')' }">
             <div v-if="operationList && operationList.length">
               <div
                 v-for="(step, sindex) in operationList"
@@ -492,6 +514,9 @@ export default {
       } else if (this.mode === 'dialog') {
         return 'tab-detail-dialog';
       }
+    },
+    runnerAction(type) {
+      this.$emit('runnerAction', type);
     }
   },
   computed: {

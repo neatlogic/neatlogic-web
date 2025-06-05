@@ -2,25 +2,6 @@
   <div v-if="jobData && phaseData" class="runner-content">
     <div v-if="runnerData" class="pl-nm pr-nm pt-nm text-right runner-action">
       <div class="action-group line">
-        <span v-if="phaseData.warnCount > 0" class="action-item">
-          <span>{{ $t('page.warningmessage') }}</span>
-          <span class="text-warning pl-icon">{{ phaseData.warnCount }}</span>
-        </span>
-        <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="resetAllNode()">{{ $t('page.reset') }}</span>
-        <span
-          v-if="jobData.isCanExecute"
-          class="action-item tsfont-minus-o"
-          :class="phaseData.status != 'failed' ? 'disable' : 'text-action'"
-          @click="ignorePhase()"
-        >{{ $t('page.ignore') }}
-        </span>
-        <span
-          v-if="jobData.isCanExecute"
-          class="action-item tsfont-run"
-          :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
-          @click="refirePhase()"
-        >{{ $t('page.execute') }}
-        </span>
         <span class="action-item">
           <Poptip transfer placement="bottom">
             <span class="text-action">
@@ -50,6 +31,7 @@
       :phaseData="phaseData"
       :runnerData="runnerData"
       :nodeData="nodeData"
+      @runnerAction="runnerAction"
     ></NodeDetail>
     <RefirePhaseDialog
       v-if="isRefireDialogShow"
@@ -179,6 +161,19 @@ export default {
         return false;
       }
       this.isIgnorePhseeDialogShow = true;
+    },
+    runnerAction(action) {
+      switch (action) {
+        case 'refire':
+          this.refirePhase();
+          break;
+        case 'reset':
+          this.resetAllNode();
+          break;
+        case 'ignore':
+          this.ignorePhase();
+          break;
+      }
     }
   },
   computed: {},

@@ -19,8 +19,12 @@
       </Poptip>
     </span>
     <Tabs v-model="tabValue" class="tab-contain block-tabs2" :animated="false">
-      <TabPane :label="$t('term.autoexec.standardoutput')" class="padding" name="standardOutput">
-        <div style="display:grid;grid-template-columns:186px auto">
+      <TabPane :label="$t('term.autoexec.standardoutput')" name="standardOutput">
+        <div v-if="jobData.isCanExecute" class="div-btn-contain action-group no-line pl-nm">
+          <span class="action-item tsfont-restart" :class="phaseData.status == 'running'?'disable':''" @click="resetAllNode()">{{ $t('page.resetall') }}</span>
+          <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">{{ $t('page.executeall') }}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:186px auto;" class="padding">
           <div>
             <div v-if="operationList && operationList.length">
               <div
@@ -63,10 +67,34 @@
           @refresh="refresh"
         ></SqlFileList>
       </TabPane>
-      <TabPane :label="$t('term.autoexec.runrecord')" class="padding" name="record">
-        <Record v-if="tabValue == 'record'" :nodeData="nodeData" :phaseData="phaseData"></Record>
+      <TabPane :label="$t('term.autoexec.runrecord')" name="record">
+        <div v-if="jobData.isCanExecute && phaseData" class="div-btn-contain action-group no-line pl-nm">
+          <span class="action-item tsfont-restart" :class="phaseData.status == 'running'?'disable':''" @click="resetAllNode()">{{ $t('page.resetall') }}</span>
+          <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">{{ $t('page.executeall') }}</span>
+        </div>
+        <Record
+          v-if="tabValue == 'record'"
+          :nodeData="nodeData"
+          :phaseData="phaseData"
+          class="padding"
+        ></Record>
       </TabPane>
     </Tabs>
+    <ResetDialog
+      v-if="actionParam && isResetDialogShow"
+      :jobId="actionParam.jobId"
+      :phaseId="actionParam.phaseId"
+      :nodeList="actionParam.nodeList"
+      :isAll="actionParam.isAll"
+      @close="closeResetDialog"
+    ></ResetDialog>
+    <RefirePhaseDialog
+      v-if="isRefireDialogShow"
+      :phaseId="phaseData.id"
+      :phaseName="phaseData.name"
+      :execMode="phaseData.execMode"
+      @close="closeRefireDialog"
+    ></RefirePhaseDialog>
   </div>
 </template>
 <script>
@@ -75,7 +103,9 @@ export default {
   components: {
     SqlLog: () => import('@/views/pages/autoexec/detail/logcomponents/sql-log.vue'),
     Record: () => import('./node/record.vue'),
-    SqlFileList: () => import('./sqlfile-list.vue')
+    SqlFileList: () => import('./sqlfile-list.vue'),
+    ResetDialog: () => import('../reset-dialog.vue'),
+    RefirePhaseDialog: () => import('../refire-phase-dialog.vue')
   },
   filters: {},
   directives: {},
@@ -92,7 +122,9 @@ export default {
       timmer: null,
       runnerData: {},
       nodeData: {},
-      locationId: null //日志定位行id
+      locationId: null, //日志定位行id
+      isResetDialogShow: false,
+      actionParam: {}
     };
   },
   beforeCreate() {},
@@ -158,6 +190,34 @@ export default {
     },
     refresh() {
       this.$emit('refresh');
+    },
+    resetAllNode() {
+      if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
+        return false;
+      }
+      this.actionParam = {};
+      this.actionParam.jobId = this.jobData.id;
+      this.actionParam.phaseId = this.phaseData.id;
+      this.actionParam.isAll = 1;
+      this.isResetDialogShow = true;
+    },
+    closeResetDialog(needRefresh) {
+      this.isResetDialogShow = false;
+      if (needRefresh) {
+        this.refresh();
+      }
+    },
+    refirePhase() {
+      if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
+        return false;
+      }
+      this.isRefireDialogShow = true;
+    },
+    closeRefireDialog(needRefresh) {
+      this.isRefireDialogShow = false;
+      if (needRefresh) {
+        this.refresh();
+      }
     }
   },
   computed: {
