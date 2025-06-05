@@ -51,9 +51,9 @@
                           />
                         </template>
                         <template v-slot:act="{ index }">
-                          <div class="actions flex-start">
-                            <span v-if="netWorkList.length>1" class="tsfont-close-o text-action" @click="operationRow('del', index)"></span>
-                            <span class="tsfont-plus-o text-action" @click="operationRow('add', index)"></span>
+                          <div class="action-group">
+                            <span v-if="netWorkList.length > 1" class="action-item tsfont-close-o" @click="operationRow('del', index)"></span>
+                            <span class="action-item tsfont-plus-o" @click="operationRow('add', index)"></span>
                           </div>
                         </template>
                       </TsTable>
