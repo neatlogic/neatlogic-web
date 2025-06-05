@@ -52,7 +52,7 @@
             :class="{seachable:search,clearable:clearable && totalText && Object.keys(totalText).length,'form-target':!border}"
             @click="clickItem"
           >
-            <span class="search-box tsfont-search" @click="handleSearch"></span>
+            <span class="search-box tsfont-search" @click.stop="handleSearch"></span>
             <div ref="tagItem" class="search-main">
               <span v-if="(totalText && Object.keys(totalText).length) ||$slots.textItem" class="tag-item">
                 <slot
@@ -270,6 +270,9 @@ export default {
       //如果是带搜索的点击空白处聚焦搜索输入框，如果是纯下拉的点击空白处展开收起下拉
       if (this.search) {
         this.$refs.input && this.$refs.input.focus();
+      } else {
+        // 如果是不带搜索的点击空白处展开收起下拉
+        this.handleToggleOpen();
       }
     },
     handleToggleOpen() {
