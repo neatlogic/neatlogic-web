@@ -251,15 +251,7 @@ export default {
           ],
           validateList: [{ name: 'required' }],
           onChange: dbType => {
-            if (dbType == 'mysql' || dbType == 'mongodb') {
-              this.reportDataSourceData.dbType = dbType;
-            } else {
-              let index = dbType.lastIndexOf('-');
-              let type = dbType.substring(0, index);
-              let databaseId = dbType.substring(index + 1, dbType.length);
-              this.reportDataSourceData.dbType = type;
-              this.reportDataSourceData.databaseId = databaseId;
-            }
+            this.reportDataSourceData.dbType = dbType;
           }
         },
         {
@@ -436,6 +428,13 @@ export default {
         }
         if (this.id) {
           this.reportDataSourceData.id = this.id;
+        }
+        if (this.reportDataSourceData.dbType != 'mysql' && this.reportDataSourceData.dbType != 'mongodb') {
+          let index = this.reportDataSourceData.dbType.lastIndexOf('-');
+          let type = this.reportDataSourceData.dbType.substring(0, index);
+          let databaseId = this.reportDataSourceData.dbType.substring(index + 1, this.reportDataSourceData.dbType.length);
+          this.reportDataSourceData.dbType = type;
+          this.reportDataSourceData.databaseId = databaseId;
         }
         this.$api.framework.datawarehouse.saveDataSource(this.reportDataSourceData).then(res => {
           if (res.Status == 'OK') {
