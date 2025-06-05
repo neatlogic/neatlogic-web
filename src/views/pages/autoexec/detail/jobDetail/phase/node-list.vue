@@ -80,120 +80,122 @@
         </Row>
       </div>
     </div>
-    <TsTable
-      v-if="nodeData"
-      ref="nodeTable"
-      v-bind="nodeData"
-      :theadList="theadList"
-      multiple
-      :fixedHeader="false"
-      @changeCurrent="changeCurrentPage"
-      @changePageSize="changePageSize"
-      @getSelected="getSelected"
-    >
-      <template v-slot:sqlFile="{ row }">
-        <!--sql-list.vue专用-->
-        <span class="text-href" :class="{ 'text-grey through': row.isDelete === 1 }" @click.stop="viewNodeDetail(row, row.sqlFile)">{{ row.sqlFile }}</span>
-      </template>
-      <template v-slot:host="{ row }">
-        <!--兼容sql-list.vue的场景-->
-        <span
-          v-if="!row.sqlFile"
-          class="text-href"
-          :class="{ 'text-grey through': row.isDelete === 1 }"
-          @click.stop="viewNodeDetail(row)"
-        >{{ row.host }}{{ row.port ? ':' + row.port : '' }}</span>
-        <span v-else :class="{ 'text-grey through': row.isDelete === 1 }">{{ row.host }}{{ row.port ? ':' + row.port : '' }}</span>
-        <span v-if="row.warnCount" class="ml-xs tsfont-warning-o text-warning">{{ row.warnCount }}</span>
-      </template>
-      <template v-slot:version="{ row }">
-        <span v-if="row && row.extraInfo && row.extraInfo.version">{{ row.extraInfo.version }}</span>
-        <span v-else>-</span>
-      </template>
-      <template v-slot:isModified="{row}">
-        <span :class="{'text-warning': row.isModified == 1,'':row.isModified == 0}">
-          {{ row.isModified == 1?$t('page.yes'):$t('page.no') }}
-        </span>
-      </template>
-      <template v-slot:blueGreenName="{ row }">
-        <span v-if="row && row.extraInfo && row.extraInfo.blueGreenName">{{ row.extraInfo.blueGreenName }}({{ row.extraInfo.blueGreenSort }})</span>
-        <span v-else>-</span>
-      </template>
-      <template v-slot:nodeName="{ row }">
-        <span :class="{ 'text-grey': row.isDelete === 1 }">{{ row.nodeName }}</span>
-      </template>
-      <template v-slot:costTime="{ row }">
-        <span :class="{ 'text-grey': row.isDelete === 1 }">{{ row.costTime }}</span>
-      </template>
-      <template v-slot:startTime="{ row }">
-        <span v-if="row.startTime" class="overflow" :class="{ 'text-grey': row.isDelete === 1 }">
-          <div v-if="row.startTime" class="fz10">
-            <span>{{ row.startTime | formatDate }}</span>
-            <span class="text-grey ml-xs">{{ $t('page.begin') }}</span>
-          </div>
-          <div v-if="row.endTime" class="fz10">
-            <span>{{ row.endTime | formatDate }}</span>
-            <span class="text-grey ml-xs">{{ $t('page.finish') }}</span>
-          </div>
-        </span>
-      </template>
-      <template v-slot:statusVo="{ row }">
-        <span v-if="row.isDelete === 1" class="text-grey">{{ row.statusName }}</span>
-        <span v-else-if="row.status == 'running'">
-          <Progress
-            hide-info
-            :percent="99"
-            status="active"
-            style="width:50px"
-          />
-        </span>
-        <span
-          v-else
-          :class="{
-            'text-success': row.status == 'succeed',
-            'text-error': row.status == 'failed',
-            'text-grey': row.status == 'pending',
-            'text-warning': row.status == 'waiting' || row.status == 'ignored' || row.status == 'aborted' || row.status == 'aborting' || row.status == 'waitInput' || row.status == 'paused' || row.status == 'invalid'
-          }"
-        >
-          <Tooltip
-            v-if="row.status == 'invalid'"
-            :transfer="true"
-            placement="bottom-start"
-            trigger="hover"
-            max-width="400"
+    <div ref="tableBox">
+      <TsTable
+        v-if="nodeData"
+        ref="nodeTable"
+        v-bind="nodeData"
+        :theadList="theadList"
+        multiple
+        :height="tableHeight"
+        @changeCurrent="changeCurrentPage"
+        @changePageSize="changePageSize"
+        @getSelected="getSelected"
+      >
+        <template v-slot:sqlFile="{ row }">
+          <!--sql-list.vue专用-->
+          <span class="text-href" :class="{ 'text-grey through': row.isDelete === 1 }" @click.stop="viewNodeDetail(row, row.sqlFile)">{{ row.sqlFile }}</span>
+        </template>
+        <template v-slot:host="{ row }">
+          <!--兼容sql-list.vue的场景-->
+          <span
+            v-if="!row.sqlFile"
+            class="text-href"
+            :class="{ 'text-grey through': row.isDelete === 1 }"
+            @click.stop="viewNodeDetail(row)"
+          >{{ row.host }}{{ row.port ? ':' + row.port : '' }}</span>
+          <span v-else :class="{ 'text-grey through': row.isDelete === 1 }">{{ row.host }}{{ row.port ? ':' + row.port : '' }}</span>
+          <span v-if="row.warnCount" class="ml-xs tsfont-warning-o text-warning">{{ row.warnCount }}</span>
+        </template>
+        <template v-slot:version="{ row }">
+          <span v-if="row && row.extraInfo && row.extraInfo.version">{{ row.extraInfo.version }}</span>
+          <span v-else>-</span>
+        </template>
+        <template v-slot:isModified="{row}">
+          <span :class="{'text-warning': row.isModified == 1,'':row.isModified == 0}">
+            {{ row.isModified == 1?$t('page.yes'):$t('page.no') }}
+          </span>
+        </template>
+        <template v-slot:blueGreenName="{ row }">
+          <span v-if="row && row.extraInfo && row.extraInfo.blueGreenName">{{ row.extraInfo.blueGreenName }}({{ row.extraInfo.blueGreenSort }})</span>
+          <span v-else>-</span>
+        </template>
+        <template v-slot:nodeName="{ row }">
+          <span :class="{ 'text-grey': row.isDelete === 1 }">{{ row.nodeName }}</span>
+        </template>
+        <template v-slot:costTime="{ row }">
+          <span :class="{ 'text-grey': row.isDelete === 1 }">{{ row.costTime }}</span>
+        </template>
+        <template v-slot:startTime="{ row }">
+          <span v-if="row.startTime" class="overflow" :class="{ 'text-grey': row.isDelete === 1 }">
+            <div v-if="row.startTime" class="fz10">
+              <span>{{ row.startTime | formatDate }}</span>
+              <span class="text-grey ml-xs">{{ $t('page.begin') }}</span>
+            </div>
+            <div v-if="row.endTime" class="fz10">
+              <span>{{ row.endTime | formatDate }}</span>
+              <span class="text-grey ml-xs">{{ $t('page.finish') }}</span>
+            </div>
+          </span>
+        </template>
+        <template v-slot:statusVo="{ row }">
+          <span v-if="row.isDelete === 1" class="text-grey">{{ row.statusName }}</span>
+          <span v-else-if="row.status == 'running'">
+            <Progress
+              hide-info
+              :percent="99"
+              status="active"
+              style="width:50px"
+            />
+          </span>
+          <span
+            v-else
+            :class="{
+              'text-success': row.status == 'succeed',
+              'text-error': row.status == 'failed',
+              'text-grey': row.status == 'pending',
+              'text-warning': row.status == 'waiting' || row.status == 'ignored' || row.status == 'aborted' || row.status == 'aborting' || row.status == 'waitInput' || row.status == 'paused' || row.status == 'invalid'
+            }"
           >
-            <span class="ml-xs tsfont-warning-o text-warn">{{ row.statusName }}</span>
-            <div slot="content">{{ row.errorMsg }}</div>
-          </Tooltip>
-          <span v-else>{{ row.statusName }}</span>
-        </span>
-      </template>
-      <template v-slot:action="{ row }">
-        <div class="tstable-action">
-          <ul class="tstable-action-ul">
-            <li v-if="row.runnerHost && phaseData.execMode != 'sqlfile'">
-              <Tooltip
-                :transfer="true"
-                placement="bottom-start"
-                trigger="hover"
-              >
-                <span class="action-item tsfont-adapter text-action">{{ $t('term.autoexec.actuatorinformation') }}</span>
-                <div slot="content">{{ row.runnerHost }}{{ row.runnerPort ? ':' + row.runnerPort : '' }}</div>
-              </Tooltip>
-            </li>
-            <template v-if="phaseData.status != 'running' && jobData.isCanExecute && row.isDelete != 1">
-              <li
-                v-for="(action, index) in statusActionMapping[row.status]"
-                :key="index"
-                :class="actionMap[action].icon"
-                @click.stop="actionMap[action].fn(row)"
-              >{{ actionMap[action].text }}</li>
-            </template>
-          </ul>
-        </div>
-      </template>
-    </TsTable>
+            <Tooltip
+              v-if="row.status == 'invalid'"
+              :transfer="true"
+              placement="bottom-start"
+              trigger="hover"
+              max-width="400"
+            >
+              <span class="ml-xs tsfont-warning-o text-warn">{{ row.statusName }}</span>
+              <div slot="content">{{ row.errorMsg }}</div>
+            </Tooltip>
+            <span v-else>{{ row.statusName }}</span>
+          </span>
+        </template>
+        <template v-slot:action="{ row }">
+          <div class="tstable-action">
+            <ul class="tstable-action-ul">
+              <li v-if="row.runnerHost && phaseData.execMode != 'sqlfile'">
+                <Tooltip
+                  :transfer="true"
+                  placement="bottom-start"
+                  trigger="hover"
+                >
+                  <span class="action-item tsfont-adapter text-action">{{ $t('term.autoexec.actuatorinformation') }}</span>
+                  <div slot="content">{{ row.runnerHost }}{{ row.runnerPort ? ':' + row.runnerPort : '' }}</div>
+                </Tooltip>
+              </li>
+              <template v-if="phaseData.status != 'running' && jobData.isCanExecute && row.isDelete != 1">
+                <li
+                  v-for="(action, index) in statusActionMapping[row.status]"
+                  :key="index"
+                  :class="actionMap[action].icon"
+                  @click.stop="actionMap[action].fn(row)"
+                >{{ actionMap[action].text }}</li>
+              </template>
+            </ul>
+          </div>
+        </template>
+      </TsTable>
+    </div>
     <!-- 节点详情弹出框 -->
     <NodeDialog
       v-if="isNodeDetailDialogShow"
@@ -354,7 +356,9 @@ export default {
         }
       },
       nodeTitle: null,
-      refreshTimes: 3 //完成后刷新次数
+      refreshTimes: 3, //完成后刷新次数
+      isFirst: true,
+      tableHeight: 150
     };
   },
   beforeCreate() {},
@@ -555,6 +559,9 @@ export default {
       mutations.setSearchParam(this.searchParam);
       this.$api.autoexec.job.searchPhaseNode(this.searchParam).then(res => {
         this.nodeData = res.Return;
+        if (this.isFirst) {
+          this.getTableHeight();
+        }
         const nodeList = res.Return.tbodyList;
         if (nodeList && nodeList.length > 0) {
           const nodeIdList = [];
@@ -596,6 +603,19 @@ export default {
       this.nodeTitle = title || row.host + (row.port ? ':' + row.port : '');
       this.currentNodeId = row.id;
       this.isNodeDetailDialogShow = true;
+    },
+    getTableHeight() {
+      this.isFirst = false;
+      const windowHeight = document.documentElement.clientHeight - 36;
+      this.$nextTick(() => {
+        if (this.$refs.tableBox) {
+          let top = this.$refs.tableBox.getBoundingClientRect().top;
+          const tableHeight = windowHeight - top;
+          if (this.tableHeight < tableHeight) {
+            this.tableHeight = tableHeight;
+          }
+        }
+      });
     }
   },
   computed: {
