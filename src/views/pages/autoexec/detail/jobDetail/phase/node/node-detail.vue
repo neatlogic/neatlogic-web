@@ -504,6 +504,8 @@ export default {
           arr.push('tsfont-play-o text-primary');
         } else if (step.status == 'failed') {
           arr.push('tsfont-close-o text-danger');
+        } else if (step.status == 'aborted') {
+          arr.push('tsfont-close-o text-warning');
         } else {
           arr.push('tsfont-sla text-grey');
         }
