@@ -248,7 +248,8 @@ const errorHandle = res => {
     case 522:
       // 认证类型失败
       Vue.prototype.$utils.removeCookie('neatlogic_authorization');
-      toLogin(res.data && res.data.directUrl ? res.data.directUrl : null, status);
+      toLogin(res.data && res.data.DirectUrl ? res.data.DirectUrl : null, status);
+      // console.log(res.data.DirectUrl);
       break;
     case 523: // 没有资源权限
     case 526: // 对象不存在
@@ -274,7 +275,7 @@ const errorHandle = res => {
     case 527:
       //会话已超时或已被终止,重新登录
       Vue.prototype.$utils.removeCookie('neatlogic_authorization');
-      toLogin(res.data && res.data.directUrl ? res.data.directUrl : null);
+      toLogin(res.data && res.data.DirectUrl ? res.data.DirectUrl : null);
       break;
     case 530:
       //接口参数不符合规范

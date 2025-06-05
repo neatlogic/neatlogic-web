@@ -46,6 +46,7 @@ const sqldump = () => import('./healthcheck/sqldump.vue');
 const databaseFragment = () => import('./healthcheck/database-fragment.vue');
 
 const dataWarehouseManage = () => import('./datawarehouse/datawarehouse-manage.vue');
+const databaseManage = () => import('./database/database-manage.vue');
 const fileManage = () => import('./file/file-manage.vue');
 const themeManage = () => import('./theme/theme-manage.vue');
 
@@ -354,6 +355,18 @@ let routerList = [
     meta: {
       title: $t('router.framework.datawarehousemanage'),
       icon: 'tsfont-db',
+      ismenu: true,
+      type: 'integration',
+      authority: ['DATA_WAREHOUSE_MODIFY']
+    }
+  },
+  {
+    path: '/database-manage',
+    name: 'database-manage',
+    component: databaseManage,
+    meta: {
+      title: $t('router.framework.datasource'),
+      icon: 'tsfont-db-cluster',
       ismenu: true,
       type: 'integration',
       authority: ['DATA_WAREHOUSE_MODIFY']

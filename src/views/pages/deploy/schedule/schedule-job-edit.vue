@@ -115,6 +115,7 @@ export default {
             } else if (this.initData.type == 'pipeline') {
               this.$set(this.baseParams, 'pipelineType', this.initData.pipelineType);
               this.$set(this.baseParams, 'pipelineId', this.initData.pipelineId);
+              this.$set(this.baseParams, 'appSystemId', this.initData.appSystemId);
             }
           }
         })

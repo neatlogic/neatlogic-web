@@ -1067,5 +1067,7 @@
   "incompleteinformation": "信息不完整",
   "requiredparameterhasnullvalue": "必填参数项存在空值",
   "executeall": "执行所有",
-  "cache": "缓存"
+  "cache": "缓存",
+  "connectionsuccessful": "连接成功",
+  "driverjar": "驱动jar包"
 }

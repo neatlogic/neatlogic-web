@@ -305,6 +305,7 @@ export default {
   beforeCreate() {},
   created() {
     this.getModuleList();
+    this.getDatabaseList();
     this.getDatasourceById();
   },
   beforeMount() {},
@@ -317,6 +318,32 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getDatabaseList() {
+      let params = {
+        currentPage: 1,
+        pageSize: 100
+      };
+      this.$api.framework.database.searchDatabaseList(params).then(res => {
+        let tbodyList = res.Return.tbodyList;
+        let dataList = [
+          { value: 'mysql', text: 'mysql' },
+          { value: 'mongodb', text: 'mongodb' }
+        ];
+        tbodyList.forEach(item => {
+          let text = item.name;
+          let value = item.type + '-' + item.id;
+          dataList.push({
+            text: text,
+            value: value
+          });
+        });
+        this.formConfig.forEach(element => {
+          if (element.name == 'dbType') {
+            this.$set(element, 'dataList', dataList);
+          }
+        });
+      });
+    },
     getModuleList() {
       this.$api.framework.module.searchModule().then(res => {
         if (res.Return) {
@@ -360,6 +387,11 @@ export default {
       if (this.id) {
         this.$api.framework.datawarehouse.getDatasourceById(this.id).then(res => {
           this.reportDataSourceData = res.Return;
+          if (this.reportDataSourceData.dbType && this.reportDataSourceData.dbType != 'mysql' && this.reportDataSourceData.dbType != 'mongodb') {
+            if (this.reportDataSourceData.databaseId && this.reportDataSourceData.databaseId != null) {
+              this.reportDataSourceData.dbType = this.reportDataSourceData.dbType + '-' + this.reportDataSourceData.databaseId;
+            }
+          }
           this.formConfig.forEach(element => {
             this.$set(element, 'value', this.reportDataSourceData[element.name]);
             if (element.name == 'fields') {
@@ -396,6 +428,13 @@ export default {
         }
         if (this.id) {
           this.reportDataSourceData.id = this.id;
+        }
+        if (this.reportDataSourceData.dbType != 'mysql' && this.reportDataSourceData.dbType != 'mongodb') {
+          let index = this.reportDataSourceData.dbType.lastIndexOf('-');
+          let type = this.reportDataSourceData.dbType.substring(0, index);
+          let databaseId = this.reportDataSourceData.dbType.substring(index + 1, this.reportDataSourceData.dbType.length);
+          this.reportDataSourceData.dbType = type;
+          this.reportDataSourceData.databaseId = databaseId;
         }
         this.$api.framework.datawarehouse.saveDataSource(this.reportDataSourceData).then(res => {
           if (res.Status == 'OK') {
