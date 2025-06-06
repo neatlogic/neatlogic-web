@@ -704,7 +704,16 @@ export default {
       }
     }
   },
-  watch: {}
+  watch: {
+    phaseData: {
+      handler(val, oldval) {
+        if (val) {
+          this.$set(this.runnerTableConfig, 'tbodyList', val.runnerVos);
+        }
+      },
+      deep: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
