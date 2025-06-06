@@ -2,13 +2,18 @@
   <TsDialog v-bind="dialogSetting" @on-close="closeDialog" @on-cancel="closeDialog">
     <template v-slot>
       <div class="network-dialog-wrapper">
-        <span
-          v-for="(item) in networkList"
-          :key="item.id"
-          class="networkip-mask-list border-color bg-op radius-sm mb-xs"
-        >
-          {{ item.networkIp }} / {{ item.mask }}
-        </span>
+        <TsRow :gutter="10">
+          <template v-for="(item) in networkList">
+            <Col
+              :key="item.id"
+              :span="8"
+            >
+              <div class="networkip-mask-list border-color bg-op radius-sm text-center overflow" :title="getNetworkIpMask(item)">
+                {{ getNetworkIpMask(item) }}
+              </div>
+            </Col>
+          </template>  
+        </TsRow>
       </div>
     </template>
   </TsDialog>
@@ -30,7 +35,7 @@ export default {
       dialogSetting: {
         title: '查看更多网段IP/子网掩码',
         type: 'modal',
-        width: 'small',
+        width: 'medium',
         isShow: true,
         hasFooter: false,
         maskClose: true
@@ -53,20 +58,23 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getNetworkIpMask() {
+      return (item) => {
+        return item.networkIp + ' / ' + item.mask;
+      };
+    }
+  },
   watch: {}
 };
 </script>
 <style lang="less">
 .network-dialog-wrapper {
-  display: flex;
-  flex-wrap: wrap;
   .networkip-mask-list {
     border: 1px solid;
     padding: 6px;
     margin-right: 10px;
     margin-bottom: 10px;
-    white-space: nowrap;
   }
 }
 </style>
