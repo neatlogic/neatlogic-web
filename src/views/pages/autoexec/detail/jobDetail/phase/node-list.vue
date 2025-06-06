@@ -10,13 +10,40 @@
             <span class="action-item tsfont-restart" :class="phaseData.status == 'running'?'disable':''" @click="resetAllNode()">{{ $t('page.resetall') }}</span>
             <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">{{ $t('page.executeall') }}</span>
           </template>
-          <template v-if="canExportNode">
-            <span v-if="!downloadLoadingNode" v-download="downloadNodeUrl" class="action-item tsfont-download">{{ $t('term.autoexec.exportnode') }}</span>
-            <span v-if="downloadLoadingNode" class="action-item disable" :title="$t('page.downloadloadingtip')">
-              <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
-              {{ $t('term.autoexec.exportnode') }}
-            </span>
-          </template>
+          <span class="action-item">
+            <Poptip transfer placement="bottom"> 
+              <span class="text-action">
+                <i class="tsfont-adapter pr-icon"></i><span>{{ $t('term.autoexec.actuatorinformation') }}</span>
+              </span>
+              <div slot="content">
+                <TsTable
+                  v-bind="runnerTableConfig"
+                >
+                  <template v-slot:ipPort="{ row }">
+                    <span>{{ row.host }}:{{ row.port }}</span>
+                  </template>
+                </TsTable>
+              </div>
+            </Poptip>
+          </span>
+          <span class="action-item">
+            <Dropdown trigger="hover" placement="bottom">
+              <span class="tsfont-option-horizontal"></span>
+              <DropdownMenu slot="list">
+                <DropdownItem>
+                  <div>
+                    <template v-if="canExportNode">
+                      <span v-if="!downloadLoadingNode" v-download="downloadNodeUrl" class="action-item tsfont-download">{{ $t('term.autoexec.exportnode') }}</span>
+                      <span v-if="downloadLoadingNode" class="action-item disable" :title="$t('page.downloadloadingtip')">
+                        <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
+                        {{ $t('term.autoexec.exportnode') }}
+                      </span>
+                    </template>
+                  </div>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </span>
         </div>
       </Col>
       <Col :span="8">
@@ -235,6 +262,7 @@
 <script>
 import {store, mutations} from '../../jobDetailState.js';
 import download from '@/resources/directives/download.js';
+import TsTable from '../../../../../../resources/components/TsTable/TsTable.vue';
 export default {
   name: '',
   components: {
@@ -358,7 +386,20 @@ export default {
       nodeTitle: null,
       refreshTimes: 3, //完成后刷新次数
       isFirst: true,
-      tableHeight: 150
+      tableHeight: 150,
+      runnerTableConfig: {
+        theadList: [
+          { title: this.$t('page.name'), key: 'name' },
+          { title: this.$t('page.config'), key: 'ipPort' },
+          { title: this.$t('page.status'), key: 'status' },
+          { title: this.$t('term.autoexec.isfirenext'), key: 'isFireNext' },
+          { title: this.$t('page.updatetime'), key: 'lcd', type: 'time' }
+        ],
+        tbodyList: this.phaseData.runnerVos,
+        currentPage: 1,
+        pageSize: 20,
+        pageCount: 1
+      }
     };
   },
   beforeCreate() {},

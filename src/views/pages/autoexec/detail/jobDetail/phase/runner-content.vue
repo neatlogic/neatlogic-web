@@ -39,6 +39,10 @@
                 <span v-if="runnerData.phaseRunnerGroupFrom" class="text-title">{{ $t('page.config') }}{{ $t('page.source') }}</span>
                 <p class="text-default">{{ runnerData.phaseRunnerGroupFrom }}</p>
               </div>
+              <div>
+                <span class="text-title">{{ $t('page.status') }}</span>
+                <p class="text-default">{{ runnerData.status }}</p>
+              </div>
             </div>
           </Poptip>
         </span>
@@ -156,6 +160,7 @@ export default {
           this.runnerData.name = res.Return.runnerVo.name;
           this.runnerData.port = res.Return.runnerVo.host + ':' + res.Return.runnerVo.port;
           this.runnerData.phaseRunnerGroupFrom = res.Return.phaseRunnerGroupFrom;
+          this.runnerData.status = res.Return.runnerVo.status;
           this.nodeData.status = res.Return.status;
           this.nodeData.warnCount = res.Return.warnCount;
           if (res.Return.status == 'pending' || res.Return.status == 'running') {
