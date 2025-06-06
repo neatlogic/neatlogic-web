@@ -531,6 +531,8 @@ export default {
           arr.push('tsfont-close-o text-danger');
         } else if (step.status == 'aborted') {
           arr.push('tsfont-close-o text-warning');
+        } else if (step.status == 'ignored') {
+          arr.push('tsfont-check-o text-warning');
         } else {
           arr.push('tsfont-sla text-grey');
         }
