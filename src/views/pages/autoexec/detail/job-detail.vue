@@ -226,7 +226,7 @@ export default {
         failed: ['refire'], //已失败：继续
         ready: ['execute', 'revoke'], //已就绪 撤销 执行
         waitInput: ['abort'],
-        waiting: ['abort']
+        waiting: ['pause', 'abort']
       },
       actionMap: {
         valid: {
