@@ -160,7 +160,11 @@ export default {
           if (vList.length > 0) {
             v = vList.join(',');
           } else {
-            v = '*';
+            if (controller.datasource === 'second') {
+              v = '0';
+            } else {
+              v = '*';
+            }
           }
         }
 
