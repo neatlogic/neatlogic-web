@@ -26,19 +26,17 @@
               </div>
             </Poptip>
           </span>
-          <span class="action-item">
+          <span v-if="canExportNode" class="action-item">
             <Dropdown trigger="hover" placement="bottom">
               <span class="tsfont-option-horizontal"></span>
               <DropdownMenu slot="list">
                 <DropdownItem>
                   <div>
-                    <template v-if="canExportNode">
-                      <span v-if="!downloadLoadingNode" v-download="downloadNodeUrl" class="action-item tsfont-download">{{ $t('term.autoexec.exportnode') }}</span>
-                      <span v-if="downloadLoadingNode" class="action-item disable" :title="$t('page.downloadloadingtip')">
-                        <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
-                        {{ $t('term.autoexec.exportnode') }}
-                      </span>
-                    </template>
+                    <span v-if="!downloadLoadingNode" v-download="downloadNodeUrl" class="action-item tsfont-download">{{ $t('term.autoexec.exportnode') }}</span>
+                    <span v-if="downloadLoadingNode" class="action-item disable" :title="$t('page.downloadloadingtip')">
+                      <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
+                      {{ $t('term.autoexec.exportnode') }}
+                    </span>
                   </div>
                 </DropdownItem>
               </DropdownMenu>
