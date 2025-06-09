@@ -216,7 +216,7 @@ export default {
         pageSize: 10
       },
       statusActionMapping: {
-        pending: ['abort'], //未开始：
+        pending: ['refire', 'abort'], //未开始：
         running: ['pause', 'abort'], //运行中： 暂停  终止
         aborting: ['abort'], //终止中
         pausing: ['pause', 'abort'], //暂定中

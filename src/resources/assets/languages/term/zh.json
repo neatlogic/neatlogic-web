@@ -296,7 +296,7 @@
     "workflow": "工作流",
     "showpriority": "显示优先级",
     "defaultpriority": "默认优先级",
-    "serwindow": "服务窗口",
+    "serwindow": "服务时间",
     "sertype": "服务类型",
     "reporauth": "上报授权",
     "tranferreport": "转报",
@@ -629,7 +629,8 @@
     "reactivatestep": "重新激活步骤",
     "seeprocessconfig": "查看当前工单流程配置",
     "editprocessconfig": "编辑当前工单流程配置",
-    "stepishandledby": "步骤处理人为"
+    "stepishandledby": "步骤处理人为",
+    "sercalendar": "服务日历"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",

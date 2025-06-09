@@ -22,9 +22,6 @@
             <div v-if="row.isActive == 1" class="text-success">{{ $t('page.enable') }}</div>
             <div v-else class="text-danger">{{ $t('page.disable') }}</div>
           </template>
-          <template slot="name" slot-scope="{ row }">
-            <span class="text-href" @click.stop="editRow(row.uuid)">{{ row.name }}</span>
-          </template>
           <template slot="yearList" slot-scope="{ row }">
             <div>{{ row.yearList | yearListToText }}</div>
           </template>
@@ -44,9 +41,9 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <!-- <li class="tsfont-edit icon" @click="editRow(row.uuid)">{{ $t('page.edit') }}</li> -->
-                <li class="tsfont-calendar icon" @click="editCalendar(row.uuid, row.name)">{{ $t('term.framework.calendar') }}</li>
-                <li class="tsfont-trash-o icon" :class="row.referenceCount>0?'disable':''" @click="deleteRow(row.uuid, row.name,row.referenceCount)">{{ $t('page.delete') }}</li>
+                <li class="tsfont-edit" @click="editRow(row.uuid)">{{ $t('term.process.serwindow') }}</li> 
+                <li class="tsfont-edit" @click="editCalendar(row.uuid, row.name)">{{ $t('term.process.sercalendar') }}</li>
+                <li class="tsfont-trash-o" :class="row.referenceCount>0?'disable':''" @click="deleteRow(row.uuid, row.name,row.referenceCount)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
           </template>

@@ -1,5 +1,14 @@
 <template>
-  <div>
+  <div v-if="expression && itemMap['ex_' + expression + '_ConditionHandler']">
+    <component
+      :is="itemMap['ex_' + expression + '_ConditionHandler']"
+      :disabled="readonly"
+      v-bind="conditionItem.config"
+      :value="finalValue"
+      @change="changeValue"
+    ></component>
+  </div>
+  <div v-else>
     <component
       :is="itemMap[conditionItem.type + 'ConditionHandler']"
       :disabled="readonly"
@@ -20,6 +29,8 @@ export default {
   props: {
     readonly: { type: Boolean, default: false },
     conditionItem: { type: Object },
+    conditionItemData: { type: Object }, //条件数据
+    expression: { type: String }, //表达式，某些表达式可能需要特殊的组件
     value: { type: [String, Array] }
   },
   data() {
@@ -50,9 +61,26 @@ export default {
       } else {
         return this.value;
       }
+    },
+    usingPlugin() {
+      //计算当前条件插件在用什么插件，在插件发生切换时需要清空value
+      if (this.expression && this.itemMap['ex_' + this.expression + '_ConditionHandler']) {
+        return 'ex_' + this.expression;
+      } else {
+        return this.conditionItem.type;
+      }
     }
   },
-  watch: {}
+  watch: {
+    usingPlugin: {
+      handler: function(val) {
+        //当条件发生切换时，清空value值，避免不同插件对value值不适配
+        console.log('change', val);
+        this.$set(this.conditionItemData, 'valueList', null);
+      },
+      deep: true
+    }
+  }
 };
 </script>
 <style lang="less"></style>
