@@ -260,7 +260,6 @@
 <script>
 import {store, mutations} from '../../jobDetailState.js';
 import download from '@/resources/directives/download.js';
-import TsTable from '../../../../../../resources/components/TsTable/TsTable.vue';
 export default {
   name: '',
   components: {
