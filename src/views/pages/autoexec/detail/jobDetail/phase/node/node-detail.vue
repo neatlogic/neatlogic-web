@@ -16,10 +16,6 @@
       >
         <div v-if="phaseData.execMode === 'runner'" class="pl-nm">
           <div class="action-group line">
-            <span v-if="phaseData.warnCount > 0" class="block-item">
-              <span>{{ $t('page.warningmessage') }}</span>
-              <span class="text-warning pl-icon">{{ phaseData.warnCount }}</span>
-            </span>
             <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="runnerAction('reset')">{{ $t('page.reset') }}</span>
             <span
               v-if="jobData.isCanExecute"
@@ -270,7 +266,7 @@
       </TabPane>
       <TabPane
         :label="$t('page.inputparam')"
-        class="padding"
+        class="pl-nm pr-nm"
         :class="getTabDetailClass()"
         name="inputParameters"
         style="paddint-top:0px"
@@ -283,11 +279,14 @@
           :sqlName="nodeData.sqlFile"
           :jobId="jobData.id"
           :type="'input'"
+          :jobData="jobData"
+          :phaseData="phaseData"
+          @runnerAction="runnerAction"
         ></NodeParam>
       </TabPane>
       <TabPane
         :label="$t('page.outputparam')"
-        class="padding"
+        class="pl-nm pr-nm"
         :class="getTabDetailClass()"
         name="outputParameters"
         style="paddint-top:0px"
@@ -300,15 +299,41 @@
           :sqlName="nodeData.sqlFile"
           :jobId="jobData.id"
           :type="'output'"
+          :jobData="jobData"
+          :phaseData="phaseData"
+          @runnerAction="runnerAction"
         ></NodeParam>
       </TabPane>
       <TabPane
         :label="$t('term.autoexec.runrecord')"
-        class="padding"
         :class="getTabDetailClass()"
         name="record"
       >
-        <Record v-if="tabValue == 'record'" :nodeData="nodeData" :phaseData="phaseData"></Record>
+        <div v-if="phaseData.execMode === 'runner'" class="pl-nm">
+          <div class="action-group line">
+            <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="runnerAction('reset')">{{ $t('page.reset') }}</span>
+            <span
+              v-if="jobData.isCanExecute"
+              class="action-item tsfont-minus-o"
+              :class="phaseData.status != 'failed' ? 'disable' : 'text-action'"
+              @click="runnerAction('ignore')"
+            >{{ $t('page.ignore') }}
+            </span>
+            <span
+              v-if="jobData.isCanExecute"
+              class="action-item tsfont-run"
+              :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
+              @click="runnerAction('refire')"
+            >{{ $t('page.execute') }}
+            </span>
+          </div>
+        </div>
+        <Record
+          v-if="tabValue == 'record'"
+          :nodeData="nodeData"
+          :phaseData="phaseData"
+          class="padding"
+        ></Record>
       </TabPane>
       <template v-if="customTemplateList.length">
         <TabPane

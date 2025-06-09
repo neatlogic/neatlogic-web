@@ -2,6 +2,10 @@
   <div v-if="jobData && phaseData" class="runner-content">
     <div v-if="runnerData" class="pl-nm pr-nm pt-nm text-right runner-action">
       <div class="action-group line">
+        <span v-if="phaseData.warnCount > 0" class="action-item">
+          <span>{{ $t('page.warningmessage') }}</span>
+          <span class="text-warning pl-icon">{{ phaseData.warnCount }}</span>
+        </span>
         <span class="action-item">
           <Poptip transfer placement="bottom">
             <span class="text-action">
