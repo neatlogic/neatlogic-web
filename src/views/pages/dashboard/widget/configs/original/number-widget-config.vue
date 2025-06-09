@@ -173,7 +173,6 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    console.log(HOME);
   },
   beforeUpdate() {},
   updated() {},

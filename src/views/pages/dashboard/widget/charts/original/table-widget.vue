@@ -2,10 +2,11 @@
   <div>
     <TsTable
       ref="table"
-      :isAutoScroll="widget.config && widget.config.autoscroll?true:false"
-      :fixedHeader="true"
+      :isAutoScroll="widget.config && widget.config.autoscroll ? true : false"
+      :fixedHeader="widget.config && widget.config.autoscroll ? true : false"
+      :theadList="theadList"
       v-bind="tableData"
-      :height="widget.height-2"
+      :height="widget.height - 2"
     ></TsTable>
   </div>
 </template>
@@ -42,10 +43,15 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
   computed: {
+    theadList() {
+      if (this.tableData && this.tableData.theadList) {
+        return this.tableData.theadList.filter(d => d.key && d.key.startsWith('field_'));
+      }
+      return [];
+    },
     style() {
       const style = {};
       if (this.widget.config) {
@@ -56,8 +62,7 @@ export default {
       return style;
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped></style>

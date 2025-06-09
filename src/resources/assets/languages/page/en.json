@@ -1067,5 +1067,6 @@
   "executeall": "Execute all",
   "cache": "Cache",
   "connectionsuccessful": "Connection successful",
-  "driverjar": "Driver jar package"
+  "driverjar": "Driver jar package",
+  "ignored": "Neglected"
 }
