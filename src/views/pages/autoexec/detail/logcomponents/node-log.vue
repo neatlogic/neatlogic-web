@@ -262,7 +262,7 @@ export default {
   },
   computed: {
     offsetHeight() {
-      return this.mode == 'page' ? this.isHasExtraInfo ? '310px' : '215px' : '190px';
+      return this.mode == 'page' ? (this.isHasExtraInfo ? '330px' : '235px') : '190px';
     },
     getContentClass() {
       return type => {
