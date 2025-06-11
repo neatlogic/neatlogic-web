@@ -344,7 +344,7 @@ export default {
       this.getPhaseList(true);
     },
     refireJob() {
-      if (this.phaseEndingStatusList.includes(this.jobData.status)) {
+      if (this.phaseEndingStatusList.includes(this.jobData.status) || this.jobData.status === 'pending') {
         this.isShowRerunDialog = true;
       }
     },
