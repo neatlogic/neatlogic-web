@@ -9,6 +9,7 @@ import VueI18n from 'vue-i18n';
 import md5 from 'js-md5';
 import frameworkUtils from '@/views/pages/framework/matrix/utils/utils';
 import LocalStore from '@/resources/assets/js/localStore.js';
+import State from '@/resources/assets/js/state.js';
 
 //公共的全局组件、样式等
 import '@/resources/base.js';
@@ -32,6 +33,7 @@ Vue.prototype.$api = api;
 Vue.prototype.$md5 = md5;
 Vue.prototype.$frameworkUtils = frameworkUtils;
 Vue.prototype.$localStore = new LocalStore('framework', router);
+Vue.prototype.$state = new State('framework');
 
 new Vue({
   router,
