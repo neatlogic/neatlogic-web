@@ -153,7 +153,7 @@ export default {
             url: '/api/rest/resourcecenter/state/list/forselect',
             params: { needPage: false},
             rootName: 'tbodyList',
-            textName: 'description',
+            textName: 'name',
             valueName: 'id',
             transfer: true,
             className: 'block-span'

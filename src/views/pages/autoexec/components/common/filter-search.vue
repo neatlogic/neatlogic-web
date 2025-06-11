@@ -184,7 +184,7 @@ export default {
             url: '/api/rest/resourcecenter/state/list/forselect',
             params: { needPage: false},
             rootName: 'tbodyList',
-            textName: 'description',
+            textName: 'name',
             valueName: 'id',
             transfer: true,
             className: 'block-span'
@@ -281,17 +281,15 @@ export default {
           type: 'select',
           label: this.$t('term.autoexec.assetstatus'),
           search: true,
-          textName: 'description',
           transfer: true,
-          valueName: 'id',
           defaultValue: [],
-          rootName: 'tbodyList',
           multiple: true,
           className: 'block-span',
-          params: {
-            'needPage': false
-          },
           url: '/api/rest/resourcecenter/state/list/forselect',
+          params: { needPage: false },
+          rootName: 'tbodyList',
+          textName: 'name',
+          valueName: 'id',
           validateList: [{name: 'required', message: ''}]
         },
         {
