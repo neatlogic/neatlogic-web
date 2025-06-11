@@ -1,8 +1,10 @@
 <template>
   <TsDialog
     type="modal"
+    :isShow="visible"
     v-bind="dialogConfig"
     height="400px"
+    :hasMask="hasMask"
     @on-close="close()"
   >
     <div class="input-border" style="text-align: right;">
@@ -10,6 +12,7 @@
         v-model="keyword"
         style="width:240px"
         search
+        :placeholder="$t('form.placeholder.pleaseinput',{'target':'ip'})"
         @on-search="filterData"
       />
     </div>
@@ -21,9 +24,9 @@
             :key="index"
             :span="8"
           >
-            <div class="item bg-op border-color overflow" :title="showLabel(data)">
-              {{ showLabel(data) }} 
-              <i v-if="!disabled" class="remove tsfont-close text-grey" @click="removeItem(index)"></i>
+            <div class="item bg-op border-color overflow" :title="targetText(data)">
+              {{ targetText(data) }} 
+              <i v-if="!isReadonly" class="remove tsfont-close text-grey" @click="removeItem(index)"></i>
             </div>
           </Col>
         </template>  
@@ -31,7 +34,7 @@
       <NoData v-if="searchList.length == 0"></NoData>
     </div>
     <template v-slot:footer>
-      <template v-if="!disabled">
+      <template v-if="!isReadonly">
         <Button type="primary" ghost @click.native="onOk('removeAll')">{{ $t('page.clear') }}</Button>
         <Button type="primary" @click="onOk('save')">{{ $t('page.confirm') }}</Button>
       </template>
@@ -49,8 +52,11 @@ export default {
   },
   filtes: {},
   props: {
-    disabled: {
+    isReadonly: {
       type: Boolean,
+      default: false
+    },
+    visible: {
       default: false
     },
     dataList: {
@@ -62,12 +68,12 @@ export default {
     }
   },
   data() {
+    let _this = this;
     return {
       dialogConfig: {
-        isShow: true,
         title: this.$t('page.viewall'),
-        hasFooter: !this.disabled,
-        maskClose: this.disabled
+        hasFooter: !_this.isReadonly,
+        maskClose: _this.isReadonly
       },
       keyword: '',
       checkAll: false,
@@ -93,10 +99,10 @@ export default {
       this.keyword = '';
       if (type) {
         if (type == 'removeAll') { //清空所有
-          this.$emit('close', []);
+          this.$emit('on-ok', []);
         } else if ('save') { //保存
           let list = this.currentDataList.filter(item => delete item._isHidden);
-          this.$emit('close', list);
+          this.$emit('on-ok', list);
         }
       }
     },
@@ -110,34 +116,31 @@ export default {
     },
     filterData() {
       let searchList = [];
+      let _this = this;
       this.currentDataList.forEach(item => {
-        let nameStr = this.showLabel(item);
-        this.$set(item, '_isHidden', this.keyword ? !nameStr.includes(this.keyword) : false);
-        if (nameStr.includes(this.keyword)) {
+        let nameStr = _this.targetText(item);
+        this.$set(item, '_isHidden', _this.keyword ? !nameStr.includes(_this.keyword) : false);
+        if (nameStr.includes(_this.keyword)) {
           searchList.push(item);
         }
       });
       this.searchList = searchList;
     },
     close() {
-      this.$emit('close');
+      this.$emit('on-ok');
     }
   },
   computed: {
-    showLabel() {
+    targetText() {
       return data => {
-        let label = data.name || '';
-        if (data.ip) {
-          label += '[' + data.ip + ']';
-        }
-        return label;
+        return data.port && data.name ? data.ip + ':' + data.port + '/' + data.name : data.port && !data.name ? data.ip + ':' + data.port : data.ip;
       };
     }
   },
   watch: {
     dataList: {
       handler(val) {
-        this.currentDataList = this.$utils.deepClone(val) || [];
+        this.currentDataList = [].concat(val || []);
       },
       immediate: true,
       deep: true
@@ -172,5 +175,8 @@ export default {
       display: block;
     }
   }
+}
+.batchRemove{
+  // margin-left: 16px;
 }
 </style>
