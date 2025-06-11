@@ -25,6 +25,17 @@
         </span>
       </div>
     </div>
+    <TsRow v-if="isHaveInitData">
+      <Col :span="12">
+      </Col>
+      <Col :span="12">
+        <InputSearcher
+          v-model="keyword"
+          :placeholder="$t('form.placeholder.pleaseinput',{'target':'ip'})"
+          @change="getInstanceList(1)"
+        ></InputSearcher>
+      </Col>
+    </TsRow>
     <div v-if="tableData.tbodyList && tableData.tbodyList.length > 0">
       <div class="pl-xs">
         <Checkbox
@@ -75,6 +86,7 @@
         </TsCard>
       </div>
     </div>
+    <NoData v-else-if="isHaveInitData"></NoData>
     <div v-else class="text-tip">{{ $t('term.deploy.moduleenvnotinstance', {modulename: module.name, envname: envName}) }}</div>
     <MoreInstanceDialog
       v-if="isShowMoreDialog"
@@ -89,7 +101,8 @@ export default {
   name: '',
   components: {
     TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
-    MoreInstanceDialog: () => import('./more-instance-dialog.vue')
+    MoreInstanceDialog: () => import('./more-instance-dialog.vue'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     disabled: {
@@ -107,7 +120,9 @@ export default {
       isShowMoreDialog: false,
       tableData: {},
       currentPage: 1,
-      instanceList: []
+      instanceList: [],
+      keyword: '',
+      isHaveInitData: false //是否有初始数据
     };
   },
   beforeCreate() {},
@@ -125,6 +140,7 @@ export default {
   methods: {
     initData() {
       this.instanceList = [];
+      this.isHaveInitData = false;
       if (this.module.instanceList && this.module.instanceList.length) {
         this.instanceList = this.module.instanceList.map(m => {
           return {
@@ -142,19 +158,26 @@ export default {
         envId: this.envId,
         appModuleId: this.module.id,
         currentPage: currentPage || this.currentPage,
-        pageSize: 100
+        pageSize: 100,
+        keyword: this.keyword
       };
       currentPage && (this.currentPage = currentPage);
       this.$api.deploy.env.getInstanceList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
-          if (isFirst && this.$utils.isEmpty(this.instanceList)) {
-            this.instanceList = this.tableData.tbodyList.map(m => {
-              return {
-                ...m,
-                isChecked: true
-              };
-            });
+          if (isFirst) {
+            if (!this.$utils.isEmpty(this.tableData.tbodyList)) {
+              this.isHaveInitData = true;
+            }
+          
+            if (this.$utils.isEmpty(this.instanceList)) {
+              this.instanceList = this.tableData.tbodyList.map(m => {
+                return {
+                  ...m,
+                  isChecked: true
+                };
+              });
+            }
           }
           this.tableData.tbodyList.forEach(i => {
             if (this.instanceList.find(ins => ins.id === i.id)) {
