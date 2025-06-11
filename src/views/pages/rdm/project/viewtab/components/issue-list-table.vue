@@ -44,7 +44,7 @@
             @click="toggleChildIssue(row)"
           ></span>
           <span class="overflow">
-            <a href="javascript:void(0)" @click="openIssueDetail(row)">
+            <a href="javascript:void(0)" @click="openIssueDetail(row)" @contextmenu="newTab($event, row)">
               <span v-if="!issueData.wordList || issueData.wordList === 0">{{ row.name }}</span>
               <span v-else v-html="highlightKeywords(row.name, issueData.wordList)"></span>
             </a>
@@ -108,6 +108,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    newTab(e, row) {
+      //鼠标右键打开新标签页
+      const base = this.$router.options.base;
+      const { appType = '', projectId = null, appId = null, id = null, name = '' } = row || {};
+      const path = `/${appType}-detail/${projectId}/${appId}/${id}`;
+      const url = `<a href="${base}#${path}">${name}</a>`;
+      e.currentTarget.innerHTML = url;
+    },
     highlightKeywords(text, wordList) {
       if (!wordList || wordList.length === 0) return text;
       const escapedWords = wordList.map(word => this.escapeRegExp(word));
