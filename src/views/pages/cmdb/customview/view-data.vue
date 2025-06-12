@@ -74,7 +74,7 @@ export default {
   destroyed() {},
   methods: {
     editView() {
-      this.$router.push({ path: '/view-edit/' + (this.viewData.isPrivate == 1 ? 'private/' : 'public/') + this.id });
+      this.$router.push({ path: '/view-edit/' + (this.viewData.type == 'private' ? 'private/' : 'public/') + this.id });
     },
     switchView(viewId) {
       this.$router.push({ path: '/view-data/' + viewId });

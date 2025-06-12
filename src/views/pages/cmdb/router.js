@@ -506,7 +506,7 @@ let routerArr = [
     meta: {
       title: $t('router.cmdb.viewedit'),
       ismenu: false,
-      authority: 'CMDB_BASE'
+      authority: 'PRIVATE_CUSTOMVIEW_MODIFY'
     }
   },
   {

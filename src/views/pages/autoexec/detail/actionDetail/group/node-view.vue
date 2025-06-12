@@ -25,7 +25,7 @@
 export default {
   name: '',
   components: {
-    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
+    MoreTarget: () => import('@/views/pages/autoexec/components/common/addTarget/more-target.vue')
   },
   filters: {
   },

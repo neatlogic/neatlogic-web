@@ -105,7 +105,7 @@ export default {
     FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect.vue'),
-    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
+    MoreTarget: () => import('@/views/pages/autoexec/components/common/addTarget/more-target.vue')
 
   },
   model: {
