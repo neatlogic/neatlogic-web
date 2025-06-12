@@ -1068,5 +1068,6 @@
   "cache": "Cache",
   "connectionsuccessful": "Connection successful",
   "driverjar": "Driver jar package",
-  "ignored": "Neglected"
+  "ignored": "Neglected",
+  "loaded": "Loaded"
 }
