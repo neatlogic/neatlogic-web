@@ -125,6 +125,7 @@ export default {
   methods: {
     afterInteract() {
       this.getContent('down', this.endPos);
+      this.$emit('refresh');
     },
     onMousewheel(event) {
       this.isAutoScroll = false;
