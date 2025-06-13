@@ -65,7 +65,7 @@
       <template v-slot:topRight>
         <div ref="topRightRef" class="div-btn-contain action-group">
           <span v-if="jobData.extraInfo && jobData.extraInfo.isHasLock == 1" class="tsfont-lock text-action action-item text-warning" @click="globalLockShow">{{ $t('term.autoexec.resourcelock') }}</span>
-          <span class="action-item tsfont-accessendpoint" @click="isShowFlow = true">流程图</span>
+          <span class="action-item tsfont-accessendpoint" @click="isShowFlow = true">{{ $t('term.deploy.flowchart') }}</span>
           <span class="action-item tsfont-console" @click="isShowConsoleLogDialog = true">{{ $t('term.autoexec.controlpanel') }}</span>
           <span class="action-item tsfont-config" @click="openShowParam">{{ $t('page.param') }}</span>
           <span v-if="versionId != null" class="action-item tsfont-file-single icon" @click="openProjectDirectoryDialog(versionId)">{{ $t('term.deploy.projectdirectory') }}</span>
@@ -87,7 +87,7 @@
                     {{ $t('term.autoexec.copyjob') }}
                   </div>
                 </DropdownItem>
-                <DropdownItem v-if="jobData.isCanExecute || jobData.isCanTakeOver" @click.native="abortJob()">
+                <DropdownItem v-if="jobData.isCanExecute" @click.native="abortJob()">
                   <div>
                     {{ $t('term.autoexec.abortjob') }}
                   </div>
@@ -475,7 +475,11 @@ export default {
     },
     refreshPhaseList(phaseIdList) {
       this.clearTimmer();
-      if (!this.$utils.isEmpty(phaseIdList) || this.refreshTimes > 0) {
+      //阶段刷新机制：
+      //1、phaseIdList不为空；
+      //2、作业状态为终点状态时，根据refreshTimes刷新次数判断是否需要继续刷新；
+      //3、作业状态不在终点状态时(phaseEndingStatusList)。
+      if (!this.$utils.isEmpty(phaseIdList) || this.refreshTimes > 0 || !this.phaseEndingStatusList.includes(this.jobData.status)) {
         this.$api.autoexec.job.getPhaseList({ jobId: this.jobParam.jobId, phaseIdList: phaseIdList }).then(res => {
           if (res.Return['phaseList'] && res.Return['phaseList'].length > 0) {
             res.Return['phaseList'].forEach(phase => {
