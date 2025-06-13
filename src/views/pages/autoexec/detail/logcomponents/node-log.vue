@@ -189,29 +189,28 @@ export default {
             const isRefresh = res.Return.isRefresh;
             this.startPos = Math.min(this.logData.startPos, this.startPos);
             this.endPos = Math.max(this.logData.endPos, this.endPos);
-            if (!this.$utils.isEmpty(res.Return.lineList)) {
-              if (param.direction == 'down') {
-                for (let i = 0; i < res.Return.lineList.length; i++) {
-                  this.logContentList.push(res.Return.lineList[i]);
-                }
-              } else {
+       
+            if (param.direction == 'down') {
+              for (let i = 0; i < res.Return.lineList.length; i++) {
+                this.logContentList.push(res.Return.lineList[i]);
+              }
+            } else {
               //记录第一行原来的位置，更新内容后重新定位到这个地方
-                firstIndex = res.Return.lineList.length;
-                for (let i = res.Return.lineList.length - 1; i >= 0; i--) {
-                  this.logContentList.unshift(res.Return.lineList[i]);
-                }
+              firstIndex = res.Return.lineList.length;
+              for (let i = res.Return.lineList.length - 1; i >= 0; i--) {
+                this.logContentList.unshift(res.Return.lineList[i]);
               }
-              if (isRefresh == 1) {
-                this.refreshTimes = 3;
-                this.timmer = setTimeout(() => {
-                  this.getContent('down', this.endPos);
-                }, this.calcIntervalTime(res.Return.lineList.length));
-              } else if (isRefresh == 0 && this.refreshTimes > 0) {
-                this.refreshTimes--;
-                this.timmer = setTimeout(() => {
-                  this.getContent('down', this.endPos);
-                }, 2000);
-              }
+            }
+            if (isRefresh == 1) {
+              this.refreshTimes = 3;
+              this.timmer = setTimeout(() => {
+                this.getContent('down', this.endPos);
+              }, this.calcIntervalTime(res.Return.lineList.length));
+            } else if (isRefresh == 0 && this.refreshTimes > 0) {
+              this.refreshTimes--;
+              this.timmer = setTimeout(() => {
+                this.getContent('down', this.endPos);
+              }, 2000);
             }
           })
           .finally(() => {
