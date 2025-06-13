@@ -24,7 +24,7 @@ export default {
           width: '100%',
           value: ''
         },
-        chartset: {
+        charset: {
           label: '字符编码',
           type: 'select',
           dataList: [
