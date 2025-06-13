@@ -129,7 +129,7 @@ export default {
       };
     },
     offsetHeight() {
-      return this.mode == 'page' ? this.isHasExtraInfo ? '310px' : '215px' : '180px';
+      return this.mode == 'page' ? this.isHasExtraInfo ? '330px' : '215px' : '180px';
     }
   },
   watch: {
