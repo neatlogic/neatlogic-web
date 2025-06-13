@@ -99,7 +99,8 @@ export default {
       timmer: null,
       isAutoScroll: true, //自动滚动日志
       encodeList: [], //编码列表
-      encoding: 'UTF-8'
+      encoding: 'UTF-8',
+      refreshTimes: 3 //刷新次数：终点状态后刷新，避免日志内容不一致
     };
   },
   beforeCreate() {},
@@ -125,6 +126,7 @@ export default {
   methods: {
     afterInteract() {
       this.getContent('down', this.endPos);
+      this.$emit('refresh');
     },
     onMousewheel(event) {
       this.isAutoScroll = false;
@@ -200,9 +202,15 @@ export default {
                 }
               }
               if (isRefresh == 1) {
+                this.refreshTimes = 3;
                 this.timmer = setTimeout(() => {
                   this.getContent('down', this.endPos);
                 }, this.calcIntervalTime(res.Return.lineList.length));
+              } else if (isRefresh == 0 && this.refreshTimes > 0) {
+                this.refreshTimes--;
+                this.timmer = setTimeout(() => {
+                  this.getContent('down', this.endPos);
+                }, 2000);
               }
             }
           })

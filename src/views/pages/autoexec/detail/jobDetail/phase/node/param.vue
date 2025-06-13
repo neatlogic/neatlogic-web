@@ -2,7 +2,12 @@
   <div>
     <div class="action-group line">
       <template v-if="phaseData && phaseData.execMode === 'runner'">
-        <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="runnerAction('reset')">{{ $t('page.reset') }}</span>
+        <span
+          v-if="jobData.isCanExecute"
+          class="action-item tsfont-restart"
+          :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
+          @click="runnerAction('reset')"
+        >{{ $t('page.reset') }}</span>
         <span
           v-if="jobData.isCanExecute"
           class="action-item tsfont-minus-o"

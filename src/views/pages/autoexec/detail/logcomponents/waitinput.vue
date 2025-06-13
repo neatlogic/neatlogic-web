@@ -1,7 +1,7 @@
 
 <template>
   <div class="mt-sm">
-    <div v-if="!interactData.role || $AuthUtils.hasRole(interactData.role)">
+    <div v-if="(!interactData.role&& jobData.isCanExecute) || (interactData.role && $AuthUtils.hasRole(interactData.role))">
       <Divider orientation="left">{{ interactData.message }}</Divider>
       <template v-if="interactData.opType == 'button'">
         <div v-if="interactData.options && interactData.options.length > 0" class="action-group">

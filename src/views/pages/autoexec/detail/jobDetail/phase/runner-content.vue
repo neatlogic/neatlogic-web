@@ -149,7 +149,7 @@ export default {
           this.runnerData.status = res.Return.runnerVo.status;
           this.nodeData.status = res.Return.status;
           this.nodeData.warnCount = res.Return.warnCount;
-          if (res.Return.status == 'pending' || res.Return.status == 'running') {
+          if (res.Return.status == 'pending' || res.Return.status == 'running' || res.Return.status == 'waitInput') {
             this.timmer = setTimeout(() => {
               this.getRunner();
             }, 3000);
@@ -181,6 +181,9 @@ export default {
           break;
         case 'ignore':
           this.ignorePhase();
+          break;
+        case 'refresh':
+          this.$emit('refresh');
           break;
       }
     }

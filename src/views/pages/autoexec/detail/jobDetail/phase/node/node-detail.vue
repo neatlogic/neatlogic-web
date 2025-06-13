@@ -15,17 +15,19 @@
         name="standardOutput"
       >
         <div v-if="phaseData.execMode === 'runner'" class="pl-nm">
-          <div class="action-group line">
-            <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="runnerAction('reset')">{{ $t('page.reset') }}</span>
+          <div v-if="jobData.isCanExecute" class="action-group line">
             <span
-              v-if="jobData.isCanExecute"
+              class="action-item tsfont-restart"
+              :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
+              @click="runnerAction('reset')"
+            >{{ $t('page.reset') }}</span>
+            <span
               class="action-item tsfont-minus-o"
               :class="phaseData.status != 'failed' ? 'disable' : 'text-action'"
               @click="runnerAction('ignore')"
             >{{ $t('page.ignore') }}
             </span>
             <span
-              v-if="jobData.isCanExecute"
               class="action-item tsfont-run"
               :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
               @click="runnerAction('refire')"
@@ -227,6 +229,7 @@
               :mode="mode"
               :locationId="locationId"
               :isHasExtraInfo="!$utils.isEmptyObj(jobData.extraInfo)"
+              @refresh="runnerAction('refresh')"
             ></NodeLog>
           </div>
         </div>
@@ -310,17 +313,15 @@
         name="record"
       >
         <div v-if="phaseData.execMode === 'runner'" class="pl-nm">
-          <div class="action-group line">
+          <div v-if="jobData.isCanExecute" class="action-group line">
             <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="runnerAction('reset')">{{ $t('page.reset') }}</span>
             <span
-              v-if="jobData.isCanExecute"
               class="action-item tsfont-minus-o"
               :class="phaseData.status != 'failed' ? 'disable' : 'text-action'"
               @click="runnerAction('ignore')"
             >{{ $t('page.ignore') }}
             </span>
             <span
-              v-if="jobData.isCanExecute"
               class="action-item tsfont-run"
               :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
               @click="runnerAction('refire')"
@@ -398,6 +399,7 @@ export default {
       customTemplateData: {},
       isCustomTemplateShow: true,
       customTemplateTimmer: null,
+      refreshTimes: 3, //刷新次数：终点状态后刷新，避免operationList数据不更新
       operationEndingStatusList: ['completed', 'aborted', 'failed'] //终点状态节点列表，非终点状态列表的需要定时刷新。
     };
   },
@@ -482,6 +484,12 @@ export default {
           let isRefresh = data.isRefresh;
           this.$set(this, 'operationList', data.operationStatusList);
           if (isRefresh === 1) {
+            this.refreshTimes = 3;
+            this.timmer = setTimeout(() => {
+              this.refreshOperationStatus();
+            }, 3000);
+          } else if (isRefresh === 0 && this.refreshTimes > 0) {
+            this.refreshTimes--;
             this.timmer = setTimeout(() => {
               this.refreshOperationStatus();
             }, 3000);
