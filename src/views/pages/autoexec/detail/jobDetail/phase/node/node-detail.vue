@@ -399,6 +399,7 @@ export default {
       customTemplateData: {},
       isCustomTemplateShow: true,
       customTemplateTimmer: null,
+      refreshTimes: 3, //刷新次数：终点状态后刷新，避免operationList数据不更新
       operationEndingStatusList: ['completed', 'aborted', 'failed'] //终点状态节点列表，非终点状态列表的需要定时刷新。
     };
   },
@@ -483,6 +484,12 @@ export default {
           let isRefresh = data.isRefresh;
           this.$set(this, 'operationList', data.operationStatusList);
           if (isRefresh === 1) {
+            this.refreshTimes = 3;
+            this.timmer = setTimeout(() => {
+              this.refreshOperationStatus();
+            }, 3000);
+          } else if (isRefresh === 0 && this.refreshTimes > 0) {
+            this.refreshTimes--;
             this.timmer = setTimeout(() => {
               this.refreshOperationStatus();
             }, 3000);
