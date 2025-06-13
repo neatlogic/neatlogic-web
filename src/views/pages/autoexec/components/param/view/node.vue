@@ -57,7 +57,7 @@ export default {
   components: {
     AddNode,
     // AddNode: () => import('@/views/pages/autoexec/components/param/edit/node/add-node.vue'),
-    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
+    MoreTarget: () => import('@/views/pages/autoexec/components/common/addTarget/more-target.vue')
   },
   filters: {},
   mixins: [viewmixin],

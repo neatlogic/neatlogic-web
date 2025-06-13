@@ -79,7 +79,7 @@ import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.
 export default {
   name: '',
   components: {
-    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'),
+    MoreTarget: () => import('./more-target.vue'),
     NodeView: () => import('../targetView/node-view')
   },
   filtes: {},

@@ -74,7 +74,7 @@ export default {
   components: {
     FilterSearch,
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue')
+    MoreTarget: () => import('@/views/pages/autoexec/components/common/addTarget/more-target.vue')
     // NodeView:()=>import('@/views/pages/autoexec/components/common/targetView/node-view')
   },
   filters: {
