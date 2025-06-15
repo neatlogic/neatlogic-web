@@ -1071,5 +1071,6 @@
   "connectionsuccessful": "连接成功",
   "driverjar": "驱动jar包",
   "ignored": "已忽略",
-  "loaded": "已加载"
+  "loaded": "已加载",
+  "dictionary": "字典"
 }

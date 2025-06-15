@@ -1069,5 +1069,6 @@
   "connectionsuccessful": "Connection successful",
   "driverjar": "Driver jar package",
   "ignored": "Neglected",
-  "loaded": "Loaded"
+  "loaded": "Loaded",
+  "dictionary": "dictionary"
 }
