@@ -4,10 +4,6 @@
       <span class="cursor tsfont-plus" @click="editSubscribe()">{{ $t('term.framework.subscribe') }}</span>
     </div>
     <TsTable v-if="subscribeData" v-bind="subscribeData" :theadList="theadList">
-      <!-- <template slot="isDurable" slot-scope="{ row }">
-        <span v-if="row.isDurable == 1">{{ $t('term.framework.dursubs') }}</span>
-        <span v-else>{{ $t('term.framework.tempsubs') }}</span>
-      </template>-->
       <template v-slot:handlerName="{ row }">
         <span>{{ row.handlerName }}</span>
         <span>
@@ -50,6 +46,7 @@
                 @on-change="toggleSubscribeActive(row)"
               ></TsFormSwitch>
             </li>
+            <li class="tsfont-heart-s" @click.stop="healthCheck(row)">状态检查</li>
             <li class="tsfont-edit" @click.stop="editSubscribe(row)">{{ $t('page.edit') }}</li>
             <li class="tsfont-trash-o" @click="deleteSubscribe(row)">{{ $t('page.delete') }}</li>
           </ul>
@@ -72,7 +69,7 @@ export default {
     return {
       isEditShow: false,
       currentSubscribeId: null,
-      searchParam: { },
+      searchParam: {},
       subscribeData: {},
       theadList: [
         {
@@ -102,6 +99,22 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    healthCheck(row) {
+      this.$api.framework.mq.healthCheck(row.id).then(res => {
+        const healthcheckResultList = res.Return;
+        if (healthcheckResultList && healthcheckResultList.length > 0) {
+          healthcheckResultList.forEach(item => {
+            if (item.level === 'normal') {
+              this.$Notice.success({ title: item.message });
+            } else if (item.level === 'warning') {
+              this.$Notice.warning({ title: item.message });
+            } else if (item.level === 'error') {
+              this.$Notice.error({ title: item.message });
+            }
+          });
+        }
+      });
+    },
     editSubscribe(row) {
       if (row) {
         this.currentSubscribeId = row.id;

@@ -1070,5 +1070,6 @@
   "driverjar": "Driver jar package",
   "ignored": "Neglected",
   "loaded": "Loaded",
-  "dictionary": "dictionary"
+  "dictionary": "dictionary",
+  "healthcheckresult": "Inspection results"
 }
