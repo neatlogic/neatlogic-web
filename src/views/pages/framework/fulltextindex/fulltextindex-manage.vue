@@ -2,8 +2,11 @@
   <div class="padding-t">
     <TsContain :hideHeader="true">
       <div slot="content">
-        <Tabs v-model="currentTab">
+        <Tabs v-model="currentTab" :animated="false">
           <TabPane label="数据库" name="database">
+            <div class="mb-md action-group">
+              <div class="action-item tsfont-setting" @click="isWordEdit = true">字典管理</div>
+            </div>
             <TsTable :tbodyList="fullTextIndexRebuildAuditData['database']" :theadList="theadList">
               <template v-slot:error="{ row }">
                 <Poptip
@@ -25,9 +28,8 @@
                   v-else-if="row.status === 'doing'"
                   :percent="99"
                   status="active"
-                  style="width:110px"
-                ><span></span>
-                </Progress>
+                  style="width: 110px"
+                ><span></span></Progress>
               </template>
               <template v-slot:action="{ row }">
                 <div class="tstable-action">
@@ -60,13 +62,11 @@
                   v-else-if="row.status === 'doing'"
                   :percent="99"
                   status="active"
-                  style="width:110px"
-                ><span></span>
-                </Progress>
+                  style="width: 110px"
+                ><span></span></Progress>
               </template>
               <template v-slot:action="{ row }">
                 <div class="tstable-action">
-                
                   <ul class="tstable-action-ul">
                     <li :class="row.status === 'doing' ? 'text-disabled' : ''" class="tsfont-restart" @click="rebuildIndex(row)">{{ $t('page.rebuildindex') }}</li>
                   </ul>
@@ -78,6 +78,7 @@
         <FullIndexRebuildDialog v-if="isRebuildDialogShow" :audit="currentAudit" @close="closeRebuildDialog"></FullIndexRebuildDialog>
       </div>
     </TsContain>
+    <FulltextIndexDictionaryEdit v-if="isWordEdit" @close="isWordEdit = false"></FulltextIndexDictionaryEdit>
   </div>
 </template>
 <script>
@@ -85,7 +86,8 @@ export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    FullIndexRebuildDialog: () => import('./fulltextindex-rebuild-dialog.vue')
+    FullIndexRebuildDialog: () => import('./fulltextindex-rebuild-dialog.vue'),
+    FulltextIndexDictionaryEdit: () => import('./fulltextindex-dictionay-edit.vue')
   },
   props: {},
   data() {
@@ -93,6 +95,8 @@ export default {
       currentTab: 'database',
       isRebuildDialogShow: false,
       currentAudit: null,
+      isWordEdit: false,
+      isTest: false,
       theadList: [
         {
           key: 'typeName',
