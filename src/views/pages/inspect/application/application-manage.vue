@@ -21,39 +21,44 @@
         </div>
       </template>
       <template v-slot:topRight>
-        <div v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY') && (selectedApp && !selectedModule)" class="action-group">
-          <span
-            class="action-item tsfont-edit"
-            @click="editApp()"
-          >{{ $t('dialog.title.edittarget', {target: $t('page.apply')}) }}</span>
-          <span
-            class="action-item tsfont-trash-o"
-            @click="deleteApp()"
-          >{{ $t('dialog.title.deletetarget', {target: $t('page.apply')}) }}</span>
-          <span
-            class="action-item tsfont-setting"
-            @click="toRoleOfThreshold()"
-          >{{ $t('term.inspect.thresholdrule') }}</span>
-          <div class="action-item">
+        <div v-if="(selectedApp && !selectedModule)" class="action-group">
+          <template v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')">
+            <span
+              class="action-item tsfont-edit"
+              @click="editApp()"
+            >{{ $t('dialog.title.edittarget', {target: $t('page.apply')}) }}</span>
+            <span
+              class="action-item tsfont-trash-o"
+              @click="deleteApp()"
+            >{{ $t('dialog.title.deletetarget', {target: $t('page.apply')}) }}</span>
+          </template>
+          <template v-if="$AuthUtils.hasRole('INSPECT_MODIFY')">
+            <span
+              class="action-item tsfont-setting"
+              @click="toRoleOfThreshold()"
+            >{{ $t('term.inspect.thresholdrule') }}</span>
+          </template>
+          <div v-if="$AuthUtils.hasRole('INSPECT_EXECUTE')" class="action-item">
             <Button
-              v-auth="'INSPECT_EXECUTE'"
               type="primary"
               class="ml-sm mr-sm"
               @click="openSystemInspection"
             >{{ $t('term.inspect.inspect') }}</Button>
           </div>
         </div>
-        <div v-else-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-group">
-          <span
-            class="action-item tsfont-edit"
-            @click="editAppModule()"
-          >{{ $t('dialog.title.edittarget', {target: $t('page.module')}) }}</span>
-          <span
-            class="action-item tsfont-trash-o"
-            @click="deleteAppModule()"
-          >{{ $t('dialog.title.deletetarget', {target: $t('page.module')}) }}</span>
+        <div v-else class="action-group">
+          <template v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')">
+            <span
+              class="action-item tsfont-edit"
+              @click="editAppModule()"
+            >{{ $t('dialog.title.edittarget', {target: $t('page.module')}) }}</span>
+            <span
+              class="action-item tsfont-trash-o"
+              @click="deleteAppModule()"
+            >{{ $t('dialog.title.deletetarget', {target: $t('page.module')}) }}</span>
+          </template>
           <Button
-            v-auth="'INSPECT_EXECUTE'"
+            v-if="$AuthUtils.hasRole('INSPECT_EXECUTE')"
             type="primary"
             class="ml-sm mr-sm"
             @click="openModuleInspectionDialog"

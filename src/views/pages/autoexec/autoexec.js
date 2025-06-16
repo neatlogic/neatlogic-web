@@ -8,6 +8,7 @@ import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import api from '@/resources/api/api.js';
 import toolCatalogUtils from './utils/tools-catalog';
 import LocalStore from '@/resources/assets/js/localStore.js';
+import State from '@/resources/assets/js/state.js';
 
 //公共的全局组件、样式等
 import '@/resources/base.js';
@@ -29,6 +30,7 @@ Vue.prototype.$api = api;
 Vue.prototype.$tsrouter = router;
 Vue.prototype.$toolCatalogUtils = toolCatalogUtils;
 Vue.prototype.$localStore = new LocalStore('autoexec', router);
+Vue.prototype.$state = new State('autoexec');
 
 //注入实例
 new Vue({

@@ -20,9 +20,24 @@
     </span>
     <Tabs v-model="tabValue" class="tab-contain block-tabs2" :animated="false">
       <TabPane :label="$t('term.autoexec.standardoutput')" name="standardOutput">
-        <div v-if="jobData.isCanExecute" class="div-btn-contain action-group no-line pl-nm">
-          <span class="action-item tsfont-restart" :class="phaseData.status == 'running'?'disable':''" @click="resetAllNode()">{{ $t('page.resetall') }}</span>
-          <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">{{ $t('page.executeall') }}</span>
+        <div class="pl-nm pr-nm flex-between">
+          <div class="div-btn-contain action-group no-line">
+            <span
+              v-if="jobData.isCanExecute"
+              class="action-item tsfont-restart"
+              :class="phaseData.status == 'running'?'disable':''"
+              @click="resetAllNode()"
+            >{{ $t('page.resetall') }}</span>
+            <span
+              v-if="jobData.isCanExecute"
+              class="action-item tsfont-run"
+              :class="phaseData.status == 'running'?'disable':''"
+              @click="refirePhase()"
+            >{{ $t('page.executeall') }}</span>
+          </div>
+          <div>
+            <span v-if="phaseData.jobGroupVo && phaseData.jobGroupVo.policy" class="text-tip">{{ $t('term.deploy.executivestrategy') }}：{{ phaseData.jobGroupVo.policy }} </span>
+          </div>
         </div>
         <div style="display:grid;grid-template-columns:186px auto;" class="padding">
           <div>

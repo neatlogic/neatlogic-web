@@ -1070,5 +1070,8 @@
   "cache": "缓存",
   "connectionsuccessful": "连接成功",
   "driverjar": "驱动jar包",
-  "ignored": "已忽略"
+  "ignored": "已忽略",
+  "loaded": "已加载",
+  "dictionary": "字典",
+  "healthcheckresult": "检查结果"
 }

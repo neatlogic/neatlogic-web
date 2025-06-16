@@ -44,6 +44,10 @@
             <span v-if="row.needAudit == 1" class="text-success">{{ $t('page.yes') }}</span>
             <span v-else class="text-grey">{{ $t('page.no') }}</span>
           </template>
+          <template slot="isLoad" slot-scope="{ row }">
+            <span v-if="row.isLoad == 1" class="text-success">{{ $t('page.yes') }}</span>
+            <span v-else class="text-grey">{{ $t('page.no') }}</span>
+          </template>
           <template slot="execCount" slot-scope="{ row }">
             <div>{{ row.jobStatus.execCount }}</div>
           </template>
@@ -147,6 +151,10 @@ export default {
         {
           title: this.$t('page.keeprecords'),
           key: 'needAudit'
+        },
+        {
+          title: this.$t('page.loaded'),
+          key: 'isLoad'
         },
         {
           title: this.$t('page.plantime'),

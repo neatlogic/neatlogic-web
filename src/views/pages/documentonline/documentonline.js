@@ -9,6 +9,7 @@ import md5 from 'js-md5';
 import api from '@/resources/api/api.js';
 import '@/resources/base.js';
 import LocalStore from '@/resources/assets/js/localStore.js';
+import State from '@/resources/assets/js/state.js';
 import {initRouter, initI18n} from '@/resources/init.js';
 
 MODULEID = 'documentonline';
@@ -26,6 +27,7 @@ Vue.prototype.$api = api;
 Vue.prototype.$md5 = md5;
 Vue.prototype.$trosuter = router;
 Vue.prototype.$localStore = new LocalStore('documentonline', router);
+Vue.prototype.$state = new State('documentonline');
 
 new Vue({
   router,

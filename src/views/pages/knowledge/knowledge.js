@@ -7,6 +7,7 @@ import store from '@/resources/store';
 import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import api from '@/resources/api/api.js';
 import LocalStore from '@/resources/assets/js/localStore.js';
+import State from '@/resources/assets/js/state.js';
 import '@/resources/base.js';
 import { initRouter, initI18n, $t } from '@/resources/init.js';
 
@@ -26,6 +27,7 @@ Vue.prototype.$tsrouter = router;
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
 Vue.prototype.$localStore = new LocalStore('knowledge', router);
+Vue.prototype.$state = new State('knowledge');
 router.beforeEach((to, from, next) => {
   let title = to.meta.title ? to.meta.title : to.name || to.path;
   document.title = $t(title);

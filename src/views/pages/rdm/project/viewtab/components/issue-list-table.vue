@@ -108,6 +108,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    newWindowOpen(row) {
+      const { appType = '', projectId = null, appId = null, id = null} = row || {};
+      const path = `${appType}-detail/${projectId}/${appId}/${id}`;
+      window.open(HOME + '/rdm.html#/' + path, '_blank');
+    },
     highlightKeywords(text, wordList) {
       if (!wordList || wordList.length === 0) return text;
       const escapedWords = wordList.map(word => this.escapeRegExp(word));
@@ -148,7 +153,12 @@ export default {
       this.$emit('deleteIssue', row);
     },
     openIssueDetail(row) {
-      this.$emit('openIssue', row);
+      if (row && row.parentId) {
+        // 子需求新标签页打开
+        this.newWindowOpen(row);
+      } else {
+        this.$emit('openIssue', row);
+      }
     },
     searchIssue(currentPage) {
       this.$emit('searchIssue', currentPage);
