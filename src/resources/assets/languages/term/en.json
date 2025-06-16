@@ -1348,7 +1348,8 @@
     "tagentupgradepkg": "Upgrade Package",
     "selecttagentupgradepkg": "Select an existing upgrade package",
     "tagentuploadupgradepkg": "Upload upgrade package",
-    "versionremarks": "Version Remarks"
+    "versionremarks": "Version Remarks",
+    "heartbeaturl": "Backend server address"
   },
   "knowledge": {
     "document": "Document",
