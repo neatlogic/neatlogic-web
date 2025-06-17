@@ -75,7 +75,7 @@ export default {
           name: 'ip',
           type: 'text',
           label: 'IP',
-          validateList: ['ip']
+          validateList: ['domainOrIP']
         },
         {
           name: 'port',
@@ -130,7 +130,7 @@ export default {
           const attrObj = res.Return || {};
           const validMap = {
             name: ['name-special'],
-            ip: ['ip'],
+            ip: ['domainOrIP'],
             port: ['port']
           };
           this.formList.forEach((item) => {

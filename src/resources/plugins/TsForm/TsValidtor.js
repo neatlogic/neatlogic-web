@@ -102,6 +102,19 @@ let validtor = {
     trigger: 'change',
     message: $t('message.pleaseentertruetarget', {target: $t('page.ipaddress')})
   },
+  domainOrIP: {
+    validator: function(rule, value) {
+      // 校验域名或者IP是否合法
+      if (!utils.isEmpty(value)) {
+        const hostRegex = /^((([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.|$)){4})$/;
+        return hostRegex.test(value);
+      } else {
+        return true;
+      }
+    },
+    trigger: 'change',
+    message: $t('message.pleaseentertruetarget', {target: $t('page.domain') + $t('page.or') + 'IP'})
+  },
   ipAndPort: {
     validator: function(rule, value) {
       let hasComma = value.indexOf('\n'); // 逗号
