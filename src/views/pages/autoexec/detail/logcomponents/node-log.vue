@@ -311,6 +311,9 @@ export default {
       handler: function(val) {
         if (val) {
           this.$utils.jumpTo('.content_' + val, 'smooth', this.$refs['codeContent'], 'start');
+          this.isAutoScroll = false;
+        } else {
+          this.isAutoScroll = true;
         }
       }
     }
