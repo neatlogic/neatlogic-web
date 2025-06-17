@@ -287,7 +287,7 @@ export default {
             this.versionId = versionId;
             this.versionOperateList = operateList;
             this.versionType = status;
-
+            this.versionStatus = status;
             //isLib（是否库文件）标识为1时，标识该脚本是库文件，不支持使用测试功能，需要隐藏测试按钮
             this.updateIsLib(isLib);
             this.getDefaultConfig();
