@@ -624,6 +624,7 @@ export default {
         this.$set(this.fixedPageTab, d.name, true);
       });
     }
+    this.initData();
   },
   mounted() {
     this.$nextTick(() => {
@@ -697,14 +698,20 @@ export default {
         if (item.top) {
           // 前置步骤信息
           this.viewStepData.forEach(step => {
+            this.$set(this.fixedPageTab, `showStep${step.id}`, false);
             this.fixedPageList.push({
               tabValue: `showStep${step.id}`,
               label: step.name,
               item: step
             });
           });
-        } else if (!defaultTabValue) {
-          defaultTabValue = `showStep${this.viewStepData[0].id}`;
+        } else {
+          this.viewStepData.forEach(step => {
+            this.$set(this.fixedPageTab, `showStep${step.id}`, true);
+          });
+          if (!defaultTabValue) {
+            defaultTabValue = `showStep${this.viewStepData[0].id}`;
+          }
         }
       }
       return defaultTabValue;
@@ -825,11 +832,12 @@ export default {
         this.setTimeUpdata = null;
       }, 300);
     },
-    initData() {
+    async initData() {
+      await this.getStepStatusList();
       this.wipeCenterDetail();
       this.getActivityList();
       this.getAllFileList();
-      this.getStepStatusList();
+    
       this.getTaskComment();
       this.getRepeatList();
       this.initTabList();
@@ -934,7 +942,7 @@ export default {
       let data = {
         processTaskId: this.processTaskId
       };
-      this.$api.process.processtask.getStepStatusList(data).then(res => {
+      return this.$api.process.processtask.getStepStatusList(data).then(res => {
         if (res.Status == 'OK') {
           this.stepData = res.Return;
           mutations.setStepList(res.Return);
@@ -951,13 +959,6 @@ export default {
                   let step = this.stepData.find(step => step.processStepUuid === pre);
                   if (!this.$utils.isEmpty(step)) {
                     this.viewStepData.push(step);
-                    this.fixedPageTab['showStep' + step.id] = false;
-                    //前置步骤信息
-                    this.fixedPageList.push({
-                      tabValue: 'showStep' + step.id,
-                      label: step.name,
-                      item: step
-                    });
                   }
                 });
               }
@@ -1379,6 +1380,9 @@ export default {
         if (this.slotList.find(s => s.name === tabValue)) {
           //步骤节点信息
           findTab = this.tabList.find(item => item.key === 'node');
+        } else if (this.viewStepData.find(v => `showStep${v.id}` === tabValue)) {
+          //前置步骤
+          findTab = this.tabList.find(item => item.key === 'preNode');
         }
       } 
       findTab && this.$set(findTab, 'top', false);
@@ -1704,9 +1708,6 @@ export default {
   watch: {
     processTaskConfig: {
       handler(val, oldval) {
-        if (val.id && ((oldval && val.id != oldval.id) || !oldval)) {
-          this.initData();
-        }
         if (val && ((oldval && val.id != oldval.id) || !oldval) && val.formAttributeDataMap) {
           this.$nextTick(() => {
             if (this.$refs.FormPreview) {
