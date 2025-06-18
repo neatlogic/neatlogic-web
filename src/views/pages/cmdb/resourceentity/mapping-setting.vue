@@ -77,7 +77,7 @@ export default {
           value: 'globalAttr'
         },
         {
-          text: '新关系',
+          text: '引用关系',
           value: 'newRel'
         },
         {
