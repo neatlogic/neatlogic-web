@@ -214,7 +214,7 @@ export default {
         testRunner: {
           type: 'slot',
           name: 'testRunner',
-          desc: '如果不指定则会通过ip根据网段匹配执行器组自动分配执行器',
+          desc: this.$t('term.deploy.testrunnerdesc'),
           label: this.$t('page.test') + this.$t('term.deploy.actuator'),
           transfer: true,
           multiple: false,
