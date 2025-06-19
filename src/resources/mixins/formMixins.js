@@ -50,6 +50,11 @@ export default {
       // 是否自定义值，单个字符串(value:1)可以自定义返回{text:1,value:1}，数组[1]可以自定义返回[{text:1,value:1}]
       type: Boolean,
       default: false
+    },
+    historyValue: {
+      // 历史值(Object包含text,value)存在时，用历史值回显数据（在dynamicUrl初始化时，不调用接口）
+      type: [String, Array, Object],
+      default: null
     }
   },
   methods: {
@@ -279,6 +284,40 @@ export default {
           }
         }
         return value;
+      };
+    },
+    handleHistoryValue() {
+      return historyData => {
+        let selectedList = [];
+        let historyValueList = Array.isArray(historyData) ? historyData : [historyData];
+        historyValueList.forEach(item => {
+          if (!this.$utils.isEmpty(item)) {
+            let obj = {};
+            if (typeof item === 'object') {
+              obj[this.valueName] = item.value;
+              obj[this.textName] = item.text;
+            } else {
+              obj[this.valueName] = obj[this.textName] = item;
+            }
+            selectedList.push(obj);
+          }
+        });
+        return selectedList;
+      };
+    },
+    getSelectedText() {
+      return (val) => {
+        const getNodeText = (node) => node && node[this.textName] ? node[this.textName] : '-';
+        let node = this.nodeList.find(item => item[this.valueName] == val);
+        if (node) {
+          return getNodeText(node);
+        } else if (!this.$utils.isEmpty(this.historyValue)) {
+          const nodeList = this.handleHistoryValue(this.historyValue);
+          const nodeItem = nodeList.find(item => item[this.valueName] == val);
+          return getNodeText(nodeItem);
+        } else {
+          return '-';
+        }
       };
     }
   },

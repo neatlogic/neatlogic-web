@@ -482,7 +482,7 @@ export default {
         if (this.entityList && this.entityList.length > 0) {
           const returnList = [];
           this.entityList.forEach(cientity => {
-            if (cientity.rootCiId === ciId && !cientity._isnew) {
+            if (cientity.rootCiId === ciId && !cientity._isnew && !cientity.flagRelId) {
               returnList.push(cientity);
             }
           });

@@ -84,6 +84,7 @@
               :isClearSpecifiedAttr="isClearSpecifiedAttr"
               :externalData="externalData"
               :rowUuid="row.uuid"
+              :extendConfigList="extendConfigList"
               style="min-width: 130px"
               @change="val => changeRow(val, extra.uuid, row)"
               @updateCurrentRow="

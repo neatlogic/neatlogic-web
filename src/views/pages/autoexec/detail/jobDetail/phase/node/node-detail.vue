@@ -11,12 +11,38 @@
       <TabPane
         v-if="phaseData.execMode != 'sqlfile'"
         :label="$t('term.autoexec.standardoutput')"
-        class="padding"
         :class="getTabDetailClass()"
         name="standardOutput"
       >
-        <div style="display:grid;grid-template-columns:228px auto">
-          <div style="overflow-y: auto;" :style="{ height: 'calc(100vh - ' + (mode === 'page' ? !$utils.isEmptyObj(jobData.extraInfo) ? '310px': '215px' : '190px') + ')' }">
+        <div v-if="phaseData.execMode === 'runner'" class="pl-nm pr-nm flex-between">
+          <div class="action-group line">
+            <span
+              v-if="jobData.isCanExecute"
+              class="action-item tsfont-restart"
+              :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
+              @click="runnerAction('reset')"
+            >{{ $t('page.reset') }}</span>
+            <span
+              v-if="jobData.isCanExecute"
+              class="action-item tsfont-minus-o"
+              :class="phaseData.status != 'failed' ? 'disable' : 'text-action'"
+              @click="runnerAction('ignore')"
+            >{{ $t('page.ignore') }}
+            </span>
+            <span
+              v-if="jobData.isCanExecute"
+              class="action-item tsfont-run"
+              :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
+              @click="runnerAction('refire')"
+            >{{ $t('page.execute') }}
+            </span>
+          </div>
+          <div>
+            <span v-if="phaseData.jobGroupVo && phaseData.jobGroupVo.policy" class="text-tip">{{ $t('term.deploy.executivestrategy') }}：{{ phaseData.jobGroupVo.policy }} </span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:228px auto" class="padding">
+          <div style="overflow-y: auto;" :style="{ height: 'calc(100vh - ' + (mode === 'page' ? (!$utils.isEmptyObj(jobData.extraInfo) ? '330px': '235px') : '190px') + ')' }">
             <div v-if="operationList && operationList.length">
               <div
                 v-for="(step, sindex) in operationList"
@@ -49,14 +75,14 @@
                     <div v-if="locationId === step.name.replace(/[-\.\/]+?/gi, '_') + '_' + step.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                     <div style="white-space:nowrap" class="overflow">
                       <span class="stepIndex tips icon-right" :class="getStepIndexClass(step)" @click.stop></span>
-                      <span class="stepName name" :class="{ 'text-primary': step.status == 'running' }" :title="step.name">{{ getOperationName(step) }}</span>
+                      <OperationTooltips :operation="step"></OperationTooltips>
                     </div>
                     <div v-if="step.description" class="stepType overflow description-pl">
                       <span class="text-tip fz10 tips" :title="step.description">{{ step.description }}</span>
                     </div>
                   </div>
                   <div v-if="!$utils.isEmpty(step.ifList) || !$utils.isEmpty(step.elseList)" class="divide-line border-color"></div>
-                  <div v-if="!$utils.isEmpty(step.ifList)" class="padding-sm">
+                  <div class="padding-sm">
                     <div>
                       <div class="text-grey pb-xs">{{ $t('page.condition') }}</div>
                       <div class="overflow mb-sm" style="white-space: nowrap;" :title="step.condition">{{ step.condition }}</div>
@@ -84,7 +110,7 @@
                           <div v-if="locationId === item.name.replace(/[-\.\/]+?/gi, '_') + '_' + item.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                           <div style="white-space:nowrap" class="overflow">
                             <span class="stepIndex tips icon-right" :class="getStepIndexClass(item)" @click.stop></span>
-                            <span class="stepName name" :class="{ 'text-primary': item.status == 'running' }" :title="item.name">{{ getOperationName(item) }}</span>
+                            <OperationTooltips :operation="item"></OperationTooltips>
                           </div>
                           <div v-if="item.description" class="stepType overflow description-pl">
                             <span class="text-tip fz10 tips" :title="item.description">{{ item.description }}</span>
@@ -115,7 +141,7 @@
                           <div v-if="locationId === item.name.replace(/[-\.\/]+?/gi, '_') + '_' + item.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                           <div style="white-space:nowrap" class="overflow">
                             <span class="stepIndex tips icon-right" :class="getStepIndexClass(item)" @click.stop></span>
-                            <span class="stepName name" :class="{ 'text-primary': item.status == 'running' }" :title="item.name">{{ getOperationName(item) }}</span>
+                            <OperationTooltips :operation="item"></OperationTooltips>
                           </div>
                           <div v-if="item.description" class="stepType overflow description-pl">
                             <span class="text-tip fz10 tips" :title="item.description">{{ item.description }}</span>
@@ -133,7 +159,7 @@
                     <div v-if="locationId === step.name.replace(/[-\.\/]+?/gi, '_') + '_' + step.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                     <div style="white-space:nowrap" class="overflow">
                       <span class="stepIndex tips icon-right" :class="getStepIndexClass(step)" @click.stop></span>
-                      <span class="stepName name" :class="{ 'text-primary': step.status == 'running' }" :title="step.name">{{ getOperationName(step) }}</span>
+                      <OperationTooltips :operation="step"></OperationTooltips>
                     </div>
                     <div v-if="step.description" class="stepType overflow description-pl">
                       <span class="text-tip fz10 tips" :title="step.description">{{ step.description }}</span>
@@ -168,7 +194,7 @@
                           <div v-if="locationId === item.name.replace(/[-\.\/]+?/gi, '_') + '_' + item.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                           <div style="white-space:nowrap" class="overflow">
                             <span class="stepIndex tips icon-right" :class="getStepIndexClass(item)" @click.stop></span>
-                            <span class="stepName name" :class="{ 'text-primary': item.status == 'running' }" :title="item.name">{{ getOperationName(item) }}</span>
+                            <OperationTooltips :operation="item"></OperationTooltips>
                           </div>
                           <div v-if="item.description" class="stepType overflow description-pl">
                             <span class="text-tip fz10 tips" :title="item.description">{{ item.description }}</span>
@@ -186,7 +212,7 @@
                   <div v-if="locationId === step.name.replace(/[-\.\/]+?/gi, '_') + '_' + step.id" class="fz10 text-info fixed-icon tsfont-location-o"></div>
                   <div style="white-space:nowrap" class="overflow">
                     <span class="stepIndex tips icon-right" :class="getStepIndexClass(step)" @click.stop></span>
-                    <span class="stepName name" :class="{ 'text-primary': step.status == 'running' }" :title="step.name">{{ getOperationName(step) }}</span>
+                    <OperationTooltips :operation="step"></OperationTooltips>
                   </div>
                   <div v-if="step.description" class="stepType overflow description-pl">
                     <span class="text-tip fz10 tips" :title="step.description">{{ step.description }}</span>
@@ -209,6 +235,7 @@
               :mode="mode"
               :locationId="locationId"
               :isHasExtraInfo="!$utils.isEmptyObj(jobData.extraInfo)"
+              @refresh="runnerAction('refresh')"
             ></NodeLog>
           </div>
         </div>
@@ -248,7 +275,7 @@
       </TabPane>
       <TabPane
         :label="$t('page.inputparam')"
-        class="padding"
+        class="pl-nm pr-nm"
         :class="getTabDetailClass()"
         name="inputParameters"
         style="paddint-top:0px"
@@ -261,11 +288,14 @@
           :sqlName="nodeData.sqlFile"
           :jobId="jobData.id"
           :type="'input'"
+          :jobData="jobData"
+          :phaseData="phaseData"
+          @runnerAction="runnerAction"
         ></NodeParam>
       </TabPane>
       <TabPane
         :label="$t('page.outputparam')"
-        class="padding"
+        class="pl-nm pr-nm"
         :class="getTabDetailClass()"
         name="outputParameters"
         style="paddint-top:0px"
@@ -278,15 +308,39 @@
           :sqlName="nodeData.sqlFile"
           :jobId="jobData.id"
           :type="'output'"
+          :jobData="jobData"
+          :phaseData="phaseData"
+          @runnerAction="runnerAction"
         ></NodeParam>
       </TabPane>
       <TabPane
         :label="$t('term.autoexec.runrecord')"
-        class="padding"
         :class="getTabDetailClass()"
         name="record"
       >
-        <Record v-if="tabValue == 'record'" :nodeData="nodeData" :phaseData="phaseData"></Record>
+        <div v-if="phaseData.execMode === 'runner'" class="pl-nm">
+          <div v-if="jobData.isCanExecute" class="action-group line">
+            <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="runnerAction('reset')">{{ $t('page.reset') }}</span>
+            <span
+              class="action-item tsfont-minus-o"
+              :class="phaseData.status != 'failed' ? 'disable' : 'text-action'"
+              @click="runnerAction('ignore')"
+            >{{ $t('page.ignore') }}
+            </span>
+            <span
+              class="action-item tsfont-run"
+              :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
+              @click="runnerAction('refire')"
+            >{{ $t('page.execute') }}
+            </span>
+          </div>
+        </div>
+        <Record
+          v-if="tabValue == 'record'"
+          :nodeData="nodeData"
+          :phaseData="phaseData"
+          class="padding"
+        ></Record>
       </TabPane>
       <template v-if="customTemplateList.length">
         <TabPane
@@ -323,7 +377,8 @@ export default {
     NodeParam: () => import('./param.vue'),
     SqlContent: () => import('@/views/pages/autoexec/detail/logcomponents/sql-content.vue'), // 脚本内容
     ScriptContentDialog: () => import('@/views/pages/autoexec/detail/script-content-dialog.vue'),
-    CustomTemplateViewer: () => import('@/resources/components/customtemplate/customtemplate-viewer.vue')
+    CustomTemplateViewer: () => import('@/resources/components/customtemplate/customtemplate-viewer.vue'),
+    OperationTooltips: () => import('./operation-tooltips.vue')
   },
   filters: {},
   directives: {},
@@ -350,6 +405,7 @@ export default {
       customTemplateData: {},
       isCustomTemplateShow: true,
       customTemplateTimmer: null,
+      refreshTimes: 3, //刷新次数：终点状态后刷新，避免operationList数据不更新
       operationEndingStatusList: ['completed', 'aborted', 'failed'] //终点状态节点列表，非终点状态列表的需要定时刷新。
     };
   },
@@ -434,18 +490,17 @@ export default {
           let isRefresh = data.isRefresh;
           this.$set(this, 'operationList', data.operationStatusList);
           if (isRefresh === 1) {
+            this.refreshTimes = 3;
+            this.timmer = setTimeout(() => {
+              this.refreshOperationStatus();
+            }, 3000);
+          } else if (isRefresh === 0 && this.refreshTimes > 0) {
+            this.refreshTimes--;
             this.timmer = setTimeout(() => {
               this.refreshOperationStatus();
             }, 3000);
           }
         });
-      }
-    },
-    getOperationName(step) {
-      if (step.name) {
-        return step.name;
-      } else {
-        return '-';
       }
     },
     getjobCustomTemplateListList() { //自定义模板列表
@@ -498,6 +553,9 @@ export default {
       } else if (this.mode === 'dialog') {
         return 'tab-detail-dialog';
       }
+    },
+    runnerAction(type) {
+      this.$emit('runnerAction', type);
     }
   },
   computed: {
@@ -510,6 +568,10 @@ export default {
           arr.push('tsfont-play-o text-primary');
         } else if (step.status == 'failed') {
           arr.push('tsfont-close-o text-danger');
+        } else if (step.status == 'aborted') {
+          arr.push('tsfont-close-o text-warning');
+        } else if (step.status == 'ignored') {
+          arr.push('tsfont-check-o text-warning');
         } else {
           arr.push('tsfont-sla text-grey');
         }

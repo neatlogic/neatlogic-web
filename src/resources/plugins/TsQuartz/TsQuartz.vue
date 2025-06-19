@@ -67,6 +67,7 @@ export default {
     return {
       datasourceVisibleMap: {
         controller: false,
+        second: false,
         hour: false,
         minute: false,
         month: false,
@@ -139,6 +140,8 @@ export default {
             } else if (key === 'dayofmonth') {
               this.$set(this.cronData, 'dayofweek', '?');
             }
+          } else if (key === 'second') {
+            this.$set(this.cronData, key, '0');
           }
         }
         this.datasourceVisibleMap[controller.datasource] = false;
@@ -157,7 +160,11 @@ export default {
           if (vList.length > 0) {
             v = vList.join(',');
           } else {
-            v = '*';
+            if (controller.datasource === 'second') {
+              v = '0';
+            } else {
+              v = '*';
+            }
           }
         }
 
@@ -240,8 +247,10 @@ export default {
         return 'dayofmonth';
       } else if (this.cronData.minute != '*') {
         return 'hour';
-      } else {
+      } else if (this.cronData.second != '*') {
         return 'minute';
+      } else {
+        return 'second';
       }
     }
   },

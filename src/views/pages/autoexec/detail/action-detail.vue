@@ -1256,7 +1256,7 @@ export default {
         if (p.operationName == 'native/IF-Block') {
           if (p.config) {
             !p.config.condition && validList.push({
-              text: this.$t('page.phase') + step.name + this.$t('term.autoexec.setinputcondition'),
+              text: this.$t('page.phase') + step.name + '【' + p.operationName + '】' + this.$t('term.autoexec.setinputcondition'),
               type: 'error',
               config: {
                 stepName: step.name,
@@ -1264,6 +1264,17 @@ export default {
                 stepUuid: step.uuid
               }
             });
+            if (this.$utils.isEmpty(p.config.ifList) && this.$utils.isEmpty(p.config.elseList)) {
+              validList.push({
+                text: this.$t('page.phase') + step.name + '【' + p.operationName + '】：' + this.$t('term.deploy.chooseatleastonetool'),
+                type: 'error',
+                config: {
+                  stepName: step.name,
+                  validComponent: 'operation',
+                  stepUuid: step.uuid
+                }
+              });
+            }
             if (p.config.ifList && p.config.ifList.length) {
               let validIfList = this.validPhaseOperationList(step, p.config.ifList);
               validIfList.length && validList.push(...validIfList);
@@ -1276,7 +1287,7 @@ export default {
         } else if (p.operationName == 'native/LOOP-Block') {
           if (p.config) {
             !p.config.loopItems && validList.push({
-              text: this.$t('page.phase') + step.name + this.$t('term.autoexec.setinputloopitems'),
+              text: this.$t('page.phase') + step.name + '【' + p.operationName + '】' + this.$t('term.autoexec.setinputloopitems'),
               type: 'error',
               config: {
                 stepName: step.name,
@@ -1285,7 +1296,7 @@ export default {
               }
             });
             !p.config.loopItemVar && validList.push({
-              text: this.$t('page.phase') + step.name + this.$t('term.autoexec.setinputloopitemvar'),
+              text: this.$t('page.phase') + step.name + '【' + p.operationName + '】' + this.$t('term.autoexec.setinputloopitemvar'),
               type: 'error',
               config: {
                 stepName: step.name,
@@ -1294,7 +1305,7 @@ export default {
               }
             });
             (!p.config.operations || p.config.operations.length == 0) && validList.push({
-              text: this.$t('page.phase') + step.name + this.$t('term.autoexec.setinputloopoperations'),
+              text: this.$t('page.phase') + step.name + '【' + p.operationName + '】' + this.$t('term.autoexec.setinputloopoperations'),
               type: 'error',
               config: {
                 stepName: step.name,

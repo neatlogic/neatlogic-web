@@ -82,7 +82,7 @@
                 </div>
               </template>
             </div>
-            <div v-if="editConfig.execMode ==='runner'">
+            <!-- <div v-if="editConfig.execMode ==='runner'">
               <TsFormItem
                 :label="$t('term.deploy.presetrunnergroup')"
                 labelPosition="left"
@@ -102,6 +102,7 @@
                     :config="executeConfig.runnerGroupTag"
                     :disabled="!canEdit"
                     :runtimeParamList="runtimeParamList"
+                    :isRequired="false"
                   ></RunnerGroupTagSetting>
                 </TsFormItem>
                 <TsFormItem
@@ -111,13 +112,14 @@
                 >
                   <RunnerGroupSetting
                     ref="runnerGroup"
-                    :config="executeConfig.runnerGroup"
+                    :config="!$utils.isEmpty(executeConfig.runnerGroup)?executeConfig.runnerGroup : runnerGroup"
                     :disabled="!canEdit"
                     :runtimeParamList="runtimeParamList"
+                    :isRequired="false"
                   ></RunnerGroupSetting>
                 </TsFormItem>
               </template>
-            </div>
+            </div> -->
           </template>
         </div>
       </template>
@@ -152,9 +154,9 @@ export default {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TargetDetail: () => import('@/views/pages/autoexec/components/common/addTarget/target-detail'),
     TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
-    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
-    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
-    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue')
+    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue')
+    // RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
+    // RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue')
   },
   props: {
     canEdit: {
@@ -251,7 +253,12 @@ export default {
       isValid: true, //校验结果通过
       isShowTargetValid: false,
       executeTooltip: this.$t('term.autoexec.executeTooltip'),
-      runnerGroupTooltip: this.$t('term.autoexec.runnerGroupTooltip')
+      runnerGroupTooltip: this.$t('term.autoexec.runnerGroupTooltip'),
+      runnerGroup: {
+        mappingMode: 'constant',
+        value: '',
+        text: ''
+      }
     };
   },
   beforeCreate() {},

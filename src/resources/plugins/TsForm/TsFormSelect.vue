@@ -495,11 +495,6 @@ export default {
       //是否自动选中唯一值
       type: Boolean,
       default: false
-    },
-    historyValue: {
-      // 历史值(Object包含text,value)存在时，用历史值回显数据（在dynamicUrl初始化时，不调用接口）
-      type: [String, Array, Object],
-      default: null
     }
   },
   data() {
@@ -899,19 +894,7 @@ export default {
         return;
       } else if (!this.$utils.isEmpty(this.historyValue)) {
         //历史值回显
-        let historyValueList = Array.isArray(this.historyValue) ? this.historyValue : [this.historyValue];
-        historyValueList.forEach(item => {
-          if (!this.$utils.isEmpty(item)) {
-            let obj = {};
-            if (typeof item === 'object') {
-              obj[this.valueName] = item.value;
-              obj[this.textName] = item.text;
-            } else {
-              obj[this.valueName] = obj[this.textName] = item;
-            }
-            this.selectedList.push(obj);
-          }
-        });
+        this.selectedList = this.handleHistoryValue(this.historyValue);
         return;
       }
       let params = { defaultValue: this.dynamicDefaultValue };

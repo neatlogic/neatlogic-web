@@ -296,7 +296,7 @@
     "workflow": "工作流",
     "showpriority": "显示优先级",
     "defaultpriority": "默认优先级",
-    "serwindow": "服务窗口",
+    "serwindow": "服务时间",
     "sertype": "服务类型",
     "reporauth": "上报授权",
     "tranferreport": "转报",
@@ -628,7 +628,9 @@
     "thirdpartyapi": "第三方回调接口",
     "reactivatestep": "重新激活步骤",
     "seeprocessconfig": "查看当前工单流程配置",
-    "editprocessconfig": "编辑当前工单流程配置"
+    "editprocessconfig": "编辑当前工单流程配置",
+    "stepishandledby": "步骤处理人为",
+    "sercalendar": "服务日历"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -891,7 +893,7 @@
     "toolparamstooltip": "工具参数是已关联的工具的参数集合。来源于自定义工具库的参数可增加、删除和修改，来源于工具库的参数无法增加、删除和修改。",
     "combophasexpired": "组合工具已失效",
     "pleasereedit": "请重新编辑后，提交审核",
-    "abortjob": "终止作业",
+    "abortjob": "中止作业",
     "runnergroupdeprecatedtips": "作业执行器组参数已失效，请重新点击确认并保存流程",
     "loopitem": "循环项",
     "loopoperation": "循环执行",
@@ -904,7 +906,8 @@
     "runnergrouptagprocesstips": "如果需要表单赋值，请在组合工具设置“执行器组标签”为“作业参数”类型",
     "runnergroupprocesstips": "如果需要表单赋值，请在组合工具设置“执行器组”为“作业参数”类型",
     "resetrunnerphase": "是否重置阶段",
-    "runnerGroupTooltip": "若此处不填写执行器组，当前阶段默认继承组合工具执行器组，若此处填写执行器组，当前阶段将采用此处填写的；执行时，不可修改阶段的执行器组"
+    "runnerGroupTooltip": "若此处不填写执行器组，当前阶段默认继承组合工具执行器组，若此处填写执行器组，当前阶段将采用此处填写的；执行时，不可修改阶段的执行器组",
+    "isfirenext": "是否激活下一个组"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",
@@ -1345,7 +1348,8 @@
     "tagentupgradepkg": "升级包",
     "selecttagentupgradepkg": "选择已有的升级包",
     "tagentuploadupgradepkg": "上传升级包",
-    "versionremarks": "版本备注"
+    "versionremarks": "版本备注",
+    "heartbeaturl": "后端服务器地址"
   },
   "knowledge": {
     "document": "文档",

@@ -315,6 +315,7 @@ function getCommercialRouter() {
   let routerPathList = [];
   try {
     routerPathList.push(require.context('@/commercial-module', true, /router.js$/));
+    routerPathList.push(require.context('@/community-module', true, /router.js$/));
   } catch {
     // 模块找不到
   }
@@ -337,6 +338,7 @@ function getAllMenuTypeList() {
   const configPathList = [require.context('@/views/pages', true, /config.js$/)];
   try {
     configPathList.push(require.context('@/commercial-module', true, /config.js$/));
+    configPathList.push(require.context('@/community-module', true, /config.js$/));
   } catch (error) {
     //
   }

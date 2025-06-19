@@ -27,10 +27,17 @@
           >
             <template slot="groupNetworkList" slot-scope="{ row }">
               <!-- 网段IP/子网掩码 -->
-              <div v-if="row.groupNetworkList.length > 0">
-                <div v-for="item in row.groupNetworkList" :key="item.id">
+              <div v-if="row.groupNetworkList && row.groupNetworkList.length > 0">
+                <div
+                  v-for="item in row.groupNetworkList.slice(0,3)"
+                  :key="item.id"
+                  class="mb-xs"
+                >
                   {{ item.networkIp }} / {{ item.mask }}
                 </div>
+                <template v-if="row.groupNetworkList.length >= 3">
+                  <span class="tsfont-option-horizontal text-href" @click.stop="openNetworkIpMaskDialog(row.groupNetworkList)">查看更多</span>
+                </template>
               </div>
             </template>
             <template slot="runnerCount" slot-scope="{ row }">
@@ -83,6 +90,12 @@
         </div>
       </template>
     </TsDialog>
+    <NetworkipMaskDialog
+      v-if="isShowNetworkIpMaskDialog"
+      :networkList="groupNetworkList"
+      @close="closeNetworkIpMaskDialog"
+    >
+    </NetworkipMaskDialog>
   </div>
 
 </template>
@@ -94,7 +107,8 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     GroupAddDialog: () => import('./group-add-dialog.vue'),
     GroupEditDialog: () => import('./group-edit-dialog.vue'),
-    RunnerRelate: () => import('./runner-relate.vue')
+    RunnerRelate: () => import('./runner-relate.vue'),
+    NetworkipMaskDialog: () => import('./networkip-mask-dialog.vue')
   },
   filters: {},
   props: {
@@ -108,6 +122,8 @@ export default {
       runnerRowData: {}, // 点击数量，获取行的数据
       isShowGroupAddDialog: false,
       isShowRunnerGroupEdit: false,
+      isShowNetworkIpMaskDialog: false,
+      groupNetworkList: [],
       runnerGroupData: {},
       runnerManageDialog: {
         type: 'modal',
@@ -292,6 +308,14 @@ export default {
       let textList = '';
       textList = list.slice(3);
       return textList;
+    },
+    openNetworkIpMaskDialog(groupNetworkList) {
+      this.isShowNetworkIpMaskDialog = true;
+      this.groupNetworkList = groupNetworkList;
+    },
+    closeNetworkIpMaskDialog() {
+      this.isShowNetworkIpMaskDialog = false;
+      this.groupNetworkList = [];
     }
   },
   computed: {},

@@ -2,6 +2,7 @@ import { rspack, defineConfig } from '@rsbuild/core';
 import { pluginVue2 } from '@rsbuild/plugin-vue2';
 import { pluginLess } from '@rsbuild/plugin-less';
 let commercialModule = './src/commercial-module';
+let communityModule = './src/community-module';
 import path from 'path';
 import glob from 'glob';
 const { tenantName, urlPrefix } = require('./apiconfig.json');
@@ -12,7 +13,31 @@ let table_style = 'border';
 let imgModule = './public/resource';
 let copyPath = '';
 let faviconPath = './public/resource/img/common/tsfavicon.png';
-let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || [];
+
+let importCustomConfig = glob.sync(`${communityModule}/**/customconfig.js`) || [];
+importCustomConfig.forEach((filePath) => {
+  if (filePath) {
+    let {tableStyle, title, loginTitle, imgPath, publicPath, faviconIconPath} = require(filePath);
+    copyPath = publicPath;
+    if (loginTitle) {
+      login_Title = String(loginTitle);
+    }
+    if (tableStyle) {
+      table_style = String(tableStyle);
+    }
+    if (title) {
+      pageTitle = String(title);
+    }
+    if (imgPath) {
+      imgModule = imgPath;
+    }
+    if (faviconIconPath) {
+      faviconPath = faviconIconPath; 
+    }
+  }
+});
+
+importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || [];
 importCustomConfig.forEach((filePath) => {
   if (filePath) {
     let {tableStyle, title, loginTitle, imgPath, publicPath, faviconIconPath} = require(filePath);
@@ -50,11 +75,13 @@ function getAllModuleList(modulePathList = []) {
 function getPages(pageList) {
   const pages = {};
   const pagePathList = glob.sync(src + '/views/pages/*/router.js');
-  const importModulePathList = glob.sync(`${commercialModule}/**/router.js`) || [];
+  const importCommercialModulePathList = glob.sync(`${commercialModule}/**/router.js`) || [];
+  const importCommunityModulePathList = glob.sync(`${communityModule}/**/router.js`) || [];
   const defaultModuleList = getAllModuleList(pagePathList);
   const commercialModuleList = [];
+  const communityModuleList = [];
 
-  importModulePathList.forEach(filePath => {
+  importCommercialModulePathList.forEach(filePath => {
     const moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
     if (!defaultModuleList.includes(getModuleName(moduleName))) {
       pagePathList.push(filePath);
@@ -62,14 +89,25 @@ function getPages(pageList) {
     }
   });
 
+  importCommunityModulePathList.forEach(filePath => {
+    const moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
+    if (!defaultModuleList.includes(getModuleName(moduleName))) {
+      pagePathList.push(filePath);
+      communityModuleList.push(getModuleName(moduleName));
+    }
+  });
+
   pagePathList.forEach(filePath => {
     const moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
     const filename = getModuleName(moduleName);
     const pageLogin = filename === 'login' ? pageTitle : `${pageTitle}-${filename}`;
-    const entry = commercialModuleList.includes(filename)
-      ? `${commercialModule}/${moduleName}/${filename}.js`
-      : `${src}/views/pages/${filename}/${filename}.js`;
 
+    let entry = `${src}/views/pages/${filename}/${filename}.js`;
+    if (communityModuleList.includes(filename)) {
+      entry = `${communityModule}/${moduleName}/${filename}.js`;
+    } else if (commercialModuleList.includes(filename)) {
+      entry = `${commercialModule}/${moduleName}/${filename}.js`;
+    } 
     pages[filename] = {
       entry,
       template: `public/index.html`,

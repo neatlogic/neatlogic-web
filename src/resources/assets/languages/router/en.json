@@ -130,6 +130,7 @@
     "formmanage": "Forms",
     "integrationmanage": "Integration",
     "datawarehousemanage": "Data Warehouse",
+    "datasource": "Data source",
     "historymanage": "Messages",
     "subscriptionsetting": "Subscribe",
     "noticemanage": "Notice",

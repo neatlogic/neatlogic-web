@@ -7,7 +7,7 @@ export const WIDGET_TYPES = [
 ];
 import { default as text } from './define/text.js';
 import { default as number } from './define/number.js';
-//import { default as table } from './define/table.js';
+import { default as table } from './define/table.js';
 import { default as pie } from './define/pie.js';
 import { default as radar } from './define/radar.js';
 import { default as rose } from './define/rose.js';
@@ -40,7 +40,7 @@ import { default as time } from './define/time.js';
 export const WIDGETS = [
   text,
   number,
-  //table,
+  table,
   pie,
   radar,
   rose,

@@ -3,7 +3,7 @@
     v-model="isSettingVisible"
     width="250"
     popper-class="auditconfig-wap"
-    style="text-align:left"
+    style="text-align: left"
     :transfer="true"
   >
     <span class="tsfont-setting text-action">{{ buttonName }}</span>
@@ -15,8 +15,13 @@
         clearable
         v-bind="timeSelectConfig"
       ></TimeSelect>
-      <div class="mt-nm text-grey">{{ $t('message.autoexec.savedeadlinenolimit') }}</div>
-      <div class="mt-nm text-right"><Button type="primary" size="small" @click="saveAuditConfig()">{{ $t('page.save') }}</Button></div>
+      <div v-if="!help" class="mt-nm text-grey">{{ $t('message.autoexec.savedeadlinenolimit') }}</div>
+      <div v-else style="white-space: normal; work-break: break-all" class="mt-nm text-grey">
+        {{ help }}
+      </div>
+      <div class="mt-nm text-right">
+        <Button type="primary" size="small" @click="saveAuditConfig()">{{ $t('page.save') }}</Button>
+      </div>
     </div>
   </Poptip>
 </template>
@@ -27,15 +32,27 @@ export default {
     TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect')
   },
   props: {
-    auditName: {type: String},
-    buttonName: {type: String, default() { return this.$t('page.setting'); }},
-    title: {type: String, default() { return this.$t('dialog.title.logsavedeadline'); } }
+    help: { type: String },
+    auditName: { type: String },
+    buttonName: {
+      type: String,
+      default() {
+        return this.$t('page.setting');
+      }
+    },
+    title: {
+      type: String,
+      default() {
+        return this.$t('dialog.title.logsavedeadline');
+      }
+    }
   },
   data() {
     return {
       isSettingVisible: false,
       auditConfig: null,
-      timeSelectConfig: {//时间选择器的数据
+      timeSelectConfig: {
+        //时间选择器的数据
         border: 'border',
         placement: 'bottom-start',
         clearable: false,
@@ -50,7 +67,9 @@ export default {
     };
   },
   beforeCreate() {},
-  created() { this.getAuditConfig(); },
+  created() {
+    this.getAuditConfig();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -68,13 +87,16 @@ export default {
       });
     },
     saveAuditConfig() {
-      this.$api.framework.auditconfig.saveApiConfig({name: this.auditName.toUpperCase(), config: this.auditConfig}).then(res => {
-        if (res.Status == 'OK') {
-          this.$Message.success(this.$t('message.savesuccess'));
-        }
-      }).finally(() => {
-        this.isSettingVisible = false;
-      });
+      this.$api.framework.auditconfig
+        .saveApiConfig({ name: this.auditName.toUpperCase(), config: this.auditConfig })
+        .then(res => {
+          if (res.Status == 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+          }
+        })
+        .finally(() => {
+          this.isSettingVisible = false;
+        });
     }
   },
   filter: {},

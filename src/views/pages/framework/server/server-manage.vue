@@ -78,7 +78,7 @@ export default {
         },
         {
           key: 'host',
-          title: this.$t('term.framework.host')
+          title: this.$t('term.framework.heartbeaturl')
         },
         {
           key: 'heartbeatTime',
@@ -111,7 +111,7 @@ export default {
         },
         host: {
           type: 'text',
-          label: this.$t('term.framework.host'),
+          label: this.$t('term.framework.heartbeaturl'),
           placeholder: 'http(s)://ip:port',
           validateList: ['required']
         }

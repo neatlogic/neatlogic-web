@@ -284,7 +284,6 @@ export default {
       let _this = this;
       _this.list.forEach(l => {
         if (l.uuid == id) {
-          console.log(config);
           Object.assign(l, config);
         }
       });
@@ -314,13 +313,24 @@ export default {
           childrendom.forEach(children => {
             if (children.__vue__ && children.__vue__.valid) {
               if (!children.__vue__.valid()) {
-                children.__vue__.$options.parent.step.isShow = true;
+                this.setShowStep(children.__vue__.$options.parent);
                 isValid = false;
               }
             }
           });
         }
         return isValid;
+      }
+    },
+    setShowStep(parent) { //设置父级的显示
+      if (parent) {
+        if (parent.step) {
+          parent.step.isShow = true;
+        } else {
+          if (parent.$options.parent) {
+            this.setShowStep(parent.$options.parent);
+          }
+        }
       }
     },
     refreshProfile() {

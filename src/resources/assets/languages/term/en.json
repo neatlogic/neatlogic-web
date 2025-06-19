@@ -628,7 +628,9 @@
     "thirdpartyapi": "Third party callback interface",
     "reactivatestep": "Reactivation steps",
     "seeprocessconfig": "View the current work order process configuration",
-    "editprocessconfig": "Edit the current work order process configuration"
+    "editprocessconfig": "Edit the current work order process configuration",
+    "stepishandledby": "Step Handling Human",
+    "sercalendar": "Service Calendar"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
@@ -904,7 +906,8 @@
     "runnergrouptagprocesstips": "If form assignment is required, please set the executor group to the \"Job Parameters\" type in the combination tool",
     "runnergroupprocesstips": "If form assignment is required, please set the \"Executor Group\" to the \"Job Parameter\" type in the combination tool",
     "resetrunnerphase": "Reset phase or not",
-    "runnerGroupTooltip": "If the actuator group is not filled in here, the current stage will inherit the combination tool actuator group by default. If the actuator group is filled in here, the current stage will use the one filled in here; During execution, the executor group of the stage cannot be modified"
+    "runnerGroupTooltip": "If the actuator group is not filled in here, the current stage will inherit the combination tool actuator group by default. If the actuator group is filled in here, the current stage will use the one filled in here; During execution, the executor group of the stage cannot be modified",
+    "isfirenext": "Do you want to activate the next group"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
@@ -1345,7 +1348,8 @@
     "tagentupgradepkg": "Upgrade Package",
     "selecttagentupgradepkg": "Select an existing upgrade package",
     "tagentuploadupgradepkg": "Upload upgrade package",
-    "versionremarks": "Version Remarks"
+    "versionremarks": "Version Remarks",
+    "heartbeaturl": "Backend server address"
   },
   "knowledge": {
     "document": "Document",

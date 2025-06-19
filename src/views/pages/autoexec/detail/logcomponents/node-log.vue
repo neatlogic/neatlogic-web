@@ -99,7 +99,8 @@ export default {
       timmer: null,
       isAutoScroll: true, //自动滚动日志
       encodeList: [], //编码列表
-      encoding: 'UTF-8'
+      encoding: 'UTF-8',
+      refreshTimes: 3 //刷新次数：终点状态后刷新，避免日志内容不一致
     };
   },
   beforeCreate() {},
@@ -125,6 +126,7 @@ export default {
   methods: {
     afterInteract() {
       this.getContent('down', this.endPos);
+      this.$emit('refresh');
     },
     onMousewheel(event) {
       this.isAutoScroll = false;
@@ -185,23 +187,35 @@ export default {
           .then(res => {
             this.logData = res.Return;
             const isRefresh = res.Return.isRefresh;
+            const lineList = res.Return.lineList || [];
             this.startPos = Math.min(this.logData.startPos, this.startPos);
             this.endPos = Math.max(this.logData.endPos, this.endPos);
+       
             if (param.direction == 'down') {
-              for (let i = 0; i < res.Return.lineList.length; i++) {
-                this.logContentList.push(res.Return.lineList[i]);
+              if (!this.$utils.isEmpty(lineList)) {
+                for (let i = 0; i < lineList.length; i++) {
+                  this.logContentList.push(lineList[i]);
+                }
               }
             } else {
               //记录第一行原来的位置，更新内容后重新定位到这个地方
-              firstIndex = res.Return.lineList.length;
-              for (let i = res.Return.lineList.length - 1; i >= 0; i--) {
-                this.logContentList.unshift(res.Return.lineList[i]);
+              firstIndex = lineList.length;
+              if (!this.$utils.isEmpty(lineList)) {
+                for (let i = lineList.length - 1; i >= 0; i--) {
+                  this.logContentList.unshift(lineList[i]);
+                }
               }
             }
             if (isRefresh == 1) {
+              this.refreshTimes = 3;
               this.timmer = setTimeout(() => {
                 this.getContent('down', this.endPos);
-              }, this.calcIntervalTime(res.Return.lineList.length));
+              }, this.calcIntervalTime(lineList.length));
+            } else if (isRefresh == 0 && this.refreshTimes > 0) {
+              this.refreshTimes--;
+              this.timmer = setTimeout(() => {
+                this.getContent('down', this.endPos);
+              }, 2000);
             }
           })
           .finally(() => {
@@ -260,7 +274,7 @@ export default {
   },
   computed: {
     offsetHeight() {
-      return this.mode == 'page' ? this.isHasExtraInfo ? '310px' : '215px' : '190px';
+      return this.mode == 'page' ? (this.isHasExtraInfo ? '330px' : '235px') : '190px';
     },
     getContentClass() {
       return type => {
@@ -302,6 +316,9 @@ export default {
       handler: function(val) {
         if (val) {
           this.$utils.jumpTo('.content_' + val, 'smooth', this.$refs['codeContent'], 'start');
+          this.isAutoScroll = false;
+        } else {
+          this.isAutoScroll = true;
         }
       }
     }

@@ -107,6 +107,9 @@ export default {
       }
       this.$api.autoexec.job.getSqlListByPhase(this.searchParam).then(res => {
         this.nodeData = res.Return;
+        if (this.isFirst) {
+          this.getTableHeight();
+        }
         const nodeList = res.Return.tbodyList;
         if (nodeList && nodeList.length > 0) {
           const nodeIdList = [];

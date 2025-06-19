@@ -51,52 +51,20 @@
             </TsTable>
           </template>
           <template v-slot:content>
-            <div>
-              <div>
-                <Poptip
-                  trigger="hover"
-                  placement="right"
-                  width="750"
-                  :transfer="true"
-                >
-                  <span class="text-href">{{ $t('term.framework.configexample') }}</span>
-                  <div slot="content" class="api">
-                    <pre>
-&lt;datasource name="testreport" label="测试报表"&gt;
-  &lt;!--fields用于定义返回的字段列表--&gt;
-  &lt;fields&gt;
-  &lt;!--id代表唯一字段，支持多个id字段进行组合。普通字段用field定义，type是数据类型，目前只支持number、text、time、date、datetime五种，number类型系统最多只会保留4位小数。
-  如果需要聚合计算，可以使用aggregate属性，目前支持sum和count两种算法。配置了aggregate属性的field字段会根据id字段进行计数或累加计算。--&gt;
-    &lt;id column="id" label="id" type="number"/&gt;
-    &lt;field column="user_id" label="用户id" type="text"/&gt;
-    &lt;field column="user_name" label="用户名" type="text"/&gt;
-    &lt;field column="phone" label="电话" type="number"/&gt;
-  &lt;/fields&gt;
-  &lt;!--params用于定义需要保存最大值的字段，例如每次执行完保留最大的id值，下次执行可以用这个id值作为过滤条件实现增量同步--&gt;
-  &lt;params&gt;
-  &lt;!--column是返回字段，返回字段的类型必须是数字型（如果需要保存时间可以先把时间转换成时间戳）。
-      在where条件中可以通过#{column值}使用，--&gt;
-    &lt;param column="id" label="最大id" default="0"/&gt;
-  &lt;/params&gt;
-  &lt;!--select元素支持多个，但每个select语句返回的字段需要和fields中定义的一致。--&gt;
-  &lt;!--mongodb 仅支持aggregation pipeline,具体api 参考官方文档:https://www.mongodb.com/docs/manual/reference/operator/aggregation/ --&gt;
-  &lt;!--如: {aggregate: "INSPECT_REPORTS",pipeline: [{ '$match': { '_report_time': { $lte: ISODate("2022-11-05T00:00:00.0Z") }, '_inspect_result.status': { '$in': ['CRITICAL', 'WARN', 'FATAL'] } } }, { '$sort': {'_report_time': -1 } }, {$project: { resourceId: "$RESOURCE_ID",status: "$_inspect_result.status" }}}--&gt;
-  &lt;select&gt;
-    select user_id,user_name,phone from `user` where id &gt; #{id}
-  &lt;/select&gt;
-&lt;/datasource&gt;
-                    </pre>
-                  </div>
-                </Poptip>
-              </div>
+            <Tabs v-model="currentTab">
+              <TabPane label="配置" name="content"></TabPane>
+              <TabPane label="范例" name="example"></TabPane>
+            </Tabs>
+            <div v-if="currentTab === 'content'">
               <TsCodemirror
                 v-model="reportDataSourceData.xml"
-                :isLoading="isValiding"
                 codeMode="xml"
-                :loadingText="$t('term.framework.parsing')"
                 @change="changeXml"
               ></TsCodemirror>
               <Alert v-if="errorMsg" class="mt-sm" type="error">{{ errorMsg }}</Alert>
+            </div>
+            <div v-else-if="currentTab === 'example'">
+              <TsCodemirror :value="example" :disabled="true" codeMode="xml"></TsCodemirror>
             </div>
           </template>
           <template v-slot:expireTime>
@@ -163,6 +131,8 @@ export default {
   data() {
     const _this = this;
     return {
+      example: null,
+      currentTab: 'content',
       errorMsg: '',
       isValiding: false,
       dataSourceData: {},
@@ -173,7 +143,7 @@ export default {
         maskClose: false,
         isShow: true,
         title: !this.id ? this.$t('dialog.title.addtarget', { target: this.$t('page.datasource') }) : this.$t('dialog.title.edittarget', { target: this.$t('page.datasource') }),
-        width: 'medium'
+        width: 'large'
       },
       reportDataSourceData: {},
       fieldHeadList: [
@@ -305,11 +275,12 @@ export default {
   beforeCreate() {},
   created() {
     this.getModuleList();
+    this.getDatabaseList();
     this.getDatasourceById();
+    this.getExample();
   },
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -317,11 +288,42 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getExample() {
+      this.$api.framework.datawarehouse.getExample().then(res => {
+        this.example = res;
+      });
+    },
+    getDatabaseList() {
+      let params = {
+        currentPage: 1,
+        pageSize: 100
+      };
+      this.$api.framework.database.searchDatabaseList(params).then(res => {
+        let tbodyList = res.Return.tbodyList;
+        let dataList = [
+          { value: 'mysql', text: 'mysql' },
+          { value: 'mongodb', text: 'mongodb' }
+        ];
+        tbodyList.forEach(item => {
+          let text = item.name;
+          let value = item.type + '-' + item.id;
+          dataList.push({
+            text: text,
+            value: value
+          });
+        });
+        this.formConfig.forEach(element => {
+          if (element.name == 'dbType') {
+            this.$set(element, 'dataList', dataList);
+          }
+        });
+      });
+    },
     getModuleList() {
       this.$api.framework.module.searchModule().then(res => {
         if (res.Return) {
           res.Return.forEach(g => {
-            this.moduleList.push({value: g.group, text: g.groupName});
+            this.moduleList.push({ value: g.group, text: g.groupName });
           });
         }
       });
@@ -360,6 +362,11 @@ export default {
       if (this.id) {
         this.$api.framework.datawarehouse.getDatasourceById(this.id).then(res => {
           this.reportDataSourceData = res.Return;
+          if (this.reportDataSourceData.dbType && this.reportDataSourceData.dbType != 'mysql' && this.reportDataSourceData.dbType != 'mongodb') {
+            if (this.reportDataSourceData.databaseId && this.reportDataSourceData.databaseId != null) {
+              this.reportDataSourceData.dbType = this.reportDataSourceData.dbType + '-' + this.reportDataSourceData.databaseId;
+            }
+          }
           this.formConfig.forEach(element => {
             this.$set(element, 'value', this.reportDataSourceData[element.name]);
             if (element.name == 'fields') {
@@ -396,6 +403,13 @@ export default {
         }
         if (this.id) {
           this.reportDataSourceData.id = this.id;
+        }
+        if (this.reportDataSourceData.dbType != 'mysql' && this.reportDataSourceData.dbType != 'mongodb') {
+          let index = this.reportDataSourceData.dbType.lastIndexOf('-');
+          let type = this.reportDataSourceData.dbType.substring(0, index);
+          let databaseId = this.reportDataSourceData.dbType.substring(index + 1, this.reportDataSourceData.dbType.length);
+          this.reportDataSourceData.dbType = type;
+          this.reportDataSourceData.databaseId = databaseId;
         }
         this.$api.framework.datawarehouse.saveDataSource(this.reportDataSourceData).then(res => {
           if (res.Status == 'OK') {
@@ -468,7 +482,7 @@ export default {
           .finally(() => {
             this.isValiding = false;
           });
-      }, 1000);
+      }, 3000);
     }
   },
   filter: {},
