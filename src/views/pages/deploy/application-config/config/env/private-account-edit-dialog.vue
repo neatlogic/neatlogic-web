@@ -28,6 +28,10 @@ export default {
       default: function() {
         return [];
       }
+    },
+    params: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -191,13 +195,21 @@ export default {
       if (!form.valid()) {
         return;
       }
-      this.$api.cmdb.accountManage
-        .saveAccount({...formValue, type: 'private', resourceId: this.resourceId, name: `${formValue.account}[${this.protocol}]`}) // 私有账号
-        .then(res => {
-          if (res && (res.Status == 'OK')) {
-            this.handleTipsMessage(res.Return);
-          }
-        });
+      let data = {
+        ...formValue, 
+        appSystemId: this.params.appSystemId,
+        appModuleId: this.params.appModuleId,
+        envId: this.params.envId,
+        type: 'private', 
+        resourceId: this.resourceId,
+        name: `${formValue.account}[${this.protocol}]`
+      };
+      // 私有账号
+      this.$api.deploy.env.saveEnvDbPrivateaccount(data).then(res => {
+        if (res && (res.Status == 'OK')) {
+          this.handleTipsMessage(res.Return);
+        }
+      });
     },
     handleTipsMessage(res) {
       // 失败，错误提示

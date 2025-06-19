@@ -79,7 +79,12 @@
       :params="params"
       @close="closeDbResourceSettingDialog"
     ></DbResourceSettingDialog>
-    <AccountEditDialog v-if="isShowAccountEditDialog" :resourceId="resourceId" @close="closeAccountEditDialog"></AccountEditDialog>
+    <AccountEditDialog
+      v-if="isShowAccountEditDialog"
+      :params="params"
+      :resourceId="resourceId"
+      @close="closeAccountEditDialog"
+    ></AccountEditDialog>
   </div>
 </template>
 <script>

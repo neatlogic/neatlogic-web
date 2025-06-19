@@ -110,6 +110,7 @@
     </TsDialog>
     <PrivateAccountEditDialog
       v-if="isShowNewAccount"
+      :params="params"
       :resourceId="resourceId"
       :accountId="accountId"
       :accountList="[...privateAccountList, ...publicAccountList]"
@@ -128,6 +129,10 @@ export default {
   },
   filters: {},
   props: {
+    params: {
+      type: Object,
+      default: () => {}
+    },
     resourceId: {
       type: Number,
       default: null
@@ -337,7 +342,13 @@ export default {
       return true;
     },
     saveAccount() {
+      if (this.$utils.isEmpty(this.params)) {
+        return false;
+      }
       let data = {
+        appSystemId: this.params.appSystemId,
+        appModuleId: this.params.appModuleId,
+        envId: this.params.envId,
         resourceId: this.resourceId,
         accountIdList: this.getAccountIdList()
       };
@@ -400,7 +411,14 @@ export default {
           btnType: 'error',
           okText: this.$t('page.delete'),
           'on-ok': vnode => {
-            this.$api.develop.env.deleteEnvDbPrivateaccount(row.value).then(res => {
+            let data = {
+              appSystemId: this.params.appSystemId,
+              appModuleId: this.params.appModuleId,
+              envId: this.params.envId,
+              resourceId: this.resourceId,
+              id: row.value
+            };
+            this.$api.develop.env.deleteEnvDbPrivateaccount(data).then(res => {
               if (res && res.Status == 'OK') {
                 this.$Message.success(this.$t('message.deletesuccess'));
                 this.privateAccountList.splice(index, 1);
