@@ -228,7 +228,7 @@ export default {
         },
         testResult: {
           type: 'slot',
-          label: '测试结果',
+          label: this.$t('term.cmdb.testaccount'),
           isHidden: true // 默认隐藏，点击【测试连接】之后才显示
         }
       }
