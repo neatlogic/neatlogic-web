@@ -418,7 +418,7 @@ export default {
               resourceId: this.resourceId,
               id: row.value
             };
-            this.$api.develop.env.deleteEnvDbPrivateaccount(data).then(res => {
+            this.$api.deploy.env.deleteEnvDbPrivateaccount(data).then(res => {
               if (res && res.Status == 'OK') {
                 this.$Message.success(this.$t('message.deletesuccess'));
                 this.privateAccountList.splice(index, 1);
