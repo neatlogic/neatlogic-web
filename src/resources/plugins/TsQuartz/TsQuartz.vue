@@ -133,14 +133,15 @@ export default {
         this.tmpCronType = item;
         for (let key in this.cronData) {
           //秒需要保持是0
-          if (key != 'second' && !this.Setting.controllerList[item].find(d => d.datasource && d.datasource === key)) {
+          console.log(this.Setting.controllerList[item], key);
+          if (key != 'second' && key != 'minute' && !this.Setting.controllerList[item].find(d => d.datasource && d.datasource === key)) {
             this.$set(this.cronData, key, '*');
             if (key === 'dayofweek') {
               this.$set(this.cronData, 'dayofmonth', '?');
             } else if (key === 'dayofmonth') {
               this.$set(this.cronData, 'dayofweek', '?');
             }
-          } else if (key === 'second') {
+          } else if (key === 'second' || key === 'minute') {
             this.$set(this.cronData, key, '0');
           }
         }
