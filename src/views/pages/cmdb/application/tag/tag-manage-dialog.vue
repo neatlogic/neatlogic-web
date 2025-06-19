@@ -124,9 +124,10 @@ export default {
             name: 'typeIdList',
             label: '系统名称',
             placeholder: this.$t('page.pleaseselect'),
-            dynamicUrl: '/api/rest/autoexec/type/search',
+            dynamicUrl: '/api/rest/resourcecenter/appsystem/list/fortree',
             params: {},
             rootName: 'tbodyList',
+            dealDataByUrl: this.$utils.getAppForselect,
             search: true,
             multiple: true,
             transfer: true
