@@ -30,6 +30,7 @@
             :expandAll="false"
             :onClick="clickNode"
             :beforeDrop="beforeDrop"
+            :beforeDrag="beforeDrag"
             :onDrop="onDrop"
           ></TsZtree>
           <NoData v-else-if="!loadingShow && $utils.isEmpty(nodeList)"></NoData>
@@ -413,6 +414,18 @@ export default {
         return false;
       }
     },
+    beforeDrag(treeId, treeNodes) {
+      // 拖拽前的操作，可去掉节点拖拽功能
+      if (this.$utils.isEmpty(treeNodes)) {
+        return false;
+      }
+      for (let i = 0; i < treeNodes.length; i++) {
+        if (treeNodes[i] && (treeNodes[i].drag === false)) {
+          return false;
+        }
+      }
+      return true;
+    },
     onDrop(tree, treeNodes, targetNode, moveType) {
       let treeNode = treeNodes[0];
       let data = {
@@ -448,15 +461,16 @@ export default {
             menuType: 'innerMenu',
             moduleId: moduleId,
             moduleName: moduleName,
+            drag: false, // 内部菜单不可拖拽
             children: item.menuList.map((v) => ({
               id: `${moduleId}_${v.path}`,
               name: v.name,
               menuType: 'innerMenu',
               isMenu: true,
               moduleId: moduleId,
-              moduleName: moduleName
-            })
-            )
+              moduleName: moduleName,
+              drag: false
+            }))
           });
         }
       });
@@ -507,7 +521,8 @@ export default {
             children: this.handleChildren(item.moduleId, item.moduleName, item.menuGroupList),
             menuType: 'innerMenu',
             moduleId: item.moduleId,
-            moduleName: item.moduleName
+            moduleName: item.moduleName,
+            drag: false // 内部菜单不可拖拽
           });
           // 获取菜单模块列表
           item.menuGroupList && item.menuGroupList.forEach((v) => {
@@ -538,7 +553,8 @@ export default {
               id: 1,
               name: this.$t('term.framework.internalmenu'),
               children: moduleList,
-              menuType: 'innerMenu'
+              menuType: 'innerMenu',
+              drag: false // 内部菜单不可拖拽
             },
             {
               id: 2,

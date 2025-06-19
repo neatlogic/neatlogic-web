@@ -187,25 +187,30 @@ export default {
           .then(res => {
             this.logData = res.Return;
             const isRefresh = res.Return.isRefresh;
+            const lineList = res.Return.lineList || [];
             this.startPos = Math.min(this.logData.startPos, this.startPos);
             this.endPos = Math.max(this.logData.endPos, this.endPos);
        
             if (param.direction == 'down') {
-              for (let i = 0; i < res.Return.lineList.length; i++) {
-                this.logContentList.push(res.Return.lineList[i]);
+              if (!this.$utils.isEmpty(lineList)) {
+                for (let i = 0; i < lineList.length; i++) {
+                  this.logContentList.push(lineList[i]);
+                }
               }
             } else {
               //记录第一行原来的位置，更新内容后重新定位到这个地方
-              firstIndex = res.Return.lineList.length;
-              for (let i = res.Return.lineList.length - 1; i >= 0; i--) {
-                this.logContentList.unshift(res.Return.lineList[i]);
+              firstIndex = lineList.length;
+              if (!this.$utils.isEmpty(lineList)) {
+                for (let i = lineList.length - 1; i >= 0; i--) {
+                  this.logContentList.unshift(lineList[i]);
+                }
               }
             }
             if (isRefresh == 1) {
               this.refreshTimes = 3;
               this.timmer = setTimeout(() => {
                 this.getContent('down', this.endPos);
-              }, this.calcIntervalTime(res.Return.lineList.length));
+              }, this.calcIntervalTime(lineList.length));
             } else if (isRefresh == 0 && this.refreshTimes > 0) {
               this.refreshTimes--;
               this.timmer = setTimeout(() => {
@@ -311,6 +316,9 @@ export default {
       handler: function(val) {
         if (val) {
           this.$utils.jumpTo('.content_' + val, 'smooth', this.$refs['codeContent'], 'start');
+          this.isAutoScroll = false;
+        } else {
+          this.isAutoScroll = true;
         }
       }
     }
