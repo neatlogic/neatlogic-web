@@ -5,29 +5,73 @@ removeCookie(name)                           清除cookie为name的值
 deepClone(data)                              复制数据（不改动原数据）
 setUuid()                                    生成32位随机uuid
 getCurrenttime(format)                       根据指定格式格式化当前时间输出格式
-sortNumber()                                 数字排序
 getDateByFormat(value, format, styleType)    通过时间戳获取指定格式的日期
+sortNumber()                                 数字排序
+concatArr(arr1, arr2)                        两个数组合并，且非数组对象去重
+validForm($el,$scroll)                       整体表单控件校验,并且滚动到报错地方 可以传dom对象，也可以传选择器字符串
 toggleClass(el, classname, type)             修改class 1、el:目标元素  2、cls:需要操作的class  3、type:"add"代表添加对应的class  "remove"代码删除对应的class 如果不传则有则删除，没有则添加
 getValueByPath(value, path, isArrary)        值的为空判断 如果是数组，数组的长度判断 //1、value：[Nothing]需要做判断的值, 2、path：[String]需要层层遍历的  3、isArrary:[Boolean]最终获取的值是数组，而且数组的长度大于0
 checkType(value, type)                       检查value类型，如果type为空则返回值的类型
-validForm($el,$scroll)                       整体表单控件校验,并且滚动到报错地方 可以传dom对象，也可以传选择器字符串
-isSame(str1, str2)                           判断str1和str2是否相等
-translateNumber(values, codeType)            将阿拉伯数字转为对应需要的格式（中文一二三或者英文ABCD）
-getLightColor(colors, level, noOpacity)      将十六进制hex的colors按减淡level（小数点数字）后得到的颜色值，当noOpacity为true时为十六进制hex，默认是按百分比透明度处理
-isEmptyObj(obj)                              判断对象是否为空
-goBack(fromPath, url)                        返回上一步
+checkStringNotEmpty(value)                   检查数据类型不为空
+equalStr(str1, str2)                         检查两个字符串是否相等，
 isEmpty(val)                                 判断数据是否为空：null undefined '' []  {} 五中情况情况中的任何一种则为true
+isSame(str1, str2)                           判断str1和str2是否相等，主要是为了对 0 和 '0'需要判断相同的情况下面
+toChinese(values)                            将数字转为中文。例如toChinese(123) => 一二三
+toEnglish(values)                            将数字转为英文。例如toEnglish(123) => ABC
+translateNumber(values, codeType)            将阿拉伯数字转为对应需要的格式（中文一二三或者英文ABCD)
+gotoHref(href, that)                         通过链接跳转时，需要做路由拦截等操作
+disabledRepeatSubmit(obj,key,trueval,falseval) 全局处理禁止短时间内反复提交,obj：对应需要改变的数据，key:更新的值的key,trueval:正常的往下走的值（比如放开按钮的disable）,falseval:需要停止正常操作的值（比如禁用按钮）
+jumpDialog(config, to, from, next, url)      // 下榻页面返回提示：您有未保存数据，是否保存当前修改并跳转新页面？
+hexToRgb(str)                                十六进制hex转为rgb,如果是3位的先补齐6位
+rgbToHex(a,b,c)                              rgb转为十六进制hex
+convertHexToRGBA(hexCode, opacity = 1)       转换Hex颜色编码为RGBA
+getLightColor(colors, level, noOpacity)      将十六进制hex的colors按减淡level（小数点数字）后得到的颜色值，当noOpacity为true时为十六进制hex，默认是按百分比透明度处理
+checkHasSomeitem(arr1, arr2)                返回arr1里是否有跟arr2重复的数据（item不支持数组和对象）,arr2可以是一个item
+isEmptyObj(obj)                              判断对象是否为空
+mergeObj()                                   合并对象
+goBack(fromPath, url, _this)                 返回上一步
+download(that, url, data, typeHttp)          下载文件
+formatFileSize(bytes, decimalPoint, type)    格式化文件大小
+ipVerification(ip)                           验证ip合法性
+portVerfication(port)                        验证端口合法性
+getProtocolDataList(nodeList)                处理连接协议默认值的数据结构
+getAccountNodeList(nodeList)                 账号下拉列表展示数据
+getRunnerGroupList(list)                     获取runner分组列表数据
+getRunnerGroupTagList(list)                  获取runner分组标签列表数据
+getAppForselect(nodeList)                    获取系统和模块下拉数据（资源中心）
+getToolClassificationList(list)              获取工具分类下拉列表数据（自动化）
+getRoundCountList()                          获取分批数量下拉列表数据（自动化，自动发布）
+getAbbrNameAndName(obj)                      获取简称(名称)
 uniqueArr(list)                              数组对象去重，返回去重后的数组
 uniqueByField(arr,filterField)               根据某个字段，数组去重，返回去重后的数组，filterField需要去重的字段
 matrixDataSourceRedirect(dataSourceId,dataSourceJson) 根据矩阵不同数据源，跳转不同页面
+handleInvalidDate(timeValue, format, styleType) 处理时间格式错误问题
+timestampCalculation(unit = null, value = 0, timstamp = null, format = '', styleType = '-') 时间戳计算
+isUserHasAuth(str)                           判断用户是否有某个权限     
+calculateDate(unit = '', value = 0, timstamp = null)   根据 hour/day/month/year 计算时间
+mergeObj(obj1, obj2)                         两个对象合并成一个对象
+substr(name, len)                            字符串截取
+jumpTo(id, behavior, parent, block)          跳转指定的位置
+scrollTo(parentId, childId, behavior)        滚动到指定的位置
 copyText(id)                                 点击复制内容，id表示需要复制元素的id，使用方法：this.$utils.copyText('#codeContent')
-mapArray(array, key)                         //从数组对象中挑出一个key，将其值作为数组返回
-intersectionArr                              // 返回一个包含所有传入数组交集元素的新数组。
-getComposedPath(e)                           // 返回事件流中元素的事件路径
-removeHTMLTag(str)                           //去除html标签
-evalWithLineNumber(e, code)                  //利用eval解析时，具体报错信息和行号
-isImage(filename)                            //判断是否是图片
-getUnicodeByClassName(className)             //获取className的unicode编码
+nameRegularValidate(name)                    名称校验：仅支持汉字、字母、数字和特殊字符(._-)
+mapArray(array, key)                         从数组对象中挑出一个key，将其值作为数组返回
+intersectionArr                              返回一个包含所有传入数组交集元素的新数组。
+validParamValue(val, validateList)           参数校验规则：判断值是否满足正则规则
+getComposedPath(e)                           返回事件流中元素的事件路径
+removeHTMLTag(str)                           去除html标签
+handleTopoImagePath(nodesString)             处理topo图中的图片路径
+cleanObject(obj)                             递归清理对象，移除对象中的null或者undefined属性
+getTextWidth({ text, fontSize = 12, isBold = false }) 获取文本宽度
+merge(obj1, obj2)                            对象合并
+evalWithLineNumber(e, code)                  利用eval解析时，具体报错信息和行号
+getFileExtension(fileName)                   获取文件后缀名
+isImage(filename)                            判断是否是图片
+isVideo(fileName)                            判断是否是视频
+setInterval(callback, delay, alwaysRun = false)  定时器
+sortByObj(obj)                               对象的属性按首字母排序
+getUnicodeByClassName(className)             获取className的unicode编码
+convertWoff2ToBase64                         将woff2文件转换为base64
 */
 import _ from 'lodash';
 import store from '@/resources/store';
@@ -313,6 +357,7 @@ const methods = {
     return isEqual;
   },
   toChinese(values) {
+    // 将数字转为中文。例如toChinese(123) => 一二三
     let arr = [];
     let val = typeof values == 'number' ? values.toString() : values;
     let len = val.length; //统计出长度
@@ -329,6 +374,7 @@ const methods = {
     return arr.join('');
   },
   toEnglish(values) {
+    // 将数字转为英文。例如toEnglish(123) => ABC
     let arr = [];
     let val = typeof values == 'number' ? values : parseInt(values);
     val = val - 1;
