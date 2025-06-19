@@ -90,7 +90,7 @@ export default {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     DbResourceSettingDialog: () => import('./db-resource-setting-dialog.vue'),
-    AccountEditDialog: () => import('@/views/pages/cmdb/asset/components/account-edit-dialog')
+    AccountEditDialog: () => import('./account-edit-dialog')
   },
   props: {
     id: {
