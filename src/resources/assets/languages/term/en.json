@@ -2151,7 +2151,8 @@
     "blueset": "Blue green setting",
     "blueSet": "Blue Green",
     "ismodified": "Modified",
-    "presetrunnergroup": "Preset actuator group"
+    "presetrunnergroup": "Preset actuator group",
+    "testrunnerdesc": "If not specified, actuators will be automatically assigned based on IP matching of actuator groups according to network segments"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
