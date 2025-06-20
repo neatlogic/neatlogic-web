@@ -12,7 +12,7 @@
         tag="ul"
         :list="list"
         handle=".stepIndex"
-        :disabled="!canEdit"
+        :disabled="!canEdit || appModuleId || envId"
         @end="dragEnd"
       >
         <template v-for="(ary, sindex) in list">
@@ -20,13 +20,13 @@
             v-if="ary && ary.length"
             :key="sindex"
             class="border-color"
-            :class="{edit:canEdit}"
+            :class="{edit:canEdit && !appModuleId && !envId}"
           >
             <span
               class="stepIndex border-color tsfont bg-op"
               :class="{'text-primary border-primary':ary.find(item=>item.uuid==currentStep.uuid)}"
               :data-index="sindex + 1"
-              :title="canEdit?$t('term.deploy.dragtochangetheorder'):''"
+              :title="canEdit && !appModuleId && !envId?$t('term.deploy.dragtochangetheorder'):''"
               @click.stop
             ></span>
             <draggable
@@ -53,7 +53,7 @@
                       <div class="step-content-top" @click="showStep(step)">
                         <div class="stepName name overflow" :class="{'text-primary':step.uuid == currentStep.uuid}" :title="step.name && step.name.length > 9 ? step.name : ''">
                           <span
-                            v-if="canEdit && ary.length > 1"
+                            v-if="canEdit && ary.length > 1 && (!appModuleId && !envId)"
                             class="tsfont-bar move"
                             :title="canEdit ? '阶段组内拖拽排序' : ''"
                             @click.stop
