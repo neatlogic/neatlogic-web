@@ -2148,7 +2148,8 @@
     "blueset": "蓝绿设置",
     "blueSet": "蓝绿",
     "ismodified": "已修改",
-    "presetrunnergroup": "预设执行器组"
+    "presetrunnergroup": "预设执行器组",
+    "testrunnerdesc": "如果不指定则会通过ip根据网段匹配执行器组自动分配执行器"
   },
   "inspect": {
     "alarmprompt": "告警提示",

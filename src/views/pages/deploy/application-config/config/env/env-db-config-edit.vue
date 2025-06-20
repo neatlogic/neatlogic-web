@@ -18,7 +18,7 @@
             :item-list="formItemList"
           >
             <template v-slot:dbResourceId>
-              <TsFormItem :label="$t('page.database')" :required="true">
+              <TsFormItem :label="$t('page.database')" :required="true" tooltip="数据来自scence_database_ip_port_env_appmodule视图">
                 <div class="flex-start">
                   <TsFormSelect
                     ref="formSelect"
@@ -35,7 +35,7 @@
               </TsFormItem>
             </template>
             <template v-slot:accountId>
-              <TsFormItem :label="$t('page.account')" :required="true">
+              <TsFormItem :label="$t('page.account')" :required="true" tooltip="账号协议是database">
                 <div class="flex-start">
                   <TsFormSelect
                     ref="formSelect"
@@ -79,7 +79,12 @@
       :params="params"
       @close="closeDbResourceSettingDialog"
     ></DbResourceSettingDialog>
-    <AccountEditDialog v-if="isShowAccountEditDialog" :resourceId="resourceId" @close="closeAccountEditDialog"></AccountEditDialog>
+    <AccountEditDialog
+      v-if="isShowAccountEditDialog"
+      :params="params"
+      :resourceId="resourceId"
+      @close="closeAccountEditDialog"
+    ></AccountEditDialog>
   </div>
 </template>
 <script>
@@ -90,7 +95,7 @@ export default {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     DbResourceSettingDialog: () => import('./db-resource-setting-dialog.vue'),
-    AccountEditDialog: () => import('@/views/pages/cmdb/asset/components/account-edit-dialog')
+    AccountEditDialog: () => import('./account-edit-dialog')
   },
   props: {
     id: {
