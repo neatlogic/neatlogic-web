@@ -104,6 +104,12 @@ export default {
       default: function() {
         return {};
       }
+    },
+    runnerGroupTableConfig: {
+      type: Object,
+      default: function() {
+        return {};
+      }
     }
   },
   data() {
