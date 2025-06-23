@@ -77,7 +77,8 @@ export default {
         { title: this.$t('term.framework.usercount'), key: 'userCount' },
         { title: this.$t('term.framework.teamcount'), key: 'teamCount' },
         { title: ' ', key: 'action'}
-      ]
+      ],
+      rulePrefix: ''
     };
   },
   created() {},
@@ -98,6 +99,7 @@ export default {
       this.$api.framework.role.roleList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
+          this.rulePrefix = res.Return.prefix;
         }
       }).finally(() => {
         this.loadingShow = false;
@@ -171,7 +173,7 @@ export default {
       }
       this.$router.push({
         path: `role-addview`,
-        query: { roleId: roleId, key: key, uuid: uuid, groupType: this.groupType}
+        query: { roleId: roleId, key: key, uuid: uuid, groupType: this.groupType, rulePrefix: this.rulePrefix}
       });
     }
   },

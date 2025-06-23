@@ -60,6 +60,17 @@ const runnerGroupMixin = {
           valueName: 'name',
           textName: 'name'
         },
+        rule: {
+          type: 'textarea',
+          name: 'rule',
+          placeholder: _this.$t('form.placeholder.pleaseinput', {
+            target: $t('page.rule')
+          }),
+          label: _this.$t('page.rule'),
+          tooltip: $t('term.framework.runnergrouptips', {
+            prefix: _this.runnerGroupTableConfig?.prefix
+          }) + '${' + _this.runnerGroupTableConfig?.prefix + "env}=='sit'&&(${" + _this.runnerGroupTableConfig?.prefix + "test}=='1'||${" + _this.runnerGroupTableConfig?.prefix + "test2}=='aaa')"
+        },
         groupNetworkList: {
           label: $t('page.networksegment'),
           type: 'slot'
