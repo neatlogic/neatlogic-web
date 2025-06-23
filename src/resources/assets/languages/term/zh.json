@@ -709,7 +709,7 @@
     "associateacustomtool": "关联自定义工具",
     "disassociatecandeletecatalog": "当前目录或其子目录已关联自定义工具，解除关联后，才可删除此目录",
     "bysubcatalogalldeletetips": "删除当前目录时，其所有子目录将同时被删除",
-    "ipformattip": "主机类目标输入格式为 IP，服务类目标输入格式为IP:PORT，数据库类目标格式为IP:PORT/SID，一行一个目标",
+    "ipformattip": "主机类目标输入格式为 IP，服务类目标输入格式为IP:PORT，数据库类目标格式为IP:PORT/SID，一行一个目标,最多支持输入1000个目标",
     "viewalltarget": "查看更多{target}个目标",
     "choosetagasnodetip": "选择标签过滤节点，作为执行目标",
     "jobparamnosettingtip": "作业参数中未设置【节点信息】参数",
@@ -907,7 +907,8 @@
     "runnergroupprocesstips": "如果需要表单赋值，请在组合工具设置“执行器组”为“作业参数”类型",
     "resetrunnerphase": "是否重置阶段",
     "runnerGroupTooltip": "若此处不填写执行器组，当前阶段默认继承组合工具执行器组，若此处填写执行器组，当前阶段将采用此处填写的；执行时，不可修改阶段的执行器组",
-    "isfirenext": "是否激活下一个组"
+    "isfirenext": "是否激活下一个组",
+    "inputnodelimit": "数量不能大于1000"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",

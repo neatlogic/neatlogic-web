@@ -329,7 +329,7 @@ export default {
 }
 .input-show{
   padding: 16px;
-  height: 300px;
+  height: 330px;
   .tip-input {
     position: relative;
     padding-left: 16px;
@@ -344,7 +344,7 @@ export default {
 .node-show{
   padding:0 16px;
   width: 100%;
-  height: 300px;
+  height: 330px;
   .clear-btn{
     text-align: right;
     margin-bottom: 8px;

@@ -907,7 +907,8 @@
     "runnergroupprocesstips": "If form assignment is required, please set the \"Executor Group\" to the \"Job Parameter\" type in the combination tool",
     "resetrunnerphase": "Reset phase or not",
     "runnerGroupTooltip": "If the actuator group is not filled in here, the current stage will inherit the combination tool actuator group by default. If the actuator group is filled in here, the current stage will use the one filled in here; During execution, the executor group of the stage cannot be modified",
-    "isfirenext": "Do you want to activate the next group"
+    "isfirenext": "Do you want to activate the next group",
+    "inputnodelimit": "The quantity cannot exceed 1000"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
