@@ -219,7 +219,9 @@ export default {
           value: '',
           placeholder: this.$t('form.placeholder.pleaseinput', {target: this.$t('page.rule')}),
           label: this.$t('page.rule'),
-          tooltip: this.$t('page.rolerule')
+          tooltip: this.$t('page.rolerule', {
+            prefix: this.rulePrefix
+          }) + '${' + this.rulePrefix + "env}=='sit'&&(${" + this.rulePrefix + "test}=='1'||${" + this.rulePrefix + "test2}=='aaa')"
         }
       ],
       uuid: '', //角色uuid
@@ -262,11 +264,14 @@ export default {
         isRefreshRoleUserList: false
       },
       defaultAuthUserSelectList: {}, // 默认授权列表回显选中数据
-      isRefreshCommonAuth: false // 是否刷新授权列表
+      isRefreshCommonAuth: false, // 是否刷新授权列表
+      rulePrefix: '' //规则key前缀
     };
   },
 
-  beforeCreate() {},
+  beforeCreate() {
+    this.rulePrefix = this.$route.query.rulePrefix || '';
+  },
 
   created() {
     this.uuid = this.$route.query.uuid || null;

@@ -231,14 +231,14 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         pathRewrite: { [`/${tenantName}/tenant/check`]: '/neatlogic/tenant/check/' + tenantName },
-        headers: { Tenant: tenantName, Env: 'uat' }
+        headers: { Tenant: tenantName, 'Neatlogic-Rule-Env': 'sit', 'Neatlogic-Rule-Test': '1' }
       },
       [`/${tenantName}/login/`]: {
         target: urlPrefix,
         changeOrigin: true,
         secure: false,
         pathRewrite: { [`/${tenantName}/login/check`]: '/neatlogic/login/check/' + tenantName },
-        headers: { Tenant: tenantName, Env: 'uat' }
+        headers: { Tenant: tenantName, 'Neatlogic-Rule-Env': 'sit', 'Neatlogic-Rule-Test': '1' }
       }
     }
   },
