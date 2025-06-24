@@ -8,7 +8,7 @@
     >
       <template v-slot>
         <Row class="mb-md">
-          <Col span="8"></Col>
+          <!-- <Col span="8"></Col> -->
           <Col span="4">
             <UserSelect
               v-model="userSelectSetting.value"
@@ -29,10 +29,18 @@
           <Col span="8">
             <TimeSelect
               v-model="timeSelectSetting.value"
-              class="bg-op radius-sm"
+              class="mr-md bg-op radius-sm"
               v-bind="timeSelectSetting"
               @change="handleChange"
             ></TimeSelect>
+          </Col>
+          <Col span="8">
+            <TsFormInput
+              v-model.trim="paramKeyword"
+              :placeholder="$t('page.paramkeyword')"
+              class="bg-op radius-sm"
+              @change="handleChange"
+            ></TsFormInput>
           </Col>
         </Row>
         <div ref="tableMain">
@@ -101,6 +109,7 @@
 <script>
 import UserSelect from '@/resources/components/UserSelect/UserSelect.vue';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
+import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 import TimeSelect from '@/resources/components/TimeSelect/TimeSelect.vue';
 export default {
   name: '',
@@ -109,6 +118,7 @@ export default {
     IntegrationAuditDetail: () => import('./integration-audit-detail.vue'),
     UserSelect,
     TsFormSelect,
+    TsFormInput,
     TimeSelect
   },
   props: {
@@ -122,6 +132,7 @@ export default {
       detailData: {},
       auditData: {},
       contentHeight: '100',
+      paramKeyword: '',
       userSelectSetting: {
         // 用户选择
         groupList: ['user'],
@@ -251,6 +262,9 @@ export default {
       }
       params.userUuidList = this.userSelectSetting.value ? [this.userSelectSetting.value] : []; // 用户
       params.statusList = this.selectSetting.value ? (this.selectSetting.value == 'all' ? [] : [this.selectSetting.value]) : []; // 状态
+      if (this.paramKeyword) {
+        params.paramKeyword = this.paramKeyword;
+      }
       if (!this.timeSelectSetting.value) {
         // 为空设置默认值
         this.timeSelectSetting.value = {
