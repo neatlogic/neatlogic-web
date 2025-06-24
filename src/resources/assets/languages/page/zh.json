@@ -1073,5 +1073,6 @@
   "ignored": "已忽略",
   "loaded": "已加载",
   "dictionary": "字典",
-  "healthcheckresult": "检查结果"
+  "healthcheckresult": "检查结果",
+  "paramkeyword": "入参搜索"
 }
