@@ -8,7 +8,6 @@
     >
       <template v-slot>
         <Row class="mb-md">
-          <!-- <Col span="8"></Col> -->
           <Col span="4">
             <UserSelect
               v-model="userSelectSetting.value"
