@@ -68,6 +68,7 @@
     <GroupAddDialog
       v-if="isShowGroupAddDialog"
       :runnerGroupData="runnerGroupData"
+      :runnerGroupTableConfig="tableConfig"
       @close="closeGroupAddDialog"
     ></GroupAddDialog>
 
@@ -75,6 +76,7 @@
     <GroupEditDialog
       v-if="isShowRunnerGroupEdit"
       :runnerGroupData="runnerGroupData"
+      :runnerGroupTableConfig="tableConfig"
       @close="closeGroupEditDialog"
     ></GroupEditDialog>
 

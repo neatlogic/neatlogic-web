@@ -88,6 +88,12 @@ export default {
   props: {
     runnerGroupData: {
       type: Object
+    },
+    runnerGroupTableConfig: {
+      type: Object,
+      default: function() {
+        return {};
+      }
     }
   },
   data() {
