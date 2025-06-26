@@ -71,22 +71,35 @@
               ></TsFormRadio>
             </TsFormItem>
           </div>
+          <div v-if="parallelPolicy !== 'roundCount'">
+            <TsFormItem
+              :label="$t('term.autoexec.parall')"
+              :labelWidth="100"
+              labelPosition="left"
+              :required="true"
+            >
+              <TsFormSelect
+                ref="parallelForm"
+                v-model="parallelCount"
+                v-bind="parallelForm"
+              ></TsFormSelect>
+            </TsFormItem>
+          </div>
+          <div v-else>
+            <TsFormItem
+              :label="$t('term.autoexec.batchquantity')"
+              :labelWidth="100"
+              labelPosition="left"
+              :required="true"
+            >
+              <TsFormSelect
+                ref="roundCountForm"
+                v-model="roundCount"
+                v-bind="roundCountForm"
+              ></TsFormSelect>
+            </TsFormItem>
+          </div>
         </div>
-        <div>
-          <TsFormItem
-            :label="parallelLabel"
-            :labelWidth="100"
-            labelPosition="left"
-            :required="true"
-          >
-            <TsFormSelect
-              ref="roundCountForm"
-              v-model="roundCount"
-              v-bind="roundCountForm"
-            ></TsFormSelect>
-          </TsFormItem>
-        </div>
-        
         <div>
           <Divider orientation="start">{{ $t('term.deploy.actuatorgrouptag') }}</Divider>
           <div v-if="runnerGroupTag && runnerGroupTag.mappingMode==='runtimeparam'">
@@ -383,7 +396,8 @@ export default {
       isShowStepList: false, //展示流水线
       showScenarioExecute: true, //切换场景是是否需要执行目标(阶段全是'runner'或者'sqlfile'不需要执行目标)
       roundCount: 32,
-      roundCountForm: {
+      parallelCount: 64,
+      parallelForm: {
         dataList: this.$utils.getRoundCountList(),
         placeholder: this.$t('page.selectinput'),
         border: 'border',
@@ -392,6 +406,17 @@ export default {
         search: true,
         transfer: true,
         desc: this.$t('term.autoexec.paralldesc'),
+        validateList: ['required', 'maxNum']
+      },
+      roundCountForm: {
+        dataList: this.$utils.getRoundCountList(),
+        placeholder: this.$t('page.selectinput'),
+        border: 'border',
+        filterName: 'text',
+        // allowCreate: true, //与发布分批数设置保持一致
+        search: true,
+        transfer: true,
+        desc: this.$t('term.autoexec.batchcountdisabledesc'),
         validateList: ['required', 'maxNum']
       },
       paramValue: {},
@@ -411,7 +436,6 @@ export default {
           value: 'roundCount'
         }
       ],
-      parallelLabel: this.$t('term.autoexec.parall'),
       parallelPolicy: 'parallel'
     };
   },
@@ -499,14 +523,10 @@ export default {
             if (this.jobId) {
               this.setJobParams(this.jobConfig);
             } else {
-              if (!this.$utils.isEmpty(this.executeConfig.roundCount)) {
-                this.roundCount = this.executeConfig.roundCount;
-                this.parallelPolicy = this.executeConfig.parallelPolicy;
-                this.changeParallelPolicy(this.parallelPolicy);
-                //组合工具设置了分批数，创建作业时支持修改
-                // this.$set(this.roundCountForm, 'disabled', true);
-                // this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
-              }
+              this.roundCount = this.executeConfig.roundCount;
+              this.parallelCount = this.executeConfig.parallelCount;
+              this.parallelPolicy = this.executeConfig.parallelPolicy;
+              
               if (this.executeConfig.whenToSpecify == 'runtime') {
                 this.$set(this.executeConfig, 'executeNodeConfig', {});
               }
@@ -569,6 +589,7 @@ export default {
       isValid = this.$refs.executeForm ? this.$refs.executeForm.valid() && isValid : isValid;
       isValid = this.$refs.nameForm ? this.$refs.nameForm.valid() && isValid : isValid;
       isValid = this.$refs.roundCountForm ? this.$refs.roundCountForm.valid() && isValid : isValid;
+      isValid = this.$refs.parallelForm ? this.$refs.parallelForm.valid() && isValid : isValid;
       isValid = this.$refs.runnerGroup ? this.$refs.runnerGroup.valid() && isValid : isValid;
       return isValid;
     },
@@ -590,10 +611,8 @@ export default {
         name: this.nameForm.itemList.name.value
       }, this.getCombopParams());
       this.isCreating = true;
-      if (val.parallelPolicy === 'parallel') {
-        val.parallelCount = this.roundCount;
-        val.roundCount = null;
-      }
+      val.parallelCount = this.parallelCount;
+      val.roundCount = this.roundCount;
       this.$api.autoexec.action.executeAction(val).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
@@ -711,11 +730,12 @@ export default {
     },
     setJobParams(obj) {
       let config = this.$utils.deepClone(obj);
-      let {name = '', param = {}, roundCount = 32, parallelPolicy = 'parallel', scenarioId = null, executeConfig = {}, runnerGroupTag = null, runnerGroup = null} = config || {};
+      let {name = '', param = {}, roundCount = 64, parallelCount = 32, parallelPolicy = 'parallel', scenarioId = null, executeConfig = {}, runnerGroupTag = null, runnerGroup = null} = config || {};
       this.nameForm.itemList.name.value = name;
       this.paramValue = param;
       this.scenarioId = scenarioId;
       this.roundCount = roundCount;
+      this.parallelCount = parallelCount;
       this.parallelPolicy = parallelPolicy;
       this.executeConfig = executeConfig;
       this.runnerGroupTag = runnerGroupTag || {
@@ -745,11 +765,9 @@ export default {
     },
     changeParallelPolicy(val) {
       if (val && val == 'roundCount') {
-        this.parallelLabel = this.$t('term.autoexec.batchquantity');
-        this.roundCountForm.desc = this.$t('term.autoexec.batchcountdisabledesc');
+        this.roundCount = this.roundCount || 64;
       } else {
-        this.parallelLabel = this.$t('term.autoexec.parall');
-        this.roundCountForm.desc = this.$t('term.autoexec.paralldesc');
+        this.parallelCount = this.parallelCount || 32;
       }
     }
   },

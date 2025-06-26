@@ -187,11 +187,11 @@ export default {
               this.$set(this.form.roundCount, 'isHidden', false);
               this.$set(this.form.parallelCount, 'isHidden', true);
               this.$set(this.settingConfig, 'parallelCount', null);
-              this.$set(this.settingConfig, 'roundCount', 32);
+              this.$set(this.settingConfig, 'roundCount', 64);
             } else {
               this.$set(this.form.roundCount, 'isHidden', true);
               this.$set(this.form.parallelCount, 'isHidden', false);
-              this.$set(this.settingConfig, 'parallelCount', 64);
+              this.$set(this.settingConfig, 'parallelCount', 32);
               this.$set(this.settingConfig, 'roundCount', null);
             }
             console.log(val);
