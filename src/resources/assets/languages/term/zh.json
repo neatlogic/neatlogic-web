@@ -908,7 +908,9 @@
     "resetrunnerphase": "是否重置阶段",
     "runnerGroupTooltip": "若此处不填写执行器组，当前阶段默认继承组合工具执行器组，若此处填写执行器组，当前阶段将采用此处填写的；执行时，不可修改阶段的执行器组",
     "isfirenext": "是否激活下一个组",
-    "inputnodelimit": "数量不能大于1000"
+    "inputnodelimit": "数量不能大于1000",
+    "parall": "并发数量",
+    "paralldesc": "将执行目标按并发数量先后执行。"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",

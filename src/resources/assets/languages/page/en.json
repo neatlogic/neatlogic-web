@@ -1071,5 +1071,9 @@
   "ignored": "Neglected",
   "loaded": "Loaded",
   "dictionary": "dictionary",
-  "healthcheckresult": "Inspection results"
+  "healthcheckresult": "Inspection results",
+  "autoexecparallpolicy": "Concurrency Strategy",
+  "autoexecbatchround": "in batches",
+  "autoexecparall": "Concurrency",
+  "autoexecparallel": "Concurrent settings"
 }

@@ -56,22 +56,37 @@
           </div>
         </div>
         <div v-if="dataConfig.needRoundCount" class="box-block">
-          <Divider orientation="start">{{ $t('term.autoexec.batchsetting') }}</Divider>
+          <Divider orientation="start">{{ $t('page.autoexecparallel') }}</Divider>
           <div>
             <TsFormItem
-              :label="$t('term.autoexec.batchquantity')"
+              :label="$t('page.autoexecparallpolicy')"
               :labelWidth="100"
               labelPosition="left"
               :required="true"
             >
-              <TsFormSelect
-                ref="roundCountForm"
-                v-model="roundCount"
-                v-bind="roundCountForm"
-              ></TsFormSelect>
+              <TsFormRadio
+                v-model="parallelPolicy"
+                :dataList="parallelPolicyDataList"
+                @on-change="changeParallelPolicy"
+              ></TsFormRadio>
             </TsFormItem>
           </div>
         </div>
+        <div>
+          <TsFormItem
+            :label="parallelLabel"
+            :labelWidth="100"
+            labelPosition="left"
+            :required="true"
+          >
+            <TsFormSelect
+              ref="roundCountForm"
+              v-model="roundCount"
+              v-bind="roundCountForm"
+            ></TsFormSelect>
+          </TsFormItem>
+        </div>
+        
         <div>
           <Divider orientation="start">{{ $t('term.deploy.actuatorgrouptag') }}</Divider>
           <div v-if="runnerGroupTag && runnerGroupTag.mappingMode==='runtimeparam'">
@@ -367,7 +382,7 @@ export default {
       selectStepList: [], //根据场景选择的阶段
       isShowStepList: false, //展示流水线
       showScenarioExecute: true, //切换场景是是否需要执行目标(阶段全是'runner'或者'sqlfile'不需要执行目标)
-      roundCount: 2,
+      roundCount: 32,
       roundCountForm: {
         dataList: this.$utils.getRoundCountList(),
         placeholder: this.$t('page.selectinput'),
@@ -376,7 +391,7 @@ export default {
         // allowCreate: true, //与发布分批数设置保持一致
         search: true,
         transfer: true,
-        desc: this.$t('term.autoexec.roundcountdescrition'),
+        desc: this.$t('term.autoexec.paralldesc'),
         validateList: ['required', 'maxNum']
       },
       paramValue: {},
@@ -385,7 +400,19 @@ export default {
       jobConfig: {},
       filterSearchValue: {},
       configExpired: 0,
-      configExpiredReason: {}
+      configExpiredReason: {},
+      parallelPolicyDataList: [
+        {
+          text: this.$t('page.autoexecparall'),
+          value: 'parallel'
+        },
+        {
+          text: this.$t('page.autoexecbatchround'),
+          value: 'roundCount'
+        }
+      ],
+      parallelLabel: this.$t('term.autoexec.parall'),
+      parallelPolicy: 'parallel'
     };
   },
   beforeCreate() {},
@@ -474,6 +501,8 @@ export default {
             } else {
               if (!this.$utils.isEmpty(this.executeConfig.roundCount)) {
                 this.roundCount = this.executeConfig.roundCount;
+                this.parallelPolicy = this.executeConfig.parallelPolicy;
+                this.changeParallelPolicy(this.parallelPolicy);
                 //组合工具设置了分批数，创建作业时支持修改
                 // this.$set(this.roundCountForm, 'disabled', true);
                 // this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
@@ -561,6 +590,10 @@ export default {
         name: this.nameForm.itemList.name.value
       }, this.getCombopParams());
       this.isCreating = true;
+      if (val.parallelPolicy === 'parallel') {
+        val.parallelCount = this.roundCount;
+        val.roundCount = null;
+      }
       this.$api.autoexec.action.executeAction(val).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
@@ -641,6 +674,7 @@ export default {
       }
       if (this.dataConfig && this.dataConfig.needRoundCount) { //是否需要设置分批数量
         this.$set(data, 'roundCount', this.roundCount);
+        this.$set(data, 'parallelPolicy', this.parallelPolicy);
       }
       if (this.$refs.param) {
         this.$set(data, 'param', this.$refs.param.getValue());
@@ -677,11 +711,12 @@ export default {
     },
     setJobParams(obj) {
       let config = this.$utils.deepClone(obj);
-      let {name = '', param = {}, roundCount = 2, scenarioId = null, executeConfig = {}, runnerGroupTag = null, runnerGroup = null} = config || {};
+      let {name = '', param = {}, roundCount = 32, parallelPolicy = 'parallel', scenarioId = null, executeConfig = {}, runnerGroupTag = null, runnerGroup = null} = config || {};
       this.nameForm.itemList.name.value = name;
       this.paramValue = param;
       this.scenarioId = scenarioId;
       this.roundCount = roundCount;
+      this.parallelPolicy = parallelPolicy;
       this.executeConfig = executeConfig;
       this.runnerGroupTag = runnerGroupTag || {
         mappingMode: 'constant',
@@ -707,6 +742,15 @@ export default {
           this.getAction();
         }
       });
+    },
+    changeParallelPolicy(val) {
+      if (val && val == 'roundCount') {
+        this.parallelLabel = this.$t('term.autoexec.batchquantity');
+        this.roundCountForm.desc = this.$t('term.autoexec.batchcountdisabledesc');
+      } else {
+        this.parallelLabel = this.$t('term.autoexec.parall');
+        this.roundCountForm.desc = this.$t('term.autoexec.paralldesc');
+      }
     }
   },
   computed: {

@@ -1073,5 +1073,9 @@
   "ignored": "已忽略",
   "loaded": "已加载",
   "dictionary": "字典",
-  "healthcheckresult": "检查结果"
+  "healthcheckresult": "检查结果",
+  "autoexecparallpolicy": "并发策略",
+  "autoexecbatchround": "分批",
+  "autoexecparall": "并发",
+  "autoexecparallel": "并发设置"
 }
