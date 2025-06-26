@@ -8,7 +8,6 @@
       <Loading :loadingShow="loadingShow" type="fix"></Loading>
       <div v-if="!loadingShow" class="pl-nm pr-nm">
         <div>
-          {{ settingConfig.parallelPolicy }}
           <TsForm
             ref="form"
             v-model="settingConfig"
