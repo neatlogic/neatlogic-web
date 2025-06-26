@@ -183,19 +183,7 @@ export default {
           validateList: ['required'],
           transfer: true,
           onChange: (val) => {
-            if (val && val == 'roundCount') {
-              this.$set(this.form.roundCount, 'isHidden', false);
-              this.$set(this.form.parallelCount, 'isHidden', true);
-              this.$set(this.settingConfig, 'parallelCount', null);
-              this.$set(this.settingConfig, 'roundCount', 64);
-            } else {
-              this.$set(this.form.roundCount, 'isHidden', true);
-              this.$set(this.form.parallelCount, 'isHidden', false);
-              this.$set(this.settingConfig, 'parallelCount', 32);
-              this.$set(this.settingConfig, 'roundCount', null);
-            }
-            console.log(val);
-            console.log(this.executeConfig.parallelPolicy);
+            this.changeParallelPolicy(val);
           }
         },
         roundCount: {
@@ -385,6 +373,21 @@ export default {
     changeWhenToSpecify(val) {
       this.settingConfig.whenToSpecify = val;
       this.settingConfig.executeNodeConfig = {};
+    },
+    changeParallelPolicy(val) {
+      this.$nextTick(() => {
+        if (val && val == 'roundCount') {
+          this.$set(this.settingConfig, 'parallelCount', null);
+          this.$set(this.settingConfig, 'roundCount', 64);
+          this.$set(this.form.roundCount, 'isHidden', false);
+          this.$set(this.form.parallelCount, 'isHidden', true);
+        } else {
+          this.$set(this.settingConfig, 'parallelCount', 32);
+          this.$set(this.settingConfig, 'roundCount', null);
+          this.$set(this.form.roundCount, 'isHidden', true);
+          this.$set(this.form.parallelCount, 'isHidden', false);
+        }
+      });
     }
   },
   computed: {},
