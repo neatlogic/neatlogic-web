@@ -67,16 +67,28 @@
             class="col-span custom-flex text-right"
             span="14"
           >
-            <span v-if="phaseData.jobGroupVo.policy" class="status-text text-pending">执行策略:{{ phaseData.jobGroupVo.policy }} </span>
+            <span v-if="phaseData.jobGroupVo.policy" class="status-text text-pending">{{ $t('term.deploy.executivestrategy') }}:{{ phaseData.jobGroupVo.policy }} </span>
             <Tooltip
-              v-if="roundCount"
+              v-if="phaseData.parallelPolicy === 'parallel' && parallelCount"
               max-width="320"
               theme="light"
               transfer
             >
-              <span class="status-text text-pending">分批数:{{ roundCount }} </span>
+              <span class="status-text text-pending">{{ $t('term.autoexec.parall') }}:{{ parallelCount }} </span>
               <div slot="content">
-                分批数来源: {{ phaseData.roundCountFrom }}
+                <div>{{ $t('term.autoexec.parall') }}{{ $t('page.source') }}: {{ phaseData.roundCountFrom }}</div>
+                <div>{{ $t('term.autoexec.batchquantity') }}: {{ phaseData.roundCount }}</div>
+              </div>
+            </Tooltip>
+            <Tooltip
+              v-if="phaseData.parallelPolicy === 'roundCount' && roundCount"
+              max-width="320"
+              theme="light"
+              transfer
+            >
+              <span class="status-text text-pending">{{ $t('term.autoexec.batchquantity') }}:{{ roundCount }} </span>
+              <div slot="content">
+                {{ $t('term.autoexec.batchquantity') }}{{ $t('page.source') }}: {{ phaseData.roundCountFrom }}
               </div>
             </Tooltip>
             <Tooltip
@@ -85,9 +97,9 @@
               theme="light"
               transfer
             >
-              <span class="status-text text-pending">执行用户:{{ phaseData.userName }} </span>
+              <span class="status-text text-pending">{{ $t('page.executeuser') }}:{{ phaseData.userName }} </span>
               <div slot="content">
-                执行用户来源: {{ phaseData.userNameFrom }}
+                {{ $t('page.executeuser') }}{{ $t('page.source') }}: {{ phaseData.userNameFrom }}
               </div>
             </Tooltip>
             <Tooltip
@@ -96,9 +108,9 @@
               theme="light"
               transfer
             >
-              <span class="status-text text-pending">执行协议:{{ phaseData.protocol }}</span>
+              <span class="status-text text-pending">{{ $t('page.protocol') }}:{{ phaseData.protocol }}</span>
               <div slot="content">
-                执行协议来源: {{ phaseData.protocolFrom }}
+                {{ $t('page.protocol') }}{{ $t('page.source') }}: {{ phaseData.protocolFrom }}
               </div>
             </Tooltip>
           </Col>
@@ -667,6 +679,18 @@ export default {
         return '蓝绿执行';
       } else {
         return roundCount;
+      }
+    },
+    parallelCount() {
+      let parallelCount = this.phaseData.parallelCount;
+      if (parallelCount == 0) {
+        return '全部串行';
+      } else if (parallelCount == 1) {
+        return '全部并行';
+      } else if (parallelCount == -1) {
+        return '蓝绿执行';
+      } else {
+        return parallelCount;
       }
     },
     currentNode() {
