@@ -453,12 +453,12 @@ export default {
           this.otherParamItemList.forEach(item => {
             let isHidden = false;
             if (item.name === 'roundCount') {
-              if (this.otherParamFormValue.parallelPolicy === 'parallel') {
+              if (this.otherParamFormValue.parallelPolicy === 'parallel' || this.$utils.isEmpty(this.otherParamFormValue.roundCount)) {
                 isHidden = true;
               }
             } 
             if (item.name === 'parallelCount') {
-              if (this.otherParamFormValue.parallelPolicy === 'roundCount') {
+              if (this.otherParamFormValue.parallelPolicy === 'roundCount' || this.$utils.isEmpty(this.otherParamFormValue.parallelCount)) {
                 isHidden = true;
               }
             }
