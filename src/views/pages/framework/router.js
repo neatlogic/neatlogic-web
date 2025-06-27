@@ -60,7 +60,7 @@ const serverManage = () => import('./server/server-manage.vue'); // 服务器管
 const extramenuManage = () => import('./extramenu/extramenu-manage.vue'); //菜单管理
 const regionManage = () => import('./region/region-manage.vue');//地域管理
 const homepageManage = () => import('./homepage/homepage-manage.vue');//首页管理
-const changelogAuditManage = () => import('./changelogaudit/changelogaudit-manage.vue');//首页管理
+const changelogAuditManage = () => import('./changelogaudit/changelogaudit-manage.vue');//数据库变更记录
 
 import { $t } from '@/resources/init.js';
 import { config } from './config.js';

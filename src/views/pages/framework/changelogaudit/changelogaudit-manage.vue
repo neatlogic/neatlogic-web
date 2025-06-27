@@ -109,14 +109,6 @@ export default {
         currentPage: 1,
         pageSize: 20
       },
-      moduleSelectSetting: {
-        // 状态下拉
-        defaultValueIsFirst: true, // 默认选中第一个
-        dataList: [],
-        transfer: true,
-        placeholder: this.$t('page.module'),
-        value: ''
-      },
       statusSelectSetting: {
         // 状态下拉
         defaultValueIsFirst: true, // 默认选中第一个
