@@ -17,121 +17,346 @@
       </span>
     </div>
     <div>
-      <TsFormItem
-        v-for="(item,index) in executeParamMappingGroupList"
-        :key="index"
-        :label="item.name"
-        :required="!!item.isRequired"
-        labelPosition="left"
-      >
-        <div v-if="item.mappingMode==='constant'">
-          <ProtocolReadonly v-if="item.key=='protocolId'" :value="item.value" readonly></ProtocolReadonly>
-          <template v-else-if="item.key==='executeNodeConfig'">
-            <div v-if="item.value && !$utils.isEmpty(item.value.paramList)">
-              <Tag v-for="param in item.value.paramList" :key="param">
-                {{ paramsName(param) }}
-              </Tag>
+      <template v-for="(item,index) in executeParamMappingGroupList">
+        <TsFormItem
+          v-if="whitelist.includes(item.key)"
+          :key="index"
+          :label="item.name"
+          :required="!!item.isRequired"
+          labelPosition="left"
+        >
+          <div v-if="item.mappingMode==='constant'">
+            <ProtocolReadonly v-if="item.key=='protocolId'" :value="item.value" readonly></ProtocolReadonly>
+            <template v-else-if="item.key==='executeNodeConfig'">
+              <div v-if="item.value && !$utils.isEmpty(item.value.paramList)">
+                <Tag v-for="param in item.value.paramList" :key="param">
+                  {{ paramsName(param) }}
+                </Tag>
+              </div>
+              <ExecuteNodeReadonly v-else :value="item.value" readonly></ExecuteNodeReadonly>
+            </template>
+            <div v-else-if="item.key==='roundCount'">
+              {{ getRoundCountText(item.value) }}
             </div>
-            <ExecuteNodeReadonly v-else :value="item.value" readonly></ExecuteNodeReadonly>
-          </template>
-          <div v-else-if="item.key==='roundCount'">
-            {{ getRoundCountText(item.value) }}
+            <div v-else>{{ item.value }}</div>
           </div>
-          <div v-else>{{ item.value }}</div>
-        </div>
-        <div v-else-if="item.mappingMode=='runtimeparam'">
-          <span class="text-tip pr-sm">{{ $t('term.autoexec.jobparam') }}</span>
-          <span>{{ paramsName(item.value) }}</span>
-        </div>
-        <div v-else>
-          <div v-for="(m,mindex) in item.mappingList" :key="mindex" class="mapping-list">
-            <TsRow :gutter="8">
-              <Col span="6">
-                <TsFormSelect
-                  ref="formValid"
-                  v-model="m.mappingMode"
-                  :dataList="mappingModeList"
-                  :validateList="item.isRequired?validateList:[]"
-                  :firstSelect="false"
-                  transfer
-                  border="border"
-                  @on-change="(val)=>{changeMappingMode(m,val)}"
-                ></TsFormSelect>
-              </Col>
-              <Col span="16">
-                <template v-if="m.mappingMode === 'formCommonComponent'">
+          <div v-else-if="item.mappingMode=='runtimeparam'">
+            <span class="text-tip pr-sm">{{ $t('term.autoexec.jobparam') }}</span>
+            <span>{{ paramsName(item.value) }}</span>
+          </div>
+          <div v-else>
+            <div v-for="(m,mindex) in item.mappingList" :key="mindex" class="mapping-list">
+              <TsRow :gutter="8">
+                <Col span="6">
                   <TsFormSelect
                     ref="formValid"
-                    v-model="m.value"
-                    :dataList="getFormComponent('formCommonComponent')"
-                    textName="label"
-                    valueName="uuid"
-                    :validateList="item.isRequired? validateList:[]"
+                    v-model="m.mappingMode"
+                    :dataList="mappingModeList"
+                    :validateList="item.isRequired?validateList:[]"
                     :firstSelect="false"
                     transfer
                     border="border"
+                    @on-change="(val)=>{changeMappingMode(m,val)}"
                   ></TsFormSelect>
-                </template>
-                <template v-else-if="m.mappingMode === 'formTableComponent'">
-                  <div class="formTableComponent">
-                    <TsRow :gutter="8">
-                      <Col :span="12">
-                        <TsFormSelect
-                          ref="formValid"
-                          v-model="m.value"
-                          :dataList="getFormComponent('formTableComponent')"
-                          textName="label"
-                          valueName="uuid"
-                          :placeholder="$t('term.framework.tablecomponent')"
-                          :validateList="item.isRequired? validateList:[]"
-                          transfer
-                          @on-change="(val)=>{
-                            $set(m, 'column', '');
-                          }"
-                        ></TsFormSelect>
-                      </Col>
-                      <Col :span="12">
-                        <TsFormSelect
-                          ref="formValid"
-                          v-model="m.column"
-                          :dataList="getFormTableAttrList(m.value)"
-                          :placeholder="$t('page.attribute')"
-                          :validateList="item.isRequired? validateList:[]"
-                          transfer
-                        ></TsFormSelect>
-                      </Col>
-                    </TsRow>
-                  </div>
-                </template>
-                <template v-else>
-                  <TsFormInput
-                    ref="formValid"
-                    v-model="m.value"
-                    :validateList="item.isRequired?validateList:[]"
-                    border="border"
-                  ></TsFormInput>
-                </template>
-              </Col>
-              <Col span="2">
-                <span class="text-tip-active tsfont-plus pr-xs" @click="addItem(item.mappingList)"></span>
-                <span v-if="item.mappingList.length > 1" class="text-tip-active tsfont-trash-o delete-condition" @click="delItem(item.mappingList, mindex)"></span>
-              </Col>
-            </TsRow>
-            <div v-if="m.mappingMode === 'formTableComponent'" class="pb-sm">
-              <FilterList
-                ref="filterList"
-                :filterList="m.filterList"
-                :allFormitemList="allFormitemList"
-                :value="m.value"
-                showStatus
-                @updateFilterList="(list)=>{
-                  $set(m,'filterList', list);
-                }"
-              ></FilterList>
+                </Col>
+                <Col span="16">
+                  <template v-if="m.mappingMode === 'formCommonComponent'">
+                    <TsFormSelect
+                      ref="formValid"
+                      v-model="m.value"
+                      :dataList="getFormComponent('formCommonComponent')"
+                      textName="label"
+                      valueName="uuid"
+                      :validateList="item.isRequired? validateList:[]"
+                      :firstSelect="false"
+                      transfer
+                      border="border"
+                    ></TsFormSelect>
+                  </template>
+                  <template v-else-if="m.mappingMode === 'formTableComponent'">
+                    <div class="formTableComponent">
+                      <TsRow :gutter="8">
+                        <Col :span="12">
+                          <TsFormSelect
+                            ref="formValid"
+                            v-model="m.value"
+                            :dataList="getFormComponent('formTableComponent')"
+                            textName="label"
+                            valueName="uuid"
+                            :placeholder="$t('term.framework.tablecomponent')"
+                            :validateList="item.isRequired? validateList:[]"
+                            transfer
+                            @on-change="(val)=>{
+                              $set(m, 'column', '');
+                            }"
+                          ></TsFormSelect>
+                        </Col>
+                        <Col :span="12">
+                          <TsFormSelect
+                            ref="formValid"
+                            v-model="m.column"
+                            :dataList="getFormTableAttrList(m.value)"
+                            :placeholder="$t('page.attribute')"
+                            :validateList="item.isRequired? validateList:[]"
+                            transfer
+                          ></TsFormSelect>
+                        </Col>
+                      </TsRow>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <TsFormInput
+                      ref="formValid"
+                      v-model="m.value"
+                      :validateList="item.isRequired?validateList:[]"
+                      border="border"
+                    ></TsFormInput>
+                  </template>
+                </Col>
+                <Col span="2">
+                  <span class="text-tip-active tsfont-plus pr-xs" @click="addItem(item.mappingList)"></span>
+                  <span v-if="item.mappingList.length > 1" class="text-tip-active tsfont-trash-o delete-condition" @click="delItem(item.mappingList, mindex)"></span>
+                </Col>
+              </TsRow>
+              <div v-if="m.mappingMode === 'formTableComponent'" class="pb-sm">
+                <FilterList
+                  ref="filterList"
+                  :filterList="m.filterList"
+                  :allFormitemList="allFormitemList"
+                  :value="m.value"
+                  showStatus
+                  @updateFilterList="(list)=>{
+                    $set(m,'filterList', list);
+                  }"
+                ></FilterList>
+              </div>
             </div>
           </div>
-        </div>
-      </TsFormItem>
+        </TsFormItem>
+      </template>
+      <template v-if="isShowExecuteParam('parallelPolicy')">
+        <TsFormItem
+          :label="$t('page.autoexecparallpolicy')"
+          :required="!!getExecuteParamValue('parallelPolicy', 'isRequired')"
+          labelPosition="left"
+        >
+          <div v-if="getExecuteParamValue('parallelPolicy', 'mappingMode')==='constant'">
+            <TsFormRadio
+              :value="getExecuteParamValue('parallelPolicy', 'value')"
+              :dataList="parallelPolicyList"
+              :disabled="true"
+            ></TsFormRadio>
+          </div>
+          <div v-else>
+            <div v-for="(m,mindex) in getExecuteParamValue('parallelPolicy', 'mappingList')" :key="mindex" class="mapping-list">
+              <TsFormRadio
+                ref="formValid"
+                :value="m.value"
+                :dataList="parallelPolicyList"
+                :disabled="getExecuteParamValue('parallelPolicy', 'mappingMode')==='constant'"
+                :validateList="getExecuteParamValue('parallelPolicy', 'isRequired')?validateList:[]"
+                allowToggle
+                @on-change="(val)=>{
+                  $set(m,'value',val);
+                  clearCount();
+                }"
+              ></TsFormRadio>
+            </div>
+          </div>
+        </TsFormItem>
+      </template>
+      <template v-if="isShowExecuteParam('roundCount') && parallelPolicyValue=== 'roundCount'">
+        <TsFormItem
+          :label="$t('term.autoexec.batchquantity')"
+          :required="!!getExecuteParamValue('roundCount', 'isRequired')"
+          labelPosition="left"
+          :tooltip="$t('term.autoexec.batchcountdisabledesc')"
+        >
+          <div v-if="getExecuteParamValue('roundCount', 'mappingMode')==='constant'">
+            {{ getRoundCountText(getExecuteParamValue('roundCount', 'value')) }}
+          </div>
+          <div v-else>
+            <div v-for="(m,mindex) in getExecuteParamValue('roundCount', 'mappingList')" :key="mindex" class="mapping-list">
+              <TsRow :gutter="8">
+                <Col span="6">
+                  <TsFormSelect
+                    ref="formValid"
+                    v-model="m.mappingMode"
+                    :dataList="mappingModeList"
+                    :validateList="getExecuteParamValue('roundCount', 'isRequired')?validateList:[]"
+                    :firstSelect="false"
+                    transfer
+                    border="border"
+                    @on-change="(val)=>{changeMappingMode(m,val)}"
+                  ></TsFormSelect>
+                </Col>
+                <Col span="16">
+                  <template v-if="m.mappingMode === 'formCommonComponent'">
+                    <TsFormSelect
+                      ref="formValid"
+                      v-model="m.value"
+                      :dataList="getFormComponent('formCommonComponent')"
+                      textName="label"
+                      valueName="uuid"
+                      :validateList="getExecuteParamValue('roundCount', 'isRequired')?validateList:[]"
+                      :firstSelect="false"
+                      transfer
+                      border="border"
+                    ></TsFormSelect>
+                  </template>
+                  <template v-else-if="m.mappingMode === 'formTableComponent'">
+                    <div class="formTableComponent">
+                      <TsRow :gutter="8">
+                        <Col :span="12">
+                          <TsFormSelect
+                            ref="formValid"
+                            v-model="m.value"
+                            :dataList="getFormComponent('formTableComponent')"
+                            textName="label"
+                            valueName="uuid"
+                            :placeholder="$t('term.framework.tablecomponent')"
+                            :validateList="getExecuteParamValue('roundCount', 'isRequired')?validateList:[]"
+                            transfer
+                            @on-change="(val)=>{
+                              $set(m, 'column', '');
+                            }"
+                          ></TsFormSelect>
+                        </Col>
+                        <Col :span="12">
+                          <TsFormSelect
+                            ref="formValid"
+                            v-model="m.column"
+                            :dataList="getFormTableAttrList(m.value)"
+                            :placeholder="$t('page.attribute')"
+                            :validateList="getExecuteParamValue('roundCount', 'isRequired')?validateList:[]"
+                            transfer
+                          ></TsFormSelect>
+                        </Col>
+                      </TsRow>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <TsFormInput
+                      ref="formValid"
+                      v-model="m.value"
+                      :validateList="getExecuteParamValue('roundCount', 'isRequired')?validateList:[]"
+                      border="border"
+                    ></TsFormInput>
+                  </template>
+                </Col>
+              </TsRow>
+              <div v-if="m.mappingMode === 'formTableComponent'" class="pb-sm">
+                <FilterList
+                  ref="filterList"
+                  :filterList="m.filterList"
+                  :allFormitemList="allFormitemList"
+                  :value="m.value"
+                  showStatus
+                  @updateFilterList="(list)=>{
+                    $set(m,'filterList', list);
+                  }"
+                ></FilterList>
+              </div>
+            </div>
+          </div>
+        </TsFormItem>
+      </template>
+      <template v-if="isShowExecuteParam('parallelCount') && parallelPolicyValue === 'parallel'">
+        <TsFormItem
+          :label="$t('term.autoexec.parall')"
+          :required="!!getExecuteParamValue('parallelCount', 'isRequired')"
+          labelPosition="left"
+          :tooltip="$t('term.autoexec.paralldesc')"
+        >
+          <div v-if="getExecuteParamValue('parallelCount', 'mappingMode')==='constant'">
+            {{ getRoundCountText(getExecuteParamValue('parallelCount', 'value')) }}
+          </div>
+          <div v-else>
+            <div v-for="(m,mindex) in getExecuteParamValue('parallelCount', 'mappingList')" :key="mindex" class="mapping-list">
+              <TsRow :gutter="8">
+                <Col span="6">
+                  <TsFormSelect
+                    ref="formValid"
+                    v-model="m.mappingMode"
+                    :dataList="mappingModeList"
+                    :validateList="getExecuteParamValue('parallelCount', 'isRequired')?validateList:[]"
+                    :firstSelect="false"
+                    transfer
+                    border="border"
+                    @on-change="(val)=>{changeMappingMode(m,val)}"
+                  ></TsFormSelect>
+                </Col>
+                <Col span="16">
+                  <template v-if="m.mappingMode === 'formCommonComponent'">
+                    <TsFormSelect
+                      ref="formValid"
+                      v-model="m.value"
+                      :dataList="getFormComponent('formCommonComponent')"
+                      textName="label"
+                      valueName="uuid"
+                      :validateList="getExecuteParamValue('parallelCount', 'isRequired')?validateList:[]"
+                      :firstSelect="false"
+                      transfer
+                      border="border"
+                    ></TsFormSelect>
+                  </template>
+                  <template v-else-if="m.mappingMode === 'formTableComponent'">
+                    <div class="formTableComponent">
+                      <TsRow :gutter="8">
+                        <Col :span="12">
+                          <TsFormSelect
+                            ref="formValid"
+                            v-model="m.value"
+                            :dataList="getFormComponent('formTableComponent')"
+                            textName="label"
+                            valueName="uuid"
+                            :placeholder="$t('term.framework.tablecomponent')"
+                            :validateList="getExecuteParamValue('parallelCount', 'isRequired')?validateList:[]"
+                            transfer
+                            @on-change="(val)=>{
+                              $set(m, 'column', '');
+                            }"
+                          ></TsFormSelect>
+                        </Col>
+                        <Col :span="12">
+                          <TsFormSelect
+                            ref="formValid"
+                            v-model="m.column"
+                            :dataList="getFormTableAttrList(m.value)"
+                            :placeholder="$t('page.attribute')"
+                            :validateList="getExecuteParamValue('parallelCount', 'isRequired')?validateList:[]"
+                            transfer
+                          ></TsFormSelect>
+                        </Col>
+                      </TsRow>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <TsFormInput
+                      ref="formValid"
+                      v-model="m.value"
+                      :validateList="getExecuteParamValue('parallelCount', 'isRequired')?validateList:[]"
+                      border="border"
+                    ></TsFormInput>
+                  </template>
+                </Col>
+              </TsRow>
+              <div v-if="m.mappingMode === 'formTableComponent'" class="pb-sm">
+                <FilterList
+                  ref="filterList"
+                  :filterList="m.filterList"
+                  :allFormitemList="allFormitemList"
+                  :value="m.value"
+                  showStatus
+                  @updateFilterList="(list)=>{
+                    $set(m,'filterList', list);
+                  }"
+                ></FilterList>
+              </div>
+            </div>
+          </div>
+        </TsFormItem>
+      </template>
     </div>
   </div>
 </template>
@@ -144,7 +369,8 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     FilterList: () => import('../filter-list.vue'),
     ExecuteNodeReadonly: () => import('@/views/pages/autoexec/form/component/formresoureces/index.vue'),
-    ProtocolReadonly: () => import('./protocol-readonly')
+    ProtocolReadonly: () => import('./protocol-readonly'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
    
   },
   props: {
@@ -164,13 +390,22 @@ export default {
           text: this.$t('term.process.formtableitem'),
           value: 'formTableComponent'
         }
-      ]
+      ],
+      parallelPolicyList: [
+        {
+          text: this.$t('page.autoexecparall'),
+          value: 'parallel'
+        },
+        {
+          text: this.$t('page.autoexecbatchround'),
+          value: 'roundCount'
+        }
+      ],
+      whitelist: ['executeNodeConfig', 'protocolId', 'executeUser']
     };
   },
   beforeCreate() {},
-  created() {
-    
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -222,6 +457,25 @@ export default {
         }
       }
       return isValid;
+    },
+    isShowExecuteParam(key) {
+      let isShow = false;
+      if (!this.$utils.isEmpty(this.executeParamMappingGroupList)) {
+        isShow = !!this.executeParamMappingGroupList.find(item => item.key === key);
+      }
+      return isShow;
+    },
+    clearCount() {
+      this.executeParamMappingGroupList.forEach(item => {
+        if (item.key === 'roundCount' || item.key === 'parallelCount') {
+          this.$set(item, 'mappingList', [{
+            mappingMode: '',
+            value: '',
+            column: '',
+            filterList: []
+          }]);
+        }
+      });
     }
   },
   filter: {},
@@ -269,6 +523,24 @@ export default {
         }
         return dataList;
       };
+    },
+    getExecuteParamValue() {
+      return (key, attr) => {
+        let value = '';
+        let findItem = this.executeParamMappingGroupList.find(item => item.key === key);
+        if (findItem) {
+          value = attr ? findItem[attr] : findItem;
+        }
+        return value;
+      };
+    },
+    parallelPolicyValue() {
+      let value = '';
+      let findItem = this.executeParamMappingGroupList.find(item => item.key === 'parallelPolicy');
+      if (findItem) {
+        value = findItem.value || (findItem.mappingList && findItem.mappingList[0] && findItem.mappingList[0].value) || '';
+      }
+      return value;
     }
   },
   watch: {}
