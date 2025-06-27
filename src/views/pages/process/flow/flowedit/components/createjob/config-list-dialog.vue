@@ -23,6 +23,7 @@
             <TsFormItem
               label="作业类型"
               labelPosition="left"
+              :labelWidth="item.type == 'service' ? '140': '120'"
               required
             >
               <TsFormRadio
