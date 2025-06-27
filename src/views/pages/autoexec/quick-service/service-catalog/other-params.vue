@@ -252,6 +252,21 @@ export default {
           }
         },
         {
+          name: 'parallelCount',
+          label: this.$t('term.autoexec.parall'),
+          constantMappingMode: {
+            type: 'select',
+            dataList: this.$utils.getRoundCountList(),
+            border: 'border',
+            filterName: 'text',
+            allowCreate: true,
+            search: true,
+            transfer: true,
+            desc: this.$t('term.autoexec.paralldesc'),
+            readonly: true
+          }
+        },
+        {
           label: this.$t('page.protocol'),
           name: 'protocol',
           constantMappingMode: {
@@ -435,6 +450,20 @@ export default {
               });
             }
           }
+          this.otherParamItemList.forEach(item => {
+            let isHidden = false;
+            if (item.name === 'roundCount') {
+              if (this.otherParamFormValue.parallelPolicy === 'parallel' || this.$utils.isEmpty(this.otherParamFormValue.roundCount)) {
+                isHidden = true;
+              }
+            } 
+            if (item.name === 'parallelCount') {
+              if (this.otherParamFormValue.parallelPolicy === 'roundCount' || this.$utils.isEmpty(this.otherParamFormValue.parallelCount)) {
+                isHidden = true;
+              }
+            }
+            item.isHidden = isHidden;
+          });
         }
       }
       this.$nextTick(() => {
