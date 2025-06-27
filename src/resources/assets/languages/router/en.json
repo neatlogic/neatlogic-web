@@ -169,7 +169,8 @@
     "healthcheck": "Health Check",
     "license": "License Management",
     "extramenu": "Menu management",
-    "homepage": "default page "
+    "homepage": "default page ",
+    "changelogaudit": "Database Change Log"
   },
   "knowledge": {
     "knowledgedetail": "entry details",

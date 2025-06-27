@@ -169,7 +169,8 @@
     "healthcheck": "健康检查",
     "license": "许可管理",
     "extramenu": "菜单管理",
-    "homepage": "默认首页"
+    "homepage": "默认首页",
+    "changelogaudit": "数据库变更记录"
   },
   "knowledge": {
     "knowledgedetail": "词条详情",

@@ -36,6 +36,7 @@ import wechat from './wechat/wechat';// 企业微信
 import extramenu from './extramenu/extramenu'; //附加菜单
 import region from './region/region';//地域管理
 import homepage from './homepage/homepage';//默认首页
+import changelogaudit from './changelogaudit/changelogaudit';//默认首页
 export default {
   role,
   user,
@@ -73,5 +74,6 @@ export default {
   wechat,
   extramenu,
   region,
-  homepage
+  homepage,
+  changelogaudit
 };
