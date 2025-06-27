@@ -26,6 +26,7 @@
             <th style="width:20%">{{ $t('term.framework.paramtype') }}</th>
             <th style="width:20%">{{ $t('term.report.datatype.name') }}</th>
             <th style="width:10%">{{ $t('page.require') }}</th>
+            <th style="width:10%">{{ $t('term.cmdb.searchable') }}</th>
             <th style="width:30%">{{ $t('page.description') }}</th>
             <th v-if="allowEditParam == 1">
               <a href="javascript:void(0)" style="margin-right:5px" @click="addParam">
@@ -64,6 +65,14 @@
               <i-switch
                 v-if="item.mode == 'input'"
                 v-model="item.isRequired"
+                :true-value="1"
+                :false-value="0"
+              ></i-switch>
+            </td>
+            <td>
+              <i-switch
+                v-if="item.mode == 'input'"
+                v-model="item.isSearchAble"
                 :true-value="1"
                 :false-value="0"
               ></i-switch>

@@ -1075,5 +1075,6 @@
   "autoexecparallpolicy": "Concurrency Strategy",
   "autoexecbatchround": "in batches",
   "autoexecparall": "Concurrency",
-  "autoexecparallel": "Concurrent settings"
+  "autoexecparallel": "Concurrent settings",
+  "paramkeyword": "Participate in search"
 }
