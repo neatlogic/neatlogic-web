@@ -752,7 +752,7 @@ let routerList = [
     meta: {
       title: $t('router.framework.changelogaudit'),
       ismenu: true,
-      icon: 'tsfont-home',
+      icon: 'tsfont-formstaticlist',
       authority: 'ADMIN',
       type: 'others'
     }
