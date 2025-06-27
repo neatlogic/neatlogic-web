@@ -54,14 +54,15 @@
       <TsFormItem
         v-show="unfoldAndFold.roundCountForm"
         :label="$t('page.autoexecparallpolicy')"
-        :required="hasRequired(parallelPolicy.mappingMode)"
+        :required="true"
       >
         <TsFormRadio
-          ref="formValid"
+          ref="parallelPolicy"
           v-model="parallelPolicy.value"
           v-bind="parallelPolicyForm"
+          :validateList="['required']"
           @on-change="(val)=>{
-          
+            changeParallelPolicy(val);
           }"
         ></TsFormRadio>
       </TsFormItem>
@@ -1064,7 +1065,7 @@ export default {
     },
     valid() {
       let isValid = true;
-      let formList = ['basicForm', 'scenarioForm', 'roundCountForm', 'executeTarget', 'executeUserForm', 'protocolForm'];
+      let formList = ['basicForm', 'scenarioForm', 'roundCountForm', 'executeTarget', 'executeUserForm', 'protocolForm', 'parallelCountForm', 'parallelPolicy'];
       let jobParamFormList = this.$refs.jobParamForm || [];
       let mappingModeFormList = ['roundCountmappingMode', 'executeNodemappingMode', 'protocolmappingMode', 'executeUsermappingMode']; // 映射关系下拉列表
       !this.$utils.isEmpty(formList) &&
@@ -1302,6 +1303,10 @@ export default {
         .finally(() => {
           this.loadingShow = false;
         });
+    },
+    changeParallelPolicy(val) {
+      this.roundCount.value = null;
+      this.parallelCount.value = null;
     }
   },
   filter: {},
