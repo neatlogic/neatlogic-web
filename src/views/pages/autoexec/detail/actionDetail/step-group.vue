@@ -100,9 +100,21 @@
           </div>
           <div v-else>-</div>
         </TsFormItem>
-        <TsFormItem :label="$t('term.autoexec.batchquantity')" labelWidth="80">
+        <TsFormItem :label="$t('page.autoexecparallpolicy')" labelWidth="80">
+          <div v-if="!$utils.isEmpty(groupConfig.config.executeConfig.parallelPolicy)">
+            {{ getParallelPolicyText(groupConfig.config.executeConfig.parallelPolicy) }}
+          </div>
+          <div v-else>-</div>
+        </TsFormItem>
+        <TsFormItem v-if="groupConfig.config.executeConfig.parallelPolicy === 'roundCount'" :label="$t('term.autoexec.batchquantity')" labelWidth="80">
           <div v-if="!$utils.isEmpty(groupConfig.config.executeConfig.roundCount)">
             {{ getRoundCountText(groupConfig.config.executeConfig.roundCount) }}
+          </div>
+          <div v-else>-</div>
+        </TsFormItem>
+        <TsFormItem v-else :label="$t('term.autoexec.parall')" labelWidth="80">
+          <div v-if="!$utils.isEmpty(groupConfig.config.executeConfig.parallelCount)">
+            {{ getRoundCountText(groupConfig.config.executeConfig.parallelCount) }}
           </div>
           <div v-else>-</div>
         </TsFormItem>
@@ -257,12 +269,39 @@ export default {
             type: 'slot',
             label: this.$t('page.executeuser')
           },
+          parallelPolicy: {
+            type: 'radio',
+            label: this.$t('page.autoexecparallpolicy'),
+            dataList: [
+              {
+                text: this.$t('page.autoexecparall'),
+                value: 'parallel'
+              },
+              {
+                text: this.$t('page.autoexecbatchround'),
+                value: 'roundCount'
+              }
+            ],
+            allowToggle: true,
+            transfer: true,
+            onChange: (val) => {
+              this.changeParallelPolicy(val);
+            }
+          },
           roundCount: {
             type: 'select',
             value: null,
             transfer: true,
             label: this.$t('term.autoexec.batchquantity'),
             desc: this.$t('term.deploy.executetargetdesc'),
+            dataList: this.$utils.getRoundCountList()
+          },
+          parallelCount: {
+            type: 'select',
+            value: null,
+            transfer: true,
+            label: this.$t('term.autoexec.parall'),
+            desc: this.$t('term.autoexec.paralldesc'),
             dataList: this.$utils.getRoundCountList()
           }
         }
@@ -320,6 +359,8 @@ export default {
         protocolId: null,
         executeUser: {},
         roundCount: null,
+        parallelCount: null,
+        parallelPolicy: null,
         executeNodeConfig: {},
         whitelist: [],
         blacklist: []
@@ -346,6 +387,14 @@ export default {
         this.isShowBlacklist = true;
       }
       this.isShowDialog = true;
+
+      this.$set(this.executeForm.itemList.roundCount, 'isHidden', true);
+      this.$set(this.executeForm.itemList.parallelCount, 'isHidden', true);
+      if (this.executeConfig.parallelPolicy && this.executeConfig.parallelPolicy == 'roundCount') {
+        this.$set(this.executeForm.itemList.roundCount, 'isHidden', false);
+      } else if (this.executeConfig.parallelPolicy && this.executeConfig.parallelPolicy == 'parallel') {
+        this.$set(this.executeForm.itemList.parallelCount, 'isHidden', false);
+      }
     },
     close() {
       this.isShowExecute = true;
@@ -414,6 +463,14 @@ export default {
       this.executeConfig.whitelist = this.$refs.whitelist.save();
       this.executeConfig.blacklist = this.$refs.blacklist.save();
       this.groupConfig.policy = this.groupPolicy;
+      if (this.$utils.isEmpty(this.executeConfig.parallelPolicy)) {
+        this.executeConfig.roundCount = null;
+        this.executeConfig.parallelCount = null;
+      } else if (this.executeConfig.parallelPolicy === 'parallel') {
+        this.executeConfig.roundCount = null;
+      } else {
+        this.executeConfig.parallelCount = null;
+      }
       let isEmpty = true;
       Object.keys(this.executeConfig).forEach(key => {
         if (!this.$utils.isEmpty(this.executeConfig[key])) {
@@ -446,6 +503,17 @@ export default {
     },
     closeValid() { //关闭校验弹框
       this.isValid = false;
+    },
+    changeParallelPolicy(val) {
+      this.$nextTick(() => {
+        this.$set(this.executeForm.itemList.roundCount, 'isHidden', true);
+        this.$set(this.executeForm.itemList.parallelCount, 'isHidden', true);
+        if (val && val == 'roundCount') {
+          this.$set(this.executeForm.itemList.roundCount, 'isHidden', false);
+        } else if (val && val == 'parallel') {
+          this.$set(this.executeForm.itemList.parallelCount, 'isHidden', false);
+        }
+      });
     }
   },
   computed: {
@@ -469,6 +537,17 @@ export default {
           text = this.$t('page.fulllist');
         } else if (val === 1) {
           text = this.$t('page.allparallel');
+        }
+        return text;
+      };
+    },
+    getParallelPolicyText() {
+      return (val) => {
+        let text = val;
+        if (val === 'parallel') {
+          text = this.$t('page.autoexecparall');
+        } else if (val === 'roundCount') {
+          text = this.$t('page.autoexecbatchround');
         }
         return text;
       };

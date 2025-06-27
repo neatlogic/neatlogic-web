@@ -525,7 +525,7 @@ export default {
             } else {
               this.roundCount = this.executeConfig.roundCount;
               this.parallelCount = this.executeConfig.parallelCount;
-              this.parallelPolicy = this.executeConfig.parallelPolicy;
+              this.parallelPolicy = this.executeConfig.parallelPolicy || 'parallel';
               
               if (this.executeConfig.whenToSpecify == 'runtime') {
                 this.$set(this.executeConfig, 'executeNodeConfig', {});
@@ -693,6 +693,7 @@ export default {
       }
       if (this.dataConfig && this.dataConfig.needRoundCount) { //是否需要设置分批数量
         this.$set(data, 'roundCount', this.roundCount);
+        this.$set(data, 'parallelCount', this.parallelCount);
         this.$set(data, 'parallelPolicy', this.parallelPolicy);
       }
       if (this.$refs.param) {

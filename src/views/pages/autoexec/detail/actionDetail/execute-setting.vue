@@ -180,7 +180,7 @@ export default {
               value: 'roundCount'
             }
           ],
-          validateList: ['required'],
+          allowToggle: true,
           transfer: true,
           onChange: (val) => {
             this.changeParallelPolicy(val);
@@ -225,7 +225,7 @@ export default {
         executeUser: null,
         runnerGroup: null,
         runnerGroupTag: null,
-        parallelPolicy: 'parall',
+        parallelPolicy: null,
         roundCount: null,
         parallelCount: null,
         whenToSpecify: 'runtime',
@@ -258,14 +258,12 @@ export default {
           if (this.settingConfig.hasOwnProperty(key)) {
             this.settingConfig[key] = this.executeConfig[key];
           }
-          if (this.executeConfig.parallelPolicy && this.executeConfig.parallelPolicy === 'roundCount') {
+          this.$set(this.form.roundCount, 'isHidden', true);
+          this.$set(this.form.parallelCount, 'isHidden', true);
+          if (this.executeConfig.parallelPolicy && this.executeConfig.parallelPolicy == 'roundCount') {
             this.$set(this.form.roundCount, 'isHidden', false);
-            this.$set(this.form.parallelCount, 'isHidden', true);
-            this.$set(this.settingConfig, 'parallelCount', null);
-          } else {
-            this.$set(this.form.roundCount, 'isHidden', true);
+          } else if (this.executeConfig.parallelPolicy && this.executeConfig.parallelPolicy == 'parallel') {
             this.$set(this.form.parallelCount, 'isHidden', false);
-            this.$set(this.settingConfig, 'roundCount', null);
           }
         });
         if (this.settingConfig.whenToSpecify == 'runtime') {
@@ -293,7 +291,6 @@ export default {
       this.$set(this.settingConfig, 'executeUser', this.$refs.executeUser.save());
       this.$set(this.settingConfig, 'runnerGroup', this.$refs.runnerGroup.save());
       this.$set(this.settingConfig, 'runnerGroupTag', this.$refs.runnerGroupTag.save());
-      console.log(this.settingConfig);
       this.settingConfig.executeNodeConfig = {};
       if (this.settingConfig.whenToSpecify == 'now') {
         this.validSetting(true);
@@ -306,6 +303,14 @@ export default {
         let paramList = this.$refs.runtimeparam.save();
         this.$set(this.settingConfig.executeNodeConfig, 'paramList', paramList);
         this.save();
+      }
+      if (this.$utils.isEmpty(this.settingConfig.parallelPolicy)) {
+        this.settingConfig.roundCount = null;
+        this.settingConfig.parallelCount = null;
+      } else if (this.settingConfig.parallelPolicy === 'parallel') {
+        this.settingConfig.roundCount = null;
+      } else {
+        this.settingConfig.parallelCount = null;
       }
     },
     save() {
@@ -376,15 +381,11 @@ export default {
     },
     changeParallelPolicy(val) {
       this.$nextTick(() => {
+        this.$set(this.form.roundCount, 'isHidden', true);
+        this.$set(this.form.parallelCount, 'isHidden', true);
         if (val && val == 'roundCount') {
-          this.$set(this.settingConfig, 'parallelCount', null);
-          this.$set(this.settingConfig, 'roundCount', 64);
           this.$set(this.form.roundCount, 'isHidden', false);
-          this.$set(this.form.parallelCount, 'isHidden', true);
-        } else {
-          this.$set(this.settingConfig, 'parallelCount', 32);
-          this.$set(this.settingConfig, 'roundCount', null);
-          this.$set(this.form.roundCount, 'isHidden', true);
+        } else if (val && val == 'parallel') {
           this.$set(this.form.parallelCount, 'isHidden', false);
         }
       });
