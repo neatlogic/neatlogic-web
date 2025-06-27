@@ -102,8 +102,21 @@
           </div>
         </div>
         <div>
-          <Divider orientation="start" class="divier">{{ $t('term.autoexec.batchsetting') }}</Divider>
+          <Divider orientation="start" class="divier">{{ $t('page.autoexecparallel') }}</Divider>
           <div class="pb-nm">
+            <TsFormRadio
+              v-model="jobTemplateData.parallelPolicy"
+              :dataList="parallelPolicyDataList"
+              @on-change="changeParallelPolicy"
+            ></TsFormRadio>
+          </div>
+          <div v-if="jobTemplateData.parallelPolicy !== 'roundCount'" class="pb-nm">
+            <TsFormSelect
+              v-model="jobTemplateData.parallelCount"
+              v-bind="parallelForm"
+            ></TsFormSelect>
+          </div>
+          <div v-else class="pb-nm">
             <TsFormSelect
               v-model="jobTemplateData.roundCount"
               v-bind="roundCountForm"
@@ -134,6 +147,7 @@ export default {
   name: '',
   components: {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     ModuleList: () => import('@/views/pages/deploy/job/publishing/module-list'),
     SetParam: () => import('@/views/pages/autoexec/detail/runnerDetail/param.vue')
   },
@@ -154,7 +168,9 @@ export default {
         appSystemId: null,
         envId: null,
         scenarioId: null,
-        roundCount: 1,
+        roundCount: null,
+        parallelCount: null,
+        parallelPolicy: null,
         config: { param: {}, selectNodeList: [] }
       },
       scenarioList: [], //场景列表
@@ -190,7 +206,26 @@ export default {
         desc: this.$t('term.autoexec.roundcountdescrition'),
         validateList: ['required', 'maxNum']
       },
-      moduleEnvInstanceMap: {}
+      parallelForm: {
+        border: 'border',
+        dataList: this.getRoundCountList(),
+        filterName: 'text',
+        search: true,
+        transfer: true,
+        desc: this.$t('term.autoexec.paralldesc'),
+        validateList: ['required', 'maxNum']
+      },
+      moduleEnvInstanceMap: {},
+      parallelPolicyDataList: [
+        {
+          text: this.$t('page.autoexecparall'),
+          value: 'parallel'
+        },
+        {
+          text: this.$t('page.autoexecbatchround'),
+          value: 'roundCount'
+        }
+      ]
     };
   },
   beforeCreate() {},
@@ -423,6 +458,13 @@ export default {
           this.$set(item, 'instanceList', []);
         }
       });
+    },
+    changeParallelPolicy(val) {
+      if (val && val == 'roundCount') {
+        this.jobTemplateData.roundCount = this.jobTemplateData.roundCount || 2;
+      } else {
+        this.jobTemplateData.parallelCount = this.jobTemplateData.parallelCount || 2;
+      }
     }
   },
   filter: {},
