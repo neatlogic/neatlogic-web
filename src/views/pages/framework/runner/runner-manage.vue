@@ -25,8 +25,8 @@
             :theadList="theadList"
             v-bind="tableSetting"
             @changeCurrent="changeCurrent"
-            @headerTitleOperation="headerTitleOperation"
             @changePageSize="changePageSize"
+            @headerTitleOperation="headerTitleOperation"
           >
             <template slot="name" slot-scope="{ row }">
               <span v-if="row && row.name" class="text-href" @click="editRunner(row)">{{ row.name }}</span>
@@ -253,7 +253,7 @@ export default {
         this.timmer = null;
       }
     },
-    refreshTbodyList(isRefresh) {
+    refreshTbodyList(isShowRefreshTip) {
       this.clearTimmer();
       if (!this.$utils.isEmpty(this.tableSetting.tbodyList)) {
         let promiseArr = [];
@@ -261,7 +261,7 @@ export default {
           return this.getRunnerStatus(item);
         });
         Promise.all(promiseArr).then(() => {
-          if (isRefresh) {
+          if (isShowRefreshTip) {
             this.$Message.success(this.$t('message.refreshsuccess'));
           }
           this.timmer = setTimeout(() => {
