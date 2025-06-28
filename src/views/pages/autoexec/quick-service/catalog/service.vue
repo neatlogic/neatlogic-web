@@ -51,45 +51,103 @@
         <span>{{ $t('term.autoexec.batchsetting') }}</span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.roundCountForm ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('roundCountForm')"></span>
       </div>
-      <TsFormItem v-show="unfoldAndFold.roundCountForm" :label="$t('term.autoexec.batchquantity')" :required="hasRequired(roundCount.mappingMode)">
-        <div id="positioningkey_roundCount" :class="roundCount.mappingMode == 'formattr' || roundCount.mappingMode == 'constant' ? 'form-wrap-box' : ''">
-          <TsFormSelect
-            ref="roundCountmappingMode"
-            v-model="roundCount.mappingMode"
-            :dataList="mappingModeDataList"
-            :disabled="roundCountForm.disabled ? true : false"
-            :clearable="false"
-            :width="roundCount.mappingMode == 'formattr' || roundCount.mappingMode == 'constant' ? 100 : '100%'"
-            transfer
-            border="border"
-            :class="roundCount.mappingMode == 'formattr' || roundCount.mappingMode == 'constant' ? 'pr-sm' : ''"
-            :validateList="['required']"
-            @change="mappingMode => changeMappingMode(mappingMode, 'roundCount')"
-          ></TsFormSelect>
-          <TsFormSelect
-            v-if="roundCount.mappingMode == 'formattr'"
-            ref="roundCountmappingMode"
-            v-model="roundCount.value"
-            :dataList="formDataList"
-            :disabled="roundCountForm.disabled ? true : false"
-            valueName="uuid"
-            textName="label"
-            transfer
-            border="border"
-            class="pr-sm form-li-width"
-            :validateList="['required']"
-          ></TsFormSelect>
-          <TsFormSelect
-            v-else-if="roundCount.mappingMode == 'constant'"
-            ref="roundCountForm"
-            v-model="roundCount.value"
-            class="form-li-width"
-            v-bind="roundCountForm"
-            :validateList="hasRequired(roundCount.mappingMode) ? ['required'] : []"
-            transfer
-          ></TsFormSelect>
-        </div>
+      <TsFormItem
+        v-show="unfoldAndFold.roundCountForm"
+        :label="$t('page.autoexecparallpolicy')"
+        :required="true"
+      >
+        <TsFormRadio
+          ref="parallelPolicy"
+          v-model="parallelPolicy.value"
+          v-bind="parallelPolicyForm"
+          :validateList="['required']"
+          @on-change="(val)=>{
+            changeParallelPolicy(val);
+          }"
+        ></TsFormRadio>
       </TsFormItem>
+      <template v-if="parallelPolicy.value ==='roundCount'">
+        <TsFormItem v-show="unfoldAndFold.roundCountForm" :label="$t('term.autoexec.batchquantity')" :required="hasRequired(roundCount.mappingMode)">
+          <div id="positioningkey_roundCount" :class="roundCount.mappingMode == 'formattr' || roundCount.mappingMode == 'constant' ? 'form-wrap-box' : ''">
+            <TsFormSelect
+              ref="roundCountmappingMode"
+              v-model="roundCount.mappingMode"
+              :dataList="mappingModeDataList"
+              :disabled="roundCountForm.disabled ? true : false"
+              :clearable="false"
+              :width="roundCount.mappingMode == 'formattr' || roundCount.mappingMode == 'constant' ? 100 : '100%'"
+              transfer
+              border="border"
+              :class="roundCount.mappingMode == 'formattr' || roundCount.mappingMode == 'constant' ? 'pr-sm' : ''"
+              :validateList="['required']"
+              @change="mappingMode => changeMappingMode(mappingMode, 'roundCount')"
+            ></TsFormSelect>
+            <TsFormSelect
+              v-if="roundCount.mappingMode == 'formattr'"
+              ref="roundCountmappingMode"
+              v-model="roundCount.value"
+              :dataList="formDataList"
+              :disabled="roundCountForm.disabled ? true : false"
+              valueName="uuid"
+              textName="label"
+              transfer
+              border="border"
+              class="pr-sm form-li-width"
+              :validateList="['required']"
+            ></TsFormSelect>
+            <TsFormSelect
+              v-else-if="roundCount.mappingMode == 'constant'"
+              ref="roundCountForm"
+              v-model="roundCount.value"
+              class="form-li-width"
+              v-bind="roundCountForm"
+              :validateList="hasRequired(roundCount.mappingMode) ? ['required'] : []"
+              transfer
+            ></TsFormSelect>
+          </div>
+        </TsFormItem>
+      </template>
+      <template v-else-if="parallelPolicy.value ==='parallel'">
+        <TsFormItem v-show="unfoldAndFold.roundCountForm" :label="$t('term.autoexec.parall')" :required="hasRequired(parallelCount.mappingMode)">
+          <div id="positioningkey_parallelCount" :class="parallelCount.mappingMode == 'formattr' || parallelCount.mappingMode == 'constant' ? 'form-wrap-box' : ''">
+            <TsFormSelect
+              ref="parallelCountmappingMode"
+              v-model="parallelCount.mappingMode"
+              :dataList="mappingModeDataList"
+              :disabled="parallelCountForm.disabled ? true : false"
+              :clearable="false"
+              :width="parallelCount.mappingMode == 'formattr' || parallelCount.mappingMode == 'constant' ? 100 : '100%'"
+              transfer
+              border="border"
+              :class="parallelCount.mappingMode == 'formattr' || parallelCount.mappingMode == 'constant' ? 'pr-sm' : ''"
+              :validateList="['required']"
+              @change="mappingMode => changeMappingMode(mappingMode, 'parallelCount')"
+            ></TsFormSelect>
+            <TsFormSelect
+              v-if="parallelCount.mappingMode == 'formattr'"
+              ref="parallelCountmappingMode"
+              v-model="parallelCount.value"
+              :dataList="formDataList"
+              :disabled="parallelCountForm.disabled ? true : false"
+              valueName="uuid"
+              textName="label"
+              transfer
+              border="border"
+              class="pr-sm form-li-width"
+              :validateList="['required']"
+            ></TsFormSelect>
+            <TsFormSelect
+              v-else-if="parallelCount.mappingMode == 'constant'"
+              ref="parallelCountForm"
+              v-model="parallelCount.value"
+              class="form-li-width"
+              v-bind="parallelCountForm"
+              :validateList="hasRequired(parallelCount.mappingMode) ? ['required'] : []"
+              transfer
+            ></TsFormSelect>
+          </div>
+        </TsFormItem>
+      </template>
     </div>
     <div v-if="hasCombopId" class="radius-lg bg-op padding mt-nm">
       <div class="flex-between" :class="unfoldAndFold.runnerGroupTag ? 'mb-sm' : ''">
@@ -703,7 +761,40 @@ export default {
       jobParamValue: {}, // 作业参数值
       jobParamsMappingMode: {}, // 作业参数映射关系
       locationKey: '',
-      dataConfig: null
+      dataConfig: null,
+      parallelPolicy: {
+        mappingMode: 'constant',
+        value: ''
+      },
+      parallelPolicyForm: {
+        dataList: [
+          {
+            text: this.$t('page.autoexecparall'),
+            value: 'parallel'
+          },
+          {
+            text: this.$t('page.autoexecbatchround'),
+            value: 'roundCount'
+          }
+        ],
+        allowToggle: true,
+        disabled: false
+      },
+      parallelCount: {
+        mappingMode: 'constant',
+        value: ''
+      },
+      parallelCountForm: {
+        dataList: this.$utils.getRoundCountList(),
+        border: 'border',
+        filterName: 'text',
+        labelWidth: 0,
+        hideLabel: true,
+        search: true,
+        transfer: true,
+        desc: this.$t('term.autoexec.paralldesc'),
+        disabled: false
+      }
     };
   },
   beforeCreate() {},
@@ -752,7 +843,7 @@ export default {
       // 清空映射关系
       this.formUuid = '';
       this.$set(this.basicFormValue, 'formUuid', '');
-      let clearAttrList = ['roundCount', 'protocol', 'executeUser', 'executeNode'];
+      let clearAttrList = ['roundCount', 'protocol', 'executeUser', 'executeNode', 'parallelCount', 'parallelPolicy'];
       clearAttrList.forEach(item => {
         if (this[item] && this[item].mappingMode && this[item].mappingMode == 'formattr') {
           this.$set(this[item], 'mappingMode', 'constant');
@@ -808,6 +899,9 @@ export default {
       this.jobParamValue = {};
       this.jobParamsMappingMode = {};
       this.paramsList = [];
+      this.parallelPolicy = { mappingMode: 'constant', value: null }; //并发策略
+      this.parallelPolicyForm.disabled = false;
+      this.parallelCount = {mappingMode: 'constant', value: null}; //并发数量
     },
     async initData() {
       this.defaultIniData();
@@ -971,7 +1065,7 @@ export default {
     },
     valid() {
       let isValid = true;
-      let formList = ['basicForm', 'scenarioForm', 'roundCountForm', 'executeTarget', 'executeUserForm', 'protocolForm'];
+      let formList = ['basicForm', 'scenarioForm', 'roundCountForm', 'executeTarget', 'executeUserForm', 'protocolForm', 'parallelCountForm', 'parallelPolicy'];
       let jobParamFormList = this.$refs.jobParamForm || [];
       let mappingModeFormList = ['roundCountmappingMode', 'executeNodemappingMode', 'protocolmappingMode', 'executeUsermappingMode']; // 映射关系下拉列表
       !this.$utils.isEmpty(formList) &&
@@ -1051,7 +1145,15 @@ export default {
           },
           runnerGroup: this.runnerGroup,
           runnerGroupTag: this.runnerGroupTag,
-          runtimeParamList: runtimeParamList
+          runtimeParamList: runtimeParamList,
+          parallelPolicy: {
+            mappingMode: this.parallelPolicy.mappingMode,
+            value: this.parallelPolicy.value
+          },
+          parallelCount: {
+            mappingMode: this.parallelCount.mappingMode,
+            value: this.parallelCount.value
+          }
         }
       };
       if (params && params.hasOwnProperty('citeForm')) {
@@ -1060,6 +1162,8 @@ export default {
       // 组合工具已设置好的参数，这里不需要传递给后端
       if (!this.needRoundCount) {
         delete params.config.roundCount;
+        delete params.config.parallelPolicy;
+        delete params.config.parallelCount;
       }
       if (!this.needExecuteNode) {
         delete params.config.executeNodeConfig;
@@ -1155,13 +1259,23 @@ export default {
             }
             // 场景
             this.scenarioList = scenarioList;
-            if (this.executeConfig.roundCount == 0 || !this.$utils.isEmpty(this.executeConfig.roundCount)) {
+            if (!this.$utils.isEmpty(this.executeConfig.roundCount)) {
               if (this.$utils.isEmpty(this.roundCount.value)) {
-                this.$set(this.roundCount, 'value', this.executeConfig.roundCount || 2);
+                this.$set(this.roundCount, 'value', this.executeConfig.roundCount);
               }
               //组合工具设置了分批数，编辑服务需要支持修改
               // this.$set(this.roundCountForm, 'disabled', true);
               // this.$set(this.roundCountForm, 'disabledHoverTitle', this.$t('term.autoexec.setbantchnumbernoupdate'));
+            }
+            if (!this.$utils.isEmpty(this.executeConfig.parallelCount)) {
+              if (this.$utils.isEmpty(this.parallelCount.value)) {
+                this.$set(this.parallelCount, 'value', this.executeConfig.parallelCount);
+              }
+            }
+            if (!this.$utils.isEmpty(this.executeConfig.parallelPolicy)) {
+              if (this.$utils.isEmpty(this.parallelPolicy.value)) {
+                this.$set(this.parallelPolicy, 'value', this.executeConfig.parallelPolicy);
+              }
             }
             if (this.executeConfig.whenToSpecify == 'runtime') {
               // 过滤器运行在执行，需要把执行目标值清空
@@ -1189,6 +1303,10 @@ export default {
         .finally(() => {
           this.loadingShow = false;
         });
+    },
+    changeParallelPolicy(val) {
+      this.roundCount.value = null;
+      this.parallelCount.value = null;
     }
   },
   filter: {},

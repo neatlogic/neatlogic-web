@@ -47,7 +47,7 @@
         ></TsFormRadio>
       </TsFormItem>
     </div>
-    <div v-if="hasServiceValue.roundCount" :class="getClassByBorder">
+    <div v-if="(parallelPolicy.value==='roundCount' && hasServiceValue.roundCount) || (parallelPolicy.value==='parallel' && hasServiceValue.parallelCount)" :class="getClassByBorder">
       <div :class="getFlexClass(unfoldAndFold.roundCount)">
         <template v-if="border !='border'">
           <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.roundCount)" @click.stop="handleUnfoldAndFold('roundCount')"></span>
@@ -58,15 +58,28 @@
           <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.roundCount)" @click.stop="handleUnfoldAndFold('roundCount')"></span>
         </template>
       </div>
-      <TsFormItem v-show="unfoldAndFold.roundCount" :label="$t('term.autoexec.batchquantity')" :required="true">
-        <TsFormSelect
-          ref="ref_roundCount"
-          v-model="roundCount"
-          v-bind="roundCountForm"
-          transfer
-          @change="handleChange"
-        ></TsFormSelect>
-      </TsFormItem>
+      <template v-if="parallelPolicy.value ==='roundCount'">
+        <TsFormItem v-show="unfoldAndFold.roundCount" :label="$t('term.autoexec.batchquantity')" :required="true">
+          <TsFormSelect
+            ref="ref_roundCount"
+            v-model="roundCount"
+            v-bind="roundCountForm"
+            transfer
+            @change="handleChange"
+          ></TsFormSelect>
+        </TsFormItem>
+      </template>
+      <template v-if="parallelPolicy.value ==='parallel'">
+        <TsFormItem v-show="unfoldAndFold.roundCount" :label="$t('term.autoexec.parall')" :required="true">
+          <TsFormSelect
+            ref="ref_parallelCount"
+            v-model="parallelCount"
+            v-bind="parallelCountForm"
+            transfer
+            @change="handleChange"
+          ></TsFormSelect>
+        </TsFormItem>
+      </template>
     </div>
     <div v-if="hasServiceValue.runnerGroupTag" :class="getClassByBorder">
       <div :class="getFlexClass(unfoldAndFold.runnerGroupTag)">
@@ -295,7 +308,9 @@ export default {
         executeNodeConfig: false,
         runtimeParamList: false,
         runnerGroupTag: false, // 执行器组标签
-        runnerGroup: false // 执行器组
+        runnerGroup: false, // 执行器组
+        parallelCount: false,
+        parallelPolicy: false
       },
       valueConfig: {}, //所有值对应的集合
       itemConfig: {}, //所以组件对应的渲染config集合
@@ -352,7 +367,23 @@ export default {
         // 执行账户
         validateList: ['required']
       },
-      isReady: false
+      isReady: false,
+      parallelPolicy: {
+        value: ''
+      },
+      parallelCount: null,
+      parallelCountForm: {
+        // 分批数量
+        dataList: this.$utils.getRoundCountList(),
+        border: 'border',
+        filterName: 'text',
+        labelWidth: 0,
+        hideLabel: true,
+        search: true,
+        transfer: true,
+        desc: this.$t('term.autoexec.paralldesc'),
+        validateList: ['required', 'maxNum']
+      }
     };
   },
   beforeCreate() {},
@@ -422,6 +453,7 @@ export default {
       this.paramKeyList = []; // 没有设置执行目标key值
       this.needExecuteUser = '';
       this.needProtocol = '';
+      this.parallelCount = null;
     },
     async initData() {
       // 初始化
@@ -442,6 +474,9 @@ export default {
                 // 执行器组标签映射关系为不设置时，需要把对应执行器组标签显示出来
                 this.$set(this.hasServiceValue, [key], true);
               }
+            }
+            if (key === 'parallelPolicy') {
+              this.parallelPolicy = config.parallelPolicy;
             }
           }
           if (!this.$utils.isEmpty(runtimeParamList)) {
@@ -584,6 +619,9 @@ export default {
       }
       if (!this.$utils.isEmpty(this.runnerGroupTag)) {
         params.runnerGroupTag = this.runnerGroupTag;
+      }
+      if (this.parallelCount) {
+        params.parallelCount = this.parallelCount;
       }
       return params;
     },

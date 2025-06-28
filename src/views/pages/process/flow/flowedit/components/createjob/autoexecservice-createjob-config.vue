@@ -4,6 +4,7 @@
     <TsFormItem
       label="自动化服务表单组件"
       labelPosition="left"
+      labelWidth="140"
       required
     >
       <TsFormSelect
