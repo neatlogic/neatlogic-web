@@ -90,8 +90,20 @@
       ></ModuleList>
     </div>
     <div id="roundCount" class="box-block">
-      <Divider orientation="start">{{ $t('term.autoexec.batchsetting') }}</Divider>
-      <div>
+      <Divider orientation="start">{{ $t('page.autoexecparallel') }}</Divider>
+      <TsFormItem
+        :label="$t('page.autoexecparallpolicy')"
+        :labelWidth="100"
+        labelPosition="left"
+        :required="true"
+      >
+        <TsFormRadio
+          v-model="parallelPolicy"
+          :dataList="parallelPolicyDataList"
+          @on-change="changeParallelPolicy"
+        ></TsFormRadio>
+      </TsFormItem>
+      <div v-if="parallelPolicy === 'roundCount'">
         <TsFormItem
           :label="$t('term.autoexec.batchquantity')"
           :labelWidth="100"
@@ -99,9 +111,24 @@
           :required="true"
         >
           <TsFormSelect
+            ref="roundCountForm"
             v-model="roundCount"
             v-bind="roundCountForm"
             :disabled="disabled"
+          ></TsFormSelect>
+        </TsFormItem>
+      </div>
+      <div v-else>
+        <TsFormItem
+          :label="$t('term.autoexec.parall')"
+          :labelWidth="100"
+          labelPosition="left"
+          :required="true"
+        >
+          <TsFormSelect
+            ref="parallelForm"
+            v-model="parallelCount"
+            v-bind="parallelForm"
           ></TsFormSelect>
         </TsFormItem>
       </div>
@@ -135,7 +162,8 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     ModuleList: () => import('@/views/pages/deploy/job/publishing/module-list'),
     SetParam: () => import('@/views/pages/autoexec/detail/runnerDetail/param.vue'),
-    PhaseList: () => import('@/views/pages/deploy/job/publishing/phase-list')
+    PhaseList: () => import('@/views/pages/deploy/job/publishing/phase-list'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {
     baseParams: Object,
@@ -166,13 +194,35 @@ export default {
         search: true,
         transfer: true,
         desc: this.$t('term.autoexec.roundcountdescrition'),
-        validateList: ['required', 'integer_p']
+        validateList: ['required', 'maxNum']
       },
       runtimeParamList: [], //作业参数
       combopPhaseList: [],
       param: {},
       defaultModuleList: [], //模块默认值
-      moduleEnvInstanceMap: {}
+      moduleEnvInstanceMap: {},
+      parallelForm: {
+        placeholder: this.$t('page.selectinput'),
+        border: 'border',
+        dataList: this.getRoundCountList(),
+        filterName: 'text',
+        search: true,
+        transfer: true,
+        desc: this.$t('term.autoexec.paralldesc'),
+        validateList: ['required', 'maxNum']
+      },
+      parallelPolicyDataList: [
+        {
+          text: this.$t('page.autoexecparall'),
+          value: 'parallel'
+        },
+        {
+          text: this.$t('page.autoexecbatchround'),
+          value: 'roundCount'
+        }
+      ],
+      parallelPolicy: 'roundCount',
+      parallelCount: 4
     };
   },
   beforeCreate() {},
@@ -196,6 +246,8 @@ export default {
       this.envId = data.envId || null;
       this.scenarioId = data.scenarioId || null;
       this.roundCount = data.roundCount || null;
+      this.parallelCount = data.parallelCount || null;
+      this.parallelPolicy = data.parallelPolicy || 'roundCount';
       this.param = data.param || {};
       this.defaultModuleList = data.moduleList || [];
     },
@@ -367,6 +419,15 @@ export default {
           });
         }
       }
+      if (this.$refs.parallelForm) {
+        if (!this.$refs.parallelForm.valid()) {
+          validList.push({
+            text: this.$t('term.deploy.roundcountvalidate'),
+            type: 'error',
+            id: '#roundCount'
+          });
+        }
+      }
       if (this.$refs.param) {
         if (!this.$refs.param.valid()) {
           validList.push({
@@ -383,9 +444,18 @@ export default {
         envId: this.envId,
         scenarioId: this.scenarioId,
         roundCount: this.roundCount,
+        parallelCount: this.parallelCount,
+        parallelPolicy: this.parallelPolicy,
         param: {},
         moduleList: this.$refs.moduleList.getData()
       };
+      if (this.parallelPolicy == 'parallel') {
+        this.$set(data, 'parallelCount', this.parallelCount || 32);
+        this.$set(data, 'roundCount', null);
+      } else {
+        this.$set(data, 'parallelCount', null);
+        this.$set(data, 'roundCount', this.roundCount || 64);
+      }
       if (this.$refs.param) {
         this.$set(data, 'param', this.$refs.param.getValue());
       }
@@ -400,6 +470,13 @@ export default {
       ];
       list.push(...this.$utils.getRoundCountList());
       return list;
+    },
+    changeParallelPolicy(val) {
+      if (val && val == 'roundCount') {
+        this.roundCount = this.roundCount || 64;
+      } else {
+        this.parallelCount = this.parallelCount || 32;
+      }
     }
   },
   filter: {},
