@@ -696,7 +696,7 @@ export default {
           this.$set(data, 'roundCount', null);
         } else {
           this.$set(data, 'parallelCount', null);
-          this.$set(data, 'roundCount', roundCount || 64);
+          this.$set(data, 'roundCount', this.roundCount || 64);
         }
       }
       if (this.$refs.param) {
