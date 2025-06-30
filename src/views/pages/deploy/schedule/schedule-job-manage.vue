@@ -40,7 +40,7 @@
               <span v-else>{{ $t('page.disable') }}</span>
             </template>
             <template slot="isLoad" slot-scope="{ row }">
-              <span v-if="row.isLoad == 1" class="text-success">{{ $t('page.yes') }}</span>
+              <span v-if="row.jobStatus && row.jobStatus.isLoad == 1" class="text-success">{{ $t('page.yes') }}</span>
               <span v-else class="text-grey">{{ $t('page.no') }}</span>
             </template>
             <template slot="cron" slot-scope="{ row }">

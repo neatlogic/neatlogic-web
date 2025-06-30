@@ -523,8 +523,8 @@ export default {
             if (this.jobId) {
               this.setJobParams(this.jobConfig);
             } else {
-              this.roundCount = this.executeConfig.roundCount;
-              this.parallelCount = this.executeConfig.parallelCount;
+              this.roundCount = this.executeConfig.roundCount || 64;
+              this.parallelCount = this.executeConfig.parallelCount || 32;
               this.parallelPolicy = this.executeConfig.parallelPolicy || 'parallel';
               
               if (this.executeConfig.whenToSpecify == 'runtime') {
@@ -611,8 +611,6 @@ export default {
         name: this.nameForm.itemList.name.value
       }, this.getCombopParams());
       this.isCreating = true;
-      val.parallelCount = this.parallelCount;
-      val.roundCount = this.roundCount;
       this.$api.autoexec.action.executeAction(val).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess')); //保存成功
@@ -692,9 +690,14 @@ export default {
         this.$set(data, 'scenarioId', this.scenarioId);
       }
       if (this.dataConfig && this.dataConfig.needRoundCount) { //是否需要设置分批数量
-        this.$set(data, 'roundCount', this.roundCount);
-        this.$set(data, 'parallelCount', this.parallelCount);
-        this.$set(data, 'parallelPolicy', this.parallelPolicy);
+        this.$set(data, 'parallelPolicy', this.parallelPolicy || 'parallel');
+        if (this.parallelPolicy == 'parallel') {
+          this.$set(data, 'parallelCount', this.parallelCount || 32);
+          this.$set(data, 'roundCount', null);
+        } else {
+          this.$set(data, 'parallelCount', null);
+          this.$set(data, 'roundCount', roundCount || 64);
+        }
       }
       if (this.$refs.param) {
         this.$set(data, 'param', this.$refs.param.getValue());
