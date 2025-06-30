@@ -568,7 +568,7 @@ export default {
     copyJob() {
       //复制作业
       let path = '';
-      if (this.jobData.source == 'test') {
+      if (this.jobData.source == 'test' || this.jobData.source == 'scripttest' || this.jobData.source == 'tooltest') {
         path = '/test-detail';
       } else if (this.jobData.extraInfo && this.jobData.extraInfo.sourceType == 'deploy') {
         //  集成发布
