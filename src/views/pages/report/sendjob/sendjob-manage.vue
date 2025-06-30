@@ -37,7 +37,7 @@
           </template>
           <template v-slot:name="{row}"><span class="text-href" @click.stop="toEditPage('edit',row)">{{ row.name }}</span></template>
           <template v-slot:isLoad="{row}">
-            <span v-if="row.isLoad == 1" class="text-success">{{ $t('page.yes') }}</span>
+            <span v-if="row.jobStatus && row.jobStatus.isLoad == 1" class="text-success">{{ $t('page.yes') }}</span>
             <span v-else class="text-grey">{{ $t('page.no') }}</span>
           </template>
           <template v-slot:cron="{row}">
@@ -52,7 +52,7 @@
             ></TsFormSwitch>
           </template>
           <template v-slot:nextFireTime="{row}">
-            {{ row.nextFireTime | formatDate }}
+            <span v-if="row.jobStatus">{{ row.jobStatus.nextFireTime | formatDate }}</span>
           </template>
           <template v-slot:action="{row}">
             <div class="tstable-action">
