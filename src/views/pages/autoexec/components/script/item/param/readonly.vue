@@ -32,7 +32,7 @@
       <span v-else-if="value.mappingMode == 'runtimeparam'" class="overflow">
         <TsFormSelect
           :value="value.value"
-          :dataList="getParamList(paramList, value.component)"
+          :dataList="paramList"
           textName="name"
           valueName="key"
           :readonly="true"
@@ -136,18 +136,6 @@ export default {
           return p.value == com.component;
         });
         return item || {};
-      };
-    },
-    getParamList() {
-      return function(list, type) {
-        //需要过滤掉类型不同类的
-        if (list && list.length) {
-          return list.filter(l => {
-            return l.type == type;
-          });
-        } else {
-          return [];
-        }
       };
     },
     getPrevList() {
