@@ -162,7 +162,7 @@ export default {
       if ((file.Status = 'ERROR')) {
         this.$Notice.error({
           title: this.$t('message.importfailed'),
-          desc: response.Message
+          desc: response?.Message
         });
       }
     },

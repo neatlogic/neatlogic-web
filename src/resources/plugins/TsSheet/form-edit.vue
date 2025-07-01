@@ -148,10 +148,15 @@
                 </Dropdown>
               </div>
               <div v-if="!processTaskId" class="action-item">
-                <Button type="primary" ghost @click.stop="saveForm('saveother')">{{ $t('term.framework.saveothernewversion') }}</Button>
+                <Button
+                  :loading="isSaving"
+                  type="primary"
+                  ghost
+                  @click.stop="saveForm('saveother')"
+                >{{ $t('term.framework.saveothernewversion') }}</Button>
               </div>
               <div v-if="!processTaskId" class="action-item last">
-                <Button type="primary" @click.stop="handleSaveForm()">{{ $t('page.save') }}</Button>
+                <Button type="primary" :loading="isSaving" @click.stop="handleSaveForm()">{{ $t('page.save') }}</Button>
               </div>
             </template>
             <template v-else>
@@ -259,6 +264,7 @@
             ref="sheet"
             v-model="formData.formConfig"
             :readonly="readOnly"
+            :defaultExtendConfigList="extendConfigList"
             @selectCell="selectCell"
             @removeComponent="removeComponent"
             @updateResize="updateResize"
@@ -269,6 +275,7 @@
             :formItem="currentFormItem"
             :formItemList="cellFormItemList"
             :error="currentFormItemError"
+            :extendConfigList="extendConfigList"
             class="form-item-config bg-grey border-base-left"
             @close="currentFormItem = null"
             @editSubForm="editSubForm"
@@ -413,7 +420,8 @@ export default {
       readOnly: false, //设置全局只读
       isShowExtendConfigDialog: false,
       extendConfigList: [],
-      processTaskId: null //工单id
+      processTaskId: null, //工单id
+      isSaving: false
     };
   },
   beforeCreate() {},
@@ -639,7 +647,7 @@ export default {
           extendConfigList: this.extendConfigList
         });
         this.$set(data, 'formConfig', formConfig);
-
+        this.isSaving = true;
         await this.$api.framework.form.saveForm(data).then(res => {
           if (res.Status == 'OK') {
             isSuccess = true;
@@ -679,6 +687,8 @@ export default {
               });
             }
           }
+        }).finally(() => {
+          this.isSaving = false;
         });
       } else if (!this.$utils.isEmpty(this.errorData)) {
         this.isShowValidList = true;
@@ -687,8 +697,11 @@ export default {
     },
     previewForm() {
       const sheet = this.$refs['sheet'];
-      const data = sheet.getFormConfig();
+      let data = sheet.getFormConfig();
       this.$set(data, 'readOnly', this.readOnly);
+      this.$set(data, 'formCustomExtendConfig', {
+        extendConfigList: this.extendConfigList
+      });
       this.previewFormData = data;
       this.isPreviewShow = true;
     },

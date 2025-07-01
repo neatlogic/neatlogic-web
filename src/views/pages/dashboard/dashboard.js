@@ -8,6 +8,7 @@ import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import md5 from 'js-md5';
 import api from '@/resources/api/api.js';
 import LocalStore from '@/resources/assets/js/localStore.js';
+import State from '@/resources/assets/js/state.js';
 
 //公共的全局组件、样式等
 import '@/resources/base.js';
@@ -30,6 +31,7 @@ Vue.config.productionTip = false;
 Vue.prototype.$api = api;
 Vue.prototype.$md5 = md5;
 Vue.prototype.$localStore = new LocalStore('dashboard', router);
+Vue.prototype.$state = new State('dashboard');
 
 new Vue({
   router,

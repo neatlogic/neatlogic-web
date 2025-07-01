@@ -442,7 +442,7 @@ export default {
       if ((file.Status = 'ERROR')) {
         this.$Notice.error({
           title: this.$t('message.importfailed'),
-          desc: response.Message
+          desc: response?.Message
         });
         let findFileItem = this.fileList.find(item => item.file.name === file.name);
         if (findFileItem) {

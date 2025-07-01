@@ -6,21 +6,6 @@
           <span>{{ $t('page.warningmessage') }}</span>
           <span class="text-warning pl-icon">{{ phaseData.warnCount }}</span>
         </span>
-        <span class="action-item tsfont-restart" :class="phaseData.status == 'running' ? 'disable' : 'text-action'" @click="resetAllNode()">{{ $t('page.reset') }}</span>
-        <span
-          v-if="jobData.isCanExecute"
-          class="action-item tsfont-minus-o"
-          :class="phaseData.status != 'failed' ? 'disable' : 'text-action'"
-          @click="ignorePhase()"
-        >{{ $t('page.ignore') }}
-        </span>
-        <span
-          v-if="jobData.isCanExecute"
-          class="action-item tsfont-run"
-          :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
-          @click="refirePhase()"
-        >{{ $t('page.execute') }}
-        </span>
         <span class="action-item">
           <Poptip transfer placement="bottom">
             <span class="text-action">
@@ -35,6 +20,14 @@
                 <span class="text-title">{{ $t('page.config') }}</span>
                 <p class="text-default">{{ runnerData.port }}</p>
               </div>
+              <div>
+                <span v-if="runnerData.phaseRunnerGroupFrom" class="text-title">{{ $t('page.config') }}{{ $t('page.source') }}</span>
+                <p class="text-default">{{ runnerData.phaseRunnerGroupFrom }}</p>
+              </div>
+              <div>
+                <span class="text-title">{{ $t('page.status') }}</span>
+                <p class="text-default">{{ runnerData.status }}</p>
+              </div>
             </div>
           </Poptip>
         </span>
@@ -46,6 +39,7 @@
       :phaseData="phaseData"
       :runnerData="runnerData"
       :nodeData="nodeData"
+      @runnerAction="runnerAction"
     ></NodeDetail>
     <RefirePhaseDialog
       v-if="isRefireDialogShow"
@@ -136,6 +130,9 @@ export default {
       this.isIgnorePhseeDialogShow = false;
     },
     resetAllNode() {
+      if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
+        return false;
+      }
       this.isResetDialogShow = true;
     },
     getRunner() {
@@ -148,9 +145,11 @@ export default {
           this.runnerData = {};
           this.runnerData.name = res.Return.runnerVo.name;
           this.runnerData.port = res.Return.runnerVo.host + ':' + res.Return.runnerVo.port;
+          this.runnerData.phaseRunnerGroupFrom = res.Return.phaseRunnerGroupFrom;
+          this.runnerData.status = res.Return.runnerVo.status;
           this.nodeData.status = res.Return.status;
           this.nodeData.warnCount = res.Return.warnCount;
-          if (res.Return.status == 'pending' || res.Return.status == 'running') {
+          if (res.Return.status == 'pending' || res.Return.status == 'running' || res.Return.status == 'waitInput') {
             this.timmer = setTimeout(() => {
               this.getRunner();
             }, 3000);
@@ -171,6 +170,22 @@ export default {
         return false;
       }
       this.isIgnorePhseeDialogShow = true;
+    },
+    runnerAction(action) {
+      switch (action) {
+        case 'refire':
+          this.refirePhase();
+          break;
+        case 'reset':
+          this.resetAllNode();
+          break;
+        case 'ignore':
+          this.ignorePhase();
+          break;
+        case 'refresh':
+          this.$emit('refresh');
+          break;
+      }
     }
   },
   computed: {},

@@ -39,6 +39,9 @@ const mq = {
   },
   testTopic(param) {
     return axios.post('/api/rest/mq/topic/test', param);
+  },
+  healthCheck(id) {
+    return axios.post('/api/rest/mq/subscribe/healthcheck', { id: id });
   }
 };
 export default mq;

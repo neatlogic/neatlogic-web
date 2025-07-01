@@ -182,6 +182,7 @@ export default {
         { key: 'userId', title: this.$t('page.user') },
         { key: 'recordCount', title: this.$t('page.datacapacity') },
         { key: 'runTime', title: this.$t('term.autoexec.executiontime'), type: 'time' },
+        { key: 'useCacheLevel', title: this.$t('page.cache') },
         { key: 'sql', title: this.$t('term.framework.sqlsstatement') }
       ],
       fromPath: '',

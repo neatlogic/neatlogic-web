@@ -1,13 +1,13 @@
 <template>
   <div class="form-li">
     <span v-if="readonly" :class="[readonlyClass, readonlyTextHighlightClass]">
-      <template v-if="nodeList && nodeList.length > 0">
+      <template v-if="currentValue && currentValue.length > 0">
         <span
-          v-for="(val, dindex) in currentValue"
+          v-for="(item, dindex) in currentValue"
           :key="dindex"
           style="display:flex;"
         >
-          {{ getText(val) }}
+          {{ getSelectedText(item) }}
           <span v-if="dindex < currentValue.length - 1" class="text-grey tsform-readonly-sperate">{{ sperateText }}</span>
         </span>
       </template>
@@ -133,8 +133,12 @@ export default {
     test() {
       return false;
     },
-    initDataListByUrl: function() {
+    initDataListByUrl() {
       let _this = this;
+      if (this.readonly && !this.$utils.isEmpty(this.historyValue)) {
+        // 只读模式下不需要调接口获取数据
+        return false;
+      }
       if (_this.url) {
         _this.nodeList = [];
         let params = { pageSize: 100 };
@@ -169,21 +173,30 @@ export default {
         // }
       }
     },
-    handleEchoFailedDefaultValue() {
-      // 处理回显失败默认值，回显失败清空默认值
-      if (this.isClearEchoFailedDefaultValue && !this.$utils.isEmpty(this.nodeList)) {
-        let selectedList = [];
-        let valueList = this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
-        valueList.forEach((item, index) => {
-          if (item && !this.nodeList.find((n) => n[this.valueName] == item)) {
-            selectedList.push(item[this.valueName]);
-            this.currentValue.splice(index, 1);
-          }
-        });
-        if (!this.$utils.isEmpty(selectedList)) {
-          this.onChangeValue();
+    handleDisabledNodeList() {
+      if (this.disabled && !this.$utils.isEmpty(this.historyValue)) {
+        const nodeValueSet = new Set(this.nodeList.map(item => item[this.valueName]));
+        const newItems = this.historyValue.filter(item => !nodeValueSet.has(item[this.valueName]));
+        if (Array.isArray(this.nodeList) && newItems.length > 0) {
+          this.nodeList.unshift(...newItems);
         }
       }
+    },
+    handleEchoFailedDefaultValue() {
+      // 处理回显失败默认值，回显失败清空默认值
+      // if (this.isClearEchoFailedDefaultValue && !this.$utils.isEmpty(this.nodeList)) {
+      //   let selectedList = [];
+      //   let valueList = this.currentValue instanceof Array ? this.currentValue : [this.currentValue];
+      //   valueList.forEach((item, index) => {
+      //     if (item && !this.nodeList.find((n) => n[this.valueName] == item)) {
+      //       selectedList.push(item[this.valueName]);
+      //       this.currentValue.splice(index, 1);
+      //     }
+      //   });
+      //   if (!this.$utils.isEmpty(selectedList)) {
+      //     this.onChangeValue();
+      //   }
+      // }
     },
     onChangeValue(val, item) {
       let isSame = JSON.stringify(this.value) == JSON.stringify(this.currentValue);
@@ -251,12 +264,6 @@ export default {
       let reslutClass = { 'ivu-checkbox-group-vertical': this.vertical };
       this.className && (reslutClass[this.className] = true);
       return reslutClass;
-    },
-    getText() {
-      return (val) => {
-        let node = this.nodeList.find(item => item[this.valueName] == val);
-        return node && node[this.textName] ? node[this.textName] : '-';
-      };
     }
   },
   watch: {
@@ -274,7 +281,8 @@ export default {
     dataList: {
       handler(newValue) {
         if (!this.url) {
-          this.$set(this, 'nodeList', newValue);
+          this.$set(this, 'nodeList', this.$utils.deepClone(newValue) || []);
+          this.handleDisabledNodeList();
           this.setSelectList();
         }
       },

@@ -155,7 +155,8 @@ export default {
       runnerGroup: {
         mappingMode: 'constant',
         value: '-1'
-      }
+      },
+      scriptId: null
     };
   },
   beforeCreate() {},
@@ -163,6 +164,9 @@ export default {
     if (this.$route.query) {
       if (this.$route.query.id) {
         this.id = parseInt(this.$route.query.id);
+      }
+      if (this.$route.query.scriptId) {
+        this.scriptId = parseInt(this.$route.query.scriptId);
       }
       if (this.$route.query.type) {
         this.type = this.$route.query.type;
@@ -194,24 +198,37 @@ export default {
     },
     getData() {
       //根据id获取详情
-      if (!this.id) {
+      if (!this.id && !this.scriptId) {
         return;
       }
-      let param = { id: this.id, type: this.type};
+      let param = { type: this.type };
+      if (this.id) {
+        param.id = this.id;
+      } else if (this.scriptId) {
+        param.scriptId = this.scriptId;
+      }
       this.$api.autoexec.script.getTestDetail(param).then(res => {
         if (res.Status == 'OK' && res.Return) {
           this.dataConfig = res.Return;
           if (!this.jobId) {
             this.nameForm.itemList.name.value = this.dataConfig.name;
           }
+          if (!this.id) {
+            this.id = this.dataConfig.id;
+          }
         }
       });
     },
     getArgument() {
-      if (!this.id) {
+      if (!this.id && !this.scriptId) {
         return;
       }
-      let param = { id: this.id, type: this.type};
+      let param = { type: this.type };
+      if (this.id) {
+        param.id = this.id;
+      } else if (this.scriptId) {
+        param.scriptId = this.scriptId;
+      }
       this.$api.autoexec.script.getArgument(param).then(res => {
         if (res.Status == 'OK' && res.Return) {
           this.argumentConfig = res.Return || {};

@@ -53,48 +53,88 @@
               ></TsFormSelect>
             </TsFormItem>
           </div>
-          <div v-if="editConfig.execMode !='runner' && editConfig.execMode !='sqlfile' && (!groupConfig || groupConfig.policy !='grayScale')" class="mt-lg">
-            <TsFormItem
-              :label="$t('term.deploy.presetexecutiontarget')"
-              labelPosition="left"
-              :labelWidth="115"
-              :tooltip="executeTooltip"
-            >
-              <TsFormSwitch v-model="executeConfig.isPresetExecuteConfig" :disabled="!canEdit"></TsFormSwitch>
-            </TsFormItem>
-            <template v-if="(!groupConfig || groupConfig.policy!='grayScale') && executeConfig.isPresetExecuteConfig">
-              <TsForm
-                ref="executeForm"
-                v-model="executeConfig"
-                :itemList="executeForm"
+          <template v-if="!groupConfig || groupConfig.policy !='grayScale'">
+            <div v-if="editConfig.execMode !='runner' && editConfig.execMode !='sqlfile'" class="mt-lg">
+              <TsFormItem
+                :label="$t('term.deploy.presetexecutiontarget')"
                 labelPosition="left"
-                tipPlacement="right"
                 :labelWidth="115"
+                :tooltip="executeTooltip"
               >
-                <template v-slot:executeUser>
-                  <ExecuteuserSetting
-                    ref="executeUser"
-                    :config="executeConfig.executeUser"
+                <TsFormSwitch v-model="executeConfig.isPresetExecuteConfig" :disabled="!canEdit"></TsFormSwitch>
+              </TsFormItem>
+              <template v-if="(!groupConfig || groupConfig.policy!='grayScale') && executeConfig.isPresetExecuteConfig">
+                <TsForm
+                  ref="executeForm"
+                  v-model="executeConfig"
+                  :itemList="executeForm"
+                  labelPosition="left"
+                  tipPlacement="right"
+                  :labelWidth="115"
+                >
+                  <template v-slot:executeUser>
+                    <ExecuteuserSetting
+                      ref="executeUser"
+                      :config="executeConfig.executeUser"
+                      :disabled="!canEdit"
+                      :runtimeParamList="runtimeParamList"
+                    ></ExecuteuserSetting>
+                  </template>
+                </TsForm>
+                <div class="pt-nm">
+                  <TargetDetail
+                    :id="id"
+                    ref="targetDetail"
+                    :canEdit="canEdit"
+                    :config="executeConfig.executeNodeConfig"
+                    :isAddParam="true"
+                    :labelWidth="115"
+                    :isAddPrenode="prevStepList.length > 0 ? true : false"
+                    :prevStepList="prevStepList"
+                    :runtimeParamList="runtimeParamList"
+                  ></TargetDetail>
+                </div>
+              </template>
+            </div>
+            <div v-if="editConfig.execMode ==='runner'">
+              <TsFormItem
+                :label="$t('term.deploy.presetrunnergroup')"
+                labelPosition="left"
+                :labelWidth="115"
+                :tooltip="runnerGroupTooltip"
+              >
+                <TsFormSwitch v-model="executeConfig.isPresetRunnerGroup" :disabled="!canEdit"></TsFormSwitch>
+              </TsFormItem>
+              <template v-if="executeConfig.isPresetRunnerGroup">
+                <TsFormItem
+                  :label="$t('term.deploy.actuatorgrouptag')"
+                  labelPosition="left"
+                  :labelWidth="115"
+                >
+                  <RunnerGroupTagSetting
+                    ref="runnerGroupTag"
+                    :config="executeConfig.runnerGroupTag"
                     :disabled="!canEdit"
                     :runtimeParamList="runtimeParamList"
-                  ></ExecuteuserSetting>
-                </template>
-              </TsForm>
-              <div class="pt-nm">
-                <TargetDetail
-                  :id="id"
-                  ref="targetDetail"
-                  :canEdit="canEdit"
-                  :config="executeConfig.executeNodeConfig"
-                  :isAddParam="true"
+                    :isRequired="false"
+                  ></RunnerGroupTagSetting>
+                </TsFormItem>
+                <TsFormItem
+                  :label="$t('page.autoexeccomboprunnergrouplabel')"
+                  labelPosition="left"
                   :labelWidth="115"
-                  :isAddPrenode="prevStepList.length > 0 ? true : false"
-                  :prevStepList="prevStepList"
-                  :runtimeParamList="runtimeParamList"
-                ></TargetDetail>
-              </div>
-            </template>
-          </div>
+                >
+                  <RunnerGroupSetting
+                    ref="runnerGroup"
+                    :config="!$utils.isEmpty(executeConfig.runnerGroup)?executeConfig.runnerGroup : runnerGroup"
+                    :disabled="!canEdit"
+                    :runtimeParamList="runtimeParamList"
+                    :isRequired="false"
+                  ></RunnerGroupSetting>
+                </TsFormItem>
+              </template>
+            </div>
+          </template>
         </div>
       </template>
       <template v-slot:footer>
@@ -130,7 +170,9 @@ export default {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue')
+    ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
+    RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
+    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue')
   },
   filters: {},
   props: {
@@ -200,10 +242,9 @@ export default {
           popLable: 120
         }
       ],
-      executeForm: [
-        {
+      executeForm: {
+        protocolId: {
           type: 'select',
-          name: 'protocolId',
           label: this.$t('page.protocol'), //添加阶段
           value: '',
           multiple: false,
@@ -214,15 +255,34 @@ export default {
           transfer: true,
           disabled: !_this.canEdit
         },
-        {
+        executeUser: {
           type: 'slot',
-          name: 'executeUser',
           label: this.$t('page.executeuser'),
           tooltip: this.$t('term.autoexec.nowriteusertooltip')
         },
-        {
+        parallelPolicy: {
+          type: 'radio',
+          labelWidth: '113',
+          disabled: !_this.canEdit,
+          label: this.$t('page.autoexecparallpolicy'),
+          dataList: [
+            {
+              text: this.$t('page.autoexecparall'),
+              value: 'parallel'
+            },
+            {
+              text: this.$t('page.autoexecbatchround'),
+              value: 'roundCount'
+            }
+          ],
+          allowToggle: true,
+          transfer: true,
+          onChange: (val) => {
+            this.changeParallelPolicy(val);
+          }
+        },
+        roundCount: {
           type: 'select',
-          name: 'roundCount',
           value: null,
           transfer: true,
           label: this.$t('term.autoexec.batchquantity'),
@@ -230,20 +290,41 @@ export default {
           dataList: this.$utils.getRoundCountList(),
           filterName: 'text',
           disabled: !_this.canEdit
+        },
+        parallelCount: {
+          type: 'select',
+          value: null,
+          transfer: true,
+          disabled: !_this.canEdit,
+          label: this.$t('term.autoexec.parall'),
+          desc: this.$t('term.autoexec.paralldesc'),
+          dataList: this.$utils.getRoundCountList()
         }
-      ],
+      },
       executeConfig: {
         protocolId: '',
         executeUser: {},
+        parallelPolicy: null,
+        parallelCount: null,
         roundCount: null,
         isPresetExecuteConfig: 0,
-        executeNodeConfig: {}
+        executeNodeConfig: {},
+        isPresetRunnerGroup: 0,
+        runnerGroup: null,
+        runnerGroupTag: null
+
       },
       isValid: false, // 校验执行目标
       resultList: [], //校验结果
       validateList: ['required'],
       executePolicyList: [],
-      executeTooltip: this.$t('term.autoexec.executeTooltip')
+      executeTooltip: this.$t('term.autoexec.executeTooltip'),
+      runnerGroupTooltip: this.$t('term.autoexec.runnerGroupTooltip'),
+      runnerGroup: {
+        mappingMode: 'constant',
+        value: '',
+        text: ''
+      }
     };
   },
   beforeCreate() {},
@@ -260,6 +341,16 @@ export default {
             this.executeConfig[key] = this.config.config.executeConfig[key];
           }
         });
+        if (!this.$utils.isEmpty(this.executeConfig.runnerGroup) || !this.$utils.isEmpty(this.executeConfig.runnerGroupTag)) {
+          this.$set(this.executeConfig, 'isPresetRunnerGroup', 1);
+        }
+        this.$set(this.executeForm.roundCount, 'isHidden', true);
+        this.$set(this.executeForm.parallelCount, 'isHidden', true);
+        if (this.executeConfig.parallelPolicy && this.executeConfig.parallelPolicy == 'roundCount') {
+          this.$set(this.executeForm.roundCount, 'isHidden', false);
+        } else if (this.executeConfig.parallelPolicy && this.executeConfig.parallelPolicy == 'parallel') {
+          this.$set(this.executeForm.parallelCount, 'isHidden', false);
+        }
       }
     }
     for (let key in this.formItem) {
@@ -289,12 +380,28 @@ export default {
       } else {
         this.executeConfig.executeNodeConfig = {};
       }
+      if (this.$refs.runnerGroupTag) {
+        this.$set(this.executeConfig, 'runnerGroupTag', this.$refs.runnerGroupTag.save());
+      }
+      if (this.$refs.runnerGroup) {
+        this.$set(this.executeConfig, 'runnerGroup', this.$refs.runnerGroup.save());
+      }
+
+      if (this.$utils.isEmpty(this.executeConfig.parallelPolicy)) {
+        this.executeConfig.roundCount = null;
+        this.executeConfig.parallelCount = null;
+      } else if (this.executeConfig.parallelPolicy === 'parallel') {
+        this.executeConfig.roundCount = null;
+      } else {
+        this.executeConfig.parallelCount = null;
+      }
+   
       if (this.$refs.form.valid()) {
         let editConfig = this.$utils.deepClone(this.editConfig);
         if (editConfig.policy && (!this.groupConfig || this.groupConfig.policy != 'grayScale' || (this.editConfig.execMode && this.editConfig.execMode != 'runner' && this.editConfig.execMode != 'sqlfile'))) {
           this.$delete(editConfig, 'policy');
         }
-        this.$emit('close', editConfig, this.executeConfig.isPresetExecuteConfig ? this.executeConfig : {});
+        this.$emit('close', editConfig, this.executeConfig.isPresetExecuteConfig || this.executeConfig.isPresetRunnerGroup ? this.executeConfig : {});
       }
     },
     checkExist(key, val) {
@@ -326,14 +433,15 @@ export default {
       }
     },
     toggleExecuteForm(type) {
-      let _this = this;
       //runner方式的阶段无需选执行目标；其他方式需要（非必选)
       if (type == 'runner') {
-        _this.executeConfig = {
+        this.executeConfig = {
           protocolId: '',
           executeUser: {},
-          isPresetExecuteConfig: 0,
-          executeNodeConfig: {}
+          executeNodeConfig: {},
+          isPresetRunnerGroup: 0,
+          runnerGroup: null,
+          runnerGroupTag: null
         };
       }
     },
@@ -400,6 +508,17 @@ export default {
       this.$api.common.getSelectList(data).then((res) => {
         if (res.Status == 'OK') {
           this.executePolicyList = res.Return || [];
+        }
+      });
+    },
+    changeParallelPolicy(val) {
+      this.$nextTick(() => {
+        this.$set(this.executeForm.roundCount, 'isHidden', true);
+        this.$set(this.executeForm.parallelCount, 'isHidden', true);
+        if (val && val == 'roundCount') {
+          this.$set(this.executeForm.roundCount, 'isHidden', false);
+        } else if (val && val == 'parallel') {
+          this.$set(this.executeForm.parallelCount, 'isHidden', false);
         }
       });
     }

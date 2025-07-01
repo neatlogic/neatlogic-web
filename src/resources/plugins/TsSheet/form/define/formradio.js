@@ -33,6 +33,7 @@ export default {
     disable: {},
     setvalue: {},
     filter: {},
-    required: {}
+    required: {},
+    clearValue: {}
   }
 };

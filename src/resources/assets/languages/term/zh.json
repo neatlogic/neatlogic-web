@@ -296,7 +296,7 @@
     "workflow": "工作流",
     "showpriority": "显示优先级",
     "defaultpriority": "默认优先级",
-    "serwindow": "服务窗口",
+    "serwindow": "服务时间",
     "sertype": "服务类型",
     "reporauth": "上报授权",
     "tranferreport": "转报",
@@ -628,7 +628,9 @@
     "thirdpartyapi": "第三方回调接口",
     "reactivatestep": "重新激活步骤",
     "seeprocessconfig": "查看当前工单流程配置",
-    "editprocessconfig": "编辑当前工单流程配置"
+    "editprocessconfig": "编辑当前工单流程配置",
+    "stepishandledby": "步骤处理人为",
+    "sercalendar": "服务日历"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -707,7 +709,7 @@
     "associateacustomtool": "关联自定义工具",
     "disassociatecandeletecatalog": "当前目录或其子目录已关联自定义工具，解除关联后，才可删除此目录",
     "bysubcatalogalldeletetips": "删除当前目录时，其所有子目录将同时被删除",
-    "ipformattip": "主机类目标输入格式为 IP，服务类目标输入格式为IP:PORT，数据库类目标格式为IP:PORT/SID，一行一个目标",
+    "ipformattip": "主机类目标输入格式为 IP，服务类目标输入格式为IP:PORT，数据库类目标格式为IP:PORT/SID，一行一个目标,最多支持输入1000个目标",
     "viewalltarget": "查看更多{target}个目标",
     "choosetagasnodetip": "选择标签过滤节点，作为执行目标",
     "jobparamnosettingtip": "作业参数中未设置【节点信息】参数",
@@ -877,7 +879,7 @@
     "pleaseselectdirectoryname": "请选择目录名称",
     "pleaseselectuploadfile": "脚本内容：请上传附件",
     "supportonlytarfile": "仅支持tar文件",
-    "scriptcontenttips": "帮助：\n 工具执行是通过标准的命令行参数来传参。\n 输入参数：\n 1）具备参数名的参数：\n   option名称就是参数名，option值就是参数值。\n 2）没有参数名的参数：\n   对应工具的自由参数，通过参数序号来获取参数。\n 不同的编程语言如何处理命令行参数，具体请查看相关的demo。\n 输出参数：\n 通过把输出参数写入当前作业工作目录下的json文件ouput.json进行参数的输出。\n 平台提供的不同语言的输出封装，具体请查看相关的demo，例如：\n Python：\n from lib import AutoExecUtils\n out = {}\n out['outtext'] = 'this is the text out value'\n AutoExecUtils.saveOutput(out) \n Perl：\n use AutoExecUtils;\n my $out = {};\n $out->{outtext}     = 'this is the text out value';\n AutoExecUtils::saveOutput($out); \n Bash：\n outtext='this is the text out value'\n if [ ! -z '$OUTPUT_PATH' ]; then\n     cat <<EOF >'$OUTPUT_PATH'\n {\n     'outtext':'$outtext'\n }\n EOF\n fi\n 退出码标识：\n 只要ExitCode不等于0则代表异常退出。\n注意：\n 如果需发起子进程，执行完毕后请注意关闭标准输出和错误输出，否则父进程可能无法正常退出。",
+    "scriptcontenttips": "帮助：\n 工具执行是通过标准的命令行参数来传参。\n 输入参数：\n 1）具备参数名的参数：\n   option名称就是参数名，option值就是参数值。\n 2）没有参数名的参数：\n   对应工具的自由参数，通过参数序号来获取参数。\n 不同的编程语言如何处理命令行参数，具体请查看相关的demo。\n 输出参数：\n 通过把输出参数写入当前作业工作目录下的json文件ouput.json进行参数的输出。\n 平台提供的不同语言的输出封装，具体请查看相关的demo，例如：\n Python： \n #runner类型工具\n #import AutoExecUtils\n #target类型工具\n from lib import AutoExecUtils\n out = {}\n out['outtext'] = 'this is the text out value'\n AutoExecUtils.saveOutput(out) \n Perl：\n use AutoExecUtils;\n my $out = {};\n $out->{outtext}     = 'this is the text out value';\n AutoExecUtils::saveOutput($out); \n Bash：\n outtext='this is the text out value'\n if [ ! -z '$OUTPUT_PATH' ]; then\n     cat <<EOF >'$OUTPUT_PATH'\n {\n     'outtext':'$outtext'\n }\n EOF\n fi\n 退出码标识：\n 只要ExitCode不等于0则代表异常退出。\n注意：\n 如果需发起子进程，执行完毕后请注意关闭标准输出和错误输出，否则父进程可能无法正常退出。",
     "speedlevel": "速度级别",
     "workthread": "工作线程",
     "loadedjob": "已加载作业",
@@ -891,7 +893,7 @@
     "toolparamstooltip": "工具参数是已关联的工具的参数集合。来源于自定义工具库的参数可增加、删除和修改，来源于工具库的参数无法增加、删除和修改。",
     "combophasexpired": "组合工具已失效",
     "pleasereedit": "请重新编辑后，提交审核",
-    "abortjob": "终止作业",
+    "abortjob": "中止作业",
     "runnergroupdeprecatedtips": "作业执行器组参数已失效，请重新点击确认并保存流程",
     "loopitem": "循环项",
     "loopoperation": "循环执行",
@@ -903,7 +905,12 @@
     "setinputloopoperations": "设置：请输入至少一个工具",
     "runnergrouptagprocesstips": "如果需要表单赋值，请在组合工具设置“执行器组标签”为“作业参数”类型",
     "runnergroupprocesstips": "如果需要表单赋值，请在组合工具设置“执行器组”为“作业参数”类型",
-    "resetrunnerphase": "是否重置阶段"
+    "resetrunnerphase": "是否重置阶段",
+    "runnerGroupTooltip": "若此处不填写执行器组，当前阶段默认继承组合工具执行器组，若此处填写执行器组，当前阶段将采用此处填写的；执行时，不可修改阶段的执行器组",
+    "isfirenext": "是否激活下一个组",
+    "inputnodelimit": "数量不能大于1000",
+    "parall": "并发数量",
+    "paralldesc": "将执行目标按并发数量先后执行。"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",
@@ -1343,7 +1350,10 @@
     "tagentupgrade": "升级包管理",
     "tagentupgradepkg": "升级包",
     "selecttagentupgradepkg": "选择已有的升级包",
-    "tagentuploadupgradepkg": "上传升级包"
+    "tagentuploadupgradepkg": "上传升级包",
+    "versionremarks": "版本备注",
+    "heartbeaturl": "后端服务器地址",
+    "runnergrouptips": "登录认证的请求需要携带Header做规则表达式(注意表达式中header参数全小写，且前缀必须为{prefix})，如果表达式执行后的值为true则该执行器组生效，false和语法异常都不生效。如:"
   },
   "knowledge": {
     "document": "文档",
@@ -2140,7 +2150,10 @@
     "buildnopending": "待构建",
     "actuatorgrouptag": "执行器组标签",
     "blueset": "蓝绿设置",
-    "blueSet": "蓝绿"
+    "blueSet": "蓝绿",
+    "ismodified": "已修改",
+    "presetrunnergroup": "预设执行器组",
+    "testrunnerdesc": "如果不指定则会通过ip根据网段匹配执行器组自动分配执行器"
   },
   "inspect": {
     "alarmprompt": "告警提示",

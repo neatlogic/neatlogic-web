@@ -9,7 +9,11 @@ export default {
       type: Array,
       default: () => []
     },
-    source: { type: String, default: '' } //表单组件配置来源：scene(场景)
+    source: { type: String, default: '' }, //表单组件配置来源：scene(场景)
+    extendConfigList: { //扩展数据标签配置列表
+      type: Array,
+      default: () => []
+    }
   },
   methods: {
     //设置属性值

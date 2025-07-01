@@ -26,7 +26,7 @@ export default ({ reaction, result, view }) => {
         value = list.join(',');
       }
     }
-    if ((!reaction.isFirstLoad && (!view.formData.hasOwnProperty(view.formItem.uuid) || !view.formData[view.formItem.uuid]) || (view.formData[view.formItem.uuid] && !view.$utils.isSame(value, view.formData[view.formItem.uuid]))) || (reaction.isFirstLoad && !view.executeCount['setvalue'])) {
+    if ((!view.isFirstLoad && (!view.formData.hasOwnProperty(view.formItem.uuid) || !view.formData[view.formItem.uuid]) || (view.formData[view.formItem.uuid] && !view.$utils.isSame(value, view.formData[view.formItem.uuid]))) || (view.isFirstLoad && !view.executeCount['setvalue'])) {
       view.addExecuteCount('setvalue');
       view.setValue(value);
       view.$emit('change', value);

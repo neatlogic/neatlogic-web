@@ -4,6 +4,8 @@
       ref="jobDetailContain"
       :siderWidth="258"
       :enableCollapse="true"
+      topLeftWidth="30%"
+      topRightWidth="70%"
       @toggleSiderHide="toggleSiderHide"
     >
       <template v-slot:navigation>
@@ -63,7 +65,7 @@
       <template v-slot:topRight>
         <div ref="topRightRef" class="div-btn-contain action-group">
           <span v-if="jobData.extraInfo && jobData.extraInfo.isHasLock == 1" class="tsfont-lock text-action action-item text-warning" @click="globalLockShow">{{ $t('term.autoexec.resourcelock') }}</span>
-          <span class="action-item tsfont-accessendpoint" @click="isShowFlow = true">流程图</span>
+          <span class="action-item tsfont-accessendpoint" @click="isShowFlow = true">{{ $t('term.deploy.flowchart') }}</span>
           <span class="action-item tsfont-console" @click="isShowConsoleLogDialog = true">{{ $t('term.autoexec.controlpanel') }}</span>
           <span class="action-item tsfont-config" @click="openShowParam">{{ $t('page.param') }}</span>
           <span v-if="versionId != null" class="action-item tsfont-file-single icon" @click="openProjectDirectoryDialog(versionId)">{{ $t('term.deploy.projectdirectory') }}</span>
@@ -85,7 +87,7 @@
                     {{ $t('term.autoexec.copyjob') }}
                   </div>
                 </DropdownItem>
-                <DropdownItem v-if="jobData.isCanExecute || jobData.isCanTakeOver" @click.native="abortJob()">
+                <DropdownItem v-if="jobData.isCanExecute" @click.native="abortJob()">
                   <div>
                     {{ $t('term.autoexec.abortjob') }}
                   </div>
@@ -214,7 +216,7 @@ export default {
         pageSize: 10
       },
       statusActionMapping: {
-        pending: ['abort'], //未开始：
+        pending: ['refire', 'abort'], //未开始：
         running: ['pause', 'abort'], //运行中： 暂停  终止
         aborting: ['abort'], //终止中
         pausing: ['pause', 'abort'], //暂定中
@@ -224,7 +226,7 @@ export default {
         failed: ['refire'], //已失败：继续
         ready: ['execute', 'revoke'], //已就绪 撤销 执行
         waitInput: ['abort'],
-        waiting: ['abort']
+        waiting: ['pause', 'abort']
       },
       actionMap: {
         valid: {
@@ -270,7 +272,8 @@ export default {
       },
       versionId: null,
       hasOperationVersionAndProductManagerAuth: false,
-      jobNameWidth: 0
+      jobNameWidth: 0,
+      refreshTimes: 3 //作业完成后刷新次数
     };
   },
   beforeCreate() {},
@@ -341,7 +344,7 @@ export default {
       this.getPhaseList(true);
     },
     refireJob() {
-      if (this.phaseEndingStatusList.includes(this.jobData.status)) {
+      if (this.phaseEndingStatusList.includes(this.jobData.status) || this.jobData.status === 'pending') {
         this.isShowRerunDialog = true;
       }
     },
@@ -453,11 +456,11 @@ export default {
               }
             });
             if (phaseIdList.length > 0) {
-              //refreshPhaseList存在定时器
-              // this.timmer = setTimeout(() => {
-              this.refreshPhaseList(phaseIdList);
-              // }, 5000);
+              this.refreshTimes = 3;
             }
+            this.timmer = setTimeout(() => {
+              this.refreshPhaseList(phaseIdList);
+            }, 5000);
           }
         })
         .finally(() => {
@@ -472,7 +475,11 @@ export default {
     },
     refreshPhaseList(phaseIdList) {
       this.clearTimmer();
-      if (phaseIdList && phaseIdList.length > 0) {
+      //阶段刷新机制：
+      //1、phaseIdList不为空；
+      //2、作业状态为终点状态时，根据refreshTimes刷新次数判断是否需要继续刷新；
+      //3、作业状态不在终点状态时(phaseEndingStatusList)。
+      if (!this.$utils.isEmpty(phaseIdList) || this.refreshTimes > 0 || !this.phaseEndingStatusList.includes(this.jobData.status)) {
         this.$api.autoexec.job.getPhaseList({ jobId: this.jobParam.jobId, phaseIdList: phaseIdList }).then(res => {
           if (res.Return['phaseList'] && res.Return['phaseList'].length > 0) {
             res.Return['phaseList'].forEach(phase => {
@@ -494,7 +501,10 @@ export default {
           if (this.jobData && this.jobData.extraInfo) {
             this.$set(this.jobData, 'extraInfo', res.Return['extraInfo']);
           }
-          if (phaseIdList.length > 0) {
+          if (this.$utils.isEmpty(phaseIdList)) {
+            this.refreshTimes--;
+          }
+          if (phaseIdList.length > 0 || this.refreshTimes > 0) {
             this.timmer = setTimeout(() => {
               this.refreshPhaseList(phaseIdList);
             }, 5000);
@@ -558,12 +568,13 @@ export default {
     copyJob() {
       //复制作业
       let path = '';
-      if (this.jobData.source == 'test') {
+      if (this.jobData.source == 'test' || this.jobData.source == 'scripttest' || this.jobData.source == 'tooltest') {
         path = '/test-detail';
-      } else if (this.jobData.source == 'deploy' || this.jobData.source == 'deployschedulegeneral') {
-        // deployschedulegeneral 发布定时普通作业
+      } else if (this.jobData.extraInfo && this.jobData.extraInfo.sourceType == 'deploy') {
+        //  集成发布
         path = '/job-add';
       } else {
+        //自动化
         path = '/runner-detail';
       }
       this.$router.push({

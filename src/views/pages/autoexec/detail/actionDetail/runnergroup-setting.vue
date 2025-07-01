@@ -7,6 +7,7 @@
           :dataList="mappingModeList"
           :disabled="disabled"
           :clearable="false"
+          border="border"
           transfer
           @change="changeMappingMode"
         ></TsFormSelect>
@@ -22,6 +23,7 @@
           :firstText="$t('term.autoexec.jobparam')"
           :firstSelect="false"
           :firstLi="isEditRuntimeParam"
+          border="border"
           @first="gotoAddParameter"
         ></TsFormSelect>
         <TsFormSelect
@@ -117,7 +119,7 @@ export default {
         transfer: true,
         needCallback: false,
         border: 'border',
-        validateList: ['required'],
+        validateList: this.isRequired ? ['required'] : [],
         dealDataByUrl: this.$utils.getRunnerGroupList,
         dynamicUrl: '/api/rest/runnergroup/search',
         params: {

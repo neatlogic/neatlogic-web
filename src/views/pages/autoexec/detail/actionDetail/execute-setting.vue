@@ -165,13 +165,45 @@ export default {
           label: this.$t('page.autoexeccomboprunnergrouplabel'),
           labelWidth: '113'
         },
+        parallelPolicy: {
+          type: 'radio',
+          labelWidth: '113',
+          disabled: !_this.isEditSetting,
+          label: this.$t('page.autoexecparallpolicy'),
+          dataList: [
+            {
+              text: this.$t('page.autoexecparall'),
+              value: 'parallel'
+            },
+            {
+              text: this.$t('page.autoexecbatchround'),
+              value: 'roundCount'
+            }
+          ],
+          allowToggle: true,
+          transfer: true,
+          onChange: (val) => {
+            this.changeParallelPolicy(val);
+          }
+        },
         roundCount: {
           type: 'select',
           value: null,
+          isHidden: true,
           transfer: true,
           disabled: !_this.isEditSetting,
           label: this.$t('term.autoexec.batchquantity'),
           desc: this.$t('term.autoexec.batchcountdisabledesc'),
+          dataList: this.$utils.getRoundCountList(),
+          labelWidth: '113'
+        },
+        parallelCount: {
+          type: 'select',
+          value: null,
+          transfer: true,
+          disabled: !_this.isEditSetting,
+          label: this.$t('term.autoexec.parall'),
+          desc: this.$t('term.autoexec.paralldesc'),
           dataList: this.$utils.getRoundCountList(),
           labelWidth: '113'
         },
@@ -193,7 +225,9 @@ export default {
         executeUser: null,
         runnerGroup: null,
         runnerGroupTag: null,
+        parallelPolicy: null,
         roundCount: null,
+        parallelCount: null,
         whenToSpecify: 'runtime',
         executeNodeConfig: {}
       },
@@ -219,14 +253,20 @@ export default {
   destroyed() {},
   methods: {
     getExecuteConfig() {
-      let _this = this;
-      if (_this.executeConfig) {
-        Object.keys(_this.executeConfig).forEach(key => {
-          if (_this.settingConfig.hasOwnProperty(key)) {
-            _this.settingConfig[key] = _this.executeConfig[key];
+      if (this.executeConfig) {
+        Object.keys(this.executeConfig).forEach(key => {
+          if (this.settingConfig.hasOwnProperty(key)) {
+            this.settingConfig[key] = this.executeConfig[key];
+          }
+          this.$set(this.form.roundCount, 'isHidden', true);
+          this.$set(this.form.parallelCount, 'isHidden', true);
+          if (this.executeConfig.parallelPolicy && this.executeConfig.parallelPolicy == 'roundCount') {
+            this.$set(this.form.roundCount, 'isHidden', false);
+          } else if (this.executeConfig.parallelPolicy && this.executeConfig.parallelPolicy == 'parallel') {
+            this.$set(this.form.parallelCount, 'isHidden', false);
           }
         });
-        if (_this.settingConfig.whenToSpecify == 'runtime') {
+        if (this.settingConfig.whenToSpecify == 'runtime') {
           this.runtimeFilter = this.settingConfig.executeNodeConfig.filter || {};
         }
       }
@@ -263,6 +303,14 @@ export default {
         let paramList = this.$refs.runtimeparam.save();
         this.$set(this.settingConfig.executeNodeConfig, 'paramList', paramList);
         this.save();
+      }
+      if (this.$utils.isEmpty(this.settingConfig.parallelPolicy)) {
+        this.settingConfig.roundCount = null;
+        this.settingConfig.parallelCount = null;
+      } else if (this.settingConfig.parallelPolicy === 'parallel') {
+        this.settingConfig.roundCount = null;
+      } else {
+        this.settingConfig.parallelCount = null;
       }
     },
     save() {
@@ -330,6 +378,17 @@ export default {
     changeWhenToSpecify(val) {
       this.settingConfig.whenToSpecify = val;
       this.settingConfig.executeNodeConfig = {};
+    },
+    changeParallelPolicy(val) {
+      this.$nextTick(() => {
+        this.$set(this.form.roundCount, 'isHidden', true);
+        this.$set(this.form.parallelCount, 'isHidden', true);
+        if (val && val == 'roundCount') {
+          this.$set(this.form.roundCount, 'isHidden', false);
+        } else if (val && val == 'parallel') {
+          this.$set(this.form.parallelCount, 'isHidden', false);
+        }
+      });
     }
   },
   computed: {},

@@ -32,6 +32,10 @@
           <template slot="isActive" slot-scope="{ row }">
             <span>{{ getActiveName(row.isActive) }}</span>
           </template>
+          <template slot="isLoad" slot-scope="{ row }">
+            <span v-if="row.jobStatus && row.jobStatus.isLoad == 1" class="text-success">{{ $t('page.yes') }}</span>
+            <span v-else class="text-grey">{{ $t('page.no') }}</span>
+          </template>
           <template slot="cron" slot-scope="{ row }">
             <div>
               <TsQuartz :value="row.cron" showType="read"></TsQuartz>
@@ -166,6 +170,7 @@ export default {
           // 选中列表表头字段
           { key: 'name', title: _this.$t('page.name') }, // 名称
           { key: 'isActive', title: _this.$t('page.status') }, // 状态
+          { key: 'isLoad', title: this.$t('page.loaded')},
           { key: 'cron', title: this.$t('term.autoexec.timingplan') }, // cron表达式
           { key: 'autoexecCombopName', title: this.$t('term.autoexec.relatecombinationtool') }, // 关联组合工具
           { key: 'execCount', title: this.$t('term.autoexec.executecount') }, // 执行次数

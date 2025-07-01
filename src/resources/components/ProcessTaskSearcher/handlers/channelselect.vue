@@ -256,7 +256,16 @@ export default {
               } catch (e) {
                 console.error(e);
               }
-              this.formConditionList.push(newD);
+              //如果有相同的属性，就不添加了，避免重复添加
+              let findItem = this.formConditionList.find(f => f.handler === newD.handler);
+              if (findItem) {
+                if (findItem.formHandler === newD.formHandler && !this.$utils.isEmpty(newD.config)) {
+                  let newConfig = Object.assign({}, findItem.config || {}, newD.config);
+                  this.$set(findItem, 'config', newConfig);
+                }
+              } else {
+                this.formConditionList.push(newD);
+              }
             });
           }
         });

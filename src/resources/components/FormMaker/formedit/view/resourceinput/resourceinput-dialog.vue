@@ -347,7 +347,7 @@ export default {
   }
   .input-show {
     padding: 16px;
-    height: calc(100vh - 160px);
+    height: calc(100vh - 150px);
     overflow-y: auto;
     .tip-input {
       position: relative;
@@ -363,7 +363,7 @@ export default {
   .node-show {
     padding: 16px;
     width: 100%;
-    height: calc(100vh - 160px);
+    height: calc(100vh - 150px);
     overflow-y: auto;
     .clear-btn {
       text-align: right;

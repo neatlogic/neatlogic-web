@@ -43,6 +43,22 @@ const env = {
   getInstanceList(params) {
     // 实例列表
     return axios.post('/api/rest/deploy/app/module/env/auto/config/instance/search', params);
+  },
+  saveEnvDbResource(params) {
+    // 保存环境db资源
+    return axios.post('/api/rest/deploy/app/config/env/cientity/save', params);
+  },
+  saveEnvDbPublicAccount(params) {
+    // 保存发布应用配置DB公共账号 
+    return axios.post('/api/rest/deploy/app/config/env/db/publicaccount/save', params);
+  },
+  saveEnvDbPrivateaccount(params) {
+    // 保存发布应用配置DB私有账号 
+    return axios.post('/api/rest/deploy/app/config/env/db/privateaccount/save', params);
+  },
+  deleteEnvDbPrivateaccount(params) {
+    // 删除发布应用配置DB私有账号 
+    return axios.post('/api/rest/deploy/app/config/env/db/privateaccount/delete', params);
   }
 };
 

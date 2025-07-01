@@ -5,7 +5,7 @@
         <Row v-if="canEdit" class="input-border" :gutter="4">
           <Col :span="11">
             <div class="bg-op input-show radius-sm" :class="!isValid?'border-error':''">
-              <div class="text-tip fz10 tip-input line-2 mb-md" :title="$t('term.autoexec.ipformattip')">
+              <div class="text-tip fz10 tip-input line-3 mb-md" :title="$t('term.autoexec.ipformattip')">
                 <span class="tsfont-question-o input-dec"></span>
                 {{ $t('term.autoexec.ipformattip') }}
               </div>
@@ -16,7 +16,12 @@
                 :placeholder="inputPlaceholder"
               ></Input>
               <div class="footer-btn">
-                <Button type="primary" ghost @click="addTarget">{{ $t('term.autoexec.addtotarget') }}</Button>
+                <Button
+                  type="primary"
+                  ghost
+                  :loading="isLoading"
+                  @click="addTarget"
+                >{{ $t('term.autoexec.addtotarget') }}</Button>
                 <div class="input-valid" :class="messageConfig.error+messageConfig.info? 'text-href':'text-primary'">
                   <Tooltip max-width="320" theme="light" transfer>
                     <div class="valid-text overflow tips">
@@ -79,7 +84,7 @@ import {mutations} from '@/views/pages/autoexec/detail/actionDetail/actionState.
 export default {
   name: '',
   components: {
-    MoreTarget: () => import('@/resources/components/FormMaker/formedit/view/resourceinput/more-target.vue'),
+    MoreTarget: () => import('./more-target.vue'),
     NodeView: () => import('../targetView/node-view')
   },
   filtes: {},
@@ -101,7 +106,8 @@ export default {
       inputPlaceholder: `192.168.0.33
 192.168.0.1:22
 192.168.0.1:3306/instance_name`,
-      nonExistList: []
+      nonExistList: [],
+      isLoading: false
     };
   },
   beforeCreate() {},
@@ -117,7 +123,7 @@ export default {
   methods: {
     async addTarget() {
       let addList = [];
-      this.messageConfig = { error: '', info: '', succee: 0};
+      this.messageConfig = { error: '', info: '', succee: ''};
       if (!this.value.trim()) {
         return false;
       }
@@ -167,6 +173,10 @@ export default {
         }
       });
       if (addList.length > 0) {
+        if (addList.length > 1000) {
+          this.messageConfig.error = this.$t('term.autoexec.inputnodelimit');
+          return;
+        }
         //接口校验
         await this.validinputnodelist(addList);
       }
@@ -203,6 +213,7 @@ export default {
         inputNodeList: list,
         cmdbGroupType: this.opType
       };
+      this.isLoading = true;
       return this.$api.autoexec.action.validinputnodelist(data).then(res => {
         if (res.Status == 'OK') {
           let existList = res.Return.existList || [];
@@ -212,6 +223,8 @@ export default {
           }
           this.messageConfig.succee = this.$t('term.autoexec.importsuccesstarget', {target: existList.length});
         }
+      }).finally(() => {
+        this.isLoading = false;
       });
     },
     getNonExistListText() {
@@ -312,7 +325,7 @@ export default {
 }
 .input-show{
   padding: 16px;
-  height: 310px;
+  height: 330px;
   .tip-input {
     position: relative;
     padding-left: 16px;
@@ -326,7 +339,7 @@ export default {
 }
 .node-show{
   padding: 16px;
-  height: 310px;
+  height: 330px;
   .clear-btn{
     text-align: right;
     margin-bottom: 12px;

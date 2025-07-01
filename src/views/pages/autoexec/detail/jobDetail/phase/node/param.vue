@@ -1,12 +1,33 @@
 <template>
   <div>
-    <div>
-      <Button
+    <div class="action-group line">
+      <template v-if="phaseData && phaseData.execMode === 'runner'">
+        <span
+          v-if="jobData.isCanExecute"
+          class="action-item tsfont-restart"
+          :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
+          @click="runnerAction('reset')"
+        >{{ $t('page.reset') }}</span>
+        <span
+          v-if="jobData.isCanExecute"
+          class="action-item tsfont-minus-o"
+          :class="phaseData.status != 'failed' ? 'disable' : 'text-action'"
+          @click="runnerAction('ignore')"
+        >{{ $t('page.ignore') }}
+        </span>
+        <span
+          v-if="jobData.isCanExecute"
+          class="action-item tsfont-run"
+          :class="phaseData.status == 'running' ? 'disable' : 'text-action'"
+          @click="runnerAction('refire')"
+        >{{ $t('page.execute') }}
+        </span>
+      </template>
+      <span
         v-if="!downLoading && paramList.length > 0"
         v-download="getDownurl()"
-        type="primary"
-        ghost
-      >{{ $t('term.autoexec.paramdownload') }}</Button>
+        class="action-item tsfont-download"
+      >{{ $t('term.autoexec.paramdownload') }}</span>
       <span v-if="downLoading" class="action-item disable" :title="$t('page.downloadloadingtip')">
         <Icon type="ios-loading" size="18" class="loading"></Icon>
         {{ $t('page.downloading') }}
@@ -97,7 +118,9 @@ export default {
     resourceId: [Number, String], //资源id
     sqlName: [String, String], //作业文件名
     jobId: [Number, String], // 作业id
-    type: [String, String] //输入|输出 参数
+    type: [String, String], //输入|输出 参数
+    phaseData: { type: Object },
+    jobData: { type: Object }
   },
   data() {
     let _this = this;
@@ -184,6 +207,9 @@ export default {
         isJson = false;
       }
       return isJson;
+    },
+    runnerAction(action) {
+      this.$emit('runnerAction', action);
     }
   },
   computed: {

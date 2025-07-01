@@ -5,14 +5,15 @@ let copyPath = '';
 let src = './src';
 let baseImg = './public/resource';
 let commercialModule = './src/commercial-module';
+let communityModule = './src/community-module';
 let localUrl = '../neatlogic-web/src/resources';
 let pageTitle = 'neatlogic'; //页面标题名称
 const { tenantName, urlPrefix } = require('./apiconfig.json');
 let faviconIcon = './public/resource/img/common/tsfavicon.png';
 let importCustomConfig = glob.sync(`${commercialModule}/**/customconfig.js`) || [];
-importCustomConfig.forEach((filePath) => {
+importCustomConfig.forEach(filePath => {
   if (filePath) {
-    let {tableStyle, title, loginTitle, imgPath, publicPath = '', faviconIconPath} = require(filePath);
+    let { tableStyle, title, loginTitle, imgPath, publicPath = '', faviconIconPath } = require(filePath);
     copyPath = publicPath;
     if (loginTitle) {
       process.env.VUE_APP_LOGINTITLE = loginTitle || 'welcome';
@@ -35,10 +36,25 @@ function getPages(pageList) {
   const pages = {};
   if (!pageList) {
     const pagePath = glob.sync(src + '/views/pages/*/router.js');
-    let importModulePathList = glob.sync(`${commercialModule}/**/router.js`) || [];
     let pagePathList = [...pagePath];
-
     let defaultModuleList = getAllModuleList([], JSON.parse(JSON.stringify(pagePath)));
+
+    //加载开源模块路由
+    let importCommunityModulePathList = glob.sync(`${communityModule}/**/router.js`) || [];
+    let communityModuleList = [];
+    if (importCommunityModulePathList && importCommunityModulePathList.length > 0) {
+      importCommunityModulePathList.forEach(filePath => {
+        let moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
+        if (moduleName && !defaultModuleList.includes(getModuleName(moduleName))) {
+          // 剔除非模块的情况，如自定义页面或者自定义组件
+          pagePathList.push(filePath);
+          communityModuleList.push(getModuleName(moduleName));
+        }
+      });
+    }
+
+    //加载商业模块路由
+    let importModulePathList = glob.sync(`${commercialModule}/**/router.js`) || [];
     let commercialModuleList = [];
     if (importModulePathList && importModulePathList.length > 0) {
       importModulePathList.forEach(filePath => {
@@ -50,6 +66,7 @@ function getPages(pageList) {
         }
       });
     }
+
     pagePathList.forEach(filePath => {
       let moduleName = filePath.match(/\/([a-zA-Z0-9_-]+)\/router\.js$/)[1];
 
@@ -59,8 +76,14 @@ function getPages(pageList) {
       if (`${filename}` == 'login') {
         pageLogin = `${pageTitle}`;
       }
+      let entry = `${src}/views/pages/${filename}/${filename}.js`;
+      if (communityModuleList.includes(filename)) {
+        entry = `${communityModule}/${moduleName}/${filename}.js`;
+      } else if (commercialModuleList.includes(filename)) {
+        entry = `${commercialModule}/${moduleName}/${filename}.js`;
+      }
       newpage[filename] = {
-        entry: commercialModuleList.includes(filename) ? `${commercialModule}/${moduleName}/${filename}.js` : `${src}/views/pages/${filename}/${filename}.js`,
+        entry: entry,
         template: `public/index.html`,
         filename: `${filename}.html`,
         title: pageLogin, // 标题名称+参数
@@ -83,6 +106,7 @@ function getPages(pageList) {
       Object.assign(pages, newpage);
     });
   }
+  console.log('pages', JSON.stringify(pages));
   return pages;
 }
 function getModuleName(moduleName) {
@@ -107,34 +131,38 @@ function getAllModuleList(defaultModuleList, modulePathList = []) {
 function resolve(dir) {
   return path.join(__dirname, dir);
 }
-const copyRsPack = copyPath ? [
-  {
-    from: resolve(copyPath), // 需要复制的目录
-    to: resolve('dist/'), // 复制到目标目录
-    force: true,
-    filter: (resourcePath) => {
-      return resourcePath.endsWith('.html'); // 只复制 .html 文件
+const copyRsPack = copyPath
+  ? [
+    {
+      from: resolve(copyPath), // 需要复制的目录
+      to: resolve('dist/'), // 复制到目标目录
+      force: true,
+      filter: resourcePath => {
+        return resourcePath.endsWith('.html'); // 只复制 .html 文件
+      },
+      noErrorOnMissing: true // 当没有找到对应的文件或目录时，忽略错误
     },
-    noErrorOnMissing: true // 当没有找到对应的文件或目录时，忽略错误
-  },
-  {
-    from: resolve(copyPath),
-    to: resolve('dist/resource/'),
-    filter: (resourcePath) => {
-      return !resourcePath.endsWith('.html');
-    },
-    force: true,
-    noErrorOnMissing: true
-  }
-] : [];
-const copyFavicon = faviconIcon ? [
-  {
-    from: resolve(faviconIcon),
-    to: resolve('dist/resource/img/common/'),
-    force: true,
-    noErrorOnMissing: true
-  }
-] : [];
+    {
+      from: resolve(copyPath),
+      to: resolve('dist/resource/'),
+      filter: resourcePath => {
+        return !resourcePath.endsWith('.html');
+      },
+      force: true,
+      noErrorOnMissing: true
+    }
+  ]
+  : [];
+const copyFavicon = faviconIcon
+  ? [
+    {
+      from: resolve(faviconIcon),
+      to: resolve('dist/resource/img/common/'),
+      force: true,
+      noErrorOnMissing: true
+    }
+  ]
+  : [];
 module.exports = {
   css: {
     loaderOptions: {
@@ -165,7 +193,7 @@ module.exports = {
     plugins: [
       new CopyPlugin({
         patterns: [...copyRsPack, ...copyFavicon]
-      }) 
+      })
     ]
   },
   chainWebpack: config => {

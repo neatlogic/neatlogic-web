@@ -70,6 +70,9 @@ export default {
             const isRefresh = res.Return.isRefresh;
             this.startPos = Math.min(this.logData.startPos, this.startPos);
             this.endPos = Math.max(this.logData.endPos, this.endPos);
+            if (!res.Return.lineList) {
+              return;
+            }
             if (param.direction == 'down') {
               for (let i = 0; i < res.Return.lineList.length; i++) {
                 this.logContentList.push(res.Return.lineList[i]);
@@ -126,7 +129,7 @@ export default {
       };
     },
     offsetHeight() {
-      return this.mode == 'page' ? this.isHasExtraInfo ? '310px' : '215px' : '180px';
+      return this.mode == 'page' ? this.isHasExtraInfo ? '330px' : '215px' : '180px';
     }
   },
   watch: {

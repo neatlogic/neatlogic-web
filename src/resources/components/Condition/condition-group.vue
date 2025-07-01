@@ -25,6 +25,7 @@
                   :disabled="readonly"
                   :value="conItem.name"
                   :transfer="true"
+                  border="border"
                   valueName="name"
                   textName="label"
                   :validateList="[{ name: 'required', message: ' ' }]"
@@ -43,6 +44,7 @@
                   :value="conItem.expression"
                   :dataList="getExpressionList(conItem)"
                   :transfer="true"
+                  border="border"
                   :validateList="[{ name: 'required', message: ' ' }]"
                   @change="
                     (value, option) => {
@@ -57,7 +59,9 @@
                 v-if="getAttr(conItem)"
                 :readonly="readonly"
                 :value="conItem.valueList"
+                :expression="conItem.expression"
                 :conditionItem="getAttr(conItem)"
+                :conditionItemData="conItem"
                 @change="
                   val => {
                     setAttrValue(conItem, val);
@@ -154,7 +158,9 @@ export default {
         gte: '大于等于',
         lte: '小于等于',
         'is-null': '为空',
-        'is-not-null': '不为空'
+        'is-not-null': '不为空',
+        inworktime: '在服务时间内',
+        outworktime: '在服务时间外'
       },
       joinTypeList: [
         {

@@ -153,6 +153,7 @@ export default {
               uuid: this.$utils.setUuid(),
               _relId: relId, //记录来自哪个关系，自动填上配置项
               _direction: rel.direction, //记录关系方向
+              flagRelId: relId, // 标识关系id，用于ITSM判断是否是关系，关系不需要直接显示在列表中。
               ciId: ciId,
               rootCiId: this.propRootCiId,
               ciName: ci.name,

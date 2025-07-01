@@ -6,85 +6,17 @@
           <div class="mb-nm">
             <TsRow>
               <Col :span="12"></Col>
-              <Col :span="12"><CombineSearcher v-model="searchValue" v-bind="searchConfig" @change="searchJob(1)"></CombineSearcher>
+              <Col :span="12"><CombineSearcher v-model="searchValue" v-bind="searchConfig" @change="searchDeployPipeline(1)"></CombineSearcher>
               </Col>
             </TsRow>
           </div>
           <div>
-            <TsTable
-              :theadList="theadList"
-              v-bind="jobData"
-              :loading="isLoading"
-              @changeCurrent="searchJob"
-              @changePageSize="changePageSize"
-            >
-              <template v-slot:showChildren="{ row }">
-                <span v-if="row.parentId == -1" class="text-href">
-                  <span v-if="!row.loading" :class="{ 'tsfont-minus-square': row['showChildren'], 'tsfont-plus-square': !row['showChildren'] }" @click="toggleChildJob(row)"></span>
-                  <Icon
-                    v-else
-                    type="ios-loading"
-                    size="16"
-                    class="loading"
-                  ></Icon>
-                </span>
-              </template>
-              <template v-slot:name="{ row }">
-                <span
-                  v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'"
-                  class="text-href"
-                  @click="toBatchJobDetail(row)"
-                  @contextmenu="newTab($event, row, 'batch-job-detail')"
-                >
-                  {{ row.name }}
-                </span>
-                <span
-                  v-else
-                  class="text-href"
-                  :class="{ 'ml-nm': (!!row.parentId && row.parentId != -1) }"
-                  @contextmenu="newTab($event, row, 'job-detail')"
-                  @click="toJobDetail(row)"
-                >{{ row.name }}</span>
-                <span><Status v-if="row.reviewStatus != 'passed'" :statusValue="row.reviewStatus" :statusName="row.reviewStatusName"></Status></span>
-                <Tooltip
-                  v-if="row.warnCount > 0 || row.isHasIgnored > 0"
-                  transfer
-                  class="stepStatues com-status"
-                  placement="bottom"
-                  theme="light"
-                >
-                  <span class="tsfont-warning-o text-warn"></span>
-                  <template v-slot:content>
-                    <div>
-                      <div v-if="row.warnCount > 0">{{ $t('term.autoexec.loghaswarninfo') }}</div>
-                      <div v-if="row.isHasIgnored > 0">{{ $t('term.deploy.phaseexistignorenode') }}</div>
-                    </div>
-                  </template>
-                </Tooltip>
-              </template>
-              <template slot="operationType" slot-scope="{ row }">
-                <span class="text-href" @click="toOperationDetail(row)">
-                  <span>{{ row.operationTypeName }}</span>
-                  <span v-if="row.operationName">({{ row.operationName }})</span>
-                </span>
-              </template>
-              <template slot="status" slot-scope="{ row }">
-                <Status :statusValue="row.status" :statusName="row.statusName" type="text"></Status>
-              </template>
-              <template v-slot:startTime="{ row }">
-                <div v-if="row.startTime" class="fz10">
-                  <span>{{ row.startTime | formatDate }}</span>
-                  <span class="text-grey ml-xs">{{ $t('page.begin') }}</span>
-                </div>
-                <div v-if="row.endTime" class="fz10">
-                  <span>{{ row.endTime | formatDate }}</span>
-                  <span class="text-grey ml-xs">{{ $t('page.finish') }}</span>
-                </div>
-              </template>
-              <template slot="completionRate" slot-scope="{ row }">
-                <Liquid :percent="row.completionRate" :size="7" :config="getConfig(row)" />
-              </template>
-            </TsTable>
+            <DeployPipelineTable
+              ref="tableData"
+              :defaultSearchParam="searchParam"
+              :fixedHeader="false"
+              :isNeedRefresh="false"
+            ></DeployPipelineTable>
           </div>
         </div>
       </template>
@@ -95,10 +27,8 @@
 export default {
   name: '',
   components: {
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue'),
-    Status: () => import('@/resources/components/Status/CommonStatus.vue'),
-    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    DeployPipelineTable: () => import('@/views/pages/deploy/job/publishing/deploy-pipeline-table.vue')
   },
   props: {
     id: { type: Number },
@@ -107,7 +37,6 @@ export default {
   data() {
     return {
       isLoading: false,
-      jobData: {},
       searchValue: {},
       searchConfig: { search: true,
         labelPosition: 'top',
@@ -158,60 +87,11 @@ export default {
         isShow: true,
         width: 'large',
         hasFooter: false
-      },
-      theadList: [
-        { key: 'showChildren' },
-        {
-          title: this.$t('page.name'),
-          key: 'name'
-        },
-        {
-          title: this.$t('page.scene'),
-          key: 'scenarioName'
-        },
-        {
-          title: this.$t('page.status'),
-          key: 'status'
-        },
-        {
-          title: this.$t('page.timecost'),
-          key: 'costTime'
-        },
-        {
-          title: this.$t('page.executeuser'),
-          key: 'execUserVo',
-          type: 'user',
-          uuid: 'uuid'
-        },
-        {
-          title: this.$t('page.source'),
-          key: 'sourceName'
-        },
-        {
-          title: this.$t('page.plantime'),
-          key: 'planStartTime',
-          type: 'time'
-        },
-        {
-          title: this.$t('page.startstoptime'),
-          key: 'startTime',
-          keyend: 'endTime'
-        },
-        {
-          title: this.$t('term.autoexec.triggertype'),
-          key: 'triggerTypeName'
-        },
-        {
-          title: this.$t('term.autoexec.executionsituation'),
-          key: 'completionRate'
-        }
-      ]
+      }
     };
   },
   beforeCreate() {},
-  created() {
-    this.searchJob(1);
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -221,99 +101,17 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    changePageSize(pageSize) {
-      this.searchParam.pageSize = pageSize;
-      this.searchJob(1);
-    },
-    toggleChildJob(row, isShow) {
-      if (row['showChildren']) {
-        this.$set(row, 'showChildren', false);
-        for (let i = this.jobData.tbodyList.length - 1; i >= 0; i--) {
-          const element = this.jobData.tbodyList[i];
-          if (element.parentId === row.id) {
-            this.jobData.tbodyList.splice(i, 1);
-          }
-        }
-      } else {
-        this.getChildrenJob(row);
+    searchDeployPipeline(currentPage) {
+      if (this.$refs.tableData) {
+        this.$refs.tableData.searchJob(currentPage, this.searchValue);
       }
-    },
-    getChildrenJob(parentRow) {
-      this.$set(parentRow, 'loading', true);
-      this.$api.deploy.job.searchJobList({ parentId: parentRow.id }).then(res => {
-        const jobList = res.Return.tbodyList;
-        if (jobList && jobList.length > 0) {
-          const pIndex = this.jobData.tbodyList.findIndex(d => d === parentRow);
-          if (pIndex >= 0) {
-            this.$set(parentRow, 'showChildren', true);
-            this.$set(parentRow, 'loading', false);
-            this.jobData.tbodyList.splice(pIndex + 1, 0, ...jobList);
-          }
-        }
-      });
-    },
-    searchJob(currentPage) {
-      this.isLoading = true;
-      if (currentPage) {
-        this.searchParam.currentPage = currentPage;
-      }
-      const param = { ...this.searchParam, ...this.searchValue };
-      this.$api.deploy.job
-        .searchJobList(param)
-        .then(res => {
-          this.jobData = res.Return;
-          if (this.jobData.tbodyList && this.jobData.tbodyList.length > 0) {
-            this.jobData.tbodyList.forEach(element => {
-              if (element.source === 'batchdeploy' || element.source === 'deployschedulepipeline') {
-                this.$set(element, '#expander', true);
-              } else {
-                this.$set(element, '#expander', false);
-              }
-            });
-          }
-        })
-        .finally(() => {
-          this.isLoading = false;
-        });
     },
     close() {
       this.$emit('close');
-    },
-    toJobDetail(row) {
-      this.$router.push({
-        path: '/job-detail',
-        query: { id: row.id }
-      });
-    },
-    toBatchJobDetail(row) {
-      const {parentId = '', id = ''} = row || {};
-      if (parentId != -1) {
-        this.toJobDetail(row);
-      } else {
-        window.open(HOME + '/deploy.html#/batch-job-detail?id=' + id, '_blank');
-      }
-    },
-    newTab(e, row, redirectPage) {
-      //鼠标右键打开新标签页
-      let base = this.$router.options.base;
-      let params = '';
-      if (row && row.id) {
-        params = `?id=${row.id}`;
-      }
-      let replaceStr = `<a href="${base}#${redirectPage}${params}" class="cursor">${row.name}</a>`;
-      e.currentTarget.innerHTML = replaceStr;
     }
   },
   filter: {},
   computed: {
-    getConfig() {
-      return row => {
-        let config = {};
-        config.status = row.status;
-        row.status == 'running' ? (config.status = 'active') : row.status == 'error' ? (config.status = 'wrong') : '';
-        return config;
-      };
-    }
   },
   watch: {}
 };

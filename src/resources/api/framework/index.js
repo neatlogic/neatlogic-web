@@ -22,6 +22,7 @@ import mq from './mq/mq';//消息队列
 import fulltextindex from './fulltextindex/fulltextindex';//全局检索
 import healthcheck from './healthcheck/healthcheck';//健康检查
 import datawarehouse from './datawarehouse/datawarehouse';//数据仓库
+import database from './database/database';//数据库
 import theme from './theme/theme';//主题定制
 import auditconfig from './auditconfig/auditconfig';//审计配置
 import file from './file/file';//附件管理
@@ -35,6 +36,7 @@ import wechat from './wechat/wechat';// 企业微信
 import extramenu from './extramenu/extramenu'; //附加菜单
 import region from './region/region';//地域管理
 import homepage from './homepage/homepage';//默认首页
+import changelogaudit from './changelogaudit/changelogaudit';//数据库变更记录
 export default {
   role,
   user,
@@ -60,6 +62,7 @@ export default {
   runner,
   healthcheck,
   datawarehouse,
+  database,
   auditconfig,
   file,
   module,
@@ -71,5 +74,6 @@ export default {
   wechat,
   extramenu,
   region,
-  homepage
+  homepage,
+  changelogaudit
 };

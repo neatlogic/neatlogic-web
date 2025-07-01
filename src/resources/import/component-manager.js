@@ -1,8 +1,14 @@
 /**
  * 组件管理器
+ * // 老写法：
  * 基于categoryList动态注册和获取组件
+ * Category来自categoryList，首字母大写
  * 注册方法：registerCategoryComponent(component)
- * 获取方法：getCategoryComponent() // Category来自categoryList，首字母大写
+ * 获取方法：getCategoryComponent()
+ * // 新写法：
+ * 如果是用新写法，获取老写法的组件，category就是categoryList中的分类名称
+ * registerComponent(category, component)
+ * getComponent(category, moduleName) // moduleName为模块名称，category为分类名称, category 为router时，才需要传入moduleName(需要获取指定模块的路由列表)，其他情况不需要传入moduleName
  *
  * 分类说明：
  * timeLine 时间线
@@ -35,7 +41,7 @@
  */
 class ComponentManager {
   static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'mqTopicConfig', 'mqSubscribeConfig', 'loginPage', 'formVersionList', 'router', 'deployAppConfigModule', 'diagramWidget', 'diagramWidgetConfig', 'diagramWidgetCustomConfig', 'alertEventHandlerEdit', 'alertEventHandlerView', 'alertEventHandlerConfig'];
-  static categoryConfig = {};
+  static categoryConfig = {_template: {}};
   static generateMethods() {
     this.categoryList.forEach(category => {
       const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
@@ -69,6 +75,49 @@ class ComponentManager {
         }
       };
     });
+    //用于注册vue模板
+    this['registerVueTemplate'] = (name, template) => {
+      this.categoryConfig['_template'][name] = template;
+    };
+    this['getVueTemplate'] = (name, template) => {
+      return this.categoryConfig['_template'][name];
+    };
+  }
+  /**
+   * 新注册组件方法
+   * @param {string} name 分类名称，如：timeLine、taskDetail、stepLog等
+   * @param {object/array}  component 组件，如：{timeLine: {component: component}}
+   */ 
+  static registerComponent(name, component) {
+    const existing = this.categoryConfig[name];
+    if (!existing) {
+      this.categoryConfig[name] = component;
+      return;
+    }
+    if (Array.isArray(component)) {
+      this.categoryConfig[name].push(...component);
+    } else {
+      for (let key in component) {
+        if (this.categoryConfig[name].hasOwnProperty(key) && Array.isArray(component[key]) && component[key].length > 0) {
+          this.categoryConfig[name][key].push(...component[key]);
+        } else {
+          this.categoryConfig[name][key] = component[key];
+        }
+      }
+    }
+  }
+  /**
+   * 新获取组件方法
+   * @param {string} name 分类名称，如：timeLine、taskDetail、stepLog等
+   * @param {string} moduleName 模块名称，如：process、cmdb等。模块名称是路由(router)时必填，其他时候可以不传。
+   * 
+   */ 
+  static getComponent(name, moduleName) {
+    if (name && moduleName) {
+      return this.categoryConfig[name] ? this.categoryConfig[name][moduleName] : '';
+    } else {
+      return this.categoryConfig[name];
+    }
   }
 }
 ComponentManager.generateMethods();

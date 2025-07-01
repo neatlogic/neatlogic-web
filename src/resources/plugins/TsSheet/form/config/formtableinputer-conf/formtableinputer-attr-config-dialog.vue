@@ -246,6 +246,15 @@
                 :formItemList="formItemList"
               ></FormtableinputDataSource>
             </template>
+            <template v-else-if="propertyLocal.config.dataSource === 'tag'">
+              <TagSourceSetting
+                ref="formitem_tag"
+                :config="propertyLocal.config"
+                :extendConfigList="extendConfigList"
+                labelPosition="right"
+                class="mb-nm"
+              ></TagSourceSetting>
+            </template>
             <TsFormItem v-if="propertyLocal.handler === 'formselect'" :label="$t('page.inputtip')">
               <TsFormInput v-model="propertyLocal.config.placeholder" :maxlength="50"></TsFormInput>
             </TsFormItem>
@@ -328,6 +337,9 @@
                 }"
               ></ExpressionSetting>
             </TsFormItem>
+          </template>
+          <template v-else-if="propertyLocal.handler === 'formuserselect'" v-slot:config>
+            <FormuserselectSetting ref="formitem_userselectSetting" :propertyLocal="propertyLocal"></FormuserselectSetting>
           </template>
           <template v-slot:reaction>
             <Tabs v-if="propertyLocal.reaction && isReady">
@@ -457,7 +469,9 @@ export default {
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
     FormtableinputDataSource: () => import('./formtableinput-data-source.vue'),
     ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue'),
-    ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue')
+    ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue'),
+    TagSourceSetting: () => import('../common/tag-source-setting.vue'),
+    FormuserselectSetting: () => import('./formuserselect-setting.vue')
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -475,7 +489,11 @@ export default {
       default: () => []
     },
     formItemUuid: String,
-    source: { type: String, default: '' } //表单组件配置来源：scene(场景)
+    source: { type: String, default: '' }, //表单组件配置来源：scene(场景)
+    extendConfigList: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
@@ -518,7 +536,8 @@ export default {
       dataSourceList: [
         { value: 'static', text: this.$t('page.staticdatasource') },
         { value: 'matrix', text: this.$t('page.matrix') },
-        { value: 'formtableinputer', text: this.$t('term.framework.formtableinputercomponent') }
+        { value: 'formtableinputer', text: this.$t('term.framework.formtableinputercomponent') },
+        { value: 'tag', text: this.$t('page.tag')}
       ],
       formConfig: [
         {
@@ -558,6 +577,7 @@ export default {
             { text: this.$t('page.checkbox'), value: 'formcheckbox' },
             { text: this.$t('page.date'), value: 'formdate' },
             { text: this.$t('page.time'), value: 'formtime' },
+            { text: this.$t('term.framework.userselect'), value: 'formuserselect' },
             { text: this.$t('page.uploadattachment'), value: 'formupload' },
             { text: this.$t('term.cmdb.expression'), value: 'formexpression' }
           ],
@@ -871,6 +891,9 @@ export default {
           this.$delete(this.reactionName, 'setvalue');
           this.$delete(this.propertyLocal.reaction, 'setvalue');
         }
+        if (val === 'formuserselect') {
+          this.$set(this.propertyLocal.config, 'isMultiple', false);
+        }
         this.isReady = false;
         this.$nextTick(() => {
           this.isReady = true;
@@ -930,6 +953,7 @@ export default {
     reactionValid(key, isValid) {
       this.$set(this.reactionError, key, !isValid);
     }
+    
   },
   filter: {},
   computed: {

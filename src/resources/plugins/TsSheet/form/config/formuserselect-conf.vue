@@ -15,6 +15,7 @@
         :disabled="disabled"
         @on-change="val => {
           setConfig('groupList', val);
+          setConfig('defaultValue', null);
         }"
       ></TsFormSelect>
     </TsFormItem>

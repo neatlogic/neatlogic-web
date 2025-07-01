@@ -32,8 +32,8 @@
     </div>
     <template v-slot:footer>
       <template v-if="!disabled">
-        <Button type="primary" ghost @click.native="onOk('removeAll')">全部清空</Button>
-        <Button type="primary" @click="onOk('save')">确定</Button>
+        <Button type="primary" ghost @click.native="onOk('removeAll')">{{ $t('page.clear') }}</Button>
+        <Button type="primary" @click="onOk('save')">{{ $t('page.confirm') }}</Button>
       </template>
     </template>
   </TsDialog>

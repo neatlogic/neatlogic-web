@@ -26,6 +26,7 @@
             v-bind="tableSetting"
             @changeCurrent="changeCurrent"
             @changePageSize="changePageSize"
+            @headerTitleOperation="headerTitleOperation"
           >
             <template slot="name" slot-scope="{ row }">
               <span v-if="row && row.name" class="text-href" @click="editRunner(row)">{{ row.name }}</span>
@@ -124,7 +125,8 @@ export default {
         },
         {
           title: this.$t('page.status'),
-          key: 'status'
+          key: 'status',
+          headerIcon: 'tsfont-refresh'
         },
         {
           title: 'IP',
@@ -173,7 +175,9 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.clearTimmer();
+  },
   destroyed() {},
   methods: {
     closeAddRunner(needRefresh) {
@@ -228,8 +232,46 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             Object.assign(this.tableSetting, res.Return);
+            this.refreshTbodyList();
           }
         });
+    },
+    getRunnerStatus(item) {
+      return this.$api.framework.runner.getRunnerStatus({id: item.id}).then((res) => {
+        if (res.Status == 'OK') {
+          if (!this.$utils.isEmpty(res.Return)) {
+            this.$set(item, 'status', res.Return.status);
+            this.$set(item, 'statusLcd', res.Return.statusLcd);
+            this.$set(item, 'statusText', res.Return.statusText);
+          }
+        }
+      });
+    },
+    clearTimmer() {
+      if (this.timmer) {
+        clearTimeout(this.timmer);
+        this.timmer = null;
+      }
+    },
+    refreshTbodyList(isShowRefreshTip) {
+      this.clearTimmer();
+      if (!this.$utils.isEmpty(this.tableSetting.tbodyList)) {
+        let promiseArr = [];
+        promiseArr = this.tableSetting.tbodyList.map(item => {
+          return this.getRunnerStatus(item);
+        });
+        Promise.all(promiseArr).then(() => {
+          if (isShowRefreshTip) {
+            this.$Message.success(this.$t('message.refreshsuccess'));
+          }
+          this.timmer = setTimeout(() => {
+            this.refreshTbodyList();
+          }, 10000);
+        });
+      }
+    },
+    headerTitleOperation() {
+      this.refreshTbodyList(true);
     }
   },
   computed: {},

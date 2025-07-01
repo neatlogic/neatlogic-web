@@ -479,6 +479,7 @@ export default {
                   id: obj.id
                 }
               });
+              this.$addHistoryData('handler', this.handler);
             }
           });
         }

@@ -46,6 +46,7 @@ const sqldump = () => import('./healthcheck/sqldump.vue');
 const databaseFragment = () => import('./healthcheck/database-fragment.vue');
 
 const dataWarehouseManage = () => import('./datawarehouse/datawarehouse-manage.vue');
+const databaseManage = () => import('./database/database-manage.vue');
 const fileManage = () => import('./file/file-manage.vue');
 const themeManage = () => import('./theme/theme-manage.vue');
 
@@ -59,6 +60,7 @@ const serverManage = () => import('./server/server-manage.vue'); // 服务器管
 const extramenuManage = () => import('./extramenu/extramenu-manage.vue'); //菜单管理
 const regionManage = () => import('./region/region-manage.vue');//地域管理
 const homepageManage = () => import('./homepage/homepage-manage.vue');//首页管理
+const changelogAuditManage = () => import('./changelogaudit/changelogaudit-manage.vue');//数据库变更记录
 
 import { $t } from '@/resources/init.js';
 import { config } from './config.js';
@@ -354,6 +356,18 @@ let routerList = [
     meta: {
       title: $t('router.framework.datawarehousemanage'),
       icon: 'tsfont-db',
+      ismenu: true,
+      type: 'integration',
+      authority: ['DATA_WAREHOUSE_MODIFY']
+    }
+  },
+  {
+    path: '/database-manage',
+    name: 'database-manage',
+    component: databaseManage,
+    meta: {
+      title: $t('router.framework.datasource'),
+      icon: 'tsfont-db-cluster',
       ismenu: true,
       type: 'integration',
       authority: ['DATA_WAREHOUSE_MODIFY']
@@ -728,6 +742,18 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-home',
       authority: 'HOME_PAGE_MODIFY',
+      type: 'others'
+    }
+  },
+  {
+    path: '/changelogaudit-manage',
+    name: 'changelogAuditManage',
+    component: changelogAuditManage,
+    meta: {
+      title: $t('router.framework.changelogaudit'),
+      ismenu: true,
+      icon: 'tsfont-formstaticlist',
+      authority: 'ADMIN',
       type: 'others'
     }
   }

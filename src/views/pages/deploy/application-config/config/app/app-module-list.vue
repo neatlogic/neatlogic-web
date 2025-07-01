@@ -413,7 +413,7 @@ export default {
           .getEnvTreeList(params)
           .then(res => {
             if (res && res.Status == 'OK') {
-              const envList = res.Return || [];
+              const envList = res.Return.tbodyList || [];
               this.$set(module, 'envList', envList);
               this.$set(module, 'isExpand', true);
             }

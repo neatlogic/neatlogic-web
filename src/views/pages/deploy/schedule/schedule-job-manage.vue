@@ -39,6 +39,10 @@
               <span v-if="row.isActive">{{ $t('page.enable') }}</span>
               <span v-else>{{ $t('page.disable') }}</span>
             </template>
+            <template slot="isLoad" slot-scope="{ row }">
+              <span v-if="row.jobStatus && row.jobStatus.isLoad == 1" class="text-success">{{ $t('page.yes') }}</span>
+              <span v-else class="text-grey">{{ $t('page.no') }}</span>
+            </template>
             <template slot="cron" slot-scope="{ row }">
               <div>
                 <TsQuartz :value="row.cron" showType="read"></TsQuartz>
@@ -67,6 +71,34 @@
             <template v-slot:execCount="{ row }">
               <div :class="row.execCount>0?'text-href':''" @click="showJobList(row)">
                 {{ row.execCount }}
+              </div>
+            </template>
+            <template slot="jobStatus" slot-scope="{ row }">
+              <div v-if="!$utils.isEmpty(row.jobStatus)">
+                <div>
+                  <span class="text-grey">{{ $t('term.autoexec.starttoexecute') }}</span>
+                  <span>{{ row.jobStatus.execCount || '0' }}次</span>
+                </div>
+                <div v-if="row.jobStatus.beginTime != null">
+                  <span class="text-grey">{{ $t('term.autoexec.planstarttime') }}：</span>
+                  <span>{{ row.jobStatus.beginTime | formatDate }}</span>
+                </div>
+                <div v-if="row.jobStatus.endTime != null">
+                  <span class="text-grey">{{ $t('term.autoexec.planendtime') }}：</span>
+                  <span>{{ row.jobStatus.endTime | formatDate }}</span>
+                </div>
+                <div v-if="row.jobStatus.lastFireTime != null">
+                  <span class="text-grey">{{ $t('term.autoexec.lastactivetime') }}：</span>
+                  <span>{{ row.jobStatus.lastFireTime | formatDate }}</span>
+                </div>
+                <div v-if="row.jobStatus.lastFinishTime != null">
+                  <span class="text-grey">{{ $t('term.autoexec.lastcompletetime') }}：</span>
+                  <span>{{ row.jobStatus.lastFinishTime | formatDate }}</span>
+                </div>
+                <div v-if="row.jobStatus.nextFireTime != null">
+                  <span class="text-grey">{{ $t('page.nextactivationtime') }}：</span>
+                  <span>{{ row.jobStatus.nextFireTime | formatDate }}</span>
+                </div>
               </div>
             </template>
             <template v-slot:action="{ row }">
@@ -131,6 +163,10 @@ export default {
           key: 'isActive'
         },
         {
+          title: this.$t('page.loaded'),
+          key: 'isLoad'
+        },
+        {
           title: this.$t('term.autoexec.timingplan'),
           key: 'cron'
         },
@@ -163,6 +199,10 @@ export default {
           title: this.$t('page.fcd'),
           key: 'lcd',
           type: 'time'
+        },
+        {
+          title: this.$t('term.autoexec.executionsituation'),
+          key: 'jobStatus'
         },
         { key: 'action' }
       ],

@@ -12,12 +12,12 @@
           </span>
         </div>-->
       </template>
-      <template v-slot:sider>
+      <!--<template v-slot:sider>
         <ViewCiEntityList :viewId="viewId" :ciEntityId="ciEntityId"></ViewCiEntityList>
-      </template>
+      </template>-->
       <template v-slot:content>
         <div class="padding-md">
-          <div class="right-block bg-block radius-lg ">
+          <div class="right-block bg-block radius-lg">
             <div v-if="!isTopoShow">
               <ViewDetailData mode="particular" :viewId="viewId" :ciEntityId="ciEntityId"></ViewDetailData>
             </div>
@@ -36,11 +36,11 @@
   </div>
 </template>
 <script>
-import ViewCiEntityList from './view-cientity-list.vue';
+//import ViewCiEntityList from './view-cientity-list.vue';
 export default {
   name: '',
   components: {
-    ViewCiEntityList,
+    //ViewCiEntityList,
     ViewDetailData: () => import('./view-detail-data.vue'),
     CustomViewTopo: () => import('./view-topo.vue')
   },
@@ -70,8 +70,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
   computed: {
     attrListGrouped() {

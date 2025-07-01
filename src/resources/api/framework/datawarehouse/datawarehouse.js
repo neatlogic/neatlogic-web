@@ -45,6 +45,13 @@ const datawarehouse = {
   },
   validXml(xml) {
     return axios.post('/api/rest/datawarehouse/datasource/validxml', {xml: xml});
+  },
+  getExample() {
+    return fetch('/resource/example/datasource_example.xml', {
+      method: 'get',
+      credentials: 'same-origin',
+      responseType: 'text'
+    }).then(res => res.text());
   }
 };
 

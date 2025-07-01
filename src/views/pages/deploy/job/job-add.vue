@@ -114,8 +114,22 @@
             ></ModuleList>
           </div>
           <div id="roundCount" class="box-block">
-            <Divider orientation="start">{{ $t('term.autoexec.batchsetting') }}</Divider>
+            <Divider orientation="start">{{ $t('page.autoexecparallel') }}</Divider>
             <div>
+              <TsFormItem
+                :label="$t('page.autoexecparallpolicy')"
+                :labelWidth="100"
+                labelPosition="left"
+                :required="true"
+              >
+                <TsFormRadio
+                  v-model="parallelPolicy"
+                  :dataList="parallelPolicyDataList"
+                  @on-change="changeParallelPolicy"
+                ></TsFormRadio>
+              </TsFormItem>
+            </div>
+            <div v-if="parallelPolicy === 'roundCount'">
               <TsFormItem
                 :label="$t('term.autoexec.batchquantity')"
                 :labelWidth="100"
@@ -125,6 +139,20 @@
                 <TsFormSelect
                   v-model="roundCount"
                   v-bind="roundCountForm"
+                ></TsFormSelect>
+              </TsFormItem>
+            </div>
+            <div v-else>
+              <TsFormItem
+                :label="$t('term.autoexec.parall')"
+                :labelWidth="100"
+                labelPosition="left"
+                :required="true"
+              >
+                <TsFormSelect
+                  ref="parallelForm"
+                  v-model="parallelCount"
+                  v-bind="parallelForm"
                 ></TsFormSelect>
               </TsFormItem>
             </div>
@@ -174,7 +202,8 @@ export default {
     SaveSetting: () => import('@/views/pages/autoexec/detail/runnerDetail/save-setting.vue'),
     ResultDialog: () => import('./publishing/result-dialog'),
     PublishingValid: () => import('./publishing/publishing-valid'),
-    PhaseList: () => import('./publishing/phase-list')
+    PhaseList: () => import('./publishing/phase-list'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {},
   data() {
@@ -201,6 +230,17 @@ export default {
         desc: this.$t('term.autoexec.roundcountdescrition'),
         validateList: ['required', 'maxNum']
       },
+      parallelForm: {
+        placeholder: this.$t('page.selectinput'),
+        border: 'border',
+        dataList: this.getRoundCountList(),
+        filterName: 'text',
+        // allowCreate: true,
+        search: true,
+        transfer: true,
+        desc: this.$t('term.autoexec.paralldesc'),
+        validateList: ['required', 'maxNum']
+      },
       runtimeParamList: [], //作业参数
       combopPhaseList: [],
       isSaveDialog: false,
@@ -216,7 +256,19 @@ export default {
       jobConfig: {},
       paramValue: {},
       saveLoading: false,
-      moduleEnvInstanceMap: {}
+      moduleEnvInstanceMap: {},
+      parallelPolicyDataList: [
+        {
+          text: this.$t('page.autoexecparall'),
+          value: 'parallel'
+        },
+        {
+          text: this.$t('page.autoexecbatchround'),
+          value: 'roundCount'
+        }
+      ],
+      parallelPolicy: 'roundCount',
+      parallelCount: 4
     };
   },
   beforeCreate() {},
@@ -376,6 +428,8 @@ export default {
         envId: this.envId,
         scenarioId: this.scenarioId,
         roundCount: this.roundCount,
+        parallelCount: this.parallelCount,
+        parallelPolicy: this.parallelPolicy,
         param: {},
         moduleList: this.$refs.moduleList.getData()
       };
@@ -524,6 +578,8 @@ export default {
         }
       });
       this.jobConfig.roundCount && (this.roundCount = this.jobConfig.roundCount);
+      this.jobConfig.parallelCount && (this.parallelCount = this.jobConfig.parallelCount);
+      this.jobConfig.parallelPolicy && (this.parallelPolicy = this.jobConfig.parallelPolicy);
       this.paramValue = this.jobConfig.param || {};
       if (this.jobConfig.scenarioId) {
         let findScenario = this.initData.scenarioList.find((item) => item.isEnable == true && item.scenarioId == this.jobConfig.scenarioId);
@@ -549,6 +605,13 @@ export default {
       ];
       list.push(...this.$utils.getRoundCountList());
       return list;
+    },
+    changeParallelPolicy(val) {
+      if (val && val == 'roundCount') {
+        this.roundCount = this.roundCount || 64;
+      } else {
+        this.parallelCount = this.parallelCount || 32;
+      }
     }
   },
   filter: {},

@@ -12,7 +12,7 @@
         tag="ul"
         :list="list"
         handle=".stepIndex"
-        :disabled="!canEdit"
+        :disabled="!canEdit || appModuleId || envId"
         @end="dragEnd"
       >
         <template v-for="(ary, sindex) in list">
@@ -20,13 +20,13 @@
             v-if="ary && ary.length"
             :key="sindex"
             class="border-color"
-            :class="{edit:canEdit}"
+            :class="{edit:canEdit && !appModuleId && !envId}"
           >
             <span
               class="stepIndex border-color tsfont bg-op"
               :class="{'text-primary border-primary':ary.find(item=>item.uuid==currentStep.uuid)}"
               :data-index="sindex + 1"
-              :title="canEdit?$t('term.deploy.dragtochangetheorder'):''"
+              :title="canEdit && !appModuleId && !envId?$t('term.deploy.dragtochangetheorder'):''"
               @click.stop
             ></span>
             <draggable
@@ -53,7 +53,7 @@
                       <div class="step-content-top" @click="showStep(step)">
                         <div class="stepName name overflow" :class="{'text-primary':step.uuid == currentStep.uuid}" :title="step.name && step.name.length > 9 ? step.name : ''">
                           <span
-                            v-if="canEdit && ary.length > 1"
+                            v-if="canEdit && ary.length > 1 && (!appModuleId && !envId)"
                             class="tsfont-bar move"
                             :title="canEdit ? '阶段组内拖拽排序' : ''"
                             @click.stop
@@ -78,9 +78,9 @@
                           <span class="text-grey fz10">{{ getExecModeText(step.execMode) }}</span>
                         </div>
                         <div class="stepBtn" @click.stop>
-                          <!-- 阶段的增删：只能在应用层; 阶段的修改：应用层可以修改名称，模块层不能修改阶段，环境层只能修改执行目标 -->
+                          <!-- 阶段的增删：只能在应用层; 阶段的修改：应用层可以修改名称，模块层不能修改阶段;环境层只能修改执行目标且阶段必须重载 -->
                           <i v-if="canEdit && !appModuleId && !envId" class="tsfont-plus text-tip-active" @click="editStep('add', step, sindex)"></i>
-                          <i v-if="canEdit && (envId || (appSystemId && !appModuleId && !envId))" class="tsfont-edit text-tip-active pl-md" @click="editStep('edit', step, sindex)"></i>
+                          <i v-if="canEdit && ((envId && step.hasOwnProperty('override') && step.override) || (appSystemId && !appModuleId && !envId))" class="tsfont-edit text-tip-active pl-md" @click="editStep('edit', step, sindex)"></i>
                           <i v-if="canEdit && !appModuleId && !envId" class="tsfont-trash-o text-tip-active pl-md" @click="delStep(step,sindex)"></i>
                           <i class="text-tip-active pl-md" :class="step.isShow? 'tsfont-up' : 'tsfont-down'" @click="showStep(step)"></i>
                         </div>

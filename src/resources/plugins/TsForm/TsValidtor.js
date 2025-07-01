@@ -1,12 +1,12 @@
 //true 代表校验通过，  false代表校验不通过
 import axios from '@/resources/api/http.js';
 import utils from '@/resources/assets/js/util.js';
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 
 let validtor = {
   required: {
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('page.content')}),
+    message: $t('form.placeholder.pleaseinput', { target: $t('page.content') }),
     validator: function(rule, value) {
       if (typeof value == 'string') {
         return value.trim() != '';
@@ -26,18 +26,18 @@ let validtor = {
       return /^[0-9]\d*$/.test(value);
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.intgreaterthan0')})
+    message: $t('form.placeholder.pleaseinput', { target: $t('term.plugin.intgreaterthan0') })
   },
   float: {
     validator: function(rule, value) {
       if (value == '') {
         return true;
       }
-      
+
       return /^-?\d+(\.\d+)?$/.test(value + '');
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.floatpointnumber')})
+    message: $t('form.placeholder.pleaseinput', { target: $t('term.plugin.floatpointnumber') })
   },
   mail: {
     validator: function(rule, value) {
@@ -47,21 +47,21 @@ let validtor = {
       return /^[_a-zA-Z0-9-]{1}([\._a-zA-Z0-9-]+)(\.[_a-zA-Z0-9-]+)*@[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+){1,3}$/.test(value);
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('page.emailaddress')})
+    message: $t('form.placeholder.pleaseinput', { target: $t('page.emailaddress') })
   },
   char: {
     validator: function(rule, value) {
       return /^[a-zA-Z]*$/.test(value);
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('page.alphabet')})
+    message: $t('form.placeholder.pleaseinput', { target: $t('page.alphabet') })
   },
   chinese: {
     validator: function(rule, value) {
       return /^[\u4e00-\u9fff]$/.test(value);
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('page.chinesecharacter')})
+    message: $t('form.placeholder.pleaseinput', { target: $t('page.chinesecharacter') })
   },
   dbindex: {
     validator: function(rule, value) {
@@ -75,21 +75,21 @@ let validtor = {
       return /^smtp\.[a-zA-Z0-9]+(\.[a-zA-Z0-9]+){1,3}(\:[0-9]+){0,1}$/.test(value);
     },
     trigger: 'change',
-    message: $t('message.pleaseentertruetarget', {target: $t('term.plugin.smtpserver')})
+    message: $t('message.pleaseentertruetarget', { target: $t('term.plugin.smtpserver') })
   },
   pop: {
     validator: function(rule, value) {
       return /^pop\.[a-zA-Z0-9]+(\.[a-zA-Z0-9]+){1,3}(\:[0-9]+){0,1}$/.test(value);
     },
     trigger: 'change',
-    message: $t('message.pleaseentertruetarget', {target: $t('term.plugin.popserver')})
+    message: $t('message.pleaseentertruetarget', { target: $t('term.plugin.popserver') })
   },
   imap: {
     validator: function(rule, value) {
       return /^imap\.[a-zA-Z0-9]+(\.[a-zA-Z0-9]+){1,3}(\:[0-9]+){0,1}$/.test(value);
     },
     trigger: 'change',
-    message: $t('message.pleaseentertruetarget', {target: $t('term.plugin.imapserver')})
+    message: $t('message.pleaseentertruetarget', { target: $t('term.plugin.imapserver') })
   },
   ip: {
     validator: function(rule, value) {
@@ -100,7 +100,20 @@ let validtor = {
       }
     },
     trigger: 'change',
-    message: $t('message.pleaseentertruetarget', {target: $t('page.ipaddress')})
+    message: $t('message.pleaseentertruetarget', { target: $t('page.ipaddress') })
+  },
+  domainOrIP: {
+    validator: function(rule, value) {
+      // 校验域名或者IP是否合法
+      if (!utils.isEmpty(value)) {
+        const hostRegex = /^((([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.|$)){4})$/;
+        return hostRegex.test(value);
+      } else {
+        return true;
+      }
+    },
+    trigger: 'change',
+    message: $t('message.pleaseentertruetarget', { target: $t('page.domain') + $t('page.or') + 'IP' })
   },
   ipAndPort: {
     validator: function(rule, value) {
@@ -124,7 +137,7 @@ let validtor = {
       }
     },
     trigger: 'change',
-    message: $t('message.pleaseentertruetarget', {target: $t('term.plugin.ipadressandport')})
+    message: $t('message.pleaseentertruetarget', { target: $t('term.plugin.ipadressandport') })
   },
   cidr: {
     validator: function(rule, value) {
@@ -135,7 +148,7 @@ let validtor = {
       }
     },
     trigger: 'change',
-    message: $t('message.pleaseentertruetarget', {target: $t('page.cidradress')})
+    message: $t('message.pleaseentertruetarget', { target: $t('page.cidradress') })
   },
   url: {
     validator: function(rule, value) {
@@ -146,7 +159,7 @@ let validtor = {
       }
     },
     trigger: 'change',
-    message: $t('message.pleaseentertruetarget', {target: 'URL'})
+    message: $t('message.pleaseentertruetarget', { target: 'URL' })
   },
   phone: {
     validator: function(rule, value) {
@@ -157,14 +170,14 @@ let validtor = {
       }
     },
     trigger: 'change',
-    message: $t('message.pleaseentertruetarget', {target: $t('page.phonenumber')})
+    message: $t('message.pleaseentertruetarget', { target: $t('page.phonenumber') })
   },
   maxNum: {
     validator: function(rule, value) {
       return /^[0-9]\d*|(\-1)$/.test(value);
     },
     trigger: 'change',
-    message: $t('message.pleaseentertruetarget', {target: $t('term.plugin.positivenumberor-1')})
+    message: $t('message.pleaseentertruetarget', { target: $t('term.plugin.positivenumberor-1') })
   },
   PeriodOfTime: {
     validator: function(rule, value) {
@@ -194,8 +207,7 @@ let validtor = {
       return false;
     },
     trigger: 'change',
-    message: $t('message.pleaseentertruetarget', {target: $t('term.plugin.adress')})
-
+    message: $t('message.pleaseentertruetarget', { target: $t('term.plugin.adress') })
   },
   port: {
     validator: function(rule, value) {
@@ -216,7 +228,7 @@ let validtor = {
       return true;
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.65535')})
+    message: $t('form.placeholder.pleaseinput', { target: $t('term.plugin.65535') })
   },
   mask: {
     validator: function(rule, value) {
@@ -237,8 +249,7 @@ let validtor = {
       return true;
     },
     trigger: 'change',
-    message: $t('message.pleaseentertruetarget', {target: $t('term.plugin.mask')})
-
+    message: $t('message.pleaseentertruetarget', { target: $t('term.plugin.mask') })
   },
   integer_p: {
     validator: function(rule, value) {
@@ -249,8 +260,7 @@ let validtor = {
       return true;
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('page.positiveinteger')})
-
+    message: $t('form.placeholder.pleaseinput', { target: $t('page.positiveinteger') })
   },
   integer_natural: {
     validator: function(rule, value) {
@@ -261,8 +271,7 @@ let validtor = {
       return true;
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.nonnegativeint')})
-
+    message: $t('form.placeholder.pleaseinput', { target: $t('term.plugin.nonnegativeint') })
   },
   integer: {
     validator: function(rule, value) {
@@ -271,7 +280,7 @@ let validtor = {
       return true;
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.int')})
+    message: $t('form.placeholder.pleaseinput', { target: $t('term.plugin.int') })
   },
   range: {
     validator: function(rule, value) {
@@ -330,11 +339,10 @@ let validtor = {
   },
   enchar: {
     validator: function(rule, value) {
-      return /^[a-zA-Z\d]*$/.test(value);
+      return /^[a-zA-Z\d_\-]*$/.test(value);
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.alphabetornumber')})
-
+    message: $t('form.placeholder.pleaseinput', { target: $t('term.plugin.alphabetornumber') })
   },
   enchar_space: {
     name: 'enchar_space',
@@ -342,8 +350,7 @@ let validtor = {
       return /^[a-zA-Z\d\.\ \_]*$/.test(value);
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.alphabetnumberempty')})
-
+    message: $t('form.placeholder.pleaseinput', { target: $t('term.plugin.alphabetnumberempty') })
   },
   unique_ident: {
     name: 'unique_ident',
@@ -351,8 +358,7 @@ let validtor = {
       return /^[a-zA-Z_]*$/.test(value);
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('page.alphabet')})
-
+    message: $t('form.placeholder.pleaseinput', { target: $t('page.alphabet') })
   },
   uppercase: {
     name: 'uppercase',
@@ -360,8 +366,7 @@ let validtor = {
       return /^[A-Z]*$/.test(value);
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.capalphabet')})
-
+    message: $t('form.placeholder.pleaseinput', { target: $t('term.plugin.capalphabet') })
   },
   lowercase: {
     name: 'lowercase',
@@ -369,8 +374,7 @@ let validtor = {
       return /^[a-z]*$/.test(value);
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.loweralphabet')})
-
+    message: $t('form.placeholder.pleaseinput', { target: $t('term.plugin.loweralphabet') })
   },
   parameter: {
     validator: function(rule, value) {
@@ -393,8 +397,7 @@ let validtor = {
       return true;
     },
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.1to12')})
-
+    message: $t('form.placeholder.pleaseinput', { target: $t('term.plugin.1to12') })
   },
   check: {
     validator: function(rule, value) {
@@ -455,22 +458,22 @@ let validtor = {
     },
     pattern: '', //  ^ [a - z] + $ 正则表达式
     trigger: 'change',
-    message: $t('form.placeholder.pleaseinput', {target: $t('term.plugin.properlyformattestring')})
-
+    message: $t('form.placeholder.pleaseinput', { target: $t('term.plugin.properlyformattestring') })
   },
-  searchUrl: {  
+  searchUrl: {
     validator: function(rule, value, vueNode) {
       rule = rule || this;
       let _this = this;
       this.searchTime && clearTimeout(this.searchTime);
-      if (utils.isEmpty(value)) { //值为空时不进行调用接口，校验通过
+      if (utils.isEmpty(value)) {
+        //值为空时不进行调用接口，校验通过
         _this.searchTime = null;
         _this.cancelAxios = null;
         _this.isValid = true;
         vueNode.$set(vueNode, 'validMesage', '');
         return true;
       }
-   
+
       this.searchTime = setTimeout(function() {
         //调用接口的预处理
         let cancel = _this.cancelAxios;
@@ -478,45 +481,49 @@ let validtor = {
         const CancelToken = axios.CancelToken;
         _this.cancelAxios = CancelToken.source();
         let params = typeof rule.params === 'function' ? rule.params(value, rule) || {} : rule.params || {};
-        let headers = {unConsole: 1 };
+        let headers = { unConsole: 1 };
         let key = rule.key || vueNode.name;
         if (key) {
           params[key] = value;
           headers['neatlogic-validfield'] = key;
         }
         let errorMessage = '';
-        axios.post(rule.url, params, { cancelToken: _this.cancelAxios.token, headers: headers}).then(res => {
-          _this.isValid = true;
-          if (res.Status == 'OK') {
-            if (!res.Return) {
-              vueNode.validMesage == _this.errorMessage ? errorMessage = '' : errorMessage = vueNode.validMesage;
-              _this.isValid = true;
+        axios
+          .post(rule.url, params, { cancelToken: _this.cancelAxios.token, headers: headers })
+          .then(res => {
+            _this.isValid = true;
+            if (res.Status == 'OK') {
+              if (!res.Return) {
+                vueNode.validMesage == _this.errorMessage ? (errorMessage = '') : (errorMessage = vueNode.validMesage);
+                _this.isValid = true;
+              } else {
+                _this.errorMessage = errorMessage = rule.message || res.Message;
+                _this.isValid = false;
+              }
             } else {
               _this.errorMessage = errorMessage = rule.message || res.Message;
               _this.isValid = false;
             }
-          } else {
-            _this.errorMessage = errorMessage = rule.message || res.Message;
-            _this.isValid = false;
-          }
-        }).catch(res => {
-          if (res.response.status == 530) {
-            //翻译处理
-            let text = res.response.data.Message;
-            let arr = text.split('.');
-            let text1 = vueNode.$i18n.t(text, res.response.data.Param);
-            if (!(arr.length < 1 || text1 == text)) {
-              text = text1;
-            } 
-            _this.errorMessage = errorMessage = _this.message || text;
-            _this.isValid = false;
-          }
-        }).finally(() => {
-          _this.searchTime = null;
-          _this.cancelAxios = null;
-          vueNode.$set(vueNode, 'validMesage', errorMessage);
-          rule.validSearchUrl && rule.validSearchUrl(_this.isValid, errorMessage);
-        });
+          })
+          .catch(res => {
+            if (res.response.status == 530) {
+              //翻译处理
+              let text = res.response.data.Message;
+              let arr = text.split('.');
+              let text1 = vueNode.$i18n.t(text, res.response.data.Param);
+              if (!(arr.length < 1 || text1 == text)) {
+                text = text1;
+              }
+              _this.errorMessage = errorMessage = _this.message || text;
+              _this.isValid = false;
+            }
+          })
+          .finally(() => {
+            _this.searchTime = null;
+            _this.cancelAxios = null;
+            vueNode.$set(vueNode, 'validMesage', errorMessage);
+            rule.validSearchUrl && rule.validSearchUrl(_this.isValid, errorMessage);
+          });
       }, 500);
       return true;
     },

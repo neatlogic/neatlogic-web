@@ -3,7 +3,7 @@
     <div class="textRight">
       <CombineSearcher
         v-model="searchVal"
-        style="width:400px;display:inline-block"
+        style="width: 400px; display: inline-block"
         v-bind="searchConfig"
         @change="searchCiEntity(1)"
       ></CombineSearcher>
@@ -21,6 +21,9 @@
         </template>
         <template slot="deleteTime" slot-scope="{ row }">
           <span>{{ row.deleteTime | formatDate }}</span>
+        </template>
+        <template slot="deleteUser" slot-scope="{ row }">
+          <UserCard :uuid="row.deleteUser" :name="row.deleteUserName" :hideAvatar="true"></UserCard>
         </template>
         <template slot="description" slot-scope="{ row }">
           <Tooltip
@@ -47,7 +50,7 @@
           </div>
           <div v-else-if="head.key.startsWith('global_') && row.globalAttrEntityData" :key="index">
             <div v-if="row.globalAttrEntityData[head.key] && row.globalAttrEntityData[head.key].valueList">
-              <Tag v-for="(v,vindex) in row.globalAttrEntityData[head.key].valueList" :key="vindex">
+              <Tag v-for="(v, vindex) in row.globalAttrEntityData[head.key].valueList" :key="vindex">
                 {{ v.value }}
               </Tag>
             </div>
@@ -85,15 +88,14 @@
   </div>
 </template>
 <script>
-import CombineSearcher from '@/resources/components/CombineSearcher/CombineSearcher.vue';
-
 export default {
   name: '',
   components: {
-    CombineSearcher,
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     AttrViewer: () => import('./attr-viewer.vue'),
-    DeletedHistoryDetail: () => import('./deleted-history-detail.vue')
+    DeletedHistoryDetail: () => import('./deleted-history-detail.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   props: {
     ciId: { type: Number },
@@ -169,7 +171,7 @@ export default {
         this.searchParam.currentPage = current;
       }
 
-      this.$api.cmdb.cientity.searchDeleteCiEntity({...this.searchParam, ...this.searchVal}).then(res => {
+      this.$api.cmdb.cientity.searchDeleteCiEntity({ ...this.searchParam, ...this.searchVal }).then(res => {
         this.searchParam.currentPage = res.Return.currentPage;
         this.searchParam.pageSize = res.Return.pageSize;
         this.ciEntityData = res.Return;
@@ -186,9 +188,9 @@ export default {
           brotherTransactionCount = res.Return;
         });
       }
-      let content = this.$t('dialog.content.recoverconfirm', {target: this.$t('term.cmdb.cientity')});
+      let content = this.$t('dialog.content.recoverconfirm', { target: this.$t('term.cmdb.cientity') });
       if (brotherTransactionCount > 0) {
-        content = this.$t('dialog.content.invokerecoverconfirm', {count: brotherTransactionCount});
+        content = this.$t('dialog.content.invokerecoverconfirm', { count: brotherTransactionCount });
       }
       this.$createDialog({
         title: this.$t('dialog.title.recoverconfirm'),

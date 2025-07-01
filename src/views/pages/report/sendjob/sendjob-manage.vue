@@ -36,6 +36,10 @@
             </template>
           </template>
           <template v-slot:name="{row}"><span class="text-href" @click.stop="toEditPage('edit',row)">{{ row.name }}</span></template>
+          <template v-slot:isLoad="{row}">
+            <span v-if="row.jobStatus && row.jobStatus.isLoad == 1" class="text-success">{{ $t('page.yes') }}</span>
+            <span v-else class="text-grey">{{ $t('page.no') }}</span>
+          </template>
           <template v-slot:cron="{row}">
             <TsQuartz :value="row.cron" showType="read" />
           </template>
@@ -48,7 +52,7 @@
             ></TsFormSwitch>
           </template>
           <template v-slot:nextFireTime="{row}">
-            {{ row.nextFireTime | formatDate }}
+            <span v-if="row.jobStatus">{{ row.jobStatus.nextFireTime | formatDate }}</span>
           </template>
           <template v-slot:action="{row}">
             <div class="tstable-action">
@@ -118,6 +122,7 @@ export default {
         {title: this.$t('page.name'), key: 'name'},
         {title: this.$t('page.emailtitle'), key: 'emailTitle'},
         {title: this.$t('page.recipient'), key: 'toNameList'},
+        {title: this.$t('page.loaded'), key: 'isLoad'},
         {title: this.$t('page.executeplan'), key: 'cron'},
         {title: this.$t('page.status'), key: 'isActive'},
         {title: this.$t('term.report.nextsendingtime'), key: 'nextFireTime'},

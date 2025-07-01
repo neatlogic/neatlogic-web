@@ -106,7 +106,10 @@ export default {
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'ScheduleType' },
           validateList: ['required'],
-          disabled: this.disabled
+          disabled: this.disabled,
+          onChange: (val) => {
+            this.changeJobType(val);
+          }
         }
       },
       generalFormConfig: {
@@ -151,6 +154,20 @@ export default {
             this.handlePipelineId(val);
           }
         },
+        appSystemId: {
+          type: 'select',
+          label: this.$t('page.apply'),
+          value: null,
+          dynamicUrl: '/api/rest/deploy/app/config/appsystem/search',
+          dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, 'app'); },
+          rootName: 'tbodyList',
+          border: 'border',
+          transfer: true,
+          validateList: ['required'],
+          onChange: (val) => {
+            this.changeAppSystemId(val);
+          }
+        },
         pipelineId: {
           type: 'select',
           label: this.$t('term.autoexec.pipeline'),
@@ -159,7 +176,8 @@ export default {
           params: {type: 'appsystem', needVerifyAuth: 1},
           rootName: 'tbodyList',
           dealDataByUrl: this.dealPipelineData,
-          validateList: ['required']
+          validateList: ['required'],
+          transfer: true
         }
       }
     };
@@ -273,6 +291,23 @@ export default {
     handlePipelineId(val) {
       this.$set(this.pipelineFormConfig.pipelineId, 'value', null);
       this.$set(this.pipelineFormConfig.pipelineId.params, 'type', val);
+      this.$set(this.pipelineFormConfig.pipelineId.params, 'appSystemId', null);
+      if (val == 'appsystem') {
+        this.$set(this.pipelineFormConfig.pipelineId, 'disabled', true);
+      } else if (val == 'global') {
+        this.$set(this.pipelineFormConfig.pipelineId, 'disabled', false);
+      }
+      this.$set(this.pipelineFormConfig.appSystemId, 'value', null);
+      this.$set(this.pipelineFormConfig.appSystemId, 'isHidden', val !== 'appsystem');
+    },
+    changeAppSystemId(val) { //应用流水线切换
+      this.$set(this.pipelineFormConfig.pipelineId, 'value', null);
+      this.$set(this.pipelineFormConfig.pipelineId.params, 'appSystemId', val);
+      if (val) {
+        this.$set(this.pipelineFormConfig.pipelineId, 'disabled', false);
+      } else {
+        this.$set(this.pipelineFormConfig.pipelineId, 'disabled', true);
+      }
     },
     dealPipelineData(nodeList) {
       let dataList = [];
@@ -285,6 +320,17 @@ export default {
         });
       }
       return dataList;
+    },
+    changeJobType(val) { //定时作业类型切换
+      if (val == 'general') {
+        Object.keys(this.generalFormConfig).forEach(key => {
+          this.$set(this.generalFormConfig[key], 'value', null);
+        });
+        this.handleModuleParams();
+      } else if (val == 'pipeline') {
+        this.$set(this.pipelineFormConfig.pipelineType, 'value', 'appsystem');
+        this.handlePipelineId('appsystem');
+      }
     }
   },
   filter: {},
@@ -303,8 +349,11 @@ export default {
           } else if (this.baseParams.type == 'pipeline') {
             this.$set(this.pipelineFormConfig.pipelineType, 'value', this.baseParams.pipelineType);
             this.$set(this.pipelineFormConfig.pipelineId, 'value', this.baseParams.pipelineId);
+            this.$set(this.pipelineFormConfig.appSystemId, 'value', this.baseParams.appSystemId);
             this.$set(this.pipelineFormConfig.pipelineType, 'disabled', true);
             this.$set(this.pipelineFormConfig.pipelineId, 'disabled', true);
+            this.$set(this.pipelineFormConfig.appSystemId, 'disabled', true);
+            this.$set(this.pipelineFormConfig.appSystemId, 'isHidden', this.baseParams.pipelineType !== 'appsystem');
             if (this.baseParams.pipelineType == 'appsystem') {
               this.$set(this.pipelineFormConfig.pipelineId.params, 'type', 'appsystem');
             } else if (this.baseParams.pipelineType == 'global') {
