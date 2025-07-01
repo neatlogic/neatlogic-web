@@ -37,117 +37,119 @@
     <!-- 描述end -->
     <!-- 固定页面tab -->
     <template v-if="isFixedAbove">
-      <div
-        v-for="(item, index) in fixedPageList"
-        :key="index"
-        class="bg-op radius-lg mt-nm mb-nm padding"
-        :class="item.tabValue == 'step' ? 'common-main' : ''"
-      >
-        <template v-if="item.tabValue == 'report'">
-          <!-- 内容详情 -->
-          <div>
-            <span>{{ item.label }}</span>
-            <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage('report')"></span>
-          </div>
-          <div v-if="haveProcessTask(false, false, formConfig, processTaskConfig)" class="pt-nm pb-nm">
-            <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
-              <template v-if="formConfig._type == 'new'">
-                <TsSheet
-                  ref="formSheet"
-                  mode="read"
-                  :value="formConfig"
-                  :formSceneUuid="formSceneUuid"
-                  :data="formAttributeDataMap"
-                  :readonly="!actionConfig.save || !formEdit"
-                  :externalData="externalData"
-                  class="pl-sm pr-sm"
-                  @emit="formSheetEmitData"
-                  @updateHiddenComponentList="updateHiddenComponentList"
-                  @setValue="setFormAttributeDataMap"
-                ></TsSheet>
-              </template>
-              <template v-else>
-                <FormPreview
+      <template v-for="(item, index) in fixedPageList">
+        <div
+          v-if="isShowfixedPage(item.tabValue)"
+          :key="index"
+          class="bg-op radius-lg mt-nm mb-nm padding"
+          :class="item.tabValue == 'step' ? 'common-main' : ''"
+        >
+          <template v-if="item.tabValue == 'report'">
+            <!-- 内容详情 -->
+            <div>
+              <span>{{ item.label }}</span>
+              <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage('report')"></span>
+            </div>
+            <div v-if="haveProcessTask(false, false, formConfig, processTaskConfig)" class="pt-nm pb-nm">
+              <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
+                <template v-if="formConfig._type == 'new'">
+                  <TsSheet
+                    ref="formSheet"
+                    mode="read"
+                    :value="formConfig"
+                    :formSceneUuid="formSceneUuid"
+                    :data="formAttributeDataMap"
+                    :readonly="!actionConfig.save || !formEdit"
+                    :externalData="externalData"
+                    class="pl-sm pr-sm"
+                    @emit="formSheetEmitData"
+                    @updateHiddenComponentList="updateHiddenComponentList"
+                    @setValue="setFormAttributeDataMap"
+                  ></TsSheet>
+                </template>
+                <template v-else>
+                  <FormPreview
+                    ref="FormPreview"
+                    :content="formConfig"
+                    :isEdit="formEdit"
+                    :isReadonly="actionConfig.save ? false : true"
+                    :stephidetrList="stephidetrList"
+                    :stepreadtrList="stepreadtrList"
+                    :formAttributeHideList="formAttributeHideList"
+                    :isEnableDefaultValue="!!actionConfig.complete"
+                  ></FormPreview>
+                </template>
+              </div>
+              <div v-else-if="processTaskConfig.isHasOldFormProp == 1" class="form-view">
+                <FormPreviewHtml
                   ref="FormPreview"
-                  :content="formConfig"
-                  :isEdit="formEdit"
-                  :isReadonly="actionConfig.save ? false : true"
-                  :stephidetrList="stephidetrList"
-                  :stepreadtrList="stepreadtrList"
-                  :formAttributeHideList="formAttributeHideList"
-                  :isEnableDefaultValue="!!actionConfig.complete"
-                ></FormPreview>
-              </template>
+                  class="block-content"
+                  lass="order-list"
+                  :processTaskId="processTaskId"
+                ></FormPreviewHtml>
+              </div>
             </div>
-            <div v-else-if="processTaskConfig.isHasOldFormProp == 1" class="form-view">
-              <FormPreviewHtml
-                ref="FormPreview"
-                class="block-content"
-                lass="order-list"
-                :processTaskId="processTaskId"
-              ></FormPreviewHtml>
+          </template>
+          <template v-else-if="item.tabValue.indexOf('showStep') != -1">
+            <div class="mb-xs">
+              <span>{{ item.label }}</span>
+              <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
             </div>
-          </div>
-        </template>
-        <template v-else-if="item.tabValue.indexOf('showStep') != -1">
-          <div class="mb-xs">
-            <span>{{ item.label }}</span>
-            <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-          </div>
-          <stepitems
-            :is="getSteptype(item.item)"
-            :item="item.item"
-            :handlerStepInfo="item.item.handlerStepInfo"
-          ></stepitems>
-        </template>
-        <template v-else-if="item.tabValue.indexOf('subTask') != -1">
-          <div class="mb-xs">
-            <span>{{ item.label }}</span>
-            <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-          </div>
-          <StrategyDetail
-            :processTaskId="processTaskId"
-            :processTaskStepId="processTaskStepId"
-            :actionConfig="actionConfig"
-            :config="getStrategyConfig(item.tabValue)"
-            @getStepList="getStepList"
-          ></StrategyDetail>
-        </template>
-        <template v-else-if="slotList.find(d => d.name === item.tabValue)">
-          <div class="mb-xs">
-            <span>{{ item.label }}</span>
-            <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-          </div>
-          <div class="padding">
-            <slot :name="item.tabValue"></slot>
-          </div>
-        </template>
-        <template v-else>
-          <div class="mb-xs">
-            <span>{{ item.label }}</span>
-            <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-          </div>
-          <Component
-            :is="item.tabValue"
-            :processTaskId="processTaskId"
-            :processTaskStepId="processTaskStepId"
-            :defaultStepData="stepData"
-            :currentStepId="defaultProcessTaskStepId"
-            :processTaskConfig="processTaskConfig"
-            :defaultActiveData="activeData"
-            :stepDataList="stepData"
-            :relationAuth="actionConfig.tranferreport"
-            :actionConfig="actionConfig"
-            :repeatList="repeatList"
-            :handlerStepInfo="autoexechandlerStepInfo"
-            :formConfig="formConfig"
-            :fileTable="fileTable"
-            @closeRepeatTab="closeRepeatTab"
-            @upActivityList="updateStepActive()"
-            @updataActive="(val)=>updataActive(val)"
-          ></Component>
-        </template>
-      </div>
+            <stepitems
+              :is="getSteptype(item.item)"
+              :item="item.item"
+              :handlerStepInfo="item.item.handlerStepInfo"
+            ></stepitems>
+          </template>
+          <template v-else-if="item.tabValue.indexOf('subTask') != -1">
+            <div class="mb-xs">
+              <span>{{ item.label }}</span>
+              <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+            </div>
+            <StrategyDetail
+              :processTaskId="processTaskId"
+              :processTaskStepId="processTaskStepId"
+              :actionConfig="actionConfig"
+              :config="getStrategyConfig(item.tabValue)"
+              @getStepList="getStepList"
+            ></StrategyDetail>
+          </template>
+          <template v-else-if="slotList.find(d => d.name === item.tabValue)">
+            <div class="mb-xs">
+              <span>{{ item.label }}</span>
+              <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+            </div>
+            <div class="padding">
+              <slot :name="item.tabValue"></slot>
+            </div>
+          </template>
+          <template v-else>
+            <div class="mb-xs">
+              <span>{{ item.label }}</span>
+              <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+            </div>
+            <Component
+              :is="item.tabValue"
+              :processTaskId="processTaskId"
+              :processTaskStepId="processTaskStepId"
+              :defaultStepData="stepData"
+              :currentStepId="defaultProcessTaskStepId"
+              :processTaskConfig="processTaskConfig"
+              :defaultActiveData="activeData"
+              :stepDataList="stepData"
+              :relationAuth="actionConfig.tranferreport"
+              :actionConfig="actionConfig"
+              :repeatList="repeatList"
+              :handlerStepInfo="autoexechandlerStepInfo"
+              :formConfig="formConfig"
+              :fileTable="fileTable"
+              @closeRepeatTab="closeRepeatTab"
+              @upActivityList="updateStepActive()"
+              @updataActive="(val)=>updataActive(val)"
+            ></Component>
+          </template>
+        </div>
+      </template>
     </template>
     <!-- 固定页面tab end-->
     <!-- 中间选项卡内容 -->
@@ -380,117 +382,119 @@
     <!-- 中间选项卡内容end -->
     <!-- 固定底部页面tab -->
     <template v-if="!isFixedAbove">
-      <div
-        v-for="(item, index) in fixedPageList"
-        :key="index"
-        class="bg-op radius-lg mt-nm mb-nm padding"
-        :class="item.tabValue == 'step' ? 'common-main' : ''"
-      >
-        <template v-if="item.tabValue == 'report'">
-          <!-- 内容详情 -->
-          <div>
-            <span>{{ item.label }}</span>
-            <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage('report')"></span>
-          </div>
-          <div v-if="haveProcessTask(false, false, formConfig, processTaskConfig)" class="pt-nm pb-nm">
-            <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
-              <template v-if="formConfig._type == 'new'">
-                <TsSheet
-                  ref="formSheet"
-                  mode="read"
-                  :value="formConfig"
-                  :formSceneUuid="formSceneUuid"
-                  :data="formAttributeDataMap"
-                  :readonly="!actionConfig.save || !formEdit"
-                  :externalData="externalData"
-                  class="pl-sm pr-sm"
-                  @emit="formSheetEmitData"
-                  @updateHiddenComponentList="updateHiddenComponentList"
-                  @setValue="setFormAttributeDataMap"
-                ></TsSheet>
-              </template>
-              <template v-else>
-                <FormPreview
+      <template v-for="(item, index) in fixedPageList">
+        <div
+          v-if="isShowfixedPage(item.tabValue)"
+          :key="index"
+          class="bg-op radius-lg mt-nm mb-nm padding"
+          :class="item.tabValue == 'step' ? 'common-main' : ''"
+        >
+          <template v-if="item.tabValue == 'report'">
+            <!-- 内容详情 -->
+            <div>
+              <span>{{ item.label }}</span>
+              <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage('report')"></span>
+            </div>
+            <div v-if="haveProcessTask(false, false, formConfig, processTaskConfig)" class="pt-nm pb-nm">
+              <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
+                <template v-if="formConfig._type == 'new'">
+                  <TsSheet
+                    ref="formSheet"
+                    mode="read"
+                    :value="formConfig"
+                    :formSceneUuid="formSceneUuid"
+                    :data="formAttributeDataMap"
+                    :readonly="!actionConfig.save || !formEdit"
+                    :externalData="externalData"
+                    class="pl-sm pr-sm"
+                    @emit="formSheetEmitData"
+                    @updateHiddenComponentList="updateHiddenComponentList"
+                    @setValue="setFormAttributeDataMap"
+                  ></TsSheet>
+                </template>
+                <template v-else>
+                  <FormPreview
+                    ref="FormPreview"
+                    :content="formConfig"
+                    :isEdit="formEdit"
+                    :isReadonly="actionConfig.save ? false : true"
+                    :stephidetrList="stephidetrList"
+                    :stepreadtrList="stepreadtrList"
+                    :formAttributeHideList="formAttributeHideList"
+                    :isEnableDefaultValue="!!actionConfig.complete"
+                  ></FormPreview>
+                </template>
+              </div>
+              <div v-else-if="processTaskConfig.isHasOldFormProp == 1" class="form-view">
+                <FormPreviewHtml
                   ref="FormPreview"
-                  :content="formConfig"
-                  :isEdit="formEdit"
-                  :isReadonly="actionConfig.save ? false : true"
-                  :stephidetrList="stephidetrList"
-                  :stepreadtrList="stepreadtrList"
-                  :formAttributeHideList="formAttributeHideList"
-                  :isEnableDefaultValue="!!actionConfig.complete"
-                ></FormPreview>
-              </template>
+                  class="block-content"
+                  lass="order-list"
+                  :processTaskId="processTaskId"
+                ></FormPreviewHtml>
+              </div>
             </div>
-            <div v-else-if="processTaskConfig.isHasOldFormProp == 1" class="form-view">
-              <FormPreviewHtml
-                ref="FormPreview"
-                class="block-content"
-                lass="order-list"
-                :processTaskId="processTaskId"
-              ></FormPreviewHtml>
+          </template>
+          <template v-else-if="item.tabValue.indexOf('showStep') != -1">
+            <div class="mb-xs">
+              <span>{{ item.label }}</span>
+              <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
             </div>
-          </div>
-        </template>
-        <template v-else-if="item.tabValue.indexOf('showStep') != -1">
-          <div class="mb-xs">
-            <span>{{ item.label }}</span>
-            <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-          </div>
-          <stepitems
-            :is="getSteptype(item.item)"
-            :item="item.item"
-            :handlerStepInfo="item.item.handlerStepInfo"
-          ></stepitems>
-        </template>
-        <template v-else-if="item.tabValue.indexOf('subTask') != -1">
-          <div class="mb-xs">
-            <span>{{ item.label }}</span>
-            <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-          </div>
-          <StrategyDetail
-            :processTaskId="processTaskId"
-            :processTaskStepId="processTaskStepId"
-            :actionConfig="actionConfig"
-            :config="getStrategyConfig(item.tabValue)"
-            @getStepList="getStepList"
-          ></StrategyDetail>
-        </template>
-        <template v-else-if="slotList.find(d => d.name === item.tabValue)">
-          <div class="mb-xs">
-            <span>{{ item.label }}</span>
-            <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-          </div>
-          <div class="padding">
-            <slot :name="item.tabValue"></slot>
-          </div>
-        </template>
-        <template v-else>
-          <div class="mb-xs">
-            <span>{{ item.label }}</span>
-            <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
-          </div>
-          <Component
-            :is="item.tabValue"
-            :processTaskId="processTaskId"
-            :processTaskStepId="processTaskStepId"
-            :defaultStepData="stepData"
-            :currentStepId="defaultProcessTaskStepId"
-            :processTaskConfig="processTaskConfig"
-            :defaultActiveData="activeData"
-            :stepDataList="stepData"
-            :relationAuth="actionConfig.tranferreport"
-            :actionConfig="actionConfig"
-            :repeatList="repeatList"
-            :handlerStepInfo="autoexechandlerStepInfo"
-            :formConfig="formConfig"
-            :fileTable="fileTable"
-            @closeRepeatTab="closeRepeatTab"
-            @upActivityList="updateStepActive()"
-            @updataActive="(val)=>updataActive(val)"
-          ></Component>
-        </template>
-      </div>
+            <stepitems
+              :is="getSteptype(item.item)"
+              :item="item.item"
+              :handlerStepInfo="item.item.handlerStepInfo"
+            ></stepitems>
+          </template>
+          <template v-else-if="item.tabValue.indexOf('subTask') != -1">
+            <div class="mb-xs">
+              <span>{{ item.label }}</span>
+              <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+            </div>
+            <StrategyDetail
+              :processTaskId="processTaskId"
+              :processTaskStepId="processTaskStepId"
+              :actionConfig="actionConfig"
+              :config="getStrategyConfig(item.tabValue)"
+              @getStepList="getStepList"
+            ></StrategyDetail>
+          </template>
+          <template v-else-if="slotList.find(d => d.name === item.tabValue)">
+            <div class="mb-xs">
+              <span>{{ item.label }}</span>
+              <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+            </div>
+            <div class="padding">
+              <slot :name="item.tabValue"></slot>
+            </div>
+          </template>
+          <template v-else>
+            <div class="mb-xs">
+              <span>{{ item.label }}</span>
+              <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage(item.tabValue)"></span>
+            </div>
+            <Component
+              :is="item.tabValue"
+              :processTaskId="processTaskId"
+              :processTaskStepId="processTaskStepId"
+              :defaultStepData="stepData"
+              :currentStepId="defaultProcessTaskStepId"
+              :processTaskConfig="processTaskConfig"
+              :defaultActiveData="activeData"
+              :stepDataList="stepData"
+              :relationAuth="actionConfig.tranferreport"
+              :actionConfig="actionConfig"
+              :repeatList="repeatList"
+              :handlerStepInfo="autoexechandlerStepInfo"
+              :formConfig="formConfig"
+              :fileTable="fileTable"
+              @closeRepeatTab="closeRepeatTab"
+              @upActivityList="updateStepActive()"
+              @updataActive="(val)=>updataActive(val)"
+            ></Component>
+          </template>
+        </div>
+      </template>
     </template>
     <!-- 固定页面tab end-->
     <!-- 底部内容 -->
@@ -1862,6 +1866,19 @@ export default {
         isAbove = false;
       }
       return isAbove;
+    },
+    isShowfixedPage() {
+      return (handler) => {
+        let isShow = true;
+        if (handler === 'relevance' && !this.showRelationDetail(this.actionConfig.tranferreport, this.processTaskConfig.processTaskRelationCount)) {
+          isShow = false;
+        } else if (handler === 'markrepeat' && !this.actionConfig.markrepeat && this.$utils.isEmpty(this.repeatList)) {
+          isShow = false;
+        } else if (handler === 'file' && !this.hasAccessoriesList) {
+          isShow = false;
+        }
+        return isShow;
+      };
     }
   },
   watch: {

@@ -32,6 +32,9 @@ const runner = {
   delRunnerGroupRunner(id) {
     // 删除runner组里面的runner
     return axios.post('/api/rest/runnergroup/runner/delete', {id: id});
+  },
+  getRunnerStatus(params) {
+    return axios.post('/api/rest/runner/status/check', params);
   }
 };
 export default runner;

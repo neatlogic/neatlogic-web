@@ -21,6 +21,10 @@
               <span v-if="row.isActive == 1" class="text-success">{{ $t('page.isactived') }}</span>
               <span v-if="row.isActive == 0" class="text-grey">{{ $t('page.ban') }}</span>
             </template>
+            <template slot="isLoad" slot-scope="{ row }">
+              <span v-if="row.jobStatus && row.jobStatus.isLoad == 1" class="text-success">{{ $t('page.yes') }}</span>
+              <span v-else class="text-grey">{{ $t('page.no') }}</span>
+            </template>
             <template v-slot:appSystem="{ row }">
               <span class="text-href" @click="openCronDialog(row)">{{ row.appSystemAbbrName }} ({{ row.appSystemName }})</span>
             </template>
@@ -154,6 +158,10 @@ export default {
         {
           title: this.$t('page.status'),
           key: 'isActive'
+        },
+        {
+          title: this.$t('page.loaded'),
+          key: 'isLoad'
         },
         {
           title: this.$t('term.pbc.timeplan'),
