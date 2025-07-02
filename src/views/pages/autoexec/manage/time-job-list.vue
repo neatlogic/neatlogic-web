@@ -288,7 +288,7 @@ export default {
     },
     toRecord(row) {
       // 打开执行记录
-      if (row && row.execCount) {
+      if (row) {
         this.autoexecCombopId = row.autoexecCombopId;
         this.scheduleId = row.id;
         this.isShowRecord = true;

@@ -348,9 +348,6 @@ export default {
       });
     },
     showJobList(row) {
-      if (!row.execCount) {
-        return;
-      }
       this.invokeIdList = [row.id];
       this.isListDeployJobDialogShow = true;
     },
