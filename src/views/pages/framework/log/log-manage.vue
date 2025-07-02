@@ -119,6 +119,8 @@ export default {
     },
     handleChangeServerId(serverId) {
       this.searchParam.fileName = null;
+      this.searchParam.fileSize = null;
+      this.logLines = [];
       if (serverId != null) {
         this.searchParam.serverId = serverId;
       } else {
