@@ -86,10 +86,20 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-history" @click="showAudit(row.uuid)">{{ $t('term.autoexec.executionrecord') }}</li>
-                <li class="tsfont-copy icon" @click="copyRow(row.uuid)">{{ $t('page.copy') }}</li>
+                <li
+                  class="tsfont-test icon"
+                  :title="
+                    row.isActive === 1
+                      ? '禁用才能测试'
+                      : ''
+                  "
+                  :class="{ disable: row.isActive == 1 }"
+                  @click="testRow(row, row.handler)"
+                >{{ $t('page.test') }}</li>
+                <li class="tsfont-copy icon" @click="copyRow(row.uuid,row.handler,row.group)">{{ $t('page.copy') }}</li>
                 <!-- <li class="tsfont-edit icon" @click="editRow(row.uuid)">{{ $t('page.edit') }}</li> -->
                 <li class="tsfont-trash-o icon" @click="deleteRow(row.uuid, row.name)">{{ $t('page.delete') }}</li>
+                <li class="tsfont-history" @click="showAudit(row.uuid)">{{ $t('term.autoexec.executionrecord') }}</li>
               </ul>
             </div>
           </template>
@@ -289,6 +299,28 @@ export default {
             .then(res => {
               if (res.Status == 'OK') {
                 this.$Message.success(this.$t('message.deletesuccess'));
+                this.searchJob(1);
+              }
+            });
+        }
+      });
+    },
+    testRow: function(row, handler) {
+      if (row.isActive == 1) {
+        return;
+      }
+      this.$createDialog({
+        title: this.$t('dialog.title.testconfirm'),
+        content: this.$t('dialog.content.testconfirm', {target: row.name}),
+        btnType: 'primary',
+        'on-ok': vnode => {
+          vnode.isShow = false;
+          let params = { jobUuid: row.uuid, jobHandlerClassName: handler};
+          this.$api.framework.schedule
+            .test(params)
+            .then(res => {
+              if (res.Status == 'OK') {
+                this.$Message.success(this.$t('message.executesuccess'));
                 this.searchJob(1);
               }
             });

@@ -910,7 +910,9 @@
     "isfirenext": "Do you want to activate the next group",
     "inputnodelimit": "The quantity cannot exceed 1000",
     "parall": "Concurrent quantity",
-    "paralldesc": "Execute the execution targets in order of concurrency."
+    "paralldesc": "Execute the execution targets in order of concurrency.",
+    "jobrecord": "Automated job recording",
+    "jobcount": "Number of automated tasks"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
@@ -2156,7 +2158,9 @@
     "blueSet": "Blue Green",
     "ismodified": "Modified",
     "presetrunnergroup": "Preset actuator group",
-    "testrunnerdesc": "If not specified, actuators will be automatically assigned based on IP matching of actuator groups according to network segments"
+    "testrunnerdesc": "If not specified, actuators will be automatically assigned based on IP matching of actuator groups according to network segments",
+    "jobcount": "Number of published assignments",
+    "jobrecord": "Publish homework records"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
