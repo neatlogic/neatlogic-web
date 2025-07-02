@@ -115,12 +115,40 @@
                     ></TsFormSwitch>
                   </li>
                   <li
+                    class="tsfont-test icon"
+                    :title="
+                      !row.editable
+                        ? $t('page.notauthrelationadmin')
+                        : row.isActive === 1
+                          ? '禁用才能测试'
+                          : ''
+                    "
+                    :class="{ disable: !row.editable || row.isActive == 1}"
+                    @click.stop="testRow(row, jobHandler)"
+                  >{{ $t('page.test') }}</li>
+                  <li
                     class="tsfont-trash-o"
                     :title="!row.deletable ? $t('page.notauthrelationadmin'):''"
                     :class="{ disable: !row.deletable }"
                     @click.stop="deleteSchedule(row)"
                   >
                     {{ $t('page.delete') }}
+                  </li>
+                  <li
+                    class="tsfont-putongjigui"
+                    :title="$t('term.deploy.jobrecord')"
+                    @click="showJobList(row)"
+                  >
+                    <!-- 执行记录 -->
+                    {{ $t('term.deploy.jobrecord') }}
+                  </li>
+                  <li
+                    class="tsfont-putongjigui"
+                    :title="$t('term.autoexec.executionrecord')"
+                    @click="showAudit(row)"
+                  >
+                    <!-- 执行记录 -->
+                    {{ '执行记录' }}
                   </li>
                 </ul>
               </div>
@@ -130,6 +158,7 @@
       </template>
     </TsContain>
     <ListDeployJobDialog v-if="isListDeployJobDialogShow" :invokeIdList="invokeIdList" @close="closeListJob"></ListDeployJobDialog>
+    <JobAudit v-if="isAuditShow" :jobUuid="currentJobUuid" @close="closeAuditDialog"></JobAudit>
   </div>
 </template>
 <script>
@@ -141,7 +170,8 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    ListDeployJobDialog: () => import('@/views/pages/deploy/pipeline/list-deployjob-dialog.vue')
+    ListDeployJobDialog: () => import('@/views/pages/deploy/pipeline/list-deployjob-dialog.vue'),
+    JobAudit: () => import('../../framework/schedule/job-audit-dialog.vue')
   },
   props: {},
   data() {
@@ -187,7 +217,7 @@ export default {
           key: 'appSystemAbbrName'
         },
         {
-          title: this.$t('term.autoexec.executionrecord'),
+          title: this.$t('term.deploy.jobcount'),
           key: 'execCount'
         },
         {
@@ -207,7 +237,9 @@ export default {
         { key: 'action' }
       ],
       isListDeployJobDialogShow: false,
-      invokeIdList: []
+      invokeIdList: [],
+      jobHandler: null,
+      isAuditShow: false
     };
   },
   beforeCreate() {},
@@ -232,6 +264,7 @@ export default {
       this.$api.deploy.schedule.searchSchedule({...this.searchParam, ...this.searchValue}).then(res => {
         if (res.Status == 'OK') {
           this.scheduleData = res.Return;
+          this.jobHandler = res.Return.handler;
         }
       }).finally(() => {
         this.loadingShow = false;
@@ -315,9 +348,6 @@ export default {
       });
     },
     showJobList(row) {
-      if (!row.execCount) {
-        return;
-      }
       this.invokeIdList = [row.id];
       this.isListDeployJobDialogShow = true;
     },
@@ -327,6 +357,36 @@ export default {
     },
     restoreHistory(historyData) {
       this.appModuleData = historyData['appModuleEnvData'] || {};
+    },
+    testRow: function(row, handler) {
+      if (!row.editable || row.isActive == 1) {
+        return;
+      }
+      this.$createDialog({
+        title: this.$t('dialog.title.testconfirm'),
+        content: this.$t('dialog.content.testconfirm', {target: row.name}),
+        btnType: 'primary',
+        'on-ok': vnode => {
+          vnode.isShow = false;
+          let params = { jobUuid: row.uuid, jobHandlerClassName: handler};
+          this.$api.framework.schedule
+            .test(params)
+            .then(res => {
+              if (res.Status == 'OK') {
+                this.$Message.success(this.$t('message.executesuccess'));
+                this.searchSchedule(1);
+              }
+            });
+        }
+      });
+    },
+    showAudit(row) {
+      this.isAuditShow = true;
+      this.currentJobUuid = row.uuid;
+    },
+    closeAuditDialog() {
+      this.isAuditShow = false;
+      this.currentJobUuid = null;
     }
   },
   filter: {},

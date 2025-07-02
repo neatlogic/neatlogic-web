@@ -36,6 +36,10 @@ const job = {
   //获取内存的定时作业列表
   searchMemoryJob(params) {
     return axios.post('/api/rest/scheduler/memory/search', params);
+  },
+  //测试定时作业
+  test(params) {
+    return axios.post('/api/rest/job/test', params);
   }
 };
 export default job;
