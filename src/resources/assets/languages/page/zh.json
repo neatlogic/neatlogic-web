@@ -1078,5 +1078,6 @@
   "autoexecbatchround": "分批",
   "autoexecparall": "并发",
   "autoexecparallel": "并发设置",
-  "paramkeyword": "入参搜索"
+  "paramkeyword": "入参搜索",
+  "loglevel": "日志级别"
 }

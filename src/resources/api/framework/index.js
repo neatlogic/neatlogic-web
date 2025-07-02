@@ -37,6 +37,7 @@ import extramenu from './extramenu/extramenu'; //附加菜单
 import region from './region/region';//地域管理
 import homepage from './homepage/homepage';//默认首页
 import changelogaudit from './changelogaudit/changelogaudit';//数据库变更记录
+import log from './log/log';// 查看日志
 export default {
   role,
   user,
@@ -75,5 +76,6 @@ export default {
   extramenu,
   region,
   homepage,
-  changelogaudit
+  changelogaudit,
+  log
 };
