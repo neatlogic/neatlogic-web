@@ -1076,5 +1076,6 @@
   "autoexecbatchround": "in batches",
   "autoexecparall": "Concurrency",
   "autoexecparallel": "Concurrent settings",
-  "paramkeyword": "Participate in search"
+  "paramkeyword": "Participate in search",
+  "loglevel": "log level"
 }

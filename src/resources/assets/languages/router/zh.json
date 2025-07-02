@@ -170,7 +170,8 @@
     "license": "许可管理",
     "extramenu": "菜单管理",
     "homepage": "默认首页",
-    "changelogaudit": "数据库变更记录"
+    "changelogaudit": "数据库变更记录",
+    "log": "查看日志"
   },
   "knowledge": {
     "knowledgedetail": "词条详情",
