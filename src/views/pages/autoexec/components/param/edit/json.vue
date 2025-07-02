@@ -62,7 +62,7 @@ export default {
   filter: {},
   computed: {
     getSetting() {
-      let setting = this.$utils.deepClone(this.config);
+      let setting = this.$utils.deepClone(this.config || {});
       Object.assign(setting, {
         rows: 1, type: 'textarea'
       });
