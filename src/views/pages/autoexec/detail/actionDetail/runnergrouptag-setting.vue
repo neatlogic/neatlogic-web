@@ -149,8 +149,12 @@ export default {
       this.openParamsSetting();
     },
     save() {
-      delete this.runnerGroupTag.text;
-      return this.runnerGroupTag;
+      if (this.runnerGroupTag.value) {
+        delete this.runnerGroupTag.text;
+        return this.runnerGroupTag;
+      } else {
+        return {};
+      }
     },
     valid() {
       let isValid = true;
