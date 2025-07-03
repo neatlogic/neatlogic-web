@@ -1383,6 +1383,9 @@
     background-color: var(--primary-grey, @primary-grey);
   }
 
+  .bg-stripe {
+    background-color: @table-stripe-color;
+  }
   .item-selected {
     background-color: var(--primary-grey, @primary-grey);
     color: var(--primary-color, @primary-color);
@@ -3448,6 +3451,31 @@
         // background: @op-color;
       }
     }
+    &.border-tabs {
+      > .ivu-tabs-bar {
+        .ivu-tabs-tab {
+          background-color: @tab-bar-bg;
+          color: @title-color;
+          border-color: var(--border-color, @border-color-base);
+
+          &.ivu-tabs-tab-active {
+            background-color: @op-color;
+            color: var(--primary-color, @primary-color);
+            border-color: var(--border-color, @border-color-base) !important;
+          }
+        }
+      }
+
+      .ivu-tabs-nav-container {
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+
+      .ivu-tabs-content {
+        background-color: @op-color;
+        border: 1px solid var(--border-color, @border-color-base);
+      }
+    }
 
     &.block-span {
       > .ivu-tabs-bar {
@@ -3621,6 +3649,7 @@
 
   .@{iv-prev}collapse {
     background-color: @table-stripe-color;
+    border-color: var(--border-color, @border-color-base);
   }
   .@{iv-prev}collapse-simple {
     background-color: transparent;

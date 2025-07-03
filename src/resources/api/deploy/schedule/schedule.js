@@ -19,6 +19,10 @@ const schedule = {
   updateSchedule(params) {
     //启用/禁用定时作业
     return axios.post('/api/rest/deploy/schedule/isactive/update', params);
+  },
+  test(params) {
+    // 测试
+    return axios.post('/api/rest/deploy/job/test', params);
   }
 };
 export default schedule;

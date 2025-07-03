@@ -24,6 +24,10 @@ const timeJob = {
   toggleAction(params) {
     // 更新激活状态
     return axios.post('/api/rest/autoexec/schedule/isactive/update', params);
+  },
+  test(params) {
+    // 测试
+    return axios.post('/api/rest/autoexec/job/test', params);
   }
 };
 

@@ -317,7 +317,7 @@ export default [
       title: $t('router.deploy.schedulejob'),
       ismenu: true,
       icon: 'tsfont-formtime',
-      authority: 'DEPLOY_BASE',
+      authority: 'DEPLOY_SCHEDULE_MODIFY',
       type: 'job'
     }
   },
