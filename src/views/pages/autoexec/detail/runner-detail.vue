@@ -110,7 +110,7 @@
               :runtimeParamList="runtimeParamList"
             ></RunnerGroupTagSetting>
           </div>
-          <div v-if="runnerGroupTag && runnerGroupTag.mappingMode==='constant'">
+          <div v-if="runnerGroupTag && (!runnerGroupTag.mappingMode || runnerGroupTag.mappingMode==='constant')">
             <RunnerGroupTagSetting
               ref="runnerGroupTag"
               :config="runnerGroupTag"

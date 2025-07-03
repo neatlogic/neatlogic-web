@@ -303,6 +303,8 @@ export default {
         //主要用来回显input框的数据
         item.width = item.width || _this.width;
         item.theme = _this.$utils.deepClone(_this.theme);
+        item.readonly = item.readonly || _this.readonly;
+        item.disabled = item.disabled || _this.disabled;
         $handler = h(ITEMTYPELIST[item.type], {
           key: item.name,
           props: item,

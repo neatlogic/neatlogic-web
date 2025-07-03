@@ -156,6 +156,7 @@ export default {
     },
     save() {
       if (this.runnerGroup.value) {
+        delete this.runnerGroup.text;
         return this.runnerGroup;
       } else {
         return {};
@@ -179,8 +180,8 @@ export default {
       return label;
     },
     async getRunnerGroupLabel() {
-      if (this.runnerGroup.value == -1) {
-        return;
+      if (this.$utils.isEmpty(this.runnerGroup.value) || this.runnerGroup.value == -1) {
+        return false;
       }
       let params = {defaultValue: [this.runnerGroup.value]};
       await this.$api.framework.runner.getRunnerGroup(params)

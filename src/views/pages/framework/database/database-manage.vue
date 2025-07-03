@@ -10,8 +10,8 @@
       </template>
       <div slot="content">
         <TsTable
-          v-if="tbodyList"
-          v-bind="tbodyList"
+          v-if="tableData"
+          v-bind="tableData"
           :theadList="theadList"
           @changeCurrent="changePage"
           @changePageSize="changePageSize"
@@ -61,7 +61,7 @@ export default {
           key: 'action'
         }
       ],
-      tbodyList: []
+      tableData: []
     };
   },
   beforeCreate() {},
@@ -79,10 +79,10 @@ export default {
   methods: {
     searchDatabaseList() {
       this.$api.framework.database.searchDatabaseList(this.searchParam).then(res => {
-        this.tbodyList = res.Return;
+        this.tableData = res.Return;
       });
     },
-    changePage() {
+    changePage(currentPage) {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       } else {
