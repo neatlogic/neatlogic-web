@@ -1355,7 +1355,8 @@
     "tagentuploadupgradepkg": "Upload upgrade package",
     "versionremarks": "Version Remarks",
     "heartbeaturl": "Backend server address",
-    "runnergrouptips": "The request for login authentication needs to carry a header as a rule expression (note that the header parameter in the expression must be all lowercase and the prefix must be {prefix}). If the value of the expression after execution is true, the executor group will take effect, and false and syntax exceptions will not take effect. For example:"
+    "runnergrouptips": "The request for login authentication needs to carry a header as a rule expression (note that the header parameter in the expression must be all lowercase and the prefix must be {prefix}). If the value of the expression after execution is true, the executor group will take effect, and false and syntax exceptions will not take effect. For example:",
+    "batchdeletetagenttooltip": "Tagent in connected state cannot be deleted"
   },
   "knowledge": {
     "document": "Document",
