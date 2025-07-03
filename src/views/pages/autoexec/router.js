@@ -97,7 +97,7 @@ export default [
       title: $t('router.autoexec.timejob'),
       ismenu: true,
       icon: 'tsfont-formtime',
-      authority: 'AUTOEXEC_MODIFY',
+      authority: 'AUTOEXEC_SCHEDULE_MODIFY',
       type: 'job'
     }
   },
@@ -110,7 +110,7 @@ export default [
       title: $t('router.autoexec.timejob'),
       ismenu: false,
       icon: 'tsfont-formtime',
-      authority: 'AUTOEXEC_MODIFY',
+      authority: 'AUTOEXEC_SCHEDULE_MODIFY',
       type: 'detail'
     }
   },
@@ -122,7 +122,7 @@ export default [
       title: $t('router.autoexec.timejob'),
       ismenu: false,
       icon: 'tsfont-formtime',
-      authority: 'AUTOEXEC_MODIFY',
+      authority: 'AUTOEXEC_SCHEDULE_MODIFY',
       type: 'detail'
     }
   },
