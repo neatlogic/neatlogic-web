@@ -21,7 +21,7 @@
             >
               {{ $t('page.batchdelete') }}
             </span>
-            <div slot="content" style="max-height: 400px;overflow:auto;">{{ '已连接状态的tagent不能删除' }}</div>
+            <div slot="content" style="max-height: 400px;overflow:auto;">{{ $t('term.framework.batchdeletetagenttooltip') }}</div>
           </Tooltip>
           <span class="tsfont-anzhuangbao action-item" @click="goPages('installationPackage')">{{ $t('term.framework.tagentupgrade') }}</span>
           <span class="tsfont-question-s action-item" @click="openInstallTipsDialog">{{ $t('term.framework.tagentinstall') }}</span>
