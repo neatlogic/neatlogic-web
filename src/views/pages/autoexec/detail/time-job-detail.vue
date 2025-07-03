@@ -279,7 +279,9 @@ export default {
   watch: {},
   beforeRouteLeave(to, from, next, url) {
     let data = this.getToolParams();
-    if (this.$utils.isSame(data, this.initData)) {
+    data = this.$utils.deepRemoveEmptyValues(data);
+    const oldData = this.$utils.deepRemoveEmptyValues(this.initData);
+    if (this.$utils.isSame(data, oldData)) {
       url ? this.$utils.gotoHref(url) : next(true);
     } else {
       let _this = this;
