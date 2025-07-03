@@ -3,7 +3,12 @@
     <TsContain>
       <template v-slot:topLeft>
         <div class="action-group">
-
+          <div v-if="currentServerId != null" class="action-item">
+            <span class="mr-xs text-grey">{{ $t('page.serverid') }}</span>
+            <span>
+              <b>{{ currentServerId }}</b>
+            </span>
+          </div>
         </div>
       </template>
       <template v-slot:topRight>
@@ -64,6 +69,7 @@ export default {
   props: {},
   data() {
     return {
+      currentServerId: null,
       loading: false,
       currentPage: 1,
       pageSize: 20,
@@ -143,9 +149,10 @@ export default {
     },
     getServerList() {
       this.loading = true;
-      this.$api.framework.server.getServerList().then(res => {
+      this.$api.framework.server.getServerList({}).then(res => {
         if (res.Status === 'OK') {
           this.tableData = res.Return;
+          this.currentServerId = res.Return.currentServerId;
         }
       }).finally(() => {
         this.loading = false;

@@ -170,7 +170,8 @@
     "license": "License Management",
     "extramenu": "Menu management",
     "homepage": "default page ",
-    "changelogaudit": "Database Change Log"
+    "changelogaudit": "Database Change Log",
+    "log": "view log"
   },
   "knowledge": {
     "knowledgedetail": "entry details",

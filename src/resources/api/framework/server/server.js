@@ -1,8 +1,8 @@
 import axios from '../../http';
 
 const server = {
-  getServerList() {
-    return axios.post('api/rest/server/list', {});
+  getServerList(param) {
+    return axios.post('api/rest/server/list', param);
   },
   saveServer(param) {
     return axios.post('api/rest/server/save', param);
