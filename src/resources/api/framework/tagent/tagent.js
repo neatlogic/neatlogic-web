@@ -7,6 +7,10 @@ const tagent = {
   deleteTagents(params) {
     return axios.post('/api/rest/tagent/delete', params);
   },
+  //批量删除tagent
+  batchDeleteTagent(params) {
+    return axios.post('/api/rest/tagent/delete/batch', params);
+  },
   //查看密码
   getAccountById(params) {
     return axios.post('api/rest/tagent/account/get', params);
