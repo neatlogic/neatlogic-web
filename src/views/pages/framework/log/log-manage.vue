@@ -3,12 +3,13 @@
     <TsContain>
       <template v-slot:topLeft>
         <div class="action-group">
-          <div v-if="level != null" class="action-item">
-            <span class="mr-xs text-grey">{{ $t('page.loglevel') }}</span>
+          <span v-if="level != null" class="mr-xs text-grey">{{ $t('page.loglevel') }}</span>
+          <span v-if="searchParam.serverId != null && level != null" class="action-item" @click="editLogLevel()">
             <span>
               <b>{{ level }}</b>
             </span>
-          </div>
+            <span class="tsfont-edit"></span>
+          </span>
         </div>
       </template>
       <template v-slot:topRight>
@@ -49,6 +50,7 @@
         </div>
       </div>
     </TsContain>
+    <LogLevelEdit v-if="searchParam.serverId != null && isEditShow" :serverId="searchParam.serverId" @close="closeEditDialog"></LogLevelEdit>
   </div>
 </template>
 <script>
@@ -56,7 +58,8 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue')
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    LogLevelEdit: () => import('./loglevel-edit.vue')
   },
   mixins: [download],
   props: {},
@@ -82,7 +85,8 @@ export default {
         value: ''
       },
       logLines: [],
-      level: null
+      level: null,
+      isEditShow: false
     };
   },
   beforeCreate() {},
@@ -127,11 +131,11 @@ export default {
         this.searchParam.serverId = null;
         this.level = null;
       }
+      this.fileNameSelectSetting.value = null;
       this.getLogFileNameList();
     },
     getLogFileNameList() {
       let _this = this;
-      _this.fileNameSelectSetting.value = null;
       _this.fileNameSelectSetting.dataList = [];
       if (this.searchParam && this.searchParam.serverId != null) {
         this.$api.framework.log.getLogFileNameList(this.searchParam).then(res => {
@@ -188,6 +192,15 @@ export default {
         params: this.searchParam
       };
       this.download(param);
+    },
+    editLogLevel() {
+      this.isEditShow = true;
+    },
+    closeEditDialog(needRefresh) {
+      this.isEditShow = false;
+      if (needRefresh) {
+        this.getLogFileNameList();
+      }
     }
   },
   filter: {},
