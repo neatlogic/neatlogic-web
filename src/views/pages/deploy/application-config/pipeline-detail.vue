@@ -311,14 +311,8 @@ export default {
       this.envId = parseInt(this.$route.query.envId);
       this.combopConfig.isEditRuntimeParam = false;
     }
-    if (this.appSystemId && this.$route.query.hasOwnProperty('hasEditAuth')) {
-      // 是否有编辑配置权限
-      let hasEditAuth = this.$route.query.hasEditAuth == 'true';
-      this.hasEditAuth = hasEditAuth;
-    } else {
-      // 预置参数集，跳转到编辑流水线，需要判断是否有编辑配置权限
-      await this.getAuthInfo();
-    }
+    //跳转到编辑流水线，需要判断是否有编辑配置权限
+    await this.getAuthInfo();
     this.getAppPipeline();
   },
   beforeMount() {},
@@ -1041,6 +1035,8 @@ export default {
           if (authList.includes('operation#all') || authList.includes('operation#edit') || (authInfo && authInfo.isHasAllAuthority)) {
             // 有编辑配置权限
             this.hasEditAuth = true;
+          } else if (authList.includes('operation#view') || authList.includes('operation#auth') || authList.includes('operation#execute')) {
+            this.hasEditAuth = false;
           } else {
             this.$router.push({
               path: '/no-authority',
