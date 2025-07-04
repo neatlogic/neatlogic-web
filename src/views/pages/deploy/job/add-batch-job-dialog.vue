@@ -8,8 +8,14 @@
             :item-list="formConfig"
             :labelWidth="90"
           >
+            <template v-slot:pipelineId>
+              <TsForm
+                ref="pipelineFormConfig"
+                :itemList="pipelineFormConfig"
+                :labelWidth="90"
+              ></TsForm>
+            </template>
           </TsForm>
-
           <AddDeployJobForm
             v-if="createMethod === 'pipeline'"
             :id="pipelineId"
@@ -64,6 +70,7 @@ export default {
             this.createMethod = val;
             this.$set(this.formConfig.name, 'isHidden', !(val === 'custom'));
             this.$set(this.formConfig.pipelineId, 'isHidden', val === 'custom');
+            this.handlePipelineId('appsystem');
           }
         },
         name: {
@@ -74,25 +81,54 @@ export default {
           maxlength: 50
         },
         pipelineId: {
-          type: 'select',
-          label: this.$t('term.deploy.superpipeline'),
-          value: null,
-          transfer: true,
+          type: 'slot',
           isHidden: true,
-          dynamicUrl: '/api/rest/deploy/pipeline/search',
+          labelWidth: 1
+        }
+      },
+      saveLoading: false,
+      pipelineFormConfig: {
+        pipelineType: {
+          type: 'radio',
+          label: this.$t('term.deploy.pipelinetype'),
+          value: 'appsystem', //global(全局)，appsystem（应用）
+          url: '/api/rest/universal/enum/get',
+          params: { enumClass: 'PipelineType' },
+          validateList: ['required'],
+          onChange: (val) => {
+            this.handlePipelineId(val);
+          }
+        },
+        appSystemId: {
+          type: 'select',
+          label: this.$t('page.apply'),
+          value: null,
+          dynamicUrl: '/api/rest/deploy/app/config/appsystem/search',
+          dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, 'app'); },
+          params: {authorityActionList: ['view']},
           rootName: 'tbodyList',
-          textName: 'name',
-          valueName: 'id',
-          multiple: false,
-          validateList: [
-            'required'
-          ],
+          border: 'border',
+          transfer: true,
+          validateList: ['required'],
+          onChange: (val) => {
+            this.changeAppSystemId(val);
+          }
+        },
+        pipelineId: {
+          type: 'select',
+          label: this.$t('term.autoexec.pipeline'),
+          value: null,
+          dynamicUrl: '/api/rest/deploy/pipeline/search',
+          params: {type: 'appsystem', needVerifyAuth: 1},
+          rootName: 'tbodyList',
+          dealDataByUrl: this.dealPipelineData,
+          validateList: ['required'],
+          transfer: true,
           onChange: val => {
             this.pipelineId = val;
           }
         }
-      },
-      saveLoading: false
+      }
     };
   },
   beforeCreate() {},
@@ -122,18 +158,99 @@ export default {
     save() {
       const dialogForm = this.$refs['dialogForm'];
       const pipelineForm = this.$refs['pipelineForm'];
-      if ((dialogForm && !dialogForm.valid()) || (pipelineForm && !pipelineForm.validateForm())) {
+      const pipelineFormConfig = this.$refs['pipelineFormConfig'];
+      if ((dialogForm && !dialogForm.valid()) || (pipelineForm && !pipelineForm.validateForm() && (pipelineFormConfig && !pipelineFormConfig.valid()))) {
         return false;
       }
+      let data = {
+        ...pipelineForm.save()
+      };
+      if (this.$refs.pipelineFormConfig) {
+        Object.assign(data, this.$refs.pipelineFormConfig.getFormValue());
+      }
       this.saveLoading = true;
-      pipelineForm.submitForm().then(() => {
-        this.close(true);
+
+      this.$api.deploy.pipeline.addBatchJob(data).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.close(true);
+        }
       }).finally(() => {
         this.saveLoading = false;
       });
     },
     close(needRefresh = false) {
       this.$emit('close', needRefresh);
+    },
+    dealDataByUrl(nodeList, type) {
+      let dataList = [];
+      if (nodeList) {
+        nodeList.forEach(item => {
+          dataList.push({
+            value: item.id,
+            text: item.abbrName + (item.name ? '(' + item.name + ')' : ''),
+            _disabled: this.getDisabledText(item, type)
+          });
+        });
+      }
+      return dataList;
+    },
+    getDisabledText(item, type) {
+      let text = false;
+      if (!item.isHasAllAuthority && type == 'app') {
+        if (item.authActionSet && item.authActionSet.length) {
+          if (!item.authActionSet.includes('operation#execute') && !item.authActionSet.includes('operation#all')) {
+            text = this.$t('term.deploy.notapplyallexecuteauth');
+          } else if (!item.authActionSet.find((item) => item.includes('scenario#')) && !item.authActionSet.includes('scenario#all')) {
+            text = this.$t('term.deploy.notapplyallsceneexecuteauth');
+          } else if (!item.authActionSet.find((item) => item.includes('env#')) && !item.authActionSet.includes('env#all')) {
+            text = this.$t('term.deploy.notapplyallenvexecuteauth');
+          }
+        } else {
+          text = this.$t('term.deploy.notapplyallexecuteauth');
+        }
+      } else if (!item.isConfig) {
+        text = this.$t('term.deploy.applynotconfigpipeline');
+      } else if (type == 'app' && !item.isHasModule) {
+        text = this.$t('term.deploy.applynotconfigmodule');
+      } else if (!item.isHasEnv) {
+        type == 'app' && (text = this.$t('term.deploy.applynotconfigenv'));
+        type == 'module' && (text = this.$t('term.deploy.modulenotconfigenv'));
+      }
+      return text;
+    },
+    dealPipelineData(nodeList) {
+      let dataList = [];
+      if (nodeList) {
+        nodeList.forEach(item => {
+          dataList.push({
+            value: item.id,
+            text: item.name + (item.appSystemAbbrName ? '/' + item.appSystemAbbrName : '')
+          });
+        });
+      }
+      return dataList;
+    },
+    changeAppSystemId(val) { //应用流水线切换
+      this.$set(this.pipelineFormConfig.pipelineId, 'value', null);
+      this.$set(this.pipelineFormConfig.pipelineId.params, 'appSystemId', val);
+      if (val) {
+        this.$set(this.pipelineFormConfig.pipelineId, 'disabled', false);
+      } else {
+        this.$set(this.pipelineFormConfig.pipelineId, 'disabled', true);
+      }
+    },
+    handlePipelineId(val) {
+      this.$set(this.pipelineFormConfig.pipelineId, 'value', null);
+      this.$set(this.pipelineFormConfig.pipelineId.params, 'type', val);
+      this.$set(this.pipelineFormConfig.pipelineId.params, 'appSystemId', null);
+      if (val == 'appsystem') {
+        this.$set(this.pipelineFormConfig.pipelineId, 'disabled', true);
+      } else if (val == 'global') {
+        this.$set(this.pipelineFormConfig.pipelineId, 'disabled', false);
+      }
+      this.$set(this.pipelineFormConfig.appSystemId, 'value', null);
+      this.$set(this.pipelineFormConfig.appSystemId, 'isHidden', val !== 'appsystem');
     }
   },
   filter: {},

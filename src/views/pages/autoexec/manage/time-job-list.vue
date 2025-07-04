@@ -77,7 +77,7 @@
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
-              <ul v-if="row.editable" class="tstable-action-ul">
+              <ul class="tstable-action-ul">
                 <li :title="!row.editable ? $t('page.notauthrelationadmin') : ''" @click.stop>
                   <TsFormSwitch
                     v-model="row.isActive"
