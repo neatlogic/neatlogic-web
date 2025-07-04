@@ -145,7 +145,7 @@ export default {
     init() {
       this.formConfig.createMethod.dataList.forEach(item => {
         if (item.value === 'custom') {
-          if (this.$AuthUtils.hasRole(['BATCHDEPLOY_MODIFY'])) {
+          if (this.$AuthUtils.hasRole('BATCHDEPLOY_MODIFY')) {
             this.$set(item, 'disabled', false);  
             this.$set(item, 'description', '');
           } else {
