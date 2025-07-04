@@ -147,8 +147,10 @@ export default {
         if (item.value === 'custom') {
           if (this.$AuthUtils.hasRole(['BATCHDEPLOY_MODIFY'])) {
             this.$set(item, 'disabled', false);  
+            this.$set(item, 'description', '');
           } else {
             this.$set(item, 'disabled', true);
+            this.$set(item, 'description', this.$t('term.deploy.batchdeployauthtip'));
           }
         }
       });

@@ -2159,7 +2159,8 @@
     "testrunnerdesc": "如果不指定则会通过ip根据网段匹配执行器组自动分配执行器",
     "jobcount": "发布作业数",
     "jobrecord": "发布作业记录",
-    "notapplyallexecuteauth": "您没有当前应用的执行权限"
+    "notapplyallexecuteauth": "您没有当前应用的执行权限",
+    "batchdeployauthtip": "当前用户缺少“批量发布管理权限”权限，请联系管理员"
   },
   "inspect": {
     "alarmprompt": "告警提示",
