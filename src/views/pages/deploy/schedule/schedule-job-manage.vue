@@ -367,14 +367,14 @@ export default {
         content: this.$t('dialog.content.testconfirm', {target: row.name}),
         btnType: 'primary',
         'on-ok': vnode => {
-          vnode.isShow = false;
           let params = { jobUuid: row.uuid, jobHandlerClassName: handler};
-          this.$api.framework.schedule
+          this.$api.deploy.schedule
             .test(params)
             .then(res => {
               if (res.Status == 'OK') {
                 this.$Message.success(this.$t('message.executesuccess'));
                 this.searchSchedule(1);
+                vnode.isShow = false;
               }
             });
         }

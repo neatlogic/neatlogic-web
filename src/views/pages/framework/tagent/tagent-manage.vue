@@ -7,6 +7,22 @@
           <span class="tsfont-refresh action-item" @click="goPages('batchUpgrade')">{{ $t('term.framework.batchupgrade') }}</span>
           <span class="tsfont-restart action-item" @click="goPages('batchReboot')">{{ $t('term.framework.batchreboot') }}</span>
           <span class="tsfont-edit action-item" @click="goPages('batchResetcred')">{{ $t('term.framework.batchresetcred') }}</span>
+          <Tooltip
+            max-width="400"
+            theme="light"
+            transfer
+            :disabled="!batchDeleteIsDisabled"
+          >
+            <span 
+              v-if="selected && selected.length > 0" 
+              class="tsfont-trash-o" 
+              :class="{ 'action-item': !batchDeleteIsDisabled, 'text-disabled': batchDeleteIsDisabled}" 
+              @click="batchDelete"
+            >
+              {{ $t('page.batchdelete') }}
+            </span>
+            <div slot="content" style="max-height: 400px;overflow:auto;">{{ $t('term.framework.batchdeletetagenttooltip') }}</div>
+          </Tooltip>
           <span class="tsfont-anzhuangbao action-item" @click="goPages('installationPackage')">{{ $t('term.framework.tagentupgrade') }}</span>
           <span class="tsfont-question-s action-item" @click="openInstallTipsDialog">{{ $t('term.framework.tagentinstall') }}</span>
           <span class="tsfont-download action-item" @click="exportExcel">{{ $t('page.export') }}</span>
@@ -25,6 +41,8 @@
           v-else
           v-bind="tableData"
           :theadList="theadList"
+          multiple
+          @getSelected="getSelected"
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
           @headerTitleOperation="headerTitleOperation"
@@ -109,6 +127,7 @@ export default {
       tableData: {
         currentPage: 1,
         pageSize: 20,
+        pageSizeOpts: [10, 20, 40, 60, 80, 100, 200, 500, 1000],
         tbodyList: []
       },
       searchConfig: {
@@ -155,6 +174,7 @@ export default {
         ]
       },
       theadList: [
+        { key: 'selection' },
         { key: 'name', title: this.$t('page.name'), textValue: 'views'},
         { key: 'ip', title: 'IP:PORT' },
         { key: 'status', title: this.$t('page.status'), headerIcon: 'tsfont-refresh'},
@@ -168,7 +188,9 @@ export default {
         { key: 'mem', title: this.$t('term.framework.mem'), type: 'company', value: 'MB' },
         { key: 'lcd', title: this.$t('page.updatetime'), type: 'time' },
         { key: 'action'}
-      ]
+      ],
+      selected: [],
+      batchDeleteIsDisabled: false
     };
   },
   beforeCreate() {},
@@ -367,6 +389,53 @@ export default {
     },
     exportExcel() {
       this.download({ url: '/api/binary/tagent/export', params: this.searchVal });
+    },
+    getSelected(indexList, itemList) {
+      this.batchDeleteIsDisabled = false;
+      itemList.forEach(item => {
+        if (item.status === 'connected') {
+          this.batchDeleteIsDisabled = true;
+        }
+      });
+      this.selected = itemList;
+    },
+    batchDelete() {
+      if (this.selected && this.selected.length > 0) {
+        let tagentNameList = [];
+        let tagentIdList = [];
+        let flag = false;
+        this.selected.forEach(item => {
+          if (item.status === 'connected') {
+            flag = true;
+          }
+          tagentNameList.push(item.name);
+          tagentIdList.push(item.id);
+        });
+        if (flag) {
+          return;
+        }
+        let params = {
+          idList: tagentIdList
+        };
+        // 批量删除确认提示框
+        this.$createDialog({
+          title: this.$t('dialog.title.deleteconfirm'),
+          content: this.$t('dialog.content.deletetargetconfirm', {target: tagentNameList.join(', ')}),
+          btnType: 'error',
+          'on-ok': vnode => {
+            this.$api.framework.tagent.batchDeleteTagent(params)
+              .then((res) => {
+                if (res.Status == 'OK') {
+                  this.changeCurrent();
+                  this.selected = [];
+                  this.$Message.success(this.$t('message.deletesuccess'));
+                }
+              }).finally(res => {
+                vnode.isShow = false;
+              });
+          }
+        });
+      }
     }
   },
   computed: {},

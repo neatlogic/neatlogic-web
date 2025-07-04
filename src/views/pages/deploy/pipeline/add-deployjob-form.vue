@@ -234,6 +234,9 @@ export default {
     },
     getVersionValidateList(row) {
       return ['required'];
+    },
+    save() {
+      return this.jobData;
     }
   },
   filter: {},
