@@ -64,13 +64,10 @@ export default {
             { value: 'custom', text: this.$t('term.deploy.directcreation') },
             { value: 'pipeline', text: this.$t('term.deploy.superpipeline') }
           ],
-          value: 'custom',
+          value: 'pipeline',
           validateList: ['required'],
           onChange: val => {
-            this.createMethod = val;
-            this.$set(this.formConfig.name, 'isHidden', !(val === 'custom'));
-            this.$set(this.formConfig.pipelineId, 'isHidden', val === 'custom');
-            this.handlePipelineId('appsystem');
+            this.changeCreateMethod(val);
           }
         },
         name: {
@@ -135,7 +132,9 @@ export default {
   created() {
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.init();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -143,6 +142,24 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    init() {
+      this.formConfig.createMethod.dataList.forEach(item => {
+        if (item.value === 'custom') {
+          if (this.$AuthUtils.hasRole(['BATCHDEPLOY_MODIFY'])) {
+            this.$set(item, 'disabled', false);  
+          } else {
+            this.$set(item, 'disabled', true);
+          }
+        }
+      });
+      this.changeCreateMethod('pipeline');
+    },
+    changeCreateMethod(val) {
+      this.createMethod = val;
+      this.$set(this.formConfig.name, 'isHidden', !(val === 'custom'));
+      this.$set(this.formConfig.pipelineId, 'isHidden', val === 'custom');
+      this.handlePipelineId('appsystem');
+    },
     nextStep() {
       const dialogForm = this.$refs['dialogForm'];
       if ((dialogForm && !dialogForm.valid())) {
@@ -159,7 +176,17 @@ export default {
       const dialogForm = this.$refs['dialogForm'];
       const pipelineForm = this.$refs['pipelineForm'];
       const pipelineFormConfig = this.$refs['pipelineFormConfig'];
-      if ((dialogForm && !dialogForm.valid()) || (pipelineForm && !pipelineForm.validateForm() && (pipelineFormConfig && !pipelineFormConfig.valid()))) {
+      let isValid = true;
+      if (dialogForm && !dialogForm.valid()) {
+        isValid = false;
+      }
+      if (pipelineForm && !pipelineForm.validateForm()) {
+        isValid = false;
+      }
+      if (pipelineFormConfig && !pipelineFormConfig.valid()) {
+        isValid = false;
+      }
+      if (!isValid) {
         return false;
       }
       let data = {
