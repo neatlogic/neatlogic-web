@@ -755,7 +755,7 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-formstaticlist',
       authority: 'ADMIN',
-      type: 'others'
+      type: 'healthcheck'
     }
   },
   {
@@ -767,7 +767,7 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-history',
       authority: 'ADMIN',
-      type: 'others'
+      type: 'healthcheck'
     }
   }
 ];
