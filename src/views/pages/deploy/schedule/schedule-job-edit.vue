@@ -89,7 +89,9 @@ export default {
   destroyed() {},
   methods: {
     beforeLeaveCompare(oldData) {
-      return this.$utils.isSame(oldData, this.getSaveData());
+      const newVal = this.$utils.deepRemoveEmptyValues(this.getSaveData());
+      const oldval = this.$utils.deepRemoveEmptyValues(oldData);
+      return this.$utils.isSame(oldval, newVal);
     },
     async beforeLeave() {
       return await this.saveTimeJob();

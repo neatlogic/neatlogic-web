@@ -72,6 +72,7 @@ setInterval(callback, delay, alwaysRun = false)  定时器
 sortByObj(obj)                               对象的属性按首字母排序
 getUnicodeByClassName(className)             获取className的unicode编码
 convertWoff2ToBase64                         将woff2文件转换为base64
+deepRemoveEmptyValues(data)                  深度移除对象中的空值
 */
 import _ from 'lodash';
 import store from '@/resources/store';
@@ -1225,6 +1226,22 @@ const methods = {
         font-display: swap;
         max-width: 16px;
       }`;
-  }
+  },
+  deepRemoveEmptyValues(obj) { //删除数据里的空值
+    let _this = this;
+    const result = _this.deepClone(obj); // 深拷贝对象以避免修改原始对象
+    for (const key in result) {
+      if (result.hasOwnProperty(key)) {
+        if (_this.isEmpty(result[key])) { // 检查并删除空值
+          delete result[key]; // 删除空值属性
+        } else if (_.isArray(result[key])) { // 处理数组内的空值元素
+          result[key] = result[key].filter(item => !_this.isEmpty(item)); // 过滤掉数组中的空值元素
+        }else  if (_.isObject(result[key])) { // 如果是对象
+          result[key] = _this.deepRemoveEmptyValues(result[key]); // 递归处理深层对象
+        } 
+      }
+    }
+    return result;
+  },
 };
 export default methods;
