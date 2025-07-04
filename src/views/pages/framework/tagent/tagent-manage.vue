@@ -127,6 +127,7 @@ export default {
       tableData: {
         currentPage: 1,
         pageSize: 20,
+        pageSizeOpts: [10, 20, 40, 60, 80, 100, 200, 500, 1000],
         tbodyList: []
       },
       searchConfig: {
