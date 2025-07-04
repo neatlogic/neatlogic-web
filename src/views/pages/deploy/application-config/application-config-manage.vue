@@ -251,7 +251,6 @@ export default {
       if (this.envId) {
         this.$set(query, 'envId', this.envId);
       }
-      this.$set(query, 'hasEditAuth', this.canEdit); // 编辑配置权限
       this.$router.push({
         path: '/application-config-pipeline-detail',
         query: query
