@@ -1164,6 +1164,12 @@ export default {
         delete params.config.roundCount;
         delete params.config.parallelPolicy;
         delete params.config.parallelCount;
+      } else {
+        if (params.config.parallelPolicy.value === 'parallel') {
+          delete params.config.roundCount;
+        } else {
+          delete params.config.parallelCount;
+        }
       }
       if (!this.needExecuteNode) {
         delete params.config.executeNodeConfig;
