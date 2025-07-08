@@ -1,5 +1,6 @@
 <template>
   <div class="bg-op padding env-example-radius">
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <div class="pb-nm">
       <TsRow>
         <Col :span="12">
@@ -166,7 +167,8 @@ export default {
       blueGreenId: null,
       selectedInstanceIdList: [],
       isEdit: false,
-      instanceData: null
+      instanceData: null,
+      loadingShow: true
     };
   },
   beforeCreate() {},
@@ -199,6 +201,7 @@ export default {
         ...this.params
       };
       if (params) {
+        this.loadingShow = true;
         this.$api.deploy.applicationConfig.getEnvInfo(params).then((res) => {
           if (res && res.Status == 'OK') {
             let {instanceList} = res.Return;
@@ -210,6 +213,8 @@ export default {
               this.defaultTbodyList = instanceList;
             }
           }
+        }).finally(() => {
+          this.loadingShow = false;
         });
       }
     },
@@ -301,6 +306,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .env-example-radius {
+  position: relative;
   height: calc(100vh - 50px - 50px - 32px - 16px);
   border-radius: 0 10px 10px;
 }
