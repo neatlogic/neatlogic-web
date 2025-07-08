@@ -443,17 +443,13 @@ export default {
       let data = {
         envId: this.envId,
         scenarioId: this.scenarioId,
-        roundCount: this.roundCount,
-        parallelCount: this.parallelCount,
         parallelPolicy: this.parallelPolicy,
         param: {},
         moduleList: this.$refs.moduleList.getData()
       };
       if (this.parallelPolicy == 'parallel') {
         this.$set(data, 'parallelCount', this.parallelCount || 32);
-        this.$set(data, 'roundCount', null);
       } else {
-        this.$set(data, 'parallelCount', null);
         this.$set(data, 'roundCount', this.roundCount || 64);
       }
       if (this.$refs.param) {
