@@ -611,9 +611,13 @@ export default {
     },
     changeParallelPolicy(val) {
       if (val && val == 'roundCount') {
-        this.roundCount = this.roundCount || 64;
+        if (this.$utils.isEmpty(this.roundCount)) {
+          this.roundCount = 64;
+        }
       } else {
-        this.parallelCount = this.parallelCount || 32;
+        if (this.$utils.isEmpty(this.parallelCount)) {
+          this.parallelCount = 32;
+        }
       }
     }
   },
