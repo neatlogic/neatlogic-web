@@ -14,8 +14,8 @@
               <span class="stepIndex tips" :class="{ 'text-primary border-primary': group.phaseList.findIndex(d => d.id === activePhaseId) >= 0, 'text-grey': group.phaseList.findIndex(d => d.id === activePhaseId) === -1 }">{{ index + 1 }}</span>
               <div slot="content">
                 <div>{{ $t('page.autoexecparallpolicy') }}: {{ parallelPolicyTrans(group.parallelPolicy) }}</div>
-                <div v-if="group.roundCount">{{ $t('term.autoexec.batchquantity') }}: {{ parallelOrRoundCountTrans(group.roundCount) }}</div>
-                <div v-if="group.parallelCount">{{ $t('term.autoexec.parall') }}: {{ parallelOrRoundCountTrans(group.parallelCount) }}</div>
+                <div v-if="!$utils.isEmpty(group.roundCount)">{{ $t('term.autoexec.batchquantity') }}: {{ parallelOrRoundCountTrans(group.roundCount) }}</div>
+                <div v-if="!$utils.isEmpty(group.parallelCount)">{{ $t('term.autoexec.parall') }}: {{ parallelOrRoundCountTrans(group.parallelCount) }}</div>
               </div>
             </Tooltip>
           </div>

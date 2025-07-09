@@ -27,8 +27,8 @@
               >{{ jobData.name }}</strong>
               <div slot="content">
                 <div>{{ $t('page.autoexecparallpolicy') }}: {{ parallelPolicyTrans(jobData.parallelPolicy) }}</div>
-                <div v-if="jobData.roundCount">{{ $t('term.autoexec.batchquantity') }}: {{ parallelOrRoundCountTrans(jobData.roundCount) }}</div>
-                <div v-if="jobData.parallelCount">{{ $t('term.autoexec.parall') }}: {{ parallelOrRoundCountTrans(jobData.parallelCount) }}</div>
+                <div v-if="!$utils.isEmpty(jobData.roundCount)">{{ $t('term.autoexec.batchquantity') }}: {{ parallelOrRoundCountTrans(jobData.roundCount) }}</div>
+                <div v-if="!$utils.isEmpty(jobData.parallelCount)">{{ $t('term.autoexec.parall') }}: {{ parallelOrRoundCountTrans(jobData.parallelCount) }}</div>
               </div>
             </Tooltip>
           </div>
