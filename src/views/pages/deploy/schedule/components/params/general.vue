@@ -245,11 +245,17 @@ export default {
     initJobParams(data) {
       this.envId = data.envId || null;
       this.scenarioId = data.scenarioId || null;
-      this.roundCount = data.roundCount || null;
-      this.parallelCount = data.parallelCount || null;
       this.parallelPolicy = data.parallelPolicy || 'roundCount';
       this.param = data.param || {};
       this.defaultModuleList = data.moduleList || [];
+      this.roundCount = null;
+      this.parallelCount = null;
+      if (!this.$utils.isEmpty(data.roundCount)) {
+        this.roundCount = data.roundCount;
+      }
+      if (!this.$utils.isEmpty(this.parallelCount)) {
+        this.parallelCount = data.parallelCount;
+      }
     },
     getAppPipeline() { //流水线
       this.$api.deploy.apppipeline.getAppPipeline(this.searchParams).then(res => {
@@ -448,9 +454,9 @@ export default {
         moduleList: this.$refs.moduleList.getData()
       };
       if (this.parallelPolicy == 'parallel') {
-        this.$set(data, 'parallelCount', this.parallelCount || 32);
+        this.$set(data, 'parallelCount', !this.$utils.isEmpty(this.parallelCount) ? this.parallelCount : 32);
       } else {
-        this.$set(data, 'roundCount', this.roundCount || 64);
+        this.$set(data, 'roundCount', !this.$utils.isEmpty(this.roundCount) ? this.roundCount : 64);
       }
       if (this.$refs.param) {
         this.$set(data, 'param', this.$refs.param.getValue());
@@ -469,9 +475,13 @@ export default {
     },
     changeParallelPolicy(val) {
       if (val && val == 'roundCount') {
-        this.roundCount = this.roundCount || 64;
+        if (this.$utils.isEmpty(this.roundCount)) {
+          this.roundCount = 64;
+        }
       } else {
-        this.parallelCount = this.parallelCount || 32;
+        if (this.$utils.isEmpty(this.parallelCount)) {
+          this.parallelCount = 32;
+        }
       }
     }
   },
