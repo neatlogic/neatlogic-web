@@ -77,7 +77,7 @@
               <span class="status-text text-pending">{{ $t('term.autoexec.parall') }}:{{ parallelCount }} </span>
               <div slot="content">
                 <div>{{ $t('term.autoexec.parall') }}{{ $t('page.source') }}: {{ phaseData.roundCountFrom }}</div>
-                <div>{{ $t('term.autoexec.batchquantity') }}: {{ phaseData.roundCount }}</div>
+                <div>{{ $t('term.autoexec.batchquantity') }}: {{ roundCount }}</div>
               </div>
             </Tooltip>
             <Tooltip
