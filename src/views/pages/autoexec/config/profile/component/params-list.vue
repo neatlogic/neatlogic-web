@@ -1,5 +1,9 @@
 <template>
   <div class="params-list-box bg-op radius-lg padding">
+    <Loading
+      :loadingShow="isShowLoading"
+      type="fix"
+    ></Loading>
     <Row v-if="!isShowLoading && list && list.length > 0" type="flex">
       <Col v-for="(data ,index) in list" :key="index" :span="24">
         <TsFormItem
@@ -47,7 +51,6 @@
       </Col>
     </Row>
     <div v-else-if="!isShowLoading" class="text-tip tips">{{ $t('page.notarget', {target: $t('page.inputparam')}) }}</div>
-    <Loading v-else-if="isShowLoading"></Loading>
   </div>
 </template>
 <script>
@@ -73,9 +76,7 @@ export default {
     };
   },
   beforeCreate() {},
-  async created() {
-    await this.getParamInvokeTypeList();
-  },
+  created() {},
   beforeMount() {},
   mounted() {
     this.getParamList();
@@ -99,23 +100,27 @@ export default {
       }
       return dataList;
     },
-    async getParamInvokeTypeList() {
+    getParamInvokeTypeList() {
+      this.isShowLoading = true;
       let params = {
         enumClass: 'neatlogic.framework.autoexec.constvalue.AutoexecProfileParamInvokeType'
       };
-      await this.$api.autoexec.globalParams.getTypeList(params).then((res) => {
+      return this.$api.autoexec.globalParams.getTypeList(params).then((res) => {
         if (res && res.Status == 'OK') {
           this.invokeTypeList = res.Return || [];
         }
+      }).finally(() => {
+        this.isShowLoading = false;
       });
     },
-    getParamList() {
-      this.isShowLoading = false;
-      this.list = this.$utils.deepClone(this.paramList);
-      this.list && this.list.forEach((item) => {
+    async getParamList() {
+      await this.getParamInvokeTypeList();
+      let list = this.$utils.deepClone(this.paramList);
+      list && list.forEach((item) => {
         item.mappingMode = item.mappingMode == 'globalparam' ? 'globalparam' : 'constant';
         item.invokeTypeList = this.$utils.deepClone(this.invokeTypeList);
       });
+      this.list = list;
       this.initConfig();
     },
     handleValueList(list) {
@@ -173,8 +178,7 @@ export default {
   },
   watch: {
     paramList: {
-      async handler() {
-        await this.getParamInvokeTypeList();
+      handler() {
         this.getParamList();
       },
       deep: true
