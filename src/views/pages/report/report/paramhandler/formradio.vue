@@ -2,7 +2,7 @@
   <div>
     <TsFormRadio
       v-model="value"
-      v-bind="myConfig"
+      v-bind="formConfig"
       border="border"
       :search="true"
       :isCustomValue="true"
@@ -18,6 +18,12 @@ export default {
     TsFormRadio
   },
   props: {
+    searchParam: {
+      type: Object,
+      default: function() {
+        return {};
+      }
+    },
     config: {
       type: Object
     },
@@ -30,15 +36,6 @@ export default {
   },
   data() {
     return {
-      myConfig: {
-        url: '/api/rest/matrix/column/data/search/forselect',
-        rootName: 'dataList',
-        params: {
-          matrixUuid: this.config.matrix,
-          valueField: this.config.valueKey,
-          textField: this.config.textKey
-        }
-      },
       value: ''
     };
   },
@@ -54,7 +51,34 @@ export default {
   destroyed() {},
   methods: {},
   filter: {},
-  computed: {},
+  computed: {
+    formConfig() {
+      const { matrix = '', valueKey = '', textKey = '', reactionFilterList = [] } = this.config || {};
+      const config = {
+        url: '/api/rest/matrix/column/data/search/forselect',
+        rootName: 'dataList',
+        params: {
+          matrixUuid: matrix,
+          valueField: valueKey,
+          textField: textKey,
+          filterList: []
+        }
+      };
+      if (reactionFilterList && reactionFilterList.length > 0) {
+        reactionFilterList.forEach((v) => {
+          if (v?.matrixAttrUuid) {
+            const searchValue = this.searchParam?.[v.formItemUuid];
+            const valueList = Array.isArray(searchValue) ? searchValue : !this.$utils.isEmpty(searchValue) ? [searchValue] : [];
+            config.params.filterList.push({
+              uuid: v.matrixAttrUuid,
+              valueList: valueList
+            });
+          }
+        });
+      }
+      return config;
+    }
+  },
   watch: {
     value: {
       handler: function(val, oldVal) {

@@ -5,18 +5,16 @@
   </div>
 </template>
 <script>
+import BaseConfig from '@/views/pages/report/report/paramconfig/base.vue';
 export default {
   name: '',
-  components: { TsForm: () => import('@/resources/plugins/TsForm/TsForm')
+  components: {
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
-  props: {
-    config: {
-      type: Object
-    }
-  },
+  extends: BaseConfig,
   data() {
     return {
-      myConfig: {defaultValue: ''},
+      myConfig: { defaultValue: '' },
       formConfig: {
         defaultValue: {
           type: 'datetimerange',
@@ -44,11 +42,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-    setConfig: function() {
-      return this.$refs['formMain'].getFormValue();
-    }
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {
