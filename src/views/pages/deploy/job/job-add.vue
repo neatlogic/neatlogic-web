@@ -427,12 +427,15 @@ export default {
         appSystemId: this.appSystemId,
         envId: this.envId,
         scenarioId: this.scenarioId,
-        roundCount: this.roundCount,
-        parallelCount: this.parallelCount,
         parallelPolicy: this.parallelPolicy,
         param: {},
         moduleList: this.$refs.moduleList.getData()
       };
+      if (this.parallelPolicy === 'parallel') {
+        data.parallelCount = this.parallelCount;
+      } else {
+        data.roundCount = this.roundCount;
+      }
       if (this.$refs.param) {
         this.$set(data, 'param', this.$refs.param.getValue());
       }
@@ -608,9 +611,13 @@ export default {
     },
     changeParallelPolicy(val) {
       if (val && val == 'roundCount') {
-        this.roundCount = this.roundCount || 64;
+        if (this.$utils.isEmpty(this.roundCount)) {
+          this.roundCount = 64;
+        }
       } else {
-        this.parallelCount = this.parallelCount || 32;
+        if (this.$utils.isEmpty(this.parallelCount)) {
+          this.parallelCount = 32;
+        }
       }
     }
   },
