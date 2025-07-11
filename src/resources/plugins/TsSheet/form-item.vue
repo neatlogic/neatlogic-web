@@ -1,6 +1,5 @@
 <template>
   <div class="form-item radius-md" :class="{ 'bg-error-grey': showStatusIcon && (hasDataError || hasConfigError) }">
-    <i v-if="isShowComponent(formItem) && formItem.config && formItem.config.isRequired && !readonly && !formItem.config.isReadOnly" class="require-tip text-error">*</i>
     <!--编辑模式下的非container组件需要增加遮罩屏蔽所有操作，container组件需要接受拖拽组件进去，不需要遮罩-->
     <div v-if="(mode === 'edit' || mode === 'editSubform') && !formItem.isContainer" class="editor-mask"></div>
     <div v-if="mode != 'defaultvalue' && mode !== 'condition' && ((formItem.override_config && formItem.override_config.isMask) || (formItem.config && formItem.config.isMask))" class="mask">
@@ -50,84 +49,87 @@
     <div v-if="clearable && mode == 'edit'" class="corner-close-icon tsfont-close-o text-tip-active" @mousedown.prevent.stop="$emit('delete')"></div>
     <div v-if="mode == 'edit' && formItem.config && formItem.config.isHide" class="corner-bottom-icon text-grey tsfont-eye-off"></div>
     <div v-if="needLabel" class="mb-xs">{{ formItem.label }}</div>
-    <template v-if="isShowComponent(formItem) && (!formItem.type || formItem.type === 'form')">
-      <component
-        :is="formItem.handler"
-        v-if="isExistComponent && formItem.handler !== 'formcustom'"
+    <template v-if="isShowComponent(formItem)">
+      <i v-if="formItem.config && formItem.config.isRequired && !readonly && !formItem.config.isReadOnly" class="require-tip text-error">*</i>
+      <template v-if=" (!formItem.type || formItem.type === 'form')">
+        <component
+          :is="formItem.handler"
+          v-if="isExistComponent && formItem.handler !== 'formcustom'"
+          ref="formItem"
+          :style="{ width: mode != 'defaultvalue' ? (formItem.config && formItem.config.width) || '100%' : '100%' }"
+          :formItem="formItem"
+          :formItemList="formItemList"
+          :value="formItemValue"
+          :mode="mode"
+          :filter="filter"
+          :readonly="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
+          :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled"
+          :required="mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false"
+          :formData="formData"
+          :readonlyTextIsHighlight="readonlyTextIsHighlight"
+          :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
+          :isCustomValue="isCustomValue"
+          :isClearSpecifiedAttr="isClearSpecifiedAttr"
+          :externalData="externalData"
+          :rowUuid="rowUuid"
+          :extendConfigList="extendConfigList"
+          @setValue="setValue"
+          @resize="$emit('resize')"
+          @select="selectFormItem"
+          @dropHideComponent="(enevt)=>{
+            $emit('dropHideComponent', enevt)
+          }"
+        ></component>
+        <component
+          :is="formItem.customName"
+          v-else-if="isExistComponent && formItem.handler === 'formcustom'"
+          ref="formItem"
+          :style="{ width: mode != 'defaultvalue' ? (formItem.config && formItem.config.width) || '100%' : '100%' }"
+          :formItem="formItem"
+          :formItemList="formItemList"
+          :value="formItemValue"
+          :mode="mode"
+          :filter="filter"
+          :readonly="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
+          :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled"
+          :required="mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false"
+          :formData="formData"
+          :readonlyTextIsHighlight="readonlyTextIsHighlight"
+          :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
+          :isCustomValue="isCustomValue"
+          :isClearSpecifiedAttr="isClearSpecifiedAttr"
+          :externalData="externalData"
+          :historyValue="isCustomValue ? formItemValue : ''"
+          @setValue="setValue"
+          @resize="$emit('resize')"
+          @select="selectFormItem"
+          @setExtendValue="setExtendValue"
+        ></component>
+        <div v-else class="text-warning">
+          {{ getComponentTip() }}
+        </div>
+      </template>
+      <CustomItem
+        v-else-if="formItem.type === 'custom'"
         ref="formItem"
-        :style="{ width: mode != 'defaultvalue' ? (formItem.config && formItem.config.width) || '100%' : '100%' }"
+        :style="{ width: (formItem.config && formItem.config.width) || '100%' }"
         :formItem="formItem"
         :formItemList="formItemList"
+        :customFormItem="customFormItem"
         :value="formItemValue"
         :mode="mode"
         :filter="filter"
-        :readonly="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
-        :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled"
-        :required="mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false"
-        :formData="formData"
+        :readonly="(mode != 'defaultvalue' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
+        :disabled="(mode != 'defaultvalue' ? formItem.config && formItem.config.isDisabled : false) || disabled"
         :readonlyTextIsHighlight="readonlyTextIsHighlight"
-        :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
-        :isCustomValue="isCustomValue"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
         :externalData="externalData"
-        :rowUuid="rowUuid"
-        :extendConfigList="extendConfigList"
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
-        @dropHideComponent="(enevt)=>{
-          $emit('dropHideComponent', enevt)
-        }"
-      ></component>
-      <component
-        :is="formItem.customName"
-        v-else-if="isExistComponent && formItem.handler === 'formcustom'"
-        ref="formItem"
-        :style="{ width: mode != 'defaultvalue' ? (formItem.config && formItem.config.width) || '100%' : '100%' }"
-        :formItem="formItem"
-        :formItemList="formItemList"
-        :value="formItemValue"
-        :mode="mode"
-        :filter="filter"
-        :readonly="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
-        :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled"
-        :required="mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false"
-        :formData="formData"
-        :readonlyTextIsHighlight="readonlyTextIsHighlight"
-        :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
-        :isCustomValue="isCustomValue"
-        :isClearSpecifiedAttr="isClearSpecifiedAttr"
-        :externalData="externalData"
-        :historyValue="isCustomValue ? formItemValue : ''"
-        @setValue="setValue"
-        @resize="$emit('resize')"
-        @select="selectFormItem"
-        @setExtendValue="setExtendValue"
-      ></component>
-      <div v-else class="text-warning">
-        {{ getComponentTip(formItem) }}
-      </div>
+      ></CustomItem>
+      <div v-if=" formItem.config && formItem.config.description" class="tsfont-info-o text-tip">{{ formItem.config.description }}</div>
     </template>
-    <CustomItem
-      v-else-if="isShowComponent(formItem) && formItem.type === 'custom'"
-      ref="formItem"
-      :style="{ width: (formItem.config && formItem.config.width) || '100%' }"
-      :formItem="formItem"
-      :formItemList="formItemList"
-      :customFormItem="customFormItem"
-      :value="formItemValue"
-      :mode="mode"
-      :filter="filter"
-      :readonly="(mode != 'defaultvalue' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
-      :disabled="(mode != 'defaultvalue' ? formItem.config && formItem.config.isDisabled : false) || disabled"
-      :readonlyTextIsHighlight="readonlyTextIsHighlight"
-      :isClearSpecifiedAttr="isClearSpecifiedAttr"
-      :externalData="externalData"
-      @setValue="setValue"
-      @resize="$emit('resize')"
-      @select="selectFormItem"
-    ></CustomItem>
-    <div v-if="isShowComponent(formItem) && formItem.config && formItem.config.description" class="tsfont-info-o text-tip">{{ formItem.config.description }}</div>
   </div>
 </template>
 <script>
@@ -205,6 +207,14 @@ export default {
     extendConfigList: {
       type: Array,
       default: () => []
+    },
+    extraFormItemList: {
+      type: Array,
+      default: () => []
+    },
+    isSetValue: { //是否更新formData
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -231,14 +241,15 @@ export default {
       filter: [], //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
       REACTION: REACTION, //联动规则
       isShowErrorMessage: true,
-      currentItemHide: false //当前组件是否隐藏
+      currentItemHide: false, //当前组件是否隐藏
+      reactionFormItemUuidMap: {} //规格内需要的表单组件值
     };
   },
   beforeCreate() {},
   created() {
+    this.initReactionFormItemUuid();
     this.updateConfig();
     this.initStatus();
-    this.initReactionWatch();
   },
   beforeMount() {},
   mounted() {
@@ -253,6 +264,78 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initReactionFormItemUuid() { //获取规则内用到的表单组件uuid
+      this.needWatch = false;
+      if (this.reaction) {
+        for (let key in this.reaction) {
+          if (!this.$utils.isEmpty(this.reaction[key])) {
+            this.needWatch = true;
+            break;
+          }
+        }
+      }
+      if (this.mode === 'read' || this.mode === 'readSubform') {
+        if (!this.$utils.isEmpty(this.reactionFormItemUuidMap) || !this.needWatch) {
+          return;
+        }
+        if (this.reaction && !this.$utils.isEmpty(this.reaction)) {
+          for (let action in this.reaction) {
+            const reaction = this.reaction[action];
+            if (action !== 'filter') {
+              const conditinoGroupList = reaction['conditionGroupList'];
+              if (conditinoGroupList && conditinoGroupList.length > 0) {
+                for (let i = 0; i < reaction['conditionGroupList'].length; i++) {
+                  const conditionGroup = reaction['conditionGroupList'][i];
+                  const conditionList = conditionGroup['conditionList'];
+                  if (conditionList && conditionList.length > 0) {
+                    for (let j = 0; j < conditionList.length; j++) {
+                      const condition = conditionList[j];
+                      const uuidList = condition['formItemUuid'].split('#');
+                      const formItemUuid = uuidList[0];
+                      if (!this.reactionFormItemUuidMap.hasOwnProperty(formItemUuid)) {
+                        this.$set(this.reactionFormItemUuidMap, formItemUuid, null);
+                      }
+                    }
+                  }
+                }
+              }
+            } else {
+              const ruleList = reaction['ruleList'];
+              if (ruleList && ruleList.length > 0) {
+                for (let i = 0; i < reaction['ruleList'].length; i++) {
+                  const rule = reaction['ruleList'][i];
+                  let list = rule['formItemUuid'].split('#');
+                  let ruleFormItemUuid = list[0];
+                  if (!this.reactionFormItemUuidMap.hasOwnProperty(ruleFormItemUuid)) {
+                    this.$set(this.reactionFormItemUuidMap, ruleFormItemUuid, null);
+                  }
+                }
+              }
+            }
+          }
+        }
+        if (!this.$utils.isEmpty(this.reactionFormItemUuidMap) && this.formData) {
+          Object.keys(this.reactionFormItemUuidMap).forEach((key) => {
+            this.$set(this.reactionFormItemUuidMap, key, this.formData[key]);
+          });
+        }
+        this.executionReaction(this.reactionFormItemUuidMap);
+      }
+    },
+    executionReaction(newVal, oldVal) { //规则
+      for (let action in this.reaction) {
+        //如果override_config有配置，则相关联动不生效
+        const overrideConfig = this.formItem.override_config || {};
+        const reaction = this.reaction[action];
+        if (reaction && !this.$utils.isEmpty(reaction) && this.isConditionDataChange(action, reaction, newVal, oldVal, this.formItem.uuid)) {
+          const result = this.executeReaction(reaction, newVal, oldVal);
+          if (this.REACTION[action]) {
+            //联动操作
+            this.REACTION[action]({ overrideConfig: overrideConfig, reaction: reaction, result: result, view: this });
+          }
+        }
+      }
+    },
     selectFormItem(formItem) {
       this.$emit('select', formItem);
     },
@@ -283,13 +366,13 @@ export default {
         }
       }
     },
-    //根据联动配置初始化watch
+    //根据联动配置初始化watch，----废弃
     initReactionWatch() {
       if (this.mode === 'read' || this.mode === 'readSubform') {
         this.needWatch = false;
-        if (this.formItem.reaction) {
-          for (let key in this.formItem.reaction) {
-            if (!this.$utils.isEmpty(this.formItem.reaction[key])) {
+        if (this.reaction) {
+          for (let key in this.reaction) {
+            if (!this.$utils.isEmpty(this.reaction[key])) {
               this.needWatch = true;
               break;
             }
@@ -300,13 +383,12 @@ export default {
             'formDataForWatch',
             (newValue, oldValue) => {
               this.enqueueReaction(this.componentUuid, () => {
-                // console.log('开始单个处理');
                 const newVal = newValue && JSON.parse(newValue);
                 const oldVal = oldValue && JSON.parse(oldValue);
-                for (let action in this.formItem.reaction) {
+                for (let action in this.reaction) {
                   //如果override_config有配置，则相关联动不生效
                   const overrideConfig = this.formItem.override_config || {};
-                  const reaction = this.formItem.reaction[action];
+                  const reaction = this.reaction[action];
                   if (reaction && !this.$utils.isEmpty(reaction) && this.isConditionDataChange(action, reaction, newVal, oldVal, this.formItem.uuid)) {
                     const result = this.executeReaction(reaction, newVal, oldVal);
                     if (this.REACTION[action]) {
@@ -471,7 +553,7 @@ export default {
     },
     setValue(val) {
       //formData不一定会提供，例如在联动设置中就不会传入formData，只有在表单正式使用过程中才会有formData
-      if (this.formData) {
+      if (this.formData && this.isSetValue) {
         this.$set(this.formData, this.formItem.uuid, val);
       }
       this.$emit('change', val);
@@ -522,6 +604,25 @@ export default {
     },
     handleCloseErrorMessage() {
       this.isShowErrorMessage = false;
+    },
+    isExistComponent() {
+      let handler = '';
+      if (this.formItem.handler === 'formcustom') {
+        handler = this.formItem.customName;
+      } else {
+        handler = this.formItem.handler;
+      }
+      let component = true;
+      if (!handler || !formItems[handler]) {
+        component = false;
+      }
+      return component;
+    },
+    getComponentTip() {
+      const { label = '', customName = '' } = this.formItem || {};
+      const nameParts = customName.split('-');
+      const componentName = nameParts.length > 1 ? nameParts[0] : customName;
+      return `【${label}(${componentName})】${this.$t('term.framework.componentnoexist')}`;
     }
   },
   filter: {},
@@ -535,13 +636,16 @@ export default {
       }
       return null;
     },
+    reaction() {
+      return this.formItem && this.formItem.reaction;
+    },
     //由于condition的valueList类型是数组，所以不能直接在script中以字符串的方式复制
     conditionData() {
       return uuid => {
         const conditionData = {};
-        if (this.formItem.reaction) {
-          for (let key in this.formItem.reaction) {
-            const reaction = this.formItem.reaction[key];
+        if (this.reaction) {
+          for (let key in this.reaction) {
+            const reaction = this.reaction[key];
             if (reaction && !this.$utils.isEmpty(reaction) && reaction.conditionGroupList) {
               reaction.conditionGroupList.forEach(cg => {
                 if (cg.conditionList) {
@@ -567,9 +671,9 @@ export default {
     },
     //是否配置联动
     hasReaction() {
-      if (!this.$utils.isEmpty(this.formItem.reaction)) {
-        for (let action in this.formItem.reaction) {
-          if (!this.$utils.isEmpty(this.formItem.reaction[action])) {
+      if (!this.$utils.isEmpty(this.reaction)) {
+        for (let action in this.reaction) {
+          if (!this.$utils.isEmpty(this.reaction[action])) {
             return true;
           }
         }
@@ -598,30 +702,35 @@ export default {
         readonlyTextIsHighlight = true;
       }
       return readonlyTextIsHighlight;
-    },
-    isExistComponent() {
-      let handler = '';
-      if (this.formItem.handler === 'formcustom') {
-        handler = this.formItem.customName;
-      } else {
-        handler = this.formItem.handler;
-      }
-      let component = true;
-      if (!handler || !formItems[handler]) {
-        component = false;
-      }
-      return component;
-    },
-    getComponentTip() {
-      return (formItem) => {
-        const { label = '', customName = '' } = formItem || {};
-        const nameParts = customName.split('-');
-        const componentName = nameParts.length > 1 ? nameParts[0] : customName;
-        return `【${label}(${componentName})】${this.$t('term.framework.componentnoexist')}`;
-      };
     }
   },
-  watch: {}
+  watch: {
+    formDataForWatch: {
+      handler(val) {
+        if (val && (this.mode === 'read' || this.mode === 'readSubform')) {
+          this.$nextTick(() => {
+            //联动规格
+            const formData = JSON.parse(val);
+            if (!this.$utils.isEmpty(this.reactionFormItemUuidMap)) {
+              let reactionFormItemUuidMap = this.$utils.deepClone(this.reactionFormItemUuidMap);
+              Object.keys(reactionFormItemUuidMap).forEach((key) => {
+                reactionFormItemUuidMap[key] = formData[key];
+              });
+              if (!this.$utils.isSame(reactionFormItemUuidMap, this.reactionFormItemUuidMap)) {
+                this.executionReaction(reactionFormItemUuidMap, this.reactionFormItemUuidMap);
+                this.reactionFormItemUuidMap = reactionFormItemUuidMap;
+              }
+            }
+            if (this.formItem.config && this.formItem.config.isHide && this.formItem.config.isRequired) {
+            // 拿到隐藏+必填表单uuid
+              this.$emit('updateHiddenComponentList', val, this.formItem.uuid);
+            }
+          });
+        }
+      },
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

@@ -6,6 +6,9 @@ export default ({ reaction, view }) => {
       let formItemUuid = list[0];
       let column = list[1] ? list[1] : 'value';
       let formItem = view.formItemList.find(d => d.uuid === formItemUuid);
+      if (!formItem) {
+        formItem = view.extraFormItemList.find(d => d.uuid === formItemUuid);
+      }
       if (formItem && formItem.config) {
         let valueList = [];
         let textList = [];
