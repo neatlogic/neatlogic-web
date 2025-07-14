@@ -617,7 +617,7 @@ export default {
         file: true,
         reportingHistory: true
       },
-      loadingShow: false, // 解决固定页面之后，tab的顺序改变了，不是渲染前的顺序
+      loadingShow: true, // 解决固定页面之后，tab的顺序改变了，不是渲染前的顺序
       fixedPageList: [],
       mouseoverTabName: '', // 鼠标进入事件
       hasAccessoriesList: true,
@@ -979,23 +979,25 @@ export default {
       this.setTimeUpdata = setTimeout(() => {
         this.$nextTick(() => {
           // 确保子组件渲染完成，否则第一次拿不到formdata的值，导致返回上一层页面，路由数据对比有问题
-          let allData = this.getData();
-          this.$emit('update', allData);
+          if (this.actionConfig.save) {
+            let allData = this.getData();
+            this.$emit('update', allData);
+          }
         });
         this.setTimeUpdata = null;
       }, 300);
     },
-    async initData() {
-      await this.getStepStatusList();
+    initData() {
+      this.getStepStatusList();
       this.wipeCenterDetail();
       this.getActivityList();
       this.getAllFileList();
-    
       this.getTaskComment();
       this.getRepeatList();
       this.initTabList();
       this.$nextTick(() => {
         this.update();
+        this.loadingShow = false;
       });
     },
     wipeCenterDetail() {
@@ -1060,6 +1062,19 @@ export default {
           }
         }
       }
+      //补充默认展示前置步骤tab（eoa）
+      if (this.processTaskConfig.currentProcessTaskStep && this.processTaskConfig.currentProcessTaskStep.viewPrevNodeUuidList) {
+        let viewPrevNodeUuidList = this.processTaskConfig.currentProcessTaskStep.viewPrevNodeUuidList;
+        const viewPrevNodeList = this.processTaskConfig.currentProcessTaskStep.viewPrevNodeList || [];
+        if (!this.$utils.isEmpty(viewPrevNodeUuidList)) {
+          viewPrevNodeUuidList.forEach(pre => {
+            let step = viewPrevNodeList.find(step => step.processStepUuid === pre);
+            if (!this.$utils.isEmpty(step)) {
+              this.viewStepData.push(step);
+            }
+          });
+        }
+      }
     },
     getStepList(data) {
       //刷新子策略数据
@@ -1095,7 +1110,7 @@ export default {
       let data = {
         processTaskId: this.processTaskId
       };
-      return this.$api.process.processtask.getStepStatusList(data).then(res => {
+      this.$api.process.processtask.getStepStatusList(data).then(res => {
         if (res.Status == 'OK') {
           this.stepData = res.Return;
           mutations.setStepList(res.Return);
@@ -1104,18 +1119,6 @@ export default {
             this.stepData.forEach(item => {
               this.$set(item, 'isShow', false);
             });
-            //补充默认展示步骤tab
-            if (this.processTaskConfig.currentProcessTaskStep && this.processTaskConfig.currentProcessTaskStep.handlerStepInfo) {
-              let viewPrevNodeUuidList = this.processTaskConfig.currentProcessTaskStep.viewPrevNodeUuidList;
-              if (!this.$utils.isEmpty(viewPrevNodeUuidList)) {
-                viewPrevNodeUuidList.forEach(pre => {
-                  let step = this.stepData.find(step => step.processStepUuid === pre);
-                  if (!this.$utils.isEmpty(step)) {
-                    this.viewStepData.push(step);
-                  }
-                });
-              }
-            }
           }
         }
       });

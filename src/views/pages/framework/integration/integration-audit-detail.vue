@@ -5,7 +5,7 @@
         {{ $t('page.detail') }}
       </template>
       <template v-slot>
-        <pre class="overflow" style="word-break: break-all; white-space: normal">{{ contentFormated }}</pre>
+        <JsonViewer boxed copyable :value="contentFormated"></JsonViewer>
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
@@ -19,7 +19,9 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   directives: { download },
-  components: {},
+  components: {
+    JsonViewer: () => import('vue-json-viewer')
+  },
   props: { filePath: { type: String } },
   data() {
     return {
@@ -30,7 +32,7 @@ export default {
         type: 'modal',
         maskClose: true,
         isShow: true,
-        width: 'small'
+        width: 'large'
       }
     };
   },
@@ -64,7 +66,7 @@ export default {
     contentFormated: function() {
       try {
         let j = JSON.parse(this.content);
-        return JSON.stringify(j, null, 2);
+        return j;
       } catch (e) {
         return this.content;
       }

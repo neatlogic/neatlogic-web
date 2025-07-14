@@ -2,7 +2,7 @@
   <div class="env-autoconfig-box bg-op env-autoconfig-radius">
     <div class="text-right">
       <ul class="pt-nm pr-nm action-group">
-        <li v-if="hasAutoConfig && hasEditConfigAuth" class="action-item tsfont-edit text-href" @click="editAutoConfig">{{ $t('page.edit') }}</li>
+        <li v-if="hasEditConfigAuth" class="action-item tsfont-edit text-href" @click="editAutoConfig">{{ $t('page.edit') }}</li>
         <template v-else>
           <Tooltip
             max-width="400"

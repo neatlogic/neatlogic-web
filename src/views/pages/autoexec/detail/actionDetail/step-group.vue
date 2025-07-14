@@ -294,7 +294,8 @@ export default {
             transfer: true,
             label: this.$t('term.autoexec.batchquantity'),
             desc: this.$t('term.deploy.executetargetdesc'),
-            dataList: this.$utils.getRoundCountList()
+            dataList: this.$utils.getRoundCountList(),
+            isHidden: true
           },
           parallelCount: {
             type: 'select',
@@ -302,7 +303,8 @@ export default {
             transfer: true,
             label: this.$t('term.autoexec.parall'),
             desc: this.$t('term.autoexec.paralldesc'),
-            dataList: this.$utils.getRoundCountList()
+            dataList: this.$utils.getRoundCountList(),
+            isHidden: true
           }
         }
       },
@@ -368,6 +370,8 @@ export default {
     },
     addTarget() {
       this.executeConfig = this.getInitExecuteConfig();
+      this.$set(this.executeForm.itemList.roundCount, 'isHidden', true);
+      this.$set(this.executeForm.itemList.parallelCount, 'isHidden', true);
       this.isShowDialog = true;
     },
     editTarget() {

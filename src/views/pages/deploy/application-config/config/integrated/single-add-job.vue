@@ -211,12 +211,43 @@ export default {
           label: ''
         },
         {
+          name: 'parallelPolicy',
+          type: 'radio',
+          label: this.$t('page.autoexecparallpolicy'),
+          dataList: [
+            {
+              text: this.$t('page.autoexecparall'),
+              value: 'parallel'
+            },
+            {
+              text: this.$t('page.autoexecbatchround'),
+              value: 'roundCount'
+            }
+          ],
+          allowToggle: true,
+          transfer: true,
+          validateList: ['required'],
+          onChange: (val) => {
+            this.changeParallelPolicy(val);
+          }
+        },
+        {
           name: 'roundCount',
           type: 'select',
           label: this.$t('term.autoexec.batchquantity'),
           desc: this.$t('term.autoexec.roundcountdescrition'),
           dataList: this.$utils.getRoundCountList(),
-          filterName: 'text'
+          filterName: 'text',
+          validateList: ['required']
+        },
+        {
+          name: 'parallelCount',
+          type: 'select',
+          label: this.$t('term.autoexec.parall'),
+          desc: this.$t('term.autoexec.paralldesc'),
+          dataList: this.$utils.getRoundCountList(),
+          filterName: 'text',
+          validateList: ['required']
         },
         {
           name: 'jobParam',
@@ -263,6 +294,8 @@ export default {
   created() {
     if (!this.value || !this.$utils.isEmptyObj(this.value)) {
       this.setFormValue();
+    } else {
+      this.changeParallelPolicy();
     }
     if (this.appModuleId) {
       // 编辑配置
@@ -296,12 +329,15 @@ export default {
           this.$set(currentValue, 'instanceFilterList', defaultInstanceIdList);
           this.instanceList = defaultInstanceIdList;
         }
-        this.$set(currentValue, 'roundCount', this.value.config.roundCount);
+        this.$set(currentValue, 'parallelPolicy', this.value.config.parallelPolicy);
+        this.$set(currentValue, 'parallelCount', !this.$utils.isEmpty(this.value.config.parallelCount) ? this.value.config.parallelCount : 32);
+        this.$set(currentValue, 'roundCount', !this.$utils.isEmpty(this.value.config.roundCount) ? this.value.config.roundCount : 64);
         this.envId = this.value.config.envId;
         this.scenarioId = this.value.config.scenarioId;
         delete currentValue.config;
-      }
+      }    
       this.formValue = Object.assign({}, this.formValue, currentValue);
+      this.changeParallelPolicy(this.formValue.parallelPolicy);
     },
     switchSceneAndEnv(type, item) {
       if (type == 'env') {
@@ -316,9 +352,13 @@ export default {
       let formValue = this.$utils.deepClone(this.formValue) || {};
       formValue.config = {};
       let selectNodeList = [];
-      let deleteFields = ['instanceFilter', 'instanceFilterList', 'roundCount']; // 删除多余的字段
-      if (formValue.roundCount) {
-        this.$set(formValue.config, 'roundCount', formValue.roundCount || 0);
+      let deleteFields = ['instanceFilter', 'instanceFilterList', 'roundCount', 'parallelPolicy', 'parallelCount']; // 删除多余的字段
+      
+      this.$set(formValue.config, 'parallelPolicy', formValue.parallelPolicy);
+      if (formValue.parallelPolicy === 'parallel') {
+        this.$set(formValue.config, 'parallelCount', formValue.parallelCount);
+      } else {
+        this.$set(formValue.config, 'roundCount', formValue.roundCount);
       }
       if (formValue.instanceFilterList) {
         // 单独处理实例过滤列表，处理传递给后端的数据
@@ -488,6 +528,16 @@ export default {
           }
         });
       }
+    },
+    changeParallelPolicy(val) {
+      this.formList.forEach((item) => {
+        if (item.name === 'parallelCount') {
+          this.$set(item, 'isHidden', !val || val === 'roundCount');
+        }
+        if (item.name === 'roundCount') {
+          this.$set(item, 'isHidden', !val || val === 'parallel');
+        }
+      });
     }
   },
   filter: {},

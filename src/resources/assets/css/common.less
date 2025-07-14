@@ -612,6 +612,27 @@ html {
         }
       }
     }
+    &.border-tabs {
+      > .@{iv-prev}tabs-bar {
+        margin-bottom: 0px;
+        .@{iv-prev}tabs-tab {
+          border: 1px solid;
+          line-height: 32px;
+          height: 32px;
+          margin-right: 4px;
+          border-top-left-radius: @item-border-radius;
+          border-top-right-radius: @item-border-radius;
+          padding: 0px @space-normal;
+        }
+        .@{iv-prev}tabs-ink-bar {
+          display: none;
+        }
+      }
+      .@{iv-prev}tabs-content {
+        border-radius: @block-border-radius;
+        border-top-left-radius: 0px;
+      }
+    }
 
     &.@{iv-prev}tabs-card {
       > .@{iv-prev}tabs-bar {

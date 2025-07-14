@@ -2,7 +2,20 @@
   <div class="form-li" :class="borderClass" @keydown.stop>
     <!-- <input v-if="type == 'password'" type="text" class="hidden" />
     <input v-if="type == 'password'" type="password" class="hidden" /> -->
-    <span v-if="readonly" :class="[readonlyClass, readonlyTextHighlightClass]" :title="readonlyTitle">{{ currentValue || currentValue === 0 ? currentValue : '-' }}</span>
+    <template v-if="readonly">
+      <span
+        v-if="type == 'textarea'"
+        :class="[readonlyClass, readonlyTextHighlightClass]"
+        :title="readonlyTitle"
+        class="pre"
+        v-html="handleReadonlyValue(currentValue)"
+      ></span>
+      <span
+        v-else
+        :class="[readonlyClass, readonlyTextHighlightClass]"
+        :title="readonlyTitle"
+      >{{ handleReadonlyValue(currentValue) }}</span>
+    </template>
     <div v-else :style="getStyle">
       <Input
         v-if="type != 'number'"
@@ -297,6 +310,11 @@ export default {
           });
       }
       return clearable;
+    },
+    handleReadonlyValue() {
+      return (currentValue) => {
+        return currentValue || currentValue === 0 ? currentValue : '-';
+      };
     }
   },
   watch: {

@@ -410,6 +410,7 @@ export default {
           params.attrFilterList.push({
             attrUuid: d.attrUuid,
             valueList: d.valueList,
+            actualValueList: d.actualValueList,
             expression: d.expression,
             type: key.startsWith('constattr_') ? 'constattr' : key.startsWith('globalattr_') ? 'globalattr' : 'attr'
           });

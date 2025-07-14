@@ -95,6 +95,7 @@ export default {
           type: 'textarea',
           name: 'config',
           label: this.$t('page.config'),
+          tooltip: '{"user":"root","password":"********","driverClassName":"com.mysql.jdbc.Driver","url":"jdbc:mysql://localhost:3306/neatlogic?characterEncoding=UTF-8"}',
           validateList: ['required'],
           onChange: config => {
             this.databaseData.config = config;

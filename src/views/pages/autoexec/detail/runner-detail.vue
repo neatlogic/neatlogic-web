@@ -110,7 +110,7 @@
               :runtimeParamList="runtimeParamList"
             ></RunnerGroupTagSetting>
           </div>
-          <div v-if="runnerGroupTag && runnerGroupTag.mappingMode==='constant'">
+          <div v-if="runnerGroupTag && (!runnerGroupTag.mappingMode || runnerGroupTag.mappingMode==='constant')">
             <RunnerGroupTagSetting
               ref="runnerGroupTag"
               :config="runnerGroupTag"
@@ -523,8 +523,8 @@ export default {
             if (this.jobId) {
               this.setJobParams(this.jobConfig);
             } else {
-              this.roundCount = this.executeConfig.roundCount || 64;
-              this.parallelCount = this.executeConfig.parallelCount || 32;
+              this.roundCount = !this.$utils.isEmpty(this.executeConfig.roundCount) ? this.executeConfig.roundCount : 64;
+              this.parallelCount = !this.$utils.isEmpty(this.executeConfig.parallelCount) ? this.executeConfig.parallelCount : 32;
               this.parallelPolicy = this.executeConfig.parallelPolicy || 'parallel';
               
               if (this.executeConfig.whenToSpecify == 'runtime') {
@@ -692,11 +692,11 @@ export default {
       if (this.dataConfig && this.dataConfig.needRoundCount) { //是否需要设置分批数量
         this.$set(data, 'parallelPolicy', this.parallelPolicy || 'parallel');
         if (this.parallelPolicy == 'parallel') {
-          this.$set(data, 'parallelCount', this.parallelCount || 32);
+          this.$set(data, 'parallelCount', !this.$utils.isEmpty(this.parallelCount) ? this.parallelCount : 32);
           this.$set(data, 'roundCount', null);
         } else {
           this.$set(data, 'parallelCount', null);
-          this.$set(data, 'roundCount', this.roundCount || 64);
+          this.$set(data, 'roundCount', !this.$utils.isEmpty(this.roundCount) ? this.roundCount : 64);
         }
       }
       if (this.$refs.param) {
@@ -769,9 +769,13 @@ export default {
     },
     changeParallelPolicy(val) {
       if (val && val == 'roundCount') {
-        this.roundCount = this.roundCount || 64;
+        if (this.$utils.isEmpty(this.roundCount)) {
+          this.roundCount = 64;
+        }
       } else {
-        this.parallelCount = this.parallelCount || 32;
+        if (this.$utils.isEmpty(this.parallelCount)) {
+          this.parallelCount = 32;
+        }
       }
     }
   },

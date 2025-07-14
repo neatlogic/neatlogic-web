@@ -1,18 +1,27 @@
 <template>
   <div>
     <TsForm ref="formMain" :item-list="formConfig">
+      <template slot="reactionFilter">
+        <ReactionFilter
+          ref="reactionFilterRef"
+          :matrixAttrUuidList="matrixAttrUuidList"
+          :rowData="rowData"
+          :paramList="paramList"
+          :reactionFilterList="reactionFilterList"
+        ></ReactionFilter>
+      </template>
     </TsForm>
   </div>
 </template>
 <script>
+import BaseConfig from '@/views/pages/report/report/paramconfig/base.vue';
 export default {
   name: '',
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
-  props: {config: {type: Object} },
+  extends: BaseConfig,
   data() {
-    const _this = this;
     return {
       myConfig: {matrix: '', valueKey: '', textKey: ''},
       formConfig: {
@@ -26,8 +35,8 @@ export default {
           valueName: 'uuid',
           transfer: true,
           validateList: ['required'],
-          onChange: function(val) {
-            _this.currentMatrix = val;
+          onChange: (val) => {
+            this.currentMatrix = val;
           }
         },
         valueKey: {
@@ -47,9 +56,16 @@ export default {
           valueName: 'uuid',
           transfer: true,
           validateList: ['required']
+        },
+        reactionFilter: {
+          name: 'reactionFilter',
+          type: 'slot',
+          label: '联动过滤'
         }
       },
-      currentMatrix: null
+      currentMatrix: null,
+      matrixAttrUuidList: [],
+      reactionFilterList: []
     };
   },
   beforeCreate() {},
@@ -61,6 +77,10 @@ export default {
       this.formConfig[k].value = this.myConfig[k];
     }
     this.currentMatrix = this.myConfig['matrix'];
+    const { reactionFilterList = [] } = this.config || {};
+    if (reactionFilterList?.length > 0) {
+      this.reactionFilterList = reactionFilterList;
+    }
   },
   beforeUpdate() {},
   updated() {},
@@ -68,11 +88,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-    setConfig: function() {
-      return this.$refs['formMain'].getFormValue();
-    }
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {
@@ -83,8 +99,10 @@ export default {
             matrixUuid: val
           }).then(res => {
             if (res.Status == 'OK') {
-              this.formConfig.valueKey.dataList = res.Return.tbodyList;
-              this.formConfig.textKey.dataList = res.Return.tbodyList;
+              const { tbodyList = [] } = res?.Return || {};
+              this.formConfig.valueKey.dataList = tbodyList;
+              this.formConfig.textKey.dataList = tbodyList;
+              this.matrixAttrUuidList = tbodyList;
             }
           });
         }

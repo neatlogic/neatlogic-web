@@ -461,9 +461,13 @@ export default {
     },
     changeParallelPolicy(val) {
       if (val && val == 'roundCount') {
-        this.jobTemplateData.roundCount = this.jobTemplateData.roundCount || 2;
+        if (this.$utils.isEmpty(this.jobTemplateData.roundCount)) {
+          this.jobTemplateData.roundCount = 2;
+        }
       } else {
-        this.jobTemplateData.parallelCount = this.jobTemplateData.parallelCount || 2;
+        if (this.$utils.isEmpty(this.jobTemplateData.parallelCount)) {
+          this.jobTemplateData.parallelCount = 2;
+        }
       }
     }
   },

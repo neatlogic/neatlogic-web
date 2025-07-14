@@ -38,7 +38,7 @@
             <div class="tstable-action">
               <ul class="tstable-action-ul">
                 <li class="tsfont-list" @click="showJobList(row)">{{ $t('term.deploy.joblist') }}</li>
-                <li class="tsfont-plus" @click="addBatchJob(row)">{{ $t('term.deploy.batchjob') }}</li>
+                <li v-auth="'BATCHDEPLOY_MODIFY'" class="tsfont-plus" @click="addBatchJob(row)">{{ $t('term.deploy.batchjob') }}</li>
                 <li class="tsfont-trash-o" @click="deletePipeline(row)">{{ $t('page.delete') }}</li>
               </ul>
             </div>

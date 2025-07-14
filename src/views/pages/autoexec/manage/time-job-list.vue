@@ -77,7 +77,7 @@
           </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
-              <ul v-if="row.editable" class="tstable-action-ul">
+              <ul class="tstable-action-ul">
                 <li :title="!row.editable ? $t('page.notauthrelationadmin') : ''" @click.stop>
                   <TsFormSwitch
                     v-model="row.isActive"
@@ -89,6 +89,18 @@
                   ></TsFormSwitch>
                 </li>
                 <li
+                  class="tsfont-test icon"
+                  :title="
+                    !row.editable
+                      ? $t('page.notauthrelationadmin')
+                      : row.isActive === 1
+                        ? '禁用才能测试'
+                        : ''
+                  "
+                  :class="{ disable: !row.editable || row.isActive == 1 }"
+                  @click="testRow(row, jobHandler)"
+                >{{ $t('page.test') }}</li>
+                <li
                   class="icon tsfont-trash-o"
                   :title="!row.deletable ? $t('page.notauthrelationadmin') : ''"
                   :class="{ disable: !row.deletable }"
@@ -98,7 +110,14 @@
                   {{ $t('page.delete') }}
                 </li>
                 <li
-                  v-if="row.execCount > 0"
+                  class="tsfont-putongjigui"
+                  :title="$t('term.autoexec.jobrecord')"
+                  @click="toRecord(row)"
+                >
+                  <!-- 自动化作业记录 -->
+                  {{ $t('term.autoexec.jobrecord') }}
+                </li>
+                <li
                   class="tsfont-putongjigui"
                   :title="$t('term.autoexec.executionrecord')"
                   @click="showAudit(row.uuid)"
@@ -173,7 +192,7 @@ export default {
           { key: 'isLoad', title: this.$t('page.loaded')},
           { key: 'cron', title: this.$t('term.autoexec.timingplan') }, // cron表达式
           { key: 'autoexecCombopName', title: this.$t('term.autoexec.relatecombinationtool') }, // 关联组合工具
-          { key: 'execCount', title: this.$t('term.autoexec.executecount') }, // 执行次数
+          { key: 'execCount', title: this.$t('term.autoexec.jobcount') }, // 执行次数
           { key: 'lcuVo', title: this.$t('page.fcu'), type: 'user' }, // 修改人
           { key: 'lcd', title: this.$t('page.fcd'), type: 'time' }, // 修改时间
           { key: 'jobStatus', title: this.$t('term.autoexec.executionsituation') },
@@ -184,7 +203,8 @@ export default {
         currentPage: 1,
         keyword: '', // 关键字
         autoexecCombopId: null // 组合工具id
-      }
+      },
+      jobHandler: null
     };
   },
   beforeCreate() {},
@@ -222,6 +242,7 @@ export default {
         if (res.Status == 'OK') {
           this.loadingShow = false;
           this.tableData = Object.assign(this.tableData, res.Return);
+          this.jobHandler = res.Return.handler;
         }
       });
     },
@@ -267,7 +288,7 @@ export default {
     },
     toRecord(row) {
       // 打开执行记录
-      if (row && row.execCount) {
+      if (row) {
         this.autoexecCombopId = row.autoexecCombopId;
         this.scheduleId = row.id;
         this.isShowRecord = true;
@@ -293,6 +314,28 @@ export default {
     closeAuditDialog() {
       this.isAuditShow = false;
       this.currentJobUuid = null;
+    },
+    testRow: function(row, handler) {
+      if (!row.editable || row.isActive == 1) {
+        return;
+      }
+      this.$createDialog({
+        title: this.$t('dialog.title.testconfirm'),
+        content: this.$t('dialog.content.testconfirm', {target: row.name}),
+        btnType: 'primary',
+        'on-ok': vnode => {
+          let params = { jobUuid: row.uuid, jobHandlerClassName: handler};
+          this.$api.autoexec.timeJob
+            .test(params)
+            .then(res => {
+              if (res.Status == 'OK') {
+                this.$Message.success(this.$t('message.executesuccess'));
+                this.getTableDataList(1);
+                vnode.isShow = false;
+              }
+            });
+        }
+      });
     }
   },
   computed: {},

@@ -303,7 +303,7 @@ export default {
         return;
       } else if (row.source == 'deployschedulegeneral' || row.source == 'deployschedulepipeline') {
         window.open(HOME + '/deploy.html#/schedule-job-edit?id=' + routeConfig.id, '_blank');
-      } else if (row.source == 'deployci') {
+      } else if (row.source == 'deployci' || row.source == 'deploycipipeline') {
         window.open(HOME + '/deploy.html#/config-add?appSystemId=' + routeConfig.appSystemId + '&id=' + routeConfig.id, '_blank');
       }
     },

@@ -164,8 +164,7 @@ export default {
           transfer: true,
           label: _this.$t('term.autoexec.planendtime') // 计划结束时间
         }
-      },
-      initData: {}
+      }
     };
   },
   beforeCreate() {},
@@ -191,6 +190,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    beforeLeaveCompare(oldData) {
+      const newVal = this.$utils.deepRemoveEmptyValues(this.getToolParams());
+      const oldval = this.$utils.deepRemoveEmptyValues(oldData);
+      return this.$utils.isSame(oldval, newVal);
+    },
+    async beforeLeave() {
+      return await this.save();
+    },
     changeTabValue(item) {
       // 点击切换按钮
       this.current = item;
@@ -234,8 +241,8 @@ export default {
         return false;
       }
       let params = this.getToolParams();
-      this.initData = params;
-      this.$api.autoexec.timeJob.saveTimeJob(params).then((res) => {
+      this.$addWatchData(params);
+      return this.$api.autoexec.timeJob.saveTimeJob(params).then((res) => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess')); // 保存成功
           this.$router.push({
@@ -256,10 +263,11 @@ export default {
       return this.$api.autoexec.timeJob.getTimeJob(param).then((res) => {
         if (res.Status == 'OK') {
           let data = res.Return;
+          let initData = {};
           if (this.id) {
             for (let key in this.formSetting) {
               this.$set(this.formSetting[key], 'value', data[key]);
-              this.$set(this.initData, key, data[key]);
+              this.$set(initData, key, data[key]);
             }
           }
           if (!this.defaultCombopId) {
@@ -267,7 +275,8 @@ export default {
           }
           this.config = data.config;
           this.isShow = true;
-          this.$set(this.initData, 'config', this.config);
+          this.$set(initData, 'config', this.config);
+          this.$addWatchData(initData);
         }
       }).finally(() => {
         this.isLoading = false;
@@ -276,29 +285,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {},
-  beforeRouteLeave(to, from, next, url) {
-    let data = this.getToolParams();
-    if (this.$utils.isSame(data, this.initData)) {
-      url ? this.$utils.gotoHref(url) : next(true);
-    } else {
-      let _this = this;
-      this.$utils.jumpDialog.call(
-        this,
-        {
-          save: {
-            fn: async vnode => {
-              return await _this.save();
-            }
-          }
-        },
-        to,
-        from,
-        next,
-        url
-      );
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

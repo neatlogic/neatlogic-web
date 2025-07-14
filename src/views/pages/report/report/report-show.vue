@@ -76,6 +76,7 @@
                   ref="form"
                   :validateList="param.validateList"
                   :config="param.config"
+                  :searchParam="searchParam"
                   @setParam="
                     val => {
                       setParam(param.name, val);

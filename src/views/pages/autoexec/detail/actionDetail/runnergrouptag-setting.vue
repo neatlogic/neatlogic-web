@@ -149,6 +149,7 @@ export default {
       this.openParamsSetting();
     },
     save() {
+      delete this.runnerGroupTag.text;
       return this.runnerGroupTag;
     },
     valid() {
@@ -169,6 +170,9 @@ export default {
       return label;
     },
     async getRunnerGroupTagLabel() {
+      if (this.$utils.isEmpty(this.runnerGroupTag.value)) {
+        return false;
+      }
       let params = {defaultValue: [this.runnerGroupTag.value]};
       await this.$api.framework.runner.getRunnerGroupTag(params)
         .then(res => {
