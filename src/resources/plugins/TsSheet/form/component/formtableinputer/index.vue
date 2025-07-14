@@ -365,7 +365,9 @@ export default {
       }
     },
     changeRow(val, uuid, row) {
-      this.$set(row, uuid, val);
+      if (!this.$utils.isSame(val, row[uuid])) {
+        this.$set(row, uuid, val);
+      }
     },
     updateRowSort(event) {
       let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
@@ -845,6 +847,9 @@ export default {
       let formData = this.$utils.deepClone(obj);
       if (formData.uuid) {
         delete formData.uuid;
+      }
+      if (formData.hasOwnProperty(this.formItem.uuid)) {
+        delete formData[this.formItem.uuid];
       }
       return formData;
     }

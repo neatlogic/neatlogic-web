@@ -708,7 +708,7 @@ export default {
     formDataForWatch: {
       handler(val) {
         if (val && (this.mode === 'read' || this.mode === 'readSubform')) {
-          this.$nextTick(() => {
+          this.enqueueReaction(this.componentUuid, () => {
             //联动规格
             const formData = JSON.parse(val);
             if (!this.$utils.isEmpty(this.reactionFormItemUuidMap)) {
@@ -722,7 +722,7 @@ export default {
               }
             }
             if (this.formItem.config && this.formItem.config.isHide && this.formItem.config.isRequired) {
-            // 拿到隐藏+必填表单uuid
+              // 拿到隐藏+必填表单uuid
               this.$emit('updateHiddenComponentList', val, this.formItem.uuid);
             }
           });
