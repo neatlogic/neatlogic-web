@@ -1,10 +1,11 @@
+import utils from '@/resources/assets/js/util.js';
 export default (currentValue, oldValue, condition) => {
   let isExclude = false;
   let conditionValue = condition.valueList;
   //处理隐藏属性过滤
   let uuidList = (condition.formItemUuid && condition.formItemUuid.split('#')) || [];
   let uuid = uuidList[1] || 'value';
-  if (currentValue == null || currentValue == '' || currentValue == [] || currentValue == {}) {
+  if (utils.isEmpty(currentValue)) {
     isExclude = true;
   } else {
     let conditionValueList = [];

@@ -1167,9 +1167,9 @@ export default {
     //根据联动配置初始化watch
     initReactionWatch() {
       this.needWatch = false;
-      if (this.config.reaction) {
-        for (let key in this.config.reaction) {
-          if (this.config.reaction[key].some(d => !this.$utils.isEmpty(d)) > 0) {
+      if (this.reaction) {
+        for (let key in this.reaction) {
+          if (this.reaction[key].some(d => !this.$utils.isEmpty(d)) > 0) {
             this.needWatch = true;
             break;
           }
@@ -1182,9 +1182,8 @@ export default {
             this.$nextTick(() => {
               const newVal = newValue && JSON.parse(newValue);
               const oldVal = oldValue && JSON.parse(oldValue);
-
-              for (let key in this.config.reaction) {
-                this.config.reaction[key].forEach(reaction => {
+              for (let key in this.reaction) {
+                this.reaction[key].forEach(reaction => {
                   if (this.mode !== 'edit' && reaction.rows && reaction.rows.length > 0) {
                     const reactionResult = this.executeReaction(reaction, newVal, oldVal);
                     if (key === 'hiderow') {
@@ -1780,9 +1779,9 @@ export default {
     },
     //行是否有联动设置
     hasReaction(index) {
-      if (this.config.reaction) {
-        for (let key in this.config.reaction) {
-          const reactionList = this.config.reaction[key];
+      if (this.reaction) {
+        for (let key in this.reaction) {
+          const reactionList = this.reaction[key];
           if (reactionList && reactionList.length > 0) {
             for (let i = 0; i < reactionList.length; i++) {
               const reaction = reactionList[i];
@@ -1796,9 +1795,9 @@ export default {
       return false;
     },
     isHideRow(index) {
-      if (this.config.reaction && this.config.reaction.hiderow) {
-        for (let i = 0; i < this.config.reaction.hiderow.length; i++) {
-          const hiderow = this.config.reaction.hiderow[i];
+      if (this.reaction && this.reaction.hiderow) {
+        for (let i = 0; i < this.reaction.hiderow.length; i++) {
+          const hiderow = this.reaction.hiderow[i];
           if (hiderow.rows && hiderow.rows.length > 0 && hiderow.rows.includes(index)) {
             return true;
           }
@@ -2104,9 +2103,9 @@ export default {
     conditionData() {
       return uuid => {
         const conditionData = {};
-        if (this.config.reaction) {
-          for (let key in this.config.reaction) {
-            const reactionList = this.config.reaction[key];
+        if (this.reaction) {
+          for (let key in this.reaction) {
+            const reactionList = this.reaction[key];
             if (reactionList && reactionList.length > 0) {
               reactionList.forEach(reaction => {
                 if (reaction && !this.$utils.isEmpty(reaction) && reaction.conditionGroupList) {
@@ -2400,6 +2399,9 @@ export default {
         let {componentTopLeftTip = ''} = config;
         return componentTopLeftTip;
       };
+    },
+    reaction() {
+      return this.config && this.config.reaction;
     }
   },
   watch: {

@@ -71,10 +71,11 @@
           <div :key="extra.uuid" @click.stop>
             <FormItem
               :ref="'formitem_' + extra.uuid + '_' + index"
-              :formItem="getExtraFormItem(extra, row)"
-              :value="getDefaultValue(extra.uuid, row)"
-              :formData="{ ...filterUuid(initFormData), ...row }"
-              :formItemList="$utils.deepClone(extraList.concat(formItemList))"
+              :formItem="$utils.deepClone(extra)"
+              :formData="{ ...filterUuid(formData), ...row }"
+              :isSetValue="false"
+              :formItemList="formItemList"
+              :extraFormItemList="extraList"
               :showStatusIcon="false"
               mode="read"
               :readonly="readonly"
@@ -130,17 +131,14 @@ export default {
       isShowExportExcelTemplate: true,
       isShowExportExcel: true,
       loading: false,
-      conditionFormItemUuidList: [], //外部组件参与联动条件的uuid列表
       filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'], //过滤不参与规则的组件
-      initExternalData: {}, //用于对比外部组件值变换
-      initFormData: this.$utils.deepClone(this.formData)
+      initExternalData: {} //用于对比外部组件值变换
     };
   },
   beforeCreate() {},
   created() {
     if (this.mode !== 'edit') {
       this.init();
-      this.getConditionFormItemList();
     }
   },
   beforeMount() {},
@@ -230,33 +228,6 @@ export default {
       });
       Object.assign(data, this.initExternalData);
       this.tableData.tbodyList.push(data);
-    },
-    //从表格选择列表行数据中获取指定字段作为扩展字段的过滤值
-    getExtraFormItem(extraFormItem, row) {
-      //由于每行的过滤值都不一样，所以需要复制，避免互相影响
-      if (!this.rowFormItem[row.uuid]) {
-        this.rowFormItem[row.uuid] = {};
-      }
-      if (!this.rowFormItem[row.uuid][extraFormItem.uuid]) {
-        this.rowFormItem[row.uuid][extraFormItem.uuid] = this.$utils.deepClone(extraFormItem);
-      }
-      const formItem = this.rowFormItem[row.uuid][extraFormItem.uuid];
-      const config = formItem.config;
-      if (config && config.sourceColumnList && config.sourceColumnList.length > 0) {
-        config.sourceColumnList.forEach(sourceColumn => {
-          if (sourceColumn.valueColumn) {
-            sourceColumn.valueList = [row[sourceColumn.valueColumn]];
-            sourceColumn.expression = 'equal';
-          }
-        });
-      }
-      if (this.disabled) {
-        this.$set(formItem.config, 'isDisabled', true);
-      }
-      if (this.readonly) {
-        this.$set(formItem.config, 'isReadOnly', true);
-      }
-      return { ...formItem };
     },
     validConfig() {
       const errorList = [];
@@ -394,7 +365,9 @@ export default {
       }
     },
     changeRow(val, uuid, row) {
-      this.$set(row, uuid, val);
+      if (!this.$utils.isSame(val, row[uuid])) {
+        this.$set(row, uuid, val);
+      }
     },
     updateRowSort(event) {
       let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
@@ -863,16 +836,6 @@ export default {
       }
       return typeof value == 'number' ? String(value) : value;
     },
-    getConditionFormItemList() {
-      //获取可以作为联动的条件的组件(外部组件和当前行下组件的属性)
-      this.conditionFormItemUuidList = [];
-      let allFormItem = this.formItemList.concat(this.formItem.config.dataConfig);
-      let formItemList = allFormItem.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !this.filterComponentList.includes(d.handler));
-      if (formItemList && formItemList.length > 0) {
-        this.conditionFormItemUuidList = this.$utils.mapArray(formItemList, 'uuid');
-      }
-      this.conditionFormItemUuidList.push('uuid');
-    },
     updateCurrentRow(row, val) {
       this.$nextTick(() => {
         if (val) {
@@ -881,10 +844,14 @@ export default {
       });
     },
     filterUuid(obj) {
-      if (obj.uuid) {
-        delete obj.uuid;
+      let formData = this.$utils.deepClone(obj);
+      if (formData.uuid) {
+        delete formData.uuid;
       }
-      return obj;
+      if (formData.hasOwnProperty(this.formItem.uuid)) {
+        delete formData[this.formItem.uuid];
+      }
+      return formData;
     }
   },
   filter: {},
@@ -898,47 +865,11 @@ export default {
     extraList() {
       return this.config.dataConfig.filter(d => d.isPC);
     },
-    getDefaultValue() {
-      return (uuid, row) => {
-        let dataConfig = null;
-        if (!this.$utils.isEmpty(this.value) && Array.isArray(this.value)) {
-          let valueItem = this.value.find(i => i.uuid === row.uuid);
-          if (valueItem) {
-            dataConfig = valueItem;
-          }
-        }
-        if (!dataConfig) {
-          dataConfig = this.config.dataConfig.find(d => d.uuid === uuid);
-        }
-        if (dataConfig) {
-          if (dataConfig.config) {
-            const defaultValue = dataConfig.config.defaultValue;
-            if (dataConfig.config.defaultValueType === 'custom') {
-              return defaultValue;
-            } else if (dataConfig.config.defaultValueType === 'matrix') {
-              if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
-                const defaultValueField = dataConfig.config.defaultValueField;
-                const defaultTextField = dataConfig.config.defaultTextField;
-                return { text: row[defaultValueField], value: row[defaultTextField] };
-              } else {
-                return row[defaultValue];
-              }
-            } else {
-              return defaultValue;
-            }
-          }
-        }
-        return null;
-      };
-    },
     canAdd() {
       return !this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd;
     },
     canShowImportExportBtn() {
       return !this.config.hasOwnProperty('isShowImportExportBtn') || this.config.isShowImportExportBtn;
-    },
-    formDataForWatch() {
-      return JSON.parse(JSON.stringify(this.formData));
     },
     showTable() {
       const { hideHeaderWhenDataEmpty = false } = this.config || {};
@@ -979,15 +910,6 @@ export default {
     'tableData.tbodyList': {
       handler: function(val) {
         this.setValue(val);
-      },
-      deep: true,
-      immediate: true
-    },
-    formDataForWatch: {
-      handler(val) {
-        if (this.mode != 'edit' && this.mode != 'editSubform' && !this.$utils.isSame(val, this.initFormData)) {
-          this.initFormData = this.$utils.deepClone(val) || {};
-        }
       },
       deep: true,
       immediate: true
