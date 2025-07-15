@@ -63,7 +63,7 @@
           :mode="mode"
           :filter="filter"
           :readonly="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
-          :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled"
+          :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled || currentItemDisabled"
           :required="mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false"
           :formData="formData"
           :readonlyTextIsHighlight="readonlyTextIsHighlight"
@@ -91,7 +91,7 @@
           :mode="mode"
           :filter="filter"
           :readonly="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
-          :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled"
+          :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled || currentItemDisabled"
           :required="mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false"
           :formData="formData"
           :readonlyTextIsHighlight="readonlyTextIsHighlight"
@@ -120,7 +120,7 @@
         :mode="mode"
         :filter="filter"
         :readonly="(mode != 'defaultvalue' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
-        :disabled="(mode != 'defaultvalue' ? formItem.config && formItem.config.isDisabled : false) || disabled"
+        :disabled="(mode != 'defaultvalue' ? formItem.config && formItem.config.isDisabled : false) || disabled || currentItemDisabled"
         :readonlyTextIsHighlight="readonlyTextIsHighlight"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
         :externalData="externalData"
@@ -242,7 +242,8 @@ export default {
       REACTION: REACTION, //联动规则
       isShowErrorMessage: true,
       currentItemHide: false, //当前组件是否隐藏
-      reactionFormItemUuidMap: {} //规格内需要的表单组件值
+      reactionFormItemUuidMap: {}, //规格内需要的表单组件值
+      currentItemDisabled: false //当前组件是否禁用(针对表格组件嵌套子组件)
     };
   },
   beforeCreate() {},
