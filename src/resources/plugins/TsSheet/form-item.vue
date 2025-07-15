@@ -727,6 +727,9 @@ export default {
               this.$emit('updateHiddenComponentList', val, this.formItem.uuid);
             }
           });
+          this.$nextTick(() => {
+            this.isFirstLoad = false;
+          });
         }
       },
       immediate: true
