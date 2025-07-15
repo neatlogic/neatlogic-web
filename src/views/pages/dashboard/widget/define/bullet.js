@@ -13,21 +13,22 @@ export default {
   needData: true,
   dataTypes: [{ value: 'dynamic', text: $t('term.report.datatype.dynamicdata') }],
   fields: [
-    { name: 'measureField', label: '当前值', type: 'number', isRequired: true },
-    { name: 'ranges', label: '最大值', type: 'number', isRequired: true },
-    { name: 'targetField', label: '目标值', type: 'number', isRequired: true }
+    { name: 'title', label: '标题', type: 'text', isRequired: true },
+    { name: 'measure', label: '当前值', type: 'number', isRequired: true },
+    { name: 'range', label: '最大值', type: 'number', isRequired: true },
+    { name: 'target', label: '目标值', type: 'number', isRequired: true }
   ],
   config: {
-    legend: { visible: true, position: 'bottom' }, 
+    legend: { visible: true, position: 'bottom' },
     layout: 'horizontal',
-    color: {range: '', measure: '', target: ''}, 
-    yAxis: { 
-      label: { 
-        autoHide: true, 
-        autoEllipsis: true 
-      }, 
-      title: { text: '' } 
-    }, 
-    xAxis: { title: { text: '' } } 
+    color: { range: '', measure: '', target: '' },
+    yAxis: {
+      label: {
+        autoHide: true,
+        autoEllipsis: true
+      },
+      title: { text: '' }
+    },
+    xAxis: { title: { text: '' } }
   }
 };

@@ -68,17 +68,18 @@ export default {
   },
   filter: {},
   computed: {
-    finalData() {
+     finalData() {
       const data = [];
       if (this.data && this.data.length > 0) {
         //数据合并汇聚
         this.data.forEach(d => {
-          const dd = data.find(dd => dd.colorField == d.colorField);
-          if (dd) {
-            dd.angleField += d.angleField;
-          } else {
-            data.push(d);
+          if (d.measure != null) {
+            d.measures = [d.measure];
           }
+          if (d.range != null) {
+            d.ranges = [d.range];
+          }
+          data.push(d);
         });
       }
       return data;
