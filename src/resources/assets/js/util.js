@@ -1243,5 +1243,8 @@ const methods = {
     }
     return result;
   },
+  filteredObj (obj, list) { //过滤对象中指定的属性列表
+    return _.omit(obj, list)
+  }
 };
 export default methods;
