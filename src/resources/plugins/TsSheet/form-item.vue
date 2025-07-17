@@ -2,7 +2,7 @@
   <div class="form-item radius-md" :class="{ 'bg-error-grey': showStatusIcon && (hasDataError || hasConfigError) }">
     <!--编辑模式下的非container组件需要增加遮罩屏蔽所有操作，container组件需要接受拖拽组件进去，不需要遮罩-->
     <div v-if="(mode === 'edit' || mode === 'editSubform') && !formItem.isContainer" class="editor-mask"></div>
-    <div v-if="mode != 'defaultvalue' && mode !== 'condition' && ((formItem.override_config && formItem.override_config.isMask) || (formItem.config && formItem.config.isMask))" class="mask">
+    <div v-if="mode != 'defaultvalue' && mode !== 'condition' && ((formItem.override_config && formItem.override_config.isMask) || (formItem.config && formItem.config.isMask) || currentItemReaction.currentItemMask)" class="mask">
       <!-- <span class="tsfont-eye-off"></span>
       <span class="mask-text text-grey">当前组件不可见</span>-->
     </div>
@@ -50,7 +50,7 @@
     <div v-if="mode == 'edit' && formItem.config && formItem.config.isHide" class="corner-bottom-icon text-grey tsfont-eye-off"></div>
     <div v-if="needLabel" class="mb-xs">{{ formItem.label }}</div>
     <template v-if="isShowComponent(formItem)">
-      <i v-if="formItem.config && formItem.config.isRequired && !readonly && !formItem.config.isReadOnly" class="require-tip text-error">*</i>
+      <i v-if="formItem.config && formItem.config.isRequired && !readonly && !formItem.config.isReadOnly && !currentItemReaction.currentItemReadonly" class="require-tip text-error">*</i>
       <template v-if=" (!formItem.type || formItem.type === 'form')">
         <component
           :is="formItem.handler"
@@ -62,9 +62,9 @@
           :value="formItemValue"
           :mode="mode"
           :filter="filter"
-          :readonly="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
-          :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled"
-          :required="mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false"
+          :readonly="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isReadOnly : false) || readonly || currentItemReaction.currentItemReadonly"
+          :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled || currentItemReaction.currentItemDisabled"
+          :required="(mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false) || currentItemReaction.cunrrentRequire"
           :formData="formData"
           :readonlyTextIsHighlight="readonlyTextIsHighlight"
           :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
@@ -91,8 +91,8 @@
           :mode="mode"
           :filter="filter"
           :readonly="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
-          :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled"
-          :required="mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false"
+          :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled || currentItemReaction.currentItemDisabled"
+          :required="(mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false) || currentItemReaction.cunrrentRequire"
           :formData="formData"
           :readonlyTextIsHighlight="readonlyTextIsHighlight"
           :isClearEchoFailedDefaultValue="isClearEchoFailedDefaultValue"
@@ -119,8 +119,8 @@
         :value="formItemValue"
         :mode="mode"
         :filter="filter"
-        :readonly="(mode != 'defaultvalue' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
-        :disabled="(mode != 'defaultvalue' ? formItem.config && formItem.config.isDisabled : false) || disabled"
+        :readonly="(mode != 'defaultvalue' ? formItem.config && formItem.config.isReadOnly : false) || readonly || currentItemReaction.currentItemReadonly"
+        :disabled="(mode != 'defaultvalue' ? formItem.config && formItem.config.isDisabled : false) || disabled || currentItemReaction.currentItemDisabled"
         :readonlyTextIsHighlight="readonlyTextIsHighlight"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
         :externalData="externalData"
@@ -241,8 +241,15 @@ export default {
       filter: [], //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
       REACTION: REACTION, //联动规则
       isShowErrorMessage: true,
-      currentItemHide: false, //当前组件是否隐藏
-      reactionFormItemUuidMap: {} //规格内需要的表单组件值
+      reactionFormItemUuidMap: {}, //规格内需要的表单组件值
+      currentItemReaction: { //(针对表格组件嵌套子组件)
+        currentItemHide: false, //当前组件是否隐藏
+        currentItemDisabled: false, //当前组件是否禁用
+        currentItemMask: false, //当前组件是否不可见
+        currentItemReadonly: false, //当前组件是否只读
+        cunrrentRequire: false //
+      }
+      
     };
   },
   beforeCreate() {},
@@ -524,11 +531,11 @@ export default {
     },
     hideFormItem() {
       this.$set(this.formItem.config, 'isHide', true);
-      this.currentItemHide = true;
+      this.currentItemReaction.currentItemHide = true;
     },
     showFormItem() {
       this.$set(this.formItem.config, 'isHide', false);
-      this.currentItemHide = false;
+      this.currentItemReaction.currentItemHide = false;
     },
     //验证配置是否完整
     validConfig() {
@@ -689,7 +696,7 @@ export default {
     isShowComponent() {
       return (formItem) => {
         let isShow = true;
-        if (this.currentItemHide || (formItem && (this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing || (formItem.override_config && formItem.override_config.isHide)) {
+        if (this.currentItemReaction.currentItemHide || (formItem && (this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing || (formItem.override_config && formItem.override_config.isHide)) {
           isShow = false;
         }
         return isShow;
@@ -725,6 +732,9 @@ export default {
               // 拿到隐藏+必填表单uuid
               this.$emit('updateHiddenComponentList', val, this.formItem.uuid);
             }
+          });
+          this.$nextTick(() => {
+            this.isFirstLoad = false;
           });
         }
       },

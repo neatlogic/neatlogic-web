@@ -178,8 +178,7 @@
       :has-footer="true"
       :title="isCopy ? $t('dialog.title.copytarget',{'target':$t('page.matrix')}) : $t('dialog.title.addtarget',{'target':$t('page.matrix')})"
       width="medium"
-      @on-close="atrixFormDialog = false"
-      @on-ok="okAddMatrix"
+      @on-close="closeMatrixDialog"
     >
       <TsForm ref="addAtrixForm" :item-list="addAtrixForm" type="type">
         <template v-slot:integrationUuid>
@@ -314,6 +313,10 @@
           </div>
         </template>
       </TsForm>
+      <template v-slot:footer>
+        <Button @click="closeMatrixDialog()">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" :loading="matrixLoading" @click="okAddMatrix()">{{ $t('page.confirm') }}</Button>
+      </template>
     </TsDialog>
   </div>
 </template>
@@ -563,7 +566,8 @@ export default {
       currentPage: 1, //当前页数
       pageCount: 1, //总页数
       modeType: 'block', //显示方式
-      cmdbCiEntityAttrList: []
+      cmdbCiEntityAttrList: [],
+      matrixLoading: false
     };
   },
   beforeCreate() {},
@@ -906,7 +910,7 @@ export default {
           attributeMappingList: data.attributeMappingList
         };
       }
-
+      this.matrixLoading = true;
       if (this.isCopy) {
         delete data.type;
         data.uuid = this.uuid;
@@ -918,6 +922,8 @@ export default {
               this.$Message.success(this.$t('message.copysuccess'));
               this.atrixFormDialog = false;
             }
+          }).finally(() => {
+            this.matrixLoading = false;
           });
       } else {
         this.$api.framework.matrix
@@ -946,6 +952,8 @@ export default {
                 query: query
               });
             }
+          }).finally(() => {
+            this.matrixLoading = false;
           });
       }
     },
@@ -1141,6 +1149,9 @@ export default {
       } else if (valueConfig.type === 'cmdbcustomview') {
         this.$set(conItem, 'uniqueIdentifier', selectItem.defaultUniqueIdentifier);
       }
+    },
+    closeMatrixDialog() {
+      this.atrixFormDialog = false;
     }
   },
   filter: {},
