@@ -42,6 +42,7 @@
         <div ref="textContainer" style="overflow: auto; white-space: pre-wrap">
           <div 
             v-for="(line, index) in logLines"
+            :id="'line_' + index"
             :key="index"
             :class="getLineClass(line)"
           >
@@ -170,6 +171,11 @@ export default {
             if (isRefresh) {
               this.$Message.success(this.$t('message.refreshsuccess'));
             }
+            this.$nextTick(() => {
+              if (!this.$utils.isEmpty(this.logLines)) {
+                this.$utils.jumpTo('#line_' + (this.logLines.length - 1), 'smooth', this.$refs['textContainer']);
+              }
+            });
           } else {
             if (isRefresh) {
               this.$Message.success(this.$t('message.nothingchange'));
