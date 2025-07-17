@@ -8,6 +8,7 @@
         <TsFormInput
           ref="name"
           v-model="reportData.name"
+          border="border"
           :validateList="[{ name: 'required', message: ' ' }]"
           :maxlength="50"
         ></TsFormInput>
@@ -657,6 +658,7 @@ export default {
       return zindex + 1;
     },
     saveReport() {
+      console.log(this.$refs['name'].valid());
       if (this.$refs['name'] && this.$refs['name'].valid()) {
         if (!this.reportData.widgetList || this.reportData.widgetList.length <= 0) {
           this.$Message.warning(this.$t('message.report.addreportwidget'));

@@ -181,9 +181,10 @@ export default {
     this.invoke = invoke;
     await this.getChannel();
     this.getChannelInfo();
-    this.$nextTick(() => {
-      this.setTimer();
-    });
+    //草稿屏蔽定时保存
+    // this.$nextTick(() => {
+    //   this.setTimer();
+    // });
   },
   beforeMount() {},
   mounted() {},
