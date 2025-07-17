@@ -4,7 +4,7 @@
       <div v-if="canAdd" class="action-item">
         <Button @click="addData()">{{ $t('dialog.title.addtarget', { target: $t('page.data') }) }}</Button>
       </div>
-      <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tableData.tbodyList)" class="action-item">
+      <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tbodyList)" class="action-item">
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget', { target: $t('page.data') }) }}</Button>
       </div>
       <template v-if="canShowImportExportBtn">
@@ -49,7 +49,9 @@
     <template v-if="showTable">
       <TsTable
         v-if="hasColumn"
-        v-bind="tableData"
+        :theadList="theadList"
+        :tbodyList="pagedTbodyList"
+        v-bind="tablePageConfig"
         :loading="loading"
         :multiple="true"
         :fixedHeader="false"
@@ -57,6 +59,8 @@
         :readonlyTextIsHighlight="readonlyTextIsHighlight"
         @updateRowSort="updateRowSort"
         @getSelected="getSelectedItem"
+        @changeCurrent="changeCurrent"
+        @changePageSize="changePageSize"
       >
         <template v-slot:delete="{ row, index }">
           <div class="flex-start">
@@ -97,7 +101,7 @@
           </div>
         </template>
       </TsTable>
-      <TsTable v-else :theadList="tableData.theadList"></TsTable>
+      <TsTable v-else :theadList="theadList"></TsTable>
     </template>
   </div>
 </template>
@@ -107,7 +111,7 @@ import validmixin from '../common/validate-mixin.js';
 import TsTable from '@/resources/components/TsTable/TsTable.vue'; //不能使用异步引入，会导致tssheet列高错位
 import ExcelJS from 'exceljs';
 import FileSaver from 'file-saver';
-
+import conditionMixin from './condition-mixin.js';
 export default {
   name: '',
   components: {
@@ -115,7 +119,7 @@ export default {
     FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
   extends: base,
-  mixins: [validmixin],
+  mixins: [validmixin, conditionMixin],
   props: {
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
@@ -125,14 +129,23 @@ export default {
       loadingShow: true,
       isTableSelectorDialogShow: false,
       selectedIndexList: [],
-      tableData: { theadList: [], tbodyList: [] },
       rowFormItem: {}, //保存每行的定义数据，避免每次都deepClone新数据，导致reaction失效
       maxSize: 1024 * 10,
       isShowExportExcelTemplate: true,
       isShowExportExcel: true,
       loading: false,
       filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'], //过滤不参与规则的组件
-      initExternalData: {} //用于对比外部组件值变换
+      initExternalData: {}, //用于对比外部组件值变换
+      tablePageConfig: { //table分页配置
+        currentPage: 1,
+        pageSize: 5,
+        rowNum: 0,
+        pageSizeOpts: [5, 10, 15, 20, 50, 100],
+        defaultShowSize: 5
+      },
+      theadList: [],
+      tbodyList: [],
+      validateMap: {}
     };
   },
   beforeCreate() {},
@@ -183,7 +196,7 @@ export default {
           }
         }
         if (value.length > 0) {
-          this.tableData.tbodyList.push(...value);
+          this.tbodyList.push(...value);
         }
       } else if (this.config.lineNumber) {
         //默认展示行
@@ -196,9 +209,9 @@ export default {
       this.selectedIndexList = indexList;
     },
     deleteItem(row) {
-      const index = this.tableData.tbodyList.findIndex(d => d.uuid === row.uuid);
+      const index = this.tbodyList.findIndex(d => d.uuid === row.uuid);
       if (index > -1) {
-        this.tableData.tbodyList.splice(index, 1);
+        this.tbodyList.splice(index, 1);
       }
     },
     addRow(index) {
@@ -209,13 +222,13 @@ export default {
         }
       });
       Object.assign(data, this.initExternalData);
-      this.tableData.tbodyList.splice(index + 1, 0, data);
+      this.tbodyList.splice(index + 1, 0, data);
     },
     removeSelectedItem() {
-      for (let i = this.tableData.tbodyList.length - 1; i >= 0; i--) {
-        const item = this.tableData.tbodyList[i];
+      for (let i = this.tbodyList.length - 1; i >= 0; i--) {
+        const item = this.tbodyList[i];
         if (item._selected) {
-          this.tableData.tbodyList.splice(i, 1);
+          this.tbodyList.splice(i, 1);
         }
       }
     },
@@ -227,7 +240,7 @@ export default {
         }
       });
       Object.assign(data, this.initExternalData);
-      this.tableData.tbodyList.push(data);
+      this.tbodyList.unshift(data);
     },
     validConfig() {
       const errorList = [];
@@ -309,7 +322,7 @@ export default {
           }
         }
       }
-      return [...errorList, ...this.validAttrUnique()];
+      return [...this.validTable(), ...this.validAttrUnique()];
     },
     validAttrUnique() {
       // 校验属性是否唯一
@@ -320,7 +333,7 @@ export default {
         const uniqueRuleList = dataConfig.filter(v => v.config && v.config['isUnique']);
         if (!this.$utils.isEmpty(uniqueRuleList)) {
           let existMap = {};
-          this.tableData.tbodyList.forEach(row => {
+          this.tbodyList.forEach(row => {
             if (!this.$utils.isEmpty(row)) {
               Object.keys(row).forEach(key => {
                 const findUnunique = uniqueRuleList.find(d => d.uuid === key);
@@ -344,7 +357,7 @@ export default {
           .join(',');
         let tempValue = '';
         let existList = [];
-        this.tableData.tbodyList.forEach(row => {
+        this.tbodyList.forEach(row => {
           if (!this.$utils.isEmpty(row)) {
             tempValue = '';
             Object.keys(row).forEach((key, index) => {
@@ -370,8 +383,8 @@ export default {
       }
     },
     updateRowSort(event) {
-      let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
-      this.tableData.tbodyList.splice(event.newIndex, 0, beforeVal);
+      let beforeVal = this.tbodyList.splice(event.oldIndex, 1)[0];
+      this.tbodyList.splice(event.newIndex, 0, beforeVal);
     },
     async exportExcelTemplate() {
       // 导出excel模板
@@ -381,7 +394,7 @@ export default {
       // 设置表头
       let theadList = [];
       let theadUuidList = [];
-      this.tableData.theadList.forEach(item => {
+      this.theadList.forEach(item => {
         if (item?.key && item?.title) {
           if (item.key != 'number' && !this.handleExcludeTable(item.key)) {
             // 序号是否需要显示
@@ -515,7 +528,7 @@ export default {
       const _sheet1 = _workbook.addWorksheet('sheet1'); // 添加工作表
       let columnsList = [];
       let theadUuidList = []; // 获取所有表头的uuid列表
-      this.tableData.theadList.forEach(item => {
+      this.theadList.forEach(item => {
         if (item?.key && item?.title) {
           if (item.key != 'number' && !this.handleExcludeTable(item.key)) {
             columnsList.push({
@@ -543,7 +556,7 @@ export default {
           wrapText: true // 单元格自动换行
         };
       });
-      let tbodyList = this.$utils.deepClone(this.tableData.tbodyList);
+      let tbodyList = this.$utils.deepClone(this.tbodyList);
       if (this.selectedIndexList.length > 0) {
         // 选中行导出
         tbodyList = tbodyList.filter((v, index) => this.selectedIndexList.includes(index));
@@ -674,8 +687,8 @@ export default {
             let rowValue = {};
             const rowValuesList = this.$utils.deepClone(row.values).slice(1); // 删除第一列序号
             let tbodyIndex = rowIndex - 2;
-            let tbodyRow = this.tableData.tbodyList[tbodyIndex];
-            let theadList = this.tableData.theadList.filter(v => v.key != 'selection' && v.key != 'number');
+            let tbodyRow = this.tbodyList[tbodyIndex];
+            let theadList = this.theadList.filter(v => v.key != 'selection' && v.key != 'number');
             let matrixSearchParamsList = [];
             for (let tIndex = 0; tIndex < theadList.length; tIndex++) {
               let theadKey = theadList[tIndex].key;
@@ -703,10 +716,10 @@ export default {
             let item = { ...(tbodyRow || {}), ...rowValue };
             if (!this.$utils.isEmpty(tbodyRow)) {
               // 不为空时，修改数组对象里面的值
-              this.tableData.tbodyList.splice(tbodyIndex, 1, item);
+              this.tbodyList.splice(tbodyIndex, 1, item);
             } else {
               // 空数组时，新增一条新的数据
-              this.tableData.tbodyList.push({ ...item, uuid: this.$utils.setUuid() });
+              this.tbodyList.push({ ...item, uuid: this.$utils.setUuid() });
             }
           });
         });
@@ -852,6 +865,83 @@ export default {
         delete formData[this.formItem.uuid];
       }
       return formData;
+    },
+    changeCurrent(currentPage) {
+      this.tablePageConfig.currentPage = currentPage;
+      this.$nextTick(() => {
+        this.validData();
+      });
+    },
+    changePageSize(pageSize) {
+      this.tablePageConfig.currentPage = 1;
+      this.tablePageConfig.pageSize = pageSize;
+    },
+    validTable() { //验证表格数据
+      let errorList = [];
+      if (!this.readonly && !this.disabled && !this.$utils.isEmpty(this.tbodyList)) {
+        this.tbodyList.forEach((d, index) => {
+          if (this.validateMap) {
+            this.theadList.forEach(th => {
+              const key = th.key;
+              let isValid = true;
+              if (!this.readonly && !this.disabled && this.validateMap && this.validateMap[key]) {
+                const validateList = this.validateMap[key].validateList;
+                if (!this.$utils.isEmpty(validateList)) {
+                  isValid = this.$utils.validParamValue(d[key], validateList);
+                }
+                if (!isValid) {
+                  const pageCount = Math.ceil((index + 1) / this.tablePageConfig.pageSize);
+                  const errItem = errorList.find(d => d.label === this.validateMap[key].label);
+                  if (!errItem) {
+                    errorList.push({
+                      errorPageList: [pageCount],
+                      label: this.validateMap[key].label,
+                      uuid: this.formItem.key,
+                      error: this.formItem.label + '：第' + pageCount + '页' + this.$t('message.completerequired', {'target': '【' + this.validateMap[key].label + '】'})
+                    });
+                  } else {
+                    if (!errItem.errorPageList.find(d => d === pageCount)) {
+                      errItem.errorPageList.push(pageCount);
+                      errItem.errorPageList = errItem.errorPageList.sort(this.$utils.sortNumber());
+                      errItem.error = this.formItem.label + '：第' + errItem.errorPageList.join(',') + '页' + this.$t('message.completerequired', {'target': '【' + this.validateMap[key].label + '】'});
+                    }
+                  }
+                }
+                if (!this.$utils.isEmpty(th.reaction)) {
+                  const data = Object.assign({}, this.formData || {}, d);
+                  this.vallidReaction(th.reaction, data);
+                }
+              }
+            });
+          }
+        });
+      }
+      return errorList;
+    },
+    isValidRegex(regexString) { //判断正则表达式是否合法
+      try {
+        new RegExp(regexString); 
+        return true; 
+      } catch (error) {
+        return false; 
+      }
+    },
+    vallidReaction(reaction, formData) {
+      let reactionMap = {
+        isHide: false,
+        isDisabled: false,
+        isReadOnly: false,
+        isRequired: false,
+        isMask: false
+      };
+      for (let key in reaction) {
+        const reactionObj = reaction[key];
+        if (!this.$utils.isEmpty(reactionObj)) {
+          console.log(formData);
+          const result = this.executeReaction(reactionObj, formData, {}, reaction);
+          console.log(result, key);
+        }
+      }
     }
   },
   filter: {},
@@ -873,41 +963,81 @@ export default {
     },
     showTable() {
       const { hideHeaderWhenDataEmpty = false } = this.config || {};
-      const { tbodyList = [] } = this.tableData || {};
+      const tbodyList = this.tbodyList || [];
       return hideHeaderWhenDataEmpty ? tbodyList.length > 0 : true;
+    },
+    pagedTbodyList() {
+      this.tablePageConfig.rowNum = this.tbodyList.length;
+      const start = (this.tablePageConfig.currentPage - 1) * this.tablePageConfig.pageSize;
+      const end = start + this.tablePageConfig.pageSize;
+      if (this.tbodyList.length <= start) {
+        return [];
+      }
+      return this.tbodyList.slice(start, end);
     }
   },
   watch: {
     'config.dataConfig': {
       handler: function(val) {
-        this.tableData.theadList = [];
+        this.theadList = [];
+        this.validateMap = {};
         if (!this.disabled && !this.readonly) {
           if (!this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd) {
-            this.tableData.theadList.push({ key: 'delete', width: 20 });
-            this.tableData.theadList.push({ key: 'selection' });
+            this.theadList.push({ key: 'delete', width: 20 });
+            this.theadList.push({ key: 'selection' });
           }
         }
         if (this.config.isShowNumber) {
-          this.tableData.theadList.push({ key: 'number', title: this.$t('page.ordernumber') });
+          this.theadList.push({ key: 'number', title: this.$t('page.ordernumber') });
         }
         this.config.dataConfig.forEach(d => {
           if (d.isPC) {
             let item = {
               key: d.uuid,
-              title: d.label
+              title: d.label,
+              reaction: d.reaction
             };
-            if (d.config && d.config.isRequired) {
-              this.$set(item, 'isRequired', true);
+            if (d.config) {
+              let validateList = [];
+              if (d.config.isRequired) {
+                this.$set(item, 'isRequired', true);
+                validateList.push('required');
+              }
+              if (!this.readonly && !this.disabled) {
+                if (!this.$utils.isEmpty(d.config.validate)) {
+                  validateList.push(d.config.validate);
+                }
+                if (!this.$utils.isEmpty(d.config.regex) && this.isValidRegex(d.config.regex)) {
+                  let findRegex = validateList.find(item => item && item.name === 'regex');
+                  if (findRegex) {
+                    this.$set(findRegex, 'pattern', d.config.regex);
+                    this.$set(findRegex, 'message', d.config.regexMessage);
+                  } else {
+                    validateList.push({
+                      name: 'regex', 
+                      pattern: d.config.regex,
+                      message: d.config.regexMessage
+                    });
+                  }
+                }
+                if (!this.$utils.isEmpty(validateList)) {
+                  this.validateMap[d.uuid] = {
+                    label: d.label,
+                    validateList: validateList
+                  };
+                }
+              }
             }
-            this.tableData.theadList.push(item);
+            this.theadList.push(item);
           }
         });
+        console.log(this.validateMap);
         this.$emit('resize');
       },
       deep: true,
       immediate: true
     },
-    'tableData.tbodyList': {
+    tbodyList: {
       handler: function(val) {
         this.setValue(val);
       },
