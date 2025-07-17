@@ -246,7 +246,8 @@
     "pause": "stop it",
     "cientityisnotfound": "Configuration item does not exist",
     "testaccount": "test result",
-    "repeataccount": "The same protocol and username cannot bind multiple accounts with the same protocol and username to the same asset."
+    "repeataccount": "The same protocol and username cannot bind multiple accounts with the same protocol and username to the same asset.",
+    "datadetail": "Data Details"
   },
   "process": {
     "workordercenter": "Work Center",
