@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Poptip placement="bottom-start" transfer>
+    <Poptip placement="bottom-start" transfer @on-popper-show="getTree()">
       <span class="tsfont-layer">{{ $t('term.deploy.hierarchyswitching') }}</span>
       <div slot="content">
         <Loading :loadingShow="loadingShow" type="fix"></Loading>
@@ -73,13 +73,12 @@ export default {
   data() {
     return {
       appConfig: null,
-      loadingShow: true
+      loadingShow: true,
+      isFirst: true
     };
   },
   beforeCreate() {},
-  created() {
-    this.getTree();
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -90,6 +89,9 @@ export default {
   destroyed() {},
   methods: {
     getTree() {
+      if (!this.isFirst) {
+        return;
+      }
       this.$api.deploy.applicationConfig.getAppAppmoduleEnvTree({ appSystemId: this.appSystemId }).then(res => {
         if (res && res.Status == 'OK') {
           this.appConfig = res.Return;
@@ -107,6 +109,7 @@ export default {
         }
       }).finally(() => {
         this.loadingShow = false;
+        this.isFirst = false;
       });
     },
     toggleShow(config) {
