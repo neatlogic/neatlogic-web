@@ -2859,7 +2859,22 @@
     "alert": "give an alarm",
     "isnormalattr": "As a regular attribute display",
     "closesuccess": "Close successfully",
-    "istop": "topped"
+    "istop": "topped",
+    "onlysearchparentalert": "Only search for parent alarms",
+    "searchallalert": "Search for all alarms",
+    "closeselectedalert": "Close selected alarms",
+    "openselectedalert": "Open the selected alarm",
+    "deletematchalert": "Delete matching alarm",
+    "allalert": "All Alarms",
+    "alerttopo": "Alarm topology",
+    "alertdetail": "Alarm details",
+    "applychildalert": "Simultaneously apply sub alarms",
+    "transferworker": "Transfer to the handler",
+    "transferteam": "Transfer to processing team",
+    "reportdata": "reported data",
+    "eventaudit": "Event record",
+    "alertnotexists": "Alarm does not exist or has been deleted",
+    "childalert": "Sub alarm"
   },
   "runnergroup": {
     "ruletips": "The request for login authentication needs to carry a header as a rule expression (note that the header parameter in the expression is all lowercase). If the value of the expression after execution is true, the executor group will take effect, and false and syntax exceptions will not take effect. For example: ${env}==\\ bit \\&&(${test}==\\ 1 \\ | | ${test2}==\\ aaa \\)"
