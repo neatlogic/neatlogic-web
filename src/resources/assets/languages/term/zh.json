@@ -247,7 +247,8 @@
     "pause": "停止",
     "cientityisnotfound": "配置项不存在",
     "testaccount": "测试结果",
-    "repeataccount": "协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。"
+    "repeataccount": "协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。",
+    "datadetail": "数据明细"
   },
   "process": {
     "workordercenter": "工单中心",

@@ -9,7 +9,7 @@
       >
         <span v-if="!ciEntity || !ciEntity.maxAttrEntityCount || ciEntity.maxAttrEntityCount > index" class="text-href">{{ value.name }}</span>
       </span>
-      <span v-if="valueList.length > ciEntity.maxAttrEntityCount" class="text-href tsfont-option-horizontal"></span>
+      <span v-if="valueList.length > ciEntity.maxAttrEntityCount" class="text-href tsfont-option-horizontal" @click="showMoreAttrEntity"></span>
     </div>
     <TsDialog
       v-if="isShow"
@@ -20,8 +20,9 @@
       <template v-slot>
         <div>
           <TsTable
-            v-if="tableData"
+            v-if="tableData && tableData.theadList && tableData.theadList.length > 0"
             v-bind="tableData"
+            :theadList="tableData.theadList.filter(d => d.key !== 'action')"
             :fixedHeader="false"
             @changeCurrent="changePage"
             @changePageSize="changePageSize"
@@ -32,7 +33,7 @@
                   <AttrViewer :handler="row.attrEntityData[head.key].type" :ciEntity="row" :attrEntity="row.attrEntityData[head.key]"></AttrViewer>
                 </div>
               </div>
-              <div v-else-if="row.relEntityData[head.key] && row.relEntityData[head.key]['valueList']" :key="index">
+              <div v-else-if="row.relEntityData[head.key] && row.relEntityData[head.key]['valueList']" :key="'e' + index">
                 <a
                   v-for="(relentity, rindex) in row.relEntityData[head.key]['valueList']"
                   :key="rindex"
@@ -69,8 +70,8 @@ export default {
         type: 'modal',
         maskClose: true,
         isShow: false,
-        title: '数据明细',
-        width: 'medium',
+        title: this.$t('term.cmdb.datadetail'),
+        width: 'large',
         hasFooter: false
       },
       tableData: {},
