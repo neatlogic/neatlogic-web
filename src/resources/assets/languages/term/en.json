@@ -2874,7 +2874,13 @@
     "reportdata": "reported data",
     "eventaudit": "Event record",
     "alertnotexists": "Alarm does not exist or has been deleted",
-    "childalert": "Sub alarm"
+    "childalert": "Sub alarm",
+    "dealresult": "Processing results",
+    "createalert": "Create an alarm",
+    "defaultstatus": "Defaults on",
+    "joinalert": "Merge into alarms",
+    "uniquekey": "unique",
+    "alertsign": "Alarm features"
   },
   "runnergroup": {
     "ruletips": "The request for login authentication needs to carry a header as a rule expression (note that the header parameter in the expression is all lowercase). If the value of the expression after execution is true, the executor group will take effect, and false and syntax exceptions will not take effect. For example: ${env}==\\ bit \\&&(${test}==\\ 1 \\ | | ${test2}==\\ aaa \\)"

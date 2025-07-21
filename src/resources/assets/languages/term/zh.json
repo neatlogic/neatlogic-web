@@ -2874,6 +2874,12 @@
     "reportdata": "上报数据",
     "eventaudit": "事件记录",
     "alertnotexists": "告警不存在或已被删除",
-    "childalert": "子告警"
+    "childalert": "子告警",
+    "dealresult": "处理结果",
+    "createalert": "创建告警",
+    "defaultstatus": "默认状态",
+    "joinalert": "归并到告警",
+    "uniquekey": "唯一键",
+    "alertsign": "告警特征"
   }
 }
