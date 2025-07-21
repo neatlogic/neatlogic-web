@@ -301,7 +301,7 @@ export default {
       return errorList;
     },
     async validData() {
-      const errorList = [];
+      //当前页校验样式
       if (this.$refs) {
         for (let name in this.$refs) {
           if (name.startsWith('formitem_')) {
@@ -313,16 +313,13 @@ export default {
                 formitem = this.$refs[name];
               }
               if (formitem) {
-                const err = await formitem.validData();
-                if (err && err.length > 0) {
-                  errorList.push(...err);
-                }
+                await formitem.validData();
               }
             }
           }
         }
       }
-      return [...this.validTable(), ...this.validAttrUnique()];
+      return [...this.validTbodyList(), ...this.validAttrUnique()];
     },
     validAttrUnique() {
       // 校验属性是否唯一
@@ -339,7 +336,7 @@ export default {
                 const findUnunique = uniqueRuleList.find(d => d.uuid === key);
                 if (findUnunique && row[key]) {
                   if (existMap[key] && existMap[key].includes(row[key])) {
-                    errorList.push({ uuid: this.formItem.uuid, error: `属性唯一：${findUnunique.label}必须唯一` });
+                    errorList.push({ uuid: this.formItem.uuid, error: `${this.formItem.label}：【${findUnunique.label}】属性必须唯一` });
                   } else {
                     existMap[key] = existMap[key] ? [...existMap[key], row[key]] : [row[key]];
                   }
@@ -367,7 +364,7 @@ export default {
             });
             if (tempValue) {
               if (existList.includes(tempValue)) {
-                errorList.push({ uuid: uniqueRuleConfig[0], error: `属性唯一：${attrLabel}必须唯一` });
+                errorList.push({ uuid: uniqueRuleConfig[0], error: `${this.formItem.label}：【${attrLabel}】属性必须唯一` });
               } else {
                 existList.push(tempValue);
               }
@@ -876,45 +873,76 @@ export default {
       this.tablePageConfig.currentPage = 1;
       this.tablePageConfig.pageSize = pageSize;
     },
-    validTable() { //验证表格数据
+    validTbodyList() { //验证表格数据
       let errorList = [];
       if (!this.readonly && !this.disabled && !this.$utils.isEmpty(this.tbodyList)) {
-        this.tbodyList.forEach((d, index) => {
-          if (this.validateMap) {
-            this.theadList.forEach(th => {
-              const key = th.key;
-              let isValid = true;
-              if (!this.readonly && !this.disabled && this.validateMap && this.validateMap[key]) {
-                const validateList = this.validateMap[key].validateList;
-                if (!this.$utils.isEmpty(validateList)) {
-                  isValid = this.$utils.validParamValue(d[key], validateList);
-                }
-                if (!isValid) {
-                  const pageCount = Math.ceil((index + 1) / this.tablePageConfig.pageSize);
-                  const errItem = errorList.find(d => d.label === this.validateMap[key].label);
-                  if (!errItem) {
-                    errorList.push({
-                      errorPageList: [pageCount],
-                      label: this.validateMap[key].label,
-                      uuid: this.formItem.key,
-                      error: this.formItem.label + '：第' + pageCount + '页' + this.$t('message.completerequired', {'target': '【' + this.validateMap[key].label + '】'})
+        this.tbodyList.forEach((row, index) => {
+          const pageCount = Math.ceil((index + 1) / this.tablePageConfig.pageSize);
+          const data = Object.assign({}, this.formData || {}, row);
+          this.theadList.forEach(th => {
+            const reactionValid = this.validReaction(th.reaction, data);
+            if (!this.readonly && !this.disabled && !reactionValid.isDisable) {
+              errorList = this.getErrorList(row, data, pageCount, th, errorList);
+            }
+          });
+         
+          Object.keys(row).forEach(key => {
+            let err = [];
+            const findThead = this.theadList.find(th => th.key === key);
+            if (findThead && findThead.config && !this.$utils.isEmpty(findThead.config.dataConfig)) {
+              if (!this.$utils.isEmpty(row[key])) {
+                for (let i = 0; i < row[key].length; i++) {
+                  let item = row[key][i];
+                  if (this.$utils.isEmpty(err)) {
+                    findThead.config.dataConfig.forEach(dc => {
+                      const dValue = Object.assign({}, data, item);
+                      const dcItem = {
+                        key: dc.uuid,
+                        title: dc.label,
+                        reaction: dc.reaction
+                      };
+                      err.push(...this.getErrorList(item, dValue, pageCount, dcItem)); 
+                      errorList = this.getErrorList(item, dValue, pageCount, dcItem, errorList);
                     });
                   } else {
-                    if (!errItem.errorPageList.find(d => d === pageCount)) {
-                      errItem.errorPageList.push(pageCount);
-                      errItem.errorPageList = errItem.errorPageList.sort(this.$utils.sortNumber());
-                      errItem.error = this.formItem.label + '：第' + errItem.errorPageList.join(',') + '页' + this.$t('message.completerequired', {'target': '【' + this.validateMap[key].label + '】'});
-                    }
+                    break;
                   }
                 }
-                if (!this.$utils.isEmpty(th.reaction)) {
-                  const data = Object.assign({}, this.formData || {}, d);
-                  this.vallidReaction(th.reaction, data);
-                }
               }
-            });
-          }
+            }
+          });
         });
+      }
+      return errorList;
+    },
+    getErrorList(row, data, pageCount, th, defaultErrorList) {
+      const key = th.key;
+      const reactionValid = this.validReaction(th.reaction, data);
+      let isValid = true;
+      let errorList = defaultErrorList || [];
+      if (this.validateMap && this.validateMap[key]) {
+        const validateList = this.validateMap[key].validateList;
+        if (!this.$utils.isEmpty(validateList)) {
+          isValid = this.$utils.validParamValue(row[key], validateList);
+        }
+      }
+      if (!isValid || (this.$utils.isEmpty(row[th.key]) && reactionValid.isRequired)) {
+        let findItem = errorList.find(d => d.attrUuid === th.key);
+        if (!findItem) {
+          errorList.push({
+            errorPageList: [pageCount],
+            label: th.title,
+            uuid: this.formItem.key,
+            attrUuid: th.key,
+            error: this.formItem.label + '：第' + pageCount + '页' + this.$t('message.completerequired', {'target': '【' + th.title + '】'})
+          });
+        } else {
+          if (!findItem.errorPageList.find(d => d === pageCount)) {
+            findItem.errorPageList.push(pageCount);
+            findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
+            findItem.error = this.formItem.label + '：第' + findItem.errorPageList.join(',') + '页' + this.$t('message.completerequired', {'target': '【' + th.title + '】'});
+          }
+        }
       }
       return errorList;
     },
@@ -926,20 +954,70 @@ export default {
         return false; 
       }
     },
-    vallidReaction(reaction, formData) {
+    validReaction(reaction, formData) { //规则必填校验
       let reactionMap = {
-        isHide: false,
-        isDisabled: false,
-        isReadOnly: false,
-        isRequired: false,
-        isMask: false
+        mask: false,
+        hide: false,
+        readonly: false,
+        disable: false
       };
-      for (let key in reaction) {
-        const reactionObj = reaction[key];
-        if (!this.$utils.isEmpty(reactionObj)) {
-          console.log(formData);
-          const result = this.executeReaction(reactionObj, formData, {}, reaction);
-          console.log(result, key);
+      let isRequired = false;
+      let isDisable = false;
+      if (!this.$utils.isEmpty(reaction)) {
+        for (let key in reaction) {
+          const reactionObj = reaction[key];
+          if (!this.$utils.isEmpty(reactionObj)) {
+            const result = this.executeReaction(reactionObj, formData, {}, reaction);
+            if (reactionMap.hasOwnProperty(key)) {
+              reactionMap[key] = result;
+            }
+            if (key === 'required') {
+              isRequired = result;
+            }
+          }
+        }
+        // 当 mask、hide、readonly、disable 中任意一个为 true 时，设置 isDisable 为 true，isRequired 为 false
+        for (let key in reactionMap) {
+          if (reactionMap[key]) {
+            isDisable = true;
+            isRequired = false;
+            break;
+          }
+        }
+      }
+     
+      return {
+        isDisable: isDisable,
+        isRequired: isRequired
+      };
+    },
+    getValidateList(d) {
+      let validateList = [];
+      if (d.config.isRequired) {
+        validateList.push('required');
+      }
+      if (!this.readonly && !this.disabled) {
+        if (!this.$utils.isEmpty(d.config.validate)) {
+          validateList.push(d.config.validate);
+        }
+        if (!this.$utils.isEmpty(d.config.regex) && this.isValidRegex(d.config.regex)) {
+          let findRegex = validateList.find(item => item && item.name === 'regex');
+          if (findRegex) {
+            this.$set(findRegex, 'pattern', d.config.regex);
+            this.$set(findRegex, 'message', d.config.regexMessage);
+          } else {
+            validateList.push({
+              name: 'regex', 
+              pattern: d.config.regex,
+              message: d.config.regexMessage
+            });
+          }
+        }
+        if (!this.$utils.isEmpty(validateList)) {
+          this.validateMap[d.uuid] = {
+            label: d.label,
+            validateList: validateList
+          };
         }
       }
     }
@@ -995,43 +1073,25 @@ export default {
             let item = {
               key: d.uuid,
               title: d.label,
-              reaction: d.reaction
+              reaction: d.reaction,
+              config: d.config || {}
             };
             if (d.config) {
-              let validateList = [];
               if (d.config.isRequired) {
                 this.$set(item, 'isRequired', true);
-                validateList.push('required');
               }
-              if (!this.readonly && !this.disabled) {
-                if (!this.$utils.isEmpty(d.config.validate)) {
-                  validateList.push(d.config.validate);
-                }
-                if (!this.$utils.isEmpty(d.config.regex) && this.isValidRegex(d.config.regex)) {
-                  let findRegex = validateList.find(item => item && item.name === 'regex');
-                  if (findRegex) {
-                    this.$set(findRegex, 'pattern', d.config.regex);
-                    this.$set(findRegex, 'message', d.config.regexMessage);
-                  } else {
-                    validateList.push({
-                      name: 'regex', 
-                      pattern: d.config.regex,
-                      message: d.config.regexMessage
-                    });
+              this.getValidateList(d);
+              if (!this.$utils.isEmpty(d.config.dataConfig)) {
+                d.config.dataConfig.forEach(c => {
+                  if (c.config) {
+                    this.getValidateList(c);
                   }
-                }
-                if (!this.$utils.isEmpty(validateList)) {
-                  this.validateMap[d.uuid] = {
-                    label: d.label,
-                    validateList: validateList
-                  };
-                }
+                });
               }
             }
             this.theadList.push(item);
           }
         });
-        console.log(this.validateMap);
         this.$emit('resize');
       },
       deep: true,
