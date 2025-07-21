@@ -83,8 +83,7 @@
     "vue-loader": "^17.4.0",
     "vue-router": "^3.5.4",
     "vuedraggable": "^2.23.2",
-    "vuex": "^3.0.1",
-    "xlsx": "^0.18.5"
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",

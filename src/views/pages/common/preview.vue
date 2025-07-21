@@ -47,7 +47,7 @@
   </div>
 </template>
 <script>
-let xlsx = require('xlsx'); // excel表格
+import ExcelJS from 'exceljs';
 let docx = require('docx-preview'); // word预览
 export default {
   name: '',
@@ -154,15 +154,37 @@ export default {
         this.loadingShow = false;
       });
     },
-    renderExcel() {
-      if (this.excelData) {
-        let workbook = xlsx.read(new Uint8Array(this.excelData), {type: 'array'}); // 解析数据
-        this.tableNums = workbook.SheetNames; // workbook.sheetNames存这每个工作表的名字
-        if (workbook && !this.$utils.isEmpty(workbook.SheetNames)) {
-          let worksheet = workbook.Sheets[workbook.SheetNames[this.tableIndex]];
-          this.tableData = xlsx.utils.sheet_to_html(worksheet); // 渲染
+    async renderExcel() {
+      if (!this.excelData) return;
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(this.excelData);
+      this.tableNums = workbook.worksheets.map(ws => ws.name);
+      const worksheet = workbook.worksheets[this.tableIndex];
+      if (!worksheet) return;
+      // 获取第一行列数，用于列单元格补全
+      const firstRow = worksheet.getRow(1);
+      const maxColCount = firstRow.cellCount;
+      let html = '<table>';
+      worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+        html += '<tr>';
+        for (let colIndex = 1; colIndex <= maxColCount; colIndex++) {
+          const cell = row.getCell(colIndex);
+          let value = '';
+          if (cell.value) {
+            if (cell.value.richText) {
+              value = cell.value.richText.map(t => t?.text).join('');
+            } else if (cell.value.text) {
+              value = cell.value.text;
+            } else {
+              value = cell.value;
+            }
+          }
+          html += `<td>${value ?? ''}</td>`;
         }
-      }
+        html += '</tr>';
+      });
+      html += '</table>';
+      this.tableData = html;
     },
     isJson(str) {
       if (typeof str == 'string') {
