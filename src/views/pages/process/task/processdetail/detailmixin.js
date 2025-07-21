@@ -1045,6 +1045,15 @@ export default {
           isComplete = false;
         }
       }
+      // 其他节点校验方法
+      if (this.validNodeData && typeof this.validNodeData === 'function') {
+        let validNodeList = this.validNodeData();
+        if (validNodeList && Array.isArray(validNodeList) && validNodeList.length > 0) {
+          this.validCardOpen = true;
+          isComplete = false;
+          this.validList.push(...validNodeList);
+        }
+      }
       //校验表单
       if (JSON.stringify(this.formConfig) != '{}') {
         let completeList = await this.$refs.TaskCenterDetail.getcompleteValid();
