@@ -65,7 +65,7 @@ export const WidgetBase = {
             data.push(d);
           });
         }
-        this.data = data;
+        this.data = data.sort((a, b) => this.changeString(a.xField) - this.changeString(b.xField));
         if (!isFirstGetData) {
           //第一次加载由于组件还没加载完毕，所以不需要调用changeData
           this.changeData();
@@ -80,6 +80,19 @@ export const WidgetBase = {
           }, this.widget.dataInterval * 1000);
         }
       });
+    },
+    changeString(a) { //字符串转时间戳
+      if (!this.$utils.isEmpty(a)) {
+        if (this.$utils.isValidDateTime(a)) {
+          return new Date(a).getTime();
+        } else if (this.$utils.isValidTimeString(a)) {
+          const pad = num => num.toString().padStart(2, '0');
+          const [h1, m1, s1 = '00'] = a.split(':').map(pad);
+          return `${h1}${m1}${s1}`; 
+        } 
+        return a.charCodeAt(0);
+      }
+      return a;
     }
   },
   beforeDestroy() {
