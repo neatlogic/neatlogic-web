@@ -1243,7 +1243,10 @@ const methods = {
     }
     return result;
   },
-   isValidTimeString(timeStr) { //校验时间字符串
+  isValidTimeString(timeStr) { //校验时间字符串
+      if(!timeStr) {
+        return false;
+      }
       const parts = timeStr.split(':');
       if (parts.length === 2) {
         const [h, m] = parts.map(Number);

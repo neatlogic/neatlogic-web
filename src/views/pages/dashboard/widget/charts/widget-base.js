@@ -92,7 +92,7 @@ export const WidgetBase = {
       });
     },
     changeString(a) { //字符串转时间戳
-      if (!this.$utils.isEmpty(a)) {
+      if (a) {
         if (this.$utils.isValidDateTime(a)) {
           return new Date(a).getTime();
         } else if (this.$utils.isValidTimeString(a)) {
