@@ -880,33 +880,24 @@ export default {
           const pageCount = Math.ceil((index + 1) / this.tablePageConfig.pageSize);
           const data = Object.assign({}, this.formData || {}, row);
           this.theadList.forEach(th => {
-            const reactionValid = this.validReaction(th.reaction, data);
-            if (!this.readonly && !this.disabled && !reactionValid.isDisable) {
-              errorList = this.getErrorList(row, data, pageCount, th, errorList);
-            }
+            errorList = this.getErrorList(row, data, pageCount, th, errorList);
           });
-         
+          //内嵌table
           Object.keys(row).forEach(key => {
-            let err = [];
             const findThead = this.theadList.find(th => th.key === key);
             if (findThead && findThead.config && !this.$utils.isEmpty(findThead.config.dataConfig)) {
               if (!this.$utils.isEmpty(row[key])) {
                 for (let i = 0; i < row[key].length; i++) {
                   let item = row[key][i];
-                  if (this.$utils.isEmpty(err)) {
-                    findThead.config.dataConfig.forEach(dc => {
-                      const dValue = Object.assign({}, data, item);
-                      const dcItem = {
-                        key: dc.uuid,
-                        title: dc.label,
-                        reaction: dc.reaction
-                      };
-                      err.push(...this.getErrorList(item, dValue, pageCount, dcItem)); 
-                      errorList = this.getErrorList(item, dValue, pageCount, dcItem, errorList);
-                    });
-                  } else {
-                    break;
-                  }
+                  findThead.config.dataConfig.forEach(dc => {
+                    const dValue = Object.assign({}, data, item);
+                    const dcItem = {
+                      key: dc.uuid,
+                      title: dc.label,
+                      reaction: dc.reaction
+                    };
+                    errorList = this.getErrorList(item, dValue, pageCount, dcItem, errorList);
+                  });
                 }
               }
             }
@@ -954,7 +945,7 @@ export default {
         return false; 
       }
     },
-    validReaction(reaction, formData) { //规则必填校验
+    validReaction(reaction, formData) { //联动规则必填校验
       let reactionMap = {
         mask: false,
         hide: false,
@@ -992,6 +983,7 @@ export default {
       };
     },
     getValidateList(d) {
+      //获取组件的基础校验规则
       let validateList = [];
       if (d.config.isRequired) {
         validateList.push('required');
