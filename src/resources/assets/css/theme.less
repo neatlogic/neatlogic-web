@@ -4119,6 +4119,71 @@
       }
     }
   }
+
+  // code-diff 对比样式
+  .code-diff-view {
+    border: 1px solid var(--border-color, @border-color-base);
+    background-color: @op-color;
+    .file-header {
+      background-color: @background-color;
+      border-bottom: 1px solid var(--border-color, @border-color-base);
+      .file-info {
+        .info-left,
+        .info-right {
+          color: @text-color;
+        }
+      }
+    }
+    .file-diff-split {
+      .blob-code + .blob-num {
+        border-left: 1px solid var(--border-color, @border-color-base);
+      }
+    }
+    .diff-table {
+      .blob-num-deletion,
+      .blob-code-deletion {
+        background-color: #fdd;
+      }
+      .blob-code-deletion,
+      .blob-code-addition {
+        .hljs-regexp,
+        .hljs-attr,
+        .hljs-attribute,
+        .hljs-literal,
+        .hljs-meta,
+        .hljs-number,
+        .hljs-string,
+        .hljs-operator,
+        .hljs-variable,
+        .hljs-punctuation,
+        .hljs-selector-attr,
+        .hljs-selector-class,
+        .hljs-selector-id {
+          color: #212121 !important; // 新增删除高亮行保持黑色，确保字体可见
+        }
+      }
+      .blob-code {
+        .blob-code-inner {
+          color: @text-color;
+        }
+      }
+    }
+    .hljs-regexp,
+    .hljs-attr,
+    .hljs-attribute,
+    .hljs-literal,
+    .hljs-meta,
+    .hljs-number,
+    .hljs-string,
+    .hljs-operator,
+    .hljs-variable,
+    .hljs-punctuation,
+    .hljs-selector-attr,
+    .hljs-selector-class,
+    .hljs-selector-id {
+      color: @text-color !important;
+    }
+  }
 }
 
 .theme-dark {
