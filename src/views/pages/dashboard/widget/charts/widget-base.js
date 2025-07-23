@@ -99,8 +99,10 @@ export const WidgetBase = {
           const pad = num => num.toString().padStart(2, '0');
           const [h1, m1, s1 = '00'] = a.split(':').map(pad);
           return `${h1}${m1}${s1}`; 
-        } 
-        return a.charCodeAt(0);
+        } else if (typeof a === 'string') {
+          return a.charCodeAt(0);
+        }
+        return a;
       }
       return a;
     }
