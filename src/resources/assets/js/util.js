@@ -1244,7 +1244,7 @@ const methods = {
     return result;
   },
   isValidTimeString(timeStr) { //校验时间字符串
-      if(!timeStr || typeof timeStr === 'number') {
+      if(!timeStr || typeof timeStr !== 'string') {
         return false;
       }
       const parts = timeStr.split(':');
