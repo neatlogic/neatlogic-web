@@ -135,7 +135,6 @@ export default {
       isShowExportExcel: true,
       loading: false,
       filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'], //过滤不参与规则的组件
-      initExternalData: {}, //用于对比外部组件值变换
       tablePageConfig: { //table分页配置
         currentPage: 1,
         pageSize: 5,
@@ -209,9 +208,10 @@ export default {
       this.selectedIndexList = indexList;
     },
     deleteItem(row) {
-      const index = this.tbodyList.findIndex(d => d.uuid === row.uuid);
-      if (index > -1) {
-        this.tbodyList.splice(index, 1);
+      const findIndex = this.tbodyList.findIndex(d => d.uuid === row.uuid);
+      this.tbodyList.splice(findIndex, 1);
+      if (!this.pagedTbodyList.length && this.tablePageConfig.currentPage > 1) {
+        this.tablePageConfig.currentPage -= 1;
       }
     },
     addRow(index) {
@@ -221,7 +221,6 @@ export default {
           data[d.uuid] = (d.config && d.config.defaultValue) || null;
         }
       });
-      Object.assign(data, this.initExternalData);
       this.tbodyList.splice(index + 1, 0, data);
     },
     removeSelectedItem() {
@@ -231,6 +230,9 @@ export default {
           this.tbodyList.splice(i, 1);
         }
       }
+      if (!this.pagedTbodyList.length && this.tablePageConfig.currentPage > 1) {
+        this.tablePageConfig.currentPage -= 1;
+      }
     },
     addData() {
       const data = { uuid: this.$utils.setUuid() };
@@ -239,7 +241,6 @@ export default {
           data[d.uuid] = (d.config && d.config.defaultValue) || null;
         }
       });
-      Object.assign(data, this.initExternalData);
       this.tbodyList.unshift(data);
     },
     validConfig() {
@@ -866,7 +867,9 @@ export default {
     changeCurrent(currentPage) {
       this.tablePageConfig.currentPage = currentPage;
       this.$nextTick(() => {
-        this.validData();
+        if (!this.readonly && !this.disabled) {
+          this.validData();
+        }
       });
     },
     changePageSize(pageSize) {
