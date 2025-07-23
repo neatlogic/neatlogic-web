@@ -14,7 +14,7 @@ export default {
   dataTypes: [{ value: 'dynamic', text: $t('term.report.datatype.dynamicdata') }], 
   fields: [ 
     { name: 'xField', label: $t('term.report.axis.xfield'), type: 'number', isRequired: true }, 
-    { name: 'yField', label: $t('term.report.axis.yfield'), type: 'text', isRequired: true } 
+    { name: 'yField', label: $t('term.report.axis.yfield'), type: ['text', 'date', 'datetime', 'time'], isRequired: true } 
   ], 
   config: { 
     legend: { visible: true, position: 'bottom' }, 
