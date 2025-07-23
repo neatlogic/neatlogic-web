@@ -503,6 +503,9 @@ export default {
         item = item || paramsTypeList.find(p => {
           return p.value == com.component;
         });
+        if (item && !item.type && com.component) {
+          item.type = com.component;
+        }
         return item || {};
       };
     },
