@@ -115,6 +115,7 @@
         ></WidgetBorder>
       </div>
       <div>
+        {{ widget.type }}
         <component
           :is="widget.type + 'widget'"
           ref="widget"

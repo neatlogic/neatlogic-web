@@ -14,8 +14,8 @@ export default {
   dataTypes: [{ value: 'dynamic', text: $t('term.report.datatype.dynamicdata') }], 
   fields: [ 
     { name: 'yField', label: $t('term.report.numberfield'), type: 'number', isRequired: true }, 
-    { name: 'xField', label: $t('term.report.chartsetting.classifyfield'), type: 'text', isRequired: true }, 
-    { name: 'seriesField', label: $t('term.report.chartsetting.groupfield'), type: 'text', isRequired: true } 
+    { name: 'xField', label: $t('term.report.chartsetting.classifyfield'), type: ['text', 'date', 'datetime', 'time'], isRequired: true }, 
+    { name: 'seriesField', label: $t('term.report.chartsetting.groupfield'), type: ['text', 'date', 'datetime', 'time'], isRequired: true } 
   ], 
   config: { 
     legend: { 
