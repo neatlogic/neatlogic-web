@@ -366,16 +366,11 @@ export default {
             value: 'is-not-null'
           }
         ];
-      });
-      return globalAttrList;
-    },
-    async getGlobalAttrItemByAttrId(attrId, attr) {
-      await this.$api.cmdb.ci.getGlobalAttrItemByAttrId({attrId: attrId}).then(res => {
-        const globalAttrList = res.Return || [];
-        if (!this.globalMap['global_' + attrId]) {
-          this.$set(this.globalMap, ['global_' + attrId], {...(attr || {}), itemList: globalAttrList});
+        if (!this.globalMap['global_' + attr.id]) {
+          this.$set(this.globalMap, 'global_' + attr.id, attr);
         }
       });
+      return globalAttrList;
     },
     async getAttrByCiId(ciId) {
       if (ciId) {
@@ -438,7 +433,7 @@ export default {
         const attrList = await this.getAttrByCiId(ciId);
         const relList = await this.getRelByCiId(ciId);
         const globalAttrList = await this.getGlobalAttrByCiId(ciId);
-        for (const attr of globalAttrList) {
+        globalAttrList.forEach((attr) => {
           elementList.push({
             typeText: this.$t('term.cmdb.globalattr'),
             type: 'global',
@@ -447,8 +442,7 @@ export default {
             label: attr.label,
             expressionList: attr.expressionList
           });
-          await this.getGlobalAttrItemByAttrId(attr.id, attr);
-        }
+        });
         attrList.forEach(attr => {
           elementList.push({
             typeText: this.$t('page.attribute'),
