@@ -1,10 +1,6 @@
 <template>
   <div>
     <TsDialog v-bind="editDialogSetting" @on-close="close">
-      <template v-slot:header>
-        <div v-if="id">{{ $t('page.edit') }}</div>
-        <div v-if="!id">{{ $t('page.add') }}</div>
-      </template>
       <div>
         <TsForm ref="form" :itemList="formData"></TsForm>
       </div>
@@ -16,7 +12,7 @@
           class="mr-md"
           @click="test()"
         >{{ $t('page.test') }}</Button>
-        <Button type="primary" @click="submit()">{{ $t('page.save') }} </Button>
+        <Button type="primary" @click="submit()">{{ $t('page.save') }}</Button>
       </template>
     </TsDialog>
     <TsDialog
@@ -124,7 +120,8 @@ export default {
       editDialogSetting: {
         type: 'modal',
         isShow: true,
-        width: 'small'
+        width: 'small',
+        title: this.id ? this.$t('dialog.title.edittarget', { target: this.$t('page.mailserver') }) : this.$t('dialog.title.addtarget', { target: this.$t('page.mailserver') })
       },
       isShow: false,
       setting: {
@@ -183,7 +180,7 @@ export default {
       }
     },
     getData() {
-      this.$api.framework.mailserver.get({id: this.id}).then(res => {
+      this.$api.framework.mailserver.get({ id: this.id }).then(res => {
         if (res.Status == 'OK') {
           const obj = res.Return;
           if (obj) {
