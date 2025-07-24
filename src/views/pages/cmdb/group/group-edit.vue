@@ -368,7 +368,7 @@ export default {
       await this.$api.cmdb.ci.getGlobalAttrItemByAttrId({attrId: attrId}).then(res => {
         const globalAttrList = res.Return || [];
         if (!this.globalMap['global_' + attrId]) {
-          this.$set(this.globalMap, ['global_' + attrId], {...attr, itemList: globalAttrList});
+          this.$set(this.globalMap, ['global_' + attrId], {...(attr || {}), itemList: globalAttrList});
         }
       });
     },
