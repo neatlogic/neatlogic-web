@@ -79,8 +79,13 @@
                             </Col>
                             <Col v-if="isNeedAttrValue(conItem)" span="8">
                               <TsFormSelect
-                                v-if="conItem.type === 'global' && getGlobalAttrById(conItem.id)"
-                                v-bind="getGlobalSelectConfig(conItem.id)"
+                                v-if="conItem.type === 'global' && conItem.id"
+                                dynamicUrl="/api/rest/cmdb/globalattritem/search"
+                                :params="{ attrId: conItem.id ? conItem.id.split('global_')[1] : '' }"
+                                valueName="id"
+                                textName="value"
+                                border="border"
+                                multiple
                                 :value="conItem.valueList"
                                 transfer
                                 @change="
@@ -361,11 +366,16 @@ export default {
             value: 'is-not-null'
           }
         ];
-        if (!this.globalMap['global_' + attr.id]) {
-          this.$set(this.globalMap, 'global_' + attr.id, attr);
-        }
       });
       return globalAttrList;
+    },
+    async getGlobalAttrItemByAttrId(attrId, attr) {
+      await this.$api.cmdb.ci.getGlobalAttrItemByAttrId({attrId: attrId}).then(res => {
+        const globalAttrList = res.Return || [];
+        if (!this.globalMap['global_' + attrId]) {
+          this.$set(this.globalMap, ['global_' + attrId], {...(attr || {}), itemList: globalAttrList});
+        }
+      });
     },
     async getAttrByCiId(ciId) {
       if (ciId) {
@@ -428,7 +438,7 @@ export default {
         const attrList = await this.getAttrByCiId(ciId);
         const relList = await this.getRelByCiId(ciId);
         const globalAttrList = await this.getGlobalAttrByCiId(ciId);
-        globalAttrList.forEach(attr => {
+        for (const attr of globalAttrList) {
           elementList.push({
             typeText: this.$t('term.cmdb.globalattr'),
             type: 'global',
@@ -437,7 +447,8 @@ export default {
             label: attr.label,
             expressionList: attr.expressionList
           });
-        });
+          await this.getGlobalAttrItemByAttrId(attr.id, attr);
+        }
         attrList.forEach(attr => {
           elementList.push({
             typeText: this.$t('page.attribute'),
@@ -574,11 +585,6 @@ export default {
         return this.ciMap['ci' + ciId];
       };
     },
-    getGlobalAttrById() {
-      return attrId => {
-        return this.globalMap[attrId];
-      };
-    },
     getAttrById() {
       return attrId => {
         return this.attrMap[attrId];
@@ -587,20 +593,6 @@ export default {
     getRelById() {
       return relId => {
         return this.relMap[relId];
-      };
-    },
-    getGlobalSelectConfig() {
-      return id => {
-        const globalAttr = this.getGlobalAttrById(id);
-        if (globalAttr) {
-          return {
-            border: 'border',
-            multiple: true,
-            dataList: globalAttr.itemList,
-            textName: 'value',
-            valueName: 'id'
-          };
-        }
       };
     },
     getRelSelectConfig() {
