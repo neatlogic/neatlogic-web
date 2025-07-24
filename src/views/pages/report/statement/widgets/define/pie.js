@@ -14,7 +14,7 @@ export default {
   dataTypes: [{ value: 'dynamic', text: $t('term.report.datatype.dynamicdata') }], 
   fields: [ 
     { name: 'angleField', label: $t('page.valuefield'), type: 'number', isRequired: true }, 
-    { name: 'colorField', label: $t('term.report.chartsetting.classifyfield'), type: 'text', isRequired: true } 
+    { name: 'colorField', label: $t('term.report.chartsetting.classifyfield'), type: ['text', 'date', 'datetime', 'time'], isRequired: true } 
   ], 
   config: { 
     legend: { 

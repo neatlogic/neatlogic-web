@@ -15,7 +15,7 @@ export default {
   fields: [ 
     { name: 'xField', label: $t('term.report.axis.xfield'), type: 'number', isRequired: true }, 
     { name: 'yField', label: $t('term.report.axis.yfield'), type: 'number', isRequired: true }, 
-    { name: 'colorField', label: $t('term.report.axis.colorfield'), type: 'text', isRequired: true } 
+    { name: 'colorField', label: $t('term.report.axis.colorfield'), type: ['text', 'date', 'datetime', 'time'], isRequired: true } 
   ], 
   config: { 
     xField: 'xField', 
