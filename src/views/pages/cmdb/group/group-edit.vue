@@ -79,8 +79,13 @@
                             </Col>
                             <Col v-if="isNeedAttrValue(conItem)" span="8">
                               <TsFormSelect
-                                v-if="conItem.type === 'global' && getGlobalAttrById(conItem.id)"
-                                v-bind="getGlobalSelectConfig(conItem.id)"
+                                v-if="conItem.type === 'global' && conItem.id"
+                                dynamicUrl="/api/rest/cmdb/globalattritem/search"
+                                :params="{ attrId: conItem.id ? conItem.id.split('global_')[1] : '' }"
+                                valueName="id"
+                                textName="value"
+                                border="border"
+                                multiple
                                 :value="conItem.valueList"
                                 transfer
                                 @change="
@@ -580,11 +585,6 @@ export default {
         return this.ciMap['ci' + ciId];
       };
     },
-    getGlobalAttrById() {
-      return attrId => {
-        return this.globalMap[attrId];
-      };
-    },
     getAttrById() {
       return attrId => {
         return this.attrMap[attrId];
@@ -593,20 +593,6 @@ export default {
     getRelById() {
       return relId => {
         return this.relMap[relId];
-      };
-    },
-    getGlobalSelectConfig() {
-      return id => {
-        const globalAttr = this.getGlobalAttrById(id);
-        if (globalAttr) {
-          return {
-            border: 'border',
-            multiple: true,
-            dataList: globalAttr.itemList,
-            textName: 'value',
-            valueName: 'id'
-          };
-        }
       };
     },
     getRelSelectConfig() {
