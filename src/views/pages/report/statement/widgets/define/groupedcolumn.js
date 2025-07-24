@@ -13,7 +13,7 @@ export default {
   needData: true, 
   dataTypes: [{ value: 'dynamic', text: $t('term.report.datatype.dynamicdata') }], 
   fields: [ 
-    { name: 'xField', label: $t('term.report.axis.xfield'), type: 'text', isRequired: true }, 
+    { name: 'xField', label: $t('term.report.axis.xfield'), type: ['text', 'date'], isRequired: true }, 
     { name: 'yField', label: $t('term.report.axis.yfield'), type: 'number', isRequired: true }, 
     { name: 'seriesField', label: $t('term.report.chartsetting.groupfield'), type: 'text', isRequired: true } 
   ], 
