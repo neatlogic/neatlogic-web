@@ -230,8 +230,8 @@ export default {
       },
       isEditRuntimeParam: true,
       paramTypeConfig: { //参数类型引用规则
-        text: ['text', 'date', 'time', 'datetime', 'select', 'radio', 'textarea', 'phase', 'password'], //如果自定义工具或工具库的参数类型是是【文本】类型，以下控件类型的作业参数、全局参数均可被引用：文本、日期、时间、时间日期、单选下拉、单选、文本域、阶段、密码
-        textarea: ['text', 'textarea'],
+        // text: ['text', 'date', 'time', 'datetime', 'select', 'radio', 'textarea', 'phase', 'password'], //如果自定义工具或工具库的参数类型是是【文本】类型，以下控件类型的作业参数、全局参数均可被引用：文本、日期、时间、时间日期、单选下拉、单选、文本域、阶段、密码
+        // textarea: ['text', 'textarea'],
         json: ['json', 'node']
       },
       overrideProfileList: [] //覆盖参数集列表
@@ -447,7 +447,7 @@ export default {
       return function(list, type, mappingMode) {
         if (list && list.length) {
           let li = [];
-          if (mappingMode == 'prenodeoutputparamkey') { //引用上游参数名-选项不受限制
+          if (mappingMode == 'prenodeoutputparamkey' || type === 'text' || type === 'textarea') { //引用上游参数名-选项不受限制, 文本框和文本域不设限制
             li = list;
           } else {
             li = list.filter(l => {
