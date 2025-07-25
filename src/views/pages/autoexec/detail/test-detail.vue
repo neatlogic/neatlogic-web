@@ -66,6 +66,51 @@
               </TsForm>
             </div>
           </div>
+          <div class="box-block">
+            <Divider orientation="start">{{ $t('page.autoexecparallel') }}</Divider>
+            <div>
+              <TsFormItem
+                :label="$t('page.autoexecparallpolicy')"
+                :labelWidth="100"
+                labelPosition="left"
+                :required="true"
+              >
+                <TsFormRadio
+                  v-model="parallelPolicy"
+                  :dataList="parallelPolicyDataList"
+                  @on-change="changeParallelPolicy"
+                ></TsFormRadio>
+              </TsFormItem>
+            </div>
+            <div v-if="parallelPolicy === 'roundCount'">
+              <TsFormItem
+                :label="$t('term.autoexec.batchquantity')"
+                :labelWidth="100"
+                labelPosition="left"
+                :required="true"
+              >
+                <TsFormSelect
+                  ref="roundCountForm"
+                  v-model="roundCount"
+                  v-bind="roundCountForm"
+                ></TsFormSelect>
+              </TsFormItem>
+            </div>
+            <div v-else>
+              <TsFormItem
+                :label="$t('term.autoexec.parall')"
+                :labelWidth="100"
+                labelPosition="left"
+                :required="true"
+              >
+                <TsFormSelect
+                  ref="parallelForm"
+                  v-model="parallelCount"
+                  v-bind="parallelForm"
+                ></TsFormSelect>
+              </TsFormItem>
+            </div>
+          </div>
         </template>
         <div>
           <Divider orientation="start">{{ $t('term.deploy.actuatorgroup') }}</Divider>
@@ -92,6 +137,9 @@ export default {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     ArgumentParams: () => import('./runnerDetail/argument-params.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue')
   },
   filters: {},
@@ -156,7 +204,40 @@ export default {
         mappingMode: 'constant',
         value: '-1'
       },
-      scriptId: null
+      scriptId: null,
+      roundCount: 32,
+      parallelCount: 64,
+      parallelPolicy: 'parallel',
+      parallelPolicyDataList: [
+        {
+          text: this.$t('page.autoexecparall'),
+          value: 'parallel'
+        },
+        {
+          text: this.$t('page.autoexecbatchround'),
+          value: 'roundCount'
+        }
+      ],
+      roundCountForm: {
+        placeholder: this.$t('page.selectinput'),
+        border: 'border',
+        dataList: this.getRoundCountList(),
+        filterName: 'text',
+        search: true,
+        transfer: true,
+        desc: this.$t('term.autoexec.roundcountdescrition'),
+        validateList: ['required']
+      },
+      parallelForm: {
+        placeholder: this.$t('page.selectinput'),
+        border: 'border',
+        dataList: this.getRoundCountList(),
+        filterName: 'text',
+        search: true,
+        transfer: true,
+        desc: this.$t('term.autoexec.paralldesc'),
+        validateList: ['required']
+      }
     };
   },
   beforeCreate() {},
@@ -244,6 +325,9 @@ export default {
       isValid = this.$refs.nameForm ? this.$refs.nameForm.valid() && isValid : isValid;
       isValid = this.$refs.argumentConfig ? this.$refs.argumentConfig.valid() && isValid : isValid;
       isValid = this.$refs.executeUser ? this.$refs.executeUser.valid() && isValid : isValid;
+      if ((this.$refs.roundCountForm && !this.$refs.roundCountForm.valid()) || (this.$refs.parallelForm && !this.$refs.parallelForm.valid())) {
+        isValid = false;
+      }
       if (isValid) {
         this.executeAction();
       }
@@ -262,6 +346,12 @@ export default {
       val.executeConfig = this.$refs.executeForm ? this.$refs.executeForm.getFormValue() : {};
       if (this.targetShow) {
         val.executeConfig.executeNodeConfig = this.$refs.addTarget.getValue();
+        val.parallelPolicy = this.parallelPolicy;
+        if (this.parallelPolicy === 'roundCount') {
+          val.roundCount = this.roundCount;
+        } else {
+          val.parallelCount = this.parallelCount;
+        }
       } else {
         val.executeConfig.executeNodeConfig = [];
       }
@@ -320,6 +410,27 @@ export default {
             this.tagIdList = [res.Return.id];
           }
         });
+      }
+    },
+    getRoundCountList() {
+      let list = [
+        {
+          value: -1,
+          text: '蓝绿执行'
+        }
+      ];
+      list.push(...this.$utils.getRoundCountList());
+      return list;
+    },
+    changeParallelPolicy(val) {
+      if (val && val == 'roundCount') {
+        if (this.$utils.isEmpty(this.roundCount)) {
+          this.roundCount = 64;
+        }
+      } else {
+        if (this.$utils.isEmpty(this.parallelCount)) {
+          this.parallelCount = 32;
+        }
       }
     }
   },
