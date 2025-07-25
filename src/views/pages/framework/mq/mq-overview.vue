@@ -1,7 +1,7 @@
 <template>
   <div class="mt-md">
-    <TsContain>
-      <template v-slot:topLeft>
+    <TsContain hideHeader>
+      <template v-slot:content>
         <Tabs
           v-model="currentTab"
           :animated="false"
@@ -14,8 +14,6 @@
           >
           </TabPane>
         </Tabs>
-      </template>
-      <template v-slot:content>
         <div v-if="currentTab === 'subscribe'">
           <MqSubscribeList></MqSubscribeList>
         </div>

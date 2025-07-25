@@ -50,6 +50,13 @@
             @changeCurrent="searchAudit"
             @changePageSize="pageSize => searchAudit(1, pageSize)"
           >
+            <template slot="userName" slot-scope="{ row }">
+              <UserCard
+                v-if="row.userUuid"
+                :uuid="row.userUuid"
+                :hideAvatar="true"
+              ></UserCard>
+            </template>
             <template slot="startTime" slot-scope="{ row }">
               {{ row.startTime | formatDate }}
             </template>
@@ -115,6 +122,7 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     IntegrationAuditDetail: () => import('./integration-audit-detail.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     UserSelect,
     TsFormSelect,
     TsFormInput,

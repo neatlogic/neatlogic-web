@@ -70,6 +70,7 @@
     "particles.vue": "^2.42.2",
     "qs": "^6.11.2",
     "save": "^2.4.0",
+    "v-code-diff": "^1.13.1",
     "vue": "^2.7.16",
     "vue-codemirror": "^4.0.6",
     "vue-cropper": "^0.5.6",
@@ -82,15 +83,14 @@
     "vue-loader": "^17.4.0",
     "vue-router": "^3.5.4",
     "vuedraggable": "^2.23.2",
-    "vuex": "^3.0.1",
-    "xlsx": "^0.18.5"
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.5",
     "@babel/eslint-parser": "^7.12.16",
     "@babel/plugin-transform-runtime": "^7.24.3",
     "@babel/preset-env": "^7.24.5",
-    "@rsbuild/core": "^1.2.4",
+    "@rsbuild/core": "^1.4.6",
     "@rsbuild/plugin-less": "^1.1.0",
     "@rsbuild/plugin-vue2": "^1.0.2",
     "@vue/cli-plugin-babel": "~5.0.6",

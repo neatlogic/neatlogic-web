@@ -73,9 +73,11 @@ const cientity = {
   getCiEntityBaseInfoByIdList(idList) {
     return axios.post('/api/rest/cmdb/cientity/baseinfo/list', { idList: idList });
   },
+  /*已删除
   getCiEntityByIdList(ciId, idList) {
     return axios.post('/api/rest/cmdb/cientity/list', { ciId: ciId, idList: idList });
   },
+  */
   getCiEntityTopoData(params) {
     return axios.post('/api/rest/cmdb/topo/cientity', params);
   },

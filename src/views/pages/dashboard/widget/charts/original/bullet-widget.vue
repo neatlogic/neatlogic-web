@@ -40,7 +40,7 @@ export default {
     createRandomData() {
       this.data = [];
       for (var i = 1; i <= 1; i++) {
-        this.data.push({ 
+        this.data.push({
           title: '完成度',
           ranges: [100],
           measures: [80],
@@ -73,12 +73,13 @@ export default {
       if (this.data && this.data.length > 0) {
         //数据合并汇聚
         this.data.forEach(d => {
-          const dd = data.find(dd => dd.colorField == d.colorField);
-          if (dd) {
-            dd.angleField += d.angleField;
-          } else {
-            data.push(d);
+          if (d.measure != null) {
+            d.measures = [d.measure];
           }
+          if (d.range != null) {
+            d.ranges = [d.range];
+          }
+          data.push(d);
         });
       }
       return data;

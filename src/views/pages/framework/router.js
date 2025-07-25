@@ -58,10 +58,10 @@ const databaseViewManage = () => import('./databaseview/databaseview-manage.vue'
 const tenantConfigManage = () => import('./tenantconfig/tenantconfig-manage.vue'); // 租户配置信息管理
 const serverManage = () => import('./server/server-manage.vue'); // 服务器管理
 const extramenuManage = () => import('./extramenu/extramenu-manage.vue'); //菜单管理
-const regionManage = () => import('./region/region-manage.vue');//地域管理
-const homepageManage = () => import('./homepage/homepage-manage.vue');//首页管理
-const changelogAuditManage = () => import('./changelogaudit/changelogaudit-manage.vue');//数据库变更记录
-const logManage = () => import('./log/log-manage.vue');//查看日志
+const regionManage = () => import('./region/region-manage.vue'); //地域管理
+const homepageManage = () => import('./homepage/homepage-manage.vue'); //首页管理
+const changelogAuditManage = () => import('./changelogaudit/changelogaudit-manage.vue'); //数据库变更记录
+const logManage = () => import('./log/log-manage.vue'); //查看日志
 
 import { $t } from '@/resources/init.js';
 import { config } from './config.js';
@@ -489,7 +489,7 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-agent',
       authority: 'TAGENT_BASE',
-      type: 'others'
+      type: 'agent'
     }
   },
   {
@@ -514,7 +514,7 @@ let routerList = [
       ismenu: false,
       icon: '',
       authority: 'TAGENT_BASE',
-      type: 'others'
+      type: 'agent'
     }
   },
   {
@@ -526,7 +526,7 @@ let routerList = [
       ismenu: false,
       icon: '',
       authority: 'TAGENT_BASE',
-      type: 'others'
+      type: 'agent'
     }
   },
   {
@@ -538,7 +538,7 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-ip-object',
       authority: 'RUNNER_MODIFY',
-      type: 'others'
+      type: 'agent'
     }
   },
 
@@ -551,7 +551,7 @@ let routerList = [
       ismenu: false,
       icon: 'tsfont-ip-object',
       authority: 'RUNNER_MODIFY',
-      type: 'others'
+      type: 'agent'
     }
   },
   {
@@ -659,7 +659,7 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-adapter',
       authority: 'ADMIN',
-      type: 'others'
+      type: 'healthcheck'
     }
   },
   {

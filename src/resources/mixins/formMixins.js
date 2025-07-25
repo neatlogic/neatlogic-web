@@ -120,8 +120,8 @@ export default {
           if (Array.isArray(value)) {
             let valueList = [];
             value.forEach(v => {
-              if (v != false && !this.$utils.isEmpty(v)) {
-                if (this.isCustomValue && v[this.valueName]) {
+              if (!this.$utils.isEmpty(v)) { // 兼容为0的情况检验不通过的问题
+                if (this.isCustomValue && !this.$utils.isEmpty(v[this.valueName])) {
                   // 数组对象类型
                   valueList.push(v?.[this.valueName]);
                 } else {
