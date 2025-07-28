@@ -1080,5 +1080,6 @@
   "autoexecparallel": "并发设置",
   "paramkeyword": "入参搜索",
   "loglevel": "日志级别",
-  "bluegreen": "蓝绿执行"
+  "bluegreen": "蓝绿执行",
+  "mailserver": "邮件服务"
 }

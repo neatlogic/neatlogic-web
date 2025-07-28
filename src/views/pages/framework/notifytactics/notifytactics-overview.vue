@@ -1,10 +1,9 @@
 <template>
-  <div class="notifytactics-overview">
+  <div class="notifytactics-overview mt-md">
     <TsContain v-if="handlerConfig" hideHeader>
       <div slot="content">
         <Tabs
           :value="handlerConfig.value"
-          class="block-tabs"
           :animated="false"
           name="tab1"
           @on-click="changeTab"
@@ -16,10 +15,10 @@
             :name="tab.value"
             tab="tab1"
           >
-            <div v-if="tab.children && tab.children.length > 0" class="padding">
+            <div v-if="tab.children && tab.children.length > 0" class="mt-md">
               <Tabs
                 v-model="handler"
-                class="block-tabs2"
+                class="block-tabs"
                 :animated="false"
                 name="tab2"
                 @on-click="changeHandler"
@@ -30,8 +29,7 @@
                   :label="subtab.text"
                   :name="subtab.value"
                   tab="tab2"
-                >
-                </TabPane>
+                ></TabPane>
                 <div class="notify-card padding">
                   <Loading :loadingShow="loadingShow" type="fix"></Loading>
                   <div v-if="isShow" class="search-box pb-md pt-md">
@@ -43,10 +41,7 @@
                       <span v-else class="action-item active" @click="setDefaultPolicy">{{ $t('page.clicksetting') }}</span>
                     </div>
                     <div class="search-right input-border">
-                      <InputSearcher
-                        v-model="keyword"
-                        @change="search(1)"
-                      ></InputSearcher>
+                      <InputSearcher v-model="keyword" @change="search(1)"></InputSearcher>
                     </div>
                   </div>
                   <div class="notifytactics-card">
@@ -72,7 +67,7 @@
                           </div>
                           <div class="text-grey des-content">
                             <UserCard v-bind="row.lcuVo" hideAvatar class="mr-xs"></UserCard>
-                            <span class="m-userCard"> {{ row.lcd | formatDate }} {{ row.actionType }}</span>
+                            <span class="m-userCard">{{ row.lcd | formatDate }} {{ row.actionType }}</span>
                           </div>
                         </div>
                       </template>
@@ -121,11 +116,7 @@
       @on-ok="saveDefaultPolicy"
     >
       <TsFormItem label="策略">
-        <TsFormSelect
-          ref="defaultPolicyFormSelect"
-          v-model="defaultPolicyFormSelectValue"
-          v-bind="defaultPolicyFormSelect"
-        ></TsFormSelect>
+        <TsFormSelect ref="defaultPolicyFormSelect" v-model="defaultPolicyFormSelectValue" v-bind="defaultPolicyFormSelect"></TsFormSelect>
       </TsFormItem>
     </TsDialog>
   </div>
@@ -173,13 +164,17 @@ export default {
           maxlength: 50,
           width: '100%',
           label: this.$t('page.name'),
-          validateList: ['required', 'name-special', {
-            name: 'searchUrl',
-            url: 'api/rest/notify/policy/save',
-            params: (value, rule) => {
-              rule.url = this.isCopy ? 'api/rest/notify/policy/copy' : 'api/rest/notify/policy/save';
+          validateList: [
+            'required',
+            'name-special',
+            {
+              name: 'searchUrl',
+              url: 'api/rest/notify/policy/save',
+              params: (value, rule) => {
+                rule.url = this.isCopy ? 'api/rest/notify/policy/copy' : 'api/rest/notify/policy/save';
+              }
             }
-          }]
+          ]
         }
       ],
       defaultPolicyId: null,
@@ -200,7 +195,7 @@ export default {
         textName: 'name',
         search: true,
         transfer: true,
-        onChangelabel: (text) => {
+        onChangelabel: text => {
           this.defaultPolicyFormSelectText = text;
         }
       }
@@ -210,7 +205,7 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    let {addNotify = false} = this.$route.query || {};
+    let { addNotify = false } = this.$route.query || {};
     if (addNotify) {
       this.tacticsDialog = true;
     }
@@ -240,9 +235,7 @@ export default {
             if (_this.handler) {
               handlerList.forEach(item => {
                 if (item.children && item.children.length > 0) {
-                  let newObj = item.children.find(d =>
-                    d.value == _this.handler
-                  );
+                  let newObj = item.children.find(d => d.value == _this.handler);
                   item.children.forEach(j => {
                     if (j.value == _this.handler && item.value == 'framework') {
                       if (j.isAllowMultiPolicy == 0) {
@@ -315,8 +308,8 @@ export default {
           if (this.isShow) {
             this.tacticsData.cardList.map(v => {
               v.btnList = [
-                {name: this.$t('page.reference'), value: 'ReferenceSelect', icon: '', type: 'ReferenceSelect', calleeType: 'notifypolicy', key: 'id'},
-                {name: this.$t('page.delete'), value: 'del', type: 'del', icon: 'tsfont-trash-o', disable: true, text: this.$t('message.framework.notdelformtip'), key: 'referenceCount'},
+                { name: this.$t('page.reference'), value: 'ReferenceSelect', icon: '', type: 'ReferenceSelect', calleeType: 'notifypolicy', key: 'id' },
+                { name: this.$t('page.delete'), value: 'del', type: 'del', icon: 'tsfont-trash-o', disable: true, text: this.$t('message.framework.notdelformtip'), key: 'referenceCount' },
                 {
                   name: this.$t('term.framework.multi'),
                   value: 'dropdown',
@@ -332,8 +325,8 @@ export default {
           } else {
             this.tacticsData.cardList.map(v => {
               v.btnList = [
-                {name: this.$t('page.reference'), value: 'ReferenceSelect', icon: '', type: 'ReferenceSelect', calleeType: 'notifypolicy', key: 'id'},
-                {name: this.$t('page.delete'), value: 'del', type: 'del', icon: 'tsfont-trash-o', disable: true, text: this.$t('message.framework.notdelformtip'), key: 'referenceCount'}
+                { name: this.$t('page.reference'), value: 'ReferenceSelect', icon: '', type: 'ReferenceSelect', calleeType: 'notifypolicy', key: 'id' },
+                { name: this.$t('page.delete'), value: 'del', type: 'del', icon: 'tsfont-trash-o', disable: true, text: this.$t('message.framework.notdelformtip'), key: 'referenceCount' }
               ];
             });
           }
@@ -431,7 +424,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: obj.name}),
+        content: this.$t('dialog.content.deleteconfirm', { target: obj.name }),
         btnType: 'error',
         'on-ok': vnode => {
           let data = {
@@ -497,7 +490,9 @@ export default {
       this.$addHistoryData('handler', val);
       let handlerConfig = null;
       this.handlerList.forEach(item => {
-        if (item.value == val) { handlerConfig = item; }
+        if (item.value == val) {
+          handlerConfig = item;
+        }
       });
       if (val == 'framework') {
         this.frameworkShow = false;
@@ -525,7 +520,6 @@ export default {
 
 <style lang="less" scoped>
 .notifytactics-overview {
-  padding-top: 16px;
   .tscontain-container {
     .tscontain-header {
       border: none;
@@ -537,16 +531,16 @@ export default {
       justify-content: space-between;
       align-items: center;
       .search-right {
-       width: 300px;
+        width: 300px;
       }
     }
     .notifytactics-card {
       .overvivew-main {
-          cursor: pointer;
-          .top-typename {
-            font-size: 13px;
-          }
+        cursor: pointer;
+        .top-typename {
+          font-size: 13px;
         }
+      }
       .action-item {
         width: 100%;
       }

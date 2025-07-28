@@ -72,6 +72,8 @@ export default {
     finalData() {
       let data = [];
       if (this.data && this.data.length > 0) {
+        //时间排序
+        this.data = this.data.sort((a, b) => this.changeString(b.yField) - this.changeString(a.yField));
         //数据合并汇聚
         this.data.forEach(d => {
           const dd = data.find(dd => dd.yField == d.yField && dd.seriesField == d.seriesField);
