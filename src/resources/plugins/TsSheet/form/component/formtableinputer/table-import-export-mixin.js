@@ -197,7 +197,7 @@ export default {
           newTbodyList.push({ ...mergedItem, uuid: this.$utils.setUuid() });
         }
       }
-      this.tableData.tbodyList = newTbodyList;
+      this.tbodyList = newTbodyList;
     },
     async _fetchMatrixDataConcurrently({ columnsUuidList = [], extraList = [] }) {
       // 并发获取矩阵数据
@@ -501,7 +501,7 @@ export default {
     },
     _filterTheadColumns() {
       // 过滤表头列属性
-      return this.tableData.theadList.filter(v => v && v.key !== 'selection' && v.key !== 'number' && v.key !== 'delete');
+      return this.theadList.filter(v => v && v.key !== 'selection' && v.key !== 'number' && v.key !== 'delete');
     }
   }
 };

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!loadingShow">
+  <div v-if="isReady">
     <div v-if="!disabled && !readonly" class="mb-sm action-group">
       <div v-if="canAdd" class="action-item">
         <Button @click="addData()">{{ $t('dialog.title.addtarget', { target: $t('page.data') }) }}</Button>
@@ -32,7 +32,7 @@
           @click.stop="() => exportExcelData({
             extraList: extraList,
             formItem: formItem,
-            tbodyList: tableData.tbodyList,
+            tbodyList: tbodyList,
             selectedIndexList: selectedIndexList,
           })"
         >
@@ -61,7 +61,7 @@
               handleBeforeUpload({
                 file: file,
                 extraList: extraList,
-                tbodyList: tableData.tbodyList
+                tbodyList: tbodyList
               })
           "
           type="drag"
@@ -153,10 +153,8 @@ export default {
   },
   data() {
     return {
-      loadingShow: true,
-      isTableSelectorDialogShow: false,
+      isReady: false,
       selectedIndexList: [],
-      rowFormItem: {}, //保存每行的定义数据，避免每次都deepClone新数据，导致reaction失效
       loading: false,
       filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'], //过滤不参与规则的组件
       tablePageConfig: { //table分页配置
@@ -181,7 +179,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       //避免初始化数据，联动过滤清空表格内数据
-      this.loadingShow = false;
+      this.isReady = true;
     });
   },
   beforeUpdate() {},
@@ -470,7 +468,7 @@ export default {
       }
       return errorList;
     },
-    getErrorList(row, data, pageCount, th, defaultErrorList) {
+    getErrorList(row, data, pageCount, th, defaultErrorList) { //获取校验错误列表
       const key = th.key;
       const reactionValid = this.validReaction(th.reaction, data);
       let isValid = true;
@@ -546,8 +544,7 @@ export default {
         isRequired: isRequired
       };
     },
-    getValidateList(d) {
-      //获取组件的基础校验规则
+    getValidateList(d) { //获取组件的基础校验规则
       let validateList = [];
       if (d.config.isRequired) {
         validateList.push('required');
