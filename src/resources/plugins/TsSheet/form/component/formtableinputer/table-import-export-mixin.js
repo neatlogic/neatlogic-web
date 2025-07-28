@@ -103,7 +103,11 @@ export default {
         });
       });
     },
-    async handleBeforeUpload({ file, extraList = [], tbodyList = [] }) {
+    handleBeforeUpload({ file, extraList = [], tbodyList = [] }) {
+      this._handleExcelImportData({ file, extraList, tbodyList });
+      return false; // 阻止自动上传，完全前端处理。
+    },
+    async _handleExcelImportData({ file, extraList = [], tbodyList = [] }) {
       // 导入表格
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.load(file);
