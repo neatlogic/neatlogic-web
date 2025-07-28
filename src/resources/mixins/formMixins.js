@@ -232,7 +232,12 @@ export default {
     borderClass() {
       let resultJson = {};
       if (this.border) {
-        resultJson['tsForm-border-' + this.border] = true;
+        const baseClass = this.border === 'none' && !this.isValidPass ? 'tsForm-border-border' : `tsForm-border-${this.border}`;
+        resultJson[baseClass] = true;
+        resultJson['tsForm-item'] = true;
+      } else if (!this.isValidPass) {
+        // border属性为空时，校验不通过显示红色边框
+        resultJson['tsForm-border-border'] = true;
         resultJson['tsForm-item'] = true;
       }
       this.className && (resultJson[this.className] = true);
