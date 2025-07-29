@@ -7,7 +7,6 @@
           mode="graph"
           :needMinimap="true"
           :readonly="true"
-          :processName="processName"
         ></FlowEditorToolbar>
       </div>
       <div v-if="isReady" style="height: calc(100vh - 334px)">
@@ -211,8 +210,7 @@ export default {
       selectLeft: [],
       showhandler: [],
       noticeList: [],
-      notifyList: [],
-      processName: '' // 流程名称，用于导出流程图时使用，作为导出文件名
+      notifyList: []
     };
   },
 
@@ -297,10 +295,10 @@ export default {
       };
       this.$api.process.process.getProcess(data).then(res => {
         if (res.Status == 'OK') {
-          const { formUuid = '', config = {}, name = '' } = res?.Return || {};
-          this.slaList = config?.process?.slaList || [];
-          this.canvasNodeList = config?.topo?.nodes || [];
-          this.processName = name;
+          let formUuid = res.Return.formUuid;
+          let config = res.Return.config;
+          this.slaList = config.process.slaList;
+          this.canvasNodeList = config.topo.nodes;
           this.getFormItem(formUuid);
           this.flowData = config;
           this.$nextTick(() => {

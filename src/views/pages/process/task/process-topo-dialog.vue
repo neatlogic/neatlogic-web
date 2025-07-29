@@ -15,7 +15,6 @@
             :needMinimap="true"
             :flowUuid="flowUuid"
             :processTaskId="processTaskId"
-            :processName="title"
           ></FlowEditorToolbar>
         </div>
         <div style="height: calc(100vh - 334px)">
