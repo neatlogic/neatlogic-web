@@ -15,6 +15,7 @@
             :readonly="true"
             :flowUuid="flowUuid"
             :processTaskId="processTaskId"
+            :processName="title"
           ></FlowEditorToolbar>
         </div>
         <div ref="flowBox" style="height: calc(100vh - 334px)">
