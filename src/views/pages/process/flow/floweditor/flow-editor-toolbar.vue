@@ -58,7 +58,12 @@
       :title="$t('term.process.seeprocessconfig')"
       @click.stop="openFlow(true)"
     ></div>
-    <div class="action-item tsfont-download" title="导出流程图" @click.stop="exportPng()"></div>
+    <div
+      v-if="needExportFlow"
+      class="action-item tsfont-download"
+      title="导出流程图"
+      @click.stop="exportPng()"
+    ></div>
   </div>
 </template>
 <script>
@@ -87,7 +92,8 @@ export default {
       default: ''
     },
     processTaskId: { type: [Number, String] }, // 流程任务id
-    processName: { type: String, default: '流程图' } // 流程名称
+    processName: { type: String, default: '流程图' }, // 流程名称
+    needExportFlow: { type: Boolean, default: false } // 是否需要导出流程图
   },
   data() {
     return {
