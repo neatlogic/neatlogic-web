@@ -353,13 +353,21 @@ export default {
         const uniqueRuleList = dataConfig.filter(v => v.config && v.config['isUnique']);
         if (!this.$utils.isEmpty(uniqueRuleList)) {
           let existMap = {};
-          this.tbodyList.forEach(row => {
+          this.tbodyList.forEach((row, index) => {
+            const pageCount = Math.ceil((index + 1) / this.tablePageConfig.pageSize);
             if (!this.$utils.isEmpty(row)) {
               Object.keys(row).forEach(key => {
                 const findUnunique = uniqueRuleList.find(d => d.uuid === key);
                 if (findUnunique && row[key]) {
                   if (existMap[key] && existMap[key].includes(row[key])) {
-                    errorList.push({ uuid: this.formItem.uuid, error: `${this.formItem.label}：【${findUnunique.label}】属性必须唯一` });
+                    let findItem = errorList.find(d => d.attrUuid === key);
+                    if (findItem && !findItem.errorPageList.find(d => d === pageCount)) {
+                      findItem.errorPageList.push(pageCount);
+                      findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
+                      findItem.error = `${this.formItem.label}：第${findItem.errorPageList.join(',')}页【${findUnunique.label}】属性必须唯一`;
+                    } else {
+                      errorList.push({ uuid: this.formItem.uuid, attrUuid: key, errorPageList: [pageCount], error: `${this.formItem.label}：第${pageCount}页【${findUnunique.label}】属性必须唯一` });
+                    }
                   } else {
                     existMap[key] = existMap[key] ? [...existMap[key], row[key]] : [row[key]];
                   }
@@ -377,7 +385,8 @@ export default {
           .join(',');
         let tempValue = '';
         let existList = [];
-        this.tbodyList.forEach(row => {
+        this.tbodyList.forEach((row, index) => {
+          const pageCount = Math.ceil((index + 1) / this.tablePageConfig.pageSize);
           if (!this.$utils.isEmpty(row)) {
             tempValue = '';
             Object.keys(row).forEach((key, index) => {
@@ -387,7 +396,14 @@ export default {
             });
             if (tempValue) {
               if (existList.includes(tempValue)) {
-                errorList.push({ uuid: uniqueRuleConfig[0], error: `${this.formItem.label}：【${attrLabel}】属性必须唯一` });
+                let findItem = errorList.find(d => d.uuid === uniqueRuleConfig[0]);
+                if (findItem && !findItem.errorPageList.find(d => d === pageCount)) {
+                  findItem.errorPageList.push(pageCount);
+                  findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
+                  findItem.error = `${this.formItem.label}：第${findItem.errorPageList.join(',')}页【${attrLabel}】属性必须唯一`;
+                } else {
+                  errorList.push({ uuid: uniqueRuleConfig[0], errorPageList: [pageCount], error: `${this.formItem.label}：第${pageCount}页【${attrLabel}】属性必须唯一` });
+                }
               } else {
                 existList.push(tempValue);
               }
