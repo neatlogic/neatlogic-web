@@ -238,7 +238,7 @@ export default {
           }
           `,
           width: getContentArea.width * 2,
-          height: getContentArea.height * 2,
+          height: getContentArea.height < 100 ? getContentArea.height * 10 : getContentArea.height * 2,
           beforeSerialize: graph => {
             this.convertSpansToSvgText(graph);
           }
