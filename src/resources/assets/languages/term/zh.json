@@ -247,7 +247,8 @@
     "pause": "停止",
     "cientityisnotfound": "配置项不存在",
     "testaccount": "测试结果",
-    "repeataccount": "协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。"
+    "repeataccount": "协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。",
+    "datadetail": "数据明细"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -2858,6 +2859,27 @@
     "alert": "告警",
     "isnormalattr": "作为普通属性展示",
     "closesuccess": "关闭成功",
-    "istop": "是否置顶"
+    "istop": "是否置顶",
+    "onlysearchparentalert": "只搜索父告警",
+    "searchallalert": "搜索所有告警",
+    "closeselectedalert": "关闭选中告警",
+    "openselectedalert": "打开选中告警",
+    "deletematchalert": "删除匹配告警",
+    "allalert": "所有告警",
+    "alerttopo": "告警拓扑",
+    "alertdetail": "告警详情",
+    "applychildalert": "同时应用子告警",
+    "transferworker": "转交处理人",
+    "transferteam": "转交处理组",
+    "reportdata": "上报数据",
+    "eventaudit": "事件记录",
+    "alertnotexists": "告警不存在或已被删除",
+    "childalert": "子告警",
+    "dealresult": "处理结果",
+    "createalert": "创建告警",
+    "defaultstatus": "默认状态",
+    "joinalert": "归并到告警",
+    "uniquekey": "唯一键",
+    "alertsign": "告警特征"
   }
 }

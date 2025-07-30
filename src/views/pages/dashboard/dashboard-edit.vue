@@ -489,29 +489,30 @@ export default {
       this.mode = screenfull.isFullscreen ? 'read' : 'edit'; // 全屏模式，组件上不显示删除图标
     },
     save() {
-      if (this.dashboard.name) {
-        if (this.dashboard.widgetList.length > 0) {
-          //_开头的属性都是编辑器的控制属性，不需要保存
-          this.dashboard.widgetList.forEach(widget => {
-            for (let key in widget) {
-              if (key.startsWith('_')) {
-                this.$delete(widget, key);
-              }
-            }
-          });
-          this.$api.dashboard.dashboard.saveDashboard(this.dashboard).then(res => {
-            if (res.Status == 'OK' && res.Return) {
-              this.$Message.success(this.$t('message.savesuccess'));
-              this.currentWidget = null;
-              this.$store.commit('leftMenu/setDashboardCount', 'add');
-              this.$router.push({ path: '/dashboard-edit/' + res.Return });
-            }
-          });
-        } else {
-          this.$Message.info(this.$t('form.placeholder.pleaseadd', { target: this.$t('page.component') }));
-        }
-      } else {
+      const dashboardName = this.$refs.dashboardName;
+      if (dashboardName && !dashboardName.valid()) {
         this.$Message.info(this.$t('form.placeholder.pleaseinput', { target: this.$t('page.name') }));
+        return false;
+      }
+      if (this.dashboard.widgetList.length > 0) {
+        //_开头的属性都是编辑器的控制属性，不需要保存
+        this.dashboard.widgetList.forEach(widget => {
+          for (let key in widget) {
+            if (key.startsWith('_')) {
+              this.$delete(widget, key);
+            }
+          }
+        });
+        this.$api.dashboard.dashboard.saveDashboard(this.dashboard).then(res => {
+          if (res.Status == 'OK' && res.Return) {
+            this.$Message.success(this.$t('message.savesuccess'));
+            this.currentWidget = null;
+            this.$store.commit('leftMenu/setDashboardCount', 'add');
+            this.$router.push({ path: '/dashboard-edit/' + res.Return });
+          }
+        });
+      } else {
+        this.$Message.info(this.$t('form.placeholder.pleaseadd', { target: this.$t('page.component') }));
       }
     }
   },

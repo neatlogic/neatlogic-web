@@ -23,9 +23,9 @@
                   placement="bottom-start"
                 >
                   <span v-html="item.content"></span>
-                  <span slot="content">
-                    <span v-html="item.content"></span>
-                  </span>
+                  <div slot="content">
+                    <div style="max-height: 500px;overflow:scroll;" v-html="item.content"></div>
+                  </div>
                 </Tooltip>
               </span>
               <span v-if="item.detail" class="text-href detail-btn" @click="lookDetail(item)">{{ $t('page.viewdetails') }}</span>

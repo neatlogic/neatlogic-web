@@ -50,7 +50,7 @@
       <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.xaxisshow') }}</label>
       <div class="ivu-form-item-content">
         <TsFormSwitch
-          :value="config.xAxis"
+          :value="config.xAxis ? true : false"
           :true-value="true"
           :false-value="false"
           @change="
@@ -103,7 +103,7 @@
     </div>
     <TsFormItem label="辅助线" labelPosition="top">
       <TsFormSwitch
-        :value="!config.yAxis?true:typeof config.yAxis === 'boolean' ? true : config.yAxis.grid.visible?true:false"
+        :value="!config.yAxis?true:typeof config.yAxis === 'boolean' ? true : (config.yAxis.grid && config.yAxis.grid.visible)?true:false"
         :true-value="true"
         :false-value="false"
         @change="

@@ -1245,6 +1245,33 @@ const methods = {
   },
   filteredObj (obj, list) { //过滤对象中指定的属性列表
     return _.omit(obj, list)
-  }
+  },
+  isValidTimeString(timeStr) { //校验时间字符串
+      if(!timeStr || typeof timeStr !== 'string') {
+        return false;
+      }
+      const parts = timeStr.split(':');
+      if (parts.length === 2) {
+        const [h, m] = parts.map(Number);
+        return h >= 0 && h < 24 && m >= 0 && m < 60;
+      } else if (parts.length === 3) {
+        const [h, m, s] = parts.map(Number);
+        return h >= 0 && h < 24 && m >= 0 && m < 60 && s >= 0 && s; 
+      }
+      return false;
+    },
+    isValidDateTime(dateStr) { //校验日期时间字符串
+      // 检查是否为Date对象实例
+      if (dateStr instanceof Date) {
+        return !isNaN(dateStr.getTime());
+      }
+      // 检查是否为可解析的日期字符串
+      if (typeof dateStr === 'string') {
+        // 尝试解析为Date对象
+        const date = new Date(dateStr);
+        return !isNaN(date.getTime());
+      }
+      return false;
+    }
 };
 export default methods;
