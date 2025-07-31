@@ -64,12 +64,11 @@ export default {
   },
   computed: {
     avatarSrc() {
-      if (this.avatar === null) return null;
       if (this.avatar && this.avatar.indexOf('api') > -1) return this.avatar.indexOf(BASEURLPREFIX + '/') != 0 ? BASEURLPREFIX + '/' + this.avatar : this.avatar;
       if (this.initType === 'role') return require('@/resources/assets/images/avatar/role.png');
       if (this.initType === 'team') return require('@/resources/assets/images/avatar/team.png');
       if (this.initType === 'user' && !this.namePinyin) return require('@/resources/assets/images/avatar/user.png');
-      if (this.initType && !this.namePinyin) return require('@/resources/assets/images/avatar/process.png');
+      if (this.initType && !['role', 'team', 'user'].includes(this.initType)) return require('@/resources/assets/images/avatar/process.png');
       else return null;
     },
 
