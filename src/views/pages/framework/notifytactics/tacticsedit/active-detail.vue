@@ -2,7 +2,7 @@
   <div v-if="config">
     <div class="condition-text dividing-color">
       <div v-if="config.conditionConfig && config.conditionConfig.conditionGroupList && config.conditionConfig.conditionGroupList.length > 0" class="condition-block">
-        <div class="text-title condition-title">{{ $t('page.condition') }}</div>
+        <Divider orientation="start">{{ $t('page.condition') }}</Divider>
         <div class="condition-content">
           <div v-for="(groupitem, groupindex) in config.conditionConfig.conditionGroupList" :key="groupindex">
             <div>
@@ -28,13 +28,18 @@
         </div>
       </div>
       <div v-if="config.actionList && config.actionList.length > 0" class="condition-block">
-        <div class="text-title condition-title">{{ $t('page.actions') }}</div>
+        <Divider orientation="start">{{ $t('page.actions') }}</Divider>
         <div class="condition-content">
-          <div v-for="(action, acindex) in config.actionList" :key="acindex" class="active-li">
-            <span class="name">{{ action.notifyHandlerName }}：</span>
-            <span v-for="(user, uindex) in action.receiverObjList" :key="uindex">
-              <UserCard class="user-name" v-bind="user"></UserCard>
-            </span>
+          <div v-for="(action, acindex) in config.actionList" :key="acindex" class="pt-xs">
+            <div class="name">{{ action.notifyHandlerName }}</div>
+            <div>
+              <UserCard
+                v-for="(user, uindex) in action.receiverObjList"
+                :key="uindex"
+                class="pr-xs pb-xs"
+                v-bind="user"
+              ></UserCard>
+            </div>
           </div>
         </div>
       </div>
@@ -107,16 +112,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.active-li {
-  position: relative;
-  padding-left: 80px;
-  word-break: break-all;
-  white-space: pre-wrap;
-  line-height: 28px;
-  .name{
-    position: absolute;
-    top: 0;
-    left: 10px;
-  }
-}
 </style>

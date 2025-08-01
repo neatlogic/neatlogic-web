@@ -71,6 +71,8 @@
             <FlowEditorToolbar
               :selectedNode="currentNode"
               :selectedEdge="currentEdge"
+              :processName="processName"
+              :needExportFlow="true"
               :needMinimap="true"
               :graph="graph"
               mode="graph"

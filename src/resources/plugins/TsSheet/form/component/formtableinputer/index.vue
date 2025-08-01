@@ -1,10 +1,10 @@
 <template>
-  <div v-if="!loadingShow">
+  <div v-if="isReady">
     <div v-if="!disabled && !readonly" class="mb-sm action-group">
       <div v-if="canAdd" class="action-item">
         <Button @click="addData()">{{ $t('dialog.title.addtarget', { target: $t('page.data') }) }}</Button>
       </div>
-      <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tableData.tbodyList)" class="action-item">
+      <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tbodyList)" class="action-item">
         <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget', { target: $t('page.data') }) }}</Button>
       </div>
       <template v-if="canShowImportExportBtn">
@@ -32,7 +32,7 @@
           @click.stop="() => exportExcelData({
             extraList: extraList,
             formItem: formItem,
-            tbodyList: tableData.tbodyList,
+            tbodyList: tbodyList,
             selectedIndexList: selectedIndexList,
           })"
         >
@@ -61,7 +61,7 @@
               handleBeforeUpload({
                 file: file,
                 extraList: extraList,
-                tbodyList: tableData.tbodyList
+                tbodyList: tbodyList
               })
           "
           type="drag"
@@ -77,7 +77,9 @@
     <template v-if="showTable">
       <TsTable
         v-if="hasColumn"
-        v-bind="tableData"
+        :theadList="theadList"
+        :tbodyList="pagedTbodyList"
+        v-bind="tablePageConfig"
         :loading="loading"
         :multiple="true"
         :fixedHeader="false"
@@ -85,6 +87,8 @@
         :readonlyTextIsHighlight="readonlyTextIsHighlight"
         @updateRowSort="updateRowSort"
         @getSelected="getSelectedItem"
+        @changeCurrent="changeCurrent"
+        @changePageSize="changePageSize"
       >
         <template v-slot:delete="{ row, index }">
           <div class="flex-start">
@@ -125,7 +129,7 @@
           </div>
         </template>
       </TsTable>
-      <TsTable v-else :theadList="tableData.theadList"></TsTable>
+      <TsTable v-else :theadList="theadList"></TsTable>
     </template>
   </div>
 </template>
@@ -133,6 +137,7 @@
 import base from '../base.vue';
 import validmixin from '../common/validate-mixin.js';
 import TsTable from '@/resources/components/TsTable/TsTable.vue'; //不能使用异步引入，会导致tssheet列高错位
+import conditionMixin from './condition-mixin.js';
 import TableImportExportMixin from './table-import-export-mixin.js';
 export default {
   name: '',
@@ -141,21 +146,27 @@ export default {
     FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
   },
   extends: base,
-  mixins: [validmixin, TableImportExportMixin],
+  mixins: [validmixin, conditionMixin, TableImportExportMixin],
   props: {
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
   },
   data() {
     return {
-      loadingShow: true,
-      isTableSelectorDialogShow: false,
+      isReady: false,
       selectedIndexList: [],
-      tableData: { theadList: [], tbodyList: [] },
-      rowFormItem: {}, //保存每行的定义数据，避免每次都deepClone新数据，导致reaction失效
       loading: false,
       filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'], //过滤不参与规则的组件
-      initExternalData: {} //用于对比外部组件值变换
+      tablePageConfig: { //table分页配置
+        currentPage: 1,
+        pageSize: 5,
+        rowNum: 0,
+        pageSizeOpts: [5, 10, 15, 20, 50, 100],
+        defaultShowSize: 5
+      },
+      theadList: [],
+      tbodyList: [],
+      validateMap: {}
     };
   },
   beforeCreate() {},
@@ -168,7 +179,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       //避免初始化数据，联动过滤清空表格内数据
-      this.loadingShow = false;
+      this.isReady = true;
     });
   },
   beforeUpdate() {},
@@ -206,7 +217,7 @@ export default {
           }
         }
         if (value.length > 0) {
-          this.tableData.tbodyList.push(...value);
+          this.tbodyList.push(...value);
         }
       } else if (this.config.lineNumber) {
         //默认展示行
@@ -219,9 +230,10 @@ export default {
       this.selectedIndexList = indexList;
     },
     deleteItem(row) {
-      const index = this.tableData.tbodyList.findIndex(d => d.uuid === row.uuid);
-      if (index > -1) {
-        this.tableData.tbodyList.splice(index, 1);
+      const findIndex = this.tbodyList.findIndex(d => d.uuid === row.uuid);
+      this.tbodyList.splice(findIndex, 1);
+      if (!this.pagedTbodyList.length && this.tablePageConfig.currentPage > 1) {
+        this.tablePageConfig.currentPage -= 1;
       }
     },
     addRow(index) {
@@ -231,15 +243,17 @@ export default {
           data[d.uuid] = (d.config && d.config.defaultValue) || null;
         }
       });
-      Object.assign(data, this.initExternalData);
-      this.tableData.tbodyList.splice(index + 1, 0, data);
+      this.tbodyList.splice(index + 1, 0, data);
     },
     removeSelectedItem() {
-      for (let i = this.tableData.tbodyList.length - 1; i >= 0; i--) {
-        const item = this.tableData.tbodyList[i];
+      for (let i = this.tbodyList.length - 1; i >= 0; i--) {
+        const item = this.tbodyList[i];
         if (item._selected) {
-          this.tableData.tbodyList.splice(i, 1);
+          this.tbodyList.splice(i, 1);
         }
+      }
+      if (!this.pagedTbodyList.length && this.tablePageConfig.currentPage > 1) {
+        this.tablePageConfig.currentPage -= 1;
       }
     },
     addData() {
@@ -249,8 +263,7 @@ export default {
           data[d.uuid] = (d.config && d.config.defaultValue) || null;
         }
       });
-      Object.assign(data, this.initExternalData);
-      this.tableData.tbodyList.push(data);
+      this.tbodyList.unshift(data);
     },
     validConfig() {
       const errorList = [];
@@ -311,7 +324,7 @@ export default {
       return errorList;
     },
     async validData() {
-      const errorList = [];
+      //当前页校验样式
       if (this.$refs) {
         for (let name in this.$refs) {
           if (name.startsWith('formitem_')) {
@@ -323,16 +336,13 @@ export default {
                 formitem = this.$refs[name];
               }
               if (formitem) {
-                const err = await formitem.validData();
-                if (err && err.length > 0) {
-                  errorList.push(...err);
-                }
+                await formitem.validData();
               }
             }
           }
         }
       }
-      return [...errorList, ...this.validAttrUnique()];
+      return [...this.validTbodyList(), ...this.validAttrUnique()];
     },
     validAttrUnique() {
       // 校验属性是否唯一
@@ -343,13 +353,21 @@ export default {
         const uniqueRuleList = dataConfig.filter(v => v.config && v.config['isUnique']);
         if (!this.$utils.isEmpty(uniqueRuleList)) {
           let existMap = {};
-          this.tableData.tbodyList.forEach(row => {
+          this.tbodyList.forEach((row, index) => {
+            const pageCount = Math.ceil((index + 1) / this.tablePageConfig.pageSize);
             if (!this.$utils.isEmpty(row)) {
               Object.keys(row).forEach(key => {
                 const findUnunique = uniqueRuleList.find(d => d.uuid === key);
                 if (findUnunique && row[key]) {
                   if (existMap[key] && existMap[key].includes(row[key])) {
-                    errorList.push({ uuid: this.formItem.uuid, error: `属性唯一：${findUnunique.label}必须唯一` });
+                    let findItem = errorList.find(d => d.attrUuid === key);
+                    if (findItem && !findItem.errorPageList.find(d => d === pageCount)) {
+                      findItem.errorPageList.push(pageCount);
+                      findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
+                      findItem.error = `${this.formItem.label}：第${findItem.errorPageList.join(',')}页【${findUnunique.label}】属性必须唯一`;
+                    } else {
+                      errorList.push({ uuid: this.formItem.uuid, attrUuid: key, errorPageList: [pageCount], error: `${this.formItem.label}：第${pageCount}页【${findUnunique.label}】属性必须唯一` });
+                    }
                   } else {
                     existMap[key] = existMap[key] ? [...existMap[key], row[key]] : [row[key]];
                   }
@@ -367,7 +385,8 @@ export default {
           .join(',');
         let tempValue = '';
         let existList = [];
-        this.tableData.tbodyList.forEach(row => {
+        this.tbodyList.forEach((row, index) => {
+          const pageCount = Math.ceil((index + 1) / this.tablePageConfig.pageSize);
           if (!this.$utils.isEmpty(row)) {
             tempValue = '';
             Object.keys(row).forEach((key, index) => {
@@ -377,7 +396,14 @@ export default {
             });
             if (tempValue) {
               if (existList.includes(tempValue)) {
-                errorList.push({ uuid: uniqueRuleConfig[0], error: `属性唯一：${attrLabel}必须唯一` });
+                let findItem = errorList.find(d => d.uuid === uniqueRuleConfig[0]);
+                if (findItem && !findItem.errorPageList.find(d => d === pageCount)) {
+                  findItem.errorPageList.push(pageCount);
+                  findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
+                  findItem.error = `${this.formItem.label}：第${findItem.errorPageList.join(',')}页【${attrLabel}】属性必须唯一`;
+                } else {
+                  errorList.push({ uuid: uniqueRuleConfig[0], errorPageList: [pageCount], error: `${this.formItem.label}：第${pageCount}页【${attrLabel}】属性必须唯一` });
+                }
               } else {
                 existList.push(tempValue);
               }
@@ -393,8 +419,8 @@ export default {
       }
     },
     updateRowSort(event) {
-      let beforeVal = this.tableData.tbodyList.splice(event.oldIndex, 1)[0];
-      this.tableData.tbodyList.splice(event.newIndex, 0, beforeVal);
+      let beforeVal = this.tbodyList.splice(event.oldIndex, 1)[0];
+      this.tbodyList.splice(event.newIndex, 0, beforeVal);
     },
     updateCurrentRow(row, val) {
       this.$nextTick(() => {
@@ -412,6 +438,157 @@ export default {
         delete formData[this.formItem.uuid];
       }
       return formData;
+    },
+    changeCurrent(currentPage) {
+      this.tablePageConfig.currentPage = currentPage;
+      this.$nextTick(() => {
+        if (!this.readonly && !this.disabled) {
+          this.validData();
+        }
+      });
+    },
+    changePageSize(pageSize) {
+      this.tablePageConfig.currentPage = 1;
+      this.tablePageConfig.pageSize = pageSize;
+    },
+    validTbodyList() { //验证表格数据
+      let errorList = [];
+      if (!this.readonly && !this.disabled && !this.$utils.isEmpty(this.tbodyList)) {
+        this.tbodyList.forEach((row, index) => {
+          const pageCount = Math.ceil((index + 1) / this.tablePageConfig.pageSize);
+          const data = Object.assign({}, this.formData || {}, row);
+          this.theadList.forEach(th => {
+            errorList = this.getErrorList(row, data, pageCount, th, errorList);
+          });
+          //内嵌table
+          Object.keys(row).forEach(key => {
+            const findThead = this.theadList.find(th => th.key === key);
+            if (findThead && findThead.config && !this.$utils.isEmpty(findThead.config.dataConfig)) {
+              if (!this.$utils.isEmpty(row[key])) {
+                for (let i = 0; i < row[key].length; i++) {
+                  let item = row[key][i];
+                  findThead.config.dataConfig.forEach(dc => {
+                    const dValue = Object.assign({}, data, item);
+                    const dcItem = {
+                      key: dc.uuid,
+                      title: dc.label,
+                      reaction: dc.reaction
+                    };
+                    errorList = this.getErrorList(item, dValue, pageCount, dcItem, errorList);
+                  });
+                }
+              }
+            }
+          });
+        });
+      }
+      return errorList;
+    },
+    getErrorList(row, data, pageCount, th, defaultErrorList) { //获取校验错误列表
+      const key = th.key;
+      const reactionValid = this.validReaction(th.reaction, data);
+      let isValid = true;
+      let errorList = defaultErrorList || [];
+      if (this.validateMap && this.validateMap[key]) {
+        const validateList = this.validateMap[key].validateList;
+        if (!this.$utils.isEmpty(validateList)) {
+          isValid = this.$utils.validParamValue(row[key], validateList);
+        }
+      }
+      if (!isValid || (this.$utils.isEmpty(row[th.key]) && reactionValid.isRequired)) {
+        let findItem = errorList.find(d => d.attrUuid === th.key);
+        if (!findItem) {
+          errorList.push({
+            errorPageList: [pageCount],
+            label: th.title,
+            uuid: this.formItem.key,
+            attrUuid: th.key,
+            error: this.formItem.label + '：第' + pageCount + '页' + this.$t('message.completerequired', {'target': '【' + th.title + '】'})
+          });
+        } else {
+          if (!findItem.errorPageList.find(d => d === pageCount)) {
+            findItem.errorPageList.push(pageCount);
+            findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
+            findItem.error = this.formItem.label + '：第' + findItem.errorPageList.join(',') + '页' + this.$t('message.completerequired', {'target': '【' + th.title + '】'});
+          }
+        }
+      }
+      return errorList;
+    },
+    isValidRegex(regexString) { //判断正则表达式是否合法
+      try {
+        new RegExp(regexString); 
+        return true; 
+      } catch (error) {
+        return false; 
+      }
+    },
+    validReaction(reaction, formData) { //联动规则必填校验
+      let reactionMap = {
+        mask: false,
+        hide: false,
+        readonly: false,
+        disable: false
+      };
+      let isRequired = false;
+      let isDisable = false;
+      if (!this.$utils.isEmpty(reaction)) {
+        for (let key in reaction) {
+          const reactionObj = reaction[key];
+          if (!this.$utils.isEmpty(reactionObj)) {
+            const result = this.executeReaction(reactionObj, formData, {}, reaction);
+            if (reactionMap.hasOwnProperty(key)) {
+              reactionMap[key] = result;
+            }
+            if (key === 'required') {
+              isRequired = result;
+            }
+          }
+        }
+        // 当 mask、hide、readonly、disable 中任意一个为 true 时，设置 isDisable 为 true，isRequired 为 false
+        for (let key in reactionMap) {
+          if (reactionMap[key]) {
+            isDisable = true;
+            isRequired = false;
+            break;
+          }
+        }
+      }
+     
+      return {
+        isDisable: isDisable,
+        isRequired: isRequired
+      };
+    },
+    getValidateList(d) { //获取组件的基础校验规则
+      let validateList = [];
+      if (d.config.isRequired) {
+        validateList.push('required');
+      }
+      if (!this.readonly && !this.disabled) {
+        if (!this.$utils.isEmpty(d.config.validate)) {
+          validateList.push(d.config.validate);
+        }
+        if (!this.$utils.isEmpty(d.config.regex) && this.isValidRegex(d.config.regex)) {
+          let findRegex = validateList.find(item => item && item.name === 'regex');
+          if (findRegex) {
+            this.$set(findRegex, 'pattern', d.config.regex);
+            this.$set(findRegex, 'message', d.config.regexMessage);
+          } else {
+            validateList.push({
+              name: 'regex', 
+              pattern: d.config.regex,
+              message: d.config.regexMessage
+            });
+          }
+        }
+        if (!this.$utils.isEmpty(validateList)) {
+          this.validateMap[d.uuid] = {
+            label: d.label,
+            validateList: validateList
+          };
+        }
+      }
     }
   },
   filter: {},
@@ -433,34 +610,56 @@ export default {
     },
     showTable() {
       const { hideHeaderWhenDataEmpty = false } = this.config || {};
-      const { tbodyList = [] } = this.tableData || {};
+      const tbodyList = this.tbodyList || [];
       return hideHeaderWhenDataEmpty ? tbodyList.length > 0 : true;
+    },
+    pagedTbodyList() {
+      this.tablePageConfig.rowNum = this.tbodyList.length;
+      const start = (this.tablePageConfig.currentPage - 1) * this.tablePageConfig.pageSize;
+      const end = start + this.tablePageConfig.pageSize;
+      if (this.tbodyList.length <= start) {
+        return [];
+      }
+      return this.tbodyList.slice(start, end);
     }
   },
   watch: {
     'config.dataConfig': {
       handler: function(val) {
-        this.tableData.theadList = [];
+        this.theadList = [];
+        this.validateMap = {};
         if (!this.disabled && !this.readonly) {
           if (!this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd) {
-            this.tableData.theadList.push({ key: 'delete', width: 20 });
-            this.tableData.theadList.push({ key: 'selection' });
+            this.theadList.push({ key: 'delete', width: 20 });
+            this.theadList.push({ key: 'selection' });
           }
         }
         if (this.config.isShowNumber) {
-          this.tableData.theadList.push({ key: 'number', title: this.$t('page.ordernumber') });
+          this.theadList.push({ key: 'number', title: this.$t('page.ordernumber') });
         }
         this.config.dataConfig.forEach(d => {
           if (d.isPC) {
             let item = {
               key: d.uuid,
               title: d.label,
+              reaction: d.reaction,
+              config: d.config || {},
               enName: d.key
             };
-            if (d.config && d.config.isRequired) {
-              this.$set(item, 'isRequired', true);
+            if (d.config) {
+              if (d.config.isRequired) {
+                this.$set(item, 'isRequired', true);
+              }
+              this.getValidateList(d);
+              if (!this.$utils.isEmpty(d.config.dataConfig)) {
+                d.config.dataConfig.forEach(c => {
+                  if (c.config) {
+                    this.getValidateList(c);
+                  }
+                });
+              }
             }
-            this.tableData.theadList.push(item);
+            this.theadList.push(item);
           }
         });
         this.$emit('resize');
@@ -468,7 +667,7 @@ export default {
       deep: true,
       immediate: true
     },
-    'tableData.tbodyList': {
+    tbodyList: {
       handler: function(val) {
         this.setValue(val);
       },
