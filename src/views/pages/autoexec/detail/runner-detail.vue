@@ -123,7 +123,7 @@
             {{ $t('page.autoexeccomboprunnergrouptagtips') }}
           </div>
         </div>
-        <div>
+        <div v-if="dataConfig.needRunnerGroup">
           <Divider orientation="start">{{ $t('term.deploy.actuatorgroup') }}</Divider>
           <div v-if="dataConfig.existRunnerOrSqlExecMode && runnerGroup && runnerGroup.mappingMode==='runtimeparam'">
             <RunnerGroupSetting
