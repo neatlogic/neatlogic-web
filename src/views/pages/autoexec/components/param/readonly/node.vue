@@ -1,16 +1,16 @@
 
 <template>
   <div class="node-main">
-    <template v-if="value && !$utils.isEmpty(value)">
-      <div v-for="(item, index) in getShowList(value)" :key="item.id ||index" class="list">
+    <div v-if="value && !$utils.isEmpty(value)" class="flex-start">
+      <div v-for="(item, index) in getShowList(value)" :key="item.id ||index" class="list overflow">
         <div class="overflow node-text border-color" :title="targetText(item)"> {{ targetText(item) }}</div>
       </div>
       <template v-if="value.length > showNumber">
-        <div class="text-tip-active list" @click="lookData">
+        <div class="text-tip-active" @click="lookData">
           {{ $t('page.viewall') }}
         </div>
       </template>
-    </template>
+    </div>
     <template v-else>{{ $t('page.notarget', {target: $t('page.defaultvalue')}) }}</template>
     <MoreTarget
       v-if="showAllDialog"
@@ -77,8 +77,6 @@ export default {
 <style lang='less' scoped>
 .node-main{
   .list{
-    display: inline-block;
-    max-width: 25%;
     &:not(:last-child){
       padding-right: 10px;
     }
