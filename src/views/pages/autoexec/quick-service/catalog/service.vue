@@ -209,7 +209,7 @@
         </div>
       </TsFormItem>
     </div>
-    <div v-if="hasCombopId" class="radius-lg bg-op padding mt-nm">
+    <div v-if="hasCombopId && needRunnerGroup" class="radius-lg bg-op padding mt-nm">
       <div class="flex-between" :class="unfoldAndFold.runnerGroup ? 'mb-sm' : ''">
         <span>{{ $t('page.autoexeccomboprunnergrouplabel') }}</span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.runnerGroup ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('runnerGroup')"></span>
@@ -572,6 +572,7 @@ export default {
       needExecuteUser: false,
       needProtocol: false,
       needRoundCount: false, // 是否需要显示分批数量，组合工具设置分批数量，这里不需要再次设置分批数量
+      needRunnerGroup: false, // 是否需要显示执行器组
       filterSearchValue: {},
       formDataList: [],
       nociteFormMappingModeList: [
@@ -883,6 +884,7 @@ export default {
       this.needProtocol = false;
       this.needRoundCount = false;
       this.needExecuteNode = false;
+      this.needRunnerGroup = false; // 是否需要显示执行器组
       this.roundCountForm.disabled = false;
       this.scenarioList = [];
       this.valueConfig = {}; //所有值对应的集合
@@ -1180,7 +1182,7 @@ export default {
       if (!this.needProtocol) {
         delete params.config.protocol;
       }
-      if (this.runnerGroup && this.runnerGroup.mappingMode == 'runtimeparam') {
+      if (this.runnerGroup && this.runnerGroup.mappingMode == 'runtimeparam' || !this.needRunnerGroup) {
         // 组合工具，执行器组如果是作业参数，不需要传递给后端
         delete params.config.runnerGroup;
       }
@@ -1239,7 +1241,7 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             dataInfo = res.Return;
-            const { config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false } = res.Return || {};
+            const { config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false, needRunnerGroup = false} = res.Return || {};
             const { combopPhaseList = [], runtimeParamList = [], executeConfig = {}, scenarioList = [], defaultScenarioId = null } = config;
             const { runnerGroup = '', runnerGroupTag = {}, executeNodeConfig = {} } = executeConfig;
             const { filter = {} } = executeNodeConfig;
@@ -1250,6 +1252,7 @@ export default {
             this.needExecuteUser = needExecuteUser;
             this.needProtocol = needProtocol;
             this.needRoundCount = needRoundCount;
+            this.needRunnerGroup = needRunnerGroup;
             this.executeConfig = this.$utils.deepClone(executeConfig) || {};
             const shouldUseCurrentValue = (obj) => {
               return !this.$utils.isEmpty(obj) && !this.$utils.isEmpty(obj['value']) && (obj['mappingMode'] === 'notsetup' || !this.$utils.isEmpty(obj['mappingMode'])); // 处理值为空，还是以自动化存储的值为主
@@ -1289,7 +1292,7 @@ export default {
             } else {
               this.filterSearchValue = !this.$utils.isEmpty(this.filterSearchValue) ? this.filterSearchValue : filter || {};
             }
-            this.scenarioId = defaultScenarioId;
+            this.scenarioId = this.scenarioId || defaultScenarioId;
             if (executeConfig && !this.$utils.isEmpty(executeConfig)) {
               // 连接协议和执行账户回显
               let { executeUser = {}, protocolId = '' } = executeConfig || {};
