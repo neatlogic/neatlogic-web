@@ -56,7 +56,7 @@
           >
             <template slot-scope="{ row }">
               <div class="trigger-list">
-                <div class="title">
+                <div class="title" :class="{'bg-selected': row.isDel || row.isDelActive || row.isShowDetail, 'title-hover-bg': row.notifyList.length > 0}">
                   <div v-if="row.isDel || row.isDelActive" class="title-bg bg-mongolia"></div>
                   <div :class="row.isDel || row.isDelActive ? 'text-mask' : ''">
                     <span class="trigger-name">
@@ -75,13 +75,13 @@
                     </Tooltip>
                   </div>
                   <div v-if="row.notifyList && row.notifyList.length > 0">
-                    <div class="number-box text-title">
+                    <div class="number-box text-title" :class="{'none': row.isDel || row.isDelActive || row.isShowDetail }">
                       <span class="pr-xs">{{ $t('page.actions') }}</span>
                       <Badge :count="row.notifyList.length" type="info"></Badge>
                     </div>
-                    <div class="action-btn bg-block" :class="{'block':row.isDel || row.isDelActive || row.isShowDetail, 'text-mask': row.isDel || row.isDelActive}">
+                    <div class="action-btn" :class="{'block':row.isDel || row.isDelActive || row.isShowDetail, 'text-mask': row.isDel || row.isDelActive}" @click.stop>
                       <span class="tsfont-plus text-action" @click="addCondition(row)">{{ $t('page.actions') }}</span>
-                      <span class="tsfont-broom text-action" @click.stop="emptyData('all', row)">{{ $t('page.clearconfig') }}</span>
+                      <span class="tsfont-broom text-action" @click="emptyData('all', row)">{{ $t('page.clearconfig') }}</span>
                     </div>
                   </div>
                 </div>
@@ -106,13 +106,13 @@
                         </template>
                       </div>
                     </div>
-                    <div v-else class="tsfont-plus add-active text-action" @click="addCondition(row)">{{ $t('page.actions') }}</div>
+                    <div v-else class="tsfont-plus add-active text-action" @click.stop="addCondition(row)">{{ $t('page.actions') }}</div>
                   </div>
-                  <div v-if="row.notifyList.length > 0" class="trigger-detail bg-block bottom-shadow" :class="row.isDel || row.isDelActive || row.isShowDetail? 'block' : ''">
+                  <div v-if="row.notifyList.length > 0" class="trigger-detail bg-block bottom-shadow-primary bg-selected" :class="row.isDel || row.isDelActive || row.isShowDetail? 'block' : ''">
                     <div @click.stop>
                       <DelItme
                         v-if="row.isDel || row.isDelActive"
-                        :delName="delTitle + '?'"
+                        :delName="delTitle"
                         @on-del="delSetting(delType, row)"
                         @on-close="closeSetting(delType, row)"
                       ></DelItme>
@@ -447,7 +447,6 @@ export default {
       }
     },
     onClickOutside() {
-      console.log('点击了');
       this.triggerList.forEach(e => {
         this.$set(e, 'isShowDetail', false);
       });
@@ -483,6 +482,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@import '~@/resources/assets/css/variable.less';
 .action-top {
   position: absolute;
   right: 8px;
@@ -576,7 +576,7 @@ export default {
       position: absolute;
       top: 0;
       z-index: 2;
-      padding: 12px 12px 0;
+      padding: 10px 10px 0;
       .list {
         position: relative;
         border: 1px solid;
@@ -616,12 +616,30 @@ export default {
 .block {
   display: block !important;
 }
+.none {
+  display: none !important;
+}
 .panel-box {
   position: relative;
   .panel-btn {
     position: absolute;
     top: 0;
     right: 8px;
+  }
+}
+.theme(@primary-grey) {
+  .trigger-list {
+    &:hover {
+      .title.title-hover-bg {
+        background-color: var(--primary-grey, @primary-grey);
+      }
+    } 
+  }
+}
+html {
+  .theme(@default-primary-grey);
+  &.theme-dark {
+    .theme(@dark-primary-grey,);
   }
 }
 </style>
