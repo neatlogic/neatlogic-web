@@ -149,8 +149,12 @@ export default {
       this.openParamsSetting();
     },
     save() {
-      delete this.runnerGroupTag.text;
-      return this.runnerGroupTag;
+      if (!this.$utils.isEmpty(this.runnerGroupTag.value)) {
+        delete this.runnerGroupTag.text;
+        return this.runnerGroupTag;
+      } else {
+        return {};
+      }
     },
     valid() {
       let isValid = true;
@@ -182,7 +186,7 @@ export default {
         });
     },
     changeMappingMode() {
-      this.$set(this.runnerGroupTag, 'value', '');
+      this.$set(this.runnerGroupTag, 'value', null);
     },
     refreshSuccess(type) {
       this.$Message.success(this.$t('message.executesuccess'));
