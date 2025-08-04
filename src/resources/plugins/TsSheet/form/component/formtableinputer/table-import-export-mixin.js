@@ -141,7 +141,7 @@ export default {
           colIndexToKeyMap[index + 1] = key;
         }
       });
-      for (let rowIndex = 2; rowIndex <= sheet.rowCount; rowIndex++) {
+      for (let rowIndex = 2; rowIndex <= this._getRowCount(sheet); rowIndex++) {
         // 从第二行开始读取数据，第一行是表头
         const row = sheet.getRow(rowIndex);
         const rowData = {
@@ -310,6 +310,28 @@ export default {
           this.isImportOperationLoading = false;
         });
       return configList;
+    },
+    _getRowCount(sheet) {
+      // 获取非空行的数量
+      let rowCount = 0;
+      // 遍历所有行
+      for (let i = 1; i <= sheet.rowCount; i++) {
+        const row = sheet.getRow(i);
+        let isEmpty = true;
+        // 检查行是否有非空单元格
+        if (row) {
+          for (const key in row) {
+            if (!this.$utils.isEmpty(row[key])) {
+              isEmpty = false;
+              break;
+            }
+          }
+        }
+        if (!isEmpty) {
+          rowCount++;
+        }
+      }
+      return rowCount;
     },
     _generateExcelHeaderConfig({ extraList = [] } = {}) {
       // 生成 Excel 导出所需的表头配置
