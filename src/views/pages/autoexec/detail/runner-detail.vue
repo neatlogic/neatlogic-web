@@ -123,7 +123,7 @@
             {{ $t('page.autoexeccomboprunnergrouptagtips') }}
           </div>
         </div>
-        <div>
+        <div v-if="dataConfig.needRunnerGroup">
           <Divider orientation="start">{{ $t('term.deploy.actuatorgroup') }}</Divider>
           <div v-if="dataConfig.existRunnerOrSqlExecMode && runnerGroup && runnerGroup.mappingMode==='runtimeparam'">
             <RunnerGroupSetting
@@ -748,6 +748,12 @@ export default {
       };
       this.runnerGroup = runnerGroup || { mappingMode: 'constant',
         value: '-1'};
+      if (this.$utils.isEmpty(runnerGroupTag) && !this.$utils.isEmpty(executeConfig.runnerGroupTag)) {
+        this.runnerGroupTag = executeConfig.runnerGroupTag;
+      }
+      if (this.$utils.isEmpty(runnerGroup) && !this.$utils.isEmpty(executeConfig.runnerGroup)) {
+        this.runnerGroup = executeConfig.runnerGroup;
+      }
       for (let key in this.executeForm.itemList) {
         // 链接协议和执行用户
         let item = this.executeForm.itemList[key];

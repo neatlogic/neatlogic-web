@@ -230,7 +230,14 @@ export default {
       };
       const formData = new FormData();
       for (let k in this.testData.param) {
-        formData.append(k, this.testData.param[k]);
+        let paramValue = this.testData.param[k];
+        if (Array.isArray(paramValue)) {
+          paramValue.forEach((item, index) => {
+            formData.append(k, item);
+          });
+        } else {
+          formData.append(k, paramValue);
+        }
       }
       const _this = this;
       this.$api.framework.apiManage.upload(this.rowData.url, formData, header).then(async res => {
