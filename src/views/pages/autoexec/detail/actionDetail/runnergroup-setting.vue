@@ -155,7 +155,7 @@ export default {
       this.openParamsSetting();
     },
     save() {
-      if (this.runnerGroup.value) {
+      if (!this.$utils.isEmpty(this.runnerGroup.value)) {
         delete this.runnerGroup.text;
         return this.runnerGroup;
       } else {
@@ -192,7 +192,7 @@ export default {
         });
     },
     changeMappingMode() {
-      this.$set(this.runnerGroup, 'value', '');
+      this.$set(this.runnerGroup, 'value', null);
     },
     refreshSuccess(type) {
       this.$Message.success(this.$t('message.executesuccess'));
