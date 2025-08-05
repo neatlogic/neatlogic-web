@@ -9,7 +9,7 @@
     :value="actualValue"
     :readonly="readonly"
     :disabled="disabled"
-    :validateList="validateList"
+    :validateList="actualValidateList"
     :readonlyTextIsHighlight="readonlyTextIsHighlight"
     @on-blur="
       val => {
@@ -48,6 +48,21 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    validConfig() {
+      const errorList = this.validDataForAllItem();
+      if (!this.$utils.isEmpty(this.config.regex) && this.$utils.isEmpty(this.config.regexMessage)) {
+        errorList.push({ field: 'regexMessage', error: this.$t('form.placeholder.pleaseinput', {'target': this.$t('message.framework.validtip')}) });
+      } 
+      return errorList;
+    },
+    isValidRegex(regexString) { //判断正则表达式是否合法
+      try {
+        new RegExp(regexString); 
+        return true; 
+      } catch (error) {
+        return false; 
+      }
+    }
   },
   filter: {},
   computed: {
@@ -60,6 +75,28 @@ export default {
         }
       }
       return null;
+    },
+    actualValidateList() {
+      let validateList = this.validateList || [];
+      if (!this.$utils.isEmpty(this.config)) {
+        if (this.config.validate) {
+          validateList.push(this.config.validate);
+        }
+        if (!this.$utils.isEmpty(this.config.regex) && this.isValidRegex(this.config.regex)) {
+          let findRegex = validateList.find(item => item.name === 'regex');
+          if (findRegex) {
+            this.$set(findRegex, 'pattern', this.config.regex);
+            this.$set(findRegex, 'message', this.config.regexMessage);
+          } else {
+            validateList.push({
+              name: 'regex', 
+              pattern: this.config.regex,
+              message: this.config.regexMessage
+            });
+          }
+        }
+      }
+      return validateList; 
     }
   },
   watch: {}

@@ -87,6 +87,10 @@ export default {
           title: this.$t('term.framework.heartbeaturl')
         },
         {
+          key: 'ip',
+          title: 'IP'
+        },
+        {
           key: 'heartbeatTime',
           title: this.$t('term.framework.heartbeattime'),
           type: 'time'

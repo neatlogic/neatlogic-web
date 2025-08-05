@@ -84,7 +84,7 @@
         {{ $t('page.autoexeccomboprunnergrouptagtips') }}
       </div>
     </TsFormItem>
-    <TsFormItem :label="$t('page.autoexeccomboprunnergrouplabel')">
+    <TsFormItem v-if="dataConfig.needRunnerGroup" :label="$t('page.autoexeccomboprunnergrouplabel')">
       <div>
         <template v-if="dataConfig && dataConfig.existRunnerOrSqlExecMode && runnerGroup">
           <template v-if="runnerGroup.mappingMode === 'runtimeparam'">

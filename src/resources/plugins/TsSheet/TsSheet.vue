@@ -568,7 +568,8 @@ export default {
       actionType: '', //当前操作类型,'add'新增组件，'copy'复制组件
       windowKeypressHandler: null, // 用于存储事件处理函数的引用
       formStyleData: {}, //表单样式设置
-      extendConfigList: this.defaultExtendConfigList || [] //扩展配置列表
+      extendConfigList: this.defaultExtendConfigList || [], //扩展配置列表
+      spanMap: new Map()
     };
   },
   beforeCreate() {
@@ -581,6 +582,8 @@ export default {
     this.initSheet();
     this.initReactionWatch();
     this.initResolve();
+    this.rowCells(-1);
+    this.spanMap = this.buildSpanMap(this.spanCells);
   },
   beforeMount() {},
   mounted() {
@@ -604,6 +607,18 @@ export default {
   },
   destroyed() {},
   methods: {
+    buildSpanMap(spanCells) {
+      const map = new Map();
+      spanCells.forEach(sp => {
+        const rowStart = sp.row;
+        const rowEnd = sp.row + (sp.rowspan || 1);
+        for (let r = rowStart; r < rowEnd; r++) {
+          if (!map.has(r)) map.set(r, []);
+          map.get(r).push(sp);
+        }
+      });
+      return map;
+    },
     enqueueReaction(componentUuid, updateFunction) {
       //this.reactionFnQueue.push(updateFunction);
       this.reactionFnQueue.set(componentUuid, updateFunction);
@@ -1769,8 +1784,8 @@ export default {
     },
     //检查当前单元格是否在其他单元格的span范围
     checkCellIsInSpan(cell) {
-      for (let i = 0; i < this.spanCells.length; i++) {
-        const spancell = this.spanCells[i];
+      const rowSpanList = this.spanMap.get(cell.row) || [];
+      for (const spancell of rowSpanList) {
         if (spancell.row <= cell.row && spancell.row + (spancell.rowspan || 1) >= cell.row + (cell.rowspan || 1) && spancell.col <= cell.col && spancell.col + (spancell.colspan || 1) >= cell.col + (cell.colspan || 1) && spancell != cell) {
           return true;
         }
@@ -2069,10 +2084,27 @@ export default {
       if (this.mode === 'edit') {
         event.preventDefault();
       }
+    },
+    rowCells(rowindex) {
+      const tableList = this.cellMapByRow[rowindex] || [];
+      return tableList;
     }
   },
   filter: {},
   computed: {
+    cellMapByRow() {
+      const map = {};
+      this.cellList.forEach(cell => {
+        if (!this.checkCellIsInSpan(cell)) {
+          if (!map[cell.row]) map[cell.row] = [];
+          map[cell.row].push({
+            ...cell,
+            keyUuid: this.$utils.setUuid()
+          });
+        }
+      });
+      return map;
+    },
     hasCopy() {
       if (this.handlerCell && this.handlerCell.component && !this.$utils.isEmpty(this.handlerCell.component) && !this.handlerCell.component.hasOwnProperty('inherit')) {
         return true;
@@ -2143,18 +2175,22 @@ export default {
     },
     //计算实际需要显示的行
     shownLefterList() {
+      const hiddenSet = new Set(this.config.hiddenRowList);
       const lefterList = [];
-      this.config.lefterList.forEach((left, index) => {
-        if (!this.config.hiddenRowList.includes(index)) {
-          const newLeft = this.$utils.deepClone(left);
-          newLeft.index = index;
-          lefterList.push(newLeft);
+      for (let i = 0; i < this.config.lefterList.length; i++) {
+        if (!hiddenSet.has(i)) {
+          lefterList.push({ ...this.config.lefterList[i], index: i });
         }
-      });
+      }
       if (this.mode !== 'edit') {
-        //只读模式，从下面消除所有没有设置组件的单元格
+        const validRowSet = new Set();
+        for (const cell of this.config.tableList) {
+          if (cell.component || cell.content || this.checkCellIsInSpan(cell)) {
+            validRowSet.add(cell.row);
+          }
+        }
         for (let i = lefterList.length - 1; i >= 0; i--) {
-          if (!this.config.tableList.find(cell => cell.row === lefterList[i].index && (cell.component || cell.content || this.checkCellIsInSpan(cell)))) {
+          if (!validRowSet.has(lefterList[i].index)) {
             lefterList.splice(i, 1);
           }
         }
@@ -2285,20 +2321,6 @@ export default {
         const tableList = [];
         this.cellList.forEach(cell => {
           if (cell.col == columnindex) {
-            if (!this.checkCellIsInSpan(cell)) {
-              tableList.push(cell);
-            }
-          }
-        });
-        return tableList;
-      };
-    },
-    //每一行应该显示的单元格数据
-    rowCells() {
-      return rowindex => {
-        const tableList = [];
-        this.cellList.forEach(cell => {
-          if (cell.row == rowindex) {
             if (!this.checkCellIsInSpan(cell)) {
               tableList.push(cell);
             }

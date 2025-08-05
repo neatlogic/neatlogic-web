@@ -58,6 +58,12 @@
       :title="$t('term.process.seeprocessconfig')"
       @click.stop="openFlow(true)"
     ></div>
+    <div
+      v-if="needExportFlow"
+      class="action-item tsfont-download"
+      title="导出流程图"
+      @click.stop="exportPng()"
+    ></div>
   </div>
 </template>
 <script>
@@ -85,7 +91,9 @@ export default {
       type: String,
       default: ''
     },
-    processTaskId: { type: [Number, String] } // 流程任务id
+    processTaskId: { type: [Number, String] }, // 流程任务id
+    processName: { type: String, default: '流程图' }, // 流程名称
+    needExportFlow: { type: Boolean, default: false } // 是否需要导出流程图
   },
   data() {
     return {
@@ -167,6 +175,108 @@ export default {
         }
         window.open(url, '_blank');
       }
+    },
+    exportPng() {
+      const getContentArea = this.graph.getContentArea();
+      this.graph.toPNG(
+        async imgBase64 => {
+          const response = await fetch(imgBase64);
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${this.processName}.png`;
+          a.click();
+          URL.revokeObjectURL(url);
+        },
+        {
+          quality: 1,
+          padding: 100,
+          preserveDimensions: false,
+          stylesheet: `${this.$utils.convertWoff2ToBase64()} 
+         .radius-sm {
+            border-radius: 6px;
+          }
+          .border-radius {
+            border-radius: 6px;
+          }
+          .icon {
+            z-index: 1;
+          }
+          .start,
+          .end {
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+          }
+          .start {
+            background-color: #81d5531a;
+          }
+          .end {
+            background-color: #ff625a1a;
+          }
+          .core {
+            border-radius: 18px;
+            width: 18px;
+            height: 18px;
+          }
+          .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+          .shadow {
+            box-shadow: 0 1px 4px #0000001a;
+          }
+          [data-shape="automatic"] .container,
+          [data-shape="event"] .container,
+          [data-shape="timer"] .container,
+          [data-shape="createjob"] .container,
+          [data-shape="cientitysync"] .container,
+          [data-shape="dataconversion"] .container  {
+            border-radius: 20px;
+          }
+          `,
+          width: getContentArea.width * 2,
+          height: getContentArea.height < 100 ? getContentArea.height * 10 : getContentArea.height * 2,
+          beforeSerialize: graph => {
+            this.convertSpansToSvgText(graph);
+          }
+        }
+      );
+    },
+    convertSpansToSvgText(svg) {
+      // 为保证在导出操作时字体图标能够正常显示，将原本使用 span 标签展示的字体图标，
+      // 转换为 <svg> 包裹 <text> 标签的展示形式
+      const spanList = svg.querySelectorAll('span[class^="tsfont-"]');
+      spanList.forEach(span => {
+        const classList = span.classList;
+        const className = classList.value;
+        const unicodeStr = this.$utils.getUnicodeByClassName(className);
+
+        // 获取样式
+        const style = span.style;
+        const fill = style.color;
+        const fontSize = style.fontSize;
+
+        const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svgElement.setAttribute('width', 16);
+        svgElement.setAttribute('height', 16);
+
+        // 创建 <text> 元素
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('font-family', 'tsfont');
+        text.setAttribute('font-size', fontSize);
+        text.setAttribute('x', '50%');
+        text.setAttribute('y', '50%');
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('fill', fill);
+        text.textContent = unicodeStr;
+
+        svgElement.appendChild(text);
+        span.replaceWith(svgElement); // 替换span元素为<svg><text></text></svg>
+      });
     }
   },
   filter: {},
