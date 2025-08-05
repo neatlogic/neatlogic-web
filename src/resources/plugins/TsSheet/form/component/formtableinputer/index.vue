@@ -104,7 +104,7 @@
             <FormItem
               :ref="'formitem_' + extra.uuid + '_' + index"
               :formItem="$utils.deepClone(extra)"
-              :formData="{ ...filterUuid(formData), ...row }"
+              :formData="{...formData, ...row}"
               :isSetValue="false"
               :formItemList="formItemList"
               :extraFormItemList="extraList"
@@ -428,16 +428,6 @@ export default {
           Object.assign(row, val);
         }
       });
-    },
-    filterUuid(obj) {
-      let formData = this.$utils.deepClone(obj);
-      if (formData.uuid) {
-        delete formData.uuid;
-      }
-      if (formData.hasOwnProperty(this.formItem.uuid)) {
-        delete formData[this.formItem.uuid];
-      }
-      return formData;
     },
     changeCurrent(currentPage) {
       this.tablePageConfig.currentPage = currentPage;
