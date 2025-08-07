@@ -11,7 +11,7 @@ vue/cli 5.x,webpack 5.x
 npm install -g @vue/cli
 ```
 
-#设置淘宝镜像源
+# 设置淘宝镜像源
 ```
 npm config set registry https://registry.npmmirror.com/
 ```
