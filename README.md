@@ -45,9 +45,9 @@ npm run lint
 ## 设置自动eslintrc
 https://www.cnblogs.com/weilai-info/p/10988829.html
 
-# ⭐️ ⭐️ ⭐️ 温馨提示
+# 支持pnpm
 ```js
- 📌" 本项目支持pnpm。研发环境建议使用pnpm效率更高，生产出包使用npm。pnpm需自行科普使用"   
+ 📌" 研发环境建议使用pnpm效率更高，生产出包使用npm。pnpm需自行科普使用"   
 ```
 
 
