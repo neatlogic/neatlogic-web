@@ -99,6 +99,7 @@
       :type="typeDialog"
       :tipText="tipText"
       :versionId="versionId"
+      :scriptId="scriptId"
       @saveData="saveUpdate"
     ></DataDialog>
     <TsDialog
