@@ -64,9 +64,9 @@
     </TsDialog>
     <TsDialog :isShow.sync="isCallDetailShow" v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        详细内容
+        <div>详细内容</div>
       </template>
-      <template v-slot><pre>{{ callDetail }}</pre></template>
+      <template v-slot><pre class="pre">{{ callDetail }}</pre></template>
       <template v-slot:footer>
         <Button @click="close()">取消</Button>
         <Button v-if="hasMore" v-download="auditDetailDownloadParams" type="primary">下载</Button>
