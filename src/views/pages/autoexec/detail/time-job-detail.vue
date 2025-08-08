@@ -116,7 +116,8 @@ export default {
           dynamicUrl: '/api/rest/autoexec/combop/executable/list',
           valueName: 'id', //option渲染值
           textName: 'name', //text渲染值
-          rootName: 'tbodyList'
+          rootName: 'tbodyList',
+          onChange: this.changeAutoexecCombopId
         },
         isActive: {
           type: 'radio',
@@ -281,6 +282,9 @@ export default {
       }).finally(() => {
         this.isLoading = false;
       });
+    },
+    changeAutoexecCombopId(val) {
+      this.config = null;
     }
   },
   filter: {},
