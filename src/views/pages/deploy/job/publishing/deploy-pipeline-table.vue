@@ -25,21 +25,14 @@
       </template>
       <template v-slot:name="{ row }">
         <span
-          v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'"
-          class="text-href"
-          @click="toBatchJobDetail(row)"
-          @contextmenu="newTab($event, row, 'batch-job-detail')"
-        >
-          {{ row.name }}
-        </span>
-        <span
-          v-else
           class="text-href"
           :class="{ 'ml-nm': (!!row.parentId && row.parentId != -1) }"
-          @contextmenu="newTab($event, row, 'job-detail')"
+          @contextmenu="newTab($event, row)"
           @click="toJobDetail(row)"
         >{{ row.name }}</span>
-        <span><Status v-if="row.reviewStatus != 'passed'" :statusValue="row.reviewStatus" :statusName="row.reviewStatusName"></Status></span>
+        <span>
+          <Status v-if="row.reviewStatus != 'passed'" :statusValue="row.reviewStatus" :statusName="row.reviewStatusName"></Status>
+        </span>
         <Tooltip
           v-if="row.warnCount > 0 || row.isHasIgnored > 0"
           transfer
@@ -265,32 +258,41 @@ export default {
         }
       });
     },
-    toBatchJobDetail(row) {
-      const {parentId = ''} = row || {};
-      if (parentId != -1) {
-        this.toJobDetail(row);
-      } else {
-        this.$router.push({
-          path: '/batch-job-detail',
-          query: { id: row.id }
-        });
-      }
-    },
-    newTab(e, row, redirectPage) {
+    newTab(e, row) {
       //鼠标右键打开新标签页
       let base = this.$router.options.base;
       let params = '';
+      let redirectPage = 'job-detail';
+
       if (row && row.id) {
         params = `?id=${row.id}`;
+      }
+      if (row.source === 'batchdeploy' || row.source === 'deployschedulepipeline') {
+        redirectPage = 'batch-job-detail';
       }
       let replaceStr = `<a href="${base}#${redirectPage}${params}" class="cursor">${row.name}</a>`;
       e.currentTarget.innerHTML = replaceStr;
     },
     toJobDetail(row) {
-      this.$router.push({
-        path: '/job-detail',
-        query: { id: row.id }
-      });
+      if (row.source === 'batchdeploy' || row.source === 'deployschedulepipeline') {
+        const {parentId = ''} = row || {};
+        if (parentId != -1) {
+          this.$router.push({
+            path: '/job-detail',
+            query: { id: row.id }
+          });
+        } else {
+          this.$router.push({
+            path: '/batch-job-detail',
+            query: { id: row.id }
+          });
+        }
+      } else {
+        this.$router.push({
+          path: '/job-detail',
+          query: { id: row.id }
+        });
+      }
     },
     toRoute(row) {
       let routeConfig = row.route?.config;
@@ -303,7 +305,7 @@ export default {
         return;
       } else if (row.source == 'deployschedulegeneral' || row.source == 'deployschedulepipeline') {
         window.open(HOME + '/deploy.html#/schedule-job-edit?id=' + routeConfig.id, '_blank');
-      } else if (row.source == 'deployci') {
+      } else if (row.source == 'deployci' || row.source == 'deploycipipeline') {
         window.open(HOME + '/deploy.html#/config-add?appSystemId=' + routeConfig.appSystemId + '&id=' + routeConfig.id, '_blank');
       }
     },

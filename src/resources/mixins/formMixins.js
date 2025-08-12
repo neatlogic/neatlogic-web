@@ -120,8 +120,8 @@ export default {
           if (Array.isArray(value)) {
             let valueList = [];
             value.forEach(v => {
-              if (v != false && !this.$utils.isEmpty(v)) {
-                if (this.isCustomValue && v[this.valueName]) {
+              if (!this.$utils.isEmpty(v)) { // 兼容为0的情况检验不通过的问题
+                if (this.isCustomValue && !this.$utils.isEmpty(v[this.valueName])) {
                   // 数组对象类型
                   valueList.push(v?.[this.valueName]);
                 } else {
@@ -232,7 +232,12 @@ export default {
     borderClass() {
       let resultJson = {};
       if (this.border) {
-        resultJson['tsForm-border-' + this.border] = true;
+        const baseClass = this.border === 'none' && !this.isValidPass ? 'tsForm-border-border' : `tsForm-border-${this.border}`;
+        resultJson[baseClass] = true;
+        resultJson['tsForm-item'] = true;
+      } else if (!this.isValidPass) {
+        // border属性为空时，校验不通过显示红色边框
+        resultJson['tsForm-border-border'] = true;
         resultJson['tsForm-item'] = true;
       }
       this.className && (resultJson[this.className] = true);

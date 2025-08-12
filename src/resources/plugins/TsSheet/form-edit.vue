@@ -821,7 +821,7 @@ export default {
     },
     changeVersion(uuid, text) {
       //改变版本时触发事件
-      let formConfig = this.$refs.sheet.getFormConfig();
+      let formConfig = this.$refs.sheet && this.$refs.sheet.getFormConfig();
       this.currentFormItem = null;
       if (this.compareData(this.initFormConfig, formConfig)) {
         //数据没有变化时直接导出

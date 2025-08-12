@@ -95,7 +95,13 @@
         <div>{{ $t('term.report.paramconfig') }}</div>
       </template>
       <template v-slot>
-        <component :is="currentParam.type+'config'" ref="paramComponent" :config="currentParam.config"></component>
+        <component
+          :is="currentParam.type + 'config'"
+          ref="paramComponent"
+          :paramList="myParamList"
+          :rowData="currentParam"
+          :config="currentParam.config"
+        ></component>
       </template>
       <template v-slot:footer>
         <Button @click="close">{{ $t('page.cancel') }}</Button>
@@ -188,7 +194,7 @@ export default {
         type: 'modal',
         maskClose: false,
         isShow: false,
-        width: 'small'
+        width: 'medium'
       }
     };
   },
@@ -224,13 +230,16 @@ export default {
     delParam: function(index) {
       this.myParamList.splice(index, 1);
     },
-    setConfig: function(config) {
+    setConfig(config) {
+      const paramComponent = this.$refs['paramComponent'];
+      if (paramComponent && paramComponent.valid && !paramComponent.valid()) {
+        return false;
+      }
       this.paramList.forEach(element => {
         if (element.name == this.currentParam.name) {
           element.config = {...element.config, ...this.$refs['paramComponent'].setConfig()};
         }
       });
-
       this.close();
     },
     configParam: function(param) {

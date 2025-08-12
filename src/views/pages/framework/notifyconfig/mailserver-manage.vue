@@ -1,64 +1,48 @@
 <template>
   <div>
-    <TsContain border="border">
-      <template slot="topLeft">
-        <div class="action-group">
-          <span class="action-item tsfont-plus" @click="addMailServer()">{{ $t('page.add') }}</span>
+    <div class="action-group">
+      <span class="action-item tsfont-plus" @click="addMailServer()">{{ $t('page.add') }}</span>
+    </div>
+    <TsTable v-if="true" :theadList="theadList" v-bind="tableData">
+      <template slot="isActive" slot-scope="{ row }">
+        <i-switch
+          :key="row.token"
+          v-model="row.isActive"
+          :true-value="1"
+          :false-value="0"
+          @on-change="handleIsActiveSwitchChange(row)"
+        ></i-switch>
+      </template>
+      <template slot="isDefault" slot-scope="{ row }">
+        <i-switch
+          :key="row.token"
+          v-model="row.isDefault"
+          :true-value="1"
+          :false-value="0"
+          @on-change="handleIsDefaultSwitchChange(row)"
+        ></i-switch>
+      </template>
+      <template slot="sslEnable" slot-scope="{ row }">
+        <span v-if="row.sslEnable == 'true'" class="text-success">{{ $t('page.yes') }}</span>
+        <span v-else class="text-grey">{{ $t('page.no') }}</span>
+      </template>
+      <template slot="action" slot-scope="{ row }">
+        <div class="tstable-action">
+          <ul class="tstable-action-ul">
+            <li class="tsfont-edit" @click="editMailServer(row)">{{ $t('page.edit') }}</li>
+            <li v-if="row.isDefault == 0" class="tsfont-trash-o" @click="deleteMailServer(row)">{{ $t('page.delete') }}</li>
+          </ul>
         </div>
       </template>
-      <div slot="content" ref="maintable">
-        <TsTable 
-          v-if="true"
-          :theadList="theadList"
-          v-bind="tableData"
-        >
-          <template slot="isActive" slot-scope="{ row }">
-            <i-switch
-              :key="row.token"
-              v-model="row.isActive"
-              :true-value="1"
-              :false-value="0"
-              @on-change="handleIsActiveSwitchChange(row)"
-            ></i-switch>
-          </template>
-          <template slot="isDefault" slot-scope="{ row }">
-            <i-switch
-              :key="row.token"
-              v-model="row.isDefault"
-              :true-value="1"
-              :false-value="0"
-              @on-change="handleIsDefaultSwitchChange(row)"
-            ></i-switch>
-          </template>
-          <template slot="sslEnable" slot-scope="{ row }">
-            <span v-if="row.sslEnable == 'true'" class="text-success">{{ $t('page.yes') }}</span>
-            <span v-else class="text-grey">{{ $t('page.no') }}</span>
-          </template>
-          <template slot="action" slot-scope="{ row }">
-            <div class="tstable-action">
-              <ul class="tstable-action-ul">
-                <li class="tsfont-edit" @click="editMailServer(row)">{{ $t('page.edit') }}</li>
-                <li v-if="row.isDefault == 0" class="tsfont-trash-o" @click="deleteMailServer(row)">{{ $t('page.delete') }}</li>
-              </ul>
-            </div>
-          </template>
-        </TsTable>
-      </div>
-    </TsContain>
-    <MailServerEdit 
-      v-if="isShowMailServerEdit"
-      :id="editId"
-      @close="closeMailServerEdit"
-    ></MailserverEdit>
+    </TsTable>
+    <MailServerEdit v-if="isShowMailServerEdit" :id="editId" @close="closeMailServerEdit"></MailServerEdit>
   </div>
 </template>
 <script>
-
 export default {
   name: '',
   components: {
     MailServerEdit: () => import('./mailserver-edit.vue'),
-    TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {},
@@ -144,7 +128,7 @@ export default {
       }
     },
     deleteMailServer(row) {
-      this.$api.framework.mailserver.deleteMailServer({id: row.id}).then(res => {
+      this.$api.framework.mailserver.deleteMailServer({ id: row.id }).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.deletesuccess'));
           this.searchMailServerList();
@@ -185,5 +169,4 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

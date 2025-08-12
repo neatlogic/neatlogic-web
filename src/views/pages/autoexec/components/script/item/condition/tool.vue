@@ -114,6 +114,9 @@ export default {
               'description': l.description
             }
           };
+          if (!this.$utils.isEmpty(defaulParam)) {
+            this.$set(item.config, 'paramMappingList', defaulParam);
+          }
           if (l.defaultProfileId) {
             this.$set(item.config, 'profileId', l.defaultProfileId);
           }

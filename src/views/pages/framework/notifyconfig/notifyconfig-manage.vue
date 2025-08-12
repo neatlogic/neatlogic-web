@@ -1,18 +1,16 @@
 <template>
-  <div>
-    <TsContain>
-      <template v-slot:topLeft>
+  <div class="mt-md">
+    <TsContain hideHeader>
+      <template v-slot:content>
         <Tabs v-model="currentTab" :animated="false">
           <TabPane :label="$t('page.mail')" name="mail"></TabPane>
           <TabPane :label="$t('page.wechat')" name="wechat"></TabPane>
         </Tabs>
-      </template>
-      <template v-slot:content>
         <div>
-          <div v-if="currentTab == 'mail'" class="padding">
+          <div v-if="currentTab == 'mail'">
             <MailServerManage></MailServerManage>
           </div>
-          <div v-if="currentTab == 'wechat'" class="padding">
+          <div v-if="currentTab == 'wechat'">
             <WechatEdit></WechatEdit>
           </div>
         </div>

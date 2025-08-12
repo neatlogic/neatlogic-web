@@ -1,37 +1,39 @@
 <template>
   <div>
-    <div v-if="!(ciEntityData.tbodyList.length > 0 && !attrData.config.isMultiple)">
+    <div v-if="!(tbodyList.length > 0 && !attrData.config.isMultiple)">
       <a
         v-if="!attrData.config.mode || attrData.config.mode === 'r' || attrData.config.mode === 'rw'"
-        :class="disabled?'text-disabled':''"
+        :class="disabled ? 'text-disabled' : ''"
         href="javascript:void(0)"
         @click="selectCiEntity()"
-      ><i class="tsfont-check"></i>{{ $t('page.choose') }}</a>
+      >
+        <i class="tsfont-check"></i>
+        {{ $t('page.choose') }}
+      </a>
       <a
         v-if="allowBatchAdd && (attrData.config.mode === 'w' || attrData.config.mode === 'rw')"
-        :class="disabled?'text-disabled':''"
+        :class="disabled ? 'text-disabled' : ''"
         href="javascript:void(0)"
         @click="addCiEntity()"
-      ><i class="tsfont-plus"></i>{{ $t('page.add') }}</a>
-    </div>
-    <div v-if="ciEntityData && ciEntityData.tbodyList && ciEntityData.tbodyList.length > 0">
-      <TsTable
-        v-if="ciEntityData"
-        v-bind="ciEntityData"
-        :fixedHeader="false"
       >
+        <i class="tsfont-plus"></i>
+        {{ $t('page.add') }}
+      </a>
+    </div>
+    <div v-if="theadList.length > 0 && tbodyList.length > 0">
+      <TsTable :theadList="theadList" :tbodyList="tbodyList" :fixedHeader="false">
         <template slot="_type" slot-scope="{ row }">
           <Tag v-if="!row.id" color="success" type="border">{{ $t('term.cmdb.newcientity') }}</Tag>
         </template>
-        <template v-for="(head, index) in finalHeaderList" :slot="head.key" slot-scope="{ row }">
+        <template v-for="(head, index) in attrList" :slot="head.key" slot-scope="{ row }">
           <div v-if="head.key.indexOf('attr_') == 0 && row.attrEntityData" :key="index">
             <div v-if="row.attrEntityData[head.key]">
               <AttrViewer :handler="row.attrEntityData[head.key].type" :ciEntity="row" :attrEntity="row.attrEntityData[head.key]"></AttrViewer>
             </div>
           </div>
-          <div v-else-if="row.relEntityData[head.key] && row.relEntityData[head.key]['valueList']" :key="index">
+          <div v-else-if="row.relEntityData[head.key] && row.relEntityData[head.key]['valueList']" :key="'e' + index">
             <a
-              v-for="(relentity,rindex) in row.relEntityData[head.key]['valueList']"
+              v-for="(relentity, rindex) in row.relEntityData[head.key]['valueList']"
               :key="rindex"
               class="modal-tag href"
               href="javascript:void(0)"
@@ -52,7 +54,7 @@
                 class="tsfont-edittext"
                 @click="editCiEntity(row.uuid)"
               >编辑</li>-->
-              <li class="tsfont-trash-o" :class="disabled?'text-disabled':''" @click="deleteCiEntity(row)">删除</li>
+              <li class="tsfont-trash-o" :class="disabled ? 'text-disabled' : ''" @click="deleteCiEntity(row)">删除</li>
             </ul>
           </div>
         </template>
@@ -61,8 +63,8 @@
     <CiEntityChoose
       v-if="showSelectCiEntity"
       :ciId="attrData.targetCiId"
-      :isMultiple="attrData.config.isMultiple?true:false"
-      @close="showSelectCiEntity=false"
+      :isMultiple="attrData.config.isMultiple ? true : false"
+      @close="showSelectCiEntity = false"
       @confirm="getCheckCiEntity"
     ></CiEntityChoose>
   </div>
@@ -76,11 +78,11 @@ export default {
     CiEntityChoose: () => import('../../../cientity/cientity-choose.vue')
   },
   props: {
-    disabled: {type: Boolean, default: false},
-    allowBatchAdd: {type: Boolean, default: true},
-    attrData: {type: Object},
-    valueList: {type: Array},
-    attrEntity: {type: Object}
+    disabled: { type: Boolean, default: false },
+    allowBatchAdd: { type: Boolean, default: true },
+    attrData: { type: Object },
+    valueList: { type: Array },
+    attrEntity: { type: Object }
   },
   data() {
     return {
@@ -89,15 +91,13 @@ export default {
        暂存的选中值，包括选择值和添加值，最后会emit到外面的value中去，数据结构和cientity-list一致
       */
       tmpValueList: [],
-      ciEntityData: {theadList: [], tbodyList: []}
+      tbodyList: []
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-    this.formatCiEntityData();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -105,17 +105,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    formatCiEntityData() {
-      if (this.attrData.config.attrList) {
-        const theadList = [{key: '_type', title: ''}];
-        this.attrData.config.attrList.forEach(attr => {
-          theadList.push({key: 'attr_' + attr.id, title: attr.label});
-        });
-        //增加一列操作列，可以删除配置项
-        theadList.push({key: 'action'});
-        this.ciEntityData.theadList = theadList;
-      }
-    },
     selectCiEntity() {
       if (!this.disabled) {
         this.showSelectCiEntity = true;
@@ -153,52 +142,91 @@ export default {
       }
       this.dataList.splice(index, 1);
     },
-    valid() { //验证数据合法性
+    valid() {
+      //验证数据合法性
       return true;
     }
   },
   filter: {},
   computed: {
-    finalHeaderList: function() {
-      let finalList = [];
-      if (this.ciEntityData && this.ciEntityData.theadList && this.ciEntityData.theadList.length > 0) {
-        this.ciEntityData.theadList.forEach(element => {
-          if (element.key.indexOf('attr_') == 0 || element.key.indexOf('relto_') == 0 || element.key.indexOf('relfrom_') == 0) {
-            finalList.push(element);
+    theadList() {
+      return [{ key: '_type', title: '' }, ...this.attrList, { key: 'action' }];
+    },
+    attrList() {
+      const theadList = [];
+      if (this.attrData.config.attrList) {
+        this.attrData.config.attrList.forEach(attr => {
+          if (attr.isSelected) {
+            theadList.push({ key: 'attr_' + attr.id, title: attr.label });
           }
         });
       }
-      return finalList;
+      return theadList;
     }
   },
   watch: {
     valueList: {
       handler: function(val) {
         if (val && val.length > 0) {
+          //排序参照
+          const idSortList = [];
+
+          const newCiEntityList = [];
           //添加配置项
           const newCiEntityIdList = [];
           val.forEach(value => {
-            if (this.ciEntityData.tbodyList.length == 0 || !this.ciEntityData.tbodyList.some(cientity => (cientity.id && value.id && cientity.id === value.id) || (cientity.uuid && value.uuid && cientity.uuid === value.uuid))) {
-              if (typeof value == 'object') { //新添加的配置项
-                this.ciEntityData.tbodyList.push(value);
-              } else if (typeof value == 'string' || typeof value == 'number') {
-                newCiEntityIdList.push(value);
+            if (typeof value === 'object' && !newCiEntityList.some(cientity => (cientity.id && value.id && cientity.id === value.id) || (cientity.uuid && value.uuid && cientity.uuid === value.uuid))) {
+              //新添加的配置项
+              this.$delete(value, '_selected');
+              this.$delete(value, 'isSelected');
+              newCiEntityList.push(value);
+              if (value.id) {
+                idSortList.push({ id: value.id });
+              } else if (value.uuid) {
+                idSortList.push({ uuid: value.uuid });
               }
+            } else if (typeof value === 'number') {
+              newCiEntityIdList.push(value);
+              idSortList.push({ id: value });
             }
           });
-          if (newCiEntityIdList.length) {
-            this.$api.cmdb.cientity.getCiEntityByIdList(this.attrData.targetCiId, newCiEntityIdList).then(res => {
-              if (res.Return && res.Return.length > 0) {
-                res.Return.forEach(item => {
-                  this.ciEntityData.tbodyList.push(item);
+          if (newCiEntityIdList.length > 0) {
+            const attrList = [];
+            this.attrData.config.attrList.forEach(attr => {
+              if (attr.isSelected) {
+                attrList.push('attr_' + attr.id);
+              }
+            });
+            const searchParam = {
+              ciId: this.attrData.targetCiId,
+              idList: newCiEntityIdList,
+              showAttrRelList: attrList
+            };
+            this.$api.cmdb.cientity.searchCiEntity(searchParam).then(res => {
+              if (res.Return && res.Return.tbodyList && res.Return.tbodyList.length > 0) {
+                this.tbodyList = [...newCiEntityList, ...res.Return.tbodyList];
+
+                // 构建排序Map
+                const orderMap = new Map();
+                idSortList.forEach((item, idx) => {
+                  if (item.id !== undefined) orderMap.set(`id:${item.id}`, idx);
+                  if (item.uuid !== undefined) orderMap.set(`uuid:${item.uuid}`, idx);
+                });
+
+                // 排序
+                this.tbodyList.sort((a, b) => {
+                  // 按优先顺序查找对应key
+                  const aIdx = orderMap.get(`id:${a.id}`) ?? orderMap.get(`uuid:${a.uuid}`) ?? Infinity;
+                  const bIdx = orderMap.get(`id:${b.id}`) ?? orderMap.get(`uuid:${b.uuid}`) ?? Infinity;
+                  return aIdx - bIdx;
                 });
               }
             });
+          } else {
+            this.tbodyList = newCiEntityList;
           }
-          //删除配置项
-          this.ciEntityData.tbodyList = this.ciEntityData.tbodyList.filter(cientity => { return val.some(value => { return (cientity.id && value.id && cientity.id === value.id) || (cientity.uuid && value.uuid && cientity.uuid === value.uuid); }); });
         } else {
-          this.ciEntityData.tbodyList = [];
+          this.tbodyList = [];
         }
       },
       deep: true,
@@ -207,5 +235,4 @@ export default {
   }
 };
 </script>
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

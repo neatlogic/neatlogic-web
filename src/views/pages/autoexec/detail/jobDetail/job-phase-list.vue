@@ -3,7 +3,25 @@
     <ul v-if="phaseGroupList && phaseGroupList.length > 0" class="phaseList">
       <template v-for="(group, index) in phaseGroupList">
         <li v-if="group.phaseList && group.phaseList.length > 0" :key="index" class="step-li border-color">
-          <span class="stepIndex tips" :class="{ 'text-primary border-primary': group.phaseList.findIndex(d => d.id === activePhaseId) >= 0, 'text-grey': group.phaseList.findIndex(d => d.id === activePhaseId) === -1 }">{{ index + 1 }}</span>
+          <div v-if="group.parallelPolicy" class="group">
+            <Tooltip
+              max-width="320"
+              theme="light"
+              transfer
+              :offset="-20"
+              :disabled="!group.parallelPolicy"
+            >
+              <span class="stepIndex tips" :class="{ 'text-primary border-primary': group.phaseList.findIndex(d => d.id === activePhaseId) >= 0, 'text-grey': group.phaseList.findIndex(d => d.id === activePhaseId) === -1 }">{{ index + 1 }}</span>
+              <div slot="content">
+                <div>{{ $t('page.autoexecparallpolicy') }}: {{ parallelPolicyTrans(group.parallelPolicy) }}</div>
+                <div v-if="!$utils.isEmpty(group.parallelFrom) && group.parallelPolicy === 'parallel'">{{ $t('term.autoexec.parall') }}{{ $t('page.source') }}: {{ group.parallelFrom }}</div>
+                <div v-if="!$utils.isEmpty(group.parallelFrom) && group.parallelPolicy === 'roundCount'">{{ $t('term.autoexec.batchquantity') }}{{ $t('page.source') }}: {{ group.parallelFrom }}</div>
+                <div v-if="!$utils.isEmpty(group.roundCount)">{{ $t('term.autoexec.batchquantity') }}: {{ parallelOrRoundCountTrans(group.roundCount) }}</div>
+                <div v-if="!$utils.isEmpty(group.parallelCount)">{{ $t('term.autoexec.parall') }}: {{ parallelOrRoundCountTrans(group.parallelCount) }}</div>
+              </div>
+            </Tooltip>
+          </div>
+          <span v-else class="stepIndex tips" :class="{ 'text-primary border-primary': group.phaseList.findIndex(d => d.id === activePhaseId) >= 0, 'text-grey': group.phaseList.findIndex(d => d.id === activePhaseId) === -1 }">{{ index + 1 }}</span>
           <ul>
             <li
               v-for="(phase, pindex) in group.phaseList"
@@ -195,6 +213,28 @@ export default {
     },
     handleWaitingData(group) {
       this.$set(this.waitingTableConfig, 'tbodyList', this.waitingDetail.filter(t => t.groupSortList.includes(group.groupSort)));
+    },
+    parallelOrRoundCountTrans(count) {
+      let parallelOrRoundCount = count;
+      if (parallelOrRoundCount == 0) {
+        return this.$t('page.fulllist');
+      } else if (parallelOrRoundCount == 1) {
+        return this.$t('page.allparallel');
+      } else if (parallelOrRoundCount == -1) {
+        return this.$t('page.bluegreen');
+      } else {
+        return parallelOrRoundCount;
+      }
+    },
+    parallelPolicyTrans(policy) {
+      let parallelPolicy = policy;
+      if (parallelPolicy === 'parallel') {
+        return this.$t('page.autoexecparall');
+      } else if (parallelPolicy === 'roundCount') {
+        return this.$t('page.autoexecbatchround');
+      } else {
+        return policy;
+      }
     }
   },
   computed: {
@@ -204,7 +244,7 @@ export default {
         this.phaseList.forEach(phase => {
           let group = groupList.find(d => d.groupId == phase.groupId);
           if (!group) {
-            group = { groupId: phase.groupId, phaseList: [], groupSort: phase.jobGroupVo.sort };
+            group = { groupId: phase.groupId, phaseList: [], groupSort: phase.jobGroupVo.sort, parallelPolicy: phase.jobGroupVo.parallelPolicy, parallelCount: phase.jobGroupVo.parallelCount, roundCount: phase.jobGroupVo.roundCount, parallelFrom: phase.jobGroupVo.parallelFrom};
             groupList.push(group);
           }
           group['phaseList'].push(phase);
@@ -405,6 +445,14 @@ export default {
           justify-content: end;
         }
       }
+    }
+  }
+  .group{
+    position: absolute;
+    ::v-deep .ivu-tooltip-rel {
+      width: 100%;
+      position: static;
+      border-color: rgb(229, 229, 229);
     }
   }
 }

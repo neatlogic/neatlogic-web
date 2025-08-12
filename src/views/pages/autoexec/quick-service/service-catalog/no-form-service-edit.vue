@@ -110,7 +110,7 @@
         </div>
       </TsFormItem>
     </div>
-    <div v-if="hasServiceValue.runnerGroup" :class="getClassByBorder">
+    <div v-if="hasServiceValue.runnerGroup && needRunnerGroup" :class="getClassByBorder">
       <div :class="getFlexClass(unfoldAndFold.runnerGroup)">
         <template v-if="border !='border'">
           <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.runnerGroup)" @click.stop="handleUnfoldAndFold('runnerGroup')"></span>
@@ -336,6 +336,7 @@ export default {
       needExecuteNode: false, // 是否需要显示执行目标
       needExecuteUser: false, // 是否需要显示执行用户
       needProtocol: false, // 是否需要显示协议
+      needRunnerGroup: false, // 是否需要显示执行器组
       filterSearchValue: {},
       jobNameForm: {
         maxlength: 50,
@@ -508,7 +509,7 @@ export default {
         .getActionDetail({id: this.combopId}).then((res) => {
           if (res.Status == 'OK') {
             this.dataConfig = res.Return;
-            let {config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false} = this.dataConfig || {};
+            let {config = {}, needExecuteNode = false, needExecuteUser = false, needProtocol = false, needRoundCount = false, needRunnerGroup = false} = this.dataConfig || {};
             let {executeConfig = {}, scenarioList = [], combopPhaseList = []} = config || {};
             let {executeUser: configexecuteUser, protocolId = null, executeNodeConfig = {}, runnerGroupTag = {}} = executeConfig || {};
             const {filter = {}} = executeNodeConfig;
@@ -517,6 +518,7 @@ export default {
             this.needExecuteUser = needExecuteUser;
             this.needProtocol = needProtocol;
             this.needRoundCount = needRoundCount;
+            this.needRunnerGroup = needRunnerGroup;
             this.executeConfig = executeConfig;
             if (this.executeConfig.whenToSpecify == 'runtime') { // 过滤器运行在执行，需要把执行目标值清空
               this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue || {});

@@ -123,7 +123,7 @@
             {{ $t('page.autoexeccomboprunnergrouptagtips') }}
           </div>
         </div>
-        <div>
+        <div v-if="dataConfig.needRunnerGroup">
           <Divider orientation="start">{{ $t('term.deploy.actuatorgroup') }}</Divider>
           <div v-if="dataConfig.existRunnerOrSqlExecMode && runnerGroup && runnerGroup.mappingMode==='runtimeparam'">
             <RunnerGroupSetting
@@ -523,8 +523,8 @@ export default {
             if (this.jobId) {
               this.setJobParams(this.jobConfig);
             } else {
-              this.roundCount = this.executeConfig.roundCount || 64;
-              this.parallelCount = this.executeConfig.parallelCount || 32;
+              this.roundCount = !this.$utils.isEmpty(this.executeConfig.roundCount) ? this.executeConfig.roundCount : 64;
+              this.parallelCount = !this.$utils.isEmpty(this.executeConfig.parallelCount) ? this.executeConfig.parallelCount : 32;
               this.parallelPolicy = this.executeConfig.parallelPolicy || 'parallel';
               
               if (this.executeConfig.whenToSpecify == 'runtime') {
@@ -692,11 +692,11 @@ export default {
       if (this.dataConfig && this.dataConfig.needRoundCount) { //是否需要设置分批数量
         this.$set(data, 'parallelPolicy', this.parallelPolicy || 'parallel');
         if (this.parallelPolicy == 'parallel') {
-          this.$set(data, 'parallelCount', this.parallelCount || 32);
+          this.$set(data, 'parallelCount', !this.$utils.isEmpty(this.parallelCount) ? this.parallelCount : 32);
           this.$set(data, 'roundCount', null);
         } else {
           this.$set(data, 'parallelCount', null);
-          this.$set(data, 'roundCount', this.roundCount || 64);
+          this.$set(data, 'roundCount', !this.$utils.isEmpty(this.roundCount) ? this.roundCount : 64);
         }
       }
       if (this.$refs.param) {
@@ -734,20 +734,49 @@ export default {
     },
     setJobParams(obj) {
       let config = this.$utils.deepClone(obj);
-      let {name = '', param = {}, roundCount = 64, parallelCount = 32, parallelPolicy = 'parallel', scenarioId = null, executeConfig = {}, runnerGroupTag = null, runnerGroup = null} = config || {};
+      let {name = '', param = {}} = config || {};
       this.nameForm.itemList.name.value = name;
       this.paramValue = param;
-      this.scenarioId = scenarioId;
-      this.roundCount = roundCount;
-      this.parallelCount = parallelCount;
-      this.parallelPolicy = parallelPolicy;
-      this.executeConfig = executeConfig;
-      this.runnerGroupTag = runnerGroupTag || {
-        mappingMode: 'constant',
-        value: null
-      };
-      this.runnerGroup = runnerGroup || { mappingMode: 'constant',
-        value: '-1'};
+      //需要赋值的key
+      const keyList = ['roundCount', 'parallelCount', 'parallelPolicy', 'scenarioId', 'executeConfig', 'runnerGroupTag', 'runnerGroup']; 
+      Object.keys(config).forEach((key) => {
+        if (keyList.indexOf(key) > -1 && this.hasOwnProperty(key)) {
+          this[key] = config[key];
+        }
+      });
+      if (this.$utils.isEmpty(this.roundCount)) {
+        this.roundCount = 64;
+      }
+      if (this.$utils.isEmpty(this.parallelCount)) {
+        this.parallelCount = 32;
+      }
+      if (this.$utils.isEmpty(this.parallelPolicy)) {
+        this.parallelPolicy = 'parallel';
+      }
+      if (this.$utils.isEmpty(this.executeConfig)) {
+        this.executeConfig = {};
+      }
+      if (this.$utils.isEmpty(this.runnerGroupTag)) {
+        if (!this.$utils.isEmpty(this.executeConfig.runnerGroupTag)) {
+          this.runnerGroupTag = this.executeConfig.runnerGroupTag;
+        } else {
+          this.runnerGroupTag = {
+            mappingMode: 'constant',
+            value: null
+          };
+        }
+      }
+      if (this.$utils.isEmpty(this.runnerGroup)) {
+        if (!this.$utils.isEmpty(this.executeConfig.runnerGroup)) {
+          this.runnerGroup = this.executeConfig.runnerGroup;
+        } else {
+          this.runnerGroup = { 
+            mappingMode: 'constant',
+            value: '-1'
+          };
+        }
+      }
+    
       for (let key in this.executeForm.itemList) {
         // 链接协议和执行用户
         let item = this.executeForm.itemList[key];
@@ -769,9 +798,13 @@ export default {
     },
     changeParallelPolicy(val) {
       if (val && val == 'roundCount') {
-        this.roundCount = this.roundCount || 64;
+        if (this.$utils.isEmpty(this.roundCount)) {
+          this.roundCount = 64;
+        }
       } else {
-        this.parallelCount = this.parallelCount || 32;
+        if (this.$utils.isEmpty(this.parallelCount)) {
+          this.parallelCount = 32;
+        }
       }
     }
   },

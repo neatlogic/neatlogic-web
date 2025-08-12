@@ -1297,7 +1297,7 @@ export default {
         return {
           border: 'border',
           dynamicUrl: '/api/rest/cmdb/cientity/search',
-          params: { ciId: rel.direction == 'from' ? rel.toCiId : rel.fromCiId, showAttrRelList: ['const_id', 'const_name'] },
+          params: { ciId: rel.direction == 'from' ? rel.toCiId : rel.fromCiId, showAttrRelList: ['const_id', 'const_name'], keywordAsName: true },
           rootName: 'tbodyList',
           textName: 'name',
           valueName: 'id'

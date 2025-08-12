@@ -14,12 +14,23 @@
       <template v-slot:topLeft>
         <div class="action-group">
           <div class="action-item">
-            <strong
-              :title="jobData.name"
-              class="text-grey overflow"
-              style="display: inline-block;line-height: normal;vertical-align: middle;"
-              :style="{maxWidth: jobNameWidth + 'px'}"
-            >{{ jobData.name }}</strong>
+            <Tooltip
+              max-width="320"
+              theme="light"
+              transfer
+            >
+              <strong
+                :title="jobData.name"
+                class="text-grey overflow"
+                style="display: inline-block;line-height: normal;vertical-align: middle;"
+                :style="{maxWidth: jobNameWidth + 'px'}"
+              >{{ jobData.name }}</strong>
+              <div slot="content">
+                <div>{{ $t('page.autoexecparallpolicy') }}: {{ parallelPolicyTrans(jobData.parallelPolicy) }}</div>
+                <div v-if="!$utils.isEmpty(jobData.roundCount)">{{ $t('term.autoexec.batchquantity') }}: {{ parallelOrRoundCountTrans(jobData.roundCount) }}</div>
+                <div v-if="!$utils.isEmpty(jobData.parallelCount)">{{ $t('term.autoexec.parall') }}: {{ parallelOrRoundCountTrans(jobData.parallelCount) }}</div>
+              </div>
+            </Tooltip>
           </div>
           <div class="action-item" style="padding: 0px"><Divider type="vertical" style="margin: 0px" /></div>
           <div ref="userRef" class="action-item">
@@ -581,6 +592,28 @@ export default {
         path: path,
         query: { jobId: this.jobData.id }
       });
+    },
+    parallelPolicyTrans(policy) {
+      let parallelPolicy = policy;
+      if (parallelPolicy === 'parallel') {
+        return this.$t('page.autoexecparall');
+      } else if (parallelPolicy === 'roundCount') {
+        return this.$t('page.autoexecbatchround');
+      } else {
+        return policy;
+      }
+    },
+    parallelOrRoundCountTrans(count) {
+      let parallelOrRoundCountTrans = count;
+      if (parallelOrRoundCountTrans == 0) {
+        return this.$t('page.fulllist');
+      } else if (parallelOrRoundCountTrans == 1) {
+        return this.$t('page.allparallel');
+      } else if (parallelOrRoundCountTrans == -1) {
+        return this.$t('page.bluegreen');
+      } else {
+        return parallelOrRoundCountTrans;
+      }
     }
   },
   computed: {

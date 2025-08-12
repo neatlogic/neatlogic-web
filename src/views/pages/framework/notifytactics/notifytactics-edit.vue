@@ -18,7 +18,12 @@
           </span>
         </div>
       </template>
-      <div slot="content">
+      <div
+        slot="content"
+        v-click-outside:false="onClickOutside"
+        v-click-outside:false.mousedown="onClickOutside"
+        v-click-outside:false.touchstart="onClickOutside"
+      >
         <Loading :loadingShow="loadingShow" type="fix"></Loading>
         <div class="search-box">
           <TsRow class="input-border">
@@ -51,7 +56,7 @@
           >
             <template slot-scope="{ row }">
               <div class="trigger-list">
-                <div class="title">
+                <div class="title" :class="{'bg-selected': row.isDel || row.isDelActive || row.isShowDetail, 'title-hover-bg': row.notifyList.length > 0}">
                   <div v-if="row.isDel || row.isDelActive" class="title-bg bg-mongolia"></div>
                   <div :class="row.isDel || row.isDelActive ? 'text-mask' : ''">
                     <span class="trigger-name">
@@ -70,28 +75,27 @@
                     </Tooltip>
                   </div>
                   <div v-if="row.notifyList && row.notifyList.length > 0">
-                    <div class="number-box text-title">
-                      <span>{{ $t('page.actions') }}</span>
-                      <span class="border-color number">{{ row.notifyList.length }}</span>
+                    <div class="number-box text-title" :class="{'none': row.isDel || row.isDelActive || row.isShowDetail }">
+                      <span class="pr-xs">{{ $t('page.actions') }}</span>
+                      <Badge :count="row.notifyList.length" type="info"></Badge>
                     </div>
-                    <div class="action-btn bg-block" :class="{'block':row.isDel || row.isDelActive || row.isShowDetail, 'text-mask': row.isDel || row.isDelActive}">
+                    <div class="action-btn" :class="{'block':row.isDel || row.isDelActive || row.isShowDetail, 'text-mask': row.isDel || row.isDelActive}" @click.stop>
                       <span class="tsfont-plus text-action" @click="addCondition(row)">{{ $t('page.actions') }}</span>
-                      <span class="tsfont-broom text-action" @click.stop="emptyData('all', row)">{{ $t('page.clearconfig') }}</span>
+                      <span class="tsfont-broom text-action" @click="emptyData('all', row)">{{ $t('page.clearconfig') }}</span>
                     </div>
                   </div>
                 </div>
                 <div class="content">
-                  <div class="overview">
-                    <div v-if="row.notifyList.length > 0" class="trigger-overview">
+                  <div class="overview pr-xs overflow">
+                    <div v-if="row.notifyList.length > 0" class="trigger-overview flex-start overflow">
                       <div
                         v-for="(item, index) in row.notifyList"
                         :key="index"
-                        class="action-item overflow"
-                        :class="[index > 0 ? 'dividing-color' : '', index > 0 && (row.notifyList.length - 1 == index) ? 'last-action-item-class' : '' ]"
+                        class="action-item dividing-color"
                       >
                         <template v-if="index < 3">
                           <div class="name text-tip">{{ $t('page.actions') }}{{ numberChinese(index) }}</div>
-                          <div class="type">
+                          <div class="type flex-start">
                             <span
                               v-for="action in item.actionList"
                               :key="action.templateId"
@@ -102,63 +106,44 @@
                         </template>
                       </div>
                     </div>
-                    <div v-else class="tsfont-plus add-active text-action" @click="addCondition(row)">{{ $t('page.actions') }}</div>
+                    <div v-else class="tsfont-plus add-active text-action" @click.stop="addCondition(row)">{{ $t('page.actions') }}</div>
                   </div>
-                  <div v-if="row.notifyList.length > 0" class="trigger-detail bg-block bottom-shadow" :class="row.isDel || row.isDelActive || row.isShowDetail ? 'block' : ''">
+                  <div v-if="row.notifyList.length > 0" class="trigger-detail bg-block bottom-shadow-primary bg-selected" :class="row.isDel || row.isDelActive || row.isShowDetail? 'block' : ''">
                     <div @click.stop>
                       <DelItme
                         v-if="row.isDel || row.isDelActive"
-                        :delName="delTitle + '?'"
+                        :delName="delTitle"
                         @on-del="delSetting(delType, row)"
                         @on-close="closeSetting(delType, row)"
                       ></DelItme>
                     </div>
-                    <div :class="row.isDel || row.isDelActive ? 'text-mask' : ''">
-                      <div v-for="(detail, dindex) in row.notifyList" :key="dindex" class="list border-color">
-                        <div class="name bg-block">{{ $t('page.actions') }}{{ numberChinese(dindex) }}</div>
-                        <div v-for="n in detail.actionList" :key="n.templateId" class="active-li overflow">
-                          <span>{{ n.notifyHandlerName }}：</span>
-                          <span v-if="n.receiverObjList && n.receiverObjList.length > 0">
-                            <span v-for="(user, uindex) in slice(n.receiverObjList, true)" :key="uindex" style="padding-right: 4px;">
-                              <UserCard class="user-name" v-bind="user" @showPop="(isshow)=>showPop(isshow, row, 'detail_' + detail.id)"></UserCard>
-                            </span>
-                            <span v-if="n.receiverObjList.length > 3" class="more">
-                              <Dropdown
-                                trigger="click"
-                                transfer
-                                style="margin-left: 20px"
-                                @on-visible-change="showUserList(arguments, row, 'detail_' + detail.id)"
-                              >
-                                <span class="tsfont-option-vertical bg-block text-action"></span>
-                                <DropdownMenu slot="list">
-                                  <DropdownItem v-for="(user, uindex) in slice(n.receiverObjList, false)" :key="uindex">
-                                    <UserCard class="user-name" v-bind="user"></UserCard>
-                                  </DropdownItem>
-                                </DropdownMenu>
-                              </Dropdown>
-                            </span>
-                          </span>
-                        </div>
-                        <div class="li-btn bg-block">
-                          <span class="text-tip-active">
-                            <Poptip
-                              ref="pop"
-                              placement="bottom"
-                              width="400"
-                              word-wrap
-                              @on-popper-show="showDetail(row, 'detail_' + detail.id)"
-                              @on-popper-hide="hideDetail(row, 'detail_' + detail.id)"
-                            >
-                              <i class="tsfont-formlist text-tip-active" :title="$t('page.detail')">{{ row.visible }}</i>
-                              <div slot="content">
-                                <ActiveDetail :config="detail" :conditionList="conditionOptionList"></ActiveDetail>
-                              </div>
-                            </Poptip>
-                          </span>
-                          <span class="tsfont-edit text-tip-active" @click="editTactics(row, detail)"></span>
-                          <span class="tsfont-trash-s text-tip-active" @click.stop="emptyData('active', row, detail, dindex)"></span>
-                        </div>
-                      </div>
+                    <div :class="row.isDel || row.isDelActive ? 'text-mask' : ''" class="pb-sm">
+                      <Collapse
+                        value="action_0"
+                        accordion
+                        @on-change="(val)=>{
+                          onChangeCollapse(val, 'detail_' + row.id,row)
+                        }"
+                      >
+                        <Panel
+                          v-for="(detail, dindex) in row.notifyList"
+                          :key="dindex"
+                          :name="'action_' + dindex"
+                          class="panel-box"
+                        >
+                          {{ $t('page.actions') }}{{ numberChinese(dindex) }}
+                          <div slot="content">
+                            <ActiveDetail
+                              :config="detail"
+                              :conditionList="conditionOptionList"
+                            ></ActiveDetail>
+                          </div>
+                          <div class="panel-btn">
+                            <span class="tsfont-edit text-tip-active pr-xs" @click.stop="editTactics(row, detail)"></span>
+                            <span class="tsfont-trash-s text-tip-active" @click.stop="emptyData('active', row, detail, dindex)"></span>
+                          </div>
+                        </Panel>
+                      </Collapse>
                     </div>
                   </div>
                 </div>
@@ -199,6 +184,7 @@
 </template>
 <script>
 import ActiveDetail from './tacticsedit/active-detail.vue';
+import { directive as ClickOutside } from '@/resources/directives/v-click-outside-x.js';
 export default {
   name: '',
   components: {
@@ -209,7 +195,7 @@ export default {
     SettingTemplate: () => import('./tacticsedit/setting/setting-template'),
     SettingParameter: () => import('./tacticsedit/setting/setting-parameter'),
     DelItme: () => import('./tacticsedit/setting/del-item.vue'),
-    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    // UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     ActiveDetail
   },
@@ -218,6 +204,7 @@ export default {
       $notifyBox: this
     };
   },
+  directives: { ClickOutside },
   filters: {},
   props: {},
   data() {
@@ -297,14 +284,6 @@ export default {
     hideDetail(row, text) {
       if (text == this.detailTemplate) {
         this.$set(row, 'isShowDetail', false);
-      }
-    },
-    showUserList(arr, row, text) {
-      //通知对象
-      if (arr[0]) {
-        this.showDetail(row, text);
-      } else {
-        this.hideDetail(row, text);
       }
     },
     hideDel() {
@@ -408,10 +387,6 @@ export default {
       this.conditionDialogShow = true;
     },
     emptyData(type, row, item, index) {
-      let listPop = this.$refs.pop;
-      listPop.forEach(item => {
-        item.visible = false;
-      });
       this.triggerList.forEach(e => {
         if (row.trigger != e.trigger) {
           this.$set(e, 'isDelActive', false);
@@ -464,26 +439,17 @@ export default {
         this.$set(row, 'isDelActive', false);
       }
     },
-    slice(list, key) {
-      if (list.length > 0) {
-        if (key) {
-          return list.slice(0, 3);
-        } else {
-          return list.slice(3, list.length);
-        }
+    onChangeCollapse(val, text, row) {
+      if (!this.$utils.isEmpty(val)) {
+        this.showDetail(row, text);
+      } else {
+        this.hideDetail(row, text);
       }
     },
-    showPop(isshow, row, text) { //用户提示框显示问题处理
-      var _this = this;
-      if (isshow) {
-        setTimeout(function() {
-          _this.showDetail(row, text);
-        }, 250);
-      } else {
-        setTimeout(function() {
-          _this.hideDetail(row, text);
-        }, 150);
-      }
+    onClickOutside() {
+      this.triggerList.forEach(e => {
+        this.$set(e, 'isShowDetail', false);
+      });
     }
   },
   computed: {
@@ -516,6 +482,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@import '~@/resources/assets/css/variable.less';
 .action-top {
   position: absolute;
   right: 8px;
@@ -583,21 +550,13 @@ export default {
           padding: 6px 0;
         }
         .action-item {
-          float: left;
-          width: 33.3333%;
           height: 100%;
           padding: 0 10px;
-          white-space: nowrap;
-          &:not(:first-child) {
-            border-left: 1px solid;
-          }
-          &.last-action-item-class {
-            border-left: none;
-            height: 0;
-            padding: 0;
+          flex: 1;
+          &:not(:last-child) {
+            border-right: 1px solid;
           }
           .action-icon {
-            display: inline-block;
             width: 32px;
             height: 32px;
             border-radius: 50%;
@@ -617,7 +576,7 @@ export default {
       position: absolute;
       top: 0;
       z-index: 2;
-      padding: 12px 12px 0;
+      padding: 10px 10px 0;
       .list {
         position: relative;
         border: 1px solid;
@@ -629,22 +588,6 @@ export default {
           left: 16px;
           padding: 4px 8px;
           font-size: 13px;
-        }
-        .li-btn {
-          position: absolute;
-          top: -15px;
-          right: 16px;
-          > span {
-            padding: 0 6px;
-          }
-        }
-      }
-      .active-li {
-        position: relative;
-        .more {
-          position: absolute;
-          top: 2px;
-          right: -10px;
         }
       }
     }
@@ -672,5 +615,31 @@ export default {
 }
 .block {
   display: block !important;
+}
+.none {
+  display: none !important;
+}
+.panel-box {
+  position: relative;
+  .panel-btn {
+    position: absolute;
+    top: 0;
+    right: 8px;
+  }
+}
+.theme(@primary-grey) {
+  .trigger-list {
+    &:hover {
+      .title.title-hover-bg {
+        background-color: var(--primary-grey, @primary-grey);
+      }
+    } 
+  }
+}
+html {
+  .theme(@default-primary-grey);
+  &.theme-dark {
+    .theme(@dark-primary-grey,);
+  }
 }
 </style>

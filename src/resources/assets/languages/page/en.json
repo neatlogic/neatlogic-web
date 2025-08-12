@@ -1077,5 +1077,7 @@
   "autoexecparall": "Concurrency",
   "autoexecparallel": "Concurrent settings",
   "paramkeyword": "Participate in search",
-  "loglevel": "log level"
+  "loglevel": "log level",
+  "bluegreen": "Blue green execution",
+  "mailserver": "mail serve"
 }

@@ -31,6 +31,7 @@ export default {
     isShow: { type: Boolean, default: false },
     id: { type: [String, Number], default: null }, //工具ID
     versionId: { type: [String, Number], default: null }, //版本id
+    scriptId: { type: [String, Number], default: null }, // 脚本id
     type: { //类型：delete 、compare
       type: String,
       default: null
@@ -78,10 +79,12 @@ export default {
       this.$api.autoexec.script.deleteScript(param).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.deletesuccess'));
+          this.$skipHistory();
           this.$router.push({ 
-            path: '/script-manage',
+            path: '/script-detail',
             query: {
-              status: this.versionStatus
+              scriptId: this.scriptId,
+              status: 'passed'
             }
           });
         }
