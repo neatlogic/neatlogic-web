@@ -159,9 +159,20 @@ export default {
       const dialogForm = this.$refs['dialogForm'];
       const pipelineForm = this.$refs['pipelineForm'];
       const pipelineFormConfig = this.$refs['pipelineFormConfig'];
-      if ((dialogForm && !dialogForm.valid()) || (pipelineForm && !pipelineForm.validateForm() && (pipelineFormConfig && !pipelineFormConfig.valid()))) {
+      let isValidate = true;
+      if (dialogForm) {
+        isValidate = isValidate && dialogForm.valid();
+      }
+      if (pipelineForm) {
+        isValidate = isValidate && pipelineForm.validateForm();
+      }
+      if (pipelineFormConfig) {
+        isValidate = isValidate && pipelineFormConfig.valid();
+      }
+      if (!isValidate) {
         return false;
       }
+      
       let data = {
         ...pipelineForm.save()
       };

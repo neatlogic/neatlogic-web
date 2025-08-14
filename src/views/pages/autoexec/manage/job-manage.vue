@@ -38,11 +38,7 @@
             </span>
           </template>
           <template v-slot:name="{ row }">
-            <span v-if="row.source === 'batchdeploy' || row.source === 'deployschedulepipeline'" class="text-href" @click="toBatchJobDetail(row)">
-              {{ row.name }}
-            </span>
             <span
-              v-else
               class="text-href"
               :class="{ 'ml-nm': !!row.parentId && row.parentId != -1 }"
               @click="toJobDetail(row)"
@@ -337,17 +333,21 @@ export default {
       }
     },
     toJobDetail(row) {
-      this.$router.push({
-        path: '/job-detail',
-        query: { id: row.id }
-      });
-    },
-    toBatchJobDetail(row) {
-      const {parentId = '', id = ''} = row || {};
-      if (parentId != -1) {
-        this.toJobDetail(row);
+      if (row.source === 'batchdeploy' || row.source === 'deployschedulepipeline') {
+        const {parentId = '', id = ''} = row || {};
+        if (parentId != -1) {
+          this.$router.push({
+            path: '/job-detail',
+            query: { id: row.id }
+          });
+        } else {
+          window.open(HOME + '/deploy.html#/batch-job-detail?id=' + id, '_blank');
+        }
       } else {
-        window.open(HOME + '/deploy.html#/batch-job-detail?id=' + id, '_blank');
+        this.$router.push({
+          path: '/job-detail',
+          query: { id: row.id }
+        });
       }
     },
     // toOperationDetail(row) {

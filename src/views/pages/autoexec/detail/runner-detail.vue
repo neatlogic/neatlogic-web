@@ -734,26 +734,49 @@ export default {
     },
     setJobParams(obj) {
       let config = this.$utils.deepClone(obj);
-      let {name = '', param = {}, roundCount = 64, parallelCount = 32, parallelPolicy = 'parallel', scenarioId = null, executeConfig = {}, runnerGroupTag = null, runnerGroup = null} = config || {};
+      let {name = '', param = {}} = config || {};
       this.nameForm.itemList.name.value = name;
       this.paramValue = param;
-      this.scenarioId = scenarioId;
-      this.roundCount = roundCount;
-      this.parallelCount = parallelCount;
-      this.parallelPolicy = parallelPolicy;
-      this.executeConfig = executeConfig;
-      this.runnerGroupTag = runnerGroupTag || {
-        mappingMode: 'constant',
-        value: null
-      };
-      this.runnerGroup = runnerGroup || { mappingMode: 'constant',
-        value: '-1'};
-      if (this.$utils.isEmpty(runnerGroupTag) && !this.$utils.isEmpty(executeConfig.runnerGroupTag)) {
-        this.runnerGroupTag = executeConfig.runnerGroupTag;
+      //需要赋值的key
+      const keyList = ['roundCount', 'parallelCount', 'parallelPolicy', 'scenarioId', 'executeConfig', 'runnerGroupTag', 'runnerGroup']; 
+      Object.keys(config).forEach((key) => {
+        if (keyList.indexOf(key) > -1 && this.hasOwnProperty(key)) {
+          this[key] = config[key];
+        }
+      });
+      if (this.$utils.isEmpty(this.roundCount)) {
+        this.roundCount = 64;
       }
-      if (this.$utils.isEmpty(runnerGroup) && !this.$utils.isEmpty(executeConfig.runnerGroup)) {
-        this.runnerGroup = executeConfig.runnerGroup;
+      if (this.$utils.isEmpty(this.parallelCount)) {
+        this.parallelCount = 32;
       }
+      if (this.$utils.isEmpty(this.parallelPolicy)) {
+        this.parallelPolicy = 'parallel';
+      }
+      if (this.$utils.isEmpty(this.executeConfig)) {
+        this.executeConfig = {};
+      }
+      if (this.$utils.isEmpty(this.runnerGroupTag)) {
+        if (!this.$utils.isEmpty(this.executeConfig.runnerGroupTag)) {
+          this.runnerGroupTag = this.executeConfig.runnerGroupTag;
+        } else {
+          this.runnerGroupTag = {
+            mappingMode: 'constant',
+            value: null
+          };
+        }
+      }
+      if (this.$utils.isEmpty(this.runnerGroup)) {
+        if (!this.$utils.isEmpty(this.executeConfig.runnerGroup)) {
+          this.runnerGroup = this.executeConfig.runnerGroup;
+        } else {
+          this.runnerGroup = { 
+            mappingMode: 'constant',
+            value: '-1'
+          };
+        }
+      }
+    
       for (let key in this.executeForm.itemList) {
         // 链接协议和执行用户
         let item = this.executeForm.itemList[key];
