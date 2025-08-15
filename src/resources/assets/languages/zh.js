@@ -60,7 +60,6 @@ try {
       }
     }
   }
-  console.log('zh.json加载完成', languagesCategoryConfig);
 } catch (error) {
   console.error('zh.json抛出异常', error);
 }
