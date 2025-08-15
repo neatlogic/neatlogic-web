@@ -2733,41 +2733,6 @@
     "representmenupage": "表示菜单页面",
     "representsubpages": "表示子页面"
   },
-  "dr": {
-    "assetconfig": "资产配置",
-    "scenarioconfig": "场景配置",
-    "centername": "中心名称",
-    "basicservices": "基础服务",
-    "associationmodel": "关联模型",
-    "network": "网络",
-    "migrationdirection": "迁移方向",
-    "datareferencetip": "当前数据被场景引用，无法删除",
-    "organizationalstructure": "组织架构",
-    "affiliatedorganization": "所属组织",
-    "currentoranghaschildnodelete": "当前组织架构已有子级不可删除",
-    "currentorangbindusernodelete": "当前组织架构已绑定用户不可删除",
-    "selectatleastmodel": "至少选择一个模型",
-    "applicationtypename": "应用类型",
-    "org": "恢复机构",
-    "fileconfigpath": "配置文件路径",
-    "datacenterrel": "关联数据中心",
-    "selectdatacenter": "至少选择两个数据中心",
-    "publicapplication": "公共服务",
-    "combopname": "自动化编排",
-    "dependency": "依赖",
-    "dependencyservice": "依赖服务",
-    "scencedependency": "场景依赖",
-    "servicedependency": "服务依赖",
-    "scenarioplan": "场景预案",
-    "relyonmyservices": "依赖我的服务",
-    "servicerelyon": "我依赖的服务",
-    "dependentapp": "依赖应用",
-    "preparation": "预案",
-    "exerciseplan": "演练计划",
-    "dependencyscene": "依赖场景",
-    "sourcedatacenter": "来源数据中心",
-    "targetdatacenter": "目标数据中心"
-  },
   "diagram": {
     "widgetlist": "图元列表",
     "widget": "图元",
@@ -2848,7 +2813,9 @@
     "fromrel": "上游关系",
     "rel": "关联关系",
     "reltypeconfig": "连线类型配置",
-    "edgetype": "线段"
+    "edgetype": "线段",
+    "associationmodel": "关联模型",
+    "preparation": "预案"
   },
   "license": {
     "isbanmodule": "到期禁用模块",
@@ -2881,5 +2848,8 @@
     "joinalert": "归并到告警",
     "uniquekey": "唯一键",
     "alertsign": "告警特征"
+  },
+  "common": {
+    "preparation": "预案"
   }
 }

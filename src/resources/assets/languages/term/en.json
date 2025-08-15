@@ -2734,41 +2734,6 @@
     "representmenupage": "Represent menu page",
     "representsubpages": "Represent Subpages"
   },
-  "dr": {
-    "assetconfig": "Asset allocation",
-    "scenarioconfig": "Scenario configuration",
-    "centername": "Center Name",
-    "basicservices": "Basic services",
-    "associationmodel": "Association model",
-    "network": "network",
-    "migrationdirection": "Migration direction",
-    "datareferencetip": "The current data is referenced by the scene and cannot be deleted",
-    "organizationalstructure": "organizational structure",
-    "affiliatedorganization": "Affiliated organization",
-    "currentoranghaschildnodelete": "The current organizational structure has child levels that cannot be deleted",
-    "currentorangbindusernodelete": "The current organizational structure is bound to a user and cannot be deleted",
-    "selectatleastmodel": "Select at least one model",
-    "applicationtypename": "Application Type",
-    "org": "Recovery institutions",
-    "fileconfigpath": "Configuration file path",
-    "datacenterrel": "Associate Data Centers",
-    "selectdatacenter": "Select at least two data centers",
-    "publicapplication": "public service",
-    "combopname": "Automated orchestration",
-    "dependency": "rely on",
-    "dependencyservice": "dependent service",
-    "scencedependency": "Scenario Dependency",
-    "servicedependency": "Service Dependency",
-    "scenarioplan": "Scenario Plan",
-    "relyonmyservices": "Rely on my services",
-    "servicerelyon": "The service I rely on",
-    "dependentapp": "Dependent applications",
-    "preparation": "reserve plan",
-    "exerciseplan": "Exercise plan",
-    "dependencyscene": "Dependent scenarios",
-    "sourcedatacenter": "Source Data Center",
-    "targetdatacenter": "Target Data Center"
-  },
   "diagram": {
     "widgetlist": "Element List",
     "widget": "Element",
@@ -2848,7 +2813,9 @@
     "fromrel": "Upstream relationship",
     "rel": "Related relationships",
     "reltypeconfig": "Connection type configuration",
-    "edgetype": "line segment"
+    "edgetype": "line segment",
+    "associationmodel": "Association model",
+    "preparation": "reserve plan"
   },
   "license": {
     "isbanmodule": "Disable module upon expiration",
@@ -2884,5 +2851,8 @@
   },
   "runnergroup": {
     "ruletips": "The request for login authentication needs to carry a header as a rule expression (note that the header parameter in the expression is all lowercase). If the value of the expression after execution is true, the executor group will take effect, and false and syntax exceptions will not take effect. For example: ${env}==\\ bit \\&&(${test}==\\ 1 \\ | | ${test2}==\\ aaa \\)"
+  },
+  "common": {
+    "preparation": "reserve plan"
   }
 }
