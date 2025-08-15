@@ -297,6 +297,12 @@
     "documentsearch": "Document Search",
     "directorymanage": "Document directory management"
   },
+  "dr": {
+    "dr": "Disaster cutting",
+    "basicsetting": "Basic Settings",
+    "servicemanage": "service list",
+    "servicedetail": "Service List Details"
+  },
   "diagram": {
     "diagrammanage": "System Management",
     "catalogmanage": "Catalog Management",
