@@ -164,7 +164,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.searchJob(1, this.defaultSearchValue);
+    this.searchJob(1);
   },
   beforeMount() {},
   mounted() {},
@@ -177,13 +177,13 @@ export default {
   },
   destroyed() {},
   methods: {
-    searchJob(currentPage, searchValue) {
+    searchJob(currentPage) {
       this.clearTimmer();
       this.isLoading = true;
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
-      const param = { ...this.searchParam, ...searchValue || {} };
+      const param = { ...this.searchParam, ...(this.defaultSearchValue || {}) };
       if (this.$utils.isSame(this.searchParam, this.defaultSearchParam)) {
         this.$emit('updateParam', 'searchParam', this.searchParam);
       }
@@ -196,7 +196,7 @@ export default {
             this.jobData.tbodyList.forEach(element => {
               if (element.source === 'batchdeploy' || element.source === 'deployschedulepipeline') {
                 this.$set(element, '#expander', true);
-                if (searchValue && searchValue.keyword) { //keyword搜索时，匹配到的父作业也需要将子作业展开
+                if (this.defaultSearchValue && this.defaultSearchValue.keyword) { //keyword搜索时，匹配到的父作业也需要将子作业展开
                   this.toggleChildJob(element);
                 }
               } else {
