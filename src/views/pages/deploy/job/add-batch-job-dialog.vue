@@ -64,13 +64,10 @@ export default {
             { value: 'custom', text: this.$t('term.deploy.directcreation') },
             { value: 'pipeline', text: this.$t('term.deploy.superpipeline') }
           ],
-          value: 'custom',
+          value: 'pipeline',
           validateList: ['required'],
           onChange: val => {
-            this.createMethod = val;
-            this.$set(this.formConfig.name, 'isHidden', !(val === 'custom'));
-            this.$set(this.formConfig.pipelineId, 'isHidden', val === 'custom');
-            this.handlePipelineId('appsystem');
+            this.changeCreateMethod(val);
           }
         },
         name: {
@@ -135,7 +132,9 @@ export default {
   created() {
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.init();
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -143,6 +142,26 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    init() {
+      this.formConfig.createMethod.dataList.forEach(item => {
+        if (item.value === 'custom') {
+          if (this.$AuthUtils.hasRole('BATCHDEPLOY_MODIFY')) {
+            this.$set(item, 'disabled', false);  
+            this.$set(item, 'description', '');
+          } else {
+            this.$set(item, 'disabled', true);
+            this.$set(item, 'description', this.$t('term.deploy.batchdeployauthtip'));
+          }
+        }
+      });
+      this.changeCreateMethod('pipeline');
+    },
+    changeCreateMethod(val) {
+      this.createMethod = val;
+      this.$set(this.formConfig.name, 'isHidden', !(val === 'custom'));
+      this.$set(this.formConfig.pipelineId, 'isHidden', val === 'custom');
+      this.handlePipelineId('appsystem');
+    },
     nextStep() {
       const dialogForm = this.$refs['dialogForm'];
       if ((dialogForm && !dialogForm.valid())) {
