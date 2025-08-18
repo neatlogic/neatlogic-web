@@ -63,7 +63,7 @@
               </ul>
             </Tooltip>
           </template>
-          <span v-auth="'BATCHDEPLOY_MODIFY'" class="tsfont-plus text-action action-item" @click="addBatchJob">{{ $t('term.deploy.batchjob') }}</span>
+          <span class="tsfont-plus text-action action-item" @click="addBatchJob">{{ $t('term.deploy.batchjob') }}</span>
           <span v-if="isHasResourceLock" class="tsfont-lock text-action action-item" @click="globalLockShow">{{ $t('term.autoexec.resourcelock') }}</span>
         </div>
       </template>
