@@ -8,7 +8,7 @@
       :sortOrder="sortOrder"
       :sortMulti="false"
       :fixedHeader="fixedHeader"
-      @changeCurrent="searchJob"
+      @changeCurrent="(currentPage) => searchJob(currentPage, defaultSearchValue)"
       @changePageSize="changePageSize"
       @updateSort="updateSort"
     >
@@ -164,7 +164,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.searchJob(1);
+    this.searchJob(1, this.defaultSearchValue);
   },
   beforeMount() {},
   mounted() {},
@@ -177,13 +177,13 @@ export default {
   },
   destroyed() {},
   methods: {
-    searchJob(currentPage) {
+    searchJob(currentPage, searchValue) {
       this.clearTimmer();
       this.isLoading = true;
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
-      const param = { ...this.searchParam, ...(this.defaultSearchValue || {}) };
+      const param = { ...this.searchParam, ...searchValue || {} };
       if (this.$utils.isSame(this.searchParam, this.defaultSearchParam)) {
         this.$emit('updateParam', 'searchParam', this.searchParam);
       }
@@ -196,7 +196,7 @@ export default {
             this.jobData.tbodyList.forEach(element => {
               if (element.source === 'batchdeploy' || element.source === 'deployschedulepipeline') {
                 this.$set(element, '#expander', true);
-                if (this.defaultSearchValue && this.defaultSearchValue.keyword) { //keyword搜索时，匹配到的父作业也需要将子作业展开
+                if (searchValue && searchValue.keyword) { //keyword搜索时，匹配到的父作业也需要将子作业展开
                   this.toggleChildJob(element);
                 }
               } else {
@@ -219,7 +219,7 @@ export default {
     },
     changePageSize(pageSize) {
       this.searchParam.pageSize = pageSize;
-      this.searchJob(1);
+      this.searchJob(1, this.defaultSearchValue);
     },
     updateSort(sort) {
       this.sortOrder = [];
