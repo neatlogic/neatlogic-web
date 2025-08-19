@@ -1063,10 +1063,46 @@ export default {
           }
         }
       });
+     
       this.$set(data, '_type', 'new'); //标识新表单
       this.$set(data, 'lcu', this.$AuthUtils.getCurrentUser().uuid);
       this.$set(data, 'lcd', new Date().getTime());
+      this.clearReactionRow(data.reaction);
       return data;
+    },
+    clearReactionRow(reaction) { //清除行联动的废数据
+      if (!this.$utils.isEmpty(reaction)) {
+        Object.keys(reaction).forEach(key => {
+          if (!this.$utils.isEmpty(reaction[key])) {
+            reaction[key].forEach(item => {
+              if (!this.$utils.isEmpty(item.conditionGroupList)) {
+                let groupUuidList = [];
+                item.conditionGroupList.forEach(c => {
+                  let uuidList = [];
+                  c.conditionList.forEach(d => {
+                    //清除不存在的条件
+                    if (!this.formItemList.find(f => d.formItemUuid.includes(f.uuid))) {
+                      uuidList.push(d.uuid);
+                    }
+                  });
+                  c.conditionList = c.conditionList.filter(d => !uuidList.includes(d.uuid));
+                  if (this.$utils.isEmpty(c.conditionList)) {
+                    groupUuidList.push(c.uuid);
+                  }
+                });
+                item.conditionGroupList = item.conditionGroupList.filter(c => !groupUuidList.includes(c.uuid));
+              }
+              if (this.$utils.isEmpty(item.conditionGroupList)) {
+                item.rows = [];
+                item.conditionGroupRelList = [];
+              }
+            });
+            reaction[key] = reaction[key].filter(item => !this.$utils.isEmpty(item.conditionGroupList));
+          }
+        });
+        //更新配置
+        this.$set(this.config, 'reaction', reaction);
+      }
     },
     //提供外部使用，返回表单数据
     getFormData() {
