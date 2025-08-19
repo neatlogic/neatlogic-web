@@ -239,7 +239,7 @@ export default {
       let text = false;
       if (!item.isHasAllAuthority && type == 'app') {
         if (item.authActionSet && item.authActionSet.length) {
-          if (!item.authActionSet.includes('operation#pipeline') && !item.authActionSet.includes('operation#all')) {
+          if (!item.isHasAuthPipeline && !item.authActionSet.includes('operation#pipeline') && !item.authActionSet.includes('operation#all')) {
             text = this.$t('term.deploy.notapplyallexecuteauth');
           } else if (!item.authActionSet.find((item) => item.includes('scenario#')) && !item.authActionSet.includes('scenario#all')) {
             text = this.$t('term.deploy.notapplyallsceneexecuteauth');
