@@ -3810,6 +3810,90 @@
       color: @text-color;
     }
   }
+  // <Menu>组件
+  .@{iv-prev}menu {
+    background: @op-color;
+    color: @text-color;
+  }
+  .@{iv-prev}menu-item,
+  .@{iv-prev}menu-submenu {
+    color: @text-color !important;
+  }
+  .@{iv-prev}menu-light:after {
+    background: @op-color !important;
+  }
+  .@{iv-prev}menu-item:hover,
+  .@{iv-prev}menu-submenu-title:hover {
+    color: var(--primary-color, @primary-color) !important;
+  }
+  .@{iv-prev}menu-dark,
+  .@{iv-prev}menu-light {
+    &.@{iv-prev}menu-vertical .@{iv-prev}menu-item-active:not(.@{iv-prev}menu-submenu) {
+      color: var(--primary-color, @primary-color) !important;
+      background: var(--selected-bg, @selected-bg) !important;
+    }
+  }
+  .@{iv-prev}menu-vertical .@{iv-prev}menu-item-active:not(.@{iv-prev}menu-submenu):after {
+    background: var(--primary-color, @primary-color) !important;
+  }
+  .@{iv-prev}menu-dark.@{iv-prev}menu-vertical .@{iv-prev}menu-item:hover,
+  .@{iv-prev}menu-dark.@{iv-prev}menu-vertical .@{iv-prev}menu-submenu-title:hover {
+    color: var(--primary-color, @primary-color);
+    background: none;
+  }
+  .@{iv-prev}menu-dark.@{iv-prev}menu-vertical .@{iv-prev}menu-opened .@{iv-prev}menu-submenu-title {
+    background: none;
+    color: @text-color;
+  }
+  .@{iv-prev}menu-dark.@{iv-prev}menu-vertical .@{iv-prev}menu-opened {
+    background: none;
+  }
+  .@{iv-prev}menu-dark.@{iv-prev}menu-vertical .@{iv-prev}menu-submenu .@{iv-prev}menu-item-active,
+  .@{iv-prev}menu-dark.@{iv-prev}menu-vertical .@{iv-prev}menu-submenu .@{iv-prev}menu-item-active:hover {
+    background: var(--selected-bg, @selected-bg) !important;
+  }
+  .@{iv-prev}menu-horizontal .@{iv-prev}menu-submenu .@{iv-prev}select-dropdown .@{iv-prev}menu-item-selected,
+  .@{iv-prev}menu-horizontal .@{iv-prev}menu-submenu .@{iv-prev}select-dropdown .@{iv-prev}menu-item-selected:hover {
+    color: var(--primary-color, @primary-color) !important;
+  }
+  .@{iv-prev}menu-horizontal .@{iv-prev}menu-submenu .@{iv-prev}select-dropdown .@{iv-prev}menu-item-focus,
+  .@{iv-prev}menu-horizontal .@{iv-prev}menu-submenu .@{iv-prev}select-dropdown .@{iv-prev}menu-item:hover {
+    background: var(--menu-hover, @menu-hover);
+  }
+  .@{iv-prev}menu-dark.@{iv-prev}menu-vertical .@{iv-prev}menu-item-group-title,
+  .@{iv-prev}menu-item-group-title {
+    color: @icon-color;
+  }
+  .@{iv-prev}menu-light,
+  .@{iv-prev}menu-primary,
+  .@{iv-prev}menu-dark {
+    &.@{iv-prev}menu-horizontal {
+      .@{iv-prev}menu-item,
+      .@{iv-prev}menu-submenu {
+        border-bottom: 2px solid transparent; // 解决暗黑模式和主题色模式下，下拉边框从0》2变化的问题
+      }
+      .@{iv-prev}menu-item-active,
+      .@{iv-prev}menu-item:hover,
+      .@{iv-prev}menu-submenu:hover {
+        border-bottom: 2px solid @primary-color;
+      }
+    }
+  }
+  .@{iv-prev}menu-light,
+  .@{iv-prev}menu-primary,
+  .@{iv-prev}menu-dark {
+    &.@{iv-prev}menu-horizontal {
+      .@{iv-prev}menu-drop-list {
+        .@{iv-prev}menu-item-group {
+          .@{iv-prev}menu-item-active,
+          .@{iv-prev}menu-item:hover,
+          .@{iv-prev}menu-submenu:hover {
+            border-bottom: 2px solid transparent;
+          }
+        }
+      }
+    }
+  }
 
   //水波纹
   @sglqprefix: sg-liquid-;

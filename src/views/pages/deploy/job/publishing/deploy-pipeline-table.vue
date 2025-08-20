@@ -8,7 +8,7 @@
       :sortOrder="sortOrder"
       :sortMulti="false"
       :fixedHeader="fixedHeader"
-      @changeCurrent="searchJob"
+      @changeCurrent="(currentPage) => searchJob(currentPage, defaultSearchValue)"
       @changePageSize="changePageSize"
       @updateSort="updateSort"
     >
@@ -219,7 +219,7 @@ export default {
     },
     changePageSize(pageSize) {
       this.searchParam.pageSize = pageSize;
-      this.searchJob(1);
+      this.searchJob(1, this.defaultSearchValue);
     },
     updateSort(sort) {
       this.sortOrder = [];
