@@ -1081,5 +1081,8 @@
   "paramkeyword": "入参搜索",
   "loglevel": "日志级别",
   "bluegreen": "蓝绿执行",
-  "mailserver": "邮件服务"
+  "mailserver": "邮件服务",
+  "beforeconfig": "转换前配置",
+  "dataconfig": "数据配置",
+  "datachange": "数据转换"
 }
