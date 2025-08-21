@@ -2889,7 +2889,8 @@
   "informant": {
     "last5dump": "Last 5 snapshots",
     "threaddump": "Thread snapshot",
-    "pid": "Process ID"
+    "pid": "Process ID",
+    "servicetopo": "Service Relationship Diagram"
   },
   "infromant": {
     "report": "analysis report"
