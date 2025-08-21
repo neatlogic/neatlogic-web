@@ -160,7 +160,7 @@ export default {
           label: this.$t('page.apply'),
           value: null,
           dynamicUrl: '/api/rest/deploy/app/config/appsystem/search',
-          dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, 'app'); },
+          dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, this.pipelineFormConfig.pipelineType.value); },
           params: {authorityActionList: ['view']},
           rootName: 'tbodyList',
           border: 'border',
@@ -228,7 +228,8 @@ export default {
           dataList.push({
             value: item.id,
             text: item.abbrName + (item.name ? '(' + item.name + ')' : ''),
-            _disabled: this.getDisabledText(item, type)
+            _disabled: this.getDisabledText(item, type),
+            tooltip: this.getDisabledText(item, type) || null
           });
         });
       }
@@ -236,8 +237,16 @@ export default {
     },
     getDisabledText(item, type) {
       let text = false;
-      if (!item.isHasAllAuthority && type == 'app') {
-        if (item.authActionSet && item.authActionSet.length) {
+      console.log(type);
+      if (!item.isHasAllAuthority && (type == 'appsystem' || type == 'app')) {
+        if (type == 'appsystem') {
+          if (item.isHasAuthPipeline) {
+            return text;
+          }
+          if (this.$utils.isEmpty(item.authActionSet) || (!item.authActionSet.includes('operation#pipeline') && !item.authActionSet.includes('operation#all'))) {
+            text = this.$t('term.deploy.notapplyallexecuteauth');
+          }
+        } else if (type == 'app') {
           if (!item.authActionSet.includes('operation#execute') && !item.authActionSet.includes('operation#all')) {
             text = this.$t('term.deploy.notapplyallexecuteauth');
           } else if (!item.authActionSet.find((item) => item.includes('scenario#')) && !item.authActionSet.includes('scenario#all')) {
@@ -245,8 +254,6 @@ export default {
           } else if (!item.authActionSet.find((item) => item.includes('env#')) && !item.authActionSet.includes('env#all')) {
             text = this.$t('term.deploy.notapplyallenvexecuteauth');
           }
-        } else {
-          text = this.$t('term.deploy.notapplyallexecuteauth');
         }
       } else if (!item.isConfig) {
         text = this.$t('term.deploy.applynotconfigpipeline');

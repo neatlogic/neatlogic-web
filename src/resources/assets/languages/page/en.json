@@ -1079,5 +1079,8 @@
   "paramkeyword": "Participate in search",
   "loglevel": "log level",
   "bluegreen": "Blue green execution",
-  "mailserver": "mail serve"
+  "mailserver": "mail serve",
+  "beforeconfig": "Pre conversion configuration",
+  "dataconfig": "data configuration",
+  "datachange": "data conversion"
 }

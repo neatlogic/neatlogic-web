@@ -296,7 +296,7 @@ export default {
         let userInfoList = await this.$api.common.getUserRoleTeam({groupList: [row.authType], valueList: [`${row.authType}#${row.authUuid}`]});
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: row.authUuid == 'alluser' ? this.$t('term.deploy.deleteallauthconfirm') : this.$t('term.deploy.deleteallauthconfirmtarget', {target: userInfoList.Return && userInfoList.Return[0] ? userInfoList.Return[0].dataList[0].text : ''}),
+          content: row.authUuid == 'alluser' ? this.$t('term.deploy.deleteallauthconfirm') : this.$t('term.deploy.deleteallauthconfirmtarget', {target: userInfoList.Return && userInfoList.Return[0] && userInfoList.Return[0].dataList[0] ? userInfoList.Return[0].dataList[0].text : ''}),
           btnType: 'error',
           btnList: [
             {
