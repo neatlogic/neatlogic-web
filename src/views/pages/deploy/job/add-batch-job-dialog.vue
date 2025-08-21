@@ -101,7 +101,7 @@ export default {
           label: this.$t('page.apply'),
           value: null,
           dynamicUrl: '/api/rest/deploy/app/config/appsystem/search',
-          dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, 'app'); },
+          dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, 'appsystem'); },
           params: {authorityActionList: ['view']},
           rootName: 'tbodyList',
           border: 'border',
@@ -228,16 +228,11 @@ export default {
     },
     getDisabledText(item, type) {
       let text = false;
-      if (!item.isHasAllAuthority && type == 'app') {
-        if (item.authActionSet && item.authActionSet.length) {
-          if (!item.isHasAuthPipeline && !item.authActionSet.includes('operation#pipeline') && !item.authActionSet.includes('operation#all')) {
-            text = this.$t('term.deploy.notapplyallexecuteauth');
-          } else if (!item.authActionSet.find((item) => item.includes('scenario#')) && !item.authActionSet.includes('scenario#all')) {
-            text = this.$t('term.deploy.notapplyallsceneexecuteauth');
-          } else if (!item.authActionSet.find((item) => item.includes('env#')) && !item.authActionSet.includes('env#all')) {
-            text = this.$t('term.deploy.notapplyallenvexecuteauth');
-          }
-        } else {
+      if (!item.isHasAllAuthority && type == 'appsystem') {
+        if (item.isHasAuthPipeline) {
+          return text;
+        }
+        if (this.$utils.isEmpty(item.authActionSet) || (!item.authActionSet.includes('operation#pipeline') && !item.authActionSet.includes('operation#all'))) {
           text = this.$t('term.deploy.notapplyallexecuteauth');
         }
       } else if (!item.isConfig) {
