@@ -23,15 +23,14 @@
     </div>
     <div v-if="isActive == 1" class="permission-list">
       <div v-for="(item,index) of authorityList" :key="index" class="list list-bottom">
-        <div class="second-title text-grey">{{ item.text }}</div>
-        <div>
+        <TsFormItem labelPosition="top" :label="item.text" :tooltip="authorityTipMap[item.action] || ''">
           <UserSelect
             :value.sync="item.acceptList"
             :groupList="item.groupList"
             border="border"
             width="100%"
           ></UserSelect>
-        </div>
+        </TsFormItem>
       </div>
     </div>
   </div>
@@ -42,7 +41,8 @@ export default {
   name: 'AuthoritySetting',
   components: {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    UserSelect: () => import('@/resources/components/UserSelect/UserSelect')
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
   mixins: [itemmixin],
   props: {
@@ -67,7 +67,10 @@ export default {
   data() {
     return {
       isActive: this.defaultIsActive,
-      authorityList: this.list
+      authorityList: this.list,
+      authorityTipMap: {
+        update: '处理人包含所有步骤处理人'
+      }
     };
   },
   beforeCreate() {},

@@ -631,7 +631,8 @@
     "seeprocessconfig": "View the current work order process configuration",
     "editprocessconfig": "Edit the current work order process configuration",
     "stepishandledby": "Step Handling Human",
-    "sercalendar": "Service Calendar"
+    "sercalendar": "Service Calendar",
+    "flowauthuserupdatetip": "The processor includes all step handlers"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

@@ -631,7 +631,8 @@
     "seeprocessconfig": "查看当前工单流程配置",
     "editprocessconfig": "编辑当前工单流程配置",
     "stepishandledby": "步骤处理人为",
-    "sercalendar": "服务日历"
+    "sercalendar": "服务日历",
+    "flowauthuserupdatetip": "处理人包含所有步骤处理人"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
