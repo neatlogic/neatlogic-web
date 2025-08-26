@@ -69,7 +69,7 @@ export default {
       isActive: this.defaultIsActive,
       authorityList: this.list,
       authorityTipMap: {
-        update: '处理人包含所有步骤处理人'
+        update: this.$t('term.process.flowauthuserupdatetip')
       }
     };
   },
