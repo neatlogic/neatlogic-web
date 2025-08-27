@@ -9,14 +9,15 @@
       @on-close="closeDialog"
     >
       <template v-slot>
-        <div>
+        <div v-if="isReady">
           <TsSheet
             ref="formSheet"
             mode="read"
             :value="formConfig"
             :data="processTaskConfig.formAttributeDataMap"
-            :isClearSpecifiedAttr="true"
-            :isNeedValid="false"
+            :isClearSpecifiedAttr="!isNeedFormSceneUuid"
+            :isNeedValid="isNeedFormSceneUuid"
+            :formSceneUuid="isNeedFormSceneUuid ? formSceneUuid : ''"
             @emit="formSheetEmitData"
           ></TsSheet>
         </div>
@@ -31,14 +32,17 @@ export default {
     TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue')
   },
   props: {
-    processTaskConfig: Object
+    processTaskConfig: Object,
+    isNeedFormSceneUuid: Boolean
   },
   data() {
     return {
+      isReady: false,
       formConfig: {},
       defaultPriorityUuid: '',
       priorityList: [],
-      priorityUuid: ''
+      priorityUuid: '',
+      formSceneUuid: ''
     };
   },
   beforeCreate() {},
@@ -58,14 +62,20 @@ export default {
     initConfig() {
       if (this.processTaskConfig) {
         this.defaultPriorityUuid = this.$utils.deepClone(this.processTaskConfig.defaultPriorityUuid);
+        let formSceneUuid = this.processTaskConfig.startProcessTaskStep.formSceneUuid;
         if (this.processTaskConfig.formConfig) {
           let formConfig = this.$utils.deepClone(this.processTaskConfig.formConfig) || {};
           //清除组件只读属性
           formConfig.readOnly = false;
           formConfig.reaction = {};
           this.formConfig = formConfig;
+          if (!formSceneUuid) {
+            formSceneUuid = this.processTaskConfig.formConfig.defaultSceneUuid;
+          }
         }
+        this.formSceneUuid = formSceneUuid;
       }
+      this.isReady = true;
     },
     async okDialog() {
       let errorMap = null;

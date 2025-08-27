@@ -83,12 +83,12 @@
       </div>
       <template v-slot:footer>
         <Button @click="closeSetting()">{{ $t('page.cancel') }}</Button>
-        <Button
+        <!-- <Button
           v-if="settingConfig.whenToSpecify == 'now'"
           type="primary"
           ghost
           @click="validSetting()"
-        >{{ $t('page.validate') }}</Button>
+        >{{ $t('page.validate') }}</Button> -->
         <Button type="primary" @click="okSetting()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
