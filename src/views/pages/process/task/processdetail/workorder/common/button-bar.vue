@@ -103,10 +103,16 @@
           <DropdownItem v-if="actionConfig.copyprocesstask" @click.native="doBtnBarAction('copyProcessTask')">
             {{ actionConfig.copyprocesstask }}
           </DropdownItem>
-          <!-- 编辑表单 -->
-          <DropdownItem v-if="processTaskConfig && processTaskConfig.formConfig && ($AuthUtils.hasRole('PROCESSTASK_MODIFY') || actionConfig.update)" @click.native="editForm()">
-            {{ $t('dialog.title.edittarget',{'target':$t('page.form')}) }}
-          </DropdownItem>
+          <!-- 编辑表单 工单管理员可编辑所以表单组件，无需校验-->
+          <template v-if="processTaskConfig && processTaskConfig.formConfig">
+            <DropdownItem v-if="$AuthUtils.hasRole('PROCESSTASK_MODIFY')" @click.native="editForm(false)">
+              {{ $t('dialog.title.edittarget',{'target':$t('page.form')}) }}
+            </DropdownItem>
+            <!--  只有修改工单上报内容权限，根据上报节点场景修改表单，需要校验-->
+            <DropdownItem v-else-if="actionConfig.update" @click.native="editForm(true)">
+              {{ $t('dialog.title.edittarget',{'target':$t('page.form')}) }}
+            </DropdownItem>
+          </template>
           <!-- 转为知识 -->
           <DropdownItem v-if="knowledgeConfig && knowledgeConfig.isTransferKnowledge == 1" @click.native="doBtnBarAction('createKnowledge')">
             {{ $t('term.process.converttoknowdoc') }}
@@ -171,7 +177,12 @@
         @click="doBtnBarAction('redoTask')"
       >{{ getRedoText }}</Button>
     </span>
-    <FormEditDialog v-if="isShowFormModal" :processTaskConfig="processTaskConfig" @close="closeFormDialog()"></FormEditDialog>
+    <FormEditDialog
+      v-if="isShowFormModal"
+      :processTaskConfig="processTaskConfig"
+      :isNeedFormSceneUuid="isNeedFormSceneUuid"
+      @close="closeFormDialog()"
+    ></FormEditDialog>
     <ProcessTaskTopo v-if="isShowProcessTaskTopo" :processTaskId="processTaskConfig.id" @close="isShowProcessTaskTopo=false"></ProcessTaskTopo>
     <TransfereoastepDialog v-if="isShowTransfereoastep" :processTaskId="processTaskConfig.id" @close="isShowTransfereoastep=false"></TransfereoastepDialog>
     <ReactivateDialog v-if="isShowReactivateStep" :processTaskId="processTaskConfig.id" @close="isShowReactivateStep=false"></ReactivateDialog>
@@ -201,7 +212,8 @@ export default {
       isShowFormModal: false,
       isShowProcessTaskTopo: false,
       isShowTransfereoastep: false,
-      isShowReactivateStep: false
+      isShowReactivateStep: false,
+      isNeedFormSceneUuid: false //是否需要表单场景uuid
     };
   },
   beforeCreate() {},
@@ -218,7 +230,8 @@ export default {
     doBtnBarAction(actionName, ...args) {
       this.$emit('doAction', actionName, ...args);
     },
-    editForm() {
+    editForm(isNeedFormSceneUuid) {
+      this.isNeedFormSceneUuid = isNeedFormSceneUuid;
       this.isShowFormModal = true;
     },
     closeFormDialog() {
