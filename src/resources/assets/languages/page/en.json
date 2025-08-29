@@ -1082,5 +1082,7 @@
   "mailserver": "mail serve",
   "beforeconfig": "Pre conversion configuration",
   "dataconfig": "data configuration",
-  "datachange": "data conversion"
+  "datachange": "data conversion",
+  "childmenucount": "Number of submenus",
+  "systemmenuauth": "System menu permissions"
 }
