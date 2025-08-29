@@ -173,7 +173,7 @@ export default {
         return true;
       } else if (source.type === 1 && target && source.parentId !== target.parentId && target.parentId !== 0) {
         //链接调整归属
-        console.log('调整菜单归属');
+        //console.log('调整菜单归属');
         this.newParentId = target.parentId;
         return true;
       } else if (source.type === 0 && target && source.parentId === target.parentId) {
