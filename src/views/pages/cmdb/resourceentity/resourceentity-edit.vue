@@ -6,6 +6,7 @@
     <template v-slot>
       <Loading :loadingShow="loadingShow" type="fix"></Loading>
       <TsForm
+        ref="form"
         v-model="resourceEntityData"
         :item-list="formConfig"
       >
@@ -214,6 +215,7 @@ export default {
     save() {
       // console.log(JSON.stringify(this.resourceEntityData, null, 2));
       let isValid = true;
+      isValid = this.$refs.form.valid() && isValid;
       isValid = this.$refs.ciSetting.valid() && isValid;
       isValid = this.$refs.mappingSetting.valid() && isValid;
       if (!isValid) {
