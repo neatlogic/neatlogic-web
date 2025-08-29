@@ -351,6 +351,8 @@ export default {
     },
     searchVersion() {
       this.loading = true;
+      let authParam = { authorityActionList: ['versionAndProductManager'] };
+      this.searchParam = {...authParam, ...this.searchParam};
       this.$api.deploy.version.searchVersion(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.versionData = res.Return;

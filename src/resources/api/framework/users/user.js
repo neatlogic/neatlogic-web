@@ -20,6 +20,10 @@ export default {
   deleteUser(data) {
     return axios.post('/api/rest/user/delete', data);
   },
+  //删除用户会话Api
+  deleteUserSession(data) {
+    return axios.post('/api/rest/user/session/delete', data);
+  },
   //保存用户信息Api
   saveUser(data) {
     return axios.post('/api/rest/user/save', data);
