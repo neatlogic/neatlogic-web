@@ -63,6 +63,8 @@ const homepageManage = () => import('./homepage/homepage-manage.vue'); //首页�
 const changelogAuditManage = () => import('./changelogaudit/changelogaudit-manage.vue'); //数据库变更记录
 const logManage = () => import('./log/log-manage.vue'); //查看日志
 
+const extramenuDetail = () => import('@/views/pages/framework/extramenu/extramenu-detail.vue');
+
 import { $t } from '@/resources/init.js';
 import { config } from './config.js';
 
@@ -768,6 +770,15 @@ let routerList = [
       icon: 'tsfont-history',
       authority: 'ADMIN',
       type: 'healthcheck'
+    }
+  },
+  {
+    path: '/extramenu-detail',
+    name: 'extramenu-detail',
+    component: extramenuDetail,
+    meta: {
+      ismenu: false,
+      title: '扩展菜单'
     }
   }
 ];
