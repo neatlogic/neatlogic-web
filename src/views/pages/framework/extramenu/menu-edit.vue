@@ -1,11 +1,9 @@
 <template>
-  <div>
-    <TsForm
-      ref="menuForm"
-      v-model="formData"
-      v-bind="formConfig"
-    ></TsForm>
-  </div>
+  <TsDialog v-bind="dialogConfig" @on-ok="save()" @on-close="close()">
+    <template v-slot>
+      <TsForm ref="menuForm" v-model="menuData" :item-list="formConfig"></TsForm>
+    </template>
+  </TsDialog>
 </template>
 <script>
 import TsForm from '@/resources/plugins/TsForm/TsForm.vue';
@@ -15,83 +13,86 @@ export default {
     TsForm
   },
   props: {
-    isMenu: {
-      type: Number,
-      default: 0
-    },
-    data: {
-      type: Object,
-      default: () => {}
-    },
-    parentId: Number
+    id: { type: Number },
+    parentId: { type: Number }
   },
   data() {
     return {
-      formData: {
-        name: '',
+      dialogConfig: {
+        title: this.id ? this.$t('dialog.title.edittarget', { target: this.$t('page.menu') }) : this.$t('dialog.title.addtarget', { target: this.$t('page.menu') }),
+        type: 'modal',
+        maskClose: false,
+        isShow: true,
+        width: 'medium'
+      },
+      menuData: {
         isActive: 1,
-        type: this.isMenu,
-        url: '',
+        type: 1,
         authorityList: ['common#alluser'],
-        description: ''
+        parentId: this.parentId,
+        openType: 'window'
       },
       formConfig: {
-        width: '75%',
-        itemList: {
-          name: {
-            label: '名称',
-            type: 'text',
-            validateList: ['required', { 
-              name: 'searchUrl',
-              url: '/api/rest/extramenu/save',
-              key: 'name',
-              params: {
-                parentId: this.data.parentId || this.parentId,
-                id: this.data.id
-              }
-            }]
-          },
-          isActive: {
-            type: 'switch',
-            label: this.$t('page.enable'),
-            validateList: ['required']
-          },
-          url: {
-            label: 'URL',
-            type: 'text',
-            validateList: ['required', 'url'],
-            isHidden: !this.isMenu
-          },
-          authorityList: {
-            type: 'userselect',
-            name: 'authorityList',
-            label: this.$t('page.auth'),
-            groupList: ['user', 'team', 'role', 'common'],
-            value: ['common#alluser']
-          },
-          description: {
-            label: '描述',
-            type: 'ckeditor',
-            params: {
-              uploadVideoConfig: {
-                type: 'framework'
-              }
+        name: {
+          label: this.$t('page.name'),
+          type: 'text',
+          maxLength: 50,
+          validateList: ['required']
+        },
+        type: {
+          type: 'radio',
+          label: this.$t('page.type'),
+          validateList: ['required'],
+          dataList: [
+            { value: 0, text: this.$t('page.catalogue') },
+            { value: 1, text: this.$t('page.link') }
+          ],
+          disabled: !!this.id,
+          onChange: value => {
+            if (value === 1) {
+              this.formConfig.url.isHidden = false;
+              this.formConfig.openType.isHidden = false;
+            } else {
+              this.formConfig.url.isHidden = true;
+              this.formConfig.openType.isHidden = true;
             }
           }
+        },
+        isActive: {
+          type: 'switch',
+          label: this.$t('page.enable'),
+          validateList: ['required']
+        },
+        url: {
+          label: 'URL',
+          type: 'text',
+          validateList: ['required', 'url']
+        },
+        openType: {
+          label: '打开方式',
+          type: 'radio',
+          dataList: [
+            { value: 'window', text: '新窗口' },
+            { value: 'iframe', text: '嵌套页面' }
+          ]
+        },
+        authorityList: {
+          type: 'userselect',
+          name: 'authorityList',
+          label: this.$t('page.auth'),
+          groupList: ['user', 'team', 'role', 'common']
+        },
+        description: {
+          label: this.$t('page.description'),
+          type: 'textarea'
         }
-      },
-      initValue: {
-        name: '',
-        isActive: 1,
-        type: this.isMenu,
-        url: '',
-        authorityList: ['common#alluser'],
-        description: ''
       }
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.init();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -102,11 +103,17 @@ export default {
   destroyed() {},
   methods: {
     init() {
-      this.formData = this.$utils.deepClone(this.initValue);
-      if (!this.$utils.isEmpty(this.data)) {
-        Object.keys(this.data).forEach(key => {
-          if (this.formData.hasOwnProperty(key)) {
-            this.$set(this.formData, key, this.data[key]);
+      if (this.id) {
+        this.$api.framework.extramenu.getMenuById(this.id).then(res => {
+          this.menuData = res.Return;
+          if (this.menuData) {
+            if (this.menuData.type === 1) {
+              this.formConfig.url.isHidden = false;
+              this.formConfig.openType.isHidden = false;
+            } else {
+              this.formConfig.url.isHidden = true;
+              this.formConfig.openType.isHidden = true;
+            }
           }
         });
       }
@@ -114,25 +121,24 @@ export default {
     valid() {
       return this.$refs.menuForm && this.$refs.menuForm.valid();
     },
+    close(needRefresh) {
+      this.$emit('close', needRefresh);
+    },
     save() {
-      if (!this.isMenu) {
-        this.$delete(this.formData, 'url');
+      const form = this.$refs.menuForm;
+      if (form && form.valid()) {
+        this.$api.framework.extramenu.saveMenuTreeNode(this.menuData).then(res => {
+          if (res.Status === 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+            this.close(true);
+          }
+        });
       }
-      return this.formData;
     }
   },
   filter: {},
   computed: {},
-  watch: {
-    data: {
-      handler() {
-        this.init();
-      },
-      immediate: true,
-      deep: true
-    }
-  }
+  watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

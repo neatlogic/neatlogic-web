@@ -1084,5 +1084,7 @@
   "mailserver": "邮件服务",
   "beforeconfig": "转换前配置",
   "dataconfig": "数据配置",
-  "datachange": "数据转换"
+  "datachange": "数据转换",
+  "childmenucount": "子菜单数量",
+  "systemmenuauth": "系统菜单权限"
 }

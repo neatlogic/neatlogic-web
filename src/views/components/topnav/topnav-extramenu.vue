@@ -11,7 +11,7 @@
     >
       <div class="cursor-pointer padding-sm">{{ extramenu.name }}</div>
     </Cascader>
-  </div>  
+  </div>
 </template>
 <script>
 export default {
@@ -69,7 +69,7 @@ export default {
         givenURL = new URL(string);
       } catch (error) {
         this.$Notice.error({ title: 'URL' + this.$t('page.exception'), desc: error});
-        return false; 
+        return false;
       }
       return true;
     }
