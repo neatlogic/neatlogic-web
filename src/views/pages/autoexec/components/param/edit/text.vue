@@ -24,7 +24,7 @@
           :class="type==='textarea'?'pre':''"
           border="border"
           :maxlength="config && config.maxlength ?config.maxlength : type==='textarea'? 6114:2048"
-          @on-change="updateval"
+          @on-blur="updateval"
         ></TsFormInput>
       </Col>
     </TsRow>

@@ -14,7 +14,7 @@
           :validateList="validateList"
           class="condition-param"
           :readonly="!canEdit"
-          @change="changeLoopItems"
+          @on-blur="changeLoopItems"
         ></TsFormInput>
       </TsFormItem>
       <TsFormItem
@@ -30,7 +30,7 @@
           :validateList="validateList"
           class="condition-param"
           :readonly="!canEdit"
-          @change="changeLoopItemVar"
+          @on-blur="changeLoopItemVar"
         ></TsFormInput>
       </TsFormItem>
     </div>
