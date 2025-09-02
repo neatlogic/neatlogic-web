@@ -1,9 +1,9 @@
 <template>
   <div>
     <TsDialog
-      :title="$t('page.edit')"
+      :title="$t('dialog.title.edittarget', { target: $t('page.defaulthomepage') })"
       type="slider"
-      width="90%"
+      width="huge"
       :isShow="true"
       @on-ok="okDialog"
       @on-close="closeDialog"
@@ -26,20 +26,16 @@
                 v-for="module in moduleList"
                 :key="module.moduleId"
                 class="module bg-op border-base"
-                :class="{'module-default' : module.isDefault}"
+                :class="{ 'module-default': module.isDefault }"
                 @click="changeDefaultModule(module)"
               >
-                <div class="module-icon" :class="'module-img-'+module.moduleId"></div>
+                <div class="module-icon" :class="'module-img-' + module.moduleId"></div>
                 <div class="module-name overflow">{{ $t(module.moduleName) }}</div>
                 <i class="module-check tsfont-check"></i>
               </li>
             </ul>
             <ul class="menu-list">
-              <li
-                v-for="module in moduleList"
-                :key="module.moduleId"
-                class="module"
-              >
+              <li v-for="module in moduleList" :key="module.moduleId" class="module">
                 <h4 class="title">{{ $t(module.moduleName) }}{{ $t('page.homepage') }}</h4>
                 <Select
                   :value="module.defaultPage"
@@ -48,20 +44,27 @@
                   clearable
                   transfer
                   transfer-class-name="menu-select"
-                  @on-select="option=>changeModuleDefaultPage(module,option.value)"
-                  @on-clear="changeModuleDefaultPage(module,'')"
+                  @on-select="option => changeModuleDefaultPage(module, option.value)"
+                  @on-clear="changeModuleDefaultPage(module, '')"
                 >
-                  <OptionGroup
-                    v-for="menuGroup in module.menuGroupList"
-                    :key="menuGroup.menuTypeName"
-                    :label="$t(menuGroup.menuTypeName)"
-                  >
+                  <OptionGroup v-for="menuGroup in module.menuGroupList" :key="menuGroup.menuTypeName" :label="$t(menuGroup.menuTypeName)">
                     <Option
-                      v-for="(menu,mindex) in menuGroup.menuList"
-                      :key="menu.name+'_'+mindex"
+                      v-for="(menu, mindex) in menuGroup.menuList"
+                      :key="menu.name + '_' + mindex"
                       :value="menu.path"
                       :label="$t(menu.name)"
                       :class="menu.icon"
+                    >
+                      <span class="pl-sm">{{ $t(menu.name) }}</span>
+                    </Option>
+                  </OptionGroup>
+                  <OptionGroup v-if="extraMenuList && extraMenuList.length > 0" key="_extramenu" label="扩展菜单">
+                    <Option
+                      v-for="(menu, mindex) in extraMenuList"
+                      :key="menu.id + '_' + mindex"
+                      :value="'/extramenu-detail?id='+menu.id"
+                      :label="$t(menu.name)"
+                      class="tsfont-bind"
                     >
                       <span class="pl-sm">{{ $t(menu.name) }}</span>
                     </Option>
@@ -81,8 +84,7 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
-  filters: {
-  },
+  filters: {},
   props: {
     id: Number
   },
@@ -102,10 +104,10 @@ export default {
           maxlength: 50,
           validateList: ['required', 'name-special', { name: 'searchUrl', url: '/api/rest/homepage/save', params: () => ({ id: this.formData.id }) }]
         },
-        authorityList: { 
+        authorityList: {
           type: 'userselect',
           label: '用户',
-          validateList: ['required'], 
+          validateList: ['required'],
           groupList: ['common', 'user', 'role', 'team'],
           isMultiple: true,
           transfer: true
@@ -117,12 +119,14 @@ export default {
         isActive: 1
       },
       moduleList: [],
-      homepageConfig: {}
+      homepageConfig: {},
+      extraMenuList: []
     };
   },
   beforeCreate() {},
   created() {
     this.init();
+    this.getExtraMenuItemList();
   },
   beforeMount() {},
   mounted() {},
@@ -133,9 +137,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getExtraMenuItemList() {
+      this.$api.framework.extramenu.listExtarmenuItem({openType: 'iframe', type: 1}).then(res => {
+        this.extraMenuList = res.Return;
+      });
+    },
     async init() {
       this.homepageConfig = {};
       const moduleList = this.$utils.deepClone(this.$store.state.topMenu.moduleList);
+      //添加扩展菜单
       await this.getHomePageConfig();
       if (!this.$utils.isEmpty(this.homepageConfig)) {
         this.formData = Object.assign({}, this.homepageConfig);
@@ -163,7 +173,7 @@ export default {
       if (!this.id) {
         return;
       }
-      return this.$api.framework.homepage.getHomepageConfig({id: this.id}).then(res => {
+      return this.$api.framework.homepage.getHomepageConfig({ id: this.id }).then(res => {
         if (res.Status == 'OK') {
           this.homepageConfig = res.Return;
         }

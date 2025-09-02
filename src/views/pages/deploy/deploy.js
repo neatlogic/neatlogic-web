@@ -7,6 +7,7 @@ import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import api from '@/resources/api/api.js';
 import LocalStore from '@/resources/assets/js/localStore.js';
 import State from '@/resources/assets/js/state.js';
+import commonRouters from '@/views/pages/common/router.js';
 
 import VueI18n from 'vue-i18n';
 import toolCatalogUtils from '@/views/pages/autoexec/utils/tools-catalog';
@@ -20,7 +21,7 @@ Vue.use(CompareUtil);//必须要在use router之后执行
 
 import {config} from './config.js';
 MODULEID = config.module;
-MENULIST = routers;
+MENULIST = [...commonRouters, ...routers];
 MENUTYPE = config.menuType;
 
 let router = initRouter(VueRouter, store);//路由拦截处理

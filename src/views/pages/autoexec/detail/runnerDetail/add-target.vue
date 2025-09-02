@@ -89,12 +89,12 @@
       </div>
       <template v-slot:footer>
         <Button @click="onOkUpdateList(false)">{{ $t('page.cancel') }}</Button>
-        <Button
+        <!-- <Button
           v-if="canEdit && type=='runtime'"
           type="primary"
           ghost
           @click="validSetting()"
-        >{{ $t('page.validate') }}</Button>
+        >{{ $t('page.validate') }}</Button> -->
         <Button type="primary" @click="okTarget()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>

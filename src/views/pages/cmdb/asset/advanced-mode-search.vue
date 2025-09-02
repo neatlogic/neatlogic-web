@@ -654,6 +654,7 @@ export default {
     getConditionList() {
       this.conditionList = [];
       this.searchConditionList = [];
+      this.canSearch = true;
       this.$api.autoexec.action.getValueconverttextList(this.value).then(res => {
         if (res.Status == 'OK') {
           let conditionConfig = res.Return;
