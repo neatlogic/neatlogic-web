@@ -1,6 +1,7 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
 const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
+
 const userManage = () => import('./users/user-manage.vue');
 const roleManage = () => import('./users/role-manage.vue');
 const teamManage = () => import('./users/team-manage.vue');
@@ -62,8 +63,6 @@ const regionManage = () => import('./region/region-manage.vue'); //地域管理
 const homepageManage = () => import('./homepage/homepage-manage.vue'); //首页管理
 const changelogAuditManage = () => import('./changelogaudit/changelogaudit-manage.vue'); //数据库变更记录
 const logManage = () => import('./log/log-manage.vue'); //查看日志
-
-const extramenuDetail = () => import('@/views/pages/framework/extramenu/extramenu-detail.vue');
 
 import { $t } from '@/resources/init.js';
 import { config } from './config.js';
@@ -771,15 +770,7 @@ let routerList = [
       authority: 'ADMIN',
       type: 'healthcheck'
     }
-  },
-  {
-    path: '/extramenu-detail',
-    name: 'extramenu-detail',
-    component: extramenuDetail,
-    meta: {
-      ismenu: false,
-      title: '扩展菜单'
-    }
   }
+
 ];
 export default routerList;

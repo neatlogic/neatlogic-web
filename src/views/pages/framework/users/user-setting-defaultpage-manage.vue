@@ -60,6 +60,17 @@
                 <span class="menu-name">{{ $t(menu.name) }}</span>
               </Option>
             </OptionGroup>
+            <OptionGroup v-if="extraMenuList && extraMenuList.length > 0" key="_extramenu" label="扩展菜单">
+              <Option
+                v-for="(menu, mindex) in extraMenuList"
+                :key="menu.id + '_' + mindex"
+                :value="'/extramenu-detail?id='+menu.id"
+                :label="$t(menu.name)"
+                class="tsfont-bind"
+              >
+                <span class="pl-sm">{{ $t(menu.name) }}</span>
+              </Option>
+            </OptionGroup>
           </Select>
         </li>
       </ul>
@@ -76,15 +87,22 @@ export default {
   data() {
     return {
       isCustome: false,
-      currentModuleList: []
+      currentModuleList: [],
+      extraMenuList: []
     };
   },
   async created() {
     await this.getUserSetting();
     this.$store.dispatch('updateMenu');
+    this.getExtraMenuItemList();
   },
 
   methods: {
+    getExtraMenuItemList() {
+      this.$api.framework.extramenu.listExtarmenuItem({openType: 'iframe', type: 1}).then(res => {
+        this.extraMenuList = res.Return;
+      });
+    },
     getUserSetting() {
       this.currentModuleList = [];
       return this.$api.framework.user.getUserSetting({type: 'defaultModulePage'}).then(res => {
@@ -119,7 +137,7 @@ export default {
         });
       } else {
         this.currentModuleList.forEach(module => {
-          module.isDefault = 0; 
+          module.isDefault = 0;
           module.defaultPage = '';
         });
         this.saveDefaultPageOnline();

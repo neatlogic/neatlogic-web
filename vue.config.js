@@ -106,7 +106,7 @@ function getPages(pageList) {
       Object.assign(pages, newpage);
     });
   }
-  console.log('pages', JSON.stringify(pages));
+  //console.log('pages', JSON.stringify(pages));
   return pages;
 }
 function getModuleName(moduleName) {
