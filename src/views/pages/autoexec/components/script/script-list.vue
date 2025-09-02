@@ -16,7 +16,7 @@
     >
       <li v-for="(step, sindex) in list" :id="'id_' + combopConfig.combopUuid + '_' + step.uuid" :key="sindex+'_'+step.uuid">
         <div v-if="step.operation" class="inner-block radius-lg" :class="{'hide-li':dragStatus == 'start' || !phaseShowMap[step.uuid], 'show-li': phaseShowMap[step.uuid], 'bg-op': step.operationName != 'native/IF-Block' && step.operationName != 'native/LOOP-Block', 'border-base': step.operationName == 'native/IF-Block' || step.operationName == 'native/LOOP-Block'}">
-          <div class="script-title border-color" @click="toggleshow(step)">
+          <div class="script-title border-color cursor-pointer" @click="toggleshow(step)">
             <div class="overflow">
               【{{ typeText(step.operationType) }}】
               <span class="text-action name" :title="step.operationName" @click.stop="gotoDateil(step)">{{ step.operationName }}</span>
