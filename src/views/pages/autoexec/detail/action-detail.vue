@@ -733,7 +733,7 @@ export default {
         this.currentStep = null;
         let data = this.getData();
         this.$set(data, 'status', 'draft');
-        this.loading =true;
+        this.loading = true;
         await this.$api.autoexec.action
           .saveActionVersion(data)
           .then(res => {
@@ -1058,12 +1058,12 @@ export default {
             let stepItem = this.stepList.find(c => c.uuid == this.currentStep);
             stepItem && (groupUuid = stepItem.groupUuid);
             groupUuid && (this.currentGroupConfig = this.combopGroupList.find(g => g.uuid == groupUuid));
-            if(!this.$utils.isEmpty(config.config.operationUuid)) {
+            if (!this.$utils.isEmpty(config.config.operationUuid)) {
               this.validPhaseOperationUuidList = config.config.operationUuid;
             }
             this.$nextTick(() => {
               this.$refs.stepConfig && this.$refs.stepConfig.valid(config.config);
-              if(!this.$utils.isEmpty(config.config.id)) {
+              if (!this.$utils.isEmpty(config.config.id)) {
                 this.$nextTick(() => {
                   this.$utils.jumpTo(config.config.id);
                 });
@@ -1409,7 +1409,6 @@ export default {
                 stepName: step.name,
                 validComponent: 'operation',
                 stepUuid: step.uuid,
-                operationUuid: p.uuid,
                 operationUuid: validUuidList,
                 id: '#id_' + step.uuid + '_' + p.uuid
               }

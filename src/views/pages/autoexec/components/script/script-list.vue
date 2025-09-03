@@ -464,10 +464,10 @@ export default {
     },
     validPhaseOperationUuidList: {
       handler(val) {
-        if(!this.$utils.isEmpty(val)) {
+        if (!this.$utils.isEmpty(val)) {
           val.forEach(item => {
             mutationsScript.setCombopPhaseShowMap(item, true);
-          })
+          });
         }
       },
       deep: true
