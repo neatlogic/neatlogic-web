@@ -214,8 +214,7 @@ export default {
         preCondition: {
           type: 'slot',
           label: '前置过滤器',
-          labelWidth: '113',
-          desc: ''
+          labelWidth: '113'
         },
         whenToSpecify: {
           type: 'radio',
