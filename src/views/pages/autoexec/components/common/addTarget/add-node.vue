@@ -29,7 +29,6 @@
               style="width:100%;display: inline-block;"
               :defaultValue="defaultSearchValue"
               :defaultSearchValue="defaultSearchValue"
-              :preCondition="preCondition"
               @changeValue="changeValue"
               @advancedModeSearch="(value) => advancedModeSearch(value, 1, 10)"
             ></FilterSearch>
@@ -181,6 +180,9 @@ export default {
         ...this.searchVal,
         ...this.defaultSearchValue
       };
+      if (!this.$utils.isEmpty(this.preCondition)) {
+        data.preCondition = this.preCondition;
+      }
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -260,6 +262,9 @@ export default {
         ...this.defaultSearchValue,
         ...searchVal
       };
+      if (!this.$utils.isEmpty(this.preCondition)) {
+        params.preCondition = this.preCondition;
+      }
       this.loadingShow = true;
       this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
         if (res.Status == 'OK') {
@@ -304,6 +309,13 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    preCondition: {
+      handler(val) {
+        this.clearAll();
+        this.handlePageChange();
+      },
+      deep: true
     }
   }
 };

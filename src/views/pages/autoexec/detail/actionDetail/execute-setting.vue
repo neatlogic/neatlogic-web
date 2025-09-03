@@ -305,7 +305,6 @@ export default {
       }
 
       this.settingConfig.executeNodeConfig = {};
-      
       if (this.settingConfig.whenToSpecify == 'now') {
         this.validSetting(true);
       } else if (this.settingConfig.whenToSpecify == 'runtime') {

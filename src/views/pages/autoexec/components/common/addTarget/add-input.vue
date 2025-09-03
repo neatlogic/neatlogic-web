@@ -213,6 +213,9 @@ export default {
         inputNodeList: list,
         cmdbGroupType: this.opType
       };
+      if (!this.$utils.isEmpty(this.preCondition)) {
+        data.preCondition = this.preCondition;
+      }
       this.isLoading = true;
       return this.$api.autoexec.action.validinputnodelist(data).then(res => {
         if (res.Status == 'OK') {
