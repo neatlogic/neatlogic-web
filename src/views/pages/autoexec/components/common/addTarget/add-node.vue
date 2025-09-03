@@ -29,6 +29,7 @@
               style="width:100%;display: inline-block;"
               :defaultValue="defaultSearchValue"
               :defaultSearchValue="defaultSearchValue"
+              :preCondition="preCondition"
               @changeValue="changeValue"
               @advancedModeSearch="(value) => advancedModeSearch(value, 1, 10)"
             ></FilterSearch>

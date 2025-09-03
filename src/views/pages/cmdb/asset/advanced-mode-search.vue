@@ -188,7 +188,7 @@
                         <Button @click="isVisible = false">{{ $t('page.cancel') }}</Button>
                       </div>
                       <div class="action-item">
-                        <Button type="primary" @click="searchConditionBtn">{{ $t('page.search') }}</Button>
+                        <Button type="primary" @click="searchConditionBtn">{{ searchText }}</Button>
                       </div>
                     </div>
                   </div>
@@ -245,6 +245,12 @@ export default {
       // 搜索条件列表
       type: Array,
       default: () => { return []; }
+    },
+    searchText: {
+      type: String,
+      default() {
+        return this.$t('page.search');
+      }
     }
   },
   data() {
