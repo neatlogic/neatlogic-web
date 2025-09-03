@@ -555,26 +555,26 @@ export default {
           });
         }
       });
-      conditionList && !this.$utils.isEmpty(conditionList) && conditionList.forEach((item) => {
-        if (uuidList && this.$utils.isEmpty(uuidList) && item.name && item.expression) {
-          this.searchConditionList.push({conditionList: [item], uuid: item.uuid, childUuid: item.childUuid, joinType: item.joinType, childJoinType: item.childJoinType}); // 根据id相同，合并分组
-          uuidList.push(item.uuid);
-        } else if (uuidList.includes(item.uuid)) {
-          this.searchConditionList.forEach((v) => {
-            if (v && v.conditionList && !this.$utils.isEmpty(v.conditionList) && v.uuid == item.uuid) {
-              v.conditionList.push(item);
-            } else if (v && !v.hasOwnProperty('conditionList')) {
-              this.$set(v, 'conditionList', [item]);
-            }
-          });
-        } else if (!uuidList.includes(item.uuid) && item && item.name && item.expression) {
-          this.searchConditionList.push({
-            conditionList: [item],
-            uuid: item.uuid,
-            joinType: item.joinType,
-            childUuid: item.childUuid,
-            childJoinType: item.childJoinType
-          });
+      !this.$utils.isEmpty(conditionList) && conditionList.forEach((item) => {
+        if (item.name && item.expression) {
+          if (uuidList.includes(item.uuid)) {
+            this.searchConditionList.forEach((v) => {
+              if (v && !this.$utils.isEmpty(v.conditionList) && v.uuid == item.uuid) {
+                v.conditionList.push(item);
+              } else if (v && !v.hasOwnProperty('conditionList')) {
+                this.$set(v, 'conditionList', [item]);
+              }
+            });
+          } else if (!uuidList.includes(item.uuid)) {
+            this.searchConditionList.push({
+              conditionList: [item],
+              uuid: item.uuid,
+              joinType: item.joinType,
+              childUuid: item.childUuid,
+              childJoinType: item.childJoinType
+            });
+            uuidList.push(item.uuid);
+          }
         }
       });
       this.searchConditionList && this.searchConditionList.forEach((v, tIndex) => {
