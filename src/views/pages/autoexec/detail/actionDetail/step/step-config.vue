@@ -225,7 +225,7 @@ export default {
       this.$el && (this.height = this.$el.getBoundingClientRect().top);
     },
     valid(config) {
-     if (this.$refs.list) {
+      if (this.$refs.list) {
         this.$refs.list.valid(config);
       } 
     },
