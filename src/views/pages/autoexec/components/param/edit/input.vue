@@ -6,7 +6,7 @@
     :disabled="disabled"
     v-bind="getSetting"
     border="border"
-    @on-change="updateval"
+    @on-blur="updateval"
   ></TsFormInput>
 </template>
 

@@ -8,7 +8,7 @@
     border="border"
     type="textarea"
     :maxlength="maxlength"
-    @on-change="updateval"
+    @on-blur="updateval"
   ></TsFormInput>
 </template>
 <script>

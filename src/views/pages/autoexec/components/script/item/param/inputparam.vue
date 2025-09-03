@@ -511,7 +511,7 @@ export default {
     },
     getProfileParamConfig() {
       return (profileParamVoList, item) => {
-        let config = '';
+        let config = {};
         let findItem = null;
         if (!this.$utils.isEmpty(this.overrideProfileList)) {
           findItem = this.overrideProfileList.find(p => p.profileId === this.profileId);
