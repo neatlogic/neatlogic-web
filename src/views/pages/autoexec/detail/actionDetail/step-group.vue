@@ -167,7 +167,7 @@
                     @changeValue="changePreConditionValue"
                     @advancedModeSearch="changePreConditionValue"
                   ></ConditionSearch>
-                  <div class="text-tip">如果为空时，继承全局过滤器</div>
+                  <div class="text-tip">如果为空时，继承全局前置过滤器</div>
                 </template>
               </TsForm>
             </div>
@@ -180,6 +180,7 @@
                 :preCondition="executeConfig.preCondition || globalPreCondition"
                 :isAddParam="true"
                 :labelWidth="100"
+                :required="!$utils.isEmpty(executeConfig.preCondition)"
               ></TargetDetail>
             </div>
           </div>
@@ -230,7 +231,7 @@
       :maskClose="true"
       @on-close="moreVisible = false"
     >
-      <TargetView :config="groupConfig.config.executeConfig.executeNodeConfig"></TargetView>
+      <TargetView :config="groupConfig.config.executeConfig.executeNodeConfig" :preCondition="executeConfig && executeConfig.preCondition" :globalPreCondition="globalPreCondition"></TargetView>
     </TsDialog>
     <TargetValid
       v-if="isValid"
@@ -631,11 +632,13 @@ export default {
     width: 100%;
   }
 }
-::v-deep .tag-item-text{
+.step-group {
+  ::v-deep .tag-item-text{
   display: block !important;
-  &:not(:last-of-type){
-    margin-right: 0 !important;
-    margin-bottom: 10px;
+    &:not(:last-of-type){
+      margin-right: 0 !important;
+      margin-bottom: 10px;
+    }
   }
 }
 .param-item {

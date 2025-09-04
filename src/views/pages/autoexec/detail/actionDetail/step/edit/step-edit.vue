@@ -88,7 +88,7 @@
                       @changeValue="changePreConditionValue"
                       @advancedModeSearch="changePreConditionValue"
                     ></ConditionSearch>
-                    <div class="text-tip">如果为空时，继承全局过滤器</div>
+                    <div class="text-tip">如果为空时，继承全局前置过滤器</div>
                   </template>
                 </TsForm>
                 <div class="pt-nm">
@@ -103,6 +103,7 @@
                     :prevStepList="prevStepList"
                     :runtimeParamList="runtimeParamList"
                     :preCondition="preCondition || globalPreCondition"
+                    :required="!$utils.isEmpty(executeConfig.preCondition)"
                   ></TargetDetail>
                 </div>
               </template>

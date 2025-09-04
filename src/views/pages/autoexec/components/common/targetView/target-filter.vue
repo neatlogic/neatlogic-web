@@ -1,6 +1,20 @@
 
 <template>
   <div>
+    <TsFormItem v-if="!$utils.isEmpty(preCondition)" :label="'前置过滤器'" labelPosition="left">
+      <FilterSearch
+        :defaultValue="preCondition"
+        :readonly="true"
+        :showSearchNumber="3"
+      ></FilterSearch>
+    </TsFormItem>
+    <TsFormItem v-else-if="!$utils.isEmpty(globalPreCondition)" :label="'全局前置过滤器'" labelPosition="left">
+      <FilterSearch
+        :defaultValue="globalPreCondition"
+        :readonly="true"
+        :showSearchNumber="3"
+      ></FilterSearch>
+    </TsFormItem>
     <div class="pb-md">
       <FilterSearch
         :defaultValue="searchVal"
@@ -42,12 +56,15 @@ export default {
   name: '',
   components: {
     FilterSearch,
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
   filters: {
   },
   props: {
-    config: Object
+    config: Object,
+    preCondition: Object,
+    globalPreCondition: Object //全局前置过滤器
   },
   data() {
     return {

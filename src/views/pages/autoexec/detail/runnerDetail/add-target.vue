@@ -1,6 +1,35 @@
 <template>
   <div class="target-div">
     <div>
+      <!-- 过滤器 -->
+      <div v-if="filter">
+        <TsFormItem
+          label="过滤器"
+          :labelWidth="100"
+          labelPosition="left"
+        >
+          <div class="flex-start">
+            <Filters
+              ref="filterMain"
+              :defaultValue="filter"
+              :readonly="true"
+              :bgOp="false"
+              class="nopadding overflow"
+              @clickMoreBtn="moreVisible=true"
+            ></Filters>
+            <div class="pl-xs" style="flex: none;">
+              <span v-if="type=='now'" class="text-tip-active pl-xs" @click="moreVisible=true">{{ $t('page.viewdetails') }}</span>
+              <span
+                v-else-if="canEdit && type=='runtime' && filter"
+                class="tsfont-edit-s text-tip-active pl-xs"
+                :title="$t('page.edit')"
+                @click="moreVisible=true"
+              ></span>
+              <span v-if="canEdit && filter" class="text-href pl-xs" @click="clearTarget">{{ $t('page.clear') }}</span>
+            </div>
+          </div>
+        </TsFormItem>
+      </div>
       <div class="div-content">
         <!-- 作业参数作为执行目标 -->
         <template v-if="paramList.length">
@@ -8,25 +37,6 @@
           <template v-for="(p,pindex) in paramList">
             <span v-if="getParamText(p.text)" :key="`p_${pindex}`" class="item border-color bg-op">{{ getParamText(p.text) }}</span>
           </template>
-        </template>
-        <!-- 过滤器 -->
-        <template v-if="filter">
-          <Filters
-            ref="filterMain"
-            :defaultValue="filter"
-            :readonly="true"
-            :bgOp="false"
-            class="nopadding filter-main overflow"
-            @clickMoreBtn="moreVisible=true"
-          ></Filters>
-          <span v-if="type=='now'" class="btn text-tip-active" @click="moreVisible=true">{{ $t('page.viewdetails') }}</span>
-          <span
-            v-else-if="canEdit && type=='runtime' && filter"
-            class="tsfont-edit-s btn text-tip-active"
-            :title="$t('page.edit')"
-            @click="moreVisible=true"
-          ></span>
-          <span v-if="canEdit && filter" class="btn text-href" @click="clearTarget">{{ $t('page.clear') }}</span>
         </template>
         <!-- 添加按钮 -->
         <Button
@@ -72,14 +82,29 @@
       @on-close="onOkUpdateList(false)"
     >
       <div class="pl-nm pr-nm">
-        <TargetDetail
-          v-if="type=='runtime'"
-          :id="id"
-          ref="targetDetail"
-          :config="valueConfig"
-          :canEdit="canEdit"
-          :defaultSearchValue="filterSearchValue"
-        ></TargetDetail>
+        <template v-if="type=='runtime'">
+          <TsFormItem
+            v-if="!$utils.preCondition"
+            label="前置过滤器"
+            :labelWidth="100"
+            labelPosition="left"
+          >
+            <ConditionSearch
+              :defaultValue="preCondition"
+              :readonly="true"
+              class="nopadding"
+            ></ConditionSearch>
+          </TsFormItem>
+          <TargetDetail
+            :id="id"
+            ref="targetDetail"
+            :config="valueConfig"
+            :canEdit="canEdit"
+            :defaultSearchValue="filterSearchValue"
+            :preCondition="preCondition"
+            :labelWidth="100"
+          ></TargetDetail>
+        </template>
         <TargetView
           v-else
           :id="id"
@@ -126,7 +151,9 @@ export default {
     NodeDetail: () => import('@/views/pages/autoexec/components/param/edit/node/add-node.vue'),
     Filters: () => import('@/views/pages/autoexec/components/common/executionMode/filters.vue'),
     TargetView: () => import('@/views/pages/autoexec/components/common/targetView/target.vue'),
-    TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue')
+    TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
+    ConditionSearch: () => import('@/views/pages/autoexec/detail/actionDetail/condition-search.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
   filters: {},
   props: {
@@ -159,7 +186,8 @@ export default {
     filterSearchValue: { //节点搜索条件
       type: Object
     },
-    defaultTagFilter: Array
+    defaultTagFilter: Array,
+    preCondition: Object //全局前置过滤器
   },
   data() {
     return {
@@ -518,12 +546,9 @@ export default {
         cursor: pointer;
       }
     }
-    .nopadding {
-      padding: 0 !important;
-    }
-    .filter-main {
-      max-width: 80%;
-    }
   }
+}
+.nopadding {
+  padding: 0 !important;
 }
 </style>

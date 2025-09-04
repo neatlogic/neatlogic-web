@@ -152,6 +152,18 @@
         <div>
           <Divider orientation="start">{{ $t('term.autoexec.executetarget') }}</Divider>
           <div v-if="needExecuteNode" class="box-block">
+            <TsFormItem
+              v-if="!$utils.isEmpty(executeConfig.preCondition)"
+              label="前置过滤器"
+              :labelWidth="100"
+              labelPosition="left"
+            >
+              <ConditionSearch
+                :defaultValue="executeConfig.preCondition"
+                :readonly="true"
+                class="nopadding"
+              ></ConditionSearch>
+            </TsFormItem>
             <AddTarget
               :id="actionId"
               ref="addTarget"
@@ -162,6 +174,7 @@
               :runtimeParamList="runtimeParamList"
               :needBorder="needExecuteUser|| needProtocol"
               :filterSearchValue="filterSearchValue"
+              :preCondition="executeConfig.preCondition"
             ></AddTarget>
           </div>
           <div v-else class="box-block text-tip">
@@ -289,7 +302,8 @@ export default {
     ExpiredReasonAlert: () => import('./expired-reason-alert'),
     ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
-    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue')
+    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
+    ConditionSearch: () => import('@/views/pages/autoexec/detail/actionDetail/condition-search.vue')
   },
   filters: {},
   props: {

@@ -307,9 +307,6 @@ export default {
       if (this.settingConfig.whenToSpecify == 'now') {
         this.validSetting(true);
       } else if (this.settingConfig.whenToSpecify == 'runtime') {
-        let filterValue = this.$refs.runtimeFilter.save();
-        let complexModeSearchValue = this.$refs.runtimeFilter.getComplexModeSearchValue(); // 获取复杂模式搜索值
-        this.$set(this.settingConfig.executeNodeConfig, 'filter', complexModeSearchValue && !this.$utils.isEmptyObj(complexModeSearchValue) ? complexModeSearchValue : filterValue);
         this.save();
       } else if (this.settingConfig.whenToSpecify == 'runtimeparam') {
         let paramList = this.$refs.runtimeparam.save();
