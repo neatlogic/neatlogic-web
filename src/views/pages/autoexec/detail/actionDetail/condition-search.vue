@@ -502,7 +502,7 @@ export default {
     defaultSearchValue: {
       handler(val) {
         if (val) {
-          if (val && val.hasOwnProperty('conditionGroupList')) {
+          if (val && val.hasOwnProperty('conditionGroupList') && !this.$utils.isEmpty(val.conditionGroupList)) {
             this.isSimpleMode = true;
             this.isSimpleMode = !this.isSimpleMode;
             this.complexInit(); // 复杂模式设置禁用值

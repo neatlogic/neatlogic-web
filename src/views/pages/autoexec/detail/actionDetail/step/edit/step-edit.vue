@@ -88,6 +88,7 @@
                       @changeValue="changePreConditionValue"
                       @advancedModeSearch="changePreConditionValue"
                     ></ConditionSearch>
+                    <div class="text-tip">如果为空时，继承全局过滤器</div>
                   </template>
                 </TsForm>
                 <div class="pt-nm">
@@ -313,8 +314,7 @@ export default {
         },
         preCondition: {
           type: 'slot',
-          label: '前置过滤器',
-          desc: '如果为空时，继承全局过滤器'
+          label: '前置过滤器'
         }
       },
       executeConfig: {

@@ -34,14 +34,12 @@
       </div>
       <template v-if="groupConfig.config.executeConfig && !$utils.isEmpty(groupConfig.config.executeConfig)">
         <TsFormItem label="前置过滤器" labelWidth="100">
-          <template v-if="!$utils.isEmpty(groupConfig.config.preCondition)">
-            {{ groupConfig.config }}
-            <Filters
-              :defaultValue="groupConfig.config.preCondition"
+          <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.preCondition)">
+            <ConditionSearch
+              :defaultValue="groupConfig.config.executeConfig.preCondition"
               :readonly="true"
-              :showSearchNumber="2"
               class="nopadding"
-            ></Filters>
+            ></ConditionSearch>
           </template>
           <template v-else>-</template>
         </TsFormItem>
@@ -169,6 +167,7 @@
                     @changeValue="changePreConditionValue"
                     @advancedModeSearch="changePreConditionValue"
                   ></ConditionSearch>
+                  <div class="text-tip">如果为空时，继承全局过滤器</div>
                 </template>
               </TsForm>
             </div>
@@ -332,8 +331,7 @@ export default {
           },
           preCondition: {
             type: 'slot',
-            label: '前置过滤器',
-            desc: '如果为空时，继承全局过滤器'
+            label: '前置过滤器'
           }
         }
       },

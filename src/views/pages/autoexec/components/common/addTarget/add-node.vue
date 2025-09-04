@@ -312,8 +312,10 @@ export default {
     },
     preCondition: {
       handler(val) {
-        this.clearAll();
-        this.handlePageChange();
+        if (!this.$utils.isEmpty(val)) {
+          this.clearAll();
+          this.handlePageChange();
+        }
       },
       deep: true
     }
