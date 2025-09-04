@@ -21,6 +21,9 @@ const extramenu = {
   },
   moveExtramenu(params) { //拖拽排序
     return axios.post('/api/rest/extramenu/move', params);
+  },
+  listExtarmenuItem(params) {
+    return axios.post('/api/rest/extramenu/item/list', params);
   }
 };
 export default extramenu;

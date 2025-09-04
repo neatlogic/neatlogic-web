@@ -107,14 +107,18 @@ function getPages(pageList) {
       entry = `${communityModule}/${moduleName}/${filename}.js`;
     } else if (commercialModuleList.includes(filename)) {
       entry = `${commercialModule}/${moduleName}/${filename}.js`;
-    } 
-    pages[filename] = {
-      entry,
-      template: `public/index.html`,
-      filename: `${filename}.html`,
-      title: pageLogin,
-      chunks: [`chunk-vendors`, `chunk-common`, filename]
-    };
+    }
+    const entryPath = path.resolve(__dirname, entry);
+    const needEntry = glob.sync(entryPath);
+    if (needEntry.length > 0) {
+      pages[filename] = {
+        entry,
+        template: `public/index.html`,
+        filename: `${filename}.html`,
+        title: pageLogin,
+        chunks: [`chunk-vendors`, `chunk-common`, filename]
+      };
+    }
   });
 
   return pages;

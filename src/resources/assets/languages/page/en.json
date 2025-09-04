@@ -1084,5 +1084,6 @@
   "dataconfig": "data configuration",
   "datachange": "data conversion",
   "childmenucount": "Number of submenus",
-  "systemmenuauth": "System menu permissions"
+  "systemmenuauth": "System menu permissions",
+  "defaulthomepage": "default page"
 }

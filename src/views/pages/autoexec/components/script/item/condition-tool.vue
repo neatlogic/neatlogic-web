@@ -19,7 +19,7 @@
         :validateList="validateList"
         class="condition-param"
         :readonly="!canEdit"
-        @change="changeCondition"
+        @on-blur="changeCondition"
       ></TsFormInput>
     </div>
     <!-- 满足执行 -->

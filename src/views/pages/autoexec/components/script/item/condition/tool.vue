@@ -6,7 +6,7 @@
     </div>
 
     <div v-if="phaseOperationList&& phaseOperationList.length" class="config-list">
-      <ConditionToolList
+      <ScriptList
         ref="conditionToolList"
         :phaseOperationList="phaseOperationList"
         :canEdit="canEdit"
@@ -19,7 +19,7 @@
         :inputTypeList="inputTypeList"
         :execMode="execMode"
         @sortList="sortList"
-      ></ConditionToolList>
+      ></ScriptList>
     </div>
     <AddOperation
       v-if="isAdd"
@@ -33,10 +33,11 @@
 </template>
 <script>
 import itemmixin from '@/views/pages/autoexec/components/script/item/itemmixin.js';
+import ScriptList from '@/views/pages/autoexec/components/script/script-list.vue';
 export default {
   name: '',
   components: {
-    ConditionToolList: () => import('./condition-tool-list'),
+    ScriptList,
     AddOperation: () => import('@/views/pages/autoexec/detail/actionDetail/step/edit/operation-add')
   },
   mixins: [itemmixin],
