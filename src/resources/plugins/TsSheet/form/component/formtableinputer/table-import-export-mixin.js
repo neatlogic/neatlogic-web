@@ -520,7 +520,7 @@ export default {
             return [handleSingleValue(value)];
           }
         } else {
-          return [handleSingleValue(value)];
+          return handleSingleValue(value);
         }
       }
       return typeof value == 'number' ? String(value) : value;
