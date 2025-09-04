@@ -149,12 +149,12 @@
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
-        <Button
+        <!-- <Button
           v-if="editConfig.execMode !='runner'"
           type="primary"
           ghost
           @click="validSetting()"
-        >{{ $t('page.validate') }}</Button>
+        >{{ $t('page.validate') }}</Button> -->
         <Button type="primary" @click="ok()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
@@ -313,7 +313,8 @@ export default {
         },
         preCondition: {
           type: 'slot',
-          label: '前置过滤器'
+          label: '前置过滤器',
+          desc: '如果为空时，继承全局过滤器'
         }
       },
       executeConfig: {

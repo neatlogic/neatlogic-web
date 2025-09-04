@@ -488,10 +488,10 @@ export default {
       handler(val) {
         this.isSimpleMode = true; // 重置简单模式，防止编辑执行目标时，模式回显不正确问题
         if (val) {
-          if (val && val.hasOwnProperty('conditionGroupList')) {
+          if (val && val.hasOwnProperty('conditionGroupList') && !this.$utils.isEmpty(val.conditionGroupList) && !this.$utils.isSame(val, this.complexSearchVal)) {
             this.complexSearchVal = this.$utils.deepClone(val);
             this.isSimpleMode = !this.isSimpleMode;
-          } else {
+          } else if (!this.$utils.isSame(val, this.searchVal)) {
             this.searchVal = this.$utils.deepClone(val);
           }
         }

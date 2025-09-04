@@ -5,7 +5,7 @@
       <div class="pr-xs">{{ $t('term.autoexec.stagegroup') }}</div>
       <div class="group-sort border-color">{{ currentGroupConfig.sort + 1 }}</div>
     </div>
-    <TsFormItem :label="$t('term.deploy.executivestrategy')" labelWidth="80" :required="true">
+    <TsFormItem :label="$t('term.deploy.executivestrategy')" labelWidth="100" :required="true">
       <TsFormSelect
         v-model="groupPolicy"
         :dataList="dataList"
@@ -33,7 +33,19 @@
         </div>
       </div>
       <template v-if="groupConfig.config.executeConfig && !$utils.isEmpty(groupConfig.config.executeConfig)">
-        <TsFormItem :label="$t('term.autoexec.executetarget')" labelWidth="80" class="">
+        <TsFormItem label="前置过滤器" labelWidth="100">
+          <template v-if="!$utils.isEmpty(groupConfig.config.preCondition)">
+            {{ groupConfig.config }}
+            <Filters
+              :defaultValue="groupConfig.config.preCondition"
+              :readonly="true"
+              :showSearchNumber="2"
+              class="nopadding"
+            ></Filters>
+          </template>
+          <template v-else>-</template>
+        </TsFormItem>
+        <TsFormItem :label="$t('term.autoexec.executetarget')" labelWidth="100">
           <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.executeNodeConfig)">
             <template v-if="groupConfig.config.executeConfig.executeNodeConfig.filter">
               <Filters
@@ -68,19 +80,19 @@
           </template>
           <template v-else>-</template>
         </TsFormItem>
-        <TsFormItem :label="$t('page.whitelist')" labelWidth="80">
+        <TsFormItem :label="$t('page.whitelist')" labelWidth="100">
           <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.whitelist)">
             <NodeView :list="groupConfig.config.executeConfig.whitelist"></NodeView>
           </template>
           <template v-else>-</template>
         </TsFormItem>
-        <TsFormItem :label="$t('page.blacklist')" labelWidth="80">
+        <TsFormItem :label="$t('page.blacklist')" labelWidth="100">
           <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.blacklist)">
             <NodeView :list="groupConfig.config.executeConfig.blacklist"></NodeView>
           </template>
           <template v-else>-</template>
         </TsFormItem>
-        <TsFormItem :label="$t('page.protocol')" labelWidth="80">
+        <TsFormItem :label="$t('page.protocol')" labelWidth="100">
           <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.protocolId)">
             <TsFormSelect
               v-bind="executeForm.itemList.protocolId"
@@ -90,7 +102,7 @@
           </template>
           <template v-else>-</template>
         </TsFormItem>
-        <TsFormItem :label="$t('page.executeuser')" labelWidth="80">
+        <TsFormItem :label="$t('page.executeuser')" labelWidth="100">
           <div v-if="!$utils.isEmpty(groupConfig.config.executeConfig.executeUser)">
             <ExecuteuserSetting
               :config="groupConfig.config.executeConfig.executeUser"
@@ -100,19 +112,19 @@
           </div>
           <div v-else>-</div>
         </TsFormItem>
-        <TsFormItem :label="$t('page.autoexecparallpolicy')" labelWidth="80">
+        <TsFormItem :label="$t('page.autoexecparallpolicy')" labelWidth="100">
           <div v-if="!$utils.isEmpty(groupConfig.config.executeConfig.parallelPolicy)">
             {{ getParallelPolicyText(groupConfig.config.executeConfig.parallelPolicy) }}
           </div>
           <div v-else>-</div>
         </TsFormItem>
-        <TsFormItem v-if="groupConfig.config.executeConfig.parallelPolicy === 'roundCount'" :label="$t('term.autoexec.batchquantity')" labelWidth="80">
+        <TsFormItem v-if="groupConfig.config.executeConfig.parallelPolicy === 'roundCount'" :label="$t('term.autoexec.batchquantity')" labelWidth="100">
           <div v-if="!$utils.isEmpty(groupConfig.config.executeConfig.roundCount)">
             {{ getRoundCountText(groupConfig.config.executeConfig.roundCount) }}
           </div>
           <div v-else>-</div>
         </TsFormItem>
-        <TsFormItem v-else :label="$t('term.autoexec.parall')" labelWidth="80">
+        <TsFormItem v-else :label="$t('term.autoexec.parall')" labelWidth="100">
           <div v-if="!$utils.isEmpty(groupConfig.config.executeConfig.parallelCount)">
             {{ getRoundCountText(groupConfig.config.executeConfig.parallelCount) }}
           </div>
@@ -149,6 +161,15 @@
                     :runtimeParamList="runtimeParamList"
                   ></ExecuteuserSetting>
                 </template>
+                <template v-slot:preCondition>
+                  <ConditionSearch
+                    ref="preCondition"
+                    :defaultValue="executeConfig.preCondition"
+                    :readonly="!canEdit"
+                    @changeValue="changePreConditionValue"
+                    @advancedModeSearch="changePreConditionValue"
+                  ></ConditionSearch>
+                </template>
               </TsForm>
             </div>
             <div>
@@ -157,7 +178,9 @@
                 ref="targetDetail"
                 :canEdit="canEdit"
                 :config="executeConfig.executeNodeConfig"
+                :preCondition="executeConfig.preCondition"
                 :isAddParam="true"
+                :labelWidth="100"
               ></TargetDetail>
             </div>
           </div>
@@ -190,11 +213,11 @@
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
-        <Button
+        <!-- <Button
           type="primary"
           ghost
           @click="validSetting()"
-        >{{ $t('page.validate') }}</Button>
+        >{{ $t('page.validate') }}</Button> -->
         <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
@@ -233,7 +256,8 @@ export default {
     Filters: () => import('@/views/pages/autoexec/components/common/executionMode/filters.vue'),
     TargetView: () => import('@/views/pages/autoexec/components/common/targetView/target.vue'),
     TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
-    ExecuteuserSetting: () => import('./executeuser-setting.vue')
+    ExecuteuserSetting: () => import('./executeuser-setting.vue'),
+    ConditionSearch: () => import('@/views/pages/autoexec/detail/actionDetail/condition-search.vue')
   },
   filters: {
   },
@@ -250,7 +274,7 @@ export default {
       dataList: [],
       executeForm: {
         labelPosition: 'left',
-        labelWidth: 80,
+        labelWidth: 100,
         itemList: {
           protocolId: {
             type: 'select',
@@ -305,6 +329,11 @@ export default {
             desc: this.$t('term.autoexec.paralldesc'),
             dataList: this.$utils.getRoundCountList(),
             isHidden: true
+          },
+          preCondition: {
+            type: 'slot',
+            label: '前置过滤器',
+            desc: '如果为空时，继承全局过滤器'
           }
         }
       },
@@ -365,7 +394,8 @@ export default {
         parallelPolicy: null,
         executeNodeConfig: {},
         whitelist: [],
-        blacklist: []
+        blacklist: [],
+        preCondition: null
       };
     },
     addTarget() {
@@ -492,7 +522,7 @@ export default {
     },
     async save() {
       this.isValid = false;
-      await this.validSetting(true);
+      // await this.validSetting(true);
       if (this.isValid) {
         return;
       } else {
@@ -518,6 +548,9 @@ export default {
           this.$set(this.executeForm.itemList.parallelCount, 'isHidden', false);
         }
       });
+    },
+    changePreConditionValue(val) {
+      this.$set(this.executeConfig, 'preCondition', val);
     }
   },
   computed: {
