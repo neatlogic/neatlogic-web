@@ -177,7 +177,7 @@
                 ref="targetDetail"
                 :canEdit="canEdit"
                 :config="executeConfig.executeNodeConfig"
-                :preCondition="executeConfig.preCondition"
+                :preCondition="executeConfig.preCondition || globalPreCondition"
                 :isAddParam="true"
                 :labelWidth="100"
               ></TargetDetail>
@@ -264,7 +264,8 @@ export default {
     id: [Number, String],
     canEdit: Boolean,
     currentGroupConfig: Object,
-    runtimeParamList: Array //运行参数
+    runtimeParamList: Array, //运行参数
+    globalPreCondition: Object //全局前置过滤器
   },
   data() {
     let _this = this;
@@ -548,7 +549,7 @@ export default {
       });
     },
     changePreConditionValue(val) {
-      this.$set(this.executeConfig, 'preCondition', val);
+      this.$set(this.executeConfig, 'preCondition', !this.$utils.isEmpty(val) ? val : null);
     }
   },
   computed: {

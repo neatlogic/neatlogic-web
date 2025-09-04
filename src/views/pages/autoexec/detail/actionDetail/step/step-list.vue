@@ -98,6 +98,7 @@
       :groupConfig="groupConfig"
       :prevStepList="getPrev(editConfig, stepList)"
       :runtimeParamList="runtimeParamList"
+      :globalPreCondition="globalPreCondition"
       @close="close"
     ></StepEdit>
   </div>
@@ -145,7 +146,8 @@ export default {
       type: Array
     },
     scrollLeft: Number,
-    runtimeParamList: Array
+    runtimeParamList: Array,
+    globalPreCondition: Object //全局前置条件
   },
   data() {
     return {

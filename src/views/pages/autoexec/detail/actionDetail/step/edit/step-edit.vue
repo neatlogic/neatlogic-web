@@ -102,7 +102,7 @@
                     :isAddPrenode="prevStepList.length > 0 ? true : false"
                     :prevStepList="prevStepList"
                     :runtimeParamList="runtimeParamList"
-                    :preCondition="preCondition"
+                    :preCondition="preCondition || globalPreCondition"
                   ></TargetDetail>
                 </div>
               </template>
@@ -215,7 +215,8 @@ export default {
       type: Array,
       default: () => []
     },
-    runtimeParamList: Array
+    runtimeParamList: Array,
+    globalPreCondition: Object //全局前置过滤器
   },
   data() {
     let _this = this;
@@ -359,7 +360,7 @@ export default {
             this.executeConfig[key] = this.config.config.executeConfig[key];
           }
         });
-        this.preCondition = this.$utils.deepClone(this.executeConfig.preCondition);
+        this.preCondition = !this.$utils.isEmpty(this.globalPreCondition) ? this.$utils.deepClone(this.executeConfig.preCondition) : null;
         if (!this.$utils.isEmpty(this.executeConfig.runnerGroup) || !this.$utils.isEmpty(this.executeConfig.runnerGroupTag)) {
           this.$set(this.executeConfig, 'isPresetRunnerGroup', 1);
         }
@@ -541,8 +542,8 @@ export default {
         }
       });
     },
-    changePreConditionValue(val) {
-      this.preCondition = val;
+    changePreConditionValue(val) { 
+      this.preCondition = !this.$utils.isEmpty(val) ? val : null;
     }
   },
   computed: {},

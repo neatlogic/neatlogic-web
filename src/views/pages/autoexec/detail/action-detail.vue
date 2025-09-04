@@ -126,6 +126,7 @@
           :canEdit="effectiveEditable && operationType == 'combop' ? true : false"
           :execModeList="execModeList"
           :runtimeParamList="runtimeParamList"
+          :globalPreCondition="executeConfig.preCondition"
           @updateSort="updateSort"
           @change="changeSelectStep"
         ></StepList>
@@ -187,6 +188,7 @@
                 :currentGroupConfig="currentGroupConfig"
                 :runtimeParamList="runtimeParamList"
                 :canEdit="effectiveEditable && operationType == 'combop' ? true : false"
+                :globalPreCondition="executeConfig.preCondition"
                 @save="saveCurrentGroupConfig"
               ></StepGroup>
             </div>
