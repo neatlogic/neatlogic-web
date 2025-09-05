@@ -190,7 +190,7 @@ export default {
       if (!this.$utils.isEmpty(this.preCondition)) {
         params.preCondition = this.preCondition;
       }
-      this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
+      this.$api.autoexec.action.getNodeList(params).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
           this.$set(this.tableData, 'theadList', this.theadList);

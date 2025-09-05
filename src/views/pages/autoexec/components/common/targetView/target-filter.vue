@@ -158,7 +158,7 @@ export default {
       params.cmdbGroupType = this.opType;
       this.complexModeSearchValue = searchVal;
       this.loadingShow = true;
-      this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
+      this.$api.autoexec.action.getNodeList(params).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
           this.$set(this.tableData, 'theadList', this.theadList);
