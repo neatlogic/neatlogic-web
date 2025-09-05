@@ -17,6 +17,7 @@
       :isRequired="isRequired"
       :readonly="readonly"
       :showSearchNumber="showSearchNumber"
+      :searchText="searchText"
       @change="simpleModeSearch"
       @switchMode="switchMode"
     >
@@ -29,6 +30,7 @@
       :searchList="searchList"
       :disabledUuidList="disabledUuidList"
       :disabledGroupUuidList="disabledGroupUuidList"
+      :searchText="searchText"
       class="advanced-mode-search-filter-btn"
       @search="advancedModeSearch"
       @switchMode="switchMode"
@@ -62,7 +64,13 @@ export default {
       type: Boolean,
       default: false
     },
-    showSearchNumber: Number
+    showSearchNumber: Number,
+    searchText: {
+      type: String,
+      default() {
+        return this.$t('page.search');
+      }
+    }
   },
   data() {
     return {
@@ -414,10 +422,10 @@ export default {
       handler(val) {
         this.isSimpleMode = true; // 重置简单模式，防止编辑执行目标时，模式回显不正确问题
         if (val) {
-          if (val && val.hasOwnProperty('conditionGroupList')) {
+          if (val && val.hasOwnProperty('conditionGroupList') && !this.$utils.isEmpty(val.conditionGroupList) && !this.$utils.isSame(val, this.complexSearchVal)) {
             this.complexSearchVal = this.$utils.deepClone(val);
             this.isSimpleMode = !this.isSimpleMode;
-          } else {
+          } else if (!this.$utils.isSame(val, this.searchVal)) {
             this.searchVal = this.$utils.deepClone(val);
           }
         }
@@ -428,7 +436,7 @@ export default {
     defaultSearchValue: {
       handler(val) {
         if (val) {
-          if (val && val.hasOwnProperty('conditionGroupList')) {
+          if (val && val.hasOwnProperty('conditionGroupList') && !this.$utils.isEmpty(val.conditionGroupList)) {
             this.isSimpleMode = true;
             this.isSimpleMode = !this.isSimpleMode;
             this.complexInit(); // 复杂模式设置禁用值

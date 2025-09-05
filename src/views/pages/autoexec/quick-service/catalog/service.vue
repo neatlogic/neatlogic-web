@@ -284,6 +284,13 @@
         <span>{{ $t('term.autoexec.executetarget') }}</span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.executeTarget ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('executeTarget')"></span>
       </div>
+      <TsFormItem v-if="!$utils.isEmpty(preCondition)" label="前置过滤器">
+        <FilterSearch
+          :defaultValue="preCondition"
+          :readonly="true"
+          class="nopadding"
+        ></FilterSearch>
+      </TsFormItem>
       <TsFormItem v-show="unfoldAndFold.executeTarget" :label="$t('term.autoexec.executetarget')" :required="hasRequired(executeNode.mappingMode)">
         <div id="positioningkey_executeNodeConfig" :class="executeNode.mappingMode == 'formattr' || executeNode.mappingMode == 'constant' ? 'form-wrap-box' : ''">
           <TsFormSelect
@@ -325,6 +332,7 @@
               :needBorder="needExecuteUser || needProtocol"
               :filterSearchValue="filterSearchValue"
               :isRequired="hasRequired(executeNode.mappingMode)"
+              :preCondition="preCondition"
             ></AddTarget>
           </div>
         </div>
@@ -503,7 +511,8 @@ export default {
     ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
     RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
-    ExpiredReasonAlert: () => import('../service-catalog/expired-reason-alert'), // 服务失效原因提示列表
+    ExpiredReasonAlert: () => import('../service-catalog/expired-reason-alert'), // 
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
     ...Component
   },
   mixins: [catalogmixin],
@@ -795,7 +804,8 @@ export default {
         transfer: true,
         desc: this.$t('term.autoexec.paralldesc'),
         disabled: false
-      }
+      },
+      preCondition: null
     };
   },
   beforeCreate() {},
@@ -1306,6 +1316,9 @@ export default {
               }
               this.executeUser.value = this.executeUser && this.executeUser.value ? this.executeUser.value : executeConfig['executeUser'] ? executeConfig['executeUser']['value'] : '';
               this.protocol.value = this.protocol && this.protocol.value ? this.protocol.value : executeConfig['protocolId'];
+            }
+            if (!this.$utils.isEmpty(executeConfig.preCondition)) {
+              this.preCondition = executeConfig.preCondition;
             }
           }
         })

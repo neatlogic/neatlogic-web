@@ -89,11 +89,11 @@
             :labelWidth="100"
             labelPosition="left"
           >
-            <ConditionSearch
+            <FilterSearch
               :defaultValue="preCondition"
               :readonly="true"
               class="nopadding"
-            ></ConditionSearch>
+            ></FilterSearch>
           </TsFormItem>
           <TargetDetail
             :id="id"
@@ -152,7 +152,7 @@ export default {
     Filters: () => import('@/views/pages/autoexec/components/common/executionMode/filters.vue'),
     TargetView: () => import('@/views/pages/autoexec/components/common/targetView/target.vue'),
     TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
-    ConditionSearch: () => import('@/views/pages/autoexec/detail/actionDetail/condition-search.vue'),
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
   filters: {},

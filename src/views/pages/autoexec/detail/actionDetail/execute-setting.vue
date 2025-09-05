@@ -48,13 +48,14 @@
             <template v-slot:preCondition>
               <div>
                 <div v-if="!isEditSetting && $utils.isEmpty(settingConfig.preCondition)">-</div>
-                <ConditionSearch
+                <FilterSearch
                   v-else
                   :defaultValue="settingConfig.preCondition"
                   :readonly="!isEditSetting"
+                  :searchText="$t('page.confirm')"
                   @changeValue="changePreConditionValue"
                   @advancedModeSearch="changePreConditionValue"
-                ></ConditionSearch>
+                ></FilterSearch>
               </div>
             </template>
           </TsForm>
@@ -116,7 +117,7 @@ export default {
     ExecuteuserSetting: () => import('./executeuser-setting.vue'),
     RunnerGroupSetting: () => import('./runnergroup-setting.vue'),
     RunnerGroupTagSetting: () => import('./runnergrouptag-setting.vue'),
-    ConditionSearch: () => import('./condition-search.vue')
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue')
   },
   filters: {},
   props: {

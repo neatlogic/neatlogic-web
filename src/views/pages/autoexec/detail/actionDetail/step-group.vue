@@ -160,13 +160,14 @@
                   ></ExecuteuserSetting>
                 </template>
                 <template v-slot:preCondition>
-                  <ConditionSearch
+                  <FilterSearch
                     ref="preCondition"
                     :defaultValue="executeConfig.preCondition"
                     :readonly="!canEdit"
+                    :searchText="$t('page.confirm')"
                     @changeValue="changePreConditionValue"
                     @advancedModeSearch="changePreConditionValue"
-                  ></ConditionSearch>
+                  ></FilterSearch>
                   <div class="text-tip">如果为空时，继承全局前置过滤器</div>
                 </template>
               </TsForm>
@@ -257,7 +258,7 @@ export default {
     TargetView: () => import('@/views/pages/autoexec/components/common/targetView/target.vue'),
     TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
     ExecuteuserSetting: () => import('./executeuser-setting.vue'),
-    ConditionSearch: () => import('@/views/pages/autoexec/detail/actionDetail/condition-search.vue')
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue')
   },
   filters: {
   },

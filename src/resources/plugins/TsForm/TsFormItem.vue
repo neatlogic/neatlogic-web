@@ -256,7 +256,7 @@ function getRequired(validateList, required) {
 }
 </script>
 <style lang="less" scoped>
-.ivu-form-label-left {
+.ivu-form-item.ivu-form-label-left {
   > .ivu-form-item-label {
     position: absolute;
     line-height: 32px;

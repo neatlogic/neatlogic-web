@@ -153,16 +153,16 @@
           <Divider orientation="start">{{ $t('term.autoexec.executetarget') }}</Divider>
           <div v-if="needExecuteNode" class="box-block">
             <TsFormItem
-              v-if="!$utils.isEmpty(executeConfig.preCondition)"
+              v-if="!$utils.isEmpty(preCondition)"
               label="前置过滤器"
               :labelWidth="100"
               labelPosition="left"
             >
-              <ConditionSearch
-                :defaultValue="executeConfig.preCondition"
+              <FilterSearch
+                :defaultValue="preCondition"
                 :readonly="true"
                 class="nopadding"
-              ></ConditionSearch>
+              ></FilterSearch>
             </TsFormItem>
             <AddTarget
               :id="actionId"
@@ -174,7 +174,7 @@
               :runtimeParamList="runtimeParamList"
               :needBorder="needExecuteUser|| needProtocol"
               :filterSearchValue="filterSearchValue"
-              :preCondition="executeConfig.preCondition"
+              :preCondition="preCondition"
             ></AddTarget>
           </div>
           <div v-else class="box-block text-tip">
@@ -303,7 +303,7 @@ export default {
     ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
     RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
-    ConditionSearch: () => import('@/views/pages/autoexec/detail/actionDetail/condition-search.vue')
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue')
   },
   filters: {},
   props: {
@@ -450,7 +450,8 @@ export default {
           value: 'roundCount'
         }
       ],
-      parallelPolicy: 'parallel'
+      parallelPolicy: 'parallel',
+      preCondition: null
     };
   },
   beforeCreate() {},
@@ -591,6 +592,9 @@ export default {
             this.scenarioList = this.dataConfig.config.scenarioList;
           }
           this.getSelectStepList(this.scenarioId);
+          if (this.dataConfig.config.executeConfig && !this.$utils.isEmpty(this.dataConfig.config.executeConfig.preCondition)) {
+            this.preCondition = this.dataConfig.config.executeConfig.preCondition;
+          }
         })
         .finally(res => {
           this.loading = false;
