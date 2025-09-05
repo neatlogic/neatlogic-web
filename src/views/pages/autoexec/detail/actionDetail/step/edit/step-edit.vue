@@ -89,7 +89,7 @@
                       @changeValue="changePreConditionValue"
                       @advancedModeSearch="changePreConditionValue"
                     ></FilterSearch>
-                    <div class="text-tip">如果为空时，继承全局前置过滤器</div>
+                    <div class="text-tip">{{ $t('term.autoexec.preconditiontip') }}</div>
                   </template>
                 </TsForm>
                 <div class="pt-nm">
@@ -317,7 +317,7 @@ export default {
         },
         preCondition: {
           type: 'slot',
-          label: '前置过滤器'
+          label: this.$t('term.autoexec.precondition')
         }
       },
       executeConfig: {

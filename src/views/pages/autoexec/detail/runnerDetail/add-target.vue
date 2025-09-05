@@ -4,8 +4,8 @@
       <!-- 过滤器 -->
       <div v-if="filter">
         <TsFormItem
-          label="过滤器"
-          :labelWidth="100"
+          :label="$t('page.filter')"
+          :labelWidth="110"
           labelPosition="left"
         >
           <div class="flex-start">
@@ -85,8 +85,8 @@
         <template v-if="type=='runtime'">
           <TsFormItem
             v-if="!$utils.preCondition"
-            label="前置过滤器"
-            :labelWidth="100"
+            :label="$t('term.autoexec.precondition')"
+            :labelWidth="110"
             labelPosition="left"
           >
             <FilterSearch
@@ -102,7 +102,7 @@
             :canEdit="canEdit"
             :defaultSearchValue="filterSearchValue"
             :preCondition="preCondition"
-            :labelWidth="100"
+            :labelWidth="110"
           ></TargetDetail>
         </template>
         <TargetView

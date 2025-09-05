@@ -7,7 +7,7 @@
           :key="tindex"
           :name="tindex"
           :fade="false"
-          class="tag-item-text border-color radius-sm overflow bg-op"
+          class="tag-item-text border-base radius-sm overflow bg-op"
         >
           <span class="text-title">{{ getLabel(tindex) }}</span>
           <span class="ml-xs mr-xs">:</span>
@@ -745,7 +745,6 @@ export default {
   display: none;
 }
 .tag-item-text{
-  border: 1px dashed;
   padding: 0 16px;
   line-height: 30px;
   display: inline-block;

@@ -214,7 +214,7 @@ export default {
         },
         preCondition: {
           type: 'slot',
-          label: '前置过滤器',
+          label: this.$t('term.autoexec.precondition'),
           labelWidth: '113'
         },
         whenToSpecify: {

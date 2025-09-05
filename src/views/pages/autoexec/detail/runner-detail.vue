@@ -60,7 +60,7 @@
           <div>
             <TsFormItem
               :label="$t('page.autoexecparallpolicy')"
-              :labelWidth="100"
+              :labelWidth="110"
               labelPosition="left"
               :required="true"
             >
@@ -74,7 +74,7 @@
           <div v-if="parallelPolicy !== 'roundCount'">
             <TsFormItem
               :label="$t('term.autoexec.parall')"
-              :labelWidth="100"
+              :labelWidth="110"
               labelPosition="left"
               :required="true"
             >
@@ -88,7 +88,7 @@
           <div v-else>
             <TsFormItem
               :label="$t('term.autoexec.batchquantity')"
-              :labelWidth="100"
+              :labelWidth="110"
               labelPosition="left"
               :required="true"
             >
@@ -154,8 +154,8 @@
           <div v-if="needExecuteNode" class="box-block">
             <TsFormItem
               v-if="!$utils.isEmpty(preCondition)"
-              label="前置过滤器"
-              :labelWidth="100"
+              :label="$t('term.autoexec.precondition')"
+              :labelWidth="110"
               labelPosition="left"
             >
               <FilterSearch
@@ -360,7 +360,7 @@ export default {
         }
       },
       executeForm: {
-        labelWidth: 100,
+        labelWidth: 110,
         labelPosition: 'left',
         itemList: {
           protocolId: {

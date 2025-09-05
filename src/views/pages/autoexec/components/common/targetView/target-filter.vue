@@ -1,14 +1,14 @@
 
 <template>
   <div>
-    <TsFormItem v-if="!$utils.isEmpty(preCondition)" :label="'前置过滤器'" labelPosition="left">
+    <TsFormItem v-if="!$utils.isEmpty(preCondition)" :label="$t('term.autoexec.precondition')" labelPosition="left">
       <FilterSearch
         :defaultValue="preCondition"
         :readonly="true"
         :showSearchNumber="3"
       ></FilterSearch>
     </TsFormItem>
-    <TsFormItem v-else-if="!$utils.isEmpty(globalPreCondition)" :label="'全局前置过滤器'" labelPosition="left">
+    <TsFormItem v-else-if="!$utils.isEmpty(globalPreCondition)" :label="$t('term.autoexec.globalprecondition')" labelPosition="left">
       <FilterSearch
         :defaultValue="globalPreCondition"
         :readonly="true"

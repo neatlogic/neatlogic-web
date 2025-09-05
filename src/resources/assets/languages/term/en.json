@@ -914,7 +914,10 @@
     "parall": "Concurrent quantity",
     "paralldesc": "Execute the execution targets in order of concurrency.",
     "jobrecord": "Automated job recording",
-    "jobcount": "Number of automated tasks"
+    "jobcount": "Number of automated tasks",
+    "precondition": "pre-filter",
+    "globalprecondition": "Global pre filter",
+    "preconditiontip": "If empty, inherit the global pre filter"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",

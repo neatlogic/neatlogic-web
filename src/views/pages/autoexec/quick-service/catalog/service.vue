@@ -284,7 +284,7 @@
         <span>{{ $t('term.autoexec.executetarget') }}</span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.executeTarget ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('executeTarget')"></span>
       </div>
-      <TsFormItem v-if="!$utils.isEmpty(preCondition)" label="前置过滤器">
+      <TsFormItem v-if="!$utils.isEmpty(preCondition)" :label="$t('term.autoexec.precondition')">
         <FilterSearch
           :defaultValue="preCondition"
           :readonly="true"
