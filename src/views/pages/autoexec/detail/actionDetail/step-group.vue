@@ -523,7 +523,10 @@ export default {
     },
     async save() {
       this.isValid = false;
-      // await this.validSetting(true);
+      if (!this.$refs.targetDetail.valid()) {
+        return;
+      }
+      // await this.validSetting(true);//废弃接口校验规则
       if (this.isValid) {
         return;
       } else {

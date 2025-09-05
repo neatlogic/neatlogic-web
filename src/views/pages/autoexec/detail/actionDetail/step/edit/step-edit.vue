@@ -104,7 +104,7 @@
                     :prevStepList="prevStepList"
                     :runtimeParamList="runtimeParamList"
                     :preCondition="preCondition || globalPreCondition"
-                    :required="!$utils.isEmpty(executeConfig.preCondition)"
+                    :required="!$utils.isEmpty(preCondition)"
                   ></TargetDetail>
                 </div>
               </template>
@@ -362,7 +362,7 @@ export default {
             this.executeConfig[key] = this.config.config.executeConfig[key];
           }
         });
-        this.preCondition = !this.$utils.isEmpty(this.globalPreCondition) ? this.$utils.deepClone(this.executeConfig.preCondition) : null;
+        this.preCondition = !this.$utils.isEmpty(this.executeConfig.preCondition) ? this.$utils.deepClone(this.executeConfig.preCondition) : null;
         if (!this.$utils.isEmpty(this.executeConfig.runnerGroup) || !this.$utils.isEmpty(this.executeConfig.runnerGroupTag)) {
           this.$set(this.executeConfig, 'isPresetRunnerGroup', 1);
         }
@@ -509,7 +509,10 @@ export default {
     },
     async ok() {
       this.isValid = false;
-      (this.editConfig.execMode != 'runner') && (await this.validSetting(true));
+      if (!this.$refs.targetDetail || (this.$refs.targetDetail && !this.$refs.targetDetail.valid())) {
+        return;
+      }
+      // (this.editConfig.execMode != 'runner') && (await this.validSetting(true)); //废弃接口校验规则
       if (this.isValid) {
         return;
       } else {
