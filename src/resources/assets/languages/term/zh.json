@@ -2893,7 +2893,9 @@
     "last5dump": "最近5次快照",
     "threaddump": "线程快照",
     "pid": "进程id",
-    "servicetopo": "服务关系图"
+    "servicetopo": "服务关系图",
+    "healthstate": "健康状态",
+    "comm": "命令"
   },
   "infromant": {
     "report": "分析报告"
