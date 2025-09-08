@@ -129,10 +129,10 @@
       v-if="executeConfig && executeConfig.preCondition"
       :label="$t('term.autoexec.precondition')"
     >
-      <FilterSearch
-        :defaultValue="executeConfig.preCondition"
-        :readonly="true"
-      ></FilterSearch>
+      <PreconditionDetail
+        :defaultValue="preCondition"
+        :canEdit="false"
+      ></PreconditionDetail>
     </TsFormItem>
     <TsFormItem :label="$t('term.autoexec.executetarget')">
       <TsFormSelect
@@ -182,7 +182,7 @@ export default {
     AddTarget: () => import('@/views/pages/autoexec/detail/runnerDetail/add-target.vue'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
     RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
-    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue'),
     ...Component
   },
   props: {

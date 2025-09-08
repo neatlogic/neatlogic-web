@@ -48,14 +48,12 @@
             <template v-slot:preCondition>
               <div>
                 <div v-if="!isEditSetting && $utils.isEmpty(settingConfig.preCondition)">-</div>
-                <FilterSearch
-                  v-else
+                <PreconditionDetail
+                  ref="preconditionDetail"
+                  :canEdit="isEditSetting"
                   :defaultValue="settingConfig.preCondition"
-                  :readonly="!isEditSetting"
-                  :searchText="$t('page.confirm')"
                   @changeValue="changePreConditionValue"
-                  @advancedModeSearch="changePreConditionValue"
-                ></FilterSearch>
+                ></PreconditionDetail>
               </div>
             </template>
           </TsForm>
@@ -117,7 +115,7 @@ export default {
     ExecuteuserSetting: () => import('./executeuser-setting.vue'),
     RunnerGroupSetting: () => import('./runnergroup-setting.vue'),
     RunnerGroupTagSetting: () => import('./runnergrouptag-setting.vue'),
-    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue')
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue')
   },
   filters: {},
   props: {
@@ -300,9 +298,7 @@ export default {
       this.$set(this.settingConfig, 'executeUser', this.$refs.executeUser.save());
       this.$set(this.settingConfig, 'runnerGroup', this.$refs.runnerGroup.save());
       this.$set(this.settingConfig, 'runnerGroupTag', this.$refs.runnerGroupTag.save());
-      if (!this.$utils.isEmpty(this.preCondition)) {
-        this.$set(this.settingConfig, 'preCondition', this.preCondition);
-      }
+      this.$set(this.settingConfig, 'preCondition', !this.$utils.isEmpty(this.preCondition) ? this.preCondition : null);
 
       this.settingConfig.executeNodeConfig = {};
       if (this.settingConfig.whenToSpecify == 'now') {
@@ -401,6 +397,7 @@ export default {
       });
     },
     changePreConditionValue(val) {
+      console.log(val);
       this.preCondition = val;
     }
   },

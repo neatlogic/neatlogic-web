@@ -35,11 +35,10 @@
       <template v-if="groupConfig.config.executeConfig && !$utils.isEmpty(groupConfig.config.executeConfig)">
         <TsFormItem :label="$t('term.autoexec.precondition')" labelWidth="100">
           <template v-if="!$utils.isEmpty(groupConfig.config.executeConfig.preCondition)">
-            <FilterSearch
+            <PreconditionDetail
               :defaultValue="groupConfig.config.executeConfig.preCondition"
-              :readonly="true"
-              class="nopadding"
-            ></FilterSearch>
+              :canEdit="false"
+            ></PreconditionDetail>
           </template>
           <template v-else>-</template>
         </TsFormItem>
@@ -258,7 +257,8 @@ export default {
     TargetView: () => import('@/views/pages/autoexec/components/common/targetView/target.vue'),
     TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
     ExecuteuserSetting: () => import('./executeuser-setting.vue'),
-    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue')
+    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue')
   },
   filters: {
   },

@@ -23,10 +23,10 @@
           :label="item.name"
           labelPosition="left"
         >
-          <FilterSearch
+          <PreconditionDetail
             :defaultValue="item.value"
-            :readonly="true"
-          ></FilterSearch>
+            :canEdit="false"
+          ></PreconditionDetail>
         </TsFormItem>
         <TsFormItem
           v-else-if="whitelist.includes(item.key)"
@@ -380,7 +380,7 @@ export default {
     ExecuteNodeReadonly: () => import('@/views/pages/autoexec/form/component/formresoureces/index.vue'),
     ProtocolReadonly: () => import('./protocol-readonly'),
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
-    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue')
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue')
   },
   props: {
     allFormitemList: Array,

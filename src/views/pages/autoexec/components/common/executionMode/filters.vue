@@ -177,6 +177,7 @@ export default {
       }
     },
     changeValue(val) {
+      this.$emit('change', val);
       this.complexModeSearchValue = {};
       this.searchVal = this.$utils.deepClone(val);
       this.getDataList('currentPage', 1);
@@ -190,6 +191,7 @@ export default {
       if (!this.$utils.isEmpty(this.preCondition)) {
         params.preCondition = this.preCondition;
       }
+      this.$emit('change', searchVal);
       this.$api.autoexec.action.getNodeList(params).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;

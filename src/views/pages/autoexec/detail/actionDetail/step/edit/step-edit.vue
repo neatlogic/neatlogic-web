@@ -81,14 +81,12 @@
                     ></ExecuteuserSetting>
                   </template>
                   <template v-slot:preCondition>
-                    <FilterSearch
+                    <PreconditionDetail
                       ref="preCondition"
-                      :defaultValue="executeConfig.preCondition"
-                      :readonly="!canEdit"
-                      :searchText="$t('page.confirm')"
+                      :defaultValue="preCondition"
+                      :canEdit="canEdit"
                       @changeValue="changePreConditionValue"
-                      @advancedModeSearch="changePreConditionValue"
-                    ></FilterSearch>
+                    ></PreconditionDetail>
                     <div class="text-tip">{{ $t('term.autoexec.preconditiontip') }}</div>
                   </template>
                 </TsForm>
@@ -186,7 +184,7 @@ export default {
     ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
     RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
-    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue')
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue')
   },
   filters: {},
   props: {
@@ -507,17 +505,12 @@ export default {
         }
       });
     },
-    async ok() {
-      this.isValid = false;
-      if (!this.$refs.targetDetail || (this.$refs.targetDetail && !this.$refs.targetDetail.valid())) {
+    ok() {
+      if (!this.$utils.isEmpty(this.preCondition) && this.$refs.targetDetail && !this.$refs.targetDetail.valid()) {
         return;
       }
       // (this.editConfig.execMode != 'runner') && (await this.validSetting(true)); //废弃接口校验规则
-      if (this.isValid) {
-        return;
-      } else {
-        this.confirmEdit();
-      }
+      this.confirmEdit();
     },
     saveValid() { //校验完成，保存
       this.confirmEdit();

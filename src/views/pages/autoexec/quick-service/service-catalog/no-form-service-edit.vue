@@ -162,10 +162,10 @@
           v-if="executeConfig && executeConfig.preCondition"
           :label="$t('term.autoexec.precondition')"
         >
-          <FilterSearch
+          <PreconditionDetail
             :defaultValue="executeConfig.preCondition"
-            :readonly="true"
-          ></FilterSearch>
+            :canEdit="false"
+          ></PreconditionDetail>
         </TsFormItem>
         <TsFormItem v-if="needExecuteNode" :label="$t('term.autoexec.executetarget')" :required="true">
           <AddTarget
@@ -288,7 +288,7 @@ export default {
     ExpiredReasonAlert: () => import('@/views/pages/autoexec/quick-service/service-catalog/expired-reason-alert'), // 服务失效原因提示列表
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
     RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
-    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue'),
     ...Component
   },
   mixins: [serviceMixin],

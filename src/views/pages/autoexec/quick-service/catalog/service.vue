@@ -285,11 +285,10 @@
         <span class="tsfont-down cursor" :class="unfoldAndFold.executeTarget ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('executeTarget')"></span>
       </div>
       <TsFormItem v-if="!$utils.isEmpty(preCondition)" :label="$t('term.autoexec.precondition')">
-        <FilterSearch
+        <PreconditionDetail
           :defaultValue="preCondition"
-          :readonly="true"
-          class="nopadding"
-        ></FilterSearch>
+          :canEdit="false"
+        ></PreconditionDetail>
       </TsFormItem>
       <TsFormItem v-show="unfoldAndFold.executeTarget" :label="$t('term.autoexec.executetarget')" :required="hasRequired(executeNode.mappingMode)">
         <div id="positioningkey_executeNodeConfig" :class="executeNode.mappingMode == 'formattr' || executeNode.mappingMode == 'constant' ? 'form-wrap-box' : ''">
@@ -512,7 +511,7 @@ export default {
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
     RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
     ExpiredReasonAlert: () => import('../service-catalog/expired-reason-alert'), // 
-    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue'),
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue'),
     ...Component
   },
   mixins: [catalogmixin],

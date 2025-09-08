@@ -157,11 +157,10 @@
             :labelWidth="110"
             labelPosition="left"
           >
-            <FilterSearch
+            <PreconditionDetail
               :defaultValue="preCondition"
-              :readonly="true"
-              class="nopadding"
-            ></FilterSearch>
+              :canEdit="false"
+            ></PreconditionDetail>
           </TsFormItem>
           <div v-if="needExecuteNode" class="box-block"> 
             <AddTarget
@@ -303,7 +302,7 @@ export default {
     ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
     RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
-    FilterSearch: () => import('@/views/pages/autoexec/components/common/filter-search.vue')
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue')
   },
   filters: {},
   props: {
