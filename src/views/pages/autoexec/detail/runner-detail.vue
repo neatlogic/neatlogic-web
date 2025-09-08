@@ -151,19 +151,19 @@
         </div>
         <div>
           <Divider orientation="start">{{ $t('term.autoexec.executetarget') }}</Divider>
-          <div v-if="needExecuteNode" class="box-block">
-            <TsFormItem
-              v-if="!$utils.isEmpty(preCondition)"
-              :label="$t('term.autoexec.precondition')"
-              :labelWidth="110"
-              labelPosition="left"
-            >
-              <FilterSearch
-                :defaultValue="preCondition"
-                :readonly="true"
-                class="nopadding"
-              ></FilterSearch>
-            </TsFormItem>
+          <TsFormItem
+            v-if="!$utils.isEmpty(preCondition)"
+            :label="$t('term.autoexec.precondition')"
+            :labelWidth="110"
+            labelPosition="left"
+          >
+            <FilterSearch
+              :defaultValue="preCondition"
+              :readonly="true"
+              class="nopadding"
+            ></FilterSearch>
+          </TsFormItem>
+          <div v-if="needExecuteNode" class="box-block"> 
             <AddTarget
               :id="actionId"
               ref="addTarget"
