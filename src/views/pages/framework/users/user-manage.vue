@@ -212,7 +212,8 @@ export default {
             label: 'Vip',
             transfer: true,
             filterable: true,
-            allowToggle: true
+            allowToggle: true,
+            isHidden: !this.$AuthUtils.hasRole('VIP_VIEW')
           },
           {
             type: 'radio',
