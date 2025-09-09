@@ -234,6 +234,7 @@ export default {
         // textarea: ['text', 'textarea'],
         json: ['json', 'node']
       },
+      extendParamTypeList: ['text', 'textarea'], //排除不需要校验的参数类型
       overrideProfileList: [] //覆盖参数集列表
     };
   },
@@ -447,7 +448,7 @@ export default {
       return function(list, type, mappingMode) {
         if (list && list.length) {
           let li = [];
-          if (mappingMode == 'prenodeoutputparamkey' || type === 'text' || type === 'textarea') { //引用上游参数名-选项不受限制, 文本框和文本域不设限制
+          if (mappingMode == 'prenodeoutputparamkey' || this.extendParamTypeList.includes(type)) { //引用上游参数名-选项不受限制, 文本框和文本域不设限制
             li = list;
           } else {
             li = list.filter(l => {
@@ -482,7 +483,9 @@ export default {
       return function(list, type) {
         //需要过滤掉类型不同类的
         if (list && list.length) {
-          if (this.paramTypeConfig.hasOwnProperty(type)) {
+          if (this.extendParamTypeList.includes(type)) {
+            return list;
+          } else if (this.paramTypeConfig.hasOwnProperty(type)) {
             let typelist = this.paramTypeConfig[type];
             return list.filter(l => {
               return typelist.includes(l.type);
