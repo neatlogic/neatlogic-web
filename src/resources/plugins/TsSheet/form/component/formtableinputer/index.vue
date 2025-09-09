@@ -104,7 +104,7 @@
             <FormItem
               :ref="'formitem_' + extra.uuid + '_' + index"
               :formItem="$utils.deepClone(extra)"
-              :formData="{...formData, ...row}"
+              :formData="{ ...filterUuid(formData), ...row }"
               :isSetValue="false"
               :formItemList="formItemList"
               :extraFormItemList="extraList"
@@ -428,6 +428,17 @@ export default {
           Object.assign(row, val);
         }
       });
+    },
+    filterUuid(obj) {
+      // 解决循环引用报错问题
+      let formData = this.$utils.deepClone(obj);
+      if (formData.uuid) {
+        delete formData.uuid;
+      }
+      if (formData.hasOwnProperty(this.formItem.uuid)) {
+        delete formData[this.formItem.uuid];
+      }
+      return formData;
     },
     changeCurrent(currentPage) {
       this.tablePageConfig.currentPage = currentPage;
