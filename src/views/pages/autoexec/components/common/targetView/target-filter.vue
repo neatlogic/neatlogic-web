@@ -113,6 +113,11 @@ export default {
       if (param) {
         Object.assign(data, param);
       }
+      if (!this.$utils.isEmpty(this.preCondition)) {
+        data.preCondition = this.preCondition;
+      } else if (!this.$utils.isEmpty(this.globalPreCondition)) {
+        data.preCondition = this.globalPreCondition;
+      }
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -158,6 +163,11 @@ export default {
       params.cmdbGroupType = this.opType;
       this.complexModeSearchValue = searchVal;
       this.loadingShow = true;
+      if (!this.$utils.isEmpty(this.preCondition)) {
+        params.preCondition = this.preCondition;
+      } else if (!this.$utils.isEmpty(this.globalPreCondition)) {
+        params.preCondition = this.globalPreCondition;
+      }
       this.$api.autoexec.action.getNodeList(params).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;

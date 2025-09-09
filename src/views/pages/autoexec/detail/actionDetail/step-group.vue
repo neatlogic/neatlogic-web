@@ -52,7 +52,7 @@
                 :showSearchNumber="2"
                 class="nopadding"
               ></Filters>
-              <div class="text-right text-tip-active" @click="moreVisible=true">{{ $t('page.viewdetails') }}</div>
+              <div class="text-right text-tip-active" @click="lookDetail()">{{ $t('page.viewdetails') }}</div>
             </template>
             <template v-else-if="groupConfig.config.executeConfig.executeNodeConfig.selectNodeList">
               <NodeView :list="groupConfig.config.executeConfig.executeNodeConfig.selectNodeList"></NodeView>
@@ -231,7 +231,7 @@
       :maskClose="true"
       @on-close="moreVisible = false"
     >
-      <TargetView :config="groupConfig.config.executeConfig.executeNodeConfig" :preCondition="executeConfig && executeConfig.preCondition" :globalPreCondition="globalPreCondition"></TargetView>
+      <TargetView :config="groupConfig.config.executeConfig.executeNodeConfig" :preCondition="executeConfig.preCondition" :globalPreCondition="globalPreCondition"></TargetView>
     </TsDialog>
     <TargetValid
       v-if="isValid"
@@ -555,6 +555,15 @@ export default {
     },
     changePreConditionValue(val) {
       this.$set(this.executeConfig, 'preCondition', !this.$utils.isEmpty(val) ? val : null);
+    },
+    lookDetail() {
+      if (!this.executeConfig) {
+        this.executeConfig = {};
+      }
+      if (this.groupConfig.config && this.groupConfig.config.executeConfig) {
+        this.executeConfig.preCondition = this.groupConfig.config.executeConfig.preCondition;
+      }
+      this.moreVisible = true;
     }
   },
   computed: {
