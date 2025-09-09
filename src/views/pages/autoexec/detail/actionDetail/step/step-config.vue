@@ -39,6 +39,7 @@
 </template>
 <script>
 import ScriptList from '@/views/pages/autoexec/components/script/script-list.vue';
+import { storeScript } from '@/views/pages/autoexec/components/script/script-state.js';
 export default {
   name: 'StepConfig',
   components: {
@@ -126,9 +127,17 @@ export default {
     if (!this.isRunner) {
       window.removeEventListener('resize', _this.renderHeight);
     }
+    
+    this.clearObservable();
   },
   destroyed() {},
   methods: {
+    clearObservable() {
+      //清空状态管理的数据
+      Object.keys(storeScript).forEach(key => {
+        storeScript[key] = null;
+      });
+    },
     addOperation() {
       this.isAdd = true;
     },

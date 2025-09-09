@@ -187,17 +187,9 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {
-    this.clearObservable();
-  },
+  beforeDestroy() {},
   destroyed() {},
   methods: {
-    clearObservable() {
-      //清空状态管理的数据
-      Object.keys(storeScript).forEach(key => {
-        storeScript[key] = null;
-      });
-    },
     changeDragStatus(type) {
       this.dragStatus = type;
       if (type == 'end') {
@@ -241,9 +233,47 @@ export default {
         uuid: this.$utils.setUuid(),
         letter: prevlength.length ? this.$utils.translateNumber(parseInt(prevlength.length), 'en') : null
       });
+      this.updateCopyUuid(newitem);
       this.list.push(newitem);
       this.updatedSort();
       this.$forceUpdate();
+    },
+    updateCopyUuid(item) { //更新复制的脚本的uuid
+      if (item.config) {
+        if (!this.$utils.isEmpty(item.config.ifList)) {
+          this.updatePhaseOperationUuidList(item.config.ifList);
+        }
+        if (!this.$utils.isEmpty(item.config.elseList)) {
+          this.updatePhaseOperationUuidList(item.config.elseList);
+        }
+        if (!this.$utils.isEmpty(item.config.operations)) {
+          this.updatePhaseOperationUuidList(item.config.operations);
+        }
+      }
+    },
+    updatePhaseOperationUuidList(phaseOperationList) {
+      phaseOperationList.forEach(p => {
+        this.$delete(p, 'id');
+        this.$set(p, 'uuid', this.$utils.setUuid());
+        if (!this.$utils.isEmpty(p.config.paramMappingList)) {
+          p.config.paramMappingList.forEach(param => {
+            if (param.mappingMode == 'prenodeoutputparam' || param.mappingMode == 'prenodeoutputparamkey') {
+              this.$set(param, 'value', null);
+            }
+          });
+        }
+        if (p.config) {
+          if (!this.$utils.isEmpty(p.config.ifList)) {
+            this.updatePhaseOperationUuidList(p.config.ifList);
+          }
+          if (!this.$utils.isEmpty(p.config.elseList)) {
+            this.updatePhaseOperationUuidList(p.config.elseList);
+          }
+          if (!this.$utils.isEmpty(p.config.operations)) {
+            this.updatePhaseOperationUuidList(p.config.operations);
+          }
+        }
+      });
     },
     updateList(list) {
       this.list = list.map((v, vindex) => {
