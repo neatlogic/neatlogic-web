@@ -47,11 +47,11 @@
             </template>
             <template v-slot:preCondition>
               <div>
-                <div v-if="!isEditSetting && $utils.isEmpty(settingConfig.preCondition)">-</div>
+                <div v-if="!isEditSetting && $utils.isEmpty(preCondition)">-</div>
                 <PreconditionDetail
                   ref="preconditionDetail"
                   :canEdit="isEditSetting"
-                  :defaultValue="settingConfig.preCondition"
+                  :defaultValue="preCondition"
                   @changeValue="changePreConditionValue"
                 ></PreconditionDetail>
               </div>
@@ -397,7 +397,6 @@ export default {
       });
     },
     changePreConditionValue(val) {
-      console.log(val);
       this.preCondition = val;
     }
   },
