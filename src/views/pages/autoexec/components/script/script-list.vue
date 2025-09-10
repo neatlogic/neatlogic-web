@@ -15,39 +15,29 @@
       @end="changeDragStatus('end')"
     >
       <li v-for="(step, sindex) in list" :id="'id_' + combopConfig.combopUuid + '_' + step.uuid" :key="sindex+'_'+step.uuid">
-        <div v-if="step.operation" class="inner-block radius-lg" :class="{'hide-li':dragStatus == 'start' || !step.isShow, 'show-li': step.isShow, 'bg-op': step.operationName != 'native/IF-Block' && step.operationName != 'native/LOOP-Block', 'border-base': step.operationName == 'native/IF-Block' || step.operationName == 'native/LOOP-Block'}">
-          <!-- <div class="script-title border-color overflow" :class="step.operationType && step.operationType == 'script' ? 'tsfont-cloud' : 'tsfont-block'"> -->
-          <div>
-            <Tooltip
-              theme="light"
-              transfer
-              :content="step.isShow? $t('page.clickandputaway'):$t('page.clicktoexpand')"
-              :style="{'width': '100%'}"
-            >
-              <div class="script-title border-color" @click="toggleshow(step)">
-                <div class="overflow">
-                  【{{ typeText(step.operationType) }}】
-                  <span class="text-action name" :title="step.operationName" @click.stop="gotoDateil(step)">{{ step.operationName }}</span>
-                  <RiskItem v-if="step.operation.riskVo" :text="step.operation.riskVo.name" :color="step.operation.riskVo.color"></RiskItem>
-                </div>
-                <div class="text-tip description overflow">
-                  <span v-if="step.description" :title="step.description">{{ step.description }}</span>
-                  <span v-else-if="!canEdit">-</span>
-                  <i v-if="canEdit" class="text-action edit-des tsfont-edit" @click.stop="editDescription(step)"></i>
-                </div>
-                <i v-if="canEdit && operationType=='combop'" class="item-sort tsfont-bar"></i>
-                <i class="item-index text-tip">#{{ sindex+1 }}</i>
-                <span class="item-actionIcon" @click.stop>
-                  <i v-if="canEdit && operationType=='combop'" class="item-copy tsfont-copy text-tip" @click="copyScript(step)"></i>
-                  <i v-if="canEdit && operationType=='combop'" class="item-delete tsfont-close text-tip" @click="deleteScript(step,sindex)"></i>
-                  <i class="item-toggle tsfont text-tip" @click="toggleshow(step)"></i>
-                </span>
-              </div>
-            </Tooltip>
+        <div v-if="step.operation" class="inner-block radius-lg" :class="{'hide-li':dragStatus == 'start' || !phaseShowMap[step.uuid], 'show-li': phaseShowMap[step.uuid], 'bg-op': step.operationName != 'native/IF-Block' && step.operationName != 'native/LOOP-Block', 'border-base': step.operationName == 'native/IF-Block' || step.operationName == 'native/LOOP-Block'}">
+          <div class="script-title border-color cursor-pointer" @click="toggleshow(step)">
+            <div class="overflow">
+              【{{ typeText(step.operationType) }}】
+              <span class="text-action name" :title="step.operationName" @click.stop="gotoDateil(step)">{{ step.operationName }}</span>
+              <RiskItem v-if="step.operation.riskVo" :text="step.operation.riskVo.name" :color="step.operation.riskVo.color"></RiskItem>
+            </div>
+            <div class="text-tip description overflow">
+              <span v-if="step.description" :title="step.description">{{ step.description }}</span>
+              <span v-else-if="!canEdit">-</span>
+              <i v-if="canEdit" class="text-action edit-des tsfont-edit" @click.stop="editDescription(step)"></i>
+            </div>
+            <i v-if="canEdit && operationType=='combop'" class="item-sort tsfont-bar"></i>
+            <i class="item-index text-tip">#{{ sindex+1 }}</i>
+            <span class="item-actionIcon" @click.stop>
+              <i v-if="canEdit && operationType=='combop'" class="item-copy tsfont-copy text-tip" @click="copyScript(step)"></i>
+              <i v-if="canEdit && operationType=='combop'" class="item-delete tsfont-close text-tip" @click="deleteScript(step,sindex)"></i>
+              <i class="item-toggle tsfont text-tip" @click="toggleshow(step)"></i>
+            </span>
           </div>
           <item
             :is="geScriptType(step)"
-            v-show="step.isShow"
+            v-if="phaseShowMap[step.uuid]"
             :ref="'toolDetail'+step.uuid"
             :config="step"
             :canEdit="canEdit"
@@ -99,9 +89,10 @@
   </div>
 </template>
 <script>
-import item from './item/index.js';
 import draggable from 'vuedraggable';
-import RiskItem from '../risk-item.vue';
+import item from '@/views/pages/autoexec/components/script/item/index.js';
+import RiskItem from '@/views/pages/autoexec/components/risk-item.vue';
+import { storeScript, mutationsScript } from './script-state.js';
 export default {
   name: '',
   inject: {
@@ -169,6 +160,12 @@ export default {
     operationType: {
       type: String,
       default: 'combop'
+    },
+    validPhaseOperationUuidList: {
+      type: Array,
+      default: () => {
+        return [];
+      }
     }
   },
   data() {
@@ -178,7 +175,8 @@ export default {
       isValid: true,
       showDialog: false,
       currentStep: null,
-      description: ''
+      description: '',
+      isUpdateSort: false //是否更新排序
     };
   },
   beforeCreate() {},
@@ -199,16 +197,17 @@ export default {
       }
     },
     updatedSort() {
-      this.list.forEach((item, index) => {
+      this.isUpdateSort = true;
+      let list = this.$utils.deepClone(this.list);
+      list.forEach((item, index) => {
         this.$set(item, 'sort', index);
       });
+      if (!this.$utils.isSame(list, this.list)) {
+        this.list = list;
+      }
     },
     toggleshow(item) {
-      if (item.isShow != false) {
-        this.$set(item, 'isShow', false);
-      } else {
-        this.$set(item, 'isShow', true);
-      }
+      mutationsScript.setCombopPhaseShowMap(item.uuid);
       this.renderHeight && this.renderHeight();
     },
     deleteScript(item, index) {
@@ -234,16 +233,53 @@ export default {
         uuid: this.$utils.setUuid(),
         letter: prevlength.length ? this.$utils.translateNumber(parseInt(prevlength.length), 'en') : null
       });
+      this.updateCopyUuid(newitem);
       this.list.push(newitem);
       this.updatedSort();
       this.$forceUpdate();
+    },
+    updateCopyUuid(item) { //更新复制的脚本的uuid
+      if (item.config) {
+        if (!this.$utils.isEmpty(item.config.ifList)) {
+          this.updatePhaseOperationUuidList(item.config.ifList);
+        }
+        if (!this.$utils.isEmpty(item.config.elseList)) {
+          this.updatePhaseOperationUuidList(item.config.elseList);
+        }
+        if (!this.$utils.isEmpty(item.config.operations)) {
+          this.updatePhaseOperationUuidList(item.config.operations);
+        }
+      }
+    },
+    updatePhaseOperationUuidList(phaseOperationList) {
+      phaseOperationList.forEach(p => {
+        this.$delete(p, 'id');
+        this.$set(p, 'uuid', this.$utils.setUuid());
+        if (!this.$utils.isEmpty(p.config.paramMappingList)) {
+          p.config.paramMappingList.forEach(param => {
+            if (param.mappingMode == 'prenodeoutputparam' || param.mappingMode == 'prenodeoutputparamkey') {
+              this.$set(param, 'value', null);
+            }
+          });
+        }
+        if (p.config) {
+          if (!this.$utils.isEmpty(p.config.ifList)) {
+            this.updatePhaseOperationUuidList(p.config.ifList);
+          }
+          if (!this.$utils.isEmpty(p.config.elseList)) {
+            this.updatePhaseOperationUuidList(p.config.elseList);
+          }
+          if (!this.$utils.isEmpty(p.config.operations)) {
+            this.updatePhaseOperationUuidList(p.config.operations);
+          }
+        }
+      });
     },
     updateList(list) {
       this.list = list.map((v, vindex) => {
         return {
           ...v,
           uuid: v.uuid || this.$utils.setUuid(),
-          isShow: v.isShow == undefined ? false : v.isShow,
           sort: vindex
         };
       });
@@ -281,8 +317,8 @@ export default {
       return this.isValid;
     },
     changeStep(config, id) {
-      let _this = this;
-      _this.list.forEach(l => {
+      this.isUpdateSort = false;
+      this.list.forEach(l => {
         if (l.uuid == id) {
           Object.assign(l, config);
         }
@@ -325,7 +361,7 @@ export default {
     setShowStep(parent) { //设置父级的显示
       if (parent) {
         if (parent.step) {
-          parent.step.isShow = true;
+          mutationsScript.setCombopPhaseShowMap(parent.step.uuid, true);
         } else {
           if (parent.$options.parent) {
             this.setShowStep(parent.$options.parent);
@@ -348,6 +384,7 @@ export default {
       this.showDialog = true;
     },
     okDialog() {
+      this.isUpdateSort = false;
       this.list.forEach(item => {
         if (item.uuid === this.currentStep.uuid) {
           this.$set(item, 'description', this.description);
@@ -362,6 +399,9 @@ export default {
     }
   },
   computed: {
+    phaseShowMap() {
+      return storeScript.phaseShowMap || {};
+    },
     getPrev() {
       return function(index, prevStepList) {
         let list = [];
@@ -435,8 +475,7 @@ export default {
             }
             return {
               ...v,
-              uuid: v.uuid || this.$utils.setUuid(),
-              isShow: v.isShow == undefined ? false : v.isShow
+              uuid: v.uuid || this.$utils.setUuid()
             };
           });
           this.updatedSort();
@@ -447,7 +486,19 @@ export default {
     },
     list: {
       handler(val) {
-        this.$emit('sortList', val);
+        if (this.canEdit) {
+          this.$emit('sortList', val, this.isUpdateSort);
+        }
+      },
+      deep: true
+    },
+    validPhaseOperationUuidList: {
+      handler(val) {
+        if (!this.$utils.isEmpty(val)) {
+          val.forEach(item => {
+            mutationsScript.setCombopPhaseShowMap(item, true);
+          });
+        }
       },
       deep: true
     }

@@ -116,9 +116,6 @@
           </Col>
         </TsRow>
       </template>
-      <!-- <template v-slot:topRight>
-
-      </template> -->
       <!-- 左侧步骤列表 -->
       <template v-slot:sider>
         <StepList
@@ -157,6 +154,7 @@
               :canEdit="effectiveEditable"
               :prevStepList="getPrev(currentConfig, stepList)"
               :operationType="operationType"
+              :validPhaseOperationUuidList="validPhaseOperationUuidList"
               @changeOperation="changeOperation"
             ></StepConfig>
           </div>
@@ -498,7 +496,8 @@ export default {
       isShowTestDialog: false,
       configExpired: 0,
       configExpiredReason: {},
-      opType: 'readonly' //操作类型
+      opType: 'readonly', //操作类型
+      validPhaseOperationUuidList: [] //校验定位工具列表
     };
   },
   beforeCreate() {},
@@ -689,7 +688,6 @@ export default {
     savePhaseOperationList(list) {
       let phaseOperationList = this.$utils.deepClone(list);
       phaseOperationList.forEach(item => {
-        delete item.isShow;
         delete item.operation;
         if (item.operationName == 'native/IF-Block') {
           if (item.config.ifList && item.config.ifList.length) {
@@ -735,6 +733,7 @@ export default {
         this.currentStep = null;
         let data = this.getData();
         this.$set(data, 'status', 'draft');
+        this.loading = true;
         await this.$api.autoexec.action
           .saveActionVersion(data)
           .then(res => {
@@ -1047,13 +1046,6 @@ export default {
       valid.length > 0 && this.$refs.stepConfig && this.$utils.validForm(this.$refs.stepConfig.$el);
       return valid;
     },
-    // validCurrentStepConfig() {
-    //   if (this.$refs.stepConfig) {
-    //     return this.$refs.stepConfig.valid();
-    //   } else {
-    //     return true;
-    //   }
-    // },
     selectValidItem(config) {
       //获取其中一个校验，进行特殊处理
       if (config) {
@@ -1066,8 +1058,16 @@ export default {
             let stepItem = this.stepList.find(c => c.uuid == this.currentStep);
             stepItem && (groupUuid = stepItem.groupUuid);
             groupUuid && (this.currentGroupConfig = this.combopGroupList.find(g => g.uuid == groupUuid));
+            if (!this.$utils.isEmpty(config.config.operationUuid)) {
+              this.validPhaseOperationUuidList = config.config.operationUuid;
+            }
             this.$nextTick(() => {
-              this.$refs.stepConfig && this.$refs.stepConfig.valid();
+              this.$refs.stepConfig && this.$refs.stepConfig.valid(config.config);
+              if (!this.$utils.isEmpty(config.config.id)) {
+                this.$nextTick(() => {
+                  this.$utils.jumpTo(config.config.id);
+                });
+              }
             });
           } else if (config.config.type == 'executeSetting') {
             //执行目标校验不通过
@@ -1249,10 +1249,11 @@ export default {
         }
       });
     },
-    validPhaseOperationList(step, phaseOperationList) { //校验工具列表
+    validPhaseOperationList(step, phaseOperationList, validPperationUuidList) { //校验工具列表
       let validList = [];
       //如果输入参数有必填但是没填的
       phaseOperationList.forEach(p => {
+        let validUuidList = [p.uuid, ...validPperationUuidList || []];
         if (p.operationName == 'native/IF-Block') {
           if (p.config) {
             !p.config.condition && validList.push({
@@ -1261,7 +1262,9 @@ export default {
               config: {
                 stepName: step.name,
                 validComponent: 'operation',
-                stepUuid: step.uuid
+                stepUuid: step.uuid,
+                operationUuid: validUuidList,
+                id: '#id_' + step.uuid + '_' + p.uuid
               }
             });
             if (this.$utils.isEmpty(p.config.ifList) && this.$utils.isEmpty(p.config.elseList)) {
@@ -1271,16 +1274,18 @@ export default {
                 config: {
                   stepName: step.name,
                   validComponent: 'operation',
-                  stepUuid: step.uuid
+                  stepUuid: step.uuid,
+                  operationUuid: validUuidList,
+                  id: '#id_' + step.uuid + '_' + p.uuid
                 }
               });
             }
             if (p.config.ifList && p.config.ifList.length) {
-              let validIfList = this.validPhaseOperationList(step, p.config.ifList);
+              let validIfList = this.validPhaseOperationList(step, p.config.ifList, validUuidList);
               validIfList.length && validList.push(...validIfList);
             }
             if (p.config.elseList && p.config.elseList.length) {
-              let validElseList = this.validPhaseOperationList(step, p.config.elseList);
+              let validElseList = this.validPhaseOperationList(step, p.config.elseList, validUuidList);
               validElseList.length && validList.push(...validElseList);
             }
           }
@@ -1292,7 +1297,9 @@ export default {
               config: {
                 stepName: step.name,
                 validComponent: 'operation',
-                stepUuid: step.uuid
+                stepUuid: step.uuid,
+                operationUuid: validUuidList,
+                id: '#id_' + step.uuid + '_' + p.uuid
               }
             });
             !p.config.loopItemVar && validList.push({
@@ -1301,7 +1308,9 @@ export default {
               config: {
                 stepName: step.name,
                 validComponent: 'operation',
-                stepUuid: step.uuid
+                stepUuid: step.uuid,
+                operationUuid: validUuidList,
+                id: '#id_' + step.uuid + '_' + p.uuid
               }
             });
             (!p.config.operations || p.config.operations.length == 0) && validList.push({
@@ -1310,11 +1319,13 @@ export default {
               config: {
                 stepName: step.name,
                 validComponent: 'operation',
-                stepUuid: step.uuid
+                stepUuid: step.uuid,
+                operationUuid: validUuidList,
+                id: '#id_' + step.uuid + '_' + p.uuid
               }
             });
             if (p.config.operations && p.config.operations.length) {
-              let validOperations = this.validPhaseOperationList(step, p.config.operations);
+              let validOperations = this.validPhaseOperationList(step, p.config.operations, validUuidList);
               validOperations.length && validList.push(...validOperations);
             }
           }
@@ -1341,7 +1352,9 @@ export default {
                   config: {
                     stepName: step.name,
                     validComponent: 'operation',
-                    stepUuid: step.uuid
+                    stepUuid: step.uuid,
+                    operationUuid: validUuidList,
+                    id: '#id_' + step.uuid + '_' + p.uuid
                   }
                 });
               }
@@ -1365,7 +1378,9 @@ export default {
                   config: {
                     stepName: step.name,
                     validComponent: 'operation',
-                    stepUuid: step.uuid
+                    stepUuid: step.uuid,
+                    operationUuid: validUuidList,
+                    id: '#id_' + step.uuid + '_' + p.uuid
                   }
                 });
               }
@@ -1380,7 +1395,9 @@ export default {
                 config: {
                   stepName: step.name,
                   validComponent: 'operation',
-                  stepUuid: step.uuid
+                  stepUuid: step.uuid,
+                  operationUuid: validUuidList,
+                  id: '#id_' + step.uuid + '_' + p.uuid
                 }
               });
             }
@@ -1391,7 +1408,9 @@ export default {
               config: {
                 stepName: step.name,
                 validComponent: 'operation',
-                stepUuid: step.uuid
+                stepUuid: step.uuid,
+                operationUuid: validUuidList,
+                id: '#id_' + step.uuid + '_' + p.uuid
               }
             });
           }
@@ -1542,12 +1561,14 @@ export default {
     getPrev() {
       return function(config, list) {
         let uk = config.uuid;
+        let prevList = [];
         let index = list.findIndex(l => {
           return l.uuid == uk;
         });
-        return list.filter((s, sindex) => {
+        prevList = list.filter((s, sindex) => {
           return sindex < index;
         });
+        return prevList;
       };
     },
     combopGroupList() {

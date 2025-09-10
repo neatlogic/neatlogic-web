@@ -15,6 +15,7 @@
           :inputTypeList="inputTypeList"
           :execMode="execMode"
           :operationType="operationType"
+          :validPhaseOperationUuidList="validPhaseOperationUuidList"
           @sortList="sortList"
         ></ScriptList>
       </div>
@@ -38,6 +39,7 @@
 </template>
 <script>
 import ScriptList from '@/views/pages/autoexec/components/script/script-list.vue';
+import { storeScript } from '@/views/pages/autoexec/components/script/script-state.js';
 export default {
   name: 'StepConfig',
   components: {
@@ -80,6 +82,12 @@ export default {
     operationType: { //组合工具类型不是combop时，只能修改输入参数，预设参数、自由参数，不可对阶段信息进行修改
       type: String,
       default: 'combop'
+    },
+    validPhaseOperationUuidList: {
+      type: Array,
+      default: () => {
+        return [];
+      }
     }
   },
   data() {
@@ -119,17 +127,26 @@ export default {
     if (!this.isRunner) {
       window.removeEventListener('resize', _this.renderHeight);
     }
+    
+    this.clearObservable();
   },
   destroyed() {},
   methods: {
+    clearObservable() {
+      //清空状态管理的数据
+      Object.keys(storeScript).forEach(key => {
+        storeScript[key] = null;
+      });
+    },
     addOperation() {
       this.isAdd = true;
     },
     async close(list) {
       this.isAdd = false;
       if (list && list.length) {
+        let phaseOperationList = this.$utils.deepClone(this.phaseOperationList) || [];
         list.forEach(async(l) => {
-          let prevlength = this.phaseOperationList.filter(p => { return p.operationId == l.operationId; });
+          let prevlength = phaseOperationList.filter(p => { return p.operationId == l.operationId; });
           let defaulParam = [];
           if (l.inputParamList && l.inputParamList.length) {
             let profileParamVoList = [];
@@ -184,10 +201,11 @@ export default {
               this.$set(item.config, 'profileId', l.defaultProfileId);
             }
           }
-          this.phaseOperationList.push(item);
-          this.$nextTick(() => {
-            this.$refs.list.updateList(this.phaseOperationList);
-          });
+          phaseOperationList.push(item);
+        });
+        this.phaseOperationList = phaseOperationList;
+        this.$nextTick(() => {
+          this.$refs.list.updateList(this.phaseOperationList);
         });
       }
     },
@@ -215,16 +233,10 @@ export default {
       this.totalheight = window.innerHeight || document.body.clientHeight;
       this.$el && (this.height = this.$el.getBoundingClientRect().top);
     },
-    valid() {
-      if (!this.phaseOperationList || !this.phaseOperationList.length) {
-        return this.$t('page.notarget', {target: this.$t('term.autoexec.tool')});
-      } else {
-        if (this.$refs.list) {
-          return this.$refs.list.valid();
-        } else {
-          return true;
-        }
-      }
+    valid(config) {
+      if (this.$refs.list) {
+        this.$refs.list.valid(config);
+      } 
     },
     getFailPolicyOption() {
       //获取失败策略下拉

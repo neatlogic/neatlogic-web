@@ -82,14 +82,18 @@ function getPages(pageList) {
       } else if (commercialModuleList.includes(filename)) {
         entry = `${commercialModule}/${moduleName}/${filename}.js`;
       }
-      newpage[filename] = {
-        entry: entry,
-        template: `public/index.html`,
-        filename: `${filename}.html`,
-        title: pageLogin, // 标题名称+参数
-        chunks: [`chunk-vendors`, `chunk-common`, filename]
-      };
-      Object.assign(pages, newpage);
+      const entryPath = path.resolve(__dirname, entry);
+      const needEntry = glob.sync(entryPath);
+      if (needEntry.length > 0) {
+        newpage[filename] = {
+          entry: entry,
+          template: `public/index.html`,
+          filename: `${filename}.html`,
+          title: pageLogin, // 标题名称+参数
+          chunks: [`chunk-vendors`, `chunk-common`, filename]
+        };
+        Object.assign(pages, newpage);
+      }
     });
   } else {
     //eg:['process','dashboard']
@@ -106,7 +110,7 @@ function getPages(pageList) {
       Object.assign(pages, newpage);
     });
   }
-  console.log('pages', JSON.stringify(pages));
+  //console.log('pages', JSON.stringify(pages));
   return pages;
 }
 function getModuleName(moduleName) {
