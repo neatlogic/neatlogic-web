@@ -196,7 +196,7 @@ export default {
         }
         let json = { userList: this.addConfig.dataConfig.userList, title: this.addConfig.dataConfig.title};
         if (this.$utils.isEmpty(this.addConfig.index)) {
-          this.teamUserTitleList.unshift(json);
+          this.teamUserTitleList.push(json);
         } else {
           Object.assign(this.teamUserTitleList[this.addConfig.index], json);
         }
