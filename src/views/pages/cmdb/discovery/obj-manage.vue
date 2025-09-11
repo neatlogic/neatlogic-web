@@ -35,15 +35,15 @@
             <div class="padding-xs">
               <div class="grid mb-sm">
                 <div class="text-grey">{{ $t('term.cmdb.objectcategory') }}</div>
-                <div>{{ row.objCategory }}</div>
+                <div class="overflow" :title="row.objCategory">{{ row.objCategory }}</div>
               </div>
               <div class="grid mb-sm">
                 <div class="text-grey">{{ $t('term.cmdb.objecttype') }}</div>
-                <div>{{ row.objType }}</div>
+                <div class="overflow" :title="row.objType">{{ row.objType }}</div>
               </div>
               <div class="grid">
                 <div class="text-grey">{{ $t('page.model') }}</div>
-                <div>{{ row.ciLabel }}</div>
+                <div class="overflow" :title="row.ciLabel">{{ row.ciLabel }}</div>
               </div>
             </div>
           </template>
