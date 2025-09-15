@@ -1,6 +1,7 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
 const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
+
 const userManage = () => import('./users/user-manage.vue');
 const roleManage = () => import('./users/role-manage.vue');
 const teamManage = () => import('./users/team-manage.vue');
@@ -770,5 +771,6 @@ let routerList = [
       type: 'healthcheck'
     }
   }
+
 ];
 export default routerList;

@@ -14,6 +14,8 @@
               <span class="stepIndex tips" :class="{ 'text-primary border-primary': group.phaseList.findIndex(d => d.id === activePhaseId) >= 0, 'text-grey': group.phaseList.findIndex(d => d.id === activePhaseId) === -1 }">{{ index + 1 }}</span>
               <div slot="content">
                 <div>{{ $t('page.autoexecparallpolicy') }}: {{ parallelPolicyTrans(group.parallelPolicy) }}</div>
+                <div v-if="!$utils.isEmpty(group.parallelFrom) && group.parallelPolicy === 'parallel'">{{ $t('term.autoexec.parall') }}{{ $t('page.source') }}: {{ group.parallelFrom }}</div>
+                <div v-if="!$utils.isEmpty(group.parallelFrom) && group.parallelPolicy === 'roundCount'">{{ $t('term.autoexec.batchquantity') }}{{ $t('page.source') }}: {{ group.parallelFrom }}</div>
                 <div v-if="!$utils.isEmpty(group.roundCount)">{{ $t('term.autoexec.batchquantity') }}: {{ parallelOrRoundCountTrans(group.roundCount) }}</div>
                 <div v-if="!$utils.isEmpty(group.parallelCount)">{{ $t('term.autoexec.parall') }}: {{ parallelOrRoundCountTrans(group.parallelCount) }}</div>
               </div>
@@ -242,7 +244,7 @@ export default {
         this.phaseList.forEach(phase => {
           let group = groupList.find(d => d.groupId == phase.groupId);
           if (!group) {
-            group = { groupId: phase.groupId, phaseList: [], groupSort: phase.jobGroupVo.sort, parallelPolicy: phase.jobGroupVo.parallelPolicy, parallelCount: phase.jobGroupVo.parallelCount, roundCount: phase.jobGroupVo.roundCount};
+            group = { groupId: phase.groupId, phaseList: [], groupSort: phase.jobGroupVo.sort, parallelPolicy: phase.jobGroupVo.parallelPolicy, parallelCount: phase.jobGroupVo.parallelCount, roundCount: phase.jobGroupVo.roundCount, parallelFrom: phase.jobGroupVo.parallelFrom};
             groupList.push(group);
           }
           group['phaseList'].push(phase);

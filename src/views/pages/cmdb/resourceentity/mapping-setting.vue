@@ -151,7 +151,7 @@ export default {
       this.fieldList.forEach(item => {
         this.list.push({
           field: item.value,
-          type: ''
+          type: 'empty'
         });
       });
     },

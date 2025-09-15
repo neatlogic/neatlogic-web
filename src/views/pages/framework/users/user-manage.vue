@@ -5,16 +5,16 @@
         <div class="action-group">
           <span class="action-item tsfont-plus" @click="editUser()">{{ $t('page.user') }}</span>
           <span v-if="select && select.length > 0" class="action-item tsfont-trash-o" @click="deleteData(select)">{{ $t('page.batchdelete') }}</span>
+          <span v-if="select && select.length > 0" class="action-item tsfont-export dropdown-icon" @click="deleteSession(select)">{{ $t('term.framework.batchdeleteusersession') }}</span>
         </div>
       </template>
-      <div slot="topCenter" class="pr-md text-right">
-        <Button v-if="$AuthUtils.hasRole('VIP_VIEW')" :type="vipLevel?'primary':'default'" @click="changeVipLevel">VIP</Button>
-      </div>
       <template slot="topRight">
-        <InputSearcher
-          v-model="keyword"
-          @change="changeCurrent(1)"
-        ></InputSearcher>
+        <CombineSearcher
+          v-if="searchConfig.searchList[0].dataList.length > 0"
+          v-model="searchValue"
+          v-bind="searchConfig"
+          @change="getTable()"
+        ></CombineSearcher>
       </template>
       <div slot="content">
         <div class="content">
@@ -73,6 +73,7 @@
                   <li class="tsfont-edit icon" @click.stop="editUser(row, 'user')">{{ $t('page.edit') }}</li>
                   <li class="tsfont-permission icon" @click.stop="editUser(row, 'auth')">{{ $t('page.auth') }}</li>
                   <li class="tsfont-trash-o icon" @click.stop="deleteData(row)">{{ $t('page.delete') }}</li>
+                  <li class="tsfont-export dropdown-icon icon" @click.stop="deleteSession(row)">{{ $t('term.framework.deletesession') }}</li>
                 </ul>
               </div>
             </template>
@@ -122,8 +123,8 @@
 export default {
   name: 'UserManage',
   components: {
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     CommonAuth: () => import('./common/common-auth.vue')
   },
@@ -176,6 +177,7 @@ export default {
       tabledata: null, //table的正文数据
       select: null, //选中哪些
       vipLevel: null, //VIP等级
+      isOnline: null, //是否在线
       formSetting: [], //弹窗表单对应的数组
       isImmediately: true, //立即授权
       isBatch: false, //是否批量授权
@@ -193,7 +195,47 @@ export default {
         authGroup: '',
         auth: '',
         roleName: ''
-      }
+      },
+      searchConfig: {
+        search: true,
+        placeholder: this.$t('form.placeholder.pleaseinput', { target: this.$t('page.keyword') }),
+        searchList: [
+          {
+            type: 'radio',
+            dataList: [
+              {
+                text: '是',
+                value: '1'
+              }
+            ],
+            name: 'vipLevel',
+            label: 'Vip',
+            transfer: true,
+            filterable: true,
+            allowToggle: true,
+            isHidden: !this.$AuthUtils.hasRole('VIP_VIEW')
+          },
+          {
+            type: 'radio',
+            dataList: [
+              {
+                text: '是',
+                value: '1'
+              },
+              {
+                text: '否',
+                value: '0'
+              }
+            ],
+            name: 'isOnline',
+            label: '在线',
+            transfer: true,
+            filterable: true,
+            allowToggle: true
+          }
+        ]
+      },
+      searchValue: {}
     };
   },
   created() {},
@@ -215,20 +257,18 @@ export default {
       this.vipLevel = this.vipLevel ? null : 1;
       this.getTable();
     },
+    changeIsOnline() {
+      this.isOnline = this.isOnline ? null : 1;
+      this.getTable();
+    },
     getTable() {
       this.loadingShow = true;
-      let data = {
-        keyword: this.keyword,
-        vipLevel: this.$AuthUtils.hasRole('VIP_VIEW') ? this.vipLevel : 0,
-        currentPage: this.searchParams.currentPage,
-        pageSize: this.searchParams.pageSize
-      };
-      this.$addHistoryData('keyword', data.keyword);
-      this.$addHistoryData('vipLevel', data.vipLevel);
-      this.$addHistoryData('currentPage', data.currentPage);
-      this.$addHistoryData('pageSize', data.pageSize);
+      const param = { ...this.searchParams, ...this.searchValue };
+      this.$addHistoryData('searchValue', this.searchValue);
+      this.$addHistoryData('searchParam', this.searchParam);
+     
       this.$api.framework.user
-        .searchUser(data)
+        .searchUser(param)
         .then(res => {
           if (res.Status == 'OK') {
             this.tabledata = res.Return;
@@ -238,10 +278,12 @@ export default {
         });
     },
     restoreHistory(historyData) {
-      this.keyword = historyData['keyword'];
-      this.vipLevel = historyData['vipLevel'];
-      this.searchParams.currentPage = historyData['currentPage'];
-      this.searchParams.pageSize = historyData['pageSize'];
+      if (historyData['searchParam']) {
+        this.searchParam = historyData['searchParam'];
+      }
+      if (historyData['searchValue']) {
+        this.searchValue = historyData['searchValue'];
+      }
     },
     getSelect(li, selection) {
       this.select = selection;
@@ -317,6 +359,39 @@ export default {
             .then(res => {
               if (res && res.Status == 'OK') {
                 this.$Message.success(this.$t('message.deletesuccess'));
+                vnode.isShow = false;
+                this.tabledata.currentPage = 1;
+                this.select = [];
+                this.getTable();
+              }
+            });
+        }
+      });
+    }, //删除
+    deleteSession(row) {
+      let key = row instanceof Array;
+      let userUuidList = [];
+      if (key && row.length > 0) {
+        row.forEach(item => {
+          userUuidList.push(item.uuid);
+        });
+      } else {
+        userUuidList = [row.uuid];
+      }
+      let param = {
+        userUuidList: userUuidList
+      };
+      let content = userUuidList.length > 1 ? this.$t('term.framework.suredeletesession', {target: this.$t('page.user') + '：' + row.map(r => { return r.userName; }).join('、')}) : key ? this.$t('term.framework.suredeletesession', {target: this.$t('page.user') + '：' + row[0].userName}) : this.$t('term.framework.suredeletesession', {target: this.$t('page.user') + '：' + row.userName});
+      this.$createDialog({
+        title: this.$t('term.framework.usersessiondeletetitle'),
+        content: content + '<br/><span class="text-tip tips">' + this.$t('term.framework.usersessiondeletetip') + '</span>',
+        btnType: 'error',
+        'on-ok': vnode => {
+          this.$api.framework.user
+            .deleteUserSession(param)
+            .then(res => {
+              if (res && res.Status == 'OK') {
+                this.$Message.success(this.$t('message.executesuccess'));
                 vnode.isShow = false;
                 this.tabledata.currentPage = 1;
                 this.select = [];

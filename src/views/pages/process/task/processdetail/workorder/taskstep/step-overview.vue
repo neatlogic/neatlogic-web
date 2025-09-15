@@ -5,7 +5,7 @@
     </div>
     <div class="activity-step">
       <Timeline>
-        <TimelineItem v-for="(item, index) of stepData" :key="index">
+        <TimelineItem v-for="(item, index) of stepData" :key="item.id">
           <div class="step-title">
             <div class="header-info-box parent">
               <CommonStatus

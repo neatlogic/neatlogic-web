@@ -430,6 +430,7 @@ export default {
       });
     },
     filterUuid(obj) {
+      // 解决循环引用报错问题
       let formData = this.$utils.deepClone(obj);
       if (formData.uuid) {
         delete formData.uuid;

@@ -235,7 +235,7 @@ export default {
       // 提取重复的宽度计算逻辑
       const getDefaultWidth = (width, defaultValue) => width || defaultValue;
       const threeEqualWidths = `${getDefaultWidth(this.topLeftWidth, '33.33%')} ${getDefaultWidth(this.topCenterWidth, '33.33%')} ${getDefaultWidth(this.topRightWidth, '33.33%')}`;
-      const twoEqualWidths = `${getDefaultWidth(this.topLeftWidth, '50%')} 0px ${getDefaultWidth(this.topRightWidth, '50%')}`;
+      const twoEqualWidths = `minmax(0, ${getDefaultWidth(this.topLeftWidth, '50%')}) 0px minmax(0, ${getDefaultWidth(this.topRightWidth, '50%')})`;
 
       if (hasLeft && hasCenter && hasRight) {
         //左中右

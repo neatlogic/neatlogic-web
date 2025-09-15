@@ -89,6 +89,7 @@
                           border="none"
                           size="small"
                           :transfer="true"
+                          class="transparentSelect"
                         ></TsFormSelect>
                       </div>
                     </Col>
@@ -729,6 +730,11 @@ export default {
     > span {
       padding-right: 8px;
     }
+  }
+}
+.transparentSelect {
+  .ivu-input {
+    background-color: transparent !important;
   }
 }
 </style>

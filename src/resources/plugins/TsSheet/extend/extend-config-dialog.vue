@@ -20,7 +20,7 @@
               </div>
             </div>
             <div v-show="!item._isHide" class="content border-color padding">
-              <TsFormItem label="标签">
+              <TsFormItem :label="$t('page.tag')">
                 <TsFormInput
                   ref="formItem"
                   v-model="item.tag"
@@ -29,18 +29,19 @@
                   :validateList="tagValidateList"
                 ></TsFormInput>
               </TsFormItem>
-              <TsFormItem label="配置">
+              <TsFormItem :label="$t('page.config')">
                 <Tabs :name="'data' + index" :animated="false" @on-click="(name)=>changeTab(name, item)">
-                  <TabPane label="转换前配置" :name="'formItem' + index" :tab="'data' + index">
-                    <TsCodemirror
-                      ref="code"
-                      :value="JSON.stringify(formItemList, null,2)"   
-                      codeMode="json"
-                      :isReadOnly="true"
-                      isCopy
-                    ></TsCodemirror>  
+                  <TabPane :label="$t('page.beforeconfig')" :name="'formItem' + index" :tab="'data' + index">
+                    <JsonViewer 
+                      boxed 
+                      copyable 
+                      :expand-depth="2" 
+                      :show-array-index="false" 
+                      :value="formItemList"
+                      class="border-base"
+                    />
                   </TabPane>
-                  <TabPane label="数据配置" :name="'dataConfig' + index" :tab="'data' + index">
+                  <TabPane :label="$t('page.dataconfig')" :name="'dataConfig' + index" :tab="'data' + index">
                     <div v-if="item._tab === 'dataConfig' + index">
                       <ConfigHelp></ConfigHelp>
                       <TsCodemirror
@@ -51,13 +52,13 @@
                       ></TsCodemirror>
                     </div>
                   </TabPane>
-                  <TabPane label="数据转换" :name="'dataChange' + index" :tab="'data' + index">
+                  <TabPane :label="$t('page.datachange')" :name="'dataChange' + index" :tab="'data' + index">
                     <div v-if="item._tab === 'dataChange' + index">
                       <MethodsHelp></MethodsHelp>
                       <TsCodemirror v-model="item.extendMethods" :validateList="validateList" isCopy></TsCodemirror>
                     </div>
                   </TabPane>
-                  <TabPane label="测试" :name="'dataTest' + index" :tab="'data' + index">
+                  <TabPane :label="$t('page.test')" :name="'dataTest' + index" :tab="'data' + index">
                     <ExtendTest
                       v-if="item._tab === 'dataTest' + index"
                       :config="item"
@@ -68,7 +69,7 @@
               </TsFormItem>
             </div>
           </div>
-          <span class="tsfont-plus text-href" @click="addItem()">添加</span>
+          <span class="tsfont-plus text-href" @click="addItem()">{{ $t('page.add') }}</span>
         </div>
       </template>
     </TsDialog>
@@ -83,7 +84,8 @@ export default {
     TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
     ExtendTest: () => import('./extend-test.vue'),
     ConfigHelp: () => import('./help/config-help.vue'),
-    MethodsHelp: () => import('./help/methods-help.vue')
+    MethodsHelp: () => import('./help/methods-help.vue'),
+    JsonViewer: () => import('vue-json-viewer')
   },
   filters: {
   },

@@ -1,17 +1,16 @@
-
 <template>
   <div>
     <TsForm ref="teamForm" :itemList="formData">
       <template v-slot:teamUserTitleList>
         <div>
-          <div class="text-href tsfont-plus addBtn" @click="editUserTitle()">{{ $t('dialog.title.addtarget', {target: $t('term.framework.position')}) }}</div>
-          <ul v-if="teamUserTitleList && teamUserTitleList.length " class="leader-ul">
-            <li v-for="(data ,index) in teamUserTitleList" :key="index" class="bg-op radius-sm">
+          <div class="text-href tsfont-plus addBtn" @click="editUserTitle()">{{ $t('dialog.title.addtarget', { target: $t('page.user') }) }}</div>
+          <ul v-if="teamUserTitleList && teamUserTitleList.length" class="leader-ul">
+            <li v-for="(data, index) in teamUserTitleList" :key="index" class="bg-op radius-sm">
               <div class="div-header">
                 <span class="text-tip">{{ data.title }}</span>
                 <div class="div-btn">
-                  <span class="tsfont-edit text-tip-active ml-md" :title="$t('page.edit')" @click="editUserTitle(data,index)"></span>
-                  <span class="tsfont-trash-o text-tip-active ml-md" :title="$t('page.delete')" @click="removeUserTitle(index,data)"></span>
+                  <span class="tsfont-edit text-tip-active ml-md" :title="$t('page.edit')" @click="editUserTitle(data, index)"></span>
+                  <span class="tsfont-trash-o text-tip-active ml-md" :title="$t('page.delete')" @click="removeUserTitle(index, data)"></span>
                 </div>
               </div>
               <div v-if="data.userList && data.userList.length > 0" class="div-content">
@@ -31,8 +30,7 @@
       @on-close="onClose"
       @on-ok="onClose(true)"
     >
-      <TsForm ref="leaderForm" v-model="addConfig.dataConfig" :itemList="addConfig.itemList">
-      </TsForm>
+      <TsForm ref="leaderForm" v-model="addConfig.dataConfig" :itemList="addConfig.itemList"></TsForm>
     </TsDialog>
   </div>
 </template>
@@ -43,8 +41,7 @@ export default {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
-  filters: {
-  },
+  filters: {},
   props: {
     uuid: [String, Number],
     isEdit: [String, Number],
@@ -66,7 +63,7 @@ export default {
           validateList: [
             {
               name: 'required',
-              message: this.$t('form.placeholder.pleaseinput', {target: this.$t('term.framework.teamname')})
+              message: this.$t('form.placeholder.pleaseinput', { target: this.$t('term.framework.teamname') })
             },
             {
               name: 'non-special'
@@ -89,7 +86,7 @@ export default {
         level: {
           type: 'select',
           label: this.$t('page.hierarchy'),
-          placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.hierarchy')}),
+          placeholder: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.hierarchy') }),
           search: true,
           multiple: false,
           url: '/api/rest/team/level/list',
@@ -104,7 +101,7 @@ export default {
       isShowEditUserDialog: false,
       addConfig: {
         title: '',
-        dataConfig: {title: '', userList: []},
+        dataConfig: { title: '', userList: [] },
         itemList: {
           title: {
             type: 'select',
@@ -127,7 +124,6 @@ export default {
             validateList: ['required']
           }
         }
-
       }
     };
   },
@@ -164,16 +160,17 @@ export default {
         });
       }
     },
-    editUserTitle(item, index) { //添加职务  编辑职务
+    editUserTitle(item, index) {
+      //添加职务  编辑职务
       this.isShowEditUserDialog = true;
-      this.addConfig.dataConfig = {userList: [], title: ''};
+      this.addConfig.dataConfig = { userList: [], title: '' };
       if (item) {
-        this.addConfig.title = this.$t('page.edit');
+        this.addConfig.title = this.$t('dialog.title.edittarget', {'target': this.$t('page.user')});
         this.addConfig.index = index;
         this.addConfig.dataConfig.title = item.title;
         this.addConfig.dataConfig.userList = this.addUserPrefix(item.userList);
       } else {
-        this.addConfig.title = this.$t('page.new');
+        this.addConfig.title = this.$t('dialog.title.addtarget', {'target': this.$t('page.user')});
       }
     },
     removeUserTitle(index, item) {
@@ -194,9 +191,9 @@ export default {
         if (!this.$refs.leaderForm.valid()) {
           return;
         }
-        let json = { userList: this.addConfig.dataConfig.userList, title: this.addConfig.dataConfig.title};
+        let json = { userList: this.addConfig.dataConfig.userList, title: this.addConfig.dataConfig.title };
         if (this.$utils.isEmpty(this.addConfig.index)) {
-          this.teamUserTitleList.unshift(json);
+          this.teamUserTitleList.push(json);
         } else {
           Object.assign(this.teamUserTitleList[this.addConfig.index], json);
         }
@@ -208,7 +205,7 @@ export default {
     getFormValue() {
       let data = this.$refs.teamForm.getFormValue();
       data.teamUserTitleList = this.teamUserTitleList.map(item => {
-        let cc = {title: item.title};
+        let cc = { title: item.title };
         cc.userList = this.handleUserPrefix(item.userList);
         return cc;
       });
@@ -235,35 +232,35 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.addBtn{
-  margin-left:0px !important;
+.addBtn {
+  margin-left: 0px !important;
   margin-bottom: @space-sm;
 }
-.leader-ul{
-  >li{
+.leader-ul {
+  > li {
     margin-bottom: @space-sm;
-    padding:@space-sm @space-normal;
-    .div-header{
+    padding: @space-sm @space-normal;
+    .div-header {
       position: relative;
       padding-right: 50px;
-      >.div-btn{
-        position:absolute;
-        top:0px;
+      > .div-btn {
+        position: absolute;
+        top: 0px;
         right: 0px;
         visibility: hidden;
       }
     }
-    .div-content{
-      padding:0px @space-normal;
-      .desc{
+    .div-content {
+      padding: 0px @space-normal;
+      .desc {
         padding-left: 6px;
         vertical-align: baseline;
       }
     }
-    &:hover{
-       .div-btn{
-          visibility:visible;
-       }
+    &:hover {
+      .div-btn {
+        visibility: visible;
+      }
     }
   }
 }
