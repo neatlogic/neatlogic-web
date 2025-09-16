@@ -20,17 +20,13 @@
               <Col
                 v-for="(item, index) in scenarioList"
                 :key="index"
-                :xs="4"
-                :sm="4"
-                :md="4"
-                :lg="4"
-                :xl="4"
-                :xxl="4"
+                :xs="6"
               >
                 <div
                   v-if="item.isEnable"
-                  class="li-item text-action"
+                  class="li-item text-action overflow"
                   :class="jobTemplateData.scenarioId == item.scenarioId ? 'li-active li-text border-primary' : 'border-base bg-op'"
+                  :title="item.scenarioName"
                   @click="selectScenario(item)"
                 >{{ item.scenarioName }}</div>
                 <Tooltip
@@ -99,6 +95,7 @@
               :appModuleList="appModuleList"
               :disableVersionSelect="true"
             ></ModuleList>
+            <div v-if="moduleListValidTip" class="text-error">{{ moduleListValidTip }}</div>
           </div>
         </div>
         <div>
@@ -225,7 +222,8 @@ export default {
           text: this.$t('page.autoexecbatchround'),
           value: 'roundCount'
         }
-      ]
+      ],
+      moduleListValidTip: ''
     };
   },
   beforeCreate() {},
@@ -380,14 +378,16 @@ export default {
       this.updateInstanceList(env.id);
     },
     save() {
+      let isValid = this.valid();
+      this.moduleListValidTip = '';
+      const moduleList = this.$refs?.moduleList.getData() || [];
+      if (!this.jobTemplateData.config) {
+        this.$set(this.jobTemplateData, 'config', {});
+      }
+      if (this.$refs.param) {
+        this.$set(this.jobTemplateData.config, 'param', this.$refs.param.getValue());
+      }
       if (!this.jobTemplateData.id && !this.jobTemplateData.uuid) {
-        if (!this.jobTemplateData.config) {
-          this.$set(this.jobTemplateData, 'config', {});
-        }
-        if (this.$refs.param) {
-          this.$set(this.jobTemplateData.config, 'param', this.$refs.param.getValue());
-        }
-        const moduleList = this.$refs?.moduleList.getData() || [];
         if (moduleList && moduleList.length > 0) {
           const jobTemplateList = [];
           moduleList.forEach(module => {
@@ -398,21 +398,21 @@ export default {
             data.uuid = this.$utils.setUuid();
             jobTemplateList.push(data);
           });
-          this.$emit('insert', jobTemplateList);
+          if (isValid) {
+            this.$emit('insert', jobTemplateList);
+          }
         } else {
-          this.$Message.info(this.$t('form.placeholder.pleaseselect', {target: this.$t('page.module')}));
+          this.moduleListValidTip = this.$t('form.placeholder.pleaseselect', {target: this.$t('page.module')});
         }
       } else {
-        const moduleList = this.$refs?.moduleList.getData() || [];
         if (moduleList && moduleList.length == 1) {
           const module = moduleList[0];
-          if (!this.jobTemplateData.config) {
-            this.jobTemplateData.config = {};
-          }
           this.jobTemplateData.config.selectNodeList = module.selectNodeList;
-          this.$emit('update', this.jobTemplateData);
+          if (isValid) {
+            this.$emit('update', this.jobTemplateData);
+          }
         } else {
-          this.$Message.info(this.$t('form.placeholder.pleaseselect', {target: this.$t('page.module')}));
+          this.moduleListValidTip = this.$t('form.placeholder.pleaseselect', {target: this.$t('page.module')});
         }
       }
     },
@@ -469,6 +469,13 @@ export default {
           this.jobTemplateData.parallelCount = 2;
         }
       }
+    },
+    valid() {
+      let isValid = true;
+      if (this.$refs.param && !this.$refs.param.valid()) {
+        isValid = false;
+      }
+      return isValid;
     }
   },
   filter: {},
