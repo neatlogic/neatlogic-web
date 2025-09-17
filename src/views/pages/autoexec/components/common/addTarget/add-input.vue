@@ -250,6 +250,14 @@ export default {
       },
       immediate: true,
       deep: true
+    },
+    preCondition: {
+      handler(val) {
+        if (!this.$utils.isEmpty(val)) {
+          this.clearAll();
+        }
+      },
+      deep: true
     }
   }
 };
