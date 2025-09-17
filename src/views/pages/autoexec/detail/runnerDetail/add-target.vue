@@ -84,7 +84,7 @@
       <div class="pl-nm pr-nm">
         <template v-if="type=='runtime'">
           <TsFormItem
-            v-if="!$utils.preCondition"
+            v-if="!$utils.isEmpty(preCondition)"
             :label="$t('term.autoexec.precondition')"
             :labelWidth="110"
             labelPosition="left"
