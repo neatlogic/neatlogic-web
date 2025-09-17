@@ -121,7 +121,7 @@
     </TsDialog>
     <TsDialog
       :isShow.sync="tabsaveModel"
-      width="437"
+      width="small"
       :title="$t('page.tip')"
       :cancelText="$t('page.cancel')"
       :content="$t('term.framework.saveusergroupchange')"

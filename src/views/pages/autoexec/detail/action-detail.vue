@@ -699,6 +699,7 @@ export default {
             this.$set(item.config, 'elseList', this.savePhaseOperationList(item.config.elseList));
           }
         } else if (item.operationName == 'native/LOOP-Block') {
+          delete item.config.paramMappingList;
           if (item.config.operations && item.config.operations.length) {
             this.$set(item.config, 'operations', this.savePhaseOperationList(item.config.operations));
           }

@@ -111,6 +111,7 @@
                       :prevStepList="getPrev(step,stepList)"
                       :failPolicyOption="failPolicyOption"
                       :inputTypeList="inputTypeList"
+                      :validPhaseOperationUuidList="validPhaseOperationUuidList"
                       @changeOperation="(list)=>{changeOperation(list, step)}"
                     ></StepConfig>
                   </div>
@@ -178,7 +179,11 @@ export default {
     },
     appSystemId: Number, //应用id
     appModuleId: Number, //模块id
-    envId: Number //环境id
+    envId: Number, //环境id
+    validPhaseOperationUuidList: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
