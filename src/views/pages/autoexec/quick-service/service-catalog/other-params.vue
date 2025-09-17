@@ -130,7 +130,7 @@
       :label="$t('term.autoexec.precondition')"
     >
       <PreconditionDetail
-        :defaultValue="preCondition"
+        :defaultValue="executeConfig.preCondition"
         :canEdit="false"
       ></PreconditionDetail>
     </TsFormItem>
