@@ -135,6 +135,7 @@ export default {
       searchConfig: {
         search: false,
         labelPosition: 'left',
+        searchMode: 'clickBtnSearch',
         searchList: [
           { type: 'text', name: 'transactionId', label: this.$t('term.cmdb.transactionid') },
           { type: 'text', name: 'transactionGroupId', label: this.$t('term.cmdb.transactiongroupid') },
@@ -172,24 +173,24 @@ export default {
             transfer: true
           },
           {
-            type: 'daterange',
+            type: 'datetimerange',
             name: 'createTimeRange',
             label: this.$t('page.actiondate'),
-            format: 'yyyy-MM-dd',
+            format: 'yyyy-MM-dd HH:mm',
             transfer: true
           },
           {
-            type: 'daterange',
+            type: 'datetimerange',
             name: 'commitTimeRange',
             label: this.$t('page.commitdate'),
-            format: 'yyyy-MM-dd',
+            format: 'yyyy-MM-dd HH:mm',
             transfer: true
           },
           {
-            type: 'daterange',
+            type: 'datetimerange',
             name: 'recoverTimeRange',
             label: this.$t('page.restoredate'),
-            format: 'yyyy-MM-dd',
+            format: 'yyyy-MM-dd HH:mm',
             transfer: true
           }
         ]
