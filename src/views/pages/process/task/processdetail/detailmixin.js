@@ -446,8 +446,17 @@ export default {
     isDraftData(to, from, next, url) {
       //路由跳转比较对比  父组件beforeRouterLeave调用
       if (this.actionConfig.save && this.$refs.TaskCenterDetail) {
-        let draftData = this.getData();
-        let isSame = this.$utils.isSame(this.draftData, draftData);
+        const draftData = this.getData();
+        const filterAttrList = ['hidecomponentList', 'formExtendAttributeDataList'];
+        let newData = draftData;
+        let oldData = this.draftData;
+        if (newData) {
+          newData = this.$utils.deepRemoveEmptyValues(this.$utils.filteredObj(draftData, filterAttrList));
+        }
+        if (oldData) {
+          oldData = this.$utils.deepRemoveEmptyValues(this.$utils.filteredObj(this.draftData, filterAttrList));
+        }
+        let isSame = this.$utils.isSame(newData, oldData);
         if (isSame || this.draftData == '') {
           // 没有改变
           url ? this.$utils.gotoHref(url) : next();

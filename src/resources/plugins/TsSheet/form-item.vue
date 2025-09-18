@@ -288,6 +288,9 @@ export default {
         if (this.reaction && !this.$utils.isEmpty(this.reaction)) {
           for (let action in this.reaction) {
             const reaction = this.reaction[action];
+            if (action === 'emit' && reaction.event) {
+              this.$set(this.reactionFormItemUuidMap, this.formItem.uuid, null);
+            }
             if (action !== 'filter') {
               const conditinoGroupList = reaction['conditionGroupList'];
               if (conditinoGroupList && conditinoGroupList.length > 0) {
