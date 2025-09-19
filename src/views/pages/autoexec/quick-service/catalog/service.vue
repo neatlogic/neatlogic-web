@@ -913,6 +913,7 @@ export default {
       this.parallelPolicy = { mappingMode: 'constant', value: null }; //并发策略
       this.parallelPolicyForm.disabled = false;
       this.parallelCount = {mappingMode: 'constant', value: null}; //并发数量
+      this.preCondition = null;
     },
     async initData() {
       this.defaultIniData();
