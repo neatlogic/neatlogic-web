@@ -110,6 +110,7 @@
           :id="id"
           :config="valueConfig"
           :defaultSearchValue="filterSearchValue"
+          :preCondition="preCondition"
         ></TargetView>
       </div>
       <template v-slot:footer>
