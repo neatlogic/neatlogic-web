@@ -2892,7 +2892,8 @@
     "uniquekey": "唯一键",
     "alertsign": "告警特征",
     "iswholerow": "独占一行展示",
-    "istab": "独占页签展示"
+    "istab": "独占页签展示",
+    "serialsave": "串行保存"
   },
   "informant": {
     "last5dump": "最近5次快照",

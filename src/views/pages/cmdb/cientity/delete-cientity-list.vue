@@ -3,7 +3,7 @@
     <div class="textRight">
       <CombineSearcher
         v-model="searchVal"
-        style="width: 400px; display: inline-block"
+        style="width: 600px; display: inline-block"
         v-bind="searchConfig"
         @change="searchCiEntity(1)"
       ></CombineSearcher>
@@ -114,13 +114,27 @@ export default {
       searchParam: { pageSize: this.pageSize },
       searchConfig: {
         search: false,
+        searchMode: 'clickBtnSearch',
         labelPosition: 'left',
-        labelWidth: 70,
+        labelWidth: 110,
         searchList: [
+          {
+            type: 'text',
+            name: 'ciEntityName',
+            label: this.$t('term.cmdb.cientityname')
+          },
           {
             type: 'text',
             name: 'transactionId',
             label: this.$t('term.cmdb.transactionid')
+          },
+          {
+            type: 'userselect',
+            name: 'deleteUser',
+            groupList: ['user'],
+            multiple: false,
+            label: this.$t('term.autoexec.operator'),
+            transfer: true
           },
           {
             type: 'select',
@@ -131,10 +145,10 @@ export default {
             transfer: true
           },
           {
-            type: 'daterange',
+            type: 'datetimerange',
             name: 'commitTimeRange',
             label: this.$t('page.deletetime'),
-            format: 'yyyy-MM-dd',
+            format: 'yyyy-MM-dd HH:mm',
             transfer: true
           }
         ]
