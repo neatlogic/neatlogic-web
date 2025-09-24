@@ -8,7 +8,7 @@
             <span
               v-if="item.text"
               :key="item.uuid"
-              class="tag-item-text border-color radius-sm overflow bg-op"
+              class="tag-item-text border-base radius-sm overflow bg-op"
             >
               <span class="text-title">{{ item.label }}</span>
               <span class="ml-xs mr-xs">:</span>
@@ -188,7 +188,7 @@
                         <Button @click="isVisible = false">{{ $t('page.cancel') }}</Button>
                       </div>
                       <div class="action-item">
-                        <Button type="primary" @click="searchConditionBtn">{{ $t('page.search') }}</Button>
+                        <Button type="primary" @click="searchConditionBtn">{{ searchText }}</Button>
                       </div>
                     </div>
                   </div>
@@ -245,6 +245,12 @@ export default {
       // 搜索条件列表
       type: Array,
       default: () => { return []; }
+    },
+    searchText: {
+      type: String,
+      default() {
+        return this.$t('page.search');
+      }
     }
   },
   data() {
@@ -921,7 +927,6 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     .tag-item-text{
-      border: 1px dashed;
       padding: 0 16px;
       line-height: 30px;
       display: inline-block;

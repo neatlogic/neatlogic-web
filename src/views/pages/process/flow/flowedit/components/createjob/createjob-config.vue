@@ -318,11 +318,10 @@ export default {
             isRequired: item.isRequired,
             key: item.key,
             mappingMode: item.mappingMode,
-            name: item.name
+            name: item.name,
+            value: item.value
           };
-          if (item.mappingMode === 'constant' || item.mappingMode === 'runtimeparam') {
-            obj.value = item.value;
-          } else {
+          if (item.mappingMode !== 'constant' && item.mappingMode !== 'runtimeparam') {
             obj.mappingList = [{
               mappingMode: '',
               value: '',

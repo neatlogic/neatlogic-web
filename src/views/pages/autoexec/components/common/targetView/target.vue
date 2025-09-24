@@ -1,7 +1,12 @@
 
 <template>
   <div v-if="config">
-    <div :is="getNodeHandler()" :config="config"></div>
+    <div
+      :is="getNodeHandler()"
+      :config="config"
+      :preCondition="preCondition"
+      :globalPreCondition="globalPreCondition"
+    ></div>
   </div>
 </template>
 <script>
@@ -15,7 +20,9 @@ export default {
   filters: {
   },
   props: {
-    config: Object
+    config: Object,
+    preCondition: Object,
+    globalPreCondition: Object //全局前置过滤器
   },
   data() {
     return {

@@ -60,7 +60,7 @@
           <div>
             <TsFormItem
               :label="$t('page.autoexecparallpolicy')"
-              :labelWidth="100"
+              :labelWidth="110"
               labelPosition="left"
               :required="true"
             >
@@ -74,7 +74,7 @@
           <div v-if="parallelPolicy !== 'roundCount'">
             <TsFormItem
               :label="$t('term.autoexec.parall')"
-              :labelWidth="100"
+              :labelWidth="110"
               labelPosition="left"
               :required="true"
             >
@@ -88,7 +88,7 @@
           <div v-else>
             <TsFormItem
               :label="$t('term.autoexec.batchquantity')"
-              :labelWidth="100"
+              :labelWidth="110"
               labelPosition="left"
               :required="true"
             >
@@ -151,7 +151,18 @@
         </div>
         <div>
           <Divider orientation="start">{{ $t('term.autoexec.executetarget') }}</Divider>
-          <div v-if="needExecuteNode" class="box-block">
+          <TsFormItem
+            v-if="!$utils.isEmpty(preCondition)"
+            :label="$t('term.autoexec.precondition')"
+            :labelWidth="110"
+            labelPosition="left"
+          >
+            <PreconditionDetail
+              :defaultValue="preCondition"
+              :canEdit="false"
+            ></PreconditionDetail>
+          </TsFormItem>
+          <div v-if="needExecuteNode" class="box-block"> 
             <AddTarget
               :id="actionId"
               ref="addTarget"
@@ -162,6 +173,7 @@
               :runtimeParamList="runtimeParamList"
               :needBorder="needExecuteUser|| needProtocol"
               :filterSearchValue="filterSearchValue"
+              :preCondition="preCondition"
             ></AddTarget>
           </div>
           <div v-else class="box-block text-tip">
@@ -289,7 +301,8 @@ export default {
     ExpiredReasonAlert: () => import('./expired-reason-alert'),
     ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
-    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue')
+    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue')
   },
   filters: {},
   props: {
@@ -346,7 +359,7 @@ export default {
         }
       },
       executeForm: {
-        labelWidth: 100,
+        labelWidth: 110,
         labelPosition: 'left',
         itemList: {
           protocolId: {
@@ -436,7 +449,8 @@ export default {
           value: 'roundCount'
         }
       ],
-      parallelPolicy: 'parallel'
+      parallelPolicy: 'parallel',
+      preCondition: null
     };
   },
   beforeCreate() {},
@@ -577,6 +591,9 @@ export default {
             this.scenarioList = this.dataConfig.config.scenarioList;
           }
           this.getSelectStepList(this.scenarioId);
+          if (this.dataConfig.config.executeConfig && !this.$utils.isEmpty(this.dataConfig.config.executeConfig.preCondition)) {
+            this.preCondition = this.dataConfig.config.executeConfig.preCondition;
+          }
         })
         .finally(res => {
           this.loading = false;
