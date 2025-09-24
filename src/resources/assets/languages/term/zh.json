@@ -2890,7 +2890,9 @@
     "alertsign": "告警特征",
     "iswholerow": "独占一行展示",
     "istab": "独占页签展示",
-    "serialsave": "串行保存"
+    "serialsave": "串行保存",
+    "subscribeaudit": "订阅审计",
+    "clickcopyattr": "点击复制属性"
   },
   "informant": {
     "last5dump": "最近5次快照",
