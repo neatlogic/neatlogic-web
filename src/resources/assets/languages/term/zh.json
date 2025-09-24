@@ -2895,7 +2895,9 @@
     "istab": "独占页签展示",
     "serialsave": "串行保存",
     "subscribeaudit": "订阅审计",
-    "clickcopyattr": "点击复制属性"
+    "clickcopyattr": "点击复制属性",
+    "alertinterval": "通知间隔",
+    "cc": "抄送"
   },
   "informant": {
     "last5dump": "最近5次快照",
