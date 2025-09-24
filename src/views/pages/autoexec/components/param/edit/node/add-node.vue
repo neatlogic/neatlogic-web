@@ -225,7 +225,7 @@ export default {
         ...complexModeSearchValue
       };
       this.loading = true;
-      this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
+      this.$api.autoexec.action.getNodeList(params).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
           this.$set(this.tableData, 'theadList', this.theadList);

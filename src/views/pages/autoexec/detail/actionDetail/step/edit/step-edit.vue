@@ -80,6 +80,15 @@
                       :runtimeParamList="runtimeParamList"
                     ></ExecuteuserSetting>
                   </template>
+                  <template v-slot:preCondition>
+                    <PreconditionDetail
+                      ref="preCondition"
+                      :defaultValue="preCondition"
+                      :canEdit="canEdit"
+                      @changeValue="changePreConditionValue"
+                    ></PreconditionDetail>
+                    <div class="text-tip">{{ $t('term.autoexec.preconditiontip') }}</div>
+                  </template>
                 </TsForm>
                 <div class="pt-nm">
                   <TargetDetail
@@ -92,6 +101,8 @@
                     :isAddPrenode="prevStepList.length > 0 ? true : false"
                     :prevStepList="prevStepList"
                     :runtimeParamList="runtimeParamList"
+                    :preCondition="preCondition || globalPreCondition"
+                    :required="!$utils.isEmpty(preCondition)"
                   ></TargetDetail>
                 </div>
               </template>
@@ -139,12 +150,12 @@
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
-        <Button
+        <!-- <Button
           v-if="editConfig.execMode !='runner'"
           type="primary"
           ghost
           @click="validSetting()"
-        >{{ $t('page.validate') }}</Button>
+        >{{ $t('page.validate') }}</Button> -->
         <Button type="primary" @click="ok()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
@@ -172,7 +183,8 @@ export default {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
-    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue')
+    RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue')
   },
   filters: {},
   props: {
@@ -203,7 +215,8 @@ export default {
       type: Array,
       default: () => []
     },
-    runtimeParamList: Array
+    runtimeParamList: Array,
+    globalPreCondition: Object //全局前置过滤器
   },
   data() {
     let _this = this;
@@ -299,6 +312,10 @@ export default {
           label: this.$t('term.autoexec.parall'),
           desc: this.$t('term.autoexec.paralldesc'),
           dataList: this.$utils.getRoundCountList()
+        },
+        preCondition: {
+          type: 'slot',
+          label: this.$t('term.autoexec.precondition')
         }
       },
       executeConfig: {
@@ -311,7 +328,8 @@ export default {
         executeNodeConfig: {},
         isPresetRunnerGroup: 0,
         runnerGroup: null,
-        runnerGroupTag: null
+        runnerGroupTag: null,
+        preCondition: null
 
       },
       isValid: false, // 校验执行目标
@@ -324,7 +342,8 @@ export default {
         mappingMode: 'constant',
         value: '',
         text: ''
-      }
+      },
+      preCondition: null
     };
   },
   beforeCreate() {},
@@ -341,6 +360,7 @@ export default {
             this.executeConfig[key] = this.config.config.executeConfig[key];
           }
         });
+        this.preCondition = !this.$utils.isEmpty(this.executeConfig.preCondition) ? this.$utils.deepClone(this.executeConfig.preCondition) : null;
         if (!this.$utils.isEmpty(this.executeConfig.runnerGroup) || !this.$utils.isEmpty(this.executeConfig.runnerGroupTag)) {
           this.$set(this.executeConfig, 'isPresetRunnerGroup', 1);
         }
@@ -395,7 +415,7 @@ export default {
       } else {
         this.executeConfig.parallelCount = null;
       }
-   
+      this.executeConfig.preCondition = !this.$utils.isEmpty(this.preCondition) ? this.preCondition : null;
       if (this.$refs.form.valid()) {
         let editConfig = this.$utils.deepClone(this.editConfig);
         if (editConfig.policy && (!this.groupConfig || this.groupConfig.policy != 'grayScale' || (this.editConfig.execMode && this.editConfig.execMode != 'runner' && this.editConfig.execMode != 'sqlfile'))) {
@@ -485,14 +505,12 @@ export default {
         }
       });
     },
-    async ok() {
-      this.isValid = false;
-      (this.editConfig.execMode != 'runner') && (await this.validSetting(true));
-      if (this.isValid) {
+    ok() {
+      if (!this.$utils.isEmpty(this.preCondition) && this.$refs.targetDetail && !this.$refs.targetDetail.valid()) {
         return;
-      } else {
-        this.confirmEdit();
       }
+      // (this.editConfig.execMode != 'runner') && (await this.validSetting(true)); //废弃接口校验规则
+      this.confirmEdit();
     },
     saveValid() { //校验完成，保存
       this.confirmEdit();
@@ -521,6 +539,9 @@ export default {
           this.$set(this.executeForm.parallelCount, 'isHidden', false);
         }
       });
+    },
+    changePreConditionValue(val) { 
+      this.preCondition = !this.$utils.isEmpty(val) ? val : null;
     }
   },
   computed: {},

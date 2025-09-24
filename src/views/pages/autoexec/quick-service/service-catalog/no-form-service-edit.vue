@@ -158,6 +158,15 @@
         </template>
       </div>
       <div v-show="unfoldAndFold.executeNodeConfig">
+        <TsFormItem
+          v-if="executeConfig && executeConfig.preCondition"
+          :label="$t('term.autoexec.precondition')"
+        >
+          <PreconditionDetail
+            :defaultValue="executeConfig.preCondition"
+            :canEdit="false"
+          ></PreconditionDetail>
+        </TsFormItem>
         <TsFormItem v-if="needExecuteNode" :label="$t('term.autoexec.executetarget')" :required="true">
           <AddTarget
             :id="combopId"
@@ -169,6 +178,7 @@
             :runtimeParamList="runtimeParamList"
             :needBorder="needExecuteUser|| needProtocol"
             :filterSearchValue="filterSearchValue"
+            :preCondition="executeConfig? executeConfig.preCondition : null"
             @on-ok="handleChange"
           ></AddTarget>
         </TsFormItem>
@@ -278,6 +288,7 @@ export default {
     ExpiredReasonAlert: () => import('@/views/pages/autoexec/quick-service/service-catalog/expired-reason-alert'), // 服务失效原因提示列表
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
     RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue'),
     ...Component
   },
   mixins: [serviceMixin],

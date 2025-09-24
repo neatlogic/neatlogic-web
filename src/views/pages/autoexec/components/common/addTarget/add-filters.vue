@@ -6,6 +6,7 @@
         :canEdit="canEdit"
         :defaultValue="searchVal"
         :defaultSearchValue="defaultSearchValue"
+        :preCondition="preCondition"
       ></Filters>
     </div>
   </div>

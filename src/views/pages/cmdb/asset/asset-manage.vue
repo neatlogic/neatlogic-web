@@ -1086,7 +1086,7 @@ export default {
       };
       this.loadingShow = true;
       this.$api.autoexec.action
-        .searchResourceCustomList(params)
+        .getNodeList(params)
         .then(res => {
           if (res.Status == 'OK') {
             this.tableConfig = Object.assign(this.tableConfig, res.Return || {});

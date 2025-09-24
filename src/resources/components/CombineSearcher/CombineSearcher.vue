@@ -7,7 +7,7 @@
           :key="tindex"
           :name="tindex"
           :fade="false"
-          class="tag-item-text border-color radius-sm overflow bg-op"
+          class="tag-item-text border-base radius-sm overflow bg-op"
         >
           <span class="text-title">{{ getLabel(tindex) }}</span>
           <span class="ml-xs mr-xs">:</span>
@@ -130,7 +130,7 @@
                 </div>
                 <div v-else>
                   <Button ghost class="mr-nm" @click.native="handleCancel">{{ $t('page.cancel') }}</Button>
-                  <Button type="primary" @click.native="doSearch">{{ $t('page.search') }}</Button>
+                  <Button type="primary" @click.native="doSearch">{{ searchText }}</Button>
                 </div>
               </div>
             </li>
@@ -227,6 +227,12 @@ export default {
       // 底部是否显示高级模式文案
       type: Boolean,
       default: false
+    },
+    searchText: {
+      type: String,
+      default() {
+        return this.$t('page.search');
+      }
     }
   },
   data() {
@@ -739,7 +745,6 @@ export default {
   display: none;
 }
 .tag-item-text{
-  border: 1px dashed;
   padding: 0 16px;
   line-height: 30px;
   display: inline-block;
