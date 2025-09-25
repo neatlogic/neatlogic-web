@@ -914,7 +914,10 @@
     "parall": "Concurrent quantity",
     "paralldesc": "Execute the execution targets in order of concurrency.",
     "jobrecord": "Automated job recording",
-    "jobcount": "Number of automated tasks"
+    "jobcount": "Number of automated tasks",
+    "precondition": "pre-filter",
+    "globalprecondition": "Global pre filter",
+    "preconditiontip": "If empty, inherit the global pre filter"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
@@ -2887,7 +2890,14 @@
     "defaultstatus": "Defaults on",
     "joinalert": "Merge into alarms",
     "uniquekey": "unique",
-    "alertsign": "Alarm features"
+    "alertsign": "Alarm features",
+    "iswholerow": "Exclusive one line display",
+    "istab": "Exclusive tab display",
+    "serialsave": "Serial save",
+    "subscribeaudit": "Subscription Audit",
+    "clickcopyattr": "Click to copy attributes",
+    "alertinterval": "Notification interval",
+    "cc": "cc"
   },
   "runnergroup": {
     "ruletips": "The request for login authentication needs to carry a header as a rule expression (note that the header parameter in the expression is all lowercase). If the value of the expression after execution is true, the executor group will take effect, and false and syntax exceptions will not take effect. For example: ${env}==\\ bit \\&&(${test}==\\ 1 \\ | | ${test2}==\\ aaa \\)"
@@ -2896,7 +2906,9 @@
     "last5dump": "Last 5 snapshots",
     "threaddump": "Thread snapshot",
     "pid": "Process ID",
-    "servicetopo": "Service Relationship Diagram"
+    "servicetopo": "Service Relationship Diagram",
+    "healthstate": "health status",
+    "comm": "command"
   },
   "infromant": {
     "report": "analysis report"

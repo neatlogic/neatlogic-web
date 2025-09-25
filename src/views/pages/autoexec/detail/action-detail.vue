@@ -126,6 +126,7 @@
           :canEdit="effectiveEditable && operationType == 'combop' ? true : false"
           :execModeList="execModeList"
           :runtimeParamList="runtimeParamList"
+          :globalPreCondition="executeConfig?executeConfig.preCondition:null"
           @updateSort="updateSort"
           @change="changeSelectStep"
         ></StepList>
@@ -187,6 +188,7 @@
                 :currentGroupConfig="currentGroupConfig"
                 :runtimeParamList="runtimeParamList"
                 :canEdit="effectiveEditable && operationType == 'combop' ? true : false"
+                :globalPreCondition="executeConfig?executeConfig.preCondition:null"
                 @save="saveCurrentGroupConfig"
               ></StepGroup>
             </div>
@@ -697,6 +699,7 @@ export default {
             this.$set(item.config, 'elseList', this.savePhaseOperationList(item.config.elseList));
           }
         } else if (item.operationName == 'native/LOOP-Block') {
+          delete item.config.paramMappingList;
           if (item.config.operations && item.config.operations.length) {
             this.$set(item.config, 'operations', this.savePhaseOperationList(item.config.operations));
           }

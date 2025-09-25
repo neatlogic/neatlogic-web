@@ -1243,6 +1243,9 @@ const methods = {
     }
     return result;
   },
+  filteredObj (obj, list) { //过滤对象中指定的属性列表
+    return _.omit(obj, list)
+  },
   isValidTimeString(timeStr) { //校验时间字符串
       if(!timeStr || typeof timeStr !== 'string') {
         return false;

@@ -45,6 +45,17 @@
                 {{ $t('page.autoexeccomboprunnergrouptips') }}
               </div>
             </template>
+            <template v-slot:preCondition>
+              <div>
+                <div v-if="!isEditSetting && $utils.isEmpty(preCondition)">-</div>
+                <PreconditionDetail
+                  ref="preconditionDetail"
+                  :canEdit="isEditSetting"
+                  :defaultValue="preCondition"
+                  @changeValue="changePreConditionValue"
+                ></PreconditionDetail>
+              </div>
+            </template>
           </TsForm>
         </div>
         <div v-if="settingConfig.whenToSpecify == 'now'" class="execute-main">
@@ -57,16 +68,8 @@
               :type="settingConfig.whenToSpecify"
               :required="true"
               :labelWidth="113"
+              :preCondition="preCondition"
             ></TargetDetail>
-          </div>
-        </div>
-        <div v-else-if="settingConfig.whenToSpecify == 'runtime'" class="execute-main">
-          <div class="target-detail">
-            <Filters
-              ref="runtimeFilter"
-              :tipText="$t('term.autoexec.setfilterexecutelimitdesc')"
-              :defaultValue="runtimeFilter"
-            ></Filters>
           </div>
         </div>
         <div v-else-if="settingConfig.whenToSpecify == 'runtimeparam'" class="execute-main">
@@ -108,11 +111,11 @@ export default {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TargetDetail: () => import('@/views/pages/autoexec/components/common/addTarget/target-detail'),
     ExecutionModeParam: () => import('@/views/pages/autoexec/components/common/executionMode/param'),
-    Filters: () => import('@/views/pages/autoexec/components/common/executionMode/filters'),
     TargetValid: () => import('@/views/pages/autoexec/components/common/targetView/target-valid.vue'),
     ExecuteuserSetting: () => import('./executeuser-setting.vue'),
     RunnerGroupSetting: () => import('./runnergroup-setting.vue'),
-    RunnerGroupTagSetting: () => import('./runnergrouptag-setting.vue')
+    RunnerGroupTagSetting: () => import('./runnergrouptag-setting.vue'),
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue')
   },
   filters: {},
   props: {
@@ -207,6 +210,11 @@ export default {
           dataList: this.$utils.getRoundCountList(),
           labelWidth: '113'
         },
+        preCondition: {
+          type: 'slot',
+          label: this.$t('term.autoexec.precondition'),
+          labelWidth: '113'
+        },
         whenToSpecify: {
           type: 'radio',
           label: this.$t('term.autoexec.choosethetime'),
@@ -229,12 +237,13 @@ export default {
         roundCount: null,
         parallelCount: null,
         whenToSpecify: 'runtime',
+        preCondition: null,
         executeNodeConfig: {}
       },
       isValid: false,
       resultList: [],
       nodeTypeParamList: [], //可选的节点参数
-      runtimeFilter: {}
+      preCondition: null
     };
   },
   beforeCreate() {},
@@ -266,9 +275,7 @@ export default {
             this.$set(this.form.parallelCount, 'isHidden', false);
           }
         });
-        if (this.settingConfig.whenToSpecify == 'runtime') {
-          this.runtimeFilter = this.settingConfig.executeNodeConfig.filter || {};
-        }
+        this.preCondition = this.$utils.deepClone(this.settingConfig['preCondition']);
       }
       this.loadingShow = false;
     },
@@ -291,13 +298,12 @@ export default {
       this.$set(this.settingConfig, 'executeUser', this.$refs.executeUser.save());
       this.$set(this.settingConfig, 'runnerGroup', this.$refs.runnerGroup.save());
       this.$set(this.settingConfig, 'runnerGroupTag', this.$refs.runnerGroupTag.save());
+      this.$set(this.settingConfig, 'preCondition', !this.$utils.isEmpty(this.preCondition) ? this.preCondition : null);
+
       this.settingConfig.executeNodeConfig = {};
       if (this.settingConfig.whenToSpecify == 'now') {
         this.validSetting(true);
       } else if (this.settingConfig.whenToSpecify == 'runtime') {
-        let filterValue = this.$refs.runtimeFilter.save();
-        let complexModeSearchValue = this.$refs.runtimeFilter.getComplexModeSearchValue(); // 获取复杂模式搜索值
-        this.$set(this.settingConfig.executeNodeConfig, 'filter', complexModeSearchValue && !this.$utils.isEmptyObj(complexModeSearchValue) ? complexModeSearchValue : filterValue);
         this.save();
       } else if (this.settingConfig.whenToSpecify == 'runtimeparam') {
         let paramList = this.$refs.runtimeparam.save();
@@ -389,6 +395,9 @@ export default {
           this.$set(this.form.parallelCount, 'isHidden', false);
         }
       });
+    },
+    changePreConditionValue(val) {
+      this.preCondition = val;
     }
   },
   computed: {},

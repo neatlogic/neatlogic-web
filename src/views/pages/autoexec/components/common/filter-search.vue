@@ -17,6 +17,7 @@
       :isRequired="isRequired"
       :readonly="readonly"
       :showSearchNumber="showSearchNumber"
+      :searchText="searchText"
       @change="simpleModeSearch"
       @switchMode="switchMode"
     >
@@ -29,6 +30,7 @@
       :searchList="searchList"
       :disabledUuidList="disabledUuidList"
       :disabledGroupUuidList="disabledGroupUuidList"
+      :searchText="searchText"
       class="advanced-mode-search-filter-btn"
       @search="advancedModeSearch"
       @switchMode="switchMode"
@@ -62,7 +64,13 @@ export default {
       type: Boolean,
       default: false
     },
-    showSearchNumber: Number
+    showSearchNumber: Number,
+    searchText: {
+      type: String,
+      default() {
+        return this.$t('page.search');
+      }
+    }
   },
   data() {
     return {
@@ -196,18 +204,6 @@ export default {
       disabledGroupUuidList: [],
       searchList: [
         {
-          name: 'typeIdList',
-          type: 'tree',
-          label: this.$t('term.cmdb.citype'),
-          search: true,
-          transfer: true,
-          multiple: true,
-          textName: 'label',
-          valueName: 'id',
-          url: '/api/rest/resourcecenter/resourcetype/tree',
-          validateList: [{name: 'required', message: ''}]
-        },
-        {
           name: 'appSystemIdList',
           type: 'select',
           label: this.$t('page.apply'),
@@ -249,48 +245,33 @@ export default {
           validateList: [{name: 'required', message: ''}]
         },
         {
-          name: 'protocolIdList',
+          name: 'inspectStatusList',
           type: 'select',
-          label: this.$t('page.protocol'),
-          search: true,
-          transfer: true,
-          defaultValue: [],
-          rootName: 'tbodyList',
-          multiple: true,
-          dealDataByUrl: 'getProtocolDataList',
-          className: 'block-span',
-          dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
-          validateList: [{name: 'required', message: ''}]
-        },
-        {
-          name: 'tagIdList',
-          type: 'select',
-          label: this.$t('page.tag'),
-          search: true,
-          textName: 'name',
-          transfer: true,
-          valueName: 'id',
-          defaultValue: [],
-          rootName: 'tbodyList',
-          multiple: true,
-          dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
-          validateList: [{name: 'required', message: ''}]
-        },
-        {
-          name: 'stateIdList',
-          type: 'select',
-          label: this.$t('term.autoexec.assetstatus'),
+          label: this.$t('term.autoexec.inspectstatus'),
           search: true,
           transfer: true,
           defaultValue: [],
           multiple: true,
           className: 'block-span',
-          url: '/api/rest/resourcecenter/state/list/forselect',
-          params: { needPage: false },
-          rootName: 'tbodyList',
-          textName: 'name',
-          valueName: 'id',
+          params: {
+            'enumClass': 'neatlogic.framework.common.constvalue.InspectStatus'
+          },
+          url: '/api/rest/universal/enum/get',
           validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'ip',
+          type: 'input',
+          label: this.$t('page.ip'),
+          validateList: [{name: 'required', message: ''}],
+          maxlength: 256
+        },
+        {
+          name: 'name',
+          type: 'input',
+          label: this.$t('page.name'),
+          validateList: [{name: 'required', message: ''}],
+          maxlength: 256
         },
         {
           name: 'vendorIdList',
@@ -310,95 +291,50 @@ export default {
           validateList: [{name: 'required', message: ''}]
         },
         {
-          name: 'inspectStatusList',
+          name: 'tagIdList',
           type: 'select',
-          label: this.$t('term.autoexec.inspectstatus'),
+          label: this.$t('page.tag'),
+          search: true,
+          textName: 'name',
+          transfer: true,
+          valueName: 'id',
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dynamicUrl: '/api/rest/resourcecenter/tag/list/forselect',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'protocolIdList',
+          type: 'select',
+          label: this.$t('page.protocol'),
+          search: true,
+          transfer: true,
+          defaultValue: [],
+          rootName: 'tbodyList',
+          multiple: true,
+          dealDataByUrl: 'getProtocolDataList',
+          className: 'block-span',
+          dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
+          name: 'stateIdList',
+          type: 'select',
+          label: this.$t('term.autoexec.assetstatus'),
           search: true,
           transfer: true,
           defaultValue: [],
           multiple: true,
           className: 'block-span',
-          params: {
-            'enumClass': 'neatlogic.framework.common.constvalue.InspectStatus'
-          },
-          url: '/api/rest/universal/enum/get',
-          validateList: [{name: 'required', message: ''}]
-        },
-        {
-          name: 'port',
-          type: 'input',
-          label: this.$t('page.port'),
-          validateList: [{name: 'required', message: ''}],
-          maxlength: 256
-        },
-        {
-          name: 'ip',
-          type: 'input',
-          label: this.$t('page.ip'),
-          validateList: [{name: 'required', message: ''}],
-          maxlength: 256
-        },
-        {
-          name: 'name',
-          type: 'input',
-          label: this.$t('page.name'),
-          validateList: [{name: 'required', message: ''}],
-          maxlength: 256
-        },
-        {
-          name: 'description',
-          type: 'input',
-          label: this.$t('page.description'),
-          validateList: [{name: 'required', message: ''}],
-          maxlength: 256
-        },
-        {
-          name: 'networkArea',
-          type: 'input',
-          label: this.$t('page.networkarea'),
-          validateList: [{name: 'required', message: ''}],
-          maxlength: 256
-        },
-        {
-          name: 'maintenanceWindow',
-          type: 'datetimerange',
-          label: this.$t('term.autoexec.maintenanceperiod'),
-          format: 'yyyy-MM-dd HH:mm',
-          validateList: [{name: 'required', message: ''}]
-        },
-        {
-          name: 'ownerList',
-          type: 'select',
-          label: this.$t('page.owner'),
-          search: true,
-          transfer: true,
-          multiple: true,
-          dynamicUrl: '/api/rest/user/search/forselect',
+          url: '/api/rest/resourcecenter/state/list/forselect',
+          params: { needPage: false },
           rootName: 'tbodyList',
-          textName: 'userName',
-          valueName: 'uuid',
-          params: {
-            needPage: true
-          },
-          validateList: [{name: 'required', message: ''}]
-        },
-        {
-          name: 'bgList',
-          type: 'select',
-          label: this.$t('term.autoexec.subordinatedepartment'),
-          search: true,
-          transfer: true,
-          multiple: true,
-          dynamicUrl: '/api/rest/team/search',
-          rootName: 'teamList',
           textName: 'name',
-          valueName: 'uuid',
-          params: {
-            needPage: true,
-            level: 'department'
-          },
+          valueName: 'id',
           validateList: [{name: 'required', message: ''}]
-        }]
+        }
+      ]
     };
   },
   beforeCreate() {},
@@ -486,10 +422,10 @@ export default {
       handler(val) {
         this.isSimpleMode = true; // 重置简单模式，防止编辑执行目标时，模式回显不正确问题
         if (val) {
-          if (val && val.hasOwnProperty('conditionGroupList')) {
+          if (val && val.hasOwnProperty('conditionGroupList') && !this.$utils.isEmpty(val.conditionGroupList) && !this.$utils.isSame(val, this.complexSearchVal)) {
             this.complexSearchVal = this.$utils.deepClone(val);
             this.isSimpleMode = !this.isSimpleMode;
-          } else {
+          } else if (!this.$utils.isSame(val, this.searchVal)) {
             this.searchVal = this.$utils.deepClone(val);
           }
         }
@@ -500,7 +436,7 @@ export default {
     defaultSearchValue: {
       handler(val) {
         if (val) {
-          if (val && val.hasOwnProperty('conditionGroupList')) {
+          if (val && val.hasOwnProperty('conditionGroupList') && !this.$utils.isEmpty(val.conditionGroupList)) {
             this.isSimpleMode = true;
             this.isSimpleMode = !this.isSimpleMode;
             this.complexInit(); // 复杂模式设置禁用值

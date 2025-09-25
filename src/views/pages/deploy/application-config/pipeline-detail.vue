@@ -94,6 +94,7 @@
                   :combopGroupList="combopGroupList"
                   :execModeList="execModeList"
                   :canEdit="canEdit"
+                  :validPhaseOperationUuidList="validPhaseOperationUuidList"
                   @updateSort="updateSort"
                   @change="changeSelectStep"
                 ></StepList>
@@ -294,7 +295,8 @@ export default {
       executeConfig: null,
       hasEditAuth: true, // 是否有编辑配置权限
       isShowImportPipeline: false,
-      isExportPipeline: false
+      isExportPipeline: false,
+      validPhaseOperationUuidList: []
     };
   },
   beforeCreate() {},
@@ -573,6 +575,11 @@ export default {
           if (item.config.elseList && item.config.elseList.length) {
             this.$set(item.config, 'elseList', this.savePhaseOperationList(item.config.elseList));
           }
+        } else if (item.operationName == 'native/LOOP-Block') {
+          delete item.config.paramMappingList;
+          if (item.config.operations && item.config.operations.length) {
+            this.$set(item.config, 'operations', this.savePhaseOperationList(item.config.operations));
+          }
         } else {
           delete item.config.profileParamList;
           if (item.config && item.config.paramMappingList) {
@@ -835,12 +842,13 @@ export default {
             });
           }
           this.changeSelectStep(item);
+          this.validPhaseOperationUuidList = obj.validUuidList;
           this.$nextTick(() => {
             this.$refs.stepList.valid();
           });
         }
       });
-      this.$utils.jumpTo(obj.id);
+      this.$utils.jumpTo(obj.id, '', '', 'start');
     },
     showRuntimeParamList() { //展示作业参数
       this.isShowParamList = true;
@@ -916,9 +924,10 @@ export default {
         }
       });
     },
-    validPhaseOperationList(step, phaseOperationList) { //校验工具列表
+    validPhaseOperationList(step, phaseOperationList, validPperationUuidList) { //校验工具列表
       let validList = [];
       phaseOperationList.forEach(p => {
+        let validUuidList = [p.uuid, ...validPperationUuidList || []];
         if (p.operationName == 'native/IF-Block') {
           if (p.config) {
             !p.config.condition && validList.push({
@@ -926,7 +935,8 @@ export default {
               type: 'error',
               stepUuid: step.uuid,
               operationUuid: p.uuid,
-              id: '#id_' + step.uuid + '_' + p.uuid
+              id: '#id_' + step.uuid + '_' + p.uuid,
+              validUuidList: validUuidList
             });
             if (this.$utils.isEmpty(p.config.ifList) && this.$utils.isEmpty(p.config.elseList)) {
               validList.push({
@@ -934,16 +944,48 @@ export default {
                 type: 'error',
                 stepUuid: step.uuid,
                 operationUuid: p.uuid,
-                id: '#id_' + step.uuid + '_' + p.uuid
+                id: '#id_' + step.uuid + '_' + p.uuid,
+                validUuidList: validUuidList
               });
             }
             if (p.config.ifList && p.config.ifList.length) {
-              let validIfList = this.validPhaseOperationList(step, p.config.ifList);
+              let validIfList = this.validPhaseOperationList(step, p.config.ifList, validUuidList);
               validIfList.length && validList.push(...validIfList);
             }
             if (p.config.elseList && p.config.elseList.length) {
-              let validElseList = this.validPhaseOperationList(step, p.config.elseList);
+              let validElseList = this.validPhaseOperationList(step, p.config.elseList, validUuidList);
               validElseList.length && validList.push(...validElseList);
+            }
+          }
+        } else if (p.operationName == 'native/LOOP-Block') {
+          if (p.config) {
+            !p.config.loopItems && validList.push({
+              text: this.$t('page.phase') + step.name + '【' + p.operationName + '】' + this.$t('term.autoexec.setinputloopitems'),
+              type: 'error',
+              stepUuid: step.uuid,
+              operationUuid: p.uuid,
+              id: '#id_' + step.uuid + '_' + p.uuid,
+              validUuidList: validUuidList
+            });
+            !p.config.loopItemVar && validList.push({
+              text: this.$t('page.phase') + step.name + '【' + p.operationName + '】' + this.$t('term.autoexec.setinputloopitemvar'),
+              type: 'error',
+              stepUuid: step.uuid,
+              operationUuid: p.uuid,
+              id: '#id_' + step.uuid + '_' + p.uuid,
+              validUuidList: validUuidList
+            });
+            (!p.config.operations || p.config.operations.length == 0) && validList.push({
+              text: this.$t('page.phase') + step.name + '【' + p.operationName + '】' + this.$t('term.autoexec.setinputloopoperations'),
+              type: 'error',
+              stepUuid: step.uuid,
+              operationUuid: p.uuid,
+              id: '#id_' + step.uuid + '_' + p.uuid,
+              validUuidList: validUuidList
+            });
+            if (p.config.operations && p.config.operations.length) {
+              let validOperations = this.validPhaseOperationList(step, p.config.operations, validUuidList);
+              validOperations.length && validList.push(...validOperations);
             }
           }
         } else {
@@ -969,7 +1011,8 @@ export default {
                     type: 'error',
                     stepUuid: step.uuid,
                     operationUuid: p.uuid,
-                    id: '#id_' + step.uuid + '_' + p.uuid
+                    id: '#id_' + step.uuid + '_' + p.uuid,
+                    validUuidList: validUuidList
                   });
                 }
               }
@@ -986,7 +1029,8 @@ export default {
                     type: 'error',
                     stepUuid: step.uuid,
                     operationUuid: p.uuid,
-                    id: '#id_' + step.uuid + '_' + p.uuid
+                    id: '#id_' + step.uuid + '_' + p.uuid,
+                    validUuidList: validUuidList
                   });
                 }
               }
@@ -997,7 +1041,8 @@ export default {
                   type: 'error',
                   stepUuid: step.uuid,
                   operationUuid: p.uuid,
-                  id: '#id_' + step.uuid + '_' + p.uuid
+                  id: '#id_' + step.uuid + '_' + p.uuid,
+                  validUuidList: validUuidList
                 });
               }
             }
@@ -1007,7 +1052,8 @@ export default {
               type: 'error',
               stepUuid: step.uuid,
               operationUuid: p.uuid,
-              id: '#id_' + step.uuid + '_' + p.uuid
+              id: '#id_' + step.uuid + '_' + p.uuid,
+              validUuidList: validUuidList
             });
           }
         }

@@ -914,7 +914,10 @@
     "parall": "并发数量",
     "paralldesc": "将执行目标按并发数量先后执行。",
     "jobrecord": "自动化作业记录",
-    "jobcount": "自动化作业数"
+    "jobcount": "自动化作业数",
+    "precondition": "前置过滤器",
+    "globalprecondition": "全局前置过滤器",
+    "preconditiontip": "如果为空时，继承全局前置过滤器"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",
@@ -2887,13 +2890,22 @@
     "defaultstatus": "默认状态",
     "joinalert": "归并到告警",
     "uniquekey": "唯一键",
-    "alertsign": "告警特征"
+    "alertsign": "告警特征",
+    "iswholerow": "独占一行展示",
+    "istab": "独占页签展示",
+    "serialsave": "串行保存",
+    "subscribeaudit": "订阅审计",
+    "clickcopyattr": "点击复制属性",
+    "alertinterval": "通知间隔",
+    "cc": "抄送"
   },
   "informant": {
     "last5dump": "最近5次快照",
     "threaddump": "线程快照",
     "pid": "进程id",
-    "servicetopo": "服务关系图"
+    "servicetopo": "服务关系图",
+    "healthstate": "健康状态",
+    "comm": "命令"
   },
   "infromant": {
     "report": "分析报告"

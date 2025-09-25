@@ -1,6 +1,20 @@
 
 <template>
   <div>
+    <TsFormItem v-if="!$utils.isEmpty(preCondition)" :label="$t('term.autoexec.precondition')" labelPosition="left">
+      <FilterSearch
+        :defaultValue="preCondition"
+        :readonly="true"
+        :showSearchNumber="3"
+      ></FilterSearch>
+    </TsFormItem>
+    <TsFormItem v-else-if="!$utils.isEmpty(globalPreCondition)" :label="$t('term.autoexec.globalprecondition')" labelPosition="left">
+      <FilterSearch
+        :defaultValue="globalPreCondition"
+        :readonly="true"
+        :showSearchNumber="3"
+      ></FilterSearch>
+    </TsFormItem>
     <div class="pb-md">
       <FilterSearch
         :defaultValue="searchVal"
@@ -42,12 +56,15 @@ export default {
   name: '',
   components: {
     FilterSearch,
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
   filters: {
   },
   props: {
-    config: Object
+    config: Object,
+    preCondition: Object,
+    globalPreCondition: Object //全局前置过滤器
   },
   data() {
     return {
@@ -96,6 +113,11 @@ export default {
       if (param) {
         Object.assign(data, param);
       }
+      if (!this.$utils.isEmpty(this.preCondition)) {
+        data.preCondition = this.preCondition;
+      } else if (!this.$utils.isEmpty(this.globalPreCondition)) {
+        data.preCondition = this.globalPreCondition;
+      }
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -141,7 +163,12 @@ export default {
       params.cmdbGroupType = this.opType;
       this.complexModeSearchValue = searchVal;
       this.loadingShow = true;
-      this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
+      if (!this.$utils.isEmpty(this.preCondition)) {
+        params.preCondition = this.preCondition;
+      } else if (!this.$utils.isEmpty(this.globalPreCondition)) {
+        params.preCondition = this.globalPreCondition;
+      }
+      this.$api.autoexec.action.getNodeList(params).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
           this.$set(this.tableData, 'theadList', this.theadList);

@@ -13,6 +13,7 @@
         :failPolicyOption="failPolicyOption"
         :inputTypeList="inputTypeList"
         :execMode="currentStepConfig.execMode"
+        :validPhaseOperationUuidList="validPhaseOperationUuidList"
         @sortList="sortList"
       ></ScriptList>
     </div>
@@ -48,7 +49,11 @@ export default {
     runtimeParamList: Array, //作业参数
     list: Array, //工具列表
     failPolicyOption: Array, //失败策略下拉列表
-    inputTypeList: Array //输入参数映射下拉
+    inputTypeList: Array, //输入参数映射下拉
+    validPhaseOperationUuidList: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
