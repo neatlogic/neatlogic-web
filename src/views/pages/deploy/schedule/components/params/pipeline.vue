@@ -16,7 +16,7 @@
         </div>
       </template>
       <template v-slot:version="{ row, index }">
-        <div v-if="row._selected">
+        <div v-if="row._selected && (row.isHasBuildTypeTool == 1 || row.isHasDeployTypeTool == 1)">
           <div class="grid">
             <TsFormSelect
               :ref="'version' + index"
@@ -202,7 +202,7 @@ export default {
   computed: {
     versionValidateList() {
       return row => {
-        if (row._selected) {
+        if (row._selected && (row.isHasBuildTypeTool == 1 || row.isHasDeployTypeTool == 1)) {
           return [{ name: 'required', message: ' ' }];
         } else {
           return [];
