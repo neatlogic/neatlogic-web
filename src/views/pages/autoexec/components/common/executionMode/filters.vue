@@ -81,6 +81,10 @@ export default {
     bgOp: {
       type: Boolean,
       default: true
+    },
+    preCondition: { //前置过滤条件
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -145,6 +149,9 @@ export default {
       if (!this.$utils.isEmpty(this.defaultSearchValue)) {
         Object.assign(data, this.defaultSearchValue);
       }
+      if (!this.$utils.isEmpty(this.preCondition)) {
+        data.preCondition = this.preCondition;
+      }
       data.cmdbGroupType = this.opType;
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
@@ -170,6 +177,7 @@ export default {
       }
     },
     changeValue(val) {
+      this.$emit('change', val);
       this.complexModeSearchValue = {};
       this.searchVal = this.$utils.deepClone(val);
       this.getDataList('currentPage', 1);
@@ -180,7 +188,11 @@ export default {
       params.cmdbGroupType = this.opType;
       this.complexModeSearchValue = searchVal;
       this.loadingShow = true;
-      this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
+      if (!this.$utils.isEmpty(this.preCondition)) {
+        params.preCondition = this.preCondition;
+      }
+      this.$emit('change', searchVal);
+      this.$api.autoexec.action.getNodeList(params).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
           this.$set(this.tableData, 'theadList', this.theadList);
@@ -188,6 +200,17 @@ export default {
       }).finally(() => {
         this.loadingShow = false;
       });
+    },
+    searchPreCondition() {
+      if (!this.$utils.isEmpty(this.searchVal)) {
+        if (this.searchVal.hasOwnProperty('conditionGroupList')) {
+          this.advancedModeSearch(this.searchVal);
+        } else {
+          this.searchNodeList(this.searchVal);
+        }
+      } else {
+        this.searchNodeList();
+      }
     }
   },
   computed: {
@@ -213,6 +236,12 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    preCondition: {
+      handler(val) {
+        this.searchPreCondition();
+      },
+      deep: true
     }
   }
 };

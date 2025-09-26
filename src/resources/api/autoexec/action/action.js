@@ -115,7 +115,7 @@ const action = {
     // 获取可执行组合工具分类列表
     return axios.post('/api/rest/autoexec/combop/type/executable/list', params);
   },
-  searchResourceCustomList(params) {
+  searchResourceCustomList(params) { //废弃
     // 高级查询资源中心数据列表
     return axios.post('/api/rest/resourcecenter/resource/custom/list', params);
   },

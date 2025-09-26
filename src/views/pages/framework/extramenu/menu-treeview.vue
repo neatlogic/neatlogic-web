@@ -5,10 +5,10 @@
       tag="div"
       class="dataSource-ul"
       :list="childrenList"
-      :group="{ name: 'item-sub' }"
       :move="checkMove"
       handle=".tsfont-drag"
       :forceFallback="false"
+      :data-parentid="parentId"
       @start="moveStart"
       @sort="moveEnd"
       @remove="moveRemove"
@@ -48,10 +48,10 @@
           </div>
         </div>
         <MenuTreeview
-          v-if="!cd._isHidden && cd.children && cd.children.length > 0"
+          v-if="!cd._isHidden"
           :parentId="cd.id"
           :search="false"
-          :children="cd.children"
+          :children="cd.children || []"
           class="item-sub"
           :show="cd.isShow"
           @refresh="refresh"
@@ -167,6 +167,7 @@ export default {
     checkMove(evt, originalEvent) {
       const source = evt.draggedContext.element;
       const target = evt.relatedContext.element;
+      const targetParentId = evt.to.dataset.parentid; 
       if (source.type === 1 && target && target.type === 1 && source.parentId === target.parentId) {
         //链接选项调整顺序
         //console.log('链接选项调整顺序');
@@ -185,22 +186,40 @@ export default {
         this.newParentId = target.parentId;
         //console.log('目录调整归属');
         return true;
-      }
+      } else if (source.type === 1 && target && source.parentId !== target.parentId && target.childCount == 0) {
+        // 链接节点拖到目录下面（目录下为空的节点）
+        this.newParentId = target.id;
+        return true;
+      } else if (source.type === 1 && target && target.type === 0 && source.parentId == target.parentId) {
+        // 链接节点拖到目录下面（目录下已存在节点）
+        this.newParentId = target.parentId;
+        return true;
+      } else if (source.type === 1 && target && source.parentId != target.parentId) {
+        // 链接拖到空白处，最顶层
+        this.newParentId = target.parentId;
+        return true;
+      } else if (!target) {
+        const parentNode = this.childrenList.find(d => d.id == targetParentId);
+        if (parentNode && parentNode.type === 0) {
+          // 只能拖到目录下面
+          this.newParentId = parentNode.id;
+          return true;
+        } else {
+          // 链接节点不允许有子节点
+          return false;
+        }
+      }  
       return false;
     },
     moveStart(e) {
       this.currentId = e.item.attributes.id.value;
       this.currentNode = this.childrenList.find(d => d.id == this.currentId);
-      console.log(this.currentId, this.currentNode);
     },
     update() {
-      console.log('update', this.parentId);
       this.$emit('update', this.childrenList, this.parentId);
     },
     moveEnd(evt) {
-      console.log('moveEnd');
       if (this.needUpdate) {
-        console.log('update node');
         if (this.currentNode && this.newParentId !== null) {
           this.$set(this.currentNode, 'parentId', this.newParentId);
           this.newParentId = null;
@@ -213,20 +232,6 @@ export default {
     },
     isOpen(cd) {
       this.$set(cd, '_isHidden', !cd._isHidden);
-    },
-    setItem(item) {
-      this.$set(item, 'isShow', this.search);
-      this.$set(item, 'isRequest', !this.search);
-      if (item.children && item.children.length > 0) {
-        item.children.forEach(citem => {
-          this.$set(citem, 'isShow', true);
-          this.$set(citem, 'isRequest', true);
-          this.setItem(citem);
-        });
-      } else {
-        this.$set(item, 'isShow', false);
-        this.$set(item, 'isRequest', false);
-      }
     }
   },
   filter: {},
@@ -235,27 +240,16 @@ export default {
       return {
         animation: 150,
         scroll: true,
-        group: 'description',
         disabled: false,
-        ghostClass: 'ghost'
-      };
-    },
-    showOpen() {
-      return function(item) {
-        let KEY = false;
-        let cKEY = false;
-        if (item.childCount > 0) {
-          KEY = true;
-        }
-
-        return KEY;
+        ghostClass: 'ghost',
+        group: { name: 'tree', pull: true, put: true }
       };
     }
   },
   watch: {
     children: {
       handler(newVal) {
-        this.childrenList = newVal;
+        this.childrenList = newVal || [];
       },
       deep: true,
       immediate: true

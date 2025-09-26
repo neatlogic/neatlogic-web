@@ -180,6 +180,9 @@ export default {
         ...this.searchVal,
         ...this.defaultSearchValue
       };
+      if (!this.$utils.isEmpty(this.preCondition)) {
+        data.preCondition = this.preCondition;
+      }
       this.$api.autoexec.action.getNodeList(data).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -259,8 +262,11 @@ export default {
         ...this.defaultSearchValue,
         ...searchVal
       };
+      if (!this.$utils.isEmpty(this.preCondition)) {
+        params.preCondition = this.preCondition;
+      }
       this.loadingShow = true;
-      this.$api.autoexec.action.searchResourceCustomList(params).then(res => {
+      this.$api.autoexec.action.getNodeList(params).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
         }
@@ -303,6 +309,15 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    preCondition: {
+      handler(val) {
+        if (!this.$utils.isEmpty(val)) {
+          this.clearAll();
+          this.handlePageChange();
+        }
+      },
+      deep: true
     }
   }
 };

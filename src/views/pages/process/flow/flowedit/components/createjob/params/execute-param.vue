@@ -17,10 +17,19 @@
       </span>
     </div>
     <div>
-      <template v-for="(item,index) in executeParamMappingGroupList">
+      <div v-for="(item,index) in executeParamMappingGroupList" :key="index" class="mb-nm">
         <TsFormItem
-          v-if="whitelist.includes(item.key)"
-          :key="index"
+          v-if="item.key==='preCondition'"
+          :label="item.name"
+          labelPosition="left"
+        >
+          <PreconditionDetail
+            :defaultValue="item.value"
+            :canEdit="false"
+          ></PreconditionDetail>
+        </TsFormItem>
+        <TsFormItem
+          v-else-if="whitelist.includes(item.key)"
           :label="item.name"
           :required="!!item.isRequired"
           labelPosition="left"
@@ -133,7 +142,7 @@
             </div>
           </div>
         </TsFormItem>
-      </template>
+      </div>
       <template v-if="isShowExecuteParam('parallelPolicy')">
         <TsFormItem
           :label="$t('page.autoexecparallpolicy')"
@@ -370,8 +379,8 @@ export default {
     FilterList: () => import('../filter-list.vue'),
     ExecuteNodeReadonly: () => import('@/views/pages/autoexec/form/component/formresoureces/index.vue'),
     ProtocolReadonly: () => import('./protocol-readonly'),
-    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
-   
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue')
   },
   props: {
     allFormitemList: Array,

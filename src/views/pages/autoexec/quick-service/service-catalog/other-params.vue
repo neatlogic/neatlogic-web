@@ -125,6 +125,15 @@
         </div>
       </div>
     </TsFormItem>
+    <TsFormItem
+      v-if="executeConfig && executeConfig.preCondition"
+      :label="$t('term.autoexec.precondition')"
+    >
+      <PreconditionDetail
+        :defaultValue="executeConfig.preCondition"
+        :canEdit="false"
+      ></PreconditionDetail>
+    </TsFormItem>
     <TsFormItem :label="$t('term.autoexec.executetarget')">
       <TsFormSelect
         v-if="executeNode.mappingMode == 'formattr'"
@@ -173,6 +182,7 @@ export default {
     AddTarget: () => import('@/views/pages/autoexec/detail/runnerDetail/add-target.vue'),
     RunnerGroupSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergroup-setting.vue'),
     RunnerGroupTagSetting: () => import('@/views/pages/autoexec/detail/actionDetail/runnergrouptag-setting.vue'),
+    PreconditionDetail: () => import('@/views/pages/autoexec/detail/actionDetail/precondition-detail.vue'),
     ...Component
   },
   props: {
