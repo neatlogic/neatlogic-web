@@ -196,7 +196,7 @@ export default {
         return true;
       } else if (source.type === 1 && target && source.parentId != target.parentId) {
         // 链接拖到空白处，最顶层
-        this.newParentId = target.parentId;
+        this.newParentId = 0;
         return true;
       } else if (!target) {
         const parentNode = this.childrenList.find(d => d.id == targetParentId);
