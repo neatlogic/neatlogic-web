@@ -86,8 +86,8 @@ var instance = Vue.prototype.$axios.create({
   //timeout: 1000 * 20,
   //headers: {'Authorization': utils.getCookie('neatlogic_authorization') ? utils.getCookie('neatlogic_authorization') : ''}
 });
-instance.defaults.headers.get['source'] = 'page'; //post请求头
-instance.defaults.headers.post['source'] = 'page'; //post请求头
+instance.defaults.headers.get['source'] = 'pc'; //post请求头
+instance.defaults.headers.post['source'] = 'pc'; //post请求头
 instance.defaults.headers.post['Content-Type'] = 'application/json'; //post请求头
 instance.defaults.baseURL = BASEURLPREFIX; //默认接口前缀
 instance.CancelToken = axios.CancelToken;
