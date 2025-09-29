@@ -237,7 +237,6 @@ export default {
     },
     getDisabledText(item, type) {
       let text = false;
-      console.log(type);
       if (!item.isHasAllAuthority && (type == 'appsystem' || type == 'app')) {
         if (type == 'appsystem') {
           if (item.isHasAuthPipeline) {

@@ -80,7 +80,6 @@ export default {
       }
     },
     update(list, parentId) {
-      console.log('update', parentId);
       this.$api.framework.extramenu.moveExtramenu({ menuList: list }).then(res => {
         if (res.Status === 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
@@ -92,11 +91,23 @@ export default {
       this.$api.framework.extramenu
         .getMenuTreeList()
         .then(res => {
-          this.menuList = res.Return;
+          this.menuList = this.normalizeMenuList(res.Return || []);
         })
         .finally(() => {
           this.loadingShow = false;
         });
+    },
+    normalizeMenuList(list = []) {
+      // 修复空目录节点无法拖入菜单的问题
+      list.forEach(item => {
+        if (item && item.type === 0 && item.childCount === 0) {
+          item.children = [];
+        }
+        if (item && Array.isArray(item.children) && item.children.length > 0) {
+          this.normalizeMenuList(item.children);
+        }
+      });
+      return list;
     }
   },
   filter: {},
