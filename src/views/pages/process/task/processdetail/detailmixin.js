@@ -796,6 +796,7 @@ export default {
           })
           .catch(error => {
             this.disabledConfig[disableType] = false;
+            this.toTask(this.processTaskId);
           });
       }
     },
