@@ -74,6 +74,7 @@
           :rowUuid="rowUuid"
           :extendConfigList="extendConfigList"
           :formDataForWatch="formDataForWatch"
+          :extraFormItemList="extraFormItemList"
           @setValue="setValue"
           @resize="$emit('resize')"
           @select="selectFormItem"
