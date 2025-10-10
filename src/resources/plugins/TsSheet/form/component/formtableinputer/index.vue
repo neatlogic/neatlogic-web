@@ -73,7 +73,7 @@
     <Loading :loadingShow="isImportOperationLoading" type="fix"></Loading>
     <template v-if="showTable">
       <template v-if="hasColumn">
-        <div class="tstable-container border bg-grey radius-lg">
+        <div class="tstable-container border bg-grey radius-lg tstable-no-fixedHeader">
           <div>
             <table class="tstable-body">
               <thead>
