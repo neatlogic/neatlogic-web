@@ -41,8 +41,8 @@
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-edit" @click="editRow(row.uuid)">{{ $t('term.process.serwindow') }}</li> 
-                <li class="tsfont-edit" @click="editCalendar(row.uuid, row.name)">{{ $t('term.process.sercalendar') }}</li>
+                <li class="tsfont-formtime" @click="editRow(row.uuid)">{{ $t('term.process.settime') }}</li>
+                <li class="tsfont-calendar" @click="editCalendar(row.uuid, row.name)">{{ $t('term.process.setdate') }}</li>
                 <li class="tsfont-trash-o" :class="row.referenceCount>0?'disable':''" @click="deleteRow(row.uuid, row.name,row.referenceCount)">{{ $t('page.delete') }}</li>
               </ul>
             </div>
