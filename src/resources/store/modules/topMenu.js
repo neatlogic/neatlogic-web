@@ -86,39 +86,27 @@ const actions = {
   },
 
   // 更新模块菜单
-  updateMenu({ dispatch }, { forceUpdate = false } = {}) {
+  updateMenu({ dispatch, commit, state, rootState }, { forceUpdate = false } = {}) {
     dispatch('updateProcessMenu', { forceUpdate });
     dispatch('updateKnowledgeMenu', { forceUpdate });
     dispatch('updateDashboardMenu', { forceUpdate });
     dispatch('updateReportMenu', { forceUpdate });
     dispatch('updateCmdbMenu', { forceUpdate });
     dispatch('updateInspectMenu', { forceUpdate });
-    dispatch('updateAlertMenu', { forceUpdate });
-  },
-
-  // alert
-  async updateAlertMenu({ commit, state, rootState }, { forceUpdate = true } = {}) {
-    await state.gettingModuleList;
-    const alertModule = state.moduleList.find(item => item.moduleId === 'alert');
-    if (!alertModule || (!forceUpdate && state.dynamicMenu.hasOwnProperty('alert')) || !hasCustomMenuAuthority('alert', 'alert-manage')) {
-      return;
-    }
-    const res = await commonApi.updateAlertMenu();
-    if (!res.Return || res.Return.length === 0) return;
-    const alertViewList = res.Return.map(view => ({
-      name: view.label,
-      path: `/alert-manage/${view.name}`,
-      url: `/alert-manage/${view.name}`,
-      icon: 'tsfont-dot'
-    }));
-    const newMenuGroup = [
-      {
-        menuTypeName: '告警视图',
-        menuList: alertViewList
-      }
+    
+    const moduleContexts = [
+      require.context('@/community-module/', true, /store\/modules\/topMenu\.js$/),
+      require.context('@/commercial-module/', true, /store\/modules\/topMenu\.js$/)
     ];
-    commit('updateMenu', { module: alertModule, startIndex: 0, newMenuGroup });
-    return res;
+    const args = { commit, dispatch, state, rootState, forceUpdate, hasCustomMenuAuthority };
+    moduleContexts.forEach((context) => {
+      context.keys().forEach((path) => {
+        const fn = context(path) && context(path).default;
+        if (fn && typeof fn === 'function') {
+          fn(args);
+        }
+      });
+    });
   },
 
   // process
