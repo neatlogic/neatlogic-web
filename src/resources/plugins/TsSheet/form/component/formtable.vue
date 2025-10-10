@@ -13,7 +13,7 @@
             :ref="'formitem_' + extra.uuid + '_' + index"
             :formItem="extra"
             :formData="{...filterUuid(initFormData), ...row}"
-            :formItemList="$utils.deepClone(config.dataConfig.concat(formItemList))"
+            :formItemList="$utils.deepClone([...extraFormItemList, ...config.dataConfig, ...formItemList])"
             :showStatusIcon="false"
             :readonly="readonly"
             :isCustomValue="isCustomValue"
@@ -48,7 +48,8 @@ export default {
   mixins: [validmixin],
   props: {
     readonly: { type: Boolean, default: false },
-    disabled: { type: Boolean, default: false }
+    disabled: { type: Boolean, default: false },
+    extraFormItemList: { type: Array, default: () => [] }
   },
   data() {
     return {
