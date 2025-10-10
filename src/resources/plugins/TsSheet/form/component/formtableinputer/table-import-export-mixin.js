@@ -50,17 +50,17 @@ export default {
         });
       });
     },
-    async exportExcelData({ tbodyList = [], extraList = [], selectedIndexList = [], formItem = {} } = {}) {
-      // 导出excel带表格数据
+    async exportExcelData({ tbodyList = [], extraList = [], selectedCurrentPageMap = {}, formItem = {} } = {}) {
+      // 导出表格数据
       this.isShowExportExcel = false;
       const _workbook = new ExcelJS.Workbook(); // 创建工作簿
       let _sheet1 = _workbook.addWorksheet('sheet1'); // 添加工作表
       const { columnsList = [], columnsUuidList = [] } = this._generateExcelHeaderConfig({ extraList: extraList }) || {}; // 设置表头
       _sheet1.columns = columnsList;
       let deepClonetbodyList = this.$utils.deepClone(tbodyList);
-      if (selectedIndexList && selectedIndexList.length > 0) {
+      if (!this.$utils.isEmpty(selectedCurrentPageMap)) {
         // 选中行导出
-        deepClonetbodyList = deepClonetbodyList.filter((v, index) => selectedIndexList.includes(index));
+        deepClonetbodyList = deepClonetbodyList.filter((row) => selectedCurrentPageMap[row.uuid]);
       }
       deepClonetbodyList.forEach(item => {
         // 添加数据
@@ -527,7 +527,8 @@ export default {
     },
     _filterTheadColumns() {
       // 过滤表头列属性
-      return this.theadList.filter(v => v && v.key !== 'selection' && v.key !== 'number' && v.key !== 'delete');
+      const filterKeyList = ['selection', 'number', 'delete', 'drag'];
+      return this.theadList.filter(v => v && !filterKeyList.includes(v.key));
     }
   }
 };

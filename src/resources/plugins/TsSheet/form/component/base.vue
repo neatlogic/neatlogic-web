@@ -4,7 +4,7 @@ export default {
     mode: { type: String, default: 'edit' }, //表单的模式edit或read或condition,edut模式才会显示异常、联动等辅助图标
     value: { type: [Object, Array, String, Number] }, //当前表单组件的值
     formItem: { type: Object },
-    formItemList: { type: Array },
+    formItemList: { type: Array, default: () => [] },
     filter: { type: Array }, //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
@@ -38,6 +38,10 @@ export default {
       // 扩展配置列表
       type: Array,
       default: () => []
+    },
+    formDataForWatch: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {

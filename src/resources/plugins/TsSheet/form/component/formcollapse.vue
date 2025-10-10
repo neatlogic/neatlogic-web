@@ -30,6 +30,7 @@
                 :externalData="externalData"
                 :disabledDelete="formItem.hasOwnProperty('inherit')"
                 @resize="$emit('resize')"
+                @setValue="setValue"
                 @emit="
                   val => {
                     $emit('emit', val);
@@ -187,6 +188,9 @@ export default {
         this.currentTabObj.component.push(this.currentEventItem.uuid);
       }
       this.isShowFormItemKeyDialog = false;
+    },
+    setValue(val) {
+      this.$emit('setValue', val);
     }
   },
   filter: {},
