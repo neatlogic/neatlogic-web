@@ -166,10 +166,6 @@ const common = {
   updateCmdbMenu(params) {
     return axios.post('/api/rest/cmdb/ci/citype/search', params);
   },
-  //后去ALERT的视图列表
-  updateAlertMenu() {
-    return axios.post('/api/rest/alert/view/list', {});
-  },
   // 获取工单中心分类
   updateProcessMenu(params) {
     return axios.post('/api/rest/workcenter/list', params);

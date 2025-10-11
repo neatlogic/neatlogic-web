@@ -8,16 +8,17 @@
       @updateRowSort="updateRowSort"
     >
       <template v-for="extra in config.dataConfig" :slot="extra.uuid" slot-scope="{ row, index }">
-        <div :key="extra.uuid" @click.stop>
+        <div :key="`${row.uuid}_${extra.uuid}`" @click.stop>
           <FormItem
             :ref="'formitem_' + extra.uuid + '_' + index"
             :formItem="extra"
             :formData="{...filterUuid(initFormData), ...row}"
-            :formItemList="$utils.deepClone(config.dataConfig.concat(formItemList))"
+            :formItemList="$utils.deepClone([...extraFormItemList, ...config.dataConfig, ...formItemList])"
             :showStatusIcon="false"
             :readonly="readonly"
             :isCustomValue="isCustomValue"
             :externalData="externalData"
+            :formDataForWatch="{...filterUuid(initFormData),...formDataForWatch, ...row}"
             :rowUuid="row.uuid"
             mode="read"
             style="min-width:130px"
@@ -48,7 +49,8 @@ export default {
   mixins: [validmixin],
   props: {
     readonly: { type: Boolean, default: false },
-    disabled: { type: Boolean, default: false }
+    disabled: { type: Boolean, default: false },
+    extraFormItemList: { type: Array, default: () => [] }
   },
   data() {
     return {

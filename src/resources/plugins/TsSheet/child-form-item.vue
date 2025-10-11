@@ -21,6 +21,7 @@
       :needLabel="needLabel"
       :formItem="formItem"
       :formData="formData"
+      :formDataForWatch="formDataForWatch"
       :formItemList="formItemList"
       :mode="mode"
       :clearable="false"
@@ -70,6 +71,10 @@ export default {
       // 是否禁用删除
       type: Boolean,
       default: false
+    },
+    formDataForWatch: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -164,6 +169,9 @@ export default {
         }
       }
       return errorList;
+    },
+    setValue(val) {
+      this.$emit('setValue', {uuid: this.formItem.uuid, value: val});
     }
   },
   filter: {},
