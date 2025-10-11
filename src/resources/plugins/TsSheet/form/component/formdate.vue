@@ -298,7 +298,7 @@ export default {
       }
     },
     getValidateList() {
-      let validateList = this.validateList;
+      let validateList = this.$utils.deepClone(this.validateList || []);
       let dateText = {
         later: this.$t('term.framework.later'),
         earlier: this.$t('term.framework.earlier'),
