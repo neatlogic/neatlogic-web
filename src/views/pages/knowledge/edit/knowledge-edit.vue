@@ -31,14 +31,7 @@
       </template>
       <template slot="content">
         <div>
-          <EditMain
-            ref="editConfig"
-            :config="knowledgeConfing"
-            :knowledgeDocumentTypeUuid="knowledgeDocumentTypeUuid"
-            :hasTemplateAuth="hasTemplateAuth"
-            @selectType="selectType"
-            @initData="initDefaultData"
-          ></EditMain>
+          <TsTiptap></TsTiptap>
         </div>
 
       </template>
@@ -56,15 +49,14 @@
   </div>
 </template>
 <script>
-import EditMain from './main/edit-main.vue';
 export default {
   name: 'KnowledgeEdit',
   components: {
-    EditMain,
     ReviewDialog: () => import('./main/review-dialog.vue'),
     ActivityOverview: () => import('@/views/pages/knowledge/common/activity-detail.vue'),
     SaveOverview: () => import('./main/save-overview'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsTiptap: () => import('@/resources/plugins/TsTiptap/index.vue')
   },
   filters: {},
   props: [''],
