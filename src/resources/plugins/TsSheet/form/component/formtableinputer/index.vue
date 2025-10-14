@@ -498,7 +498,7 @@ export default {
       const reactionValid = this.validReaction(th.reaction, data);
       let isValid = true;
       let errorList = defaultErrorList || [];
-      if (this.validateMap && this.validateMap[key]) {
+      if (!reactionValid.isDisable && this.validateMap && this.validateMap[key]) {
         const validateList = this.validateMap[key].validateList;
         if (!this.$utils.isEmpty(validateList)) {
           isValid = this.$utils.validParamValue(row[key], validateList);
@@ -558,12 +558,14 @@ export default {
         for (let key in reactionMap) {
           if (reactionMap[key]) {
             isDisable = true;
-            isRequired = false;
             break;
           }
         }
       }
-     
+      // 当 isDisable 为 true 时，不用校验必填，设置 isRequired 为 false,
+      if (isDisable) {
+        isRequired = false;
+      }
       return {
         isDisable: isDisable,
         isRequired: isRequired
