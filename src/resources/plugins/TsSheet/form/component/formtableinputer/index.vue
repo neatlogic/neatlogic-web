@@ -358,18 +358,26 @@ export default {
             if (!this.$utils.isEmpty(row)) {
               Object.keys(row).forEach(key => {
                 const findUnunique = uniqueRuleList.find(d => d.uuid === key);
-                if (findUnunique && row[key]) {
-                  if (existMap[key] && existMap[key].includes(row[key])) {
-                    let findItem = errorList.find(d => d.attrUuid === key);
-                    if (findItem && !findItem.errorPageList.find(d => d === pageCount)) {
-                      findItem.errorPageList.push(pageCount);
-                      findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
-                      findItem.error = `${this.formItem.label}：第${findItem.errorPageList.join(',')}页【${findUnunique.label}】属性必须唯一`;
+                let value = row[key];
+                if (!this.$utils.isEmpty(value)) {
+                  if (Array.isArray(value)) {
+                    value = this.$utils.mapArray(value, 'text').join('_');
+                  } else if (typeof value === 'object') {
+                    value = value['text'];
+                  }
+                  if (findUnunique) {
+                    if (existMap[key] && existMap[key].includes(value)) {
+                      let findItem = errorList.find(d => d.attrUuid === key);
+                      if (findItem && !findItem.errorPageList.find(d => d === pageCount)) {
+                        findItem.errorPageList.push(pageCount);
+                        findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
+                        findItem.error = `${this.formItem.label}：第${findItem.errorPageList.join(',')}页【${findUnunique.label}】属性必须唯一`;
+                      } else {
+                        errorList.push({ uuid: this.formItem.uuid, attrUuid: key, errorPageList: [pageCount], error: `${this.formItem.label}：第${pageCount}页【${findUnunique.label}】属性必须唯一` });
+                      }
                     } else {
-                      errorList.push({ uuid: this.formItem.uuid, attrUuid: key, errorPageList: [pageCount], error: `${this.formItem.label}：第${pageCount}页【${findUnunique.label}】属性必须唯一` });
+                      existMap[key] = existMap[key] ? [...existMap[key], value] : [value];
                     }
-                  } else {
-                    existMap[key] = existMap[key] ? [...existMap[key], row[key]] : [row[key]];
                   }
                 }
               });
@@ -490,7 +498,7 @@ export default {
       const reactionValid = this.validReaction(th.reaction, data);
       let isValid = true;
       let errorList = defaultErrorList || [];
-      if (this.validateMap && this.validateMap[key]) {
+      if (!reactionValid.isDisable && this.validateMap && this.validateMap[key]) {
         const validateList = this.validateMap[key].validateList;
         if (!this.$utils.isEmpty(validateList)) {
           isValid = this.$utils.validParamValue(row[key], validateList);
@@ -550,12 +558,14 @@ export default {
         for (let key in reactionMap) {
           if (reactionMap[key]) {
             isDisable = true;
-            isRequired = false;
             break;
           }
         }
       }
-     
+      // 当 isDisable 为 true 时，不用校验必填，设置 isRequired 为 false,
+      if (isDisable) {
+        isRequired = false;
+      }
       return {
         isDisable: isDisable,
         isRequired: isRequired

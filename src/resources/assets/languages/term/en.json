@@ -632,7 +632,9 @@
     "editprocessconfig": "Edit the current work order process configuration",
     "stepishandledby": "Step Handling Human",
     "sercalendar": "Service Calendar",
-    "flowauthuserupdatetip": "The processor includes all step handlers"
+    "flowauthuserupdatetip": "The processor includes all step handlers",
+    "settime": "Set time",
+    "setdate": "Set Calendar"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

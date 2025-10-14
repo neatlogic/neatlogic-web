@@ -98,7 +98,7 @@ export default {
       return null;
     },
     getValidList() {
-      let validateList = this.validateList || [];
+      let validateList = this.$utils.deepClone(this.validateList || []);
       //自定义校验
       if (this.config.validType && this.config.validType.indexOf('custom') >= 0 && !this.$utils.isEmpty(this.config.validValueList)) {
         this.config.validValueList.forEach(item => {
