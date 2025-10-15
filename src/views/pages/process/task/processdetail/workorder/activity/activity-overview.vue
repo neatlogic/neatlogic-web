@@ -13,11 +13,14 @@
         multiple
         transfer
         style="width:300px"
+        @change="(val)=> {
+          $emit('updataActive', val)
+        }"
       ></TsFormSelect>
     </div>
-    <div v-if="activeData && activeData.length > 0" class="activity-show-box bg-block">
+    <div v-if="defaultActiveData && defaultActiveData.length > 0" class="activity-show-box bg-block">
       <Timeline>
-        <TimelineItem v-for="item of activeData" :key="item.id">
+        <TimelineItem v-for="item of defaultActiveData" :key="item.id">
           <template slot="dot">
             <template v-if="item.userVo.uuid == 'system' && item.action != 'restfulaction'">
               <span v-if="item.stepStatus && item.stepStatus == 'succeed'" class="tsfont-check-s text-success text-icon-font-size"></span>
@@ -58,10 +61,10 @@
               <template v-for="(jitem, jindex) in item.auditDetailList">
                 <component
                   :is="handlerType(jitem.type)"
-                  :key="jindex"
+                  :key="`${item.id}_${jitem.auditId}_${jindex}`"
                   :config="jitem"
                   :formSceneUuid="item.formSceneUuid"
-                  :formConfig="$utils.deepClone(formConfig)"
+                  :formConfig="frozenFormConfig"
                   :processTaskStepId="item.processTaskStepId"
                   :processTaskId="processTaskId"
                   class="mb-sm"
@@ -82,7 +85,6 @@ import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
   name: 'ActivityOverview',
   components: {
-    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     ...Item
@@ -105,12 +107,14 @@ export default {
   },
   data() {
     return {
-      activeData: [],
+      frozenFormConfig: null,
       currentNode: null
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.frozenFormConfig = Object.freeze(this.$utils.deepClone(this.formConfig));
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -133,22 +137,6 @@ export default {
     }
   },
   watch: {
-    defaultActiveData: {
-      handler(val) {
-        if (val && val.length > 0) {
-          this.activeData = val;
-        }
-      },
-      deep: true,
-      immediate: true
-    },
-    currentNode: {
-      handler(val) {
-        this.$emit('updataActive', val);
-      },
-      deep: true,
-      immediate: true
-    }
   }
 };
 </script>
