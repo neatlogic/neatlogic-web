@@ -162,6 +162,27 @@ export default {
         }
       }
       return dataList;
+    },
+    clearCurrentValue(dataList = []) {
+      if (!this.$utils.isEmpty(this.value)) {
+        if (this.$utils.isEmpty(dataList)) {
+          this.setValue(null);
+        } else {
+          let newValue = null;
+          if (Array.isArray(this.value)) {
+            newValue = this.value.filter(v => {
+              return dataList.find(d => d.value === v.value);
+            });
+            if (!this.$utils.isSame(this.value, newValue)) {
+              this.setValue(newValue);
+            }
+          } else {
+            if (!dataList.find(d => d.value === this.value.value)) {
+              this.setValue(null);
+            }
+          }
+        }
+      }
     }
   },
   filter: {},
@@ -272,27 +293,10 @@ export default {
             });
           }
         }
-        if (!this.$utils.isEmpty(this.value)) {
-          if (this.$utils.isEmpty(setting.dataList)) {
-            this.setValue(null);
-          } else {
-            let newValue = null;
-            if (Array.isArray(this.value)) {
-              newValue = this.value.filter(v => {
-                return setting.dataList.find(d => d.value === v.value);
-              });
-              if (!this.$utils.isSame(this.value, newValue)) {
-                this.setValue(newValue);
-              }
-            } else {
-              if (!setting.dataList.find(d => d.value === this.value.value)) {
-                this.setValue(null);
-              }
-            }
-          }
-        }
+        this.clearCurrentValue(setting.dataList);
       } else if (this.config.dataSource === 'tag') {
         setting.dataList = this.getTagDataList(this.formData);
+        this.clearCurrentValue(setting.dataList);
       } else {
         setting.showName = 'text';
         setting.dataList = this.validatedDataList;
