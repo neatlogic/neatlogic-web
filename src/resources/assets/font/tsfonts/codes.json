@@ -3472,5 +3472,17 @@
     "css": "tsfont-snapshot",
     "hexCodepoint": "0xea44",
     "codepoint": 59972
+  },
+  {
+    "name": "ai",
+    "css": "tsfont-ai",
+    "hexCodepoint": "0xea45",
+    "codepoint": 59973
+  },
+  {
+    "name": "ais",
+    "css": "tsfont-ais",
+    "hexCodepoint": "0xea46",
+    "codepoint": 59974
   }
 ]
