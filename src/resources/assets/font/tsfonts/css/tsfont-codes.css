@@ -580,3 +580,5 @@
 .tsfont-zoom-in:before { content: '\ea42'; } /* '' */
 .tsfont-zoom-out:before { content: '\ea43'; } /* '' */
 .tsfont-snapshot:before { content: '\ea44'; } /* '' */
+.tsfont-ai:before { content: '\ea45'; } /* '' */
+.tsfont-ais:before { content: '\ea46'; } /* '' */

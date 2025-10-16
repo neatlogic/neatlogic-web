@@ -308,7 +308,7 @@
                 :processTaskId="processTaskId"
                 :stepDataList="stepData"
                 :defaultActiveData="activeData"
-                :formConfig="processTaskConfig.formConfig"
+                :formConfig="frozenFormConfig"
                 @updataActive="(val)=>updataActive(val)"
               ></ActivityOverview>
             </TabPane>
@@ -1734,6 +1734,9 @@ export default {
     }
   },
   computed: {
+    frozenFormConfig() {
+      return Object.freeze(this.processTaskConfig.formConfig || {});
+    },
     isRequiredContent() {
       //回复必填判断
       let valid = false;
