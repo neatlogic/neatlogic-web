@@ -5,7 +5,7 @@
         <li v-for="(item, index) in menuList" :key="index" :class="getMenuClass(item)">
           <div class="menu-text">
             <span class="heading-icon" :class="getHeadingIcon(item)" @click="handleClick(item, index)"></span>
-            <span>{{ item.text }}</span>
+            <span :class="{'text-href': selectHeadingUuid === item.attrs?.uuid}">{{ item.text }}</span>
           </div>
         </li>
       </ul>
@@ -40,13 +40,18 @@ import TableHeader from '@tiptap/extension-table-header';
 import Placeholder from '@tiptap/extension-placeholder';
 import { BlockWrapper } from './BlockWrapper.js';
 import SlashCommand from './SlashCommand';
+import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
 
 export default {
   components: { EditorContent },
   data() {
     return { 
-      editor: null,
-      menuList: []
+      editor: null, 
+      toolbarTop: 0, 
+      showToolbar: false,
+      currentBlockEl: null,
+      menuList: [],
+      selectHeadingUuid: ''
 
     };
   },
@@ -54,6 +59,7 @@ export default {
     let _this = this;
     this.editor = new Editor({
       extensions: [
+        AutoUuid,
         StarterKit.configure({
           heading: {
             levels: [1, 2, 3]
@@ -61,7 +67,7 @@ export default {
           paragraph: false // 我们用 BlockWrapper 包装 paragraph
         }),
         Placeholder.configure({
-          placeholder: '输入 / 弹出菜单' // 这是全局 placeholder
+          placeholder: '输入“/”快速插入内容' // 这是全局 placeholder
         }),
         Table.configure({ resizable: true }),
         TableHeader,
@@ -73,6 +79,12 @@ export default {
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
         console.log(editor.getJSON());
+      },
+      onFocus({ editor}) {
+        const { $from } = editor.state.selection;
+        const node = $from.node($from.depth);
+        _this.highlightHeading(node, editor.isActive('heading'));
+        console.log(editor, editor.isActive('heading'), node);
       }
     });
   },
@@ -89,9 +101,11 @@ export default {
       const headings = $headings.map((node) => {
         const afterNode = node.after;
         const afterLevel = afterNode.attributes.level;
+        console.log(node);
         let obj = {
           level: node.attributes.level,
-          text: node.textContent
+          text: node.textContent,
+          attrs: node.attrs
         };
         if (afterLevel && afterLevel > node.attributes.level) {
           obj.showNextIcon = true;
@@ -99,22 +113,34 @@ export default {
         return obj;
       });
       this.menuList = headings;
-      console.log($headings, headings);
     },
     handleClick(item, index) {
       this.$set(item, 'showNextIcon', !item.showNextIcon);
-      this.menuList.forEach((item, index) => {
-        item.showNextIcon = false;
-      });
+      for (let i = index + 1; i < this.menuList.length; i++) {
+        if (this.menuList[i].level > item.level) {
+          this.$set(this.menuList[i], 'isHide', !item.showNextIcon);
+        } else {
+          break;
+        }
+      }
+    },
+    highlightHeading(node, isHeading) {
+      console.log(node.attrs);
+      if (isHeading) {
+        this.selectHeadingUuid = node.attrs?.uuid || '';
+      } else {
+        //
+      }
     }
   },
   computed: {
     getMenuClass() {
       return (item) => {
         const className = 'heading-level-' + item.level;
-        return {
-          [className]: true
-        };
+        if (item.hasOwnProperty('isHide') && item.isHide) {
+          return className + ' hide';
+        }
+        return className;
       };
     },
     getHeadingIcon() {
@@ -141,6 +167,9 @@ export default {
   .editor-menu {
     padding: 20px;
     overflow: auto;
+    .hide{
+      display: none;
+    }
     .menu-text {
       position: relative;
     }
@@ -164,6 +193,13 @@ export default {
   padding: 12px;
   // border-radius: 8px;
   overflow: auto;
+}
+.tiptap p.is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
 }
 
 /* Slash Menu */

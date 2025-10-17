@@ -10,6 +10,7 @@ const templateEdit = () => import('./manage/template-edit.vue');
 const reviewDetail = () => import('./overview/review-detail.vue');
 const KnowledgeOverview = () => import('./overview/knowledge-overview.vue');
 const KnowledgeSearch = () => import('./overview/knowledge-search.vue');
+const KnowledgeTest = () => import('./test/knowledge-edit.vue');
 import {$t} from '@/resources/init.js';
 
 export default [
@@ -68,6 +69,18 @@ export default [
     path: '/knowledge-edit',
     name: 'knowledge-edit',
     component: knowledgeEdit,
+    meta: {
+      title: $t('router.knowledge.knowledgeedit'),
+      ismenu: false,
+      icon: 'tsfont-edit',
+      authority: '',
+      type: 'overview'
+    }
+  },
+  {
+    path: '/knowledge-test',
+    name: 'knowledge-test',
+    component: KnowledgeTest,
     meta: {
       title: $t('router.knowledge.knowledgeedit'),
       ismenu: false,

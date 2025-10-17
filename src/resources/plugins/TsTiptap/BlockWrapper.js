@@ -1,11 +1,21 @@
 import Paragraph from '@tiptap/extension-paragraph';
-import { mergeAttributes } from '@tiptap/core';
 
 export const BlockWrapper = Paragraph.extend({
   name: 'paragraph', // ⚠️ 注意：这里必须还是 paragraph，替换掉默认的
-
   group: 'block',
-
+  addAttributes() {
+    return {
+      ...this.parent?.(), // 继承父类已有的 attrs（比如 class、align）
+      uuid: {
+        default: null,
+        parseHTML: element => element.getAttribute('data-uuid'),
+        renderHTML: attributes => {
+          if (!attributes.uuid) return {};
+          return { 'data-uuid': attributes.uuid };
+        }
+      }
+    };
+  },
   addNodeView() {
     return ({ node, editor, getPos }) => {
       const wrapper = document.createElement('div');

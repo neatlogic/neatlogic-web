@@ -101,6 +101,12 @@
       @update="updateJobTemplate"
     ></JobTemplateDialog>
     <AuthDialog v-if="isAuthDialogShow" :authList="pipelineData.authList" @close="closeAuthDialog"></AuthDialog>
+    <ValidPipelineDialog
+      v-if="isValidPipelineDialogShow"
+      :validList="validList"
+      @click="isValidPipelineDialogShow = false;"
+      @clickItem="clickItem"
+    ></ValidPipelineDialog>
   </div>
 </template>
 <script>
@@ -112,7 +118,8 @@ export default {
     draggable,
     JobTemplateDialog: () => import('./edit-jobtemplate-dialog.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    AuthDialog: () => import('./auth-dialog.vue')
+    AuthDialog: () => import('./auth-dialog.vue'),
+    ValidPipelineDialog: () => import('./valid-pipeline-dialog.vue')
   },
   props: {},
   data() {
@@ -164,7 +171,8 @@ export default {
       },
       isSaving: false,
       isUpdateJobTemplate: false, //true是从前端获取jobTemplate
-      jobTemplateMap: {} //编辑job时如果不存在则通过接口获取
+      jobTemplateMap: {}, //编辑job时如果不存在则通过接口获取
+      isValidPipelineDialogShow: false
     };
   },
   beforeCreate() {},
@@ -390,6 +398,9 @@ export default {
             });
         }
       });
+    },
+    clickItem() {
+
     }
   },
   filter: {},
