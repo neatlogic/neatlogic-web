@@ -79,6 +79,7 @@
     "navigator": "^1.0.1",
     "neatlogic-ui": "^1.0.7",
     "particles.vue": "^2.42.2",
+    "prosemirror-state": "^1.4.3",
     "qs": "^6.11.2",
     "save": "^2.4.0",
     "tippy.js": "^6.3.7",
