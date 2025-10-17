@@ -1,6 +1,32 @@
 <template>
-  <div class="editor-wrapper">
-    <editor-content :editor="editor" class="editor" />
+  <div class="editor-main">
+    <div class="editor-menu">
+      <ul>
+        <li v-for="(item, index) in menuList" :key="index" :class="getMenuClass(item)">
+          <div class="menu-text">
+            <span class="heading-icon" :class="getHeadingIcon(item)" @click="handleClick(item, index)"></span>
+            <span>{{ item.text }}</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="editor-wrapper bg-op">
+      <div>
+        <button @click="editor.chain().focus().toggleBold().run()">Bold</button>
+        <button @click="editor.chain().focus().toggleHeading({ level: 1 }).run()">
+          H1
+        </button>
+        <button @click="editor.chain().focus().toggleHeading({ level: 2 }).run()">
+          H2
+        </button>
+        <button @click="editor.chain().focus().toggleHeading({ level: 3 }).run()">
+          H3
+        </button>
+      </div>
+
+      <editor-content :editor="editor" class="editor" />
+      <div @click="getData()">aaa</div>
+    </div>
   </div>
 </template>
 
@@ -18,12 +44,20 @@ import SlashCommand from './SlashCommand';
 export default {
   components: { EditorContent },
   data() {
-    return { editor: null };
+    return { 
+      editor: null,
+      menuList: []
+
+    };
   },
   mounted() {
+    let _this = this;
     this.editor = new Editor({
       extensions: [
         StarterKit.configure({
+          heading: {
+            levels: [1, 2, 3]
+          },
           paragraph: false // 我们用 BlockWrapper 包装 paragraph
         }),
         Placeholder.configure({
@@ -35,21 +69,101 @@ export default {
         TableCell,
         BlockWrapper,
         SlashCommand
-      ]
+      ],
+      onUpdate({ editor }) {
+        _this.getAllHeadings(editor);
+        console.log(editor.getJSON());
+      }
     });
   },
   beforeDestroy() {
     this.editor.destroy();
+  },
+  methods: {
+    getData() {
+      let json = this.editor.getJSON();
+      console.log(json);
+    },
+    getAllHeadings(editor) {
+      const $headings = editor.$nodes('heading');
+      const headings = $headings.map((node) => {
+        const afterNode = node.after;
+        const afterLevel = afterNode.attributes.level;
+        let obj = {
+          level: node.attributes.level,
+          text: node.textContent
+        };
+        if (afterLevel && afterLevel > node.attributes.level) {
+          obj.showNextIcon = true;
+        }
+        return obj;
+      });
+      this.menuList = headings;
+      console.log($headings, headings);
+    },
+    handleClick(item, index) {
+      this.$set(item, 'showNextIcon', !item.showNextIcon);
+      this.menuList.forEach((item, index) => {
+        item.showNextIcon = false;
+      });
+    }
+  },
+  computed: {
+    getMenuClass() {
+      return (item) => {
+        const className = 'heading-level-' + item.level;
+        return {
+          [className]: true
+        };
+      };
+    },
+    getHeadingIcon() {
+      return (item) => {
+        let classStr = '';
+        if (item.hasOwnProperty('showNextIcon')) {
+          classStr = classStr + (item.showNextIcon ? 'tsfont-drop-down' : 'tsfont-drop-right');
+        } else if (item.level == 1) {
+          classStr = classStr + 'tsfont-dot';
+        }
+        return classStr;
+      };
+    }
   }
 };
 </script>
 
-<style>
+<style lang="less">
+.editor-main {
+  height: calc(100vh - 116px);
+  display: grid;
+  grid-template-columns: 200px auto;
+  border-radius: 10px;
+  .editor-menu {
+    padding: 20px;
+    overflow: auto;
+    .menu-text {
+      position: relative;
+    }
+    .heading-icon{
+      position: absolute;
+      left: -14px;
+    }
+    .heading-level-1 {
+      padding-left: 0px;
+    }
+    .heading-level-2 {
+      padding-left: 14px;
+    }
+    .heading-level-3 {
+      padding-left: 28px;
+    }
+  }
+}
 .editor-wrapper {
-  border: 1px solid #ddd;
+  // border: 1px solid #ddd;
   padding: 12px;
-  border-radius: 8px;
-  min-height: 200px;
+  // border-radius: 8px;
+  overflow: auto;
 }
 
 /* Slash Menu */
