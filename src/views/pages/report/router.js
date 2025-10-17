@@ -7,10 +7,11 @@ const reportShow = () => import('./report/report-show.vue');
 const reportinstanceShow = () => import('./report/reportinstance-show.vue');
 const sendjobManage = () => import('./sendjob/sendjob-manage.vue');
 const sendjobEdit = () => import('./sendjob/sendjob-edit.vue');
-const blackWhiteListManage = () => import('./config/blackwhitelist-manage.vue');
 const statementEdit = () => import('./statement/statement-edit.vue');
 const statementView = () => import('./statement/statement-view.vue');
 const statementManage = () => import('./statement/statement-manage.vue');
+const reportAi = () => import('@/views/pages/report/report/report-ai.vue');
+
 import { $t } from '@/resources/init.js';
 
 export default [
@@ -152,6 +153,18 @@ export default [
       ismenu: true,
       type: 'statementmanage',
       authority: ['REPORT_STATEMENT_MODIFY']
+    }
+  },
+  {
+    path: '/report-ai',
+    name: 'report-ai',
+    component: reportAi,
+    meta: {
+      title: 'AI测试',
+      icon: 'tsfont-agent',
+      ismenu: true,
+      type: 'statementmanage',
+      authority: ['REPORT_BASE']
     }
   }
 ];

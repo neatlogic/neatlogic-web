@@ -6,6 +6,7 @@ const creatEventSourcePolyfill = (url, params) => {
     queryString = '?' + Object.keys(params).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(params[key])).join('&');
   }
   const href = BASEURLPREFIX + url + queryString;
+  console.log(href);
   const es = new EventSourcePolyfill(href, {
     heartbeatTimeout: 300000, //设置重连时间
     headers: {
