@@ -52,6 +52,12 @@
                   maxlength="50"
                 ></TsFormInput>
                 <TsFormInput
+                  v-else-if="row.dataType && (row.dataType.toLowerCase() == 'json')"
+                  v-model="row.value"
+                  type="textarea"
+                  border="border"
+                ></TsFormInput>
+                <TsFormInput
                   v-else
                   v-model="row.value"
                   border="border"
