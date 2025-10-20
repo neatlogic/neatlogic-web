@@ -1066,6 +1066,15 @@ export default {
     },
     clearReactionRow(reaction) { //清除行联动的废数据
       if (!this.$utils.isEmpty(reaction)) {
+        let tableRowList = [];
+        (this.config?.tableList || []).forEach((v) => {
+          if (v && v.hasOwnProperty('row')) {
+            const currentRow = v.row + 1;
+            if (!tableRowList.includes(currentRow)) {
+              tableRowList.push(currentRow);
+            }
+          }
+        });
         Object.keys(reaction).forEach(key => {
           if (!this.$utils.isEmpty(reaction[key])) {
             reaction[key].forEach(item => {
@@ -1087,11 +1096,17 @@ export default {
                 item.conditionGroupList = item.conditionGroupList.filter(c => !groupUuidList.includes(c.uuid));
               }
               if (this.$utils.isEmpty(item.conditionGroupList)) {
-                item.rows = [];
+                if (!this.$utils.isEmpty(item.rows)) {
+                  for (let j = item.rows.length - 1; j >= 0; j--) {
+                    if (!tableRowList.includes(j)) {
+                      item.rows.splice(j, 1);
+                    }
+                  }
+                }
                 item.conditionGroupRelList = [];
               }
             });
-            reaction[key] = reaction[key].filter(item => !this.$utils.isEmpty(item.conditionGroupList));
+            reaction[key] = reaction[key].filter(item => !this.$utils.isEmpty(item.rows));
           }
         });
         //更新配置
