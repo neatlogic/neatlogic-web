@@ -1069,7 +1069,7 @@ export default {
         let tableRowList = [];
         (this.config?.tableList || []).forEach((v) => {
           if (v && v.hasOwnProperty('row')) {
-            const currentRow = v.row + 1;
+            const currentRow = v.row;
             if (!tableRowList.includes(currentRow)) {
               tableRowList.push(currentRow);
             }
@@ -1097,11 +1097,7 @@ export default {
               }
               if (this.$utils.isEmpty(item.conditionGroupList)) {
                 if (!this.$utils.isEmpty(item.rows)) {
-                  for (let j = item.rows.length - 1; j >= 0; j--) {
-                    if (!tableRowList.includes(j)) {
-                      item.rows.splice(j, 1);
-                    }
-                  }
+                  item.rows = item.rows.filter(d => tableRowList.includes(d));
                 }
                 item.conditionGroupRelList = [];
               }
