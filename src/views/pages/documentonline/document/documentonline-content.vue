@@ -6,7 +6,7 @@
 </template>
 <script>
 import hljs from 'highlight.js';
-import {marked} from 'marked';
+import { marked } from 'marked';
 import imgViewer from '@/resources/directives/img-viewer.js';
 export default {
   name: '',
@@ -34,7 +34,7 @@ export default {
     this.getDocumentDetail();
   },
   beforeMount() {},
-  mounted() { 
+  mounted() {
     this.$nextTick(() => {
       hljs.highlightAll();
     });
@@ -54,15 +54,18 @@ export default {
         filePath: this.filePath
       };
       this.loadingShow = true;
-      return this.$api.documentonline.getDocumentDetail(data).then(res => {
-        if (res.Status === 'OK') {
-          if (res.Return.content) {
-            this.markdownSource = res.Return.content;
+      return this.$api.documentonline
+        .getDocumentDetail(data)
+        .then(res => {
+          if (res.Status === 'OK') {
+            if (res.Return.content) {
+              this.markdownSource = res.Return.content;
+            }
           }
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
+        })
+        .finally(() => {
+          this.loadingShow = false;
+        });
     },
     async getDocumentDetail() {
       if (this.content) {
@@ -84,7 +87,7 @@ export default {
         const newhref = href.replace(/\&/g, '%26');
         return `<a href="${newhref}">${text}</a>`;
       };
-      this.markdownContent = marked(this.markdownSource, { renderer }); 
+      this.markdownContent = marked(this.markdownSource, { renderer });
       this.getHeadings();
       this.$nextTick(() => {
         if (this.anchorPoint) {
@@ -92,13 +95,14 @@ export default {
         }
       });
     },
-    getHeadings() { //获取目录
+    getHeadings() {
+      //获取目录
       this.headings = [];
       // 提取 h1 到 h6 标签
       const parser = new DOMParser();
       const doc = parser.parseFromString(this.markdownContent, 'text/html');
       const headings = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
-      headings.forEach((heading) => {
+      headings.forEach(heading => {
         const level = parseInt(heading.tagName.charAt(1));
         const text = heading.textContent;
         const id = heading.id;

@@ -42,7 +42,8 @@
     "editconfirm": "Edit confirmation",
     "canceleditconfirm": "Exit editing confirmation",
     "lockconfirm": "Lock Confirmation",
-    "testconfirm": "TEST confirmation"
+    "testconfirm": "TEST confirmation",
+    "restartconfirm": "Restart confirmation"
   },
   "content": {
     "pauseconfirm": "Are you sure to pause {target}？",
@@ -88,6 +89,7 @@
     "opencomfirm": "Are you sure to open this {target}?",
     "canceleditconfirm": "Are you sure to exit editing and unlock the current schema diagram?",
     "lockconfirm": "Are you sure you want to lock the current {target}?",
-    "testconfirm": "Are you sure to test the current {target}"
+    "testconfirm": "Are you sure to test the current {target}?",
+    "restartconfirm":"Are you sure to restart the current {target}?"
   }
 }
