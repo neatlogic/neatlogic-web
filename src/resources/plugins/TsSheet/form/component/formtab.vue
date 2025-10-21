@@ -30,6 +30,7 @@
                 :formItem="component"
                 :formData="formData"
                 :formItemList="formItemList"
+                :formDataForWatch="formDataForWatch"
                 :mode="mode"
                 :disabled="disabled || tab.isDisabled"
                 :readonly="readonly || tab.isReadOnly"
@@ -333,9 +334,6 @@ export default {
         }
         return [];
       };
-    },
-    formDataForWatch() {
-      return JSON.parse(JSON.stringify(this.formData));
     },
     conditionData() { //tab内规则用到的条件
       return uuid => {
