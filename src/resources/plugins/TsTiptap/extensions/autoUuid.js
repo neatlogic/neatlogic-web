@@ -38,5 +38,12 @@ export const AutoUuid = Extension.create({
         }
       })
     ];
+  },
+  addKeyboardShortcuts() {
+    return {
+      'Backspace': () => {
+        console.log('Keyboard shortcut executed');
+      }
+    };
   }
 });

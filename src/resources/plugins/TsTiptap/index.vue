@@ -15,8 +15,11 @@
       class="editor-wrapper bg-op"
       @mousemove="handleMouseMove"
       @mouseleave="hidePlus"
+      @click="handleClickPlus"
     >
-      <editor-content :editor="editor" class="editor-content" />
+      <div @click.stop>
+        <editor-content :editor="editor" class="editor-content" />
+      </div>
       <span
         v-if="showPlus"
         class="plus-button tsfont-plus bg-op"
@@ -198,10 +201,12 @@ export default {
         : null;
       // 获取光标所在 resolved position
       const { $from } = this.editor.state.selection;
-
       // 如果外部传入 pos，就用 pos，否则用当前光标所在 block 的结束位置
-      const insertPos = pos?.pos ? pos.pos + 1 : $from.end() + 1;
+      let insertPos = pos?.pos ? pos.pos + 1 : $from.end() + 1;
       console.log('menuType', menuType);
+      if (this.$utils.isEmpty($from.doc.textContent)) {
+        insertPos = insertPos - 1;
+      }
       switch (menuType) {
         case 'heading1':
           this.editor
@@ -321,6 +326,9 @@ export default {
         this.editor.commands.focus();
         this.editor.commands.setTextSelection(targetPos);
       }
+    },
+    handleClickPlus() {
+      this.editor.commands.focus('end');
     }
   },
   computed: {
