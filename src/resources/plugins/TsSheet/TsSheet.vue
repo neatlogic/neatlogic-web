@@ -1258,7 +1258,7 @@ export default {
               this.$emit('updateFormValue', newVal, this.getHiddenComponentsByHideCondition());
             });
           },
-          { immediate: true }
+          { immediate: true, deep: true }
         );
       }
     },
