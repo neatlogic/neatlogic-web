@@ -1,25 +1,37 @@
 <template>
   <div
-    ref="wrapper"
-    class="editor-wrapper"
-    @mousemove="onMouseMove"
-    @mouseleave="hideToolbar"
+    ref="editorWrapper"
+    class="editor-wrapper border-base"
+    @mousemove="handleMouseMove"
+    @mouseleave="hidePlus"
   >
     <editor-content :editor="editor" class="editor-content" />
-
-    <!-- 插入器 / 拖拽柄浮层 -->
-    <div
-      v-if="showToolbar"
-      :style="{ top: toolbarTop + 'px', left: '0px' }"
-      class="insert-toolbar"
+    <!-- 悬浮的 + 号按钮 -->
+    <span
+      v-if="showPlus"
+      class="plus-button tsfont-plus bg-op"
+      :style="{
+        top: plusPos.top + 'px',
+        left: plusPos.left + 'px'
+      }"
+      @click.stop="toggleMenu"
     >
-      <span class="add-btn tsfont-plus" @click="onAdd"></span>
-      <span class="drag-btn tsfont-drag"></span>
-    </div>
+    </span>
+    <MenuList
+      v-if="menuVisible"
+      :style="{
+        position: 'absolute',
+        top: plusPos.top + 'px',
+        left: plusPos.left + 'px'
+      }"
+      @click-menu="handleClickMenu"
+    >
+    </MenuList>
   </div>
 </template>
 
 <script>
+import { throttle } from 'lodash';
 import { Editor, EditorContent } from '@tiptap/vue-2';
 import StarterKit from '@tiptap/starter-kit';
 import { Table } from '@tiptap/extension-table';
@@ -27,34 +39,41 @@ import TableRow from '@tiptap/extension-table-row';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
 import Placeholder from '@tiptap/extension-placeholder';
-import { BlockWrapper } from './BlockWrapper.js';
-import SlashCommand from './SlashCommand';
 import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
 
 export default {
-  components: { EditorContent },
+  components: {
+    EditorContent,
+    MenuList: () => import('./menu/index.vue') },
   data() {
-    return { editor: null, toolbarTop: 0, showToolbar: false, currentBlockEl: null };
+    return {
+      editor: null,
+      plusPos: { top: 0, left: 0 },
+      showPlus: false,
+      plusBlock: null,
+      menuVisible: true
+    };
   },
   mounted() {
     this.editor = new Editor({
       extensions: [
         AutoUuid,
         StarterKit.configure({
-          paragraph: false // 我们用 BlockWrapper 包装 paragraph
         }),
         Placeholder.configure({
-          placeholder: '输入“/”快速插入内容' // 这是全局 placeholder
+          placeholder: '可在此处输入内容' // 这是全局 placeholder
         }),
         Table.configure({ resizable: true }),
         TableHeader,
         TableRow,
-        TableCell,
-        BlockWrapper,
-        SlashCommand
+        TableCell
       ],
       onUpdate: ({ editor }) => {
         console.log('文档更新：', editor.getJSON());
+      },
+      onFocus: ({ editor }) => {
+        const { $from } = editor.state.selection;
+        const node = $from.node($from.depth);
       }
     });
   },
@@ -62,43 +81,148 @@ export default {
     this.editor.destroy();
   },
   methods: {
-    onMouseMove(e) {
-      const wrapper = this.$refs.wrapper;
-      const editorEl = wrapper?.querySelector('.editor-content');
-      if (!editorEl) return;
-
-      // 从鼠标位置获取元素
-      const el = document.elementFromPoint(e.clientX, e.clientY);
-      if (!el) return;
-
-      // 找最近的 block（段落、标题、引用等）
-      const blockEl = el.closest('p, h1, h2, h3, blockquote, li');
-      // console.log('el', el);
-      
-      if (!blockEl || !editorEl.contains(blockEl)) {
-        // this.showToolbar = false;
+    handleMouseMove: throttle(function(event) {
+      const wrapper = this.$refs.editorWrapper;
+      const editorEl = wrapper.querySelector('.ProseMirror');
+      // 👉 如果鼠标在 + 按钮上，直接忽略，不隐藏
+      if (event.target.closest('.plus-button')) {
         return;
       }
-
-      // 如果是新的 block，就更新浮层位置
-      if (blockEl !== this.currentBlockEl) {
-        this.currentBlockEl = blockEl;
-        const rect = blockEl.getBoundingClientRect();
-        const wrapperRect = wrapper.getBoundingClientRect();
-
-        this.toolbarTop = rect.top - wrapperRect.top;
-        this.showToolbar = true;
+      if (!editorEl.contains(event.target)) {
+        this.hidePlus();
+        return;
       }
+      // 找到当前块元素
+      let block = event.target.closest(
+        'p, h1, h2, h3, li, blockquote, pre, div'
+      );
+      if (!block) {
+        // 如果是空行，用 posAtCoords + nodeDOM 获取
+        const coords = { left: event.clientX, top: event.clientY };
+        const pos = this.editor.view.posAtCoords(coords);
+        if (pos) {
+          const $pos = this.editor.state.doc.resolve(pos.pos);
+          const dom = this.editor.view.nodeDOM($pos.before($pos.depth));
+          if (dom && dom.nodeType === 1) block = dom;
+        }
+      }
+      if (!block || block === this.plusBlock) return;
+
+      this.plusBlock = block;
+      const blockRect = block.getBoundingClientRect();
+      const wrapperRect = wrapper.getBoundingClientRect();
+
+      this.plusPos = {
+        top: (blockRect.top - wrapperRect.top + blockRect.height / 2 - 12).toFixed(0),
+        left: 5
+      };
+      this.showPlus = true;
+    }, 300),
+    hidePlus: throttle(function() {
+      this.showPlus = false;
+      this.plusBlock = null;
+    }, 400),
+    toggleMenu() {
+      this.menuVisible = !this.menuVisible;
     },
-    hideToolbar() {
-      // this.showToolbar = false;
-      // this.currentBlockEl = null;
-    },
-    onAdd() {
-      if (!this.currentBlockEl) return;
-      // 获取当前位置
-      const pos = this.editor.state.selection.$anchor.pos;
-      this.editor.commands.insertContent('<p>新的一行</p>');
+    handleClickMenu(menuType) {
+      this.menuVisible = false;
+      if (!this.editor) return;
+
+      const view = this.editor.view;
+      const coords = this.plusBlock?.getBoundingClientRect();
+      const pos = coords
+        ? view.posAtCoords({ left: coords.left, top: coords.top })
+        : null;
+      // 获取光标所在 resolved position
+      const { $from } = this.editor.state.selection;
+
+      // 如果外部传入 pos，就用 pos，否则用当前光标所在 block 的结束位置
+      const insertPos = pos?.pos ? pos.pos + 1 : $from.end() + 1;
+      console.log('menuType', menuType);
+      switch (menuType) {
+        case 'heading1':
+          this.editor
+            .chain()
+            .focus()
+            .insertContentAt(insertPos, {
+              type: 'heading',
+              attrs: { level: 1 },
+              content: [{ type: 'text', text: '新标题内容' }]
+            })
+            .run();
+          break;
+        case 'heading2':
+          this.editor
+            .chain()
+            .focus()
+            .insertContentAt(insertPos, {
+              type: 'heading',
+              attrs: { level: 2 },
+              content: [
+                {
+                  type: 'text',
+                  text: '新标题h2的内容'
+                }
+              ]
+            })
+            .run();
+          break;
+        case 'heading3':
+          this.editor
+            .chain()
+            .focus()
+            .insertContentAt(insertPos, {
+              type: 'heading',
+              attrs: { level: 3 },
+              content: [{ type: 'text', text: '新标题3内容' }]
+            })
+            .run();
+          break;
+        case 'heading4':
+          this.editor
+            .chain()
+            .focus()
+            .insertContentAt(insertPos, {
+              type: 'heading',
+              attrs: { level: 4 },
+              content: [{ type: 'text', text: '新标题4内容' }]
+            })
+            .run();
+          break;
+        case 'heading5':
+          this.editor
+            .chain()
+            .focus()
+            .insertContentAt(insertPos, {
+              type: 'heading',
+              attrs: { level: 5 },
+              content: [{ type: 'text', text: '新标题5内容' }]
+            })
+            .run();
+          break;
+        case 'heading6':
+          this.editor
+            .chain()
+            .focus()
+            .insertContentAt(insertPos, {
+              type: 'heading',
+              attrs: { level: 6 },
+              content: [{ type: 'text', text: '新标题内容' }]
+            })
+            .run();
+          break;
+        case 'image':
+          this.editor
+            .chain()
+            .focus()
+            .insertContentAt(insertPos, {
+              type: 'paragraph',
+              content: [{ type: 'text', text: '[插入图片位置]' }]
+            })
+            .run();
+          break;
+      }
     }
   }
 };
@@ -106,67 +230,30 @@ export default {
 
 <style>
 .editor-wrapper {
-  border: 1px solid #ddd;
-  padding: 12px;
+  position: relative;
+  padding: 16px 16px 16px 32px;
   border-radius: 8px;
   min-height: 200px;
 }
 .tiptap p.is-editor-empty:first-child::before {
   color: #adb5bd;
   content: attr(data-placeholder);
-  float: left;
-  height: 0;
-  pointer-events: none;
 }
-
-/* Slash Menu */
-.slash-menu {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 4px;
-}
-.slash-menu-item {
-  padding: 6px 10px;
-  cursor: pointer;
-}
-.slash-menu-item:hover {
-  background: #f0f0f0;
-}
-
-/* Block Wrapper */
-.block-wrapper {
-  display: flex;
-  align-items: flex-start;
-  padding: 2px 0;
-  position: relative;
-  border-radius: 4px;
-}
-.block-tools {
+.plus-button {
+  position: absolute;
   width: 24px;
-  margin-right: 6px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-.block-wrapper:hover .block-tools {
-  opacity: 1;
-}
-.drag-handle {
-  cursor: grab;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: white;
+  line-height: 22px;
+  text-align: center;
   font-size: 12px;
-  text-align: center;
-  user-select: none;
-}
-.insert-btn {
   cursor: pointer;
-  text-align: center;
-  font-size: 14px;
-  color: #888;
+  user-select: none;
+  z-index: 10;
 }
-.block-content {
-  flex: 1;
-}
-.drag-over {
-  background: #f0f8ff;
+.plus-button:hover {
+  background: #f5f5f5;
 }
 </style>
