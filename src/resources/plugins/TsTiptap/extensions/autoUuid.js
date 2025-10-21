@@ -11,7 +11,7 @@ export const AutoUuid = Extension.create({
         types: ['paragraph', 'heading', 'todoItem', 'customBlock'], // 系统所有 block 类型
         attributes: {
           uuid: {
-            default: utils.setUuid()
+            default: null
           }
         }
       }
