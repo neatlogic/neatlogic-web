@@ -8,7 +8,7 @@ export const AutoUuid = Extension.create({
   addGlobalAttributes() {
     return [
       {
-        types: ['paragraph', 'heading', 'BulletList', 'OrderedList', 'ListItem', 'TaskList', 'TaskItem', 'Blockquote', 'CodeBlock', 'Divider', 'Container', 'Image', 'Video', 'Iframe', 'Table', 'TableRow', 'TableCell', 'TableHeader', 'customBlock'], // 系统所有 block 类型
+        types: ['paragraph', 'heading', 'bulletList', 'orderedList', 'listItem', 'taskList', 'taskItem', 'blockquote', 'codeBlock', 'divider', 'container', 'image', 'video', 'iframe', 'table', 'tableRow', 'tableCell', 'tableHeader', 'customBlock'], // 系统所有 block 类型
         attributes: {
           uuid: {
             default: null
