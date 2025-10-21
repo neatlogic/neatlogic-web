@@ -10,7 +10,7 @@
                 v-for="child in item.children"
                 :key="child.uuid"
                 class="basic-menu-text bg-hover-grey"
-                @click.stop="handleClick(child.value)"
+                @click.stop="handleClick(item.category, child.value)"
               >
                 <Tooltip
                   v-if="child.tipConentList"
@@ -37,7 +37,7 @@
               v-for="child in item.children"
               :key="child.uuid"
               class="common-menu-text"
-              @click.stop="handleClick(child.value)"
+              @click.stop="handleClick(item.category, child.value)"
             >
               <span :class="child.iconClass" class="mr-xs"></span>
               <span>{{ child.label }}</span>
@@ -157,11 +157,16 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    handleClick(value) {
-      this.componentsType = value;
-      if (value === 'uploadImage') {
+    handleClick(category, value) {
+      if (category === 'basic') {
+        this.componentsType = '';
+        this.$emit('click-menu', value);
+      } else {
+        this.componentsType = value;
+        if (value === 'uploadImage') {
         // this.$refs.componentMenu.fileInput.click();
-        console.log(this.$refs.componentMenu.fileInput);
+          console.log(this.$refs.componentMenu.fileInput);
+        }
       }
     },
     handleMenuList() {

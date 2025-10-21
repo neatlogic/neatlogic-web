@@ -63,7 +63,7 @@ export default {
       plusPos: { top: 0, left: 0 },
       showPlus: false,
       plusBlock: null,
-      menuVisible: true,
+      menuVisible: false,
       toolbarTop: 0, 
       showToolbar: false,
       currentBlockEl: null,
