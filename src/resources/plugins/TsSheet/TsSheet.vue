@@ -8,12 +8,7 @@
     @contextmenu="handleContextMenu"
     @mousemove="doDrag"
     @mouseup="endResize"
-    @click="
-      event => {
-        isContextMenuShow = false;
-        event.stopPropagation();
-      }
-    "
+    @click="handleClick"
     @mouseleave="endResize"
   >
     <div v-if="mode === 'edit'" class="tssheet-toolbar">
@@ -127,11 +122,7 @@
       :class="{ editmode: mode === 'edit' }"
       style="position: relative; overflow: auto; width: 100%"
       :style="{ height: mode === 'edit' ? containerHeight : mode === 'editSubform' ? 'auto' : '100%' }"
-      @scroll="
-        event => {
-          scrollContainer(event);
-        }
-      "
+      @scroll="scrollContainer"
     >
       <table v-if="mode === 'edit'" class="tssheet-main-shadow-head" :style="{ top: scrollTop + 'px', width: tableSize.width + 'px' }">
         <thead>
@@ -145,27 +136,12 @@
               :style="{ width: head.width + 'px' }"
               @mouseup="isDragging = false"
               @mouseenter="multipleSelectColumn(index)"
-              @mousedown="
-                event => {
-                  if (mode === 'edit') {
-                    if (event.buttons === 1) {
-                      clearSelectedRowCol();
-                      isDragging = true;
-                      selectColumn(index);
-                      multipleSelectColumn(index);
-                    }
-                  }
-                }
-              "
+              @mousedown="handleColumnMouseDown(index, $event)"
             >
               <div
                 v-if="mode === 'edit'"
                 class="horizontal-resize-handler"
-                @mousedown.stop="
-                  event => {
-                    startResize(event, 'h', index);
-                  }
-                "
+                @mousedown.stop="startResize($event, 'h', index);"
               ></div>
               <span>{{ getHeadText(index) }}</span>
             </th>
@@ -179,35 +155,20 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(left, rowindex) in shownLefterList" :key="rowindex">
+          <tr v-for="(left) in shownLefterList" :key="left.rowUuid">
             <th
               class="thead-th"
               style="position: relative"
               :class="{ selected: !!left._selected }"
               :style="{ height: left.height + 'px' }"
-              @mousedown="
-                event => {
-                  if (mode === 'edit') {
-                    if (event.buttons === 1) {
-                      clearSelectedRowCol();
-                      isDragging = true;
-                      selectRow(left.index);
-                      multipleSelectRow(left.index);
-                    }
-                  }
-                }
-              "
+              @mousedown="handleRowMouseDown(left, $event)"
               @mouseup="isDragging = false"
               @mouseenter="multipleSelectRow(left.index)"
             >
               <div
                 v-if="mode === 'edit'"
                 class="vertical-resize-handler"
-                @mousedown.stop="
-                  event => {
-                    startResize(event, 'v', left.index);
-                  }
-                "
+                @mousedown.stop="startResize($event, 'v', left.index);"
               ></div>
               <div v-if="hasReaction(left.index)" class="corner-icon tsfont-lightning text-warning"></div>
               {{ left.index + 1 }}
@@ -216,19 +177,19 @@
           </tr>
         </tbody>
       </table>
-      <table class="tssheet-main" :class="{ 'bg-op': mode === 'edit','cell-spacing':mode !== 'edit' && formStyleData.cellSpacing }" :style="{ width: mode === 'edit' ? tableSize.width + 'px' : isFormSubassembly ? 'inherit' : containerWidth + 'px', height: tableSize.height + 'px', margin: mode === 'edit' ? 0 : '0 auto', '--padding': formStyleData.cellSpacing + 'px' || '0px'}">
+      <table class="tssheet-main" :class="tssheetMainClass" :style="tssheetMainStyle">
         <colgroup>
-          <col v-if="mode === 'edit'" :style="{ width: minWidth + 'px' }" />
+          <col v-if="mode === 'edit'" :style="colStyle" />
           <col
             v-for="(head, index) in config.headerList"
             :ref="'header' + index"
             :key="index"
-            :style="{ width: mode === 'edit' ? head.width + 'px' : tdWidth(head.width) }"
+            :style="colgroupStyle(head)"
           />
         </colgroup>
         <thead v-if="mode === 'edit'">
           <tr>
-            <th :style="{ height: minHeight + 'px' }"></th>
+            <th :style="theadThStyle"></th>
             <th v-for="(head, index) in config.headerList" :key="index" class="thead-th"></th>
           </tr>
         </thead>
@@ -236,55 +197,25 @@
           <tr
             v-for="(left, rowindex) in shownLefterList"
             :ref="'lefter' + rowindex"
-            :key="rowindex"
-            :style="{ height: left.height + 'px' }"
+            :key="left.rowUuid"
+            :style="tbodyTrStyle(left)"
           >
             <th v-if="mode === 'edit'" class="thead-th">
               {{ left.index + 1 }}
             </th>
             <td
-              v-for="(cell, cindex) in rowCells(left.index)"
-              :key="cindex"
-              :class="{ read: mode !== 'edit' && mode !== 'editSubform', selected: (mode === 'edit' || mode === 'editSubform') && (!!cell._selected || dropCell === cell), handler: !!cell._isHandler, ...cell.class }"
+              v-for="(cell) in rowCells(left.index)"
+              :key="cell.rowColUuid"
+              :class="tbodyTdClass(cell)"
               :colspan="cell.colspan"
               :rowspan="getActualRowSpan(cell)"
               :style="cell.style"
-              @dblclick="
-              /*if (mode === 'edit') {
-                  focusCell(cell);
-                }*/
-              "
+              @mouseenter="handleMouseEnter($event, cell)"
+              @mousedown="handlemousedown($event, cell)"
+              @mouseup="handleMouseUp"
               @dragover.prevent
-              @drop="
-                event => {
-                  if (mode === 'edit') {
-                    addItemKey(event);
-                  }
-                }
-              "
+              @drop="handleDrop($event)"
               @dragenter="activeDropContainer(cell)"
-              @mouseenter="
-                event => {
-                  if (mode === 'edit' && event.buttons === 1) multipleSelectCell(cell, event);
-                }
-              "
-              @mousedown="
-                event => {
-                  if (mode === 'edit') {
-                    clearSelectedRowCol();
-                    if (event.buttons === 1) {
-                      selectCell(cell);
-                      isDragging = true;
-                    } else if (event.buttons === 2) {
-                      if (!cell._selected) {
-                        selectCell(cell, true);
-                      }
-                      showContextMenu(event);
-                    }
-                  }
-                }
-              "
-              @mouseup="isDragging = false"
             >
               <div
                 v-if="mode === 'edit' && !$utils.isEmpty(cell.component)"
@@ -308,10 +239,11 @@
                   :formItem="cell.component"
                   :formData="formData"
                   :formItemList="formItemList"
+                  :formDataForWatch="formData"
                   :mode="mode"
                   :disabled="disabled"
                   :readonly="readonly || config.readOnly"
-                  :formHighlightData="formHighlightData"
+                  :formHighlightData="freezeFormHighlightData"
                   :isCustomValue="true"
                   :formExtendData="formExtendData"
                   :isClearSpecifiedAttr="isClearSpecifiedAttr"
@@ -321,29 +253,13 @@
                   class="padding-xs"
                   @changeConfig="addHistory()"
                   @change="resizeCell(cell.row, cell.col, true)"
-                  @resize="
-                    $nextTick(() => {
-                      resizeCell(cell.row, cell.col, true);
-                    })
-                  "
-                  @emit="
-                    val => {
-                      $emit('emit', val);
-                    }
-                  "
-                  @select="
-                    com => {
-                      $emit('selectCell', cell, com);
-                    }
-                  "
+                  @setValue="setValue"
+                  @resize="handleResize(cell)"
+                  @emit="handleEmit($event)"
+                  @select="handleSelect($event, cell)"
                   @delete="deleteFormItem(cell)"
                   @updateHiddenComponentList="updateHiddenComponentList"
-                  @dropHideComponent="
-                    event => {
-                      if (mode === 'edit') {
-                        addItemKey(event);
-                      }
-                    }"
+                  @dropHideComponent="dropHideComponent"
                 ></FormItem>
               </div>
               <div v-if="!cell._isHandler && cell.border">
@@ -438,6 +354,7 @@
 </template>
 <script>
 import conditionMixin from './form/conditionexpression/condition-mixin.js';
+const colorList = ['color-picker-th-', 'color-picker-', 'color-picker-border-', 'color-picker-tip-', 'color-picker-text-', 'color-picker-info-', 'color-picker-warning-', 'color-picker-success-', 'color-picker-error-', 'color-picker-info-grey-', 'color-picker-warning-grey-', 'color-picker-success-grey-', 'color-picker-error-grey-', 'color-picker-form-sheet-style-setting-'];
 export default {
   name: '',
   components: {
@@ -549,13 +466,14 @@ export default {
       //expressionList: EXPRESSIONS,
       componentIndex: 1,
       formData: {}, //表单控件的值，key是控件uuid
+     
       fontSizeList: [
         { value: '12px', text: this.$t('page.small') },
         { value: '14px', text: this.$t('page.medium') },
         { value: '16px', text: this.$t('page.big') },
         { value: '18px', text: this.$t('page.maximum') }
       ],
-      colorList: ['color-picker-th-', 'color-picker-', 'color-picker-border-', 'color-picker-tip-', 'color-picker-text-', 'color-picker-info-', 'color-picker-warning-', 'color-picker-success-', 'color-picker-error-', 'color-picker-info-grey-', 'color-picker-warning-grey-', 'color-picker-success-grey-', 'color-picker-error-grey-', 'color-picker-form-sheet-style-setting-'],
+      colorList: colorList,
       formExtendData: {}, //自定义组件消费数据
       hideComponentList: [], //底部隐藏组件列表
       hideComponentError: {},
@@ -568,7 +486,7 @@ export default {
       actionType: '', //当前操作类型,'add'新增组件，'copy'复制组件
       windowKeypressHandler: null, // 用于存储事件处理函数的引用
       formStyleData: {}, //表单样式设置
-      extendConfigList: this.defaultExtendConfigList || [] //扩展配置列表
+      extendConfigList: Object.freeze(this.defaultExtendConfigList) || [] //扩展配置列表
     };
   },
   beforeCreate() {
@@ -601,9 +519,74 @@ export default {
       // 移除事件监听
       container.removeEventListener('keydown', this.windowKeypressHandler);
     }
+    container?.removeEventListener('keydown', this.windowKeypressHandler);
+    this.formData = {};
+    this.extendConfigList = [];
+    this.reactionFnQueue.clear();
+    this.isReady = false;
   },
   destroyed() {},
   methods: {
+    handleColumnMouseDown(index, event) {
+      if (this.mode === 'edit') {
+        if (event.buttons === 1) {
+          this.clearSelectedRowCol();
+          this.isDragging = true;
+          this.selectColumn(index);
+          this.multipleSelectColumn(index);
+        }
+      }
+    },
+    handleRowMouseDown(left, event) {
+      if (this.mode === 'edit') {
+        if (event.buttons === 1) {
+          this.clearSelectedRowCol();
+          this.isDragging = true;
+          this.selectRow(left.index);
+          this.multipleSelectRow(left.index);
+        }
+      }
+    },
+    handleMouseUp() {
+      this.isDragging = false;
+    },
+    handleClick(event) {
+      this.isContextMenuShow = false;
+      event.stopPropagation();
+    },
+    handleMouseEnter(event, cell) {
+      if (this.mode === 'edit' && event.buttons === 1) this.multipleSelectCell(cell, event);
+    },
+    handlemousedown(event, cell) {
+      if (this.mode === 'edit') {
+        this.clearSelectedRowCol();
+        if (event.buttons === 1 && cell) {
+          this.selectCell(cell);
+          this.isDragging = true;
+        } else if (event.buttons === 2) {
+          if (!cell?._selected) {
+            this.selectCell(cell, true);
+          }
+          this.showContextMenu(event);
+        }
+      }
+    },
+    handleResize(cell) {
+      this.$nextTick(() => {
+        this.resizeCell(cell.row, cell.col, true);
+      });
+    },
+    handleEmit(val) {
+      this.$emit('emit', val);
+    },
+    handleSelect(com, cell) {
+      this.$emit('selectCell', cell, com);
+    },
+    dropHideComponent(event) {
+      if (this.mode === 'edit') {
+        this.addItemKey(event);
+      }
+    },
     enqueueReaction(componentUuid, updateFunction) {
       //this.reactionFnQueue.push(updateFunction);
       this.reactionFnQueue.set(componentUuid, updateFunction);
@@ -616,11 +599,11 @@ export default {
     executeReactions() {
       // 执行所有收集到的更新
       // console.log('开始批量处理', new Date());
-      this.reactionFnQueue.forEach(fn => fn && fn());
-      this.reactionFnQueue = new Map();
-      this.isDoingReaction = false;
+      // this.reactionFnQueue.forEach(fn => fn && fn());
+      // this.reactionFnQueue = new Map();
+      // this.isDoingReaction = false;
       // console.log('批量处理完毕', new Date());
-      this.$forceUpdate();
+      // this.$forceUpdate();
     },
     cutCell() {
       if (this.handlerCell) {
@@ -710,7 +693,7 @@ export default {
     initSheet() {
       this.hideComponentList = this.value?.hideComponentList || [];
       if (this.value && this.value.formCustomExtendConfig && !this.$utils.isEmpty(this.value.formCustomExtendConfig.extendConfigList)) {
-        this.extendConfigList = this.value.formCustomExtendConfig.extendConfigList;
+        this.extendConfigList = Object.freeze(this.value.formCustomExtendConfig.extendConfigList);
       }
       if (this.value && this.value.lefterList && this.value.headerList && this.value.tableList) {
         /**
@@ -730,6 +713,9 @@ export default {
           if (d.height < this.minHeight) {
             d.height = this.minHeight;
           }
+          if (d) {
+            d.rowUuid = this.$utils.setUuid();
+          }
         });
         this.config.headerList.forEach(d => {
           if (d.width < this.minWidth) {
@@ -739,6 +725,11 @@ export default {
         if (this.mode === 'edit' || !this.config.hiddenRowList) {
           this.$set(this.config, 'hiddenRowList', []);
         }
+        this.config.tableList.forEach(d => {
+          if (d) {
+            d.rowColUuid = this.$utils.setUuid();
+          }
+        });
         this.componentIndex = this.config.tableList.filter(d => !!d.component && !this.$utils.isEmpty(d.component)).length;
         this.formStyleData = this.value.formWidth || {};
       } else {
@@ -859,21 +850,24 @@ export default {
       if (this.init && this.init.length == 2) {
         const row = this.init[0];
         const col = this.init[1];
-        this.$set(this.config, 'headerList', []);
-        this.$set(this.config, 'lefterList', []);
-        this.$set(this.config, 'tableList', []);
-        this.$set(this.config, 'hiddenRowList', []);
+        let headerList = [];
+        let lefterList = [];
+        let tableList = [];
         for (let c = 0; c < col; c++) {
-          this.config.headerList.push({ width: this.defaultWidth });
+          headerList.push({ width: this.defaultWidth });
         }
         for (let r = 0; r < row; r++) {
-          this.config.lefterList.push({ height: this.minHeight });
+          lefterList.push({ height: this.minHeight, rowUuid: this.$utils.setUuid() });
         }
         for (let r = 0; r < row; r++) {
           for (let c = 0; c < col; c++) {
-            this.config.tableList.push({ row: r, col: c });
+            tableList.push({ row: r, col: c, rowColUuid: this.$utils.setUuid() });
           }
         }
+        this.$set(this.config, 'headerList', headerList);
+        this.$set(this.config, 'lefterList', lefterList);
+        this.$set(this.config, 'tableList', tableList);
+        this.$set(this.config, 'hiddenRowList', []);
       }
     },
     activeDropContainer(cell) {
@@ -1213,22 +1207,25 @@ export default {
     },
     //根据联动配置初始化watch
     initReactionWatch() {
-      this.needWatch = false;
-      if (this.reaction) {
-        for (let key in this.reaction) {
-          if (this.reaction[key].some(d => !this.$utils.isEmpty(d)) > 0) {
-            this.needWatch = true;
-            break;
-          }
-        }
-      }
-      if (this.needWatch && this.formData) {
+      if (this.formData) {
         this.$watch(
-          'formDataForWatch',
+          'formData',
           (newValue, oldValue) => {
             this.$nextTick(() => {
-              const newVal = newValue && JSON.parse(newValue);
-              const oldVal = oldValue && JSON.parse(oldValue);
+              const newVal = newValue;
+              const oldVal = oldValue;
+              this.needWatch = false;
+              if (this.reaction) {
+                for (let key in this.reaction) {
+                  if (this.reaction[key].some(d => !this.$utils.isEmpty(d)) > 0) {
+                    this.needWatch = true;
+                    break;
+                  }
+                }
+              }
+              if (!this.needWatch) {
+                return false;
+              }
               for (let key in this.reaction) {
                 this.reaction[key].forEach(reaction => {
                   if (this.mode !== 'edit' && reaction.rows && reaction.rows.length > 0) {
@@ -1261,7 +1258,7 @@ export default {
               this.$emit('updateFormValue', newVal, this.getHiddenComponentsByHideCondition());
             });
           },
-          { immediate: true }
+          { immediate: true, deep: true }
         );
       }
     },
@@ -1816,9 +1813,21 @@ export default {
     },
     //检查当前单元格是否在其他单元格的span范围
     checkCellIsInSpan(cell) {
-      for (let i = 0; i < this.spanCells.length; i++) {
-        const spancell = this.spanCells[i];
-        if (spancell.row <= cell.row && spancell.row + (spancell.rowspan || 1) >= cell.row + (cell.rowspan || 1) && spancell.col <= cell.col && spancell.col + (spancell.colspan || 1) >= cell.col + (cell.colspan || 1) && spancell != cell) {
+      const cellEndRow = cell.row + (cell.rowspan || 1);
+      const cellEndCol = cell.col + (cell.colspan || 1);
+    
+      const spanCells = this.spanCells;
+      for (let i = 0; i < spanCells.length; i++) {
+        const spancell = spanCells[i];
+        // 提前计算合并单元格的结束行和列
+        const spancellEndRow = spancell.row + (spancell.rowspan || 1);
+        const spancellEndCol = spancell.col + (spancell.colspan || 1);
+      
+        if (
+          spancell.row <= cell.row && spancellEndRow >= cellEndRow &&
+        spancell.col <= cell.col && spancellEndCol >= cellEndCol &&
+        spancell !== cell
+        ) {
           return true;
         }
       }
@@ -2116,10 +2125,65 @@ export default {
       if (this.mode === 'edit') {
         event.preventDefault();
       }
+    },
+    setValue({uuid, value} = {}) {
+      if (uuid) {
+        if (this.$utils.isEmpty(this.formData)) {
+          this.formData = {}; // 处理为null是报错问题
+        }
+        this.$set(this.formData, uuid, value);
+      }
+    },
+    handleDrop(event) {
+      if (this.mode === 'edit') {
+        this.addItemKey(event);
+      }
     }
   },
   filter: {},
   computed: {
+    tssheetMainClass() {
+      return { 
+        'bg-op': this.mode === 'edit',
+        'cell-spacing': this.mode !== 'edit' && this?.formStyleData?.cellSpacing 
+      };
+    },
+    tssheetMainStyle() {
+      return {
+        width: this.mode === 'edit' ? this.tableSize.width + 'px' : this.isFormSubassembly ? 'inherit' : this.containerWidth + 'px',
+        height: this.tableSize.height + 'px',
+        margin: this.mode === 'edit' ? 0 : '0 auto',
+        '--padding': this.formStyleData.cellSpacing + 'px' || '0px'
+      }; 
+    },
+    colStyle() {
+      return { width: this.minWidth + 'px' };
+    },
+    colgroupStyle() {
+      return (head) => {
+        return { width: this.mode === 'edit' ? head.width + 'px' : this.tdWidth(head.width) };
+      };
+    },
+    theadThStyle() {
+      return { height: this.minHeight + 'px' };
+    },
+    tbodyTrStyle() {
+      return (left) => {
+        return { height: left.height + 'px' };
+      };
+    },
+    tbodyTdClass() {
+      return (cell) => {
+        return {
+          read: this.mode !== 'edit' && this.mode !== 'editSubform',
+          selected: (this.mode === 'edit' || this.mode === 'editSubform') && (!!cell._selected || this.dropCell === cell),
+          handler: !!cell._isHandler, ...cell.class
+        };
+      };
+    },
+    freezeFormHighlightData() {
+      return Object.freeze(this.formHighlightData);
+    },
     hasCopy() {
       if (this.handlerCell && this.handlerCell.component && !this.$utils.isEmpty(this.handlerCell.component) && !this.handlerCell.component.hasOwnProperty('inherit')) {
         return true;
@@ -2140,12 +2204,12 @@ export default {
       };
     },
     //如果reaction直接监听formData，由于都是同一个对象，所以watch无法获取前后值变化，需要用此计算属性转换一下数据
-    formDataForWatch() {
-      if (this.needWatch && this.formData) {
-        return JSON.stringify(this.formData);
-      }
-      return null;
-    },
+    // formDataForWatch() {
+    //   if (this.needWatch && this.formData) {
+    //     return JSON.stringify(this.formData);
+    //   }
+    //   return null;
+    // },
     //由于condition的valueList类型是数组，所以不能直接在script中以字符串的方式复制
     conditionData() {
       return uuid => {
@@ -2393,7 +2457,7 @@ export default {
       if (!this.$utils.isEmpty(this.hideComponentList)) {
         formItemList.push(...this.hideComponentList);
       }
-      return formItemList;
+      return Object.freeze(formItemList);
     },
     //能否回退
     canFallback() {

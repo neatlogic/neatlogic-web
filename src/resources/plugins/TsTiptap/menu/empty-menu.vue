@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="bg-op radius-sm">
+    <div class="bg-op radius-sm border-base shadow">
       <ul class="insert-menu-box">
         <li v-for="item in menuList" :key="item.uuid">
           <div v-if="item.category === 'basic'" class="item-list-box">
@@ -223,7 +223,8 @@ export default {
     height: 24px;
     line-height: 24px;
     margin-right: 8px;
-    font-size: 14px;
+    margin-bottom: 8px;
+    font-size: 15px;
     cursor: pointer;
     text-align: center;
   }

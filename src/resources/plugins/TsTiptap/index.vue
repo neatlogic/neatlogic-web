@@ -20,28 +20,49 @@
       <div @click.stop>
         <editor-content :editor="editor" class="editor-content" />
       </div>
-      <span
+    
+      <div
         v-if="showPlus"
-        class="plus-button tsfont-plus bg-op"
-        :style="{
-          top: plusPos.top + 'px',
-          left: plusPos.left + 'px'
-        }"
-        @click.stop="toggleMenu"
-      >
-      </span>
-      <MenuList
-        v-if="menuVisible"
+        :class="isEmptyRow ? 'plus-button ' : `drag-button bg-op border-base shadow`"
         :style="{
           position: 'absolute',
           top: plusPos.top + 'px',
           left: plusPos.left + 'px'
         }"
-        @click-menu="handleClickMenu"
+        @click.stop="toggleMenu"
       >
-      </MenuList>
-      <div class="tsfont-save mr-xs" @click="getData()">保存</div>
+        <span :class="editClassName" class="text-primary"></span>
+        <span :class="isEmptyRow ? 'tsfont-plus bg-op' : `tsfont-drag`"></span>
+      </div>
+      <template v-if="menuVisible">
+        <EmptyMenuList
+          v-if="isEmptyRow"
+          :style="{
+            position: 'absolute',
+            top: plusPos.top + 'px',
+            left: plusPos.left + 'px'
+          }"
+          @click-menu="handleClickMenu"
+        >
+        </EmptyMenuList>
+        <NormalMenuList
+          v-else
+          :style="{
+            position: 'absolute',
+            top: plusPos.top + 'px',
+            left: plusPos.left + 'px'
+          }"
+          @replace-menu-content="replaceMenuContent"
+        ></NormalMenuList>
+      </template>
+     
     </div>
+    <Button
+      style="position:absolute;right:20px;top:10px;"
+      type="primary"
+      class="tsfont-save mr-xs"
+      @click="getData()"
+    >保存</Button>
   </div>
 </template>
 
@@ -49,19 +70,19 @@
 import { throttle } from 'lodash';
 import { Editor, EditorContent } from '@tiptap/vue-2';
 import StarterKit from '@tiptap/starter-kit';
-import { Table } from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
 import Placeholder from '@tiptap/extension-placeholder';
 import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
 
 export default {
   components: {
     EditorContent,
-    MenuList: () => import('./menu/index.vue') },
+    EmptyMenuList: () => import('./menu/empty-menu.vue'),
+    NormalMenuList: () => import('./menu/normal-menu.vue')
+  },
   data() {
     return {
+      isEmptyRow: true, // 是否是空行，用于判断显示鼠标经过时的加号
+      editClassName: '',
       editor: null,
       plusPos: { top: 0, left: 0 },
       showPlus: false,
@@ -79,36 +100,34 @@ export default {
     this.editor = new Editor({
       extensions: [
         AutoUuid,
-        StarterKit.configure({}),
+        StarterKit.configure({
+         
+        }),
         Placeholder.configure({
           placeholder: '可在此处输入内容' // 这是全局 placeholder
-        }),
-        Table.configure({ resizable: true }),
-        TableHeader,
-        TableRow,
-        TableCell
+        })
       ],
       onUpdate({ editor }) {
         console.log(editor);
         _this.getAllHeadings(editor);
       },
       onFocus({ editor, event }) {
-        const { $from } = editor.state.selection;
+        const { $from } = editor?.state?.selection;
         const node = $from.node($from.depth);
         _this.highlightHeading(node, editor);
       }
     });
    
     // 监听 selectionUpdate 事件，当选择变化时，高亮当前选中的标题
-    this.editor.on('selectionUpdate', ({ editor, event }) => {
+    this?.editor?.on('selectionUpdate', ({ editor, event }) => {
       // 编辑器获得焦点。
-      const { $from } = editor.state.selection;
+      const { $from } = editor?.state?.selection;
       const node = $from.node($from.depth);
       _this.highlightHeading(node, editor);
     });
   },
   beforeDestroy() {
-    this.editor.destroy();
+    this.editor?.destroy();
   },
   methods: {
     getData() {
@@ -148,15 +167,19 @@ export default {
     },
     handleMouseMove: throttle(function(event) {
       const wrapper = this.$refs.editorWrapper;
-      const editorEl = wrapper.querySelector('.ProseMirror');
+      const editorEl = wrapper?.querySelector('.ProseMirror');
       // 👉 如果鼠标在 + 按钮上，直接忽略，不隐藏
       if (event.target.closest('.plus-button')) {
         return;
       }
-      if (!editorEl.contains(event.target)) {
+      if (event.target.closest('.drag-button')) {
+        return;
+      }
+      if (!editorEl?.contains(event.target)) {
         this.hidePlus();
         return;
       }
+      this.editClassName = '';
       // 找到当前块元素
       let block = event.target.closest(
         'p, h1, h2, h3, li, blockquote, pre, div'
@@ -164,11 +187,24 @@ export default {
       if (!block) {
         // 如果是空行，用 posAtCoords + nodeDOM 获取
         const coords = { left: event.clientX, top: event.clientY };
-        const pos = this.editor.view.posAtCoords(coords);
+        const pos = this.editor?.view?.posAtCoords(coords);
         if (pos) {
-          const $pos = this.editor.state.doc.resolve(pos.pos);
-          const dom = this.editor.view.nodeDOM($pos.before($pos.depth));
+          const $pos = this.editor?.state?.doc?.resolve(pos.pos);
+          const dom = this.editor?.view?.nodeDOM($pos.before($pos.depth));
           if (dom && dom.nodeType === 1) block = dom;
+        }
+        this.isEmptyRow = true;
+      } else {
+        // 非空行
+        const elementName = block?.tagName?.toLowerCase();
+        const isEmptyBlock = block?.textContent?.trim() === '';
+        if (elementName == 'pre') {
+          this.editClassName = 'tsfont-code';
+        }
+        if (isEmptyBlock) {
+          this.isEmptyRow = true;
+        } else {
+          this.isEmptyRow = false;
         }
       }
       if (!block || block === this.plusBlock) return;
@@ -194,10 +230,10 @@ export default {
       this.menuVisible = false;
       if (!this.editor) return;
 
-      const view = this.editor.view;
+      const view = this?.editor?.view;
       const coords = this.plusBlock?.getBoundingClientRect();
       const pos = coords
-        ? view.posAtCoords({ left: coords.left, top: coords.top })
+        ? view?.posAtCoords({ left: coords.left, top: coords.top })
         : null;
       // 获取光标所在 resolved position
       const { $from } = this.editor.state.selection;
@@ -279,13 +315,13 @@ export default {
             })
             .run();
           break;
-        case 'image':
+        case 'codeBlock':
           this.editor
             .chain()
             .focus()
             .insertContentAt(insertPos, {
-              type: 'paragraph',
-              content: [{ type: 'text', text: '[插入图片位置]' }]
+              type: 'codeBlock',
+              content: [{ type: 'text', text: '新代码块内容' }]
             })
             .run();
           break;
@@ -329,6 +365,61 @@ export default {
     },
     handleClickPlus() {
       this.editor.commands.focus('end');
+    },
+    replaceMenuContent(nodeName) {
+      // 替换当前光标所在的节点内容
+      this.menuVisible = false;
+      const { view, state } = this.editor;
+
+      // 1. 获取 posAtCoords 或 fallback 光标
+      let posResult = null;
+      if (this.plusBlock) {
+        const coords = this.plusBlock.getBoundingClientRect();
+        posResult = view.posAtCoords({ left: coords.left, top: coords.top });
+      }
+
+      let $pos;
+      if (posResult?.pos != null) {
+        $pos = state.doc.resolve(posResult.pos);
+      } else {
+        // fallback 用光标所在位置
+        const { $from } = state.selection;
+        $pos = $from;
+      }
+
+      // 2. 找到最近的 block 节点
+      let node, nodeStart, nodeEnd;
+      for (let depth = $pos.depth; depth > 0; depth--) {
+        const tempNode = $pos.node(depth);
+        if (tempNode.type.isBlock) {
+          node = tempNode;
+          nodeStart = $pos.before(depth);
+          nodeEnd = nodeStart + node.nodeSize;
+          break;
+        }
+      }
+      console.log('node', node);
+      if (!node) return; // 没找到 block，直接返回
+      const nodeTextContent = node.textContent;
+      if (node && nodeTextContent) {
+        const { schema } = view.state;
+
+        // 假设替换成 heading
+        let attrs = {};
+        if (nodeName == 'heading1') {
+          attrs = { level: 1 };
+        } else if (nodeName == 'heading2') {
+          attrs = { level: 2 };
+        } else if (nodeName == 'heading3') {
+          attrs = { level: 3 };
+        }
+        // 3. 创建新节点（保留内容）
+        const newNode = schema.nodes.heading.create(attrs, schema.text(nodeTextContent));
+
+        // 4. 替换
+        view.dispatch(state.tr.replaceWith(nodeStart, nodeEnd, newNode));
+        console.log('node', nodeStart, nodeEnd, nodeTextContent);
+      }
     }
   },
   computed: {
@@ -357,6 +448,7 @@ export default {
 </script>
 
 <style lang="less">
+@import "./index.less";
 .editor-main {
   height: calc(100vh - 116px);
   display: grid;
@@ -388,10 +480,10 @@ export default {
 }
 .editor-wrapper {
   position: relative;
-  padding: 16px 16px 16px 32px;
+  padding: 16px 42px;
   border-radius: 8px;
   min-height: 200px;
-   overflow: auto;
+  overflow: auto;
 }
 .tiptap p.is-editor-empty:first-child::before {
   color: #adb5bd;
@@ -413,5 +505,16 @@ export default {
 }
 .plus-button:hover {
   background: #f5f5f5;
+}
+.drag-button {
+  display: flex;
+  align-items: center;
+  max-width: 59px;
+  height: 24px;
+  line-height: 24px;
+  font-size: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 10;
 }
 </style>
