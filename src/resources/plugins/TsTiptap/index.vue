@@ -3,9 +3,9 @@
     <div class="editor-menu">
       <ul>
         <li v-for="(item, index) in menuList" :key="index" :class="getMenuClass(item)">
-          <div class="menu-text">
-            <span class="heading-icon" :class="getHeadingIcon(item)" @click="handleClick(item, index)"></span>
-            <span :class="{'text-href': selectHeadingUuid === item.attrs?.uuid}">{{ item.text }}</span>
+          <div class="menu-text" @click="selectHeading(item)">
+            <span class="heading-icon" :class="getHeadingIcon(item)" @click.stop="handleClick(item, index)"></span>
+            <span :class="{'text-href': selectHeadingUuid === item.uuid}">{{ item.text }}</span>
           </div>
         </li>
       </ul>
@@ -77,15 +77,22 @@ export default {
         SlashCommand
       ],
       onUpdate({ editor }) {
+        console.log(editor);
         _this.getAllHeadings(editor);
-        console.log(editor.getJSON());
       },
-      onFocus({ editor}) {
+      onFocus({ editor, event }) {
         const { $from } = editor.state.selection;
         const node = $from.node($from.depth);
-        _this.highlightHeading(node, editor.isActive('heading'));
-        console.log(editor, editor.isActive('heading'), node);
+        _this.highlightHeading(node, editor);
       }
+    });
+   
+    // 监听 selectionUpdate 事件，当选择变化时，高亮当前选中的标题
+    this.editor.on('selectionUpdate', ({ editor, event }) => {
+      // 编辑器获得焦点。
+      const { $from } = editor.state.selection;
+      const node = $from.node($from.depth);
+      _this.highlightHeading(node, editor);
     });
   },
   beforeDestroy() {
@@ -98,19 +105,22 @@ export default {
     },
     getAllHeadings(editor) {
       const $headings = editor.$nodes('heading');
-      const headings = $headings.map((node) => {
-        const afterNode = node.after;
-        const afterLevel = afterNode.attributes.level;
-        console.log(node);
+      let headings = [];
+      $headings.forEach((node, index) => {
         let obj = {
           level: node.attributes.level,
           text: node.textContent,
-          attrs: node.attrs
+          uuid: node.attributes.uuid
         };
-        if (afterLevel && afterLevel > node.attributes.level) {
-          obj.showNextIcon = true;
+        for (let i = index + 1; i < $headings.length; i++) {
+          const afterNode = $headings[i];
+          const afterLevel = afterNode.attributes.level;
+          if (afterLevel && afterLevel > node.attributes.level) {
+            obj.showNextIcon = true;
+            break;
+          }
         }
-        return obj;
+        headings.push(obj);
       });
       this.menuList = headings;
     },
@@ -124,12 +134,40 @@ export default {
         }
       }
     },
-    highlightHeading(node, isHeading) {
-      console.log(node.attrs);
+    highlightHeading(node, editor) {
+      const isHeading = editor.isActive('heading');
+      const contentObj = editor.getJSON();
+      const uuid = node.attrs?.uuid || '';
       if (isHeading) {
-        this.selectHeadingUuid = node.attrs?.uuid || '';
+        this.selectHeadingUuid = uuid;
       } else {
-        //
+        const contentList = contentObj.content.reverse();
+        console.log(contentList);
+        const index = contentList.findIndex((item) => item.attrs.uuid === uuid);
+        for (let i = index + 1; i < contentList.length; i++) {
+          if (contentList[i].type === 'heading') {
+            this.selectHeadingUuid = contentList[i].attrs.uuid;
+            break;
+          }
+        }
+      }
+    },
+    selectHeading(item) {
+      const { doc } = this.editor.state;
+      let targetPos = null;
+
+      doc.descendants((node, pos) => {
+        // 假设节点属性里有 node.attrs.uuid
+        if (item.uuid === node.attrs.uuid) {
+          // 光标放在节点内容开头
+          targetPos = pos + 1;
+          return false; // 找到就停止遍历
+        }
+      });
+
+      if (targetPos !== null) {
+        this.editor.commands.focus();
+        this.editor.commands.setTextSelection(targetPos);
       }
     }
   },
