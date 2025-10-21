@@ -1,32 +1,44 @@
 <template>
-  <div
-    ref="editorWrapper"
-    class="editor-wrapper border-base"
-    @mousemove="handleMouseMove"
-    @mouseleave="hidePlus"
-  >
-    <editor-content :editor="editor" class="editor-content" />
-    <!-- 悬浮的 + 号按钮 -->
-    <span
-      v-if="showPlus"
-      class="plus-button tsfont-plus bg-op"
-      :style="{
-        top: plusPos.top + 'px',
-        left: plusPos.left + 'px'
-      }"
-      @click.stop="toggleMenu"
+  <div class="editor-main">
+    <div class="editor-menu">
+      <ul>
+        <li v-for="(item, index) in menuList" :key="index" :class="getMenuClass(item)">
+          <div class="menu-text" @click="selectHeading(item)">
+            <span class="heading-icon" :class="getHeadingIcon(item)" @click.stop="handleClick(item, index)"></span>
+            <span :class="{'text-href': selectHeadingUuid === item.uuid}">{{ item.text }}</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div
+      ref="editorWrapper"
+      class="editor-wrapper bg-op"
+      @mousemove="handleMouseMove"
+      @mouseleave="hidePlus"
     >
-    </span>
-    <MenuList
-      v-if="menuVisible"
-      :style="{
-        position: 'absolute',
-        top: plusPos.top + 'px',
-        left: plusPos.left + 'px'
-      }"
-      @click-menu="handleClickMenu"
-    >
-    </MenuList>
+      <editor-content :editor="editor" class="editor-content" />
+      <span
+        v-if="showPlus"
+        class="plus-button tsfont-plus bg-op"
+        :style="{
+          top: plusPos.top + 'px',
+          left: plusPos.left + 'px'
+        }"
+        @click.stop="toggleMenu"
+      >
+      </span>
+      <MenuList
+        v-if="menuVisible"
+        :style="{
+          position: 'absolute',
+          top: plusPos.top + 'px',
+          left: plusPos.left + 'px'
+        }"
+        @click-menu="handleClickMenu"
+      >
+      </MenuList>
+      <div @click="getData()">aaa</div>
+    </div>
   </div>
 </template>
 
@@ -51,15 +63,20 @@ export default {
       plusPos: { top: 0, left: 0 },
       showPlus: false,
       plusBlock: null,
-      menuVisible: true
+      menuVisible: true,
+      toolbarTop: 0, 
+      showToolbar: false,
+      currentBlockEl: null,
+      menuList: [],
+      selectHeadingUuid: ''
     };
   },
   mounted() {
+    let _this = this;
     this.editor = new Editor({
       extensions: [
         AutoUuid,
-        StarterKit.configure({
-        }),
+        StarterKit.configure({}),
         Placeholder.configure({
           placeholder: '可在此处输入内容' // 这是全局 placeholder
         }),
@@ -68,19 +85,64 @@ export default {
         TableRow,
         TableCell
       ],
-      onUpdate: ({ editor }) => {
-        console.log('文档更新：', editor.getJSON());
+      onUpdate({ editor }) {
+        console.log(editor);
+        _this.getAllHeadings(editor);
       },
-      onFocus: ({ editor }) => {
+      onFocus({ editor, event }) {
         const { $from } = editor.state.selection;
         const node = $from.node($from.depth);
+        _this.highlightHeading(node, editor);
       }
+    });
+   
+    // 监听 selectionUpdate 事件，当选择变化时，高亮当前选中的标题
+    this.editor.on('selectionUpdate', ({ editor, event }) => {
+      // 编辑器获得焦点。
+      const { $from } = editor.state.selection;
+      const node = $from.node($from.depth);
+      _this.highlightHeading(node, editor);
     });
   },
   beforeDestroy() {
     this.editor.destroy();
   },
   methods: {
+    getData() {
+      let json = this.editor.getJSON();
+      console.log(json);
+    },
+    getAllHeadings(editor) {
+      const $headings = editor.$nodes('heading');
+      let headings = [];
+      $headings.forEach((node, index) => {
+        let obj = {
+          level: node.attributes.level,
+          text: node.textContent,
+          uuid: node.attributes.uuid
+        };
+        for (let i = index + 1; i < $headings.length; i++) {
+          const afterNode = $headings[i];
+          const afterLevel = afterNode.attributes.level;
+          if (afterLevel && afterLevel > node.attributes.level) {
+            obj.showNextIcon = true;
+            break;
+          }
+        }
+        headings.push(obj);
+      });
+      this.menuList = headings;
+    },
+    handleClick(item, index) {
+      this.$set(item, 'showNextIcon', !item.showNextIcon);
+      for (let i = index + 1; i < this.menuList.length; i++) {
+        if (this.menuList[i].level > item.level) {
+          this.$set(this.menuList[i], 'isHide', !item.showNextIcon);
+        } else {
+          break;
+        }
+      }
+    },
     handleMouseMove: throttle(function(event) {
       const wrapper = this.$refs.editorWrapper;
       const editorEl = wrapper.querySelector('.ProseMirror');
@@ -223,17 +285,105 @@ export default {
             .run();
           break;
       }
+    },
+    highlightHeading(node, editor) {
+      const isHeading = editor.isActive('heading');
+      const contentObj = editor.getJSON();
+      const uuid = node.attrs?.uuid || '';
+      if (isHeading) {
+        this.selectHeadingUuid = uuid;
+      } else {
+        const contentList = contentObj.content.reverse();
+        console.log(contentList);
+        const index = contentList.findIndex((item) => item.attrs.uuid === uuid);
+        for (let i = index + 1; i < contentList.length; i++) {
+          if (contentList[i].type === 'heading') {
+            this.selectHeadingUuid = contentList[i].attrs.uuid;
+            break;
+          }
+        }
+      }
+    },
+    selectHeading(item) {
+      const { doc } = this.editor.state;
+      let targetPos = null;
+
+      doc.descendants((node, pos) => {
+        // 假设节点属性里有 node.attrs.uuid
+        if (item.uuid === node.attrs.uuid) {
+          // 光标放在节点内容开头
+          targetPos = pos + 1;
+          return false; // 找到就停止遍历
+        }
+      });
+
+      if (targetPos !== null) {
+        this.editor.commands.focus();
+        this.editor.commands.setTextSelection(targetPos);
+      }
+    }
+  },
+  computed: {
+    getMenuClass() {
+      return (item) => {
+        const className = 'heading-level-' + item.level;
+        if (item.hasOwnProperty('isHide') && item.isHide) {
+          return className + ' hide';
+        }
+        return className;
+      };
+    },
+    getHeadingIcon() {
+      return (item) => {
+        let classStr = '';
+        if (item.hasOwnProperty('showNextIcon')) {
+          classStr = classStr + (item.showNextIcon ? 'tsfont-drop-down' : 'tsfont-drop-right');
+        } else if (item.level == 1) {
+          classStr = classStr + 'tsfont-dot';
+        }
+        return classStr;
+      };
     }
   }
 };
 </script>
 
-<style>
+<style lang="less">
+.editor-main {
+  height: calc(100vh - 116px);
+  display: grid;
+  grid-template-columns: 200px auto;
+  border-radius: 10px;
+  .editor-menu {
+    padding: 20px;
+    overflow: auto;
+    .hide{
+      display: none;
+    }
+    .menu-text {
+      position: relative;
+    }
+    .heading-icon{
+      position: absolute;
+      left: -14px;
+    }
+    .heading-level-1 {
+      padding-left: 0px;
+    }
+    .heading-level-2 {
+      padding-left: 14px;
+    }
+    .heading-level-3 {
+      padding-left: 28px;
+    }
+  }
+}
 .editor-wrapper {
   position: relative;
   padding: 16px 16px 16px 32px;
   border-radius: 8px;
   min-height: 200px;
+   overflow: auto;
 }
 .tiptap p.is-editor-empty:first-child::before {
   color: #adb5bd;
