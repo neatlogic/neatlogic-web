@@ -17,7 +17,7 @@
       @mouseleave="hidePlus"
       @click="handleClickPlus"
     >
-      <div @click.stop>
+      <div class="editor-content-container" @click.stop>
         <editor-content :editor="editor" class="editor-content" />
       </div>
     
@@ -72,6 +72,7 @@ import { Editor, EditorContent } from '@tiptap/vue-2';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
+import { BulletList, ListItem, OrderedList } from '@tiptap/extension-list';
 
 export default {
   components: {
@@ -99,16 +100,30 @@ export default {
     let _this = this;
     this.editor = new Editor({
       extensions: [
+        BulletList,
+        OrderedList,
+        ListItem,
         AutoUuid,
         StarterKit.configure({
          
         }),
         Placeholder.configure({
           placeholder: '可在此处输入内容' // 这是全局 placeholder
+        }),
+        BulletList.configure({
+          itemTypeName: 'listItem',
+          HTMLAttributes: {
+            class: 'bullet-list'
+          }
+        }),
+        OrderedList.configure({
+          itemTypeName: 'listItem',
+          HTMLAttributes: {
+            class: 'ordered-list'
+          }
         })
       ],
       onUpdate({ editor }) {
-        console.log(editor);
         _this.getAllHeadings(editor);
       },
       onFocus({ editor, event }) {
@@ -325,6 +340,12 @@ export default {
             })
             .run();
           break;
+        case 'unorderedList':
+          this.editor.chain().focus().toggleBulletList().run();
+          break;
+        case 'orderedList':
+          this.editor.chain().focus().toggleOrderedList().run();
+          break;
       }
     },
     highlightHeading(node, editor) {
@@ -364,7 +385,7 @@ export default {
       }
     },
     handleClickPlus() {
-      this.editor.commands.focus('end');
+      this.editor.chain().focus('end').run();
     },
     replaceMenuContent(nodeName) {
       // 替换当前光标所在的节点内容
@@ -398,20 +419,25 @@ export default {
           break;
         }
       }
-      console.log('node', node);
+      console.log('node', node, nodeName);
       if (!node) return; // 没找到 block，直接返回
       const nodeTextContent = node.textContent;
       if (node && nodeTextContent) {
         const { schema } = view.state;
-
+        console.log('node', node);
         // 假设替换成 heading
         let attrs = {};
         if (nodeName == 'heading1') {
           attrs = { level: 1 };
+          // this.editor.commands.setNode('heading', { level: 1 });
         } else if (nodeName == 'heading2') {
           attrs = { level: 2 };
+          // this.editor.commands.setNode('heading', { level: 2 });
         } else if (nodeName == 'heading3') {
           attrs = { level: 3 };
+          // this.editor.commands.setNode('heading', { level: 3 });
+        } else if (nodeName == 'orderedList') {
+          // this.editor.commands.setNode('paragraph');
         }
         // 3. 创建新节点（保留内容）
         const newNode = schema.nodes.heading.create(attrs, schema.text(nodeTextContent));
@@ -484,6 +510,12 @@ export default {
   border-radius: 8px;
   min-height: 200px;
   overflow: auto;
+  .bullet-list,.bullet-list li{
+    list-style: initial;
+  }
+  .ordered-list,.ordered-list li {
+    list-style: decimal;
+  }
 }
 .tiptap p.is-editor-empty:first-child::before {
   color: #adb5bd;
