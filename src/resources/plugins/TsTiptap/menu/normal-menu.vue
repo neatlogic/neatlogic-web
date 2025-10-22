@@ -2,30 +2,45 @@
   <div>
     <div class="bg-op radius-sm border-base shadow">
       <ul class="insert-menu-box">
-        <li v-for="item in menuList" :key="item.uuid">
-          <div
-            v-for="child in item.children"
-            :key="child.uuid"
-            class="basic-menu-text bg-hover-grey"
-            @click.stop="handleClick(item.category, child.value)"
-          >
-            <Tooltip
-              v-if="child.tipConentList"
-              transfer
-              theme="dark"
-              placement="top"
+        <li v-for="(item,index) in menuList" :key="item.uuid" :class="index != (menuList.length - 1)? 'border-base-bottom mb-sm':''">
+          <div v-if="item.category == 'basic'">
+            <div
+              v-for="child in item.children"
+              :key="child.uuid"
+              class="basic-menu-text"
+              @click.stop="handleClick(item.category, child.value)"
             >
-              <span v-if="child.iconClass" :class="child.iconClass"></span>
-              <template v-else> {{ child.label }}</template>
-              <div slot="content">
-                <div v-for="(childTipItem,childTipIndex) in child.tipConentList" :key="`${child.uuid}_${childTipIndex}`">{{ childTipItem }}</div>
+              <div v-if="child.tipConentList">
+                <Tooltip
+                  transfer
+                  theme="dark"
+                  placement="top"
+                >
+                  <span v-if="child.iconClass" :class="child.iconClass"></span>
+                  <template v-else> {{ child.label }}</template>
+                  <div slot="content">
+                    <div v-for="(childTipItem,childTipIndex) in child.tipConentList" :key="`${child.uuid}_${childTipIndex}`">{{ childTipItem }}</div>
+                  </div>
+                </Tooltip>
               </div>
-            </Tooltip>
-            <template v-else>
-              <span v-if="child.iconClass" :class="child.iconClass"></span>
-              <template v-else> {{ child.label }}</template>
-            </template>
+             
+            </div>
           </div>
+          <template v-else>
+            <div
+              v-for="(child) in item.children"
+              :key="child.uuid"
+              class="menu-category"
+            >
+              <div :class="child.hoverComponent ? 'flex-between' : ''">
+                <div>
+                  <span v-if="child.iconClass" :class="child.iconClass" class="mr-sm menu-name"></span>
+                  <template> {{ child.label }}</template>
+                </div>
+                <span v-if="child.hoverComponent" class="tsfont-right"></span>
+              </div>
+            </div>
+          </template>
         </li>
       </ul>
     </div>
@@ -41,6 +56,13 @@ export default {
     return {
       menuList: [],
       cascaderDataList: [
+        {
+          category: 'basic',
+          tipConentList: ['正文 Ctrl + Alt + 0'],
+          iconClass: 'tsfont-title',
+          value: 'title',
+          label: '正文'
+        },
         {
           category: 'basic',
           tipConentList: ['一级标题', 'Markdown: # 空格'],
@@ -113,10 +135,43 @@ export default {
           label: '链接'
         },
         {
-          category: 'common',
+          category: 'textStyles',
+          iconClass: 'tsfont-horizontal-left',
+          value: 'indentationAlignment',
+          label: '缩进和对齐',
+          hoverComponent: 'indentationAlignment'
+        },
+        {
+          category: 'textStyles',
+          iconClass: 'tsfont-theme',
+          value: 'fontStyle',
+          label: '颜色',
+          hoverComponent: 'fontStyle'
+        },
+        {
+          category: 'operation',
           iconClass: 'tsfont-image',
-          value: 'uploadImage',
-          label: '图片'
+          value: 'cut',
+          label: '剪切'
+        },
+        {
+          category: 'operation',
+          iconClass: 'tsfont-copy',
+          value: 'copy',
+          label: '复制'
+        },
+        {
+          category: 'operation',
+          iconClass: 'tsfont-trash-o',
+          value: 'delete',
+          label: '删除'
+        },
+        {
+          category: 'other',
+          iconClass: 'tsfont-plus-square',
+          value: 'insertNewRow',
+          label: '在下方添加',
+          hoverComponent: 'insertNewRow'
         }
       ]
     };
@@ -187,9 +242,21 @@ export default {
     font-size: 15px;
     cursor: pointer;
     text-align: center;
+    &:hover {
+      background-color: #1f23291f;
+      border-radius: 4px;
+    }
   }
-  .common-menu-text {
+  .menu-category {
     cursor: pointer;
+    padding: 4px;
+    &:hover {
+      background-color: #1f23291f;
+      border-radius: 4px;
+    }
+    .menu-name {
+      font-size: 14px;
+    }
   }
 }
 </style>

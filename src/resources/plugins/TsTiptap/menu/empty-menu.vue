@@ -9,7 +9,7 @@
               <div
                 v-for="child in item.children"
                 :key="child.uuid"
-                class="basic-menu-text bg-hover-grey"
+                class="basic-menu-text"
                 @click.stop="handleClick(item.category, child.value)"
               >
                 <Tooltip
@@ -31,16 +31,43 @@
               </div>
             </div>
           </div>
-          <div v-else-if="item.category" class="item-list-box">
+          <div v-else-if="item.category" class="common-list-box">
             <div class="catagory-name text-grey">常用</div>
             <div
               v-for="child in item.children"
               :key="child.uuid"
               class="common-menu-text"
+              @mouseenter.stop="()=> {
+                if(child.hoverComponent) {
+                  child.isShowHoverComponent = true
+                }
+              }"
+              @mouseleave="()=> {
+                setTimeout(()=> {
+                  if(child.hoverComponent) {
+                    child.isShowHoverComponent = false
+                  }
+                }, 100)
+              }"
               @click.stop="handleClick(item.category, child.value)"
             >
-              <span :class="child.iconClass" class="mr-xs"></span>
-              <span>{{ child.label }}</span>
+              <div :class="child.hoverComponent ? 'flex-between' : ''">
+                <div>
+                  <span :class="child.iconClass" class="mr-xs"></span>
+                  <span>{{ child.label }}</span>
+                </div>
+                <span v-if="child.hoverComponent" class="tsfont-right"></span>
+              </div>
+              <div v-if="child.isShowHoverComponent" style="position:absolute;right:-226px;top:-28px;">
+                <TableGridSelector
+                  @select="(rowCol)=> {
+                    $emit('click-menu', {
+                      catagory: item.category,
+                      value: rowCol
+                    })
+                  }"
+                ></TableGridSelector>
+              </div>
             </div>
           </div>
         </li>
@@ -49,14 +76,14 @@
     <!-- 动态菜单组件 -->
     <component :is="getDisplayComponent" ref="componentMenu"></component>
   </div>
-  
 </template>
 <script>
-import MenuComponent from './component/index.js';
+import MenuComponent from '@/resources/plugins/TsTiptap/menu/component/click/index.js';
 export default {
   name: 'MenuList',
   components: {
-    ...MenuComponent
+    ...MenuComponent,
+    TableGridSelector: () => import('@/resources/plugins/TsTiptap/menu/component/hover/table-grid-selector.vue')
   },
   props: {},
   data() {
@@ -140,6 +167,13 @@ export default {
           iconClass: 'tsfont-image',
           value: 'uploadImage',
           label: '图片'
+        },
+        {
+          category: 'common',
+          iconClass: 'tsfont-chart-table',
+          value: 'table',
+          label: '表格',
+          hoverComponent: 'Table'
         }
       ]
     };
@@ -178,6 +212,7 @@ export default {
           const { category, ...rest } = cur;
           acc[cur.category].children.push({
             uuid: this.$utils.setUuid(),
+            isShowHoverComponent: false,
             ...rest
           });
           return acc;
@@ -191,8 +226,6 @@ export default {
   filter: {},
   computed: {
     getDisplayComponent() {
-      console.log(this.componentsType, MenuComponent[this.componentsType]);
-      
       return this.componentsType ? this.componentsType : 'div';
     }
   },
@@ -217,6 +250,9 @@ export default {
   .item-list-box {
     margin-bottom: 10px;
   }
+  .common-list-box {
+    margin-bottom: 10px;
+  }
   .basic-menu-text {
     display: inline-block;
     width: 24px;
@@ -227,9 +263,19 @@ export default {
     font-size: 15px;
     cursor: pointer;
     text-align: center;
+    &:hover {
+      background: #1f23291f;
+      border-radius: 4px;
+    }
   }
   .common-menu-text {
+    position: relative;
     cursor: pointer;
+    padding: 4px ;
+    &:hover {
+      background: #1f23291f;
+      border-radius: 4px;
+    }
   }
 }
 </style>

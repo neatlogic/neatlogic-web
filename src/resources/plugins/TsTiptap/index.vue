@@ -1,5 +1,5 @@
 <template>
-  <div class="editor-main">
+  <div class="editor-main" @click.stop="()=> hidePlus()">
     <div class="editor-menu">
       <ul>
         <li v-for="(item, index) in menuList" :key="index" :class="getMenuClass(item)">
@@ -23,24 +23,26 @@
     
       <div
         v-if="showPlus"
-        :class="isEmptyRow ? 'plus-button ' : `drag-button bg-op border-base shadow`"
+        class="bg-op border-base"
+        :class="isEmptyRow ? 'plus-button' : `drag-button shadow`"
         :style="{
           position: 'absolute',
           top: plusPos.top + 'px',
           left: plusPos.left + 'px'
         }"
-        @click.stop="toggleMenu"
+        @mouseenter="toggleMenu"
       >
-        <span :class="editClassName" class="text-primary"></span>
-        <span :class="isEmptyRow ? 'tsfont-plus bg-op' : `tsfont-drag`"></span>
+        <span v-if="!isEmptyRow" :class="iconClassName" class="text-primary"></span>
+        <span :class="isEmptyRow ? 'tsfont-plus' : `tsfont-drag`"></span>
       </div>
       <template v-if="menuVisible">
         <EmptyMenuList
           v-if="isEmptyRow"
+          class="menu-wrapper"
           :style="{
             position: 'absolute',
-            top: plusPos.top + 'px',
-            left: plusPos.left + 'px'
+            top: menuPos.top + 'px',
+            left: menuPos.left + 'px'
           }"
           @click-menu="handleClickMenu"
         >
@@ -49,8 +51,8 @@
           v-else
           :style="{
             position: 'absolute',
-            top: plusPos.top + 'px',
-            left: plusPos.left + 'px'
+            top: menuPos.top + 'px',
+            left: menuPos.left + 'px'
           }"
           @replace-menu-content="replaceMenuContent"
         ></NormalMenuList>
@@ -72,19 +74,22 @@ import { Editor, EditorContent } from '@tiptap/vue-2';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
+import { CustomBackspace } from '@/resources/plugins/TsTiptap/extensions/custom-backspace.js';
 import { BulletList, ListItem, OrderedList } from '@tiptap/extension-list';
 
 export default {
   components: {
     EditorContent,
     EmptyMenuList: () => import('./menu/empty-menu.vue'),
+    // MenuList: () => import('@/resources/plugins/TsTiptap/menu/menu-list.vue'),
     NormalMenuList: () => import('./menu/normal-menu.vue')
   },
   data() {
     return {
       isEmptyRow: true, // 是否是空行，用于判断显示鼠标经过时的加号
-      editClassName: '',
+      iconClassName: '',
       editor: null,
+      menuPos: { top: 0, left: 0 },
       plusPos: { top: 0, left: 0 },
       showPlus: false,
       plusBlock: null,
@@ -121,7 +126,8 @@ export default {
           HTMLAttributes: {
             class: 'ordered-list'
           }
-        })
+        }),
+         CustomBackspace,
       ],
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
@@ -184,17 +190,13 @@ export default {
       const wrapper = this.$refs.editorWrapper;
       const editorEl = wrapper?.querySelector('.ProseMirror');
       // 👉 如果鼠标在 + 按钮上，直接忽略，不隐藏
-      if (event.target.closest('.plus-button')) {
-        return;
-      }
-      if (event.target.closest('.drag-button')) {
+      if (event.target.closest('.plus-button') || event.target.closest('.drag-button') || event.target.closest('.menu-wrapper')) {
         return;
       }
       if (!editorEl?.contains(event.target)) {
-        this.hidePlus();
         return;
       }
-      this.editClassName = '';
+      this.iconClassName = '';
       // 找到当前块元素
       let block = event.target.closest(
         'p, h1, h2, h3, li, blockquote, pre, div'
@@ -214,7 +216,9 @@ export default {
         const elementName = block?.tagName?.toLowerCase();
         const isEmptyBlock = block?.textContent?.trim() === '';
         if (elementName == 'pre') {
-          this.editClassName = 'tsfont-code';
+          this.iconClassName = 'tsfont-code';
+        } else {
+          this.iconClassName = 'tsfont-font-size'; // 默认先用字体大小图标来替换先
         }
         if (isEmptyBlock) {
           this.isEmptyRow = true;
@@ -229,7 +233,7 @@ export default {
       const wrapperRect = wrapper.getBoundingClientRect();
 
       this.plusPos = {
-        top: (blockRect.top - wrapperRect.top + blockRect.height / 2 - 12).toFixed(0),
+        top: Number((blockRect.top - wrapperRect.top + blockRect.height / 2 - 12).toFixed(0)),
         left: 5
       };
       this.showPlus = true;
@@ -237,8 +241,11 @@ export default {
     hidePlus: throttle(function() {
       this.showPlus = false;
       this.plusBlock = null;
+      this.menuVisible = false;
     }, 400),
     toggleMenu() {
+      this.$set(this.menuPos, 'top', this.plusPos.top + 25);
+      this.$set(this.menuPos, 'left', this.plusPos.left);
       this.menuVisible = !this.menuVisible;
     },
     handleClickMenu(menuType) {
@@ -526,8 +533,6 @@ export default {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 1px solid #ddd;
-  background: white;
   line-height: 22px;
   text-align: center;
   font-size: 12px;
@@ -536,7 +541,7 @@ export default {
   z-index: 10;
 }
 .plus-button:hover {
-  background: #f5f5f5;
+  background: #1f23291f !important;
 }
 .drag-button {
   display: flex;
