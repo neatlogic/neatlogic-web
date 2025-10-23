@@ -44,6 +44,7 @@
     "@tiptap/core": "^3.7.2",
     "@tiptap/extension-document": "^3.7.2",
     "@tiptap/extension-list": "^3.7.2",
+    "@tiptap/extension-paragraph": "^3.7.2",
     "@tiptap/extension-placeholder": "^3.7.2",
     "@tiptap/extension-text": "^3.7.2",
     "@tiptap/vue-2": "^3.7.2",

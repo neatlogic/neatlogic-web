@@ -106,8 +106,8 @@ export default {
     let _this = this;
     this.editor = new Editor({
       extensions: [
-        Paragraph,
         Document,
+        Paragraph,
         Text,
         BulletList,
         OrderedList,
