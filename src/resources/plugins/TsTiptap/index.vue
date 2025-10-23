@@ -71,10 +71,11 @@
 <script>
 import { throttle } from 'lodash';
 import { Editor, EditorContent } from '@tiptap/vue-2';
-import StarterKit from '@tiptap/starter-kit';
+import Document from '@tiptap/extension-document';
+import Paragraph from '@tiptap/extension-paragraph';
+import Text from '@tiptap/extension-text';
 import Placeholder from '@tiptap/extension-placeholder';
 import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
-import { CustomBackspace } from '@/resources/plugins/TsTiptap/extensions/custom-backspace.js';
 import { BulletList, ListItem, OrderedList } from '@tiptap/extension-list';
 
 export default {
@@ -105,13 +106,13 @@ export default {
     let _this = this;
     this.editor = new Editor({
       extensions: [
+        Paragraph,
+        Document,
+        Text,
         BulletList,
         OrderedList,
         ListItem,
         AutoUuid,
-        StarterKit.configure({
-         
-        }),
         Placeholder.configure({
           placeholder: '可在此处输入内容' // 这是全局 placeholder
         }),
@@ -126,8 +127,7 @@ export default {
           HTMLAttributes: {
             class: 'ordered-list'
           }
-        }),
-        CustomBackspace
+        })
       ],
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
