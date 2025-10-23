@@ -127,7 +127,7 @@ export default {
             class: 'ordered-list'
           }
         }),
-         CustomBackspace,
+        CustomBackspace
       ],
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
@@ -513,7 +513,7 @@ export default {
 }
 .editor-wrapper {
   position: relative;
-  padding: 16px 42px;
+  padding: 16px 54px;
   border-radius: 8px;
   min-height: 200px;
   overflow: auto;
