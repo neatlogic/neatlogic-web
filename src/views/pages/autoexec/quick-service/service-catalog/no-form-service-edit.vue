@@ -562,6 +562,10 @@ export default {
             if (this.runtimeParamList && !this.$utils.isEmpty(this.runtimeParamList)) {
               this.initConfig(); // 设置作业参数值
             }
+            //服务目录前置条件
+            if (this.defaultData['config'].hasOwnProperty('preCondition')) {
+              this.$set(this.executeConfig, 'preCondition', this.defaultData['config'].preCondition);
+            }
           }
         });
     },
