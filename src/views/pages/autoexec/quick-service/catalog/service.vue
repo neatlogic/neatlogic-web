@@ -808,7 +808,7 @@ export default {
         disabled: false
       },
       preCondition: null,
-      newPreCondition: null
+      newPreCondition: null // 服务目录从新设置前置条件
     };
   },
   beforeCreate() {},
@@ -990,7 +990,7 @@ export default {
                 this.$set(this.executeNode, 'mappingMode', executeNodeConfig.mappingMode || 'constant');
                 this.$set(this.executeNode, 'value', executeNodeConfig.value);
               }
-              if (!this.$utils.isEmpty(this.preCondition)) {
+              if (config.preCondition) {
                 this.newPreCondition = this.$utils.deepClone(config.preCondition);
               }
             }
@@ -1208,7 +1208,7 @@ export default {
         // 组合工具，执行器组标签如果是作业参数，不需要传递给后端
         delete params.config.runnerGroupTag;
       }
-      if (!this.$utils.isEmpty(this.newPreCondition)) {
+      if (this.newPreCondition) {
         params.config.preCondition = this.newPreCondition;
       }
       if (params && params.config) {
@@ -1343,7 +1343,7 @@ export default {
     },
     changePreCondition(val) {
       this.preCondition = val;
-      this.newPreCondition = this.$utils.deepClone(val);
+      this.newPreCondition = this.$utils.deepClone(val) || {};
     }
   },
   filter: {},
