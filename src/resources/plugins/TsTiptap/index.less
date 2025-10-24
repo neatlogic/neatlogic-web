@@ -12,4 +12,42 @@
       padding: 0;
     }
   }
+  ul[data-type='taskList'] {
+    li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+      > label {
+        display: flex;
+        flex-direction: column;
+        margin-right: 6px;
+        input[type='checkbox'] {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+}
+.editor-wrapper {
+  position: relative;
+  padding: 16px 54px;
+  border-radius: 8px;
+  min-height: 200px;
+  overflow: auto;
+  .bullet-list,
+  .bullet-list li {
+    list-style: initial;
+  }
+  .ordered-list,
+  .ordered-list li {
+    list-style: decimal;
+  }
+  .tiptap p.is-editor-empty:first-child::before {
+    float: left;
+    height: 0;
+    pointer-events: none;
+    content: attr(data-placeholder);
+    color: #adb5bd;
+  }
 }

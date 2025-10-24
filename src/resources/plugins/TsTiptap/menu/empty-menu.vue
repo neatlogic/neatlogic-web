@@ -42,13 +42,7 @@
                   child.isShowHoverComponent = true
                 }
               }"
-              @mouseleave="()=> {
-                setTimeout(()=> {
-                  if(child.hoverComponent) {
-                    child.isShowHoverComponent = false
-                  }
-                }, 100)
-              }"
+              @mouseleave="handleMouseLeave(child)"
               @click.stop="handleClick(item.category, child.value)"
             >
               <div :class="child.hoverComponent ? 'flex-between' : ''">
@@ -191,6 +185,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleMouseLeave(child) {
+      setTimeout(() => {
+        if (child.hoverComponent) {
+          child.isShowHoverComponent = false;
+        }
+      }, 200);
+    },
     handleClick(category, value) {
       if (category === 'basic') {
         this.componentsType = '';

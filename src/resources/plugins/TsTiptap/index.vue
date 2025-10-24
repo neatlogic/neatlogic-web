@@ -17,47 +17,21 @@
       @mouseleave="hidePlus"
       @click="handleClickPlus"
     >
+      <ToolBar class="mb-nm"></ToolBar>
       <div class="editor-content-container" @click.stop>
-        <editor-content :editor="editor" class="editor-content" />
+        <EditorContent :editor="editor" class="editor-content"></EditorContent>
       </div>
-    
-      <div
-        v-if="showPlus"
-        class="bg-op border-base"
-        :class="isEmptyRow ? 'plus-button' : `drag-button shadow`"
-        :style="{
-          position: 'absolute',
-          top: plusPos.top + 'px',
-          left: plusPos.left + 'px'
-        }"
-        @mouseenter="toggleMenu"
-      >
-        <span v-if="!isEmptyRow" :class="iconClassName" class="text-primary"></span>
-        <span :class="isEmptyRow ? 'tsfont-plus' : `tsfont-drag`"></span>
-      </div>
-      <template v-if="menuVisible">
-        <EmptyMenuList
-          v-if="isEmptyRow"
-          class="menu-wrapper"
-          :style="{
-            position: 'absolute',
-            top: menuPos.top + 'px',
-            left: menuPos.left + 'px'
-          }"
-          @click-menu="handleClickMenu"
-        >
-        </EmptyMenuList>
-        <NormalMenuList
-          v-else
-          :style="{
-            position: 'absolute',
-            top: menuPos.top + 'px',
-            left: menuPos.left + 'px'
-          }"
-          @replace-menu-content="replaceMenuContent"
-        ></NormalMenuList>
-      </template>
-     
+      <TipTapMenu
+        :isEmptyRow="isEmptyRow"
+        :showPlus="showPlus"
+        :menuVisible="menuVisible"
+        :iconClassName="iconClassName"
+        :plusPos="plusPos"
+        :menuPos="menuPos"
+        @click-menu="handleClickMenu"
+        @replace-menu-content="replaceMenuContent"
+        @PlusMouseenter="handlePlusMouseenter"
+      ></TipTapMenu>
     </div>
     <Button
       style="position:absolute;right:20px;top:10px;"
@@ -70,19 +44,21 @@
 
 <script>
 import { throttle } from 'lodash';
-import Document from '@tiptap/extension-document';
-import Paragraph from '@tiptap/extension-paragraph';
-import Text from '@tiptap/extension-text';
-import { Placeholder } from '@tiptap/extensions';
-import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
-import { BulletList, ListItem, OrderedList } from '@tiptap/extension-list';
 import { Editor, EditorContent } from '@tiptap/vue-2';
+import { Placeholder } from '@tiptap/extensions';
+import StarterKit from '@tiptap/starter-kit';
+import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
+
 export default {
   components: {
     EditorContent,
-    EmptyMenuList: () => import('./menu/empty-menu.vue'),
-    // MenuList: () => import('@/resources/plugins/TsTiptap/menu/menu-list.vue'),
-    NormalMenuList: () => import('./menu/normal-menu.vue')
+    TipTapMenu: () => import('@/resources/plugins/TsTiptap/menu/index.vue'),
+    ToolBar: () => import('@/resources/plugins/TsTiptap/toolbar/index.vue')
+  },
+  provide() {
+    return {
+      tiptapEditor: this.editor
+    };
   },
   data() {
     return {
@@ -94,9 +70,6 @@ export default {
       showPlus: false,
       plusBlock: null,
       menuVisible: false,
-      toolbarTop: 0, 
-      showToolbar: false,
-      currentBlockEl: null,
       menuList: [],
       selectHeadingUuid: ''
     };
@@ -105,27 +78,23 @@ export default {
     let _this = this;
     this.editor = new Editor({
       extensions: [
-        Document,
-        Paragraph,
-        Text,
-        BulletList,
-        OrderedList,
-        ListItem,
+        StarterKit.configure({
+          bulletList: {
+            itemTypeName: 'listItem',
+            HTMLAttributes: {
+              class: 'bullet-list'
+            }
+          },
+          orderedList: {
+            itemTypeName: 'listItem',
+            HTMLAttributes: {
+              class: 'ordered-list'
+            }
+          }
+        }),
         AutoUuid,
         Placeholder.configure({
           placeholder: '可在此处输入内容' // 这是全局 placeholder
-        }),
-        BulletList.configure({
-          itemTypeName: 'listItem',
-          HTMLAttributes: {
-            class: 'bullet-list'
-          }
-        }),
-        OrderedList.configure({
-          itemTypeName: 'listItem',
-          HTMLAttributes: {
-            class: 'ordered-list'
-          }
         })
       ],
       onUpdate({ editor }) {
@@ -242,7 +211,7 @@ export default {
       this.plusBlock = null;
       this.menuVisible = false;
     }, 400),
-    toggleMenu() {
+    handlePlusMouseenter() {
       this.$set(this.menuPos, 'top', this.plusPos.top + 25);
       this.$set(this.menuPos, 'left', this.plusPos.left);
       this.menuVisible = !this.menuVisible;
@@ -507,51 +476,5 @@ export default {
       padding-left: 28px;
     }
   }
-}
-.editor-wrapper {
-  position: relative;
-  padding: 16px 54px;
-  border-radius: 8px;
-  min-height: 200px;
-  overflow: auto;
-  .bullet-list,.bullet-list li{
-    list-style: initial;
-  }
-  .ordered-list,.ordered-list li {
-    list-style: decimal;
-  }
-  .tiptap p.is-editor-empty:first-child::before {
-    float: left;
-    height: 0;
-    pointer-events: none;
-    content: attr(data-placeholder);
-    color: #adb5bd;
-  }
-}
-.plus-button {
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  line-height: 22px;
-  text-align: center;
-  font-size: 12px;
-  cursor: pointer;
-  user-select: none;
-  z-index: 10;
-}
-.plus-button:hover {
-  background: #1f23291f !important;
-}
-.drag-button {
-  display: flex;
-  align-items: center;
-  max-width: 59px;
-  height: 24px;
-  line-height: 24px;
-  font-size: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 10;
 }
 </style>
