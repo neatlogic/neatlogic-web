@@ -204,6 +204,18 @@ export default {
       disabledGroupUuidList: [],
       searchList: [
         {
+          name: 'typeIdList',
+          type: 'tree',
+          label: this.$t('term.cmdb.citype'),
+          search: true,
+          transfer: true,
+          multiple: true,
+          textName: 'label',
+          valueName: 'id',
+          url: '/api/rest/resourcecenter/resourcetype/tree',
+          validateList: [{name: 'required', message: ''}]
+        },
+        {
           name: 'appSystemIdList',
           type: 'select',
           label: this.$t('page.apply'),
