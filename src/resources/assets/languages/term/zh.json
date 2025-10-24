@@ -2899,7 +2899,9 @@
     "subscribeaudit": "订阅审计",
     "clickcopyattr": "点击复制属性",
     "alertinterval": "通知间隔",
-    "cc": "抄送"
+    "cc": "抄送",
+    "async": "异步",
+    "bantime": "屏蔽时间"
   },
   "informant": {
     "last5dump": "最近5次快照",
