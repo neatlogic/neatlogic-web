@@ -70,14 +70,13 @@
 
 <script>
 import { throttle } from 'lodash';
-import { Editor, EditorContent } from '@tiptap/vue-2';
 import Document from '@tiptap/extension-document';
 import Paragraph from '@tiptap/extension-paragraph';
 import Text from '@tiptap/extension-text';
-import Placeholder from '@tiptap/extension-placeholder';
+import { Placeholder } from '@tiptap/extensions';
 import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
 import { BulletList, ListItem, OrderedList } from '@tiptap/extension-list';
-
+import { Editor, EditorContent } from '@tiptap/vue-2';
 export default {
   components: {
     EditorContent,
@@ -363,7 +362,6 @@ export default {
         this.selectHeadingUuid = uuid;
       } else {
         const contentList = contentObj.content.reverse();
-        console.log(contentList);
         const index = contentList.findIndex((item) => item.attrs.uuid === uuid);
         for (let i = index + 1; i < contentList.length; i++) {
           if (contentList[i].type === 'heading') {
@@ -431,7 +429,6 @@ export default {
       const nodeTextContent = node.textContent;
       if (node && nodeTextContent) {
         const { schema } = view.state;
-        console.log('node', node);
         // 假设替换成 heading
         let attrs = {};
         if (nodeName == 'heading1') {
@@ -523,10 +520,13 @@ export default {
   .ordered-list,.ordered-list li {
     list-style: decimal;
   }
-}
-.tiptap p.is-editor-empty:first-child::before {
-  color: #adb5bd;
-  content: attr(data-placeholder);
+  .tiptap p.is-editor-empty:first-child::before {
+    float: left;
+    height: 0;
+    pointer-events: none;
+    content: attr(data-placeholder);
+    color: #adb5bd;
+  }
 }
 .plus-button {
   position: absolute;
