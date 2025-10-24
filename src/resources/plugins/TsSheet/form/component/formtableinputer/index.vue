@@ -179,7 +179,7 @@ export default {
   },
   provide() {
     return {
-      formDataForWatch: Object.freeze(this.formDataForWatch),
+      formDataForWatch: Object.freeze(this.$utils.deepClone(this.formDataForWatch)),
       extraFormItemList: this.frozenExtraFormItemList,
       extendConfigList: this.frozenExtendConfigList,
       formItemList: this.frozenFormItemList,
@@ -188,8 +188,8 @@ export default {
       isClearEchoFailedDefaultValue: true,
       isCustomValue: true,
       showStatusIcon: false,
-      readonly: Object.freeze(this.readonly),
-      disabled: Object.freeze(this.disabled),
+      readonly: this.readonly,
+      disabled: this.disabled,
       mode: 'read'
     };
   },
@@ -685,16 +685,16 @@ export default {
       };
     },
     frozenFormItemList() {
-      return Object.freeze(this.formItemList);
+      return Object.freeze([...this.formItemList || []]); // 解构不影响原数据
     },
     frozenExtraFormItemList() {
-      return Object.freeze(this.extraList);
+      return Object.freeze([...this.extraList || []]);
     },
     frozenExtendConfigList() {
-      return Object.freeze(this.extendConfigList);
+      return Object.freeze([...this.extendConfigList || []]);
     },
     frozenExternalData() {
-      return Object.freeze(this.externalData);
+      return Object.freeze({ ...this.externalData || {} });
     },
     isShowDeleteBtn() {
       if (this.isSelectAllCurrentPage) {
