@@ -130,9 +130,11 @@
       :label="$t('term.autoexec.precondition')"
     >
       <PreconditionDetail
+        v-if="!$utils.isEmpty(executeConfig.preCondition)"
         :defaultValue="executeConfig.preCondition"
         :canEdit="false"
       ></PreconditionDetail>
+      <div v-else>-</div>
     </TsFormItem>
     <TsFormItem :label="$t('term.autoexec.executetarget')">
       <TsFormSelect
@@ -415,7 +417,7 @@ export default {
         let { executeNodeConfig = {}, runnerGroup = {}, runnerGroupTag = {} } = config || {};
         let { value = '', mappingMode } = executeNodeConfig || {};
         if (mappingMode == 'constant') {
-          if (!this.$utils.isEmpty(value)) {
+          if (!this.$utils.isEmpty(value) && this.executeConfig.whenToSpecify === 'runtime') {
             this.filterSearchValue = value || {}; // 执行目标值回显
             this.$set(this.executeConfig, 'executeNodeConfig', this.filterSearchValue); // 执行目标回显
           }
@@ -474,6 +476,10 @@ export default {
             }
             item.isHidden = isHidden;
           });
+          //服务目录前置条件
+          if (this.serviceData['config'].hasOwnProperty('preCondition')) {
+            this.$set(this.executeConfig, 'preCondition', this.serviceData['config'].preCondition);
+          }
         }
       }
       this.$nextTick(() => {
