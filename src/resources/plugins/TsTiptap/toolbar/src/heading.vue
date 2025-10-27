@@ -1,17 +1,17 @@
 <template>
-  <div>
-    <Dropdown>
+  <div @click.stop>
+    <Dropdown @on-click="handleClickMenu">
       <span class="cursor-pointer">
         H
         <Icon type="ios-arrow-down"></Icon>
       </span>
       <DropdownMenu slot="list">
-        <DropdownItem>H1 一级标题</DropdownItem>
-        <DropdownItem>H2 二级标题</DropdownItem>
-        <DropdownItem>H3 三级标题</DropdownItem>
-        <DropdownItem>H4 四级标题</DropdownItem>
-        <DropdownItem>H5 五级标题</DropdownItem>
-        <DropdownItem>H6 六级标题</DropdownItem>
+        <DropdownItem name="heading1">H1 一级标题</DropdownItem>
+        <DropdownItem name="heading2">H2 二级标题</DropdownItem>
+        <DropdownItem name="heading3">H3 三级标题</DropdownItem>
+        <DropdownItem name="heading4">H4 四级标题</DropdownItem>
+        <DropdownItem name="heading5">H5 五级标题</DropdownItem>
+        <DropdownItem name="heading6">H6 六级标题</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   </div>
@@ -24,7 +24,6 @@ export default {
   props: {},
   data() {
     return {
-      initData: null
     };
   },
   beforeCreate() {},
@@ -37,7 +36,11 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {},
+  methods: {
+    handleClickMenu(menuName) {
+      this.emitValue({menuName: menuName});
+    }
+  },
   filter: {},
   computed: {},
   watch: {}

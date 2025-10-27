@@ -1,7 +1,12 @@
 <template>
   <div>
-    <Tooltip content="两端对齐" placement="top" :transfer="true">
-      <span class="tsfont-horizontal-justify cursor-pointer" @click.stop="emitValue({menuName: 'alignJustify'})"></span>
+    <Tooltip content="引用" placement="top" :transfer="true">
+      <img
+        src="./quote.svg"
+        style="width: 16px;height: 16px;cursor:pointer;"
+        alt="引用"
+        @click.stop="emitValue({menuName: 'blockQuote'})"
+      />
     </Tooltip>
   </div>
 </template>
@@ -13,8 +18,7 @@ export default {
   mixins: [toolBarMixin],
   props: {},
   data() {
-    return {
-    };
+    return {};
   },
   beforeCreate() {},
   created() {},

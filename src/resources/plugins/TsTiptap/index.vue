@@ -17,7 +17,7 @@
       @mouseleave="hidePlus"
       @click="handleClickPlus"
     >
-      <ToolBar class="mb-nm"></ToolBar>
+      <ToolBar class="mb-nm" @insert-menu-content="(menuName)=> handleToolBarClickMenu(menuName, 'toolBarMenu')"></ToolBar>
       <div class="editor-content-container" @click.stop>
         <EditorContent :editor="editor" class="editor-content"></EditorContent>
       </div>
@@ -28,7 +28,7 @@
         :iconClassName="iconClassName"
         :plusPos="plusPos"
         :menuPos="menuPos"
-        @click-menu="handleClickMenu"
+        @insert-menu-content="handleClickMenu"
         @replace-menu-content="replaceMenuContent"
         @PlusMouseenter="handlePlusMouseenter"
       ></TipTapMenu>
@@ -46,8 +46,12 @@
 import { throttle } from 'lodash';
 import { Editor, EditorContent } from '@tiptap/vue-2';
 import { Placeholder } from '@tiptap/extensions';
+import TextAlign from '@tiptap/extension-text-align';
+import Image from '@tiptap/extension-image';
 import StarterKit from '@tiptap/starter-kit';
+import { TableKit } from '@tiptap/extension-table';
 import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
+import BaseMixin from './base-mixin.js';
 
 export default {
   components: {
@@ -60,6 +64,7 @@ export default {
       tiptapEditor: this.editor
     };
   },
+  mixins: [BaseMixin],
   data() {
     return {
       isEmptyRow: true, // 是否是空行，用于判断显示鼠标经过时的加号
@@ -92,10 +97,15 @@ export default {
             }
           }
         }),
-        AutoUuid,
         Placeholder.configure({
           placeholder: '可在此处输入内容' // 这是全局 placeholder
-        })
+        }),
+        TextAlign.configure({
+          types: ['heading', 'paragraph']
+        }),
+        TableKit,
+        Image,
+        AutoUuid
       ],
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
@@ -216,10 +226,9 @@ export default {
       this.$set(this.menuPos, 'left', this.plusPos.left);
       this.menuVisible = !this.menuVisible;
     },
-    handleClickMenu(menuType) {
+    handleClickMenu(menuData) {
       this.menuVisible = false;
       if (!this.editor) return;
-
       const view = this?.editor?.view;
       const coords = this.plusBlock?.getBoundingClientRect();
       const pos = coords
@@ -229,10 +238,12 @@ export default {
       const { $from } = this.editor.state.selection;
       // 如果外部传入 pos，就用 pos，否则用当前光标所在 block 的结束位置
       let insertPos = pos?.pos ? pos.pos + 1 : $from.end() + 1;
-      console.log('menuType', menuType);
       if (this.$utils.isEmpty($from.doc.textContent)) {
         insertPos = insertPos - 1;
       }
+      const menuType = menuData?.category;
+      const { value: {rows, cols}} = menuData;
+      console.log('menuData', menuData, menuType, rows, cols);
       switch (menuType) {
         case 'heading1':
           this.editor
@@ -320,6 +331,9 @@ export default {
           break;
         case 'orderedList':
           this.editor.chain().focus().toggleOrderedList().run();
+          break;
+        case 'table':
+          this.editor.chain().focus().insertTable({ rows: rows, cols: cols, withHeaderRow: true }).run();
           break;
       }
     },

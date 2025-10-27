@@ -1,18 +1,24 @@
 <template>
   <div>
-    <Tooltip content="上传附件" placement="top" :transfer="true">
-      <span class="tsfont-batch-upload cursor-pointer"></span>
+    <Tooltip content="分割线" placement="top" :transfer="true">
+      <img
+        src="./divide.svg"
+        style="width: 16px;height: 16px;cursor:pointer;"
+        alt="分割线"
+        @click.stop="emitValue({menuName: 'divide'})"
+      />
     </Tooltip>
   </div>
 </template>
 <script>
+import toolBarMixin from '@/resources/plugins/TsTiptap/toolbar/src/toolbar-mixin.js';
 export default {
   name: '',
   components: {},
+  mixins: [toolBarMixin],
   props: {},
   data() {
-    return {
-    };
+    return {};
   },
   beforeCreate() {},
   created() {},

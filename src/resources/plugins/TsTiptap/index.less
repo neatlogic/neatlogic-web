@@ -1,16 +1,27 @@
 .ProseMirror {
   pre {
-    background: #000;
+    background: rgba(#616161, 0.1);
     border-radius: 0.5rem;
-    color: #fff;
+    color: #000;
     margin: 1.5rem 0;
     padding: 0.75rem 1rem;
     code {
       background: none;
       color: inherit;
-      font-size: 0.8rem;
+      font-size: 13px;
       padding: 0;
     }
+  }
+  hr {
+    border: none;
+    border-top: 1px solid #3d251414;
+    cursor: pointer;
+    margin: 16px 0;
+  }
+  blockquote {
+    border-left: 3px solid #3d25141f;
+    margin: 1.5rem 0;
+    padding-left: 1rem;
   }
   ul[data-type='taskList'] {
     li {
@@ -27,6 +38,39 @@
         }
       }
     }
+  }
+  table {
+    border-collapse: collapse;
+    margin: 0;
+    overflow: hidden;
+    table-layout: fixed;
+    width: 100%;
+
+    td,
+    th {
+      border: 1px solid #3d25141f;
+      box-sizing: border-box;
+      min-width: 1em;
+      padding: 6px 8px;
+      position: relative;
+      vertical-align: top;
+
+      > * {
+        margin-bottom: 0;
+      }
+    }
+
+    th {
+      background-color: #3d25140d;
+      font-weight: bold;
+      text-align: left;
+    }
+  }
+  em {
+    font-style: italic;
+  }
+  s {
+    text-decoration: line-through;
   }
 }
 .editor-wrapper {

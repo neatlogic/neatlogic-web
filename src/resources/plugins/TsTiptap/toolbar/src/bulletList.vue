@@ -1,23 +1,23 @@
 <template>
   <div>
     <Tooltip content="无序列表" placement="top" :transfer="true">
-      <span class="tsfont-list cursor-pointer"></span>
+      <span class="tsfont-list cursor-pointer" @click.stop="emitValue({menuName: 'bulletList'})"></span>
     </Tooltip>
   </div>
 </template>
 <script>
+import toolBarMixin from '@/resources/plugins/TsTiptap/toolbar/src/toolbar-mixin.js';
 export default {
   name: '',
-  components: {
-  },
+  components: {},
+  mixins: [toolBarMixin],
   props: {},
   data() {
     return {
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -26,8 +26,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {}

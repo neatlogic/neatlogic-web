@@ -2,7 +2,7 @@
   <div class="table-grid-selector" @mouseleave="resetHover">
     <div class="header">
       <span>插入支持富文本的表格</span>
-      <span class="count">{{ hoverCol }} × {{ hoverRow }}</span>
+      <span class="count">{{ hoverRow }} × {{ hoverCol }}</span>
     </div>
 
     <div class="grid">

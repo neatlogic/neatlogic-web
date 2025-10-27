@@ -37,12 +37,7 @@
               v-for="child in item.children"
               :key="child.uuid"
               class="common-menu-text"
-              @mouseenter.stop="()=> {
-                if(child.hoverComponent) {
-                  child.isShowHoverComponent = true
-                }
-              }"
-              @mouseleave="handleMouseLeave(child)"
+              @mouseenter.stop="setActivePath(`${item.category}/${child.value}`)"
               @click.stop="handleClick(item.category, child.value)"
             >
               <div :class="child.hoverComponent ? 'flex-between' : ''">
@@ -52,11 +47,15 @@
                 </div>
                 <span v-if="child.hoverComponent" class="tsfont-right"></span>
               </div>
-              <div v-if="child.isShowHoverComponent" style="position:absolute;right:-226px;top:-28px;">
+              <div
+                v-if="activePath === `${item.category}/${child.value}` && child.hoverComponent"
+                style="position:absolute;right:-226px;top:-28px;"
+                @mouseenter.stop="setActivePath(`${item.category}/${child.value}`)"
+              >
                 <TableGridSelector
                   @select="(rowCol)=> {
                     $emit('click-menu', {
-                      catagory: item.category,
+                      category: child.value,
                       value: rowCol
                     })
                   }"
@@ -82,6 +81,7 @@ export default {
   props: {},
   data() {
     return {
+      activePath: '', // 当前 hover 路径
       componentsType: '',
       menuList: [],
       cascaderDataList: [
@@ -185,17 +185,21 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    handleMouseLeave(child) {
+    setActivePath(path) {
+      this.activePath = path;
+    },
+    clearActivePath(path) {
+    // 延迟一点点防止光标在间隙间跳动
       setTimeout(() => {
-        if (child.hoverComponent) {
-          child.isShowHoverComponent = false;
+        if (this.activePath === path) {
+          this.activePath = '';
         }
-      }, 200);
+      }, 120);
     },
     handleClick(category, value) {
       if (category === 'basic') {
         this.componentsType = '';
-        this.$emit('click-menu', value);
+        this.$emit('click-menu', {category: value});
       } else {
         this.componentsType = value;
         if (value === 'uploadImage') {
