@@ -379,6 +379,14 @@ export default {
       }
       return false;
     },
+    hideFormItem() {
+      this.$set(this.formItem.config, 'isHide', true);
+      this.currentItemReaction.currentItemHide = true;
+    },
+    showFormItem() {
+      this.$set(this.formItem.config, 'isHide', false);
+      this.currentItemReaction.currentItemHide = false;
+    },
     //验证配置是否完整
     validConfig() {
       if (this.$refs['formItem']) {
