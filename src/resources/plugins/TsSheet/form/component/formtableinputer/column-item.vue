@@ -66,6 +66,7 @@
           :rowUuid="rowUuid"
           :extendConfigList="Object.freeze(extendConfigList)"
           :formDataForWatch="formDataForWatch"
+          :extraFormItemList="extraFormItemList"
           @setValue="setValue"
           @select="selectFormItem"
           @dropHideComponent="dropHideComponent"
