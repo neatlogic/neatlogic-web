@@ -284,10 +284,13 @@
         <span>{{ $t('term.autoexec.executetarget') }}</span>
         <span class="tsfont-down cursor" :class="unfoldAndFold.executeTarget ? 'tsfont-down' : 'tsfont-up'" @click.stop="handleUnfoldAndFold('executeTarget')"></span>
       </div>
-      <TsFormItem v-if="!$utils.isEmpty(preCondition)" :label="$t('term.autoexec.precondition')">
+      <TsFormItem :label="$t('term.autoexec.precondition')">
         <PreconditionDetail
           :defaultValue="preCondition"
-          :canEdit="false"
+          :canEdit="true"
+          @changeValue="(val)=>{
+            changePreCondition(val);
+          }"
         ></PreconditionDetail>
       </TsFormItem>
       <TsFormItem v-show="unfoldAndFold.executeTarget" :label="$t('term.autoexec.executetarget')" :required="hasRequired(executeNode.mappingMode)">
@@ -804,7 +807,8 @@ export default {
         desc: this.$t('term.autoexec.paralldesc'),
         disabled: false
       },
-      preCondition: null
+      preCondition: null,
+      newPreCondition: null // 服务目录从新设置前置条件
     };
   },
   beforeCreate() {},
@@ -914,6 +918,7 @@ export default {
       this.parallelPolicyForm.disabled = false;
       this.parallelCount = {mappingMode: 'constant', value: null}; //并发数量
       this.preCondition = null;
+      this.newPreCondition = null;
     },
     async initData() {
       this.defaultIniData();
@@ -965,10 +970,10 @@ export default {
             if (config) {
               for (let key in config) {
                 if (!this.$utils.isEmpty(config[key])) {
-                  this[key] = config[key]; // 分批数量，执行目标，执行器组标签，执行器组
+                  this[key] = config[key]; // 分批数量，执行目标，执行器组标签，执行器组 ，前置条件
                 }
               }
-              if (config && !this.$utils.isEmpty(runtimeParamList)) {
+              if (!this.$utils.isEmpty(runtimeParamList)) {
                 runtimeParamList.forEach(item => {
                   if (item.key) {
                     this.$set(this.jobParamValue, [item.key], item.value);
@@ -984,6 +989,9 @@ export default {
               } else {
                 this.$set(this.executeNode, 'mappingMode', executeNodeConfig.mappingMode || 'constant');
                 this.$set(this.executeNode, 'value', executeNodeConfig.value);
+              }
+              if (config.preCondition) {
+                this.newPreCondition = this.$utils.deepClone(config.preCondition);
               }
             }
             this.basicFormItemList &&
@@ -1200,6 +1208,9 @@ export default {
         // 组合工具，执行器组标签如果是作业参数，不需要传递给后端
         delete params.config.runnerGroupTag;
       }
+      if (this.newPreCondition) {
+        params.config.preCondition = this.newPreCondition;
+      }
       if (params && params.config) {
         // 删除额外的属性，不需要传递给后端
         const { runnerGroupTag, runnerGroup } = params.config;
@@ -1317,7 +1328,7 @@ export default {
               this.executeUser.value = this.executeUser && this.executeUser.value ? this.executeUser.value : executeConfig['executeUser'] ? executeConfig['executeUser']['value'] : '';
               this.protocol.value = this.protocol && this.protocol.value ? this.protocol.value : executeConfig['protocolId'];
             }
-            if (!this.$utils.isEmpty(executeConfig.preCondition)) {
+            if (this.$utils.isEmpty(this.newPreCondition) && !this.$utils.isEmpty(executeConfig.preCondition)) {
               this.preCondition = executeConfig.preCondition;
             }
           }
@@ -1329,6 +1340,10 @@ export default {
     changeParallelPolicy(val) {
       this.roundCount.value = null;
       this.parallelCount.value = null;
+    },
+    changePreCondition(val) {
+      this.preCondition = val;
+      this.newPreCondition = this.$utils.deepClone(val) || {};
     }
   },
   filter: {},
