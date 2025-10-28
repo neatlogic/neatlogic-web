@@ -1692,7 +1692,6 @@
     background-color: @error-color;
   }
 
-
   .bg-gray {
     background-color: @tip-color;
   }
@@ -1865,16 +1864,6 @@
     }
   }
 
-  .tsForm-border-border.tsForm-item {
-    .ivu-input,
-    .ivu-input-number,
-    .ivu-select-selection {
-      border: 1px solid var(--border-color, @border-color-base);
-      background-color: @inputbg-color;
-      border-radius: 2px;
-    }
-  }
-
   .tsForm-border-none.tsForm-item {
     .ivu-input,
     .ivu-input-number,
@@ -1909,8 +1898,13 @@
     }
   }
   .tsForm-item .tsForm-formItem-error,
-  .tsForm-formItem-error.ivu-input-number {
-    border-color: @error-color;
+  .tsForm-border-border.tsForm-item,
+  .tsForm-border-bottom.tsForm-item {
+    .tsForm-formItem-error {
+      &.ivu-input-number {
+        border-color: @error-color;
+      }
+    }
   }
 
   .form-error-tip {
