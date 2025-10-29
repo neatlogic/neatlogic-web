@@ -19,7 +19,7 @@
     >
       <ToolBar class="mb-nm" @insert-menu-content="(menuName)=> handleToolBarClickMenu(menuName, 'toolBarMenu')"></ToolBar>
       <div class="editor-content-container" @click.stop>
-        <EditorContent :editor="editor" class="editor-content"></EditorContent>
+        <EditorContent v-if="editor" :editor="editor" class="editor-content"></EditorContent>
       </div>
       <TipTapMenu
         :isEmptyRow="isEmptyRow"
@@ -32,6 +32,34 @@
         @replace-menu-content="replaceMenuContent"
         @PlusMouseenter="handlePlusMouseenter"
       ></TipTapMenu>
+      <div v-if="isShowBubbleMenu" ref="bubbleMenu" class="bubble-menu">
+        <span class="tsfont-bold"></span>
+        <span class="tsfont-text-delete"></span>
+        <span class="tsfont-italic"></span>
+        <span class="tsfont-attachment"></span>
+        <Dropdown>
+          <span>
+            <span class="tsfont-font-color"></span>
+            <Icon type="ios-arrow-down"></Icon>
+          </span>
+          <DropdownMenu slot="list">
+            <DropdownItem>驴打滚</DropdownItem>
+            <DropdownItem>炸酱面</DropdownItem>
+            <DropdownItem>豆汁儿</DropdownItem>
+            <Dropdown placement="right-start">
+              <DropdownItem>
+                北京烤鸭
+                <Icon type="ios-arrow-forward"></Icon>
+              </DropdownItem>
+              <DropdownMenu slot="list">
+                <DropdownItem>挂炉烤鸭</DropdownItem>
+                <DropdownItem>焖炉烤鸭</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+            <DropdownItem>冰糖葫芦</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      </div>
     </div>
     <Button
       style="position:absolute;right:20px;top:10px;"
@@ -50,6 +78,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import Image from '@tiptap/extension-image';
 import StarterKit from '@tiptap/starter-kit';
 import { TableKit } from '@tiptap/extension-table';
+import BubbleMenu from '@tiptap/extension-bubble-menu';
 import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
 import BaseMixin from './base-mixin.js';
 
@@ -67,6 +96,7 @@ export default {
   mixins: [BaseMixin],
   data() {
     return {
+      isShowBubbleMenu: false,
       isEmptyRow: true, // 是否是空行，用于判断显示鼠标经过时的加号
       iconClassName: '',
       editor: null,
@@ -103,10 +133,18 @@ export default {
         TextAlign.configure({
           types: ['heading', 'paragraph']
         }),
+        BubbleMenu.configure({
+          element: this.$refs.bubbleMenu,
+          tippyOptions: {
+            placement: 'top', // 默认是上方
+            offset: [0, 8] // 偏移距离
+          }
+        }),
         TableKit,
         Image,
         AutoUuid
       ],
+      content: '选中我看看~',
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
       },
@@ -120,7 +158,8 @@ export default {
     // 监听 selectionUpdate 事件，当选择变化时，高亮当前选中的标题
     this?.editor?.on('selectionUpdate', ({ editor, event }) => {
       // 编辑器获得焦点。
-      const { $from } = editor?.state?.selection;
+      const { $from, from, to } = editor?.state?.selection;
+      this.isShowBubbleMenu = from != to;
       const node = $from.node($from.depth);
       _this.highlightHeading(node, editor);
     });
@@ -489,6 +528,19 @@ export default {
     .heading-level-3 {
       padding-left: 28px;
     }
+  }
+}
+.bubble-menu {
+  position: absolute; /* 关键 */
+  display: flex;
+  gap: 8px;
+  background: #f5f5f5;
+  color: #000;
+  border-radius: 6px;
+  padding: 10px;
+  z-index: 100;
+  span {
+    cursor: pointer;
   }
 }
 </style>
