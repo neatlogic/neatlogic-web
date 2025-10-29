@@ -87,6 +87,12 @@
         <div class="mt-nm item-selected padding-sm radius-md cursor" style="text-align:center;width:400px;" @click="addLane()">
           <span class="tsfont-plus">{{ $t('term.deploy.batchchannel') }}</span>
         </div>
+        <ValidPipelineDialog
+          v-if="isValidPipelineDialogShow"
+          :validList="validList"
+          @close="isValidPipelineDialogShow = false;"
+          @clickItem="clickItem"
+        ></ValidPipelineDialog>
       </template>
     </TsContain>
     <JobTemplateDialog
@@ -112,7 +118,8 @@ export default {
     draggable,
     JobTemplateDialog: () => import('./edit-jobtemplate-dialog.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    AuthDialog: () => import('./auth-dialog.vue')
+    AuthDialog: () => import('./auth-dialog.vue'),
+    ValidPipelineDialog: () => import('./valid-pipeline-dialog.vue')
   },
   props: {},
   data() {
@@ -164,7 +171,10 @@ export default {
       },
       isSaving: false,
       isUpdateJobTemplate: false, //true是从前端获取jobTemplate
-      jobTemplateMap: {} //编辑job时如果不存在则通过接口获取
+      jobTemplateMap: {}, //编辑job时如果不存在则通过接口获取
+      appConfigList: [], //应用配置列表
+      validList: [], //校验列表
+      isValidPipelineDialogShow: false //校验弹窗是否显示
     };
   },
   beforeCreate() {},
@@ -285,6 +295,7 @@ export default {
         this.isLoading = true;
         this.$api.deploy.pipeline.getPipelineById(this.id).then(res => {
           this.pipelineData = res.Return;
+          this.appConfigList = res.Return.appConfigList || [];
           //在每个通道最后都增加一个空组
           this.pipelineData.laneList.forEach(lane => {
             lane.groupList.push({ jobTemplateList: [] });
@@ -358,6 +369,14 @@ export default {
             this.$Message.info(this.$t('term.deploy.atleastaddajob'));
             return false;
           }
+          const validList = this.validParams();
+          this.validList = validList;
+          if (validList.length > 0) {
+            this.isValidPipelineDialogShow = true;
+            return false;
+          } else {
+            this.isValidPipelineDialogShow = false;
+          }
           this.isSaving = true;
           this.$api.deploy.pipeline.savePipeline(this.pipelineData).then(res => {
             if (res.Status == 'OK') {
@@ -390,6 +409,37 @@ export default {
             });
         }
       });
+    },
+    validParams() {
+      let errorList = [];
+      if (!this.$utils.isEmpty(this.appConfigList)) {
+        this.pipelineData.laneList.forEach((lane, laneIndex) => {
+          lane.groupList.forEach((group, groupIndex) => {
+            group.jobTemplateList.forEach((job, jobIndex) => {
+              const params = job.config && job.config.param || {};
+              const findItem = this.appConfigList.find(item => item.appSystemId === job.appSystemId);
+              if (findItem && findItem.config && !this.$utils.isEmpty(findItem.config.runtimeParamList)) {
+                for (let i = 0; i < findItem.config.runtimeParamList.length; i++) {
+                  const runtimeParamObj = findItem.config.runtimeParamList[i];
+                  if (runtimeParamObj.isRequired && this.$utils.isEmpty(params[runtimeParamObj.key])) {
+                    errorList.push({
+                      type: 'error',
+                      editJob: job,
+                      group: group,
+                      message: '第' + (laneIndex + 1) + '通道，第' + (groupIndex + 1) + '组，第' + (jobIndex + 1) + '个作业：作业参数请填写完整'
+                    });
+                    break;
+                  }
+                }
+              }
+            });
+          });
+        });
+      }
+      return errorList;
+    },
+    clickItem(valid) {
+      this.editJob(valid.editJob, valid.group);
     }
   },
   filter: {},
