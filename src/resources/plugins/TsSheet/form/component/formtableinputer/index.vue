@@ -179,7 +179,7 @@ export default {
   },
   provide() {
     return {
-      formDataForWatch: Object.freeze(this.$utils.deepClone(this.formDataForWatch)),
+      getFormDataForWatch: () => this.formDataForWatch,
       extraFormItemList: this.frozenExtraFormItemList,
       extendConfigList: this.frozenExtendConfigList,
       formItemList: this.frozenFormItemList,
@@ -706,9 +706,11 @@ export default {
       return false;
     },
     reactionDepsMap() {
-      const map = {};
+      let map = {};
       this.extraList.forEach(extra => {
-        const set = new Set();
+        if (extra?.uuid) {
+          map[extra.uuid] = [];
+        }
         const reactionValue = extra.reaction || {};
         for (const action in reactionValue) {
           const reaction = reactionValue[action];
@@ -717,17 +719,47 @@ export default {
             (reaction.conditionGroupList || []).forEach(group => {
               (group.conditionList || []).forEach(cond => {
                 const uuid = (cond.formItemUuid || '').split('#')[0];
-                if (uuid) set.add(uuid);
+                if (uuid) {
+                  map[extra.uuid].push(uuid);
+                }
               });
             });
           } else {
             (reaction.ruleList || []).forEach(rule => {
               const uuid = (rule.formItemUuid || '').split('#')[0];
-              if (uuid) set.add(uuid);
+              if (uuid) {
+                map[extra.uuid].push(uuid);
+              }
             });
           }
         }
-        map[extra.uuid] = Array.from(set);
+        const {dataConfig = []} = extra.config || {};
+        if (dataConfig.length > 0) {
+          dataConfig.forEach(d => {
+            const innerReactionValue = d.reaction || {};
+            for (const action in innerReactionValue) {
+              const reactionRule = innerReactionValue[action];
+              if (!reactionRule) continue;
+              if (action !== 'filter') {
+                (reactionRule.conditionGroupList || []).forEach(group => {
+                  (group.conditionList || []).forEach(cond => {
+                    const uuid = (cond.formItemUuid || '').split('#')[0];
+                    if (uuid) {
+                      map[extra.uuid].push(uuid);
+                    }
+                  });
+                });
+              } else {
+                (reactionRule.ruleList || []).forEach(rule => {
+                  const uuid = (rule.formItemUuid || '').split('#')[0];
+                  if (uuid) {
+                    map[extra.uuid].push(uuid);
+                  }
+                });
+              }
+            }
+          });
+        }
       });
       return map;
     },
