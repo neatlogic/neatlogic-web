@@ -3,6 +3,7 @@ const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 
 const userManage = () => import('./users/user-manage.vue');
+const LoginManage = () => import('./users/login-manage.vue');
 const roleManage = () => import('./users/role-manage.vue');
 const teamManage = () => import('./users/team-manage.vue');
 const userSetting = () => import('./users/user-setting.vue');
@@ -191,6 +192,19 @@ let routerList = [
       icon: 'tsfont-sla',
       authority: 'WORKTIME_MODIFY',
       type: 'user'
+    }
+  },
+  {
+    path: '/login-manage',
+    name: 'login-manage',
+    component: LoginManage,
+    meta: {
+      title: '登录记录',
+      ismenu: true,
+      icon: 'tsfont-user',
+      authority: 'USER_MODIFY',
+      type: 'user',
+      isBack: false
     }
   },
   {

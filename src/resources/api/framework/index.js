@@ -3,6 +3,7 @@ import role from './users/role'; //角色管理
 import user from './users/user'; //用户管理、个人设置
 import auth from './users/auth'; //权限
 import group from './users/group'; //分组
+import loginaudit from './users/loginaudit';
 import apiManage from './apiManage/apiManage'; //接口管理
 import audit from './audit/audit'; //操作审计
 import matrix from './matrix/matrix'; //矩阵数据源
@@ -77,5 +78,6 @@ export default {
   region,
   homepage,
   changelogaudit,
-  log
+  log,
+  loginaudit
 };
