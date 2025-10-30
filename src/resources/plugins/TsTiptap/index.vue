@@ -388,7 +388,8 @@ export default {
     handleClickPlus() {
       this.editor.chain().focus('end').run();
     },
-    replaceMenuContent(nodeName) {
+    replaceMenuContent(menuData) {
+      const { type: nodeName, category} = menuData;
       // 替换当前光标所在的节点内容
       this.menuVisible = false;
       const { view, state } = this.editor;
@@ -427,24 +428,38 @@ export default {
         const { schema } = view.state;
         // 假设替换成 heading
         let attrs = {};
-        if (nodeName == 'heading1') {
-          attrs = { level: 1 };
+        if (category === 'basic') {
+          if (nodeName == 'heading1') {
+            attrs = { level: 1 };
           // this.editor.commands.setNode('heading', { level: 1 });
-        } else if (nodeName == 'heading2') {
-          attrs = { level: 2 };
+          } else if (nodeName == 'heading2') {
+            attrs = { level: 2 };
           // this.editor.commands.setNode('heading', { level: 2 });
-        } else if (nodeName == 'heading3') {
-          attrs = { level: 3 };
+          } else if (nodeName == 'heading3') {
+            attrs = { level: 3 };
           // this.editor.commands.setNode('heading', { level: 3 });
-        } else if (nodeName == 'orderedList') {
+          } else if (nodeName == 'orderedList') {
           // this.editor.commands.setNode('paragraph');
-        }
-        // 3. 创建新节点（保留内容）
-        const newNode = schema.nodes.heading.create(attrs, schema.text(nodeTextContent));
+          } 
+          // 3. 创建新节点（保留内容）
+          const newNode = schema.nodes.heading.create(attrs, schema.text(nodeTextContent));
 
-        // 4. 替换
-        view.dispatch(state.tr.replaceWith(nodeStart, nodeEnd, newNode));
-        console.log('node', nodeStart, nodeEnd, nodeTextContent);
+          // 4. 替换
+          view.dispatch(state.tr.replaceWith(nodeStart, nodeEnd, newNode));
+          console.log('node', nodeStart, nodeEnd, nodeTextContent);
+        } else if (category === 'operation') {
+          if (nodeName === 'delete') {
+            //删除
+            this.editor.commands.deleteRange({ from: nodeStart, to: nodeEnd });
+          } else if (nodeName === 'cut') {
+            // 剪切
+            this.editor.commands.deleteRange({ from: nodeStart, to: nodeEnd });
+            navigator.clipboard.writeText(nodeTextContent);
+          } else if (nodeName === 'copy') {
+            // 复制
+            navigator.clipboard.writeText(aaa);
+          }
+        }
       }
     }
   },

@@ -31,6 +31,7 @@
               v-for="(child) in item.children"
               :key="child.uuid"
               class="menu-category"
+              @click.stop="handleClick(item.category, child.value)"
             >
               <div :class="child.hoverComponent ? 'flex-between' : ''">
                 <div>
@@ -191,7 +192,7 @@ export default {
   methods: {
     handleClick(category, value) {
       console.log(category, value);
-      this.$emit('replace-menu-content', value);
+      this.$emit('replace-menu-content', { type: value, category: category });
     },
     handleMenuList() {
       this.menuList = Object.values(
