@@ -32,34 +32,7 @@
         @replace-menu-content="replaceMenuContent"
         @PlusMouseenter="handlePlusMouseenter"
       ></TipTapMenu>
-      <div v-if="isShowBubbleMenu" ref="bubbleMenu" class="bubble-menu">
-        <span class="tsfont-bold"></span>
-        <span class="tsfont-text-delete"></span>
-        <span class="tsfont-italic"></span>
-        <span class="tsfont-attachment"></span>
-        <Dropdown>
-          <span>
-            <span class="tsfont-font-color"></span>
-            <Icon type="ios-arrow-down"></Icon>
-          </span>
-          <DropdownMenu slot="list">
-            <DropdownItem>驴打滚</DropdownItem>
-            <DropdownItem>炸酱面</DropdownItem>
-            <DropdownItem>豆汁儿</DropdownItem>
-            <Dropdown placement="right-start">
-              <DropdownItem>
-                北京烤鸭
-                <Icon type="ios-arrow-forward"></Icon>
-              </DropdownItem>
-              <DropdownMenu slot="list">
-                <DropdownItem>挂炉烤鸭</DropdownItem>
-                <DropdownItem>焖炉烤鸭</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-            <DropdownItem>冰糖葫芦</DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-      </div>
+      <BubbleMenu v-if="isShowBubbleMenu" ref="bubbleMenu"></BubbleMenu>
     </div>
     <Button
       style="position:absolute;right:20px;top:10px;"
@@ -86,7 +59,8 @@ export default {
   components: {
     EditorContent,
     TipTapMenu: () => import('@/resources/plugins/TsTiptap/menu/index.vue'),
-    ToolBar: () => import('@/resources/plugins/TsTiptap/toolbar/index.vue')
+    ToolBar: () => import('@/resources/plugins/TsTiptap/toolbar/index.vue'),
+    BubbleMenu: () => import('@/resources/plugins/TsTiptap/bubble-menu/index.vue')
   },
   provide() {
     return {
@@ -528,19 +502,6 @@ export default {
     .heading-level-3 {
       padding-left: 28px;
     }
-  }
-}
-.bubble-menu {
-  position: absolute; /* 关键 */
-  display: flex;
-  gap: 8px;
-  background: #f5f5f5;
-  color: #000;
-  border-radius: 6px;
-  padding: 10px;
-  z-index: 100;
-  span {
-    cursor: pointer;
   }
 }
 </style>
