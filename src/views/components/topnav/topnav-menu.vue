@@ -71,7 +71,8 @@ export default {
       moduleId: MODULEID,
       home: HOME,
       extramenuList: [],
-      extramenuLoading: false
+      extramenuLoading: false,
+      selectedExtraMenuList: [] // 已选的额外菜单列表。用于在点击跳转后重置选中状态，防止第二次点击无效。
     };
   },
   created() {
@@ -117,6 +118,7 @@ export default {
         const id = selectedData[selectedData.length - 1].id;
         if (url && this.checkUrl(url)) {
           if (openType === 'window') {
+            this.selectedExtraMenuList = [];
             window.open(url, '_blank');
           } else if (openType === 'iframe') {
             //清空模块id，避免选中
@@ -155,7 +157,7 @@ export default {
               'Cascader',
               {
                 props: {
-                  value: [], // = selecteData
+                  value: this.selectedExtraMenuList, // = selecteData
                   data: options,
                   transfer: true,
                   clearable: false,
