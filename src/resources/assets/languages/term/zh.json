@@ -2901,7 +2901,10 @@
     "alertinterval": "通知间隔",
     "cc": "抄送",
     "async": "异步",
-    "bantime": "屏蔽时间"
+    "bantime": "屏蔽时间",
+    "similarrate": "相似度",
+    "comparecount": "比较数据量",
+    "samplecount": "样本数"
   },
   "informant": {
     "last5dump": "最近5次快照",
