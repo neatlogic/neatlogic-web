@@ -16,6 +16,7 @@
             :formItemList="$utils.deepClone([...extraFormItemList, ...config.dataConfig, ...formItemList])"
             :showStatusIcon="false"
             :readonly="readonly"
+            :disabled="disabled"
             :isCustomValue="isCustomValue"
             :externalData="externalData"
             :formDataForWatch="{...filterUuid(initFormData),...formDataForWatch, ...row}"

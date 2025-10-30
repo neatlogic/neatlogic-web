@@ -91,7 +91,7 @@ export default {
   },
   mixins: [conditionMixin],
   inject: [
-    'formDataForWatch',
+    'getFormDataForWatch',
     'extraFormItemList',
     'extendConfigList',
     'formItemList',
@@ -150,11 +150,13 @@ export default {
         currentItemMask: false, //当前组件是否不可见
         currentItemReadonly: false, //当前组件是否只读
         cunrrentRequire: false //
-      }
+      },
+      formItem: {}
     };
   },
   beforeCreate() {},
   created() {
+    this.formItem = this.extraFormItemList.find(d => d.uuid === this.extraUuid);
     this.initReactionFormItemUuid();
     this.updateConfig();
     this.initStatus();
@@ -470,10 +472,6 @@ export default {
   },
   filter: {},
   computed: {
-    formItem() {
-      const formItem = this.extraFormItemList.find(d => d.uuid === this.extraUuid);
-      return formItem;
-    },
     componentStyle() {
       return { width: this.mode != 'defaultvalue' ? (this.formItem.config && this.formItem.config.width) || '100%' : '100%' };
     },
@@ -565,20 +563,24 @@ export default {
     },
     formItemUuid() {
       return this.formItem && this.formItem.uuid;
+    },
+    formDataForWatch() {
+      return this.getFormDataForWatch();
     }
   },
   watch: {
     reactionData: {
       handler(val, oldVal) {
         if (val && (this.mode === 'read' || this.mode === 'readSubform')) {
-          if (!this.$utils.isSame(val, this.reactionFormItemUuidMap)) {
+          if (!this.$utils.isEmpty(this.reactionFormItemUuidMap) && !this.$utils.isSame(val, this.reactionFormItemUuidMap)) {
             this.executionReaction(val, this.reactionFormItemUuidMap);
             this.reactionFormItemUuidMap = this.$utils.deepClone(val);
+            this.isFirstLoad = false;
           }
-          this.isFirstLoad = false;
         }
       },
-      immediate: true
+      immediate: true,
+      deep: true
     }
   }
 };
