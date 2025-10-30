@@ -1368,7 +1368,9 @@
     "suredeletesession": "Are you sure to log off the user: {target}",
     "usersessiondeletetitle": "Confirm forced offline",
     "batchdeleteusersession": "Batch forced offline",
-    "usersessiondeletetip": "Users will be forced to log off after 15 minutes of cache expiration"
+    "usersessiondeletetip": "Users will be forced to log off after 15 minutes of cache expiration",
+    "loginauditretentionperiod": "Login record retention period",
+    "logintime": "Login time"
   },
   "knowledge": {
     "document": "Document",
