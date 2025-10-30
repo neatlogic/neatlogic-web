@@ -17,10 +17,12 @@
   </div>
 </template>
 <script>
+import toolBarMixin from '@/resources/plugins/TsTiptap/toolbar/src/toolbar-mixin.js';
 export default {
   name: '',
   components: {
   },
+  mixins: [toolBarMixin],
   props: {},
   data() {
     return {
