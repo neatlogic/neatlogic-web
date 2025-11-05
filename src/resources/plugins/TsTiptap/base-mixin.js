@@ -80,6 +80,36 @@ export default {
           this.editor.chain().focus().insertTable({ rows: rows, cols: cols, withHeaderRow: true }).run();
           break;
       }
+    },
+    execCommand(dataConfig) {
+      const { command, value } = dataConfig || {};
+      const { linkUrl, isbold, isitalic, isstrike, textAlignValue, backgroundColor, fontColor } = value || {};
+      const { editor } = this;
+      if (!editor) return;
+      const chain = editor.chain().focus();
+      switch (command) {
+        case 'bold':
+          isbold ? chain.unsetBold().run() : chain.setBold().run();
+          break;
+        case 'italic':
+          isitalic ? chain.unsetItalic().run() : chain.setItalic().run();
+          break;
+        case 'strike':
+          isstrike ? chain.unsetStrike().run() : chain.setStrike().run();
+          break;
+        case 'link':
+          chain.extendMarkRange('link').setLink({ href: linkUrl }).run();
+          break;
+        case 'textAlign':
+          chain.toggleTextAlign(textAlignValue).run();
+          break;
+        case 'backgroundColor':
+          chain.setBackgroundColor(backgroundColor).run();
+          break;
+        case 'fontColor':
+          chain.setColor(fontColor).run();
+          break;
+      }
     }
   }
 };

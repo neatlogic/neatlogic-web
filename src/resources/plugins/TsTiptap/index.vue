@@ -32,7 +32,12 @@
         @replace-menu-content="replaceMenuContent"
         @PlusMouseenter="handlePlusMouseenter"
       ></TipTapMenu>
-      <BubbleMenu v-if="isShowBubbleMenu" ref="bubbleMenu"></BubbleMenu>
+      <BubbleMenu
+        v-show="isShowBubbleMenu"
+        ref="bubbleMenuWrapper"
+        :style="{top: `${bubbleMenuPosition.top}px`, left: `${bubbleMenuPosition.left}px`}"
+        @execCommand="execCommand"
+      ></BubbleMenu>
     </div>
     <Button
       style="position:absolute;right:20px;top:10px;"
@@ -45,15 +50,17 @@
 
 <script>
 import { throttle } from 'lodash';
+import { posToDOMRect } from '@tiptap/core';
 import { Editor, EditorContent } from '@tiptap/vue-2';
 import { Placeholder } from '@tiptap/extensions';
 import TextAlign from '@tiptap/extension-text-align';
 import Image from '@tiptap/extension-image';
 import StarterKit from '@tiptap/starter-kit';
 import { TableKit } from '@tiptap/extension-table';
-import BubbleMenu from '@tiptap/extension-bubble-menu';
+import { TextStyleKit } from '@tiptap/extension-text-style';
 import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
 import BaseMixin from './base-mixin.js';
+import { menuState} from './state.js';
 
 export default {
   components: {
@@ -64,13 +71,17 @@ export default {
   },
   provide() {
     return {
-      tiptapEditor: this.editor
+      menuState
     };
   },
   mixins: [BaseMixin],
   data() {
     return {
       isShowBubbleMenu: false,
+      bubbleMenuPosition: {
+        top: 0,
+        left: 0
+      },
       isEmptyRow: true, // 是否是空行，用于判断显示鼠标经过时的加号
       iconClassName: '',
       editor: null,
@@ -107,18 +118,12 @@ export default {
         TextAlign.configure({
           types: ['heading', 'paragraph']
         }),
-        BubbleMenu.configure({
-          element: this.$refs.bubbleMenu,
-          tippyOptions: {
-            placement: 'top', // 默认是上方
-            offset: [0, 8] // 偏移距离
-          }
-        }),
         TableKit,
+        TextStyleKit,
         Image,
         AutoUuid
       ],
-      content: '选中我看看~',
+      content: '国家主席为国家元首，国务院总理由国家主席提名，全国人大任命，测试的数据的',
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
       },
@@ -128,18 +133,25 @@ export default {
         _this.highlightHeading(node, editor);
       }
     });
-   
     // 监听 selectionUpdate 事件，当选择变化时，高亮当前选中的标题
     this?.editor?.on('selectionUpdate', ({ editor, event }) => {
       // 编辑器获得焦点。
       const { $from, from, to } = editor?.state?.selection;
       this.isShowBubbleMenu = from != to;
+      const selectionRect = posToDOMRect(editor.view, from, to);
+      const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
+      const bubbleMenuRect = this.$refs?.bubbleMenuWrapper?.$refs?.bubbleMenuRef?.getBoundingClientRect();
+      this.bubbleMenuPosition = {
+        top: (selectionRect.top + selectionRect.height - editorWrapperRect.top + 5).toFixed(0),
+        left: selectionRect.left + selectionRect.width / 2 - editorWrapperRect.left - (bubbleMenuRect.width / 2)
+      };
       const node = $from.node($from.depth);
       _this.highlightHeading(node, editor);
     });
+    menuState.editorData = this.editor;
   },
   beforeDestroy() {
-    this.editor?.destroy();
+    // this.editor?.destroy();
   },
   methods: {
     getData() {
