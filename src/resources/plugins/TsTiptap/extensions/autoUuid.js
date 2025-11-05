@@ -24,16 +24,18 @@ export const AutoUuid = Extension.create({
         appendTransaction: (transactions, oldState, newState) => {
           let tr = newState.tr;
           let modified = false;
+          let uuidList = [];
           // 遍历当前编辑器最新状态（newState）下的所有文档节点
           newState.doc.descendants((node, pos) => {
             // 只给块级节点加 uuid（比如 paragraph、heading、list_item等）
-            if (node.type.isBlock && !node?.attrs?.uuid) {
+            if (node.type.isBlock && (!node?.attrs?.uuid || (node?.attrs?.uuid && uuidList.includes(node.attrs.uuid)))) {
               tr = tr.setNodeMarkup(pos, node?.type, {
                 ...(node.attrs || {}),
                 uuid: utils.setUuid()
               });
               modified = true;
             }
+            uuidList.push(node.attrs.uuid);
           });
 
           return modified ? tr : null;
