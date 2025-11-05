@@ -1129,7 +1129,7 @@ export default {
     },
     toggleSelect(item) {
       //选中调用的方法
-      if (item && item._disabled) {
+      if (item && item._disabled || !item) {
         return;
       }
       let value = item[this.valueName];
@@ -1261,7 +1261,7 @@ export default {
 
             return;
           } else {
-            this.nodeList.unshift(this.addItem);
+            this.addItem && this.nodeList.unshift(this.addItem);
             if (this.$listeners && this.$listeners['on-create']) {
               this.$emit('on-create', keyval);
             }
