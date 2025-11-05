@@ -97,6 +97,17 @@ export default {
   mounted() {
     let _this = this;
     this.editor = new Editor({
+      // // 启用核心扩展（包含粘贴处理）
+      // enableCoreExtensions: true,
+      // // 配置核心扩展选项
+      // coreExtensionOptions: {
+      //   clipboardTextSerializer: {
+      //     // 设置块级元素分隔符，例如段落之间用两个换行符分隔
+      //     blockSeparator: '\n\n'
+      //   }
+      // },
+      // // 启用粘贴规则系统
+      // enablePasteRules: true,
       extensions: [
         StarterKit.configure({
           bulletList: {
@@ -469,7 +480,24 @@ export default {
             navigator.clipboard.writeText(nodeTextContent);
           } else if (nodeName === 'copy') {
             // 复制
-            navigator.clipboard.writeText(aaa);
+            this.editor.chain().focus().setTextSelection({ from: nodeStart, to: nodeEnd }).run();
+            // 获取选中文本
+            const selectedText = this.editor.state.doc.textBetween(nodeStart, nodeEnd, '\n');
+            console.log('selectedText', selectedText);
+            // 复制到剪贴板
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(selectedText).then(() => {
+                console.log('文本复制成功');
+              });
+            } else {
+              // 降级方案
+              const textArea = document.createElement('textarea');
+              textArea.value = selectedText;
+              document.body.appendChild(textArea);
+              textArea.select();
+              document.execCommand('copy');
+              document.body.removeChild(textArea);
+            }
           }
         }
       }
