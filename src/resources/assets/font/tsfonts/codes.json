@@ -3484,5 +3484,23 @@
     "css": "tsfont-ais",
     "hexCodepoint": "0xea46",
     "codepoint": 59974
+  },
+  {
+    "name": "callout",
+    "css": "tsfont-callout",
+    "hexCodepoint": "0xea47",
+    "codepoint": 59975
+  },
+  {
+    "name": "divider",
+    "css": "tsfont-divider",
+    "hexCodepoint": "0xea48",
+    "codepoint": 59976
+  },
+  {
+    "name": "quote",
+    "css": "tsfont-quote",
+    "hexCodepoint": "0xea49",
+    "codepoint": 59977
   }
 ]
