@@ -56,11 +56,7 @@
               <TabPane label="范例" name="example"></TabPane>
             </Tabs>
             <div v-if="currentTab === 'content'">
-              <TsCodemirror
-                v-model="reportDataSourceData.xml"
-                codeMode="xml"
-                @change="changeXml"
-              ></TsCodemirror>
+              <TsCodemirror v-model="reportDataSourceData.xml" codeMode="xml" @change="changeXml"></TsCodemirror>
               <Alert v-if="errorMsg" class="mt-sm" type="error">{{ errorMsg }}</Alert>
             </div>
             <div v-else-if="currentTab === 'example'">
@@ -131,6 +127,7 @@ export default {
   data() {
     const _this = this;
     return {
+      systemDsTypeList: ['mysql', 'mongodb', 'elasticsearch'],
       example: null,
       currentTab: 'content',
       errorMsg: '',
@@ -215,10 +212,7 @@ export default {
           type: 'radio',
           name: 'dbType',
           label: this.$t('page.dbtype'),
-          dataList: [
-            { value: 'mysql', text: 'mysql' },
-            { value: 'mongodb', text: 'mongodb' }
-          ],
+          dataList: [],
           validateList: [{ name: 'required' }],
           onChange: dbType => {
             this.reportDataSourceData.dbType = dbType;
@@ -300,10 +294,10 @@ export default {
       };
       this.$api.framework.database.searchDatabaseList(params).then(res => {
         let tbodyList = res.Return.tbodyList;
-        let dataList = [
-          { value: 'mysql', text: 'mysql' },
-          { value: 'mongodb', text: 'mongodb' }
-        ];
+        const dataList = [];
+        this.systemDsTypeList.forEach(d => {
+          dataList.push({ value: d, text: d });
+        });
         tbodyList.forEach(item => {
           let text = item.name;
           let value = item.type + '-' + item.id;
@@ -362,7 +356,7 @@ export default {
       if (this.id) {
         this.$api.framework.datawarehouse.getDatasourceById(this.id).then(res => {
           this.reportDataSourceData = res.Return;
-          if (this.reportDataSourceData.dbType && this.reportDataSourceData.dbType != 'mysql' && this.reportDataSourceData.dbType != 'mongodb') {
+          if (!this.systemDsTypeList.includes(this.reportDataSourceData.dbType)) {
             if (this.reportDataSourceData.databaseId && this.reportDataSourceData.databaseId != null) {
               this.reportDataSourceData.dbType = this.reportDataSourceData.dbType + '-' + this.reportDataSourceData.databaseId;
             }
@@ -404,7 +398,7 @@ export default {
         if (this.id) {
           this.reportDataSourceData.id = this.id;
         }
-        if (this.reportDataSourceData.dbType != 'mysql' && this.reportDataSourceData.dbType != 'mongodb') {
+        if (!this.systemDsTypeList.includes(this.reportDataSourceData.dbType)) {
           let index = this.reportDataSourceData.dbType.lastIndexOf('-');
           let type = this.reportDataSourceData.dbType.substring(0, index);
           let databaseId = this.reportDataSourceData.dbType.substring(index + 1, this.reportDataSourceData.dbType.length);
