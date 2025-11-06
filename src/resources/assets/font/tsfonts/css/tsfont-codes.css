@@ -582,3 +582,6 @@
 .tsfont-snapshot:before { content: '\ea44'; } /* '' */
 .tsfont-ai:before { content: '\ea45'; } /* '' */
 .tsfont-ais:before { content: '\ea46'; } /* '' */
+.tsfont-callout:before { content: '\ea47'; } /* '' */
+.tsfont-divider:before { content: '\ea48'; } /* '' */
+.tsfont-quote:before { content: '\ea49'; } /* '' */
