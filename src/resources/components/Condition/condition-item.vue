@@ -56,7 +56,7 @@ export default {
   filter: {},
   computed: {
     finalValue() {
-      if (['text', 'number'].includes(this.conditionItem.type)) {
+      if (['text', 'number', 'html', 'json'].includes(this.conditionItem.type)) {
         return this.value && this.value.length > 0 && this.value[0];
       } else {
         return this.value;
