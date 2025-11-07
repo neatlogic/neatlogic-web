@@ -11,5 +11,9 @@ export default [
     meta: {
       title: $t('page.sitenavigation')
     }
+  },
+  {
+    path: '/test',
+    component: () => import('./navigation/test_ww.vue')
   }
 ];
