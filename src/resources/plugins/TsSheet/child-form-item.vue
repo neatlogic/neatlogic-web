@@ -32,6 +32,7 @@
       :isClearSpecifiedAttr="isClearSpecifiedAttr"
       :externalData="externalData"
       @resize="$emit('resize')"
+      @setValue="setValue"
       @emit="
         val => {
           $emit('emit', val);
@@ -171,7 +172,8 @@ export default {
       return errorList;
     },
     setValue(val) {
-      this.$emit('setValue', {uuid: this.formItem.uuid, value: val});
+      const { value } = val || {};
+      this.$set(this.formData, this.formItem.uuid, value);
     }
   },
   filter: {},
