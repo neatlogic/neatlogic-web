@@ -2906,7 +2906,8 @@
     "bantime": "屏蔽时间",
     "similarrate": "相似度",
     "comparecount": "比较数据量",
-    "samplecount": "样本数"
+    "samplecount": "样本数",
+    "generatecode": "生成代码"
   },
   "informant": {
     "last5dump": "最近5次快照",
