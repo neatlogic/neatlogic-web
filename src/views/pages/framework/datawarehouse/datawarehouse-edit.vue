@@ -1,11 +1,6 @@
 <template>
   <div>
-    <TsDialog
-      v-bind="dialogConfig"
-      :okBtnDisable="!!errorMsg"
-      @on-close="close"
-      @on-ok="save"
-    >
+    <TsDialog v-bind="dialogConfig" :okBtnDisable="!!errorMsg" @on-close="close">
       <template v-slot>
         <TsForm ref="form" :item-list="formConfig">
           <template v-slot:fields>
@@ -105,6 +100,16 @@
             </div>
           </template>
         </TsForm>
+      </template>
+      <template v-slot:footer>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
+        <Button
+          v-if="id"
+          type="primary"
+          ghost
+          @click="save(1)"
+        >清空数据并确认</Button>
+        <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -385,7 +390,7 @@ export default {
         });
       }
     },
-    save() {
+    save(isClear) {
       const form = this.$refs['form'];
       if (form.valid()) {
         if (!this.reportDataSourceData.xml) {
@@ -405,7 +410,7 @@ export default {
           this.reportDataSourceData.dbType = type;
           this.reportDataSourceData.databaseId = databaseId;
         }
-        this.$api.framework.datawarehouse.saveDataSource(this.reportDataSourceData).then(res => {
+        this.$api.framework.datawarehouse.saveDataSource({ ...this.reportDataSourceData, isClear: isClear ? 1 : 0 }).then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
             this.close(true);
