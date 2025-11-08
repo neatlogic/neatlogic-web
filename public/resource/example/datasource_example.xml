@@ -7,6 +7,8 @@
     <field column="user_id" label="用户id" type="text"/>
     <field column="user_name" label="用户名" type="text"/>
     <field column="phone" label="电话" type="number"/>
+    <!--如果返回字段是json结构，支持通过x.y.z的方式提取json属性-->
+     <field column="json.x" label="json的x属性" type="text"/>
   </fields>
   <!--params用于定义需要保存最大值的字段，例如每次执行完保留最大的id值，下次执行可以用这个id值作为过滤条件实现增量同步-->
   <params>
@@ -17,7 +19,7 @@
   <!--select元素支持多个，但每个select语句返回的字段需要和fields中定义的一致。-->
   <!--sql范例-->
   <select>
-    select user_id,user_name,phone from `user` where id > #{id}
+    select user_id,user_name,phone,json from `user` where id > #{id}
   </select>
   <!--mongodb范例-->
   <!--mongodb仅支持aggregation pipeline,具体api 参考官方文档:https://www.mongodb.com/docs/manual/reference/operator/aggregation/ -->
