@@ -2914,7 +2914,13 @@
     "pid": "进程id",
     "servicetopo": "服务关系图",
     "healthstate": "健康状态",
-    "comm": "命令"
+    "comm": "命令",
+    "hostname": "主机名",
+    "udpport": "UDP端口",
+    "httpport": "HTTP端口",
+    "httpsport": "HTTPS端口",
+    "ostype": "操作系统类型",
+    "ipandname": "IP/名称"
   },
   "infromant": {
     "report": "分析报告"

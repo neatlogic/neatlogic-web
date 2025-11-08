@@ -1,7 +1,7 @@
 <datasource>
   <!--fields用于定义返回的字段列表-->
   <fields>
-  <!--id代表唯一字段，支持多个id字段进行组合。普通字段用field定义，type是数据类型，目前只支持number、text、time、date、datetime五种，number类型系统最多只会保留4位小数。
+    <!--id代表唯一字段，支持多个id字段进行组合。普通字段用field定义，type是数据类型，目前只支持number、text、time、date、datetime五种，number类型系统最多只会保留4位小数。
   如果需要聚合计算，可以使用aggregate属性，目前支持sum和count两种算法。配置了aggregate属性的field字段会根据id字段进行计数或累加计算。-->
     <id column="id" label="id" type="number"/>
     <field column="user_id" label="用户id" type="text"/>
@@ -10,14 +10,52 @@
   </fields>
   <!--params用于定义需要保存最大值的字段，例如每次执行完保留最大的id值，下次执行可以用这个id值作为过滤条件实现增量同步-->
   <params>
-  <!--column是返回字段，返回字段的类型必须是数字型（如果需要保存时间可以先把时间转换成时间戳）。
+    <!--column是返回字段，返回字段的类型必须是数字型（如果需要保存时间可以先把时间转换成时间戳）。
       在where条件中可以通过#{column值}使用，-->
     <param column="id" label="最大id" default="0"/>
   </params>
   <!--select元素支持多个，但每个select语句返回的字段需要和fields中定义的一致。-->
-  <!--mongodb 仅支持aggregation pipeline,具体api 参考官方文档:https://www.mongodb.com/docs/manual/reference/operator/aggregation/ -->
-  <!--如: {aggregate: "INSPECT_REPORTS",pipeline: [{ '$match': { '_report_time': { $lte: ISODate("2022-11-05T00:00:00.0Z") }, '_inspect_result.status': { '$in': ['CRITICAL', 'WARN', 'FATAL'] } } }, { '$sort': {'_report_time': -1 } }, {$project: { resourceId: "$RESOURCE_ID",status: "$_inspect_result.status" }}}-->
+  <!--sql范例-->
   <select>
     select user_id,user_name,phone from `user` where id > #{id}
+  </select>
+  <!--mongodb范例-->
+  <!--mongodb仅支持aggregation pipeline,具体api 参考官方文档:https://www.mongodb.com/docs/manual/reference/operator/aggregation/ -->
+  <select>
+  {
+  aggregate: "INSPECT_REPORTS",
+  pipeline: [
+    {
+      $match: {
+        _report_time: { $lte: ISODate("2022-11-05T00:00:00.000Z") },
+        "_inspect_result.status": { $in: ["CRITICAL", "WARN", "FATAL"] }
+      }
+    },
+    {
+      $sort: { _report_time: -1 }
+    },
+    {
+      $project: {
+        resourceId: "$RESOURCE_ID",
+        status: "$_inspect_result.status"
+      }
+    }
+  ],
+  cursor: {}
+}
+  </select>
+  <!--elasticsearch范例-->
+  <select>
+ {
+    "index": "alert",
+    "query": {
+      "range": {
+        "id": { "gt": #{id} }
+      }
+    },
+    "_source": ["id","title","level","alertTime","status","attrObj.entityName"],
+    "sort": [{ "id": { "order": "asc" } }],
+    "size": 100
+  }
   </select>
 </datasource>

@@ -2917,7 +2917,13 @@
     "pid": "Process ID",
     "servicetopo": "Service Relationship Diagram",
     "healthstate": "health status",
-    "comm": "command"
+    "comm": "command",
+    "hostname": "hostname",
+    "udpport": "UDP port",
+    "httpport": "HTTP port",
+    "httpsport": "HTTPS port",
+    "ostype": "Operating system type",
+    "ipandname": "IP/Name"
   },
   "infromant": {
     "report": "analysis report"
