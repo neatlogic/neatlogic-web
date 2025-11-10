@@ -17,15 +17,15 @@
             class="action-item tsfont-upload"
             :class="{ 'text-disabled': !hasAuth }"
             :title="!hasAuth ? $t('page.notauthrelationadmin') : ''"
-            @click="uploadAction()"
+            @click.self="$refs.uploadDialog.showDialog"
           >{{ $t('page.import') }}</span>
-          <span
+          <!-- <span
             v-if="hasAuth"
             v-download="downloadUrl"
             v-download:prevent="preventDownload"
             class="action-item tsfont-download"
           >{{ $t('page.export') }}</span>
-          <span v-else class="action-item tsfont-download text-disabled" :title="$t('page.notauthrelationadmin')">{{ $t('page.export') }}</span>
+          <span v-else class="action-item tsfont-download text-disabled" :title="$t('page.notauthrelationadmin')">{{ $t('page.export') }}</span> -->
         </div>
       </template>
       <template slot="topRight">
@@ -91,6 +91,12 @@
                         :class="{ disable: !hasAuth }"
                         @click.stop="copyAction(row)"
                       >{{ $t('page.copy') }}</li>
+                      <li
+                        class="icon tsfont-download"
+                        :title="!hasAuth ? $t('page.notauthrelationadmin') : ''"
+                        :class="{ disable: !hasAuth }"
+                        @click.stop="exportAction(row)"
+                      >{{ $t('page.export') }}</li>
                       <li :title="!row.isActive ? $t('page.notauthrelationadmin') : !row.executable ? $t('page.notauthrelationadmin') : ''">
                         <!-- 执行作业 -->
                         <TimeJobClickText :id="row.id" :isShow="true" :disable="!row.executable || !row.isActive"></TimeJobClickText>
@@ -157,11 +163,18 @@
       @close="isShowRecord = false"
     ></RecordList>
     <SingleUploadDialog v-if="showUploadDialog" :uploadTooltip="uploadTooltip" @close="closeUploadDialog"></SingleUploadDialog>
+    <ComplexUploadDialog
+      ref="uploadDialog"
+      targetType="autoexecCombop"
+      url="/api/binary/common/import"
+      @close="closeComplexUploadDialog"
+    ></ComplexUploadDialog>
   </div>
 </template>
 <script>
 import CombineSearcher from '@/resources/components/CombineSearcher/CombineSearcher.vue';
-import download from '@/resources/directives/download.js';
+// import download from '@/resources/directives/download.js';
+import download from '@/resources/mixins/download.js';
 import TimeJobClickText from './job/time-job-click-text.vue'; // 添加定时作业
 export default {
   name: 'ActionManage',
@@ -174,10 +187,12 @@ export default {
     RecordList: () => import('./action/record-list'),
     NoticeSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'),
     ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
+    ComplexUploadDialog: () => import('@/resources/components/ComplexUploadDialog/complexUploadDialog.vue'),
     SingleUploadDialog: () => import('./action/single-upload-dialog.vue')
   },
-  directives: { download },
+  // directives: { download },
   filters: {},
+  mixins: [download],
   props: {},
   data() {
     let _this = this;
@@ -505,6 +520,17 @@ export default {
         });
       }
     },
+    exportAction(row) {
+      if (!this.hasAuth) {
+        return;
+      }
+      this.download({url: '/api/binary/common/export', params: { primaryKey: row.id, type: 'autoexecCombop'}});
+    },
+    closeComplexUploadDialog(isSuccess) {
+      if (isSuccess) {
+        this.searchAction();
+      }
+    },
     closeAction() {
       this.actionFormDialog = false;
     },
@@ -590,9 +616,9 @@ export default {
     getTheadList(versionStatus) {
       this.theadList = [];
       let index = 0;
-      if (versionStatus == 'passed') {
-        this.theadList[index++] = { key: 'selection', multiple: true };
-      }
+      // if (versionStatus == 'passed') {
+      //   this.theadList[index++] = { key: 'selection', multiple: true };
+      // }
       this.theadList[index++] = { title: this.$t('page.name'), key: 'name' };
       this.theadList[index++] = { title: this.$t('page.autoexeccomboptype'), key: 'typeName' };
       if (this.tableData.isResourcecenterAuth === '1') {
