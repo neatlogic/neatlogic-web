@@ -207,7 +207,7 @@ export default {
 
       if (!isSame) {
         if (this.currentValidList.length > 0 && this.canValid('change', this.currentValidList)) {
-          this.valid(this.currentValue);
+          this.valid(value);
         }
       } else {
         // this.validMesage = '';  // enter键回车会清空校验提示信息
@@ -230,10 +230,11 @@ export default {
       this.$emit('on-clear');
     },
     onBlurValue: function() {
-      typeof this.onBlur == 'function' && this.onBlur(this.currentValue);
-      this.$emit('on-blur', this.currentValue);
+      const value = typeof this.currentValue === 'string' ? this.currentValue.trim() : this.currentValue;
+      typeof this.onBlur == 'function' && this.onBlur(value);
+      this.$emit('on-blur', value);
       if (this.currentValidList.length > 0 && this.canValid('blur', this.currentValidList)) {
-        this.valid(this.currentValue);
+        this.valid(value);
       }
     },
     onEvent(evt, type) {

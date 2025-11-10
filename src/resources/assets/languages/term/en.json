@@ -2906,7 +2906,8 @@
     "bantime": "Shielding time",
     "similarrate": "similarity",
     "comparecount": "Compare data volume",
-    "samplecount": "sample size"
+    "samplecount": "sample size",
+    "generatecode": "generate code"
   },
   "runnergroup": {
     "ruletips": "The request for login authentication needs to carry a header as a rule expression (note that the header parameter in the expression is all lowercase). If the value of the expression after execution is true, the executor group will take effect, and false and syntax exceptions will not take effect. For example: ${env}==\\ bit \\&&(${test}==\\ 1 \\ | | ${test2}==\\ aaa \\)"
@@ -2917,7 +2918,13 @@
     "pid": "Process ID",
     "servicetopo": "Service Relationship Diagram",
     "healthstate": "health status",
-    "comm": "command"
+    "comm": "command",
+    "hostname": "hostname",
+    "udpport": "UDP port",
+    "httpport": "HTTP port",
+    "httpsport": "HTTPS port",
+    "ostype": "Operating system type",
+    "ipandname": "IP/Name"
   },
   "infromant": {
     "report": "analysis report"

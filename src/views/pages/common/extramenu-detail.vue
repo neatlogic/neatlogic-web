@@ -11,7 +11,7 @@
           scrolling="auto"
           allowfullscreen
           allow="geolocation; microphone; camera; clipboard-read; clipboard-write; autoplay; encrypted-media; fullscreen"
-          sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"
+          sandbox="allow-downloads allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation"
         ></iframe>
       </template>
     </TsContain>

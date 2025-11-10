@@ -593,3 +593,6 @@
 .tsfont-snapshot { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea44;&nbsp;'); }
 .tsfont-ai { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea45;&nbsp;'); }
 .tsfont-ais { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea46;&nbsp;'); }
+.tsfont-callout { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea47;&nbsp;'); }
+.tsfont-divider { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea48;&nbsp;'); }
+.tsfont-quote { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea49;&nbsp;'); }
