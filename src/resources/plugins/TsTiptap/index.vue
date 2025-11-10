@@ -142,6 +142,12 @@ export default {
         const { $from } = editor?.state?.selection;
         const node = $from.node($from.depth);
         _this.highlightHeading(node, editor);
+      },
+      onPaste(e, slice) {
+        // 处理粘贴事件
+        e.preventDefault();
+        console.log(e, slice);
+        return true;
       }
     });
     // 监听 selectionUpdate 事件，当选择变化时，高亮当前选中的标题
