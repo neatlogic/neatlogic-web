@@ -330,11 +330,13 @@
             ref="hideComponent"
             :formItem="item"
             :formData="formData"
+            :formDataForWatch="formData"
             :formItemList="formItemList"
             :mode="mode"
             :isCustomValue="true"
             :formExtendData="formExtendData"
             :externalData="externalData"
+            @setValue="setValue"
             @emit="
               val => {
                 $emit('emit', val);
