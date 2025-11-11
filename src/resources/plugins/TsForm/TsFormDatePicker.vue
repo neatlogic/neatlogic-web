@@ -371,6 +371,29 @@ export default {
           isValid = false;
         }
       }
+      //datetimerange类型初始化空数组，必填校验
+      if (isValid && Array.isArray(value) && !this.$utils.isEmpty(this.validateList)) {
+        let isRequired = false;
+        for (let i = 0; i < this.validateList.length; i++) {
+          if (typeof this.validateList[i] == 'string') {
+            if (this.validateList[i] == 'required') {
+              isRequired = true;
+            }
+          } else if (typeof this.validateList[i] == 'object') {
+            if (this.validateList[i].name == 'required') {
+              isRequired = true;
+            }
+          }
+        }
+        if (isRequired) {
+          for (let i = 0; i < value.length; i++) {
+            if (!value[i]) {
+              isValid = false;
+              break;
+            }
+          }
+        }
+      }
       return isValid;
     }
   },
