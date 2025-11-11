@@ -102,9 +102,13 @@
                 </div>
               </div>
               <Divider plain orientation="right" style="font-size:12px;margin:0px">{{ $t('term.report.datatype.binddynamicdata') }}</Divider>
-              <div v-for="(field, index) in currentWidgetComponent.fields" :key="index" class="ivu-form-item tsform-item ivu-form-label-top">
-                <label class="ivu-form-item-label overflow">{{ field.label }}</label>
-                <div class="ivu-form-item-content">
+              <div v-for="(field, index) in currentWidgetComponent.fields" :key="index" class="mb-sm"> 
+                <TsFormItem
+                  :label="field.label"
+                  labelPosition="top"
+                  :tooltip="field.description"
+                  :required="field.isRequired"
+                >
                   <TsFormSelect
                     :value="getCurrentWidgetField(field.name) && getCurrentWidgetField(field.name)['datasourceField']"
                     :transfer="true"
@@ -117,7 +121,7 @@
                       }
                     "
                   ></TsFormSelect>
-                </div>
+                </TsFormItem>
               </div>
               <div v-if="datasourceConditionList && datasourceConditionList.length > 0">
                 <Divider plain orientation="right" style="font-size:12px;margin:0px">{{ $t('page.filtercondition') }}</Divider>
@@ -149,6 +153,7 @@ export default {
   name: '',
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
