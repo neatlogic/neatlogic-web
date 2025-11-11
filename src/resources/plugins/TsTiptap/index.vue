@@ -59,6 +59,7 @@ import StarterKit from '@tiptap/starter-kit';
 import { TableKit } from '@tiptap/extension-table';
 import { TextStyleKit } from '@tiptap/extension-text-style';
 import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
+import HightlightBlock from '@/resources/plugins/TsTiptap/extensions/hightlight-block.js';
 import BaseMixin from './base-mixin.js';
 import { menuState} from './state.js';
 
@@ -132,7 +133,8 @@ export default {
         TableKit,
         TextStyleKit,
         Image,
-        AutoUuid
+        AutoUuid,
+        HightlightBlock
       ],
       content: '国家主席为国家元首，国务院总理由国家主席提名，全国人大任命，测试的数据的',
       onUpdate({ editor }) {
@@ -284,8 +286,8 @@ export default {
         insertPos = insertPos - 1;
       }
       const menuType = menuData?.category;
-      const { value: {rows, cols}} = menuData;
-      console.log('menuData', menuData, menuType, rows, cols);
+      const { value: {rows, cols} = {}} = menuData;
+      console.log('menuData', menuType === 'hightlightBlock');
       switch (menuType) {
         case 'heading1':
           this.editor
@@ -377,6 +379,8 @@ export default {
         case 'table':
           this.editor.chain().focus().insertTable({ rows: rows, cols: cols, withHeaderRow: true }).run();
           break;
+        case 'hightlightBlock':
+          this.editor.chain().focus().toggleHighlightBlock().run();
       }
     },
     highlightHeading(node, editor) {

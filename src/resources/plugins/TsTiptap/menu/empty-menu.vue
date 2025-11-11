@@ -157,6 +157,13 @@ export default {
           label: '链接'
         },
         {
+          category: 'basic',
+          tipConentList: ['高亮快'],
+          iconClass: 'tsfont-callout',
+          value: 'hightlightBlock',
+          label: '高亮块'
+        },
+        {
           category: 'common',
           iconClass: 'tsfont-image',
           value: 'uploadImage',
