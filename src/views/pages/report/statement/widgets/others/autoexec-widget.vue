@@ -7,6 +7,7 @@
           v-if="isReady"
           :percent="percentData"
           :stroke-width="strokeWidth"
+          :stroke-color="getStrokeColor(percentData)"
           status="active"
           text-inside
         /></div>
@@ -174,7 +175,8 @@ export default {
       };
     },
     strokeWidth() {
-      return this.widget && this.widget.config && this.widget.config.fontsize ? this.widget.config.fontsize - 3 : 10; 
+      const { fontsize } = this?.widget?.config || {};
+      return fontsize < 18 ? 18 : fontsize; 
     },
     getStatusStyle() {
       return (jobPhaseStatus) => {
@@ -191,6 +193,21 @@ export default {
           }
         }
         return style;
+      };
+    },
+    getStrokeColor() {
+      return (percentData) => {
+        const { progressStatusList = [] } = this?.widget?.config || {};
+        let status = '';
+        if (percentData === 100) {
+          status = 'completed';
+        } else if (percentData > 0) {
+          status = 'running';
+        } else {
+          status = 'pending';
+        }
+        const findProgressItem = progressStatusList.find(v => v.progressValue === status);
+        return findProgressItem && findProgressItem.progressColor;
       };
     }
   },

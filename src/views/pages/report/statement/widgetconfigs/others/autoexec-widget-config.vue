@@ -15,19 +15,33 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem :label="$t('page.fontcolor')" labelPosition="top">
-      <div>
-        <ColorPicker
-          :value="config.fontcolor"
-          :transfer="true"
-          recommend
-          format="hex"
-          class="colorPicker"
-          transfer-class-name="color-picker-transfer-class"
-          @on-change="val => {
-            setConfigValue('fontcolor', val);
-          }"
-        />
+    <TsFormItem label="进度条的颜色" labelPosition="top">
+      <div class="bg-op radius-sm padding-sm">
+        <Row
+          v-for="(item, index) in progressStatusList"
+          :key="index"
+          :gutter="16"
+          type="flex"
+          :class="index != progressStatusList.length - 1 ? 'mb-sm' : ''"
+        >
+          <Col span="6">
+            {{ item.progressName }}
+          </Col>
+          <Col span="10">
+            <ColorPicker
+              :value="item.progressColor"
+              :transfer="true"
+              recommend
+              format="hex"
+              class="colorPicker"
+              transfer-class-name="color-picker-transfer-class"
+              @on-change="val => {
+                item.progressColor = val;
+                setConfigValue('progressStatusList', progressStatusList);
+              }"
+            />
+          </Col>
+        </Row>
       </div>
     </TsFormItem>
     <TsFormItem label="箭头颜色" labelPosition="top">
@@ -45,59 +59,61 @@
       />
     </TsFormItem>
     <TsFormItem label="阶段状态颜色设置" labelPosition="top">
-      <TsRow v-if="!$utils.isEmpty(statusColorList)" :gutter="8">
-        <Col :span="8">状态</Col>
-        <Col :span="7">字体颜色</Col>
-        <Col :span="7">背景颜色</Col>
-      </TsRow>
-      <TsRow
-        v-for="(item, index) in statusColorList"
-        :key="index"
-        :gutter="8"
-        class="mb-sm"
-      >
-        <Col :span="8">
-          <TsFormInput
-            v-model="item.name"
-            border="border"
-            @on-blur="val => {
-              setConfigValue('statusColorList', statusColorList);
-            }"
-          ></TsFormInput>
-        </Col>
-        <Col :span="7">
-          <ColorPicker
-            :value="item.color"
-            :transfer="true"
-            recommend
-            format="hex"
-            class="colorPicker"
-            transfer-class-name="color-picker-transfer-class"
-            @on-change="val => {
-              $set(item, 'color', val);
-              setConfigValue('statusColorList', statusColorList);
-            }"
-          />
-        </Col>
-        <Col :span="7">
-          <ColorPicker
-            :value="item.bgColor"
-            :transfer="true"
-            recommend
-            class="colorPicker"
-            alpha 
-            transfer-class-name="color-picker-transfer-class"
-            @on-change="val => {
-              $set(item, 'bgColor', val);
-              setConfigValue('statusColorList', statusColorList);
-            }"
-          />
-        </Col>
-        <Col :span="2">
-          <span class="text-href tsfont-trash-o" @click="removeStatusColor(index)"></span>
-        </Col>
-      </TsRow>
-      <Button @click="addStatusColor"><span class="tsfont-plus">状态</span></Button>
+      <div class="bg-op radius-sm padding-sm">
+        <TsRow v-if="!$utils.isEmpty(statusColorList)" :gutter="8">
+          <Col :span="8">状态</Col>
+          <Col :span="7">字体颜色</Col>
+          <Col :span="7">背景颜色</Col>
+        </TsRow>
+        <TsRow
+          v-for="(item, index) in statusColorList"
+          :key="index"
+          :gutter="8"
+          class="mb-sm"
+        >
+          <Col :span="8">
+            <TsFormInput
+              v-model="item.name"
+              border="border"
+              @on-blur="val => {
+                setConfigValue('statusColorList', statusColorList);
+              }"
+            ></TsFormInput>
+          </Col>
+          <Col :span="7">
+            <ColorPicker
+              :value="item.color"
+              :transfer="true"
+              recommend
+              format="hex"
+              class="colorPicker"
+              transfer-class-name="color-picker-transfer-class"
+              @on-change="val => {
+                $set(item, 'color', val);
+                setConfigValue('statusColorList', statusColorList);
+              }"
+            />
+          </Col>
+          <Col :span="7">
+            <ColorPicker
+              :value="item.bgColor"
+              :transfer="true"
+              recommend
+              class="colorPicker"
+              alpha 
+              transfer-class-name="color-picker-transfer-class"
+              @on-change="val => {
+                $set(item, 'bgColor', val);
+                setConfigValue('statusColorList', statusColorList);
+              }"
+            />
+          </Col>
+          <Col :span="2">
+            <span class="text-href tsfont-trash-o" @click="removeStatusColor(index)"></span>
+          </Col>
+        </TsRow>
+        <Button @click="addStatusColor"><span class="tsfont-plus">状态</span></Button>
+      </div>
     </TsFormItem>
   </div>
 </template>
@@ -113,6 +129,20 @@ export default {
   },
   data() {
     return {
+      progressStatusList: [{
+        progressName: '未开始',
+        progressValue: 'pending',
+        progressColor: '#fff'
+      }, {
+        progressName: '进行中',
+        progressValue: 'running',
+        progressColor: '#2d8cf0'
+      },
+      {
+        progressName: '已完成',
+        progressValue: 'completed',
+        progressColor: '#19be6b'
+      }],
       statusColorList: [
         // {
         //   name: 'saved',
@@ -195,6 +225,7 @@ export default {
     if (this.config.statusColorList && this.config.statusColorList.length) {
       this.statusColorList = this.config.statusColorList;
     } 
+    this.handleProgressStatusList();
   },
   beforeUpdate() {},
   updated() {},
@@ -203,6 +234,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleProgressStatusList() {
+      const { progressStatusList = [] } = this.config || {};
+      if (this.$utils.isEmpty(progressStatusList)) {
+        this.setConfigValue('progressStatusList', this.progressList);
+      } else {
+        this.progressStatusList = progressStatusList;
+      }
+    },
     setConfigValue(attrName, attrValue) {
       if (attrName) {
         this.$emit('setConfig', attrName, attrValue);
