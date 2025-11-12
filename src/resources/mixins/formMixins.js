@@ -176,17 +176,16 @@ export default {
         //校验卡槽存在则为false 移到后面的原因是 this.$slots.validMessage为空的设置需要等下一次render，这个时候validMessage为空导致插件校验显示出错
         isValid = false;
       }
-      if (isValid && this.currentValidDate) {
-        isValid = this.currentValidDate(val || this.currentValue);
+      if (isValid && this.myValid) {
+        isValid = this.myValid(val || this.currentValue);
         !isValid && this.$set(this, 'validMesage', this.currentValidMesage);
-      }
-      if (isValid && this.currentValidTimeSelect) {
-        // timeSelect 下拉验证
-        isValid = this.currentValidTimeSelect(val || this.currentValue);
-        !isValid && this.$set(this, 'validMesage', this.validMesage);
       }
       this.isValidPass = isValid;
       return isValid;
+    },
+    myValid(currentValue) {
+      // 组件里面自己单独校验的方法
+      return true;
     },
     canValid(way, validateList) {
       //是否可以触发校验 way 触发校验的类型 change blur

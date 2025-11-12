@@ -354,7 +354,7 @@ export default {
         this.$refs.dropdownContain && this.$refs.dropdownContain.$refs.drop && this.$refs.dropdownContain.$refs.drop.update();
       }
     },
-    currentValidTimeSelect(currentValue) {
+    myValid(currentValue) {
       // 验证时间范围必填
       let isValid = true;
       let currentValidList = this.filterValid(this.validateList) || [];
