@@ -23,6 +23,22 @@ export default {
     backgroundImage: '', 
     fontsize: 13, 
     color: '',
-    arrowcolor: ''
+    arrowcolor: '',
+    statusColorList: [
+      {
+        name: 'start',
+        label: '开始',
+        color: '#25b864',
+        bgColor: 'rgba(37, 184, 100, .1)',
+        disabled: true
+      },
+      {
+        name: 'end',
+        label: '结束',
+        color: '#f33b3b',
+        bgColor: 'rgba(243, 59, 59, .1)',
+        disabled: true
+      }
+    ]
   }
 };
