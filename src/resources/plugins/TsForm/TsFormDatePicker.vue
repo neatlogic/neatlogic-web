@@ -225,7 +225,7 @@ export default {
 
       if (!isSame) {
         typeof _this.onChange == 'function' && _this.onChange(time);
-        this.currentValidDate(time);
+        this.myValid(time);
         if (_this.currentValidList.length > 0) {
           _this.valid(time);
         }
@@ -362,7 +362,7 @@ export default {
       }
       return newValue.toString().trim();
     },
-    currentValidDate(value) { //当前组件特殊校验
+    myValid(value) { //当前组件特殊校验
       let isValid = true;
       if (value && this.selectableRange && typeof this.selectableRange == 'function') {
         let timeList = this.selectableRange();
