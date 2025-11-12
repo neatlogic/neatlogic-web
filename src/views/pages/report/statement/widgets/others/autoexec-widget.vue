@@ -15,7 +15,7 @@
     <div v-if="dataList && dataList.length>0" class="job-detail">
       <div class="item-list border-color">
         <div class="step-content">
-          <div class="animate-spin step-node border-base radius-sm success border-color-success text-success">
+          <div class="animate-spin step-node radius-sm" :style="getStatusStyle('start')">
             <span>开始</span>
           </div>
         </div>
@@ -24,7 +24,7 @@
       <div
         v-for="(item,index) in dataList"
         :key="index"
-        class="item-list border-color"
+        class="item-list"
       >
         <div
           v-for="(litem,lindex) in item"
@@ -32,15 +32,15 @@
           :key="lindex"
           class="step-content"
         >
-          <div class="step-node border radius-sm" :style="getStatusStyle(litem.jobPhaseStatus)" :title="litem.jobPhaseName">
+          <div class="step-node radius-sm overflow pl-xs pr-xs" :style="getStatusStyle(litem.jobPhaseStatus)" :title="litem.jobPhaseName">
             <span>{{ litem.jobPhaseName }}</span>
           </div>
         </div>
         <span class="step_a tsfont-arrow-down" :style="{'color': widget?.config.arrowcolor || '#25b864'}"></span>
       </div>
-      <div class="item-list border-color">
+      <div class="item-list">
         <div class="step-content">
-          <div class="step-node border-base radius-sm border-color-error text-error failed">
+          <div class="step-node radius-sm" :style="getStatusStyle('end')">
             <span>结束</span>
           </div>
         </div>
@@ -49,8 +49,8 @@
     <div v-else><no-data></no-data></div>
     <div v-if="!$utils.isEmpty(statusColorList)" class="action-group no-line">
       <span v-for="item in statusColorList" :key="item.name" class="block-item">
-        <span class="color-tip" :style="{'background-color': item.color}"></span>
-        <span class="fz10">{{ item.name }}</span>
+        <span class="color-tip" :style="{'background-color': item.bgColor}"></span>
+        <span class="fz10" :style="{'color': item.color}">{{ item.name }}</span>
       </span>
     </div>
   </div>
@@ -86,9 +86,11 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    if (this.widget?.config.statusColorList && this.widget?.config.statusColorList.length) {
-      this.statusColorList = this.widget?.config.statusColorList;
-    }
+    this.$nextTick(() => {
+      if (this.widget?.config.statusColorList && this.widget.config.statusColorList.length) {
+        this.statusColorList = this.widget?.config.statusColorList;
+      }
+    });
   },
   beforeUpdate() {},
   updated() {},
@@ -181,7 +183,9 @@ export default {
     getStatusStyle() {
       return (jobPhaseStatus) => {
         let status = this.statusColorList.find(l => l.name === jobPhaseStatus);
-        let style = {};
+        let style = {
+          'background-color': 'rgba(0, 0, 0, 0.05)'
+        };
         if (status) {
           style['color'] = status.color || '';
           if (status.color) {
@@ -224,9 +228,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.border{
-  border:  1px solid;
-}
 .autoexec-widget{
   position: relative;
   padding-bottom: 10px;
