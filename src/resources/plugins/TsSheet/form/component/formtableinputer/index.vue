@@ -4,8 +4,8 @@
       <div v-if="canAdd" class="action-item">
         <Button @click="addData()">{{ $t('dialog.title.addtarget', { target: $t('page.data') }) }}</Button>
       </div>
-      <div v-if="selectedIndexList && selectedIndexList.length > 0 && !$utils.isEmpty(tbodyList)" class="action-item">
-        <Button @click="removeSelectedItem">{{ $t('dialog.title.deletetarget', { target: $t('page.data') }) }}</Button>
+      <div v-if="isShowDeleteBtn && !$utils.isEmpty(pagedTbodyList)" class="action-item">
+        <Button @click.stop="removeSelectedItem">{{ $t('dialog.title.deletetarget', { target: $t('page.data') }) }}</Button>
       </div>
       <template v-if="canShowImportExportBtn">
         <span
@@ -29,11 +29,11 @@
         <span
           v-if="isShowExportExcel"
           class="action-item tsfont-download"
-          @click.stop="() => exportExcelData({
+          @click.stop="exportExcelData({
             extraList: extraList,
             formItem: formItem,
             tbodyList: tbodyList,
-            selectedIndexList: selectedIndexList,
+            selectedCurrentPageMap: selectedCurrentPageMap,
           })"
         >
           {{ $t('term.framework.exporttable') }}
@@ -56,14 +56,11 @@
           :max-size="maxSize"
           :on-format-error="handleFormatError"
           :on-exceeded-size="handleMaxSize"
-          :before-upload="
-            file =>
-              handleBeforeUpload({
-                file: file,
-                extraList: extraList,
-                tbodyList: tbodyList
-              })
-          "
+          :before-upload="(file)=> handleBeforeUpload({
+            file: file,
+            extraList: extraList,
+            tbodyList: tbodyList
+          })"
           type="drag"
           action=""
           class="forminputtable-upload ml-sm"
@@ -75,75 +72,104 @@
     </div>
     <Loading :loadingShow="isImportOperationLoading" type="fix"></Loading>
     <template v-if="showTable">
-      <TsTable
-        v-if="hasColumn"
-        :theadList="theadList"
-        :tbodyList="pagedTbodyList"
-        v-bind="tablePageConfig"
-        :loading="loading"
-        :multiple="true"
-        :fixedHeader="false"
-        :canDrag="!disabled && !readonly && config.isCanDrag"
-        :readonlyTextIsHighlight="readonlyTextIsHighlight"
-        @updateRowSort="updateRowSort"
-        @getSelected="getSelectedItem"
-        @changeCurrent="changeCurrent"
-        @changePageSize="changePageSize"
-      >
-        <template v-slot:delete="{ row, index }">
-          <div class="flex-start">
-            <span class="tsfont-plus text-action mr-nm" @click.stop="addRow(index)"></span>
-            <span class="tsfont-close text-action" @click.stop="deleteItem(row)"></span>
+      <template v-if="hasColumn">
+        <div class="tstable-container border bg-grey radius-lg tstable-no-fixedHeader">
+          <div>
+            <table class="tstable-body">
+              <thead>
+                <tr>
+                  <th v-for="(col) in theadList" :key="col.key">
+                    <div v-if="col.key === 'selection'">
+                      <Checkbox
+                        v-model="isSelectAllCurrentPage"
+                        :disabled="readonly || disabled"
+                        @on-change="selectAllCurrentPage"
+                      ></Checkbox>
+                    </div>
+                    <span v-else :class="col.isRequired ? 'require-label' : ''" :style="col.width ? {width: col.width} : {}">{{ col.title }}</span>
+                  </th>
+                </tr>
+              </thead>
+              <VueDraggable
+                v-model="pagedTbodyList"
+                :disabled="readonly || disabled"
+                :animation="150"
+                tag="tbody"
+                handle=".tsfont-drag"
+                class="tbody-main"
+                draggable="tr"
+              >
+                <tr
+                  v-for="(row, index) in pagedTbodyList"
+                  :key="row.uuid"
+                >
+                  <td v-if="config.isCanDrag && hasDragColumn">
+                    <span class="tsfont-drag" style="cursor:move;"></span>
+                  </td>
+                  <td v-if="hasDelete">
+                    <div class="flex-start">
+                      <span class="tsfont-plus text-action mr-nm" @click.stop="addRow(index)"></span>
+                      <span class="tsfont-close text-action mr-nm" @click.stop="deleteItem(row)"></span>
+                    </div>
+                  </td>
+                  <td v-if="hasDelete">
+                    <Checkbox
+                      :value="selectedCurrentPageMap[row.uuid]"
+                      :disabled="readonly || disabled"
+                      @on-change="handleSelectedRow($event, row)"
+                    ></Checkbox>
+                  </td>
+                  <td v-if="config.isShowNumber">
+                    {{ index + 1 }}
+                  </td>
+                  <td v-for="extra in extraList" :key="`${row.uuid}_ ${extra.uuid}`" @click.stop>
+                    <ColumnItem
+                      :ref="`formitem_${row.uuid}${extra.uuid}`"
+                      :rowData="row"
+                      :rowUuid="row.uuid"
+                      :extraUuid="extra.uuid"
+                      :reactionData="getReactionData(extra, row)"
+                      :reactionValueData="reactionValuesMap[extra.uuid]"
+                      class="form-item-width"
+                      @change="changeRow"
+                      @getCurrentRowData="getCurrentRowData"
+                    ></ColumnItem>
+                  </td>
+                </tr>
+              </VueDraggable>
+            </table>
           </div>
-        </template>
-        <template v-if="config.isShowNumber" v-slot:number="{ index }">
-          {{ index + 1 }}
-        </template>
-        <template v-for="extra in extraList" :slot="extra.uuid" slot-scope="{ row, index }">
-          <div :key="extra.uuid" @click.stop>
-            <FormItem
-              :ref="'formitem_' + extra.uuid + '_' + index"
-              :formItem="$utils.deepClone(extra)"
-              :formData="{ ...filterUuid(formData), ...row }"
-              :isSetValue="false"
-              :formItemList="formItemList"
-              :extraFormItemList="extraList"
-              :showStatusIcon="false"
-              mode="read"
-              :readonly="readonly"
-              :disabled="disabled"
-              :isClearEchoFailedDefaultValue="true"
-              :isCustomValue="true"
-              :isClearSpecifiedAttr="isClearSpecifiedAttr"
-              :externalData="externalData"
-              :rowUuid="row.uuid"
-              :extendConfigList="extendConfigList"
-              style="min-width: 130px"
-              @change="val => changeRow(val, extra.uuid, row)"
-              @updateCurrentRow="
-                data => {
-                  updateCurrentRow(row, data);
-                }
-              "
-            ></FormItem>
-          </div>
-        </template>
-      </TsTable>
-      <TsTable v-else :theadList="theadList"></TsTable>
+        </div>
+        <div v-if="tablePageConfig.rowNum > tablePageConfig.defaultShowSize && tablePageConfig.pageSize > 0" ref="tablepage" class="tstable-page text-right">
+          <Page
+            size="small"
+            :showSizer="true"
+            :showTotal="true"
+            :total="tablePageConfig.rowNum"
+            :current="tablePageConfig.currentPage"
+            :page-size="tablePageConfig.pageSize"
+            :page-size-opts="tablePageConfig.pageSizeOpts"
+            :transfer="true"
+            @on-change="changeCurrent"
+            @on-page-size-change="changePageSize"
+          />
+        </div>
+      </template>
+      <TsSimpleTable v-else :theadList="theadList"></TsSimpleTable>
     </template>
   </div>
 </template>
 <script>
 import base from '../base.vue';
 import validmixin from '../common/validate-mixin.js';
-import TsTable from '@/resources/components/TsTable/TsTable.vue'; //不能使用异步引入，会导致tssheet列高错位
 import conditionMixin from './condition-mixin.js';
 import TableImportExportMixin from './table-import-export-mixin.js';
 export default {
   name: '',
   components: {
-    TsTable,
-    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
+    VueDraggable: () => import('vuedraggable'),
+    TsSimpleTable: () => import('@/resources/components/TsSimpleTable/index.vue'),
+    ColumnItem: () => import('@/resources/plugins/TsSheet/form/component/formtableinputer/column-item.vue')
   },
   extends: base,
   mixins: [validmixin, conditionMixin, TableImportExportMixin],
@@ -151,10 +177,25 @@ export default {
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
   },
+  provide() {
+    return {
+      getFormDataForWatch: () => this.formDataForWatch,
+      extraFormItemList: this.frozenExtraFormItemList,
+      extendConfigList: this.frozenExtendConfigList,
+      formItemList: this.frozenFormItemList,
+      externalData: this.frozenExternalData,
+      isClearSpecifiedAttr: this.isClearSpecifiedAttr,
+      isClearEchoFailedDefaultValue: true,
+      isCustomValue: true,
+      showStatusIcon: false,
+      readonly: this.readonly,
+      disabled: this.disabled,
+      mode: 'read'
+    };
+  },
   data() {
     return {
       isReady: false,
-      selectedIndexList: [],
       loading: false,
       filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly', 'formupload', 'formcube', 'formtable', 'formresoureces', 'formprotocol'], //过滤不参与规则的组件
       tablePageConfig: { //table分页配置
@@ -166,7 +207,11 @@ export default {
       },
       theadList: [],
       tbodyList: [],
-      validateMap: {}
+      validateMap: {},
+      reactionValuesMap: {}, // { extraUuid: { uuid: value } }
+      clonedExtrasMap: {},
+      isSelectAllCurrentPage: false,
+      selectedCurrentPageMap: {}
     };
   },
   beforeCreate() {},
@@ -174,6 +219,7 @@ export default {
     if (this.mode !== 'edit') {
       this.init();
     }
+    this.reactionWatch();
   },
   beforeMount() {},
   mounted() {
@@ -189,6 +235,37 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleSelectedRow(value, row) {
+      this.$set(selectedCurrentPageMap, row.uuid, val);
+    },
+    selectAllCurrentPage(selectedAll) {
+      if (selectedAll) {
+        this.pagedTbodyList.forEach((row) => {
+          this.selectedCurrentPageMap[row.uuid] = true;
+        });
+      } else {
+        this.selectedCurrentPageMap = {};
+      }
+    },
+    reactionWatch() {
+      this.reactionValuesMap = {};
+      this.extraList.forEach(extra => {
+        const deps = this.reactionDepsMap[extra.uuid] || [];
+        this.$set(this.reactionValuesMap, extra.uuid, {});
+        this.$set(this.clonedExtrasMap, extra.uuid, this.$utils.deepClone(extra));
+        deps.forEach(uuid => {
+          this.$set(this.reactionValuesMap[extra.uuid], uuid, this.formData[uuid]);
+          this.$watch(
+            () => this.formData[uuid],
+            (newVal, oldVal) => {
+              if (newVal !== oldVal) {
+                this.$set(this.reactionValuesMap[extra.uuid], uuid, newVal);
+              }
+            }
+          );
+        });
+      });
+    },
     init() {
       if (this.value && this.value instanceof Array && this.value.length > 0) {
         const value = this.$utils.deepClone(this.value);
@@ -226,9 +303,6 @@ export default {
         }
       }
     },
-    getSelectedItem(indexList) {
-      this.selectedIndexList = indexList;
-    },
     deleteItem(row) {
       const findIndex = this.tbodyList.findIndex(d => d.uuid === row.uuid);
       this.tbodyList.splice(findIndex, 1);
@@ -247,13 +321,17 @@ export default {
     },
     removeSelectedItem() {
       for (let i = this.tbodyList.length - 1; i >= 0; i--) {
-        const item = this.tbodyList[i];
-        if (item._selected) {
+        const row = this.tbodyList[i];
+        if (this.selectedCurrentPageMap[row.uuid]) {
           this.tbodyList.splice(i, 1);
+          this.$delete(this.selectedCurrentPageMap, row.uuid);
         }
       }
       if (!this.pagedTbodyList.length && this.tablePageConfig.currentPage > 1) {
         this.tablePageConfig.currentPage -= 1;
+      }
+      if (this.isSelectAllCurrentPage) {
+        this.isSelectAllCurrentPage = false;
       }
     },
     addData() {
@@ -421,40 +499,27 @@ export default {
         return errorList;
       }
     },
-    changeRow(val, uuid, row) {
-      if (!this.$utils.isSame(val, row[uuid])) {
-        this.$set(row, uuid, val);
+    changeRow(rowData) {
+      const { value, extraUuid = '', row = {} } = rowData || {};
+      if (!this.$utils.isSame(value, row[extraUuid])) {
+        row[extraUuid] = value;
       }
     },
-    updateRowSort(event) {
-      let beforeVal = this.tbodyList.splice(event.oldIndex, 1)[0];
-      this.tbodyList.splice(event.newIndex, 0, beforeVal);
-    },
-    updateCurrentRow(row, val) {
+    getCurrentRowData(currentRowData) {
+      const { reactionData = {}, rowData = {} } = currentRowData || {};
       this.$nextTick(() => {
-        if (val) {
-          Object.assign(row, val);
+        if (reactionData) {
+          Object.assign(rowData, reactionData);
         }
       });
-    },
-    filterUuid(obj) {
-      // 解决循环引用报错问题
-      let formData = this.$utils.deepClone(obj);
-      if (formData.uuid) {
-        delete formData.uuid;
-      }
-      if (formData.hasOwnProperty(this.formItem.uuid)) {
-        delete formData[this.formItem.uuid];
-      }
-      return formData;
     },
     changeCurrent(currentPage) {
       this.tablePageConfig.currentPage = currentPage;
-      this.$nextTick(() => {
-        if (!this.readonly && !this.disabled) {
+      if (!this.readonly && !this.disabled) {
+        this.$nextTick(() => {
           this.validData();
-        }
-      });
+        });
+      }
     },
     changePageSize(pageSize) {
       this.tablePageConfig.currentPage = 1;
@@ -604,6 +669,108 @@ export default {
   },
   filter: {},
   computed: {
+    config() {
+      return this.formItem?.config || {};
+    },
+    getReactionData() {
+      return (extra, row) => {
+        if (!extra || !row) return {};
+        const deps = this.reactionDepsMap[extra.uuid] || [];
+        if (!deps.length) return {};
+        const result = {};
+        deps.forEach(uuid => {
+          result[uuid] = this.formData.hasOwnProperty(uuid)
+            ? this.formData[uuid]
+            : row[uuid];
+        });
+        return result;
+      };
+    },
+    frozenFormItemList() {
+      return Object.freeze([...this.formItemList || []]); // 解构不影响原数据
+    },
+    frozenExtraFormItemList() {
+      return Object.freeze([...this.extraList || []]);
+    },
+    frozenExtendConfigList() {
+      return Object.freeze([...this.extendConfigList || []]);
+    },
+    frozenExternalData() {
+      return Object.freeze({ ...this.externalData || {} });
+    },
+    isShowDeleteBtn() {
+      if (this.isSelectAllCurrentPage) {
+        return true;
+      } else if (!this.$utils.isEmpty(this.selectedCurrentPageMap)) {
+        const selectedList = Object.values(this.selectedCurrentPageMap);
+        return selectedList.every(item => item);
+      }
+      return false;
+    },
+    reactionDepsMap() {
+      let map = {};
+      this.extraList.forEach(extra => {
+        if (extra?.uuid) {
+          map[extra.uuid] = [];
+        }
+        const reactionValue = extra.reaction || {};
+        for (const action in reactionValue) {
+          const reaction = reactionValue[action];
+          if (!reaction) continue;
+          if (action !== 'filter') {
+            (reaction.conditionGroupList || []).forEach(group => {
+              (group.conditionList || []).forEach(cond => {
+                const uuid = (cond.formItemUuid || '').split('#')[0];
+                if (uuid) {
+                  map[extra.uuid].push(uuid);
+                }
+              });
+            });
+          } else {
+            (reaction.ruleList || []).forEach(rule => {
+              const uuid = (rule.formItemUuid || '').split('#')[0];
+              if (uuid) {
+                map[extra.uuid].push(uuid);
+              }
+            });
+          }
+        }
+        const {dataConfig = []} = extra.config || {};
+        if (dataConfig.length > 0) {
+          dataConfig.forEach(d => {
+            const innerReactionValue = d.reaction || {};
+            for (const action in innerReactionValue) {
+              const reactionRule = innerReactionValue[action];
+              if (!reactionRule) continue;
+              if (action !== 'filter') {
+                (reactionRule.conditionGroupList || []).forEach(group => {
+                  (group.conditionList || []).forEach(cond => {
+                    const uuid = (cond.formItemUuid || '').split('#')[0];
+                    if (uuid) {
+                      map[extra.uuid].push(uuid);
+                    }
+                  });
+                });
+              } else {
+                (reactionRule.ruleList || []).forEach(rule => {
+                  const uuid = (rule.formItemUuid || '').split('#')[0];
+                  if (uuid) {
+                    map[extra.uuid].push(uuid);
+                  }
+                });
+              }
+            }
+          });
+        }
+      });
+      return map;
+    },
+    hasDelete() {
+      return this.theadList.find(d => d.key === 'delete');
+    },
+    hasDragColumn() {
+      return this.theadList.find(d => d.key === 'drag');
+    },
     hasColumn() {
       if (this.mode != 'edit' && this.mode != 'editSubform' && this.config.dataConfig && this.config.dataConfig.length > 0) {
         return true;
@@ -611,7 +778,8 @@ export default {
       return false;
     },
     extraList() {
-      return this.config.dataConfig.filter(d => d.isPC);
+      const list = this.$utils.deepClone(this.config.dataConfig.filter(d => d.isPC));
+      return Object.freeze(list); // 浅冻结
     },
     canAdd() {
       return !this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd;
@@ -624,14 +792,22 @@ export default {
       const tbodyList = this.tbodyList || [];
       return hideHeaderWhenDataEmpty ? tbodyList.length > 0 : true;
     },
-    pagedTbodyList() {
-      this.tablePageConfig.rowNum = this.tbodyList.length;
-      const start = (this.tablePageConfig.currentPage - 1) * this.tablePageConfig.pageSize;
-      const end = start + this.tablePageConfig.pageSize;
-      if (this.tbodyList.length <= start) {
-        return [];
-      }
-      return this.tbodyList.slice(start, end);
+    pagedTbodyList: {
+      get() {
+        this.tablePageConfig.rowNum = this.tbodyList.length;
+        const start = (this.tablePageConfig.currentPage - 1) * this.tablePageConfig.pageSize;
+        const end = start + this.tablePageConfig.pageSize;
+        if (this.tbodyList.length <= start) {
+          return [];
+        }
+        return this.tbodyList.slice(start, end);
+      },
+      set(newPageList) {
+        const start = (this.tablePageConfig.currentPage - 1) * this.tablePageConfig.pageSize;
+        for (let i = 0; i < newPageList.length; i++) {
+          this.$set(this.tbodyList, start + i, newPageList[i]);
+        }
+      } 
     }
   },
   watch: {
@@ -640,8 +816,11 @@ export default {
         this.theadList = [];
         this.validateMap = {};
         if (!this.disabled && !this.readonly) {
+          if (this.config.isCanDrag) {
+            this.theadList.push({ key: 'drag', title: '拖拽行' });
+          }
           if (!this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd) {
-            this.theadList.push({ key: 'delete', width: 20 });
+            this.theadList.push({ key: 'delete', title: '操作' });
             this.theadList.push({ key: 'selection' });
           }
         }
@@ -694,5 +873,12 @@ export default {
     border: none;
     background: transparent;
   }
+}
+.form-item-width {
+  min-width: 130px;
+}
+::v-deep .tstable-container, .table-container {
+  overflow-x: scroll;
+  width: 100%;
 }
 </style>

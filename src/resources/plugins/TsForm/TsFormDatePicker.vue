@@ -225,7 +225,7 @@ export default {
 
       if (!isSame) {
         typeof _this.onChange == 'function' && _this.onChange(time);
-        this.currentValidDate(time);
+        this.myValid(time);
         if (_this.currentValidList.length > 0) {
           _this.valid(time);
         }
@@ -362,13 +362,36 @@ export default {
       }
       return newValue.toString().trim();
     },
-    currentValidDate(value) { //当前组件特殊校验
+    myValid(value) { //当前组件特殊校验
       let isValid = true;
       if (value && this.selectableRange && typeof this.selectableRange == 'function') {
         let timeList = this.selectableRange();
         if ((timeList[0] && timeList[0] > value) || (timeList[1] && timeList[1] < value)) {
           this.currentValidMesage = this.desc || this.$t('form.placeholder.pleaseselect', {target: this.$t('term.plugin.correcttime')});
           isValid = false;
+        }
+      }
+      //datetimerange类型初始化空数组，必填校验
+      if (isValid && Array.isArray(value) && !this.$utils.isEmpty(this.validateList)) {
+        let isRequired = false;
+        for (let i = 0; i < this.validateList.length; i++) {
+          if (typeof this.validateList[i] == 'string') {
+            if (this.validateList[i] == 'required') {
+              isRequired = true;
+            }
+          } else if (typeof this.validateList[i] == 'object') {
+            if (this.validateList[i].name == 'required') {
+              isRequired = true;
+            }
+          }
+        }
+        if (isRequired) {
+          for (let i = 0; i < value.length; i++) {
+            if (!value[i]) {
+              isValid = false;
+              break;
+            }
+          }
         }
       }
       return isValid;

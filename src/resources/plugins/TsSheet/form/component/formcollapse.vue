@@ -24,6 +24,7 @@
                 :formItem="component"
                 :formData="formData"
                 :formItemList="formItemList"
+                :formDataForWatch="formDataForWatch"
                 :mode="mode"
                 :disabled="disabled"
                 :readonly="readonly"

@@ -7,10 +7,10 @@ const reportShow = () => import('./report/report-show.vue');
 const reportinstanceShow = () => import('./report/reportinstance-show.vue');
 const sendjobManage = () => import('./sendjob/sendjob-manage.vue');
 const sendjobEdit = () => import('./sendjob/sendjob-edit.vue');
-const blackWhiteListManage = () => import('./config/blackwhitelist-manage.vue');
 const statementEdit = () => import('./statement/statement-edit.vue');
 const statementView = () => import('./statement/statement-view.vue');
 const statementManage = () => import('./statement/statement-manage.vue');
+
 import { $t } from '@/resources/init.js';
 
 export default [

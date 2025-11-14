@@ -474,7 +474,7 @@ export default {
       if (plugin && plugin.length > 0) {
         plugin.forEach(plugins => {
           //只能选择用户选择器、下拉框
-          if (plugins.handler == 'formuserselect' || plugins.handler == 'formselect') {
+          if (plugins.handler == 'formuserselect' || plugins.handler == 'formselect' || plugins.handler == 'formtext') {
             let conf = {
               value: plugins.uuid,
               text: plugins.label

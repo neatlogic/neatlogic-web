@@ -913,12 +913,27 @@ export default {
                 let findSelect = selectedList.find(sel => sel[this.valueName] == item);
                 findSelect && list.push(findSelect);
               });
+            const tempList = this.handleEnterDisplayValue();
+            if (tempList.length > 0) {
+              list.unshift(...tempList);
+              list = this.$utils.uniqueByField(list, this.valueName);
+            }
+          } else {
+            const tempList = this.handleEnterDisplayValue();
+            if (tempList.length > 0) {
+              selectedList.unshift(...tempList);
+              selectedList = this.$utils.uniqueByField(selectedList, this.valueName);
+            }
           }
           this.selectedList = selectedList.length > 1 && !this.$utils.isEmpty(list) ? list : selectedList;
           this.handleEchoFailedDefaultValue();
         } else {
           this.selectedList = [];
           this.handleEchoFailedDefaultValue();
+          const tempList = this.handleEnterDisplayValue();
+          if (tempList.length > 0) {
+            this.selectedList = this.$utils.uniqueByField(tempList, this.valueName);
+          }
         }
 
         if (!this.multiple) {
@@ -931,6 +946,29 @@ export default {
           this.$emit('searchCallback');
         }
       });
+    },
+    handleEnterDisplayValue() {
+      // 处理回车创建值回显问题
+      let tempList = [];
+      if (this.allowCreate && !this.$utils.isEmpty(this.currentValue)) {
+        if (Array.isArray(this.currentValue)) {
+          this.currentValue.forEach(item => {
+            const findItem = this.selectedList.find(v => v[this.valueName] == item);
+            if (!findItem && !this.$utils.isEmpty(item)) {
+              tempList.unshift({
+                [this.valueName]: item,
+                [this.textName]: item
+              });
+            }
+          });
+        } else {
+          tempList.unshift({
+            [this.valueName]: this.currentValue,
+            [this.textName]: this.currentValue
+          });
+        }
+      }
+      return tempList;
     },
     handleObjectValue(valueName) {
       if (!this.isCustomValue) {
@@ -1091,7 +1129,7 @@ export default {
     },
     toggleSelect(item) {
       //选中调用的方法
-      if (item && item._disabled) {
+      if (item && item._disabled || !item) {
         return;
       }
       let value = item[this.valueName];
@@ -1223,7 +1261,7 @@ export default {
 
             return;
           } else {
-            this.nodeList.unshift(this.addItem);
+            this.addItem && this.nodeList.unshift(this.addItem);
             if (this.$listeners && this.$listeners['on-create']) {
               this.$emit('on-create', keyval);
             }
