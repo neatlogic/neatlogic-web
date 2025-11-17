@@ -7,6 +7,7 @@
           v-if="isReady"
           :percent="percentData"
           :stroke-width="strokeWidth"
+          :stroke-color="getStrokeColor(percentData)"
           status="active"
           text-inside
         /></div>
@@ -14,16 +15,16 @@
     <div v-if="dataList && dataList.length>0" class="job-detail">
       <div class="item-list border-color">
         <div class="step-content">
-          <div class="animate-spin step-node border-base radius-sm success border-color-success text-success">
+          <div class="animate-spin step-node radius-sm" :style="getStatusStyle('start')">
             <span>开始</span>
           </div>
         </div>
-        <span class="step_a tsfont-arrow-down text-success"></span>
+        <span class="step_a tsfont-arrow-down" :style="{'color': widget?.config.arrowcolor || '#25b864'}"></span>
       </div>
       <div
         v-for="(item,index) in dataList"
         :key="index"
-        class="item-list border-color"
+        class="item-list"
       >
         <div
           v-for="(litem,lindex) in item"
@@ -31,41 +32,25 @@
           :key="lindex"
           class="step-content"
         >
-          <div class="step-node border-base radius-sm" :class="getStatusClassName(litem.jobPhaseStatus)" :title="litem.jobPhaseName">
+          <div class="step-node radius-sm overflow pl-xs pr-xs" :style="getStatusStyle(litem.jobPhaseStatus)" :title="litem.jobPhaseName">
             <span>{{ litem.jobPhaseName }}</span>
           </div>
         </div>
-        <span class="step_a tsfont-arrow-down text-success"></span>
+        <span class="step_a tsfont-arrow-down" :style="{'color': widget?.config.arrowcolor || '#25b864'}"></span>
       </div>
-      <div class="item-list border-color">
+      <div class="item-list">
         <div class="step-content">
-          <div class="step-node border-base radius-sm" :class="percentData == 100? 'success border-color-success text-success':'pending border-color'">
+          <div class="step-node radius-sm" :style="getStatusStyle('end')">
             <span>结束</span>
           </div>
         </div>
       </div>
     </div>
     <div v-else><no-data></no-data></div>
-    <div class="action-group no-line">
-      <span class="block-item">
-        <span class="color-tip bg-pending"></span>
-        <span class="fz10">未开始</span>
-      </span>
-      <span class="block-item">
-        <span class="color-tip bg-info"></span>
-        <span class="fz10"> 进行中</span>
-      </span>
-      <span class="block-item">
-        <span class="color-tip bg-warning"></span>
-        <span class="fz10">已终止</span>
-      </span>
-      <span class="block-item">
-        <span class="color-tip bg-error"></span>
-        <span class="fz10">失败</span>
-      </span>
-      <span class="block-item">
-        <span class="color-tip bg-success"></span>
-        <span class="fz10">成功</span>
+    <div v-if="!$utils.isEmpty(statusColorList)" class="action-group no-line">
+      <span v-for="item in statusColorList" :key="item.name" class="block-item">
+        <span class="color-tip" :style="{'background-color': item.bgColor}"></span>
+        <span class="fz10" :style="{'color': item.color}">{{ item.name }}</span>
       </span>
     </div>
   </div>
@@ -83,31 +68,29 @@ export default {
     return {
       isFirst: true,
       isReady: true,
-      statusMapClass: {
-        pending: 'pending',
-        completed: 'success border-color-success text-success', //成功
-        running: 'running border-color-info text-info', //运行中
-        failed: 'failed border-color-error text-error', //失败
-        aborted: 'aborted border-color-warning text-warning' //中止
-      },
       dataList: [],
       stepList: [
-        {jobPhaseName: '步骤一', jobGroupSort: 0, jobPhaseStatus: 'completed'},
-        {jobPhaseName: '步骤二', jobGroupSort: 0, jobPhaseStatus: 'completed'},
-        {jobPhaseName: '步骤三', jobGroupSort: 0, jobPhaseStatus: 'completed'},
-        {jobPhaseName: '步骤四', jobGroupSort: 0, jobPhaseStatus: 'completed'},     
-        {jobPhaseName: '步骤一', jobGroupSort: 0, jobPhaseStatus: 'completed'},
-        {jobPhaseName: '步骤二', jobGroupSort: 1, jobPhaseStatus: 'failed'},
-        {jobPhaseName: '步骤三', jobGroupSort: 1, jobPhaseStatus: 'running'}
+        {jobPhaseName: '阶段1', jobGroupSort: '11111', jobPhaseStatus: 'completed', progress: 1},
+        {jobPhaseName: '阶段2', jobGroupSort: '11111', jobPhaseStatus: 'completed', progress: 1},
+        {jobPhaseName: '阶段3', jobGroupSort: '22222', jobPhaseStatus: 'completed', progress: 1},
+        {jobPhaseName: '阶段4', jobGroupSort: '22222', jobPhaseStatus: 'completed', progress: 1},     
+        {jobPhaseName: '阶段5', jobGroupSort: '22222', jobPhaseStatus: 'running', progress: 0},
+        {jobPhaseName: '阶段6', jobGroupSort: '33333', jobPhaseStatus: 'failed', progress: 0},
+        {jobPhaseName: '阶段7', jobGroupSort: '44444', jobPhaseStatus: 'running', progress: 0}
       ],
-      percentData: 0
+      percentData: 0,
+      statusColorList: []
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   mounted() {
-  
+    this.$nextTick(() => {
+      if (this.widget?.config.statusColorList && this.widget.config.statusColorList.length) {
+        this.statusColorList = this.widget?.config.statusColorList;
+      }
+    });
   },
   beforeUpdate() {},
   updated() {},
@@ -141,22 +124,17 @@ export default {
     },
     getStepList(stepList) {
       let list = [];
+      let listMap = {};
       if (stepList.length) {
-        let groupSortList = stepList.filter(l => !this.$utils.isEmpty(l.jobGroupSort));
-        if (groupSortList && groupSortList.length) {
-          for (let sort = 0, index = 0; index < groupSortList.length;) {
-            let arr = [];
-            groupSortList.filter(l => {
-              if (l.jobGroupSort == sort) {
-                arr.push(l);
-                index++;
-                return true;
-              }
-            });
-            sort++;
-            arr.length && list.push(arr);
+        stepList.forEach(item => {
+          if (!listMap[item.jobGroupSort]) {
+            listMap[item.jobGroupSort] = [];
           }
-        }
+          listMap[item.jobGroupSort].push(item);
+        });
+        Object.keys(listMap).forEach(key => {
+          list.push(listMap[key]);
+        });
       }
       return list;
     },
@@ -177,7 +155,7 @@ export default {
       if (list && list.length) {
         let i = 0;
         list.forEach(item => {
-          if (['checked', 'success', 'completed'].includes(item.jobPhaseStatus)) {
+          if (item.progress == 1) {
             i += 1;
           }
         });
@@ -185,7 +163,7 @@ export default {
           this.percentData = 100;
         } else {
           let num = i / list.length;
-          this.percentData = num.toFixed(2) * 100;
+          this.percentData = Number((num.toFixed(2) * 100).toFixed(2));
         }
       }
     }
@@ -199,19 +177,41 @@ export default {
       };
     },
     strokeWidth() {
-      return this.widget && this.widget.config && this.widget.config.fontsize ? this.widget.config.fontsize - 3 : 10; 
+      const { fontsize } = this?.widget?.config || {};
+      return fontsize < 18 ? 18 : fontsize; 
     },
-    getStatusClassName() {
+    getStatusStyle() {
       return (jobPhaseStatus) => {
-        let className = this.statusMapClass[jobPhaseStatus] || '';
-        if (jobPhaseStatus && !className) {
-          if (['pausing', 'paused', 'aborting', 'waitInput'].includes(jobPhaseStatus)) {
-            className = this.statusMapClass['aborted'];
-          } else if (['checked', 'success'].includes(jobPhaseStatus)) {
-            className = this.statusMapClass['completed']; 
+        let status = this.statusColorList.find(l => l.name === jobPhaseStatus);
+        let style = {
+          'background-color': 'rgba(0, 0, 0, 0.05)'
+        };
+        if (status) {
+          style['color'] = status.color || '';
+          if (status.color) {
+            style['color'] = status.color || '';
+            style['border-color'] = status.borderColor || '';
+          }
+          if (status.bgColor) {
+            style['background-color'] = status.bgColor || '';
           }
         }
-        return className;
+        return style;
+      };
+    },
+    getStrokeColor() {
+      return (percentData) => {
+        const { progressStatusList = [] } = this?.widget?.config || {};
+        let status = '';
+        if (percentData === 100) {
+          status = 'completed';
+        } else if (percentData > 0) {
+          status = 'running';
+        } else {
+          status = 'pending';
+        }
+        const findProgressItem = progressStatusList.find(v => v.progressValue === status);
+        return findProgressItem && findProgressItem.progressColor;
       };
     }
   },
