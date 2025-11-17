@@ -32,11 +32,7 @@ export const BlockUuid = Extension.create({
           // 遍历当前编辑器最新状态（newState）下的所有文档节点
           newState.doc.descendants((node, pos) => {
             // 只给块级节点加 uuid（比如 paragraph、heading、list_item等）
-            console.log('node', node.type.isBlock, !node.attrs?.uuid);
-            
             if (node.type.isBlock && (!node?.attrs?.uuid || (node?.attrs?.uuid && uuidList.includes(node.attrs.uuid)))) {
-              console.log('nodes', node);
-              
               tr = tr.setNodeMarkup(pos, node?.type, {
                 ...(node.attrs || {}),
                 uuid: utils.setUuid()
@@ -45,7 +41,6 @@ export const BlockUuid = Extension.create({
             }
             uuidList.push(node.attrs?.uuid);
           });
-
           return modified ? tr : null;
         }
       })
@@ -54,7 +49,7 @@ export const BlockUuid = Extension.create({
   addKeyboardShortcuts() {
     return {
       Backspace: () => {
-        console.log('Keyboard shortcut executed');
+        // 
       }
     };
   }

@@ -4,19 +4,6 @@
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
-      <template slot="topLeft">
-        <div class="mr-md">
-          <TsFormInput
-            v-if="isReviewer"
-            ref="titleInput"
-            v-model="title"
-            maxlength="30"
-            isEmptyBg
-            @on-blur="updateTitle"
-          ></TsFormInput>
-          <span v-else>{{ title }}</span>
-        </div>
-      </template>
       <template slot="topRight">
         <div class="action-group" style="text-align:right">
           <span class="action-item tsfont-drafts" :class="{disable:disabledBtn.saveDraftDocument}" @click="saveDraftDocument(true)">{{ $t('term.knowledge.savedraft') }}</span>
@@ -31,7 +18,7 @@
       </template>
       <template slot="content">
         <div>
-          <TsKnowledgeDocumentEditor></TsKnowledgeDocumentEditor>
+          <TsKnowledgeDocumentEditor :documentTitle="title"></TsKnowledgeDocumentEditor>
         </div>
       </template>
     </TsContain>
@@ -54,7 +41,6 @@ export default {
     ReviewDialog: () => import('./main/review-dialog.vue'),
     ActivityOverview: () => import('@/views/pages/knowledge/common/activity-detail.vue'),
     SaveOverview: () => import('./main/save-overview'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsKnowledgeDocumentEditor: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/index.vue')
   },
   filters: {},

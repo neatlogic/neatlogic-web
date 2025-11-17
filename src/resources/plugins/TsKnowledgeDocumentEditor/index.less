@@ -23,6 +23,13 @@
     margin: 1.5rem 0;
     padding-left: 1rem;
   }
+  ul,
+  ol {
+    padding-inline-start: 0;
+    padding-left: 0;
+    margin: 0;
+    padding: 0;
+  }
   ul[data-type='taskList'] {
     li {
       display: grid;
@@ -103,11 +110,14 @@
   }
 }
 .editor-wrapper {
-  position: relative;
   padding: 16px 54px;
   border-radius: 8px;
   min-height: 200px;
   overflow: auto;
+  .bullet-list,
+  .ordered-list {
+    padding-left: 16px; // 调整列表项的缩进
+  }
   .bullet-list,
   .bullet-list li {
     list-style: initial;
@@ -122,5 +132,20 @@
     pointer-events: none;
     content: attr(data-placeholder);
     color: #adb5bd;
+  }
+  .head-info-box {
+    .document-title {
+      input {
+        font-size: 30px;
+        height: 32px;
+        padding: 0;
+        &::placeholder {
+          font-size: 30px;
+        }
+      }
+    }
+  }
+  .editor-content-box {
+    position: relative;
   }
 }

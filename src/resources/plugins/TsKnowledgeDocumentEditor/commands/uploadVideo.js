@@ -1,18 +1,17 @@
 import utils from '@/resources/assets/js/util.js';
-export default function heading({ editor, pos, options, https }) {
+export default function uploadVideo({ editor, pos, options, https }) {
   const { file } = options || {};
   if (!file) {
     return;
   }
   const uuid = utils.setUuid();
-  let editorFocus = editor.chain().focus();
   const uploadUrl = '/api/binary/file/upload';
   const formData = new FormData();
   formData.append('type', 'knowledge');
   formData.append('responseType', 'blob');
   formData.append('param', 'file');
   formData.append('file', file);
-  editorFocus.insertVideo({loading: true, uuid: uuid}).run();
+  editor.chain().focus().insertVideo({loading: true, uuid: uuid}).run();
   https
     .post(uploadUrl, formData, {
       headers: {
@@ -22,7 +21,7 @@ export default function heading({ editor, pos, options, https }) {
     }).then((res) => {
       const { Status = 'OK', Return: { url = '' } = {} } = res || {};
       if (Status === 'OK' && url) {
-        editorFocus.updateVideo(uuid, { src: url }).run();
+        editor.chain().focus().updateVideo(uuid, { src: url }).run();
       }
     });
 }

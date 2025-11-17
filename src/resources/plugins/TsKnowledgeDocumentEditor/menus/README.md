@@ -1,0 +1,5 @@
+- block-menu 快菜单
+  - insert-block-menu 插入快菜单(空行时前面出现的菜单)
+  - block-action-menu 快菜单(鼠标经过当前行时出现的菜单，区别在于这个快菜单里面是有内容的)
+- text-selected-menu 选中文字菜单，出现的浮动菜单
+- tooltip 工具栏菜单

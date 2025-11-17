@@ -1,48 +1,60 @@
 <template>
   <div>
-    <div class="editor-main" @click.stop="()=> hidePlus()">
+    <div class="editor-main" @click.stop="() => hidePlus()">
       <div class="editor-menu">
         <ul>
           <li v-for="(item, index) in menuList" :key="index" :class="getMenuClass(item)">
             <div class="menu-text" @click="selectHeading(item)">
               <span class="heading-icon" :class="getHeadingIcon(item)" @click.stop="handleClick(item, index)"></span>
-              <span :class="{'text-href': selectHeadingUuid === item.uuid}">{{ item.text }}</span>
+              <span :class="{ 'text-href': selectHeadingUuid === item.uuid }">{{ item.text }}</span>
             </div>
           </li>
         </ul>
       </div>
-      <div
-        ref="editorWrapper"
-        class="editor-wrapper bg-op"
-        @mousemove="handleMouseMove"
-        @mouseleave="hidePlus"
-        @click="handleClickPlus"
-      >
-        <ToolBar class="mb-nm" @insert-menu-content="(menuName)=> handleToolBarClickMenu(menuName, 'toolBarMenu')"></ToolBar>
-        <div class="editor-content-container" @click.stop>
-          <EditorContent v-if="editor" :editor="editor" class="editor-content"></EditorContent>
+      <div class="editor-wrapper bg-op">
+        <div class="head-info-box">
+          <TsFormInput
+            v-model="title"
+            border="none"
+            class="document-title"
+            placeholder="请输入标题"
+          ></TsFormInput>
+          <DocumentTag class="mt-nm"></DocumentTag>
+          <div class="border-base-bottom mt-nm mb-nm"></div>
         </div>
-        <TipTapMenu
-          :isEmptyRow="isEmptyRow"
-          :showPlus="showPlus"
-          :menuVisible="menuVisible"
-          :iconClassName="iconClassName"
-          :plusPos="plusPos"
-          :menuPos="menuPos"
-          @insert-menu-content="handleClickMenu"
-          @replace-menu-content="replaceMenuContent"
-          @PlusMouseenter="handlePlusMouseenter"
-        ></TipTapMenu>
-        <BubbleMenu
-          v-show="isShowBubbleMenu"
-          ref="bubbleMenuWrapper"
-          :style="{top: `${bubbleMenuPosition.top}px`, left: `${bubbleMenuPosition.left}px`}"
-          @execCommand="execCommand"
-        ></BubbleMenu>
+        <div
+          ref="editorWrapper"
+          class="editor-content-box"
+          @mousemove="handleMouseMove"
+          @mouseleave="hidePlus"
+          @click="handleClickPlus"
+        >
+          <ToolBar class="mb-nm" @insert-menu-content="menuName => handleToolBarClickMenu(menuName, 'toolBarMenu')"></ToolBar>
+          <div class="editor-content-container" @click.stop>
+            <EditorContent v-if="editor" :editor="editor" class="editor-content"></EditorContent>
+          </div>
+          <TipTapMenu
+            :isEmptyRow="isEmptyRow"
+            :showPlus="showPlus"
+            :menuVisible="menuVisible"
+            :iconClassName="iconClassName"
+            :plusPos="plusPos"
+            :menuPos="menuPos"
+            @insert-menu-content="handleClickMenu"
+            @replace-menu-content="replaceMenuContent"
+            @PlusMouseenter="handlePlusMouseenter"
+          ></TipTapMenu>
+          <BubbleMenu
+            v-show="isShowBubbleMenu"
+            ref="bubbleMenuWrapper"
+            :style="{ top: `${bubbleMenuPosition.top}px`, left: `${bubbleMenuPosition.left}px` }"
+            @execCommand="execCommand"
+          ></BubbleMenu>
+        </div>
       </div>
     </div>
     <Button
-      style="position:absolute;right:20px;top:10px;"
+      style="position: absolute; right: 20px; top: 10px"
       type="primary"
       class="mr-xs"
       @click="getData()"
@@ -51,12 +63,13 @@
       v-if="isShowSearchReplaceDialog"
       :editor="editor"
       :selectedText="selectedText"
-      @close="()=> {
-        isShowSearchReplaceDialog = false
-      }"
+      @close="
+        () => {
+          isShowSearchReplaceDialog = false;
+        }
+      "
     ></SearchReplaceDialog>
   </div>
- 
 </template>
 
 <script>
@@ -72,17 +85,20 @@ import { TextStyleKit } from '@tiptap/extension-text-style';
 import { TaskList, TaskItem } from '@tiptap/extension-list';
 import ExtensionsList from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/index.js';
 import BaseMixin from './base-mixin.js';
-import { menuState} from './state.js';
+import { menuState } from './state.js';
 import InsertMenuCommands from '@/resources/plugins/TsKnowledgeDocumentEditor/commands/index.js';
-import {SearchHighlight} from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
+import { SearchHighlight } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
+import DataContext from './data.js';
 
 export default {
   components: {
     EditorContent,
-    TipTapMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menu/index.vue'),
-    ToolBar: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/toolbar/index.vue'),
-    BubbleMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/bubble-menu/index.vue'),
-    SearchReplaceDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/search-replace-dialog/index.vue')
+    TipTapMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/index.vue'),
+    ToolBar: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/toolbar/index.vue'),
+    BubbleMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/index.vue'),
+    SearchReplaceDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/search-replace-dialog/index.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    DocumentTag: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/tag/index.vue')
   },
   provide() {
     return {
@@ -90,8 +106,15 @@ export default {
     };
   },
   mixins: [BaseMixin],
+  props: {
+    documentTitle: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
+      title: this.documentTitle,
       isShowBubbleMenu: false,
       isShowSearchReplaceDialog: false,
       bubbleMenuPosition: {
@@ -181,20 +204,23 @@ export default {
       const selectionRect = posToDOMRect(editor.view, from, to);
       const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
       const bubbleMenuRect = this.$refs?.bubbleMenuWrapper?.$refs?.bubbleMenuRef?.getBoundingClientRect();
+      const { width: bubbleMenuWidth = 0 } = bubbleMenuRect || {};
+      const { top: editorWrapperTop = 0, left: editorWrapperRectLeft = 0 } = editorWrapperRect || {};
+      const { top: selectionRectTop = 0, height: selectionRectHight = 0, left: selectionRectLeft = 0, width: selectionRectWidth = 0 } = selectionRect || {};
       this.bubbleMenuPosition = {
-        top: (selectionRect.top + selectionRect.height - editorWrapperRect.top + 5).toFixed(0),
-        left: selectionRect.left + selectionRect.width / 2 - editorWrapperRect.left - (bubbleMenuRect.width / 2)
+        top: (selectionRectTop + selectionRectHight - editorWrapperTop + 5).toFixed(0),
+        left: selectionRectLeft + selectionRectWidth / 2 - editorWrapperRectLeft - bubbleMenuWidth / 2
       };
       const node = $from.node($from.depth);
       _this.highlightHeading(node, editor);
     });
-    this.editor?.view?.dom?.addEventListener('keydown', (e) => {
+    this.editor?.view?.dom?.addEventListener('keydown', e => {
       if (e.ctrlKey && e.key === 'f') {
         e.preventDefault(); // 阻止浏览器默认搜索
         this.isShowSearchReplaceDialog = true;
       }
     });
-
+    this.editor.commands.setContent(DataContext);
     menuState.editorData = this.editor;
   },
   beforeDestroy() {
@@ -248,9 +274,7 @@ export default {
       }
       this.iconClassName = '';
       // 找到当前块元素
-      let block = event.target.closest(
-        'p, h1, h2, h3, h4, h5, h6, li, blockquote, pre, div'
-      );
+      let block = event.target.closest('p, h1, h2, h3, h4, h5, h6, li, blockquote, pre, div');
       if (!block) {
         // 如果是空行，用 posAtCoords + nodeDOM 获取
         const coords = { left: event.clientX, top: event.clientY };
@@ -284,7 +308,7 @@ export default {
 
       this.plusPos = {
         top: Number((blockRect.top - wrapperRect.top + blockRect.height / 2 - 12).toFixed(0)),
-        left: 5
+        left: -34
       };
       this.showPlus = true;
     }, 300),
@@ -301,9 +325,7 @@ export default {
     getInsertPosition() {
       const view = this?.editor?.view;
       const coords = this.plusBlock?.getBoundingClientRect();
-      const pos = coords
-        ? view?.posAtCoords({ left: coords.left, top: coords.top })
-        : null;
+      const pos = coords ? view?.posAtCoords({ left: coords.left, top: coords.top }) : null;
       // 获取光标所在 resolved position
       const { $from } = this.editor.state.selection;
       // 如果外部传入 pos，就用 pos，否则用当前光标所在 block 的结束位置
@@ -317,7 +339,7 @@ export default {
       this.menuVisible = false;
       if (!this.editor) return;
       const insertPos = this.getInsertPosition();
-      const {category, value = {}} = menuData;
+      const { category, value = {} } = menuData;
       let commandKey = category;
       if (/^heading[1-6]$/.test(category)) {
         commandKey = 'heading';
@@ -341,7 +363,7 @@ export default {
         this.selectHeadingUuid = uuid;
       } else {
         const contentList = contentObj.content.reverse();
-        const index = contentList.findIndex((item) => item.attrs.uuid === uuid);
+        const index = contentList.findIndex(item => item?.attrs?.uuid === uuid);
         for (let i = index + 1; i < contentList.length; i++) {
           if (contentList[i].type === 'heading') {
             this.selectHeadingUuid = contentList[i].attrs.uuid;
@@ -372,7 +394,7 @@ export default {
       this.editor.chain().focus('end').run();
     },
     replaceMenuContent(menuData) {
-      const { type: nodeName, category} = menuData;
+      const { type: nodeName, category } = menuData;
       // 替换当前光标所在的节点内容
       this.menuVisible = false;
       const { view, state } = this.editor;
@@ -414,16 +436,16 @@ export default {
         if (category === 'basic') {
           if (nodeName == 'heading1') {
             attrs = { level: 1 };
-          // this.editor.commands.setNode('heading', { level: 1 });
+            // this.editor.commands.setNode('heading', { level: 1 });
           } else if (nodeName == 'heading2') {
             attrs = { level: 2 };
-          // this.editor.commands.setNode('heading', { level: 2 });
+            // this.editor.commands.setNode('heading', { level: 2 });
           } else if (nodeName == 'heading3') {
             attrs = { level: 3 };
-          // this.editor.commands.setNode('heading', { level: 3 });
+            // this.editor.commands.setNode('heading', { level: 3 });
           } else if (nodeName == 'orderedList') {
-          // this.editor.commands.setNode('paragraph');
-          } 
+            // this.editor.commands.setNode('paragraph');
+          }
           // 3. 创建新节点（保留内容）
           const newNode = schema.nodes.heading.create(attrs, schema.text(nodeTextContent));
 
@@ -465,7 +487,7 @@ export default {
   },
   computed: {
     getMenuClass() {
-      return (item) => {
+      return item => {
         const className = 'heading-level-' + item.level;
         if (item.hasOwnProperty('isHide') && item.isHide) {
           return className + ' hide';
@@ -474,7 +496,7 @@ export default {
       };
     },
     getHeadingIcon() {
-      return (item) => {
+      return item => {
         let classStr = '';
         if (item.hasOwnProperty('showNextIcon')) {
           classStr = classStr + (item.showNextIcon ? 'tsfont-drop-down' : 'tsfont-drop-right');
@@ -489,7 +511,7 @@ export default {
 </script>
 
 <style lang="less">
-@import "./index.less";
+@import './index.less';
 .editor-main {
   height: calc(100vh - 116px);
   display: grid;
@@ -498,13 +520,13 @@ export default {
   .editor-menu {
     padding: 20px;
     overflow: auto;
-    .hide{
+    .hide {
       display: none;
     }
     .menu-text {
       position: relative;
     }
-    .heading-icon{
+    .heading-icon {
       position: absolute;
       left: -14px;
     }
