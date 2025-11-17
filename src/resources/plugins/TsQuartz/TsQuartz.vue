@@ -121,7 +121,7 @@ export default {
     },
     getCronDataValueName(controller) {
       const v = this.cronData[controller.datasource];
-      const vList = v.split(',');
+      const vList = String(v).split(',');
       const nList = [];
       vList.forEach(element => {
         nList.push(this.Setting.dict[element] || element);
