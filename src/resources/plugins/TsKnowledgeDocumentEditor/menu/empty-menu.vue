@@ -76,12 +76,12 @@
   </div>
 </template>
 <script>
-import MenuComponent from '@/resources/plugins/TsTiptap/menu/component/click/index.js';
+import MenuComponent from '@/resources/plugins/TsKnowledgeDocumentEditor/menu/component/click/index.js';
 export default {
   name: 'MenuList',
   components: {
     ...MenuComponent,
-    TableGridSelector: () => import('@/resources/plugins/TsTiptap/menu/component/hover/table-grid-selector.vue')
+    TableGridSelector: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menu/component/hover/table-grid-selector.vue')
   },
   props: {},
   data() {

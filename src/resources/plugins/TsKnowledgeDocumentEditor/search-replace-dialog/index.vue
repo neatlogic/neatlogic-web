@@ -55,7 +55,7 @@
   </div>
 </template>
 <script>
-import {SearchHighlightKey} from '@/resources/plugins/TsTiptap/extensions/search-highlight.js';
+import {SearchHighlightKey} from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
 export default {
   name: '',
   components: {

@@ -31,7 +31,7 @@
       </template>
       <template slot="content">
         <div>
-          <TsTiptap></TsTiptap>
+          <TsKnowledgeDocumentEditor></TsKnowledgeDocumentEditor>
         </div>
       </template>
     </TsContain>
@@ -55,7 +55,7 @@ export default {
     ActivityOverview: () => import('@/views/pages/knowledge/common/activity-detail.vue'),
     SaveOverview: () => import('./main/save-overview'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    TsTiptap: () => import('@/resources/plugins/TsTiptap/index.vue')
+    TsKnowledgeDocumentEditor: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/index.vue')
   },
   filters: {},
   props: [''],

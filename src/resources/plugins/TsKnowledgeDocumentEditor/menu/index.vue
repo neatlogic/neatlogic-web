@@ -49,8 +49,8 @@
 export default {
   name: '',
   components: {
-    EmptyMenuList: () => import('@/resources/plugins/TsTiptap/menu/empty-menu.vue'),
-    NormalMenuList: () => import('@/resources/plugins/TsTiptap/menu/normal-menu.vue')
+    EmptyMenuList: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menu/empty-menu.vue'),
+    NormalMenuList: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menu/normal-menu.vue')
   },
   props: {
     isEmptyRow: {

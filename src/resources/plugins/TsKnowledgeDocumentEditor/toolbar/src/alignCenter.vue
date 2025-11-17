@@ -6,7 +6,7 @@
   </div>
 </template>
 <script>
-import toolBarMixin from '@/resources/plugins/TsTiptap/toolbar/src/toolbar-mixin.js';
+import toolBarMixin from '@/resources/plugins/TsKnowledgeDocumentEditor/toolbar/src/toolbar-mixin.js';
 export default {
   name: '',
   components: {

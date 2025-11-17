@@ -7,11 +7,11 @@
   </div>
 </template>
 <script>
-import toolBarMixin from '@/resources/plugins/TsTiptap/toolbar/src/toolbar-mixin.js';
+import toolBarMixin from '@/resources/plugins/TsKnowledgeDocumentEditor/toolbar/src/toolbar-mixin.js';
 export default {
   name: '',
   components: {
-    EditLinkDialog: () => import('@/resources/plugins/TsTiptap/toolbar/src/link/edit-link-dialog.vue')
+    EditLinkDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/toolbar/src/link/edit-link-dialog.vue')
   },
   mixins: [toolBarMixin],
   props: {},

@@ -70,19 +70,19 @@ import StarterKit from '@tiptap/starter-kit';
 import { TableKit } from '@tiptap/extension-table';
 import { TextStyleKit } from '@tiptap/extension-text-style';
 import { TaskList, TaskItem } from '@tiptap/extension-list';
-import ExtensionsList from '@/resources/plugins/TsTiptap/extensions/index.js';
+import ExtensionsList from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/index.js';
 import BaseMixin from './base-mixin.js';
 import { menuState} from './state.js';
-import InsertMenuCommands from '@/resources/plugins/TsTiptap/commands/index.js';
-import {SearchHighlight} from '@/resources/plugins/TsTiptap/extensions/search-highlight.js';
+import InsertMenuCommands from '@/resources/plugins/TsKnowledgeDocumentEditor/commands/index.js';
+import {SearchHighlight} from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
 
 export default {
   components: {
     EditorContent,
-    TipTapMenu: () => import('@/resources/plugins/TsTiptap/menu/index.vue'),
-    ToolBar: () => import('@/resources/plugins/TsTiptap/toolbar/index.vue'),
-    BubbleMenu: () => import('@/resources/plugins/TsTiptap/bubble-menu/index.vue'),
-    SearchReplaceDialog: () => import('@/resources/plugins/TsTiptap/search-replace-dialog/index.vue')
+    TipTapMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menu/index.vue'),
+    ToolBar: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/toolbar/index.vue'),
+    BubbleMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/bubble-menu/index.vue'),
+    SearchReplaceDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/search-replace-dialog/index.vue')
   },
   provide() {
     return {

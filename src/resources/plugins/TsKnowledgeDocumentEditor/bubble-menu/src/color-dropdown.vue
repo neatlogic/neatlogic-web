@@ -109,7 +109,7 @@
   </div>
 </template>
 <script>
-import mixin from '@/resources/plugins/TsTiptap/bubble-menu/src/mixin.js';
+import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/bubble-menu/src/mixin.js';
 export default {
   name: '',
   components: {},
