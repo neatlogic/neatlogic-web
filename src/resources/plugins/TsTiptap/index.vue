@@ -1,51 +1,62 @@
 <template>
-  <div class="editor-main" @click.stop="()=> hidePlus()">
-    <div class="editor-menu">
-      <ul>
-        <li v-for="(item, index) in menuList" :key="index" :class="getMenuClass(item)">
-          <div class="menu-text" @click="selectHeading(item)">
-            <span class="heading-icon" :class="getHeadingIcon(item)" @click.stop="handleClick(item, index)"></span>
-            <span :class="{'text-href': selectHeadingUuid === item.uuid}">{{ item.text }}</span>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <div
-      ref="editorWrapper"
-      class="editor-wrapper bg-op"
-      @mousemove="handleMouseMove"
-      @mouseleave="hidePlus"
-      @click="handleClickPlus"
-    >
-      <ToolBar class="mb-nm" @insert-menu-content="(menuName)=> handleToolBarClickMenu(menuName, 'toolBarMenu')"></ToolBar>
-      <div class="editor-content-container" @click.stop>
-        <EditorContent v-if="editor" :editor="editor" class="editor-content"></EditorContent>
+  <div>
+    <div class="editor-main" @click.stop="()=> hidePlus()">
+      <div class="editor-menu">
+        <ul>
+          <li v-for="(item, index) in menuList" :key="index" :class="getMenuClass(item)">
+            <div class="menu-text" @click="selectHeading(item)">
+              <span class="heading-icon" :class="getHeadingIcon(item)" @click.stop="handleClick(item, index)"></span>
+              <span :class="{'text-href': selectHeadingUuid === item.uuid}">{{ item.text }}</span>
+            </div>
+          </li>
+        </ul>
       </div>
-      <TipTapMenu
-        :isEmptyRow="isEmptyRow"
-        :showPlus="showPlus"
-        :menuVisible="menuVisible"
-        :iconClassName="iconClassName"
-        :plusPos="plusPos"
-        :menuPos="menuPos"
-        @insert-menu-content="handleClickMenu"
-        @replace-menu-content="replaceMenuContent"
-        @PlusMouseenter="handlePlusMouseenter"
-      ></TipTapMenu>
-      <BubbleMenu
-        v-show="isShowBubbleMenu"
-        ref="bubbleMenuWrapper"
-        :style="{top: `${bubbleMenuPosition.top}px`, left: `${bubbleMenuPosition.left}px`}"
-        @execCommand="execCommand"
-      ></BubbleMenu>
+      <div
+        ref="editorWrapper"
+        class="editor-wrapper bg-op"
+        @mousemove="handleMouseMove"
+        @mouseleave="hidePlus"
+        @click="handleClickPlus"
+      >
+        <ToolBar class="mb-nm" @insert-menu-content="(menuName)=> handleToolBarClickMenu(menuName, 'toolBarMenu')"></ToolBar>
+        <div class="editor-content-container" @click.stop>
+          <EditorContent v-if="editor" :editor="editor" class="editor-content"></EditorContent>
+        </div>
+        <TipTapMenu
+          :isEmptyRow="isEmptyRow"
+          :showPlus="showPlus"
+          :menuVisible="menuVisible"
+          :iconClassName="iconClassName"
+          :plusPos="plusPos"
+          :menuPos="menuPos"
+          @insert-menu-content="handleClickMenu"
+          @replace-menu-content="replaceMenuContent"
+          @PlusMouseenter="handlePlusMouseenter"
+        ></TipTapMenu>
+        <BubbleMenu
+          v-show="isShowBubbleMenu"
+          ref="bubbleMenuWrapper"
+          :style="{top: `${bubbleMenuPosition.top}px`, left: `${bubbleMenuPosition.left}px`}"
+          @execCommand="execCommand"
+        ></BubbleMenu>
+      </div>
     </div>
     <Button
       style="position:absolute;right:20px;top:10px;"
       type="primary"
-      class="tsfont-save mr-xs"
+      class="mr-xs"
       @click="getData()"
     >保存</Button>
+    <SearchReplaceDialog
+      v-if="isShowSearchReplaceDialog"
+      :editor="editor"
+      :selectedText="selectedText"
+      @close="()=> {
+        isShowSearchReplaceDialog = false
+      }"
+    ></SearchReplaceDialog>
   </div>
+ 
 </template>
 
 <script>
@@ -58,17 +69,20 @@ import Image from '@tiptap/extension-image';
 import StarterKit from '@tiptap/starter-kit';
 import { TableKit } from '@tiptap/extension-table';
 import { TextStyleKit } from '@tiptap/extension-text-style';
-import { AutoUuid } from '@/resources/plugins/TsTiptap/extensions/autoUuid.js';
-import HightlightBlock from '@/resources/plugins/TsTiptap/extensions/hightlight-block.js';
+import { TaskList, TaskItem } from '@tiptap/extension-list';
+import ExtensionsList from '@/resources/plugins/TsTiptap/extensions/index.js';
 import BaseMixin from './base-mixin.js';
 import { menuState} from './state.js';
+import InsertMenuCommands from '@/resources/plugins/TsTiptap/commands/index.js';
+import {SearchHighlight} from '@/resources/plugins/TsTiptap/extensions/search-highlight.js';
 
 export default {
   components: {
     EditorContent,
     TipTapMenu: () => import('@/resources/plugins/TsTiptap/menu/index.vue'),
     ToolBar: () => import('@/resources/plugins/TsTiptap/toolbar/index.vue'),
-    BubbleMenu: () => import('@/resources/plugins/TsTiptap/bubble-menu/index.vue')
+    BubbleMenu: () => import('@/resources/plugins/TsTiptap/bubble-menu/index.vue'),
+    SearchReplaceDialog: () => import('@/resources/plugins/TsTiptap/search-replace-dialog/index.vue')
   },
   provide() {
     return {
@@ -79,6 +93,7 @@ export default {
   data() {
     return {
       isShowBubbleMenu: false,
+      isShowSearchReplaceDialog: false,
       bubbleMenuPosition: {
         top: 0,
         left: 0
@@ -92,7 +107,8 @@ export default {
       plusBlock: null,
       menuVisible: false,
       menuList: [],
-      selectHeadingUuid: ''
+      selectHeadingUuid: '',
+      selectedText: ''
     };
   },
   mounted() {
@@ -133,10 +149,14 @@ export default {
         TableKit,
         TextStyleKit,
         Image,
-        AutoUuid,
-        HightlightBlock
+        TaskList,
+        TaskItem.configure({
+          nested: true
+        }),
+        ...ExtensionsList,
+        SearchHighlight
       ],
-      content: '国家主席为国家元首，国务院总理由国家主席提名，全国人大任命，测试的数据的',
+      content: '',
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
       },
@@ -157,6 +177,7 @@ export default {
       // 编辑器获得焦点。
       const { $from, from, to } = editor?.state?.selection;
       this.isShowBubbleMenu = from != to;
+      this.selectedText = editor?.state?.doc?.textBetween(from, to);
       const selectionRect = posToDOMRect(editor.view, from, to);
       const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
       const bubbleMenuRect = this.$refs?.bubbleMenuWrapper?.$refs?.bubbleMenuRef?.getBoundingClientRect();
@@ -167,6 +188,13 @@ export default {
       const node = $from.node($from.depth);
       _this.highlightHeading(node, editor);
     });
+    this.editor?.view?.dom?.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'f') {
+        e.preventDefault(); // 阻止浏览器默认搜索
+        this.isShowSearchReplaceDialog = true;
+      }
+    });
+
     menuState.editorData = this.editor;
   },
   beforeDestroy() {
@@ -221,7 +249,7 @@ export default {
       this.iconClassName = '';
       // 找到当前块元素
       let block = event.target.closest(
-        'p, h1, h2, h3, li, blockquote, pre, div'
+        'p, h1, h2, h3, h4, h5, h6, li, blockquote, pre, div'
       );
       if (!block) {
         // 如果是空行，用 posAtCoords + nodeDOM 获取
@@ -270,9 +298,7 @@ export default {
       this.$set(this.menuPos, 'left', this.plusPos.left);
       this.menuVisible = !this.menuVisible;
     },
-    handleClickMenu(menuData) {
-      this.menuVisible = false;
-      if (!this.editor) return;
+    getInsertPosition() {
       const view = this?.editor?.view;
       const coords = this.plusBlock?.getBoundingClientRect();
       const pos = coords
@@ -285,102 +311,26 @@ export default {
       if (this.$utils.isEmpty($from.doc.textContent)) {
         insertPos = insertPos - 1;
       }
-      const menuType = menuData?.category;
-      const { value: {rows, cols} = {}} = menuData;
-      console.log('menuData', menuType === 'hightlightBlock');
-      switch (menuType) {
-        case 'heading1':
-          this.editor
-            .chain()
-            .focus()
-            .insertContentAt(insertPos, {
-              type: 'heading',
-              attrs: { level: 1 },
-              content: [{ type: 'text', text: '新标题内容' }]
-            })
-            .run();
-          break;
-        case 'heading2':
-          this.editor
-            .chain()
-            .focus()
-            .insertContentAt(insertPos, {
-              type: 'heading',
-              attrs: { level: 2 },
-              content: [
-                {
-                  type: 'text',
-                  text: '新标题h2的内容'
-                }
-              ]
-            })
-            .run();
-          break;
-        case 'heading3':
-          this.editor
-            .chain()
-            .focus()
-            .insertContentAt(insertPos, {
-              type: 'heading',
-              attrs: { level: 3 },
-              content: [{ type: 'text', text: '新标题3内容' }]
-            })
-            .run();
-          break;
-        case 'heading4':
-          this.editor
-            .chain()
-            .focus()
-            .insertContentAt(insertPos, {
-              type: 'heading',
-              attrs: { level: 4 },
-              content: [{ type: 'text', text: '新标题4内容' }]
-            })
-            .run();
-          break;
-        case 'heading5':
-          this.editor
-            .chain()
-            .focus()
-            .insertContentAt(insertPos, {
-              type: 'heading',
-              attrs: { level: 5 },
-              content: [{ type: 'text', text: '新标题5内容' }]
-            })
-            .run();
-          break;
-        case 'heading6':
-          this.editor
-            .chain()
-            .focus()
-            .insertContentAt(insertPos, {
-              type: 'heading',
-              attrs: { level: 6 },
-              content: [{ type: 'text', text: '新标题内容' }]
-            })
-            .run();
-          break;
-        case 'codeBlock':
-          this.editor
-            .chain()
-            .focus()
-            .insertContentAt(insertPos, {
-              type: 'codeBlock',
-              content: [{ type: 'text', text: '新代码块内容' }]
-            })
-            .run();
-          break;
-        case 'unorderedList':
-          this.editor.chain().focus().toggleBulletList().run();
-          break;
-        case 'orderedList':
-          this.editor.chain().focus().toggleOrderedList().run();
-          break;
-        case 'table':
-          this.editor.chain().focus().insertTable({ rows: rows, cols: cols, withHeaderRow: true }).run();
-          break;
-        case 'hightlightBlock':
-          this.editor.chain().focus().toggleHighlightBlock().run();
+      return insertPos;
+    },
+    handleClickMenu(menuData) {
+      this.menuVisible = false;
+      if (!this.editor) return;
+      const insertPos = this.getInsertPosition();
+      const {category, value = {}} = menuData;
+      let commandKey = category;
+      if (/^heading[1-6]$/.test(category)) {
+        commandKey = 'heading';
+        value.level = Number(category.replace('heading', ''));
+      }
+      const commandMethod = InsertMenuCommands[commandKey];
+      if (commandMethod) {
+        commandMethod({
+          editor: this.editor,
+          pos: insertPos,
+          options: value,
+          https: this.$https
+        });
       }
     },
     highlightHeading(node, editor) {

@@ -1,10 +1,9 @@
 <template>
-  <div @click.stop>
+  <div ref="uploadVideoRef" @click.stop>
     <input
       ref="fileRef"
       type="file"
-      multiple
-      accept=".png,.jpg,.jpeg"
+      accept="video/mp4,video/mkv,video/avi,video/mov,video/webm,video/flv,video/f4v,video/mpg,video/mpeg,video/ts,video/m2ts,video/mts,video/wmv,video/rm,video/rmvb,video/3pg,video/3g2"
       style="display:none"
       @change="handleFileChange"
     />
@@ -37,7 +36,7 @@ export default {
         fileRef.click();
       }
     },
-    handleFileChange(event) {
+    async handleFileChange(event) {
       const file = event?.target?.files?.[0];
       if (!file) {
         return false;

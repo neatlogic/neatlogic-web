@@ -67,7 +67,12 @@
       </ul>
     </div>
     <!-- 动态菜单组件 -->
-    <component :is="getDisplayComponent" ref="componentMenu"></component>
+    <component
+      :is="getDisplayComponent"
+      ref="uploadRef"
+      :category="componentsType"
+      @uploadSuccess="emitClickMenu"
+    ></component>
   </div>
 </template>
 <script>
@@ -132,12 +137,12 @@ export default {
           category: 'basic',
           tipConentList: ['无序列表', 'Markdown: - 空格'],
           iconClass: 'tsfont-list',
-          value: 'unorderedList',
+          value: 'bulletList',
           label: '无序列表'
         },
         {
           category: 'basic',
-          tipConentList: ['任务列表', 'Markdown: > 空格'],
+          tipConentList: ['任务列表', 'Markdown: - [ ] 空格'],
           iconClass: 'tsfont-check-square-o',
           value: 'taskList',
           label: '任务列表'
@@ -151,10 +156,10 @@ export default {
         },
         {
           category: 'basic',
-          tipConentList: ['链接'],
-          iconClass: 'tsfont-formlink',
-          value: 'link',
-          label: '链接'
+          tipConentList: ['引用', 'Markdown: > 空格'],
+          iconClass: 'tsfont-quote',
+          value: 'blockquote',
+          label: '引用'
         },
         {
           category: 'basic',
@@ -164,10 +169,30 @@ export default {
           label: '高亮块'
         },
         {
+          category: 'basic',
+          tipConentList: ['分割线', 'Markdown: --- 或 ***'],
+          iconClass: 'tsfont-divider',
+          value: 'horizontalRule',
+          label: '分割线'
+        },
+        {
+          category: 'basic',
+          tipConentList: ['链接'],
+          iconClass: 'tsfont-formlink',
+          value: 'link',
+          label: '链接'
+        },
+        {
           category: 'common',
           iconClass: 'tsfont-image',
           value: 'uploadImage',
           label: '图片'
+        },
+        {
+          category: 'common',
+          iconClass: 'tsfont-play',
+          value: 'uploadVideo',
+          label: '视频'
         },
         {
           category: 'common',
@@ -204,14 +229,15 @@ export default {
       }, 120);
     },
     handleClick(category, value) {
+      this.componentsType = value;
       if (category === 'basic') {
         this.componentsType = '';
         this.$emit('click-menu', {category: value});
       } else {
-        this.componentsType = value;
-        if (value === 'uploadImage') {
-        // this.$refs.componentMenu.fileInput.click();
-          console.log(this.$refs.componentMenu.fileInput);
+        if (value === 'uploadImage' || value === 'uploadVideo') {
+          this.$nextTick(() => { // 使用的是动态组件，需要等组件挂载后才能调用方法
+            this.$refs.uploadRef?.openFileDialog();
+          });
         }
       }
     },
@@ -233,6 +259,14 @@ export default {
     },
     handleChange(value, selectedData) {
       this.text = selectedData.map(o => o.label).join(', ');
+    },
+    emitClickMenu(file) {
+      this.$emit('click-menu', {
+        category: this.componentsType,
+        value: {
+          file: file
+        }}
+      );
     }
   },
   filter: {},

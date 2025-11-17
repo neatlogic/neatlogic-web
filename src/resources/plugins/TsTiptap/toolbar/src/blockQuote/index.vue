@@ -1,12 +1,7 @@
 <template>
   <div>
     <Tooltip content="引用" placement="top" :transfer="true">
-      <img
-        src="./quote.svg"
-        style="width: 16px;height: 16px;cursor:pointer;"
-        alt="引用"
-        @click.stop="emitValue({menuName: 'blockQuote'})"
-      />
+      <span class="tsfont-quote" @click.stop="emitValue({menuName: 'blockQuote'})"></span>
     </Tooltip>
   </div>
 </template>

@@ -37,7 +37,6 @@ export default {
       this.$refs.uploadImage.click();
     },
     handleFileChange(event) {
-      console.log('已选择好的文件', event.target.files[0]);
       const file = event?.target?.files?.[0];
       if (!file) {
         return false;
@@ -55,13 +54,9 @@ export default {
           },
           contentType: 'multipart/form-data'
         }).then((res) => {
-          console.log('上传成功', res);
           const { Status = 'OK', Return: {url = ''} = {}} = res || {};
           if (Status === 'OK' && url) {
-            this.emitValue({
-              menuName: 'uploadImage',
-              uploadImageUrl: url
-            });
+            this.$emit('uploadSuccess', url);
           }
         });
     }

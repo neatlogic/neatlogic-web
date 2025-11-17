@@ -79,6 +79,9 @@ export default {
         case 'insertTable':
           this.editor.chain().focus().insertTable({ rows: rows, cols: cols, withHeaderRow: true }).run();
           break;
+        case 'searchReplace':
+          this.isShowSearchReplaceDialog = !this.isShowSearchReplaceDialog;
+          break;
       }
     },
     execCommand(dataConfig) {

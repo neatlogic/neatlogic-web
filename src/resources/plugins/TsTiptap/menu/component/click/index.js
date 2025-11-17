@@ -1,4 +1,6 @@
-import UploadImage from './upload-image.vue';
+import uploadImage from './upload-image.vue';
+import uploadVideo from './upload-video.vue';
 export default {
-  UploadImage
+  uploadImage,
+  uploadVideo
 };

@@ -1,12 +1,7 @@
 <template>
   <div>
     <Tooltip content="分割线" placement="top" :transfer="true">
-      <img
-        src="./divide.svg"
-        style="width: 16px;height: 16px;cursor:pointer;"
-        alt="分割线"
-        @click.stop="emitValue({menuName: 'divide'})"
-      />
+      <span class="tsfont-divider" @click.stop="emitValue({menuName: 'divide'})"></span>
     </Tooltip>
   </div>
 </template>
