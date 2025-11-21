@@ -1087,5 +1087,6 @@
   "datachange": "数据转换",
   "childmenucount": "子菜单数量",
   "systemmenuauth": "系统菜单权限",
-  "defaulthomepage": "默认首页"
+  "defaulthomepage": "默认首页",
+  "selectalltip": "多选模式下支持当前数据全选"
 }

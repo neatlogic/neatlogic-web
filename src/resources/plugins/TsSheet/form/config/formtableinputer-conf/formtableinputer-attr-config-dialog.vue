@@ -93,20 +93,34 @@
             <TsFormItem v-if="propertyLocal.handler !== 'formradio'" :label="$t('page.multipleselection')">
               <TsFormSwitch v-model="propertyLocal.config.isMultiple" :trueValue="true" :falseValue="false"></TsFormSwitch>
             </TsFormItem>
-            <TsFormItem
-              v-if="propertyLocal.handler === 'formselect'"
-              :label="$t('page.isdefaultselectd')"
-              :tooltip="$t('page.defaultselectdonlyvalue')"
-            >
-              <TsFormSwitch
-                :value="propertyLocal.config.isAutoSelectdOnlyValue || false"
-                :trueValue="true"
-                :falseValue="false"
-                @change="(val)=>{
-                  $set(propertyLocal.config, 'isAutoSelectdOnlyValue', val);
-                }"
-              ></TsFormSwitch>
-            </TsFormItem>
+            <template v-if="propertyLocal.handler === 'formselect'">
+              <TsFormItem
+                :label="$t('page.selectall')"
+                :tooltip="$t('page.selectalltip')"
+              >
+                <TsFormSwitch
+                  :value="propertyLocal.config.isCanAll || false"
+                  :trueValue="true"
+                  :falseValue="false "
+                  @change="(val)=>{
+                    $set(propertyLocal.config, 'isCanAll', val)
+                  }"
+                ></TsFormSwitch>
+              </TsFormItem>
+              <TsFormItem
+                :label="$t('page.isdefaultselectd')"
+                :tooltip="$t('page.defaultselectdonlyvalue')"
+              >
+                <TsFormSwitch
+                  :value="propertyLocal.config.isAutoSelectdOnlyValue || false"
+                  :trueValue="true"
+                  :falseValue="false"
+                  @change="(val)=>{
+                    $set(propertyLocal.config, 'isAutoSelectdOnlyValue', val);
+                  }"
+                ></TsFormSwitch>
+              </TsFormItem>
+            </template>
             <TsFormItem :label="$t('page.datasource')" required>
               <TsFormSelect
                 ref="formitem_datasource"
@@ -202,6 +216,18 @@
                     changeHiddenFieldList(val);
                   }"
                 ></TsFormSelect>
+              </TsFormItem>
+              <TsFormItem label="默认条数">
+                <TsFormInput
+                  :value="propertyLocal.config.pageSize || 20"
+                  border="border"
+                  type="number"
+                  :min="10"
+                  :max="500"
+                  @change="(val)=>{
+                    $set(propertyLocal.config,'pageSize',val);
+                  }"
+                ></TsFormInput>
               </TsFormItem>
               <TsFormItem v-if="propertyLocal.config.matrixUuid && tableMatrixColumnList.length > 0" :label="$t('page.filtercondition')">
                 <div class="bg-block padding-md radius-md">
@@ -920,6 +946,7 @@ export default {
       this.$set(this.propertyLocal.config, 'matrixUuid', null);
       this.$set(this.propertyLocal.config, 'formtableinputerUuid', null);
       this.$set(this.propertyLocal.config, 'mapping', {});
+      this.$set(this.propertyLocal.config, 'pageSize', 20);
       this.$delete(this.propertyLocal.reaction, 'filter');
       this.isReady = false;
       this.$nextTick(() => {

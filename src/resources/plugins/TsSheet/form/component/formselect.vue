@@ -232,6 +232,8 @@ export default {
       setting.placeholder = this.config.placeholder;
       setting.sperateText = this.config.sperateText || '、';
       setting.isAutoSelectdOnlyValue = this.config.isAutoSelectdOnlyValue || false;
+      setting.isCanAll = this.config.isCanAll || false;
+      setting.pageSize = this.config.pageSize || 20;
       if (this.config.dataSource === 'matrix') {
         setting.dynamicUrl = '/api/rest/matrix/column/data/search/forselect';
         setting.rootName = 'dataList';

@@ -9,6 +9,22 @@
       ></TsFormSwitch>
     </TsFormItem>
     <TsFormItem
+      labelPosition="left"
+      contentAlign="right"
+      :label="$t('page.selectall')"
+      :tooltip="$t('page.selectalltip')"
+    >
+      <TsFormSwitch
+        :value="config.isCanAll || false"
+        :trueValue="true"
+        :falseValue="false "
+        :disabled="disabled"
+        @change="(val)=>{
+          $set(config, 'isCanAll', val)
+        }"
+      ></TsFormSwitch>
+    </TsFormItem>
+    <TsFormItem
       :label="$t('page.isdefaultselectd')"
       labelPosition="left"
       contentAlign="right"
@@ -149,6 +165,19 @@
           :disabled="disabled"
         ></TsFormSwitch>
       </TsFormItem>
+      <TsFormItem labelPosition="top" label="默认条数">
+        <TsFormInput
+          :value="config.pageSize || 20"
+          border="border"
+          type="number"
+          :min="10"
+          :max="500"
+          :disabled="disabled"
+          @change="(val)=>{
+            $set(config, 'pageSize', val);
+          }"
+        ></TsFormInput>
+      </TsFormItem>
     </template>
     <TsFormItem v-if="config.matrixUuid && config.dataSource === 'matrix' && selectMatrixConfig && mappingDataList.length > 0" labelPosition="top" :label="$t('page.filtercondition')">
       <div class="bg-block padding-md radius-md" :class="validClass('sourceColumnList')">
@@ -268,6 +297,7 @@ export default {
       this.$set(this.config, 'sourceColumnList', []);
       this.$set(this.config, 'hiddenFieldList', []);
       this.$set(this.config, 'defaultValue', null);
+      this.$set(this.config, 'pageSize', 20);
       if (!this.$utils.isEmpty(this.formItem.reaction)) {
         Object.keys(this.formItem.reaction).forEach(key => {
           this.$set(this.formItem.reaction, key, {});
