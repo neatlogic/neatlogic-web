@@ -112,6 +112,9 @@ export default {
         case 'fontColor':
           chain.setColor(fontColor).run();
           break;
+        case 'mergeOrSplit':
+          chain.mergeOrSplit().run();
+          break;
       }
     }
   }

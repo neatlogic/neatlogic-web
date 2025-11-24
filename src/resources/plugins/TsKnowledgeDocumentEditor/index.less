@@ -1,4 +1,9 @@
 .ProseMirror {
+  &.resize-cursor {
+    // 鼠标左右可拖动的光标样式
+    cursor: ew-resize;
+    cursor: col-resize;
+  }
   pre {
     background: rgba(#616161, 0.1);
     border-radius: 0.5rem;
@@ -75,6 +80,26 @@
       background-color: #3d25140d;
       font-weight: bold;
       text-align: left;
+    }
+    .selectedCell:after {
+      background: #1456f02e;
+      content: '';
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      pointer-events: none;
+      position: absolute;
+      z-index: 2;
+    }
+    .column-resize-handle {
+      background-color: blue;
+      bottom: -2px;
+      pointer-events: none;
+      position: absolute;
+      right: -2px;
+      top: 0;
+      width: 4px;
     }
   }
   em {

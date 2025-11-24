@@ -4,23 +4,28 @@
       :is="getMenuComponent(menu.type)"
       v-for="(menu,index) in menuConfig"
       :key="index"
+      :selectedNodeTypeName="selectedNodeTypeName"
       v-bind="menu"
       @execCommand="handleCommand"
     />
   </div>
 </template>
 <script>
-import MenuConfig from './menu-config';
+import { BaseMenuConfigList, TableMenuConfigList } from './menu-config';
 import MenuComponent from './src/index.js';
 export default {
   name: '',
   components: {
     ...MenuComponent
   },
-  props: {},
+  props: {
+    selectedNodeTypeName: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
-      menuConfig: MenuConfig
     };
   },
   beforeCreate() {},
@@ -42,7 +47,14 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    menuConfig() {
+      const menuMap = {
+        'table': TableMenuConfigList
+      };
+      return [...BaseMenuConfigList, ...(menuMap[this.selectedNodeTypeName] || [])];
+    }
+  },
   watch: {}
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="knowledge-editor-box">
     <div class="editor-main" @click.stop="() => hidePlus()">
       <div class="editor-menu">
         <ul>
@@ -44,12 +44,13 @@
             @replace-menu-content="replaceMenuContent"
             @PlusMouseenter="handlePlusMouseenter"
           ></TipTapMenu>
-          <BubbleMenu
+          <TextSelectedMenu
             v-show="isShowBubbleMenu"
-            ref="bubbleMenuWrapper"
-            :style="{ top: `${bubbleMenuPosition.top}px`, left: `${bubbleMenuPosition.left}px` }"
+            ref="textSelectedMenuWrapper"
+            :selectedNodeTypeName="selectedNodeTypeName"
+            :style="{ top: `${textSelectedMenuPosition.top}px`, left: `${textSelectedMenuPosition.left}px` }"
             @execCommand="execCommand"
-          ></BubbleMenu>
+          ></TextSelectedMenu>
         </div>
       </div>
     </div>
@@ -69,6 +70,7 @@
         }
       "
     ></SearchReplaceDialog>
+    <div v-show="showRowButton" ref="rowBtn" class="row-action-btn">我是测试的点</div>
   </div>
 </template>
 
@@ -84,18 +86,20 @@ import { TableKit } from '@tiptap/extension-table';
 import { TextStyleKit } from '@tiptap/extension-text-style';
 import { TaskList, TaskItem } from '@tiptap/extension-list';
 import ExtensionsList from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/index.js';
+import { tableHoverCell } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table-hover-cell.js';
 import BaseMixin from './base-mixin.js';
 import { menuState } from './state.js';
 import InsertMenuCommands from '@/resources/plugins/TsKnowledgeDocumentEditor/commands/index.js';
 import { SearchHighlight } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
 import DataContext from './data.js';
+import { Plugin } from 'prosemirror-state';
 
 export default {
   components: {
     EditorContent,
     TipTapMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/index.vue'),
     ToolBar: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/toolbar/index.vue'),
-    BubbleMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/index.vue'),
+    TextSelectedMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/index.vue'),
     SearchReplaceDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/search-replace-dialog/index.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     DocumentTag: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/tag/index.vue')
@@ -117,7 +121,7 @@ export default {
       title: this.documentTitle,
       isShowBubbleMenu: false,
       isShowSearchReplaceDialog: false,
-      bubbleMenuPosition: {
+      textSelectedMenuPosition: {
         top: 0,
         left: 0
       },
@@ -131,7 +135,9 @@ export default {
       menuVisible: false,
       menuList: [],
       selectHeadingUuid: '',
-      selectedText: ''
+      selectedText: '',
+      selectedNodeTypeName: '', // 选中的节点类型名称
+      showRowButton: false
     };
   },
   mounted() {
@@ -169,7 +175,9 @@ export default {
         TextAlign.configure({
           types: ['heading', 'paragraph']
         }),
-        TableKit,
+        TableKit.configure({
+          table: { resizable: true }
+        }),
         TextStyleKit,
         Image,
         TaskList,
@@ -177,7 +185,14 @@ export default {
           nested: true
         }),
         ...ExtensionsList,
-        SearchHighlight
+        SearchHighlight,
+        {
+          name: 'debug-test',
+          addProseMirrorPlugins() {
+            console.log('🔥 addProseMirrorPlugins executed!');
+            return [];
+          }
+        }
       ],
       content: '',
       onUpdate({ editor }) {
@@ -203,15 +218,18 @@ export default {
       this.selectedText = editor?.state?.doc?.textBetween(from, to);
       const selectionRect = posToDOMRect(editor.view, from, to);
       const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
-      const bubbleMenuRect = this.$refs?.bubbleMenuWrapper?.$refs?.bubbleMenuRef?.getBoundingClientRect();
-      const { width: bubbleMenuWidth = 0 } = bubbleMenuRect || {};
+      const textSelectedMenuRect = this.$refs?.textSelectedMenuWrapper?.$refs?.bubbleMenuRef?.getBoundingClientRect();
+      const { width: bubbleMenuWidth = 0 } = textSelectedMenuRect || {};
       const { top: editorWrapperTop = 0, left: editorWrapperRectLeft = 0 } = editorWrapperRect || {};
       const { top: selectionRectTop = 0, height: selectionRectHight = 0, left: selectionRectLeft = 0, width: selectionRectWidth = 0 } = selectionRect || {};
-      this.bubbleMenuPosition = {
+      this.textSelectedMenuPosition = {
         top: (selectionRectTop + selectionRectHight - editorWrapperTop + 5).toFixed(0),
         left: selectionRectLeft + selectionRectWidth / 2 - editorWrapperRectLeft - bubbleMenuWidth / 2
       };
       const node = $from.node($from.depth);
+      this.selectedNodeTypeName = editor.isActive('table') ? 'table' : node?.type?.name;
+      console.log('node.type.name', node?.type?.name, editor.isActive('table'));
+
       _this.highlightHeading(node, editor);
     });
     this.editor?.view?.dom?.addEventListener('keydown', e => {
@@ -230,6 +248,17 @@ export default {
     getData() {
       let json = this.editor.getJSON();
       console.log(json);
+    },
+    updateRowButton(info) {
+      const rect = info.cellDom.getBoundingClientRect();
+      const btn = this.$refs.rowBtn;
+
+      this.showRowButton = true;
+      console.log('info', info);
+
+      // 定位：按钮在左侧 12px，垂直居中
+      btn.style.top = rect.top + rect.height / 2 + 'px';
+      btn.style.left = rect.left - 12 + 'px';
     },
     getAllHeadings(editor) {
       const $headings = editor.$nodes('heading');
@@ -539,6 +568,19 @@ export default {
     .heading-level-3 {
       padding-left: 28px;
     }
+  }
+}
+.knowledge-editor-box {
+  position: relative;
+  .row-action-btn {
+    position: fixed;
+    width: 16px;
+    height: 16px;
+    background: #3b82f6;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    pointer-events: none;
   }
 }
 </style>
