@@ -165,7 +165,7 @@
           :disabled="disabled"
         ></TsFormSwitch>
       </TsFormItem>
-      <TsFormItem labelPosition="top" :label="$t('page.pagesize')">
+      <TsFormItem labelPosition="top" :label="$t('page.pagesize')" :tooltip="$t('page.pagesizedes')">
         <TsFormInput
           :value="config.pageSize || 20"
           border="border"

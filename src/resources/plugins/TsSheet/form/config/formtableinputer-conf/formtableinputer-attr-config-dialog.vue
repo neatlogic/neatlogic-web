@@ -217,7 +217,7 @@
                   }"
                 ></TsFormSelect>
               </TsFormItem>
-              <TsFormItem :label="$t('page.pagesize')">
+              <TsFormItem :label="$t('page.pagesize')" :tooltip="$t('page.pagesizedes')">
                 <TsFormInput
                   :value="propertyLocal.config.pageSize || 20"
                   border="border"
