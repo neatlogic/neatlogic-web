@@ -165,7 +165,7 @@
           :disabled="disabled"
         ></TsFormSwitch>
       </TsFormItem>
-      <TsFormItem labelPosition="top" label="默认条数">
+      <TsFormItem labelPosition="top" :label="$t('page.pagesize')">
         <TsFormInput
           :value="config.pageSize || 20"
           border="border"

@@ -217,7 +217,7 @@
                   }"
                 ></TsFormSelect>
               </TsFormItem>
-              <TsFormItem label="默认条数">
+              <TsFormItem :label="$t('page.pagesize')">
                 <TsFormInput
                   :value="propertyLocal.config.pageSize || 20"
                   border="border"
