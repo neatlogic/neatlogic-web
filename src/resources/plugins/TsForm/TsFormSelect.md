@@ -88,8 +88,10 @@ needCallback|Boolean|false|否|是否搜索需要回调，主要用于实时搜�
 forbidContent|String,Array||否|禁止输入的字符串，主要用于通过allowCreate来创建选项时，主要是为了防止xss攻击 一般情况下面值为 ['<', '>', '"', "'", '&'] 或者 '<>&'|生效条件 search 时
 firstSelect|Boolean|true|否|必填且下拉列表只有一个时，是否选中下拉列表的唯一项|-
 nowrapHead|Boolean|false|否|当出现多选的时候，不换行显示，如果数据过多时则显示不全,通过滚动条来查看数据|-
-dropdownMenuMaxWidth|String,Boolean|false|下拉列表最大宽度
-
+dropdownMenuMaxWidth|String,Boolean|false|否|下拉列表最大宽度
+pageSize|Number|20|否|dynamicUrl模式下，设置返回数据的条数
+isCanAll|Boolean|false|否|多选模式下支持当前数据全选
+allText|String|全选|否|多选时，全选文字
 
 2021-11-09 新加方法
 参数名|数据类型|默认值|必传|用途|说明
