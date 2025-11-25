@@ -75,7 +75,8 @@ export default {
       selectedExtraMenuList: [] // 已选的额外菜单列表。用于在点击跳转后重置选中状态，防止第二次点击无效。
     };
   },
-  created() {
+  async created() {
+    await this.initExtramenu();
     //检测hash变化，用于framework.html切换hash
     window.addEventListener('hashchange', this.onHashChange);
     //如果从别的页面进来，使用此方法检测
@@ -254,17 +255,19 @@ export default {
       };
     },
     initExtramenu() {
-      this.$api.framework &&
-        this.$api.framework.extramenu
-          .getMenuList()
-          .then(res => {
-            this.extramenuList = res.Return;
-          })
-          .finally(() => {
-            this.$nextTick(() => {
-              this.$store.commit('setExtramenu', false);
-            });
+      if (!this.$api.framework) {
+        return;
+      }
+      return this.$api.framework.extramenu
+        .getMenuList()
+        .then(res => {
+          this.extramenuList = res.Return;
+        })
+        .finally(() => {
+          this.$nextTick(() => {
+            this.$store.commit('setExtramenu', false);
           });
+        });
     }
   },
   computed: {
@@ -283,9 +286,6 @@ export default {
         return groupList;
       };
     },
-    isHasExtramenu() {
-      return this.$AuthUtils.hasRole('EXTRA_MENU_MODIFY');
-    },
     isUpdateExtramenu() {
       return this.$store.state.isUpdateExtramenu;
     },
@@ -296,14 +296,6 @@ export default {
     }
   },
   watch: {
-    isHasExtramenu: {
-      handler(val) {
-        if (val) {
-          this.initExtramenu();
-        }
-      },
-      immediate: true
-    },
     isUpdateExtramenu: {
       handler(val) {
         if (val) {
