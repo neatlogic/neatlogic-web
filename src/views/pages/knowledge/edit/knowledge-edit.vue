@@ -1,7 +1,5 @@
 <template>
   <div>
-    <Tag color="#000" type="dot">我是颜色</Tag>
-    <Tag color="#000">我是颜色</Tag>
     <TsContain border="border">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
