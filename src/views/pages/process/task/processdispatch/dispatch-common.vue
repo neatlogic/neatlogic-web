@@ -236,7 +236,7 @@ export default {
       return validList;
     },
     knowledgeSearch() {
-      this.$refs.baseSetting.knowledgeSearch(this.dispatchTitle);
+      this.$refs.baseSetting && this.$refs.baseSetting.knowledgeSearch(this.dispatchTitle);
     },
     updateFormWidth() {
       if (this.$refs.formSetting && this.$refs.formSetting.$el && this.$refs.formSetting.$el.__vue__.$refs.formSheet) {
