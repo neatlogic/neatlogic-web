@@ -1,7 +1,7 @@
 <template>
   <div>
     <Tooltip content="无序列表" placement="top" :transfer="true">
-      <span class="tsfont-list cursor-pointer" @click.stop="emitValue({menuName: 'bulletList'})"></span>
+      <span class="tsfont-list cursor-pointer" @click.stop="insertMenuContent({commandName: 'bulletList'})"></span>
     </Tooltip>
   </div>
 </template>

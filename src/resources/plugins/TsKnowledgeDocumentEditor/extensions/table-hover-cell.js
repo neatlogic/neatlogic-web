@@ -7,7 +7,6 @@ export function tableHoverCell({ onHover, onLeave }) {
       handleDOMEvents: {
         mousemove(view, event) {
           const cellDom = event.target.closest('td, th');
-          console.log('cellDom', event);
           if (!cellDom) {
             onLeave?.();
             return false;

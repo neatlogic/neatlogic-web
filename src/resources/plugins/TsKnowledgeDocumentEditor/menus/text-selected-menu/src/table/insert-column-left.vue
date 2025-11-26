@@ -6,38 +6,26 @@
       theme="light"
       max-width="300"
     >
-      <span
-        class="menu-button-box"
-        :class="[icon, menuState?.editorData?.isActive(command) ? 'text-href' : '']"
-        @click="
-          $emit('executeEditorCommand',
-                {
-                  commandName: command,
-                  value: {
-                    [capitalizeFirstWordKeepRest(command)]: menuState?.editorData?.isActive(command)
-                  }
-                }
-          )"
-      ></span>
+      <img
+        style="width: 16px;height: 16px;"
+        src="@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/table/svg/insert-column-left.svg"
+        alt=""
+        @click="handleClick"
+      />
       <div slot="content">
         {{ title }}
       </div>
     </Tooltip>
-
   </div>
-
 </template>
 <script>
 import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/mixin.js';
 export default {
   name: '',
-  components: {},
+  components: {
+  },
   mixins: [mixin],
   props: {
-    icon: {
-      type: String,
-      default: ''
-    },
     title: {
       type: String,
       default: ''
@@ -48,7 +36,9 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      linkUrl: ''
+    };
   },
   beforeCreate() {},
   created() {},
@@ -61,11 +51,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    capitalizeFirstWordKeepRest(str) {
-      if (!str || typeof str !== 'string') return '';
-      const trimmed = str.trim();
-      // 首字符大写 + 剩余字符原样拼接
-      return `is${trimmed.charAt(0).toUpperCase()}${trimmed.slice(1)}`;
+    handleClick() {
+      this.$emit('executeEditorCommand', {
+        commandName: this.command,
+        value: {}
+      });
     }
   },
   filter: {},
@@ -74,7 +64,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.menu-button-box {
-  font-size: 18px;
-}
 </style>

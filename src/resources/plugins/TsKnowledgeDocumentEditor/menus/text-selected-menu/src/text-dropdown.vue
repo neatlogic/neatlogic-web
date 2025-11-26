@@ -10,7 +10,7 @@
         @mouseenter.stop="handleBtnMouseEnter"
         @mouseleave.stop="handleBtnMouseLeave"
       >
-        <span class="tsfont-horizontal-left" style="font-size: 16px;"></span>
+        <span class="tsfont-title" style="font-size: 16px;"></span>
         <Icon type="ios-arrow-down"></Icon>
       </span>
       <DropdownMenu slot="list">
@@ -55,19 +55,73 @@ export default {
       isVisibleAlignment: false,
       hideTimer: null,
       isEnterMenu: false,
-      alignmentList: [{
-        text: '左对齐',
-        value: 'left',
-        iconClass: 'tsfont-horizontal-left'
-      }, {
-        text: '居中对齐',
-        value: 'center',
-        iconClass: 'tsfont-horizontal-center'
-      }, {
-        text: '右对齐',
-        value: 'right',
-        iconClass: 'tsfont-horizontal-right'
-      }]
+      alignmentList: [
+        {
+          text: '正文',
+          value: 'title',
+          iconClass: 'tsfont-title'
+        },
+        {
+          text: '一级标题',
+          value: 'center',
+          iconClass: 'tsfont-horizontal-center'
+        },
+        {
+          text: '二级标题',
+          value: 'right',
+          iconClass: 'tsfont-horizontal-right'
+        },
+        {
+          text: '三级标题',
+          value: 'justify',
+          iconClass: 'tsfont-justify'
+        },
+        {
+          text: '四级标题',
+          value: 'justify',
+          iconClass: 'tsfont-justify'
+        },
+        {
+          text: '五级标题',
+          value: 'justify',
+          iconClass: 'tsfont-justify'
+        },
+        {
+          text: '六级标题',
+          value: 'justify',
+          iconClass: 'tsfont-justify'
+        },
+        {
+          text: '有序列表',
+          value: 'justify',
+          iconClass: 'tsfont-orderlist'
+        },
+        {
+          text: '无序列表',
+          value: 'justify',
+          iconClass: 'tsfont-list'
+        },
+        {
+          text: '任务',
+          value: 'justify',
+          iconClass: 'tsfont-check-square-o'
+        },
+        {
+          text: '代码块',
+          value: 'codeBlock',
+          iconClass: 'tsfont-json'
+        },
+        {
+          text: '引用',
+          value: 'blockquote',
+          iconClass: 'tsfont-quote'
+        },
+        {
+          text: '高亮快',
+          value: 'justify',
+          iconClass: 'tsfont-callout'
+        }
+      ]
     };
   },
   beforeCreate() {},

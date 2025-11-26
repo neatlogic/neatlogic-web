@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Tooltip content="居中对齐" placement="top" :transfer="true">
-      <span class="tsfont-horizontal-center cursor-pointer" @click.stop="emitValue({menuName: 'alignCenter'})"></span>
+    <Tooltip content="有序列表" placement="top" :transfer="true">
+      <span class="tsfont-orderlist cursor-pointer" @click.stop="insertMenuContent({commandName: 'orderedList'})"></span>
     </Tooltip>
   </div>
 </template>
@@ -9,8 +9,7 @@
 import toolBarMixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/toolbar/src/toolbar-mixin.js';
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   mixins: [toolBarMixin],
   props: {},
   data() {
@@ -18,8 +17,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -28,8 +26,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {}

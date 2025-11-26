@@ -37,7 +37,7 @@ export default {
     closeDialog(menuData) {
       this.isShowDialog = false;
       if (menuData) {
-        this.emitValue(menuData);
+        this.insertMenuContent(menuData);
       }
     }
   },

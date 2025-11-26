@@ -10,7 +10,7 @@
         @mouseenter.stop="handleBtnMouseEnter"
         @mouseleave.stop="handleBtnMouseLeave"
       >
-        <span class="tsfont-font-color"></span>
+        <span class="tsfont-font-color" style="font-size: 16px;"></span>
         <Icon type="ios-arrow-down"></Icon>
       </span>
       <DropdownMenu slot="list">
@@ -24,10 +24,10 @@
                 :class="item.color === selectedFontColor ? 'border-color-info' : ''"
                 @click.stop="()=> {
                   selectedFontColor = item.color;
-                  $emit('execCommand', {
-                    command: 'fontColor',
+                  $emit('executeEditorCommand', {
+                    commandName: 'color',
                     value: {
-                      fontColor: item.color,
+                      color: item.color,
                     }
                   })
                 }"
@@ -60,8 +60,8 @@
                     :style="{background: item.color}"
                     @click.stop="()=> {
                       selectedBgColorLight = item.color;
-                      $emit('execCommand', {
-                        command: 'backgroundColor',
+                      $emit('executeEditorCommand', {
+                        commandName: 'backgroundColor',
                         value: {
                           backgroundColor: item.color,
                         }
@@ -87,8 +87,8 @@
                     @click.stop="()=> {
                       selectedBgColor = item.color;
                       selectedBgColorLight = '';
-                      $emit('execCommand', {
-                        command: 'backgroundColor',
+                      $emit('executeEditorCommand', {
+                        commandName: 'backgroundColor',
                         value: {
                           backgroundColor: item.color,
                         }
@@ -246,14 +246,14 @@ export default {
       this.selectedBgColor = '#fff';
       this.selectedBgColorLight = '#fff';
       this.selectedFontColor = '#000';
-      this.$emit('execCommand', {
-        command: 'fontColor',
+      this.$emit('executeEditorCommand', {
+        commandName: 'color',
         value: {
           fontColor: this.selectedFontColor
         }
       });
-      this.$emit('execCommand', {
-        command: 'backgroundColor',
+      this.$emit('executeEditorCommand', {
+        commandName: 'backgroundColor',
         value: {
           backgroundColor: this.selectedBgColorLight
         }

@@ -6,38 +6,39 @@
       theme="light"
       max-width="300"
     >
-      <img
-        style="width: 16px;height: 16px;"
-        src="@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/table/svg/split-cell.svg"
-        alt=""
-        @click="handleClick"
-      />
+      <IconSvg
+        :activeClassName="menuState?.editorData?.isActive(command) ? `active` : ''"
+        @click="
+          $emit('executeEditorCommand',
+                {
+                  commandName: command,
+                  value: {}
+                }
+          )"
+      ></IconSvg>
       <div slot="content">
-        {{ title }}
+        <div>
+          <div>下划线 (ctrl + shift + c)</div>
+          <div>Markdown ~代码~</div>
+        </div>
       </div>
     </Tooltip>
+
   </div>
+
 </template>
 <script>
 import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/mixin.js';
 export default {
   name: '',
   components: {
+    IconSvg: () => import('./icon/index.vue')
   },
   mixins: [mixin],
-  props: {
-    title: {
-      type: String,
-      default: ''
-    },
-    command: {
-      type: String,
-      default: ''
-    }
-  },
+  props: {},
   data() {
     return {
-      linkUrl: ''
+      command: 'code'
     };
   },
   beforeCreate() {},
@@ -50,14 +51,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-    handleClick() {
-      this.$emit('executeEditorCommand', {
-        commandName: this.command,
-        value: {}
-      });
-    }
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {}

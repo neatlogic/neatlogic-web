@@ -1,7 +1,7 @@
 <template>
   <div>
     <Tooltip content="加粗" placement="top" :transfer="true">
-      <span class="tsfont-bold cursor-pointer" @click.stop="emitValue({menuName: 'bold'})"></span>
+      <span class="tsfont-bold cursor-pointer" @click.stop="insertMenuContent({commandName: 'bold', value: {isBold: false}})"></span>
     </Tooltip>
   </div>
 </template>

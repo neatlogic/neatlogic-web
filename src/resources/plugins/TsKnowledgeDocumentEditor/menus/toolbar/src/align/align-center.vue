@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Tooltip content="删除线" placement="top" :transfer="true">
-      <span class="tsfont-text-delete cursor-pointer" @click.stop="emitValue({menuName: 'strikethrough'})"></span>
+    <Tooltip content="居中对齐" placement="top" :transfer="true">
+      <span class="tsfont-horizontal-center cursor-pointer" @click.stop="insertMenuContent({commandName: 'textAlign', value: {textAlign: 'center'}})"></span>
     </Tooltip>
   </div>
 </template>
@@ -9,7 +9,8 @@
 import toolBarMixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/toolbar/src/toolbar-mixin.js';
 export default {
   name: '',
-  components: {},
+  components: {
+  },
   mixins: [toolBarMixin],
   props: {},
   data() {

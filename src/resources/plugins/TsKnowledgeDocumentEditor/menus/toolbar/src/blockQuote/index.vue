@@ -1,7 +1,7 @@
 <template>
   <div>
     <Tooltip content="引用" placement="top" :transfer="true">
-      <span class="tsfont-quote" @click.stop="emitValue({menuName: 'blockQuote'})"></span>
+      <span class="tsfont-quote" @click.stop="insertMenuContent({commandName: 'blockquote'})"></span>
     </Tooltip>
   </div>
 </template>

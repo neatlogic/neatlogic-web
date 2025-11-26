@@ -1,6 +1,6 @@
 // heading.js
 export default function heading({ editor, pos, options }) {
-  const { level = 1 } = options || {};
+  const { level } = options || {};
   editor
     .chain()
     .focus()

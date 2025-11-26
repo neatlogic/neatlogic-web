@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Tooltip content="左对齐" placement="top" :transfer="true">
-      <span class="tsfont-horizontal-left cursor-pointer" @click.stop="emitValue({menuName: 'alignLeft'})"></span>
+    <Tooltip content="两端对齐" placement="top" :transfer="true">
+      <span class="tsfont-horizontal-justify cursor-pointer" @click.stop="insertMenuContent({commandName: 'textAlign', value: {textAlign: 'justify'}})"></span>
     </Tooltip>
   </div>
 </template>

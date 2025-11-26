@@ -55,7 +55,7 @@
                 <TableGridSelector
                   @select="(rowCol)=> {
                     $emit('click-menu', {
-                      category: child.value,
+                      commandName: child.value,
                       value: rowCol
                     })
                   }"
@@ -228,13 +228,18 @@ export default {
         }
       }, 120);
     },
-    handleClick(category, value) {
-      this.componentsType = value;
+    handleClick(category, commandName) {
+      this.componentsType = commandName;
       if (category === 'basic') {
         this.componentsType = '';
-        this.$emit('click-menu', {category: value});
+        if (commandName.includes('heading')) { // 标题
+          const level = commandName.split('heading')[1];
+          this.$emit('click-menu', {commandName: 'heading', value: {level: level}});
+        } else {
+          this.$emit('click-menu', {commandName: commandName});
+        }
       } else {
-        if (value === 'uploadImage' || value === 'uploadVideo') {
+        if (commandName === 'uploadImage' || commandName === 'uploadVideo') {
           this.$nextTick(() => { // 使用的是动态组件，需要等组件挂载后才能调用方法
             this.$refs.uploadRef?.openFileDialog();
           });
@@ -262,7 +267,7 @@ export default {
     },
     emitClickMenu(file) {
       this.$emit('click-menu', {
-        category: this.componentsType,
+        commandName: this.componentsType,
         value: {
           file: file
         }}

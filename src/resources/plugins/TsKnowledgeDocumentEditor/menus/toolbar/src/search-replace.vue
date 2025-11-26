@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Tooltip content="两端对齐" placement="top" :transfer="true">
-      <span class="tsfont-horizontal-justify cursor-pointer" @click.stop="emitValue({menuName: 'alignJustify'})"></span>
+    <Tooltip content="搜索替换" placement="top" :transfer="true">
+      <span class="tsfont-search cursor-pointer" @click.stop="insertMenuContent({commandName: 'searchReplace'})"></span>
     </Tooltip>
   </div>
 </template>

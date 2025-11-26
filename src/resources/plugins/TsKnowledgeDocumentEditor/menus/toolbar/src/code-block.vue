@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Tooltip content="分割线" placement="top" :transfer="true">
-      <span class="tsfont-divider" @click.stop="emitValue({menuName: 'divide'})"></span>
+    <Tooltip content="代码块" placement="top" :transfer="true">
+      <span class="tsfont-code cursor-pointer" @click.stop="insertMenuContent({commandName: 'codeBlock'})"></span>
     </Tooltip>
   </div>
 </template>
@@ -13,7 +13,8 @@ export default {
   mixins: [toolBarMixin],
   props: {},
   data() {
-    return {};
+    return {
+    };
   },
   beforeCreate() {},
   created() {},

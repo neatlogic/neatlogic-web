@@ -39,8 +39,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    handleClickMenu(menuName) {
-      this.emitValue({menuName: menuName});
+    handleClickMenu(heading) {
+      const level = parseInt(heading.split('heading')[1]);
+      this.insertMenuContent({commandName: 'heading', value: {level: level}});
     }
   },
   filter: {},

@@ -6,7 +6,7 @@
       :key="index"
       :selectedNodeTypeName="selectedNodeTypeName"
       v-bind="menu"
-      @execCommand="handleCommand"
+      @executeEditorCommand="handleCommand"
     />
   </div>
 </template>
@@ -39,8 +39,8 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    handleCommand(execMenuValue) {
-      this.$emit('execCommand', execMenuValue);
+    handleCommand(menuDataConfig) {
+      this.$emit('executeEditorCommand', menuDataConfig);
     },
     getMenuComponent(type) {
       return MenuComponent[type] || 'div';

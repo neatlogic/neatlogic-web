@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Tooltip content="搜索替换" placement="top" :transfer="true">
-      <span class="tsfont-search cursor-pointer" @click.stop="emitValue({menuName: 'searchReplace'})"></span>
+    <Tooltip content="删除线" placement="top" :transfer="true">
+      <span class="tsfont-text-delete cursor-pointer" @click.stop="insertMenuContent({commandName: 'strike'})"></span>
     </Tooltip>
   </div>
 </template>

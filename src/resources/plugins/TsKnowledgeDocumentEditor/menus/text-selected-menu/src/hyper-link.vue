@@ -81,10 +81,10 @@ export default {
       this.dialogSetting.isShow = false;
     },
     okDialog() {
-      this.$emit('execCommand', {
-        command: this.command,
+      this.$emit('executeEditorCommand', {
+        commandName: this.command,
         value: {
-          linkUrl: this.linkUrl
+          linkHref: this.linkUrl
         }
       });
       this.closeDialog();
@@ -98,7 +98,7 @@ export default {
 <style lang="less" scoped>
 .hyper-link-box {
   .link-text {
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 </style>

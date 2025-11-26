@@ -4,8 +4,8 @@
       :is="componentName"
       v-for="(componentName,index) in toolbarComponent"
       :key="index"
-      @insert-menu-content="(menuName)=> {
-        $emit('insert-menu-content', menuName)
+      @insert-menu-content="(menuData)=> {
+        $emit('insert-menu-content', menuData)
       }"
     ></component>
   </div>

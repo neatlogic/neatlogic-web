@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Tooltip content="右对齐" placement="top" :transfer="true">
-      <span class="tsfont-horizontal-right cursor-pointer" @click.stop="emitValue({menuName: 'alignRight'})"></span>
+    <Tooltip content="分割线" placement="top" :transfer="true">
+      <span class="tsfont-divider" @click.stop="insertMenuContent({commandName: 'horizontalRule'})"></span>
     </Tooltip>
   </div>
 </template>
@@ -13,8 +13,7 @@ export default {
   mixins: [toolBarMixin],
   props: {},
   data() {
-    return {
-    };
+    return {};
   },
   beforeCreate() {},
   created() {},

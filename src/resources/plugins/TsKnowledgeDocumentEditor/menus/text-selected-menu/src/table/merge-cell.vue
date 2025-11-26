@@ -8,7 +8,7 @@
     >
       <img
         style="width: 16px;height: 16px;"
-        src="@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/table/merge-cell.svg"
+        src="@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/table/svg/merge-cell.svg"
         alt=""
         @click="handleClick"
       />
@@ -52,8 +52,8 @@ export default {
   destroyed() {},
   methods: {
     handleClick() {
-      this.$emit('execCommand', {
-        command: this.command,
+      this.$emit('executeEditorCommand', {
+        commandName: this.command,
         value: {}
       });
     }

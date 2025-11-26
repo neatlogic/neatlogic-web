@@ -1,6 +1,6 @@
 export default {
   methods: {
-    emitValue(menuName) {
+    insertMenuContent(menuName) {
       this.$emit('insert-menu-content', menuName);
     }
   }

@@ -6,21 +6,21 @@
       theme="light"
       max-width="300"
     >
-      <span
-        class="menu-button-box"
-        :class="[icon, menuState?.editorData?.isActive(command) ? 'text-href' : '']"
+      <IconSvg
+        :activeClassName="menuState?.editorData?.isActive(command) ? `active` : ''"
         @click="
           $emit('executeEditorCommand',
                 {
                   commandName: command,
-                  value: {
-                    [capitalizeFirstWordKeepRest(command)]: menuState?.editorData?.isActive(command)
-                  }
+                  value: {}
                 }
           )"
-      ></span>
+      ></IconSvg>
       <div slot="content">
-        {{ title }}
+        <div>
+          <div>下划线 (ctrl + U)</div>
+          <div>Markdown ~文本~ 空格</div>
+        </div>
       </div>
     </Tooltip>
 
@@ -31,7 +31,9 @@
 import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/mixin.js';
 export default {
   name: '',
-  components: {},
+  components: {
+    IconSvg: () => import('./icon/index.vue')
+  },
   mixins: [mixin],
   props: {
     icon: {
@@ -44,7 +46,7 @@ export default {
     },
     command: {
       type: String,
-      default: ''
+      default: 'underline'
     }
   },
   data() {
@@ -60,21 +62,11 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-    capitalizeFirstWordKeepRest(str) {
-      if (!str || typeof str !== 'string') return '';
-      const trimmed = str.trim();
-      // 首字符大写 + 剩余字符原样拼接
-      return `is${trimmed.charAt(0).toUpperCase()}${trimmed.slice(1)}`;
-    }
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {}
 };
 </script>
 <style lang="less" scoped>
-.menu-button-box {
-  font-size: 18px;
-}
 </style>

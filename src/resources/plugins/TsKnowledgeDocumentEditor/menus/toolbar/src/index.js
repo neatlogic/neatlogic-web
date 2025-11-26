@@ -1,31 +1,28 @@
 import Heading from './heading';
 import Bold from './bold.vue';
 import Italic from './italic.vue';
-import Strikethrough from './strikethrough.vue';
-import Orderedlist from './orderedList.vue';
-import BulletList from './bulletList.vue';
+import Strike from './strike.vue';
+import Orderedlist from './ordered-list.vue';
+import BulletList from './bullet-list.vue';
 import Link from './link/index.vue';
-import CodeBlock from './codeBlock.vue';
-import AlignCenter from './alignCenter.vue';
-import AlignLeft from './alignLeft.vue';
-import AlignRight from './alignRight.vue';
-import AlignJustify from './alignJustify.vue';
-import UploadAttachment from './uploadAttachment/index.vue';
-import UploadImage from './uploadImage/index.vue';
-import Divide from './divide/index.vue';
-import BlockQuote from './blockQuote/index.vue';
-import SearchReplace from './searchReplace.vue';
+import CodeBlock from './code-block.vue';
+import UploadAttachment from './upload-attachment/index.vue';
+import UploadImage from './upload-image/index.vue';
+import HorizontalRule from './horizontal-rule/index.vue';
+import BlockQuote from './blockquote/index.vue';
+import SearchReplace from './search-replace.vue';
+import { AlignLeft, AlignRight, AlignCenter, AlignJustify } from './align/index.js';
 export default {
   Heading,
   Bold,
   Italic,
-  Strikethrough,
+  Strike,
   Orderedlist,
   BulletList,
   Link,
   CodeBlock,
   BlockQuote,
-  Divide,
+  HorizontalRule,
   AlignLeft,
   AlignRight,
   AlignCenter,

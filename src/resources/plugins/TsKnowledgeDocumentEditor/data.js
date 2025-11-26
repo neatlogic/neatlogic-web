@@ -35,6 +35,185 @@ export default {
       ]
     },
     {
+      'type': 'table',
+      'content': [
+        {
+          'type': 'tableRow',
+          'content': [
+            {
+              'type': 'tableHeader',
+              'attrs': {
+                'colspan': 1,
+                'rowspan': 1,
+                'colwidth': null
+              },
+              'content': [
+                {
+                  'type': 'paragraph',
+                  'attrs': {
+                    'textAlign': null
+                  },
+                  'content': [
+                    {
+                      'type': 'text',
+                      'text': '姓名'
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              'type': 'tableHeader',
+              'attrs': {
+                'colspan': 1,
+                'rowspan': 1,
+                'colwidth': null
+              },
+              'content': [
+                {
+                  'type': 'paragraph',
+                  'attrs': {
+                    'textAlign': null
+                  },
+                  'content': [
+                    {
+                      'type': 'text',
+                      'text': '年级'
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              'type': 'tableHeader',
+              'attrs': {
+                'colspan': 1,
+                'rowspan': 1,
+                'colwidth': null
+              },
+              'content': [
+                {
+                  'type': 'paragraph',
+                  'attrs': {
+                    'textAlign': null
+                  },
+                  'content': [
+                    {
+                      'type': 'text',
+                      'text': '爱好'
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              'type': 'tableHeader',
+              'attrs': {
+                'colspan': 1,
+                'rowspan': 1,
+                'colwidth': null
+              },
+              'content': [
+                {
+                  'type': 'paragraph',
+                  'attrs': {
+                    'textAlign': null
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          'type': 'tableRow',
+          'content': [
+            {
+              'type': 'tableCell',
+              'attrs': {
+                'colspan': 1,
+                'rowspan': 1,
+                'colwidth': null
+              },
+              'content': [
+                {
+                  'type': 'paragraph',
+                  'attrs': {
+                    'textAlign': null
+                  },
+                  'content': [
+                    {
+                      'type': 'text',
+                      'text': '欧阳xxx'
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              'type': 'tableCell',
+              'attrs': {
+                'colspan': 1,
+                'rowspan': 1,
+                'colwidth': null
+              },
+              'content': [
+                {
+                  'type': 'paragraph',
+                  'attrs': {
+                    'textAlign': null
+                  },
+                  'content': [
+                    {
+                      'type': 'text',
+                      'text': '2年级'
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              'type': 'tableCell',
+              'attrs': {
+                'colspan': 1,
+                'rowspan': 1,
+                'colwidth': null
+              },
+              'content': [
+                {
+                  'type': 'paragraph',
+                  'attrs': {
+                    'textAlign': null
+                  },
+                  'content': [
+                    {
+                      'type': 'text',
+                      'text': '吉他，二胡'
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              'type': 'tableCell',
+              'attrs': {
+                'colspan': 1,
+                'rowspan': 1,
+                'colwidth': null
+              },
+              'content': [
+                {
+                  'type': 'paragraph',
+                  'attrs': {
+                    'textAlign': null
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
       'type': 'paragraph',
       'attrs': {
         'textAlign': null
@@ -509,185 +688,6 @@ export default {
       'attrs': {
         'textAlign': null
       }
-    },
-    {
-      'type': 'table',
-      'content': [
-        {
-          'type': 'tableRow',
-          'content': [
-            {
-              'type': 'tableHeader',
-              'attrs': {
-                'colspan': 1,
-                'rowspan': 1,
-                'colwidth': null
-              },
-              'content': [
-                {
-                  'type': 'paragraph',
-                  'attrs': {
-                    'textAlign': null
-                  },
-                  'content': [
-                    {
-                      'type': 'text',
-                      'text': '姓名'
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              'type': 'tableHeader',
-              'attrs': {
-                'colspan': 1,
-                'rowspan': 1,
-                'colwidth': null
-              },
-              'content': [
-                {
-                  'type': 'paragraph',
-                  'attrs': {
-                    'textAlign': null
-                  },
-                  'content': [
-                    {
-                      'type': 'text',
-                      'text': '年级'
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              'type': 'tableHeader',
-              'attrs': {
-                'colspan': 1,
-                'rowspan': 1,
-                'colwidth': null
-              },
-              'content': [
-                {
-                  'type': 'paragraph',
-                  'attrs': {
-                    'textAlign': null
-                  },
-                  'content': [
-                    {
-                      'type': 'text',
-                      'text': '爱好'
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              'type': 'tableHeader',
-              'attrs': {
-                'colspan': 1,
-                'rowspan': 1,
-                'colwidth': null
-              },
-              'content': [
-                {
-                  'type': 'paragraph',
-                  'attrs': {
-                    'textAlign': null
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          'type': 'tableRow',
-          'content': [
-            {
-              'type': 'tableCell',
-              'attrs': {
-                'colspan': 1,
-                'rowspan': 1,
-                'colwidth': null
-              },
-              'content': [
-                {
-                  'type': 'paragraph',
-                  'attrs': {
-                    'textAlign': null
-                  },
-                  'content': [
-                    {
-                      'type': 'text',
-                      'text': '欧阳xxx'
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              'type': 'tableCell',
-              'attrs': {
-                'colspan': 1,
-                'rowspan': 1,
-                'colwidth': null
-              },
-              'content': [
-                {
-                  'type': 'paragraph',
-                  'attrs': {
-                    'textAlign': null
-                  },
-                  'content': [
-                    {
-                      'type': 'text',
-                      'text': '2年级'
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              'type': 'tableCell',
-              'attrs': {
-                'colspan': 1,
-                'rowspan': 1,
-                'colwidth': null
-              },
-              'content': [
-                {
-                  'type': 'paragraph',
-                  'attrs': {
-                    'textAlign': null
-                  },
-                  'content': [
-                    {
-                      'type': 'text',
-                      'text': '吉他，二胡'
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              'type': 'tableCell',
-              'attrs': {
-                'colspan': 1,
-                'rowspan': 1,
-                'colwidth': null
-              },
-              'content': [
-                {
-                  'type': 'paragraph',
-                  'attrs': {
-                    'textAlign': null
-                  }
-                }
-              ]
-            }
-          ]
-        }
-      ]
     },
     {
       'type': 'codeBlock',

@@ -1,14 +1,26 @@
 import heading from './heading';
-import bulletList from './bulletList';
-import codeBlock from './codeBlock';
-import hightlightBlock from './hightlightBlock';
-import orderedList from './orderedList';
-import table from './table';
-import uploadImage from './uploadImage';
-import uploadVideo from './uploadVideo';
+import bulletList from './bullet-list';
+import codeBlock from './code-block';
+import hightlightBlock from './hightlight-block';
+import orderedList from './ordered-list';
+import uploadImage from './upload-image';
+import uploadVideo from './upload-video';
 import blockquote from './blockquote';
-import horizontalRule from './horizontalRule';
-import taskList from './taskList';
+import horizontalRule from './horizontal-rule';
+import taskList from './task-list';
+import insertTable from './table/insert-table';
+import addColumnBefore from './table/add-column-before';
+import addColumnAfter from './table/add-column-after';
+import mergeOrSplit from './table/merge-or-split';
+import bold from './bold';
+import italic from './italic';
+import strike from './strike';
+import link from './link';
+import textAlign from './text-align';
+import backgroundColor from './background-color';
+import color from './color';
+import underline from './underline';
+import code from './code';
 export default {
   heading,
   codeBlock,
@@ -16,9 +28,21 @@ export default {
   bulletList,
   orderedList,
   taskList,
-  table,
+  insertTable,
   uploadImage,
   uploadVideo,
   blockquote,
-  horizontalRule
+  horizontalRule,
+  addColumnBefore,
+  addColumnAfter,
+  mergeOrSplit,
+  bold,
+  italic,
+  strike,
+  link,
+  textAlign,
+  backgroundColor,
+  color,
+  underline,
+  code
 };

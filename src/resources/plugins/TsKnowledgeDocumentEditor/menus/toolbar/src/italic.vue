@@ -1,7 +1,7 @@
 <template>
   <div>
     <Tooltip content="倾斜" placement="top" :transfer="true">
-      <span class="tsfont-italic cursor-pointer" @click.stop="emitValue({menuName: 'italic'})"></span>
+      <span class="tsfont-italic cursor-pointer" @click.stop="insertMenuContent({commandName: 'italic', value: { isItalic: false}})"></span>
     </Tooltip>
   </div>
 </template>

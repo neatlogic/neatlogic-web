@@ -64,7 +64,11 @@ export default {
       if (!this.valid()) {
         return false;
       }
-      this.$emit('close', {menuName: 'link', hrefName: this.formData.name || this.formData.url, hrefUrl: this.formData.url});
+      this.$emit('close', {commandName: 'link',
+        value: {
+          linkText: this.formData.name || this.formData.url,
+          linkHref: this.formData.url
+        }});
     },
     closeDialog() {
       this.$emit('close');
