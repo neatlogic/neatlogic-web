@@ -20,22 +20,15 @@
               v-for="(item, index) in alignmentList"
               :key="index"
               class="mb-sm cursor-pointer"
-              :class="{ 'text-href': menuState?.editorData?.isActive({textAlign: item.value}) }"
-              @click.stop="()=> {
-                $emit('executeEditorCommand', {
-                  commandName: 'textAlign',
-                  value: {
-                    textAlign: item.value
-                  }
-                })
-              }"
+              :class="{ 'text-href': isActiveMenu(item.value) }"
+              @click.stop="handleClick(item.value)"
             >
               <span
                 :class="item.iconClass"
-                class="pr-nm"
+                class="icon-font-size pr-nm"
               ></span>
               <span>{{ item.text }}</span>
-              <span v-if="menuState?.editorData?.isActive({textAlign: item.value})" class="tsfont-check text-href ml-nm"></span>
+              <span v-if="isActiveMenu(item.value)" class="tsfont-check text-href ml-nm"></span>
             </li>
           </ul>
         </div>
@@ -58,52 +51,52 @@ export default {
       alignmentList: [
         {
           text: '正文',
-          value: 'title',
+          value: 'paragraph',
           iconClass: 'tsfont-title'
         },
         {
           text: '一级标题',
-          value: 'center',
+          value: 'heading1',
           iconClass: 'tsfont-horizontal-center'
         },
         {
           text: '二级标题',
-          value: 'right',
+          value: 'heading2',
           iconClass: 'tsfont-horizontal-right'
         },
         {
           text: '三级标题',
-          value: 'justify',
+          value: 'heading3',
           iconClass: 'tsfont-justify'
         },
         {
           text: '四级标题',
-          value: 'justify',
+          value: 'heading4',
           iconClass: 'tsfont-justify'
         },
         {
           text: '五级标题',
-          value: 'justify',
+          value: 'heading5',
           iconClass: 'tsfont-justify'
         },
         {
           text: '六级标题',
-          value: 'justify',
+          value: 'heading6',
           iconClass: 'tsfont-justify'
         },
         {
           text: '有序列表',
-          value: 'justify',
+          value: 'orderedList',
           iconClass: 'tsfont-orderlist'
         },
         {
           text: '无序列表',
-          value: 'justify',
+          value: 'bulletList',
           iconClass: 'tsfont-list'
         },
         {
           text: '任务',
-          value: 'justify',
+          value: 'taskList',
           iconClass: 'tsfont-check-square-o'
         },
         {
@@ -118,7 +111,7 @@ export default {
         },
         {
           text: '高亮快',
-          value: 'justify',
+          value: 'highlightBlock',
           iconClass: 'tsfont-callout'
         }
       ]
@@ -135,6 +128,25 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleClick(value) {
+      if (value.includes('heading')) {
+        this.$emit('executeEditorCommand', {
+          commandName: 'heading',
+          value: {
+            level: Number(value.split('heading')[1]),
+            isToggle: true
+          }
+        });
+        return;
+      } else {
+        this.$emit('executeEditorCommand', {
+          commandName: value,
+          value: {
+            isToggle: true
+          }
+        });
+      }
+    },
     closeDropdownMenu() {
       this.isVisibleAlignment = false;
     },
@@ -169,7 +181,17 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    isActiveMenu() {
+      return menuName => {
+        if (menuName.includes('heading')) {
+          return this.menuState?.editorData?.isActive('heading', { level: Number(menuName.split('heading')[1]) });
+        } else {
+          return this.menuState?.editorData?.isActive(menuName);
+        }
+      };
+    }
+  },
   watch: {}
 };
 </script>
@@ -180,6 +202,9 @@ export default {
       &:last-child {
         margin-bottom: 0;
       }
+    }
+    .icon-font-size {
+      font-size: 16px;
     }
   }
 </style>

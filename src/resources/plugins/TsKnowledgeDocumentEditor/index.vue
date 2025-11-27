@@ -212,7 +212,7 @@ export default {
         ...ExtensionsList,
         SearchHighlight
       ],
-      content: '',
+      content: '<h1>欢迎使用这是一个示例文档</h1>',
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
       },

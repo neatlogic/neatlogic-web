@@ -21,6 +21,7 @@ import backgroundColor from './background-color';
 import color from './color';
 import underline from './underline';
 import code from './code';
+import paragraph from './paragraph';
 export default {
   heading,
   codeBlock,
@@ -44,5 +45,6 @@ export default {
   backgroundColor,
   color,
   underline,
-  code
+  code,
+  paragraph
 };
