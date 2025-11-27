@@ -114,6 +114,11 @@
               {{ addItem[showName ? showName : textName] }}
               <i class="tsfont-arrow-corner-left text-primary"></i>
             </li>
+            <li
+              v-if="multiple && isCanAll && !$utils.isEmpty(nodeList)"
+              class="ivu-dropdown-item overflow"
+              @click.stop="selectAll"
+            >{{ allText }}</li>
             <Scroll
               v-if="!handleNoData()"
               :on-reach-bottom="handleReachBottom"
@@ -194,6 +199,11 @@
               {{ addItem[showName ? showName : textName] }}
               <i class="tsfont-arrow-corner-left text-primary"></i>
             </li>
+            <li
+              v-if="multiple && isCanAll && !$utils.isEmpty(nodeList)"
+              class="ivu-dropdown-item overflow"
+              @click.stop="selectAll"
+            >{{ allText }}</li>
             <Scroll
               v-if="!handleNoData()"
               :on-reach-bottom="handleReachBottom"
@@ -495,6 +505,23 @@ export default {
       //是否自动选中唯一值
       type: Boolean,
       default: false
+    },
+    pageSize: {
+      //分页大小
+      type: Number,
+      default: 20
+    },
+    isCanAll: {
+      //是否显示全选
+      type: Boolean,
+      default: false
+    },
+    allText: {
+      //全选文字
+      type: String,
+      default() {
+        return this.$t('page.selectall');
+      }
     }
   },
   data() {
@@ -1011,7 +1038,7 @@ export default {
         this.reachPage = 0;
         this.nodeList = [];
       }
-      let params = { currentPage: this.currentPage, pageSize: 20 };
+      let params = { currentPage: this.currentPage, pageSize: this.pageSize };
       params[this.keyword] = query ? query.trim() : '';
       this.getDataByAjax(params, this.dynamicUrl, 'cancelAxios')
         .then(res => {
@@ -1412,6 +1439,22 @@ export default {
         this.$utils.equalStr(arr, str) && (index = 0);
       }
       return index;
+    },
+    selectAll() {
+      // 全选
+      let value = [];
+      this.nodeList.forEach(item => {
+        if (item && item._disabled || !item) {
+          return;
+        } else {
+          value.push(item[this.valueName]);
+        }
+      });
+      this.selectedList = this.nodeList.filter(item => !item._disabled && item);
+      this.currentValue = value;
+      this.searchKeyWord = '';
+      this.onChangeValue();
+      this.scrollTop();
     }
   },
   computed: {

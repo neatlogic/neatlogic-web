@@ -14,11 +14,6 @@
           labelPosition="right"
         >
           <template slot="propList">
-            <!-- <div class="mb-nm">
-              <Button type="primary" ghost @click="addProp">
-                <span class="tsfont-plus"></span>
-              </Button>
-            </div>-->
             <TsTable
               ref="proptable"
               :fixedHeader="false"
@@ -43,37 +38,33 @@
                 </Tooltip>
               </template>
 
-              <template v-slot:value="{ row }">
+              <template v-slot:value="{ row, index }">
                 <TsFormInput
-                  v-if="row.dataType && (row.dataType.toLowerCase() == 'int' || row.dataType.toLowerCase() == 'integer' || row.dataType.toLowerCase() == 'long' || row.dataType.toLowerCase() == 'double')"
+                  v-if="row.dataType && ['int', 'integer', 'long', 'double'].includes(row.dataType.toLowerCase())"
+                  :ref="'propValue_' + index"
                   v-model="row.value"
+                  :validateList="[row.required ? { name: 'required', message: ' ' } : '']"
                   type="number"
                   border="border"
                   maxlength="50"
                 ></TsFormInput>
                 <TsFormInput
-                  v-else-if="row.dataType && (row.dataType.toLowerCase() == 'json')"
+                  v-else-if="row.dataType && row.dataType.toLowerCase() === 'json'"
+                  :ref="'propValue_' + index"
                   v-model="row.value"
+                  :validateList="[row.required ? { name: 'required', message: ' ' } : '']"
                   type="textarea"
                   border="border"
                 ></TsFormInput>
                 <TsFormInput
                   v-else
+                  :ref="'propValue_' + index"
                   v-model="row.value"
+                  :validateList="[row.required ? { name: 'required', message: ' ' } : '']"
                   border="border"
                   maxlength="200"
                 ></TsFormInput>
               </template>
-              <!-- <template v-slot:action="{ row }">
-                <div class="tstable-action">
-                  <ul class="tstable-action-ul">
-                    <li
-                      class="tsfont-trash-o"
-                      @click="deleteProp(row)"
-                    >{{ $t('page.delete') }}</li>
-                  </ul>
-                </div>
-              </template>-->
             </TsTable>
           </template>
         </TsForm>
@@ -98,7 +89,7 @@ export default {
       isSaving: false,
       dialogConfig: {
         type: 'modal',
-        title: this.jobUuid && this.isCopy ? this.$t('page.copy') : this.jobUuid && !this.isCopy ? this.$t('page.edit') : this.$t('page.add'),
+        title: (this.jobUuid && this.isCopy ? this.$t('page.copy') : this.jobUuid && !this.isCopy ? this.$t('page.edit') : this.$t('page.add')) + this.$t('term.autoexec.job'),
         maskClose: false,
         isShow: true,
         width: 'medium'
@@ -143,6 +134,7 @@ export default {
           value: '',
           defaultValue: '', //默认值
           maxlength: 20,
+          transfer: true,
           label: this.$t('term.autoexec.jobmodule'),
           validateList: ['required'],
           url: '/api/rest/job/class/search', //通过url获取数据
@@ -253,7 +245,18 @@ export default {
     },
     save() {
       var form = this.$refs.mainForm;
-      if (form.valid()) {
+      let isValid = true;
+      this.propList.forEach((d, index) => {
+        const propValue = this.$refs['propValue_' + index];
+        if (propValue && !propValue.valid()) {
+          isValid = false;
+        }
+      });
+
+      if (!form.valid()) {
+        isValid = false;
+      }
+      if (isValid) {
         let data = form.getFormValue();
         data.propList = [];
         this.propList &&

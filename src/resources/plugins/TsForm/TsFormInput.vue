@@ -232,7 +232,10 @@ export default {
       this.$emit('on-clear');
     },
     onBlurValue: function() {
-      const value = typeof this.currentValue === 'string' ? this.currentValue.trim() : this.currentValue;
+      if (typeof this.currentValue === 'string') {
+        this.currentValue = this.currentValue.trim(); // 去除首尾空格；否则由于前后值一致不会触发 watch，this.currentValue 的空格无法更新，最终导致校验失败。
+      }
+      const value = this.currentValue;
       typeof this.onBlur == 'function' && this.onBlur(value);
       this.$emit('on-blur', value);
       if (this.currentValidList.length > 0 && this.canValid('blur', this.currentValidList)) {
