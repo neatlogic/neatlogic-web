@@ -118,6 +118,11 @@ export default {
     reactionValueData: {
       type: Object,
       default: () => {}
+    },
+    expressionData: {
+      // 表达式的值
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -559,7 +564,7 @@ export default {
       };
     },
     formData() {
-      return {...(this.reactionValueData || {}), ...(this.rowData || {})};
+      return {...(this.reactionValueData || {}), ...(this.rowData || {}), ...(this.expressionData || {})};
     },
     formItemUuid() {
       return this.formItem && this.formItem.uuid;
