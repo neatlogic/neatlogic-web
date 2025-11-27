@@ -890,8 +890,7 @@ export default {
 .form-item-width {
   min-width: 130px;
 }
-::v-deep .tstable-container,
-.table-container {
+::v-deep .tstable-container, .table-container {
   overflow-x: scroll;
   width: 100%;
 }
