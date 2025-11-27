@@ -1,5 +1,5 @@
 import UploadVideo from './upload-video';
-import HighlightBlock from './hightlight-block';
+import HighlightBlock from './highlight-block';
 import { BlockUuid } from './block-uuid';
 export default [
   UploadVideo,

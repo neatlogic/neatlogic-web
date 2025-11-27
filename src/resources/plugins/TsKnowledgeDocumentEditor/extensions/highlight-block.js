@@ -40,30 +40,32 @@ const HighlightBlock = Node.create({
     return {
       toggleHighlightBlock:
         () =>
-          ({ editor, commands, state }) => {
+          ({ editor, commands, state, chain }) => {
             const isActive = editor.isActive('highlightBlock');
-
+            const type = editor.schema.nodes.highlightBlock;
             if (isActive) {
             // 退出高亮块
               commands.lift();
               commands.setNode('paragraph');
               return true;
             }
-
-            // 插入新的高亮块
-            commands.focus();
-            commands.insertContent({
-              type: 'highlightBlock',
-              attrs: { uuid: utils.setUuid() },
-              content: [
-                {
-                  type: 'paragraph',
-                  content: [{ type: 'text', text: '高亮块内容…' }]
-                }
-              ]
-            });
-            return true;
-          }
+            return chain()
+              .selectParentNode() // 将选取范围扩展到父节点，比如选中几个文字的时候，需要去替换整个父节点
+              .wrapIn(type, { uuid: utils.setUuid() }).run();
+          },
+      setHighlightBlock: (text = '高亮块内容...') => ({commands}) => {
+        const uuid = utils.setUuid();
+        return commands.insertContent({
+          type: 'highlightBlock',
+          attrs: { uuid },
+          content: [
+            {
+              type: 'paragraph',
+              content: [{ type: 'text', text: text || '' }]
+            }
+          ]
+        });
+      }
     };
   }
 });

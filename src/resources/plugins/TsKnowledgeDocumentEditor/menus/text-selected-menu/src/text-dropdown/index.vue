@@ -26,7 +26,7 @@
               <span
                 :class="item.iconClass"
                 class="icon-font-size pr-nm"
-              ></span>
+              >{{ item.iconText }}</span>
               <span>{{ item.text }}</span>
               <span v-if="isActiveMenu(item.value)" class="tsfont-check text-href ml-nm"></span>
             </li>
@@ -57,32 +57,32 @@ export default {
         {
           text: '一级标题',
           value: 'heading1',
-          iconClass: 'tsfont-horizontal-center'
+          iconText: 'H1'
         },
         {
           text: '二级标题',
           value: 'heading2',
-          iconClass: 'tsfont-horizontal-right'
+          iconText: 'H2'
         },
         {
           text: '三级标题',
           value: 'heading3',
-          iconClass: 'tsfont-justify'
+          iconText: 'H3'
         },
         {
           text: '四级标题',
           value: 'heading4',
-          iconClass: 'tsfont-justify'
+          iconText: 'H4'
         },
         {
           text: '五级标题',
           value: 'heading5',
-          iconClass: 'tsfont-justify'
+          iconText: 'H5'
         },
         {
           text: '六级标题',
           value: 'heading6',
-          iconClass: 'tsfont-justify'
+          iconText: 'H6'
         },
         {
           text: '有序列表',

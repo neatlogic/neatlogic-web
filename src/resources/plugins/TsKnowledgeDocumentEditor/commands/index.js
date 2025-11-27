@@ -1,7 +1,7 @@
 import heading from './heading';
 import bulletList from './bullet-list';
 import codeBlock from './code-block';
-import hightlightBlock from './hightlight-block';
+import highlightBlock from './highlight-block';
 import orderedList from './ordered-list';
 import uploadImage from './upload-image';
 import uploadVideo from './upload-video';
@@ -25,7 +25,7 @@ import paragraph from './paragraph';
 export default {
   heading,
   codeBlock,
-  hightlightBlock,
+  highlightBlock,
   bulletList,
   orderedList,
   taskList,

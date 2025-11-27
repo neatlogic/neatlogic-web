@@ -8,7 +8,7 @@ import InsertColumnLeft from './table/insert-column-left.vue';
 import InsertColumnRight from './table/insert-column-right.vue';
 import Underline from './underline/index.vue';
 import Code from './code/index.vue';
-import TextDropdown from './text-dropdown.vue';
+import TextDropdown from './text-dropdown/index.vue';
 export default {
   MenuButton,
   HyperLink,

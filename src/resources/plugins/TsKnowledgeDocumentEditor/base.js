@@ -5,7 +5,6 @@ export default {
       if (!currentInstanceThis.editor) return;
       const insertPos = currentInstanceThis.getInsertPosition();
       const { commandName, value = {} } = menuData;
-      console.log('commandName', commandName, value);
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
         commandMethod({
