@@ -65,7 +65,7 @@ export default {
   align-items: center;
   gap: 15px;
   border-radius: 6px;
-  padding: 10px;
+  padding: 10px 16px;
   z-index: 100;
   span {
     cursor: pointer;

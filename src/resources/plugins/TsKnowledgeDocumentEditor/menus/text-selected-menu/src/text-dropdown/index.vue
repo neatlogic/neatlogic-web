@@ -14,7 +14,7 @@
         <Icon type="ios-arrow-down"></Icon>
       </span>
       <DropdownMenu slot="list">
-        <div class="padding-sm" @mouseenter.stop="handleDropDownMenuMouseEnter" @mouseleave.stop="handleDropDownMenuMouseLeave">
+        <div class="padding" @mouseenter.stop="handleDropDownMenuMouseEnter" @mouseleave.stop="handleDropDownMenuMouseLeave">
           <ul class="alignment-box">
             <li
               v-for="(item, index) in alignmentList"
