@@ -1085,5 +1085,7 @@
   "datachange": "data conversion",
   "childmenucount": "Number of submenus",
   "systemmenuauth": "System menu permissions",
-  "defaulthomepage": "default page"
+  "defaulthomepage": "default page",
+  "selectalltip": "Support full selection of current data in multiple selection mode",
+  "pagesizedes": "Quantity limit: 10-500 pieces"
 }

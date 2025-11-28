@@ -138,8 +138,9 @@ export default {
       error: '',
       inputColumns: Object.freeze([
         { title: this.$t('page.name'), key: 'name' },
-        { title: this.$t('page.explain'), key: 'description' },
+        { title: this.$t('page.description'), key: 'description' },
         { title: this.$t('page.type'), key: 'type' },
+        { title: this.$t('page.rule'), key: 'rule' },
         { title: this.$t('page.isrequired'), key: 'isRequired', width: 100, render: (h, params) => {
           if (params.row.isRequired) {
             return h('div', {class: 'text-success'}, this.$t('page.yes'));
@@ -147,7 +148,7 @@ export default {
             return h('div', {class: 'text-grey'}, this.$t('page.no'));
           }
         } },
-        { title: this.$t('page.help'), key: 'help' },
+        { title: this.$t('page.explain'), key: 'help' },
         { title: this.$t('page.insert'), key: 'input', slot: 'input' }
       ]),
       outputColumns: Object.freeze([

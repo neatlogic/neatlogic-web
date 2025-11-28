@@ -130,6 +130,7 @@
                       :extraUuid="extra.uuid"
                       :reactionData="getReactionData(extra, row)"
                       :reactionValueData="reactionValuesMap[extra.uuid]"
+                      :expressionData="getExpressionData(extra)"
                       class="form-item-width"
                       @change="changeRow"
                       @getCurrentRowData="getCurrentRowData"
@@ -163,6 +164,7 @@
 import base from '../base.vue';
 import validmixin from '../common/validate-mixin.js';
 import conditionMixin from './condition-mixin.js';
+import expressionMixin from './expression-mixin.js';
 import TableImportExportMixin from './table-import-export-mixin.js';
 export default {
   name: '',
@@ -172,7 +174,7 @@ export default {
     ColumnItem: () => import('@/resources/plugins/TsSheet/form/component/formtableinputer/column-item.vue')
   },
   extends: base,
-  mixins: [validmixin, conditionMixin, TableImportExportMixin],
+  mixins: [validmixin, conditionMixin, expressionMixin, TableImportExportMixin],
   props: {
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
@@ -684,6 +686,17 @@ export default {
             : row[uuid];
         });
         return result;
+      };
+    },
+    getExpressionData() {
+      return (extra) => {
+        const { handler, config = {} } = extra || {};
+        const { expression } = config || {};
+        let resultData = {};
+        if (handler === 'formexpression') {
+          resultData = this.handleExpressionData({expression: expression, formData: this.formData});
+        }
+        return resultData;
       };
     },
     frozenFormItemList() {
