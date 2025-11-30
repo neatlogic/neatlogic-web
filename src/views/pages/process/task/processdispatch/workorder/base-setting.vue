@@ -1,6 +1,6 @@
 <template>
   <div class="pl-nm">
-    <div class="bg-op padding radius-lg mb-nm">
+    <div v-if="isHasKnowledgeModule" class="bg-op padding radius-lg mb-nm">
       <div class="pb-nm" style="cursor: pointer;" @click="showRelateKnowledge = !showRelateKnowledge">
         <i :class="showRelateKnowledge ? 'tsfont-down' : 'tsfont-right'"></i>
         {{ $t('term.process.relateknowledge') }}
@@ -260,7 +260,7 @@ export default {
       return validList;
     },
     knowledgeSearch(keyword) {
-      if (!keyword || !keyword.trim()) {
+      if (!this.isHasKnowledgeModule || !keyword || !keyword.trim()) {
         this.knowledgeList = [];
         return;
       }
@@ -299,6 +299,14 @@ export default {
     getRegionSetting() {
       this.$set(this.regionSelectConfig, 'params', {owner: this.dispatch.owner});
       return this.regionSelectConfig;
+    },
+    isHasKnowledgeModule() {
+      let moduleList = this.$store.state.topMenu.moduleList;
+      let findItem = moduleList.find(item => item.moduleId === 'knowledge');
+      if (!this.$utils.isEmpty(findItem)) {
+        return true;
+      }
+      return false;
     }
   },
   watch: {
