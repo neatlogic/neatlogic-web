@@ -2908,7 +2908,8 @@
     "comparecount": "比较数据量",
     "samplecount": "样本数",
     "generatecode": "生成代码",
-    "open": "打开"
+    "open": "打开",
+    "isindex": "是否索引"
   },
   "informant": {
     "last5dump": "最近5次快照",
