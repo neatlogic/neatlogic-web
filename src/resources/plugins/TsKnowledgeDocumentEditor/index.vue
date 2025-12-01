@@ -35,14 +35,10 @@
           </div>
           <TipTapMenu
             :isEmptyRow="isEmptyRow"
-            :showPlus="showPlus"
-            :menuVisible="menuVisible"
             :iconClassName="iconClassName"
             :plusPos="plusPos"
-            :menuPos="menuPos"
             @insert-menu-content="handleInsertMenuContent"
             @replace-menu-content="replaceMenuContent"
-            @PlusMouseenter="handlePlusMouseenter"
           ></TipTapMenu>
           <TextSelectedMenu
             v-show="isShowBubbleMenu"
@@ -151,14 +147,11 @@ export default {
         top: 0,
         left: 0
       },
-      isEmptyRow: true, // 是否是空行，用于判断显示鼠标经过时的加号
+      isEmptyRow: false, // 是否是空行，用于判断显示鼠标经过时的加号
       iconClassName: '',
       editor: null,
-      menuPos: { top: 0, left: 0 },
       plusPos: { top: 0, left: 0 },
-      showPlus: false,
       plusBlock: null,
-      menuVisible: false,
       menuList: [],
       selectHeadingUuid: '',
       selectedText: '',
@@ -353,14 +346,11 @@ export default {
           top: Number((blockRect.top - wrapperRect.top + blockRect.height / 2 - 12).toFixed(0)),
           left: -34
         };
-        this.showPlus = true;
         this.isShowTableMenu = false;
       }
     }, 300),
     hidePlus: throttle(function() {
-      this.showPlus = false;
       this.plusBlock = null;
-      this.menuVisible = false;
     }, 400),
     isInTable(e) {
       const pos = this.editor.view.posAtCoords({
@@ -378,17 +368,6 @@ export default {
       }
       return false;
     },
-    handlePlusMouseenter() {
-      this.$set(this.menuPos, 'top', this.plusPos.top + 25);
-      this.$set(this.menuPos, 'left', this.plusPos.left);
-      if (this.menuVisible) {
-        setTimeout(() => {
-          this.menuVisible = false;
-        }, 2000);
-      } else {
-        this.menuVisible = !this.menuVisible;
-      }
-    },
     getInsertPosition() {
       const view = this?.editor?.view;
       const coords = this.plusBlock?.getBoundingClientRect();
@@ -403,7 +382,6 @@ export default {
       return insertPos;
     },
     handleInsertMenuContent(menuData) {
-      this.menuVisible = false;
       if (!this.editor) return;
       const insertPos = this.getInsertPosition();
       const { commandName, value = {} } = menuData;
@@ -458,7 +436,6 @@ export default {
     replaceMenuContent(menuData) {
       const { type: nodeName, category } = menuData;
       // 替换当前光标所在的节点内容
-      this.menuVisible = false;
       const { view, state } = this.editor;
 
       // 1. 获取 posAtCoords 或 fallback 光标

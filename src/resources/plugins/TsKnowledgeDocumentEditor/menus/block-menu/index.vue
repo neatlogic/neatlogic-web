@@ -1,67 +1,41 @@
 <template>
   <div>
-    <div
-      v-if="showPlus"
-      class="bg-op border-base"
-      :class="isEmptyRow ? 'plus-button' : `drag-button shadow`"
+    <EmptyRowMenu
+      v-if="isEmptyRow"
+      class="menu-wrapper"
       :style="{
         position: 'absolute',
         top: plusPos.top + 'px',
         left: plusPos.left + 'px'
       }"
-      @mouseenter="()=>{
-        $emit('PlusMouseenter')
+      @click-menu="(menuData)=> {
+        $emit('insert-menu-content', menuData)
       }"
     >
-      <span v-if="!isEmptyRow" :class="iconClassName" class="text-primary"></span>
-      <span :class="isEmptyRow ? 'tsfont-plus' : `tsfont-drag`"></span>
-    </div>
-    <template v-if="menuVisible">
-      <InsertBlockMenu
-        v-if="isEmptyRow"
-        class="menu-wrapper"
-        :style="{
-          position: 'absolute',
-          top: menuPos.top + 'px',
-          left: menuPos.left + 'px'
-        }"
-        @click-menu="(menuData)=> {
-          $emit('insert-menu-content', menuData)
-        }"
-      >
-      </InsertBlockMenu>
-      <BlockActionMenu
-        v-else
-        :style="{
-          position: 'absolute',
-          top: menuPos.top + 'px',
-          left: menuPos.left + 'px'
-        }"
-        @replace-menu-content="(menuData)=> {
-          $emit('replace-menu-content', menuData)
-        }"
-      ></BlockActionMenu>
-    </template>
-  
+    </EmptyRowMenu>
+    <EditRowMenu
+      v-else
+      :style="{
+        position: 'absolute',
+        top: (plusPos.top) + 'px',
+        left: plusPos.left + 'px'
+      }"
+      @replace-menu-content="(menuData)=> {
+        $emit('replace-menu-content', menuData)
+      }"
+    >
+    </EditRowMenu>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    InsertBlockMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/insert-block-menu.vue'),
-    BlockActionMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/block-action-menu.vue')
+    EmptyRowMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/empty-row-menu/index.vue'),
+    EditRowMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/edit-row-menu/index.vue')
   },
   props: {
     isEmptyRow: {
-      type: Boolean,
-      default: true
-    },
-    menuVisible: {
-      type: Boolean,
-      default: false
-    },
-    showPlus: {
       type: Boolean,
       default: false
     },
@@ -70,15 +44,6 @@ export default {
       default: ''
     },
     plusPos: {
-      type: Object,
-      default: () => {
-        return {
-          top: 0,
-          left: 0
-        };
-      }
-    },
-    menuPos: {
       type: Object,
       default: () => {
         return {
@@ -109,30 +74,4 @@ export default {
 };
 </script>
 <style lang="less"  scoped>
-.plus-button {
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  line-height: 22px;
-  text-align: center;
-  font-size: 12px;
-  cursor: pointer;
-  user-select: none;
-  z-index: 10;
-  &:hover {
-  background: #1f23291f !important;
- }
-}
-.drag-button {
-  display: flex;
-  align-items: center;
-  max-width: 59px;
-  height: 24px;
-  line-height: 24px;
-  font-size: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  z-index: 10;
-}
 </style>

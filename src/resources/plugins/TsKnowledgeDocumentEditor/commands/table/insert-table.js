@@ -1,4 +1,4 @@
-export default function table({ editor, pos, options }) {
+export default function insertTable({ editor, pos, options }) {
   const { rows = 0, cols = 0 } = options || {};
   if (rows === 0 || cols === 0) { return; }
   editor
