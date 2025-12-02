@@ -1,4 +1,4 @@
-export default function bold({ editor, pos, options }) {
+export default function bold({ editor, position, options }) {
   const { isbold } = options || {};
   if (isbold) {
     editor

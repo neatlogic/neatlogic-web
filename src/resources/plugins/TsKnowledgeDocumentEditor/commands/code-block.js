@@ -1,4 +1,4 @@
-export default function codeBlock({ editor, pos, options }) {
+export default function codeBlock({ editor, position, options }) {
   const { isToggle } = options || {};
   if (isToggle) {
     editor.chain().focus().toggleCodeBlock().run();
@@ -6,7 +6,7 @@ export default function codeBlock({ editor, pos, options }) {
     editor
       .chain()
       .focus()
-      .insertContentAt(pos, {
+      .insertContentAt(position, {
         type: 'codeBlock',
         content: [{ type: 'text', text: '新代码块内容' }]
       })

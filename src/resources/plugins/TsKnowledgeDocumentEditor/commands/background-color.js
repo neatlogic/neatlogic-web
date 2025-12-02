@@ -1,4 +1,4 @@
-export default function backgroundColor({ editor, pos, options }) {
+export default function backgroundColor({ editor, position, options }) {
   const { backgroundColor = '' } = options || {};
   editor
     .chain()

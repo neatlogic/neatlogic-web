@@ -1,9 +1,9 @@
-export default function taskList({ editor, pos, options }) {
+export default function taskList({ editor, position, options }) {
   const { isToggle } = options || {};
   if (isToggle) {
     editor.chain().focus().toggleTaskList().run();
   } else {
-    editor.chain().focus().insertContentAt(pos, {
+    editor.chain().focus().insertContentAt(position, {
       type: 'taskList',
       content: [
         {

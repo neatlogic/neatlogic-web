@@ -3,10 +3,10 @@
     <div v-if="!hideBaseText" class="catagory-name text-grey">基础</div>
     <div class="basic-menu-box">
       <div
-        v-for="item in menuList.filter((item) => (item.isShow || !item.hasOwnProperty('isShow')))"
+        v-for="item in menuList.filter(item => item.isShow || !item.hasOwnProperty('isShow'))"
         :key="item.value"
         class="basic-menu-text"
-        @click.stop="handleClick(item.category, item.value)"
+        @click.stop="handleClick(item.value)"
       >
         <Tooltip
           v-if="item.tipConentList"
@@ -14,24 +14,35 @@
           theme="dark"
           placement="top"
         >
-          <span v-if="item.iconClass" style="font-size: 16px;" :class="item.iconClass"></span>
-          <template v-else> {{ item.text }}</template>
+          <span v-if="item.iconClass" style="font-size: 16px" :class="item.iconClass"></span>
+          <template v-else>{{ item.text }}</template>
           <div slot="content">
-            <div v-for="(childTipItem,childTipIndex) in item.tipConentList" :key="`${item.value}_${childTipIndex}`">{{ childTipItem }}</div>
+            <div v-for="(childTipItem, childTipIndex) in item.tipConentList" :key="`${item.value}_${childTipIndex}`">{{ childTipItem }}</div>
           </div>
         </Tooltip>
         <template v-else>
           <span v-if="item.iconClass" :class="item.iconClass"></span>
-          <template v-else> {{ item.text }}</template>
+          <template v-else>{{ item.text }}</template>
         </template>
       </div>
     </div>
+    <EditLinkDialog
+      v-if="isShowLinkDialog"
+      @close="(menuData)=> {
+        isShowLinkDialog = false;
+        if(menuData) {
+          $emit('click-menu', menuData)
+        }
+      }"
+    ></EditLinkDialog>
   </div>
 </template>
 <script>
 export default {
   name: '',
-  components: {},
+  components: {
+    EditLinkDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/toolbar/src/link/edit-link-dialog.vue')
+  },
   props: {
     hideBaseText: {
       type: Boolean,
@@ -40,6 +51,7 @@ export default {
   },
   data() {
     return {
+      isShowLinkDialog: false,
       menuList: [
         {
           tipConentList: ['正文(ctrl+alt+o)'],
@@ -111,7 +123,7 @@ export default {
         {
           tipConentList: ['高亮快'],
           iconClass: 'tsfont-callout',
-          value: 'hightlightBlock',
+          value: 'highlightBlock',
           text: '高亮块'
         },
         {
@@ -141,11 +153,14 @@ export default {
   destroyed() {},
   methods: {
     handleClick(commandName) {
-      if (commandName.includes('heading')) { // 标题
+      if (commandName.includes('heading')) {
+        // 标题
         const level = commandName.split('heading')[1];
-        this.$emit('click-menu', {commandName: 'heading', value: {level: level}});
+        this.$emit('click-menu', { commandName: 'heading', value: { level: level } });
+      } else if (commandName === 'link') {
+        this.isShowLinkDialog = true;
       } else {
-        this.$emit('click-menu', {commandName: commandName});
+        this.$emit('click-menu', { commandName: commandName });
       }
     }
   },
@@ -181,7 +196,7 @@ export default {
       background: #1f23291f;
       border-radius: 4px;
     }
-    &:nth-last-child(-n+6) {
+    &:nth-last-child(-n + 6) {
       margin-bottom: 0;
     }
   }

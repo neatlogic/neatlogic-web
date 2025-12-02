@@ -33,12 +33,13 @@
           <div ref="editorContentContainer" class="editor-content-container" @click.stop>
             <EditorContent v-if="editor" :editor="editor" class="editor-content"></EditorContent>
           </div>
-          <TipTapMenu
+          <BlockMenu
+            v-show="isShowBlockMenu"
             :isEmptyRow="isEmptyRow"
-            :plusPos="plusPos"
+            :menuPosition="menuPosition"
             @insert-menu-content="handleInsertMenuContent"
             @replace-menu-content="replaceMenuContent"
-          ></TipTapMenu>
+          ></BlockMenu>
           <TextSelectedMenu
             v-show="isShowBubbleMenu"
             ref="textSelectedMenuWrapper"
@@ -112,7 +113,7 @@ import { SearchHighlight } from '@/resources/plugins/TsKnowledgeDocumentEditor/e
 export default {
   components: {
     EditorContent,
-    TipTapMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/index.vue'),
+    BlockMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/index.vue'),
     // ToolBar: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/toolbar/index.vue'),
     TextSelectedMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/index.vue'),
     SearchReplaceDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/search-replace-dialog/index.vue'),
@@ -135,6 +136,7 @@ export default {
     return {
       title: this.documentTitle,
       isShowBubbleMenu: false,
+      isShowBlockMenu: false,
       isShowSearchReplaceDialog: false,
       isShowTableMenu: false,
       tableMenuPosition: {
@@ -147,7 +149,7 @@ export default {
       },
       isEmptyRow: false, // 是否是空行，用于判断显示鼠标经过时的加号
       editor: null,
-      plusPos: { top: 0, left: 0 },
+      menuPosition: { top: 0, left: 0 },
       plusBlock: null,
       menuList: [],
       selectHeadingUuid: '',
@@ -251,8 +253,8 @@ export default {
   },
   methods: {
     getData() {
-      let json = this.editor.getJSON();
-      console.log(json);
+      const saveData = this.editor.getJSON();
+      console.log(saveData);
     },
     getAllHeadings(editor) {
       const $headings = editor.$nodes('heading');
@@ -301,9 +303,9 @@ export default {
       if (!block) {
         // 如果是空行，用 posAtCoords + nodeDOM 获取
         const coords = { left: event.clientX, top: event.clientY };
-        const pos = this.editor?.view?.posAtCoords(coords);
-        if (pos) {
-          const $pos = this.editor?.state?.doc?.resolve(pos.pos);
+        const position = this.editor?.view?.posAtCoords(coords);
+        if (position) {
+          const $pos = this.editor?.state?.doc?.resolve(position.pos);
           const dom = this.editor?.view?.nodeDOM($pos?.before($pos?.depth));
           if (dom && dom.nodeType === 1) block = dom;
         }
@@ -331,24 +333,25 @@ export default {
           left: Number((blockRect.left - editorContentContainerRect.left + 100 / 2).toFixed(0))
         };
       } else {
-        this.plusPos = {
+        this.menuPosition = {
           top: Number((blockRect.top - wrapperRect.top + blockRect.height / 2 - 12).toFixed(0)),
           left: -46
         };
         this.isShowTableMenu = false;
+        this.isShowBlockMenu = true;
       }
     }, 300),
     hidePlus: throttle(function() {
       this.plusBlock = null;
     }, 400),
     isInTable(e) {
-      const pos = this.editor.view.posAtCoords({
+      const position = this.editor.view.posAtCoords({
         left: e.clientX,
         top: e.clientY
       });
-      if (!pos) return false;
+      if (!position) return false;
 
-      const $pos = this.editor.state.doc.resolve(pos.pos);
+      const $pos = this.editor.state.doc.resolve(position.pos);
 
       for (let d = $pos.depth; d > 0; d--) {
         if ($pos.node(d).type.name === 'table') {
@@ -357,28 +360,42 @@ export default {
       }
       return false;
     },
-    getInsertPosition() {
-      const view = this?.editor?.view;
+    findInsertContentPosition() {
+      const view = this.editor.view;
       const coords = this.plusBlock?.getBoundingClientRect();
-      const pos = coords ? view?.posAtCoords({ left: coords.left, top: coords.top }) : null;
-      // 获取光标所在 resolved position
-      const { $from } = this.editor.state.selection;
-      // 如果外部传入 pos，就用 pos，否则用当前光标所在 block 的结束位置
-      let insertPos = pos?.pos ? pos.pos + 1 : $from.end() + 1;
-      if (this.$utils.isEmpty($from.doc.textContent)) {
-        insertPos = insertPos - 1;
+      const found = coords
+        ? view.posAtCoords({
+          left: coords.left,
+          top: coords.top
+        })
+        : null;
+
+      const position = found?.pos ?? this.editor.state.selection.from;
+      const { doc } = this.editor.state;
+      const $pos = doc.resolve(position);
+
+      // ✨ 向上找“顶层 block”（parent === doc）
+      for (let d = $pos.depth; d > 0; d--) {
+        const node = $pos.node(d);
+        const parent = $pos.node(d - 1);
+
+        // 顶层 block：父节点是 doc
+        if (node.isBlock && parent.type === doc.type) {
+          return $pos.after(d); // ★ 输出顶层 block 的 after
+        }
       }
-      return insertPos;
+
+      return position;
     },
     handleInsertMenuContent(menuData) {
       if (!this.editor) return;
-      const insertPos = this.getInsertPosition();
+      const insertPos = this.findInsertContentPosition();
       const { commandName, value = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
         commandMethod({
           editor: this.editor,
-          pos: insertPos,
+          position: insertPos,
           options: value,
           https: this.$https
         });
@@ -454,7 +471,6 @@ export default {
           break;
         }
       }
-      console.log('node', node, nodeName);
       if (!node) return; // 没找到 block，直接返回
       const nodeTextContent = node.textContent;
       if (node && nodeTextContent) {
@@ -479,7 +495,6 @@ export default {
 
           // 4. 替换
           view.dispatch(state.tr.replaceWith(nodeStart, nodeEnd, newNode));
-          console.log('node', nodeStart, nodeEnd, nodeTextContent);
         } else if (category === 'operation') {
           if (nodeName === 'delete') {
             //删除

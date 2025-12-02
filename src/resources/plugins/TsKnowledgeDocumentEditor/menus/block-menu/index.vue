@@ -5,8 +5,8 @@
       class="menu-wrapper"
       :style="{
         position: 'absolute',
-        top: plusPos.top + 'px',
-        left: plusPos.left + 'px'
+        top: menuPosition.top + 'px',
+        left: menuPosition.left + 'px'
       }"
       @click-menu="(menuData)=> {
         $emit('insert-menu-content', menuData)
@@ -17,8 +17,8 @@
       v-else
       :style="{
         position: 'absolute',
-        top: (plusPos.top) + 'px',
-        left: plusPos.left + 'px'
+        top: (menuPosition.top) + 'px',
+        left: menuPosition.left + 'px'
       }"
       @replace-menu-content="(menuData)=> {
         $emit('replace-menu-content', menuData)
@@ -39,7 +39,7 @@ export default {
       type: Boolean,
       default: false
     },
-    plusPos: {
+    menuPosition: {
       type: Object,
       default: () => {
         return {

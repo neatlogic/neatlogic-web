@@ -1,4 +1,4 @@
-export default function italic({ editor, pos, options }) {
+export default function italic({ editor, position, options }) {
   const { isStrike } = options || {};
   if (isStrike) {
     editor

@@ -53,9 +53,9 @@ const HighlightBlock = Node.create({
               .selectParentNode() // 将选取范围扩展到父节点，比如选中几个文字的时候，需要去替换整个父节点
               .wrapIn(type, { uuid: utils.setUuid() }).run();
           },
-      setHighlightBlock: (text = '高亮块内容...') => ({commands}) => {
+      insertHighlightBlockContent: ({position, text = '高亮块内容...'}) => ({commands}) => {
         const uuid = utils.setUuid();
-        return commands.insertContent({
+        return commands.insertContentAt(position, {
           type: 'highlightBlock',
           attrs: { uuid },
           content: [

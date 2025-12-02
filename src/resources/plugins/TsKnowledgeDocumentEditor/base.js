@@ -3,13 +3,13 @@ export default {
   methods: {
     executeEditorCommand({menuData, currentInstanceThis}) {
       if (!currentInstanceThis.editor) return;
-      const insertPos = currentInstanceThis.getInsertPosition();
+      const insertPos = currentInstanceThis.findInsertContentPosition();
       const { commandName, value = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
         commandMethod({
           editor: currentInstanceThis.editor,
-          pos: insertPos,
+          position: insertPos,
           options: value,
           https: currentInstanceThis.$https
         });

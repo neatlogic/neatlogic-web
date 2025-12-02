@@ -1,5 +1,5 @@
 // heading.js
-export default function heading({ editor, pos, options }) {
+export default function heading({ editor, position, options }) {
   const { level, isToggle } = options || {};
   if (isToggle) {
     editor.chain().focus().toggleHeading({ level }).run();
@@ -7,7 +7,7 @@ export default function heading({ editor, pos, options }) {
     editor
       .chain()
       .focus()
-      .insertContentAt(pos, {
+      .insertContentAt(position, {
         type: 'heading',
         attrs: { level },
         content: [{ type: 'text', text: `新标题${level}内容` }]

@@ -1,4 +1,4 @@
-export default function uploadImage({ editor, pos, options, https }) {
+export default function uploadImage({ editor, position, options, https }) {
   const { file } = options || {};
   if (!file) {
     return;

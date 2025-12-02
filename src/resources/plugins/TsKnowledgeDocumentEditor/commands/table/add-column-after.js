@@ -1,4 +1,4 @@
-export default function addColumnAfter({ editor, pos, options }) {
+export default function addColumnAfter({ editor, position, options }) {
   editor
     .chain()
     .focus()
