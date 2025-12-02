@@ -1,5 +1,5 @@
 <template>
-  <Dropdown placement="right-start">
+  <Dropdown placement="right">
     <DropdownItem>
       <div class="insert-table-box">
         <div class="icon-text-box">
@@ -10,7 +10,7 @@
       </div>
     </DropdownItem>
     <DropdownMenu slot="list">
-      <DropdownItem class="clear-hover-background">
+      <DropdownItem class="clear-dropdown-item-hover-background">
         <div class="table-grid-selector" @mouseleave="resetHover">
           <div class="header">
             <span>插入支持富文本的表格</span>

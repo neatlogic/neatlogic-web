@@ -1,6 +1,6 @@
 <template>
   <div class="upload-image-box" @click.stop>
-    <div class="menu-content-item" @click="openFileDialog">
+    <div class="icon-box" @click="openFileDialog">
       <span class="tsfont-image icon-image"></span>
       <span class="icon-text">图片</span>
     </div>
@@ -53,9 +53,9 @@ export default {
 </script>
 <style lang="less" scoped>
 .upload-image-box {
-  .menu-content-item {
+  .icon-box {
     display: flex;
-    align-content: center;
+    align-items: center;
     .icon-image {
       margin-right: 14px;
       font-size: 16px;

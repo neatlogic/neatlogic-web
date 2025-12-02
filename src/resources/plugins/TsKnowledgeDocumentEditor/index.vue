@@ -1,5 +1,5 @@
 <template>
-  <div ref="knowledgeEditorBox" class="knowledge-editor-box">
+  <div class="knowledge-editor-box">
     <div class="editor-main" @click.stop="() => hidePlus()">
       <div class="editor-menu">
         <ul>
@@ -35,7 +35,6 @@
           </div>
           <TipTapMenu
             :isEmptyRow="isEmptyRow"
-            :iconClassName="iconClassName"
             :plusPos="plusPos"
             @insert-menu-content="handleInsertMenuContent"
             @replace-menu-content="replaceMenuContent"
@@ -109,7 +108,6 @@ import BaseMixin from './base.js';
 import { menuState } from './state.js';
 import InsertMenuCommands from '@/resources/plugins/TsKnowledgeDocumentEditor/commands/index.js';
 import { SearchHighlight } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
-import DataContext from './data.js';
 
 export default {
   components: {
@@ -148,7 +146,6 @@ export default {
         left: 0
       },
       isEmptyRow: false, // 是否是空行，用于判断显示鼠标经过时的加号
-      iconClassName: '',
       editor: null,
       plusPos: { top: 0, left: 0 },
       plusBlock: null,
@@ -291,7 +288,6 @@ export default {
     handleMouseMove: throttle(function(event) {
       const wrapper = this.$refs.editorWrapper;
       const editorContentContainer = this.$refs?.editorContentContainer;
-      const knowledgeEditorBox = this.$refs.knowledgeEditorBox;
       const editorEl = wrapper?.querySelector('.ProseMirror');
       // 👉 如果鼠标在 + 按钮上，直接忽略，不隐藏
       if (event.target.closest('.plus-button') || event.target.closest('.drag-button') || event.target.closest('.menu-wrapper')) {
@@ -300,7 +296,6 @@ export default {
       if (!editorEl?.contains(event.target)) {
         return;
       }
-      this.iconClassName = '';
       // 找到当前块元素
       let block = event.target.closest('p,h1, h2, h3, h4, h5, h6, li, blockquote, pre,div, table');
       if (!block) {
@@ -315,13 +310,7 @@ export default {
         this.isEmptyRow = true;
       } else {
         // 非空行
-        const elementName = block?.tagName?.toLowerCase();
         const isEmptyBlock = block?.textContent?.trim() === '';
-        if (elementName == 'pre') {
-          this.iconClassName = 'tsfont-code';
-        } else {
-          this.iconClassName = 'tsfont-font-size'; // 默认先用字体大小图标来替换先
-        }
         if (isEmptyBlock) {
           this.isEmptyRow = true;
         } else {
@@ -344,7 +333,7 @@ export default {
       } else {
         this.plusPos = {
           top: Number((blockRect.top - wrapperRect.top + blockRect.height / 2 - 12).toFixed(0)),
-          left: -34
+          left: -46
         };
         this.isShowTableMenu = false;
       }

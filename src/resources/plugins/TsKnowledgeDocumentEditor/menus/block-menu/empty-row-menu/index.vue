@@ -1,37 +1,50 @@
 <template>
-  <div>
-    <Dropdown placement="bottom-start">
-      <span class="tsfont-plus-o cursor-pointer" style="font-size: 20px;"></span>
-      <DropdownMenu slot="list">
-        <DropdownItem class="clear-hover-background">
-          <BaseMenu
-            @click-menu="(menuData)=> {
-              $emit('click-menu', menuData)
-            }"
-          ></BaseMenu>
-        </DropdownItem>
-        <DropdownItem class="clear-hover-background">
-          <span class="text-grey">常用</span>
-        </DropdownItem>
-        <DropdownItem>
-          <UploadImage
-            @click-menu="(menuData)=> {
-              $emit('click-menu', menuData)}"
-          ></UploadImage>
-        </DropdownItem>
-        <DropdownItem>
-          <UploadVideo
-            @click-menu="(menuData)=> {
-              $emit('click-menu', menuData)}"
-          ></UploadVideo>
-        </DropdownItem>
-        <InsertTable
+  <Dropdown :placement="placement">
+    <template v-if="placement === 'bottom-start'">
+      <div class="knowledge-document-editor-plus-box cursor-pointer">
+        <span class="tsfont-plus"></span>
+      </div>
+    </template>
+    <template v-else>
+      <DropdownItem>
+        <div class="knowledge-document-editor-menu-item-content">
+          <div class="icon-text-box">
+            <span class="tsfont-plus-square icon-image"></span>
+            <span class="icon-text">在下方插入</span>
+          </div>
+          <Icon type="ios-arrow-forward"></Icon>
+        </div>
+      </DropdownItem>
+    </template>
+    <DropdownMenu slot="list">
+      <DropdownItem class="clear-dropdown-item-hover-background">
+        <BaseMenu
+          @click-menu="(menuData)=> {
+            $emit('click-menu', menuData)
+          }"
+        ></BaseMenu>
+      </DropdownItem>
+      <DropdownItem class="clear-dropdown-item-hover-background">
+        <span class="text-grey">常用</span>
+      </DropdownItem>
+      <DropdownItem>
+        <UploadImage
           @click-menu="(menuData)=> {
             $emit('click-menu', menuData)}"
-        ></InsertTable>
-      </DropdownMenu>
-    </Dropdown>
-  </div>
+        ></UploadImage>
+      </DropdownItem>
+      <DropdownItem>
+        <UploadVideo
+          @click-menu="(menuData)=> {
+            $emit('click-menu', menuData)}"
+        ></UploadVideo>
+      </DropdownItem>
+      <InsertTable
+        @click-menu="(menuData)=> {
+          $emit('click-menu', menuData)}"
+      ></InsertTable>
+    </DropdownMenu>
+  </Dropdown>
 </template>
 <script>
 export default {
@@ -42,7 +55,12 @@ export default {
     UploadVideo: () => import('./commonly-used/upload-video/index.vue'),
     InsertTable: () => import('./commonly-used/insert-table/index.vue')
   },
-  props: {},
+  props: {
+    placement: {
+      type: String,
+      default: 'bottom-start'
+    }
+  },
   data() {
     return {};
   },
@@ -63,9 +81,5 @@ export default {
 };
 </script>
 <style lang="less">
-.clear-hover-background {
-  &.ivu-dropdown-item:hover {
-    background: transparent!important;
-  }
-}
+@import "@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/common.less";
 </style>

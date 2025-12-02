@@ -39,10 +39,6 @@ export default {
       type: Boolean,
       default: false
     },
-    iconClassName: {
-      type: String,
-      default: ''
-    },
     plusPos: {
       type: Object,
       default: () => {
@@ -73,5 +69,5 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less"  scoped>
+<style lang="less" scoped>
 </style>

@@ -20,7 +20,7 @@
           )"
       ></span>
       <div slot="content">
-        {{ title }}
+        <div v-for="(item, index) in tipContentList" :key="index">{{ item }}</div>
       </div>
     </Tooltip>
 
@@ -38,9 +38,11 @@ export default {
       type: String,
       default: ''
     },
-    title: {
-      type: String,
-      default: ''
+    tipContentList: {
+      type: [],
+      default: () => {
+        return [];
+      }
     },
     command: {
       type: String,

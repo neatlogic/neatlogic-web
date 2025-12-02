@@ -1,7 +1,7 @@
 <template>
-  <Dropdown placement="right-start">
+  <Dropdown placement="right">
     <DropdownItem>
-      <div class="menu-content-item">
+      <div class="knowledge-document-editor-menu-item-content">
         <div class="icon-text-box">
           <span class="tsfont-horizontal-left icon-image"></span>
           <span class="icon-text">对齐</span>
@@ -10,8 +10,20 @@
       </div>
     </DropdownItem>
     <DropdownMenu slot="list">
-      <DropdownItem class="clear-hover-background">
-       
+      <DropdownItem>
+        <span class="tsfont-horizontal-left knowledge-document-editor-menu-icon"></span>
+        <span class="ml-sm mr-sm">左对齐</span>
+        <!-- <span class="tsfont-check"></span> -->
+      </DropdownItem>
+      <DropdownItem>
+        <span class="tsfont-horizontal-center knowledge-document-editor-menu-icon"></span>
+        <span class="ml-sm mr-sm">居中对齐</span>
+        <!-- <span class="tsfont-check"></span> -->
+      </DropdownItem>
+      <DropdownItem>
+        <span class="tsfont-horizontal-right knowledge-document-editor-menu-icon"></span>
+        <span class="ml-sm mr-sm">右对齐</span>
+        <!-- <span class="tsfont-check"></span> -->
       </DropdownItem>
     </DropdownMenu>
   </Dropdown>
@@ -40,6 +52,6 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
-@import "@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/common-menu.less";
+<style lang="less" scoped>
+@import "@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/common.less";
 </style>

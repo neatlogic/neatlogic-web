@@ -12,7 +12,7 @@
         @click.stop="openLinkDialog"
       ></span>
       <div slot="content">
-        {{ title }}
+        <div v-for="(item, index) in tipContentList" :key="index">{{ item }}</div>
       </div>
     </Tooltip>
    
@@ -36,20 +36,7 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   mixins: [mixin],
-  props: {
-    icon: {
-      type: String,
-      default: ''
-    },
-    title: {
-      type: String,
-      default: ''
-    },
-    command: {
-      type: String,
-      default: ''
-    }
-  },
+  props: {},
   data() {
     return {
       linkUrl: '',

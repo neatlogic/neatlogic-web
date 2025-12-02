@@ -1,6 +1,6 @@
 <template>
   <div ref="uploadVideoRef" class="upload-video-box" @click.stop>
-    <div class="menu-content-item" @click="openFileDialog">
+    <div class="icon-box" @click="openFileDialog">
       <span class="tsfont-play icon-image"></span>
       <span class="icon-text">视频</span>
     </div>
@@ -55,7 +55,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .upload-video-box {
-  .menu-content-item {
+  .icon-box {
     display: flex;
     align-content: center;
     .icon-image {
