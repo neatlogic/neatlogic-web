@@ -38,7 +38,7 @@
             :isEmptyRow="isEmptyRow"
             :menuPosition="menuPosition"
             @insert-menu-content="handleInsertMenuContent"
-            @replace-menu-content="replaceMenuContent"
+            @replace-menu-content="handleReplaceMenuContent"
           ></BlockMenu>
           <TextSelectedMenu
             v-show="isShowBubbleMenu"
@@ -150,7 +150,7 @@ export default {
       isEmptyRow: false, // 是否是空行，用于判断显示鼠标经过时的加号
       editor: null,
       menuPosition: { top: 0, left: 0 },
-      plusBlock: null,
+      currentBlock: null,
       menuList: [],
       selectHeadingUuid: '',
       selectedText: '',
@@ -319,9 +319,9 @@ export default {
           this.isEmptyRow = false;
         }
       }
-      if (!block || block === this.plusBlock) return;
+      if (!block || block === this.currentBlock) return;
 
-      this.plusBlock = block;
+      this.currentBlock = block;
       const blockRect = block.getBoundingClientRect();
       const wrapperRect = wrapper.getBoundingClientRect();
       const editorContentContainerRect = editorContentContainer.getBoundingClientRect();
@@ -342,7 +342,7 @@ export default {
       }
     }, 300),
     hidePlus: throttle(function() {
-      this.plusBlock = null;
+      this.currentBlock = null;
     }, 400),
     isInTable(e) {
       const position = this.editor.view.posAtCoords({
@@ -362,7 +362,7 @@ export default {
     },
     findInsertContentPosition() {
       const view = this.editor.view;
-      const coords = this.plusBlock?.getBoundingClientRect();
+      const coords = this.currentBlock?.getBoundingClientRect();
       const found = coords
         ? view.posAtCoords({
           left: coords.left,
@@ -374,18 +374,49 @@ export default {
       const { doc } = this.editor.state;
       const $pos = doc.resolve(position);
 
-      // ✨ 向上找“顶层 block”（parent === doc）
+      // 向上找“顶层 block”（parent === doc）
       for (let d = $pos.depth; d > 0; d--) {
         const node = $pos.node(d);
         const parent = $pos.node(d - 1);
-
         // 顶层 block：父节点是 doc
         if (node.isBlock && parent.type === doc.type) {
-          return $pos.after(d); // ★ 输出顶层 block 的 after
+          return $pos.after(d); // 输出快的结束位置
         }
       }
 
       return position;
+    },
+    findCurrentBlockPosition() {
+      // 获取当前块元素的位置（编辑菜单编辑器悬停的位置）
+      const view = this.editor.view;
+      const coords = this.currentBlock?.getBoundingClientRect();
+
+      const found = coords
+        ? view.posAtCoords({
+          left: coords.left,
+          top: coords.top
+        })
+        : null;
+
+      const position = found?.pos ?? this.editor.state.selection.from;
+      const { doc } = this.editor.state;
+      const $pos = doc.resolve(position);
+
+      // 向上找顶层 block
+      for (let d = $pos.depth; d > 0; d--) {
+        const node = $pos.node(d);
+        const parent = $pos.node(d - 1);
+
+        if (node.isBlock && parent.type === doc.type) {
+          const start = $pos.start(d);
+          return {
+            startPosition: start, // block 起始位置
+            node: node, // block node
+            endPosition: start + node.nodeSize
+          };
+        }
+      }
+      return null;
     },
     handleInsertMenuContent(menuData) {
       if (!this.editor) return;
@@ -397,6 +428,21 @@ export default {
           editor: this.editor,
           position: insertPos,
           options: value,
+          https: this.$https
+        });
+      }
+    },
+    handleReplaceMenuContent(menuData) {
+      if (!this.editor) return;
+
+      const { commandName, value = {} } = menuData;
+      const position = this.findCurrentBlockPosition();
+      const commandMethod = InsertMenuCommands[commandName];
+      if (commandMethod) {
+        commandMethod({
+          editor: this.editor,
+          position: position || {},
+          options: {...value, isToggle: true},
           https: this.$https
         });
       }
@@ -446,8 +492,8 @@ export default {
 
       // 1. 获取 posAtCoords 或 fallback 光标
       let posResult = null;
-      if (this.plusBlock) {
-        const coords = this.plusBlock.getBoundingClientRect();
+      if (this.currentBlock) {
+        const coords = this.currentBlock.getBoundingClientRect();
         posResult = view.posAtCoords({ left: coords.left, top: coords.top });
       }
 
@@ -480,15 +526,10 @@ export default {
         if (category === 'basic') {
           if (nodeName == 'heading1') {
             attrs = { level: 1 };
-            // this.editor.commands.setNode('heading', { level: 1 });
           } else if (nodeName == 'heading2') {
             attrs = { level: 2 };
-            // this.editor.commands.setNode('heading', { level: 2 });
           } else if (nodeName == 'heading3') {
             attrs = { level: 3 };
-            // this.editor.commands.setNode('heading', { level: 3 });
-          } else if (nodeName == 'orderedList') {
-            // this.editor.commands.setNode('paragraph');
           }
           // 3. 创建新节点（保留内容）
           const newNode = schema.nodes.heading.create(attrs, schema.text(nodeTextContent));

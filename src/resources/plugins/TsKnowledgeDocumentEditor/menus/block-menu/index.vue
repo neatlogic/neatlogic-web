@@ -20,7 +20,7 @@
         top: (menuPosition.top) + 'px',
         left: menuPosition.left + 'px'
       }"
-      @replace-menu-content="(menuData)=> {
+      @click-menu="(menuData)=> {
         $emit('replace-menu-content', menuData)
       }"
     >

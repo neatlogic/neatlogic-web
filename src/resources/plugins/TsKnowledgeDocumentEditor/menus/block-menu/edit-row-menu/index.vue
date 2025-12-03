@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Dropdown placement="bottom-start">
+    <Dropdown placement="bottom-start" @on-click="handleClick">
       <div class="knowledge-document-editor-plus-box">
         <span class="tsfont-title"></span>
         <span class="tsfont-drag cursor-pointer"></span>
@@ -9,29 +9,25 @@
         <DropdownItem class="clear-dropdown-item-hover-background">
           <BaseMenu
             :hideBaseText="true"
-            @click-menu="
-              menuData => {
-                $emit('click-menu', menuData);
-              }
-            "
+            @click-menu="emitClickMenu"
           ></BaseMenu>
         </DropdownItem>
         <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
           <div class="border-base-bottom"></div>
         </DropdownItem>
-        <AlignMenu></AlignMenu>
+        <AlignMenu @click-menu="emitClickMenu"></AlignMenu>
         <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
           <div class="border-base-bottom"></div>
         </DropdownItem>
-        <DropdownItem>
+        <DropdownItem name="cut">
           <span class="tsfont-close mr-nm knowledge-document-editor-menu-icon"></span>
           <span>剪切</span>
         </DropdownItem>
-        <DropdownItem>
+        <DropdownItem name="copy">
           <span class="tsfont-copy mr-nm knowledge-document-editor-menu-icon"></span>
           <span>复制</span>
         </DropdownItem>
-        <DropdownItem>
+        <DropdownItem name="deleteRange">
           <span class="tsfont-trash-o mr-nm knowledge-document-editor-menu-icon"></span>
           <span>删除</span>
         </DropdownItem>
@@ -65,7 +61,14 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {},
+  methods: {
+    emitClickMenu(menuData) {
+      this.$emit('click-menu', menuData);
+    },
+    handleClick(name) {
+      this.$emit('click-menu', { commandName: name });
+    }
+  },
   filter: {},
   computed: {},
   watch: {}

@@ -3,6 +3,6 @@ export default function textAlign({ editor, position, options }) {
   editor
     .chain()
     .focus()
-    .toggleTextAlign(textAlign)
+    .setTextAlign(textAlign)
     .run();
 }

@@ -1,4 +1,3 @@
-// heading.js
 export default function heading({ editor, position, options }) {
   const { level, isToggle } = options || {};
   if (isToggle) {

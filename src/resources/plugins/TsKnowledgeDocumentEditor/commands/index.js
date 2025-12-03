@@ -22,6 +22,7 @@ import color from './color';
 import underline from './underline';
 import code from './code';
 import paragraph from './paragraph';
+import deleteRange from './delete-range';
 export default {
   heading,
   codeBlock,
@@ -46,5 +47,6 @@ export default {
   color,
   underline,
   code,
-  paragraph
+  paragraph,
+  deleteRange
 };
