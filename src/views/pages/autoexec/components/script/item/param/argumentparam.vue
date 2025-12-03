@@ -326,7 +326,8 @@ export default {
               } else {
                 subList[nameArr.indexOf(res.value)].children.push({
                   value: ele[level2],
-                  label: ele['operationName'] + (ele.operationLetter ? ('_' + ele.operationLetter) : '') + (ele.operationDes ? '[' + ele.operationDes + ']' : ''),
+                  // label: ele['operationName'] + (ele.operationLetter ? ('_' + ele.operationLetter) : '') + (ele.operationDes ? '[' + ele.operationDes + ']' : ''), //相同工具标识自增operationLetter
+                  label: ele['operationName'] + (ele.operationDes ? '[' + ele.operationDes + ']' : ''),
                   operationDes: ele.operationDes,
                   children: [{
                     value: ele[level3],
@@ -340,7 +341,8 @@ export default {
                 label: res.label,
                 children: [{
                   value: ele[level2],
-                  label: ele['operationName'] + (ele.operationLetter ? ('_' + ele.operationLetter) : '') + (ele.operationDes ? '[' + ele.operationDes + ']' : ''),
+                  // label: ele['operationName'] + (ele.operationLetter ? ('_' + ele.operationLetter) : '') + (ele.operationDes ? '[' + ele.operationDes + ']' : ''),
+                  label: ele['operationName'] + (ele.operationDes ? '[' + ele.operationDes + ']' : ''),
                   operationDes: ele.operationDes,
                   children: [{
                     value: ele[level3],
