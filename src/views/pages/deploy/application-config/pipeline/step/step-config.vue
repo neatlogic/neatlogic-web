@@ -178,6 +178,39 @@ export default {
           return true;
         }
       }
+    },
+    getPrevOutputParamList(list, l) {
+      let allPrevOutputList = [];
+      list.forEach(item => {
+        if (item.operation.outputParamList && item.operation.outputParamList.length > 0) {
+          let outputParamList = item.operation.outputParamList;
+          outputParamList.forEach(i => {
+            allPrevOutputList.push({
+              ...i,
+              combopName: l.name,
+              combopId: l.id,
+              combopUuid: l.uuid,
+              operationId: item.operationId,
+              operationName: item.operationName,
+              operationUuid: item.uuid,
+              operationLetter: item.letter || null,
+              operationDes: item.description
+            });
+          });
+        } 
+        if (item.config) {
+          if (item.config.ifList && item.config.ifList.length > 0) {
+            allPrevOutputList.push(...this.getPrevOutputParamList(item.config.ifList, l));
+          }
+          if (item.config.elseList && item.config.elseList.length > 0) {
+            allPrevOutputList.push(...this.getPrevOutputParamList(item.config.elseList, l));
+          }
+          if (item.config.operations && item.config.operations.length > 0) {
+            allPrevOutputList.push(...this.getPrevOutputParamList(item.config.operations, l));
+          }
+        }
+      });
+      return allPrevOutputList;
     }
   },
   computed: {
@@ -201,69 +234,7 @@ export default {
           if (list && list.length) {
             list.forEach(l => {
               if (l.config && l.config.phaseOperationList && l.config.phaseOperationList.length > 0) {
-                l.config.phaseOperationList.forEach(p => {
-                  if (!this.$utils.isEmpty(p.operation) && p.operation.outputParamList && p.operation.outputParamList.length > 0) {
-                    let item = p.operation.outputParamList;
-                    item.forEach(i => {
-                      allPrevOutputList.push({
-                        ...i,
-                        combopName: l.name,
-                        combopId: l.id,
-                        combopUuid: l.uuid,
-                        operationId: p.operationId,
-                        operationName: p.operationName,
-                        operationUuid: p.uuid,
-                        operationLetter: p.letter || null,
-                        operationDes: p.description
-                      });
-                    });
-                  } else if (p.operationName == 'native/IF-Block') {
-                    if (p.config) {
-                      if (p.config.ifList && p.config.ifList.length > 0) {
-                        let ifList = p.config.ifList;
-                        ifList.forEach(ifItem => {
-                          if (ifItem.operation.outputParamList && ifItem.operation.outputParamList.length > 0) {
-                            let item = ifItem.operation.outputParamList;
-                            item.forEach(i => {
-                              allPrevOutputList.push({
-                                ...i,
-                                combopName: l.name,
-                                combopId: l.id,
-                                combopUuid: l.uuid,
-                                operationId: ifItem.operationId,
-                                operationName: ifItem.operationName,
-                                operationUuid: ifItem.uuid,
-                                operationLetter: ifItem.letter || null,
-                                operationDes: ifItem.description
-                              });
-                            });
-                          }
-                        });
-                      }
-                      if (p.config.elseList && p.config.elseList.length > 0) {
-                        let elseList = p.config.elseList;
-                        elseList.forEach(elseItem => {
-                          if (elseItem.operation.outputParamList && elseItem.operation.outputParamList.length > 0) {
-                            let item = elseItem.operation.outputParamList;
-                            item.forEach(i => {
-                              allPrevOutputList.push({
-                                ...i,
-                                combopName: l.name,
-                                combopId: l.id,
-                                combopUuid: l.uuid,
-                                operationId: elseItem.operationId,
-                                operationName: elseItem.operationName,
-                                operationUuid: elseItem.uuid,
-                                operationLetter: elseItem.letter || null,
-                                operationDes: elseItem.description
-                              });
-                            });
-                          }
-                        });
-                      }
-                    }
-                  }
-                });
+                allPrevOutputList.push(...this.getPrevOutputParamList(l.config.phaseOperationList, l));
               }
             });
           }
