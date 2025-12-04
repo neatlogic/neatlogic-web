@@ -2909,7 +2909,8 @@
     "samplecount": "样本数",
     "generatecode": "生成代码",
     "open": "打开",
-    "isindex": "是否索引"
+    "isindex": "是否索引",
+    "isshow": "是否显示"
   },
   "informant": {
     "last5dump": "最近5次快照",
