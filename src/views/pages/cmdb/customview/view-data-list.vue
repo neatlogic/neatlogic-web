@@ -34,12 +34,11 @@
           </div>
         </div>
       </div>
-      <div v-if="isAdvancedSearch">
+      <div v-if="isAdvancedSearch" style="position: relative;" class="radius-md mb-sm">
         <Card
           v-if="attrList && attrList.length > 0"
           dis-hover
-          style="margin-bottom: 10px"
-          class="radius-md"
+          style="maxHeight: 250px; overflow-y: auto; padding-bottom: 52px;"
         >
           <TsRow>
             <Col v-for="(attr, index) in searchAttrList" :key="index" span="12">
@@ -114,7 +113,9 @@
               </TsRow>
             </Col>
           </TsRow>
-          <div style="text-align: right" class="mt-md">
+        </Card>
+        <div style="position:absolute;right:22px;bottom:1px;width:calc(100% - 23px);z-index:1;" class="text-right bg-op">
+          <div class="pb-sm pt-sm">
             <Button type="primary" class="mr-md" @click="searchCustomViewData()">{{ $t('page.search') }}</Button>
             <Button
               v-download="exportUrl()"
@@ -124,7 +125,7 @@
               :disabled="isExporting"
             >{{ $t('page.export') }}</Button>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
     <div v-if="groupList && groupList.length > 0">
