@@ -1,6 +1,6 @@
 import { Node, mergeAttributes } from '@tiptap/core';
-const UploadVideo = Node.create({
-  name: 'uploadVideo',
+const InsertVideo = Node.create({
+  name: 'insertVideo',
   group: 'block',
   atom: true,
   selectable: false,
@@ -30,7 +30,7 @@ const UploadVideo = Node.create({
       return [
         'div',
         mergeAttributes(HTMLAttributes, {
-          'data-type': 'upload-video',
+          'data-type': 'insert-video',
           style: `
             width:${width};
             height:200px;
@@ -60,7 +60,7 @@ const UploadVideo = Node.create({
     return [
       'video',
       mergeAttributes(HTMLAttributes, {
-        'data-type': 'upload-video',
+        'data-type': 'insert-video',
         src,
         width,
         controls
@@ -89,4 +89,4 @@ const UploadVideo = Node.create({
   }
 });
 
-export default UploadVideo;
+export default InsertVideo;

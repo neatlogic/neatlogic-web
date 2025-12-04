@@ -107,9 +107,8 @@ import { TaskList, TaskItem } from '@tiptap/extension-list';
 import ExtensionsList from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/index.js';
 import BaseMixin from './base.js';
 import { menuState } from './state.js';
-import InsertMenuCommands from '@/resources/plugins/TsKnowledgeDocumentEditor/commands/index.js';
 import { SearchHighlight } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
-
+import DataContent from './data.js';
 export default {
   components: {
     EditorContent,
@@ -184,10 +183,15 @@ export default {
             HTMLAttributes: {
               class: 'ordered-list'
             }
+          },
+          heading: {
+            HTMLAttributes: {
+              class: 'heading'
+            }
           }
         }),
         Placeholder.configure({
-          placeholder: '可在此处输入内容' // 这是全局 placeholder
+          placeholder: '可在此处输入内容'
         }),
         TextAlign.configure({
           types: ['heading', 'paragraph']
@@ -204,7 +208,7 @@ export default {
         ...ExtensionsList,
         SearchHighlight
       ],
-      content: '<h1>欢迎使用这是一个示例文档</h1>',
+      content: DataContent,
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
       },
@@ -342,7 +346,7 @@ export default {
       }
     }, 300),
     hidePlus: throttle(function() {
-      this.currentBlock = null;
+      // this.currentBlock = null;
     }, 400),
     isInTable(e) {
       const position = this.editor.view.posAtCoords({
@@ -359,93 +363,6 @@ export default {
         }
       }
       return false;
-    },
-    findInsertContentPosition() {
-      const view = this.editor.view;
-      const coords = this.currentBlock?.getBoundingClientRect();
-      const found = coords
-        ? view.posAtCoords({
-          left: coords.left,
-          top: coords.top
-        })
-        : null;
-
-      const position = found?.pos ?? this.editor.state.selection.from;
-      const { doc } = this.editor.state;
-      const $pos = doc.resolve(position);
-
-      // 向上找“顶层 block”（parent === doc）
-      for (let d = $pos.depth; d > 0; d--) {
-        const node = $pos.node(d);
-        const parent = $pos.node(d - 1);
-        // 顶层 block：父节点是 doc
-        if (node.isBlock && parent.type === doc.type) {
-          return $pos.after(d); // 输出快的结束位置
-        }
-      }
-
-      return position;
-    },
-    findCurrentBlockPosition() {
-      // 获取当前块元素的位置（编辑菜单编辑器悬停的位置）
-      const view = this.editor.view;
-      const coords = this.currentBlock?.getBoundingClientRect();
-
-      const found = coords
-        ? view.posAtCoords({
-          left: coords.left,
-          top: coords.top
-        })
-        : null;
-
-      const position = found?.pos ?? this.editor.state.selection.from;
-      const { doc } = this.editor.state;
-      const $pos = doc.resolve(position);
-
-      // 向上找顶层 block
-      for (let d = $pos.depth; d > 0; d--) {
-        const node = $pos.node(d);
-        const parent = $pos.node(d - 1);
-
-        if (node.isBlock && parent.type === doc.type) {
-          const start = $pos.start(d);
-          return {
-            startPosition: start, // block 起始位置
-            node: node, // block node
-            endPosition: start + node.nodeSize
-          };
-        }
-      }
-      return null;
-    },
-    handleInsertMenuContent(menuData) {
-      if (!this.editor) return;
-      const insertPos = this.findInsertContentPosition();
-      const { commandName, value = {} } = menuData;
-      const commandMethod = InsertMenuCommands[commandName];
-      if (commandMethod) {
-        commandMethod({
-          editor: this.editor,
-          position: insertPos,
-          options: value,
-          https: this.$https
-        });
-      }
-    },
-    handleReplaceMenuContent(menuData) {
-      if (!this.editor) return;
-
-      const { commandName, value = {} } = menuData;
-      const position = this.findCurrentBlockPosition();
-      const commandMethod = InsertMenuCommands[commandName];
-      if (commandMethod) {
-        commandMethod({
-          editor: this.editor,
-          position: position || {},
-          options: {...value, isToggle: true},
-          https: this.$https
-        });
-      }
     },
     highlightHeading(node, editor) {
       const isHeading = editor.isActive('heading');
@@ -484,6 +401,42 @@ export default {
     },
     handleClickPlus() {
       this.editor.chain().focus('end').run();
+    },
+    transformBlockType({nodeType, attrs = {}} = {}) {
+      const { view, state } = this.editor;
+      let posResult = null;
+      let $pos;
+      let node, nodeStart, nodeEnd;
+      if (this.currentBlock) {
+        const coords = this.currentBlock.getBoundingClientRect();
+        posResult = view.posAtCoords({ left: coords.left, top: coords.top });
+      }
+      if (posResult?.pos != null) {
+        $pos = state.doc.resolve(posResult.pos);
+      } else {
+        const { $from } = state.selection;
+        $pos = $from;
+      }
+
+      // 2. 找到最近的 block 节点
+      for (let depth = $pos.depth; depth > 0; depth--) {
+        const tempNode = $pos.node(depth);
+        if (tempNode.type.isBlock) {
+          node = tempNode;
+          nodeStart = $pos.before(depth);
+          nodeEnd = nodeStart + node.nodeSize;
+          break;
+        }
+      }
+      if (!node) return; // 没找到 block，直接返回
+      const nodeTextContent = node.textContent;
+      if (node && nodeTextContent) {
+        const { schema } = view.state;
+        // 3. 创建新节点（保留内容）
+        const newNode = view.state.schema.nodes[nodeType].create(attrs, schema.text(nodeTextContent));
+        // 4. 替换
+        view.dispatch(state.tr.replaceWith(nodeStart, nodeEnd, newNode));
+      }
     },
     replaceMenuContent(menuData) {
       const { type: nodeName, category } = menuData;

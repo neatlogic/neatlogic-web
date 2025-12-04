@@ -4,7 +4,7 @@ import codeBlock from './code-block';
 import highlightBlock from './highlight-block';
 import orderedList from './ordered-list';
 import uploadImage from './upload-image';
-import uploadVideo from './upload-video';
+import insertVideo from './insert-video';
 import blockquote from './blockquote';
 import horizontalRule from './horizontal-rule';
 import taskList from './task-list';
@@ -32,7 +32,7 @@ export default {
   taskList,
   insertTable,
   uploadImage,
-  uploadVideo,
+  insertVideo,
   blockquote,
   horizontalRule,
   addColumnBefore,

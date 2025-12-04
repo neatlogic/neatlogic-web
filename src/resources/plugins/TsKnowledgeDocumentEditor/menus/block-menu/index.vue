@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @click.stop>
     <EmptyRowMenu
       v-if="isEmptyRow"
       class="menu-wrapper"

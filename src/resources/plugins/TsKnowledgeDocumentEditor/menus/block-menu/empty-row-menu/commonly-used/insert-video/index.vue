@@ -43,7 +43,7 @@ export default {
     handleFileChange(event) {
       const file = event?.target?.files?.[0];
       this.$emit('click-menu', {
-        commandName: 'uploadVideo',
+        commandName: 'insertVideo',
         value: { file: file }
       });
     }
