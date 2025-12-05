@@ -56,33 +56,36 @@ export default {
     },
     findCurrentBlockPosition() {
       // 获取当前块元素的位置（编辑菜单编辑器悬停的位置）
-      const view = this.editor.view;
-      const coords = this.currentBlock?.getBoundingClientRect();
+      const { view, state } = this.editor;
+      let posResult = null;
+      let $pos;
+      let node, nodeStart, nodeEnd;
+      if (this.currentBlock) {
+        const coords = this.currentBlock.getBoundingClientRect();
+        posResult = view.posAtCoords({ left: coords.left, top: coords.top });
+      }
+      if (posResult?.pos != null) {
+        $pos = state.doc.resolve(posResult.pos);
+      } else {
+        const { $from } = state.selection;
+        $pos = $from;
+      }
 
-      const found = coords
-        ? view.posAtCoords({
-          left: coords.left,
-          top: coords.top
-        })
-        : null;
-
-      const position = found?.pos ?? this.editor.state.selection.from;
-      const { doc } = this.editor.state;
-      const $pos = doc.resolve(position);
-
-      // 向上找顶层 block
-      for (let d = $pos.depth; d > 0; d--) {
-        const node = $pos.node(d);
-        if (node.isBlock) {
-          const start = $pos.start(d);
-          return {
-            startPosition: start, // block 起始位置
-            node: node, // block node
-            endPosition: start + node.nodeSize
-          };
+      // 2. 找到最近的 block 节点
+      for (let depth = $pos.depth; depth > 0; depth--) {
+        const tempNode = $pos.node(depth);
+        if (tempNode.type.isBlock) {
+          node = tempNode;
+          nodeStart = $pos.before(depth);
+          nodeEnd = nodeStart + node.nodeSize;
+          break;
         }
       }
-      return null;
+      return {
+        node: node,
+        startPosition: nodeStart,
+        endPosition: nodeEnd
+      };
     },
     handleInsertMenuContent(menuData) {
       if (!this.editor) return;
@@ -108,10 +111,21 @@ export default {
         commandMethod({
           editor: this.editor,
           position: position || {},
-          options: {...value, isReplace: true},
+          options: {...value, isToggle: true},
           https: this.$https,
           vueInstance: this
         });
+      }
+    },
+    transformBlockType({editor, position = {}, nodeType, nodeAttrs = {}} = {}) {
+      // 替换当前节点为指定类型的节点
+      const { node, startPosition, endPosition } = position || {};
+      if (!node) return;
+      const nodeTextContent = node.textContent;
+      if (node && nodeTextContent) {
+        const { schema } = editor.view.state;
+        const newNode = editor.view.state.schema.nodes[nodeType].create(nodeAttrs, schema.text(nodeTextContent));
+        editor.view.dispatch(editor.state.tr.replaceWith(startPosition, endPosition, newNode));
       }
     }
   }

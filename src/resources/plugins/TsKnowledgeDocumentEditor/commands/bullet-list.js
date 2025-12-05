@@ -1,7 +1,8 @@
-export default function bulletList({ editor, position, options }) {
+export default function bulletList({ editor, position, options, vueInstance }) {
   const { isToggle } = options || {};
+  const { endPosition } = position || {};
   if (isToggle) {
-    editor.chain().focus().toggleBulletList().run();
+    editor.chain().focus().setTextSelection(endPosition - 1).toggleBulletList().run();
   } else {
     editor.chain().focus().insertContentAt(position, {
       type: 'bulletList',

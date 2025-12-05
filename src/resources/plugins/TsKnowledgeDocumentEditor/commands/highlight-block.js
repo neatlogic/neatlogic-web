@@ -1,8 +1,10 @@
 export default function highlightBlock({ editor, position, options }) {
   const { isToggle } = options || {};
+  const { endPosition } = position || {};
   if (isToggle) {
     editor.chain()
       .focus()
+      .setTextSelection(endPosition - 1)
       .toggleHighlightBlock()
       .run();
   } else {

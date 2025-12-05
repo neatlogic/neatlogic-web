@@ -1,7 +1,8 @@
 export default function codeBlock({ editor, position, options }) {
   const { isToggle } = options || {};
+  const { endPosition } = position || {};
   if (isToggle) {
-    editor.chain().focus().toggleCodeBlock().run();
+    editor.chain().focus().setTextSelection(endPosition - 1).toggleCodeBlock().run();
   } else {
     editor
       .chain()

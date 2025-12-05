@@ -1,10 +1,8 @@
 export default function heading({ editor, position, options, vueInstance }) {
-  const { level, isToggle, isReplace } = options || {};
+  const { level, isToggle } = options || {};
+  const { endPosition } = position || {};
   if (isToggle) {
-    // 切换标题，光标在当前标题时，这个方法才会生肖
-    editor.chain().focus().toggleHeading({ level }).run();
-  } else if (isReplace) {
-    vueInstance.transformBlockType({ nodeType: 'heading', attrs: {level: level} });
+    editor.chain().focus().setTextSelection(endPosition - 1).toggleHeading({ level: level }).run();
   } else {
     editor
       .chain()

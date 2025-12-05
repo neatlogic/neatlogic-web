@@ -9,6 +9,7 @@
         <DropdownItem class="clear-dropdown-item-hover-background">
           <BaseMenu
             :hideBaseText="true"
+            :removeMenuList="[]"
             @click-menu="emitClickMenu"
           ></BaseMenu>
         </DropdownItem>

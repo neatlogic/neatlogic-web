@@ -1,8 +1,10 @@
 export default function link({ editor, position, options }) {
   const { linkUrl = '', linkText = '', isToggle } = options || {};
+  const { endPosition } = position || {};
   if (isToggle) {
     editor.chain()
       .focus()
+      .setTextSelection(endPosition - 1)
       .extendMarkRange('link')
       .setLink({ href: linkUrl })
       .run();

@@ -1,11 +1,8 @@
 export default function blockquote({ editor, position, options }) {
   const { isToggle } = options || {};
+  const { endPosition } = position || {};
   if (isToggle) {
-    editor
-      .chain()
-      .focus()
-      .toggleBlockquote()
-      .run();
+    editor.chain().focus().setTextSelection(endPosition - 1).toggleBlockquote().run();
   } else {
     editor
       .chain()
@@ -18,6 +15,7 @@ export default function blockquote({ editor, position, options }) {
             content: []
           }
         ]
-      }).run();
+      })
+      .run();
   }
 }

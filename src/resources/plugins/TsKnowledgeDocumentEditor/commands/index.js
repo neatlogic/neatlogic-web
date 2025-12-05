@@ -23,6 +23,8 @@ import underline from './underline';
 import code from './code';
 import paragraph from './paragraph';
 import deleteRange from './delete-range';
+import cut from './cut';
+import copy from './copy';
 export default {
   heading,
   codeBlock,
@@ -48,5 +50,7 @@ export default {
   underline,
   code,
   paragraph,
-  deleteRange
+  deleteRange,
+  cut,
+  copy
 };
