@@ -2910,7 +2910,19 @@
     "generatecode": "生成代码",
     "open": "打开",
     "isindex": "是否索引",
-    "isshow": "是否显示"
+    "isshow": "是否显示",
+    "eventactiontype": "事件动作类型",
+    "30minute": "30分钟",
+    "1hour": "1小时",
+    "3hour": "3小时",
+    "6hour": "6小时",
+    "12hour": "12小时",
+    "1day": "1天",
+    "1week": "1周",
+    "1month": "1个月",
+    "3day": "3天",
+    "subscribename": "订阅名称",
+    "invokealert": "关联告警"
   },
   "informant": {
     "last5dump": "最近5次快照",
