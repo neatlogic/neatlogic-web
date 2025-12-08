@@ -166,6 +166,12 @@ export default {
       default: () => {
         return [];
       }
+    },
+    parentPrevOperationList: { //父级上游工具列表
+      type: Array,
+      default: () => {
+        return [];
+      }
     }
   },
   data() {
@@ -396,6 +402,25 @@ export default {
       this.currentStep = null;
       this.description = '';
       this.showDialog = false;
+    },
+    getPrevOperation(list) {
+      let operationList = [];
+      list.forEach(item => {
+        operationList.push(item);
+        if (item.config && !this.$utils.isEmpty(item.config.ifList)) {
+          operationList.push(...item.config.ifList);
+          operationList.push(...this.getPrevOperation(item.config.ifList));
+        } 
+        if (item.config && !this.$utils.isEmpty(item.config.elseList)) {
+          operationList.push(...item.config.elseList);
+          operationList.push(...this.getPrevOperation(item.config.elseList));
+        } 
+        if (item.config && !this.$utils.isEmpty(item.config.operations)) {
+          operationList.push(...item.config.elseList);
+          operationList.push(...this.getPrevOperation(item.config.operations));
+        }
+      });
+      return operationList;
     }
   },
   computed: {
@@ -406,6 +431,9 @@ export default {
       return function(index, prevStepList) {
         let list = [];
         let newList = [];
+        if (!this.$utils.isEmpty(this.parentPrevOperationList)) {
+          list.push(...this.parentPrevOperationList);
+        }
         //当前阶段的前面的所有输出参数
         if (prevStepList && prevStepList.length) {
           list.push(...prevStepList);
@@ -414,6 +442,7 @@ export default {
         newList = this.list.filter((l, lindex) => {
           return lindex < index;
         });
+        newList = this.getPrevOperation(newList);
         newList.forEach(n => {
           if (n.operation && n.operation.outputParamList && n.operation.outputParamList.length) {
             let item = n.operation.outputParamList;
@@ -435,8 +464,8 @@ export default {
     },
     getFirstStatus() {
       return function(stepIndex, scriptIndex) {
-        //判断当前脚本是否第一个阶段的第一个脚本，此时没有选择上游输出参数的选项
-        return !stepIndex && !scriptIndex;
+        //判断当前脚本是否第一个阶段的第一个脚本或者父级工具不存在上游工具，此时没有选择上游输出参数的选项
+        return !stepIndex && !scriptIndex && this.$utils.isEmpty(this.parentPrevOperationList);
       };
     },
     typeText() {

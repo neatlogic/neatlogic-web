@@ -261,13 +261,26 @@ export default {
       return this.$api.framework.extramenu
         .getMenuList()
         .then(res => {
-          this.extramenuList = res.Return;
+          this.extramenuList = this.findActiveExtramenuList(res.Return || []);
         })
         .finally(() => {
           this.$nextTick(() => {
             this.$store.commit('setExtramenu', false);
           });
         });
+    },
+    findActiveExtramenuList(menuList = []) {
+      const result = [];
+      menuList.forEach(item => {
+        const newItem = { ...item };
+        if (item['children'] && Array.isArray(item['children'])) {
+          newItem['children'] = this.findActiveExtramenuList(item['children']);
+        }
+        if (newItem['isActive'] == 1 || (newItem['isActive'] == 1 && newItem['children'] && newItem['children'].length > 0)) {
+          result.push(newItem);
+        }
+      });
+      return result;
     }
   },
   computed: {

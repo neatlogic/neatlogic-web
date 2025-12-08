@@ -7,9 +7,9 @@ const extramenu = {
   getMenuById(id) {
     return axios.post('/api/rest/extramenu/get', {id: id});
   },
-  getMenuTreeNode(params) {
+  /*getMenuTreeNode(params) {
     return axios.post('/api/rest/extramenu/get', params);
-  },
+  },*/
   deleteMenuTreeNode(id) {
     return axios.post('/api/rest/extramenu/delete', {id: id});
   },

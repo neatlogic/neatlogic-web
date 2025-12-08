@@ -96,6 +96,7 @@
                               v-if="conItem.type == 'attr' && getAttrById(conItem.id)"
                               ref="attrHandler"
                               :valueList="conItem.valueList"
+                              mode="condition"
                               :attrData="getAttrById(conItem.id)"
                               @setData="setAttrValue(conItem, arguments[0])"
                             ></AttrSearcher>
