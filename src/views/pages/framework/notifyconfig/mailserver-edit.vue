@@ -192,15 +192,19 @@ export default {
       });
     },
     test() {
-      this.isShow = true;
+      let form = this.$refs.form;
+      if (form.valid()) {
+        this.isShow = true;
+      }
     },
     testSend() {
-      let form = this.$refs.testform;
-      if (form.valid()) {
-        let data = this.testVal;
+      let form = this.$refs.form;
+      let data = form.getFormValue();
+      let testForm = this.$refs.testform;
+      if (testForm.valid()) {
+        this.$set(data, 'emailAddress', this.testVal.emailAddress);
         this.disabledTest = true;
-        this.$api.framework.mailserver
-          .test(data)
+        this.$api.framework.mailserver.test(data)
           .then(res => {
             if (res.Status === 'OK') {
               this.$Message.success(this.$t('page.sendsucceed'));
