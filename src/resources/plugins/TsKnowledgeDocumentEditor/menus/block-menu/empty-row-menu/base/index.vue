@@ -12,7 +12,7 @@
           v-if="item.tipConentList"
           transfer
           theme="dark"
-          placement="top"
+          placement="bottom"
         >
           <span v-if="item.iconClass" style="font-size: 16px" :class="item.iconClass"></span>
           <template v-else>{{ item.text }}</template>

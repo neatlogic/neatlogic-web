@@ -10,11 +10,11 @@ export const BlockUuid = Extension.create({
       {
         types: ['*'],
         attributes: {
-          uuid: {
-            default: utils.setUuid(),
+          'data-uuid': {
+            default: null,
             parseHTML: element => element.getAttribute('data-uuid'),
             renderHTML: attributes => {
-              return { 'data-uuid': attributes.uuid };
+              return { 'data-uuid': attributes['data-uuid'] };
             }
           }
         }
@@ -32,25 +32,18 @@ export const BlockUuid = Extension.create({
           // 遍历当前编辑器最新状态（newState）下的所有文档节点
           newState.doc.descendants((node, pos) => {
             // 只给块级节点加 uuid（比如 paragraph、heading、list_item等）
-            if (node.type.isBlock && (!node?.attrs?.uuid || (node?.attrs?.uuid && uuidList.includes(node.attrs.uuid)))) {
+            if (node.type.isBlock && (!node?.attrs?.['data-uuid'] || (node?.attrs?.['data-uuid'] && uuidList.includes(node.attrs['data-uuid'])))) {
               tr = tr.setNodeMarkup(pos, node?.type, {
                 ...(node.attrs || {}),
-                uuid: utils.setUuid()
+                'data-uuid': utils.setUuid()
               });
               modified = true;
             }
-            uuidList.push(node.attrs?.uuid);
+            uuidList.push(node.attrs?.['data-uuid']);
           });
           return modified ? tr : null;
         }
       })
     ];
-  },
-  addKeyboardShortcuts() {
-    return {
-      Backspace: () => {
-        // 
-      }
-    };
   }
 });

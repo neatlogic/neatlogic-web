@@ -21,7 +21,7 @@ export default {
       const found = coords
         ? view.posAtCoords({
           left: coords.left,
-          top: coords.bottom - 1
+          top: coords.top
         })
         : null;
 
@@ -49,7 +49,7 @@ export default {
 
         // 处理无序有序列表时，需要跳到列表后面
         if (node.isBlock && parent.type === doc.type) {
-          return $pos.after(d);
+          // return $pos.after(d);
         }
       }
       return position;
@@ -98,7 +98,6 @@ export default {
           position: position,
           options: value,
           https: this.$https
-          
         });
       }
     },

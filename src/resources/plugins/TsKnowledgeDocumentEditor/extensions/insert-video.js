@@ -13,10 +13,15 @@ const InsertVideo = Node.create({
         default: false,
         renderHTML: attrs => (attrs.loading ? { 'data-loading': 'true' } : {})
       },
-      uuid: {
+      'data-uuid': {
         default: null,
-        parseHTML: (element) => element.getAttribute('uuid'),
-        renderHTML: (attributes) => ({ 'uuid': attributes.uuid })
+        parseHTML: (element) => element.getAttribute('data-uuid'),
+        renderHTML: (attributes) => ({ 'data-uuid': attributes['data-uuid'] })
+      },
+      'data-type': {
+        default: 'table',
+        parseHTML: (element) => element.getAttribute('data-type'),
+        renderHTML: (attributes) => ({ 'data-type': attributes['data-type'] })
       }
     };
   },
@@ -80,7 +85,7 @@ const InsertVideo = Node.create({
       },
       updateVideo: (uuid, newAttrs) => ({ tr, state }) => {
         tr.doc.descendants((node, pos) => { // 遍历文档中的所有节点
-          if (node.type.name === this.name && node.attrs.uuid === uuid) {
+          if (node.type.name === this.name && node.attrs['data-uuid'] === uuid) {
             tr.setNodeMarkup(pos, undefined, { ...node.attrs, ...newAttrs });
           }
         });
