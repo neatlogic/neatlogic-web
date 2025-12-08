@@ -1,15 +1,15 @@
-// heading.js
-export default function heading({ editor, pos, options }) {
+export default function heading({ editor, position, options, vueInstance }) {
   const { level, isToggle } = options || {};
+  const { endPosition } = position || {};
   if (isToggle) {
-    editor.chain().focus().toggleHeading({ level }).run();
+    editor.chain().focus().setTextSelection(endPosition - 1).toggleHeading({ level: level }).run();
   } else {
     editor
       .chain()
       .focus()
-      .insertContentAt(pos, {
+      .insertContentAt(position, {
         type: 'heading',
-        attrs: { level },
+        attrs: { level: level, 'data-type': `heading${level}`},
         content: [{ type: 'text', text: `新标题${level}内容` }]
       })
       .run();

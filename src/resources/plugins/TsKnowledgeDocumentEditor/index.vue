@@ -1,5 +1,5 @@
 <template>
-  <div ref="knowledgeEditorBox" class="knowledge-editor-box">
+  <div class="knowledge-editor-box">
     <div class="editor-main" @click.stop="() => hidePlus()">
       <div class="editor-menu">
         <ul>
@@ -33,17 +33,13 @@
           <div ref="editorContentContainer" class="editor-content-container" @click.stop>
             <EditorContent v-if="editor" :editor="editor" class="editor-content"></EditorContent>
           </div>
-          <TipTapMenu
+          <BlockMenu
+            v-show="isShowBlockMenu"
             :isEmptyRow="isEmptyRow"
-            :showPlus="showPlus"
-            :menuVisible="menuVisible"
-            :iconClassName="iconClassName"
-            :plusPos="plusPos"
-            :menuPos="menuPos"
+            :menuPosition="menuPosition"
             @insert-menu-content="handleInsertMenuContent"
-            @replace-menu-content="replaceMenuContent"
-            @PlusMouseenter="handlePlusMouseenter"
-          ></TipTapMenu>
+            @replace-menu-content="handleReplaceMenuContent"
+          ></BlockMenu>
           <TextSelectedMenu
             v-show="isShowBubbleMenu"
             ref="textSelectedMenuWrapper"
@@ -111,14 +107,12 @@ import { TaskList, TaskItem } from '@tiptap/extension-list';
 import ExtensionsList from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/index.js';
 import BaseMixin from './base.js';
 import { menuState } from './state.js';
-import InsertMenuCommands from '@/resources/plugins/TsKnowledgeDocumentEditor/commands/index.js';
 import { SearchHighlight } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
-import DataContext from './data.js';
-
+import DataContent from './data.js';
 export default {
   components: {
     EditorContent,
-    TipTapMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/index.vue'),
+    BlockMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/index.vue'),
     // ToolBar: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/toolbar/index.vue'),
     TextSelectedMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/index.vue'),
     SearchReplaceDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/search-replace-dialog/index.vue'),
@@ -141,6 +135,7 @@ export default {
     return {
       title: this.documentTitle,
       isShowBubbleMenu: false,
+      isShowBlockMenu: false,
       isShowSearchReplaceDialog: false,
       isShowTableMenu: false,
       tableMenuPosition: {
@@ -151,14 +146,10 @@ export default {
         top: 0,
         left: 0
       },
-      isEmptyRow: true, // 是否是空行，用于判断显示鼠标经过时的加号
-      iconClassName: '',
+      isEmptyRow: false, // 是否是空行，用于判断显示鼠标经过时的加号
       editor: null,
-      menuPos: { top: 0, left: 0 },
-      plusPos: { top: 0, left: 0 },
-      showPlus: false,
-      plusBlock: null,
-      menuVisible: false,
+      menuPosition: { top: 0, left: 0 },
+      currentBlock: null,
       menuList: [],
       selectHeadingUuid: '',
       selectedText: '',
@@ -192,10 +183,15 @@ export default {
             HTMLAttributes: {
               class: 'ordered-list'
             }
+          },
+          heading: {
+            HTMLAttributes: {
+              class: 'heading'
+            }
           }
         }),
         Placeholder.configure({
-          placeholder: '可在此处输入内容' // 这是全局 placeholder
+          placeholder: '可在此处输入内容'
         }),
         TextAlign.configure({
           types: ['heading', 'paragraph']
@@ -212,7 +208,7 @@ export default {
         ...ExtensionsList,
         SearchHighlight
       ],
-      content: '<h1>欢迎使用这是一个示例文档</h1>',
+      content: DataContent,
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
       },
@@ -261,8 +257,8 @@ export default {
   },
   methods: {
     getData() {
-      let json = this.editor.getJSON();
-      console.log(json);
+      const saveData = this.editor.getJSON();
+      console.log(saveData);
     },
     getAllHeadings(editor) {
       const $headings = editor.$nodes('heading');
@@ -298,7 +294,6 @@ export default {
     handleMouseMove: throttle(function(event) {
       const wrapper = this.$refs.editorWrapper;
       const editorContentContainer = this.$refs?.editorContentContainer;
-      const knowledgeEditorBox = this.$refs.knowledgeEditorBox;
       const editorEl = wrapper?.querySelector('.ProseMirror');
       // 👉 如果鼠标在 + 按钮上，直接忽略，不隐藏
       if (event.target.closest('.plus-button') || event.target.closest('.drag-button') || event.target.closest('.menu-wrapper')) {
@@ -307,37 +302,30 @@ export default {
       if (!editorEl?.contains(event.target)) {
         return;
       }
-      this.iconClassName = '';
       // 找到当前块元素
       let block = event.target.closest('p,h1, h2, h3, h4, h5, h6, li, blockquote, pre,div, table');
       if (!block) {
         // 如果是空行，用 posAtCoords + nodeDOM 获取
         const coords = { left: event.clientX, top: event.clientY };
-        const pos = this.editor?.view?.posAtCoords(coords);
-        if (pos) {
-          const $pos = this.editor?.state?.doc?.resolve(pos.pos);
+        const position = this.editor?.view?.posAtCoords(coords);
+        if (position) {
+          const $pos = this.editor?.state?.doc?.resolve(position.pos);
           const dom = this.editor?.view?.nodeDOM($pos?.before($pos?.depth));
           if (dom && dom.nodeType === 1) block = dom;
         }
         this.isEmptyRow = true;
       } else {
         // 非空行
-        const elementName = block?.tagName?.toLowerCase();
         const isEmptyBlock = block?.textContent?.trim() === '';
-        if (elementName == 'pre') {
-          this.iconClassName = 'tsfont-code';
-        } else {
-          this.iconClassName = 'tsfont-font-size'; // 默认先用字体大小图标来替换先
-        }
         if (isEmptyBlock) {
           this.isEmptyRow = true;
         } else {
           this.isEmptyRow = false;
         }
       }
-      if (!block || block === this.plusBlock) return;
+      if (!block || block === this.currentBlock) return;
 
-      this.plusBlock = block;
+      this.currentBlock = block;
       const blockRect = block.getBoundingClientRect();
       const wrapperRect = wrapper.getBoundingClientRect();
       const editorContentContainerRect = editorContentContainer.getBoundingClientRect();
@@ -349,27 +337,25 @@ export default {
           left: Number((blockRect.left - editorContentContainerRect.left + 100 / 2).toFixed(0))
         };
       } else {
-        this.plusPos = {
+        this.menuPosition = {
           top: Number((blockRect.top - wrapperRect.top + blockRect.height / 2 - 12).toFixed(0)),
-          left: -34
+          left: -46
         };
-        this.showPlus = true;
         this.isShowTableMenu = false;
+        this.isShowBlockMenu = true;
       }
     }, 300),
     hidePlus: throttle(function() {
-      this.showPlus = false;
-      this.plusBlock = null;
-      this.menuVisible = false;
+      // this.currentBlock = null;
     }, 400),
     isInTable(e) {
-      const pos = this.editor.view.posAtCoords({
+      const position = this.editor.view.posAtCoords({
         left: e.clientX,
         top: e.clientY
       });
-      if (!pos) return false;
+      if (!position) return false;
 
-      const $pos = this.editor.state.doc.resolve(pos.pos);
+      const $pos = this.editor.state.doc.resolve(position.pos);
 
       for (let d = $pos.depth; d > 0; d--) {
         if ($pos.node(d).type.name === 'table') {
@@ -377,45 +363,6 @@ export default {
         }
       }
       return false;
-    },
-    handlePlusMouseenter() {
-      this.$set(this.menuPos, 'top', this.plusPos.top + 25);
-      this.$set(this.menuPos, 'left', this.plusPos.left);
-      if (this.menuVisible) {
-        setTimeout(() => {
-          this.menuVisible = false;
-        }, 2000);
-      } else {
-        this.menuVisible = !this.menuVisible;
-      }
-    },
-    getInsertPosition() {
-      const view = this?.editor?.view;
-      const coords = this.plusBlock?.getBoundingClientRect();
-      const pos = coords ? view?.posAtCoords({ left: coords.left, top: coords.top }) : null;
-      // 获取光标所在 resolved position
-      const { $from } = this.editor.state.selection;
-      // 如果外部传入 pos，就用 pos，否则用当前光标所在 block 的结束位置
-      let insertPos = pos?.pos ? pos.pos + 1 : $from.end() + 1;
-      if (this.$utils.isEmpty($from.doc.textContent)) {
-        insertPos = insertPos - 1;
-      }
-      return insertPos;
-    },
-    handleInsertMenuContent(menuData) {
-      this.menuVisible = false;
-      if (!this.editor) return;
-      const insertPos = this.getInsertPosition();
-      const { commandName, value = {} } = menuData;
-      const commandMethod = InsertMenuCommands[commandName];
-      if (commandMethod) {
-        commandMethod({
-          editor: this.editor,
-          pos: insertPos,
-          options: value,
-          https: this.$https
-        });
-      }
     },
     highlightHeading(node, editor) {
       const isHeading = editor.isActive('heading');
@@ -454,97 +401,6 @@ export default {
     },
     handleClickPlus() {
       this.editor.chain().focus('end').run();
-    },
-    replaceMenuContent(menuData) {
-      const { type: nodeName, category } = menuData;
-      // 替换当前光标所在的节点内容
-      this.menuVisible = false;
-      const { view, state } = this.editor;
-
-      // 1. 获取 posAtCoords 或 fallback 光标
-      let posResult = null;
-      if (this.plusBlock) {
-        const coords = this.plusBlock.getBoundingClientRect();
-        posResult = view.posAtCoords({ left: coords.left, top: coords.top });
-      }
-
-      let $pos;
-      if (posResult?.pos != null) {
-        $pos = state.doc.resolve(posResult.pos);
-      } else {
-        // fallback 用光标所在位置
-        const { $from } = state.selection;
-        $pos = $from;
-      }
-
-      // 2. 找到最近的 block 节点
-      let node, nodeStart, nodeEnd;
-      for (let depth = $pos.depth; depth > 0; depth--) {
-        const tempNode = $pos.node(depth);
-        if (tempNode.type.isBlock) {
-          node = tempNode;
-          nodeStart = $pos.before(depth);
-          nodeEnd = nodeStart + node.nodeSize;
-          break;
-        }
-      }
-      console.log('node', node, nodeName);
-      if (!node) return; // 没找到 block，直接返回
-      const nodeTextContent = node.textContent;
-      if (node && nodeTextContent) {
-        const { schema } = view.state;
-        // 假设替换成 heading
-        let attrs = {};
-        if (category === 'basic') {
-          if (nodeName == 'heading1') {
-            attrs = { level: 1 };
-            // this.editor.commands.setNode('heading', { level: 1 });
-          } else if (nodeName == 'heading2') {
-            attrs = { level: 2 };
-            // this.editor.commands.setNode('heading', { level: 2 });
-          } else if (nodeName == 'heading3') {
-            attrs = { level: 3 };
-            // this.editor.commands.setNode('heading', { level: 3 });
-          } else if (nodeName == 'orderedList') {
-            // this.editor.commands.setNode('paragraph');
-          }
-          // 3. 创建新节点（保留内容）
-          const newNode = schema.nodes.heading.create(attrs, schema.text(nodeTextContent));
-
-          // 4. 替换
-          view.dispatch(state.tr.replaceWith(nodeStart, nodeEnd, newNode));
-          console.log('node', nodeStart, nodeEnd, nodeTextContent);
-        } else if (category === 'operation') {
-          if (nodeName === 'delete') {
-            //删除
-            this.editor.commands.deleteRange({ from: nodeStart, to: nodeEnd });
-          } else if (nodeName === 'cut') {
-            // 剪切
-            this.editor.commands.deleteRange({ from: nodeStart, to: nodeEnd });
-            navigator.clipboard.writeText(nodeTextContent);
-          } else if (nodeName === 'copy') {
-            // 复制
-            this.editor.chain().focus().setTextSelection({ from: nodeStart, to: nodeEnd }).run();
-            // 获取选中文本
-            const selectedText = this.editor.state.doc.textBetween(nodeStart, nodeEnd, '\n');
-            console.log('selectedText', selectedText);
-            // 复制到剪贴板
-            if (navigator.clipboard) {
-              navigator.clipboard.writeText(selectedText).then(() => {
-                console.log('文本复制成功');
-              });
-            } else {
-              // 降级方案
-              const textArea = document.createElement('textarea');
-              textArea.value = selectedText;
-              document.body.appendChild(textArea);
-              textArea.select();
-              document.execCommand('copy');
-              document.body.removeChild(textArea);
-            }
-          }
-        }
-      }
     }
   },
   computed: {

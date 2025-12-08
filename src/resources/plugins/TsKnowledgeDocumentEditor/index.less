@@ -6,27 +6,28 @@
   }
   pre {
     background: rgba(#616161, 0.1);
-    border-radius: 0.5rem;
+    border-radius: 8px;
     color: #000;
-    margin: 1.5rem 0;
-    padding: 0.75rem 1rem;
+    margin: 16px 0;
+    padding: 16px;
     code {
       background: none;
       color: inherit;
       font-size: 13px;
       padding: 0;
+      border: none;
     }
   }
   hr {
     border: none;
     border-top: 1px solid #3d251414;
-    cursor: pointer;
     margin: 16px 0;
   }
   blockquote {
     border-left: 3px solid #3d25141f;
-    margin: 1.5rem 0;
-    padding-left: 1rem;
+    margin: 16px 0;
+    padding-left: 12px;
+    color: #646a73;
   }
   ul,
   ol {
@@ -34,6 +35,22 @@
     padding-left: 0;
     margin: 0;
     padding: 0;
+  }
+  .bullet-list,
+  .ordered-list {
+    padding-left: 16px;
+  }
+  .bullet-list,
+  .bullet-list li {
+    list-style: initial;
+  }
+  .ordered-list,
+  .ordered-list li {
+    list-style: decimal;
+  }
+  .ordered-list li,
+  .bullet-list li {
+    line-height: 2;
   }
   ul[data-type='taskList'] {
     li {
@@ -61,7 +78,6 @@
     overflow: hidden;
     table-layout: fixed;
     width: 100%;
-
     td,
     th {
       border: 1px solid #3d25141f;
@@ -138,44 +154,37 @@
   .tiptap-search-active {
     background: orange;
   }
+  .heading {
+    margin: 10px 0;
+  }
 }
-.editor-wrapper {
-  padding: 16px 54px;
-  border-radius: 8px;
-  min-height: 200px;
-  overflow: auto;
-  .bullet-list,
-  .ordered-list {
-    padding-left: 16px; // 调整列表项的缩进
-  }
-  .bullet-list,
-  .bullet-list li {
-    list-style: initial;
-  }
-  .ordered-list,
-  .ordered-list li {
-    list-style: decimal;
-  }
-  .tiptap p.is-editor-empty:first-child::before {
-    float: left;
-    height: 0;
-    pointer-events: none;
-    content: attr(data-placeholder);
-    color: #adb5bd;
-  }
-  .head-info-box {
-    .document-title {
-      input {
-        font-size: 30px;
-        height: 32px;
-        padding: 0;
-        &::placeholder {
+.knowledge-editor-box {
+  .editor-wrapper {
+    padding: 16px 54px;
+    border-radius: 8px;
+    min-height: 200px;
+    overflow: auto;
+    .tiptap p.is-editor-empty:first-child::before {
+      float: left;
+      height: 0;
+      pointer-events: none;
+      content: attr(data-placeholder);
+      color: #adb5bd;
+    }
+    .head-info-box {
+      .document-title {
+        input {
           font-size: 30px;
+          height: 32px;
+          padding: 0;
+          &::placeholder {
+            font-size: 30px;
+          }
         }
       }
     }
-  }
-  .editor-content-box {
-    position: relative;
+    .editor-content-box {
+      position: relative;
+    }
   }
 }

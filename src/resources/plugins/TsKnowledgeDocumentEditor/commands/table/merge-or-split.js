@@ -1,4 +1,4 @@
-export default function mergeOrSplit({ editor, pos, options }) {
+export default function mergeOrSplit({ editor, position, options }) {
   editor
     .chain()
     .focus()

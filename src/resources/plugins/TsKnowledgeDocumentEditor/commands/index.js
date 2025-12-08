@@ -4,7 +4,7 @@ import codeBlock from './code-block';
 import highlightBlock from './highlight-block';
 import orderedList from './ordered-list';
 import uploadImage from './upload-image';
-import uploadVideo from './upload-video';
+import insertVideo from './insert-video';
 import blockquote from './blockquote';
 import horizontalRule from './horizontal-rule';
 import taskList from './task-list';
@@ -22,6 +22,9 @@ import color from './color';
 import underline from './underline';
 import code from './code';
 import paragraph from './paragraph';
+import deleteRange from './delete-range';
+import cut from './cut';
+import copy from './copy';
 export default {
   heading,
   codeBlock,
@@ -31,7 +34,7 @@ export default {
   taskList,
   insertTable,
   uploadImage,
-  uploadVideo,
+  insertVideo,
   blockquote,
   horizontalRule,
   addColumnBefore,
@@ -46,5 +49,8 @@ export default {
   color,
   underline,
   code,
-  paragraph
+  paragraph,
+  deleteRange,
+  cut,
+  copy
 };

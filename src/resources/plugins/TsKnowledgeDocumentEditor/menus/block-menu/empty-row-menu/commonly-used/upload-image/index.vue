@@ -1,9 +1,14 @@
 <template>
-  <div ref="uploadVideoRef" @click.stop>
+  <div class="upload-image-box" @click.stop>
+    <div class="icon-box" @click="openFileDialog">
+      <span class="tsfont-image icon-image"></span>
+      <span class="icon-text">图片</span>
+    </div>
     <input
       ref="fileRef"
       type="file"
-      accept="video/mp4,video/mkv,video/avi,video/mov,video/webm,video/flv,video/f4v,video/mpg,video/mpeg,video/ts,video/m2ts,video/mts,video/wmv,video/rm,video/rmvb,video/3pg,video/3g2"
+      multiple
+      accept=".png,.jpg,.jpeg"
       style="display:none"
       @change="handleFileChange"
     />
@@ -36,12 +41,9 @@ export default {
         fileRef.click();
       }
     },
-    async handleFileChange(event) {
+    handleFileChange(event) {
       const file = event?.target?.files?.[0];
-      if (!file) {
-        return false;
-      }
-      this.$emit('uploadSuccess', file);
+      this.$emit('click-menu', {commandName: 'uploadImage', value: {file: file}});
     }
   },
   filter: {},
@@ -49,5 +51,19 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.upload-image-box {
+  .icon-box {
+    display: flex;
+    align-items: center;
+    .icon-image {
+      margin-right: 14px;
+      font-size: 16px;
+      color:#ffc60a;
+    }
+    .icon-text {
+      font-size: 14px;
+    }
+  }
+}
 </style>

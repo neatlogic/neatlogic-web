@@ -36,14 +36,6 @@ export default {
   },
   mixins: [mixin],
   props: {
-    icon: {
-      type: String,
-      default: ''
-    },
-    title: {
-      type: String,
-      default: ''
-    },
     command: {
       type: String,
       default: 'underline'

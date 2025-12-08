@@ -1,4 +1,4 @@
-export default function strike({ editor, pos, options }) {
+export default function strike({ editor, position, options }) {
   const { isStrike } = options || {};
   if (isStrike) {
     editor

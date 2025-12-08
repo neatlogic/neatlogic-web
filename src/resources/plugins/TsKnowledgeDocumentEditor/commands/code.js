@@ -1,4 +1,4 @@
-export default function code({ editor, pos, options }) {
+export default function code({ editor, position, options }) {
   editor
     .chain()
     .focus()

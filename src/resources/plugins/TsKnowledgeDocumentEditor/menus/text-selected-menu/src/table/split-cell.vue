@@ -13,7 +13,7 @@
         @click="handleClick"
       />
       <div slot="content">
-        {{ title }}
+        <div v-for="(item, index) in tipContentList" :key="index">{{ item }}</div>
       </div>
     </Tooltip>
   </div>
@@ -25,16 +25,7 @@ export default {
   components: {
   },
   mixins: [mixin],
-  props: {
-    title: {
-      type: String,
-      default: ''
-    },
-    command: {
-      type: String,
-      default: ''
-    }
-  },
+  props: {},
   data() {
     return {
       linkUrl: ''

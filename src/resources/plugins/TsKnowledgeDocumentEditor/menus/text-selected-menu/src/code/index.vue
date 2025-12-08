@@ -35,10 +35,15 @@ export default {
     IconSvg: () => import('./icon/index.vue')
   },
   mixins: [mixin],
-  props: {},
+  props: {
+    command: {
+      type: String,
+      default: 'code'
+    }
+  },
   data() {
     return {
-      command: 'code'
+      
     };
   },
   beforeCreate() {},

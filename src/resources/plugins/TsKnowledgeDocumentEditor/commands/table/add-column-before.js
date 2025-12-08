@@ -1,4 +1,4 @@
-export default function addColumnBefore({ editor, pos, options }) {
+export default function addColumnBefore({ editor, position, options }) {
   editor
     .chain()
     .focus()

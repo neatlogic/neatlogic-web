@@ -1,5 +1,5 @@
 import utils from '@/resources/assets/js/util.js';
-export default function uploadVideo({ editor, pos, options, https }) {
+export default function insertVideo({ editor, position, options, https }) {
   const { file } = options || {};
   if (!file) {
     return;

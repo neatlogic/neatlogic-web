@@ -3,101 +3,130 @@ export default {
   methods: {
     executeEditorCommand({menuData, currentInstanceThis}) {
       if (!currentInstanceThis.editor) return;
-      const insertPos = currentInstanceThis.getInsertPosition();
+      const insertPos = currentInstanceThis.findInsertContentPosition();
       const { commandName, value = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
         commandMethod({
           editor: currentInstanceThis.editor,
-          pos: insertPos,
+          position: insertPos,
           options: value,
           https: currentInstanceThis.$https
         });
       }
+    },
+    findInsertContentPosition() {
+      const view = this.editor.view;
+      const coords = this.currentBlock?.getBoundingClientRect();
+      const found = coords
+        ? view.posAtCoords({
+          left: coords.left,
+          top: coords.bottom - 1
+        })
+        : null;
+
+      let position = found?.pos ?? this.editor.state.selection.from;
+      const { doc } = this.editor.state;
+      const $pos = doc.resolve(position);
+
+      const nodeAfter = $pos.nodeAfter;
+      const nodeBefore = $pos.nodeBefore;
+
+      // 情况1：命中的是 atom block 的前面
+      if (nodeAfter && nodeAfter.type.isAtom && nodeAfter.isBlock) {
+        return position + nodeAfter.nodeSize; // 跳到节点之后
+      }
+
+      // 情况2：命中的是 atom block 的后面
+      if (nodeBefore && nodeBefore.type.isAtom && nodeBefore.isBlock) {
+        return position; // 已经在节点后面，无需处理
+      }
+
+      // 非 atom block的情况
+      for (let d = $pos.depth; d > 0; d--) {
+        const node = $pos.node(d);
+        const parent = $pos.node(d - 1);
+
+        // 处理无序有序列表时，需要跳到列表后面
+        if (node.isBlock && parent.type === doc.type) {
+          return $pos.after(d);
+        }
+      }
+      return position;
+    },
+    findCurrentBlockPosition() {
+      // 获取当前块元素的位置（编辑菜单编辑器悬停的位置）
+      const { view, state } = this.editor;
+      let posResult = null;
+      let $pos;
+      let node, nodeStart, nodeEnd;
+      if (this.currentBlock) {
+        const coords = this.currentBlock.getBoundingClientRect();
+        posResult = view.posAtCoords({ left: coords.left, top: coords.top });
+      }
+      if (posResult?.pos != null) {
+        $pos = state.doc.resolve(posResult.pos);
+      } else {
+        const { $from } = state.selection;
+        $pos = $from;
+      }
+
+      // 2. 找到最近的 block 节点
+      for (let depth = $pos.depth; depth > 0; depth--) {
+        const tempNode = $pos.node(depth);
+        if (tempNode.type.isBlock) {
+          node = tempNode;
+          nodeStart = $pos.before(depth);
+          nodeEnd = nodeStart + node.nodeSize;
+          break;
+        }
+      }
+      return {
+        node: node,
+        startPosition: nodeStart,
+        endPosition: nodeEnd
+      };
+    },
+    handleInsertMenuContent(menuData) {
+      if (!this.editor) return;
+      const position = this.findInsertContentPosition();
+      const { commandName, value = {} } = menuData;
+      const commandMethod = InsertMenuCommands[commandName];
+      if (commandMethod) {
+        commandMethod({
+          editor: this.editor,
+          position: position,
+          options: value,
+          https: this.$https
+          
+        });
+      }
+    },
+    handleReplaceMenuContent(menuData) {
+      if (!this.editor) return;
+      const { commandName, value = {} } = menuData;
+      const position = this.findCurrentBlockPosition();
+      const commandMethod = InsertMenuCommands[commandName];
+      if (commandMethod) {
+        commandMethod({
+          editor: this.editor,
+          position: position || {},
+          options: {...value, isToggle: true},
+          https: this.$https,
+          vueInstance: this
+        });
+      }
+    },
+    transformBlockType({editor, position = {}, nodeType, nodeAttrs = {}} = {}) {
+      // 替换当前节点为指定类型的节点
+      const { node, startPosition, endPosition } = position || {};
+      if (!node) return;
+      const nodeTextContent = node.textContent;
+      if (node && nodeTextContent) {
+        const { schema } = editor.view.state;
+        const newNode = editor.view.state.schema.nodes[nodeType].create(nodeAttrs, schema.text(nodeTextContent));
+        editor.view.dispatch(editor.state.tr.replaceWith(startPosition, endPosition, newNode));
+      }
     }
-    // insertMenuContent(contentData) {
-    // // 工具栏菜单是替换所在光标的位置的内容
-    //   const { menuName, hrefUrl, hrefName, uploadImageUrl, rows, cols } = menuConfig || {};
-    //   switch (menuName) {
-    //     case 'heading1':
-    //       this.editor.chain().focus().toggleHeading({ level: 1 }).run();
-    //       break;
-    //     case 'heading2':
-    //       this.editor.chain().focus().toggleHeading({ level: 2 }).run();
-    //       break;
-    //     case 'heading3':
-    //       this.editor.chain().focus().toggleHeading({ level: 3 }).run();
-    //       break;
-    //     case 'heading4':
-    //       this.editor.chain().focus().toggleHeading({ level: 4 }).run();
-    //       break;
-    //     case 'heading5':
-    //       this.editor.chain().focus().toggleHeading({ level: 5 }).run();
-    //       break;
-    //     case 'heading6':
-    //       this.editor.chain().focus().toggleHeading({ level: 6 }).run();
-    //       break;
-    //     case 'bold':
-    //       this.editor.chain().focus().toggleBold().run();
-    //       break;
-    //     case 'italic':
-    //       this.editor.chain().focus().toggleItalic().run();
-    //       break;
-    //     case 'strikethrough':
-    //       this.editor.chain().focus().toggleStrike().run();
-    //       break;
-    //     case 'orderedList':
-    //       this.editor.chain().focus().toggleOrderedList().run();
-    //       break;
-    //     case 'bulletList':
-    //       this.editor.chain().focus().toggleBulletList().run();
-    //       break;
-    //     case 'link':
-    //       this.editor.chain().focus().insertContent({
-    //       // 需要设置超链接的文本，所以使用insertContent的方式插入
-    //         type: 'text',
-    //         text: hrefName,
-    //         marks: [
-    //           {
-    //             type: 'link',
-    //             attrs: { href: hrefUrl }
-    //           }
-    //         ]
-    //       }).run();
-    //       break;
-    //     case 'codeBlock':
-    //       this.editor.chain().focus().toggleCodeBlock().run();
-    //       break;
-    //     case 'alignLeft':
-    //       this.editor.chain().focus().setTextAlign('left').run();
-    //       break;
-    //     case 'alignRight':
-    //       this.editor.chain().focus().setTextAlign('right').run();
-    //       break;
-    //     case 'alignCenter':
-    //       this.editor.chain().focus().setTextAlign('center').run();
-    //       break;
-    //     case 'alignJustify':
-    //       this.editor.chain().focus().setTextAlign('justify').run();
-    //       break;
-    //     case 'uploadImage':
-    //       if (uploadImageUrl) {
-    //         this.editor.chain().focus().setImage({ src: uploadImageUrl }).run();
-    //       }
-    //       break;
-    //     case 'divide':
-    //       this.editor.chain().focus().setHorizontalRule().run();
-    //       break;
-    //     case 'blockQuote':
-    //       this.editor.chain().focus().toggleBlockquote().run();
-    //       break;
-    //     case 'insertTable':
-    //       this.editor.chain().focus().insertTable({ rows: rows, cols: cols, withHeaderRow: true }).run();
-    //       break;
-    //     case 'searchReplace':
-    //       this.isShowSearchReplaceDialog = !this.isShowSearchReplaceDialog;
-    //       break;
-    //   }
-    // },
   }
 };

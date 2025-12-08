@@ -1,4 +1,4 @@
-export default function color({ editor, pos, options }) {
+export default function color({ editor, position, options }) {
   const { color } = options || {};
   editor
     .chain()
