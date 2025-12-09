@@ -3502,5 +3502,65 @@
     "css": "tsfont-quote",
     "hexCodepoint": "0xea49",
     "codepoint": 59977
+  },
+  {
+    "name": "cut",
+    "css": "tsfont-cut",
+    "hexCodepoint": "0xea4a",
+    "codepoint": 59978
+  },
+  {
+    "name": "h1",
+    "css": "tsfont-h1",
+    "hexCodepoint": "0xea4b",
+    "codepoint": 59979
+  },
+  {
+    "name": "h2",
+    "css": "tsfont-h2",
+    "hexCodepoint": "0xea4c",
+    "codepoint": 59980
+  },
+  {
+    "name": "h3",
+    "css": "tsfont-h3",
+    "hexCodepoint": "0xea4d",
+    "codepoint": 59981
+  },
+  {
+    "name": "h4",
+    "css": "tsfont-h4",
+    "hexCodepoint": "0xea4e",
+    "codepoint": 59982
+  },
+  {
+    "name": "h5",
+    "css": "tsfont-h5",
+    "hexCodepoint": "0xea4f",
+    "codepoint": 59983
+  },
+  {
+    "name": "h6",
+    "css": "tsfont-h6",
+    "hexCodepoint": "0xea50",
+    "codepoint": 59984
+  },
+  {
+    "name": "table-merge-cell",
+    "css": "tsfont-table-merge-cell",
+    "hexCodepoint": "0xea51",
+    "codepoint": 59985
+  },
+  {
+    "name": "table-split-cell",
+    "css": "tsfont-table-split-cell",
+    "hexCodepoint": "0xea52",
+    "codepoint": 59986
+  },
+  {
+    "name": "underline",
+    "css": "tsfont-underline",
+    "hexCodepoint": "0xea53",
+    "codepoint": 59987
   }
 ]

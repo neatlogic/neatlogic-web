@@ -156,8 +156,7 @@ export default {
       default: false
     },
     min: {
-      type: Number,
-      default: 0
+      type: Number
     },
     max: {
       type: Number

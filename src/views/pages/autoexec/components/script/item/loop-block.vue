@@ -43,6 +43,7 @@
         :config="config"
         :canEdit="canEdit"
         :stepIndex="prevStepList && prevStepList.length||0"
+        :prevList="prevList"
         :prevStepList="prevStepList"
         :combopConfig="combopConfig"
         :paramList="paramList"

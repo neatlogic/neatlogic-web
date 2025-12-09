@@ -1,11 +1,12 @@
 <template>
   <div>
     <component
-      :is="attrData.type+'attr'"
+      :is="attrData.type + 'attr'"
       v-if="attrData && attrData.type"
       ref="attrHandler"
       :attrData="attrData"
       :valueList="valueList"
+      :mode="mode"
       @setData="setData"
       @select="selectNewCiEntity($event)"
     ></component>
@@ -19,8 +20,9 @@ export default {
     ...handlers
   },
   props: {
+    mode: { type: String, default: 'search' }, //search或condition
     attrData: { type: Object },
-    valueList: {type: Array}
+    valueList: { type: Array }
   },
   data() {
     return {};
@@ -30,8 +32,7 @@ export default {
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
-  updated() {
-  },
+  updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {},
@@ -55,9 +56,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
-<style lang="less">
-</style>
+<style lang="less"></style>

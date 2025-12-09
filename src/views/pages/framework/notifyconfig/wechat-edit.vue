@@ -115,12 +115,17 @@ export default {
       });
     },
     test() {
-      this.isShow = true;
+      let form = this.$refs.form;
+      if (form.valid()) {
+        this.isShow = true;
+      }
     },
     testSend() {
-      let form = this.$refs.testForm;
-      if (form.valid()) {
-        let params = this.testVal;
+      let form = this.$refs.form;
+      let params = form.getFormValue();
+      let testForm = this.$refs.testForm;
+      if (testForm.valid()) {
+        this.$set(params, 'toUser', this.testVal.toUser);
         this.disabledTest = true;
         this.$api.framework.wechat.test(params).then(res => {
           if (res.Status == 'OK') {

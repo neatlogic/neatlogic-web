@@ -6,7 +6,7 @@
         <TsFormSelect
           ref="item"
           :value="value"
-          v-bind="runnerGroupTagConfig"
+          v-bind="getSetting"
           :readonly="readonly"
           :disabled="disabled"
           :clearable="true"
@@ -61,7 +61,21 @@ export default {
     }
   },
   computed: {
-  
+    getSetting() {
+      let setting = Object.assign(this.runnerGroupTagConfig, this.config);
+      setting.validateList = setting.validateList || [];
+      if (typeof this.isRequired == 'boolean') {
+        //当从别的判断带过来的关于这个组件是否必填的选项时，进行原来required的覆盖
+        if (this.isRequired && setting.validateList.indexOf('required') < 0) {
+          setting.validateList.push('required');
+        } else if (!this.isRequired && setting.validateList.indexOf('required') > -1) {
+          setting.validateList = setting.validateList.filter(v => {
+            return v != 'required';
+          });
+        }
+      }
+      return setting;
+    }
   },
   watch: {
   }
