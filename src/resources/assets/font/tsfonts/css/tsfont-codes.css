@@ -585,3 +585,13 @@
 .tsfont-callout:before { content: '\ea47'; } /* '' */
 .tsfont-divider:before { content: '\ea48'; } /* '' */
 .tsfont-quote:before { content: '\ea49'; } /* '' */
+.tsfont-cut:before { content: '\ea4a'; } /* '' */
+.tsfont-h1:before { content: '\ea4b'; } /* '' */
+.tsfont-h2:before { content: '\ea4c'; } /* '' */
+.tsfont-h3:before { content: '\ea4d'; } /* '' */
+.tsfont-h4:before { content: '\ea4e'; } /* '' */
+.tsfont-h5:before { content: '\ea4f'; } /* '' */
+.tsfont-h6:before { content: '\ea50'; } /* '' */
+.tsfont-table-merge-cell:before { content: '\ea51'; } /* '' */
+.tsfont-table-split-cell:before { content: '\ea52'; } /* '' */
+.tsfont-underline:before { content: '\ea53'; } /* '' */
