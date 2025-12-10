@@ -73,6 +73,7 @@ sortByObj(obj)                               对象的属性按首字母排序
 getUnicodeByClassName(className)             获取className的unicode编码
 convertWoff2ToBase64                         将woff2文件转换为base64
 deepRemoveEmptyValues(data)                  深度移除对象中的空值
+getUserInfo()                                获取用户信息
 */
 import _ from 'lodash';
 import store from '@/resources/store';
@@ -793,6 +794,9 @@ const methods = {
   isUserHasAuth(data) {
     // 全局权限方法
     return store.getters.userAuthList.includes(data);
+  },
+  getUserInfo(){
+    return store?.state?.userInfo;
   },
   calculateDate(unit = '', value = 0, timstamp = null) {
     /**
