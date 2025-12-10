@@ -208,7 +208,7 @@ export default {
         ...ExtensionsList,
         SearchHighlight
       ],
-      content: DataContent,
+      content: '',
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
       },
@@ -220,7 +220,6 @@ export default {
       onPaste(e, slice) {
         // 处理粘贴事件
         e.preventDefault();
-        console.log(e, slice);
         return true;
       }
     });
@@ -258,7 +257,7 @@ export default {
   methods: {
     getData() {
       const saveData = this.editor.getJSON();
-      console.log(saveData);
+      console.log(JSON.stringify(saveData, null, 2));
     },
     getAllHeadings(editor) {
       const $headings = editor.$nodes('heading');
@@ -267,7 +266,7 @@ export default {
         let obj = {
           level: node.attributes.level,
           text: node.textContent,
-          uuid: node.attributes.uuid
+          uuid: node.attributes['data-uuid']
         };
         for (let i = index + 1; i < $headings.length; i++) {
           const afterNode = $headings[i];
@@ -367,15 +366,15 @@ export default {
     highlightHeading(node, editor) {
       const isHeading = editor.isActive('heading');
       const contentObj = editor.getJSON();
-      const uuid = node.attrs?.uuid || '';
+      const uuid = node.attrs?.['data-uuid'] || '';
       if (isHeading) {
         this.selectHeadingUuid = uuid;
       } else {
         const contentList = contentObj.content.reverse();
-        const index = contentList.findIndex(item => item?.attrs?.uuid === uuid);
+        const index = contentList.findIndex(item => item?.attrs?.['data-uuid'] === uuid);
         for (let i = index + 1; i < contentList.length; i++) {
           if (contentList[i].type === 'heading') {
-            this.selectHeadingUuid = contentList[i].attrs.uuid;
+            this.selectHeadingUuid = contentList[i].attrs['data-uuid'];
             break;
           }
         }
@@ -386,8 +385,8 @@ export default {
       let targetPos = null;
 
       doc.descendants((node, pos) => {
-        // 假设节点属性里有 node.attrs.uuid
-        if (item.uuid === node.attrs.uuid) {
+        // 假设节点属性里有 node.attrs['data-uuid']
+        if (item.uuid === node.attrs['data-uuid']) {
           // 光标放在节点内容开头
           targetPos = pos + 1;
           return false; // 找到就停止遍历

@@ -4,7 +4,6 @@ export default {
     {
       type: 'heading',
       attrs: {
-        textAlign: null,
         level: 1
       },
       content: [
@@ -17,7 +16,6 @@ export default {
     {
       type: 'heading',
       attrs: {
-        textAlign: null,
         level: 2
       },
       content: [
@@ -30,7 +28,6 @@ export default {
     {
       type: 'heading',
       attrs: {
-        textAlign: null,
         level: 3
       },
       content: [
@@ -43,7 +40,6 @@ export default {
     {
       type: 'heading',
       attrs: {
-        textAlign: null,
         level: 4
       },
       content: [
@@ -56,7 +52,6 @@ export default {
     {
       type: 'heading',
       attrs: {
-        textAlign: null,
         level: 5
       },
       content: [
@@ -69,7 +64,6 @@ export default {
     {
       type: 'heading',
       attrs: {
-        textAlign: null,
         level: 6
       },
       content: [
@@ -91,9 +85,6 @@ export default {
           content: [
             {
               type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
               content: [
                 {
                   type: 'text',
@@ -108,9 +99,6 @@ export default {
           content: [
             {
               type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
               content: [
                 {
                   type: 'text',
@@ -130,9 +118,6 @@ export default {
           content: [
             {
               type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
               content: [
                 {
                   type: 'text',
@@ -147,9 +132,6 @@ export default {
           content: [
             {
               type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
               content: [
                 {
                   type: 'text',
@@ -172,9 +154,6 @@ export default {
           content: [
             {
               type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
               content: [
                 {
                   type: 'text',
@@ -192,9 +171,6 @@ export default {
           content: [
             {
               type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
               content: [
                 {
                   type: 'text',
@@ -211,9 +187,6 @@ export default {
       content: [
         {
           type: 'paragraph',
-          attrs: {
-            textAlign: null
-          },
           content: [
             {
               type: 'text',
@@ -243,9 +216,6 @@ export default {
       content: [
         {
           type: 'paragraph',
-          attrs: {
-            textAlign: null
-          },
           content: [
             {
               type: 'text',
@@ -270,10 +240,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             },
@@ -286,10 +253,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             },
@@ -302,10 +266,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             },
@@ -318,10 +279,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             }
@@ -339,10 +297,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             },
@@ -355,10 +310,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             },
@@ -371,10 +323,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             },
@@ -387,10 +336,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             }
@@ -408,10 +354,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             },
@@ -424,10 +367,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             },
@@ -440,10 +380,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             },
@@ -456,10 +393,7 @@ export default {
               },
               content: [
                 {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                  type: 'paragraph'
                 }
               ]
             }

@@ -8,17 +8,19 @@ const HighlightBlock = Node.create({
   topNode: true,
   addAttributes() {
     return {
-      uuid: {
+      'data-uuid': {
         default: null,
-        parseHTML: (element) => element.getAttribute('uuid'),
-        renderHTML: (attributes) => ({ 'uuid': attributes.uuid })
+        parseHTML: (element) => {
+          return element.getAttribute('data-uuid') || utils.setUuid();
+        },
+        renderHTML: (attributes) => ({ 'data-uuid': attributes['data-uuid'] || utils.setUuid() })
       }
     };
   },
 
   parseHTML() {
     // 解析 HTML 时，将 <div data-type="highlight-block"> 转换为 highlightBlock 节点
-    return [{ tag: 'div[data-type="highlight-block"]' }];
+    return [{ tag: 'div[data-type="highlightBlock"]' }];
   },
 
   renderHTML({ HTMLAttributes }) {
@@ -27,7 +29,7 @@ const HighlightBlock = Node.create({
     return [
       'div',
       {
-        'data-type': 'highlight-block',
+        'data-type': 'highlightBlock',
         class: 'highlight-block',
         ...HTMLAttributes
       },
@@ -51,13 +53,13 @@ const HighlightBlock = Node.create({
             }
             return chain()
               .selectParentNode() // 将选取范围扩展到父节点，比如选中几个文字的时候，需要去替换整个父节点
-              .wrapIn(type, { uuid: utils.setUuid() }).run();
+              .wrapIn(type, { 'data-uuid': utils.setUuid() }).run();
           },
       insertHighlightBlockContent: ({position, text = '高亮块内容...'}) => ({commands}) => {
         const uuid = utils.setUuid();
         return commands.insertContentAt(position, {
           type: 'highlightBlock',
-          attrs: { uuid },
+          attrs: { 'data-uuid': uuid },
           content: [
             {
               type: 'paragraph',

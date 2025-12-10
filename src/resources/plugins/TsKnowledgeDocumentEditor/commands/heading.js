@@ -9,7 +9,7 @@ export default function heading({ editor, position, options, vueInstance }) {
       .focus()
       .insertContentAt(position, {
         type: 'heading',
-        attrs: { level: level, 'data-type': `heading${level}`},
+        attrs: { level: level },
         content: [{ type: 'text', text: `新标题${level}内容` }]
       })
       .run();
