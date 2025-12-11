@@ -60,7 +60,7 @@
           <template v-if="f.rightMappingMode === 'formCommonComponent'">
             <TsFormSelect
               ref="formValid"
-              v-model="f.value"
+              v-model="f.rightValue"
               :dataList="getFormComponent('formCommonComponent')"
               textName="label"
               valueName="uuid"
