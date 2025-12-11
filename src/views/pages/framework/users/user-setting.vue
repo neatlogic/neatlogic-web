@@ -514,10 +514,7 @@ export default {
       this.$api.framework.user.clearUserSessionCache().then(res => {
         if (res.Status == 'OK') {
           const { serverId = '' } = res.Return || {};
-          this.$Message.success({
-            content: `清除【服务器ID：${serverId}】缓存成功！`,
-            duration: 10
-          });
+          this.$Message.success(`清除【服务器ID：${serverId}】缓存成功！`);
         }
       });
     },
