@@ -511,7 +511,7 @@ export default {
       }
     },
     clearUserSessionCache() {
-      this.$api.framework.user.clearUserSessionCache().then(res => {
+      this.$api.framework.user.clearUserSessionCache({serverId: this?.currentUserInfo?.serverId}).then(res => {
         if (res.Status == 'OK') {
           const { serverId = '' } = res.Return || {};
           this.$Message.success(`清除【服务器ID：${serverId}】缓存成功！`);
