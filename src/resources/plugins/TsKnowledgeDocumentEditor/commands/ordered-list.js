@@ -1,6 +1,6 @@
 export default function orderedList({ editor, position, options }) {
   const { isToggle } = options || {};
-  const { endPosition } = position || {};
+  const { endPosition, insertPosition } = position || {};
   if (isToggle) {
     editor
       .chain()
@@ -10,7 +10,7 @@ export default function orderedList({ editor, position, options }) {
       .run();
   } else {
     editor.chain().focus()
-      .insertContentAt(position,
+      .insertContentAt(insertPosition,
         {
           type: 'orderedList',
           content: [

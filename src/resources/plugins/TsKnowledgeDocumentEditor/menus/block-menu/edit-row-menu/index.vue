@@ -2,7 +2,7 @@
   <div>
     <Dropdown placement="bottom-start" @on-click="handleClick">
       <div class="knowledge-document-editor-plus-box">
-        <span class="tsfont-title"></span>
+        <span :class="getFontClassName" class="text-href"></span>
         <span class="tsfont-drag cursor-pointer"></span>
       </div>
       <DropdownMenu slot="list">
@@ -10,6 +10,7 @@
           <BaseMenu
             :hideBaseText="true"
             :removeMenuList="[]"
+            :currentNode="currentNode"
             @click-menu="emitClickMenu"
           ></BaseMenu>
         </DropdownItem>
@@ -21,7 +22,7 @@
           <div class="border-base-bottom"></div>
         </DropdownItem>
         <DropdownItem name="cut">
-          <span class="tsfont-close mr-nm knowledge-document-editor-menu-icon"></span>
+          <span class="tsfont-cut mr-nm knowledge-document-editor-menu-icon"></span>
           <span>剪切</span>
         </DropdownItem>
         <DropdownItem name="copy">
@@ -35,7 +36,7 @@
         <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
           <div class="border-base-bottom"></div>
         </DropdownItem>
-        <InsertedBelowMenu placement="right"></InsertedBelowMenu>
+        <InsertedBelowMenu placement="right" @click-menu="insertBelowPosition"></InsertedBelowMenu>
       </DropdownMenu>
     </Dropdown>
   </div>
@@ -48,7 +49,14 @@ export default {
     AlignMenu: () => import('../edit-row-menu/align/index.vue'),
     InsertedBelowMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/empty-row-menu/index.vue')
   },
-  props: {},
+  props: {
+    currentNode: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    }
+  },
   data() {
     return {};
   },
@@ -68,10 +76,38 @@ export default {
     },
     handleClick(name) {
       this.$emit('click-menu', { commandName: name });
+    },
+    insertBelowPosition(menuData) {
+      this.$emit('insert-below-position', menuData);
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    getFontClassName() {
+      const classNameMap = {
+        heading1: 'tsfont-h1',
+        heading2: 'tsfont-h2',
+        heading3: 'tsfont-h3',
+        heading4: 'tsfont-h4',
+        heading5: 'tsfont-h5',
+        heading6: 'tsfont-h6',
+        paragraph: 'tsfont-title',
+        horizontalRule: 'tsfont-divider',
+        highlightBlock: 'tsfont-callout',
+        blockquote: 'tsfont-quote',
+        codeBlock: 'tsfont-code',
+        taskList: 'tsfont-check-square-o',
+        bulletList: 'tsfont-list',
+        orderedList: 'tsfont-orderlist'
+      };
+      const { type, attrs = {} } = this.currentNode || {};
+      if (type == 'heading') {
+        return classNameMap[`heading${attrs.level}`];
+      } else {
+        return classNameMap[type];
+      }
+    }
+  },
   watch: {}
 };
 </script>

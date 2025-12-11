@@ -19,6 +19,11 @@ export default {
   computed: {
     editorData() {
       return this.menuState.editorData;
+    },
+    getActiveMenuClassName() {
+      return (commandName) => {
+        return this?.menuState?.editorData?.isActive(commandName) ? 'text-href' : '';
+      };
     }
   }
 };

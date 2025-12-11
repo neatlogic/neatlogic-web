@@ -1,6 +1,6 @@
 export default function link({ editor, position, options }) {
   const { linkUrl = '', linkText = '', isToggle } = options || {};
-  const { endPosition } = position || {};
+  const { endPosition, insertPosition } = position || {};
   if (isToggle) {
     editor.chain()
       .focus()
@@ -9,7 +9,7 @@ export default function link({ editor, position, options }) {
       .setLink({ href: linkUrl })
       .run();
   } else {
-    editor.chain().focus().insertContentAt(position, [
+    editor.chain().focus().insertContentAt(insertPosition, [
       {
         type: 'text',
         text: linkText,

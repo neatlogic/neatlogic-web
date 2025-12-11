@@ -52,7 +52,9 @@ export default {
           // return $pos.after(d);
         }
       }
-      return position;
+      return {
+        insertPosition: position
+      };
     },
     findCurrentBlockPosition() {
       // 获取当前块元素的位置（编辑菜单编辑器悬停的位置）
@@ -84,10 +86,27 @@ export default {
       return {
         node: node,
         startPosition: nodeStart,
-        endPosition: nodeEnd
+        endPosition: nodeEnd,
+        insertPosition: nodeEnd + 1
       };
     },
+    handleInsertBelowPosition(menuData) {
+      // 编辑菜单，在下方插入一行
+      if (!this.editor) return;
+      const position = this.findCurrentBlockPosition();
+      const { commandName, value = {} } = menuData;
+      const commandMethod = InsertMenuCommands[commandName];
+      if (commandMethod) {
+        commandMethod({
+          editor: this.editor,
+          position: position,
+          options: value,
+          https: this.$https
+        });
+      }
+    },
     handleInsertMenuContent(menuData) {
+      // 空白行插入菜单
       if (!this.editor) return;
       const position = this.findInsertContentPosition();
       const { commandName, value = {} } = menuData;
@@ -102,6 +121,7 @@ export default {
       }
     },
     handleReplaceMenuContent(menuData) {
+      // 编辑菜单，替换当前行
       if (!this.editor) return;
       const { commandName, value = {} } = menuData;
       const position = this.findCurrentBlockPosition();

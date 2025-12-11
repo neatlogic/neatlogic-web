@@ -6,12 +6,7 @@
       theme="light"
       max-width="300"
     >
-      <img
-        style="width: 16px;height: 16px;"
-        src="@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/table/svg/merge-cell.svg"
-        alt=""
-        @click="handleClick"
-      />
+      <span class="tsfont-table-merge-cell" @click="handleClick"></span>
       <div slot="content">
         <div v-for="(item, index) in tipContentList" :key="index">{{ item }}</div>
       </div>

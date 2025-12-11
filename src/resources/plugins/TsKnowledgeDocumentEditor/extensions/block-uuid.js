@@ -2,7 +2,7 @@ import { Extension } from '@tiptap/core';
 import { Plugin } from 'prosemirror-state';
 import utils from '@/resources/assets/js/util.js';
 
-export const BlockUuid = Extension.create({
+const BlockUuid = Extension.create({
   name: 'blockUuid',
   // 给所有 block 节点加全局属性
   addGlobalAttributes() {
@@ -11,7 +11,7 @@ export const BlockUuid = Extension.create({
         types: ['*'],
         attributes: {
           'data-uuid': {
-            default: null,
+            default: utils.setUuid(),
             parseHTML: element => element.getAttribute('data-uuid'),
             renderHTML: attributes => {
               return { 'data-uuid': attributes['data-uuid'] };
@@ -28,18 +28,14 @@ export const BlockUuid = Extension.create({
         appendTransaction: (transactions, oldState, newState) => {
           let tr = newState.tr;
           let modified = false;
-          let uuidList = [];
-          // 遍历当前编辑器最新状态（newState）下的所有文档节点
           newState.doc.descendants((node, pos) => {
-            // 只给块级节点加 uuid（比如 paragraph、heading、list_item等）
-            if (node.type.isBlock && (!node?.attrs?.['data-uuid'] || (node?.attrs?.['data-uuid'] && uuidList.includes(node.attrs['data-uuid'])))) {
+            if (!node?.attrs?.['data-uuid']) {
               tr = tr.setNodeMarkup(pos, node?.type, {
                 ...(node.attrs || {}),
                 'data-uuid': utils.setUuid()
               });
               modified = true;
             }
-            uuidList.push(node.attrs?.['data-uuid']);
           });
           return modified ? tr : null;
         }
@@ -47,3 +43,4 @@ export const BlockUuid = Extension.create({
     ];
   }
 });
+export default BlockUuid;

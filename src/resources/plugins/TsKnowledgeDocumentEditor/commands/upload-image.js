@@ -1,5 +1,6 @@
 export default function uploadImage({ editor, position, options, https }) {
   const { file } = options || {};
+  const { insertPosition } = position || {};
   if (!file) {
     return;
   }
@@ -21,7 +22,7 @@ export default function uploadImage({ editor, position, options, https }) {
         editor
           .chain()
           .focus()
-          .setImage({ src: url })
+          .insertContentAt(insertPosition, { type: 'image', attrs: {src: url} })
           .run();
       }
     });

@@ -20,8 +20,12 @@
         top: (menuPosition.top) + 'px',
         left: menuPosition.left + 'px'
       }"
+      :currentNode="currentNode"
       @click-menu="(menuData)=> {
         $emit('replace-menu-content', menuData)
+      }"
+      @insert-below-position="(menuData)=> {
+        $emit('insert-below-position', menuData)
       }"
     >
     </EditRowMenu>
@@ -46,6 +50,12 @@ export default {
           top: 0,
           left: 0
         };
+      }
+    },
+    currentNode: {
+      type: Object,
+      default: () => {
+        return {};
       }
     }
   },
