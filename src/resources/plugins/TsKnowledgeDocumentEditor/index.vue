@@ -37,8 +37,10 @@
             v-show="isShowBlockMenu"
             :isEmptyRow="isEmptyRow"
             :menuPosition="menuPosition"
+            :currentNode="currentNode"
             @insert-menu-content="handleInsertMenuContent"
             @replace-menu-content="handleReplaceMenuContent"
+            @insert-below-position="handleInsertBelowPosition"
           ></BlockMenu>
           <TextSelectedMenu
             v-show="isShowBubbleMenu"
@@ -153,7 +155,11 @@ export default {
       menuList: [],
       selectHeadingUuid: '',
       selectedText: '',
-      selectedNodeTypeName: '' // 选中的节点类型名称
+      selectedNodeTypeName: '', // 选中的节点类型名称
+      currentNode: {
+        type: '',
+        attrs: {}
+      }
     };
   },
   mounted() {
@@ -208,7 +214,7 @@ export default {
         ...ExtensionsList,
         SearchHighlight
       ],
-      content: '',
+      content: '<p>欢迎使用知识文档编辑器</p>',
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
       },
@@ -294,59 +300,109 @@ export default {
       const wrapper = this.$refs.editorWrapper;
       const editorContentContainer = this.$refs?.editorContentContainer;
       const editorEl = wrapper?.querySelector('.ProseMirror');
-      // 👉 如果鼠标在 + 按钮上，直接忽略，不隐藏
       if (event.target.closest('.plus-button') || event.target.closest('.drag-button') || event.target.closest('.menu-wrapper')) {
         return;
       }
       if (!editorEl?.contains(event.target)) {
         return;
       }
-      // 找到当前块元素
-      let block = event.target.closest('p,h1, h2, h3, h4, h5, h6, li, blockquote, pre,div, table');
-      if (!block) {
-        // 如果是空行，用 posAtCoords + nodeDOM 获取
-        const coords = { left: event.clientX, top: event.clientY };
-        const position = this.editor?.view?.posAtCoords(coords);
-        if (position) {
-          const $pos = this.editor?.state?.doc?.resolve(position.pos);
-          const dom = this.editor?.view?.nodeDOM($pos?.before($pos?.depth));
-          if (dom && dom.nodeType === 1) block = dom;
-        }
-        this.isEmptyRow = true;
-      } else {
-        // 非空行
-        const isEmptyBlock = block?.textContent?.trim() === '';
-        if (isEmptyBlock) {
-          this.isEmptyRow = true;
-        } else {
-          this.isEmptyRow = false;
-        }
-      }
-      if (!block || block === this.currentBlock) return;
-
-      this.currentBlock = block;
-      const blockRect = block.getBoundingClientRect();
-      const wrapperRect = wrapper.getBoundingClientRect();
-      const editorContentContainerRect = editorContentContainer.getBoundingClientRect();
+      const { view, state } = this.editor;
+      const coords = { left: event.clientX, top: event.clientY };
+      const position = view.posAtCoords(coords);
+      let currentBlock = null;
+      if (position) {
+        const $pos = state?.doc?.resolve(position.pos);
+        if ($pos && $pos.depth > 0) {
+          const node = $pos.node($pos.depth); // 获取当前节点
+          const parentNode = $pos.node($pos.depth - 1);
+          const parentNodeType = parentNode?.type?.name;
+          let nodeType = node?.type?.name;
+          let nodeAttrs = node?.attrs || {};
+          if (parentNodeType === 'listItem' || parentNodeType === 'taskItem') {
+            const parentNode = $pos.node($pos.depth - 2);
+            nodeType = parentNode?.type?.name;
+            nodeAttrs = parentNode?.attrs || {};
+          } else if (nodeType === 'paragraph') {
+            nodeType = parentNodeType;
+            nodeAttrs = parentNode?.attrs || {};
+            if (nodeType === 'doc') {
+              // 如果父节点是文档根节点，将节点类型设置为 'paragraph'
+              nodeType = 'paragraph';
+              nodeAttrs = {};
+            }
+          }
+          const dom = view.nodeDOM($pos.before($pos.depth));
+          this.$set(this.currentNode, 'type', nodeType);
+          this.$set(this.currentNode, 'attrs', nodeAttrs);
+          if (this.isEmptyBlock(node)) {
+            this.isEmptyRow = true;
+          } else {
+            this.isEmptyRow = false;
+          }
+          if (dom && dom.nodeType === 1) { // 确保dom是一个元素节点
+            currentBlock = dom;
+          }
+          if (currentBlock === this.currentBlock) return;
+          this.currentBlock = currentBlock;
+          const blockRect = currentBlock.getBoundingClientRect();
+          const wrapperRect = wrapper.getBoundingClientRect();
+          const editorContentContainerRect = editorContentContainer.getBoundingClientRect();
     
-      if (this.isInTable(event)) {
-        this.isShowTableMenu = true;
-        this.tableMenuPosition = {
-          top: Number((blockRect.top - wrapperRect.top - blockRect.height - 6).toFixed(0)),
-          left: Number((blockRect.left - editorContentContainerRect.left + 100 / 2).toFixed(0))
-        };
-      } else {
-        this.menuPosition = {
-          top: Number((blockRect.top - wrapperRect.top + blockRect.height / 2 - 12).toFixed(0)),
-          left: -46
-        };
-        this.isShowTableMenu = false;
-        this.isShowBlockMenu = true;
+          if (this.isInTable(event)) {
+            this.isShowTableMenu = true;
+            this.tableMenuPosition = {
+              top: Number((blockRect.top - wrapperRect.top - blockRect.height - 6).toFixed(0)),
+              left: Number((blockRect.left - editorContentContainerRect.left + 100 / 2).toFixed(0))
+            };
+          } else {
+            this.menuPosition = {
+              top: Number((blockRect.top - wrapperRect.top + blockRect.height / 2 - 12).toFixed(0)),
+              left: -50
+            };
+            this.isShowTableMenu = false;
+            this.isShowBlockMenu = true;
+          }
+        }
       }
-    }, 300),
+    }, 500),
     hidePlus: throttle(function() {
       // this.currentBlock = null;
     }, 400),
+    isTextContentEmpty(node) {
+      return node.textContent.trim() === '';
+    },
+    isImageOrVideoEmpty(node) {
+      // 判断图片和视频是否有有效的 src
+      return !node.attrs.src;
+    },
+    isEmptyBlock(node) {
+      // 判断是否是空行
+      const menuMap = {
+        'heading': this.isTextContentEmpty,
+        'paragraph': this.isTextContentEmpty,
+        'listItem': this.isTextContentEmpty,
+        'taskItem': this.isTextContentEmpty,
+        'codeBlock': this.isTextContentEmpty,
+        'blockquote': this.isTextContentEmpty,
+        'highlight': this.isTextContentEmpty,
+        'image': this.isImageOrVideoEmpty,
+        'insertVideo': this.isImageOrVideoEmpty
+      };
+      const checkStrategy = menuMap[node.type.name]; // 根据节点类型获取对应的判断策略
+      if (checkStrategy) {
+        return checkStrategy(node); // 调用对应的策略判断
+      }
+      // 对于有子节点的块，递归检查子节点
+      if (node.childCount > 0) {
+        for (let i = 0; i < node.childCount; i++) {
+          const childNode = node.child(i);
+          if (!this.isEmptyBlock(childNode)) {
+            return false; // 只要有一个非空的子节点，就认为该节点不是空的
+          }
+        }
+      }
+      return true; // 如果没有子节点或所有子节点都是空的，则认为节点为空
+    },
     isInTable(e) {
       const position = this.editor.view.posAtCoords({
         left: e.clientX,
@@ -399,7 +455,7 @@ export default {
       }
     },
     handleClickPlus() {
-      this.editor.chain().focus('end').run();
+      // this.editor.chain().focus('end').run();
     }
   },
   computed: {

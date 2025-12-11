@@ -20,7 +20,7 @@
               v-for="(item, index) in alignmentList"
               :key="index"
               class="mb-sm cursor-pointer"
-              :class="{ 'text-href': menuState?.editorData?.isActive({textAlign: item.value}) }"
+              :class="getActiveMenuClassName({textAlign: item.value})"
               @click.stop="()=> {
                 $emit('executeEditorCommand', {
                   commandName: 'textAlign',

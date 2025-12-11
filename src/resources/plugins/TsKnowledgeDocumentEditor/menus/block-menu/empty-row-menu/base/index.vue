@@ -6,15 +6,16 @@
         v-for="item in menuList.filter(item => item.isShow || !item.hasOwnProperty('isShow'))"
         :key="item.value"
         class="basic-menu-text"
+        :class="setSelectedBgClassName(item.value)"
         @click.stop="handleClick(item.value)"
       >
         <Tooltip
           v-if="item.tipConentList"
           transfer
           theme="dark"
-          placement="bottom"
+          placement="right"
         >
-          <span v-if="item.iconClass" style="font-size: 16px" :class="item.iconClass"></span>
+          <span v-if="item.iconClass" style="font-size: 16px" :class="[item.iconClass, setSelectedTextClassName(item.value)]"></span>
           <template v-else>{{ item.text }}</template>
           <div slot="content">
             <div v-for="(childTipItem, childTipIndex) in item.tipConentList" :key="`${item.value}_${childTipIndex}`">{{ childTipItem }}</div>
@@ -22,7 +23,6 @@
         </Tooltip>
         <template v-else>
           <span v-if="item.iconClass" :class="item.iconClass"></span>
-          <template v-else>{{ item.text }}</template>
         </template>
       </div>
     </div>
@@ -47,6 +47,10 @@ export default {
     hideBaseText: {
       type: Boolean,
       default: false
+    },
+    currentNode: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
@@ -63,32 +67,38 @@ export default {
         {
           tipConentList: ['一级标题', 'Markdown: # 空格'],
           value: 'heading1',
-          text: 'H1'
+          text: 'H1',
+          iconClass: 'tsfont-h1'
         },
         {
           tipConentList: ['二级标题', 'Markdown: ## 空格'],
           value: 'heading2',
-          text: 'H2'
+          text: 'H2',
+          iconClass: 'tsfont-h2'
         },
         {
           tipConentList: ['三级标题', 'Markdown: ### 空格'],
           value: 'heading3',
-          text: 'H3'
+          text: 'H3',
+          iconClass: 'tsfont-h3'
         },
         {
           tipConentList: ['四级标题', 'Markdown: #### 空格'],
           value: 'heading4',
-          text: 'H4'
+          text: 'H4',
+          iconClass: 'tsfont-h4'
         },
         {
           tipConentList: ['五级标题', 'Markdown: ##### 空格'],
           value: 'heading5',
-          text: 'H5'
+          text: 'H5',
+          iconClass: 'tsfont-h5'
         },
         {
           tipConentList: ['六级标题', 'Markdown: ###### 空格'],
           value: 'heading6',
-          text: 'H6'
+          text: 'H6',
+          iconClass: 'tsfont-h6'
         },
         {
           tipConentList: ['有序列表', 'Markdown: 1. 空格'],
@@ -165,7 +175,28 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    setSelectedTextClassName() {
+      return (commandName) => {
+        const {type, attrs = {}} = this.currentNode || {};
+        if (commandName && commandName.includes('heading')) {
+          return commandName == `${type}${attrs.level}` ? 'text-primary' : '';
+        } else {
+          return commandName == type ? 'text-primary' : '';
+        }
+      };
+    },
+    setSelectedBgClassName() {
+      return (commandName) => {
+        const {type, attrs = {}} = this.currentNode || {};
+        if (commandName && commandName.includes('heading')) {
+          return commandName == `${type}${attrs.level}` ? 'bg-info-grey radius-mi' : '';
+        } else {
+          return commandName == type ? 'bg-info-grey radius-mi' : '';
+        }
+      };
+    }
+  },
   watch: {}
 };
 </script>

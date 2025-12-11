@@ -596,3 +596,13 @@
 .tsfont-callout { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea47;&nbsp;'); }
 .tsfont-divider { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea48;&nbsp;'); }
 .tsfont-quote { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea49;&nbsp;'); }
+.tsfont-cut { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea4a;&nbsp;'); }
+.tsfont-h1 { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea4b;&nbsp;'); }
+.tsfont-h2 { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea4c;&nbsp;'); }
+.tsfont-h3 { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea4d;&nbsp;'); }
+.tsfont-h4 { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea4e;&nbsp;'); }
+.tsfont-h5 { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea4f;&nbsp;'); }
+.tsfont-h6 { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea50;&nbsp;'); }
+.tsfont-table-merge-cell { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea51;&nbsp;'); }
+.tsfont-table-split-cell { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea52;&nbsp;'); }
+.tsfont-underline { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea53;&nbsp;'); }

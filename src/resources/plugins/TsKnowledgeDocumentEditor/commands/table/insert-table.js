@@ -1,5 +1,6 @@
 export default function insertTable({ editor, position, options }) {
   const { rows = 0, cols = 0 } = options || {};
+  const { insertPosition } = position || {};
   if (rows === 0 || cols === 0) {
     return;
   }
@@ -18,5 +19,5 @@ export default function insertTable({ editor, position, options }) {
     content: tableContent
   };
 
-  editor.chain().focus().insertContentAt(position, tableNode).run();
+  editor.chain().focus().insertContentAt(insertPosition, tableNode).run();
 }

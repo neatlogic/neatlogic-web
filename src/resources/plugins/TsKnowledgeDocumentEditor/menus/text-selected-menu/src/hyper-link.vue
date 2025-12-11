@@ -7,7 +7,7 @@
       max-width="300"
     >
       <span
-        :class="[icon, menuState?.editorData?.isActive('link') ? 'text-href' : '']"
+        :class="[icon, getActiveMenuClassName('link')]"
         class="link-text"
         @click.stop="openLinkDialog"
       ></span>

@@ -1,5 +1,6 @@
 export default function horizontalRule({ editor, position, options }) {
   const { isToggle } = options || {};
+  const { insertPosition } = position || {};
   if (isToggle) {
     editor
       .chain()
@@ -10,7 +11,7 @@ export default function horizontalRule({ editor, position, options }) {
     editor
       .chain()
       .focus()
-      .insertContentAt(position, {
+      .insertContentAt(insertPosition, {
         type: 'horizontalRule'
       })
       .run();

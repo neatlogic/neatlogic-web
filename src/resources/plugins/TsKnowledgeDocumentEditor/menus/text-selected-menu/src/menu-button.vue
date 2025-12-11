@@ -8,7 +8,7 @@
     >
       <span
         class="menu-button-box"
-        :class="[icon, menuState?.editorData?.isActive(command) ? 'text-href' : '']"
+        :class="[icon, getActiveMenuClassName(command)]"
         @click="
           $emit('executeEditorCommand',
                 {

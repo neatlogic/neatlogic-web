@@ -1,6 +1,6 @@
 export default function highlightBlock({ editor, position, options }) {
   const { isToggle } = options || {};
-  const { endPosition } = position || {};
+  const { endPosition, insertPosition } = position || {};
   if (isToggle) {
     editor.chain()
       .focus()
@@ -10,7 +10,7 @@ export default function highlightBlock({ editor, position, options }) {
   } else {
     // 插入高亮块
     editor.chain().focus().insertHighlightBlockContent({
-      position: position,
+      position: insertPosition,
       text: '高亮块内容...'
     }).run();
   }

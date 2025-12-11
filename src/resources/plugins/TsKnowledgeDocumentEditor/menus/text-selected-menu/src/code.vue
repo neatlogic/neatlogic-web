@@ -6,8 +6,10 @@
       theme="light"
       max-width="300"
     >
-      <IconSvg
-        :activeClassName="menuState?.editorData?.isActive(command) ? `active` : ''"
+      <span
+        class="tsfont-code"
+        style="font-size: 18px;"
+        :class="getActiveMenuClassName(command)"
         @click="
           $emit('executeEditorCommand',
                 {
@@ -15,7 +17,7 @@
                   value: {}
                 }
           )"
-      ></IconSvg>
+      ></span>
       <div slot="content">
         <div>
           <div>下划线 (ctrl + shift + c)</div>
@@ -31,9 +33,7 @@
 import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/mixin.js';
 export default {
   name: '',
-  components: {
-    IconSvg: () => import('./icon/index.vue')
-  },
+  components: {},
   mixins: [mixin],
   props: {
     command: {

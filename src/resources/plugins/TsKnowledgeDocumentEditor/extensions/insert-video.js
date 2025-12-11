@@ -8,7 +8,7 @@ const InsertVideo = Node.create({
     return {
       src: { default: null },
       controls: { default: true },
-      width: { default: '100%' },
+      width: { default: null },
       loading: {
         default: false,
         renderHTML: attrs => (attrs.loading ? { 'data-loading': 'true' } : {})
@@ -30,7 +30,7 @@ const InsertVideo = Node.create({
   },
   renderHTML({ HTMLAttributes }) {
     const { src, width, controls, loading } = HTMLAttributes;
-    // 1️⃣ 加载中状态
+    // 加载中状态
     if (loading || !src) {
       return [
         'div',
@@ -76,14 +76,16 @@ const InsertVideo = Node.create({
   addCommands() {
     return {
       insertVideo: (options) => ({ commands }) => {
-        return commands.insertContent({
+        const { position, ...restAttrs } = options || {};
+        return commands.insertContentAt(position, {
           type: this.name,
           attrs: {
-            ...options
+            ...(restAttrs || {})
           }
         });
       },
-      updateVideo: (uuid, newAttrs) => ({ tr, state }) => {
+      updateVideo: (options) => ({ tr, state }) => {
+        const { uuid, position, ...newAttrs } = options || {};
         tr.doc.descendants((node, pos) => { // 遍历文档中的所有节点
           if (node.type.name === this.name && node.attrs['data-uuid'] === uuid) {
             tr.setNodeMarkup(pos, undefined, { ...node.attrs, ...newAttrs });
@@ -93,5 +95,4 @@ const InsertVideo = Node.create({
     };
   }
 });
-
 export default InsertVideo;
