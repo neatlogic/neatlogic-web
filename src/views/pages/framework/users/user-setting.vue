@@ -48,7 +48,16 @@
                 </template>
               </TsForm>
               <Button class="save" type="primary" @click="save()">{{ $t('page.save') }}</Button>
-              <Button class="clearCache" type="default" @click="clearUserSessionCache()">{{ $t('page.userclearsessioncache') }}</Button>
+              <Tooltip 
+                placement="top"
+                :transfer="true"
+                theme="light"
+                max-width="300"
+                class="clearCache"
+                :content="serverIdTipInfo"
+              >
+                <Button type="default" @click="clearUserSessionCache()">{{ $t('page.userclearsessioncache') }}</Button>
+              </Tooltip>
             </TabPane>
             <TabPane :label="$t('term.framework.modifypwd')" name="password">
               <TsForm ref="password" :itemList="pwdSetting"></TsForm>
@@ -168,6 +177,7 @@ export default {
   props: [''],
   data() {
     return {
+      serverIdTipInfo: '',
       tableConfig: {
         rowNum: 0,
         pageSize: 20,
@@ -500,11 +510,14 @@ export default {
         });
       }
     },
-    clearUserSessionCache: function() {
+    clearUserSessionCache() {
       this.$api.framework.user.clearUserSessionCache().then(res => {
         if (res.Status == 'OK') {
-          this.userToken = res.Return;
-          this.$Message.success(this.$t('message.clearsuccess'));
+          const { serverId = '' } = res.Return || {};
+          this.$Message.success({
+            content: `清除【服务器ID：${serverId}】缓存成功！`,
+            duration: 10
+          });
         }
       });
     },
@@ -527,6 +540,20 @@ export default {
     },
     canShow() {
       return this.hasAuth && !this.$utils.isEmpty(this.moduleList) && this.moduleList.some(v => v.moduleId == 'process');
+    },
+    currentUserInfo() {
+      return this.$store.state.topMenu.userInfo;
+    }
+  },
+  watch: {
+    currentUserInfo: {
+      handler(userInfo, oldVal) {
+        if (userInfo?.serverId) {
+          this.serverIdTipInfo = `服务器ID：${userInfo.serverId}`;
+        }
+      },
+      deep: true,
+      immediate: true
     }
   }
 };
