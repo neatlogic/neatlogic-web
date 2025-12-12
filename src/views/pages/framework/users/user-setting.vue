@@ -514,7 +514,7 @@ export default {
       this.$api.framework.user.clearUserSessionCache({serverId: this?.currentUserInfo?.serverId}).then(res => {
         if (res.Status == 'OK') {
           const { serverId = '' } = res.Return || {};
-          this.$Message.success(`清除【服务器ID：${serverId}】缓存成功！`);
+          this.$Message.success(this.$t('term.framework.clearServerCacheSuccessTarget', { target: serverId }));
         }
       });
     },
@@ -546,7 +546,7 @@ export default {
     currentUserInfo: {
       handler(userInfo, oldVal) {
         if (userInfo?.serverId) {
-          this.serverIdTipInfo = `服务器ID：${userInfo.serverId}`;
+          this.serverIdTipInfo = this.$t('term.framework.serverIdTarget', {target: userInfo.serverId});
         }
       },
       deep: true,
