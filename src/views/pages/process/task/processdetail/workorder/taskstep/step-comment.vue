@@ -49,7 +49,7 @@
             class="content-text-padding text-href pt-xs ml-xs pr-md"
             :class="stepItem.fileList && stepItem.fileList.length > 0 ? 'pb-xs' : ''"
           >
-            <span style="cursor: pointer;" @click="viewMore(stepItem, stepIndex)">{{ stepItem.maxheight=='200px'?$t('page.viewmore'):$t('page.clickandputaway') }}</span>
+            <span style="cursor: pointer;" @click="viewMore(stepItem)">{{ stepItem.maxheight=='200px'?$t('page.viewmore'):$t('page.clickandputaway') }}</span>
           </div>
         </div>
       </div>
@@ -121,13 +121,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    viewMore(stepItem, stepIndex) {
+    viewMore(stepItem) {
       if (stepItem.maxheight == '200px') {
         this.$set(stepItem, 'maxheight', 'auto');
-        this.$set(this.item.commentList, stepIndex, stepItem);
       } else {
         this.$set(stepItem, 'maxheight', '200px');
-        this.$set(this.item.commentList, stepIndex, stepItem);
       }
     },
     getActionText(type) {
