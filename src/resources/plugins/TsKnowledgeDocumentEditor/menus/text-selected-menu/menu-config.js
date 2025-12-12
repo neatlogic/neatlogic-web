@@ -24,3 +24,9 @@ export const TableMenuConfigList = [
   { type: 'InsertColumnLeft', icon: '', tipContentList: ['左边插入一列'], command: 'addColumnBefore' },
   { type: 'InsertColumnRight', icon: '', tipContentList: ['右边插入一列'], command: 'addColumnAfter' }
 ];
+export const ImageMenuConfigList = [
+  { type: 'ImageView', icon: 'tsfont-compare', tipContentList: ['裁剪'], command: 'imageCrop' },
+  { type: 'ImageView', icon: 'tsfont-horizontal-left', tipContentList: ['左对齐'], command: 'left' },
+  { type: 'ImageView', icon: 'tsfont-horizontal-center', tipContentList: ['居中'], command: 'center' },
+  { type: 'ImageView', icon: 'tsfont-horizontal-right', tipContentList: ['右对齐'], command: 'right' }
+];

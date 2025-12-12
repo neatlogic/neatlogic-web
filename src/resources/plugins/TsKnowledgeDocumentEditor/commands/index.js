@@ -25,6 +25,9 @@ import paragraph from './paragraph';
 import deleteRange from './delete-range';
 import cut from './cut';
 import copy from './copy';
+import imageCrop from './image/image-crop';
+import imageAlign from './image/image-align';
+
 export default {
   heading,
   codeBlock,
@@ -52,5 +55,7 @@ export default {
   paragraph,
   deleteRange,
   cut,
-  copy
+  copy,
+  imageCrop,
+  imageAlign
 };

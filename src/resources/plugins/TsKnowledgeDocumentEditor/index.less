@@ -4,6 +4,24 @@
     cursor: ew-resize;
     cursor: col-resize;
   }
+  .ProseMirror-selectednode {
+    .image-wrapper {
+      border: 1px solid #3b82f6;
+      .resize-handle{
+        display: block;
+      }
+    }
+  }
+  .image-container {
+    max-width: 100%;
+    margin: 16px 0;
+    .resize-handle {
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid #000;
+      display: none;
+    }
+  }
   img {
     max-width: 100%;
     height: auto;

@@ -101,7 +101,6 @@ import { posToDOMRect } from '@tiptap/core';
 import { Editor, EditorContent } from '@tiptap/vue-2';
 import { Placeholder } from '@tiptap/extensions';
 import TextAlign from '@tiptap/extension-text-align';
-import Image from '@tiptap/extension-image';
 import StarterKit from '@tiptap/starter-kit';
 import { TableKit } from '@tiptap/extension-table';
 import { TextStyleKit } from '@tiptap/extension-text-style';
@@ -110,7 +109,9 @@ import ExtensionsList from '@/resources/plugins/TsKnowledgeDocumentEditor/extens
 import BaseMixin from './base.js';
 import { menuState } from './state.js';
 import { SearchHighlight } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
-import DataContent from './data.js';
+import { PasteUploadImages } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/paste-imges.js'; 
+import { ImageResize } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/image-resize.js';
+import DataContent from './data.js';  
 export default {
   components: {
     EditorContent,
@@ -206,7 +207,14 @@ export default {
           table: { resizable: true }
         }),
         TextStyleKit,
-        Image,
+        ImageResize,
+        PasteUploadImages.configure({
+          upload: file => {
+            // 返回 Promise<string>（图片 url）
+            return _this.uploadFileToServer(file);
+          },
+          uploadExternalImages: true // 是否把外链强制下载再上传（true 推荐）
+        }),
         TaskList,
         TaskItem.configure({
           nested: true
@@ -214,7 +222,7 @@ export default {
         ...ExtensionsList,
         SearchHighlight
       ],
-      content: '<p>欢迎使用知识文档编辑器</p>',
+      content: DataContent,
       onUpdate({ editor }) {
         _this.getAllHeadings(editor);
       },
@@ -222,11 +230,6 @@ export default {
         const { $from } = editor?.state?.selection;
         const node = $from.node($from.depth);
         _this.highlightHeading(node, editor);
-      },
-      onPaste(e, slice) {
-        // 处理粘贴事件
-        e.preventDefault();
-        return true;
       }
     });
     // 监听 selectionUpdate 事件，当选择变化时，高亮当前选中的标题
@@ -246,7 +249,7 @@ export default {
         left: Math.max(selectionRectLeft + selectionRectWidth / 2 - editorWrapperRectLeft - bubbleMenuWidth / 2, 10)
       };
       const node = $from.node($from.depth);
-      this.selectedNodeTypeName = editor.isActive('table') ? 'table' : node?.type?.name;
+      this.selectedNodeTypeName = editor.isActive('table') ? 'table' : editor.isActive('image') ? 'ImageView' : node?.type?.name;
       _this.highlightHeading(node, editor);
     });
     this.editor?.view?.dom?.addEventListener('keydown', e => {
@@ -456,6 +459,15 @@ export default {
     },
     handleClickPlus() {
       // this.editor.chain().focus('end').run();
+    },
+    async uploadFileToServer(file) {
+      let formData = new FormData();
+      formData.append('file', file);
+      formData.append('param', 'file');
+      formData.append('type', 'knowledge');
+      formData.append('responseType', 'blob');
+      let res = await this.$api.knowledge.knowledge.uploadFile(formData);
+      return res.Return.url;
     }
   },
   computed: {

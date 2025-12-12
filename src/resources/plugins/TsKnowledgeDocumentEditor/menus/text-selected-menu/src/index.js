@@ -9,6 +9,7 @@ import InsertColumnRight from './table/insert-column-right.vue';
 import Underline from './underline.vue';
 import Code from './code.vue';
 import TextDropdown from './text-dropdown.vue';
+import ImageView from './image/image.vue';
 export default {
   MenuButton,
   HyperLink,
@@ -20,5 +21,6 @@ export default {
   InsertColumnRight,
   Underline,
   Code,
-  TextDropdown
+  TextDropdown,
+  ImageView
 };

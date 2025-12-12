@@ -472,30 +472,28 @@ export default
       type: 'horizontalRule'
     },
     {
-      type: 'image',
-      attrs: {
-        src: 'api/binary/file/download?id=1573261192404993',
-        alt: null,
-        title: null,
-        width: null,
-        height: null
+      'type': 'image',
+      'attrs': {
+        'data-uuid': '6118d538b4764cd7a7943bd2c258666f',
+        'data-block-type': 'image',
+        'src': 'api/binary/file/download?id=1574522345480240',
+        'alt': null,
+        'title': null,
+        'width': 523,
+        'height': 70,
+        'align': 'right'
       }
     },
     {
-      type: 'insertVideo',
-      attrs: {
-        src: 'api/binary/file/download?id=1573261267902465',
-        controls: true,
-        width: null,
-        loading: false,
-        'data-uuid': '1cc469f9adf84dc290e308ebd433c489',
-        'data-type': 'table'
-      }
-    },
-    {
-      type: 'paragraph',
-      attrs: {
-        textAlign: null
+      'type': 'image',
+      'attrs': {
+        'data-uuid': 'ce7e699b28da4929a7dff5c722d68d9e',
+        'data-block-type': 'image',
+        'src': 'api/binary/file/download?id=1573939966369868',
+        'alt': null,
+        'title': null,
+        'width': null,
+        'height': null
       }
     }
   ]
