@@ -2371,7 +2371,9 @@
     "selectdataurl": "Query data processing status address",
     "errorcode": "Error code",
     "facilitycategory": "Data element classification identifier",
-    "facilitydescriptor": "Data element facility identifier"
+    "facilitydescriptor": "Data element facility identifier",
+    "isprimarykey": "Is it a primary key?",
+    "batchresetaction": "Batch reset operation"
   },
   "rdm": {
     "project": "project",

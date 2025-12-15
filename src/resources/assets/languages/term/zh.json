@@ -2368,7 +2368,9 @@
     "selectdataurl": "查询数据处理状态地址",
     "errorcode": "错误编码",
     "facilitycategory": "数据元分类标识符",
-    "facilitydescriptor": "数据元设施标识符"
+    "facilitydescriptor": "数据元设施标识符",
+    "isprimarykey": "是否主键",
+    "batchresetaction": "批量重置操作"
   },
   "rdm": {
     "project": "项目",

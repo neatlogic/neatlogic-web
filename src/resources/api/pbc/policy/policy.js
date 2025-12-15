@@ -4,6 +4,9 @@ const policy = {
   getPolicyById(id) {
     return axios.post('/api/rest/pbc/policy/get', { id: id });
   },
+  getPolicyPhaseRequest(id) {
+    return axios.post('/api/rest/pbc/policy/phase/request/audit/get', { policyPhaseId: id });
+  },
   searchPolicy(params) {
     return axios.post('/api/rest/pbc/policy/search', params);
   },
