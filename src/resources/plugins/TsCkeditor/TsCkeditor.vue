@@ -4,7 +4,7 @@
       v-if="readonly"
       v-imgViewer
       :class="readonlyTextIsHighlight ? 'text-warning' : ''"
-      class="ckeditor-readonly-content-box"
+      class="ckeditor-readonly-content-box ck-content"
       v-html="currentValue ? currentValue : '-'"
     ></div>
     <div v-else :class="getClass" :style="getStyle">
