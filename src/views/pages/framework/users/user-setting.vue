@@ -46,6 +46,19 @@
                     </span>
                   </div>
                 </template>
+                <template v-slot:teamList>
+                  <div v-if="userInfo?.teamList?.length > 0">
+                    <Tag v-for="item in userInfo.teamList" :key="item.uuid" class="ivu-tag">{{ item.name }}</Tag>
+                  </div>
+                </template>
+                <template v-slot:userAuthList>
+                  <div v-if="userInfo?.userAuthList?.length > 0">
+                    <Tag v-for="item in userInfo.userAuthList.slice(0, 5)" :key="item.uuid" class="ivu-tag">
+                      <span>{{ item.authName }}</span>
+                    </Tag>
+                    <span v-if="userInfo?.userAuthList?.length > 5" class="tsfont-option-horizontal text-href" @click.stop="openViewAuthorizationDialog">{{ $t('page.viewall') }}</span>
+                  </div>
+                </template>
               </TsForm>
               <Button class="save" type="primary" @click="save()">{{ $t('page.save') }}</Button>
               <Tooltip 
@@ -155,6 +168,7 @@
         </div>
       </template>
     </TsContain>
+    <ViewAuthorizationDialog v-if="isShowAuthDialog" :userAuthList="userInfo?.userAuthList || []" @close="closeViewAuthorizationDialog"></ViewAuthorizationDialog>
   </div>
 </template>
 
@@ -172,7 +186,8 @@ export default {
     TaskAuthorization,
     AvatarSetting,
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    TsAvatar
+    TsAvatar,
+    ViewAuthorizationDialog: () => import('./user-setting-view-authorization-dialog.vue')
   },
   props: [''],
   data() {
@@ -272,6 +287,11 @@ export default {
         },
         {
           type: 'slot',
+          label: this.$t('page.group'),
+          name: 'teamList'
+        },
+        {
+          type: 'slot',
           label: this.$t('page.role'),
           name: 'roleUuidList'
         },
@@ -279,6 +299,11 @@ export default {
           type: 'slot',
           label: this.$t('term.framework.grouprole'),
           name: 'teamRoleList'
+        },
+        {
+          type: 'slot',
+          label: this.$t('page.authority'),
+          name: 'userAuthList'
         },
         {
           type: 'slot',
@@ -339,7 +364,8 @@ export default {
           ]
         }
       ],
-      convenienceList: []
+      convenienceList: [],
+      isShowAuthDialog: false
     };
   },
 
@@ -514,7 +540,7 @@ export default {
       this.$api.framework.user.clearUserSessionCache({serverId: this?.currentUserInfo?.serverId}).then(res => {
         if (res.Status == 'OK') {
           const { serverId = '' } = res.Return || {};
-          this.$Message.success(`清除【服务器ID：${serverId}】缓存成功！`);
+          this.$Message.success(this.$t('term.framework.clearServerCacheSuccessTarget', { target: serverId }));
         }
       });
     },
@@ -525,6 +551,12 @@ export default {
           this.$Message.success(this.$t('message.executesuccess'));
         }
       });
+    },
+    openViewAuthorizationDialog() {
+      this.isShowAuthDialog = true;
+    },
+    closeViewAuthorizationDialog() {
+      this.isShowAuthDialog = false;
     }
   },
   computed: {
@@ -546,7 +578,7 @@ export default {
     currentUserInfo: {
       handler(userInfo, oldVal) {
         if (userInfo?.serverId) {
-          this.serverIdTipInfo = `服务器ID：${userInfo.serverId}`;
+          this.serverIdTipInfo = this.$t('term.framework.serverIdTarget', {target: userInfo.serverId});
         }
       },
       deep: true,

@@ -58,6 +58,7 @@
 </template>
 
 <script>
+import BaseMenuMixin from './base-menu-mixin';
 export default {
   name: 'AuthManage',
   components: {
@@ -65,6 +66,7 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
+  mixins: [BaseMenuMixin],
   props: {},
   data() {
     return {
@@ -126,7 +128,7 @@ export default {
   beforeMount() {},
   async mounted() {
     await this.searchGroupNameData();
-    this.getRouterConfig();
+    this.setMenuDataList();
     this.searchAuthData();
   },
   beforeUpdate() {},
@@ -183,75 +185,14 @@ export default {
         query: { name: name, groupName: authGroup }
       });
     },
-    getRouterConfig() {
-      const routerConfig = {};
-      const dataList = [];
-
-      const routerPathList = [require.context('@/views/pages', true, /router.js$/)];
-      routerPathList.forEach(item => {
-        item.keys().forEach(routerPath => {
-          const moduleNames = routerPath.split('/')[1];
-          const moduleName = moduleNames.split('-').pop() || moduleNames;
-          const routeList = item(routerPath).default || [];
-          routerConfig[moduleName] = routeList;
-        });
-      });
-
-      const commercialRouterConfig = this.getCommercialRouter();
-      Object.keys(commercialRouterConfig)
-        .filter(key => !routerConfig[key])
-        .forEach(key => {
-          routerConfig[key] = commercialRouterConfig[key];
-        });
-      for (let key in routerConfig) {
-        let groupItem = this.groupList.find(item => item.value == key);
-        if (key && !this.$utils.isEmpty(groupItem) && !this.$utils.isEmpty(groupItem.text)) {
-          dataList.push({
-            text: groupItem.text,
-            value: key,
-            children: []
-          });
-          routerConfig[key].forEach(item => {
-            if (item.name && item.meta && item.meta.ismenu && item.meta.authority) {
-              let childrenItem = dataList.find(item => item.value == key);
-              if (!this.$utils.isEmpty(childrenItem)) {
-                childrenItem.children.push({
-                  text: `${item.meta.title}`,
-                  value: `${item.name}_${item.path}_${key}`,
-                  authority: item.meta.authority ? (typeof item.meta.authority == 'string' ? item.meta.authority : typeof item.meta.authority == 'object' ? item.meta.authority.join(',') : '') : ''
-                });
-              }
-            }
-          });
-        }
-      }
+    setMenuDataList() {
+      const dataList = this.getMenuInfoList({groupList: this.groupList}) || [];
       this.searchConfig.searchList.forEach(item => {
         if (item.name == 'defaultValue') {
           item.dataList = dataList;
         }
       });
       this.defaultValueList = dataList.flatMap(item => (item.children || []).flatMap(v => (v && this.searchVal && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(v.value) && v.authority ? [v.authority] : []))); // flatMap 将结果展开一级
-    },
-    getCommercialRouter() {
-      //商业版模块
-      let routerConfig = {};
-      let routerPathList = [];
-      try {
-        routerPathList.push(require.context('@/commercial-module', true, /router.js$/));
-      } catch {
-        // 模块找不到
-      }
-      routerPathList.forEach(item => {
-        if (item && item.keys()) {
-          item.keys().forEach(routerPath => {
-            const moduleNames = routerPath.split('/')[1];
-            const moduleName = moduleNames.split('-').pop() || moduleNames;
-            const routeList = item(routerPath).default || [];
-            routerConfig[moduleName] = routeList;
-          });
-        }
-      });
-      return routerConfig;
     }
   },
   filter: {},
