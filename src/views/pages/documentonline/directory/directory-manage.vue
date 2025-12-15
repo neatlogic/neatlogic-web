@@ -2,7 +2,14 @@
   <div>
     <TsContain :siderWidth="300" enableCollapse>
       <template v-slot:topLeft>
-        <div v-if="!isFile">
+        <div v-if="!isFile" class="flex-start">
+          <span class="tsfont-upload text-action pr-sm" @click.self="$refs.uploadDialog.showDialog">{{ $t('page.import') }}</span>
+          <UploadDialog
+            ref="uploadDialog"
+            :actionUrl="importJarUrl"
+            :formatList="['jar']"
+            @on-all-upload="getDocumentList()"
+          />
           <InputSearcher
             v-model="keyword"
             :placeholder="$t('term.documentonline.searchhelp')"
@@ -96,11 +103,13 @@ export default {
     DirectoryTree: () => import('./directory-tree.vue'),
     DocumentonlineContent: () => import('@/views/pages/documentonline/document/documentonline-content.vue'),
     FileDetailDialog: () => import('./file-detail-dialog.vue'),
+    UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
     AddClassificationDialog: () => import('./add-classification-dialog.vue')
   },
   props: {},
   data() {
     return {
+      importJarUrl: BASEURLPREFIX + '/api/binary/documentonline/jar/import',
       loadingShow: true,
       keyword: '',
       tableData: {},
