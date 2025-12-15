@@ -2,17 +2,12 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot>
-        <TsForm
-          ref="form"
-          v-model="propertyData"
-          :item-list="formConfig"
-        > <template v-slot:expression>
-          <TsCodemirror
-            v-model="propertyData.expression"
-            codeMode="javascript"
-          ></TsCodemirror>
-          <div class="mt-xs text-grey">对值进行二次计算，例如：$value = $value * 10，假如原值是10，则转换后的值是100。只支持ES5语法。</div>
-        </template></TsForm>
+        <TsForm ref="form" v-model="propertyData" :item-list="formConfig">
+          <template v-slot:expression>
+            <TsCodemirror v-model="propertyData.expression" codeMode="javascript"></TsCodemirror>
+            <div class="mt-xs text-grey">对值进行二次计算，例如：$value = $value * 10，假如原值是10，则转换后的值是100。只支持ES5语法。</div>
+          </template>
+        </TsForm>
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
@@ -30,7 +25,7 @@ export default {
   },
   props: {
     propertyUid: { type: Number },
-    interfaceId: {type: String}
+    interfaceId: { type: String }
   },
   data() {
     return {
@@ -85,6 +80,13 @@ export default {
           desc: this.$t('term.pbc.propertyaliasdescribe')
         },
         {
+          type: 'switch',
+          name: 'isKey',
+          label: '是否主键',
+          trueValue: 1,
+          falseValue: 0
+        },
+        {
           type: 'select',
           name: 'dataType',
           label: this.$t('term.report.datatype.name'),
@@ -103,7 +105,11 @@ export default {
           type: 'radio',
           name: 'restraint',
           label: this.$t('term.pbc.restraintcondition'),
-          dataList: [{value: 'M', text: this.$t('page.require')}, {value: 'O', text: this.$t('page.optional')}, {value: 'C', text: this.$t('page.conditionnotnull')}],
+          dataList: [
+            { value: 'M', text: this.$t('page.require') },
+            { value: 'O', text: this.$t('page.optional') },
+            { value: 'C', text: this.$t('page.conditionnotnull') }
+          ],
           validateList: ['required']
         },
         {
@@ -169,7 +175,7 @@ export default {
     }
   },
   filter: {},
-  computed: { },
+  computed: {},
   watch: {}
 };
 </script>

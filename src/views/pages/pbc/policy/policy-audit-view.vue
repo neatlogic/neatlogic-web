@@ -30,16 +30,20 @@
             <template v-slot:content>
               <div class="divInfo mb-md" style="font-weight: normal; font-size: 12px">
                 <div>
-                  <span v-if="phase.startTime" class="text-grey">{{ $t('page.begin') }}：{{ phase.startTime | formatDate }}</span>
+                  <span v-if="phase.startTime" class="text-grey">{{ $t('page.begin') }}</span>
+                  <span class="ml-sm"><b>{{ phase.startTime | formatDate }}</b></span>
                 </div>
                 <div>
-                  <span v-if="phase.endTime" class="text-grey">{{ $t('page.finish') }}：{{ phase.endTime | formatDate }}</span>
+                  <span v-if="phase.endTime" class="text-grey">{{ $t('page.finish') }}</span>
+                  <span class="ml-sm"><b>{{ phase.endTime | formatDate }}</b></span>
                 </div>
                 <div>
-                  <span v-if="phase.timeCost" class="text-grey">{{ $t('page.timecost') }}：{{ phase.timeCost | formatTimeCost }}</span>
+                  <span v-if="phase.timeCost" class="text-grey">{{ $t('page.timecost') }}</span>
+                  <span class="ml-sm"><b>{{ phase.timeCost | formatTimeCost }}</b></span>
                 </div>
                 <div>
-                  <span v-if="phase.timeCost" class="text-grey">{{ $t('term.autoexec.executecount') }}：{{ phase.execCount }}</span>
+                  <span v-if="phase.timeCost" class="text-grey">{{ $t('term.autoexec.executecount') }}</span>
+                  <span class="ml-sm"><b>{{ phase.execCount }}</b></span>
                 </div>
                 <div style="text-align: right" :class="getStatusClass(phase.status)">
                   <span v-if="phase.statusText">{{ phase.statusText }}</span>

@@ -18,6 +18,7 @@
         :failPolicyOption="failPolicyOption"
         :inputTypeList="inputTypeList"
         :execMode="execMode"
+        :parentPrevOperationList="prevList"
         @sortList="sortList"
       ></ScriptList>
     </div>
@@ -47,7 +48,11 @@ export default {
   },
   props: {
     title: String,
-    list: Array // 工具列表
+    list: Array, // 工具列表
+    prevList: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {

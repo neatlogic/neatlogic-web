@@ -1,5 +1,5 @@
 <template>
-  <div style="display:grid;grid-template-columns: 47% 6% 47%;grid-gap: 0px;">
+  <div v-if="mode === 'search'" style="display: grid; grid-template-columns: 47% 6% 47%; grid-gap: 0px">
     <div>
       <TsFormDatePicker
         ref="handler"
@@ -11,7 +11,7 @@
         @change="setDataBefore"
       ></TsFormDatePicker>
     </div>
-    <div style="text-align:center">~</div>
+    <div style="text-align: center">~</div>
     <div>
       <TsFormDatePicker
         ref="handler"
@@ -24,22 +24,52 @@
       ></TsFormDatePicker>
     </div>
   </div>
+  <div v-else-if="mode === 'condition'">
+    <div class="item mr-xs"><TsFormInput
+      type="number"
+      :value="valueBNumber"
+      :width="60"
+      :step="1"
+      border="border"
+      @on-change="setDataBefore"
+    ></TsFormInput></div>
+    <div class="item mr-xs">天前</div>
+    <div class="item mr-xs">~</div>
+    <div class="item mr-xs"><TsFormInput
+      type="number"
+      :width="60"
+      :step="1"
+      border="border"
+      :value="valueANumber"
+      @on-change="setDataAfter"
+    ></TsFormInput></div>
+    <div class="item">天后</div>
+    <div class="item"><Tooltip max-width="200" :transfer="true" content="以合规检查执行的时间为基准，向前和向后生成时间区间，判断属性是否处于时间区间之内，偏差天数可以是负数，时间区间可以是开区间">
+      <span class="tsfont-question-o"></span>
+    </Tooltip></div>
+  </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   props: {
-    propConfig: {type: Object},
-    attrData: {type: Object},
-    valueList: {type: Array}
+    mode: { type: String },
+    propConfig: { type: Object },
+    attrData: { type: Object },
+    valueList: { type: Array }
   },
   data() {
     return {
       valueBefore: '',
-      valueAfter: ''
+      valueAfter: '',
+      expressionList: [
+        { value: '+', text: '+' },
+        { value: '-', text: '-' }
+      ]
     };
   },
   beforeCreate() {},
@@ -56,6 +86,9 @@ export default {
   destroyed() {},
   methods: {
     setDataBefore(val) {
+      if (val === null) {
+        val = '';
+      }
       this.valueBefore = val;
       let v = this.valueBefore + '~' + this.valueAfter;
       if (v == '~') {
@@ -65,6 +98,9 @@ export default {
       this.$emit('setValue', [v]);
     },
     setDataAfter(val) {
+      if (val === null) {
+        val = '';
+      }
       this.valueAfter = val;
       let v = this.valueBefore + '~' + this.valueAfter;
       if (v == '~') {
@@ -73,8 +109,7 @@ export default {
       this.$emit('setData', [v]);
       this.$emit('setValue', [v]);
     },
-    init() {
-    }
+    init() {}
   },
   filter: {},
   computed: {
@@ -90,6 +125,27 @@ export default {
       if (this.valueList && this.valueList.length > 0) {
         if (this.valueList[0].indexOf('~') > -1) {
           return this.valueList[0].split('~')[1];
+        }
+      }
+      return '';
+    },
+    valueBNumber: function() {
+      if (this.valueList && this.valueList.length > 0) {
+        if (this.valueList[0].indexOf('~') > -1) {
+          if (this.valueList[0].split('~')[0] !== '') {
+            return parseInt(this.valueList[0].split('~')[0]);
+          }
+        }
+      }
+      console.log('here');
+      return '';
+    },
+    valueANumber: function() {
+      if (this.valueList && this.valueList.length > 0) {
+        if (this.valueList[0].indexOf('~') > -1) {
+          if (this.valueList[0].split('~')[1] !== '') {
+            return parseInt(this.valueList[0].split('~')[1]);
+          }
         }
       }
       return '';
@@ -111,5 +167,8 @@ export default {
   }
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.item {
+  display: inline-block;
+}
 </style>

@@ -2,11 +2,7 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot>
-        <TsForm
-          ref="form"
-          v-model="interfaceData"
-          :item-list="formConfig"
-        ></TsForm>
+        <TsForm ref="form" v-model="interfaceData" :item-list="formConfig"></TsForm>
       </template>
       <template v-slot:footer>
         <Button @click="close()">{{ $t('page.cancel') }}</Button>
@@ -22,13 +18,13 @@ export default {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
-    interfaceId: {type: String}
+    interfaceId: { type: String }
   },
   data() {
     return {
       interfaceData: {},
       dialogConfig: {
-        title: this.$t('term.pbc.addinterface'),
+        title: this.interfaceId ? this.$t('dialog.title.edittarget', { target: this.$t('page.interface') }) : this.$t('dialog.title.addtarget', { target: this.$t('page.interface') }),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -89,7 +85,7 @@ export default {
     }
   },
   filter: {},
-  computed: { },
+  computed: {},
   watch: {}
 };
 </script>

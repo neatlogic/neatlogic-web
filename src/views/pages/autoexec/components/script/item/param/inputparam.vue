@@ -32,20 +32,10 @@
               </template>
             </div>
           </Col>
-          <Col v-if="configParamList[lindex].isRequired" span="6">
+          <Col :span="configParamList[lindex].mappingMode == 'isempty' ? 18 : 6">
             <TsFormSelect
               v-model="configParamList[lindex].mappingMode"
-              :dataList="getList(inputTypeList, isFirst, true, profileParamVoList, l)"
-              v-bind="styleConfig"
-              :validateList="validateList"
-              :disabled="!canEdit"
-              @change="changeMappingMode(configParamList[lindex],l)"
-            ></TsFormSelect>
-          </Col>
-          <Col v-if="!configParamList[lindex].isRequired" :span="configParamList[lindex].mappingMode == 'isempty' ? 18 : 6">
-            <TsFormSelect
-              v-model="configParamList[lindex].mappingMode"
-              :dataList="getList(inputTypeList, isFirst, false, profileParamVoList, l)"
+              :dataList="getList(inputTypeList, isFirst, !!configParamList[lindex].isRequired, profileParamVoList, l)"
               v-bind="styleConfig"
               :validateList="validateList"
               :disabled="!canEdit"
@@ -403,7 +393,8 @@ export default {
               } else {
                 subList[nameArr.indexOf(res.value)].children.push({
                   value: ele[level2],
-                  label: ele['operationName'] + (ele.operationLetter ? ('_' + ele.operationLetter) : '') + (ele.operationDes ? '[' + ele.operationDes + ']' : ''),
+                  // label: ele['operationName'] + (ele.operationLetter ? ('_' + ele.operationLetter) : '') + (ele.operationDes ? '[' + ele.operationDes + ']' : ''), //相同工具标识自增operationLetter
+                  label: ele['operationName'] + (ele.operationDes ? '[' + ele.operationDes + ']' : ''),
                   operationDes: ele.operationDes,
                   children: [{
                     value: ele[level3],
@@ -417,7 +408,8 @@ export default {
                 label: res.label,
                 children: [{
                   value: ele[level2],
-                  label: ele['operationName'] + (ele.operationLetter ? ('_' + ele.operationLetter) : '') + (ele.operationDes ? '[' + ele.operationDes + ']' : ''),
+                  // label: ele['operationName'] + (ele.operationLetter ? ('_' + ele.operationLetter) : '') + (ele.operationDes ? '[' + ele.operationDes + ']' : ''),
+                  label: ele['operationName'] + (ele.operationDes ? '[' + ele.operationDes + ']' : ''),
                   operationDes: ele.operationDes,
                   children: [{
                     value: ele[level3],

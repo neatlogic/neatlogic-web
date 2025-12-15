@@ -1370,7 +1370,9 @@
     "batchdeleteusersession": "Batch forced offline",
     "usersessiondeletetip": "Users will be forced to log off after 15 minutes of cache expiration",
     "loginauditretentionperiod": "Login record retention period",
-    "logintime": "Login time"
+    "logintime": "Login time",
+    "serverIdTarget": "Server ID：{target}",
+    "clearServerCacheSuccessTarget": "Clearing the cache of [Server ID: {target}] successfully!"
   },
   "knowledge": {
     "document": "Document",
@@ -2369,7 +2371,9 @@
     "selectdataurl": "Query data processing status address",
     "errorcode": "Error code",
     "facilitycategory": "Data element classification identifier",
-    "facilitydescriptor": "Data element facility identifier"
+    "facilitydescriptor": "Data element facility identifier",
+    "isprimarykey": "Is it a primary key?",
+    "batchresetaction": "Batch reset operation"
   },
   "rdm": {
     "project": "project",
@@ -2908,7 +2912,21 @@
     "comparecount": "Compare data volume",
     "samplecount": "sample size",
     "generatecode": "generate code",
-    "open": "open"
+    "open": "open",
+    "isindex": "Is it indexed",
+    "isshow": "Display or not",
+    "eventactiontype": "Event action type",
+    "30minute": "30 minutes",
+    "1hour": "1 hour",
+    "3hour": "3 hours",
+    "6hour": "6 hours",
+    "12hour": "12 hours",
+    "1day": "1 day",
+    "1week": "1 week",
+    "1month": "a month",
+    "3day": "3 days",
+    "subscribename": "Subscription Name",
+    "invokealert": "Related Alarm "
   },
   "runnergroup": {
     "ruletips": "The request for login authentication needs to carry a header as a rule expression (note that the header parameter in the expression is all lowercase). If the value of the expression after execution is true, the executor group will take effect, and false and syntax exceptions will not take effect. For example: ${env}==\\ bit \\&&(${test}==\\ 1 \\ | | ${test2}==\\ aaa \\)"
