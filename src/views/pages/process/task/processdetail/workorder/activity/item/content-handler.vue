@@ -5,11 +5,11 @@
       <div :style="{'height':maxheight}" class="activity-content overflow-y">
         <div v-if="config.changeType =='clear'" class="text-grey pr8 flew-shrink0">{{ $t('page.delete') }}</div>
         <div v-if="config.oldContent">
-          <div v-imgViewer v-dompurify-html="config.oldContent"></div>
+          <div v-imgViewer v-dompurify-html="config.oldContent" class="ck-content"></div>
         </div>
         <div v-if="config.changeType == 'update'" class="change-text text-grey flew-shrink0">{{ $t('term.process.changeto') }}</div>
         <div v-if="config.newContent">
-          <div v-imgViewer v-dompurify-html="config.newContent"></div>
+          <div v-imgViewer v-dompurify-html="config.newContent" class="ck-content"></div>
         </div>
       </div>
     </div>

@@ -16,6 +16,9 @@ const interfaceitem = {
   saveInterfaceItem(params) {
     return axios.post('/api/rest/pbc/interfaceitem/save', params);
   },
+  saveInterfaceItemAction(params) {
+    return axios.post('/api/rest/pbc/interfaceitem/action/save', params);
+  },
   validInterfaceItem(id) {
     return axios.post('/api/rest/pbc/interfaceitem/valid', { id: id });
   },

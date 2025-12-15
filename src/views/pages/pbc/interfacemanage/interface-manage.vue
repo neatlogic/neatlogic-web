@@ -61,6 +61,10 @@
               <span>{{ row.interfaceName }}</span>
               <span class="text-grey">({{ row.interfaceId }})</span>
             </template>
+            <template v-slot:isKey="{ row }">
+              <span v-if="row.isKey" class="text-success">{{ $t('page.yes') }}</span>
+              <span v-else class="text-grey">{{ $t('page.no') }}</span>
+            </template>
             <template v-slot:restraint="{ row }">
               <span v-if="row.restraint == 'M'">{{ $t('page.require') }}(M)</span>
               <span v-else-if="row.restraint == 'O'">{{ $t('page.optional') }}(O)</span>
@@ -88,11 +92,7 @@
       :propertyUid="currentPropertyUid"
       @close="closeEditPropertyDialog"
     ></EditProperty>
-    <EditInterface
-      v-if="isEditInterfaceDialogShow"
-      @close="closeEditInterfaceDialog"
-    >
-    </EditInterface>
+    <EditInterface v-if="isEditInterfaceDialogShow" @close="closeEditInterfaceDialog"></EditInterface>
     <PropertyRelEdit v-if="isRelDialogShow" :propertyUid="currentPropertyUid" @close="closePropertyRelDialog"></PropertyRelEdit>
   </div>
 </template>
@@ -135,6 +135,7 @@ export default {
         { key: 'complexId', title: this.$t('term.pbc.complexid') },
         { key: 'interfaceId', title: this.$t('term.pbc.datatransferid') },
         { key: 'dataType', title: this.$t('term.report.datatype.name') },
+        { key: 'isKey', title: this.$t('term.pbc.isprimarykey') },
         { key: 'valueRange', title: this.$t('term.pbc.valuerange') },
         { key: 'restraint', title: this.$t('term.pbc.restraintcondition') },
         { key: 'action', title: '' }
@@ -225,7 +226,7 @@ export default {
     deleteProperty(row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.attribute')}),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.attribute') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.pbc.property.deleteProperty(row.uid).then(res => {

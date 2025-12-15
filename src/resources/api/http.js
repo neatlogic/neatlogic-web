@@ -149,6 +149,10 @@ instance.interceptors.request.use(config => {
   if (config.method === 'post' && config.contentType != 'multipart/form-data') {
     config.data = JSON.stringify(config.data || {});
   }
+  const { userId } = utils?.getUserInfo() || {};
+  if (userId) {
+    config.headers['x-userid'] = userId;
+  }
   return config;
 });
 

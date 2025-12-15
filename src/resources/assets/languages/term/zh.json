@@ -1370,7 +1370,9 @@
     "batchdeleteusersession": "批量强制下线",
     "usersessiondeletetip": "用户将在15分钟缓存失效后强制用户下线",
     "loginauditretentionperiod": "登录记录保存期限",
-    "logintime": "登录时间"
+    "logintime": "登录时间",
+    "serverIdTarget": "服务器ID：{target}",
+    "clearServerCacheSuccessTarget": "清除【服务器ID：{target}】缓存成功！"
   },
   "knowledge": {
     "document": "文档",
@@ -2366,7 +2368,9 @@
     "selectdataurl": "查询数据处理状态地址",
     "errorcode": "错误编码",
     "facilitycategory": "数据元分类标识符",
-    "facilitydescriptor": "数据元设施标识符"
+    "facilitydescriptor": "数据元设施标识符",
+    "isprimarykey": "是否主键",
+    "batchresetaction": "批量重置操作"
   },
   "rdm": {
     "project": "项目",

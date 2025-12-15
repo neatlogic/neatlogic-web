@@ -5,7 +5,8 @@ const state = {
   moduleList: [], //所有的模块及其描述、菜单、默认页等
   gettingModuleList: new Promise(() => {}), //模块列表获取状态
   dynamicMenu: {},
-  gettingCmdbMenu: new Promise(() => {})
+  gettingCmdbMenu: new Promise(() => {}),
+  userInfo: {} // 用户信息
 };
 
 const getters = {
@@ -34,6 +35,10 @@ const mutations = {
       ...state.dynamicMenu,
       [module.moduleId]: newMenuGroup
     };
+  },
+  // 设置用户信息
+  setUserInfo(state, userInfo) {
+    state.userInfo = userInfo;
   }
 };
 
@@ -82,6 +87,7 @@ const actions = {
         }
       });
     commit('setModuleList', moduleList);
+    commit('setUserInfo', userRes.Return);
     return res;
   },
 
