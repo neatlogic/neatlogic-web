@@ -13,6 +13,7 @@
             <div class="action-item tsfont-upload" @click="showImportDialog()">{{ $t('page.importdata') }}</div>
             <div v-download="exportData()" class="action-item tsfont-download">{{ $t('term.pbc.exportdata') }}</div>
             <div v-if="hasSelectItem" class="action-item tsfont-trash-o" @click="batchDelInterfaceItem">{{ $t('page.batchdelete') }}</div>
+            <div v-if="hasSelectItem" class="action-item tsfont-formdynamiclist" @click="batchUpdateInterfaceItemAction">{{ $t('term.pbc.batchresetaction') }}</div>
             <div class="action-item"><TsFormSwitch
               v-model="isUseAlias"
               :showStatus="true"
@@ -87,7 +88,7 @@
                     </tr>
                     <tr style="text-align: center">
                       <th></th>
-                      <th v-if="hasDeleteItem">
+                      <th>
                         <Checkbox
                           :value="isCheckAll"
                           :indeterminate="isIndeterminate"
@@ -114,11 +115,12 @@
                             <DropdownItem @click.native="editInterfaceItem(interfaceItem.id)">{{ $t('page.edit') }}</DropdownItem>
                             <DropdownItem @click.native="validInterfaceItem(interfaceItem.id)">{{ $t('page.validate') }}</DropdownItem>
                             <DropdownItem v-if="!interfaceItem.isImported" @click.native="delInterfaceItem(interfaceItem.id)">{{ $t('page.delete') }}</DropdownItem>
+                            <DropdownItem divided @click.native="editInterfaceItemAction(interfaceItem.id)">重置操作</DropdownItem>
                             <DropdownItem divided @click.native="getAudit(interfaceItem.id)">最近一次同步</DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
                       </td>
-                      <td v-if="hasDeleteItem" style="text-align: center; width: 40px"><Checkbox v-if="!interfaceItem.isImported" v-model="interfaceItem.isSelected" style="margin: 0px"></Checkbox></td>
+                      <td style="text-align: center; width: 40px"><Checkbox v-model="interfaceItem.isSelected" style="margin: 0px"></Checkbox></td>
                       <td style="width: 80px; text-align: center">
                         <span>
                           <Tooltip v-if="interfaceItem.errorCount" :content="interfaceItem.errorCount + '个校验异常'" :transfer="true">
@@ -265,6 +267,12 @@
       :interfaceId="searchParam.interfaceId"
       @close="closeImportDialog"
     ></InterfaceItemImportDialog>
+    <InterfaceItemActionEdit
+      v-if="isInterfaceItemActionDialogShow"
+      :id="currentInterfaceItemId"
+      :idList="idList"
+      @close="closeInterfaceItemActionDialog"
+    ></InterfaceItemActionEdit>
     <PolicyEdit v-if="isPolicyEditShow" :id="currentPolicyId" @close="closePolicyDialog"></PolicyEdit>
   </div>
 </template>
@@ -274,8 +282,8 @@ import customScrollbar from '@/resources/directives/v-custom-scrollbar.js';
 export default {
   name: '',
   components: {
-    //InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     InterfaceItemEdit: () => import('./interface-item-edit.vue'),
+    InterfaceItemActionEdit: () => import('@/views/pages/pbc/interfacemanage/components/interface-item-action-edit-dialog.vue'),
     InterfaceList: () => import('./components/interface-list.vue'),
     InterfaceItemImportDialog: () => import('./components/interface-item-import-dialog.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
@@ -286,11 +294,13 @@ export default {
   props: {},
   data() {
     return {
+      idList: [],
       currentPolicyId: null,
       isPolicyEditShow: false,
       currentCorporation: null,
       corporationList: [],
       isInterfaceItemDialogShow: false,
+      isInterfaceItemActionDialogShow: false,
       currentInterfaceItemId: null,
       interfaceUid: null,
       isImportShow: false,
@@ -405,6 +415,17 @@ export default {
       this.interfaceItemData.tbodyList.forEach(element => {
         this.$set(element, 'isSelected', val);
       });
+    },
+    batchUpdateInterfaceItemAction() {
+      this.idList = [];
+      this.interfaceItemData.tbodyList.forEach(element => {
+        if (element.isSelected) {
+          this.idList.push(element.id);
+        }
+      });
+      if (this.idList.length > 0) {
+        this.isInterfaceItemActionDialogShow = true;
+      }
     },
     batchDelInterfaceItem() {
       const idList = [];
@@ -612,12 +633,24 @@ export default {
     },
     closeInterfaceItemDialog(needRefresh) {
       this.isInterfaceItemDialogShow = false;
+      this.currentInterfaceItemId = null;
+      if (needRefresh) {
+        this.searchInterfaceItem();
+      }
+    },
+    closeInterfaceItemActionDialog(needRefresh) {
+      this.isInterfaceItemActionDialogShow = false;
+      this.currentInterfaceItemId = null;
       if (needRefresh) {
         this.searchInterfaceItem();
       }
     },
     editInterfaceItem(id) {
       this.isInterfaceItemDialogShow = true;
+      this.currentInterfaceItemId = id;
+    },
+    editInterfaceItemAction(id) {
+      this.isInterfaceItemActionDialogShow = true;
       this.currentInterfaceItemId = id;
     },
     delInterfaceItem(id) {

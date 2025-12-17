@@ -30,7 +30,7 @@
               style="overflow: hidden"
               :style="{ height: maxheight }"
             >
-              <div ref="getheight" v-dompurify-html="dataConfig.content"></div>
+              <div ref="getheight" v-dompurify-html="dataConfig.content" class="ck-content"></div>
             </div>
             <div v-if="isView" class="text-href pt-xs" @click="viewMoreContent">{{ maxheight == '200px' ? $t('page.viewmore') : $t('page.clickandputaway') }}</div>
             <Divider v-if="dataConfig.fileList.length > 0" orientation="start">
