@@ -144,9 +144,8 @@ export default {
     async close(list) {
       this.isAdd = false;
       if (list && list.length) {
-        let phaseOperationList = this.$utils.deepClone(this.phaseOperationList) || [];
         list.forEach(async(l) => {
-          let prevlength = phaseOperationList.filter(p => { return p.operationId == l.operationId; });
+          let prevlength = this.phaseOperationList.filter(p => { return p.operationId == l.operationId; });
           let defaulParam = [];
           if (l.inputParamList && l.inputParamList.length) {
             let profileParamVoList = [];
@@ -201,11 +200,10 @@ export default {
               this.$set(item.config, 'profileId', l.defaultProfileId);
             }
           }
-          phaseOperationList.push(item);
+          this.phaseOperationList.push(item);
         });
-        this.phaseOperationList = phaseOperationList;
         this.$nextTick(() => {
-          this.$refs.list.updateList(this.phaseOperationList);
+          this.$refs.list && this.$refs.list.updateList(this.phaseOperationList);
         });
       }
     },
