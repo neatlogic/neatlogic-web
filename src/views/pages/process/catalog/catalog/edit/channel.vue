@@ -304,6 +304,15 @@ export default {
           validateList: ['required']
         },
         {
+          type: 'text',
+          name: 'titleTemplate',
+          value: '',
+          placeholder: '',
+          maxlength: 200,
+          label: '标题模板',
+          tooltip: ''
+        },
+        {
           type: 'slot',
           name: 'isActivePriority',
           label: '优先级激活',
@@ -428,6 +437,25 @@ export default {
   },
   beforeCreate() {},
   created() {
+    let param = {
+      enumClass: 'ProcessTaskTitleTemplateVariable'
+    };
+    this.$api.common.getSelectList(param).then((res) => {
+      if (res.Status == 'OK') {
+        let str = '';
+        let dataList = res.Return || [];
+        dataList.forEach(e => {
+          str += e.value + ' ';
+        });
+        if (str != '') {
+          this.channelForm.forEach(e => {
+            if (e.name == 'titleTemplate') {
+              e.tooltip = str;
+            }
+          });
+        }
+      }
+    });
     this.channelForm.forEach(e => {
       e.width = '75%';
     });
@@ -496,6 +524,7 @@ export default {
             name: name,
             parentUuid: parentUuid,
             processUuid: processUuid,
+            titleTemplate: !this.$utils.isEmpty(config) ? config.titleTemplate : '',
             isActive: isActive,
             reportAuthorityList: reportAuthorityList,
             viewAuthorityList: viewAuthorityList,
@@ -595,6 +624,9 @@ export default {
       let priorityForm = this.$refs.priorityForm;
       if (!this.$refs.form.valid() || (priorityForm && !priorityForm.valid()) || ((this.channelValue.config && this.channelValue.config.allowTranferReport) && !this.$refs.channelRelationList.valid())) {
         return;
+      }
+      if (this.channelValue.titleTemplate) {
+        this.$set(this.channelValue.config, 'titleTemplate', this.channelValue.titleTemplate);
       }
       if (this.channelValue.config && this.channelValue.config.allowTranferReport) {
         this.channelValue.config.channelRelationList = this.$refs.channelRelationList.saveRelationList();
