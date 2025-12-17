@@ -1,4 +1,4 @@
-export default function bulletList({ editor, position, options, vueInstance }) {
+export default function bulletList({ editor, position, options, _this }) {
   const { isToggle } = options || {};
   const { endPosition, insertPosition } = position || {};
   if (isToggle) {

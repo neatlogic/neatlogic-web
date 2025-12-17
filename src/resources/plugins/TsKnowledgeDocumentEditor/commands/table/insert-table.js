@@ -1,4 +1,4 @@
-export default function insertTable({ editor, position, options }) {
+export default function insertTable({ editor, position, options, _this }) {
   const { rows = 0, cols = 0 } = options || {};
   const { insertPosition } = position || {};
   if (rows === 0 || cols === 0) {
@@ -9,13 +9,14 @@ export default function insertTable({ editor, position, options }) {
     type: 'tableRow',
     content: Array.from({ length: cols }).map(() => ({
       type: 'tableCell',
+      attrs: { colwidth: [100] }, // 设置默认列宽为100
       content: [{ type: 'paragraph' }]
     }))
   }));
 
   const tableNode = {
     type: 'table',
-    attrs: { withHeaderRow: true },
+    attrs: { withHeaderRow: true, dataUuid: _this.$utils.setUuid(), dataBlockType: 'table' },
     content: tableContent
   };
 

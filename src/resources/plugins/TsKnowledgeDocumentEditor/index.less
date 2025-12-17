@@ -4,10 +4,23 @@
     cursor: ew-resize;
     cursor: col-resize;
   }
+  .tableWrapper {
+    margin: 20px 0;
+  }
+  .table-col-hover,
+  .table-row-hover {
+    background: rgba(24, 144, 255, 0.08);
+  }
+
+  .table-row-active,
+  .table-col-active {
+    background: rgba(24, 144, 255, 0.16);
+  }
+
   .ProseMirror-selectednode {
     .image-wrapper {
       border: 1px solid #3b82f6;
-      .resize-handle{
+      .resize-handle {
         display: block;
       }
     }

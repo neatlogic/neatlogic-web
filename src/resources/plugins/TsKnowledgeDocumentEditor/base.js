@@ -1,17 +1,18 @@
 import InsertMenuCommands from '@/resources/plugins/TsKnowledgeDocumentEditor/commands/index.js';
 export default {
   methods: {
-    executeEditorCommand({menuData, currentInstanceThis}) {
-      if (!currentInstanceThis.editor) return;
-      const insertPos = currentInstanceThis.findInsertContentPosition();
+    executeEditorCommand({menuData, _this}) {
+      if (!_this.editor) return;
+      const insertPos = _this.findInsertContentPosition();
       const { commandName, value = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
         commandMethod({
-          editor: currentInstanceThis.editor,
+          editor: _this.editor,
           position: insertPos,
           options: value,
-          https: currentInstanceThis.$https
+          https: _this.$https,
+          _this: _this
         });
       }
     },
@@ -101,7 +102,8 @@ export default {
           editor: this.editor,
           position: position,
           options: value,
-          https: this.$https
+          https: this.$https,
+          _this: this
         });
       }
     },
@@ -116,7 +118,8 @@ export default {
           editor: this.editor,
           position: position,
           options: value,
-          https: this.$https
+          https: this.$https,
+          _this: this
         });
       }
     },
@@ -132,7 +135,7 @@ export default {
           position: position || {},
           options: {...value, isToggle: true},
           https: this.$https,
-          vueInstance: this
+          _this: this
         });
       }
     },
@@ -146,6 +149,48 @@ export default {
         const newNode = editor.view.state.schema.nodes[nodeType].create(nodeAttrs, schema.text(nodeTextContent));
         editor.view.dispatch(editor.state.tr.replaceWith(startPosition, endPosition, newNode));
       }
+    },
+    getTableNode({editor, event}) {
+      // 获取表格节点
+      const { clientX, clientY } = event;
+      const coords = { left: clientX, top: clientY };
+      const posResult = editor.view.posAtCoords(coords);
+
+      if (!posResult) {
+        // 无法映射到文档位置
+        return null; 
+      }
+
+      // 映射结果包含 position (pos) 和 insideDOM
+      const clickedPos = posResult.pos;
+      const $pos = this.editor.state.doc.resolve(clickedPos);
+      for (let d = $pos.depth; d > 0; d--) {
+        const node = $pos.node(d);
+
+        if (node.type.name === 'table') {
+          const tableNode = node;
+          const tableAttrs = tableNode.attrs;
+          const tableType = tableNode.type?.name;
+
+          // 返回表格节点和属性
+          return { nodeType: tableType, attrs: tableAttrs };
+        }
+      }
+      return null; // 没有找到父级表格
+    },
+    findTableNodeByUuid({editor, uuid}) {
+      let result = null;
+      const state = editor.state;
+      state.doc.descendants((node, pos) => {
+        if (
+          node.type.name === 'table' &&
+      node.attrs?.['data-uuid'] === uuid
+        ) {
+          result = { nodeType: node?.type?.name, attrs: node?.attrs };
+          return false; // 停止遍历
+        }
+      });
+      return result;
     }
   }
 };

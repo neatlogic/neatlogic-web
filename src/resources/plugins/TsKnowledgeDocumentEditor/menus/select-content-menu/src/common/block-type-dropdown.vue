@@ -10,7 +10,7 @@
         @mouseenter.stop="handleBtnMouseEnter"
         @mouseleave.stop="handleBtnMouseLeave"
       >
-        <span class="tsfont-title" style="font-size: 16px;"></span>
+        <span class="tsfont-title" :style="iconStyle"></span>
         <Icon type="ios-arrow-down"></Icon>
       </span>
       <DropdownMenu slot="list">
@@ -25,7 +25,8 @@
             >
               <span
                 :class="item.iconClass"
-                class="icon-font-size pr-nm"
+                :style="iconStyle"
+                class="pr-nm"
               ></span>
               <span>{{ item.text }}</span>
               <span v-if="isActiveMenu(item.value)" class="tsfont-check text-href ml-nm"></span>
@@ -37,7 +38,7 @@
   </div>
 </template>
 <script>
-import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/mixin.js';
+import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/mixin.js';
 export default {
   name: '',
   components: {},
@@ -202,9 +203,6 @@ export default {
       &:last-child {
         margin-bottom: 0;
       }
-    }
-    .icon-font-size {
-      font-size: 16px;
     }
   }
 </style>

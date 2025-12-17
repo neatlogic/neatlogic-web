@@ -10,7 +10,7 @@
         @mouseenter.stop="handleBtnMouseEnter"
         @mouseleave.stop="handleBtnMouseLeave"
       >
-        <span class="tsfont-horizontal-left" style="font-size: 16px;"></span>
+        <span class="tsfont-horizontal-left" :style="iconStyle"></span>
         <Icon type="ios-arrow-down"></Icon>
       </span>
       <DropdownMenu slot="list">
@@ -44,7 +44,7 @@
   </div>
 </template>
 <script>
-import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/mixin.js';
+import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/mixin.js';
 export default {
   name: '',
   components: {},

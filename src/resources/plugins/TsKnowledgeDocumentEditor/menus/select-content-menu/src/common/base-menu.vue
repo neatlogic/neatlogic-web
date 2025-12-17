@@ -7,14 +7,16 @@
       max-width="300"
     >
       <span
-        class="menu-button-box"
+        :style="iconStyle"
         :class="[icon, getActiveMenuClassName(command)]"
-        @click="
+        @click.stop="
           $emit('executeEditorCommand',
                 {
                   commandName: command,
                   value: {
-                    [capitalizeFirstWordKeepRest(command)]: menuState?.editorData?.isActive(command)
+                    [capitalizeFirstWordKeepRest(command)]: menuState?.editorData?.isActive(command),
+                    ...(nodeConfig || {}),
+                   ...(params || {})
                   }
                 }
           )"
@@ -23,30 +25,20 @@
         <div v-for="(item, index) in tipContentList" :key="index">{{ item }}</div>
       </div>
     </Tooltip>
-
   </div>
-
 </template>
 <script>
-import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/mixin.js';
+import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/mixin.js';
 export default {
   name: '',
   components: {},
   mixins: [mixin],
   props: {
-    icon: {
-      type: String,
-      default: ''
-    },
-    tipContentList: {
-      type: [],
+    params: {
+      type: Object,
       default: () => {
-        return [];
+        return {};
       }
-    },
-    command: {
-      type: String,
-      default: ''
     }
   },
   data() {
@@ -76,7 +68,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.menu-button-box {
-  font-size: 18px;
-}
 </style>

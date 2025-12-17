@@ -29,7 +29,6 @@
           @mouseleave="hidePlus"
           @click="handleClickPlus"
         >
-          <!-- <ToolBar class="mb-nm" @insert-menu-content="(menuContentData) => executeEditorCommand({menuData: menuContentData, currentInstanceThis: this})"></ToolBar> -->
           <div ref="editorContentContainer" class="editor-content-container" @click.stop>
             <EditorContent v-if="editor" :editor="editor" class="editor-content"></EditorContent>
           </div>
@@ -37,42 +36,27 @@
             v-show="isShowBlockMenu"
             :isEmptyRow="isEmptyRow"
             :menuPosition="menuPosition"
-            :currentNode="currentNode"
+            :nodeConfig="blockMenuNodeConfig"
             @insert-menu-content="handleInsertMenuContent"
             @replace-menu-content="handleReplaceMenuContent"
             @insert-below-position="handleInsertBelowPosition"
           ></BlockMenu>
-          <TextSelectedMenu
-            v-show="isShowBubbleMenu"
-            ref="textSelectedMenuWrapper"
-            :selectedNodeTypeName="selectedNodeTypeName"
-            :style="{ top: `${textSelectedMenuPosition.top}px`, left: `${textSelectedMenuPosition.left}px` }"
-            @executeEditorCommand="(menuData)=> executeEditorCommand({menuData: menuData, currentInstanceThis: this})"
-          ></TextSelectedMenu>
-          <div
+          <SelectContentMenu
+            v-show="isShowSelectContentMenu"
+            ref="selectContentMenuRef"
+            :nodeConfig="nodeConfig"
+            :nodeName="nodeName"
+            :style="{ top: `${selectContentMenuPos.top}px`, left: `${selectContentMenuPos.left}px` }"
+            @executeEditorCommand="(menuData)=> executeEditorCommand({menuData: menuData, _this: this})"
+          ></SelectContentMenu>
+          <TableHoverLayer
             v-show="isShowTableMenu"
-            :style="{
-              position: 'absolute',
-              top: `${tableMenuPosition.top}px`,
-              left: `${tableMenuPosition.left}px`
-            }"
-            @click.stop
-          >
-            <div style="width: 100px;height: 16px;" class="bg-grey radius-sm text-center cursor-pointer">
-              <span
-                class="tsfont-option-horizontal"
-                @click.stop="()=> {
-                  isShowBubbleMenu = true;
-                  selectedNodeTypeName = 'table';
-                  textSelectedMenuPosition = {
-                    top: tableMenuPosition.top - 25,
-                    left: tableMenuPosition.left - 30
-                  }
-                  isShowTableMenu = false;
-                }"
-              ></span>
-            </div>
-          </div>
+            :tableMenuPosition="tableMenuPosition"
+            :tableUuid="tableUuid"
+            :row-height-list="rowHeightList"
+            :editor="editor"
+            @click="tableClick"
+          ></TableHoverLayer>
         </div>
       </div>
     </div>
@@ -102,22 +86,25 @@ import { Editor, EditorContent } from '@tiptap/vue-2';
 import { Placeholder } from '@tiptap/extensions';
 import TextAlign from '@tiptap/extension-text-align';
 import StarterKit from '@tiptap/starter-kit';
-import { TableKit } from '@tiptap/extension-table';
+import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table';
 import { TextStyleKit } from '@tiptap/extension-text-style';
 import { TaskList, TaskItem } from '@tiptap/extension-list';
+import Image from '@tiptap/extension-image';
 import ExtensionsList from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/index.js';
 import BaseMixin from './base.js';
 import { menuState } from './state.js';
 import { SearchHighlight } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
 import { PasteUploadImages } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/paste-imges.js'; 
 import { ImageResize } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/image-resize.js';
+import { RowColSelected } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/row-col-selected/index.js';
+import { TableUtils } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/table-utils.js';
 import DataContent from './data.js';  
 export default {
   components: {
     EditorContent,
     BlockMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/index.vue'),
-    // ToolBar: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/toolbar/index.vue'),
-    TextSelectedMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/index.vue'),
+    SelectContentMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/index.vue'),
+    TableHoverLayer: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/table-hover-layer/index.vue'),
     SearchReplaceDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/search-replace-dialog/index.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     DocumentTag: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/tag/index.vue')
@@ -136,16 +123,18 @@ export default {
   },
   data() {
     return {
+      nodeConfig: null,
+      tableUuid: '',
       title: this.documentTitle,
-      isShowBubbleMenu: false,
+      isShowSelectContentMenu: false,
       isShowBlockMenu: false,
       isShowSearchReplaceDialog: false,
       isShowTableMenu: false,
       tableMenuPosition: {
-        top: 0,
+        top: -12,
         left: 0
       },
-      textSelectedMenuPosition: {
+      selectContentMenuPos: { // 选中内容菜单的位置
         top: 0,
         left: 0
       },
@@ -156,11 +145,12 @@ export default {
       menuList: [],
       selectHeadingUuid: '',
       selectedText: '',
-      selectedNodeTypeName: '', // 选中的节点类型名称
-      currentNode: {
+      nodeName: '', // 节点名称，如：heading、paragraph、listItem等
+      blockMenuNodeConfig: {
         type: '',
         attrs: {}
-      }
+      },
+      rowHeightList: [] // 行高列表
     };
   },
   mounted() {
@@ -203,11 +193,17 @@ export default {
         TextAlign.configure({
           types: ['heading', 'paragraph']
         }),
-        TableKit.configure({
-          table: { resizable: true }
+        Image,
+        Table.configure({
+          resizable: true
         }),
+        TableRow,
+        TableCell,
+        TableHeader,
         TextStyleKit,
         ImageResize,
+        RowColSelected,
+        TableUtils,
         PasteUploadImages.configure({
           upload: file => {
             // 返回 Promise<string>（图片 url）
@@ -236,20 +232,20 @@ export default {
     this?.editor?.on('selectionUpdate', ({ editor, event }) => {
       // 编辑器获得焦点。
       const { $from, from, to } = editor?.state?.selection;
-      this.isShowBubbleMenu = from != to;
+      this.isShowSelectContentMenu = from != to;
       this.selectedText = editor?.state?.doc?.textBetween(from, to);
       const selectionRect = posToDOMRect(editor.view, from, to);
       const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
-      const textSelectedMenuRect = this.$refs?.textSelectedMenuWrapper?.$refs?.bubbleMenuRef?.getBoundingClientRect();
+      const textSelectedMenuRect = this.$refs?.selectContentMenuRef?.$refs?.bubbleMenuRef?.getBoundingClientRect();
       const { width: bubbleMenuWidth = 0 } = textSelectedMenuRect || {};
       const { top: editorWrapperTop = 0, left: editorWrapperRectLeft = 0 } = editorWrapperRect || {};
       const { top: selectionRectTop = 0, height: selectionRectHight = 0, left: selectionRectLeft = 0, width: selectionRectWidth = 0 } = selectionRect || {};
-      this.textSelectedMenuPosition = {
+      this.selectContentMenuPos = {
         top: (selectionRectTop + selectionRectHight - editorWrapperTop + 5).toFixed(0),
         left: Math.max(selectionRectLeft + selectionRectWidth / 2 - editorWrapperRectLeft - bubbleMenuWidth / 2, 10)
       };
       const node = $from.node($from.depth);
-      this.selectedNodeTypeName = editor.isActive('table') ? 'table' : editor.isActive('image') ? 'ImageView' : node?.type?.name;
+      this.nodeName = editor.isActive('table') ? 'table' : editor.isActive('image') ? 'ImageView' : node?.type?.name;
       _this.highlightHeading(node, editor);
     });
     this.editor?.view?.dom?.addEventListener('keydown', e => {
@@ -266,7 +262,7 @@ export default {
   methods: {
     getData() {
       const saveData = this.editor.getJSON();
-      console.log(JSON.stringify(saveData, null, 2));
+      console.log(saveData);
     },
     getAllHeadings(editor) {
       const $headings = editor.$nodes('heading');
@@ -301,7 +297,6 @@ export default {
     },
     handleMouseMove: throttle(function(event) {
       const wrapper = this.$refs.editorWrapper;
-      const editorContentContainer = this.$refs?.editorContentContainer;
       const editorEl = wrapper?.querySelector('.ProseMirror');
       if (event.target.closest('.plus-button') || event.target.closest('.drag-button') || event.target.closest('.menu-wrapper')) {
         return;
@@ -335,8 +330,8 @@ export default {
             }
           }
           const dom = view.nodeDOM($pos.before($pos.depth));
-          this.$set(this.currentNode, 'type', nodeType);
-          this.$set(this.currentNode, 'attrs', nodeAttrs);
+          this.$set(this.blockMenuNodeConfig, 'type', nodeType);
+          this.$set(this.blockMenuNodeConfig, 'attrs', nodeAttrs);
           if (this.isEmptyBlock(node)) {
             this.isEmptyRow = true;
           } else {
@@ -349,28 +344,90 @@ export default {
           this.currentBlock = currentBlock;
           const blockRect = currentBlock.getBoundingClientRect();
           const wrapperRect = wrapper.getBoundingClientRect();
-          const editorContentContainerRect = editorContentContainer.getBoundingClientRect();
-    
+          
           if (this.isInTable(event)) {
-            this.isShowTableMenu = true;
-            this.tableMenuPosition = {
-              top: Number((blockRect.top - wrapperRect.top - blockRect.height - 6).toFixed(0)),
-              left: Number((blockRect.left - editorContentContainerRect.left + 100 / 2).toFixed(0))
-            };
+            const cell = event.target.closest('td, th');
+            const table = cell?.closest('table');
+            const tableRect = table?.getBoundingClientRect();
+            const tableNodeAttr = this.getTableNode({editor: this.editor, event: event});
+            const { attrs } = tableNodeAttr || {};
+            this.tableUuid = attrs?.['data-uuid'];
+            this.rowHeightList = this.getTableRowHeights(table);
+            if (tableRect) {
+              this.isShowTableMenu = true;
+              this.tableMenuPosition = {
+                top: Number((tableRect.top - wrapperRect.top)).toFixed(0) <= 0 ? -10 : Number((tableRect.top - wrapperRect.top).toFixed(0)) - 10, // 16 头部点击菜单的高度
+                left: Number((tableRect.left - wrapperRect.left).toFixed(0))
+              };
+            }
           } else {
             this.menuPosition = {
-              top: Number((blockRect.top - wrapperRect.top + blockRect.height / 2 - 12).toFixed(0)),
+              top: Number((blockRect.top - wrapperRect.top + blockRect.height / 2 - 1).toFixed(0)),
               left: -50
             };
-            this.isShowTableMenu = false;
+            // this.isShowTableMenu = false;
             this.isShowBlockMenu = true;
           }
         }
       }
     }, 500),
+    getTableRowHeights(tableEl) {
+      if (!tableEl) return [];
+      return Array.from(
+        tableEl.querySelectorAll('tbody > tr')
+      ).map(tr => tr.getBoundingClientRect().height);
+    },
     hidePlus: throttle(function() {
       // this.currentBlock = null;
     }, 400),
+    tableClick({event, index, type}) {
+      const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
+      const { nodeType, attrs } = this.findTableNodeByUuid({editor: this.editor, uuid: this.tableUuid}) || {};
+      this.nodeConfig = {
+        nodeType: nodeType,
+        nodeAttrs: attrs,
+        index: index,
+        type: type
+      };
+      this.isShowSelectContentMenu = true;
+      this.nodeName = 'table';
+      this.selectContentMenuPos = {
+        top: event.clientY - editorWrapperRect.top - 57,
+        left: event.clientX - editorWrapperRect.left
+      };
+      if (type == 'row') {
+        this.selectContentMenuPos = {
+          top: event.clientY - editorWrapperRect.top - 60,
+          left: event.clientX - editorWrapperRect.left
+        };
+        this.executeEditorCommand({
+          menuData: {
+            commandName: 'selectedRow',
+            value: {
+              nodeType: nodeType,
+              nodeAttrs: attrs,
+              index: index,
+              type: 'row'
+            }
+          },
+          _this: this
+        });
+      }
+      if (type === 'column') {
+        this.executeEditorCommand({
+          menuData: {
+            commandName: 'selectedColumn',
+            value: {
+              nodeType: nodeType,
+              nodeAttrs: attrs,
+              index: index,
+              type: 'column'
+            }
+          },
+          _this: this
+        });
+      }
+    },
     isTextContentEmpty(node) {
       return node.textContent.trim() === '';
     },

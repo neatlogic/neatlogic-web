@@ -48,7 +48,7 @@ export default {
       type: Boolean,
       default: false
     },
-    currentNode: {
+    nodeConfig: {
       type: Object,
       default: () => {}
     }
@@ -178,7 +178,7 @@ export default {
   computed: {
     setSelectedTextClassName() {
       return (commandName) => {
-        const {type, attrs = {}} = this.currentNode || {};
+        const {type, attrs = {}} = this.nodeConfig || {};
         if (commandName && commandName.includes('heading')) {
           return commandName == `${type}${attrs.level}` ? 'text-primary' : '';
         } else {
@@ -188,7 +188,7 @@ export default {
     },
     setSelectedBgClassName() {
       return (commandName) => {
-        const {type, attrs = {}} = this.currentNode || {};
+        const {type, attrs = {}} = this.nodeConfig || {};
         if (commandName && commandName.includes('heading')) {
           return commandName == `${type}${attrs.level}` ? 'bg-info-grey radius-mi' : '';
         } else {

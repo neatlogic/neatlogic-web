@@ -6,11 +6,8 @@
       :visible="isVisibleColor"
       @on-clickoutside="closeDropdownMenu"
     >
-      <span
-        @mouseenter.stop="handleBtnMouseEnter"
-        @mouseleave.stop="handleBtnMouseLeave"
-      >
-        <span class="tsfont-font-color" style="font-size: 16px;"></span>
+      <span @mouseenter.stop="handleBtnMouseEnter" @mouseleave.stop="handleBtnMouseLeave">
+        <span class="tsfont-font-color" :style="iconStyle"></span>
         <Icon type="ios-arrow-down"></Icon>
       </span>
       <DropdownMenu slot="list">
@@ -22,15 +19,17 @@
                 v-for="(item, index) in textColorList"
                 :key="index"
                 :class="item.color === selectedFontColor ? 'border-color-info' : ''"
-                @click.stop="()=> {
-                  selectedFontColor = item.color;
-                  $emit('executeEditorCommand', {
-                    commandName: 'color',
-                    value: {
-                      color: item.color,
-                    }
-                  })
-                }"
+                @click.stop="
+                  () => {
+                    selectedFontColor = item.color;
+                    $emit('executeEditorCommand', {
+                      commandName: 'color',
+                      value: {
+                        color: item.color
+                      }
+                    });
+                  }
+                "
               >
                 <Tooltip
                   placement="top"
@@ -38,7 +37,7 @@
                   theme="light"
                   transfer
                 >
-                  <span class="tsfont-font-color" :style="{color: item.color}"></span>
+                  <span class="tsfont-font-color" :style="{ color: item.color }"></span>
                   <div slot="content">{{ item.text }}</div>
                 </Tooltip>
               </li>
@@ -47,7 +46,7 @@
           <div class="mt-sm">
             <div class="mb-xs">背景颜色</div>
             <ul class="bg-color-box">
-              <template v-for="(item,index) in bgColorlightList">
+              <template v-for="(item, index) in bgColorlightList">
                 <Tooltip
                   :key="index"
                   placement="top"
@@ -56,24 +55,26 @@
                   transfer
                 >
                   <li
-                    :class="[item.hasAfter ? 'bg-color-divide-line' : '', item.color === selectedBgColorLight? 'border-color-info' : '']"
-                    :style="{background: item.color}"
-                    @click.stop="()=> {
-                      selectedBgColorLight = item.color;
-                      $emit('executeEditorCommand', {
-                        commandName: 'backgroundColor',
-                        value: {
-                          backgroundColor: item.color,
-                        }
-                      })
-                    }"
+                    :class="[item.hasAfter ? 'bg-color-divide-line' : '', item.color === selectedBgColorLight ? 'border-color-info' : '']"
+                    :style="{ background: item.color }"
+                    @click.stop="
+                      () => {
+                        selectedBgColorLight = item.color;
+                        $emit('executeEditorCommand', {
+                          commandName: 'backgroundColor',
+                          value: {
+                            backgroundColor: item.color
+                          }
+                        });
+                      }
+                    "
                   ></li>
                   <div slot="content">{{ item.text }}</div>
                 </Tooltip>
               </template>
             </ul>
             <ul class="bg-color-box mt-xs">
-              <template v-for="(item,index) in bgColorList">
+              <template v-for="(item, index) in bgColorList">
                 <Tooltip
                   :key="index"
                   placement="top"
@@ -82,24 +83,24 @@
                   transfer
                 >
                   <li
-                    :style="{background: item.color}"
+                    :style="{ background: item.color }"
                     :class="item.color === selectedBgColor ? 'border-color-info' : ''"
-                    @click.stop="()=> {
-                      selectedBgColor = item.color;
-                      selectedBgColorLight = '';
-                      $emit('executeEditorCommand', {
-                        commandName: 'backgroundColor',
-                        value: {
-                          backgroundColor: item.color,
-                        }
-                      })
-                    }"
-                  >
-                  </li>
+                    @click.stop="
+                      () => {
+                        selectedBgColor = item.color;
+                        selectedBgColorLight = '';
+                        $emit('executeEditorCommand', {
+                          commandName: 'backgroundColor',
+                          value: {
+                            backgroundColor: item.color
+                          }
+                        });
+                      }
+                    "
+                  ></li>
                   <div slot="content">{{ item.text }}</div>
                 </Tooltip>
               </template>
-
             </ul>
           </div>
           <div class="border-base radius-mi mt-sm text-center restore-default" @click="handleRestoreDefault">恢复默认</div>
@@ -109,7 +110,7 @@
   </div>
 </template>
 <script>
-import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/mixin.js';
+import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/mixin.js';
 export default {
   name: '',
   components: {},

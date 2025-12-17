@@ -6,7 +6,12 @@
       theme="light"
       max-width="300"
     >
-      <span class="tsfont-table-merge-cell" @click="handleClick"></span>
+      <img
+        style="width:16px;height:16px;"
+        src="@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/table/svg/insert-column-left.svg"
+        alt=""
+        @click="handleClick"
+      />
       <div slot="content">
         <div v-for="(item, index) in tipContentList" :key="index">{{ item }}</div>
       </div>
@@ -14,7 +19,7 @@
   </div>
 </template>
 <script>
-import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/mixin.js';
+import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/mixin.js';
 export default {
   name: '',
   components: {
@@ -23,7 +28,6 @@ export default {
   props: {},
   data() {
     return {
-      linkUrl: ''
     };
   },
   beforeCreate() {},
@@ -40,7 +44,10 @@ export default {
     handleClick() {
       this.$emit('executeEditorCommand', {
         commandName: this.command,
-        value: {}
+        value: {
+          direction: 'left',
+          ...(this.nodeConfig)
+        }
       });
     }
   },

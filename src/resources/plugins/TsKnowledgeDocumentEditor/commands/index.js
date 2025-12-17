@@ -9,9 +9,11 @@ import blockquote from './blockquote';
 import horizontalRule from './horizontal-rule';
 import taskList from './task-list';
 import insertTable from './table/insert-table';
-import addColumnBefore from './table/add-column-before';
-import addColumnAfter from './table/add-column-after';
+import insertColumn from './table/insert-column.js';
+import insertRow from './table/insert-row.js';
 import mergeOrSplit from './table/merge-or-split';
+import selectedColumn from './table/selected-column.js';
+import selectedRow from './table/selected-row.js';
 import bold from './bold';
 import italic from './italic';
 import strike from './strike';
@@ -27,6 +29,8 @@ import cut from './cut';
 import copy from './copy';
 import imageCrop from './image/image-crop';
 import imageAlign from './image/image-align';
+import deleteColumn from './table/delete-column.js';
+import deleteRow from './table/delete-row.js';
 
 export default {
   heading,
@@ -35,13 +39,13 @@ export default {
   bulletList,
   orderedList,
   taskList,
-  insertTable,
   uploadImage,
   insertVideo,
   blockquote,
   horizontalRule,
-  addColumnBefore,
-  addColumnAfter,
+  insertTable,
+  insertColumn,
+  insertRow,
   mergeOrSplit,
   bold,
   italic,
@@ -57,5 +61,9 @@ export default {
   cut,
   copy,
   imageCrop,
-  imageAlign
+  imageAlign,
+  selectedColumn,
+  selectedRow,
+  deleteColumn,
+  deleteRow
 };

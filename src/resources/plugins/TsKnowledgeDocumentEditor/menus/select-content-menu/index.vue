@@ -1,26 +1,13 @@
 <template>
   <div ref="bubbleMenuRef" class="bubble-menu bg-op border-base">
-    <template v-if="selectedNodeTypeName === 'ImageView'">
-      <ImageView
-        :menuList="menuConfig(selectedNodeTypeName)"
-        @executeEditorCommand="handleCommand"
-      ></ImageView>
-    </template>
-    <template v-else>
-      <component
-        :is="getMenuComponent(menu.type)"
-        v-for="(menu,index) in menuConfig(selectedNodeTypeName)"
-        :key="index"
-        :selectedNodeTypeName="selectedNodeTypeName"
-        v-bind="menu"
-        @executeEditorCommand="handleCommand"
-      />
-    </template>
-   
+    <component
+      :is="getComponentName(nodeName)"
+      :nodeConfig="nodeConfig"
+      @executeEditorCommand="handleCommand"
+    />
   </div>
 </template>
 <script>
-import { BaseMenuConfigList, TableMenuConfigList, ImageMenuConfigList} from './menu-config';
 import MenuComponent from './src/index.js';
 export default {
   name: '',
@@ -28,9 +15,13 @@ export default {
     ...MenuComponent
   },
   props: {
-    selectedNodeTypeName: {
+    nodeName: {
       type: String,
-      default: ''
+      default: 'text'
+    },
+    nodeConfig: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -50,22 +41,19 @@ export default {
   methods: {
     handleCommand(menuDataConfig) {
       this.$emit('executeEditorCommand', menuDataConfig);
-    },
-    getMenuComponent(type) {
-      return MenuComponent[type] || 'div';
     }
   },
   filter: {},
   computed: {
-    menuConfig() {
+    getComponentName() {
       return (type) => {
         if (type === 'ImageView') {
-          return ImageMenuConfigList;
+          return 'ImageMenu';
+        } else if (type === 'table') {
+          return 'TableMenu';
+        } else {
+          return 'TextMenu';
         }
-        const menuMap = {
-          'table': TableMenuConfigList
-        };
-        return [...BaseMenuConfigList, ...(menuMap[this.selectedNodeTypeName] || [])];
       };
     }
   },

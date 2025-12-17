@@ -1,263 +1,26 @@
-export default 
-{
+export default {
   type: 'doc',
   content: [
     {
-      type: 'heading',
+      type: 'paragraph',
       attrs: {
         textAlign: null,
-        level: 1
+        'data-uuid': 'c416f128637e47fc8f850576d44421111',
+        'data-block-type': 'paragraph'
       },
       content: [
         {
           type: 'text',
-          text: '标题1内容'
-        }
-      ]
-    },
-    {
-      type: 'heading',
-      attrs: {
-        textAlign: null,
-        level: 2
-      },
-      content: [
-        {
-          type: 'text',
-          text: '标题2内容'
-        }
-      ]
-    },
-    {
-      type: 'heading',
-      attrs: {
-        textAlign: null,
-        level: 3
-      },
-      content: [
-        {
-          type: 'text',
-          text: '标题3内容'
-        }
-      ]
-    },
-    {
-      type: 'heading',
-      attrs: {
-        textAlign: null,
-        level: 4
-      },
-      content: [
-        {
-          type: 'text',
-          text: '标题4内容'
-        }
-      ]
-    },
-    {
-      type: 'heading',
-      attrs: {
-        textAlign: null,
-        level: 5
-      },
-      content: [
-        {
-          type: 'text',
-          text: '标题5内容'
-        }
-      ]
-    },
-    {
-      type: 'heading',
-      attrs: {
-        textAlign: null,
-        level: 6
-      },
-      content: [
-        {
-          type: 'text',
-          text: '标题6内容'
-        }
-      ]
-    },
-    {
-      type: 'orderedList',
-      attrs: {
-        start: 1,
-        type: null
-      },
-      content: [
-        {
-          type: 'listItem',
-          content: [
-            {
-              type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
-              content: [
-                {
-                  type: 'text',
-                  text: '有序列表1'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          type: 'listItem',
-          content: [
-            {
-              type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
-              content: [
-                {
-                  type: 'text',
-                  text: '有序列表2'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      type: 'bulletList',
-      content: [
-        {
-          type: 'listItem',
-          content: [
-            {
-              type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
-              content: [
-                {
-                  type: 'text',
-                  text: '无序列表1'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          type: 'listItem',
-          content: [
-            {
-              type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
-              content: [
-                {
-                  type: 'text',
-                  text: '无序列表2'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      type: 'taskList',
-      content: [
-        {
-          type: 'taskItem',
-          attrs: {
-            checked: false
-          },
-          content: [
-            {
-              type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
-              content: [
-                {
-                  type: 'text',
-                  text: '任务列表'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          type: 'taskItem',
-          attrs: {
-            checked: false
-          },
-          content: [
-            {
-              type: 'paragraph',
-              attrs: {
-                textAlign: null
-              },
-              content: [
-                {
-                  type: 'text',
-                  text: '任务列表2'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      type: 'blockquote',
-      content: [
-        {
-          type: 'paragraph',
-          attrs: {
-            textAlign: null
-          },
-          content: [
-            {
-              type: 'text',
-              text: '引用内容'
-            }
-          ]
-        }
-      ]
-    },
-    {
-      type: 'codeBlock',
-      attrs: {
-        language: null
-      },
-      content: [
-        {
-          type: 'text',
-          text: '新代码块内容'
-        }
-      ]
-    },
-    {
-      type: 'highlightBlock',
-      attrs: {
-        'data-uuid': '84d5cc93b1c64553b565b47310137509'
-      },
-      content: [
-        {
-          type: 'paragraph',
-          attrs: {
-            textAlign: null
-          },
-          content: [
-            {
-              type: 'text',
-              text: '高亮块内容'
-            }
-          ]
+          text: '测试的数据'
         }
       ]
     },
     {
       type: 'table',
+      attrs: {
+        'data-uuid': 'c416f128637e47fc8f850576d4442c17',
+        'data-block-type': 'table'
+      },
       content: [
         {
           type: 'tableRow',
@@ -267,14 +30,22 @@ export default
               attrs: {
                 colspan: 1,
                 rowspan: 1,
-                colwidth: null
+                colwidth: [100]
               },
               content: [
                 {
                   type: 'paragraph',
                   attrs: {
-                    textAlign: null
-                  }
+                    textAlign: null,
+                    'data-uuid': '753ddce031374ba5af2eadd5628f6c85',
+                    'data-block-type': 'paragraph'
+                  },
+                  content: [
+                    {
+                      type: 'text',
+                      text: '第一行的数据1'
+                    }
+                  ]
                 }
               ]
             },
@@ -283,14 +54,22 @@ export default
               attrs: {
                 colspan: 1,
                 rowspan: 1,
-                colwidth: null
+                colwidth: [100]
               },
               content: [
                 {
                   type: 'paragraph',
                   attrs: {
-                    textAlign: null
-                  }
+                    textAlign: null,
+                    'data-uuid': 'c178cdadbe5c49fcade7253eb63cb7b1',
+                    'data-block-type': 'paragraph'
+                  },
+                  content: [
+                    {
+                      type: 'text',
+                      text: '第一行的数据'
+                    }
+                  ]
                 }
               ]
             },
@@ -299,30 +78,22 @@ export default
               attrs: {
                 colspan: 1,
                 rowspan: 1,
-                colwidth: null
+                colwidth: [100]
               },
               content: [
                 {
                   type: 'paragraph',
                   attrs: {
-                    textAlign: null
-                  }
-                }
-              ]
-            },
-            {
-              type: 'tableCell',
-              attrs: {
-                colspan: 1,
-                rowspan: 1,
-                colwidth: null
-              },
-              content: [
-                {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                    textAlign: null,
+                    'data-uuid': '44b4006763284b52b282408c1c7ff934',
+                    'data-block-type': 'paragraph'
+                  },
+                  content: [
+                    {
+                      type: 'text',
+                      text: '第一行的数据'
+                    }
+                  ]
                 }
               ]
             }
@@ -336,14 +107,22 @@ export default
               attrs: {
                 colspan: 1,
                 rowspan: 1,
-                colwidth: null
+                colwidth: [100]
               },
               content: [
                 {
                   type: 'paragraph',
                   attrs: {
-                    textAlign: null
-                  }
+                    textAlign: null,
+                    'data-uuid': 'a4caab9f35d64eae95d782fffc7da49a',
+                    'data-block-type': 'paragraph'
+                  },
+                  content: [
+                    {
+                      type: 'text',
+                      text: '第二行的数据11111的很少看到还是的哈萨克的时代开始但是肯定还是快点很多考生的考试的很少看到的很少看到时代开始的开始的很少看到很少看到好看的的很少看到很少看到'
+                    }
+                  ]
                 }
               ]
             },
@@ -352,14 +131,22 @@ export default
               attrs: {
                 colspan: 1,
                 rowspan: 1,
-                colwidth: null
+                colwidth: [100]
               },
               content: [
                 {
                   type: 'paragraph',
                   attrs: {
-                    textAlign: null
-                  }
+                    textAlign: null,
+                    'data-uuid': '84cff037290f434499877e41e12900e8',
+                    'data-block-type': 'paragraph'
+                  },
+                  content: [
+                    {
+                      type: 'text',
+                      text: '第二行的数据22222'
+                    }
+                  ]
                 }
               ]
             },
@@ -368,99 +155,22 @@ export default
               attrs: {
                 colspan: 1,
                 rowspan: 1,
-                colwidth: null
+                colwidth: [100]
               },
               content: [
                 {
                   type: 'paragraph',
                   attrs: {
-                    textAlign: null
-                  }
-                }
-              ]
-            },
-            {
-              type: 'tableCell',
-              attrs: {
-                colspan: 1,
-                rowspan: 1,
-                colwidth: null
-              },
-              content: [
-                {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        {
-          type: 'tableRow',
-          content: [
-            {
-              type: 'tableCell',
-              attrs: {
-                colspan: 1,
-                rowspan: 1,
-                colwidth: null
-              },
-              content: [
-                {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
-                }
-              ]
-            },
-            {
-              type: 'tableCell',
-              attrs: {
-                colspan: 1,
-                rowspan: 1,
-                colwidth: null
-              },
-              content: [
-                {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
-                }
-              ]
-            },
-            {
-              type: 'tableCell',
-              attrs: {
-                colspan: 1,
-                rowspan: 1,
-                colwidth: null
-              },
-              content: [
-                {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
-                }
-              ]
-            },
-            {
-              type: 'tableCell',
-              attrs: {
-                colspan: 1,
-                rowspan: 1,
-                colwidth: null
-              },
-              content: [
-                {
-                  type: 'paragraph',
-                  attrs: {
-                    textAlign: null
-                  }
+                    textAlign: null,
+                    'data-uuid': 'bddce331de7b4330b08a03011ca4e844',
+                    'data-block-type': 'paragraph'
+                  },
+                  content: [
+                    {
+                      type: 'text',
+                      text: '第二行的数据33333'
+                    }
+                  ]
                 }
               ]
             }
@@ -469,31 +179,11 @@ export default
       ]
     },
     {
-      type: 'horizontalRule'
-    },
-    {
-      'type': 'image',
-      'attrs': {
-        'data-uuid': '6118d538b4764cd7a7943bd2c258666f',
-        'data-block-type': 'image',
-        'src': 'api/binary/file/download?id=1574522345480240',
-        'alt': null,
-        'title': null,
-        'width': 523,
-        'height': 70,
-        'align': 'right'
-      }
-    },
-    {
-      'type': 'image',
-      'attrs': {
-        'data-uuid': 'ce7e699b28da4929a7dff5c722d68d9e',
-        'data-block-type': 'image',
-        'src': 'api/binary/file/download?id=1573939966369868',
-        'alt': null,
-        'title': null,
-        'width': null,
-        'height': null
+      type: 'paragraph',
+      attrs: {
+        textAlign: null,
+        'data-uuid': '7b763198461b49a192c4c954440946a9',
+        'data-block-type': 'paragraph'
       }
     }
   ]

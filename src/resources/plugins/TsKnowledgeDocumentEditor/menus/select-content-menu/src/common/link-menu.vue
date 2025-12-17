@@ -8,7 +8,7 @@
     >
       <span
         :class="[icon, getActiveMenuClassName('link')]"
-        class="link-text"
+        :style="iconStyle"
         @click.stop="openLinkDialog"
       ></span>
       <div slot="content">
@@ -29,14 +29,27 @@
   </div>
 </template>
 <script>
-import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/mixin.js';
+import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/mixin.js';
 export default {
   name: '',
   components: {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   mixins: [mixin],
-  props: {},
+  props: {
+    icon: {
+      type: String,
+      default: 'tsfont-attachment'
+    },
+    command: {
+      type: String,
+      default: 'link'
+    },
+    tipContentList: {
+      type: Array,
+      default: () => ['超链接']
+    }
+  },
   data() {
     return {
       linkUrl: '',
@@ -83,9 +96,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.hyper-link-box {
-  .link-text {
-    font-size: 18px;
-  }
-}
 </style>

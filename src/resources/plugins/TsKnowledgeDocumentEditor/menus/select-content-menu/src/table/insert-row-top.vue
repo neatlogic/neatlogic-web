@@ -7,8 +7,8 @@
       max-width="300"
     >
       <img
-        style="width: 16px;height: 16px;"
-        src="@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/table/svg/insert-column-left.svg"
+        style="width:16px;height: 16px;"
+        src="@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/table/svg/insert-row-above.svg"
         alt=""
         @click="handleClick"
       />
@@ -19,7 +19,7 @@
   </div>
 </template>
 <script>
-import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/text-selected-menu/src/mixin.js';
+import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/mixin.js';
 export default {
   name: '',
   components: {
@@ -28,7 +28,6 @@ export default {
   props: {},
   data() {
     return {
-      linkUrl: ''
     };
   },
   beforeCreate() {},
@@ -45,7 +44,10 @@ export default {
     handleClick() {
       this.$emit('executeEditorCommand', {
         commandName: this.command,
-        value: {}
+        value: {
+          direction: 'top',
+          ...(this.nodeConfig || {})
+        }
       });
     }
   },

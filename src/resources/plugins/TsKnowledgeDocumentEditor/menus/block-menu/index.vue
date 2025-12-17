@@ -20,7 +20,7 @@
         top: (menuPosition.top) + 'px',
         left: menuPosition.left + 'px'
       }"
-      :currentNode="currentNode"
+      :nodeConfig="nodeConfig"
       @click-menu="(menuData)=> {
         $emit('replace-menu-content', menuData)
       }"
@@ -52,7 +52,7 @@ export default {
         };
       }
     },
-    currentNode: {
+    nodeConfig: {
       type: Object,
       default: () => {
         return {};

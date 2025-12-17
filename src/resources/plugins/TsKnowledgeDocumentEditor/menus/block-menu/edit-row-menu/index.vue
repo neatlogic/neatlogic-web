@@ -10,7 +10,7 @@
           <BaseMenu
             :hideBaseText="true"
             :removeMenuList="[]"
-            :currentNode="currentNode"
+            :nodeConfig="nodeConfig"
             @click-menu="emitClickMenu"
           ></BaseMenu>
         </DropdownItem>
@@ -50,7 +50,7 @@ export default {
     InsertedBelowMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/empty-row-menu/index.vue')
   },
   props: {
-    currentNode: {
+    nodeConfig: {
       type: Object,
       default: () => {
         return {};
@@ -100,7 +100,7 @@ export default {
         bulletList: 'tsfont-list',
         orderedList: 'tsfont-orderlist'
       };
-      const { type, attrs = {} } = this.currentNode || {};
+      const { type, attrs = {} } = this.nodeConfig || {};
       if (type == 'heading') {
         return classNameMap[`heading${attrs.level}`];
       } else {

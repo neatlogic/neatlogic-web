@@ -1,4 +1,4 @@
-export default function heading({ editor, position, options, vueInstance }) {
+export default function heading({ editor, position, options, _this }) {
   const { level, isToggle } = options || {};
   const { endPosition, insertPosition } = position || {};
   if (isToggle) {

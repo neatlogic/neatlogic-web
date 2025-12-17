@@ -66,7 +66,6 @@ const BlockUuid = Extension.create({
 
             // 已有 uuid 的跳过
             if (node.attrs['data-uuid']) return;
-
             tr = tr.setNodeMarkup(pos, node.type, {
               ...node.attrs,
               'data-uuid': utils.setUuid(),
