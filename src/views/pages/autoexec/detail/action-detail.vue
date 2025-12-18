@@ -1083,7 +1083,10 @@ export default {
       if (!this.effectiveEditable) {
         return;
       }
-      this.valid();
+      if (this.valid()) {
+        this.$Notice.success({title: this.$t('message.validatesuccess') });
+        return;
+      }
       this.validVisible = true;
     },
     openParamsSetting() {

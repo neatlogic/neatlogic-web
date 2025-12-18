@@ -139,8 +139,8 @@
                         </span>
                       </td>
                       <td style="width: 50px; text-align: center">
-                        <span v-if="interfaceItem.isNew && !interfaceItem.dataHash" class="text-success">新增</span>
-                        <span v-else-if="interfaceItem.isNew && interfaceItem.dataHash" class="text-primary">修改</span>
+                        <span v-if="interfaceItem.isNew && !interfaceItem.isImported" class="text-success">新增</span>
+                        <span v-else-if="interfaceItem.isNew && interfaceItem.isImported" class="text-primary">修改</span>
                         <span v-else-if="interfaceItem.isDelete" class="text-error">删除</span>
                       </td>
                       <td style="width: 50px; text-align: center">
