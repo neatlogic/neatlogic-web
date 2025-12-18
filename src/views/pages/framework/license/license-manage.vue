@@ -1,6 +1,25 @@
 <template>
   <div>
     <TsContain>
+      <template v-slot:topRight>
+        <div class="action-group">
+          <div class="action-item tsfont-refresh" @click="refresh">{{ $t('page.refresh') }}
+            <span>
+              <Tooltip
+                placement="left"
+                max-width="1000"
+                theme="light"
+                transfer
+              >
+                <b class="tsfont-info-o text-href"></b>
+                <div slot="content">
+                  <p>{{ $t('term.framework.licenserefresh') }}</p>
+                </div>
+              </Tooltip>
+            </span>
+          </div>
+        </div>
+      </template>
       <template v-slot:content>
         <div v-if="licenseData" class="padding">
           <TsFormItem :label="$t('term.framework.authorizedto')">
@@ -124,7 +143,16 @@ export default {
           });
         }
       });
+    },
+    refresh() {
+      this.$api.framework.license.updateLicenseExpireDate().then(res => {
+        if (res.Status == 'OK') {
+          this.getLicense();
+          this.$Notice.success({ title: this.$t('message.refreshsuccess')});
+        }
+      });
     }
+     
   },
   filter: {},
   computed: {},

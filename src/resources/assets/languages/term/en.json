@@ -1373,7 +1373,8 @@
     "loginauditretentionperiod": "Login record retention period",
     "logintime": "Login time",
     "serverIdTarget": "Server ID：{target}",
-    "clearServerCacheSuccessTarget": "Clearing the cache of [Server ID: {target}] successfully!"
+    "clearServerCacheSuccessTarget": "Clearing the cache of [Server ID: {target}] successfully!",
+    "licenserefresh": "After updating the license in nacos or config. properties, you can click this refresh button to update the license without restarting the service"
   },
   "knowledge": {
     "document": "Document",
