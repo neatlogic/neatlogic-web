@@ -115,7 +115,7 @@ export default {
       currentPhase: {},
       policyData: { phase: '', cronExpression: '0 0 1 * * ?' }, //默认晚上1点
       interfaceData: {},
-      searchParam: { pageSize: 10, hasCi: 1, hasCustomView: 1 },
+      searchParam: { pageSize: 10 },
       selectedInterfaceList: [],
       phaseList: [],
       theadList: [
