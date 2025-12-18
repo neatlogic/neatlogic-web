@@ -149,6 +149,7 @@
     <PhaseList
       v-if="selectModuleList.length"
       :appSystemId="baseParams.appSystemId"
+      :envId="envId"
       :moduleList="selectModuleList"
       :combopPhaseNameList="combopPhaseNameList"
     ></PhaseList>

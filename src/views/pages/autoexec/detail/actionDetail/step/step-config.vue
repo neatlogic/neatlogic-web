@@ -212,9 +212,15 @@ export default {
             }
           }
           this.phaseOperationList.push(item);
-        });
+        });   
         this.$nextTick(() => {
-          this.$refs.list && this.$refs.list.updateList(this.phaseOperationList);
+          this.phaseOperationList = this.phaseOperationList.map((v, vindex) => {
+            return {
+              ...v,
+              uuid: v.uuid || this.$utils.setUuid(),
+              sort: vindex
+            };
+          });
         });
       }
     },
