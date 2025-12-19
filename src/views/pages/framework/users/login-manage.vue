@@ -75,9 +75,17 @@ export default {
           title: this.$t('page.user')
         },
         {
+          key: 'ip',
+          title: 'IP'
+        },
+        {
           key: 'loginTime',
           title: this.$t('term.framework.logintime'),
           type: 'time'
+        },
+        {
+          key: 'loginMethod',
+          title: this.$t('term.framework.loginmethod')
         }
       ],
       tableData: []
