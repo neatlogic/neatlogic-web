@@ -1,12 +1,14 @@
 import InsertMenuCommands from '@/resources/plugins/TsKnowledgeDocumentEditor/commands/index.js';
+import { getCellSelectionByIndex } from '@/resources/plugins/TsKnowledgeDocumentEditor/commands/table/utils.js';
 export default {
   methods: {
-    executeEditorCommand({menuData, _this}) {
+    handleSelectMenuContent({menuData, _this}) {
       if (!_this.editor) return;
       const insertPos = _this.findInsertContentPosition();
       const { commandName, value = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
+        getCellSelectionByIndex({editor: _this.editor, options: value});
         commandMethod({
           editor: _this.editor,
           position: insertPos,
@@ -98,6 +100,7 @@ export default {
       const { commandName, value = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
+        getCellSelectionByIndex({editor: this.editor, options: value});
         commandMethod({
           editor: this.editor,
           position: position,
@@ -114,6 +117,7 @@ export default {
       const { commandName, value = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
+        getCellSelectionByIndex({editor: this.editor, options: value});
         commandMethod({
           editor: this.editor,
           position: position,
@@ -130,10 +134,12 @@ export default {
       const position = this.findCurrentBlockPosition();
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
+        const options = {...value, isToggle: true};
+        getCellSelectionByIndex({editor: this.editor, options: options});
         commandMethod({
           editor: this.editor,
           position: position || {},
-          options: {...value, isToggle: true},
+          options: options,
           https: this.$https,
           _this: this
         });

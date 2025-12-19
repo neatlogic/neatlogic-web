@@ -42,7 +42,7 @@ export default {
   destroyed() {},
   methods: {
     handleClick() {
-      this.$emit('executeEditorCommand', {
+      this.$emit('handleSelectMenuContent', {
         commandName: this.command,
         value: {
           direction: 'left',

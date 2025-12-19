@@ -16,7 +16,7 @@ export default {
     BaseMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/base-menu.vue'),
     ColorDropdown: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/color-dropdown.vue'),
     DivideMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/divide-menu.vue'),
-    TextAlignDropdown: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/text-align-dropdown.vue'),
+    AlignmentDropdown: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/alignment-dropdown.vue'),
     BlockTypeDropdown: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/block-type-dropdown.vue'),
     LinkMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/link-menu.vue')
   },
@@ -33,7 +33,7 @@ export default {
           type: 'DivideMenu'
         },
         {
-          type: 'TextAlignDropdown',
+          type: 'AlignmentDropdown',
           icon: 'tsfont-text-align-left'
         },
         {

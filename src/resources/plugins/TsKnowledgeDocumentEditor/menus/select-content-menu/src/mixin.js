@@ -28,11 +28,19 @@ export default {
   },
   computed: {
     editorData() {
-      return this.menuState.editorData;
+      return this.menuState?.editorData;
     },
-    getActiveMenuClassName() {
+    isCommandActive() {
+      return (commandName, attrs) => {
+        if (typeof commandName == 'object') {
+          return this?.editorData?.isActive?.(commandName);
+        }
+        return this?.editorData?.isActive?.(commandName, attrs);
+      };
+    },
+    activeMenuClassName() {
       return (commandName) => {
-        return this?.menuState?.editorData?.isActive(commandName) ? 'text-href' : '';
+        return this?.isCommandActive(commandName) ? 'text-href' : '';
       };
     },
     iconStyle() {

@@ -6,8 +6,8 @@
       :key="`${item.type}_${index}`"
       v-bind="item"
       :nodeConfig="nodeConfig"
-      @executeEditorCommand="(config)=> {
-        $emit('executeEditorCommand', config)
+      @handleSelectMenuContent="(config)=> {
+        $emit('handleSelectMenuContent', config)
       }"
     >
     </component>
@@ -15,18 +15,20 @@
 </template>
 <script>
 import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/mixin.js';
+import { CellSelection } from 'prosemirror-tables';
+import { isMergedCell } from '@/resources/plugins/TsKnowledgeDocumentEditor/commands/table/selection-utils.js';
 export default {
   name: '',
   components: {
     BaseMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/base-menu.vue'),
     ColorDropdown: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/color-dropdown.vue'),
     DivideMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/divide-menu.vue'),
-    TextAlignDropdown: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/text-align-dropdown.vue'),
-    BlockTypeDropdown: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/block-type-dropdown.vue'),
+    AlignmentDropdown: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/alignment-dropdown.vue'),
     InsertColumnLeft: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/table/insert-column-left.vue'),
     InsertColumnRight: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/table/insert-column-right.vue'),
     InsertRowTop: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/table/insert-row-top.vue'),
-    InsertRowBottom: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/table/insert-row-bottom.vue')
+    InsertRowBottom: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/table/insert-row-bottom.vue'),
+    CellBackground: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/table/cell-background.vue')
   },
   mixins: [mixin],
   props: {},
@@ -34,15 +36,9 @@ export default {
     return {
       baseComponentList: [
         {
-          type: 'BlockTypeDropdown',
-          icon: 'tsfont-title'
-        },
-        {
-          type: 'DivideMenu'
-        },
-        {
-          type: 'TextAlignDropdown',
-          icon: 'tsfont-text-align-left'
+          type: 'AlignmentDropdown',
+          icon: 'tsfont-text-align-left',
+          hideVerticalAlign: true
         },
         {
           type: 'DivideMenu'
@@ -72,12 +68,6 @@ export default {
           command: 'underline'
         },
         {
-          type: 'BaseMenu',
-          icon: 'tsfont-code',
-          tipContentList: ['代码 (ctrl + shift + c)', 'Markdown ~代码~'],
-          command: 'code'
-        },
-        {
           type: 'ColorDropdown',
           icon: 'tsfont-font-color'
         }
@@ -99,27 +89,33 @@ export default {
   computed: {
     componentList() {
       const { type } = this.nodeConfig || {};
-      const mergeOrSplitList = [
+      const { state } = this.editorData || {};
+      const selection = state?.selection || '';
+      
+      const commonList = [
         {
-          type: 'BaseMenu',
-          icon: 'tsfont-table-merge-cell',
-          command: 'mergeOrSplit',
-          tipContentList: ['合并单元格']
-        },
-        {
-          type: 'BaseMenu',
-          icon: 'tsfont-table-split-cell',
-          tipContentList: ['拆分单元格'],
-          command: 'mergeOrSplit'
-        },
-        {
-          type: 'DivideMenu'
+          type: 'CellBackground'
         }
       ];
       if (type == 'row') {
         return [
           ...[
-            ...mergeOrSplitList,
+            ...commonList,
+            {
+              type: 'BaseMenu',
+              icon: 'tsfont-table-merge-cell',
+              command: 'mergeCell',
+              tipContentList: ['合并单元格']
+            },
+            {
+              type: 'BaseMenu',
+              icon: 'tsfont-table-split-cell',
+              tipContentList: ['拆分单元格'],
+              command: 'splitCell'
+            },
+            {
+              type: 'DivideMenu'
+            },
             {
               type: 'InsertRowTop',
               tipContentList: ['上方插入一行'],
@@ -152,7 +148,22 @@ export default {
         ];
       } else if (type === 'column') {
         return [
-          ...mergeOrSplitList,
+        
+          {
+            type: 'BaseMenu',
+            icon: 'tsfont-table-merge-cell',
+            command: 'mergeCell',
+            tipContentList: ['合并单元格']
+          },
+          {
+            type: 'BaseMenu',
+            icon: 'tsfont-table-split-cell',
+            tipContentList: ['拆分单元格'],
+            command: 'splitCell'
+          },
+          {
+            type: 'DivideMenu'
+          },
           ...[
             {
               type: 'InsertColumnLeft',
@@ -175,6 +186,7 @@ export default {
             }
           ],
           ...this.baseComponentList,
+          ...commonList,
           ...[
             {
               type: 'DivideMenu'
@@ -187,8 +199,36 @@ export default {
             }
           ]
         ];
+      } else if (selection && selection instanceof CellSelection && selection.$anchorCell.pos !== selection.$headCell.pos && selection.ranges.length > 1) {
+        //选中多个单元格
+        return [
+          {
+            type: 'BaseMenu',
+            icon: 'tsfont-table-merge-cell',
+            command: 'mergeCell',
+            tipContentList: ['合并单元格']
+          },
+          {
+            type: 'BaseMenu',
+            icon: 'tsfont-table-split-cell',
+            tipContentList: ['拆分单元格'],
+            command: 'splitRow'
+          },
+          ...this.baseComponentList,
+          ...commonList
+        ];
+      } else if (isMergedCell(this.editorData)) {
+        return [
+          {
+            type: 'BaseMenu',
+            icon: 'tsfont-table-split-cell',
+            tipContentList: ['拆分单元格'],
+            command: 'splitRow'
+          },
+          ...this.baseComponentList
+        ];
       }
-      return this.baseComponentList;
+      return [...this.baseComponentList, ...commonList];
     }
   },
   watch: {}

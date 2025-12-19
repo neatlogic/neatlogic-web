@@ -2,27 +2,24 @@
   <div>
     <Dropdown
       :transfer="true"
-      trigger="custom"
+      trigger="hover"
       :visible="isVisibleAlignment"
       @on-clickoutside="closeDropdownMenu"
     >
-      <span
-        @mouseenter.stop="handleBtnMouseEnter"
-        @mouseleave.stop="handleBtnMouseLeave"
-      >
+      <span>
         <span class="tsfont-horizontal-left" :style="iconStyle"></span>
         <Icon type="ios-arrow-down"></Icon>
       </span>
       <DropdownMenu slot="list">
-        <div class="padding-sm" @mouseenter.stop="handleDropDownMenuMouseEnter" @mouseleave.stop="handleDropDownMenuMouseLeave">
+        <div class="padding-sm">
           <ul class="alignment-box">
             <li
               v-for="(item, index) in alignmentList"
               :key="index"
               class="mb-sm cursor-pointer"
-              :class="getActiveMenuClassName({textAlign: item.value})"
+              :class="activeMenuClassName({textAlign: item.value})"
               @click.stop="()=> {
-                $emit('executeEditorCommand', {
+                $emit('handleSelectMenuContent', {
                   commandName: 'textAlign',
                   value: {
                     textAlign: item.value
@@ -35,10 +32,31 @@
                 class="pr-nm"
               ></span>
               <span>{{ item.text }}</span>
-              <span v-if="menuState?.editorData?.isActive({textAlign: item.value})" class="tsfont-check text-href ml-nm"></span>
+              <span v-if="isCommandActive({textAlign: item.value})" class="tsfont-check text-href ml-nm"></span>
             </li>
           </ul>
         </div>
+        <template v-if="hideVerticalAlign">
+          <div class="border-base-bottom"></div>
+          <div class="padding-sm">
+            <ul class="alignment-box">
+              <li
+                v-for="(item, index) in verticalList"
+                :key="index"
+                class="mb-sm cursor-pointer"
+                :class="activeMenuClassName({verticalAlign: item.value})"
+                @click.stop="handleClick(item.value)"
+              >
+                <span
+                  :class="item.iconClass"
+                  class="pr-nm"
+                ></span>
+                <span>{{ item.text }}</span>
+                <span v-if="isCommandActive({verticalAlign: item.value})" class="tsfont-check text-href ml-nm"></span>
+              </li>
+            </ul>
+          </div>
+        </template>
       </DropdownMenu>
     </Dropdown>
   </div>
@@ -49,7 +67,12 @@ export default {
   name: '',
   components: {},
   mixins: [mixin],
-  props: {},
+  props: {
+    hideVerticalAlign: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       isVisibleAlignment: false,
@@ -67,6 +90,19 @@ export default {
         text: '右对齐',
         value: 'right',
         iconClass: 'tsfont-horizontal-right'
+      }],
+      verticalList: [{
+        text: '顶部对齐',
+        value: 'top',
+        iconClass: 'tsfont-vertical-top'
+      }, {
+        text: '垂直居中',
+        value: 'middle',
+        iconClass: 'tsfont-vertical-middle'
+      }, {
+        text: '底部对齐',
+        value: 'bottom',
+        iconClass: 'tsfont-vertical-bottom'
       }]
     };
   },
@@ -81,6 +117,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleClick(alignMethod) {
+      this.$emit('handleSelectMenuContent', {
+        commandName: 'tableCellVerticalAlign',
+        value: {
+          verticalAlign: alignMethod,
+          ...(this.nodeConfig || {})
+        }
+      });
+    },
     closeDropdownMenu() {
       this.isVisibleAlignment = false;
     },

@@ -22,10 +22,11 @@
                 @click.stop="
                   () => {
                     selectedFontColor = item.color;
-                    $emit('executeEditorCommand', {
+                    $emit('handleSelectMenuContent', {
                       commandName: 'color',
                       value: {
-                        color: item.color
+                        color: item.color,
+                         ...(nodeConfig || {}),
                       }
                     });
                   }
@@ -60,10 +61,11 @@
                     @click.stop="
                       () => {
                         selectedBgColorLight = item.color;
-                        $emit('executeEditorCommand', {
+                        $emit('handleSelectMenuContent', {
                           commandName: 'backgroundColor',
                           value: {
-                            backgroundColor: item.color
+                            backgroundColor: item.color,
+                             ...(nodeConfig || {}),
                           }
                         });
                       }
@@ -89,10 +91,11 @@
                       () => {
                         selectedBgColor = item.color;
                         selectedBgColorLight = '';
-                        $emit('executeEditorCommand', {
+                        $emit('handleSelectMenuContent', {
                           commandName: 'backgroundColor',
                           value: {
-                            backgroundColor: item.color
+                            backgroundColor: item.color,
+                             ...(nodeConfig || {}),
                           }
                         });
                       }
@@ -247,16 +250,18 @@ export default {
       this.selectedBgColor = '#fff';
       this.selectedBgColorLight = '#fff';
       this.selectedFontColor = '#000';
-      this.$emit('executeEditorCommand', {
+      this.$emit('handleSelectMenuContent', {
         commandName: 'color',
         value: {
-          fontColor: this.selectedFontColor
+          fontColor: this.selectedFontColor,
+          ...(this.nodeConfig || {})
         }
       });
-      this.$emit('executeEditorCommand', {
+      this.$emit('handleSelectMenuContent', {
         commandName: 'backgroundColor',
         value: {
-          backgroundColor: this.selectedBgColorLight
+          backgroundColor: this.selectedBgColorLight,
+          ...(this.nodeConfig || {})
         }
       });
       this.closeDropdownMenu();

@@ -131,19 +131,21 @@ export default {
   methods: {
     handleClick(value) {
       if (value.includes('heading')) {
-        this.$emit('executeEditorCommand', {
+        this.$emit('handleSelectMenuContent', {
           commandName: 'heading',
           value: {
             level: Number(value.split('heading')[1]),
-            isToggle: true
+            isToggle: true,
+            ...(this.nodeConfig || {})
           }
         });
         return;
       } else {
-        this.$emit('executeEditorCommand', {
+        this.$emit('handleSelectMenuContent', {
           commandName: value,
           value: {
-            isToggle: true
+            isToggle: true,
+            ...(this.nodeConfig || {})
           }
         });
       }
@@ -186,9 +188,9 @@ export default {
     isActiveMenu() {
       return menuName => {
         if (menuName.includes('heading')) {
-          return this.menuState?.editorData?.isActive('heading', { level: Number(menuName.split('heading')[1]) });
+          return this.isCommandActive('heading', { level: Number(menuName.split('heading')[1]) });
         } else {
-          return this.menuState?.editorData?.isActive(menuName);
+          return this.isCommandActive(menuName);
         }
       };
     }

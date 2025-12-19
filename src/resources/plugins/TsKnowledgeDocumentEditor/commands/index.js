@@ -11,7 +11,6 @@ import taskList from './task-list';
 import insertTable from './table/insert-table';
 import insertColumn from './table/insert-column.js';
 import insertRow from './table/insert-row.js';
-import mergeOrSplit from './table/merge-or-split';
 import selectedColumn from './table/selected-column.js';
 import selectedRow from './table/selected-row.js';
 import bold from './bold';
@@ -31,6 +30,10 @@ import imageCrop from './image/image-crop';
 import imageAlign from './image/image-align';
 import deleteColumn from './table/delete-column.js';
 import deleteRow from './table/delete-row.js';
+import tableCellBackgorund from './table/cell-background.js';
+import tableCellVerticalAlign from './table/cell-vertical-align.js';
+import mergeCell from './table/merge-cell.js';
+import splitCell from './table/split-cell.js';
 
 export default {
   heading,
@@ -46,7 +49,6 @@ export default {
   insertTable,
   insertColumn,
   insertRow,
-  mergeOrSplit,
   bold,
   italic,
   strike,
@@ -65,5 +67,9 @@ export default {
   selectedColumn,
   selectedRow,
   deleteColumn,
-  deleteRow
+  deleteRow,
+  tableCellBackgorund,
+  tableCellVerticalAlign,
+  mergeCell,
+  splitCell
 };

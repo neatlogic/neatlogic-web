@@ -7,7 +7,7 @@
       max-width="300"
     >
       <span
-        :class="[icon, getActiveMenuClassName('link')]"
+        :class="[icon, activeMenuClassName('link')]"
         :style="iconStyle"
         @click.stop="openLinkDialog"
       ></span>
@@ -73,7 +73,7 @@ export default {
   destroyed() {},
   methods: {
     openLinkDialog() {
-      this.linkUrl = this.menuState?.editorData?.getAttributes('link').href || '';
+      this.linkUrl = this.editorData?.getAttributes('link').href || '';
       this.dialogSetting.isShow = true;
     },
     closeDialog() {
@@ -81,10 +81,11 @@ export default {
       this.dialogSetting.isShow = false;
     },
     okDialog() {
-      this.$emit('executeEditorCommand', {
+      this.$emit('handleSelectMenuContent', {
         commandName: this.command,
         value: {
-          linkHref: this.linkUrl
+          linkHref: this.linkUrl,
+          ...(this.nodeConfig || {})
         }
       });
       this.closeDialog();

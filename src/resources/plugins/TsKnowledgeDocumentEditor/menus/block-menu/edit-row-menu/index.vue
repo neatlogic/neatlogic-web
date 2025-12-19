@@ -3,7 +3,7 @@
     <Dropdown placement="bottom-start" @on-click="handleClick">
       <div class="knowledge-document-editor-plus-box">
         <span :class="getFontClassName" class="text-href"></span>
-        <span class="tsfont-drag cursor-pointer"></span>
+        <span class="tsfont-option-vertical cursor-pointer"></span>
       </div>
       <DropdownMenu slot="list">
         <DropdownItem class="clear-dropdown-item-hover-background">

@@ -28,7 +28,7 @@ export const RowColSelectedPlugin = new Plugin({
       if (!pluginState) return null;
 
       const { hover, active } = pluginState;
-      const target = active.tableUuid ? active : hover;
+      const target = active?.tableUuid ? active : hover;
       const { tableUuid, type, index } = target || {};
       if (!tableUuid || !type) return null;
 

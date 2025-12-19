@@ -15,7 +15,7 @@
             :key="row"
             :style="`width: ${tableMetrics.colsWidthList[columnIndex]}px`"
             style="height: 10px"
-            :class="getColClass({row: row, colIndex: columnIndex})"
+            :class="getColClass({row: row, colIndex: columnIndex, colSelected: colSelected})"
             @click.stop="handleColClick($event, row, columnIndex)"
           ></li>
         </template>
@@ -36,7 +36,7 @@
             :key="col"
             style="width: 10px"
             :style="`height: ${rowHeightList[rowIndex]}px`"
-            :class="getRowClass({col: col, rowIndex: rowIndex})"
+            :class="getRowClass({col: col, rowIndex: rowIndex, rowSelected: rowSelected })"
             @click.stop="handleRowClick($event, col, rowIndex)"
           ></li>
         </template>
@@ -70,6 +70,10 @@ export default {
       default: () => {
         return [];
       }
+    },
+    isClearHighlight: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -99,10 +103,10 @@ export default {
       this.colSelected = index;
       this.$emit('click', { event: event, index: columnIndex, type: 'column' });
     },
-    getColClass({ row, colIndex }) {
+    getColClass({ row, colIndex, colSelected }) {
       let selectedClassName = 'bg-grey';
       let blockBorderLeftRadius = '';
-      if (row == this.colSelected) {
+      if (row == colSelected) {
         selectedClassName = 'bg-info';
       }
       const { rows } = this.tableMetrics || {};
@@ -115,10 +119,10 @@ export default {
       }
       return [selectedClassName, blockBorderLeftRadius];
     },
-    getRowClass({ col, rowIndex }) {
+    getRowClass({ col, rowIndex, rowSelected }) {
       let selectedClassName = 'bg-grey';
       let blockBorderLeftRadius = '';
-      if (col == this.rowSelected) {
+      if (col == rowSelected) {
         selectedClassName = 'bg-info';
       }
       const { cols } = this.tableMetrics || {};
@@ -130,6 +134,10 @@ export default {
         blockBorderLeftRadius = 'block-border-bottom-radius'; 
       }
       return [selectedClassName, blockBorderLeftRadius];
+    },
+    clearSelected() {
+      this.rowSelected = null;
+      this.colSelected = null;
     }
   },
   filter: {},
@@ -150,7 +158,17 @@ export default {
       return this.tableMetrics.cols;
     }
   },
-  watch: {}
+  watch: {
+    isClearHighlight: {
+      handler(newVal) {
+        if (newVal) {
+          this.clearSelected();
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

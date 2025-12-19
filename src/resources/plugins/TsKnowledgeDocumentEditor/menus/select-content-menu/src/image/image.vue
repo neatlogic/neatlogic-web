@@ -10,7 +10,7 @@
         <span
           :class="item.icon"
           :style="iconStyle"
-          @click="executeEditorCommand(item)"
+          @click="handleSelectMenuContent(item)"
         ></span>
         <div slot="content">
           <div>
@@ -86,13 +86,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    executeEditorCommand(item) {
+    handleSelectMenuContent(item) {
       this.currentCommand = item.command;
       if (item.command === 'imageCrop') {
         this.picUrl = this.getSelectedImageSrc(this.editorData);
         this.isShowDialog = true;
       } else {
-        this.$emit('executeEditorCommand',
+        this.$emit('handleSelectMenuContent',
           {
             commandName: 'imageAlign',
             value: {
@@ -125,7 +125,7 @@ export default {
         this.$api.knowledge.knowledge.uploadFile(formData)
           .then(res => {
             if (res.Return) {
-              this.$emit('executeEditorCommand',
+              this.$emit('handleSelectMenuContent',
                 {
                   commandName: this.currentCommand,
                   value: {

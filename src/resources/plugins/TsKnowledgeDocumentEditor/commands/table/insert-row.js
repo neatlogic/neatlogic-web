@@ -4,7 +4,7 @@ import {
   TableMap,
   CellSelection
 } from 'prosemirror-tables';
-
+import { findTablePosByUuid } from './utils.js';
 export default function insertRow({ editor, options }) {
   const {
     nodeAttrs = {},
@@ -39,22 +39,6 @@ export default function insertRow({ editor, options }) {
       : addRowAfter;
 
   command(editor.state, view.dispatch);
-}
-function findTablePosByUuid(doc, tableUuid) {
-  let result = null;
-
-  doc.descendants((node, pos) => {
-    if (
-      node.type.name === 'table' &&
-      node.attrs &&
-      node.attrs['data-uuid'] === tableUuid
-    ) {
-      result = pos;
-      return false;
-    }
-  });
-
-  return result;
 }
 function setSelectionToRow(state, tr, tablePos, rowIndex) {
   const tableNode = state.doc.nodeAt(tablePos);

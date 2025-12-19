@@ -1,3 +1,4 @@
+import { findTablePosByUuid } from './utils.js';
 import {
   addColumnBefore,
   addColumnAfter,
@@ -71,26 +72,6 @@ export default function insertColumn({ editor, options }) {
   });
 
   view.dispatch(widthTr);
-}
-
-/**
- * 通过 data-uuid 找 table 的 doc 位置
- */
-function findTablePosByUuid(doc, tableUuid) {
-  let result = null;
-
-  doc.descendants((node, pos) => {
-    if (
-      node.type.name === 'table' &&
-      node.attrs &&
-      node.attrs['data-uuid'] === tableUuid
-    ) {
-      result = pos;
-      return false;
-    }
-  });
-
-  return result;
 }
 function setSelectionToColumn(state, tr, tablePos, colIndex) {
   const tableNode = state.doc.nodeAt(tablePos);

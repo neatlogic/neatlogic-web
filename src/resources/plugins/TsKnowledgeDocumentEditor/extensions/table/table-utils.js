@@ -5,7 +5,7 @@ import { TextSelection } from 'prosemirror-state';
 /**
  * 根据 uuid 查找 table 节点
  */
-function findTableByUuid(state, uuid) {
+export function findTableByUuid(state, uuid) {
   let result = null;
 
   state.doc.descendants((node, pos) => {

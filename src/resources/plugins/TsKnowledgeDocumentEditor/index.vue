@@ -47,13 +47,14 @@
             :nodeConfig="nodeConfig"
             :nodeName="nodeName"
             :style="{ top: `${selectContentMenuPos.top}px`, left: `${selectContentMenuPos.left}px` }"
-            @executeEditorCommand="(menuData)=> executeEditorCommand({menuData: menuData, _this: this})"
+            @handleSelectMenuContent="(menuData)=> handleSelectMenuContent({menuData: menuData, _this: this})"
           ></SelectContentMenu>
           <TableHoverLayer
             v-show="isShowTableMenu"
             :tableMenuPosition="tableMenuPosition"
             :tableUuid="tableUuid"
             :row-height-list="rowHeightList"
+            :isClearHighlight="isClearTableRowColHighlight"
             :editor="editor"
             @click="tableClick"
           ></TableHoverLayer>
@@ -130,6 +131,7 @@ export default {
       isShowBlockMenu: false,
       isShowSearchReplaceDialog: false,
       isShowTableMenu: false,
+      isClearTableRowColHighlight: false,
       tableMenuPosition: {
         top: -12,
         left: 0
@@ -195,10 +197,10 @@ export default {
         }),
         Image,
         Table.configure({
-          resizable: true
+          resizable: true,
+          cell: false
         }),
         TableRow,
-        TableCell,
         TableHeader,
         TextStyleKit,
         ImageResize,
@@ -355,6 +357,7 @@ export default {
             this.rowHeightList = this.getTableRowHeights(table);
             if (tableRect) {
               this.isShowTableMenu = true;
+              this.isClearHighlight = false;
               this.tableMenuPosition = {
                 top: Number((tableRect.top - wrapperRect.top)).toFixed(0) <= 0 ? -10 : Number((tableRect.top - wrapperRect.top).toFixed(0)) - 10, // 16 头部点击菜单的高度
                 left: Number((tableRect.left - wrapperRect.left).toFixed(0))
@@ -367,6 +370,7 @@ export default {
             };
             // this.isShowTableMenu = false;
             this.isShowBlockMenu = true;
+            this.isClearHighlight = true;
           }
         }
       }
@@ -400,7 +404,7 @@ export default {
           top: event.clientY - editorWrapperRect.top - 60,
           left: event.clientX - editorWrapperRect.left
         };
-        this.executeEditorCommand({
+        this.handleSelectMenuContent({
           menuData: {
             commandName: 'selectedRow',
             value: {
@@ -414,7 +418,7 @@ export default {
         });
       }
       if (type === 'column') {
-        this.executeEditorCommand({
+        this.handleSelectMenuContent({
           menuData: {
             commandName: 'selectedColumn',
             value: {
@@ -516,6 +520,8 @@ export default {
     },
     handleClickPlus() {
       // this.editor.chain().focus('end').run();
+      this.editor.commands.clearTableHighlight();
+      this.isClearTableRowColHighlight = true;
     },
     async uploadFileToServer(file) {
       let formData = new FormData();

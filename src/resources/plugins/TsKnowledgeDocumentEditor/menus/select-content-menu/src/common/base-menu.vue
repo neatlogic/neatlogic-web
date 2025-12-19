@@ -8,13 +8,13 @@
     >
       <span
         :style="iconStyle"
-        :class="[icon, getActiveMenuClassName(command)]"
+        :class="[icon, activeMenuClassName(command)]"
         @click.stop="
-          $emit('executeEditorCommand',
+          $emit('handleSelectMenuContent',
                 {
                   commandName: command,
                   value: {
-                    [capitalizeFirstWordKeepRest(command)]: menuState?.editorData?.isActive(command),
+                    [capitalizeFirstWordKeepRest(command)]: isCommandActive(command),
                     ...(nodeConfig || {}),
                    ...(params || {})
                   }
