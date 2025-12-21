@@ -22,8 +22,8 @@ const healthcheck = {
   getInnodbStatus() {
     return axios.get('/api/rest/healthcheck/innodb/status', {});
   },
-  getThreadpoolStatus() {
-    return axios.get('/api/rest/healthcheck/threadpool/status', {});
+  getThreadpoolStatus(params) {
+    return axios.post('/api/rest/healthcheck/threadpool/status', params);
   }
 };
 
