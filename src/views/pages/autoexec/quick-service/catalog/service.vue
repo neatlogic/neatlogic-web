@@ -969,7 +969,7 @@ export default {
             this.combopId = itemValue.combopId || null;
             if (config) {
               for (let key in config) {
-                if (!this.$utils.isEmpty(config[key])) {
+                if (this.hasOwnProperty(key)) {
                   this[key] = config[key]; // 分批数量，执行目标，执行器组标签，执行器组 ，前置条件
                 }
               }
@@ -1328,7 +1328,7 @@ export default {
               this.executeUser.value = this.executeUser && this.executeUser.value ? this.executeUser.value : executeConfig['executeUser'] ? executeConfig['executeUser']['value'] : '';
               this.protocol.value = this.protocol && this.protocol.value ? this.protocol.value : executeConfig['protocolId'];
             }
-            if (this.$utils.isEmpty(this.newPreCondition) && !this.$utils.isEmpty(executeConfig.preCondition)) {
+            if (this.$utils.isEmpty(this.newPreCondition) && !this.$utils.isEmpty(executeConfig.preCondition) && !this.preCondition) {
               this.preCondition = executeConfig.preCondition;
             }
           }
