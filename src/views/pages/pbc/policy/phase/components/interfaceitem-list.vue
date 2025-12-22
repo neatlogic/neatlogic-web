@@ -6,7 +6,7 @@
         <table class="table-main tstable-body">
           <thead>
             <tr v-if="hasComplexProp">
-              <th :colspan="hasDeleteItem ? 4 : 3"></th>
+              <th :colspan="2"></th>
               <th
                 v-for="(prop, pindex) in propertyList"
                 :key="pindex"

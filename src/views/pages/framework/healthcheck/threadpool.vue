@@ -7,6 +7,17 @@
             <span class="tsfont-fangbingduwangguan">{{ $t('term.framework.printsnapshot') }}</span>
             <span v-if="isShowThreaddump" class="tsfont-close"></span>
           </div>
+          <div class="action-item">
+            <span class="mr-xs text-grey">只显示当前租户线程</span>
+            <span>
+              <i-switch
+                v-model="isShowCurrentTenant"
+                :true-value="1"
+                :false-value="0"
+                @on-change="handleSwitchChange()"
+              ></i-switch>
+            </span>
+          </div>
         </div>
       </template>
       <template v-slot:topRight>
@@ -57,6 +68,12 @@
                 <div v-if="getThreadInfo(thread.id)" style="margin-top: 4px"><LoadingIcon></LoadingIcon></div>
                 <span v-else class="text-op tsfont-formtime"></span>
                 <div slot="content">
+                  <div v-if="getThreadInfo(thread.id)" class="grid">
+                    <div class="text-grey">{{ $t('page.tenant') }}</div>
+                    <div>
+                      <b class="text-grey">{{ getThreadInfo(thread.id).tenantUuid }}</b>
+                    </div>
+                  </div>
                   <div v-if="getThreadInfo(thread.id)" class="grid">
                     <div class="text-grey">{{ $t('page.task') }}</div>
                     <div>
@@ -157,6 +174,7 @@ export default {
       threadPoolData: null,
       threaddump: null,
       currentMatchIndex: 0,
+      isShowCurrentTenant: 1,
       matches: []
     };
   },
@@ -209,6 +227,11 @@ export default {
         this.threaddump = null;
       }
     },
+    handleSwitchChange() {
+      this.$api.framework.healthcheck.getThreadpoolStatus({isShowCurrentTenant: this.isShowCurrentTenant}).then(res => {
+        this.threadPoolData = res.Return;
+      });
+    },
     formatTimeCost(ms) {
       const units = [
         { label: '天', value: 24 * 60 * 60 * 1000 },
@@ -240,7 +263,7 @@ export default {
     },
     getThreadPoolStatus() {
       this.timmer = this.$utils.setInterval(async() => {
-        await this.$api.framework.healthcheck.getThreadpoolStatus().then(res => {
+        await this.$api.framework.healthcheck.getThreadpoolStatus({isShowCurrentTenant: this.isShowCurrentTenant}).then(res => {
           this.threadPoolData = res.Return;
         });
       }, 3000);
