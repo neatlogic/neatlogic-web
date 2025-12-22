@@ -7,7 +7,6 @@ import framework from './framework';
 import globalsearch from './globalsearch';
 import inspect from './inspect';
 import knowledge from './knowledge';
-import pbc from './pbc';
 import process from './process';
 import report from './report';
 import rdm from './rdm';
@@ -23,7 +22,6 @@ let moduleApiConfig = {
   globalsearch: globalsearch,
   inspect: inspect,
   knowledge: knowledge,
-  pbc: pbc,
   process: process,
   report: report,
   rdm: rdm,
