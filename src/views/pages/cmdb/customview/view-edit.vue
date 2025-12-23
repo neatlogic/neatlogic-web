@@ -151,6 +151,14 @@
                 @on-change="changeCiIsShow"
               ></TsFormSwitch>
             </TsFormItem>
+            <TsFormItem :label="$t('term.cmdb.isaggregation')" labelPosition="left" contentAlign="right">
+              <TsFormSwitch
+                v-model="currentCi.isAggregation"
+                :true-value="1"
+                :false-value="0"
+                @on-change="changeCiIsAggregation"
+              ></TsFormSwitch>
+            </TsFormItem>
             <TsFormItem :label="$t('page.alias')" labelPosition="top" contentAlign="right">
               <TsFormInput v-model="currentCi.alias" :maxlength="30" @change="changeCiAlias"></TsFormInput>
             </TsFormItem>
@@ -291,6 +299,7 @@ export default {
         ciRelList: [],
         isHidden: 0,
         isStart: 0,
+        isAggregation: 0,
         uuid: '',
         alias: ''
       },
@@ -378,6 +387,7 @@ export default {
             this.currentCi.uuid = node.getUuid();
             this.currentCi.isHidden = node.getConfig()['isHidden'] || 0;
             this.currentCi.alias = node.getConfig()['alias'];
+            this.currentCi.isAggregation = node.getConfig()['isAggregation'] || 0;
             this.currentCi.isStart = node.getConfig()['isStart'] || 0;
             this.currentCi.constList = this.$utils.deepClone(this.constList);
             const constNodeList = node.group.nodes.filter(n => n.getType() === 'ConstAttr');
@@ -563,6 +573,14 @@ export default {
         const node = this.topo.getNodeByUuid(this.currentCi.uuid);
         let conf = node.getConfig();
         conf['isHidden'] = val;
+        node.setConfig(conf);
+      }
+    },
+    changeCiIsAggregation(val) {
+      if (this.currentCi && this.currentCi.uuid) {
+        const node = this.topo.getNodeByUuid(this.currentCi.uuid);
+        let conf = node.getConfig();
+        conf['isAggregation'] = val;
         node.setConfig(conf);
       }
     },

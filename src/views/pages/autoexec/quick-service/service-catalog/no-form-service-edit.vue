@@ -163,9 +163,11 @@
           :label="$t('term.autoexec.precondition')"
         >
           <PreconditionDetail
+            v-if="!$utils.isEmpty(executeConfig.preCondition)"
             :defaultValue="executeConfig.preCondition"
             :canEdit="false"
           ></PreconditionDetail>
+          <div v-else>-</div>
         </TsFormItem>
         <TsFormItem v-if="needExecuteNode" :label="$t('term.autoexec.executetarget')" :required="true">
           <AddTarget

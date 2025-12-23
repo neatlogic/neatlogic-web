@@ -247,7 +247,8 @@
     "cientityisnotfound": "Configuration item does not exist",
     "testaccount": "test result",
     "repeataccount": "The same protocol and username cannot bind multiple accounts with the same protocol and username to the same asset.",
-    "datadetail": "Data Details"
+    "datadetail": "Data Details",
+    "isaggregation": "Whether to aggregate or not"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -1373,7 +1374,8 @@
     "logintime": "Login time",
     "serverIdTarget": "Server ID：{target}",
     "clearServerCacheSuccessTarget": "Clearing the cache of [Server ID: {target}] successfully!",
-    "licenserefresh": "After updating the license in nacos or config. properties, you can click this refresh button to update the license without restarting the service"
+    "licenserefresh": "After updating the license in nacos or config. properties, you can click this refresh button to update the license without restarting the service",
+    "loginmethod": "Login method"
   },
   "knowledge": {
     "document": "Document",

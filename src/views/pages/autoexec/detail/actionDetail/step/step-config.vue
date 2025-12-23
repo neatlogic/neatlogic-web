@@ -147,6 +147,7 @@ export default {
         list.forEach(async(l) => {
           let prevlength = this.phaseOperationList.filter(p => { return p.operationId == l.operationId; });
           let defaulParam = [];
+          let argumentMappingList = [];
           if (l.inputParamList && l.inputParamList.length) {
             let profileParamVoList = [];
             if (l.defaultProfileId) { //预设参数集列表
@@ -199,11 +200,27 @@ export default {
             if (l.defaultProfileId) {
               this.$set(item.config, 'profileId', l.defaultProfileId);
             }
+            //自由参数
+            if (!this.$utils.isEmpty(l.argument) && l.argument.isRequired) {
+              argumentMappingList.push({
+                mappingMode: l.argument.mappingMode,
+                key: l.argument.key,
+                value: l.argument.defaultValue,
+                type: l.argument.type
+              });
+              this.$set(item.config, 'argumentMappingList', argumentMappingList);
+            }
           }
           this.phaseOperationList.push(item);
-        });
+        });   
         this.$nextTick(() => {
-          this.$refs.list && this.$refs.list.updateList(this.phaseOperationList);
+          this.phaseOperationList = this.phaseOperationList.map((v, vindex) => {
+            return {
+              ...v,
+              uuid: v.uuid || this.$utils.setUuid(),
+              sort: vindex
+            };
+          });
         });
       }
     },

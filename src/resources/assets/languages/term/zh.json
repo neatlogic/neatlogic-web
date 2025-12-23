@@ -248,7 +248,8 @@
     "cientityisnotfound": "配置项不存在",
     "testaccount": "测试结果",
     "repeataccount": "协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。",
-    "datadetail": "数据明细"
+    "datadetail": "数据明细",
+    "isaggregation": "是否聚合"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -1373,7 +1374,8 @@
     "logintime": "登录时间",
     "serverIdTarget": "服务器ID：{target}",
     "clearServerCacheSuccessTarget": "清除【服务器ID：{target}】缓存成功！",
-    "licenserefresh": "更新nacos或config.properties中的license后，可以不重启服务，点击此刷新按钮进行更新许可"
+    "licenserefresh": "更新nacos或config.properties中的license后，可以不重启服务，点击此刷新按钮进行更新许可",
+    "loginmethod": "登录方式"
   },
   "knowledge": {
     "document": "文档",
