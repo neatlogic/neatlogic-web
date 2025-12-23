@@ -41,7 +41,7 @@
 export default {
   name: '',
   components: {
-    EditLinkDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/toolbar/src/link/edit-link-dialog.vue')
+    EditLinkDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/empty-row-menu/commonly-used/link-dialog/index.vue')
   },
   props: {
     hideBaseText: {
