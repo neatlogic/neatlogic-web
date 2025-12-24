@@ -310,7 +310,7 @@ export default {
           placeholder: '',
           maxlength: 200,
           label: '标题模板',
-          tooltip: ''
+          tooltip: this.$t('term.process.titletemplatetooltip')
         },
         {
           type: 'slot',
@@ -445,12 +445,12 @@ export default {
         let str = '';
         let dataList = res.Return || [];
         dataList.forEach(e => {
-          str += e.value + ' ';
+          str += e.text + ' ' + e.value + '\n';
         });
         if (str != '') {
           this.channelForm.forEach(e => {
             if (e.name == 'titleTemplate') {
-              e.tooltip = str;
+              e.tooltip += str;
             }
           });
         }
