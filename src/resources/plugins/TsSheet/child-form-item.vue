@@ -33,6 +33,7 @@
       :externalData="externalData"
       @resize="$emit('resize')"
       @setValue="setValue"
+      @updateReactionSetValue="updateReactionSetValue"
       @emit="
         val => {
           $emit('emit', val);
@@ -174,6 +175,16 @@ export default {
     setValue(val) {
       const { value } = val || {};
       this.$set(this.formData, this.formItem.uuid, value);
+    },
+    updateReactionSetValue(reactionData = {}) {
+    //  更新联动赋值
+      if (!this.$utils.isEmpty(reactionData)) {
+        for (const key in reactionData) {
+          if (key) {
+            this.$set(this.formData, key, reactionData[key]);
+          }
+        }
+      }
     }
   },
   filter: {},
