@@ -129,7 +129,10 @@ const handleUrl = (url, splitParam, queryParam) => {
   return url;
 };
 const toResetPassword = () => {
-  const path = Vue.prototype.$tsrouter.currentRoute.fullPath == '/' ? window.location.href.split(MODULEID + '.html#')[1] : Vue.prototype.$tsrouter.currentRoute.fullPath;   
+  let path = '/';
+  if (Vue.prototype.$tsrouter) {
+    path = Vue.prototype.$tsrouter && Vue.prototype.$tsrouter.currentRoute.fullPath == '/' ? window.location.href.split(MODULEID + '.html#')[1] : Vue.prototype.$tsrouter.currentRoute.fullPath;  
+  }
   const href = MODULEID + '.html#' + path;
   const PWD_EXPIRED_DIRECT_URL = sessionStorage.getItem('PWD_EXPIRED_DIRECT_URL') || HOME + '/index.html#/reset-password?redirect=' + href;
   location.replace(PWD_EXPIRED_DIRECT_URL);

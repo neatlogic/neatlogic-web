@@ -166,7 +166,7 @@ async function getSsoTokenKey() {
           COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
         }
         if (responseText.userExpireTime) {
-          sessionStorage.setItem('IDLE_TIMEOUT', responseText.userExpireTime);
+          sessionStorage.setItem('IDLE_TIMEOUT', responseText.userExpireTime * 60 * 1000);
         }
         if (ISNEEDAUTH) {
           getDirectUrl();

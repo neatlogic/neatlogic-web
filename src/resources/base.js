@@ -68,7 +68,8 @@ import 'assets/index.js';
 import '@/resources/import/index'; // 加载所有模块的import.js文件
 
 import authHeartbeat from '@/resources/assets/js/authHeartbeat';
-if (sessionStorage.getItem('neatlogic_authorization')) {
+const { userId } = utils?.getUserInfo() || {};
+if (userId) {
   const userExpireTime = Number(sessionStorage.getItem('IDLE_TIMEOUT'));
   if (!userExpireTime) {
     console.error('userExpireTime不存在');

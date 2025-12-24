@@ -58,7 +58,7 @@ axios({
       authtype = data.authType;
       encrypt = data.encrypt;
       if (data.userExpireTime) {
-        sessionStorage.setItem('IDLE_TIMEOUT', data.userExpireTime);
+        sessionStorage.setItem('IDLE_TIMEOUT', data.userExpireTime * 60 * 1000);
       }
       sessionStorage.setItem('PWD_EXPIRED_DIRECT_URL', data.pwdExpiredDirectUrl || '');
     }
