@@ -78,6 +78,9 @@
           @setValue="setValue"
           @resize="$emit('resize')"
           @select="selectFormItem"
+          @updateReactionSetValue="(currentData) => {
+            $emit('updateReactionSetValue', currentData)
+          }"
           @dropHideComponent="(enevt)=>{
             $emit('dropHideComponent', enevt)
           }"
@@ -107,6 +110,9 @@
           @resize="$emit('resize')"
           @select="selectFormItem"
           @setExtendValue="setExtendValue"
+          @updateReactionSetValue="(currentData) => {
+            $emit('updateReactionSetValue', currentData)
+          }"
         ></component>
         <div v-else class="text-warning">
           {{ getComponentTip() }}
@@ -131,6 +137,9 @@
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
+        @updateReactionSetValue="(currentData) => {
+          $emit('updateReactionSetValue', currentData)
+        }"
       ></CustomItem>
       <div v-if=" formItem.config && formItem.config.description" class="tsfont-info-o text-tip">{{ formItem.config.description }}</div>
     </template>
