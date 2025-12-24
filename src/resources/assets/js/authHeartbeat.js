@@ -17,7 +17,7 @@ function markUserActive() {
  * 初始化用户行为监听
  */
 function initActiveListener() {
-  ['mousedown', 'wheel', 'touchstart', 'keydown'].forEach(evt => {
+  ['mousedown', 'wheel'].forEach(evt => {
     window.addEventListener(
       evt,
       utils.throttle(markUserActive, 5000),
@@ -34,7 +34,10 @@ function initActiveListener() {
  */
 function sendHeartbeat() {
   const tokenHash = sessionStorage.getItem('neatlogic_tokenHash');
-  if (!tokenHash) return;
+  if (!tokenHash) {
+    console.error('tokenHash不存在');
+    return;
+  };
   const xhr = new XMLHttpRequest();
   xhr.open('POST', BASEURLPREFIX + '/api/rest/heartbeat', true);
   xhr.send(JSON.stringify({
