@@ -111,7 +111,6 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.updatesuccess'));
-            this.$utils.removeCookie('neatlogic_authorization');
             if (this.getRedirect()) {
               window.location.href = HOME + '/' + this.getRedirect();
             } else {
