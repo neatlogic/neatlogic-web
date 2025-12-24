@@ -24,6 +24,7 @@ var GLOBAL_TABLESTRYLE = '';
 var GLOBAL_LOGINTITLE = '';
 var ISAUTODIRECT = false; // 是否需要自动跳转
 var REDIRECTURL = ''; // 重定向url
+var PWD_EXPIRED_DIRECT_URL = ''; // 密码过期后直接跳转的url
 setCookie('neatlogic_language', BASELANGUAGES, 7); // 设置cookie，解决部署首次，没有默认多语言问题
 
 function setCookie(name, value, time) {
@@ -110,6 +111,9 @@ function getDirectUrl() {
             if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
               COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
             }
+            if (res.data.TokenHash) {
+              sessionStorage.setItem('neatlogic_tokenHash', res.data.TokenHash);
+            }
           } catch (error) {
             console.error('JSON 解析出错:', error.message);
           }
@@ -161,9 +165,16 @@ async function getSsoTokenKey() {
         if (responseText.commercialModuleSet && responseText.commercialModuleSet.length > 0) {
           COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
         }
+        if (responseText.userExpireTime) {
+          sessionStorage.setItem('IDLE_TIMEOUT', responseText.userExpireTime);
+        }
         if (ISNEEDAUTH) {
           getDirectUrl();
         }
+        if(responseText.hasOwnProperty('pwdExpiredDirectUrl')){
+          PWD_EXPIRED_DIRECT_URL = responseText.pwdExpiredDirectUrl;
+        }
+       sessionStorage.setItem('PWD_EXPIRED_DIRECT_URL', PWD_EXPIRED_DIRECT_URL);
       } else if (responseText && responseText.Status !== 'OK') {
         window.location.href = '/404.html';
       }

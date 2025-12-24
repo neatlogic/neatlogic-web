@@ -49,7 +49,7 @@ export default {
   },
   computed: {
     isAtNaviPage() {
-      return MODULEID === 'index' && this.$route.fullPath == '/navigation';
+      return MODULEID === 'index' && this.$route.meta.isNavHide;
     },
     defaultModuleId() {
       return this.$store.getters.defaultModule.moduleId;

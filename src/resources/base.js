@@ -67,4 +67,12 @@ Vue.prototype.$AuthUtils = AuthUtils;
 import 'assets/index.js';
 import '@/resources/import/index'; // 加载所有模块的import.js文件
 
+import authHeartbeat from '@/resources/assets/js/authHeartbeat';
+if (sessionStorage.getItem('neatlogic_authorization')) {
+  const userExpireTime = Number(sessionStorage.getItem('IDLE_TIMEOUT'));
+  authHeartbeat.start(userExpireTime);
+} else {
+  authHeartbeat.stop();
+}
+
 Vue.directive('auth', auth);

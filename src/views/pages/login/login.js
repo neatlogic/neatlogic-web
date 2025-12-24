@@ -57,6 +57,10 @@ axios({
       }
       authtype = data.authType;
       encrypt = data.encrypt;
+      if (data.userExpireTime) {
+        sessionStorage.setItem('IDLE_TIMEOUT', data.userExpireTime);
+      }
+      sessionStorage.setItem('PWD_EXPIRED_DIRECT_URL', data.pwdExpiredDirectUrl || '');
     }
 
     let i18n = initI18n(VueI18n, {});//语言包配置
