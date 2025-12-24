@@ -1,5 +1,5 @@
 <template>
-  <div ref="bubbleMenuRef" class="bubble-menu bg-op border-base">
+  <div ref="bubbleMenuRef" class="selected-content-menu-wrapper bg-op border-base">
     <component
       :is="getComponentName(nodeName)"
       :nodeConfig="nodeConfig"
@@ -40,6 +40,8 @@ export default {
   destroyed() {},
   methods: {
     handleCommand(menuDataConfig) {
+      console.log('menuDataConfig:', menuDataConfig);
+      
       this.$emit('handleSelectMenuContent', menuDataConfig);
     }
   },
@@ -47,7 +49,7 @@ export default {
   computed: {
     getComponentName() {
       return (type) => {
-        if (type === 'ImageView') {
+        if (type === 'image') {
           return 'ImageMenu';
         } else if (type === 'table') {
           return 'TableMenu';
@@ -61,7 +63,7 @@ export default {
 };
 </script>
 <style lang="less">
-.bubble-menu {
+.selected-content-menu-wrapper {
   position: absolute; /* 关键 */
   display: flex;
   align-items: center;

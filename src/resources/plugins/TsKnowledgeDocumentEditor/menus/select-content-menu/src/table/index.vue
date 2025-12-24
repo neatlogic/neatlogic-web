@@ -100,7 +100,7 @@ export default {
       if (type == 'row') {
         return [
           ...[
-            ...commonList,
+        
             {
               type: 'BaseMenu',
               icon: 'tsfont-table-merge-cell',
@@ -134,7 +134,8 @@ export default {
             },
             {
               type: 'DivideMenu'
-            }
+            },
+            ...commonList
           ],
           ...this.baseComponentList,
           ...[
@@ -148,7 +149,6 @@ export default {
         ];
       } else if (type === 'column') {
         return [
-        
           {
             type: 'BaseMenu',
             icon: 'tsfont-table-merge-cell',

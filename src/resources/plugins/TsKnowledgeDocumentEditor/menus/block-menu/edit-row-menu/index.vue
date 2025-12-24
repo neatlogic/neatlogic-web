@@ -1,42 +1,20 @@
 <template>
   <div>
-    <Dropdown placement="bottom-start" @on-click="handleClick">
+    <Dropdown placement="right" @on-click="handleClick">
       <div class="knowledge-document-editor-plus-box">
-        <span :class="getFontClassName" class="text-href"></span>
+        <span :class="getFontClassName" class="text-href" style="margin-right: -5px;"></span>
         <span class="tsfont-option-vertical cursor-pointer"></span>
       </div>
       <DropdownMenu slot="list">
-        <DropdownItem class="clear-dropdown-item-hover-background">
-          <BaseMenu
-            :hideBaseText="true"
-            :removeMenuList="[]"
-            :nodeConfig="nodeConfig"
-            @click-menu="emitClickMenu"
-          ></BaseMenu>
-        </DropdownItem>
-        <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
-          <div class="border-base-bottom"></div>
-        </DropdownItem>
-        <AlignMenu @click-menu="emitClickMenu"></AlignMenu>
-        <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
-          <div class="border-base-bottom"></div>
-        </DropdownItem>
-        <DropdownItem name="cut">
-          <span class="tsfont-cut mr-nm knowledge-document-editor-menu-icon"></span>
-          <span>剪切</span>
-        </DropdownItem>
-        <DropdownItem name="copy">
-          <span class="tsfont-copy mr-nm knowledge-document-editor-menu-icon"></span>
-          <span>复制</span>
-        </DropdownItem>
-        <DropdownItem name="deleteRange">
-          <span class="tsfont-trash-o mr-nm knowledge-document-editor-menu-icon"></span>
-          <span>删除</span>
-        </DropdownItem>
-        <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
-          <div class="border-base-bottom"></div>
-        </DropdownItem>
-        <InsertedBelowMenu placement="right" @click-menu="insertBelowPosition"></InsertedBelowMenu>
+        <template v-if="menuType === 'text'">
+          <TextMenu />
+        </template>
+        <template v-else-if="menuType === 'table'">
+          <TableMenu />
+        </template>
+        <template v-else-if="menuType === 'image'">
+          <ImageMenu />
+        </template>
       </DropdownMenu>
     </Dropdown>
   </div>
@@ -45,9 +23,9 @@
 export default {
   name: '',
   components: {
-    BaseMenu: () => import('../empty-row-menu/base/index.vue'),
-    AlignMenu: () => import('../edit-row-menu/align/index.vue'),
-    InsertedBelowMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/empty-row-menu/index.vue')
+    TextMenu: () => import('./src/text/index.vue'),
+    TableMenu: () => import('./src/table/index.vue'),
+    ImageMenu: () => import('./src/image/index.vue')
   },
   props: {
     nodeConfig: {
@@ -75,7 +53,8 @@ export default {
       this.$emit('click-menu', menuData);
     },
     handleClick(name) {
-      this.$emit('click-menu', { commandName: name });
+      console.log('handleClick', name);
+      // this.$emit('click-menu', { commandName: name });
     },
     insertBelowPosition(menuData) {
       this.$emit('insert-below-position', menuData);
@@ -98,13 +77,25 @@ export default {
         codeBlock: 'tsfont-code',
         taskList: 'tsfont-check-square-o',
         bulletList: 'tsfont-list',
-        orderedList: 'tsfont-orderlist'
+        orderedList: 'tsfont-orderlist',
+        table: 'tsfont-chart-table',
+        image: 'tsfont-image',
+        video: 'tsfont-play-o'
       };
       const { type, attrs = {} } = this.nodeConfig || {};
       if (type == 'heading') {
         return classNameMap[`heading${attrs.level}`];
       } else {
         return classNameMap[type];
+      }
+    },
+    menuType() {
+      const { type } = this.nodeConfig || {};
+      const mapList = ['table', 'image', 'video'];
+      if (mapList.includes(type)) {
+        return type;
+      } else {
+        return 'text';
       }
     }
   },

@@ -104,7 +104,6 @@ export default {
     },
     realTime(data) {
       this.preview = data;
-      console.log(this.preview);
     },
     getSelectedImageSrc(editor) {
       const { state } = editor;

@@ -3,7 +3,7 @@ import { Node, mergeAttributes } from '@tiptap/core';
 import { NodeSelection } from 'prosemirror-state';
 
 export const ImageResize = Node.create({
-  name: 'imageResize',
+  name: 'image',
 
   inline: false,
   group: 'block',

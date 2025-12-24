@@ -13,7 +13,6 @@
       <DropdownItem v-for="item in alignList" :key="item.value" :name="item.value">
         <span :class="item.iconClassName" class="knowledge-document-editor-menu-icon"></span>
         <span class="ml-sm mr-sm">{{ item.text }}</span>
-        <!-- <span class="tsfont-check"></span> -->
       </DropdownItem>
     </DropdownMenu>
   </Dropdown>

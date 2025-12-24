@@ -96,12 +96,18 @@ export default {
     handleRowClick(event, index, rowIndex) {
       this.colSelected = null;
       this.rowSelected = index;
-      this.$emit('click', { event: event, index: rowIndex, type: 'row' });
+      this.$emit('click', { event: event, index: rowIndex, type: 'row', rowHeight: this.rowHeightList[rowIndex] });
     },
     handleColClick(event, index, columnIndex) {
       this.rowSelected = null;
       this.colSelected = index;
-      this.$emit('click', { event: event, index: columnIndex, type: 'column' });
+      let columnHeight = 0;
+      if (this.rowHeightList && this.rowHeightList.length) {
+        this.rowHeightList.forEach((item) => {
+          columnHeight += item;
+        });
+      }
+      this.$emit('click', { event: event, index: columnIndex, type: 'column', columnHeight: columnHeight });
     },
     getColClass({ row, colIndex, colSelected }) {
       let selectedClassName = 'bg-grey';

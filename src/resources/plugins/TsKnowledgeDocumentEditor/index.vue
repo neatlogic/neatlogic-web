@@ -40,7 +40,8 @@
             @insert-menu-content="handleInsertMenuContent"
             @replace-menu-content="handleReplaceMenuContent"
             @insert-below-position="handleInsertBelowPosition"
-          ></BlockMenu>
+          >
+          </BlockMenu>
           <SelectContentMenu
             v-show="isShowSelectContentMenu"
             ref="selectContentMenuRef"
@@ -48,7 +49,8 @@
             :nodeName="nodeName"
             :style="{ top: `${selectContentMenuPos.top}px`, left: `${selectContentMenuPos.left}px` }"
             @handleSelectMenuContent="(menuData)=> handleSelectMenuContent({menuData: menuData, _this: this})"
-          ></SelectContentMenu>
+          >
+          </SelectContentMenu>
           <TableHoverLayer
             v-show="isShowTableMenu"
             :tableMenuPosition="tableMenuPosition"
@@ -56,7 +58,7 @@
             :row-height-list="rowHeightList"
             :isClearHighlight="isClearTableRowColHighlight"
             :editor="editor"
-            @click="tableClick"
+            @click="tableRowColHeadClick"
           ></TableHoverLayer>
         </div>
       </div>
@@ -95,11 +97,13 @@ import ExtensionsList from '@/resources/plugins/TsKnowledgeDocumentEditor/extens
 import BaseMixin from './base.js';
 import { menuState } from './state.js';
 import { SearchHighlight } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
-import { PasteUploadImages } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/paste-imges.js'; 
+import { PasteUploadImages } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/paste-imges.js';
 import { ImageResize } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/image-resize.js';
 import { RowColSelected } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/row-col-selected/index.js';
 import { TableUtils } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/table-utils.js';
-import DataContent from './data.js';  
+import DataContent from './data.js';
+import { getNodeByPos, getTableRowHeights } from '@/resources/plugins/TsKnowledgeDocumentEditor/node-utils.js';
+import { getSelectedTextInfo, getSelectionNode } from '@/resources/plugins/TsKnowledgeDocumentEditor/selection-utils.js';
 export default {
   components: {
     EditorContent,
@@ -127,32 +131,26 @@ export default {
       nodeConfig: null,
       tableUuid: '',
       title: this.documentTitle,
-      isShowSelectContentMenu: false,
-      isShowBlockMenu: false,
-      isShowSearchReplaceDialog: false,
-      isShowTableMenu: false,
-      isClearTableRowColHighlight: false,
-      tableMenuPosition: {
-        top: -12,
-        left: 0
-      },
-      selectContentMenuPos: { // 选中内容菜单的位置
-        top: 0,
-        left: 0
-      },
       isEmptyRow: false, // 是否是空行，用于判断显示鼠标经过时的加号
+      isShowBlockMenu: false,
+      isShowTableMenu: false,
+      isShowSelectContentMenu: false,
+      isShowSearchReplaceDialog: false,
+      isClearTableRowColHighlight: false,
       editor: null,
-      menuPosition: { top: 0, left: 0 },
-      currentBlock: null,
+      currentBlock: null, // 鼠标悬停快速响应的节点，作为菜单替换/插入时获取位置的依据
       menuList: [],
+      rowHeightList: [], // 表格行高列表，用于表格菜单
       selectHeadingUuid: '',
       selectedText: '',
       nodeName: '', // 节点名称，如：heading、paragraph、listItem等
+      menuPosition: { top: 0, left: 0 },
+      tableMenuPosition: { top: -12, left: 0 },
+      selectContentMenuPos: { top: 0, left: 0 }, // 选中内容菜单的位置
       blockMenuNodeConfig: {
         type: '',
         attrs: {}
-      },
-      rowHeightList: [] // 行高列表
+      }
     };
   },
   mounted() {
@@ -234,20 +232,9 @@ export default {
     this?.editor?.on('selectionUpdate', ({ editor, event }) => {
       // 编辑器获得焦点。
       const { $from, from, to } = editor?.state?.selection;
-      this.isShowSelectContentMenu = from != to;
-      this.selectedText = editor?.state?.doc?.textBetween(from, to);
-      const selectionRect = posToDOMRect(editor.view, from, to);
-      const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
-      const textSelectedMenuRect = this.$refs?.selectContentMenuRef?.$refs?.bubbleMenuRef?.getBoundingClientRect();
-      const { width: bubbleMenuWidth = 0 } = textSelectedMenuRect || {};
-      const { top: editorWrapperTop = 0, left: editorWrapperRectLeft = 0 } = editorWrapperRect || {};
-      const { top: selectionRectTop = 0, height: selectionRectHight = 0, left: selectionRectLeft = 0, width: selectionRectWidth = 0 } = selectionRect || {};
-      this.selectContentMenuPos = {
-        top: (selectionRectTop + selectionRectHight - editorWrapperTop + 5).toFixed(0),
-        left: Math.max(selectionRectLeft + selectionRectWidth / 2 - editorWrapperRectLeft - bubbleMenuWidth / 2, 10)
-      };
+      this.handleSelectionText({editor: editor, from: from, to: to, $from: $from});
+
       const node = $from.node($from.depth);
-      this.nodeName = editor.isActive('table') ? 'table' : editor.isActive('image') ? 'ImageView' : node?.type?.name;
       _this.highlightHeading(node, editor);
     });
     this.editor?.view?.dom?.addEventListener('keydown', e => {
@@ -258,13 +245,50 @@ export default {
     });
     menuState.editorData = this.editor;
   },
-  beforeDestroy() {
-    // this.editor?.destroy();
-  },
+  beforeDestroy() {},
   methods: {
     getData() {
       const saveData = this.editor.getJSON();
       console.log(saveData);
+    },
+
+    // 处理用户选中文案内容
+    handleSelectionText({editor: editor, from: from, to: to, $from: $from}) {
+      const { hasTextSelection = false, selectedText = '' } = getSelectedTextInfo(editor);
+      const selectedNode = getSelectionNode(editor);
+      if (selectedNode?.type?.includes('table')) {
+        return false;
+      } else if (selectedNode?.type?.includes('image')) {
+        this.isShowSelectContentMenu = true;
+        this.selectedText = '';
+        const selectionRect = posToDOMRect(editor.view, from, to);
+        const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
+        const textSelectedMenuRect = this.$refs?.selectContentMenuRef?.$refs?.bubbleMenuRef?.getBoundingClientRect();
+        const { width: bubbleMenuWidth = 0 } = textSelectedMenuRect || {};
+        const { top: editorWrapperTop = 0, left: editorWrapperRectLeft = 0 } = editorWrapperRect || {};
+        const { top: selectionRectTop = 0, height: selectionRectHight = 0, left: selectionRectLeft = 0, width: selectionRectWidth = 0 } = selectionRect || {};
+        this.selectContentMenuPos = {
+          top: (selectionRectTop + selectionRectHight - editorWrapperTop + 5).toFixed(0),
+          left: Math.max(selectionRectLeft + selectionRectWidth / 2 - editorWrapperRectLeft - bubbleMenuWidth / 2, 10)
+        };
+        this.nodeName = selectedNode?.type || '';
+        return false;
+      }
+      this.isShowSelectContentMenu = hasTextSelection;
+      this.selectedText = selectedText;
+      if (hasTextSelection) {
+        const selectionRect = posToDOMRect(editor.view, from, to);
+        const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
+        const textSelectedMenuRect = this.$refs?.selectContentMenuRef?.$refs?.bubbleMenuRef?.getBoundingClientRect();
+        const { width: bubbleMenuWidth = 0 } = textSelectedMenuRect || {};
+        const { top: editorWrapperTop = 0, left: editorWrapperRectLeft = 0 } = editorWrapperRect || {};
+        const { top: selectionRectTop = 0, height: selectionRectHight = 0, left: selectionRectLeft = 0, width: selectionRectWidth = 0 } = selectionRect || {};
+        this.selectContentMenuPos = {
+          top: (selectionRectTop + selectionRectHight - editorWrapperTop + 5).toFixed(0),
+          left: Math.max(selectionRectLeft + selectionRectWidth / 2 - editorWrapperRectLeft - bubbleMenuWidth / 2, 10)
+        };
+      }
+      this.nodeName = selectedNode?.type || '';
     },
     getAllHeadings(editor) {
       const $headings = editor.$nodes('heading');
@@ -309,100 +333,83 @@ export default {
       const { view, state } = this.editor;
       const coords = { left: event.clientX, top: event.clientY };
       const position = view.posAtCoords(coords);
-      let currentBlock = null;
-      if (position) {
-        const $pos = state?.doc?.resolve(position.pos);
-        if ($pos && $pos.depth > 0) {
-          const node = $pos.node($pos.depth); // 获取当前节点
-          const parentNode = $pos.node($pos.depth - 1);
-          const parentNodeType = parentNode?.type?.name;
-          let nodeType = node?.type?.name;
-          let nodeAttrs = node?.attrs || {};
-          if (parentNodeType === 'listItem' || parentNodeType === 'taskItem') {
-            const parentNode = $pos.node($pos.depth - 2);
-            nodeType = parentNode?.type?.name;
-            nodeAttrs = parentNode?.attrs || {};
-          } else if (nodeType === 'paragraph') {
-            nodeType = parentNodeType;
-            nodeAttrs = parentNode?.attrs || {};
-            if (nodeType === 'doc') {
-              // 如果父节点是文档根节点，将节点类型设置为 'paragraph'
-              nodeType = 'paragraph';
-              nodeAttrs = {};
-            }
-          }
-          const dom = view.nodeDOM($pos.before($pos.depth));
-          this.$set(this.blockMenuNodeConfig, 'type', nodeType);
-          this.$set(this.blockMenuNodeConfig, 'attrs', nodeAttrs);
-          if (this.isEmptyBlock(node)) {
-            this.isEmptyRow = true;
-          } else {
-            this.isEmptyRow = false;
-          }
-          if (dom && dom.nodeType === 1) { // 确保dom是一个元素节点
-            currentBlock = dom;
-          }
-          if (currentBlock === this.currentBlock) return;
-          this.currentBlock = currentBlock;
-          const blockRect = currentBlock.getBoundingClientRect();
-          const wrapperRect = wrapper.getBoundingClientRect();
-          
-          if (this.isInTable(event)) {
-            const cell = event.target.closest('td, th');
-            const table = cell?.closest('table');
-            const tableRect = table?.getBoundingClientRect();
-            const tableNodeAttr = this.getTableNode({editor: this.editor, event: event});
-            const { attrs } = tableNodeAttr || {};
-            this.tableUuid = attrs?.['data-uuid'];
-            this.rowHeightList = this.getTableRowHeights(table);
-            if (tableRect) {
-              this.isShowTableMenu = true;
-              this.isClearHighlight = false;
-              this.tableMenuPosition = {
-                top: Number((tableRect.top - wrapperRect.top)).toFixed(0) <= 0 ? -10 : Number((tableRect.top - wrapperRect.top).toFixed(0)) - 10, // 16 头部点击菜单的高度
-                left: Number((tableRect.left - wrapperRect.left).toFixed(0))
-              };
-            }
-          } else {
-            this.menuPosition = {
-              top: Number((blockRect.top - wrapperRect.top + blockRect.height / 2 - 1).toFixed(0)),
-              left: -50
-            };
-            // this.isShowTableMenu = false;
-            this.isShowBlockMenu = true;
-            this.isClearHighlight = true;
-          }
+
+      if (!position) return;
+      const editorWrapperRect = wrapper.getBoundingClientRect();
+
+      const $pos = state?.doc?.resolve(position.pos);
+      if (!$pos || $pos.depth < 0) return;
+
+      // 优先处理表格
+      const { type, attrs = {}, pos, isEmpty: nodeContentIsEmpty = false } = getNodeByPos($pos) || {};
+      this.$set(this.blockMenuNodeConfig, 'type', type);
+      this.$set(this.blockMenuNodeConfig, 'attrs', attrs);
+      const nodeDom = view.nodeDOM(pos);
+      const nodeRect = nodeDom?.getBoundingClientRect();
+      this.currentBlock = nodeDom;
+
+      if (!nodeRect) return;
+
+      // 处理表格节点
+      if (type == 'table') {
+        this.tableUuid = attrs?.['data-uuid'];
+        this.rowHeightList = getTableRowHeights(nodeDom?.querySelector('table'));
+        if (nodeRect) {
+          // 表格行列浮层，可点击表头
+          this.isShowTableMenu = true;
+          this.isClearHighlight = false;
+          this.tableMenuPosition = {
+            top: Number(nodeRect.top - editorWrapperRect.top).toFixed(0) <= 0 ? -10 : Number((nodeRect.top - editorWrapperRect.top).toFixed(0)) - 10, // 16 头部点击菜单的高度
+            left: Number((nodeRect.left - editorWrapperRect.left).toFixed(0))
+          };
+
+          // 右边编辑菜单
+          this.isShowBlockMenu = true;
+          this.isEmptyRow = false;
+          this.menuPosition = {
+            top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
+            left: -50
+          };
         }
+      } else {
+        // 处理非表格节点
+        this.isShowTableMenu = false;
+        this.isShowBlockMenu = true;
+        this.isClearHighlight = true;
+        this.isEmptyRow = nodeContentIsEmpty;
+        this.menuPosition = {
+          top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
+          left: -50
+        };
       }
     }, 500),
-    getTableRowHeights(tableEl) {
-      if (!tableEl) return [];
-      return Array.from(
-        tableEl.querySelectorAll('tbody > tr')
-      ).map(tr => tr.getBoundingClientRect().height);
-    },
+  
     hidePlus: throttle(function() {
       // this.currentBlock = null;
     }, 400),
-    tableClick({event, index, type}) {
+
+    // 表格行列浮动菜单点击，点击可出现操作按钮，如：前后插入行列
+    tableRowColHeadClick({ event, index, type, rowHeight, columnHeight }) {
       const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
-      const { nodeType, attrs } = this.findTableNodeByUuid({editor: this.editor, uuid: this.tableUuid}) || {};
+      const { nodeType, attrs } = this.findTableNodeByUuid({ editor: this.editor, uuid: this.tableUuid }) || {};
+      
+      this.isShowSelectContentMenu = true;
+      this.nodeName = 'table';
+      this.selectContentMenuPos = {
+        top: event.clientY - editorWrapperRect.top - 60,
+        left: event.clientX - editorWrapperRect.left
+      };
       this.nodeConfig = {
         nodeType: nodeType,
         nodeAttrs: attrs,
         index: index,
         type: type
       };
-      this.isShowSelectContentMenu = true;
-      this.nodeName = 'table';
-      this.selectContentMenuPos = {
-        top: event.clientY - editorWrapperRect.top - 57,
-        left: event.clientX - editorWrapperRect.left
-      };
+      
       if (type == 'row') {
         this.selectContentMenuPos = {
-          top: event.clientY - editorWrapperRect.top - 60,
-          left: event.clientX - editorWrapperRect.left
+          top: event.clientY - editorWrapperRect.top - (rowHeight) - 15, // 10 间隙
+          left: event.clientX - editorWrapperRect.left + 6
         };
         this.handleSelectMenuContent({
           menuData: {
@@ -431,57 +438,6 @@ export default {
           _this: this
         });
       }
-    },
-    isTextContentEmpty(node) {
-      return node.textContent.trim() === '';
-    },
-    isImageOrVideoEmpty(node) {
-      // 判断图片和视频是否有有效的 src
-      return !node.attrs.src;
-    },
-    isEmptyBlock(node) {
-      // 判断是否是空行
-      const menuMap = {
-        'heading': this.isTextContentEmpty,
-        'paragraph': this.isTextContentEmpty,
-        'listItem': this.isTextContentEmpty,
-        'taskItem': this.isTextContentEmpty,
-        'codeBlock': this.isTextContentEmpty,
-        'blockquote': this.isTextContentEmpty,
-        'highlight': this.isTextContentEmpty,
-        'image': this.isImageOrVideoEmpty,
-        'insertVideo': this.isImageOrVideoEmpty
-      };
-      const checkStrategy = menuMap[node.type.name]; // 根据节点类型获取对应的判断策略
-      if (checkStrategy) {
-        return checkStrategy(node); // 调用对应的策略判断
-      }
-      // 对于有子节点的块，递归检查子节点
-      if (node.childCount > 0) {
-        for (let i = 0; i < node.childCount; i++) {
-          const childNode = node.child(i);
-          if (!this.isEmptyBlock(childNode)) {
-            return false; // 只要有一个非空的子节点，就认为该节点不是空的
-          }
-        }
-      }
-      return true; // 如果没有子节点或所有子节点都是空的，则认为节点为空
-    },
-    isInTable(e) {
-      const position = this.editor.view.posAtCoords({
-        left: e.clientX,
-        top: e.clientY
-      });
-      if (!position) return false;
-
-      const $pos = this.editor.state.doc.resolve(position.pos);
-
-      for (let d = $pos.depth; d > 0; d--) {
-        if ($pos.node(d).type.name === 'table') {
-          return true;
-        }
-      }
-      return false;
     },
     highlightHeading(node, editor) {
       const isHeading = editor.isActive('heading');
@@ -520,8 +476,6 @@ export default {
     },
     handleClickPlus() {
       // this.editor.chain().focus('end').run();
-      this.editor.commands.clearTableHighlight();
-      this.isClearTableRowColHighlight = true;
     },
     async uploadFileToServer(file) {
       let formData = new FormData();
