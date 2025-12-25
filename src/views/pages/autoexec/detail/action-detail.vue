@@ -75,7 +75,7 @@
                   @click="toExecute"
                 >{{ $t('term.autoexec.job') }}</Button>
               </span>
-              <span v-if="!isActive && versionIsActive == 1" class="action-item">
+              <span v-if="!isActive && editable == 1" class="action-item">
                 <Button
                   type="primary"
                   ghost
