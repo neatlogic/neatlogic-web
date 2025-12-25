@@ -113,6 +113,8 @@ function getDirectUrl() {
             }
             if (res.data.TokenHash) {
               sessionStorage.setItem('neatlogic_tokenHash', res.data.TokenHash);
+            } else {
+              sessionStorage.removeItem('neatlogic_tokenHash');
             }
           } catch (error) {
             console.error('JSON 解析出错:', error.message);
@@ -166,7 +168,9 @@ async function getSsoTokenKey() {
           COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
         }
         if (responseText.userExpireTime) {
-          sessionStorage.setItem('IDLE_TIMEOUT', responseText.userExpireTime * 60 * 1000);
+          sessionStorage.setItem('IDLE_TIMEOUT', responseText.userExpireTime);
+        } else {
+          sessionStorage.removeItem('IDLE_TIMEOUT');
         }
         if (ISNEEDAUTH) {
           getDirectUrl();

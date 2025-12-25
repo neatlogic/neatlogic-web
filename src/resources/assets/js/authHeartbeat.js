@@ -6,6 +6,9 @@ let lastActiveAt = Date.now();
 let timer = null;
 let idleTimeout = 0;
 
+// 需要保持引用，避免 removeEventListener 失效
+let throttledHandler = null;
+
 /**
  * 用户活跃标记
  */
@@ -17,16 +20,30 @@ function markUserActive() {
  * 初始化用户行为监听
  */
 function initActiveListener() {
+  if (throttledHandler) return; // 避免重复注册
+
+  throttledHandler = utils.throttle(markUserActive, 5000);
+
   ['mousedown', 'wheel'].forEach(evt => {
-    window.addEventListener(
-      evt,
-      utils.throttle(markUserActive, 5000),
-      { passive: true }
-    );
+     window.addEventListener(evt, throttledHandler, { passive: true });
   });
 
-  // 页面加载视为一次活跃
+  // 页面加载 & 激活 都算活跃
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) markUserActive();
+  });
+
   markUserActive();
+}
+
+function removeActiveListener() {
+  if (!throttledHandler) return;
+
+  ['mousedown', 'wheel'].forEach(evt => {
+    window.removeEventListener(evt, throttledHandler);
+  });
+
+  throttledHandler = null;
 }
 
 /**
@@ -40,6 +57,7 @@ function sendHeartbeat() {
   };
   const xhr = new XMLHttpRequest();
   xhr.open('POST', BASEURLPREFIX + '/api/rest/heartbeat', true);
+  xhr.setRequestHeader('Content-Type','application/json');
   xhr.send(JSON.stringify({
     tokenHash: tokenHash
   }));
@@ -56,6 +74,9 @@ function start(timeout) {
 
   timer = utils.setInterval(() => {
     const now = Date.now();
+    
+    if (document.hidden) return; // 后台不续期
+
     if (now - lastActiveAt < idleTimeout) {
       sendHeartbeat();
     }
@@ -69,6 +90,7 @@ function stop() {
   clearInterval(timer);
   timer = null;
   idleTimeout = 0;
+  removeActiveListener();
 }
 
 export default {

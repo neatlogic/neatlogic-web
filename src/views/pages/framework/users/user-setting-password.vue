@@ -111,6 +111,7 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.updatesuccess'));
+            sessionStorage.removeItem('PWD_FORCE_REDIRECTED');
             if (this.getRedirect()) {
               window.location.href = HOME + '/' + this.getRedirect();
             } else {

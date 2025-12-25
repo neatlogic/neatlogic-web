@@ -33,7 +33,11 @@ import 'regenerator-runtime/runtime'; // 处理regeneratorRuntime is not defined
 // });
 
 // eslint-disable-next-line space-before-function-paren
-(async function () {
+
+// 每次系统重新加载 → 清掉密码强制跳转标记
+sessionStorage.removeItem('PWD_FORCE_REDIRECTED');
+
+(async function() {
   await ThemeUtils.init();
 })();
 
@@ -68,15 +72,15 @@ import 'assets/index.js';
 import '@/resources/import/index'; // 加载所有模块的import.js文件
 
 import authHeartbeat from '@/resources/assets/js/authHeartbeat';
-const { userId } = utils?.getUserInfo() || {};
-if (userId) {
-  const userExpireTime = Number(sessionStorage.getItem('IDLE_TIMEOUT'));
-  if (!userExpireTime) {
-    console.error('userExpireTime不存在');
-  } else {
-    authHeartbeat.start(userExpireTime);
-  }
+let usertoken = utils.getCookie('neatlogic_authorization');
+
+const raw = sessionStorage.getItem('IDLE_TIMEOUT');
+const userExpireTime = raw ? Number(raw) * 60 * 1000 : 0;
+
+if (usertoken && userExpireTime > 0) {
+  authHeartbeat.start(userExpireTime);
 } else {
+  console.warn('停止心跳');
   authHeartbeat.stop();
 }
 

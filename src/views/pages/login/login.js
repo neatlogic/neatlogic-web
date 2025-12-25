@@ -58,8 +58,11 @@ axios({
       authtype = data.authType;
       encrypt = data.encrypt;
       if (data.userExpireTime) {
-        sessionStorage.setItem('IDLE_TIMEOUT', data.userExpireTime * 60 * 1000);
+        sessionStorage.setItem('IDLE_TIMEOUT', data.userExpireTime);
+      } else {
+        sessionStorage.removeItem('IDLE_TIMEOUT');
       }
+      // 存储密码过期跳转路径
       sessionStorage.setItem('PWD_EXPIRED_DIRECT_URL', data.pwdExpiredDirectUrl || '');
     }
 
