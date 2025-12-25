@@ -37,20 +37,18 @@
             :isEmptyRow="isEmptyRow"
             :menuPosition="menuPosition"
             :nodeConfig="blockMenuNodeConfig"
-            @insert-menu-content="handleInsertMenuContent"
-            @replace-menu-content="handleReplaceMenuContent"
-            @insert-below-position="handleInsertBelowPosition"
-          >
-          </BlockMenu>
+            @insert-menu-content="(menuData) => handleInsertMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
+            @replace-menu-content="(menuData) => handleReplaceMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
+            @insert-below-position="menuData => handleInsertBelowPosition({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
+          ></BlockMenu>
           <SelectContentMenu
             v-show="isShowSelectContentMenu"
             ref="selectContentMenuRef"
             :nodeConfig="nodeConfig"
             :nodeName="nodeName"
             :style="{ top: `${selectContentMenuPos.top}px`, left: `${selectContentMenuPos.left}px` }"
-            @handleSelectMenuContent="(menuData)=> handleSelectMenuContent({menuData: menuData, _this: this})"
-          >
-          </SelectContentMenu>
+            @handleSelectMenuContent="menuData => handleSelectMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
+          ></SelectContentMenu>
           <TableHoverLayer
             v-show="isShowTableMenu"
             :tableMenuPosition="tableMenuPosition"
@@ -102,7 +100,7 @@ import { ImageResize } from '@/resources/plugins/TsKnowledgeDocumentEditor/exten
 import { RowColSelected } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/row-col-selected/index.js';
 import { TableUtils } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/table-utils.js';
 import DataContent from './data.js';
-import { getNodeByPos, getTableRowHeights } from '@/resources/plugins/TsKnowledgeDocumentEditor/node-utils.js';
+import { getHoverTargetByEvent, getTableRowHeights } from '@/resources/plugins/TsKnowledgeDocumentEditor/node-utils.js';
 import { getSelectedTextInfo, getSelectionNode } from '@/resources/plugins/TsKnowledgeDocumentEditor/selection-utils.js';
 export default {
   components: {
@@ -138,7 +136,7 @@ export default {
       isShowSearchReplaceDialog: false,
       isClearTableRowColHighlight: false,
       editor: null,
-      currentBlock: null, // 鼠标悬停快速响应的节点，作为菜单替换/插入时获取位置的依据
+      hoverBlockDom: null, // 鼠标悬停快速响应的节点，作为菜单替换/插入时获取位置的依据
       menuList: [],
       rowHeightList: [], // 表格行高列表，用于表格菜单
       selectHeadingUuid: '',
@@ -232,7 +230,7 @@ export default {
     this?.editor?.on('selectionUpdate', ({ editor, event }) => {
       // 编辑器获得焦点。
       const { $from, from, to } = editor?.state?.selection;
-      this.handleSelectionText({editor: editor, from: from, to: to, $from: $from});
+      this.handleSelectionText({ editor: editor, from: from, to: to, $from: $from });
 
       const node = $from.node($from.depth);
       _this.highlightHeading(node, editor);
@@ -253,7 +251,7 @@ export default {
     },
 
     // 处理用户选中文案内容
-    handleSelectionText({editor: editor, from: from, to: to, $from: $from}) {
+    handleSelectionText({ editor: editor, from: from, to: to, $from: $from }) {
       const { hasTextSelection = false, selectedText = '' } = getSelectedTextInfo(editor);
       const selectedNode = getSelectionNode(editor);
       if (selectedNode?.type?.includes('table')) {
@@ -321,6 +319,8 @@ export default {
         }
       }
     },
+
+    // 鼠标移动事件
     handleMouseMove: throttle(function(event) {
       const wrapper = this.$refs.editorWrapper;
       const editorEl = wrapper?.querySelector('.ProseMirror');
@@ -341,19 +341,19 @@ export default {
       if (!$pos || $pos.depth < 0) return;
 
       // 优先处理表格
-      const { type, attrs = {}, pos, isEmpty: nodeContentIsEmpty = false } = getNodeByPos($pos) || {};
+      const { type, attrs = {}, pos, isEmpty: nodeContentIsEmpty = false } = getHoverTargetByEvent({state: state, $pos: $pos}) || {};
       this.$set(this.blockMenuNodeConfig, 'type', type);
       this.$set(this.blockMenuNodeConfig, 'attrs', attrs);
       const nodeDom = view.nodeDOM(pos);
-      const nodeRect = nodeDom?.getBoundingClientRect();
-      this.currentBlock = nodeDom;
+      const nodeRect = nodeDom && nodeDom.getBoundingClientRect && nodeDom.getBoundingClientRect();
+      this.hoverBlockDom = nodeDom;
 
       if (!nodeRect) return;
 
       // 处理表格节点
       if (type == 'table') {
         this.tableUuid = attrs?.['data-uuid'];
-        this.rowHeightList = getTableRowHeights(nodeDom?.querySelector('table'));
+        this.rowHeightList = getTableRowHeights(nodeDom);
         if (nodeRect) {
           // 表格行列浮层，可点击表头
           this.isShowTableMenu = true;
@@ -383,16 +383,16 @@ export default {
         };
       }
     }, 500),
-  
+
     hidePlus: throttle(function() {
-      // this.currentBlock = null;
+      // this.hoverBlockDom = null;
     }, 400),
 
     // 表格行列浮动菜单点击，点击可出现操作按钮，如：前后插入行列
     tableRowColHeadClick({ event, index, type, rowHeight, columnHeight }) {
       const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
       const { nodeType, attrs } = this.findTableNodeByUuid({ editor: this.editor, uuid: this.tableUuid }) || {};
-      
+
       this.isShowSelectContentMenu = true;
       this.nodeName = 'table';
       this.selectContentMenuPos = {
@@ -405,10 +405,10 @@ export default {
         index: index,
         type: type
       };
-      
+
       if (type == 'row') {
         this.selectContentMenuPos = {
-          top: event.clientY - editorWrapperRect.top - (rowHeight) - 15, // 10 间隙
+          top: event.clientY - editorWrapperRect.top - rowHeight - 15, // 10 间隙
           left: event.clientX - editorWrapperRect.left + 6
         };
         this.handleSelectMenuContent({
@@ -421,7 +421,8 @@ export default {
               type: 'row'
             }
           },
-          _this: this
+          editor: this.editor,
+          hoverBlockDom: this.hoverBlockDom
         });
       }
       if (type === 'column') {
@@ -435,7 +436,8 @@ export default {
               type: 'column'
             }
           },
-          _this: this
+          editor: this.editor,
+          hoverBlockDom: this.hoverBlockDom
         });
       }
     },

@@ -478,12 +478,13 @@ export default {
       type: 'insertVideo',
       attrs: {
         'data-uuid': '1942c81b91c74500baed5c3b4630f4c1',
-        'data-block-type': null,
+        'data-block-type': 'insertVideo',
         src: 'api/binary/file/download?id=1583350961135645',
         controls: true,
-        width: null,
-        loading: false,
-        'data-type': 'table'
+        width: 439,
+        height: 247,
+        aspectRatio: 1.7777777777777777,
+        loading: false
       }
     },
     {

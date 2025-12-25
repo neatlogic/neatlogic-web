@@ -24,8 +24,8 @@
     <div
       :style="{
         position: 'absolute',
-        top: `37px`,
-        left: `-10px`
+        top: `${tableMenuPosition.top + 10}px`,
+        left: `${tableMenuPosition.left - 10}px`
       }"
       @click.stop
     >
@@ -65,7 +65,7 @@ export default {
       type: String,
       default: ''
     },
-    rowHeightList: {
+    rowHeightList: { // row-height-list
       type: Array,
       default: () => {
         return [];

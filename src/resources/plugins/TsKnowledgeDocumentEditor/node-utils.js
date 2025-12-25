@@ -25,13 +25,19 @@ export function findTableNode($pos) {
 
 export function findListNode($pos) {
   for (let d = $pos.depth; d > 1; d--) {
-    const node = $pos.node(d);
-    if (node.type.name === 'listItem' || node.type.name === 'taskItem') {
+    const itemNode = $pos.node(d);
+    
+    if (itemNode.type.name === 'listItem' || itemNode.type.name === 'taskItem') {
       const listNode = $pos.node(d - 1);
       return {
-        node: listNode,
-        depth: d - 1,
-        pos: $pos.before(d - 1)
+        // 父级信息
+        type: listNode.type.name,
+
+        // 子级信息
+        node: itemNode,
+        attrs: { ...(itemNode.attrs || {}) },
+        depth: d,
+        pos: $pos.start(d)
       };
     }
   }
@@ -63,11 +69,27 @@ export function findBlockNode($pos) {
  @return {
   type: '节点的名称，
   attrs: '节点的属性',
-  isEmpty: '节点的内容是否为空',
+  isEmpty: '节点的内容是否为空', // 用于判断是否显示编辑按钮还是插入按钮
+  pos: '节点的位置',
   node: '节点'
  }
 */
-export function getNodeByPos($pos) {
+export function getHoverTargetByEvent({ state, $pos}) {
+  // 处理原子节点（image、video）
+  const atomNode = state.doc.nodeAt($pos.pos);
+  const atomNodeList = ['image', 'insertVideo', 'horizontalRule'];
+  const { attrs: atomAttrs = {} } = atomNode || {};
+  const atomNodeName = atomNode?.type?.name;
+  if (atomNodeName && atomNodeList.includes(atomNodeName)) {
+    return {
+      type: atomNodeName,
+      attrs: { ...atomAttrs },
+      node: atomNode,
+      pos: $pos.pos,
+      isEmpty: false
+    };
+  }
+
   // 1. table
   const table = findTableNode($pos);
   if (table) {
@@ -81,14 +103,14 @@ export function getNodeByPos($pos) {
   }
 
   // 2. list
-  const list = findListNode($pos);
-  if (list) {
+  const { type, node, attrs = {}, pos } = findListNode($pos) || {};
+  if (type) {
     return {
-      type: list.node.type.name,
-      attrs: { ...list.node.attrs },
-      isEmpty: isNodeEmptyByType(list.node),
-      node: list.node,
-      pos: list.pos
+      type: type,
+      attrs: attrs,
+      isEmpty: isNodeEmptyByType(node),
+      node: node,
+      pos: pos
     };
   }
 
@@ -180,8 +202,18 @@ function isListEmpty(listNode) {
  * @param {*} tableEl 
  * @returns [100, 200, 300] // 每一行的高度
  */
-export function getTableRowHeights(tableEl) {
+export function getTableRowHeights(tableOrWrapperEl) {
+  if (!tableOrWrapperEl) return [];
+
+  const tableEl =
+    tableOrWrapperEl.tagName === 'TABLE'
+      ? tableOrWrapperEl
+      : tableOrWrapperEl.querySelector('table');
+
   if (!tableEl) return [];
-  return Array.from(tableEl.querySelectorAll('tbody > tr')).map(tr => tr.getBoundingClientRect().height);
+
+  const rows = tableEl.querySelectorAll('tr');
+
+  return Array.from(rows).map(tr => tr.offsetHeight);
 }
 

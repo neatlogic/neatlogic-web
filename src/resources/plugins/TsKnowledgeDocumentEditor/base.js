@@ -2,25 +2,28 @@ import InsertMenuCommands from '@/resources/plugins/TsKnowledgeDocumentEditor/co
 import { getCellSelectionByIndex } from '@/resources/plugins/TsKnowledgeDocumentEditor/commands/table/utils.js';
 export default {
   methods: {
-    handleSelectMenuContent({menuData, _this}) {
-      if (!_this.editor) return;
-      const insertPos = _this.findInsertContentPosition();
+    // 处理选中的菜单内容，点击菜单后执行的方法
+    handleSelectMenuContent({editor, menuData, hoverBlockDom}) {
+      if (!editor) return;
+      const insertPos = this.findInsertContentPosition({editor: editor, hoverBlockDom: hoverBlockDom});
       const { commandName, value = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
-        getCellSelectionByIndex({editor: _this.editor, options: value});
+        getCellSelectionByIndex({editor: editor, options: value});
         commandMethod({
-          editor: _this.editor,
+          editor: editor,
           position: insertPos,
           options: value,
-          https: _this.$https,
-          _this: _this
+          https: this.$https,
+          _this: this
         });
       }
     },
-    findInsertContentPosition() {
-      const view = this.editor.view;
-      const coords = this.currentBlock?.getBoundingClientRect();
+
+    // 查找插入内容的位置
+    findInsertContentPosition({editor, hoverBlockDom}) {
+      const view = editor?.view;
+      const coords = hoverBlockDom?.getBoundingClientRect();
       const found = coords
         ? view.posAtCoords({
           left: coords.left,
@@ -28,8 +31,8 @@ export default {
         })
         : null;
 
-      let position = found?.pos ?? this.editor.state.selection.from;
-      const { doc } = this.editor.state;
+      let position = found?.pos ?? editor?.state?.selection?.from;
+      const { doc } = editor?.state || {};
       const $pos = doc.resolve(position);
 
       const nodeAfter = $pos.nodeAfter;
@@ -59,14 +62,15 @@ export default {
         insertPosition: position
       };
     },
-    findCurrentBlockPosition() {
-      // 获取当前块元素的位置（编辑菜单编辑器悬停的位置）
-      const { view, state } = this.editor;
+
+    // 获取当前鼠标悬停快的位置(编辑菜单编辑器悬停的位置)
+    findCurrentBlockPosition({editor, hoverBlockDom}) {
+      const { view, state } = editor || {};
       let posResult = null;
       let $pos;
       let node, nodeStart, nodeEnd;
-      if (this.currentBlock) {
-        const coords = this.currentBlock.getBoundingClientRect();
+      if (hoverBlockDom) {
+        const coords = hoverBlockDom.getBoundingClientRect();
         posResult = view.posAtCoords({ left: coords.left, top: coords.top });
       }
       if (posResult?.pos != null) {
@@ -93,16 +97,16 @@ export default {
         insertPosition: nodeEnd + 1
       };
     },
-    handleInsertBelowPosition(menuData) {
+    handleInsertBelowPosition({editor, menuData, hoverBlockDom}) {
       // 编辑菜单，在下方插入一行
-      if (!this.editor) return;
-      const position = this.findCurrentBlockPosition();
+      if (!editor) return;
+      const position = this.findCurrentBlockPosition({editor: editor, hoverBlockDom: hoverBlockDom});
       const { commandName, value = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
-        getCellSelectionByIndex({editor: this.editor, options: value});
+        getCellSelectionByIndex({editor: editor, options: value});
         commandMethod({
-          editor: this.editor,
+          editor: editor,
           position: position,
           options: value,
           https: this.$https,
@@ -110,16 +114,16 @@ export default {
         });
       }
     },
-    handleInsertMenuContent(menuData) {
+    handleInsertMenuContent({editor, menuData, hoverBlockDom}) {
       // 空白行插入菜单
-      if (!this.editor) return;
-      const position = this.findInsertContentPosition();
+      if (!editor) return;
+      const position = this.findInsertContentPosition({editor: editor, hoverBlockDom: hoverBlockDom});
       const { commandName, value = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
-        getCellSelectionByIndex({editor: this.editor, options: value});
+        getCellSelectionByIndex({editor: editor, options: value});
         commandMethod({
-          editor: this.editor,
+          editor: editor,
           position: position,
           options: value,
           https: this.$https,
@@ -127,17 +131,17 @@ export default {
         });
       }
     },
-    handleReplaceMenuContent(menuData) {
+    handleReplaceMenuContent({editor, menuData, hoverBlockDom}) {
       // 编辑菜单，替换当前行
-      if (!this.editor) return;
+      if (!editor) return;
       const { commandName, value = {} } = menuData;
-      const position = this.findCurrentBlockPosition();
+      const position = this.findCurrentBlockPosition({editor: editor, hoverBlockDom: hoverBlockDom});
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
         const options = {...value, isToggle: true};
-        getCellSelectionByIndex({editor: this.editor, options: options});
+        getCellSelectionByIndex({editor: editor, options: options});
         commandMethod({
-          editor: this.editor,
+          editor: editor,
           position: position || {},
           options: options,
           https: this.$https,
@@ -160,7 +164,7 @@ export default {
       // 获取表格节点
       const { clientX, clientY } = event;
       const coords = { left: clientX, top: clientY };
-      const posResult = editor.view.posAtCoords(coords);
+      const posResult = editor?.view?.posAtCoords(coords);
 
       if (!posResult) {
         // 无法映射到文档位置
@@ -169,7 +173,7 @@ export default {
 
       // 映射结果包含 position (pos) 和 insideDOM
       const clickedPos = posResult.pos;
-      const $pos = this.editor.state.doc.resolve(clickedPos);
+      const $pos = editor?.state?.doc?.resolve(clickedPos);
       for (let d = $pos.depth; d > 0; d--) {
         const node = $pos.node(d);
 
@@ -184,15 +188,17 @@ export default {
       }
       return null; // 没有找到父级表格
     },
+
+    // 根据uuid查找表格节点
     findTableNodeByUuid({editor, uuid}) {
       let result = null;
       const state = editor.state;
       state.doc.descendants((node, pos) => {
-        if (
-          node.type.name === 'table' &&
-      node.attrs?.['data-uuid'] === uuid
-        ) {
-          result = { nodeType: node?.type?.name, attrs: node?.attrs };
+        if (node.type.name === 'table' && node.attrs?.['data-uuid'] === uuid) {
+          result = {
+            nodeType: node?.type?.name,
+            attrs: node?.attrs
+          };
           return false; // 停止遍历
         }
       });

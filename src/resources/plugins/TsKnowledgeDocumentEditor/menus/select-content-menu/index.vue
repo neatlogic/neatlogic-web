@@ -40,8 +40,6 @@ export default {
   destroyed() {},
   methods: {
     handleCommand(menuDataConfig) {
-      console.log('menuDataConfig:', menuDataConfig);
-      
       this.$emit('handleSelectMenuContent', menuDataConfig);
     }
   },

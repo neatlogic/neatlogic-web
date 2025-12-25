@@ -12,6 +12,7 @@
       <div class="border-base-bottom"></div>
     </DropdownItem>
     <AlignMenu @click-menu="emitClickMenu"></AlignMenu>
+    <ColorMenu></ColorMenu>
     <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
       <div class="border-base-bottom"></div>
     </DropdownItem>
@@ -39,7 +40,8 @@ export default {
   components: {
     BaseMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/empty-row-menu/base/index.vue'),
     AlignMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/edit-row-menu/src/common/align/index.vue'),
-    InsertedBelowMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/empty-row-menu/index.vue')
+    InsertedBelowMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/empty-row-menu/index.vue'),
+    ColorMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/edit-row-menu/src/common/color/index.vue')
   },
   props: {
     nodeConfig: {
@@ -65,9 +67,6 @@ export default {
   methods: {
     emitClickMenu(menuData) {
       this.$emit('click-menu', menuData);
-    },
-    handleClick(name) {
-      this.$emit('click-menu', { commandName: name });
     },
     insertBelowPosition(menuData) {
       this.$emit('insert-below-position', menuData);

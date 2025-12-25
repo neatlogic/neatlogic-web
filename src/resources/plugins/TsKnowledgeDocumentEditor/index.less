@@ -197,6 +197,47 @@
   .heading {
     margin: 10px 0;
   }
+  .video-block {
+    position: relative;
+    display: inline-block;
+    border-radius: 8px;
+  }
+
+  .video-block.is-selected {
+    outline: 2px solid #409eff;
+  }
+
+  .video-block video {
+    display: block;
+    border-radius: 8px;
+  }
+
+  .video-resize-handle {
+    position: absolute;
+    right: -6px;
+    bottom: -6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #409eff;
+    background: #fff;
+    cursor: se-resize;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+  .video-block.is-hover .video-resize-handle,
+  .video-block.is-selected .video-resize-handle {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 视频本体不参与 resize */
+  .video-block video {
+    display: block;
+    pointer-events: auto;
+  }
 }
 .knowledge-editor-box {
   .editor-wrapper {

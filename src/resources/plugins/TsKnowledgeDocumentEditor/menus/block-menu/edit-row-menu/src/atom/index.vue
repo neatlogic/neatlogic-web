@@ -1,10 +1,15 @@
 <template>
   <div style="width: 200px;">
-    <DropdownItem name="deleteRange">
-      <span class="tsfont-trash-o mr-nm knowledge-document-editor-menu-icon"></span>
-      <span>删除</span>
-    </DropdownItem>
-    <InsertedBelowMenu placement="right" @click-menu="insertBelowPosition"></InsertedBelowMenu>
+    <DropdownMenu slot="list">
+      <DropdownItem name="deleteRange">
+        <span class="tsfont-trash-o mr-nm knowledge-document-editor-menu-icon"></span>
+        <span>删除</span>
+      </DropdownItem>
+      <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
+        <div class="border-base-bottom"></div>
+      </DropdownItem>
+      <InsertedBelowMenu placement="right" @click-menu="insertBelowPosition"></InsertedBelowMenu>
+    </DropdownMenu>
   </div>
 </template>
 <script>
@@ -35,9 +40,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    emitClickMenu(menuData) {
-      this.$emit('click-menu', menuData);
-    },
     handleClick(name) {
       this.$emit('click-menu', { commandName: name });
     },

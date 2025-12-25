@@ -209,7 +209,7 @@ export default {
   }
   .basic-menu-box {
     display: grid;
-    grid-template-columns: repeat(6, 30px);
+    grid-template-columns: repeat(7, 30px);
     justify-content: space-between;
     margin-top: 6px;
   }

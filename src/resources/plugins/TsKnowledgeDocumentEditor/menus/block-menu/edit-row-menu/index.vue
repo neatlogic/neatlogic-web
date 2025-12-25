@@ -1,19 +1,19 @@
 <template>
   <div>
-    <Dropdown placement="right" @on-click="handleClick">
+    <Dropdown
+      :placement="menuType === 'text' ? 'bottom-start' : 'right'"
+      @on-click="handleClick"
+    >
       <div class="knowledge-document-editor-plus-box">
         <span :class="getFontClassName" class="text-href" style="margin-right: -5px;"></span>
         <span class="tsfont-option-vertical cursor-pointer"></span>
       </div>
       <DropdownMenu slot="list">
         <template v-if="menuType === 'text'">
-          <TextMenu />
+          <TextMenu @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
         </template>
-        <template v-else-if="menuType === 'table'">
-          <TableMenu />
-        </template>
-        <template v-else-if="menuType === 'image'">
-          <ImageMenu />
+        <template v-else-if="atomNodeList.includes(menuType)">
+          <AtomMenu @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
         </template>
       </DropdownMenu>
     </Dropdown>
@@ -24,8 +24,7 @@ export default {
   name: '',
   components: {
     TextMenu: () => import('./src/text/index.vue'),
-    TableMenu: () => import('./src/table/index.vue'),
-    ImageMenu: () => import('./src/image/index.vue')
+    AtomMenu: () => import('./src/atom/index.vue')
   },
   props: {
     nodeConfig: {
@@ -36,7 +35,9 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      atomNodeList: ['image', 'insertVideo', 'table', 'horizontalRule'] // 不可编辑的节点
+    };
   },
   beforeCreate() {},
   created() {},
@@ -49,12 +50,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    emitClickMenu(menuData) {
-      this.$emit('click-menu', menuData);
-    },
     handleClick(name) {
-      console.log('handleClick', name);
-      // this.$emit('click-menu', { commandName: name });
+      this.$emit('click-menu', { commandName: name, value: {...this.nodeConfig || {}} });
+    },
+    handleClickMenu(menuData) {
+      this.$emit('click-menu', menuData);
     },
     insertBelowPosition(menuData) {
       this.$emit('insert-below-position', menuData);
@@ -80,7 +80,7 @@ export default {
         orderedList: 'tsfont-orderlist',
         table: 'tsfont-chart-table',
         image: 'tsfont-image',
-        video: 'tsfont-play-o'
+        insertVideo: 'tsfont-play-o'
       };
       const { type, attrs = {} } = this.nodeConfig || {};
       if (type == 'heading') {
@@ -91,8 +91,7 @@ export default {
     },
     menuType() {
       const { type } = this.nodeConfig || {};
-      const mapList = ['table', 'image', 'video'];
-      if (mapList.includes(type)) {
+      if (this.atomNodeList.includes(type)) {
         return type;
       } else {
         return 'text';
