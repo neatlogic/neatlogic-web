@@ -259,6 +259,7 @@
                   @select="handleSelect($event, cell)"
                   @delete="deleteFormItem(cell)"
                   @updateHiddenComponentList="updateHiddenComponentList"
+                  @updateReactionSetValue="updateReactionSetValue"
                   @dropHideComponent="dropHideComponent"
                 ></FormItem>
               </div>
@@ -2134,6 +2135,16 @@ export default {
           this.formData = {}; // 处理为null是报错问题
         }
         this.$set(this.formData, uuid, value);
+      }
+    },
+    updateReactionSetValue(currentData) {
+      // 更新赋值值
+      if (!this.$utils.isEmpty(currentData)) {
+        for (const key in currentData) {
+          if (key) {
+            this.$set(this.formData, key, currentData[key]);
+          }
+        }
       }
     },
     handleDrop(event) {
