@@ -80,6 +80,22 @@
                 ></span>
               </div>
             </Col>
+            <Col v-else-if="resultMap" span="2">
+              <div v-if="resultMap[conItem.uuid]" class="pt-xs" style="text-align:center">
+                <span v-if="resultMap[conItem.uuid].result" class="tsfont-check text-success text-bold"></span>
+                <div v-else>
+                  <Tooltip
+                    v-if="resultMap[conItem.uuid].errorMsg"
+                    max-width="200"
+                    :transfer="true"
+                    :content="resultMap[conItem.uuid].errorMsg"
+                  >
+                    <span class="tsfont-warning-s text-error text-bold"></span>
+                  </Tooltip>
+                  <span v-else class="tsfont-close text-error text-bold"></span>
+                </div>
+              </div>
+            </Col>
           </TsRow>
           <div v-if="conditionGroup.conditionList.length - 1 > conditionIndex">
             <TsRow>
@@ -140,6 +156,7 @@ export default {
     level: { type: Number, default: 1 },
     value: { type: Object },
     readonly: { type: Boolean, default: false },
+    resultMap: { type: Object }, //结果
     attrList: [] //定义属性列表，[{name:'attrname',label:'属性名称',url:'xxx',dataList:[{value:'value',text:'text'}],expressionList:['equal','like']}]
   },
   data() {
