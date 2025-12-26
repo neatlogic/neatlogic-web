@@ -58,9 +58,9 @@ axios({
       authtype = data.authType;
       encrypt = data.encrypt;
       if (data.userExpireTime) {
-        sessionStorage.setItem('IDLE_TIMEOUT', data.userExpireTime);
+        sessionStorage.setItem('HEARTBEAT_INTERVAL', data.webHeartbeatInterval);
       } else {
-        sessionStorage.removeItem('IDLE_TIMEOUT');
+        sessionStorage.removeItem('HEARTBEAT_INTERVAL');
       }
       // 存储密码过期跳转路径
       sessionStorage.setItem('PWD_EXPIRED_DIRECT_URL', data.pwdExpiredDirectUrl || '');

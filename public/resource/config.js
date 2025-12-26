@@ -168,9 +168,9 @@ async function getSsoTokenKey() {
           COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
         }
         if (responseText.userExpireTime) {
-          sessionStorage.setItem('IDLE_TIMEOUT', responseText.userExpireTime);
+          sessionStorage.setItem('HEARTBEAT_INTERVAL', responseText.webHeartbeatInterval);
         } else {
-          sessionStorage.removeItem('IDLE_TIMEOUT');
+          sessionStorage.removeItem('HEARTBEAT_INTERVAL');
         }
         if (ISNEEDAUTH) {
           getDirectUrl();

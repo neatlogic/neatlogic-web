@@ -1,10 +1,9 @@
 import utils from '@/resources/assets/js/util';
 
-const HEARTBEAT_INTERVAL = 60 * 1000; // 60s
 
-let lastActiveAt = Date.now();
 let timer = null;
-let idleTimeout = 0;
+// 是否有用户新行为
+let dirty = true;
 
 // 需要保持引用，避免 removeEventListener 失效
 let throttledHandler = null;
@@ -13,7 +12,7 @@ let throttledHandler = null;
  * 用户活跃标记
  */
 function markUserActive() {
-  lastActiveAt = Date.now();
+  dirty = true;
 }
 
 /**
@@ -66,21 +65,19 @@ function sendHeartbeat() {
 /**
  * 启动心跳（登录后调用）
  */
-function start(timeout) {
+function start(heartbeatInterval) {
   if (timer) return;
-
-  idleTimeout = timeout;
   initActiveListener();
 
   timer = utils.setInterval(() => {
     const now = Date.now();
-    
     if (document.hidden) return; // 后台不续期
-
-    if (now - lastActiveAt < idleTimeout) {
+    console.log(dirty);
+    if (dirty) {
       sendHeartbeat();
+      dirty = false;
     }
-  }, HEARTBEAT_INTERVAL);
+  }, heartbeatInterval);
 }
 
 /**
@@ -89,7 +86,7 @@ function start(timeout) {
 function stop() {
   clearInterval(timer);
   timer = null;
-  idleTimeout = 0;
+  dirty = false;
   removeActiveListener();
 }
 

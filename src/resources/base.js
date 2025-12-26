@@ -74,11 +74,11 @@ import '@/resources/import/index'; // 加载所有模块的import.js文件
 import authHeartbeat from '@/resources/assets/js/authHeartbeat';
 let usertoken = utils.getCookie('neatlogic_authorization');
 
-const raw = sessionStorage.getItem('IDLE_TIMEOUT');
-const userExpireTime = raw ? Number(raw) * 60 * 1000 : 0;
+const raw = sessionStorage.getItem('HEARTBEAT_INTERVAL');
+const webHeartbeatInterval = raw ? Number(raw) * 60 * 1000 : 0;
 
-if (usertoken && userExpireTime > 0) {
-  authHeartbeat.start(userExpireTime);
+if (usertoken && webHeartbeatInterval > 0) {
+  authHeartbeat.start(webHeartbeatInterval);
 } else {
   console.warn('停止心跳');
   authHeartbeat.stop();
