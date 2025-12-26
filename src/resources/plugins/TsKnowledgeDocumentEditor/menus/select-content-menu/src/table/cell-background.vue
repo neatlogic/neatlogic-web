@@ -165,7 +165,7 @@ export default {
       this.isVisibleColor = false;
     },
     handleEmitCommand(backgroundColor) {
-      this.$emit('handleSelectMenuContent', {
+      this.$emit('emitMenuValue', {
         commandName: 'tableCellBackgorund',
         value: {
           backgroundColor: backgroundColor,

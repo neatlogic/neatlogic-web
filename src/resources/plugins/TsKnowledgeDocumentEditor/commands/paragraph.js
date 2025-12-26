@@ -1,8 +1,8 @@
 export default function paragraph({ editor, position, options }) {
   const { isToggle } = options || {};
-  const { endPosition } = position || {};
+  const { insertPosition } = position || {};
   if (isToggle) {
-    editor.chain().focus().setTextSelection(endPosition - 1).setParagraph().run();
+    editor.chain().focus().setTextSelection(insertPosition - 1).setParagraph().run();
   } else {
     editor
       .chain()

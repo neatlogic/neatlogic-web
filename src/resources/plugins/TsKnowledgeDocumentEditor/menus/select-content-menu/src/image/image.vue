@@ -92,7 +92,7 @@ export default {
         this.picUrl = this.getSelectedImageSrc(this.editorData);
         this.isShowDialog = true;
       } else {
-        this.$emit('handleSelectMenuContent',
+        this.$emit('emitMenuValue',
           {
             commandName: 'imageAlign',
             value: {

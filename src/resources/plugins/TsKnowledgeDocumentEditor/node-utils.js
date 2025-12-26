@@ -17,6 +17,20 @@ export function findTableNode($pos) {
   return null;
 }
 
+export function findHighlightBlockNode($pos) {
+  for (let d = $pos.depth; d > 0; d--) {
+    const node = $pos.node(d);
+    if (node.type.name === 'highlightBlock') {
+      return {
+        node,
+        depth: d,
+        pos: $pos.before(d)
+      };
+    }
+  }
+  return null;
+}
+
 /*
 获取有序、无序、任务列表的节点
 @param {position} 坐标

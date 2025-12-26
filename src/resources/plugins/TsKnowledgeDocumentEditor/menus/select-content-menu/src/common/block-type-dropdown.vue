@@ -131,7 +131,7 @@ export default {
   methods: {
     handleClick(value) {
       if (value.includes('heading')) {
-        this.$emit('handleSelectMenuContent', {
+        this.$emit('emitMenuValue', {
           commandName: 'heading',
           value: {
             level: Number(value.split('heading')[1]),
@@ -141,7 +141,7 @@ export default {
         });
         return;
       } else {
-        this.$emit('handleSelectMenuContent', {
+        this.$emit('emitMenuValue', {
           commandName: value,
           value: {
             isToggle: true,

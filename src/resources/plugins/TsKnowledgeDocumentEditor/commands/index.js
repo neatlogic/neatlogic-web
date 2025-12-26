@@ -34,6 +34,9 @@ import tableCellBackgorund from './table/cell-background.js';
 import tableCellVerticalAlign from './table/cell-vertical-align.js';
 import mergeCell from './table/merge-cell.js';
 import splitCell from './table/split-cell.js';
+import blockBackgroundColor from './block-background-color.js';
+import blockTextColor from './block-text-color.js';
+import blockBorderColor from './block-border-color.js';
 
 export default {
   heading,
@@ -71,5 +74,8 @@ export default {
   tableCellBackgorund,
   tableCellVerticalAlign,
   mergeCell,
-  splitCell
+  splitCell,
+  blockBackgroundColor,
+  blockTextColor,
+  blockBorderColor
 };

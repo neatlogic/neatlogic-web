@@ -5,6 +5,9 @@
       v-for="(item,index) in componentList"
       :key="`${item.type}_${index}`"
       v-bind="item"
+      @emitMenuValue="(data)=> {
+        $emit('emitMenuValue', data)
+      }"
     ></component>
   </div>
 </template>

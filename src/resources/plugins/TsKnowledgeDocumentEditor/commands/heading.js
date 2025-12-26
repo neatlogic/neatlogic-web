@@ -1,8 +1,8 @@
-export default function heading({ editor, position, options, _this }) {
+export default function heading({ editor, position, options }) {
   const { level, isToggle } = options || {};
-  const { endPosition, insertPosition } = position || {};
+  const { insertPosition } = position || {};
   if (isToggle) {
-    editor.chain().focus().setTextSelection(endPosition - 1).toggleHeading({ level: level }).run();
+    editor.chain().focus().setTextSelection(insertPosition - 1).toggleHeading({ level: level }).run();
   } else {
     editor
       .chain()

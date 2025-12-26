@@ -19,7 +19,7 @@
               class="mb-sm cursor-pointer"
               :class="activeMenuClassName({textAlign: item.value})"
               @click.stop="()=> {
-                $emit('handleSelectMenuContent', {
+                $emit('emitMenuValue', {
                   commandName: 'textAlign',
                   value: {
                     textAlign: item.value
@@ -118,7 +118,7 @@ export default {
   destroyed() {},
   methods: {
     handleClick(alignMethod) {
-      this.$emit('handleSelectMenuContent', {
+      this.$emit('emitMenuValue', {
         commandName: 'tableCellVerticalAlign',
         value: {
           verticalAlign: alignMethod,

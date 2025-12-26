@@ -1,8 +1,8 @@
 export default function taskList({ editor, position, options }) {
   const { isToggle } = options || {};
-  const { endPosition, insertPosition } = position || {};
+  const { insertPosition } = position || {};
   if (isToggle) {
-    editor.chain().focus().setTextSelection(endPosition - 1).toggleTaskList().run();
+    editor.chain().focus().setTextSelection(insertPosition - 1).toggleTaskList().run();
   } else {
     editor.chain().focus().insertContentAt(insertPosition, {
       type: 'taskList',

@@ -8,19 +8,22 @@ const HighlightBlock = Node.create({
   topNode: true,
   addAttributes() {
     return {
-      'data-uuid': {
+      dataUuid: {
         default: null,
-        parseHTML: (element) => {
-          return element.getAttribute('data-uuid') || utils.setUuid();
-        },
-        renderHTML: (attributes) => ({ 'data-uuid': attributes['data-uuid'] || utils.setUuid() })
+        parseHTML: (element) => element.getAttribute('data-uuid'),
+        renderHTML: (attributes) => ({ 'data-uuid': attributes.dataUuid })
+      },
+      dataBlockType: {
+        default: 'highlightBlock',
+        parseHTML: (element) => element.getAttribute('data-block-type'),
+        renderHTML: (attributes) => ({ 'data-block-type': attributes.dataBlockType })
       }
     };
   },
 
   parseHTML() {
     // 解析 HTML 时，将 <div data-type="highlight-block"> 转换为 highlightBlock 节点
-    return [{ tag: 'div[data-type="highlightBlock"]' }];
+    return [{ tag: 'div[data-block-type="highlightBlock"]' }];
   },
 
   renderHTML({ HTMLAttributes }) {
@@ -29,7 +32,6 @@ const HighlightBlock = Node.create({
     return [
       'div',
       {
-        'data-type': 'highlightBlock',
         class: 'highlight-block',
         ...HTMLAttributes
       },
@@ -43,9 +45,8 @@ const HighlightBlock = Node.create({
       toggleHighlightBlock:
         () =>
           ({ editor, commands, state, chain }) => {
-            const isActive = editor.isActive('highlightBlock');
             const type = editor.schema.nodes.highlightBlock;
-            if (isActive) {
+            if (editor.isActive('highlightBlock')) {
             // 退出高亮块
               commands.lift();
               commands.setNode('paragraph');
@@ -53,13 +54,13 @@ const HighlightBlock = Node.create({
             }
             return chain()
               .selectParentNode() // 将选取范围扩展到父节点，比如选中几个文字的时候，需要去替换整个父节点
-              .wrapIn(type, { 'data-uuid': utils.setUuid() }).run();
+              .wrapIn(type, { dataUuid: utils.setUuid(), dataBlockType: 'highlightBlock' }).run();
           },
       insertHighlightBlockContent: ({position, text = '高亮块内容...'}) => ({commands}) => {
         const uuid = utils.setUuid();
         return commands.insertContentAt(position, {
           type: 'highlightBlock',
-          attrs: { 'data-uuid': uuid },
+          attrs: { dataUuid: uuid, dataBlockType: 'highlightBlock' },
           content: [
             {
               type: 'paragraph',

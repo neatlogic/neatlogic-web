@@ -10,7 +10,7 @@
         :style="iconStyle"
         :class="[icon, activeMenuClassName(command)]"
         @click.stop="
-          $emit('handleSelectMenuContent',
+          $emit('emitMenuValue',
                 {
                   commandName: command,
                   value: {

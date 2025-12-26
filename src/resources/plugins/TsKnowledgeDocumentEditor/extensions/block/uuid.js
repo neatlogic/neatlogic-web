@@ -53,24 +53,26 @@ const BlockUuid = Extension.create({
     return [
       new Plugin({
         appendTransaction: (transactions, oldState, newState) => {
-          // 如果没有内容变动，不处理
+          // / 如果没有内容变动，不处理
           const docChanged = transactions.some(tr => tr.docChanged);
           if (!docChanged) return null;
-
           let tr = newState.tr;
           let modified = false;
 
           newState.doc.descendants((node, pos) => {
             // 只处理 block 节点
             if (!node.type.isBlock) return;
-
             // 已有 uuid 的跳过
             if (node.attrs['data-uuid']) return;
-            tr = tr.setNodeMarkup(pos, node.type, {
+            const uuid = utils.setUuid();
+
+            const newAttrs = {
               ...node.attrs,
-              'data-uuid': utils.setUuid(),
+              'data-uuid': uuid,
               'data-block-type': node.type.name == 'heading' ? `heading${node.attrs.level}` : node.type.name
-            });
+            };
+
+            tr = tr.setNodeMarkup(pos, node.type, newAttrs);
             modified = true;
           });
           return modified ? tr : null;
@@ -79,4 +81,6 @@ const BlockUuid = Extension.create({
     ];
   }
 });
-export default BlockUuid;
+export {
+  BlockUuid
+};

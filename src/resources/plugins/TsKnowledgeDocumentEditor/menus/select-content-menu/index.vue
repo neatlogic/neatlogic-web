@@ -3,7 +3,7 @@
     <component
       :is="getComponentName(nodeName)"
       :nodeConfig="nodeConfig"
-      @handleSelectMenuContent="handleCommand"
+      @emitMenuValue="handleCommand"
     />
   </div>
 </template>
@@ -40,6 +40,8 @@ export default {
   destroyed() {},
   methods: {
     handleCommand(menuDataConfig) {
+      console.log('menuDataConfig:', menuDataConfig);
+      
       this.$emit('handleSelectMenuContent', menuDataConfig);
     }
   },

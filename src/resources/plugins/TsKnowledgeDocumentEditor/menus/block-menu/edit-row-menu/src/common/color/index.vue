@@ -17,7 +17,7 @@
             <li
               v-for="(item, index) in textColorList"
               :key="index"
-              :class="item.color === selectedFontColor ? 'border-color-info' : ''"
+              :class="item.color === selectedFontColor ? 'active border-color-info' : ''"
               @click.stop="handleTextColorClick(item.color)"
             >
               <Tooltip
@@ -30,6 +30,27 @@
                 <div slot="content">{{ item.text }}</div>
               </Tooltip>
             </li>
+          </ul>
+        </div>
+        <div v-if="isShowBorderColor" class="mt-sm">
+          <div class="mb-xs">边框颜色</div>
+          <ul class="bg-color-box mt-xs">
+            <template v-for="(item, index) in borderColorList">
+              <Tooltip
+                :key="index"
+                placement="top"
+                max-width="400"
+                theme="light"
+                transfer
+              >
+                <li
+                  :style="{ background: item.color }"
+                  :class="[item.hasAfter ? 'bg-color-divide-line' : '', item.color === selectedBorderColor ? 'border-color-info' : '']"
+                  @click.stop="handleBorderColorClick(item.color)"
+                ></li>
+                <div slot="content">{{ item.text }}</div>
+              </Tooltip>
+            </template>
           </ul>
         </div>
         <div class="mt-sm">
@@ -46,18 +67,7 @@
                 <li
                   :class="[item.hasAfter ? 'bg-color-divide-line' : '', item.color === selectedBgColorLight ? 'border-color-info' : '']"
                   :style="{ background: item.color }"
-                  @click.stop="
-                    () => {
-                      selectedBgColorLight = item.color;
-                      $emit('handleSelectMenuContent', {
-                        commandName: 'backgroundColor',
-                        value: {
-                          backgroundColor: item.color,
-                             ...(nodeConfig || {}),
-                        }
-                      });
-                    }
-                  "
+                  @click.stop="handleBgColorLightClick(item.color)"
                 ></li>
                 <div slot="content">{{ item.text }}</div>
               </Tooltip>
@@ -93,12 +103,18 @@ export default {
   name: '',
   components: {},
   mixins: [mixin],
-  props: {},
+  props: {
+    isShowBorderColor: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       selectedFontColor: '#000',
       selectedBgColor: '#fff',
       selectedBgColorLight: '#fff',
+      selectedBorderColor: '',
       textColorList: [
         {
           color: '#000',
@@ -170,7 +186,7 @@ export default {
       bgColorlightList: [
         {
           color: '#fff',
-          text: '无颜色',
+          text: '透明',
           hasAfter: true
         },
         {
@@ -201,6 +217,41 @@ export default {
           color: '#dcc9fb',
           text: '浅紫色'
         }
+      ],
+      borderColorList: [
+        {
+          color: '#fff',
+          text: '透明',
+          hasAfter: true
+        },
+        {
+          color: '#bbbfc4',
+          text: '灰色'
+        },
+        {
+          color: '#f76964',
+          text: '红色'
+        },
+        {
+          color: '#ffa53d',
+          text: '橙色'
+        },
+        {
+          color: '#ffe928',
+          text: '黄色'
+        },
+        {
+          color: '#62d256',
+          text: '绿色'
+        },
+        {
+          color: '#9ebbfe',
+          text: '蓝色'
+        },
+        {
+          color: '#c4a4fa',
+          text: '紫色'
+        }
       ]
     };
   },
@@ -215,42 +266,68 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleBorderColorClick(borderColor) {
+      // 选中边框颜色
+      this.selectedBorderColor = borderColor;
+      this.$emit('click-menu', {
+        commandName: 'blockBorderColor',
+        value: {
+          borderColor: borderColor,
+          ...(this.nodeConfig || {})
+        }
+      });
+    },
     handleBgColorClick(bgColor) {
       // 选中的背景色
       this.selectedBgColor = bgColor;
       this.selectedBgColorLight = '';
       this.$emit('click-menu', {
-        commandName: 'backgroundColor',
+        commandName: 'blockBackgroundColor',
         value: {
           backgroundColor: bgColor,
           ...(this.nodeConfig || {})
         }
       });
     },
-    handleTextColorClick(color) {
-      // 选中的字体颜色
-      this.selectedFontColor = color;
+
+    handleBgColorLightClick(bgColor) {
+      // 选中的背景色(浅色)
+      this.selectedBgColorLight = bgColor;
       this.$emit('click-menu', {
-        commandName: 'color',
+        commandName: 'blockBackgroundColor',
         value: {
-          color: color,
+          backgroundColor: bgColor,
           ...(this.nodeConfig || {})
         }
       });
     },
+
+    handleTextColorClick(color) {
+      // 选中的字体颜色
+      this.selectedFontColor = color;
+      this.$emit('click-menu', {
+        commandName: 'blockTextColor',
+        value: {
+          fontColor: color,
+          ...(this.nodeConfig || {})
+        }
+      });
+    },
+
     handleRestoreDefault() {
+      // 恢复默认
       this.selectedBgColor = '#fff';
       this.selectedBgColorLight = '#fff';
       this.selectedFontColor = '#000';
       this.$emit('click-menu', {
-        commandName: 'color',
+        commandName: 'blockTextColor',
         value: {
           fontColor: this.selectedFontColor,
           ...(this.nodeConfig || {})
         }
       });
       this.$emit('click-menu', {
-        commandName: 'backgroundColor',
+        commandName: 'blockBackgroundColor',
         value: {
           backgroundColor: this.selectedBgColorLight,
           ...(this.nodeConfig || {})
@@ -275,6 +352,9 @@ export default {
     white-space: nowrap;
     border: 1px solid #ccc;
     border-radius: 3px;
+    &.active {
+      border-width: 2px;
+    }
   }
 }
 .bg-color-box {

@@ -6,8 +6,8 @@
       :key="`${item.type}_${index}`"
       v-bind="item"
       :nodeConfig="nodeConfig"
-      @handleSelectMenuContent="(config)=> {
-        $emit('handleSelectMenuContent', config)
+      @emitMenuValue="(config)=> {
+        $emit('emitMenuValue', config)
       }"
     >
     </component>

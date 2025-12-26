@@ -81,7 +81,7 @@ export default {
       this.dialogSetting.isShow = false;
     },
     okDialog() {
-      this.$emit('handleSelectMenuContent', {
+      this.$emit('emitMenuValue', {
         commandName: this.command,
         value: {
           linkHref: this.linkUrl,

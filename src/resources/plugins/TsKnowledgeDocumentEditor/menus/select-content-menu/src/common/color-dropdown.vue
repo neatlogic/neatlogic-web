@@ -22,7 +22,7 @@
                 @click.stop="
                   () => {
                     selectedFontColor = item.color;
-                    $emit('handleSelectMenuContent', {
+                    $emit('emitMenuValue', {
                       commandName: 'color',
                       value: {
                         color: item.color,
@@ -61,7 +61,7 @@
                     @click.stop="
                       () => {
                         selectedBgColorLight = item.color;
-                        $emit('handleSelectMenuContent', {
+                        $emit('emitMenuValue', {
                           commandName: 'backgroundColor',
                           value: {
                             backgroundColor: item.color,
@@ -91,7 +91,7 @@
                       () => {
                         selectedBgColor = item.color;
                         selectedBgColorLight = '';
-                        $emit('handleSelectMenuContent', {
+                        $emit('emitMenuValue', {
                           commandName: 'backgroundColor',
                           value: {
                             backgroundColor: item.color,
@@ -250,14 +250,14 @@ export default {
       this.selectedBgColor = '#fff';
       this.selectedBgColorLight = '#fff';
       this.selectedFontColor = '#000';
-      this.$emit('handleSelectMenuContent', {
+      this.$emit('emitMenuValue', {
         commandName: 'color',
         value: {
           fontColor: this.selectedFontColor,
           ...(this.nodeConfig || {})
         }
       });
-      this.$emit('handleSelectMenuContent', {
+      this.$emit('emitMenuValue', {
         commandName: 'backgroundColor',
         value: {
           backgroundColor: this.selectedBgColorLight,

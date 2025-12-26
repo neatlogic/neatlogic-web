@@ -8,11 +8,20 @@
         @click-menu="emitClickMenu"
       ></BaseMenu>
     </DropdownItem>
-    <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
-      <div class="border-base-bottom"></div>
-    </DropdownItem>
-    <AlignMenu @click-menu="emitClickMenu"></AlignMenu>
-    <ColorMenu></ColorMenu>
+    <template v-if="isShowColorMenu">
+      <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
+        <div class="border-base-bottom"></div>
+      </DropdownItem>
+      <ColorMenu :nodeConfig="nodeConfig" :isShowBorderColor="true" @click-menu="emitClickMenu"></ColorMenu>
+    </template>
+    <template v-else-if="isShowMenu">
+      <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
+        <div class="border-base-bottom"></div>
+      </DropdownItem>
+      <AlignMenu @click-menu="emitClickMenu"></AlignMenu>
+      <ColorMenu :nodeConfig="nodeConfig" @click-menu="emitClickMenu"></ColorMenu>
+    </template>
+  
     <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
       <div class="border-base-bottom"></div>
     </DropdownItem>
@@ -52,7 +61,9 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+
+    };
   },
   beforeCreate() {},
   created() {},
@@ -73,7 +84,18 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    isShowMenu() {
+      const { type } = this.nodeConfig || {};
+      const disabledTypeList = ['codeBlock'];
+      return !disabledTypeList.includes(type);
+    },
+    isShowColorMenu() {
+      const { type } = this.nodeConfig || {};
+      const disabledTypeList = ['highlightBlock'];
+      return !!disabledTypeList.includes(type);
+    }
+  },
   watch: {}
 };
 </script>

@@ -10,10 +10,10 @@
       </div>
       <DropdownMenu slot="list">
         <template v-if="menuType === 'text'">
-          <TextMenu @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
+          <TextMenu :nodeConfig="nodeConfig" @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
         </template>
         <template v-else-if="atomNodeList.includes(menuType)">
-          <AtomMenu @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
+          <AtomMenu :nodeConfig="nodeConfig" @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
         </template>
       </DropdownMenu>
     </Dropdown>
