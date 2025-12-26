@@ -79,7 +79,6 @@ function start(heartbeatInterval) {
   timer = utils.setInterval(() => {
     const now = Date.now();
     if (document.hidden) return; // 后台不续期
-    console.log(dirty);
     if (dirty) {
       sendHeartbeat();
       dirty = false;
