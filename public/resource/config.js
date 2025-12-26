@@ -167,7 +167,7 @@ async function getSsoTokenKey() {
         if (responseText.commercialModuleSet && responseText.commercialModuleSet.length > 0) {
           COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
         }
-        if (responseText.userExpireTime) {
+        if (responseText.webHeartbeatInterval) {
           sessionStorage.setItem('HEARTBEAT_INTERVAL', responseText.webHeartbeatInterval);
         } else {
           sessionStorage.removeItem('HEARTBEAT_INTERVAL');

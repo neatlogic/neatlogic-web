@@ -75,10 +75,10 @@ import authHeartbeat from '@/resources/assets/js/authHeartbeat';
 let usertoken = utils.getCookie('neatlogic_authorization');
 
 const raw = sessionStorage.getItem('HEARTBEAT_INTERVAL');
-const webHeartbeatInterval = raw ? Number(raw) * 60 * 1000 : 0;
+const heartbeatInterval = raw ? Number(raw) * 1000 : 0;
 
-if (usertoken && webHeartbeatInterval > 0) {
-  authHeartbeat.start(webHeartbeatInterval);
+if (usertoken && heartbeatInterval > 0) {
+  authHeartbeat.start(heartbeatInterval);
 } else {
   console.warn('停止心跳');
   authHeartbeat.stop();
