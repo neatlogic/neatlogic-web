@@ -19,13 +19,20 @@ function markUserActive() {
 /**
  * 初始化用户行为监听
  */
+const ACTIVE_EVENTS = [
+  'mousedown',
+  'wheel',
+  'scroll'
+];
+const ACTIVE_EVENT_OPTIONS = { passive:true, capture:true };
+
 function initActiveListener() {
   if (throttledHandler) return; // 避免重复注册
 
   throttledHandler = utils.throttle(markUserActive, 5000);
 
-  ['mousedown', 'wheel'].forEach(evt => {
-     window.addEventListener(evt, throttledHandler, { passive: true });
+  ACTIVE_EVENTS.forEach(evt => {
+     window.addEventListener(evt, throttledHandler, ACTIVE_EVENT_OPTIONS);
   });
 
   // 页面加载 & 激活 都算活跃
@@ -39,8 +46,8 @@ function initActiveListener() {
 function removeActiveListener() {
   if (!throttledHandler) return;
 
-  ['mousedown', 'wheel'].forEach(evt => {
-    window.removeEventListener(evt, throttledHandler);
+  ACTIVE_EVENTS.forEach(evt => {
+    window.removeEventListener(evt, throttledHandler, ACTIVE_EVENT_OPTIONS);
   });
 
   throttledHandler = null;
