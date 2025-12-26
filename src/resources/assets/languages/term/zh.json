@@ -636,7 +636,7 @@
     "flowauthuserupdatetip": "处理人包含所有步骤处理人",
     "settime": "设置时间",
     "setdate": "设置日历",
-    "titletemplatetooltip": "示例:${DATA.regionName}机构用户${DATA.userName}于${DATA.yyyyMMdd}发起机房巡检\n可用变量:\n"
+    "titletemplatetooltip": "示例:${regionName}机构用户${userName}于${yyyyMMdd}发起机房巡检\n可用变量:\n"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
