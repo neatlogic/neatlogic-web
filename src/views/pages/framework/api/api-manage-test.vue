@@ -289,8 +289,7 @@ export default {
       this.$api.framework.apiManage
         .test(this.testData.token, this.testData.param, header)
         .then(res => {
-          console.log(res);
-          this.$set(this.testData, 'result', res.Return);
+          this.$set(this.testData, 'result', res);
         })
         .catch(error => {
           this.$set(this.testData, 'result', error.data);
