@@ -72,7 +72,7 @@ function sendHeartbeat() {
 /**
  * 启动心跳（登录后调用）
  */
-function start(heartbeatInterval) {
+function start() {
   if (timer) return;
   initActiveListener();
 
@@ -83,7 +83,7 @@ function start(heartbeatInterval) {
       sendHeartbeat();
       dirty = false;
     }
-  }, heartbeatInterval);
+  }, 60000);
 }
 
 /**
