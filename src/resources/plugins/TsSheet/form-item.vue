@@ -735,7 +735,7 @@ export default {
             });
             if (!this.$utils.isSame(reactionFormItemUuidMap, this.reactionFormItemUuidMap)) {
               this.executionReaction(reactionFormItemUuidMap, this.reactionFormItemUuidMap);
-              this.reactionFormItemUuidMap = reactionFormItemUuidMap;
+              this.reactionFormItemUuidMap = this.$utils.deepClone(reactionFormItemUuidMap);
             }
           }
           if (this.formItem.config && this.formItem.config.isHide && this.formItem.config.isRequired) {
