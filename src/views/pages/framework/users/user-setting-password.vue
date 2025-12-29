@@ -123,7 +123,7 @@ export default {
     getRedirect() {
       let redirecturl = null;
       try {
-        redirecturl = window.location.href.split('redirect=')[1];
+        redirecturl = decodeURIComponent(window.location.href.split('redirect=')[1]);
       } catch (e) {
         console.log(e);
       }
