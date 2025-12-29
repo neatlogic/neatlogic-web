@@ -128,6 +128,21 @@ const handleUrl = (url, splitParam, queryParam) => {
   }
   return url;
 };
+const toResetPassword = () => {
+  let path = '/';
+  if (Vue.prototype.$tsrouter) {
+    path = Vue.prototype.$tsrouter.currentRoute.fullPath;
+  }
+  const redirect = MODULEID + '.html#' + path;
+  const url =
+      sessionStorage.getItem('PWD_EXPIRED_DIRECT_URL') ||
+      `${HOME}/index.html#/reset-password?redirect=${encodeURIComponent(
+        redirect
+      )}`;
+    // 标记
+  sessionStorage.setItem('PWD_FORCE_REDIRECTED', '1');
+  location.replace(url);
+};
 //调用接口
 instance.interceptors.request.use(config => {
   //暂时不能放这，后面考虑路由策略
@@ -286,6 +301,10 @@ const errorHandle = res => {
     case 530:
       //接口参数不符合规范
       throw res.data.Message; //把后端返回的校验信息抛出到页面中
+    case 533:
+      //密码重置
+      toResetPassword();
+      break;
     default:
       console.error($t('message.urlnotfound', { target: res.config.url }) + '，原因：' + (res.data.Message ? res.data.Message : res.data));
   }

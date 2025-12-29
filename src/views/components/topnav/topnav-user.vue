@@ -113,6 +113,7 @@ export default {
       this.$api.common.logout(data).then(res => {
         if (res.Status == 'OK') {
           sessionStorage.removeItem('neatlogic_authorization');
+          sessionStorage.removeItem('neatlogic_tokenHash');
           this.$utils.removeCookie('neatlogic_authorization');
           let url = res.Return.url || '';
           if (url) {

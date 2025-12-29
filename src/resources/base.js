@@ -33,7 +33,11 @@ import 'regenerator-runtime/runtime'; // 处理regeneratorRuntime is not defined
 // });
 
 // eslint-disable-next-line space-before-function-paren
-(async function () {
+
+// 每次系统重新加载 → 清掉密码强制跳转标记
+sessionStorage.removeItem('PWD_FORCE_REDIRECTED');
+
+(async function() {
   await ThemeUtils.init();
 })();
 
@@ -66,5 +70,15 @@ Vue.prototype.$AuthUtils = AuthUtils;
 
 import 'assets/index.js';
 import '@/resources/import/index'; // 加载所有模块的import.js文件
+
+import authHeartbeat from '@/resources/assets/js/authHeartbeat';
+let usertoken = utils.getCookie('neatlogic_authorization');
+
+if (usertoken) {
+  authHeartbeat.start();
+} else {
+  console.warn('停止心跳');
+  authHeartbeat.stop();
+}
 
 Vue.directive('auth', auth);
