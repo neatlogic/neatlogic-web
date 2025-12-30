@@ -8,9 +8,9 @@
           :src="setLogo"
         />
       </span>
-      <TopnavMenu v-if="!isAtNaviPage && !isResetPassword" />
+      <TopnavMenu v-if="!isAtNaviPage" />
     </div>
-    <div v-if="!isResetPassword" class="topnav-right-container">
+    <div class="topnav-right-container">
       <TopnavHelp v-if="!isAtNaviPage" class="pr-nm"></TopnavHelp>
       <TopnavMessage class="pr-nm" />
       <TopnavUser />
@@ -39,7 +39,7 @@ export default {
   },
   methods: {
     toHomePage() {
-      if (this.isResetPassword) {
+      if (sessionStorage.getItem('PWD_FORCE_REDIRECTED')) {
         return;
       }
       if (MODULEID === this.defaultModuleId) {
@@ -72,9 +72,6 @@ export default {
         src = logoDarkIcon || require('@/resources/assets/images/logo_big_dark.png');
       }
       return src;
-    },
-    isResetPassword() {
-      return sessionStorage.getItem('PWD_FORCE_REDIRECTED');
     }
   }
 };
