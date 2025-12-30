@@ -111,8 +111,8 @@ function getDirectUrl() {
             if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
               COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
             }
-            if (res.data.TokenHash) {
-              sessionStorage.setItem('neatlogic_tokenHash', res.data.TokenHash);
+            if (data.Return.TokenHash) {
+              sessionStorage.setItem('neatlogic_tokenHash', data.Return.TokenHash);
             } else {
               sessionStorage.removeItem('neatlogic_tokenHash');
             }

@@ -1,11 +1,10 @@
 <template>
-  <div>
+  <div style="display: inline-block;">
     <TsForm ref="password" :itemList="pwdSetting"></TsForm>
-    <div class="pt-sm">
-      <Button class="save mr-sm" type="primary" @click="save()">{{ $t('page.save') }}</Button>
-      <Button v-if="$store.state.isPwdRedirected" class="logout" @click="logout()">{{ $t('page.logout') }}</Button>
+    <div class="pt-sm text-right">
+      <Button class="save" type="primary" @click="save()">{{ $t('page.save') }}</Button>
+      <Button v-if="$store.state.isPwdRedirected" class="logout ml-sm" @click="logout()">{{ $t('page.logout') }}</Button>
     </div>
-   
   </div>
 </template>
 <script>
