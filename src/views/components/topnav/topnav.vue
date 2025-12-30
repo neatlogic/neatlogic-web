@@ -10,7 +10,7 @@
       </span>
       <TopnavMenu v-if="!isAtNaviPage" />
     </div>
-    <div class="topnav-right-container">
+    <div v-if="!$store.state.isPwdRedirected" class="topnav-right-container">
       <TopnavHelp v-if="!isAtNaviPage" class="pr-nm"></TopnavHelp>
       <TopnavMessage class="pr-nm" />
       <TopnavUser />

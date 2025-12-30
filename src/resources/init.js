@@ -90,10 +90,15 @@ export function initRouter(VueRouter, store) {
         if (to.path.startsWith('/reset-password')) {
           return next();
         }
+        let redirect = to.fullPath;
+        const hasHtml = /\.html($|[?#])/.test(redirect);
+        if (!hasHtml) {
+          redirect = `${MODULEID}.html#${redirect}`;
+        }
         return next({
           path: '/reset-password',
           replace: true,
-          query: { redirect: to.fullPath }
+          query: { redirect }
         });
       }
       let auth = to.meta ? to.meta.authority : [];

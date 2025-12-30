@@ -52,6 +52,16 @@ const Mutations = {
   setAutoexecJobListData(state, isUpdateAutoexecJobListData) {
     // 刷新自动化作业列表数据
     state.isUpdateAutoexecJobListData = isUpdateAutoexecJobListData;
+  },
+  setPwdRedirected(state, isPwdRedirected) {
+    // 是否强制重定向到重置密码页面
+    state.isPwdRedirected = isPwdRedirected;
+
+    if (isPwdRedirected) {
+      sessionStorage.setItem('PWD_FORCE_REDIRECTED', '1');
+    } else {
+      sessionStorage.removeItem('PWD_FORCE_REDIRECTED');
+    }
   }
 };
 
