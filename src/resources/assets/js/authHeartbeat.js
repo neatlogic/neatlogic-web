@@ -55,8 +55,7 @@ function removeActiveListener() {
 /**
  * 发送心跳
  */
-function sendHeartbeat() {
-  const tokenHash = sessionStorage.getItem('neatlogic_tokenHash');
+function sendHeartbeat(tokenHash) {
   if (!tokenHash) {
     console.error('tokenHash不存在');
     return;
@@ -72,15 +71,13 @@ function sendHeartbeat() {
 /**
  * 启动心跳（登录后调用）
  */
-function start() {
+function start(tokenHash) {
   if (timer) return;
   initActiveListener();
-
   timer = utils.setInterval(() => {
-    const now = Date.now();
     if (document.hidden) return; // 后台不续期
     if (dirty) {
-      sendHeartbeat();
+      sendHeartbeat(tokenHash);
       dirty = false;
     }
   }, 60000);

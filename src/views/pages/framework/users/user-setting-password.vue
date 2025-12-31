@@ -137,7 +137,6 @@ export default {
       this.$api.common.logout(data).then(res => {
         if (res.Status == 'OK') {
           sessionStorage.removeItem('neatlogic_authorization');
-          sessionStorage.removeItem('neatlogic_tokenHash');
           this.$utils.removeCookie('neatlogic_authorization');
           this.$store.commit('setPwdRedirected', false);
           let url = res.Return.url || '';
