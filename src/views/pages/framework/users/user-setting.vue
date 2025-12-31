@@ -69,7 +69,6 @@
                 class="clearCache"
                 :content="serverIdTipInfo"
               >
-                <Button type="default" @click="clearUserSessionCache()">{{ $t('page.userclearsessioncache') }}</Button>
               </Tooltip>
             </TabPane>
             <TabPane :label="$t('term.framework.modifypwd')" name="password">
@@ -436,14 +435,6 @@ export default {
           }
         });
       } 
-    },
-    clearUserSessionCache() {
-      this.$api.framework.user.clearUserSessionCache({serverId: this?.currentUserInfo?.serverId}).then(res => {
-        if (res.Status == 'OK') {
-          const { serverId = '' } = res.Return || {};
-          this.$Message.success(this.$t('term.framework.clearServerCacheSuccessTarget', { target: serverId }));
-        }
-      });
     },
     //个性化保存
     saveProfile: function(data) {
