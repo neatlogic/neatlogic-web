@@ -3,6 +3,7 @@ import axios from 'axios';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import utils from '@/resources/assets/js/util';
 import { $t } from '@/resources/init.js';
+import store from '@/resources/store';
 
 Vue.prototype.$axios = axios;
 const tip = ({desc, onClose, name, title, type = 'error', duration = 4.5, errorDetail = ''}) => {
@@ -141,6 +142,7 @@ const toResetPassword = () => {
       )}`;
     // 标记
   sessionStorage.setItem('PWD_FORCE_REDIRECTED', '1');
+  store.commit('setPwdRedirected', true);
   location.replace(url);
 };
 //调用接口

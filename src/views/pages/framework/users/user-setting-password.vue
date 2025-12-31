@@ -1,7 +1,10 @@
 <template>
-  <div>
+  <div style="display: inline-block;">
     <TsForm ref="password" :itemList="pwdSetting"></TsForm>
-    <Button class="save" type="primary" @click="save()">{{ $t('page.save') }}</Button>
+    <div class="pt-sm text-right">
+      <Button class="save" type="primary" @click="save()">{{ $t('page.save') }}</Button>
+      <Button v-if="$store.state.isPwdRedirected" class="logout ml-sm" @click="logout()">{{ $t('page.logout') }}</Button>
+    </div>
   </div>
 </template>
 <script>
@@ -111,9 +114,9 @@ export default {
         .then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.updatesuccess'));
-            sessionStorage.removeItem('PWD_FORCE_REDIRECTED');
+            this.$store.commit('setPwdRedirected', false);
             if (this.getRedirect()) {
-              window.location.href = HOME + '/' + this.getRedirect();
+              window.location.href = HOME + '/' + decodeURIComponent(this.getRedirect());
             } else {
               window.location.reload();
             }
@@ -123,11 +126,29 @@ export default {
     getRedirect() {
       let redirecturl = null;
       try {
-        redirecturl = decodeURIComponent(window.location.href.split('redirect=')[1]);
+        redirecturl = window.location.href.split('redirect=')[1];
       } catch (e) {
         console.log(e);
       }
       return redirecturl;
+    },
+    logout() {
+      let data = {};
+      this.$api.common.logout(data).then(res => {
+        if (res.Status == 'OK') {
+          sessionStorage.removeItem('neatlogic_authorization');
+          sessionStorage.removeItem('neatlogic_tokenHash');
+          this.$utils.removeCookie('neatlogic_authorization');
+          this.$store.commit('setPwdRedirected', false);
+          let url = res.Return.url || '';
+          if (url) {
+            url = url.indexOf('http://') == -1 && url.indexOf('https://') == -1 ? 'http://' + url : url;
+            window.open(url, '_self');
+          } else {
+            window.location.href = HOME + '/login.html';
+          }
+        }
+      });
     }
   },
   filter: {},
