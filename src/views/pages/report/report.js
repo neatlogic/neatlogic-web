@@ -22,7 +22,6 @@ Vue.use(CompareUtil); //必须要在use router之后执行
 
 MODULEID = config.module;
 MENULIST = [...commonRouters, ...routers];
-// MENULIST = routers;
 MENUTYPE = config.menuType;
 
 let router = initRouter(VueRouter, store); //路由拦截处理
