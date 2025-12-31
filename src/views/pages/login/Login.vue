@@ -146,6 +146,9 @@ export default {
                 if (res.data.JwtToken) {
                   sessionStorage.setItem('neatlogic_authorization', 'Bearer_' + res.data.JwtToken);
                 }
+                if (res.data.TokenHash) {
+                  sessionStorage.setItem('neatlogic_tokenHash', res.data.TokenHash);
+                }
                 if (this.getRedirect()) {
                   window.location.href = HOME + '/' + this.getRedirect();
                 } else {
@@ -157,6 +160,7 @@ export default {
               } else if (res.data.Status == 'ERROR') {
                 this.errorTips = res.data.Message;
                 sessionStorage.removeItem('neatlogic_authorization');
+                sessionStorage.removeItem('neatlogic_tokenHash');
               }
             }
           })
@@ -164,6 +168,7 @@ export default {
             this.loading = true;
             this.errorTips = this.$t('page.accountorpwderror');
             sessionStorage.removeItem('neatlogic_authorization');
+            sessionStorage.removeItem('neatlogic_tokenHash');
           });
       }
     },

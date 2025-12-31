@@ -85,6 +85,22 @@ export function initRouter(VueRouter, store) {
        */
       await gettingUserInfo;
       await gettingModuleList;
+      // 强制密码重定向
+      if (sessionStorage.getItem('PWD_FORCE_REDIRECTED')) {
+        if (to.path.startsWith('/reset-password')) {
+          return next();
+        }
+        let redirect = to.fullPath;
+        const hasHtml = /\.html($|[?#])/.test(redirect);
+        if (!hasHtml) {
+          redirect = `${MODULEID}.html#${redirect}`;
+        }
+        return next({
+          path: '/reset-password',
+          replace: true,
+          query: { redirect }
+        });
+      }
       let auth = to.meta ? to.meta.authority : [];
       auth = typeof auth == 'string' ? (auth.trim() ? [auth.trim()] : []) : auth; //字符串转数组，主要是兼容string array两种情况的数据
       if (!auth || !auth.length || utils.checkHasSomeitem(store.getters.userAuthList, auth)) {

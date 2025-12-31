@@ -636,7 +636,7 @@
     "flowauthuserupdatetip": "The processor includes all step handlers",
     "settime": "Set time",
     "setdate": "Set Calendar",
-    "titletemplatetooltip": "Example: ${DATA. regionName} institutional user ${DATA. userName} initiates a data center inspection on ${DATA. yyyyMMdd}. \nAvailable variables: \n"
+    "titletemplatetooltip": "Example: ${regionName} institutional user ${userName} initiates a data center inspection on ${yyyyMMdd}. \nAvailable variables: \n"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",

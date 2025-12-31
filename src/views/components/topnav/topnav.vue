@@ -1,16 +1,16 @@
 <template>
   <div class="topnav">
     <div class="topnav-left-container">
-      <a :href="`${home}/${defaultModuleId}.html`" class="homeLink" @click.prevent="toHomePage()">
+      <span class="homeLink" @click.prevent="toHomePage()">
         <!-- <h1 class="topnav-logo"></h1> -->
         <img
           class="topnav-newlogo"
           :src="setLogo"
         />
-      </a>
+      </span>
       <TopnavMenu v-if="!isAtNaviPage" />
     </div>
-    <div class="topnav-right-container">
+    <div v-if="!$store.state.isPwdRedirected" class="topnav-right-container">
       <TopnavHelp v-if="!isAtNaviPage" class="pr-nm"></TopnavHelp>
       <TopnavMessage class="pr-nm" />
       <TopnavUser />
@@ -39,6 +39,9 @@ export default {
   },
   methods: {
     toHomePage() {
+      if (sessionStorage.getItem('PWD_FORCE_REDIRECTED')) {
+        return;
+      }
       if (MODULEID === this.defaultModuleId) {
         this.$router.push('/');
       } else {
@@ -49,7 +52,7 @@ export default {
   },
   computed: {
     isAtNaviPage() {
-      return MODULEID === 'index' && this.$route.fullPath == '/navigation';
+      return MODULEID === 'index' && this.$route.meta.isNavHide;
     },
     defaultModuleId() {
       return this.$store.getters.defaultModule.moduleId;

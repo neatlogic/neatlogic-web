@@ -213,11 +213,25 @@ export default {
           },
           desc: this.$t('message.framework.syncmodedesc')
         },
+        // {
+        //   type: 'radio',
+        //   name: 'dbType',
+        //   label: this.$t('page.dbtype'),
+        //   dataList: [],
+        //   validateList: [{ name: 'required' }],
+        //   onChange: dbType => {
+        //     this.reportDataSourceData.dbType = dbType;
+        //   }
+        // },
         {
-          type: 'radio',
+          type: 'select',
           name: 'dbType',
           label: this.$t('page.dbtype'),
-          dataList: [],
+          mode: 'group',
+          search: true,
+          url: 'api/rest/datawarehouse/datasource/dbtype/search',
+          rootName: 'tbodyList',
+          transfer: true,
           validateList: [{ name: 'required' }],
           onChange: dbType => {
             this.reportDataSourceData.dbType = dbType;
@@ -272,9 +286,9 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
+  async created() {
     this.getModuleList();
-    this.getDatabaseList();
+    // this.getDatabaseList();
     this.getDatasourceById();
     this.getExample();
   },
@@ -292,32 +306,32 @@ export default {
         this.example = res;
       });
     },
-    getDatabaseList() {
-      let params = {
-        currentPage: 1,
-        pageSize: 100
-      };
-      this.$api.framework.database.searchDatabaseList(params).then(res => {
-        let tbodyList = res.Return.tbodyList;
-        const dataList = [];
-        this.systemDsTypeList.forEach(d => {
-          dataList.push({ value: d, text: d });
-        });
-        tbodyList.forEach(item => {
-          let text = item.name;
-          let value = item.type + '-' + item.id;
-          dataList.push({
-            text: text,
-            value: value
-          });
-        });
-        this.formConfig.forEach(element => {
-          if (element.name == 'dbType') {
-            this.$set(element, 'dataList', dataList);
-          }
-        });
-      });
-    },
+    // getDatabaseList() {
+    //   let params = {
+    //     currentPage: 1,
+    //     pageSize: 100
+    //   };
+    //   this.$api.framework.database.searchDatabaseList(params).then(res => {
+    //     let tbodyList = res.Return.tbodyList;
+    //     const dataList = [];
+    //     this.systemDsTypeList.forEach(d => {
+    //       dataList.push({ value: d, text: d });
+    //     });
+    //     tbodyList.forEach(item => {
+    //       let text = item.name;
+    //       let value = item.type + '-' + item.id;
+    //       dataList.push({
+    //         text: text,
+    //         value: value
+    //       });
+    //     });
+    //     this.formConfig.forEach(element => {
+    //       if (element.name == 'dbType') {
+    //         this.$set(element, 'dataList', dataList);
+    //       }
+    //     });
+    //   });
+    // },
     getModuleList() {
       this.$api.framework.module.searchModule().then(res => {
         if (res.Return) {
@@ -364,6 +378,8 @@ export default {
           if (!this.systemDsTypeList.includes(this.reportDataSourceData.dbType)) {
             if (this.reportDataSourceData.databaseId && this.reportDataSourceData.databaseId != null) {
               this.reportDataSourceData.dbType = this.reportDataSourceData.dbType + '-' + this.reportDataSourceData.databaseId;
+            } else if (this.reportDataSourceData.integrationUuid && this.reportDataSourceData.integrationUuid != null) {
+              this.reportDataSourceData.dbType = this.reportDataSourceData.dbType + '-' + this.reportDataSourceData.integrationUuid;
             }
           }
           this.formConfig.forEach(element => {
@@ -406,9 +422,18 @@ export default {
         if (!this.systemDsTypeList.includes(this.reportDataSourceData.dbType)) {
           let index = this.reportDataSourceData.dbType.lastIndexOf('-');
           let type = this.reportDataSourceData.dbType.substring(0, index);
-          let databaseId = this.reportDataSourceData.dbType.substring(index + 1, this.reportDataSourceData.dbType.length);
+          let key = this.reportDataSourceData.dbType.substring(index + 1, this.reportDataSourceData.dbType.length);
           this.reportDataSourceData.dbType = type;
-          this.reportDataSourceData.databaseId = databaseId;
+          if (type == 'jdbc') {
+            this.reportDataSourceData.databaseId = key;
+            this.reportDataSourceData.integrationUuid = null;
+          } else if (type == 'integration') {
+            this.reportDataSourceData.databaseId = null;
+            this.reportDataSourceData.integrationUuid = key;
+          }
+        } else {
+          this.reportDataSourceData.databaseId = null;
+          this.reportDataSourceData.integrationUuid = null;
         }
         this.$api.framework.datawarehouse.saveDataSource({ ...this.reportDataSourceData, isClear: isClear ? 1 : 0 }).then(res => {
           if (res.Status == 'OK') {

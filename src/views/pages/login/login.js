@@ -57,6 +57,8 @@ axios({
       }
       authtype = data.authType;
       encrypt = data.encrypt;
+      // 存储密码过期跳转路径
+      sessionStorage.setItem('PWD_EXPIRED_DIRECT_URL', data.pwdExpiredDirectUrl || '');
     }
 
     let i18n = initI18n(VueI18n, {});//语言包配置

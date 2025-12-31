@@ -122,10 +122,9 @@ export default {
             this.selectedExtraMenuList = [];
             window.open(url, '_blank');
           } else if (openType === 'iframe') {
-            //清空模块id，避免选中
-            this.moduleId = null;
+            this.selectedExtraMenuList = [];
             let that = this.$root.$children[0] ? this.$root.$children[0].$refs.root : null; //获取router-view 的vue 对象
-            this.$utils.gotoHref(`${HOME}/framework.html#/extramenu-detail?rootId=${rootmenu.id}&id=${id}`, that);
+            this.$utils.gotoHref(`${HOME}/${MODULEID}.html#/extramenu-detail?rootId=${rootmenu.id}&id=${id}`, that);
           }
         }
       }
