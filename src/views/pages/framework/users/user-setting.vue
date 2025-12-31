@@ -61,15 +61,6 @@
                 </template>
               </TsForm>
               <Button class="save" type="primary" @click="save()">{{ $t('page.save') }}</Button>
-              <Tooltip 
-                placement="top"
-                :transfer="true"
-                theme="light"
-                max-width="300"
-                class="clearCache"
-                :content="serverIdTipInfo"
-              >
-              </Tooltip>
             </TabPane>
             <TabPane :label="$t('term.framework.modifypwd')" name="password">
               <PasswordSetting></PasswordSetting>
@@ -191,7 +182,6 @@ export default {
   props: [''],
   data() {
     return {
-      serverIdTipInfo: '',
       tableConfig: {
         rowNum: 0,
         pageSize: 20,
@@ -461,22 +451,9 @@ export default {
     },
     canShow() {
       return this.hasAuth && !this.$utils.isEmpty(this.moduleList) && this.moduleList.some(v => v.moduleId == 'process');
-    },
-    currentUserInfo() {
-      return this.$store.state.topMenu.userInfo;
     }
   },
-  watch: {
-    currentUserInfo: {
-      handler(userInfo, oldVal) {
-        if (userInfo?.serverId) {
-          this.serverIdTipInfo = this.$t('term.framework.serverIdTarget', {target: userInfo.serverId});
-        }
-      },
-      deep: true,
-      immediate: true
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less">
