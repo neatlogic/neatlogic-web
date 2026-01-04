@@ -22,7 +22,10 @@
               <Radio label="list"><i class="tsfont-list"></i></Radio>
             </RadioGroup>
           </Col>
-          <Col :span="18">
+          <Col :span="6">
+            <TsFormSelect v-model="matrixType" v-bind="typeFormSelectConfig" @on-change="getMatrixList(1)" />
+          </Col>
+          <Col :span="12">
             <InputSearcher
               v-model="keyword"
               @change="searchMatrix()"
@@ -344,6 +347,13 @@ export default {
       importMatrixDefinitionUrl: BASEURLPREFIX + '/api/binary/matrix/import', // 矩阵定义导入
       loadingShow: true,
       keyword: '',
+      matrixType: null,
+      typeFormSelectConfig: {
+        placeholder: this.$t('page.type'),
+        border: 'border',
+        dynamicUrl: '/api/rest/universal/enum/get',
+        params: {enumClass: 'MatrixTypeFactory'}
+      },
       showFileError: false, //视图数据校验信息是否展示
       defaultFileList: [],
       addAtrixForm: {
@@ -700,10 +710,12 @@ export default {
     getMatrixList: function(currentPage) {
       let data = {
         keyword: this.keyword,
+        type: this.matrixType,
         pageSize: this.matrixCardData.pageSize,
         currentPage: currentPage || this.matrixCardData.currentPage
       };
       this.loadingShow = true;
+      this.$addHistoryData('matrixType', this.matrixType);
       this.$addHistoryData('modeType', this.modeType);
       this.$addHistoryData('keyword', this.keyword);
       this.$addHistoryData('currentPage', data.currentPage);
@@ -784,12 +796,14 @@ export default {
     //表格形式展示数据
     getMatrixTableList(currentPage, pageSize) {
       this.loadingShow = true;
+      this.$addHistoryData('matrixType', this.matrixType);
       this.$addHistoryData('modeType', this.modeType);
       this.$addHistoryData('keyword', this.keyword);
       this.$addHistoryData('currentPage', currentPage);
       this.$addHistoryData('pageSize', pageSize);
       this.$api.framework.matrix.getMatrixList({
         keyword: this.keyword,
+        type: this.matrixType,
         currentPage: currentPage,
         pageSize: pageSize
       }).then(res => {
