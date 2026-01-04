@@ -3,7 +3,7 @@ import utils from '@/resources/assets/js/util.js';
 import Zh from '@/resources/assets/languages/zh.js';
 import En from '@/resources/assets/languages/en.js';
 import VueI18n from 'vue-i18n';
-
+import authHeartbeat from '@/resources/assets/js/authHeartbeat';
 let config = {
   locale: BASELANGUAGES, // 定义默认语言为中文
   messages: {
@@ -70,6 +70,7 @@ export function initRouter(VueRouter, store) {
     }
 
     if (!usertoken) {
+      authHeartbeat.stop();
       window.location.href = `${HOME}/login.html?tenant=${TENANT}${HTTP_RESPONSE_STATUS_CODE ? '&httpresponsestatuscode=' + HTTP_RESPONSE_STATUS_CODE : ''}&redirect=${MODULEID}.html#${to.fullPath ? to.fullPath : ''}`;
     } else {
       /**
@@ -85,6 +86,8 @@ export function initRouter(VueRouter, store) {
        */
       await gettingUserInfo;
       await gettingModuleList;
+      // 启动心跳
+      authHeartbeat.start(store.state.userInfo.tokenHash);
       // 强制密码重定向
       if (sessionStorage.getItem('PWD_FORCE_REDIRECTED')) {
         if (to.path.startsWith('/reset-password')) {

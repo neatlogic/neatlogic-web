@@ -111,11 +111,6 @@ function getDirectUrl() {
             if (data.Return.commercialModuleSet && data.Return.commercialModuleSet.length > 0) {
               COMMERCIAL_MODULES.push(...data.Return.commercialModuleSet);
             }
-            if (data.Return.TokenHash) {
-              sessionStorage.setItem('neatlogic_tokenHash', data.Return.TokenHash);
-            } else {
-              sessionStorage.removeItem('neatlogic_tokenHash');
-            }
           } catch (error) {
             console.error('JSON 解析出错:', error.message);
           }
