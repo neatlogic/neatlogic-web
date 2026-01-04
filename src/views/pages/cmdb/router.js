@@ -290,7 +290,7 @@ let routerArr = [
       ismenu: true,
       type: 'cmdbmanage',
       icon: 'tsfont-module',
-      authority: 'CMDB_BASE'
+      authority: 'CI_MODIFY'
     }
   },
   {
