@@ -384,7 +384,7 @@ export default {
       let content = userUuidList.length > 1 ? this.$t('term.framework.suredeletesession', {target: this.$t('page.user') + '：' + row.map(r => { return r.userName; }).join('、')}) : key ? this.$t('term.framework.suredeletesession', {target: this.$t('page.user') + '：' + row[0].userName}) : this.$t('term.framework.suredeletesession', {target: this.$t('page.user') + '：' + row.userName});
       this.$createDialog({
         title: this.$t('term.framework.usersessiondeletetitle'),
-        content: content + '<br/><span class="text-tip tips">' + this.$t('term.framework.usersessiondeletetip') + '</span>',
+        content: content,
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.user

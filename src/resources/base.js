@@ -71,14 +71,4 @@ Vue.prototype.$AuthUtils = AuthUtils;
 import 'assets/index.js';
 import '@/resources/import/index'; // 加载所有模块的import.js文件
 
-import authHeartbeat from '@/resources/assets/js/authHeartbeat';
-let usertoken = utils.getCookie('neatlogic_authorization');
-
-if (usertoken) {
-  authHeartbeat.start();
-} else {
-  console.warn('停止心跳');
-  authHeartbeat.stop();
-}
-
 Vue.directive('auth', auth);
