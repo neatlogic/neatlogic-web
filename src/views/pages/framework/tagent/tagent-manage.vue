@@ -358,7 +358,7 @@ export default {
       // 删除确认提示框
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deletetargetconfirm', {target: 'Tagent'}),
+        content: this.$t('dialog.content.deleteconfirm', {target: 'Tagent'}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.tagent.deleteTagents(params)

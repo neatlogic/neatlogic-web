@@ -196,7 +196,7 @@ export default {
       let _this = this;
       _this.$createDialog({
         title: _this.$t('page.warning'),
-        content: this.$t('dialog.content.deleteconfirm', {target: config.name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: config.name}),
         btnType: 'error',
         'on-ok': vnode => {
           vnode.isShow = false;

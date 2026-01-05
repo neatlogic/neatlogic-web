@@ -196,7 +196,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: row.name || ''}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: row.name || ''}),
         okText: this.$t('page.delete'),
         btnType: 'error',
         'on-ok': (vnode) => {

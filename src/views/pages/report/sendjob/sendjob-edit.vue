@@ -415,7 +415,7 @@ export default {
       if (this.operation === 'add') return;
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.jobConfig.name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: this.jobConfig.name}),
         btnType: 'error',
         'on-ok': async vnode => {
           const params = { id: this.jobConfig.id };

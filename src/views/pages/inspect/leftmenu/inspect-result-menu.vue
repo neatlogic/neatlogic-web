@@ -175,7 +175,7 @@ export default {
           title: this.$t('page.warning'),
           maskClose: true,
           btnType: 'error',
-          content: this.$t('dialog.content.deleteconfirm', {target: item.name}),
+          content: this.$t('dialog.content.deletetargetconfirm', {target: item.name}),
           'on-ok': (vnode) => {
             this.$api.inspect.assetsInspect.delProblemClassificationMenu({id: item.id}).then(res => {
               if (res.Status == 'OK') {

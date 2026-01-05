@@ -213,7 +213,7 @@ export default {
       // 删除版本
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: item.versionName}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: item.versionName}),
         btnType: 'error',
         'on-ok': vnode => {
           let data = {

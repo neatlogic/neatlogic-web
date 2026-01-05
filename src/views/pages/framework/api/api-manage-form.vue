@@ -338,7 +338,7 @@ export default {
       this.$emit('on-hide');
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: token}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: token}),
         btnType: 'error',
         'on-ok': vnode => {
           const params = { token };

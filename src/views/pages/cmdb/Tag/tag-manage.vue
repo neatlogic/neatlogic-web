@@ -139,7 +139,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: relType.name }),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: relType.name }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.cmdb.tagManage

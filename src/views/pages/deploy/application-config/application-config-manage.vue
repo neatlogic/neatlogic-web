@@ -411,7 +411,7 @@ export default {
         };
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', {target: this.getDelEnvPath()}),
+          content: this.$t('dialog.content.deletetargetconfirm', {target: this.getDelEnvPath()}),
           btnList: [//底部操作区域的按钮数组
             {
               text: this.$t('page.cancel'),

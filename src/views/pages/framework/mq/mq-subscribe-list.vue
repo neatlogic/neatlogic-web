@@ -126,7 +126,7 @@ export default {
     deleteSubscribe(sub) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: sub.name }),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: sub.name }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.mq.deleteSubscribe(sub.id).then(res => {
