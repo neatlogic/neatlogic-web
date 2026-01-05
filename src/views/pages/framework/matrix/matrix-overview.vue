@@ -74,6 +74,14 @@
               <div class="title pb-sm">
                 <div class="overflow top-title-matrix text-action" :title="row.name + '('+row.label+')'" @click="editMatrix(row.uuid, row.name, row.type)"><span>{{ row.name }}</span><span class="text-grey">({{ row.label }})</span></div>
                 <div class="text-grey top-typename">
+                  <span v-if="row.error">
+                    <Poptip :transfer="true" placement="right" trigger="hover">
+                      <i class="tsfont-warning-s text-error"></i>
+                      <div slot="content">
+                        {{ row.error }}
+                      </div>
+                    </Poptip>
+                  </span>
                   <Tooltip :content="row.typeName" transfer theme="light">
                     <Icon :size="16" :custom="getIconByType(row.type)" class="text-primary customize-data-icon" />
                   </Tooltip>
@@ -98,6 +106,17 @@
             @changeCurrent="getPagedata"
             @changePageSize="changePageSize"
           >
+            <template slot="error" slot-scope="{ row }">
+              <div v-if="row.error">
+                <Poptip :transfer="true" placement="right" trigger="hover">
+                  <i class="tsfont-warning-s text-error"></i>
+                  <div slot="content">
+                    {{ row.error }}
+                  </div>
+                </Poptip>
+              </div>
+              <div v-else>-</div>
+            </template>
             <template slot="lcu" slot-scope="{ row }">
               <UserCard v-if="row.type !='private'" v-bind="row.lcuVo"></UserCard>
               <div v-else>-</div>
@@ -553,6 +572,10 @@ export default {
         {
           title: this.$t('page.referencecount'),
           key: 'referenceCount'
+        },
+        {
+          title: this.$t('page.error'),
+          key: 'error'
         },
         {
           title: this.$t('page.fcu'),
