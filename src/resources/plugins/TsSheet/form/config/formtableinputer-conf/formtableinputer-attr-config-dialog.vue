@@ -968,11 +968,25 @@ export default {
       if (config.dataSource === 'matrix' && config.matrixUuid) {
         setting.dynamicUrl = '/api/rest/matrix/column/data/search/forselect';
         setting.rootName = 'dataList';
-        const params = { matrixUuid: config.matrixUuid };
+        const params = { matrixUuid: config.matrixUuid, filterList: [] };
         if (config.mapping) {
           params.keywordColumn = config.mapping.text;
           params.valueField = config.mapping.value;
           params.textField = config.mapping.text;
+        }
+        if (config.sourceColumnList && config.sourceColumnList.length > 0) {
+          config.sourceColumnList.forEach(sourceColumn => {
+            if (!this.$utils.isEmpty(sourceColumn.valueList) && sourceColumn.column && sourceColumn.expression) {
+              const newValueList = sourceColumn.valueList.filter(v => !this.$utils.isEmpty(v));
+              if (!this.$utils.isEmpty(newValueList)) {
+                params.filterList.push({
+                  uuid: sourceColumn.column,
+                  expression: sourceColumn.expression,
+                  valueList: newValueList
+                });
+              }
+            }
+          });
         }
         setting.params = params;
       } else {
