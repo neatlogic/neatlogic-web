@@ -51,7 +51,6 @@ export function initRouter(VueRouter, store) {
     base: '/' + TENANT + '/' + MODULEID + '.html',
     routes: MENULIST
   });
-  const gettingUserInfo = store.dispatch('getUserInfo');
   const gettingModuleList = store.dispatch('getModuleList');
   // 返回的路由(包含所有模块)
   let routerFromPageConfig = sessionStorage.getItem('moduleFromPage') ? JSON.parse(sessionStorage.getItem('moduleFromPage')) : {};
@@ -84,7 +83,6 @@ export function initRouter(VueRouter, store) {
        * 直接从localstrage调出fromPageList,后续访问使用场景一的处理方式。
        *
        */
-      await gettingUserInfo;
       await gettingModuleList;
       // 启动心跳
       authHeartbeat.start(store.state.userInfo.tokenHash);
