@@ -17,7 +17,7 @@
             class="action-item tsfont-upload"
             :class="{ 'text-disabled': !hasAuth }"
             :title="!hasAuth ? $t('page.notauthrelationadmin') : ''"
-            @click.self="$refs.uploadDialog.showDialog"
+            @click.self="hasAuth && $refs.uploadDialog.showDialog"
           >{{ $t('page.import') }}</span>
           <!-- <span
             v-if="hasAuth"
