@@ -9,52 +9,65 @@
       >
         <Col :span="item.column?8:22">
           <TsFormSelect
+            ref="formitem_column"
             v-model="item.column"
             :dataList="listFilter(dataList,sourceColumnList,item.column)"
             v-bind="uuidConfig"
             :disabled="disabled"
+            :validateList="validateList"
             @on-change="getMatrixvalue(item)"
           ></TsFormSelect>
         </Col>
         <template v-if="item.column">
           <Col :span="item.expression != 'is-null' && item.expression != 'is-not-null'?6:14">
             <TsFormSelect
+              ref="formitem_expression"
               v-model="item.expression"
               :dataList="getExpressionList(item.type)"
               :disabled="disabled"
+              :validateList="validateList"
+              transfer
               @on-change="changeExpression(item)"
             ></TsFormSelect>
           </Col>
           <Col v-if="item.expression != 'is-null' && item.expression != 'is-not-null'" span="8">
             <TsFormSelect
               v-if="item.type === 'select'"
+              ref="formitem_value"
               v-model="item.defaultValue"
               v-bind="valueConfig(item.column)"
               :disabled="disabled"
+              :validateList="validateList"
               @on-change="(value, config, selectItem)=>{ changeValue(selectItem,index,'select'); }"
             ></TsFormSelect>
             <TsFormDatePicker
               v-else-if="item.type === 'date'"
+              ref="formitem_value"
               v-model="item.defaultValue"
               valueType="format"
               type="datetimerange"
               transfer
               :disabled="disabled"
+              :validateList="validateList"
               @on-change="(value)=>{ changeValue(value,index); }"
             ></TsFormDatePicker>
             <UserSelect
               v-else-if="item.type === 'user' || item.type === 'role'|| item.type === 'team'"
+              ref="formitem_value"
               v-model="item.defaultValue"
               :multiple="true"
               :transfer="true"
               :groupList="[item.type]"
               :disabled="disabled"
+              :validateList="validateList"
               @on-change="(value)=>{ changeValue(value,index); }"
             ></UserSelect>
             <TsFormInput
               v-else
+              ref="formitem_value"
               v-model="item.defaultValue[0]"
               :disabled="disabled"
+              :validateList="validateList"
               @on-change="(value)=>{changeValue(value,index);}"
             ></TsFormInput>
           </Col>
@@ -104,7 +117,8 @@ export default {
         validateList: ['required']
       },
       sourceColumnList: [],
-      expressionConfig: expressionConfig
+      expressionConfig: expressionConfig,
+      validateList: ['required']
     };
   },
   beforeCreate() {},
@@ -175,6 +189,27 @@ export default {
       } else {
         this.$set(this.sourceColumnList[index], 'valueList', [value]);
       }
+    },
+    valid() {
+      let isValid = true;
+      let refs = this.$refs;
+      Object.keys(refs).forEach(key => {
+        const item = this.$refs[key];
+        if (item) {
+          if (Array.isArray(item) && item.length) {
+            item.forEach(k => {
+              if (k.valid && !k.valid()) {
+                isValid = false;
+              }
+            });
+          } else {
+            if (item.valid && !item.valid()) {
+              isValid = false;
+            }
+          }
+        } 
+      });
+      return isValid;
     }
   },
   computed: {
