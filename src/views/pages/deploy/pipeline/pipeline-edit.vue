@@ -397,7 +397,7 @@ export default {
     deleteJob() {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.pipelineData.name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: this.pipelineData.name}),
         'on-ok': vnode => {
           this.$api.deploy.pipeline
             .deletePipeline(this.pipelineData.id).then(res => {

@@ -514,7 +514,7 @@ export default {
     deleteRow(row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: row.name + '(' + row.id + ')' }),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: row.name + '(' + row.id + ')' }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.autoexec.job

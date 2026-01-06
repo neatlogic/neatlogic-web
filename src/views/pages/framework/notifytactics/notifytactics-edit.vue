@@ -395,7 +395,7 @@ export default {
       });
       if (type && type == 'active') {
         this.delType = 'active';
-        this.delTitle = this.$t('dialog.content.deleteconfirm', {target: this.$t('page.actions') + this.numberChinese(index)});
+        this.delTitle = this.$t('dialog.content.deletetargetconfirm', {target: this.$t('page.actions') + this.numberChinese(index)});
         this.$set(row, 'isDelActive', true);
         this.avtiveConfig.name = this.numberChinese(index);
         this.avtiveConfig.id = item.id;

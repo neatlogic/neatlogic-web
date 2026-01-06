@@ -356,7 +356,7 @@ export default {
       if (this.authName) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', {target: item.name}),
+          content: this.$t('dialog.content.deletetargetconfirm', {target: item.name}),
           btnType: 'error',
           'on-ok': async vnode => {
             const key = await this.deleteMember(item.uuid);

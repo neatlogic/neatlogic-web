@@ -407,7 +407,7 @@ export default {
       if (row && row.value) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', { target: row.text }),
+          content: this.$t('dialog.content.deletetargetconfirm', { target: row.text }),
           btnType: 'error',
           okText: this.$t('page.delete'),
           'on-ok': vnode => {

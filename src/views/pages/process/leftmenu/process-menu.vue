@@ -213,7 +213,7 @@ export default {
       this.$createDialog({
         type: 'modal',
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: name}),
         maskClose: true,
         btnType: 'error',
         'on-ok': function(vnode) {

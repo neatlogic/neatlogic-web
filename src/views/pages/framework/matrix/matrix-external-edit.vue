@@ -148,7 +148,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.matrixName}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: this.matrixName}),
         btnType: 'error',
         'on-ok': vnode => {
           let data = {

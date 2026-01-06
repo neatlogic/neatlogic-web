@@ -219,7 +219,7 @@ export default {
     deleteAccount(row) {
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: row.referredCount > 0 ? this.$t('page.deletetarget', {target: this.$t('page.account')}) : this.$t('dialog.content.deleteconfirm', {target: row.name}),
+        content: row.referredCount > 0 ? this.$t('page.deletetarget', {target: this.$t('page.account')}) : this.$t('dialog.content.deletetargetconfirm', {target: row.name}),
         btnType: 'error',
         okText: this.$t('page.delete'),
         'on-ok': vnode => {

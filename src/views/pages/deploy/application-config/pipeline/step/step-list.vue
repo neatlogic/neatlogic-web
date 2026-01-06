@@ -379,7 +379,7 @@ export default {
     delStep(config, oindex) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: config.name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: config.name}),
         btnType: 'error',
         'on-ok': vnode => {
           vnode.isShow = false;

@@ -208,7 +208,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: row.name}),
         'on-ok': vnode => {
           vnode.isShow = false;
           let findIndex = this.tbodyList.findIndex(item => item.uuid === row.uuid);

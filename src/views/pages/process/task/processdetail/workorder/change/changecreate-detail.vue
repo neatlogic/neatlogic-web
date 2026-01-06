@@ -418,7 +418,7 @@ export default {
       let _this = this;
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: name}),
         btnType: 'error',
         'on-ok': vnode => {
           let index = this.newChangeStepList.map(item => item.uuid).indexOf(id);

@@ -358,7 +358,7 @@ export default {
       let that = this;
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deletetargetconfirm', {target: this.$t('page.auth')}),
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.auth')}),
         btnType: 'error',
         'on-ok': vnode => {
           that.$api.framework.user.deleteProcesstask().then(res => {

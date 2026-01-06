@@ -137,7 +137,7 @@ export default {
       };
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.role') + '：' + row.name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: this.$t('page.role') + '：' + row.name}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.role

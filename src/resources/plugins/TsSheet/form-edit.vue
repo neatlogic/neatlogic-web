@@ -537,7 +537,7 @@ export default {
     removeCustomItem(customItem) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: customItem.label }),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: customItem.label }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.form.deleteCustomItem(customItem.id).then(res => {
@@ -927,7 +927,7 @@ export default {
 
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: version + this.$t('page.versions') }),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: version + this.$t('page.versions') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.form.delFormVersion({ uuid: uuid }).then(res => {
