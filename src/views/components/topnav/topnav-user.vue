@@ -12,6 +12,7 @@
           v-bind="userInfo"
           :avatar="avatarUrl"
           :size="24"
+          initType="user"
           class="user-avatar"
         ></TsAvatar>
         <i class="tsfont-down" :class="{'arrow-dropdown':isDropdown}"></i>
