@@ -2,10 +2,8 @@ import axios from '../../http';
 
 const matrix = {
   //获取矩阵列表
-  getMatrixList(data) {
-    return axios.get('/api/rest/matrix/search', {
-      params: data
-    });
+  getMatrixList(params) {
+    return axios.post('/api/rest/matrix/search', params);
   },
   //获取矩阵属性
   getMatrixAttributeByUuid(params) {
