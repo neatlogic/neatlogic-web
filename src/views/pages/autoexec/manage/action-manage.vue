@@ -17,7 +17,7 @@
             class="action-item tsfont-upload"
             :class="{ 'text-disabled': !hasAuth }"
             :title="!hasAuth ? $t('page.notauthrelationadmin') : ''"
-            @click.self="$refs.uploadDialog.showDialog"
+            @click.self="hasAuth && $refs.uploadDialog.showDialog"
           >{{ $t('page.import') }}</span>
           <!-- <span
             v-if="hasAuth"
@@ -540,7 +540,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: row.name}),
         btnType: 'error',
         'on-ok': vnode => {
           let data = { id: row.id };
