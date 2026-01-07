@@ -121,7 +121,7 @@
               labelWidth="70"
             > 
               <TsFormSelect
-                ref="cmdbci"
+                ref="modelRef"
                 v-model="cmdbCi.ciId"
                 v-bind="cmdbCiConfig"
                 :validateList="validateList"
@@ -137,7 +137,7 @@
               labelWidth="70"
             > 
               <TsFormSelect
-                ref="cmdbciattr"
+                ref="attributeRef"
                 v-model="cmdbCi.label"
                 v-bind="cmdbCiAttrConfig"
                 :validateList="validateList"
@@ -358,6 +358,11 @@ export default {
             validList.push(false);
           }
         });
+      }
+      const modelRef = this.$refs?.modelRef;
+      const attributeRef = this.$refs?.attributeRef;
+      if (modelRef && !modelRef.valid() || attributeRef && !attributeRef.valid()) {
+        validList.push(false);
       }
       if (validList.length > 0) {
         return;
