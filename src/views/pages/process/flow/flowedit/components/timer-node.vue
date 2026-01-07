@@ -7,7 +7,7 @@
       :formConfig="formConfig"
       :toSetting="toSetting"
       :nodeConfig="nodeConfig"
-      @updateScene="updateScene"
+      @updateScene="changeFormScene"
     ></FormsceneSetting>
     <div class="permission-list require-label text-grey">
       {{ $t('term.process.circulationtime') }}
@@ -67,7 +67,8 @@ export default {
       },
       validateList: ['required'],
       formDataList: [],
-      workerPolicyConfig: {}
+      workerPolicyConfig: {},
+      isFirst: true
     };
   },
   beforeCreate() {},
@@ -93,6 +94,10 @@ export default {
           this.timerConfig[key] = defaultData[key];
         });
       }
+      if (this.isFirst) {
+        this.getFormTimeList();
+        this.isFirst = false;
+      }
     },
     saveNodeData() {
       let stepConfig = Object.assign({}, this.timerConfig);
@@ -114,27 +119,72 @@ export default {
       });
     },
     getFormTimeList() {
-      if (this.allFormitemList && this.allFormitemList.length) {
-        this.formDataList = this.allFormitemList.filter(item => item.handler == 'formdate' && item.config.isRequired);
-        if (this.timerConfig.attributeUuid) {
-          let attributeUuid = this.formDataList.find(f => f.uuid == this.timerConfig.attributeUuid);
-          !attributeUuid && (this.timerConfig.attributeUuid = '');
-        }
-      } else {
+      let formItemList = [];
+      const formConfig = this.currentFormConfig;
+      if (this.$utils.isEmpty(formConfig)) {
         this.formDataList = [];
         this.timerConfig.attributeUuid = '';
+        return;
       }
+
+      const currentSceneUuid = this.configData?.stepConfig?.formSceneUuid || formConfig.defaultSceneUuid || formConfig.uuid;
+
+      //如果场景不是默认场景，需要遍历场景下的所有组件
+      if (currentSceneUuid && currentSceneUuid != formConfig.uuid) {
+        let sceneConfig = formConfig.sceneList.find(item => item.uuid === currentSceneUuid);
+        if (sceneConfig) {
+          sceneConfig.tableList.forEach(item => {
+            if (item.component) {
+              if (item.component.inherit) {
+                let component = this.allFormitemList.find(c => c.uuid === item.component.uuid);
+                if (component) {
+                  this.$set(item, 'component', component);
+                }
+              }
+            
+              if (item.component.hasValue) {
+                formItemList.push(item.component);
+              } else if (item.component.component && Array.isArray(item.component.component)) {
+                if (!this.$utils.isEmpty(item.component.component)) {
+                  formItemList.push(...item.component.component);
+                }
+              }
+            }
+          });
+        }
+      } 
+      if (!formItemList.length && this.allFormitemList.length) {
+        formItemList = this.allFormitemList;
+      }
+     
+      this.formDataList = formItemList.filter(item => item.handler == 'formdate' && item.config.isRequired);
+      if (this.timerConfig.attributeUuid) {
+        let attributeUuid = this.formDataList.find(f => f.uuid == this.timerConfig.attributeUuid);
+        !attributeUuid && (this.timerConfig.attributeUuid = '');
+      }
+    },
+    changeFormScene(sceneConfig) {
+      this.$set(this.configData.stepConfig, 'formSceneUuid', sceneConfig.value);
+      this.getFormTimeList();
     }
   },
   computed: {
     allFormitemList() {
       return store.allFormitemList;
+    },
+    currentFormConfig() {
+      return store.currentFormConfig;
     }
   },
   watch: {
-    allFormitemList: {
+    currentFormConfig: {
       handler(val) {
-        this.getFormTimeList();
+        if (!this.isFirst) {
+          if (this.$utils.isEmpty(val)) {
+            this.$set(this.configData.stepConfig, 'formSceneUuid', '');
+          }
+          this.getFormTimeList();
+        }
       },
       deep: true,
       immediate: true

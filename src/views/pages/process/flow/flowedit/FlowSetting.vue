@@ -125,6 +125,7 @@
 import FormPreview from '@/resources/components/FormMaker/formview/form-view.vue';
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
+import { mutations } from './floweditState.js';
 export default {
   name: 'FlowSetting',
   components: {
@@ -227,6 +228,7 @@ export default {
         this.getFormItem(val);
       } else {
         this.$emit('updateformitemList', []);
+        mutations.setCurrtentFormConfig({});
       }
       this.$emit('update:formUuid', val);
       this.$emit('changeRelateForm', val);
@@ -291,6 +293,7 @@ export default {
               plugin = this.formContent.controllerList;
             }
             this.$emit('updateformitemList', this.$utils.deepClone(plugin)); //表单组件
+            mutations.setCurrtentFormConfig(this.formContent);
           }
         }
       });
@@ -380,7 +383,10 @@ export default {
   watch: {
     formConfig: {
       handler(val, oldval) {
-        val && val.uuid && this.getFormItem(val.uuid) && (this.relateList.uuid = val.uuid); // 解决重置关联表单预览失败
+        if (val && val.uuid && !this.$utils.isSame(val.uuid, this.relateList.uuid)) {
+          this.getFormItem(val.uuid);
+          this.relateList.uuid = val.uuid; // 解决重置关联表单预览失败
+        }
       },
       deep: true
     },
