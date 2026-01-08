@@ -1088,5 +1088,6 @@
   "systemmenuauth": "系统菜单权限",
   "defaulthomepage": "默认首页",
   "selectalltip": "多选模式下支持当前数据全选",
-  "pagesizedes": "数量限制：10-500条"
+  "pagesizedes": "数量限制：10-500条",
+  "staticvalue": "静态值"
 }
