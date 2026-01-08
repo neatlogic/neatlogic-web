@@ -1,5 +1,5 @@
 <template>
-  <div style="min-height: 32px;">
+  <div>
     {{ expressionValue }}
     <div v-if="!expressionValue && vaildError" class="form-error-tip">{{ vaildError }}</div>
   </div>
