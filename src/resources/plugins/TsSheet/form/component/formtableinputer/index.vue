@@ -500,7 +500,11 @@ export default {
     changeRow(rowData) {
       const { value, extraUuid = '', row = {} } = rowData || {};
       if (!this.$utils.isSame(value, row[extraUuid])) {
-        row[extraUuid] = value;
+        if (!row.hasOwnProperty(extraUuid)) {
+          this.$set(row, extraUuid, value); // 修复条件赋值不生效问题
+        } else {
+          row[extraUuid] = value;
+        }
       }
     },
     getCurrentRowData(currentRowData) {
