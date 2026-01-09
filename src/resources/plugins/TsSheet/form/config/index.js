@@ -23,6 +23,7 @@ import formcube from './formcube-conf.vue';
 import formtab from './formtab-conf';
 import formcollapse from './formcollapse-conf.vue';
 import formscript from './formscript-conf.vue';
+import formexpression from './formexpression-conf.vue';
 
 // import * as hideComponent from './hide/index.js';
 
@@ -70,6 +71,7 @@ export default {
   formtab,
   formcollapse,
   formscript,
+  formexpression,
   // ...hideComponent,
   ...cmdbComponent,
   ...autoexecComponent,
