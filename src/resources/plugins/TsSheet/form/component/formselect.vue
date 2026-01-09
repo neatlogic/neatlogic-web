@@ -297,7 +297,7 @@ export default {
         }
         this.clearCurrentValue(setting.dataList);
       } else if (this.config.dataSource === 'tag') {
-        setting.dataList = this.getTagDataList(this.formData);
+        setting.dataList = this.getTagDataList(this.formDataForWatch); // 表格输入组件，formData值不全。
         this.clearCurrentValue(setting.dataList);
       } else {
         setting.showName = 'text';
