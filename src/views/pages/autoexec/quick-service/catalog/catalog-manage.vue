@@ -331,7 +331,7 @@ export default {
       };
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: treeNode.name }),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: treeNode.name }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.autoexec.catalogManage.deleteService(data).then(res => {

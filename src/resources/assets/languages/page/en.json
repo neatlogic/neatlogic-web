@@ -1086,5 +1086,7 @@
   "systemmenuauth": "System menu permissions",
   "defaulthomepage": "default page",
   "selectalltip": "Support full selection of current data in multiple selection mode",
-  "pagesizedes": "Quantity limit: 10-500 pieces"
+  "pagesizedes": "Quantity limit: 10-500 pieces",
+  "staticvalue": "static value",
+  "middleware": "middleware"
 }

@@ -566,7 +566,7 @@ export default {
     deleteIssue(issue) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: issue.appName }),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: issue.appName }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.rdm.issue.deleteIssue(issue.id).then(res => {

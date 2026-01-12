@@ -113,6 +113,7 @@
             v-model="formData.formConfig"
             :readonly="readOnly"
             :disabledHideComponent="true"
+            :defaultExtendConfigList="extendConfigList"
             @selectCell="selectCell"
             @removeComponent="removeComponent"
             @updateItemList="updateItemList"
@@ -125,6 +126,7 @@
             :disabled="disabled"
             :initFormItemList="initFormItemList"
             source="scene"
+            :extendConfigList="extendConfigList"
             class="form-item-config bg-grey border-base-left"
             @close="currentFormItem = null"
             @inheritFormItem="inheritFormItem"
@@ -132,6 +134,7 @@
           <FormPreview
             v-if="isPreviewShow"
             :data="previewFormData"
+            :extendConfigList="extendConfigList"
             @close="closePreview"
           ></FormPreview>
         </div>
@@ -202,7 +205,8 @@ export default {
       sceneList: [],
       deleteSceneUuid: '',
       readOnly: false,
-      processTaskId: null
+      processTaskId: null,
+      extendConfigList: []
     };
   },
   beforeCreate() {},
@@ -369,6 +373,9 @@ export default {
             }
           }
           this.formData.formConfig.hideComponentList = this.hideComponentList;
+          if (formConfig.formCustomExtendConfig) {
+            this.extendConfigList = formConfig.formCustomExtendConfig.extendConfigList || []; 
+          }
           this.$addWatchData(this.getCompareData(sceneConfig));
         }
       }).finally(() => {

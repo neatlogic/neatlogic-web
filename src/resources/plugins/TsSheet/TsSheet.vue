@@ -337,6 +337,7 @@
             :isCustomValue="true"
             :formExtendData="formExtendData"
             :externalData="externalData"
+            :extendConfigList="extendConfigList"
             @setValue="setValue"
             @emit="
               val => {

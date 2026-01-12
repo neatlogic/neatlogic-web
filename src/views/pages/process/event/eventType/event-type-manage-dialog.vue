@@ -94,7 +94,7 @@
       @on-ok="confirmDelete(params)"
       @on-close="close"
     >
-      <div>{{ $t('dialog.content.deleteconfirm', {target:params.node.name}) }}</div>
+      <div>{{ $t('dialog.content.deletetargetconfirm', {target:params.node.name}) }}</div>
     </TsDialog>
 
   </div>

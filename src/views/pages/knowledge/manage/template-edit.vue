@@ -218,7 +218,7 @@ export default {
       const {uuid, content} = this.rootNode;
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: content}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: content}),
         btnType: 'error',
         'on-ok': async vnode => {
           const params = { id: uuid };

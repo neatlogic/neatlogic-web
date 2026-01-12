@@ -163,7 +163,7 @@ export default {
       const {id, title} = notice;
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: title}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: title}),
         btnType: 'error',
         'on-ok': async vnode => {
           await this.$api.framework.notice.remove(id);

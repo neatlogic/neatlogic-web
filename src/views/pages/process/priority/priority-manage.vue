@@ -277,7 +277,7 @@ export default {
     deleteRow(uuid, name) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: name}),
         btnType: 'error',
         'on-ok': vnode => {
           if (!this.deleting) {

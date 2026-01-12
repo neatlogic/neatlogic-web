@@ -45,8 +45,8 @@ const actions = {
     let moduleList = [];
     let userAuthList = [];
     state.gettingModuleList = commonApi.getModuleList();
+    const userRes = await commonApi.getCurrentUser();
     const res = await state.gettingModuleList;
-    const userRes = await commonApi.getUser();
     let showModuleList = null; //可以显示的模块，如果不是单独命令行的就默认null全部需要展示，如果有单独配置的获取配置
     if (GLOBAL_PAGELIST && JSON.parse(GLOBAL_PAGELIST)) {
       //如果是指定编译模块的，要过滤掉不在模块列表里的
@@ -60,6 +60,7 @@ const actions = {
           userAuthList.push(item.auth); // 拿到所有权限列表
         }
       });
+    commit('setUserInfo', userRes && userRes.Return ? userRes.Return : {}); // 设置用户信息，避免因执行顺序问题引发权限获取失败
     res &&
       res.Return &&
       res.Return.forEach(moduleGroup => {

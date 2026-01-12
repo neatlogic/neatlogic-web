@@ -22,7 +22,10 @@
               <Radio label="list"><i class="tsfont-list"></i></Radio>
             </RadioGroup>
           </Col>
-          <Col :span="18">
+          <Col :span="6">
+            <TsFormSelect v-model="matrixType" v-bind="typeFormSelectConfig" @on-change="getMatrixList(1)" />
+          </Col>
+          <Col :span="12">
             <InputSearcher
               v-model="keyword"
               @change="searchMatrix()"
@@ -71,6 +74,14 @@
               <div class="title pb-sm">
                 <div class="overflow top-title-matrix text-action" :title="row.name + '('+row.label+')'" @click="editMatrix(row.uuid, row.name, row.type)"><span>{{ row.name }}</span><span class="text-grey">({{ row.label }})</span></div>
                 <div class="text-grey top-typename">
+                  <span v-if="row.error">
+                    <Poptip :transfer="true" placement="right" trigger="hover">
+                      <i class="tsfont-warning-s text-error"></i>
+                      <div slot="content">
+                        {{ row.error }}
+                      </div>
+                    </Poptip>
+                  </span>
                   <Tooltip :content="row.typeName" transfer theme="light">
                     <Icon :size="16" :custom="getIconByType(row.type)" class="text-primary customize-data-icon" />
                   </Tooltip>
@@ -95,6 +106,17 @@
             @changeCurrent="getPagedata"
             @changePageSize="changePageSize"
           >
+            <template slot="error" slot-scope="{ row }">
+              <div v-if="row.error">
+                <Poptip :transfer="true" placement="right" trigger="hover">
+                  <i class="tsfont-warning-s text-error"></i>
+                  <div slot="content">
+                    {{ row.error }}
+                  </div>
+                </Poptip>
+              </div>
+              <div v-else>-</div>
+            </template>
             <template slot="lcu" slot-scope="{ row }">
               <UserCard v-if="row.type !='private'" v-bind="row.lcuVo"></UserCard>
               <div v-else>-</div>
@@ -344,6 +366,13 @@ export default {
       importMatrixDefinitionUrl: BASEURLPREFIX + '/api/binary/matrix/import', // 矩阵定义导入
       loadingShow: true,
       keyword: '',
+      matrixType: null,
+      typeFormSelectConfig: {
+        placeholder: this.$t('page.type'),
+        border: 'border',
+        dynamicUrl: '/api/rest/universal/enum/get',
+        params: {enumClass: 'MatrixTypeFactory'}
+      },
       showFileError: false, //视图数据校验信息是否展示
       defaultFileList: [],
       addAtrixForm: {
@@ -545,6 +574,10 @@ export default {
           key: 'referenceCount'
         },
         {
+          title: this.$t('page.error'),
+          key: 'error'
+        },
+        {
           title: this.$t('page.fcu'),
           key: 'lcu'
         },
@@ -700,10 +733,12 @@ export default {
     getMatrixList: function(currentPage) {
       let data = {
         keyword: this.keyword,
+        type: this.matrixType,
         pageSize: this.matrixCardData.pageSize,
         currentPage: currentPage || this.matrixCardData.currentPage
       };
       this.loadingShow = true;
+      this.$addHistoryData('matrixType', this.matrixType);
       this.$addHistoryData('modeType', this.modeType);
       this.$addHistoryData('keyword', this.keyword);
       this.$addHistoryData('currentPage', data.currentPage);
@@ -784,12 +819,14 @@ export default {
     //表格形式展示数据
     getMatrixTableList(currentPage, pageSize) {
       this.loadingShow = true;
+      this.$addHistoryData('matrixType', this.matrixType);
       this.$addHistoryData('modeType', this.modeType);
       this.$addHistoryData('keyword', this.keyword);
       this.$addHistoryData('currentPage', currentPage);
       this.$addHistoryData('pageSize', pageSize);
       this.$api.framework.matrix.getMatrixList({
         keyword: this.keyword,
+        type: this.matrixType,
         currentPage: currentPage,
         pageSize: pageSize
       }).then(res => {
@@ -835,7 +872,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: row.name}),
         btnType: 'error',
         'on-ok': vnode => {
           let data = {

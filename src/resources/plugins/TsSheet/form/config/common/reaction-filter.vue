@@ -7,7 +7,7 @@
             对于下拉框组件：{{ $t('term.framework.requiredselectedtips') }}
           </template>
           <div :class="formItem.handler && formItem.handler == 'formselect' ? 'mt-xs' : ''">
-            目前可作为组件值的组件有：下拉框、单选框、复选框、用户选择、上报人、日期、时间。
+            目前可作为组件值的组件有：下拉框、单选框、复选框、用户选择、上报人、日期、时间、表达式、文本框。
           </div>
         </Alert>
       </Col>
@@ -84,7 +84,7 @@ export default {
     return {
       filter: this.value || {},
       validateList: [{ name: 'required', message: ' ' }],
-      filterComponentList: ['formselect', 'formradio', 'formcheckbox', 'formuserselect', 'formdispatchowner', 'formdate', 'formtime']
+      filterComponentList: ['formselect', 'formradio', 'formcheckbox', 'formuserselect', 'formdispatchowner', 'formdate', 'formtime', 'formtext', 'formexpression']
     };
   },
   beforeCreate() {},

@@ -284,7 +284,7 @@ export default {
       if (this.changeTemplateId) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', {target: this.changeBasicData.name}),
+          content: this.$t('dialog.content.deletetargetconfirm', {target: this.changeBasicData.name}),
           btnType: 'error',
           'on-ok': vnode => {
             let data = {

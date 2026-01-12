@@ -243,7 +243,7 @@ export default {
       if (obj.changeTemplateList.length == 0) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', {target: obj.name}),
+          content: this.$t('dialog.content.deletetargetconfirm', {target: obj.name}),
           btnType: 'error',
           'on-ok': vnode => {
             if (!this.deleting) {

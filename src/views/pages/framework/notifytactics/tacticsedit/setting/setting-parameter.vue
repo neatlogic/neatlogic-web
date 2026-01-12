@@ -67,7 +67,7 @@
                   </div>
                   <DelItme
                     v-if="row.isDel"
-                    :delName="$t('dialog.content.deleteconfirm', {target: row.name})"
+                    :delName="$t('dialog.content.deletetargetconfirm', {target: row.name})"
                     buttonSize="small"
                     @on-del="delParam(row)"
                     @on-close="closeParam(row)"

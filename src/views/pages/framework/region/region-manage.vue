@@ -327,7 +327,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.regionName}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: this.regionName}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.region.deleteRegion({id: this.regionId})
@@ -352,7 +352,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: name}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.framework.region.deleteRegion({id: id})

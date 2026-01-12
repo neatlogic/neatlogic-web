@@ -35,6 +35,7 @@
   </div>
 </template>
 <script>
+import { store as processStore } from '@/views/pages/process/task/processdetail/processStore.js';
 export default {
   name: '',
   components: {},
@@ -118,14 +119,22 @@ export default {
       this.getServicechannel(currentPage - 1);
     },
     //跳转到工单上报
-    goWorkOrder: function(item) {
+    goWorkOrder(item) {
       let uuid = item.uuid;
+      let stepId = this.fromProcessTaskStepId;
+      if (!stepId) {
+        // 当前用户不是步骤处理人，取的是步骤列表激活并且是进行中或者待处理的步骤，如果是多个，取任意一个即可
+        const stepItem = processStore.stepDataList.find((item) => item.isActive && (item.status == 'pending' || item.status == 'running'));
+        if (stepItem) {
+          stepId = stepItem.id;
+        }
+      }
       this.$router.push({
         path: '/task-dispatch',
         query: {
           uuid: uuid,
           fromProcessTaskId: this.processTaskId,
-          fromProcessTaskStepId: this.fromProcessTaskStepId,
+          fromProcessTaskStepId: stepId,
           channelTypeRelationId: this.channelTypeRelationId
         }
       });

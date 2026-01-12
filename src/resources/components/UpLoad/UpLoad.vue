@@ -269,7 +269,6 @@ export default {
       defaultFileList: [],
       fileStatus: 'normal',
       headerConfig: {
-        Authorization: sessionStorage.getItem('neatlogic_authorization') ? sessionStorage.getItem('neatlogic_authorization') : ''
       },
       srcList: [],
       initialIndex: 0,
