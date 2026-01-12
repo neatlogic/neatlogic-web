@@ -49,7 +49,9 @@
                   :formItem="getFormItem(conItem.formItemUuid)"
                   :value="conItem.valueList"
                   mode="condition"
+                  :showStatusIcon="false"
                   isCustomValue
+                  isNeedVadliValidate
                   @change="
                     val => {
                       setAttrValue(conItem, val);
@@ -332,6 +334,10 @@ export default {
         findItem.config.mapping.value = list[1];
         findItem.config.mapping.text = list[1];
       }
+      if (!findItem.config) {
+        findItem.config = {};
+      }
+      findItem.config.isRequired = true;
       return findItem;
     }
   },
