@@ -88,6 +88,10 @@ export default {
     isOrderRightHide: {
       type: Boolean,
       default: false
+    },
+    processTaskId: { // 工单ID
+      type: [Number, String],
+      default: null
     }
   },
   data() {
@@ -260,7 +264,18 @@ export default {
       return store.showDetailConfig;
     }
   },
-  watch: {}
+  watch: {
+    processTaskId: {
+      handler(id) {
+        if (id && !this.$utils.isSame(id, this.externalData.processTaskId)) {
+          // 编辑草稿时，需获取当前 processTaskId；同时隐藏工单信息组件，需要获取到当前工单 ID
+          this.$set(this.externalData, 'processTaskId', id);
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
