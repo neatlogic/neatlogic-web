@@ -91,6 +91,11 @@ export default {
           title: 'IP'
         },
         {
+          key: 'startTime',
+          title: this.$t('page.starttime'),
+          type: 'time'
+        },
+        {
           key: 'heartbeatTime',
           title: this.$t('term.framework.heartbeattime'),
           type: 'time'
