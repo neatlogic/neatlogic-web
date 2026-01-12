@@ -38,6 +38,7 @@
             <span
               v-clipboard="getIntegrationLink(row.uuid)"
               v-clipboard:success="clipboardSuc"
+              :title="$t('term.framework.clicktocopyuuid')"
               class="text-primary tsfont-copy"
               @click.stop
             ></span>
@@ -182,12 +183,13 @@ export default {
   destroyed() {},
   methods: {
     clipboardSuc() {
-      this.$Message.success(this.$t('message.copysuccess'));
+      this.$Message.success(this.$t('term.framework.successcopyintegrationuuid'));
     },
     getIntegrationLink(uuid) {
       const protocal = window.location.protocol;
       const host = window.location.host;
-      return protocal + '//' + host + BASEURLPREFIX + '/api/rest/integration/run/' + uuid;
+      //return protocal + '//' + host + BASEURLPREFIX + '/api/rest/integration/run/' + uuid;
+      return uuid;
     },
     change() {
       this.selectList = [];
