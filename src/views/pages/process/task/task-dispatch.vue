@@ -72,6 +72,7 @@
           :handler="handler"
           :draftData="draftData"
           :isOrderRightHide="isOrderRightHide"
+          :processTaskId="processTaskId"
           @updateMenu="updateMenu"
           @rightSiderToggle="rightSiderToggle"
         ></DispatchCommon>
