@@ -308,7 +308,7 @@ export default {
         if (val) {
           const {channelUuid = null, currentProcessTaskStep = {}} = val || {};
           this.channelUuid = channelUuid;
-          this.processTaskStepId = currentProcessTaskStep.id || null;
+          this.processTaskStepId = currentProcessTaskStep.id || null; // 当前用户是步骤处理人，取的是当前步骤的步骤ID
           if (this.channelUuid) {
             this.getRelarelationList(this.channelUuid);
           }

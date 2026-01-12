@@ -152,7 +152,7 @@ export default {
       this.searchParam.columnList = [];
       this.searchParam.searchColumnList = [];
       this.config.dataConfig.filter(d => !d.isExtra).forEach(d => {
-        d.isPC && this.searchParam.columnList.push(this.matrixAttrUuidMap[d.uuid]);
+        this.matrixAttrUuidMap[d.uuid] && this.searchParam.columnList.push(this.matrixAttrUuidMap[d.uuid]);
         d.isSearch && this.searchParam.searchColumnList.push(this.matrixAttrUuidMap[d.uuid]);
       });
       if (!this.searchParam.columnList.length) {
@@ -195,7 +195,7 @@ export default {
           tbodyList.forEach(d => {
             if (!this.$utils.isEmpty(this.config.dataConfig.length)) {
               this.config.dataConfig.forEach(column => {
-                if (column.isExtra && column.isPC) {
+                if (column.isExtra) {
                   this.$set(d, column.uuid, null);
                 }
               });
@@ -206,7 +206,7 @@ export default {
                 d['_selected'] = true;
                 for (let key in valueitem) {
                   const column = this.config.dataConfig.find(c => c.uuid === key);
-                  if (column && column.isExtra && column.isPC) {
+                  if (column && column.isExtra) {
                     this.$set(d, key, valueitem[key]);
                   }
                 }

@@ -9,6 +9,9 @@ const tenantconfig = {
   },
   saveTenantConfig(param) {
     return axios.post('api/rest/tenantconfig/save', param);
+  },
+  getMiddlewareConfig(param) {
+    return axios.post('api/rest/middlewareconfig/get', param);
   }
 };
 export default tenantconfig;
