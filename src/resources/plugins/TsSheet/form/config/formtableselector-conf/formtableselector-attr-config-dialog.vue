@@ -347,6 +347,7 @@
                 :formItemList="allFormItemList"
                 :config="propertyLocal.config"
                 :source="source"
+                :extendConfigList="extendConfigList"
                 @setDataConfig="(dataConfig)=>{
                   $set(propertyLocal.config, 'dataConfig', dataConfig);
                 }"
@@ -528,7 +529,8 @@ export default {
       type: Boolean,
       default: true
     },
-    source: {type: String, default: ''}
+    source: {type: String, default: ''},
+    extendConfigList: { type: Array, default: () => [] } // 标签扩展配置列表
   },
   data() {
     return {
