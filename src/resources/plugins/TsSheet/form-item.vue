@@ -75,6 +75,7 @@
           :extendConfigList="extendConfigList"
           :formDataForWatch="formDataForWatch"
           :extraFormItemList="extraFormItemList"
+          :isNeedVadliValidate="isNeedVadliValidate"
           @setValue="setValue"
           @resize="$emit('resize')"
           @select="selectFormItem"
@@ -232,6 +233,10 @@ export default {
     formDataForWatch: {
       type: Object,
       default: () => {}
+    },
+    isNeedVadliValidate: { //是否需要校验值是否为空
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -650,6 +655,12 @@ export default {
       const nameParts = customName.split('-');
       const componentName = nameParts.length > 1 ? nameParts[0] : customName;
       return `【${label}(${componentName})】${this.$t('term.framework.componentnoexist')}`;
+    },
+    valid() { //用于联动规则引用组件，组件校验
+      if (this.$refs['formItem'] && this.$refs['formItem'].valid) {
+        return this.$refs['formItem'].valid();
+      }
+      return true;
     }
   },
   filter: {},
