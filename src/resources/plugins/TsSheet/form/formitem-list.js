@@ -5,6 +5,7 @@ import { default as formtextarea } from './define/formtextarea.js';
 import { default as formckeditor } from './define/formckeditor.js';
 import { default as formnumber } from './define/formnumber.js';
 import { default as formpassword } from './define/formpassword.js';
+import { default as formexpression } from './define/formexpression.js';
 import { default as formselect } from './define/formselect.js';
 import { default as formcascader } from './define/formcascader.js';
 import { default as formradio } from './define/formradio.js';
@@ -42,4 +43,4 @@ export const FORMITEM_CATEGORY = [
   { value: 'autoexec', text: $t('term.framework.automationwidget') },
   { value: 'cmdb', text: $t('term.framework.cmdbwidget') }
 ];
-export const FORMITEMS = [formlabel, formtext, formtextarea, formckeditor, formnumber, formpassword, formselect, formcascader, formradio, formcheckbox, formcube, formtableselector, formtableinputer, formdate, formtime, formlink, formrate, formuserselect, formtreeselect, formaccounts, formupload, formdivider, formtab, formcollapse, formscript, ...AUTOEXECITEMS, ...CMDBITEMS, ...defineComponentList, ...HIDEITEMS];
+export const FORMITEMS = [formlabel, formtext, formtextarea, formckeditor, formnumber, formpassword, formexpression, formselect, formcascader, formradio, formcheckbox, formcube, formtableselector, formtableinputer, formdate, formtime, formlink, formrate, formuserselect, formtreeselect, formaccounts, formupload, formdivider, formtab, formcollapse, formscript, ...AUTOEXECITEMS, ...CMDBITEMS, ...defineComponentList, ...HIDEITEMS];

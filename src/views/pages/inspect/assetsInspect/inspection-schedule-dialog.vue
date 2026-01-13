@@ -25,7 +25,20 @@
               <span v-if="row.isActive == 0" class="text-grey">{{ $t('page.ban') }}</span>
             </template>
             <template slot="isLoad" slot-scope="{ row }">
-              <span v-if="row.jobStatus && row.jobStatus.isLoad == 1" class="text-success">{{ $t('page.yes') }}</span>
+              <span v-if="row.jobStatus && row.jobStatus.isLoad == 1" class="text-success">
+                <Poptip :transfer="true" placement="right" trigger="hover">
+                  {{ $t('page.yes') }}
+                  <div slot="content">
+                    <div v-if="row.jobStatus && row.jobStatus.jobLoadList" class="action-group">
+                      <div v-for="jobLoad in row.jobStatus.jobLoadList" :key="jobLoad.serverId" class="action-item">
+                        <span class="mr-xs text-grey">{{ $t('term.process.catalog') + jobLoad.serverId }}</span>
+                        <span v-if="jobLoad && jobLoad.isLoad == 1" class="text-success">{{ $t('page.yes') }}</span>
+                        <span v-else class="text-grey">{{ $t('page.no') }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </Poptip>
+              </span>
               <span v-else class="text-grey">{{ $t('page.no') }}</span>
             </template>
             <template v-slot:ciLabel="{ row }">

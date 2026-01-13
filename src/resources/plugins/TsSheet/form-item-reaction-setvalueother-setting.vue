@@ -8,7 +8,7 @@
         {{ $t('page.type') }}
       </Col>
       <Col span="8">
-        {{ $t('page.constant') }}/{{ $t('term.framework.hideattrassignment') }}
+        {{ $t('page.staticvalue') }}:{{ $t('page.constant') }}/{{ $t('page.dynamicvalue') }}:{{ $t('term.framework.hideattrassignment') }}
       </Col>
     </TsRow>
     <div v-for="(item,index) in list" :key="index" class="pb-sm">
@@ -112,7 +112,7 @@ export default {
       validateList: [{ name: 'required', message: ' ' }],
       typeDataList: [
         {
-          text: this.$t('term.autoexec.static'),
+          text: this.$t('page.staticvalue'),
           value: 'static'
         },
         {
