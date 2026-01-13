@@ -321,6 +321,7 @@
                 :formItemList="allFormItemList"
                 :config="propertyLocal.config"
                 :source="source"
+                :extendConfigList="extendConfigList"
                 @setDataConfig="(dataConfig)=>{
                   $set(propertyLocal.config, 'dataConfig', dataConfig);
                 }"

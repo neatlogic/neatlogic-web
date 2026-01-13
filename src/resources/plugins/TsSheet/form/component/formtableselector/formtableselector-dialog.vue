@@ -10,10 +10,12 @@
           ref="dataList"
           :formData="formData"
           :formItem="formItem"
+          :formDataForWatch="formDataForWatch"
           :value="value"
           :mode="mode"
           :filter="filter"
           :externalData="externalData"
+          :extendConfigList="extendConfigList"
           :formItemList="formItemList"
           @change="getSelectedData"
         ></DataList>
@@ -34,6 +36,11 @@ export default {
     filter: {type: Array},
     formItemList: { type: Array },
     formData: { type: Object },
+    formDataForWatch: { type: Object },
+    extendConfigList: { // 标签扩展配置列表
+      type: Array,
+      default: () => []
+    },
     externalData: {
       // 外部数据，非表单数据，例如工单上报人数据等
       type: Object,
