@@ -1,6 +1,16 @@
 <template>
   <div>
-    <TsContain :hideHeader="true">
+    <TsContain>
+      <template v-slot:topRight>
+        <div>
+          <Row span="24" :gutter="16">
+            <Col span="12"></Col>
+            <Col span="12">
+              <InputSearcher v-model="keyword" @change="changePage(1)"></InputSearcher>
+            </Col>
+          </Row>
+        </div>
+      </template>
       <template v-slot:content>
         <TsTable
           v-if="!loading"
@@ -40,12 +50,14 @@ export default {
   name: '',
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {},
   data() {
     return {
       loading: false,
+      keyword: null,
       currentPage: 1,
       pageSize: 20,
       theadList: [
@@ -112,7 +124,7 @@ export default {
     listTenantConfig() {
       this.loading = true;
       this.$api.framework.tenantconfig
-        .listTenantConfig({ currentPage: this.currentPage, pageSize: this.pageSize })
+        .listTenantConfig({ currentPage: this.currentPage, pageSize: this.pageSize, keyword: this.keyword })
         .then(res => {
           if (res.Status === 'OK') {
             this.tableData = res.Return;
