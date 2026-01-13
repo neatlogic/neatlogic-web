@@ -59,13 +59,9 @@
             </Row>
           </template>
           <template v-slot:basicInfo>
-            <ul v-if="formConfig?.basic?.value === 'true'">
-              <li class="bg-op radius-sm mb-nm">
-                <div class="padding">
-                  <TsForm ref="basicForm" :item-list="basicFormConfig"></TsForm>
-                </div>
-              </li>
-            </ul>
+            <div v-if="formConfig?.basic?.value === 'true'">
+              <TsForm ref="basicForm" :item-list="basicFormConfig"></TsForm>
+            </div>
           </template>
         </TsForm>
       </div>
