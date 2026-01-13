@@ -394,7 +394,8 @@ export default {
       handler: function(val) {
         this.searchMatrixData(1);
       },
-      deep: true
+      deep: true,
+      immediate: true
     },
     config: {
       handler: function(val) {
