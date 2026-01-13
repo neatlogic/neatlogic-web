@@ -31,6 +31,7 @@
       isCustomValue
       :isClearSpecifiedAttr="isClearSpecifiedAttr"
       :externalData="externalData"
+      :extendConfigList="extendConfigList"
       @resize="$emit('resize')"
       @setValue="setValue"
       @updateReactionSetValue="updateReactionSetValue"
@@ -77,6 +78,10 @@ export default {
     formDataForWatch: {
       type: Object,
       default: () => {}
+    },
+    extendConfigList: {
+      type: Array,
+      default: () => [] // 标签扩展配置列表
     }
   },
   data() {

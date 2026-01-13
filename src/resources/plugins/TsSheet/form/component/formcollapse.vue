@@ -29,6 +29,7 @@
                 :disabled="disabled"
                 :readonly="readonly"
                 :externalData="externalData"
+                :extendConfigList="extendConfigList"
                 :disabledDelete="formItem.hasOwnProperty('inherit')"
                 @resize="$emit('resize')"
                 @emit="

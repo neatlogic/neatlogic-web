@@ -19,6 +19,7 @@
             :disabled="disabled"
             :isCustomValue="isCustomValue"
             :externalData="externalData"
+            :extendConfigList="extendConfigList"
             :formDataForWatch="{...filterUuid(initFormData),...formDataForWatch, ...row}"
             :rowUuid="row.uuid"
             mode="read"
