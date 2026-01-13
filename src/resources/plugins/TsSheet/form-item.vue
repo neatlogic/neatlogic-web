@@ -151,7 +151,6 @@ import formItems from './form/component/index.js';
 import conditionMixin from './form/conditionexpression/condition-mixin.js';
 import { REACTION } from './form/reaction/index.js';
 import { FORMITEMS } from './form/formitem-list.js';
-import item from '../../../views/pages/autoexec/components/param/edit/dataSource/item/index.js';
 export default {
   name: '',
   components: {
@@ -699,7 +698,6 @@ export default {
             }
           }
         }
-        console.log(conditionData[uuid], 'pp');
         return conditionData[uuid];
       };
     },
