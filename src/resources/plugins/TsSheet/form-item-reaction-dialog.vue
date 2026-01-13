@@ -36,7 +36,7 @@
                 }
               "
             ></ConditionGroup>
-            <div v-if="key === 'setvalue'">
+            <div v-if="key === 'setvalue'" class="pb-nm">
               <template v-if="!$utils.isEmpty(r)">
                 <div class="mt-sm mb-sm text-grey">{{ $t('term.framework.assignment') }}</div>
                 <!--isDynamicValue: 是否可以动态赋值  -->
@@ -55,8 +55,10 @@
                 <!--dynamic:动态赋值  -->
                 <TsFormSelect
                   v-if="r.type === 'dynamic'"
+                  :ref="'condition_' + key"
                   :value="r.value"
                   :dataList="hasValueFormItemList"
+                  :validateList="validateList"
                   valueName="uuid"
                   textName="label"
                   border="border"
@@ -69,10 +71,13 @@
                 ></TsFormSelect>
                 <FormItem
                   v-else
-                  :formItem="formItemLocal"
+                  :ref="'condition_' + key"
+                  :formItem="getFormItem()"
                   :value="r.value"
                   mode="condition"
+                  :showStatusIcon="false"
                   isCustomValue
+                  isNeedVadliValidate
                   @change="
                     val => {
                       $set(r, 'value', val);
@@ -187,7 +192,8 @@ export default {
           text: this.$t('page.dynamicvalue'),
           value: 'dynamic'
         }
-      ]
+      ],
+      validateList: [{name: 'required', message: ' '}]
       //filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
     };
   },
@@ -268,7 +274,7 @@ export default {
             }
             if (setValueOtherValueList && !setValueOtherValueList.valid()) {
               isValid = false;
-              this.$set(this.reactionError, 'setValueOther', true);
+              this.$set(this.error, 'setValueOther', true);
             }
           }
         }
@@ -276,6 +282,11 @@ export default {
       if (isValid) {
         this.$emit('close', this.formItemLocal.reaction);
       }
+    },
+    getFormItem() {
+      let findItem = this.$utils.deepClone(this.formItemLocal);
+      findItem.config.isRequired = true;
+      return findItem;
     }
   },
   filter: {},
