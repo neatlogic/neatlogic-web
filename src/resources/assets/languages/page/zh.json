@@ -1090,5 +1090,6 @@
   "selectalltip": "多选模式下支持当前数据全选",
   "pagesizedes": "数量限制：10-500条",
   "staticvalue": "静态值",
-  "middleware": "中间件"
+  "middleware": "中间件",
+  "manage": "管理"
 }
