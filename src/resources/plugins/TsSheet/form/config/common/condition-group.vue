@@ -49,6 +49,8 @@
                   :formItem="getFormItem(conItem.formItemUuid)"
                   :value="conItem.valueList"
                   mode="condition"
+                  :showStatusIcon="false"
+                  isNeedVadliValidate
                   isCustomValue
                   @change="
                     val => {
@@ -178,6 +180,9 @@ export default {
               const condition = conditionGroup.conditionList[cindex];
               let uuidList = (condition.formItemUuid && condition.formItemUuid.split('#')) || [];
               let uuid = uuidList[0];
+              if (!uuid) {
+                continue;
+              }
               const index = this.formItemList.findIndex(d => d.uuid === uuid);
               if (index < 0) {
                 conditionGroup.conditionList.splice(cindex, 1);
@@ -332,6 +337,7 @@ export default {
         findItem.config.mapping.value = list[1];
         findItem.config.mapping.text = list[1];
       }
+      findItem.config.isRequired = true;
       return findItem;
     }
   },

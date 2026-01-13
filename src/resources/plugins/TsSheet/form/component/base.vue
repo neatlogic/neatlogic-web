@@ -42,6 +42,10 @@ export default {
     formDataForWatch: {
       type: Object,
       default: () => {}
+    },
+    isNeedVadliValidate: { //是否需要校验值是否为空
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -180,6 +184,13 @@ export default {
           });
         }
       }
+    },
+    valid() {
+      let isValid = true;
+      if (this.$refs['formitem'] && this.$refs['formitem'].valid) {
+        isValid = this.$refs['formitem'].valid();
+      }
+      return isValid;
     }
   },
   computed: {
@@ -199,7 +210,7 @@ export default {
     required: {
       handler(val) {
         this.validateList = [];
-        if ((this.mode === 'read' || this.mode === 'readSubform') && val) {
+        if ((this.mode === 'read' || this.mode === 'readSubform' || this.isNeedVadliValidate) && val) {
           this.validateList.push({name: 'required', message: ' '});
         }
       },

@@ -75,6 +75,7 @@
           :extendConfigList="extendConfigList"
           :formDataForWatch="formDataForWatch"
           :extraFormItemList="extraFormItemList"
+          :isNeedVadliValidate="isNeedVadliValidate"
           @setValue="setValue"
           @resize="$emit('resize')"
           @select="selectFormItem"
@@ -150,6 +151,7 @@ import formItems from './form/component/index.js';
 import conditionMixin from './form/conditionexpression/condition-mixin.js';
 import { REACTION } from './form/reaction/index.js';
 import { FORMITEMS } from './form/formitem-list.js';
+import item from '../../../views/pages/autoexec/components/param/edit/dataSource/item/index.js';
 export default {
   name: '',
   components: {
@@ -232,6 +234,10 @@ export default {
     formDataForWatch: {
       type: Object,
       default: () => {}
+    },
+    isNeedVadliValidate: { //是否需要校验值是否为空
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -650,6 +656,12 @@ export default {
       const nameParts = customName.split('-');
       const componentName = nameParts.length > 1 ? nameParts[0] : customName;
       return `【${label}(${componentName})】${this.$t('term.framework.componentnoexist')}`;
+    },
+    valid() {
+      if (this.$refs['formItem']) {
+        return this.$refs['formItem'].valid();
+      }
+      return true;
     }
   },
   filter: {},
@@ -663,18 +675,31 @@ export default {
         const conditionData = {};
         if (this.reaction) {
           for (let key in this.reaction) {
+            let reactionList = [];
             const reaction = this.reaction[key];
-            if (reaction && !this.$utils.isEmpty(reaction) && reaction.conditionGroupList) {
-              reaction.conditionGroupList.forEach(cg => {
-                if (cg.conditionList) {
-                  cg.conditionList.forEach(c => {
-                    conditionData[c.uuid] = c;
-                  });
-                }
-              });
+            if (!this.$utils.isEmpty(reaction)) {
+              if (!Array.isArray(reaction)) {
+                reactionList.push(reaction);
+              } else {
+                reactionList = this.$utils.deepClone(reaction);
+              }
+              if (reactionList && reactionList.length > 0) {
+                reactionList.forEach(item => {
+                  if (item && !this.$utils.isEmpty(item) && item.conditionGroupList) {
+                    item.conditionGroupList.forEach(cg => {
+                      if (cg.conditionList) {
+                        cg.conditionList.forEach(c => {
+                          conditionData[c.uuid] = c;
+                        });
+                      }
+                    });
+                  }
+                });
+              }
             }
           }
         }
+        console.log(conditionData[uuid], 'pp');
         return conditionData[uuid];
       };
     },
