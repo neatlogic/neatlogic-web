@@ -45,10 +45,12 @@
             :disabled="!row._selected || disabled"
             :value="row[extra.uuid]"
             :formData="{...$utils.deepClone(formData || {}), ...row}"
+            :formDataForWatch="{...$utils.deepClone(formDataForWatch || {}),...(row || {})}"
             :showStatusIcon="false"
             mode="read"
             :readonly="readonly"
             :externalData="externalData"
+            :extendConfigList="extendConfigList"
             :rowUuid="row.uuid"
             isCustomValue
             :isClearSpecifiedAttr="isClearSpecifiedAttr"

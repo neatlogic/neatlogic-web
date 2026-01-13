@@ -1,10 +1,5 @@
 <template>
-  <TsDialog
-    v-if="isShow"
-    v-bind="dialogConfig"
-    @on-close="handleClose"
-    @on-ok="handleOk"
-  >
+  <TsDialog v-if="isShow" v-bind="dialogConfig" @on-close="handleClose" @on-ok="handleOk">
     <template v-slot>
       <div class="input-border">
         <TsForm ref="form" :itemList="formConfig" labelPosition="right">
@@ -12,29 +7,14 @@
           <template v-slot:authtype>
             <Row>
               <Col span="12">
-                <TsFormSelect
-                  ref="authtype"
-                  v-model="formConfig['authtype'].value"
-                  :dataList="formConfig['authtype'].dataList"
-                  :transfer="true"
-                  :validateList="formConfig['authtype'].validateList"
-                  :clearable="formConfig['authtype'].clearable"
-                  @on-change="authChange"
-                ></TsFormSelect>
+                <TsFormSelect ref="authtype" v-model="formConfig['authtype'].value" :dataList="formConfig['authtype'].dataList" :transfer="true" :validateList="formConfig['authtype'].validateList" :clearable="formConfig['authtype'].clearable" @on-change="authChange"></TsFormSelect>
               </Col>
               <Col span="12">
-                <Poptip
-                  class="poptip"
-                  word-wrap
-                  width="500"
-                  placement="bottom"
-                  trigger="hover"
-                  transfer
-                >
+                <Poptip class="poptip" word-wrap width="500" placement="bottom" trigger="hover" transfer>
                   <i class="tsfont-question-o text-href"></i>
                   <div slot="title">{{ authConfig ? authConfig.title : $t('page.nothave') }}</div>
                   <div v-if="authConfig" slot="content">
-                    <p v-for="(item,index) in authConfig.detailList" :key="index">
+                    <p v-for="(item, index) in authConfig.detailList" :key="index">
                       <span class="tsfont-dot fz10">{{ item }}</span>
                     </p>
                   </div>
@@ -46,22 +26,11 @@
           <template v-slot:timeout>
             <Row>
               <Col span="12">
-                <TsFormInput
-                  ref="timeout"
-                  v-model="formConfig['timeout'].value"
-                  type="number"
-                  :validateList="formConfig['timeout'].validateList"
-                ></TsFormInput>
+                <TsFormInput ref="timeout" v-model="formConfig['timeout'].value" type="number" :validateList="formConfig['timeout'].validateList"></TsFormInput>
               </Col>
               <Col span="12">
                 <!-- <span>秒</span> -->
-                <Poptip
-                  class="poptip"
-                  word-wrap
-                  transfer
-                  placement="bottom"
-                  trigger="hover"
-                >
+                <Poptip class="poptip" word-wrap transfer placement="bottom" trigger="hover">
                   <i class="tsfont-question-o text-href"></i>
                   <div slot="title">{{ $t('term.framework.timeout') }}</div>
                   <div slot="content">
@@ -75,22 +44,11 @@
           <template v-slot:qps>
             <Row>
               <Col span="12">
-                <TsFormInput
-                  ref="qps"
-                  v-model="formConfig['qps'].value"
-                  type="number"
-                  :validateList="formConfig['qps'].validateList"
-                ></TsFormInput>
+                <TsFormInput ref="qps" v-model="formConfig['qps'].value" type="number" :validateList="formConfig['qps'].validateList"></TsFormInput>
               </Col>
               <Col span="12">
                 <!-- <span>次/秒</span> -->
-                <Poptip
-                  class="poptip"
-                  transfer
-                  word-wrap
-                  placement="bottom"
-                  trigger="hover"
-                >
+                <Poptip class="poptip" transfer word-wrap placement="bottom" trigger="hover">
                   <i class="tsfont-question-o text-href"></i>
                   <div slot="title">{{ $t('term.framework.qps') }}</div>
                   <div slot="content">
@@ -100,17 +58,17 @@
               </Col>
             </Row>
           </template>
+          <template v-slot:basicInfo>
+            <div v-if="formConfig?.basic?.value === 'true'">
+              <TsForm ref="basicForm" :item-list="basicFormConfig"></TsForm>
+            </div>
+          </template>
         </TsForm>
       </div>
     </template>
     <template v-slot:footer>
       <Button @click.native="handleClose">{{ $t('page.cancel') }}</Button>
-      <Button
-        type="primary"
-        :disabled="dialogConfig.isButtonDisabled"
-        :loading="dialogConfig.loading"
-        @click.native="handleOk"
-      >{{ $t('page.confirm') }}</Button>
+      <Button type="primary" :disabled="dialogConfig.isButtonDisabled" :loading="dialogConfig.loading" @click.native="handleOk">{{ $t('page.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>
@@ -147,9 +105,7 @@ export default {
           value: '',
           width: 400,
           label: this.$t('page.address'),
-          validateList: [
-            'required', 'token', { name: 'searchUrl', url: 'api/rest/apimanage/save', message: this.$t('message.targetisexists', {'target': this.$t('page.address')}) }
-          ],
+          validateList: ['required', 'token', { name: 'searchUrl', url: 'api/rest/apimanage/save', message: this.$t('message.targetisexists', { target: this.$t('page.address') }) }],
           disabled: false
         },
         name: {
@@ -160,12 +116,13 @@ export default {
           width: 400,
           label: this.$t('page.name'),
           validateList: [
-            'required', 'non-special',
+            'required',
+            'non-special',
             {
               name: 'searchUrl',
               url: 'api/rest/apimanage/save',
-              message: this.$t('message.targetisexists', {'target': this.$t('page.name')}),
-              params: () => ({token: this.rowData.token})
+              message: this.$t('message.targetisexists', { target: this.$t('page.name') }),
+              params: () => ({ token: this.rowData.token })
             }
           ],
           disabled: false
@@ -247,11 +204,13 @@ export default {
           width: 400,
           label: this.$t('page.password'),
           isHidden: true,
-          validateList: ['required',
+          validateList: [
+            'required',
             {
               name: 'passcode',
               message: this.$t('message.passcode')
-            }]
+            }
+          ]
         },
         timeout: {
           type: 'slot',
@@ -280,10 +239,63 @@ export default {
           name: 'description',
           value: '',
           label: this.$t('page.description')
+        },
+        basic: {
+          type: 'radio',
+          name: 'basicSupport',
+          value: 'false',
+          label: 'basic认证',
+          validateList: ['required'],
+          valueName: 'value',
+          textName: 'text',
+          dataList: [
+            { value: 'true', text: this.$t('page.yes') },
+            { value: 'false', text: this.$t('page.no') }
+          ],
+          onChange: val => {
+            if (val === 'false') {
+              this.$set(this.basicFormConfig['username'], 'value', null);
+              this.$set(this.basicFormConfig['password'], 'value', null);
+              this.$delete(this.formConfig, 'basicInfo');
+            } else {
+              this.$set(this.formConfig, 'basicInfo', this.defaultFormConfig.basicInfo);
+            }
+          }
+        },
+        basicInfo: {
+          hideLabel: true,
+          type: 'slot',
+          lable: ''
         }
       },
       formConfig: {},
-      authConfig: null
+      authConfig: null,
+      basicFormConfig: {
+        username: {
+          type: 'text',
+          name: 'basicUsername',
+          value: '',
+          maxlength: 20,
+          width: 400,
+          label: this.$t('page.username'),
+          validateList: ['required']
+        },
+        password: {
+          type: 'password',
+          name: 'basicPassword',
+          value: '',
+          maxlength: 20,
+          width: 400,
+          label: this.$t('page.password'),
+          validateList: [
+            'required',
+            {
+              name: 'passcode',
+              message: this.$t('message.passcode')
+            }
+          ]
+        }
+      }
     };
   },
   mounted() {
@@ -303,11 +315,11 @@ export default {
       this.authConfig = nowList && nowList.help ? nowList.help : null;
     },
     createApi() {
-      this.dialogConfig.title = this.$t('dialog.title.addtarget', {'target': this.$t('page.interface')});
+      this.dialogConfig.title = this.$t('dialog.title.addtarget', { target: this.$t('page.interface') });
       this.formConfig = this.$utils.deepClone(this.defaultFormConfig);
     },
     updateApi() {
-      this.dialogConfig.title = this.$t('dialog.title.edittarget', {'target': this.$t('page.interface')});
+      this.dialogConfig.title = this.$t('dialog.title.edittarget', { target: this.$t('page.interface') });
       if (this.rowData.apiType === 'custom') {
         this.formConfig = this.$utils.deepClone(this.defaultFormConfig);
         this.fetchFormValue(this.rowData.token).then(() => {
@@ -326,7 +338,7 @@ export default {
       }
     },
     copyApi() {
-      this.dialogConfig.title = this.$t('dialog.title.copytarget', {'target': this.$t('page.interface')});
+      this.dialogConfig.title = this.$t('dialog.title.copytarget', { target: this.$t('page.interface') });
       this.formConfig = this.$utils.deepClone(this.defaultFormConfig);
       this.fetchFormValue(this.rowData.token).then(() => {
         this.formConfig['token'].value += '_copy';
@@ -338,7 +350,7 @@ export default {
       this.$emit('on-hide');
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deletetargetconfirm', {target: token}),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: token }),
         btnType: 'error',
         'on-ok': vnode => {
           const params = { token };
@@ -362,13 +374,16 @@ export default {
       this.formConfig = this.$utils.deepClone(this.defaultFormConfig);
     },
     handleOk() {
-      const isValid = Object.values(this.$refs).every(ref => ref.valid());
+      const isValid = Object.values(this.$refs)
+        .filter(ref => ref)
+        .every(ref => ref.valid());
       if (!isValid) {
         return;
       }
       this.dialogConfig.loading = true;
       const params = {
         ...this.$refs.form.getFormValue(),
+        ...(this.$refs.basicForm ? this.$refs.basicForm.getFormValue() : {}),
         apiType: this.apiType,
         operationType: this.operationType === 'copy' ? 'create' : this.operationType
       };
@@ -399,6 +414,21 @@ export default {
             item.value = res.Return[item.name];
             item.disabled = false;
           });
+          // 设置basic认证信息
+          if (res.Return.basicSupport) {
+            this.$set(this.formConfig, 'basic', this.defaultFormConfig.basic);
+          }
+
+          if (res.Return.basicSupport) {
+            if (res.Return.username || res.Return.password) {
+              this.$set(this.formConfig['basic'], 'value', 'true');
+              this.$set(this.formConfig, 'basicInfo', this.defaultFormConfig.basicInfo);
+              this.basicFormConfig['username']['value'] = res.Return.username;
+              this.basicFormConfig['password']['value'] = res.Return.password;
+            } else {
+              this.$set(this.formConfig['basic'], 'value', 'false');
+            }
+          }
           this.dialogConfig.isButtonDisabled = false;
         }
       });

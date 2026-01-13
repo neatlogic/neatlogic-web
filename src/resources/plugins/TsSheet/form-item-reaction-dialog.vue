@@ -136,7 +136,18 @@ export default {
       },
       martixAttrList: [],
       error: {}, //异常信息
-      formItemMatrixAttrMap: {}
+      formItemMatrixAttrMap: {},
+      typeDataList: [
+        {
+          text: this.$t('term.autoexec.static'),
+          value: 'static'
+        },
+        {
+          text: this.$t('page.dynamicvalue'),
+          value: 'dynamic'
+        }
+      ],
+      validateList: [{name: 'required', message: ' '}]
       //filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
     };
   },
@@ -225,6 +236,11 @@ export default {
       if (isValid) {
         this.$emit('close', this.formItemLocal.reaction);
       }
+    },
+    getFormItem() {
+      let findItem = this.$utils.deepClone(this.formItemLocal);
+      findItem.config.isRequired = true;
+      return findItem;
     }
   },
   filter: {},

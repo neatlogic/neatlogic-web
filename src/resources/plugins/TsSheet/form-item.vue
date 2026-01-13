@@ -657,8 +657,8 @@ export default {
       const componentName = nameParts.length > 1 ? nameParts[0] : customName;
       return `【${label}(${componentName})】${this.$t('term.framework.componentnoexist')}`;
     },
-    valid() {
-      if (this.$refs['formItem']) {
+    valid() { //用于联动规则引用组件，组件校验
+      if (this.$refs['formItem'] && this.$refs['formItem'].valid) {
         return this.$refs['formItem'].valid();
       }
       return true;

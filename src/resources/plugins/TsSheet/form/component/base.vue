@@ -186,11 +186,10 @@ export default {
       }
     },
     valid() {
-      let isValid = true;
       if (this.$refs['formitem'] && this.$refs['formitem'].valid) {
-        isValid = this.$refs['formitem'].valid();
+        return this.$refs['formitem'].valid();
       }
-      return isValid;
+      return true;
     }
   },
   computed: {

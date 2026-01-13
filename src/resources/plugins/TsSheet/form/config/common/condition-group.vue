@@ -50,8 +50,8 @@
                   :value="conItem.valueList"
                   mode="condition"
                   :showStatusIcon="false"
-                  isNeedVadliValidate
                   isCustomValue
+                  isNeedVadliValidate
                   @change="
                     val => {
                       setAttrValue(conItem, val);
@@ -336,6 +336,9 @@ export default {
       if (list[1] && !this.$utils.isEmpty(findItem.config.mapping)) {
         findItem.config.mapping.value = list[1];
         findItem.config.mapping.text = list[1];
+      }
+      if (!findItem.config) {
+        findItem.config = {};
       }
       findItem.config.isRequired = true;
       return findItem;
