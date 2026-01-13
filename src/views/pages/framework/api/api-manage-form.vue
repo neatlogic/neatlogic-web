@@ -1,5 +1,10 @@
 <template>
-  <TsDialog v-if="isShow" v-bind="dialogConfig" @on-close="handleClose" @on-ok="handleOk">
+  <TsDialog
+    v-if="isShow"
+    v-bind="dialogConfig"
+    @on-close="handleClose"
+    @on-ok="handleOk"
+  >
     <template v-slot>
       <div class="input-border">
         <TsForm ref="form" :itemList="formConfig" labelPosition="right">
@@ -7,10 +12,25 @@
           <template v-slot:authtype>
             <Row>
               <Col span="12">
-                <TsFormSelect ref="authtype" v-model="formConfig['authtype'].value" :dataList="formConfig['authtype'].dataList" :transfer="true" :validateList="formConfig['authtype'].validateList" :clearable="formConfig['authtype'].clearable" @on-change="authChange"></TsFormSelect>
+                <TsFormSelect
+                  ref="authtype"
+                  v-model="formConfig['authtype'].value"
+                  :dataList="formConfig['authtype'].dataList"
+                  :transfer="true"
+                  :validateList="formConfig['authtype'].validateList"
+                  :clearable="formConfig['authtype'].clearable"
+                  @on-change="authChange"
+                ></TsFormSelect>
               </Col>
               <Col span="12">
-                <Poptip class="poptip" word-wrap width="500" placement="bottom" trigger="hover" transfer>
+                <Poptip
+                  class="poptip"
+                  word-wrap
+                  width="500"
+                  placement="bottom"
+                  trigger="hover"
+                  transfer
+                >
                   <i class="tsfont-question-o text-href"></i>
                   <div slot="title">{{ authConfig ? authConfig.title : $t('page.nothave') }}</div>
                   <div v-if="authConfig" slot="content">
@@ -26,11 +46,22 @@
           <template v-slot:timeout>
             <Row>
               <Col span="12">
-                <TsFormInput ref="timeout" v-model="formConfig['timeout'].value" type="number" :validateList="formConfig['timeout'].validateList"></TsFormInput>
+                <TsFormInput
+                  ref="timeout"
+                  v-model="formConfig['timeout'].value"
+                  type="number"
+                  :validateList="formConfig['timeout'].validateList"
+                ></TsFormInput>
               </Col>
               <Col span="12">
                 <!-- <span>秒</span> -->
-                <Poptip class="poptip" word-wrap transfer placement="bottom" trigger="hover">
+                <Poptip
+                  class="poptip"
+                  word-wrap
+                  transfer
+                  placement="bottom"
+                  trigger="hover"
+                >
                   <i class="tsfont-question-o text-href"></i>
                   <div slot="title">{{ $t('term.framework.timeout') }}</div>
                   <div slot="content">
@@ -44,11 +75,22 @@
           <template v-slot:qps>
             <Row>
               <Col span="12">
-                <TsFormInput ref="qps" v-model="formConfig['qps'].value" type="number" :validateList="formConfig['qps'].validateList"></TsFormInput>
+                <TsFormInput
+                  ref="qps"
+                  v-model="formConfig['qps'].value"
+                  type="number"
+                  :validateList="formConfig['qps'].validateList"
+                ></TsFormInput>
               </Col>
               <Col span="12">
                 <!-- <span>次/秒</span> -->
-                <Poptip class="poptip" transfer word-wrap placement="bottom" trigger="hover">
+                <Poptip
+                  class="poptip"
+                  transfer
+                  word-wrap
+                  placement="bottom"
+                  trigger="hover"
+                >
                   <i class="tsfont-question-o text-href"></i>
                   <div slot="title">{{ $t('term.framework.qps') }}</div>
                   <div slot="content">
@@ -68,7 +110,12 @@
     </template>
     <template v-slot:footer>
       <Button @click.native="handleClose">{{ $t('page.cancel') }}</Button>
-      <Button type="primary" :disabled="dialogConfig.isButtonDisabled" :loading="dialogConfig.loading" @click.native="handleOk">{{ $t('page.confirm') }}</Button>
+      <Button
+        type="primary"
+        :disabled="dialogConfig.isButtonDisabled"
+        :loading="dialogConfig.loading"
+        @click.native="handleOk"
+      >{{ $t('page.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>
