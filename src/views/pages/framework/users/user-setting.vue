@@ -298,6 +298,16 @@ export default {
           type: 'slot',
           label: this.$t('term.framework.token'),
           name: 'token'
+        },
+        {
+          type: 'text',
+          name: 'serverId',
+          readonly: true,
+          disabled: true,
+          isHidden: false,
+          placeholder: '',
+          width: 250,
+          label: this.$t('page.serverid')
         }
       ],
       convenienceList: [],
