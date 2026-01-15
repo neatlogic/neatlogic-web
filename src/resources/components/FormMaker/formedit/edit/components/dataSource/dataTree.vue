@@ -240,10 +240,7 @@ function validDataList(dataList, parent) {
 }
 
 </script>
-<style lang="less" scope>
-.noBlock {
-  display: none;
-}
+<style lang="less" scoped>
 .cen-align{
   vertical-align: baseline;
   margin-left: 3px;

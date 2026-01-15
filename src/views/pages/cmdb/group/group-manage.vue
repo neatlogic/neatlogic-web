@@ -331,7 +331,7 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 .width90 {
   max-width: calc(100% - 30px);

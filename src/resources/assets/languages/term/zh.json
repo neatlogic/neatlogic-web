@@ -2931,7 +2931,13 @@
     "1month": "1个月",
     "3day": "3天",
     "subscribename": "订阅名称",
-    "invokealert": "关联告警"
+    "invokealert": "关联告警",
+    "alertdata": "告警数据",
+    "successaction": "成功动作",
+    "failedaction": "失败动作",
+    "invokeresult": "调用结果",
+    "invokeinterval": "调用间隔",
+    "returnresult": "返回信息"
   },
   "informant": {
     "last5dump": "最近5次快照",
