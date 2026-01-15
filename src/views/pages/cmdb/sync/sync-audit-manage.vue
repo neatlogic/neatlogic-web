@@ -388,7 +388,7 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scope>
+<style lang="less">
 .grid {
   width: 100%;
   display: grid;

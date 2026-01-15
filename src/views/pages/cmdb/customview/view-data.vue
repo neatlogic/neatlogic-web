@@ -128,7 +128,7 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scope>
+<style lang="less">
 @import '../public/common.less';
 .right-top {
   height: 38px !important;

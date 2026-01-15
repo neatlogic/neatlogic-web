@@ -267,7 +267,7 @@ export default {
   }
 };
 </script>
-<style lang="less" scope>
+<style lang="less">
 @import '../public/graphviz.less';
 .header {
   display: grid;

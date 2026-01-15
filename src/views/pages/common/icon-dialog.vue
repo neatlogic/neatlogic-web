@@ -13,7 +13,7 @@
           v-for="(item, index) in iconList"
           :key="index"
           :span="3"
-          class="icon-item text-action border-color"
+          class="text-action border-color"
           :class="item == selectedIcon ? 'text-primary' : ''"
         >
           <i
@@ -88,8 +88,5 @@ export default {
   }
 };
 </script>
-<style lang="less" scope>
-.icon-item {
-  cursor: pointer;
-}
+<style lang="less" scoped>
 </style>

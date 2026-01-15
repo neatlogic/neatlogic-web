@@ -48,26 +48,5 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scope>
-@import (reference) '~@/resources/assets/css/variable.less';
-.notifyconfig-manage {
-  padding-top: 16px;
-  .order-tabs-title {
-    width: 100%;
-    height: 56px;
-    line-height: 54px;
-    li {
-      display: inline-block;
-      text-align: center;
-      padding: 0 16px;
-      cursor: pointer;
-      &.active {
-        border-bottom: 2px solid;
-        .title-box {
-          display: inline-block;
-        }
-      }
-    }
-  }
-}
+<style lang="less" scoped>
 </style>

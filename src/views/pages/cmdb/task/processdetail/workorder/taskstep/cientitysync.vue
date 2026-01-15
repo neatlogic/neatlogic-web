@@ -121,7 +121,7 @@ export default {
 };
 
 </script>
-<style lang='less' scope>
+<style lang='less' scoped>
 .ci-main {
   position: relative;
   cursor: pointer;
