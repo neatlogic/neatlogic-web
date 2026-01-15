@@ -618,7 +618,7 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
 @import '~@/resources/assets/css/variable.less';
 //条件节点弹框
 .transparentSelect {

@@ -37,7 +37,7 @@
         :slot="extra.uuid"
         slot-scope="{ row }"
       >
-        <div :key="extra.uuid" class="table-item" @click.stop>
+        <div :key="extra.uuid" @click.stop>
           <FormItem
             :ref="'formitem_' + row._selected + '_' + row.uuid"
             :formItem="getExtraFormItem(extra,row)"
@@ -433,11 +433,8 @@ export default {
   }
 };
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
 .table-datalist {
    position: relative;
-}
-.table-item {
-  min-width: 60px;
 }
 </style>

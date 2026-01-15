@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="action-group">
+    <div class="action-group pb-sm">
       <span class="action-item tsfont-plus" @click="addMailServer()">{{ $t('page.add') }}</span>
     </div>
     <TsTable v-if="true" :theadList="theadList" v-bind="tableData">

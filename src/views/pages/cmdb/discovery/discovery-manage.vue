@@ -47,7 +47,7 @@
                 :xxl="4"
                 @action="doAction"
               >
-                <template slot-scope="{ row }" style="position:relative">
+                <template slot-scope="{ row }">
                   <div class="ci-main">
                     <div style="text-align:center">
                       <div class="ci-icon">

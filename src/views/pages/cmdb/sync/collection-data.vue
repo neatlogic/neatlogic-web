@@ -28,7 +28,6 @@
               v-for="(value, key) in collectionData.subTheadData"
               :slot="key"
               slot-scope="{ row }"
-              style="vertical-align: top"
             >
               <table v-if="row[key] && row[key].length > 0" :key="key" class="table table-color">
                 <thead v-if="collectionData.subTheadData[key].length > 0">
@@ -180,7 +179,7 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scope>
+<style lang="less">
 @import (reference) '~@/resources/assets/css/theme.less';
 .top {
   vertical-align: top;
