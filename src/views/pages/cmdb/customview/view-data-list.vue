@@ -34,12 +34,8 @@
           </div>
         </div>
       </div>
-      <div v-if="isAdvancedSearch" style="position: relative;" class="radius-md mb-sm">
-        <Card
-          v-if="attrList && attrList.length > 0"
-          dis-hover
-          style="maxHeight: 250px; overflow-y: auto; padding-bottom: 52px;"
-        >
+      <div v-if="isAdvancedSearch" style="position: relative" class="radius-md mb-sm">
+        <Card v-if="attrList && attrList.length > 0" dis-hover style="maxheight: 250px; overflow-y: auto; padding-bottom: 52px">
           <TsRow>
             <Col v-for="(attr, index) in searchAttrList" :key="index" span="12">
               <TsRow class="search-item">
@@ -114,7 +110,7 @@
             </Col>
           </TsRow>
         </Card>
-        <div style="position:absolute;right:22px;bottom:1px;width:calc(100% - 23px);z-index:1;" class="text-right bg-op">
+        <div style="position: absolute; right: 22px; bottom: 1px; width: calc(100% - 23px); z-index: 1" class="text-right bg-op">
           <div class="pb-sm pt-sm">
             <Button type="primary" class="mr-md" @click="searchCustomViewData()">{{ $t('page.search') }}</Button>
             <Button
@@ -138,6 +134,7 @@
       >{{ group.alias }}</Tag>
     </div>
     <div ref="table">
+      <Loading v-if="loadingShow" :loadingShow="loadingShow" type="fix"></Loading>
       <TsTable
         v-if="viewData"
         v-bind="viewData"
@@ -205,6 +202,7 @@ export default {
     const _this = this;
     return {
       isExporting: false,
+      loadingShow: false,
       searchParam: { id: _this.viewId, keyword: '', pageSize: 20, searchMode: 'normal' }, //视图查询参数
       viewData: { theadList: [], tbodyList: [] },
       dataCount: 0, //数据量
@@ -259,8 +257,16 @@ export default {
       if (type == 'value') {
         const valObj = value;
         if (value && value.length > 0) {
-          this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'valueList', value.map(d => d.value));
-          this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'actualValueList', value.map(d => d.text));
+          this.$set(
+            this.attrFilterList['globalattr_' + globalattr.uuid],
+            'valueList',
+            value.map(d => d.value)
+          );
+          this.$set(
+            this.attrFilterList['globalattr_' + globalattr.uuid],
+            'actualValueList',
+            value.map(d => d.text)
+          );
         } else {
           this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'valueList', []);
           this.$set(this.attrFilterList['globalattr_' + globalattr.uuid], 'actualValueList', []);
@@ -600,7 +606,7 @@ export default {
   }
 };
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
 .search-item {
   height: 40px;
   line-height: 38px;
@@ -633,5 +639,9 @@ export default {
       margin-left: 10px;
     }
   }
+}
+
+::v-deep .ivu-spin-fix {
+  z-index: 100 !important;
 }
 </style>
