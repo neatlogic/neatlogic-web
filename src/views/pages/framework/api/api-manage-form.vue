@@ -482,19 +482,9 @@ export default {
     }
   },
   computed: {
-    // 根据认证类型,判断是否隐藏用户名和密码输入框
-    areUsernameAndPasswordHidden() {
-      let authType = this.formConfig['authtype'] && this.formConfig['authtype'].value;
-      if (authType) this.authChange(authType);
-      if (authType == 'basic' || authType == 'hmac-sha1') return false;
-      return true;
-    }
+
   },
   watch: {
-    areUsernameAndPasswordHidden(value) {
-      this.formConfig['username'].isHidden = value;
-      this.formConfig['password'].isHidden = value;
-    },
     isShow(isShow) {
       const strategies = {
         create: this.createApi,
