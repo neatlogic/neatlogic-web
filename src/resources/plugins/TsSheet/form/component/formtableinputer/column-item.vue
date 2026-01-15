@@ -199,23 +199,31 @@ export default {
           for (let action in this.reaction) {
             const reaction = this.reaction[action];
             if (action !== 'filter') {
-              const conditinoGroupList = reaction['conditionGroupList'];
-              if (conditinoGroupList && conditinoGroupList.length > 0) {
-                for (let i = 0; i < reaction['conditionGroupList'].length; i++) {
-                  const conditionGroup = reaction['conditionGroupList'][i];
-                  const conditionList = conditionGroup['conditionList'];
-                  if (conditionList && conditionList.length > 0) {
-                    for (let j = 0; j < conditionList.length; j++) {
-                      const condition = conditionList[j];
-                      const uuidList = condition['formItemUuid'].split('#');
-                      const formItemUuid = uuidList[0];
-                      if (!this.reactionFormItemUuidMap.hasOwnProperty(formItemUuid)) {
-                        this.$set(this.reactionFormItemUuidMap, formItemUuid, null);
+              let ruleList = [];
+              if (Array.isArray(reaction)) {
+                ruleList = reaction;
+              } else {
+                ruleList.push(reaction);
+              }
+              ruleList.forEach(rule => {
+                const conditinoGroupList = rule['conditionGroupList'];
+                if (conditinoGroupList && conditinoGroupList.length > 0) {
+                  for (let i = 0; i < rule['conditionGroupList'].length; i++) {
+                    const conditionGroup = rule['conditionGroupList'][i];
+                    const conditionList = conditionGroup['conditionList'];
+                    if (conditionList && conditionList.length > 0) {
+                      for (let j = 0; j < conditionList.length; j++) {
+                        const condition = conditionList[j];
+                        const uuidList = condition['formItemUuid'].split('#');
+                        const formItemUuid = uuidList[0];
+                        if (!this.reactionFormItemUuidMap.hasOwnProperty(formItemUuid)) {
+                          this.$set(this.reactionFormItemUuidMap, formItemUuid, null);
+                        }
                       }
                     }
                   }
                 }
-              }
+              });
             } else {
               const ruleList = reaction['ruleList'];
               if (ruleList && ruleList.length > 0) {
@@ -244,12 +252,22 @@ export default {
         //如果override_config有配置，则相关联动不生效
         const overrideConfig = this.formItem.override_config || {};
         const reaction = this.reaction[action];
-        if (reaction && !this.$utils.isEmpty(reaction) && this.isConditionDataChange(action, reaction, newVal, oldVal, this.formItem.uuid)) {
-          const result = this.executeReaction(reaction, newVal, oldVal);
-          if (this.REACTION[action]) {
-            //联动操作
-            this.REACTION[action]({ overrideConfig: overrideConfig, reaction: reaction, result: result, view: this });
+        if (!this.$utils.isEmpty(reaction)) {
+          let ruleList = [];
+          if (Array.isArray(reaction)) {
+            ruleList = reaction;
+          } else {
+            ruleList = [reaction];
           }
+          ruleList.forEach(rule => {
+            if (this.isConditionDataChange(action, rule, newVal, oldVal, this.formItem.uuid)) {
+              const result = this.executeReaction(rule, newVal, oldVal);
+              if (this.REACTION[action]) {
+                //联动操作
+                this.REACTION[action]({ overrideConfig: overrideConfig, reaction: rule, result: result, view: this });
+              }
+            }
+          });
         }
       }
     },
@@ -514,15 +532,27 @@ export default {
         const conditionData = {};
         if (this.reaction) {
           for (let key in this.reaction) {
+            let reactionList = [];
             const reaction = this.reaction[key];
-            if (reaction && !this.$utils.isEmpty(reaction) && reaction.conditionGroupList) {
-              reaction.conditionGroupList.forEach(cg => {
-                if (cg.conditionList) {
-                  cg.conditionList.forEach(c => {
-                    conditionData[c.uuid] = c;
-                  });
-                }
-              });
+            if (!this.$utils.isEmpty(reaction)) {
+              if (!Array.isArray(reaction)) {
+                reactionList.push(reaction);
+              } else {
+                reactionList = this.$utils.deepClone(reaction);
+              }
+              if (reactionList && reactionList.length > 0) {
+                reactionList.forEach(item => {
+                  if (item && !this.$utils.isEmpty(item) && item.conditionGroupList) {
+                    item.conditionGroupList.forEach(cg => {
+                      if (cg.conditionList) {
+                        cg.conditionList.forEach(c => {
+                          conditionData[c.uuid] = c;
+                        });
+                      }
+                    });
+                  }
+                });
+              }
             }
           }
         }

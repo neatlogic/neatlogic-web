@@ -391,6 +391,19 @@
                     "
                   ></ReactionFilter>
                 </div>
+                <div v-else-if="key === 'setvalue'">
+                  <ReactionSetvalue
+                    :ref="'formitem_' + key"
+                    :value="propertyLocal.reaction[key]"
+                    :formItemList="allFormItemList"
+                    :formItem="propertyLocal"
+                    @input="
+                      rule => {
+                        setReaction(key, rule);
+                      }
+                    "
+                  ></ReactionSetvalue>
+                </div>
                 <ConditionGroup
                   v-else
                   :ref="'formitem_' + key"
@@ -406,52 +419,7 @@
                     }
                   "
                 ></ConditionGroup>
-                <div v-if="key === 'setvalue' && !$utils.isEmpty(propertyLocal.reaction[key])">
-                  <div class="mt-sm text-grey">{{ $t('term.framework.assignment') }}</div>
-                  <!--isDynamicValue: 是否可以动态赋值  -->
-                  <div v-if="propertyLocal.isDynamicValue" class="pb-sm">
-                    <TsFormRadio
-                      :value="propertyLocal.reaction[key].type || 'static'"
-                      :dataList="typeDataList"
-                      @change="
-                        val => {
-                          $set(propertyLocal.reaction[key], 'type', val);
-                          $set(propertyLocal.reaction[key], 'value', null);
-                        }
-                      "
-                    ></TsFormRadio>
-                  </div>
-                  <!--dynamic:动态赋值  -->
-                  <TsFormSelect
-                    v-if="propertyLocal.reaction[key].type === 'dynamic'"
-                    :value="propertyLocal.reaction[key].value"
-                    :dataList="hasValueFormItemList"
-                    valueName="uuid"
-                    textName="label"
-                    border="border"
-                    transfer
-                    @on-change="
-                      val => {
-                        $set(propertyLocal.reaction[key], 'value', val);
-                      }
-                    "
-                  ></TsFormSelect>
-                  <FormItem
-                    v-else
-                    ref="assignmentValue"
-                    :formItem="assignmentValueConfig"
-                    :value="propertyLocal.reaction[key].value"
-                    mode="defaultvalue"
-                    :showStatusIcon="false"
-                    isCustomValue
-                    @change="
-                      val => {
-                        $set(propertyLocal.reaction[key], 'value', val);
-                      }
-                    "
-                  ></FormItem>
-                </div>
-                <div v-else-if="key === 'setValueOther'">
+                <div v-if="key === 'setValueOther'">
                   <ReactionSetValueOtherSetting
                     v-if="propertyLocal && propertyLocal.config.hiddenFieldList && !$utils.isEmpty(propertyLocal.reaction[key])"
                     ref="setValueOther_valueList"
@@ -516,9 +484,10 @@ export default {
     ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
     ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue'),
-    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
     ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue'),
-    TableConfig: () => import('@/resources/plugins/TsSheet/form/config/formtableinputer-conf/formtableinputer-table-config.vue')
+    TableConfig: () => import('@/resources/plugins/TsSheet/form/config/formtableinputer-conf/formtableinputer-table-config.vue'),
+    ReactionSetvalue: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-setvalue.vue')
+  
   },
   props: {
     formItemUuid: { type: String }, //表单组件uuid
@@ -692,16 +661,6 @@ export default {
         {
           text: this.$t('page.custom'),
           value: 'custom'
-        }
-      ],
-      typeDataList: [
-        {
-          text: this.$t('term.autoexec.static'),
-          value: 'static'
-        },
-        {
-          text: this.$t('page.dynamicvalue'),
-          value: 'dynamic'
         }
       ],
       regexValidateList: [
@@ -1044,30 +1003,6 @@ export default {
         this.$delete(reaction, 'setValueOther');
       }
       return this.$utils.sortByObj(reaction);
-    },
-    hasValueFormItemList() {
-      let list = this.allFormItemList.filter(d => d.hasValue && (!this.propertyLocal || (this.propertyLocal && d.uuid != this.propertyLocal.uuid)) && !d.excludedFromCondition /* !this.filterComponentList.includes(d.handler)*/);
-      let newList = [];
-      list.forEach(item => {
-        let obj = {
-          label: item.label,
-          uuid: item.uuid
-        };
-        let children = [];
-        if (item.config && !this.$utils.isEmpty(item.config.hiddenFieldList)) {
-          item.config.hiddenFieldList.forEach(a => {
-            children.push({
-              label: item.label + '.' + a.text,
-              uuid: item.uuid + '#' + a.value
-            });
-          });
-        }
-        newList.push(obj);
-        if (!this.$utils.isEmpty(children)) {
-          newList.push(...children);
-        }
-      });
-      return newList;
     },
     canShowAddBtn() {
       return (propertyLocal) => {

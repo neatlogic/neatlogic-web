@@ -729,14 +729,22 @@ export default {
         const reactionValue = extra.reaction || {};
         for (const action in reactionValue) {
           const reaction = reactionValue[action];
-          if (!reaction) continue;
+          if (this.$utils.isEmpty(reaction)) continue;
           if (action !== 'filter') {
-            (reaction.conditionGroupList || []).forEach(group => {
-              (group.conditionList || []).forEach(cond => {
-                const uuid = (cond.formItemUuid || '').split('#')[0];
-                if (uuid) {
-                  map[extra.uuid].push(uuid);
-                }
+            let ruleList = [];
+            if (Array.isArray(reaction)) {
+              ruleList = reaction;
+            } else {
+              ruleList.push(reaction);
+            }
+            ruleList.forEach(item => {
+              (item.conditionGroupList || []).forEach(group => {
+                (group.conditionList || []).forEach(cond => {
+                  const uuid = (cond.formItemUuid || '').split('#')[0];
+                  if (uuid) {
+                    map[extra.uuid].push(uuid);
+                  }
+                });
               });
             });
           } else {
@@ -756,12 +764,20 @@ export default {
               const reactionRule = innerReactionValue[action];
               if (!reactionRule) continue;
               if (action !== 'filter') {
-                (reactionRule.conditionGroupList || []).forEach(group => {
-                  (group.conditionList || []).forEach(cond => {
-                    const uuid = (cond.formItemUuid || '').split('#')[0];
-                    if (uuid) {
-                      map[extra.uuid].push(uuid);
-                    }
+                let ruleList = [];
+                if (Array.isArray(reactionRule)) {
+                  ruleList = reactionRule;
+                } else {
+                  ruleList.push(reactionRule);
+                }
+                ruleList.forEach(item => {
+                  (item.conditionGroupList || []).forEach(group => {
+                    (group.conditionList || []).forEach(cond => {
+                      const uuid = (cond.formItemUuid || '').split('#')[0];
+                      if (uuid) {
+                        map[extra.uuid].push(uuid);
+                      }
+                    });
                   });
                 });
               } else {
