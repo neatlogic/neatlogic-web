@@ -18,6 +18,7 @@ yarn.lock
 /.lh
 /.vscode
 /src/commercial-module/*
+/src/community-module/*
 *.code-workspace
 pnpm-lock.yaml
 public/version.md
