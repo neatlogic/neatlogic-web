@@ -4,6 +4,7 @@ const welcome = () => import('@/views/pages/common/welcome.vue');
 
 const userManage = () => import('./users/user-manage.vue');
 const LoginManage = () => import('./users/login-manage.vue');
+const userExportFileManage = () => import('./users/user-export-file-manage.vue');
 const roleManage = () => import('./users/role-manage.vue');
 const teamManage = () => import('./users/team-manage.vue');
 const userSetting = () => import('./users/user-setting.vue');
@@ -203,6 +204,19 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-user',
       authority: 'USER_MODIFY',
+      type: 'user',
+      isBack: false
+    }
+  },
+  {
+    path: '/user-export-file-manage',
+    name: 'user-export-file-manage',
+    component: userExportFileManage,
+    meta: {
+      title: '导出管理',
+      ismenu: true,
+      icon: 'tsfont-download',
+      authority: '',
       type: 'user',
       isBack: false
     }
