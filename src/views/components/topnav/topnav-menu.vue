@@ -94,9 +94,18 @@ export default {
       if (hash.startsWith('#/extramenu-detail')) {
         const queryString = hash.split('?')[1];
         const params = new URLSearchParams(queryString);
-        const id = params.get('rootId');
-        if (id) {
-          this.moduleId = 'extra_' + id;
+        const rootId = params.get('rootId');
+        const id = params.get('id');
+        if (rootId) {
+          this.moduleId = 'extra_' + rootId;
+
+          // 额外菜单刷新后，回显并保持当前菜单选中状态
+          const rootItem = this.extramenuList.find(item => item.id == rootId);
+          if (!rootItem) {
+            return false;
+          }
+          const childPath = this.findFullPathById(rootItem.children, id) || [];
+          this.selectedExtraMenuList = [rootItem.id, ...childPath];
         }
       }
     },
@@ -112,6 +121,30 @@ export default {
       }
       return arr;
     },
+
+    // 查找菜单完整路径，用于额外菜单刷新后，回显并保持当前菜单选中状态
+    findFullPathById(list, targetId, path = []) {
+      for (const item of list) {
+        const currentPath = [...path, item.id];
+
+        if (item.id == targetId) {
+          return currentPath;
+        }
+
+        if (item.children && item.children.length) {
+          const result = this.findFullPathById(
+            item.children,
+            targetId,
+            currentPath
+          );
+          if (result) {
+            return result;
+          }
+        }
+      }
+
+      return null;
+    },
     handleExtraChange(val, selectedData, rootmenu) {
       if (!this.$utils.isEmpty(selectedData) && selectedData[selectedData.length - 1].url) {
         const url = selectedData[selectedData.length - 1].url;
@@ -122,10 +155,8 @@ export default {
             this.selectedExtraMenuList = [];
             window.open(url, '_blank');
           } else if (openType === 'iframe') {
-            //清空模块id，避免选中
-            this.moduleId = null;
             let that = this.$root.$children[0] ? this.$root.$children[0].$refs.root : null; //获取router-view 的vue 对象
-            this.$utils.gotoHref(`${HOME}/framework.html#/extramenu-detail?rootId=${rootmenu.id}&id=${id}`, that);
+            this.$utils.gotoHref(`${HOME}/${MODULEID}.html#/extramenu-detail?rootId=${rootmenu.id}&id=${id}`, that);
           }
         }
       }

@@ -345,7 +345,7 @@ export default {
       let apiFunc = this.catalogTypeName == 'catalog' ? this.$api.process.service.deleteCatalog({ uuid: this.catalogData.uuid }) : this.$api.process.service.deleteChannel({ uuid: this.channelData.uuid });
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: deleteContentName }),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: deleteContentName }),
         btnType: 'error',
         'on-ok': vnode => {
           apiFunc
@@ -371,7 +371,7 @@ export default {
       let apiFunc = type == 'catalog' ? this.$api.process.service.deleteCatalog({ uuid: uuid }) : this.$api.process.service.deleteChannel({ uuid: uuid });
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: name }),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: name }),
         btnType: 'error',
         'on-ok': vnode => {
           apiFunc.then(res => {

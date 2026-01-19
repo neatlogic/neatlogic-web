@@ -278,7 +278,7 @@ export default {
     delGroup(group) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: group.name }),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: group.name }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.cmdb.group.deleteGroup(group.id).then(res => {
@@ -331,7 +331,7 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 .width90 {
   max-width: calc(100% - 30px);

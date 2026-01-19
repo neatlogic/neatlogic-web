@@ -7,7 +7,7 @@
           <span class="action-item tsfont-upload" @click="uploadAction()">{{ $t('page.import') }}</span>
           <span
             v-if="!isExportIntegration"
-            :class="{'text-disabled':!selectList || selectList.length == 0}"
+            :class="{ 'text-disabled': !selectList || selectList.length == 0 }"
             class="action-item tsfont-download"
             @click="exportList()"
           >{{ $t('page.export') }}</span>
@@ -18,10 +18,7 @@
         </div>
       </template>
       <template slot="topRight">
-        <InputSearcher
-          v-model="searchParam.keyword"
-          @change="() => updatePagesize()"
-        ></InputSearcher>
+        <InputSearcher v-model="searchParam.keyword" @change="() => updatePagesize()"></InputSearcher>
       </template>
       <div slot="content" ref="maintable">
         <TsTable
@@ -38,6 +35,13 @@
           </template>
           <template slot="name" slot-scope="{ row }">
             <span class="text-href" @click.stop="editIntegration(row.uuid)">{{ row.name }}</span>
+            <span
+              v-clipboard="getIntegrationLink(row.uuid)"
+              v-clipboard:success="clipboardSuc"
+              :title="$t('term.framework.clicktocopyuuid')"
+              class="text-primary tsfont-copy"
+              @click.stop
+            ></span>
           </template>
           <template slot="referenceCount" slot-scope="{ row }">
             <ReferenceSelect
@@ -86,14 +90,16 @@
       :actionUrl="actionUrl"
       :formatList="formatList"
       :isValid="true"
-      @on-success="searchIntegration(1)"
+      @on-success="searchIntegration()"
     />
   </div>
 </template>
 <script>
 import download from '@/resources/mixins/download.js';
+import clipboard from '@/resources/directives/clipboard.js';
 export default {
   name: '',
+  directives: { clipboard },
   components: {
     TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
@@ -176,6 +182,15 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    clipboardSuc() {
+      this.$Message.success(this.$t('term.framework.successcopyintegrationuuid'));
+    },
+    getIntegrationLink(uuid) {
+      const protocal = window.location.protocol;
+      const host = window.location.host;
+      //return protocal + '//' + host + BASEURLPREFIX + '/api/rest/integration/run/' + uuid;
+      return uuid;
+    },
     change() {
       this.selectList = [];
     },
@@ -239,7 +254,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
+        content: this.$t('dialog.content.deletetargetconfirm', { target: row.name }),
         btnType: 'error',
         'on-ok': vnode => {
           let param = {
@@ -249,7 +264,7 @@ export default {
             if (res && res.Status == 'OK') {
               this.$Message.success(this.$t('message.deletesuccess'));
               vnode.isShow = false;
-              this.searchIntegration(1);
+              this.searchIntegration();
             }
           });
         },

@@ -3,7 +3,7 @@ import utils from '@/resources/assets/js/util.js';
 import Zh from '@/resources/assets/languages/zh.js';
 import En from '@/resources/assets/languages/en.js';
 import VueI18n from 'vue-i18n';
-
+import authHeartbeat from '@/resources/assets/js/authHeartbeat';
 let config = {
   locale: BASELANGUAGES, // 定义默认语言为中文
   messages: {
@@ -51,7 +51,6 @@ export function initRouter(VueRouter, store) {
     base: '/' + TENANT + '/' + MODULEID + '.html',
     routes: MENULIST
   });
-  const gettingUserInfo = store.dispatch('getUserInfo');
   const gettingModuleList = store.dispatch('getModuleList');
   // 返回的路由(包含所有模块)
   let routerFromPageConfig = sessionStorage.getItem('moduleFromPage') ? JSON.parse(sessionStorage.getItem('moduleFromPage')) : {};
@@ -70,6 +69,7 @@ export function initRouter(VueRouter, store) {
     }
 
     if (!usertoken) {
+      authHeartbeat.stop();
       window.location.href = `${HOME}/login.html?tenant=${TENANT}${HTTP_RESPONSE_STATUS_CODE ? '&httpresponsestatuscode=' + HTTP_RESPONSE_STATUS_CODE : ''}&redirect=${MODULEID}.html#${to.fullPath ? to.fullPath : ''}`;
     } else {
       /**
@@ -83,8 +83,25 @@ export function initRouter(VueRouter, store) {
        * 直接从localstrage调出fromPageList,后续访问使用场景一的处理方式。
        *
        */
-      await gettingUserInfo;
       await gettingModuleList;
+      // 启动心跳
+      authHeartbeat.start(store.state.userInfo.tokenHash);
+      // 强制密码重定向
+      if (sessionStorage.getItem('PWD_FORCE_REDIRECTED')) {
+        if (to.path.startsWith('/reset-password')) {
+          return next();
+        }
+        let redirect = to.fullPath;
+        const hasHtml = /\.html($|[?#])/.test(redirect);
+        if (!hasHtml) {
+          redirect = `${MODULEID}.html#${redirect}`;
+        }
+        return next({
+          path: '/reset-password',
+          replace: true,
+          query: { redirect }
+        });
+      }
       let auth = to.meta ? to.meta.authority : [];
       auth = typeof auth == 'string' ? (auth.trim() ? [auth.trim()] : []) : auth; //字符串转数组，主要是兼容string array两种情况的数据
       if (!auth || !auth.length || utils.checkHasSomeitem(store.getters.userAuthList, auth)) {

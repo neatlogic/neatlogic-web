@@ -38,7 +38,7 @@
             v-for="(extra) in extraList"
             v-slot:[extra.uuid]="{row,index}"
           >
-            <div :key="extra.uuid" class="table-item" @click.stop>
+            <div :key="extra.uuid" @click.stop>
               <FormItem
                 :ref="'formitem_true_' + extra.uuid + '_' + index"
                 :formItem="getExtraFormItem(extra,row)"
@@ -47,10 +47,13 @@
                 :readonly="readonly"
                 :value="row[extra.uuid]"
                 :formData="{...$utils.deepClone(formData || {}), ...row}"
+                :formDataForWatch="{...$utils.deepClone(formDataForWatch || {}),...row}"
+             
                 :showStatusIcon="false"
                 mode="read"
                 isCustomValue
                 :externalData="externalData"
+                :extendConfigList="extendConfigList"
                 :rowUuid="row.uuid"
                 :isClearSpecifiedAttr="isClearSpecifiedAttr"
                 style="min-width:100px"
@@ -68,6 +71,7 @@
         ref="dataList"
         :formData="formData"
         :formItem="formItem"
+        :formDataForWatch="formDataForWatch"
         :formItemList="formItemList"
         :value="tbodyList"
         :mode="mode"
@@ -75,6 +79,7 @@
         :disabled="disabled"
         :readonly="readonly"
         :externalData="externalData"
+        :extendConfigList="extendConfigList"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
         @resize="$emit('resize')"
         @change="getSelectedData"
@@ -83,12 +88,14 @@
     <DataDialog
       v-if="isTableSelectorDialogShow"
       :formData="formData"
+      :formDataForWatch="formDataForWatch"
       :formItem="formItem"
       :value="tbodyList"
       :mode="mode"
       :filter="filter"
       :formItemList="formItemList"
       :externalData="externalData"
+      :extendConfigList="extendConfigList"
       @close="closeTableSelectorDialog"
     ></DataDialog>
   </div>

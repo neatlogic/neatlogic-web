@@ -6,7 +6,7 @@ import store from '@/resources/store';
 import VueI18n from 'vue-i18n';
 import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import md5 from 'js-md5';
-import api from '@/resources/api/index/index.js';
+import api from '@/resources/api/api.js';
 
 import {initRouter, initI18n} from '@/resources/init.js';
 

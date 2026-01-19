@@ -37,7 +37,7 @@
         :slot="extra.uuid"
         slot-scope="{ row }"
       >
-        <div :key="extra.uuid" class="table-item" @click.stop>
+        <div :key="extra.uuid" @click.stop>
           <FormItem
             :ref="'formitem_' + row._selected + '_' + row.uuid"
             :formItem="getExtraFormItem(extra,row)"
@@ -45,10 +45,12 @@
             :disabled="!row._selected || disabled"
             :value="row[extra.uuid]"
             :formData="{...$utils.deepClone(formData || {}), ...row}"
+            :formDataForWatch="{...$utils.deepClone(formDataForWatch || {}),...(row || {})}"
             :showStatusIcon="false"
             mode="read"
             :readonly="readonly"
             :externalData="externalData"
+            :extendConfigList="extendConfigList"
             :rowUuid="row.uuid"
             isCustomValue
             :isClearSpecifiedAttr="isClearSpecifiedAttr"
@@ -152,7 +154,7 @@ export default {
       this.searchParam.columnList = [];
       this.searchParam.searchColumnList = [];
       this.config.dataConfig.filter(d => !d.isExtra).forEach(d => {
-        d.isPC && this.searchParam.columnList.push(this.matrixAttrUuidMap[d.uuid]);
+        this.matrixAttrUuidMap[d.uuid] && this.searchParam.columnList.push(this.matrixAttrUuidMap[d.uuid]);
         d.isSearch && this.searchParam.searchColumnList.push(this.matrixAttrUuidMap[d.uuid]);
       });
       if (!this.searchParam.columnList.length) {
@@ -195,7 +197,7 @@ export default {
           tbodyList.forEach(d => {
             if (!this.$utils.isEmpty(this.config.dataConfig.length)) {
               this.config.dataConfig.forEach(column => {
-                if (column.isExtra && column.isPC) {
+                if (column.isExtra) {
                   this.$set(d, column.uuid, null);
                 }
               });
@@ -206,7 +208,7 @@ export default {
                 d['_selected'] = true;
                 for (let key in valueitem) {
                   const column = this.config.dataConfig.find(c => c.uuid === key);
-                  if (column && column.isExtra && column.isPC) {
+                  if (column && column.isExtra) {
                     this.$set(d, key, valueitem[key]);
                   }
                 }
@@ -394,7 +396,8 @@ export default {
       handler: function(val) {
         this.searchMatrixData(1);
       },
-      deep: true
+      deep: true,
+      immediate: true
     },
     config: {
       handler: function(val) {
@@ -430,11 +433,8 @@ export default {
   }
 };
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
 .table-datalist {
    position: relative;
-}
-.table-item {
-  min-width: 60px;
 }
 </style>

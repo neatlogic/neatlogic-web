@@ -161,7 +161,7 @@ export default {
     deleteDraft({ title, id: knowledgeDocumentVersionId }) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: title}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: title}),
         btnType: 'error',
         'on-ok': async vnode => {
           const params = { knowledgeDocumentVersionId };
@@ -182,7 +182,7 @@ export default {
     deleteDocument({ title, knowledgeDocumentId }) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: title}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: title}),
         btnType: 'error',
         'on-ok': async vnode => {
           const params = { knowledgeDocumentId };

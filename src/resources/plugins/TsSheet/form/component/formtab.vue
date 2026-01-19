@@ -36,6 +36,7 @@
                 :readonly="readonly || tab.isReadOnly"
                 :isClearSpecifiedAttr="isClearSpecifiedAttr"
                 :externalData="externalData"
+                :extendConfigList="extendConfigList"
                 :needLabel="config.isShowComponentNameInTab"
                 :disabledDelete="formItem.hasOwnProperty('inherit')"
                 @resize="$emit('resize')"

@@ -280,7 +280,7 @@ export default {
       let tmpText, tmpValue;
       let { handler = '', config = {} } = formItem || {};
       let { dataList = [] } = config;
-      if (typeof value === 'string') {
+      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
         tmpText = tmpValue = value;
         if (handler == 'formuserselect') {
           tmpText = tmpValue = this.handleUserSelectValue(value);

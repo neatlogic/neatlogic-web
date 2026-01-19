@@ -46,6 +46,7 @@
       v-if="isAttrConfigDialogShow && currentProperty"
       :formItemList="formItemList"
       :formItemConfig="config"
+      :extendConfigList="extendConfigList"
       :property="currentProperty"
       :isNeedTable="false"
       :isNeedReaction="true"
@@ -64,7 +65,8 @@ export default {
   props: {
     config: Object,
     source: {type: String, default: ''},
-    formItemList: {type: Array, default: () => []}
+    formItemList: {type: Array, default: () => []},
+    extendConfigList: {type: Array, default: () => []} // 标签扩展配置列表
   },
   data() {
     return {

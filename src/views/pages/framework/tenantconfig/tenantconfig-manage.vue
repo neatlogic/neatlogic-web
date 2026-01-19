@@ -1,96 +1,38 @@
 <template>
-  <div>
-    <TsContain>
+  <div class="mt-md">
+    <TsContain hideHeader>
       <template v-slot:content>
-        <TsTable
-          v-if="!loading"
-          v-bind="tableData"
-          :theadList="theadList"
-          @changeCurrent="changePage"
-          @changePageSize="changePageSize"
-        >
-          <template v-slot:key="{ row }">
-            <span class="text-href" @click.stop="showTenantConfigForm(row.key)">{{ row.key }}</span>
-          </template>
-        </TsTable>
+        <Tabs v-model="currentTab" :animated="false">
+          <TabPane :label="$t('page.param')" name="parameterSettings"></TabPane>
+          <TabPane :label="$t('page.middleware')" name="middleware"></TabPane>
+        </Tabs>
+        <div>
+          <div v-if="currentTab == 'parameterSettings'">
+            <ParameterSettingsManage></ParameterSettingsManage>
+          </div>
+          <div v-if="currentTab == 'middleware'">
+            <MiddlewareManage></MiddlewareManage>
+          </div>
+        </div>
       </template>
     </TsContain>
-    <TsDialog
-      v-if="isShowFormDialog"
-      type="modal"
-      :isShow="true"
-      :title="$t('dialog.title.edittarget', { target: $t('page.param') })"
-      @on-close="close"
-      @on-ok="save"
-    >
-      <template v-slot>
-        <TsForm
-          ref="mainForm"
-          v-model="rowData"
-          :itemList="formSetting"
-          type="type"
-          labelPosition="right"
-        ></TsForm>
-      </template>
-    </TsDialog>
   </div>
 </template>
 <script>
 export default {
   name: '',
   components: {
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+    ParameterSettingsManage: () => import('./parametersettings-manage.vue'),
+    MiddlewareManage: () => import('./middleware-manage.vue')
   },
   props: {},
   data() {
     return {
-      loading: false,
-      currentPage: 1,
-      pageSize: 20,
-      theadList: [
-        {
-          key: 'key',
-          title: this.$t('page.variable')
-        },
-        {
-          key: 'value',
-          title: this.$t('page.value'),
-          maxLength: 200
-        },
-        {
-          key: 'description',
-          title: this.$t('page.description'),
-          maxLength: 200
-        }
-      ],
-      tableData: {},
-      isShowFormDialog: false,
-      formSetting: {
-        key: {
-          type: 'text',
-          label: this.$t('page.variable'),
-          disabled: true,
-          validateList: ['required']
-        },
-        value: {
-          type: 'text',
-          label: this.$t('page.value'),
-          validateList: ['required']
-        },
-        description: {
-          type: 'textarea',
-          label: this.$t('page.description'),
-          disabled: true
-        }
-      },
-      rowData: {}
+      currentTab: 'parameterSettings'
     };
   },
   beforeCreate() {},
-  created() {
-    this.listTenantConfig();
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -99,58 +41,11 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-    changePage(currentPage) {
-      this.currentPage = currentPage;
-      this.listTenantConfig();
-    },
-    changePageSize(pageSize) {
-      this.currentPage = 1;
-      this.pageSize = pageSize;
-      this.listTenantConfig();
-    },
-    listTenantConfig() {
-      this.loading = true;
-      this.$api.framework.tenantconfig
-        .listTenantConfig({ currentPage: this.currentPage, pageSize: this.pageSize })
-        .then(res => {
-          if (res.Status === 'OK') {
-            this.tableData = res.Return;
-          }
-        })
-        .finally(() => {
-          this.loading = false;
-        });
-    },
-    async showTenantConfigForm(key) {
-      await this.$api.framework.tenantconfig.getTenantConfig({ key }).then(res => {
-        if (res.Status === 'OK') {
-          this.rowData = res.Return;
-        }
-      });
-      this.isShowFormDialog = true;
-    },
-    close() {
-      this.isShowFormDialog = false;
-      this.rowData = {};
-    },
-    save() {
-      let form = this.$refs.mainForm;
-      if (form.valid()) {
-        let data = form.getFormValue();
-        this.$api.framework.tenantconfig.saveTenantConfig(data).then(res => {
-          if (res.Status === 'OK') {
-            this.isShowFormDialog = false;
-            this.rowData = {};
-            this.listTenantConfig();
-          }
-        });
-      }
-    }
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {}
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped>
+</style>

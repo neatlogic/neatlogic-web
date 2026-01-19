@@ -155,7 +155,7 @@ export default {
       const { id, name } = row;
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: row.name}),
         btnType: 'error',
         'on-ok': async vnode => {
           const res = await this.$api.report.report.deleteReportInstance({ id });

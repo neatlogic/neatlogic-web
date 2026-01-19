@@ -148,6 +148,7 @@
                   textName="name"
                   valueName="uuid"
                   transfer
+                  :selectItemList.sync="selectMatrixConfig"
                   @on-change="(val, valueCOnfig, selectItem)=>{
                     changeMatrixUuid({value: val, selectItem: selectItem});
                   }"
@@ -229,38 +230,15 @@
                   }"
                 ></TsFormInput>
               </TsFormItem>
-              <TsFormItem v-if="propertyLocal.config.matrixUuid && tableMatrixColumnList.length > 0" :label="$t('page.filtercondition')">
+              <TsFormItem v-if="propertyLocal.config.matrixUuid && selectMatrixConfig" :label="$t('page.filtercondition')">
                 <div class="bg-block padding-md radius-md">
-                  <div v-if="propertyLocal.config.sourceColumnList && propertyLocal.config.sourceColumnList.length > 0">
-                    <Row
-                      v-for="(sourceColumn, index) in propertyLocal.config.sourceColumnList"
-                      :key="index"
-                      :gutter="10"
-                      class="mb-xs"
-                    >
-                      <Col span="10">
-                        <TsFormSelect
-                          ref="formitem_column"
-                          v-model="sourceColumn.column"
-                          :dataList="extraPropertyMatrixColumnList"
-                          :validateList="validateList"
-                          transfer
-                          border="border"
-                        ></TsFormSelect>
-                      </Col>
-                      <Col span="2" style="text-align:center" class="text-grey">{{ $t('term.expression.eq') }}</Col>
-                      <Col span="10"><TsFormSelect
-                        ref="formitem_valueColumn"
-                        v-model="sourceColumn.valueColumn"
-                        :dataList="tableMatrixColumnList"
-                        :validateList="validateList"
-                        transfer
-                        border="border"
-                      ></TsFormSelect></Col>
-                      <Col span="2" style="text-align:center"><span class="tsfont-trash-o text-action" @click="removeSourceColumn(index)"></span></Col>
-                    </Row>
-                  </div>
-                  <Button @click="addSourceColumn"><span class="tsfont-plus">{{ $t('page.filtercondition') }}</span></Button>
+                  <DataSourceFilter
+                    ref="formitem_sourceColumnList"
+                    v-model="propertyLocal.config.sourceColumnList"
+                    :dataList="mappingDataList"
+                    :matrixUuid="propertyLocal.config.matrixUuid"
+                    :matrixType="selectMatrixConfig.type"
+                  ></DataSourceFilter>
                 </div>
               </TsFormItem>
             </template>
@@ -343,6 +321,7 @@
                 :formItemList="allFormItemList"
                 :config="propertyLocal.config"
                 :source="source"
+                :extendConfigList="extendConfigList"
                 @setDataConfig="(dataConfig)=>{
                   $set(propertyLocal.config, 'dataConfig', dataConfig);
                 }"
@@ -497,7 +476,8 @@ export default {
     ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue'),
     ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue'),
     TagSourceSetting: () => import('../common/tag-source-setting.vue'),
-    FormuserselectSetting: () => import('./formuserselect-setting.vue')
+    FormuserselectSetting: () => import('./formuserselect-setting.vue'),
+    DataSourceFilter: () => import('../common/data-source-filter.vue')
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -714,7 +694,8 @@ export default {
             }
           }
         }
-      ]
+      ],
+      selectMatrixConfig: null
       //filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
     };
   },
@@ -887,15 +868,6 @@ export default {
       const c = { 'bg-error-grey': !!this.errorMap[attrName], 'bg-block': !this.errorMap[attrName] };
       return c;
     },
-    addSourceColumn() {
-      if (!this.propertyLocal.config.sourceColumnList) {
-        this.$set(this.propertyLocal.config, 'sourceColumnList', []);
-      }
-      this.propertyLocal.config.sourceColumnList.push({ column: '', valueColumn: '' });
-    },
-    removeSourceColumn(index) {
-      this.propertyLocal.config.sourceColumnList.splice(index, 1);
-    },
     changeHandler(val) {
       this.propertyLocal.reaction = null;
       this.$nextTick(() => {
@@ -988,24 +960,6 @@ export default {
       //表格输入组件和表格外组件
       return this.formItemConfig.dataConfig.concat(this.formItemList);
     },
-    //表格选择组件矩阵的字段
-    tableMatrixColumnList() {
-      const columnList = [];
-      this.formItemConfig.dataConfig
-        .filter(d => !d.isExtra)
-        .forEach(d => {
-          columnList.push({ value: d.uuid, text: d.label });
-        });
-      return columnList;
-    },
-    //扩展属性矩阵的字段
-    extraPropertyMatrixColumnList() {
-      const columnList = [];
-      this.mappingDataList.forEach(d => {
-        columnList.push({ value: d.uuid, text: d.name });
-      });
-      return columnList;
-    },
     defaultValueSetting() {
       const setting = {};
       const config = this.propertyLocal.config;
@@ -1015,11 +969,25 @@ export default {
       if (config.dataSource === 'matrix' && config.matrixUuid) {
         setting.dynamicUrl = '/api/rest/matrix/column/data/search/forselect';
         setting.rootName = 'dataList';
-        const params = { matrixUuid: config.matrixUuid };
+        const params = { matrixUuid: config.matrixUuid, filterList: [] };
         if (config.mapping) {
           params.keywordColumn = config.mapping.text;
           params.valueField = config.mapping.value;
           params.textField = config.mapping.text;
+        }
+        if (config.sourceColumnList && config.sourceColumnList.length > 0) {
+          config.sourceColumnList.forEach(sourceColumn => {
+            if (!this.$utils.isEmpty(sourceColumn.valueList) && sourceColumn.column && sourceColumn.expression) {
+              const newValueList = sourceColumn.valueList.filter(v => !this.$utils.isEmpty(v));
+              if (!this.$utils.isEmpty(newValueList)) {
+                params.filterList.push({
+                  uuid: sourceColumn.column,
+                  expression: sourceColumn.expression,
+                  valueList: newValueList
+                });
+              }
+            }
+          });
         }
         setting.params = params;
       } else {

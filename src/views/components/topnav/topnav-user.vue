@@ -12,6 +12,7 @@
           v-bind="userInfo"
           :avatar="avatarUrl"
           :size="24"
+          initType="user"
           class="user-avatar"
         ></TsAvatar>
         <i class="tsfont-down" :class="{'arrow-dropdown':isDropdown}"></i>
@@ -114,6 +115,7 @@ export default {
         if (res.Status == 'OK') {
           sessionStorage.removeItem('neatlogic_authorization');
           this.$utils.removeCookie('neatlogic_authorization');
+          this.$store.commit('setPwdRedirected', false);
           let url = res.Return.url || '';
           if (url) {
             url = url.indexOf('http://') == -1 && url.indexOf('https://') == -1 ? 'http://' + url : url;

@@ -362,7 +362,7 @@ export default {
       if (row && row.formValue) {
         this.$createDialog({
           title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', {target: row.formValue && row.formValue.name ? row.formValue.name : ''}),
+          content: this.$t('dialog.content.deletetargetconfirm', {target: row.formValue && row.formValue.name ? row.formValue.name : ''}),
           btnType: 'error',
           'on-ok': vnode => {
             this.ruleList.splice(index, 1);

@@ -88,7 +88,7 @@
             :key="menu.id"
             class="link"
             :class="{ active: $isMenuActive(menu.url) }"
-            @click="goTo('/graph-data/' + customview.id)"
+            @click="goTo('/ci-view/' + menu.id)"
             @contextmenu="newTab($event, menu, menu.url ? menu.url : '/')"
           >
             <a class="cursor" :class="menu.icon">{{ menu.name }}</a>

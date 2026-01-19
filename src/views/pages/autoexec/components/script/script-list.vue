@@ -219,7 +219,7 @@ export default {
     deleteScript(item, index) {
       this.$createDialog({
         title: this.$t('page.warning'),
-        content: this.$t('dialog.content.deleteconfirm', {target: item.operationName}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: item.operationName}),
         btnType: 'error',
         'on-ok': vnode => {
           vnode.isShow = false;

@@ -636,7 +636,7 @@
     "flowauthuserupdatetip": "处理人包含所有步骤处理人",
     "settime": "设置时间",
     "setdate": "设置日历",
-    "titletemplatetooltip": "示例:${DATA.regionName}机构用户${DATA.userName}于${DATA.yyyyMMdd}发起机房巡检\n可用变量:\n"
+    "titletemplatetooltip": "示例:${regionName}机构用户${userName}于${yyyyMMdd}发起机房巡检\n可用变量:\n"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -1370,13 +1370,14 @@
     "suredeletesession": "是否确认强制下线{target}",
     "usersessiondeletetitle": "确认强制下线",
     "batchdeleteusersession": "批量强制下线",
-    "usersessiondeletetip": "用户将在15分钟缓存失效后强制用户下线",
     "loginauditretentionperiod": "登录记录保存期限",
     "logintime": "登录时间",
     "serverIdTarget": "服务器ID：{target}",
     "clearServerCacheSuccessTarget": "清除【服务器ID：{target}】缓存成功！",
     "licenserefresh": "更新nacos或config.properties中的license后，可以不重启服务，点击此刷新按钮进行更新许可",
-    "loginmethod": "登录方式"
+    "loginmethod": "登录方式",
+    "clicktocopyuuid": "点击复制uuid",
+    "successcopyintegrationuuid": "成功复制集成uuid"
   },
   "knowledge": {
     "document": "文档",
@@ -2930,7 +2931,13 @@
     "1month": "1个月",
     "3day": "3天",
     "subscribename": "订阅名称",
-    "invokealert": "关联告警"
+    "invokealert": "关联告警",
+    "alertdata": "告警数据",
+    "successaction": "成功动作",
+    "failedaction": "失败动作",
+    "invokeresult": "调用结果",
+    "invokeinterval": "调用间隔",
+    "returnresult": "返回信息"
   },
   "informant": {
     "last5dump": "最近5次快照",

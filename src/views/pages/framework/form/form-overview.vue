@@ -249,7 +249,7 @@ export default {
       this.formUuid = row.uuid;
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.formName}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: this.formName}),
         btnType: 'error',
         'on-ok': vnode => {
           vnode.isShow = false;

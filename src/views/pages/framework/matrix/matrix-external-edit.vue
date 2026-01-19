@@ -148,7 +148,7 @@ export default {
       }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: this.matrixName}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: this.matrixName}),
         btnType: 'error',
         'on-ok': vnode => {
           let data = {
@@ -178,20 +178,5 @@ export default {
   watch: {}
 };
 </script>
-<style lang='less' scope>
-@import (reference) '~@/resources/assets/css/variable.less';
-.bar-top {
-    .input-contain {
-      display: inline-block;
-      line-height: 30px;
-      padding: 0px 15px;
-      padding-left: 0;
-      .form-error-tip {
-        display: inline-block;
-        line-height: 1.8;
-        position: absolute;
-        top: 20px;
-      }
-    }
-  }
+<style lang='less' scoped>
 </style>

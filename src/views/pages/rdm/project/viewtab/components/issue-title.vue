@@ -11,6 +11,7 @@
         border="border"
         :maxlength="50"
         :width="350"
+        @click.native.stop
         @on-keydown="saveIssue"
         @on-blur="(val)=>saveIssue('', val)"
       ></TsFormInput>

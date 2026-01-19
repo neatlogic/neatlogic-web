@@ -33,7 +33,11 @@ import 'regenerator-runtime/runtime'; // 处理regeneratorRuntime is not defined
 // });
 
 // eslint-disable-next-line space-before-function-paren
-(async function () {
+
+// 每次系统重新加载 → 清掉密码强制跳转标记
+sessionStorage.removeItem('PWD_FORCE_REDIRECTED');
+
+(async function() {
   await ThemeUtils.init();
 })();
 

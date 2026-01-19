@@ -233,7 +233,6 @@ export default {
       },
       fileList: [],
       headerConfig: {
-        Authorization: sessionStorage.getItem('neatlogic_authorization')
       },
       filedata: {
         type: this.dataType,

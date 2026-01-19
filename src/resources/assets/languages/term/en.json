@@ -636,7 +636,7 @@
     "flowauthuserupdatetip": "The processor includes all step handlers",
     "settime": "Set time",
     "setdate": "Set Calendar",
-    "titletemplatetooltip": "Example: ${DATA. regionName} institutional user ${DATA. userName} initiates a data center inspection on ${DATA. yyyyMMdd}. \nAvailable variables: \n"
+    "titletemplatetooltip": "Example: ${regionName} institutional user ${userName} initiates a data center inspection on ${yyyyMMdd}. \nAvailable variables: \n"
   },
   "autoexec": {
     "addrootdirectory": "Add root directory",
@@ -1370,13 +1370,14 @@
     "suredeletesession": "Are you sure to log off the user: {target}",
     "usersessiondeletetitle": "Confirm forced offline",
     "batchdeleteusersession": "Batch forced offline",
-    "usersessiondeletetip": "Users will be forced to log off after 15 minutes of cache expiration",
     "loginauditretentionperiod": "Login record retention period",
     "logintime": "Login time",
     "serverIdTarget": "Server ID：{target}",
     "clearServerCacheSuccessTarget": "Clearing the cache of [Server ID: {target}] successfully!",
     "licenserefresh": "After updating the license in nacos or config. properties, you can click this refresh button to update the license without restarting the service",
-    "loginmethod": "Login method"
+    "loginmethod": "Login method",
+    "clicktocopyuuid": "Click to copy uuid",
+    "successcopyintegrationuuid": "Successfully copied integrated uuid"
   },
   "knowledge": {
     "document": "Document",
@@ -2930,7 +2931,13 @@
     "1month": "a month",
     "3day": "3 days",
     "subscribename": "Subscription Name",
-    "invokealert": "Related Alarm "
+    "invokealert": "Related Alarm ",
+    "alertdata": "alert data",
+    "successaction": "Successful action",
+    "failedaction": "Failed action",
+    "invokeresult": "call result",
+    "invokeinterval": "Call interval",
+    "returnresult": "return message"
   },
   "runnergroup": {
     "ruletips": "The request for login authentication needs to carry a header as a rule expression (note that the header parameter in the expression is all lowercase). If the value of the expression after execution is true, the executor group will take effect, and false and syntax exceptions will not take effect. For example: ${env}==\\ bit \\&&(${test}==\\ 1 \\ | | ${test2}==\\ aaa \\)"

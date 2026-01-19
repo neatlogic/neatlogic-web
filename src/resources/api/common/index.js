@@ -182,7 +182,7 @@ const common = {
     return axios.post('/api/rest/license/invalid/msg/get');
   },
   getCurrentUser() {
-    // 仅用于登录之后获取用户信息，切换路由的时候获取用户信息
+    // 仅用于刷新页面获取用户基本信息，以及权限信息
     return axios.get('/api/rest/user/current/get');
   }
 };

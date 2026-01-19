@@ -61,20 +61,9 @@
                 </template>
               </TsForm>
               <Button class="save" type="primary" @click="save()">{{ $t('page.save') }}</Button>
-              <Tooltip 
-                placement="top"
-                :transfer="true"
-                theme="light"
-                max-width="300"
-                class="clearCache"
-                :content="serverIdTipInfo"
-              >
-                <Button type="default" @click="clearUserSessionCache()">{{ $t('page.userclearsessioncache') }}</Button>
-              </Tooltip>
             </TabPane>
             <TabPane :label="$t('term.framework.modifypwd')" name="password">
-              <TsForm ref="password" :itemList="pwdSetting"></TsForm>
-              <Button class="save" type="primary" @click="save()">{{ $t('page.save') }}</Button>
+              <PasswordSetting></PasswordSetting>
             </TabPane>
             <TabPane :label="$t('term.framework.custom')" name="convenience">
               <div v-show="paneName === 'convenience'">
@@ -187,12 +176,12 @@ export default {
     AvatarSetting,
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsAvatar,
-    ViewAuthorizationDialog: () => import('./user-setting-view-authorization-dialog.vue')
+    ViewAuthorizationDialog: () => import('./user-setting-view-authorization-dialog.vue'),
+    PasswordSetting: () => import('./user-setting-password.vue')
   },
   props: [''],
   data() {
     return {
-      serverIdTipInfo: '',
       tableConfig: {
         rowNum: 0,
         pageSize: 20,
@@ -309,59 +298,16 @@ export default {
           type: 'slot',
           label: this.$t('term.framework.token'),
           name: 'token'
-        }
-      ],
-      pwdSetting: [
-        {
-          type: 'password',
-          name: 'password',
-          value: '',
-          readonly: false,
-          disabled: false,
-          isHidden: false,
-          placeholder: '',
-          width: 250,
-          label: this.$t('term.framework.currentpwd'),
-          showPassword: true,
-          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseinput', { target: this.$t('term.framework.currentpwd') }) }]
         },
         {
-          type: 'password',
-          name: 'newpwd',
-          value: '',
-          readonly: false,
-          disabled: false,
+          type: 'text',
+          name: 'serverId',
+          readonly: true,
+          disabled: true,
           isHidden: false,
           placeholder: '',
           width: 250,
-          label: this.$t('term.framework.newpwd'),
-          showPassword: true,
-          validateList: [
-            { name: 'required', message: this.$t('form.placeholder.pleaseinput', { target: this.$t('term.framework.newpwd') }) },
-            {
-              name: 'passcode',
-              message: this.$t('message.passcode')
-            }
-          ]
-        },
-        {
-          type: 'password',
-          name: 'confirmpwd',
-          value: '',
-          readonly: false,
-          disabled: false,
-          isHidden: false,
-          placeholder: '',
-          width: 250,
-          label: this.$t('term.framework.confirmpwd'),
-          showPassword: true,
-          validateList: [
-            { name: 'required', message: this.$t('term.framework.pleaseconfirmnewpwd') },
-            {
-              name: 'passcode',
-              message: this.$t('message.passcode')
-            }
-          ]
+          label: this.$t('page.serverid')
         }
       ],
       convenienceList: [],
@@ -476,53 +422,7 @@ export default {
         return;
       }
       let data = this.$refs[refsName].getFormValue();
-      if (refsName == 'password') {
-        let oldpwd = '{MD5}' + _this.$md5(data.password);
-        let userpwd = '{MD5}' + _this.$md5(data.newpwd);
-        let newpwd = '{MD5}' + _this.$md5(data.confirmpwd);
-        // if (oldpwd !== userpwd) {
-        //   this.$Notice.error({
-        //     title: "当前密码不正确",
-        //     duration: 1.5
-        //   });
-        //   return;
-        // }
-        // if (newpwd == oldpwd) {
-        //   this.$Notice.error({
-        //     title: "新密码跟旧密码不能一样",
-        //     duration: 1.5
-        //   });
-        //   return;
-        // }
-        if (data.newpwd !== data.confirmpwd) {
-          this.$Notice.error({
-            title: this.$t('message.savefailed'),
-            desc: this.$t('term.framework.pwdnotsame'),
-            duration: 2
-          });
-          return;
-        }
-        let pwdData = {
-          oldPassword: oldpwd,
-          userId: this.userInfo.userId,
-          password: newpwd
-        };
-        this.$api.framework.user
-          .updatePwd(pwdData)
-          .then(res => {
-            if (res.Status == 'OK') {
-              this.$Message.success(this.$t('message.updatesuccess'));
-              // this.$refs[refsName].resetFields();
-            }
-          })
-          .catch(error => {
-            this.$Notice.error({
-              title: this.$t('message.modifyfail'),
-              desc: error.data.Message,
-              duration: 2
-            });
-          });
-      } else {
+      if (refsName !== 'password') {
         delete data.token;
         if (this.userInfo.roleUuidList == undefined) {
           data.roleUuidList = '';
@@ -534,15 +434,7 @@ export default {
             this.$Message.success(this.$t('message.savesuccess'));
           }
         });
-      }
-    },
-    clearUserSessionCache() {
-      this.$api.framework.user.clearUserSessionCache({serverId: this?.currentUserInfo?.serverId}).then(res => {
-        if (res.Status == 'OK') {
-          const { serverId = '' } = res.Return || {};
-          this.$Message.success(this.$t('term.framework.clearServerCacheSuccessTarget', { target: serverId }));
-        }
-      });
+      } 
     },
     //个性化保存
     saveProfile: function(data) {
@@ -569,22 +461,9 @@ export default {
     },
     canShow() {
       return this.hasAuth && !this.$utils.isEmpty(this.moduleList) && this.moduleList.some(v => v.moduleId == 'process');
-    },
-    currentUserInfo() {
-      return this.$store.state.topMenu.userInfo;
     }
   },
-  watch: {
-    currentUserInfo: {
-      handler(userInfo, oldVal) {
-        if (userInfo?.serverId) {
-          this.serverIdTipInfo = this.$t('term.framework.serverIdTarget', {target: userInfo.serverId});
-        }
-      },
-      deep: true,
-      immediate: true
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less">

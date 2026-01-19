@@ -782,9 +782,9 @@ export default {
       let content = '';
       if (versionCount > 1) {
         if (_this.versionStatus == 'draft') {
-          title = this.$t('dialog.content.deleteconfirm', {target: _this.versionName});
+          title = this.$t('dialog.content.deletetargetconfirm', {target: _this.versionName});
         } else {
-          title = this.$t('dialog.content.deleteconfirm', {target: _this.version});
+          title = this.$t('dialog.content.deletetargetconfirm', {target: _this.version});
         }
 
         content = '';

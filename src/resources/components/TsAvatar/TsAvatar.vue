@@ -9,7 +9,7 @@
       @on-error="handleError"
     ></Avatar>
     <span v-else class="ivu-avatar" :style="sizeClass">
-      <span class="text-info" style="text-transform: lowercase">{{ namePinyin }}</span>
+      <span class="text-info" style="text-transform: lowercase">{{ getUserName }}</span>
     </span>
     <UserStatus
       :vipLevel="vipLevel"
@@ -67,12 +67,12 @@ export default {
       if (this.avatar && this.avatar.indexOf('api') > -1) return this.avatar.indexOf(BASEURLPREFIX + '/') != 0 ? BASEURLPREFIX + '/' + this.avatar : this.avatar;
       if (this.initType === 'role') return require('@/resources/assets/images/avatar/role.png');
       if (this.initType === 'team') return require('@/resources/assets/images/avatar/team.png');
-      if (this.initType === 'user' && !this.namePinyin) return require('@/resources/assets/images/avatar/user.png');
+      if (this.initType === 'user' && !this.getUserName) return require('@/resources/assets/images/avatar/user.png');
       if (this.initType && !['role', 'team', 'user'].includes(this.initType)) return require('@/resources/assets/images/avatar/process.png');
       else return null;
     },
 
-    namePinyin() {
+    getUserName() {
       let newName = '';
       let re = /^[\u4E00-\u9FA5]+$/;
       let name = this.name || this.userName;

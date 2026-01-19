@@ -315,9 +315,7 @@ export default {
     addRow(index) {
       const data = { uuid: this.$utils.setUuid() };
       this.config.dataConfig.forEach(d => {
-        if (d.isPC) {
-          data[d.uuid] = (d.config && d.config.defaultValue) || null;
-        }
+        data[d.uuid] = (d.config && d.config.defaultValue) || null;
       });
       this.tbodyList.splice(index + 1, 0, data);
     },
@@ -339,9 +337,7 @@ export default {
     addData() {
       const data = { uuid: this.$utils.setUuid() };
       this.config.dataConfig.forEach(d => {
-        if (d.isPC) {
-          data[d.uuid] = (d.config && d.config.defaultValue) || null;
-        }
+        data[d.uuid] = (d.config && d.config.defaultValue) || null;
       });
       this.tbodyList.unshift(data);
     },
@@ -504,7 +500,11 @@ export default {
     changeRow(rowData) {
       const { value, extraUuid = '', row = {} } = rowData || {};
       if (!this.$utils.isSame(value, row[extraUuid])) {
-        row[extraUuid] = value;
+        if (!row.hasOwnProperty(extraUuid)) {
+          this.$set(row, extraUuid, value); // 修复条件赋值不生效问题
+        } else {
+          row[extraUuid] = value;
+        }
       }
     },
     getCurrentRowData(currentRowData) {
@@ -703,7 +703,7 @@ export default {
       return Object.freeze([...this.formItemList || []]); // 解构不影响原数据
     },
     frozenExtraFormItemList() {
-      return Object.freeze([...this.extraList || []]);
+      return Object.freeze([...this.dataConfigList || []]);
     },
     frozenExtendConfigList() {
       return Object.freeze([...this.extendConfigList || []]);
@@ -793,6 +793,11 @@ export default {
     extraList() {
       const list = this.$utils.deepClone(this.config.dataConfig.filter(d => d.isPC));
       return Object.freeze(list); // 浅冻结
+    },
+    dataConfigList() {
+      // 表头配置列：PC端隐藏列需存配置，供过滤使用
+      const list = this.$utils.deepClone(this.config.dataConfig);
+      return Object.freeze(list);
     },
     canAdd() {
       return !this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd;

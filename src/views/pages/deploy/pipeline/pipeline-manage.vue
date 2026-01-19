@@ -134,7 +134,7 @@ export default {
     deletePipeline(row) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', {target: row.name}),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: row.name}),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.deploy.pipeline
