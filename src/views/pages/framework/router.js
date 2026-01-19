@@ -200,7 +200,7 @@ let routerList = [
     name: 'login-manage',
     component: LoginManage,
     meta: {
-      title: '登录记录',
+      title: $t('router.framework.loginmanage'),
       ismenu: true,
       icon: 'tsfont-user',
       authority: 'USER_MODIFY',
@@ -213,7 +213,7 @@ let routerList = [
     name: 'user-export-file-manage',
     component: userExportFileManage,
     meta: {
-      title: '导出管理',
+      title: $t('router.framework.userexportfilemanage'),
       ismenu: true,
       icon: 'tsfont-download',
       authority: '',
