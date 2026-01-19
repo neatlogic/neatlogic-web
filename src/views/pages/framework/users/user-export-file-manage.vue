@@ -156,6 +156,7 @@ export default {
       },
       defaultTheadList: [
         { key: 'name', title: this.$t('page.name') },
+        { key: 'typeText', title: this.$t('page.type') },
         { key: 'status', title: this.$t('page.status') },
         { key: 'sizeText', title: this.$t('page.size') },
         { key: 'startTime', title: this.$t('page.starttime'), type: 'time' },
@@ -165,6 +166,7 @@ export default {
       ],
       hasAllUserAuthTheadList: [
         { key: 'name', title: this.$t('page.name') },
+        { key: 'typeText', title: this.$t('page.type') },
         { key: 'status', title: this.$t('page.status') },
         { key: 'sizeText', title: this.$t('page.size') },
         { key: 'startTime', title: this.$t('page.starttime'), type: 'time' },
