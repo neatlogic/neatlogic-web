@@ -15,7 +15,7 @@ export default {
   props: {},
   data() {
     return {
-      unreadCount: 0
+      // unreadCount: 0
     };
   },
   beforeCreate() {},
@@ -34,9 +34,9 @@ export default {
     getUserExportFileUnReadCount() {
       this.$api.framework.userexportfile.getUserExportFileUnReadCount({}).then(res => {
         if (res.Status == 'OK') {
-          this.unreadCount = res.Return.unreadCount;
-          // let unreadCount = res.Return.unreadCount;
-          // this.$store.commit('setUnreadCount', unreadCount);
+          // this.unreadCount = res.Return.unreadCount;
+          let unreadCount = res.Return.unreadCount;
+          this.$store.commit('setUserExportFileUnreadCount', unreadCount);
         }
       });
     },
@@ -46,9 +46,9 @@ export default {
   },
   filter: {},
   computed: {
-    // unreadCount() {
-    //   return this.$store?.state?.unreadCount;
-    // }
+    unreadCount() {
+      return this.$store.state.userExportFileUnreadCount;
+    }
   },
   watch: {}
 };

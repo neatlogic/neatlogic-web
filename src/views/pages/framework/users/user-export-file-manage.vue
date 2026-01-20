@@ -301,7 +301,12 @@ export default {
             });
           }
           if (unreadIdList.length > 0) {
-            this.$api.framework.userexportfile.updateUserExportFileIsRead({idList: unreadIdList});
+            this.$api.framework.userexportfile.updateUserExportFileIsRead({idList: unreadIdList}).then(res => {
+              if (res.Status == 'OK') {
+                let unreadCount = res.Return.unreadCount;
+                this.$store.commit('setUserExportFileUnreadCount', unreadCount);
+              }
+            });
           }
           if (doingIdList.length > 0) {
             this.timmer = setTimeout(() => {
@@ -330,7 +335,7 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.file') }),
         btnType: 'error',
         'on-ok': vnode => {
-          this.$api.framework.database.exportUserExportFile({id: row.id}).then(res => {
+          this.$api.framework.userexportfile.deleteUserExportFile({id: row.id}).then(res => {
             if (res.Status == 'OK') {
               this.searchUserExportFileList();
               vnode.isShow = false;
