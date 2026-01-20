@@ -12,7 +12,7 @@
         <TsRow>
           <Col :span="6">
             <div v-auth="['USER_EXPORT_FILE_MODIFY']">
-              <span class="mr-xs text-grey">查看所有用户数据</span>
+              <span class="mr-xs text-grey">{{ $t('term.framework.showalluserdata') }}</span>
               <span>
                 <i-switch
                   v-model="isShowAllUser"
