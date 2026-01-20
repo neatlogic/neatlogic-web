@@ -3,7 +3,7 @@
     <div class="pb-sm">
       <span class="tsfont-plus text-href" @click="addData()">{{ $t('page.condition') }}</span>
     </div>
-    <div v-for="(item, index) in list" :key="index" class="bg-op mb-sm padding radius-md">
+    <div v-for="(item, index) in list" :key="index" class="bg-op mb-sm padding radius-md setvalue-list">
       <ConditionGroup
         :ref="'condition_setvalue'"
         reactionKey="setvalue"
@@ -64,6 +64,9 @@
           "
         ></FormItem>
       </template>
+      <div class="del-item text-tip-active" @click="delItem(index)">
+        <i class="tsfont-close"></i>
+      </div>
     </div>
   </div>
 </template>
@@ -153,6 +156,9 @@ export default {
       if (!this.$utils.isSame(rule, this.list[index])) {
         this.list[index] = rule;
       }
+      if (this.$utils.isEmpty(rule)) {
+        this.list.splice(index, 1);
+      }
     },
     valid() {
       let isValid = true;
@@ -169,12 +175,15 @@ export default {
       let findItem = this.$utils.deepClone(this.formItem);
       findItem.config.isRequired = true;
       return findItem;
+    },
+    delItem(index) {
+      this.list.splice(index, 1);
     }
   },
   filter: {},
   computed: {
     hasValueFormItemList() {
-      let list = this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !d.excludedFromCondition /*!this.filterComponentList.includes(d.handler)*/);
+      let list = this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !d.excludedFromCondition);
       let newList = [];
       list.forEach(item => {
         let obj = {
@@ -209,5 +218,13 @@ export default {
   }
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.setvalue-list {
+  position: relative;
+  .del-item {
+    position: absolute;
+    top: 0;
+    right: 6px;
+  }
+}
 </style>
