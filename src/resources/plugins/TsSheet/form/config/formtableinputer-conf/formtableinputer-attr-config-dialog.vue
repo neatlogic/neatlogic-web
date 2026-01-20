@@ -265,11 +265,14 @@
             <TsFormItem :label="$t('page.defaultvalue')">
               <div>
                 <TsFormSelect
-                  v-model="propertyLocal.config.defaultValue"
+                  :value="propertyLocal.config.defaultValue"
                   v-bind="defaultValueSetting"
                   :isCustomValue="true"
                   search
                   transfer
+                  @change="(val, valueObj, selectItem)=>{
+                    $set(propertyLocal.config, 'defaultValue', selectItem);
+                  }"
                 ></TsFormSelect>
               </div>
             </TsFormItem>
@@ -945,6 +948,10 @@ export default {
               }
             }
           });
+        }
+        //隐藏属性过滤
+        if (!this.$utils.isEmpty(config.hiddenFieldList)) {
+          params.hiddenFieldList = this.$utils.mapArray(config.hiddenFieldList, 'value');
         }
         setting.params = params;
       } else {

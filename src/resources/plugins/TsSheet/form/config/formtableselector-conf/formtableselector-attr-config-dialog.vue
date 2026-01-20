@@ -292,10 +292,14 @@
                 </div>
                 <TsFormSelect
                   v-else-if="propertyLocal.config.defaultValueType === 'custom'"
-                  v-model="propertyLocal.config.defaultValue"
                   v-bind="defaultValueSetting"
+                  :value="propertyLocal.config.defaultValue"
+                  :isCustomValue="true"
                   search
                   transfer
+                  @on-change="(val, valObj, selectItem) => {
+                    propertyLocal.config.defaultValue = selectItem;
+                  }"
                 ></TsFormSelect>
               </div>
             </TsFormItem>
@@ -956,6 +960,10 @@ export default {
           params.keywordColumn = config.mapping.text;
           params.valueField = config.mapping.value;
           params.textField = config.mapping.text;
+        }
+        //隐藏属性过滤
+        if (!this.$utils.isEmpty(config.hiddenFieldList)) {
+          params.hiddenFieldList = this.$utils.mapArray(config.hiddenFieldList, 'value');
         }
         setting.params = params;
       } else {

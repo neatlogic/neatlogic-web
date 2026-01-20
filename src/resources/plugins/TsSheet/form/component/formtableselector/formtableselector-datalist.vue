@@ -301,6 +301,8 @@ export default {
             if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
               if (Array.isArray(defaultValue)) {
                 defaultValueObj = defaultValue.map(d => ({ text: d, value: d }));
+              } else if (typeof defaultValue === 'object') {
+                defaultValueObj = defaultValue;
               } else {
                 defaultValueObj = { text: defaultValue, value: defaultValue };
               }
