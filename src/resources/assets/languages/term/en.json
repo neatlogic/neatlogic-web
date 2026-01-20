@@ -1377,7 +1377,8 @@
     "licenserefresh": "After updating the license in nacos or config. properties, you can click this refresh button to update the license without restarting the service",
     "loginmethod": "Login method",
     "clicktocopyuuid": "Click to copy uuid",
-    "successcopyintegrationuuid": "Successfully copied integrated uuid"
+    "successcopyintegrationuuid": "Successfully copied integrated uuid",
+    "showalluserdata": "View all user data"
   },
   "knowledge": {
     "document": "Document",

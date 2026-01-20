@@ -40,7 +40,7 @@
       </template>
       <div slot="content">
         <div ref="textContainer" style="overflow: auto; white-space: pre-wrap">
-          <div 
+          <div
             v-for="(line, index) in logLines"
             :id="'line_' + index"
             :key="index"
@@ -100,7 +100,7 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestory() {},
+  beforeDestroy() {},
   destroyed() {},
   methods: {
     getServerList() {

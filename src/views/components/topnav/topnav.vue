@@ -11,6 +11,7 @@
       <TopnavMenu v-if="!isAtNaviPage" />
     </div>
     <div v-if="!$store.state.isPwdRedirected" class="topnav-right-container">
+      <TopnavExportManage class="pr-nm"></TopnavExportManage>
       <TopnavHelp v-if="!isAtNaviPage" class="pr-nm"></TopnavHelp>
       <TopnavMessage class="pr-nm" />
       <TopnavUser />
@@ -30,7 +31,8 @@ export default {
     TopnavUser,
     TopnavMessage,
     TopnavMenu: () => import('./topnav-menu.vue'),
-    TopnavHelp: () => import('./topnav-help.vue')
+    TopnavHelp: () => import('./topnav-help.vue'),
+    TopnavExportManage: () => import('./topnav-export-manage.vue')
   },
   data() {
     return {

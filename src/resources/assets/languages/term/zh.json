@@ -1377,7 +1377,8 @@
     "licenserefresh": "更新nacos或config.properties中的license后，可以不重启服务，点击此刷新按钮进行更新许可",
     "loginmethod": "登录方式",
     "clicktocopyuuid": "点击复制uuid",
-    "successcopyintegrationuuid": "成功复制集成uuid"
+    "successcopyintegrationuuid": "成功复制集成uuid",
+    "showalluserdata": "查看所有用户数据"
   },
   "knowledge": {
     "document": "文档",
