@@ -3,7 +3,7 @@
     <div v-if="!hideBaseText" class="catagory-name text-grey">基础</div>
     <div class="basic-menu-box">
       <div
-        v-for="item in menuList.filter(item => item.isShow || !item.hasOwnProperty('isShow'))"
+        v-for="item in menuList.filter(item => !removeMenuList.includes(item.value) && (item.isShow || !item.hasOwnProperty('isShow')))"
         :key="item.value"
         class="basic-menu-text"
         :class="setSelectedBgClassName(item.value)"
@@ -51,6 +51,11 @@ export default {
     nodeConfig: {
       type: Object,
       default: () => {}
+    },
+    removeMenuList: {
+      // 需要移除的菜单列表
+      type: Array,
+      default: () => []
     }
   },
   data() {

@@ -19,11 +19,22 @@ export const ImageResize = Node.create({
         renderHTML: attrs => {
           return { 'data-align': attrs.align };
         }
-      }
+      },
+      uploading: { default: false }, // 上传的状态
+      uploadId: { default: null } // 上传的唯一标识
     };
   },
   addCommands() {
     return {
+      setImage:
+      options =>
+        ({ commands }) => {
+          //新增插入图片的方法，去掉extension-image插件，插入图片统一用这个方法
+          return commands.insertContent({
+            type: this.name,
+            attrs: options
+          });
+        },
       alignImage:
       align =>
         ({ commands }) => {

@@ -3,7 +3,7 @@
     <DropdownItem class="clear-dropdown-item-hover-background">
       <BaseMenu
         :hideBaseText="true"
-        :removeMenuList="[]"
+        :removeMenuList="['link']"
         :nodeConfig="nodeConfig"
         @click-menu="emitClickMenu"
       ></BaseMenu>

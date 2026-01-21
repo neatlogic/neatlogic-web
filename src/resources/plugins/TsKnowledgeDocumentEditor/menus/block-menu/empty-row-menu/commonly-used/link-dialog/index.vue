@@ -64,10 +64,12 @@ export default {
       if (!this.valid()) {
         return false;
       }
-      this.$emit('close', {commandName: 'link',
+      this.$emit('close', {
+        commandName: 'link',
         value: {
           linkText: this.formData.name || this.formData.url,
-          linkHref: this.formData.url
+          linkUrl: this.formData.url,
+          operationType: 'addLink'
         }});
     },
     closeDialog() {

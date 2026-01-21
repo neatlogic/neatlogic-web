@@ -25,7 +25,7 @@ const BlockUuid = Extension.create({
         ],
         attributes: {
           'data-uuid': {
-            default: null, // 不要默认值，避免重复 uuid
+            default: null,
             parseHTML: element => element.getAttribute('data-uuid'),
             renderHTML: attributes => {
               if (!attributes['data-uuid']) return {};
@@ -46,34 +46,35 @@ const BlockUuid = Extension.create({
   },
 
   /**
-   * 只处理“新增的 block 节点”
-   * 避免每次扫描全文档，提高性能
+   * 插入或者粘贴时，块级元素需要新增或者修改uuid
    */
   addProseMirrorPlugins() {
     return [
       new Plugin({
         appendTransaction: (transactions, oldState, newState) => {
-          // / 如果没有内容变动，不处理
-          const docChanged = transactions.some(tr => tr.docChanged);
+          const docChanged = transactions.some(tr => tr.docChanged); // 如果没有内容变动，不处理
           if (!docChanged) return null;
+
           let tr = newState.tr;
+          const existUuid = new Set();
           let modified = false;
 
           newState.doc.descendants((node, pos) => {
-            // 只处理 block 节点
-            if (!node.type.isBlock) return;
-            // 已有 uuid 的跳过
-            if (node.attrs['data-uuid']) return;
-            const uuid = utils.setUuid();
+            if (!node.type.isBlock) return; // 只处理 block 节点
 
-            const newAttrs = {
-              ...node.attrs,
-              'data-uuid': uuid,
-              'data-block-type': node.type.name == 'heading' ? `heading${node.attrs.level}` : node.type.name
-            };
+            const uuid = node.attrs['data-uuid'];
+            const needNew = !uuid || existUuid.has(uuid);
 
-            tr = tr.setNodeMarkup(pos, node.type, newAttrs);
-            modified = true;
+            if (needNew) {
+              tr = tr.setNodeMarkup(pos, node.type, {
+                ...node.attrs,
+                'data-uuid': utils.setUuid(),
+                'data-block-type': node.type.name == 'heading' ? `heading${node.attrs.level}` : node.type.name
+              });
+              modified = true;
+            } else {
+              existUuid.add(uuid);
+            }
           });
           return modified ? tr : null;
         }

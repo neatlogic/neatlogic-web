@@ -1,6 +1,14 @@
 <template>
   <div style="width: 200px;">
     <DropdownMenu slot="list">
+      <DropdownItem name="cut">
+        <span class="tsfont-cut mr-nm knowledge-document-editor-menu-icon"></span>
+        <span>剪切</span>
+      </DropdownItem>
+      <DropdownItem name="copy">
+        <span class="tsfont-copy mr-nm knowledge-document-editor-menu-icon"></span>
+        <span>复制</span>
+      </DropdownItem>
       <DropdownItem name="deleteRange">
         <span class="tsfont-trash-o mr-nm knowledge-document-editor-menu-icon"></span>
         <span>删除</span>

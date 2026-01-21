@@ -3,7 +3,7 @@ import { getCellSelectionByIndex } from '@/resources/plugins/TsKnowledgeDocument
 export default {
   methods: {
     // 处理选中的菜单内容，点击菜单后执行的方法
-    handleSelectMenuContent({editor, menuData, hoverBlockDom}) {
+    handleSelectMenuContent({ editor, menuData, hoverBlockDom }) {
       if (!editor) return;
       const insertPos = this.findInsertContentPosition({editor: editor, hoverBlockDom: hoverBlockDom});
       const { commandName, value = {} } = menuData;
@@ -21,7 +21,7 @@ export default {
     },
 
     // 查找插入内容的位置
-    findInsertContentPosition({editor, hoverBlockDom}) {
+    findInsertContentPosition({ editor, hoverBlockDom }) {
       const view = editor?.view;
       const coords = hoverBlockDom?.getBoundingClientRect();
       const found = coords
@@ -40,12 +40,12 @@ export default {
 
       // 情况1：命中的是 atom block 的前面
       if (nodeAfter && nodeAfter.type.isAtom && nodeAfter.isBlock) {
-        return position + nodeAfter.nodeSize; // 跳到节点之后
+        position = position + nodeAfter.nodeSize;
       }
 
       // 情况2：命中的是 atom block 的后面
       if (nodeBefore && nodeBefore.type.isAtom && nodeBefore.isBlock) {
-        return position; // 已经在节点后面，无需处理
+        // position 本身就是安全的
       }
 
       // 非 atom block的情况
@@ -58,46 +58,74 @@ export default {
           // return $pos.after(d);
         }
       }
+    
+      // === 只新增的部分（重点） ===
+      const $finalPos = doc.resolve(position);
+      const from = $finalPos.start($finalPos.depth);
+      const to = $finalPos.end($finalPos.depth);
+    
       return {
-        insertPosition: position
+        insertPosition: position,
+        startPosition: from,
+        endPosition: to
       };
     },
 
     // 获取当前鼠标悬停快的位置(编辑菜单编辑器悬停的位置)
-    findCurrentBlockPosition({editor, hoverBlockDom}) {
+    findCurrentBlockPosition({ editor, hoverBlockDom }) {
       const { view, state } = editor || {};
       let posResult = null;
-      let $pos;
-      let node, nodeStart, nodeEnd;
       if (hoverBlockDom) {
         const coords = hoverBlockDom.getBoundingClientRect();
         posResult = view.posAtCoords({ left: coords.left, top: coords.top });
       }
-      if (posResult?.pos != null) {
-        $pos = state.doc.resolve(posResult.pos);
-      } else {
-        const { $from } = state.selection;
-        $pos = $from;
-      }
+      const pos = posResult?.pos;
+      const node = pos ? state.doc.nodeAt(pos) : '';
 
-      // 2. 找到最近的 block 节点
-      for (let depth = $pos.depth; depth > 0; depth--) {
-        const tempNode = $pos.node(depth);
-        if (tempNode.type.isBlock) {
-          node = tempNode;
-          nodeStart = $pos.before(depth);
-          nodeEnd = nodeStart + node.nodeSize;
-          break;
+      const blockList = ['image', 'insertVideo', 'horizontalRule'];
+      
+      if (node && node.type.isBlock && blockList.includes(node.type.name)) {
+        // 图片拿到depth是0，所以需要单独处理
+        const nodeStart = pos;
+        const nodeEnd = pos + node.nodeSize;
+
+        return {
+          node: node,
+          startPosition: nodeStart,
+          endPosition: nodeEnd,
+          insertPosition: nodeEnd + 1
+        };
+      } else {
+        let node = null;
+        let nodeStart = null;
+        let nodeEnd = null;
+        let position = null;
+        if (pos != null) {
+          position = state.doc.resolve(pos);
+        } else {
+          const { $from } = state.selection;
+          position = $from;
         }
+  
+        // 2. 找到最近的 block 节点
+        for (let depth = position.depth; depth > 0; depth--) {
+          const tempNode = position.node(depth);
+          if (tempNode.type.isBlock) {
+            node = tempNode;
+            nodeStart = position.before(depth);
+            nodeEnd = nodeStart + node.nodeSize;
+            break;
+          }
+        }
+        return {
+          node: node,
+          startPosition: nodeStart,
+          endPosition: nodeEnd,
+          insertPosition: nodeEnd + 1
+        };
       }
-      return {
-        node: node,
-        startPosition: nodeStart,
-        endPosition: nodeEnd,
-        insertPosition: nodeEnd + 1
-      };
     },
-    handleInsertBelowPosition({editor, menuData, hoverBlockDom}) {
+    handleInsertBelowPosition({ editor, menuData, hoverBlockDom }) {
       // 编辑菜单，在下方插入一行
       if (!editor) return;
       const position = this.findCurrentBlockPosition({editor: editor, hoverBlockDom: hoverBlockDom});
@@ -114,7 +142,7 @@ export default {
         });
       }
     },
-    handleInsertMenuContent({editor, menuData, hoverBlockDom}) {
+    handleInsertMenuContent({ editor, menuData, hoverBlockDom }) {
       // 空白行插入菜单
       if (!editor) return;
       const position = this.findInsertContentPosition({editor: editor, hoverBlockDom: hoverBlockDom});

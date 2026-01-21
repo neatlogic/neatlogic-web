@@ -3,6 +3,7 @@
     <component
       :is="getComponentName(nodeName)"
       :nodeConfig="nodeConfig"
+      :selectedText="selectedText"
       @emitMenuValue="handleCommand"
     />
   </div>
@@ -22,6 +23,10 @@ export default {
     nodeConfig: {
       type: Object,
       default: () => ({})
+    },
+    selectedText: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -40,8 +45,6 @@ export default {
   destroyed() {},
   methods: {
     handleCommand(menuDataConfig) {
-      console.log('menuDataConfig:', menuDataConfig);
-      
       this.$emit('handleSelectMenuContent', menuDataConfig);
     }
   },

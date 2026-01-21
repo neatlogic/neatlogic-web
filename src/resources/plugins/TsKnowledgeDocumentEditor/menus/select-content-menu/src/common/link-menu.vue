@@ -84,7 +84,9 @@ export default {
       this.$emit('emitMenuValue', {
         commandName: this.command,
         value: {
-          linkHref: this.linkUrl,
+          linkUrl: this.linkUrl,
+          linkText: this.selectedText,
+          operationType: 'replaceLink',
           ...(this.nodeConfig || {})
         }
       });

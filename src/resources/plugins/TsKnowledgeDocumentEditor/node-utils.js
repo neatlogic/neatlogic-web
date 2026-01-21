@@ -104,7 +104,7 @@ export function getHoverTargetByEvent({ state, $pos}) {
     };
   }
 
-  // 1. table
+  // table
   const table = findTableNode($pos);
   if (table) {
     return {
@@ -116,7 +116,7 @@ export function getHoverTargetByEvent({ state, $pos}) {
     };
   }
 
-  // 2. list
+  // list
   const { type, node, attrs = {}, pos } = findListNode($pos) || {};
   if (type) {
     return {
@@ -128,7 +128,19 @@ export function getHoverTargetByEvent({ state, $pos}) {
     };
   }
 
-  // 3. block
+  // highlightBlock
+  const highlightBlock = findHighlightBlockNode($pos);
+  if (highlightBlock) {
+    return {
+      type: 'highlightBlock',
+      attrs: {...highlightBlock.node.attrs },
+      isEmpty: isNodeEmptyByType(highlightBlock.node),
+      node: highlightBlock.node,
+      pos: highlightBlock.pos
+    };
+  }
+
+  // block
   const block = findBlockNode($pos);
   if (block) {
     return {
@@ -171,6 +183,7 @@ export function isNodeEmptyByType(node) {
     case 'horizontalRule':
     case 'video':
     case 'table':
+    case 'highlightBlock':
       return false;
 
     default:
@@ -229,5 +242,34 @@ export function getTableRowHeights(tableOrWrapperEl) {
   const rows = tableEl.querySelectorAll('tr');
 
   return Array.from(rows).map(tr => tr.offsetHeight);
+}
+
+/* 
+ * 获取段落中的链接信息 
+ * return {
+    text: '链接文本',
+    href: '链接地址',
+    target: '_blank' // 可选，默认为 '_self'
+  }
+*/
+export function getLinksInfoFromParagraph(paragraphNode) {
+  let links = {};
+  const { content = {} } = paragraphNode || {};
+  const contentList = content.content || [];
+
+  contentList.forEach((child) => {
+    if (!child.isText || !child.marks?.length) return;
+
+    const linkMark = child.marks.find((mark) => mark.type.name === 'link');
+    if (linkMark) {
+      links = {
+        type: 'link',
+        text: child.text,
+        href: linkMark.attrs.href,
+        target: linkMark.attrs.target
+      };
+    }
+  });
+  return links;
 }
 

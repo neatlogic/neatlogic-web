@@ -17,7 +17,7 @@ export const PasteUploadImages = Extension.create({
     return [
       new Plugin({
         props: {
-          handlePaste: async(view, event) => {
+          handlePaste: (view, event) => {
             const { upload, uploadExternalImages } = self.options;
             if (typeof upload !== 'function') return false;
 
@@ -36,50 +36,54 @@ export const PasteUploadImages = Extension.create({
               div.innerHTML = html;
 
               const imgs = Array.from(div.querySelectorAll('img'));
-              await Promise.all(
-                imgs.map(async img => {
-                  try {
-                    let src = img.getAttribute('src') || img.src || '';
-                    if (!src) return;
+              // Promise.all(
+              //   imgs.map(async img => {
+              //     try {
+              //       let src = img.getAttribute('src') || img.src || '';
+              //       if (!src) return;
 
-                    // data:image -> 转 file 并上传
-                    if (src.startsWith('data:')) {
-                      const file = dataURLToFile(src);
-                      const newUrl = await upload(file);
-                      img.setAttribute('src', newUrl);
-                    } else if ((src.startsWith('http://') || src.startsWith('https://')) && uploadExternalImages) {
-                      // 外链 http/https -> 如果配置要上传，则 fetch -> upload
-                      try {
-                        const resp = await fetch(src, { mode: 'cors' });
-                        const blob = await resp.blob();
-                        // 从 URL 推测扩展名（保底为 png）
-                        let ext = 'png';
-                        const match = src.split('?')[0].match(/\.(jpeg|jpg|png|gif|webp|svg)$/i);
-                        if (match && match[1]) ext = match[1];
-                        const file = new File([blob], `external_${Date.now()}.${ext}`, { type: blob.type || `image/${ext}` });
-                        const newUrl = await upload(file);
-                        img.setAttribute('src', newUrl);
-                      } catch (err) {
-                        // 如果 fetch/upload 失败，保留原 src（可按需改成删除）
-                        console.warn('外链图片下载或上传失败，保留原链接：', src, err);
-                      }
-                    }
-                  } catch (err) {
-                    console.error('处理 img 时出错', err);
-                  }
-                })
-              );
+              //       // data:image -> 转 file 并上传
+              //       if (src.startsWith('data:')) {
+              //         const file = dataURLToFile(src);
+              //         const newUrl = await upload(file);
+              //         img.setAttribute('src', newUrl);
+              //       } else if ((src.startsWith('http://') || src.startsWith('https://')) && uploadExternalImages) {
+              //         // 外链 http/https -> 如果配置要上传，则 fetch -> upload
+              //         try {
+              //           const resp = await fetch(src, { mode: 'cors' });
+              //           const blob = await resp.blob();
+              //           // 从 URL 推测扩展名（保底为 png）
+              //           let ext = 'png';
+              //           const match = src.split('?')[0].match(/\.(jpeg|jpg|png|gif|webp|svg)$/i);
+              //           if (match && match[1]) ext = match[1];
+              //           const file = new File([blob], `external_${Date.now()}.${ext}`, { type: blob.type || `image/${ext}` });
+              //           const newUrl = await upload(file);
+              //           img.setAttribute('src', newUrl);
+              //         } catch (err) {
+              //           // 如果 fetch/upload 失败，保留原 src（可按需改成删除）
+              //           console.warn('外链图片下载或上传失败，保留原链接：', src, err);
+              //         }
+              //       }
+              //     } catch (err) {
+              //       console.error('处理 img 时出错', err);
+              //     }
+              //   })
+              // );
 
-              // 将处理过的 div 转为 ProseMirror 的 Slice 并插入（避免重复插入）
-              try {
-                const parser = ProseMirrorDOMParser.fromSchema(view.state.schema);
-                const slice = parser.parseSlice(div);
-                const tr = view.state.tr.replaceSelection(slice);
-                view.dispatch(tr.scrollIntoView());
-              } catch (err) {
-                console.error('将 HTML 插入编辑器时出错', err);
-              }
+              const tr = view.state.tr;
+              imgs.forEach((img) => {
+                const uploadId = `img_${Date.now()}_${Math.random()}`;
+                const src = img.getAttribute('src') || '';
 
+                const node = view.state.schema.nodes.image.create({ src, uploading: true, uploadId });
+                tr.replaceSelectionWith(node);
+                tr.insertText('\n'); // 插入换行符
+
+                // 异步上传
+                uploadImage(src, uploadId, view, self);
+              });
+
+              view.dispatch(tr.scrollIntoView());
               return true;
             }
 
@@ -93,10 +97,13 @@ export const PasteUploadImages = Extension.create({
                 event.preventDefault();
                 const file = item.getAsFile();
                 try {
-                  const url = await upload(file);
-                  const node = view.state.schema.nodes.image.create({ src: url });
-                  const tr = view.state.tr.replaceSelectionWith(node);
-                  view.dispatch(tr.scrollIntoView());
+                  upload && typeof upload == 'function' && upload(file).then((url) => {
+                    if (url) {
+                      const node = view.state.schema.nodes.image.create({ src: url });
+                      const tr = view.state.tr.replaceSelectionWith(node);
+                      view.dispatch(tr.scrollIntoView());
+                    }
+                  });
                 } catch (err) {
                   console.error('上传截图图片失败', err);
                 }
@@ -123,3 +130,49 @@ function dataURLToFile(dataurl, filename = `pasted_${Date.now()}.png`) {
   while (n--) u8arr[n] = bstr.charCodeAt(n);
   return new File([u8arr], filename, { type: mime });
 }
+
+async function uploadImage(src, uploadId, view, self) {
+  const { upload, uploadExternalImages } = self.options;
+
+  try {
+    let file;
+
+    if (src.startsWith('data:')) {
+      file = dataURLToFile(src);
+    } else if (/^https?:\/\//.test(src) && uploadExternalImages) {
+      const resp = await fetch(src);
+      const blob = await resp.blob();
+      file = new File([blob], 'paste.png', { type: blob.type });
+    } else {
+      return;
+    }
+
+    const url = await upload(file);
+    if (!url) return;
+
+    // 🔑 查找并替换对应 uploadId 的 image node
+    const { state } = view;
+    let tr = state.tr;
+
+    state.doc.descendants((node, pos) => {
+      if (
+        node.type.name === 'image' &&
+        node.attrs.uploadId === uploadId
+      ) {
+        tr = tr.setNodeMarkup(pos, undefined, {
+          ...node.attrs,
+          src: url,
+          uploading: false,
+          uploadId: null
+        });
+      }
+    });
+
+    if (tr.steps.length) {
+      view.dispatch(tr);
+    }
+  } catch (e) {
+    console.error('图片上传失败', e);
+  }
+}
+

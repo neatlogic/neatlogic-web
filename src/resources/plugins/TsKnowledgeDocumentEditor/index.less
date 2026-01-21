@@ -137,6 +137,7 @@
       font-weight: bold;
       text-align: left;
     }
+    // 选中单元格背景颜色
     .selectedCell:after {
       background: #1456f02e;
       content: '';
@@ -237,6 +238,25 @@
   .video-block video {
     display: block;
     pointer-events: auto;
+  }
+  a[href=''] {
+    color: #000;
+    cursor: none;
+    &:hover {
+      text-decoration: none;
+    }
+  }
+  // 超链接不为空的时候，鼠标经过有下划线
+  a:not([href='']) {
+    color: #409eff;
+    cursor: pointer;
+    :hover {
+      text-decoration: underline;
+    }
+  }
+  img[data-uploading='true'] {
+    opacity: 0.5;
+    filter: blur(1px);
   }
 }
 .knowledge-editor-box {

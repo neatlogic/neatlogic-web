@@ -19,7 +19,8 @@
             class="document-title"
             placeholder="请输入标题"
           ></TsFormInput>
-          <DocumentTag class="mt-nm"></DocumentTag>
+          <DocumentTag class="mt-sm mb-sm"></DocumentTag>
+          <DocumentAttachment />
           <div class="border-base-bottom mt-nm mb-nm"></div>
         </div>
         <div
@@ -44,6 +45,7 @@
           <SelectContentMenu
             v-show="isShowSelectContentMenu"
             ref="selectContentMenuRef"
+            :selectedText="selectedText"
             :nodeConfig="nodeConfig"
             :nodeName="nodeName"
             :style="{ top: `${selectContentMenuPos.top}px`, left: `${selectContentMenuPos.left}px` }"
@@ -58,6 +60,7 @@
             :editor="editor"
             @click="tableRowColHeadClick"
           ></TableHoverLayer>
+          <LinkHover v-show="isShowLinkHover" :linkHoverConfig="linkHoverConfig" @click-menu="(menuData)=> handleReplaceMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"></LinkHover>
         </div>
       </div>
     </div>
@@ -90,7 +93,6 @@ import StarterKit from '@tiptap/starter-kit';
 import { Table, TableRow, TableHeader } from '@tiptap/extension-table';
 import { TextStyleKit } from '@tiptap/extension-text-style';
 import { TaskList, TaskItem } from '@tiptap/extension-list';
-import Image from '@tiptap/extension-image';
 import ExtensionsList from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/index.js';
 import BaseMixin from './base.js';
 import { menuState } from './state.js';
@@ -100,17 +102,19 @@ import { ImageResize } from '@/resources/plugins/TsKnowledgeDocumentEditor/exten
 import { RowColSelected } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/row-col-selected/index.js';
 import { TableUtils } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/table-utils.js';
 import DataContent from './data.js';
-import { getHoverTargetByEvent, getTableRowHeights } from '@/resources/plugins/TsKnowledgeDocumentEditor/node-utils.js';
+import { getHoverTargetByEvent, getTableRowHeights, getLinksInfoFromParagraph } from '@/resources/plugins/TsKnowledgeDocumentEditor/node-utils.js';
 import { getSelectedTextInfo, getSelectionNode } from '@/resources/plugins/TsKnowledgeDocumentEditor/selection-utils.js';
 export default {
   components: {
     EditorContent,
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     BlockMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/block-menu/index.vue'),
     SelectContentMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/index.vue'),
     TableHoverLayer: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/table-hover-layer/index.vue'),
     SearchReplaceDialog: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/search-replace-dialog/index.vue'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    DocumentTag: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/tag/index.vue')
+    LinkHover: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/link-hover/index.vue'),
+    DocumentTag: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/tag/index.vue'),
+    DocumentAttachment: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/components/attachment/index.vue')
   },
   provide() {
     return {
@@ -126,9 +130,9 @@ export default {
   },
   data() {
     return {
-      nodeConfig: null,
       tableUuid: '',
       title: this.documentTitle,
+      isShowLinkHover: false, // 是否显示链接悬浮框
       isEmptyRow: false, // 是否是空行，用于判断显示鼠标经过时的加号
       isShowBlockMenu: false,
       isShowTableMenu: false,
@@ -142,13 +146,15 @@ export default {
       selectHeadingUuid: '',
       selectedText: '',
       nodeName: '', // 节点名称，如：heading、paragraph、listItem等
+      nodeConfig: null, // 节点的配置 如：{type: 'heading', attrs: {level: 1}} 等信息
       menuPosition: { top: 0, left: 0 },
       tableMenuPosition: { top: -12, left: 0 },
       selectContentMenuPos: { top: 0, left: 0 }, // 选中内容菜单的位置
       blockMenuNodeConfig: {
         type: '',
         attrs: {}
-      }
+      },
+      linkHoverConfig: {}
     };
   },
   mounted() {
@@ -183,6 +189,11 @@ export default {
             HTMLAttributes: {
               class: 'heading'
             }
+          },
+          link: {
+            HTMLAttributes: {
+              class: 'link'
+            }
           }
         }),
         Placeholder.configure({
@@ -191,7 +202,6 @@ export default {
         TextAlign.configure({
           types: ['heading', 'paragraph']
         }),
-        Image,
         Table.configure({
           resizable: true,
           cell: false
@@ -217,7 +227,12 @@ export default {
         SearchHighlight
       ],
       content: DataContent,
+      onCreate({ editor }) {
+        // 编辑器初始化完成时触发，用于处理初始内容回显（左侧菜单渲染）
+        _this.getAllHeadings(editor);
+      },
       onUpdate({ editor }) {
+        // 文档内容发生变更时触发（用户输入、粘贴、命令等），用于更新左侧菜单
         _this.getAllHeadings(editor);
       },
       onFocus({ editor, event }) {
@@ -230,10 +245,11 @@ export default {
     this?.editor?.on('selectionUpdate', ({ editor, event }) => {
       // 编辑器获得焦点。
       const { $from, from, to } = editor?.state?.selection;
-      this.handleSelectionText({ editor: editor, from: from, to: to, $from: $from });
 
       const node = $from.node($from.depth);
       _this.highlightHeading(node, editor);
+      
+      this.handleSelectionText({ editor: editor, from: from, to: to, $from: $from });
     });
     this.editor?.view?.dom?.addEventListener('keydown', e => {
       if (e.ctrlKey && e.key === 'f') {
@@ -341,12 +357,15 @@ export default {
       if (!$pos || $pos.depth < 0) return;
 
       // 优先处理表格
-      const { type, attrs = {}, pos, isEmpty: nodeContentIsEmpty = false } = getHoverTargetByEvent({state: state, $pos: $pos}) || {};
+      const { type, attrs = {}, pos, isEmpty: nodeContentIsEmpty = false, node } = getHoverTargetByEvent({state: state, $pos: $pos}) || {};
       this.$set(this.blockMenuNodeConfig, 'type', type);
       this.$set(this.blockMenuNodeConfig, 'attrs', attrs);
       const nodeDom = view.nodeDOM(pos);
       const nodeRect = nodeDom && nodeDom.getBoundingClientRect && nodeDom.getBoundingClientRect();
       this.hoverBlockDom = nodeDom;
+
+      const linkInfo = getLinksInfoFromParagraph(node); // 获取链接节点信息
+      const { type: linkType, href: linkHref} = linkInfo;
 
       if (!nodeRect) return;
 
@@ -371,11 +390,31 @@ export default {
             left: -50
           };
         }
+      } else if (linkType === 'link' && linkHref) {
+        // 处理链接节点（悬浮）
+        const top = Number((nodeRect.top - editorWrapperRect.top).toFixed(0));
+        const left = Number((nodeRect.left - editorWrapperRect.left).toFixed(0));
+        this.linkHoverConfig = {
+          ...(linkInfo || {}),
+          top: top,
+          left: left
+        };
+        this.isShowLinkHover = true;
+
+        // 右边编辑菜单
+        this.isShowBlockMenu = true;
+        this.isEmptyRow = false;
+        this.menuPosition = {
+          top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
+          left: -50
+        };
       } else {
         // 处理非表格节点
         this.isShowTableMenu = false;
         this.isShowBlockMenu = true;
         this.isClearHighlight = true;
+        this.isShowLinkHover = false;
+        this.linkHoverConfig = {};
         this.isEmptyRow = nodeContentIsEmpty;
         this.menuPosition = {
           top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),

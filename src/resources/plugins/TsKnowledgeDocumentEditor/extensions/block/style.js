@@ -76,6 +76,24 @@ export const BlockStyle = Extension.create({
             }
             if (!target) return false;
 
+            if (target.node.type.name === 'taskItem') {
+              // 如果是任务列表，单独处理子节点
+              target.node.descendants((child, childPos) => {
+                if (child.type.name === 'paragraph') {
+                  dispatch(
+                    state.tr.setNodeMarkup(target.pos + childPos + 1, undefined, {
+                      ...child.attrs,
+                      ...(blockTextColor ? { blockTextColor } : {}),
+                      ...(blockBackgroundColor ? { blockBackgroundColor } : {}),
+                      ...(blockBorderColor ? { blockBorderColor } : {})
+                    })
+                  );
+                  return false;
+                }
+              });
+              return true;
+            }
+
             dispatch(
               state.tr.setNodeMarkup(target.pos, undefined, {
                 ...target.node.attrs,

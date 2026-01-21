@@ -24,6 +24,11 @@ export default {
       default: () => {
         return {};
       }
+    },
+    // 选中的文本(例如选中的文案，设置超链接时，需要用到选中的文案)
+    selectedText: {
+      type: String,
+      default: ''
     }
   },
   computed: {
