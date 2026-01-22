@@ -55,6 +55,14 @@ const download = {
               aLink.click();
               aLink.remove();
               URL.revokeObjectURL(aLink);
+            } else if (res.status == '220') {
+              ViewUI.Notice.success({
+                duration: 0,
+                title: '',
+                render: h => {
+                  return h('span', ['已切换到后台导出，请到', h('a', {attrs: {href: HOME + '/framework.html#/user-export-file-manage', target: '_blank'}}, '导出管理'), '查看']);
+                }
+              });
             }
             params.changeStatus && params.changeStatus('success', null);
           })
