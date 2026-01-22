@@ -1,5 +1,6 @@
 import axios from '@/resources/api/http.js';
 import qs from 'qs';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 export default {
   methods: {
     download(params) {
@@ -49,12 +50,20 @@ export default {
               document.body.appendChild(aLink);
               aLink.click();
               aLink.remove();
+            } else if (res.status == '220') {
+              ViewUI.Notice.success({
+                duration: 0,
+                title: '',
+                render: h => {
+                  return h('span', ['已切换到后台导出，请到', h('a', {attrs: {href: HOME + '/framework.html#/user-export-file-manage', target: '_blank'}}, '导出管理'), '查看']);
+                }
+              });
             }
             params.changeStatus && params.changeStatus('success', null);
           })
           .catch(async error => {
             _this.downloadError(error);
-            if (error.data.type === 'application/json') {
+            if (error.data && error.data.type === 'application/json') {
               const text = await error.data.text();
               const jsonText = await JSON.parse(text);
               ViewUI.Notice.error({
