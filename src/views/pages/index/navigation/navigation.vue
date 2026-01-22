@@ -81,7 +81,7 @@ export default {
       text-align: center;
       cursor: pointer;
       position: relative;
-      .without-background('framework');
+      .without-background('module');
 
       &.background {
         .with-background(@module) {
@@ -97,6 +97,9 @@ export default {
           // .module-desc {
           //   color: @dark-text;
           // }
+        }
+        &-module {
+           .without-background('module');
         }
 
         &-dashboard {
@@ -136,6 +139,21 @@ export default {
         }
         &-rdm {
           .without-background('rdm'); // 研发管理
+        }
+        &-dr {
+          .without-background('dr'); // 灾切
+        }
+        &-diagram {
+          .without-background('diagram'); // 架构图
+        }
+        &-alert {
+          .without-background('alert');
+        }
+        &-codehub {
+          .without-background('codehub'); // 代码中心
+        }
+        &-informant {
+          .without-background('informant'); // 故障诊断
         }
       }
 
