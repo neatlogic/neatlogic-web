@@ -2938,7 +2938,11 @@
     "failedaction": "失败动作",
     "invokeresult": "调用结果",
     "invokeinterval": "调用间隔",
-    "returnresult": "返回信息"
+    "returnresult": "返回信息",
+    "conditionresult": "判定结果",
+    "conditionmatch": "条件满足",
+    "conditionmotmatch": "条件不满足",
+    "abeyrule": "满足以上条件则执行"
   },
   "informant": {
     "last5dump": "最近5次快照",

@@ -86,7 +86,8 @@
                 <div v-else>
                   <Tooltip
                     v-if="resultMap[conItem.uuid].errorMsg"
-                    max-width="200"
+                    placement="left"
+                    max-width="300"
                     :transfer="true"
                     :content="resultMap[conItem.uuid].errorMsg"
                   >
