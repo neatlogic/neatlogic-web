@@ -414,6 +414,7 @@
                   :value="propertyLocal.reaction[key]"
                   :formItemList="allFormItemList"
                   :formItem="propertyLocal"
+                  :reactionKey="key"
                   @reactionValid="(isValid)=>{
                     reactionValid(key, isValid)
                   }"
