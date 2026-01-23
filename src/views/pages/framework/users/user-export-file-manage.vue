@@ -337,6 +337,7 @@ export default {
         'on-ok': vnode => {
           this.$api.framework.userexportfile.deleteUserExportFile({id: row.id}).then(res => {
             if (res.Status == 'OK') {
+              this.searchParam.currentPage = 1;
               this.searchUserExportFileList();
               vnode.isShow = false;
             }
