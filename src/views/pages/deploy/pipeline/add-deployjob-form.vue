@@ -134,6 +134,7 @@ export default {
           this.isNeedDefaultVersion = !!this.pipelineData.isNeedDefaultVersion || false;
           pipelineData.defaultVersion && this.$set(this.jobData, 'defaultVersion', pipelineData.defaultVersion);
           pipelineData.name && this.$set(this.jobData, 'name', pipelineData.name);
+          this.$set(this.formConfig.defaultVersion, 'isHidden', !!this.isNeedDefaultVersion);
         }).finally(() => {
           this.isReady = true;
         });
