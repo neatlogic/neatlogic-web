@@ -2182,7 +2182,8 @@
     "jobcount": "发布作业数",
     "jobrecord": "发布作业记录",
     "notapplyallexecuteauth": "您没有当前应用的执行权限",
-    "batchdeployauthtip": "当前用户缺少“批量发布管理权限”权限，请联系管理员"
+    "batchdeployauthtip": "当前用户缺少“批量发布管理权限”权限，请联系管理员",
+    "defaultversion": "默认版本号"
   },
   "inspect": {
     "alarmprompt": "告警提示",
