@@ -7,7 +7,7 @@
     >
       <template v-slot>
         <div>
-          <TsFormItem label="版本号" labelPosition="left" required>
+          <TsFormItem :label="$t('term.framework.pkgversion')" labelPosition="left" required>
             <TsFormInput
               ref="version"
               v-model="version"
@@ -18,7 +18,7 @@
             ></TsFormInput>
           </TsFormItem>
           <Alert v-if="errList.length" type="warning" show-icon>
-            <div>原因</div>
+            <div>{{ $t('page.reason') }}</div>
             <template slot="desc">
               <div v-for="(item, index) in errList" :key="index" class="text-danger mt-sm">{{ item.text }}</div>
             </template>
