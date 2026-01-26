@@ -106,6 +106,7 @@ export default {
   ],
   props: {
     rowUuid: { type: String }, //行uuid，表格组件引用时需要
+    columnReadonly: { type: Boolean, default: false }, // 列是否只读，表格选择组件时使用
     extraUuid: {type: String},
     rowData: {
       type: Object,
@@ -161,7 +162,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.formItem = this.extraFormItemList.find(d => d.uuid === this.extraUuid);
+    this.initFormItem();
     this.initReactionFormItemUuid();
     this.updateConfig();
     this.initStatus();
@@ -175,6 +176,27 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initFormItem() {
+      const formItem = this.extraFormItemList.find(d => d.uuid === this.extraUuid);
+      this.formItem = formItem ? this.$utils.deepClone(formItem) : {}; // 需要深拷贝，避免修改原数据，否则会影响到联动的禁用显示隐藏等功能
+      const { config = {} } = this.formItem || {};
+      const { sourceColumnList = [] } = config;
+      if (sourceColumnList.length == 0) {
+        return false;
+      }
+      // 处理矩阵过滤条件的值
+      const sourceColumnListMap = {};
+      sourceColumnList.forEach((item) => {
+        if (item && item.valueColumn) {
+          this.$watch(() => this.rowData[item.valueColumn], (newVal, oldVal) => {
+            if (newVal != oldVal) {
+              sourceColumnListMap[item.valueColumn] = newVal;
+              this.handleFilterConditionDataList(sourceColumnListMap);
+            }
+          });
+        }
+      });
+    },
     updateCurrentRow(reactionData) {
       this.$emit('getCurrentRowData', { reactionData: reactionData, rowData: this.rowData});
     },
@@ -491,6 +513,31 @@ export default {
         component = false;
       }
       return component;
+    },
+    handleFilterConditionDataList(currentRowData) {
+      // 处理矩阵数据，过滤条件的值（表格选择组件，组件类型是矩阵，可以过滤下拉列表的值）
+      const { config = {} } = this.formItem || {};
+      const { sourceColumnList = [] } = config;
+      if (sourceColumnList.length == 0) {
+        return false;
+      }
+      sourceColumnList.forEach(item => {
+        if (item && item.valueColumn) {
+          const valueList = Array.isArray(currentRowData[item.valueColumn]) ? currentRowData[item.valueColumn] : [currentRowData[item.valueColumn]];
+          let tempDataList = [];
+          if (!this.$utils.isEmpty(valueList)) {
+            valueList.forEach(valueItem => {
+              if (valueItem && typeof valueItem === 'object') {
+                tempDataList.push(valueItem.value);
+              } else {
+                tempDataList.push(valueItem);
+              }
+            });
+          }
+          this.$set(item, 'valueList', tempDataList);
+          item.expression = 'equal';
+        }
+      });
     }
   },
   filter: {},
@@ -501,7 +548,7 @@ export default {
     componentReadonly() {
       const configIsReadOnly = this.formItem.config && this.formItem.config.isReadOnly;
       const currentItemReactionIsReadOnly = this.currentItemReaction && this.currentItemReaction.currentItemReadonly;
-      return (this.mode != 'defaultvalue' && this.mode != 'condition' ? configIsReadOnly : false) || this.readonly || currentItemReactionIsReadOnly;
+      return (this.mode != 'defaultvalue' && this.mode != 'condition' ? configIsReadOnly : false) || this.readonly || this.columnReadonly || currentItemReactionIsReadOnly;
     },
     componentDisabled() {
       return (this.mode != 'defaultvalue' && this.mode != 'condition' ? this.formItem.config && this.formItem.config.isDisabled : false) || this.disabled || this.currentItemReaction?.currentItemDisabled;
