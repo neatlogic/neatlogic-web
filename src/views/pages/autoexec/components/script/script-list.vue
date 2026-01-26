@@ -416,7 +416,7 @@ export default {
           operationList.push(...this.getPrevOperation(item.config.elseList));
         } 
         if (item.config && !this.$utils.isEmpty(item.config.operations)) {
-          operationList.push(...item.config.elseList);
+          operationList.push(...item.config.operations);
           operationList.push(...this.getPrevOperation(item.config.operations));
         }
       });
