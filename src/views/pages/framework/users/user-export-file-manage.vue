@@ -71,7 +71,7 @@
           </template>
           <template v-slot:timeCost="{ row }">
             <span v-if="row.endTime != null && row.startTime != null">
-              {{ row.endTime - row.startTime }}
+              {{ row.endTime - row.startTime | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'millisecond' }) }}
             </span>
             <span v-else>-</span>
           </template>
@@ -140,15 +140,9 @@ export default {
       },
       isExportRunning: false,
       searchParam: {
-        keyword: '',
         currentPage: 1,
         pageSize: 20,
-        timeRange: null,
-        timeUnit: '',
-        startTime: null,
-        endTime: null,
-        isAll: 0,
-        userUuid: ''
+        isAll: 0
       },
       timeParams: {
         timeRange: 1,
@@ -247,47 +241,11 @@ export default {
         clearTimeout(this.timmer);
         this.timmer = null;
       }
-      if (this.searchValue) {
-        if (this.searchValue.keyword) {
-          this.searchParam.keyword = this.searchValue.keyword;
-        } else {
-          this.searchParam.keyword = null;
-        }
-        if (this.searchValue.dateRange) {
-          if (this.searchValue.dateRange.timeRange) {
-            this.searchParam.timeRange = this.searchValue.dateRange.timeRange;
-          } else {
-            this.searchParam.timeRange = null;
-          }
-          if (this.searchValue.dateRange.timeUnit) {
-            this.searchParam.timeUnit = this.searchValue.dateRange.timeUnit;
-          } else {
-            this.searchParam.timeUnit = null;
-          }
-          if (this.searchValue.dateRange.startTime) {
-            this.searchParam.startTime = this.searchValue.dateRange.startTime;
-          } else {
-            this.searchParam.startTime = null;
-          }
-          if (this.searchValue.dateRange.endTime) {
-            this.searchParam.endTime = this.searchValue.dateRange.endTime;
-          } else {
-            this.searchParam.endTime = null;
-          }
-        } else {
-          this.searchParam.timeRange = null;
-          this.searchParam.timeUnit = null;
-          this.searchParam.startTime = null;
-          this.searchParam.endTime = null;
-        }
-        if (this.searchValue.userUuid) {
-          this.searchParam.userUuid = this.searchValue.userUuid;
-        } else {
-          this.searchParam.userUuid = null;
-        }
-      }
+      let searchVal = this.$utils.deepClone(this.searchValue) || {};
+      let dateRange = searchVal.dateRange;
+      searchVal.dateRange = null;
       this.searchParam.isAll = this.isShowAllUser;
-      this.$api.framework.userexportfile.searchUserExportFileList(this.searchParam).then(res => {
+      this.$api.framework.userexportfile.searchUserExportFileList({...this.searchParam, ...searchVal, ...dateRange}).then(res => {
         if (res.Status == 'OK') {
           let unreadIdList = [];
           let doingIdList = [];
