@@ -52,17 +52,19 @@
               </div>
               <div v-else-if="row.status == 'failed'">
                 <div v-if="row.error">
-                  <span>{{ row.statusText }}</span>
-                  <Poptip :transfer="true" placement="right" trigger="hover">
+                  <span class="text-error">{{ row.statusText }}</span>
+                  <Tooltip
+                    max-width="450"
+                    :transfer="true"
+                    trigger="hover"
+                    :content="row.error"
+                  >
                     <i class="tsfont-warning-s text-error"></i>
-                    <div slot="content">
-                      {{ row.error }}
-                    </div>
-                  </Poptip>
+                  </Tooltip>
                 </div>
                 <div v-else>{{ row.statusText }}</div>
               </div>
-              <div v-else>
+              <div v-else class="text-success">
                 {{ row.statusText }}
               </div>
             </div>
