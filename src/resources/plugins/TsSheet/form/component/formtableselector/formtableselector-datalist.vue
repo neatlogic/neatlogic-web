@@ -41,7 +41,7 @@
           <FormItem
             :ref="'formitem_' + row._selected + '_' + row.uuid"
             :formItem="getExtraFormItem(extra,row)"
-            :formItemList="$utils.deepClone(extraList.concat(formItemList))"
+            :formItemList="mergedFormItemList"
             :disabled="!row._selected || disabled"
             :value="row[extra.uuid]"
             :formData="{...$utils.deepClone(formData || {}), ...row}"
@@ -391,6 +391,10 @@ export default {
     },
     extraList() {
       return this.config.dataConfig.filter(d => d.isExtra && d.isPC);
+    },
+    mergedFormItemList() {
+      const merged = [...this.extraList, ...this.formItemList];
+      return this.$utils.deepClone(merged);
     }
   },
   watch: {
