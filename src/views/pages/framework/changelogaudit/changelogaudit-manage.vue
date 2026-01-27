@@ -163,13 +163,13 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    this.searchChangelogAuditList();
+    // this.searchChangelogAuditList();
   },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestory() {},
+  beforeDestroy() {},
   destroyed() {},
   methods: {
     searchChangelogAuditList() {

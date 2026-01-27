@@ -106,6 +106,7 @@ export default {
   ],
   props: {
     rowUuid: { type: String }, //行uuid，表格组件引用时需要
+    columnReadonly: { type: Boolean, default: false }, // 列是否只读，表格选择组件时使用
     extraUuid: {type: String},
     rowData: {
       type: Object,
@@ -161,7 +162,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.formItem = this.extraFormItemList.find(d => d.uuid === this.extraUuid);
+    this.initFormItem();
     this.initReactionFormItemUuid();
     this.updateConfig();
     this.initStatus();
@@ -175,6 +176,27 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initFormItem() {
+      const formItem = this.extraFormItemList.find(d => d.uuid === this.extraUuid);
+      this.formItem = formItem ? this.$utils.deepClone(formItem) : {}; // 需要深拷贝，避免修改原数据，否则会影响到联动的禁用显示隐藏等功能
+      const { config = {} } = this.formItem || {};
+      const { sourceColumnList = [] } = config;
+      if (sourceColumnList.length == 0) {
+        return false;
+      }
+      // 处理矩阵过滤条件的值
+      const sourceColumnListMap = {};
+      sourceColumnList.forEach((item) => {
+        if (item && item.valueColumn) {
+          this.$watch(() => this.rowData[item.valueColumn], (newVal, oldVal) => {
+            if (newVal != oldVal) {
+              sourceColumnListMap[item.valueColumn] = newVal;
+              this.handleFilterConditionDataList(sourceColumnListMap);
+            }
+          });
+        }
+      });
+    },
     updateCurrentRow(reactionData) {
       this.$emit('getCurrentRowData', { reactionData: reactionData, rowData: this.rowData});
     },
@@ -199,23 +221,31 @@ export default {
           for (let action in this.reaction) {
             const reaction = this.reaction[action];
             if (action !== 'filter') {
-              const conditinoGroupList = reaction['conditionGroupList'];
-              if (conditinoGroupList && conditinoGroupList.length > 0) {
-                for (let i = 0; i < reaction['conditionGroupList'].length; i++) {
-                  const conditionGroup = reaction['conditionGroupList'][i];
-                  const conditionList = conditionGroup['conditionList'];
-                  if (conditionList && conditionList.length > 0) {
-                    for (let j = 0; j < conditionList.length; j++) {
-                      const condition = conditionList[j];
-                      const uuidList = condition['formItemUuid'].split('#');
-                      const formItemUuid = uuidList[0];
-                      if (!this.reactionFormItemUuidMap.hasOwnProperty(formItemUuid)) {
-                        this.$set(this.reactionFormItemUuidMap, formItemUuid, null);
+              let ruleList = [];
+              if (Array.isArray(reaction)) {
+                ruleList = reaction;
+              } else {
+                ruleList.push(reaction);
+              }
+              ruleList.forEach(rule => {
+                const conditinoGroupList = rule['conditionGroupList'];
+                if (conditinoGroupList && conditinoGroupList.length > 0) {
+                  for (let i = 0; i < rule['conditionGroupList'].length; i++) {
+                    const conditionGroup = rule['conditionGroupList'][i];
+                    const conditionList = conditionGroup['conditionList'];
+                    if (conditionList && conditionList.length > 0) {
+                      for (let j = 0; j < conditionList.length; j++) {
+                        const condition = conditionList[j];
+                        const uuidList = condition['formItemUuid'].split('#');
+                        const formItemUuid = uuidList[0];
+                        if (!this.reactionFormItemUuidMap.hasOwnProperty(formItemUuid)) {
+                          this.$set(this.reactionFormItemUuidMap, formItemUuid, null);
+                        }
                       }
                     }
                   }
                 }
-              }
+              });
             } else {
               const ruleList = reaction['ruleList'];
               if (ruleList && ruleList.length > 0) {
@@ -244,12 +274,22 @@ export default {
         //如果override_config有配置，则相关联动不生效
         const overrideConfig = this.formItem.override_config || {};
         const reaction = this.reaction[action];
-        if (reaction && !this.$utils.isEmpty(reaction) && this.isConditionDataChange(action, reaction, newVal, oldVal, this.formItem.uuid)) {
-          const result = this.executeReaction(reaction, newVal, oldVal);
-          if (this.REACTION[action]) {
-            //联动操作
-            this.REACTION[action]({ overrideConfig: overrideConfig, reaction: reaction, result: result, view: this });
+        if (!this.$utils.isEmpty(reaction)) {
+          let ruleList = [];
+          if (Array.isArray(reaction)) {
+            ruleList = reaction;
+          } else {
+            ruleList = [reaction];
           }
+          ruleList.forEach(rule => {
+            if (this.isConditionDataChange(action, rule, newVal, oldVal, this.formItem.uuid)) {
+              const result = this.executeReaction(rule, newVal, oldVal);
+              if (this.REACTION[action]) {
+                //联动操作
+                this.REACTION[action]({ overrideConfig: overrideConfig, reaction: rule, result: result, view: this });
+              }
+            }
+          });
         }
       }
     },
@@ -473,6 +513,31 @@ export default {
         component = false;
       }
       return component;
+    },
+    handleFilterConditionDataList(currentRowData) {
+      // 处理矩阵数据，过滤条件的值（表格选择组件，组件类型是矩阵，可以过滤下拉列表的值）
+      const { config = {} } = this.formItem || {};
+      const { sourceColumnList = [] } = config;
+      if (sourceColumnList.length == 0) {
+        return false;
+      }
+      sourceColumnList.forEach(item => {
+        if (item && item.valueColumn) {
+          const valueList = Array.isArray(currentRowData[item.valueColumn]) ? currentRowData[item.valueColumn] : [currentRowData[item.valueColumn]];
+          let tempDataList = [];
+          if (!this.$utils.isEmpty(valueList)) {
+            valueList.forEach(valueItem => {
+              if (valueItem && typeof valueItem === 'object') {
+                tempDataList.push(valueItem.value);
+              } else {
+                tempDataList.push(valueItem);
+              }
+            });
+          }
+          this.$set(item, 'valueList', tempDataList);
+          item.expression = 'equal';
+        }
+      });
     }
   },
   filter: {},
@@ -483,7 +548,7 @@ export default {
     componentReadonly() {
       const configIsReadOnly = this.formItem.config && this.formItem.config.isReadOnly;
       const currentItemReactionIsReadOnly = this.currentItemReaction && this.currentItemReaction.currentItemReadonly;
-      return (this.mode != 'defaultvalue' && this.mode != 'condition' ? configIsReadOnly : false) || this.readonly || currentItemReactionIsReadOnly;
+      return (this.mode != 'defaultvalue' && this.mode != 'condition' ? configIsReadOnly : false) || this.readonly || this.columnReadonly || currentItemReactionIsReadOnly;
     },
     componentDisabled() {
       return (this.mode != 'defaultvalue' && this.mode != 'condition' ? this.formItem.config && this.formItem.config.isDisabled : false) || this.disabled || this.currentItemReaction?.currentItemDisabled;
@@ -514,15 +579,27 @@ export default {
         const conditionData = {};
         if (this.reaction) {
           for (let key in this.reaction) {
+            let reactionList = [];
             const reaction = this.reaction[key];
-            if (reaction && !this.$utils.isEmpty(reaction) && reaction.conditionGroupList) {
-              reaction.conditionGroupList.forEach(cg => {
-                if (cg.conditionList) {
-                  cg.conditionList.forEach(c => {
-                    conditionData[c.uuid] = c;
-                  });
-                }
-              });
+            if (!this.$utils.isEmpty(reaction)) {
+              if (!Array.isArray(reaction)) {
+                reactionList.push(reaction);
+              } else {
+                reactionList = this.$utils.deepClone(reaction);
+              }
+              if (reactionList && reactionList.length > 0) {
+                reactionList.forEach(item => {
+                  if (item && !this.$utils.isEmpty(item) && item.conditionGroupList) {
+                    item.conditionGroupList.forEach(cg => {
+                      if (cg.conditionList) {
+                        cg.conditionList.forEach(c => {
+                          conditionData[c.uuid] = c;
+                        });
+                      }
+                    });
+                  }
+                });
+              }
             }
           }
         }

@@ -1377,7 +1377,8 @@
     "licenserefresh": "更新nacos或config.properties中的license后，可以不重启服务，点击此刷新按钮进行更新许可",
     "loginmethod": "登录方式",
     "clicktocopyuuid": "点击复制uuid",
-    "successcopyintegrationuuid": "成功复制集成uuid"
+    "successcopyintegrationuuid": "成功复制集成uuid",
+    "showalluserdata": "查看所有用户数据"
   },
   "knowledge": {
     "document": "文档",
@@ -2931,7 +2932,17 @@
     "1month": "1个月",
     "3day": "3天",
     "subscribename": "订阅名称",
-    "invokealert": "关联告警"
+    "invokealert": "关联告警",
+    "alertdata": "告警数据",
+    "successaction": "成功动作",
+    "failedaction": "失败动作",
+    "invokeresult": "调用结果",
+    "invokeinterval": "调用间隔",
+    "returnresult": "返回信息",
+    "conditionresult": "判定结果",
+    "conditionmatch": "条件满足",
+    "conditionmotmatch": "条件不满足",
+    "abeyrule": "满足以上条件则执行"
   },
   "informant": {
     "last5dump": "最近5次快照",

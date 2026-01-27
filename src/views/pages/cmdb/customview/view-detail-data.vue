@@ -225,7 +225,7 @@ export default {
   }
 };
 </script>
-<style lang="less" scope>
+<style lang="less">
 .cientity-label {
   text-align: right;
 }

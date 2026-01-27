@@ -528,7 +528,7 @@ function validDataList(dataList, parent) {
 }
 
 </script>
-<style lang="less" scope>
+<style lang="less" scoped>
 .dataSource {
   .static-block {
     .text-right {

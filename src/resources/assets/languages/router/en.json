@@ -119,6 +119,8 @@
     "authmanage": "Authority ",
     "useraddview": "Edit User",
     "worktimemanage": "Work Schedule Calendar",
+    "loginmanage": "Login Relation",
+    "userexportfilemanage": "Export Management",
     "usersetting": "Personal Settings",
     "roleaddview": "Edit Role",
     "authadduser": "Edit Authorization",

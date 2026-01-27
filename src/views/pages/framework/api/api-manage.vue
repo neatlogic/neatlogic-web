@@ -16,9 +16,15 @@
       <template v-slot:topRight>
         <div style="text-align: right" :style="{ '--children': 3 }" class="controller-group">
           <!-- <div><TsformSelect v-model="apiType" v-bind="apiTypeConfig" @on-change="handleApiTypeChange" /></div> -->
-          <div><TsformSelect v-model="needAudit" v-bind="auditConfig" @on-change="filterAudit" /></div>
           <div>
-            <InputSearcher v-model="searchParams.keyword" @change="handleSearchChange"></InputSearcher>
+            <CombineSearcher
+              v-model="searchVal"
+              class="search"
+              v-bind="searchConfig"
+              :clearable="true"
+              :isRequired="false"
+              @change="handleSearchChange()"
+            ></CombineSearcher>
           </div>
         </div>
       </template>
@@ -53,8 +59,8 @@
           <template v-slot:token="{ row }">
             <span class="text-href" @click.stop="showApiForm(row, 'update')">{{ row.token }}</span>
           </template>
-          <template v-slot:authtype="{ row }">
-            <div>{{ row.authtype | authtypeText(t) }}</div>
+          <template v-slot:authTypeNameList="{ row }">
+            <Tag v-for="(authTypeName, index) in row.authTypeNameList" :key="index">{{ authTypeName }}</Tag>
           </template>
           <template v-slot:expire="{ row }">
             <div>{{ row.expire | formatDate }}</div>
@@ -104,26 +110,16 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: 'ApiManage',
   components: {
-    TsformSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable'),
     ApiHelp: () => import('./api-manage-help'),
     CallRecord: () => import('./api-manage-call-record'),
     FormDialog: () => import('./api-manage-form'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     ApiTest: () => import('./api-manage-test.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   filters: {
-    authtypeText(value, t) {
-      const config = {
-        '-': t('page.nothave'),
-        basic: 'Basic',
-        token: t('page.token'),
-        cookie: 'Cookie',
-        'hmac-sha1': 'HMAC-SHA1'
-      };
-      return value in config ? config[value] : value;
-    }
+    
   },
   mixins: [download],
   data() {
@@ -134,25 +130,6 @@ export default {
       isCallRecordShow: false, //是否显示接口调用记录
       isFormDialogShow: false, //是否显示对话框
       apiType: 'system',
-      // apiTypeConfig: Object.freeze({
-      //   //接口类型选择器配置
-      //   value: 'system',
-      //   clearable: false,
-      //   border: 'border',
-      //   dataList: [
-      //     { value: 'system', text: this.$t('page.systemapi') },
-      //     { value: 'custom', text: this.$t('page.customapi') }
-      //   ],
-      //   validateList: ['required']
-      // }),
-      auditConfig: {
-        placeholder: this.$t('page.isneedaudit'),
-        border: 'border',
-        dataList: [
-          { value: 1, text: this.$t('page.needaudit') },
-          { value: 0, text: this.$t('page.notneedaudit') }
-        ]
-      },
       operationType: '', //对话框操作类型('creatre','update','copy','delete')
       treeList: [
         {
@@ -168,10 +145,9 @@ export default {
         //表头数据
         { title: this.$t('page.address'), key: 'token', width: 300 },
         { title: this.$t('page.name'), key: 'name', width: 300 },
-        { title: this.$t('page.handler'), key: 'handlerName', width: 300 },
         { title: this.$t('page.needaudit'), key: 'needAudit', minWidth: 80 },
-        { title: this.$t('page.authtype'), key: 'authtype', minWidth: 80 },
-        { title: this.$t('page.status'), key: 'isActive', minWidth: 60 },
+        { title: this.$t('page.authtype'), key: 'authTypeNameList', minWidth: 80 },
+        // { title: this.$t('page.status'), key: 'isActive', minWidth: 60 },
         { title: this.$t('page.module'), key: 'moduleGroupName', minWidth: 60 },
         { title: this.$t('page.visittimes'), key: 'visitTimes', minWidth: 60 },
         { title: ' ', key: 'action', align: 'right', width: 10 }
@@ -195,7 +171,41 @@ export default {
         pageSize: 20
       },
       tableHeight: 'calc(100vh - 192px)',
-      needAudit: null
+      needAudit: null,
+      initSearchVal: {
+        needAudit: null,
+        authType: null,
+        keyword: null
+      },
+      searchVal: {},
+      searchConfig: {
+        labelWidth: 100,
+        // placeholder: '请输入节点ip、端口、名称',
+        searchList: [
+          {
+            type: 'radio',
+            name: 'needAudit',
+            value: null,
+            label: this.$t('page.isneedaudit'),
+            placeholder: this.$t('page.pleaseselect'),
+            dataList: [
+              { value: 1, text: this.$t('page.yes') },
+              { value: 0, text: this.$t('page.no') }
+            ],
+            transfer: true,
+            allowToggle: true
+          },
+          {
+            type: 'select',
+            name: 'authType',
+            label: '认证类型',
+            multiple: false,
+            url: 'api/rest/universal/enum/get',
+            params: { enumClass: 'neatlogic.framework.restful.constvalue.ApiAuthType' },
+            transfer: true
+          }
+        ]
+      }
     };
   },
   created() {
@@ -260,7 +270,9 @@ export default {
     // 获取表格数据
     getTableConfig(params = {}) {
       this.isLoading = true;
-      this.searchParams = { ...this.searchParams, currentPage: 1, ...params };
+      let searchVal = { ...this.initSearchVal};
+      searchVal = { ...searchVal, ...this.searchVal };
+      this.searchParams = { ...this.searchParams, currentPage: 1, ...params, ...searchVal };
       this.$api.framework.apiManage
         .search(this.searchParams)
         .then(res => {

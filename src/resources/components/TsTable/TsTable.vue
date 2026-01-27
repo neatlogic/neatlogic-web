@@ -293,7 +293,7 @@
                 :disabled="btn.disabled"
                 @click.native.stop="btnClick(btn)"
               >{{ btn.text }}</Button>
-            </div> 
+            </div>
           </div>
         </div>
       </Poptip>
@@ -845,7 +845,7 @@ export default {
           }
         }
         this.$forceUpdate();
-        this.getSelectList(); 
+        this.getSelectList();
       }
     },
     toggleExpand(row) {
@@ -1215,7 +1215,7 @@ export default {
       return style;
     },
     colsList() {
-      const columnList = this.columnList; 
+      const columnList = this.columnList;
       const list = this.thList;
       let thList = [];
       let showList = [];
@@ -1457,7 +1457,7 @@ export default {
   visibility: hidden;
 }
 </style>
-<style lang="less" scope>
+<style lang="less" scoped>
 .tstable-action-ul {
   li {
     span {

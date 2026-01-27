@@ -2,7 +2,7 @@
   <div>
     <div v-if="config.mode === 'dialog'">
       <div v-if="!readonly && !disabled" class="mb-sm action-group">
-        <div v-if="!config.disableAddData" class="action-item">
+        <div v-if="canAddData" class="action-item">
           <Button @click="showTableSelectorDialog">{{ $t('dialog.title.addtarget',{'target':$t('page.data')}) }}</Button>
         </div>
         <div v-if="!config.disableDeleteData && selectedItemList && selectedItemList.length > 0" class="action-item">
@@ -10,60 +10,88 @@
         </div>
       </div>
       <div>
-        <TsTable
-          v-if="showTable"
-          :multiple="true"
-          :theadList="theadList"
-          :tbodyList="tbodyList"
-          keyName="uuid"
-          selectedRemain
-          :disabled="readonly || disabled"
-          :fixedHeader="false"
-          :readonlyTextIsHighlight="readonlyTextIsHighlight"
-          @getSelected="getSelected"
-          @operation="operation"
-        >
-          <template v-slot:operation="{ row, index }">
-            <div class="flex-center">
-              <span
-                v-if="!config.disableAddData && !readonly && !disabled"
-                :class="canDeleteRow ? 'mr-nm' : ''"
-                class="tsfont-plus text-action"
-                @click.stop="showTableSelectorDialog(index)"
-              ></span>
-              <span v-if="canDeleteRow" class="tsfont-close text-action" @click.stop="deleteItem(row)"></span>
+        <template v-if="showTable">
+          <template v-if="hasColumn">
+            <div class="tstable-container border bg-grey radius-lg tstable-no-fixedHeader">
+              <div>
+                <table class="tstable-body">
+                  <thead>
+                    <tr>
+                      <th v-for="(col) in theadList" :key="col.key">
+                        <div v-if="col.key === 'selection'">
+                          <Checkbox
+                            v-model="isSelectAllCurrentPage"
+                            :disabled="readonly || disabled"
+                            @on-change="selectAllCurrentPage"
+                          ></Checkbox>
+                        </div>
+                        <template v-else-if="col.key === 'operation'">
+                        </template>
+                        <span v-else :class="col.isRequired ? 'require-label' : ''" :style="col.width ? {width: col.width} : {}">{{ col.title }}</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(row) in pagedTbodyList"
+                      :key="row.uuid"
+                    >
+                      <td v-if="canDeleteRow">
+                        <div class="flex-start">
+                          <span v-if="canAddData" class="tsfont-plus text-action mr-nm" @click.stop="showTableSelectorDialog"></span>
+                          <span class="tsfont-close text-action mr-nm" @click.stop="deleteItem(row)"></span>
+                        </div>
+                      </td>
+                      <td v-if="!readonly || !disabled">
+                        <Checkbox
+                          :value="selectedCurrentPageMap[row.uuid]"
+                          :disabled="readonly || disabled"
+                          @on-change="handleSelectedRow($event, row)"
+                        ></Checkbox>
+                      </td>
+                      <td v-for="column in columnAttrList" :key="`${row.uuid}_ ${column.uuid}`" @click.stop>
+                        <div v-if="column?.config?.urlAttributeValue">
+                          <span class="text-href" @click="openRowLInkByType(row, column?.config.urlAttributeValue)">
+                            {{ column.label }}
+                          </span>
+                        </div>
+                        <ColumnItem
+                          v-else
+                          :ref="`columnItem_${row.uuid}${column.uuid}`"
+                          :rowData="row"
+                          :rowUuid="row.uuid"
+                          :extraUuid="column.uuid"
+                          :columnReadonly="getColumnReadonly(column.uuid)"
+                          :reactionData="getReactionData(column, row)"
+                          :reactionValueData="reactionValuesMap[column.uuid]"
+                          :expressionData="getExpressionData(column)"
+                          class="form-item-width"
+                          @change="changeRow"
+                          @getCurrentRowData="getCurrentRowData"
+                        ></ColumnItem>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div v-if="tablePageConfig.rowNum > tablePageConfig.defaultShowSize && tablePageConfig.pageSize > 0" ref="tablepage" class="tstable-page text-right">
+              <Page
+                size="small"
+                :showSizer="true"
+                :showTotal="true"
+                :total="tablePageConfig.rowNum"
+                :current="tablePageConfig.currentPage"
+                :page-size="tablePageConfig.pageSize"
+                :page-size-opts="tablePageConfig.pageSizeOpts"
+                :transfer="true"
+                @on-change="changeCurrent"
+                @on-page-size-change="changePageSize"
+              />
             </div>
           </template>
-          <template
-            v-for="(extra) in extraList"
-            v-slot:[extra.uuid]="{row,index}"
-          >
-            <div :key="extra.uuid" class="table-item" @click.stop>
-              <FormItem
-                :ref="'formitem_true_' + extra.uuid + '_' + index"
-                :formItem="getExtraFormItem(extra,row)"
-                :formItemList="$utils.deepClone(extraList.concat(formItemList))"
-                :disabled="disabled"
-                :readonly="readonly"
-                :value="row[extra.uuid]"
-                :formData="{...$utils.deepClone(formData || {}), ...row}"
-                :formDataForWatch="{...$utils.deepClone(formDataForWatch || {}),...row}"
-             
-                :showStatusIcon="false"
-                mode="read"
-                isCustomValue
-                :externalData="externalData"
-                :extendConfigList="extendConfigList"
-                :rowUuid="row.uuid"
-                :isClearSpecifiedAttr="isClearSpecifiedAttr"
-                style="min-width:100px"
-                @change="(val)=>{
-                  changeRowItem(val, row, extra.uuid)
-                }"
-              ></FormItem>
-            </div>
-          </template>
-        </TsTable>
+          <TsSimpleTable v-else :theadList="theadList"></TsSimpleTable>
+        </template>
       </div>
     </div>
     <div v-else-if="config.mode === 'normal'">
@@ -103,18 +131,22 @@
 <script>
 import base from '../base.vue';
 import validmixin from '../common/validate-mixin.js';
+import ColumnItemMixin from '@/resources/plugins/TsSheet/form/component/formtableinputer/column-item-mixin.js';
+import ExpressionMixin from '@/resources/plugins/TsSheet/form/component/formtableinputer/expression-mixin.js';
+import conditionMixin from '@/resources/plugins/TsSheet/form/component/formtableinputer/condition-mixin.js';
+import TableMixin from '@/resources/plugins/TsSheet/form/component/common/table-mixin.js';
 import DataList from './formtableselector-datalist.vue';
-import TsTable from '@/resources/components/TsTable/TsTable.vue';
+import { buildValidateList } from '@/resources/plugins/TsSheet/form/component/common/table-utils.js';
 export default {
   name: '',
   components: {
     DataList,
-    TsTable,
     DataDialog: () => import('./formtableselector-dialog.vue'),
-    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue')
+    ColumnItem: () => import('@/resources/plugins/TsSheet/form/component/formtableinputer/column-item.vue'),
+    TsSimpleTable: () => import('@/resources/components/TsSimpleTable/index.vue')
   },
   extends: base,
-  mixins: [validmixin],
+  mixins: [validmixin, conditionMixin, ExpressionMixin, ColumnItemMixin, TableMixin],
   props: {
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
@@ -124,11 +156,23 @@ export default {
       isTableSelectorDialogShow: false,
       selectedItemList: [],
       rowFormItem: {},
-      tbodyList: []
+      tbodyList: [],
+      isSelectAllCurrentPage: false,
+      selectedCurrentPageMap: {},
+      validateMap: {}, // {uuid: label: 'xxx', validateList: []} // 校验规则
+      tablePageConfig: { //table分页配置
+        currentPage: 1,
+        pageSize: 5,
+        rowNum: 0,
+        pageSizeOpts: [5, 10, 15, 20, 50, 100],
+        defaultShowSize: 5
+      }
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.reactionWatch();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -138,15 +182,55 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleSelectedRow(isSelected, row) {
+      const { uuid } = row || {};
+      this.$set(this.selectAllCurrentPage, uuid, isSelected);
+      const findItemIndex = this.selectedItemList.findIndex(d => d.uuid === uuid);
+      if (isSelected) {
+        this.selectedItemList.push(row);
+      } else {
+        this.selectedItemList.splice(findItemIndex, 1);
+      }
+      if (this.selectedItemList.length === 0 || this.selectedItemList.length !== this.pagedTbodyList.length) {
+        this.isSelectAllCurrentPage = false;
+      } else if (this.selectedItemList.length === this.pagedTbodyList.length) {
+        this.isSelectAllCurrentPage = true;
+      }
+    },
+    selectAllCurrentPage(selectedAll) {
+      if (selectedAll) {
+        this.pagedTbodyList.forEach((row) => {
+          this.selectedCurrentPageMap[row.uuid] = true;
+          this.selectedItemList.push(row);
+        });
+      } else {
+        this.selectedCurrentPageMap = {};
+        this.selectedItemList = [];
+      }
+    },
+    changeCurrent(currentPage) {
+      this.tablePageConfig.currentPage = currentPage;
+      if (!this.readonly && !this.disabled) {
+        this.$nextTick(() => {
+          this.validData();
+        });
+      }
+    },
+    changePageSize(pageSize) {
+      this.tablePageConfig.currentPage = 1;
+      this.tablePageConfig.pageSize = pageSize;
+    },
     deleteItem(row) {
+      const { uuid } = row || {};
       if (this.selectedItemList && this.selectedItemList.length > 0) {
-        const index = this.selectedItemList.findIndex(d => d.uuid === row.uuid);
+        const index = this.selectedItemList.findIndex(d => d.uuid === uuid);
         if (index > -1) {
           this.selectedItemList.splice(index, 1);
+          this.$delete(this.selectedCurrentPageMap, uuid);
         }
       }
       if (this.tbodyList && this.tbodyList.length > 0) {
-        const index = this.tbodyList.findIndex(d => d.uuid === row.uuid);
+        const index = this.tbodyList.findIndex(d => d.uuid === uuid);
         if (index > -1) {
           this.tbodyList.splice(index, 1);
           this.setValue(this.tbodyList);
@@ -157,12 +241,15 @@ export default {
       if (this.selectedItemList && this.selectedItemList.length > 0) {
         for (let i = this.tbodyList.length - 1; i >= 0; i--) {
           if (this.selectedItemList.find(d => d.uuid === this.tbodyList[i].uuid)) {
+            this.$delete(this.selectedCurrentPageMap, this.tbodyList[i].uuid);
             this.tbodyList.splice(i, 1);
           }
         }
         this.setValue(this.tbodyList);
       }
       this.selectedItemList = [];
+      this.selectedCurrentPageMap = {};
+      this.isSelectAllCurrentPage = false;
     },
     getSelectedData(itemList) {
       const valueList = this.$utils.deepClone(itemList);
@@ -186,7 +273,6 @@ export default {
     },
     async validData() {
       const errorList = [];
-      //TODO 需要补充校验方法
       if (this.$refs.dataList && this.$refs.dataList.validData) {
         let dataListValid = await this.$refs.dataList.validData();
         errorList.push(...dataListValid);
@@ -194,7 +280,7 @@ export default {
         let itemError = [];
         if (this.$refs) {
           for (let name in this.$refs) {
-            if (name.indexOf('formitem_true') > -1 && this.$refs[name]) {
+            if (name.startsWith('columnItem_') && this.$refs[name]) {
               let formitem = null;
               if (this.$refs[name] instanceof Array) {
                 formitem = this.$refs[name][0];
@@ -210,59 +296,26 @@ export default {
             }
           }
         }
-        errorList.push(...itemError, ...this.validAttrUnique());
+        errorList.push(
+          ...this.validTableTbodyListData({
+            pageSize: this.tablePageConfig.pageSize,
+            readonly: this.readonly,
+            disabled: this.disabled,
+            theadList: this.theadList,
+            tbodyList: this.tbodyList,
+            formData: this.formData,
+            formItem: this.formItem,
+            validateMap: this.validateMap,
+            executeReaction: this.executeReaction
+          }),
+          ...this.validTableAttrUnique({
+            pageSize: this.tablePageConfig.pageSize,
+            config: this.config,
+            formItem: this.formItem,
+            tbodyList: this.tbodyList
+          }));
       }
       return errorList;
-    },
-    validAttrUnique() {
-      // 校验属性是否唯一
-      let errorList = [];
-      let {uniqueRuleConfig = [], dataConfig = []} = this.config || {};
-      if (uniqueRuleConfig.length == 0) {
-        //如果存在设置唯一标识的字段则校验是否重复
-        const uniqueRuleList = dataConfig.filter((v) => v.config && v.config['isUnique']);
-        if (!this.$utils.isEmpty(uniqueRuleList)) {
-          let existMap = {};
-          this.tbodyList.forEach((row) => {
-            if (!this.$utils.isEmpty(row)) {
-              Object.keys(row).forEach((key) => {
-                const findUnunique = uniqueRuleList.find(d => d.uuid === key);
-                if (findUnunique && row[key]) {
-                  if (existMap[key] && existMap[key].includes(row[key])) {
-                    errorList.push({ uuid: this.formItem.uuid, error: `属性唯一：${findUnunique.label}必须唯一` });
-                  } else {
-                    existMap[key] = existMap[key] ? [...existMap[key], row[key]] : [row[key]];
-                  }
-                }
-              });
-            }
-          });
-        }
-        return errorList;
-      } else {
-        //组合属性是否唯一
-        let attrLabel = dataConfig.filter((v) => v['uuid'] && uniqueRuleConfig.includes(v['uuid']) && v.label).map((item) => item.label).join(',');
-        let tempValue = '';
-        let existList = [];
-        this.tbodyList.forEach((row) => {
-          if (!this.$utils.isEmpty(row)) {
-            tempValue = '';
-            Object.keys(row).forEach((key, index) => {
-              if (uniqueRuleConfig.includes(key) && row[key]) {
-                tempValue += `${JSON.stringify(row[key])}${index < uniqueRuleConfig.length - 1 ? '_' : ''}`;
-              }
-            });
-            if (tempValue) {
-              if (existList.includes(tempValue)) {
-                errorList.push({ uuid: uniqueRuleConfig[0], error: `属性唯一：${attrLabel}必须唯一` });
-              } else {
-                existList.push(tempValue);
-              }
-            }
-          }
-        });
-        return errorList;
-      }
     },
     validConfig() {
       const errorList = [];
@@ -293,6 +346,27 @@ export default {
               if (!config.mapping.text) {
                 errorList.push({field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', {'target': this.$t('term.framework.showtextfieldmapping')})});
               }
+            } else if (config.dataSource === 'formtableinputer') {
+              //选择表单输入组件
+              let findItem = this.formItemList.find(item => item.uuid === config.formtableinputerUuid);
+              if (!findItem) {
+                errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('message.framework.datasourceselectmessage') });
+              } else {
+                if (findItem.config && findItem.config.dataConfig) {
+                  let isValidMapping = true;
+                  const valueUuid = config.mapping.value.split('##')[0];
+                  const textUuid = config.mapping.text.split('##')[0];
+                  if (!findItem.config.dataConfig.find(d => d.uuid === valueUuid)) {
+                    isValidMapping = false;
+                  }
+                  if (!findItem.config.dataConfig.find(d => d.uuid === textUuid)) {
+                    isValidMapping = false;
+                  }
+                  if (!isValidMapping) {
+                    errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('form.placeholder.pleaseselect', { target: this.$t('page.fieldmapping') }) });
+                  }
+                }
+              }
             }
           } else if (['formdate', 'formtime'].includes(element.handler)) {
             if (!config.format) {
@@ -319,42 +393,10 @@ export default {
       }
       return errorList;
     },
-    operation(row, type) {
+    openRowLInkByType(row, type) {
       if (type && row[type]) { //超链接跳转
         window.open(row[type], '_blank');
       }
-    },
-    //从表格选择列表行数据中获取指定字段作为扩展字段的过滤值
-    getExtraFormItem(extraFormItem, row) {
-      //由于每行的过滤值都不一样，所以需要复制，避免互相影响
-      if (!this.rowFormItem[row.uuid]) {
-        this.rowFormItem[row.uuid] = {};
-      }
-      if (!this.rowFormItem[row.uuid][extraFormItem.uuid]) {
-        this.rowFormItem[row.uuid][extraFormItem.uuid] = this.$utils.deepClone(extraFormItem);
-      }
-      const formItem = this.rowFormItem[row.uuid][extraFormItem.uuid];
-      const config = formItem.config;
-      if (config && config.sourceColumnList && config.sourceColumnList.length > 0) {
-        config.sourceColumnList.forEach(sourceColumn => {
-          if (sourceColumn.valueColumn) {
-            const valueList = Array.isArray(row[sourceColumn.valueColumn]) ? row[sourceColumn.valueColumn] : [row[sourceColumn.valueColumn]];
-            let newValueList = [];
-            if (!this.$utils.isEmpty(valueList)) {
-              valueList.forEach(i => {
-                if (i && typeof i === 'object') {
-                  newValueList.push(i.value);
-                } else {
-                  newValueList.push(i);
-                }
-              });
-            }
-            this.$set(sourceColumn, 'valueList', newValueList);
-            sourceColumn.expression = 'equal';
-          }
-        });
-      }
-      return {...formItem};
     },
     getSelected(indexList) {
       let selectedArr = this.tbodyList.filter(val => {
@@ -362,11 +404,24 @@ export default {
       });
       this.selectedItemList = selectedArr;
     },
-    changeRowItem(val, row, uuid) {
-      if (!this.$utils.isSame(val, row[uuid])) {
-        this.$set(row, uuid, val);
+    changeRow(rowData) {
+      const { value, extraUuid = '', row = {} } = rowData || {};
+      if (!this.$utils.isSame(value, row[extraUuid])) {
+        if (!row.hasOwnProperty(extraUuid)) {
+          this.$set(row, extraUuid, value); // 修复条件赋值不生效问题
+        } else {
+          row[extraUuid] = value;
+        }
         this.setValue(this.tbodyList);
       }
+    },
+    getCurrentRowData(currentRowData) {
+      const { reactionData = {}, rowData = {} } = currentRowData || {};
+      this.$nextTick(() => {
+        if (reactionData) {
+          Object.assign(rowData, reactionData);
+        }
+      });
     }
   },
   filter: {},
@@ -389,8 +444,32 @@ export default {
               title: thead.label,
               type: thead.config && thead.config.urlAttributeValue ? 'linktext' : '',
               textValue: thead.config && thead.config.urlAttributeValue ? thead.config.urlAttributeValue : '',
-              isRequired: !!(thead.config && thead.config.isRequired)
+              isRequired: !!(thead.config && thead.config.isRequired),
+              config: thead.config,
+              reaction: thead.reaction
             });
+            if (thead?.config) {
+              const validateList = buildValidateList({columnAttrItem: thead, readonly: this.readonly, disabled: this.disabled});
+              if (validateList.length > 0) {
+                this.validateMap[thead.uuid] = {
+                  label: thead.label,
+                  validateList: validateList
+                };
+              }
+              if (!this.$utils.isEmpty(thead?.config?.dataConfig)) {
+                thead.config.dataConfig.forEach(c => {
+                  if (c.config) {
+                    const innerValidateList = buildValidateList({columnAttrItem: c, readonly: this.readonly, disabled: this.disabled});
+                    if (innerValidateList.length > 0) {
+                      this.validateMap[c.uuid] = {
+                        label: c.label,
+                        validateList: innerValidateList
+                      };
+                    }
+                  }
+                });
+              }
+            }
           }
         });
       }
@@ -399,12 +478,54 @@ export default {
     extraList() {
       return this.config.dataConfig.filter(d => d.isExtra && d.isPC);
     },
+    canAddData() {
+      return !this.config.disableAddData;
+    },
+    getColumnReadonly() {
+      return (uuid) => {
+        if (this.readonly || this.disabled) {
+          return true;
+        }
+        const columnItem = this.extraList.find(d => d.uuid === uuid);
+        if (columnItem) {
+          return false;
+        }
+        return true;
+      };
+    },
+    columnAttrList() {
+      const columnAttrList = this.config.dataConfig.filter(d => d.isPC);
+      return this.$utils.deepClone(columnAttrList);
+    },
     canDeleteRow() {
       return !!((!this.config.disableDeleteData && !this.readonly && !this.disabled));
     },
     showTable() {
       const { hideHeaderWhenDataEmpty = false } = this.config || {};
       return hideHeaderWhenDataEmpty ? this.tbodyList.length > 0 : true;
+    },
+    hasColumn() {
+      if (this.mode != 'edit' && this.mode != 'editSubform' && this?.config?.dataConfig?.length > 0) {
+        return true;
+      }
+      return false;
+    },
+    pagedTbodyList: {
+      get() {
+        this.tablePageConfig.rowNum = this.tbodyList.length;
+        const start = (this.tablePageConfig.currentPage - 1) * this.tablePageConfig.pageSize;
+        const end = start + this.tablePageConfig.pageSize;
+        if (this.tbodyList.length <= start) {
+          return [];
+        }
+        return this.tbodyList.slice(start, end);
+      },
+      set(newPageList) {
+        const start = (this.tablePageConfig.currentPage - 1) * this.tablePageConfig.pageSize;
+        for (let i = 0; i < newPageList.length; i++) {
+          this.$set(this.tbodyList, start + i, newPageList[i]);
+        }
+      } 
     }
   },
   watch: {
@@ -420,4 +541,12 @@ export default {
   }
 };
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.form-item-width {
+  min-width: 130px;
+}
+::v-deep .tstable-container, .table-container {
+  overflow-x: scroll;
+  width: 100%;
+}
+</style>

@@ -237,8 +237,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    handleSelectedRow(value, row) {
-      this.$set(selectedCurrentPageMap, row.uuid, val);
+    handleSelectedRow(isSelected, row) {
+      this.$set(this.selectedCurrentPageMap, row.uuid, isSelected);
+      const findSelectedList = this.pagedTbodyList.filter(d => this.selectedCurrentPageMap[d.uuid]);
+      if (findSelectedList.length === this.pagedTbodyList.length) {
+        this.isSelectAllCurrentPage = true;
+      } else {
+        this.isSelectAllCurrentPage = false;
+      }
     },
     selectAllCurrentPage(selectedAll) {
       if (selectedAll) {
@@ -320,11 +326,13 @@ export default {
       this.tbodyList.splice(index + 1, 0, data);
     },
     removeSelectedItem() {
-      for (let i = this.tbodyList.length - 1; i >= 0; i--) {
-        const row = this.tbodyList[i];
-        if (this.selectedCurrentPageMap[row.uuid]) {
-          this.tbodyList.splice(i, 1);
-          this.$delete(this.selectedCurrentPageMap, row.uuid);
+      for (const key in this.selectedCurrentPageMap) {
+        if (this.selectedCurrentPageMap[key]) {
+          const findIndex = this.tbodyList.findIndex(d => d.uuid === key);
+          if (findIndex !== -1) {
+            this.tbodyList.splice(findIndex, 1);
+            this.$delete(this.selectedCurrentPageMap, key);
+          }
         }
       }
       if (!this.pagedTbodyList.length && this.tablePageConfig.currentPage > 1) {
@@ -715,8 +723,11 @@ export default {
       if (this.isSelectAllCurrentPage) {
         return true;
       } else if (!this.$utils.isEmpty(this.selectedCurrentPageMap)) {
-        const selectedList = Object.values(this.selectedCurrentPageMap);
-        return selectedList.every(item => item);
+        for (let key in this.selectedCurrentPageMap) {
+          if (this.selectedCurrentPageMap[key]) {
+            return true;
+          }
+        }
       }
       return false;
     },
@@ -729,14 +740,22 @@ export default {
         const reactionValue = extra.reaction || {};
         for (const action in reactionValue) {
           const reaction = reactionValue[action];
-          if (!reaction) continue;
+          if (this.$utils.isEmpty(reaction)) continue;
           if (action !== 'filter') {
-            (reaction.conditionGroupList || []).forEach(group => {
-              (group.conditionList || []).forEach(cond => {
-                const uuid = (cond.formItemUuid || '').split('#')[0];
-                if (uuid) {
-                  map[extra.uuid].push(uuid);
-                }
+            let ruleList = [];
+            if (Array.isArray(reaction)) {
+              ruleList = reaction;
+            } else {
+              ruleList.push(reaction);
+            }
+            ruleList.forEach(item => {
+              (item.conditionGroupList || []).forEach(group => {
+                (group.conditionList || []).forEach(cond => {
+                  const uuid = (cond.formItemUuid || '').split('#')[0];
+                  if (uuid) {
+                    map[extra.uuid].push(uuid);
+                  }
+                });
               });
             });
           } else {
@@ -756,12 +775,20 @@ export default {
               const reactionRule = innerReactionValue[action];
               if (!reactionRule) continue;
               if (action !== 'filter') {
-                (reactionRule.conditionGroupList || []).forEach(group => {
-                  (group.conditionList || []).forEach(cond => {
-                    const uuid = (cond.formItemUuid || '').split('#')[0];
-                    if (uuid) {
-                      map[extra.uuid].push(uuid);
-                    }
+                let ruleList = [];
+                if (Array.isArray(reactionRule)) {
+                  ruleList = reactionRule;
+                } else {
+                  ruleList.push(reactionRule);
+                }
+                ruleList.forEach(item => {
+                  (item.conditionGroupList || []).forEach(group => {
+                    (group.conditionList || []).forEach(cond => {
+                      const uuid = (cond.formItemUuid || '').split('#')[0];
+                      if (uuid) {
+                        map[extra.uuid].push(uuid);
+                      }
+                    });
                   });
                 });
               } else {

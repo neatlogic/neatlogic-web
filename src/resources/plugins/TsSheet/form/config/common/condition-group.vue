@@ -180,6 +180,9 @@ export default {
               const condition = conditionGroup.conditionList[cindex];
               let uuidList = (condition.formItemUuid && condition.formItemUuid.split('#')) || [];
               let uuid = uuidList[0];
+              if (!uuid) {
+                continue;
+              }
               const index = this.formItemList.findIndex(d => d.uuid === uuid);
               if (index < 0) {
                 conditionGroup.conditionList.splice(cindex, 1);

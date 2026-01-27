@@ -163,6 +163,6 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scope>
+<style lang="less">
 @import '@/views/pages/autoexec/public/graphviz.less';
 </style>

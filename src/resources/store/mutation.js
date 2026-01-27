@@ -62,6 +62,12 @@ const Mutations = {
     } else {
       sessionStorage.removeItem('PWD_FORCE_REDIRECTED');
     }
+  },
+  setUserExportFileUnreadCount(state, userExportFileUnreadCount) {
+    state.userExportFileUnreadCount = userExportFileUnreadCount;
+  },
+  addUserExportFileUnreadCount(state, userExportFileUnreadCount) {
+    state.userExportFileUnreadCount += userExportFileUnreadCount;
   }
 };
 
