@@ -277,8 +277,9 @@ export default {
     showLabel() {
       return data => {
         let label = data.name || '';
+        const port = data?.port || '';
         if (data.ip) {
-          label += '[' + data.ip + ']';
+          label += '[' + data.ip + (port ? ':' + port : '') + ']';
         }
         return label;
       };
