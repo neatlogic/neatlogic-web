@@ -53,7 +53,8 @@
 export default {
   name: '',
   components: {
-    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
+    TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     mode: { type: String },
