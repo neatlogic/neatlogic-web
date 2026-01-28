@@ -25,7 +25,7 @@
           </Alert>
           <TsTable
             :theadList="theadList"
-            :tbodyList="appSystemModuleVersionList"
+            :tbodyList="tbodyList"
             keyName="id"
           >
             <template v-slot:envScenario="{ row }">
@@ -63,6 +63,7 @@ export default {
   },
   data() {
     return {
+      tbodyList: [],
       dialogConfig: {
         type: 'modal',
         maskClose: false,
@@ -84,7 +85,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-  
+    this.initTbodyList();
   },
   beforeMount() {},
   mounted() {},
@@ -95,6 +96,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initTbodyList() {
+      this.tbodyList = this.$utils.deepClone(this.appSystemModuleVersionList);
+    },
     async okDialog() {
       if (!this.$refs.version.valid()) {
         return;
@@ -149,7 +153,7 @@ export default {
       this.jobTemplateVersionMap = {};
       this.errList = [];
       if (this.version) {
-        const valueList = this.appSystemModuleVersionList.map(item => {
+        const valueList = this.tbodyList.map(item => {
           return item.id;
         });
         let data = {
@@ -159,7 +163,7 @@ export default {
         return this.$api.deploy.pipeline.getJobTemplateVersionList(data).then(res => {
           if (res.Status === 'OK') {
             this.jobTemplateVersionMap = res.Return || {};
-            this.appSystemModuleVersionList.forEach(item => {
+            this.tbodyList.forEach(item => {
               if (this.jobTemplateVersionMap[item.id]) {
                 item.versionId = this.jobTemplateVersionMap[item.id];
               } else {
