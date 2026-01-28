@@ -36,7 +36,7 @@
               v-model="keyword"
               :placeholder="$t('term.deploy.ipname')"
               class="mb-nm"
-              @change="() => changeCurrent"
+              @change="() => changeCurrent(1)"
             ></InputSearcher>
           </Col>
         </Row>
@@ -95,6 +95,10 @@ export default {
           key: 'ip'
         },
         {
+          title: this.$t('term.framework.pkgversion'),
+          key: 'version'
+        },
+        {
           title: this.$t('term.deploy.publishstatus'),
           key: 'status'
         },
@@ -150,7 +154,7 @@ export default {
       };
       this.$api.deploy.version.versionInstanceSearch(params).then((res) => {
         if (res.Status == 'OK') {
-          this.$set(this.tableData, 'tbodyList', res.Return);
+          this.tableData = res.Return || {};
         }
       }).finally(() => {
         this.loadingShow = false;
