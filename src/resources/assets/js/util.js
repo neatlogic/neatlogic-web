@@ -74,6 +74,7 @@ getUnicodeByClassName(className)             获取className的unicode编码
 convertWoff2ToBase64                         将woff2文件转换为base64
 deepRemoveEmptyValues(data)                  深度移除对象中的空值
 getUserInfo()                                获取用户信息
+getInstanceIpPort()                          获取实例ip和端口
 */
 import _ from 'lodash';
 import store from '@/resources/store';
@@ -1286,6 +1287,17 @@ const methods = {
         fn.apply(this, args);
       }
     };
-  }  
+  },
+  getInstanceIpPort(dataConfig = {}) {
+    // 获取实例ip和端口
+    let instanceIpPortStr = '';
+    const { name = '', ip = '', port = '' } = dataConfig || {};
+    const instancePort = port ? `:${port}` : '';
+    instanceIpPortStr = name;
+    if (ip) {
+      instanceIpPortStr += `[${ip}${instancePort}]`;  
+    }
+    return instanceIpPortStr;
+  }
 };
 export default methods;

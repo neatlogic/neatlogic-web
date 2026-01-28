@@ -109,7 +109,7 @@
                     <Checkbox
                       :label="item.id"
                       class="pr-nm pb-sm"
-                    >{{ `${item.name || ''}[${item.ip}]` }}</Checkbox>
+                    >{{ $utils.getInstanceIpPort(item) }}</Checkbox>
                   </div>
                 </Col>
               </Row>
