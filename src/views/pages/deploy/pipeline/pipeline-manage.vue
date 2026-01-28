@@ -75,7 +75,8 @@ export default {
       searchParam: { keyword: '', type: '' },
       pipelineData: {},
       jobType: 'all',
-      jobTypeDataList: []
+      jobTypeDataList: [],
+      isNeedDefaultVersion: false
     };
   },
   beforeCreate() {},
@@ -112,7 +113,7 @@ export default {
       this.$router.push({ path: '/pipeline-edit', query: params });
     },
     addPipeline() {
-      this.$router.push({ path: '/pipeline-edit' });
+      this.$router.push({ path: '/pipeline-edit', query: { isNeedDefaultVersion: this.isNeedDefaultVersion } });
     },
     changePageSize(pageSize) {
       this.searchParam.pageSize = pageSize;
@@ -129,6 +130,7 @@ export default {
       }
       this.$api.deploy.pipeline.searchPipeline(this.searchParam).then(res => {
         this.pipelineData = res.Return;
+        this.isNeedDefaultVersion = !!this.pipelineData.isNeedDefaultVersion || false;
       });
     },
     deletePipeline(row) {

@@ -2185,7 +2185,8 @@
     "jobcount": "Number of published assignments",
     "jobrecord": "Publish homework records",
     "notapplyallexecuteauth": "You do not have the execution permission for the current application",
-    "batchdeployauthtip": "The current user lacks the 'Batch Publishing Management Permission' permission. Please contact the administrator"
+    "batchdeployauthtip": "The current user lacks the 'Batch Publishing Management Permission' permission. Please contact the administrator",
+    "defaultversion": "Default version number"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",

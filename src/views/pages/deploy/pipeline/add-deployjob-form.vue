@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div v-if="isReady">
       <TsForm
         ref="form"
         v-model="jobData"
@@ -8,7 +8,11 @@
         :labelWidth="90"
       >
         <template v-slot:moduleList>
-          <Pipeline ref="moduleList" :baseParams="jobData"></Pipeline>
+          <Pipeline
+            ref="moduleList"
+            :baseParams="jobData"
+            :defaultVersion="jobData.defaultVersion"
+          ></Pipeline>
         </template>
       </TsForm>
     </div>
@@ -26,7 +30,7 @@ export default {
   },
   data() {
     return {
-      jobData: { pipelineId: this.id, appSystemModuleVersionList: [], triggerType: 'manual'},
+      jobData: { pipelineId: this.id, appSystemModuleVersionList: [], triggerType: 'manual', defaultVersion: ''},
       pipelineData: {},
       formConfig: {
         name: {
@@ -61,11 +65,19 @@ export default {
           },
           validateList: ['required']
         },
+        defaultVersion: {
+          type: 'text',
+          label: this.$t('term.deploy.defaultversion'),
+          readonly: true,
+          isHidden: !this.isNeedDefaultVersion
+        },
         moduleList: {
           type: 'slot',
           hideLabel: true
         }
-      }
+      },
+      isReady: false,
+      isNeedDefaultVersion: false
     };
   },
   beforeCreate() {},
@@ -111,6 +123,24 @@ export default {
         this.$set(this.jobData, 'appSystemModuleVersionList', data.appSystemModuleVersionList);
       }
       return this.jobData;
+    },
+    getPipelineById() {
+      this.$set(this.jobData, 'defaultVersion', '');
+      this.$set(this.jobData, 'name', '');
+      this.isReady = false;
+      if (this.id) {
+        this.$api.deploy.pipeline.getPipelineById(this.id).then(res => {
+          let pipelineData = res.Return;
+          this.isNeedDefaultVersion = !!this.pipelineData.isNeedDefaultVersion || false;
+          pipelineData.defaultVersion && this.$set(this.jobData, 'defaultVersion', pipelineData.defaultVersion);
+          pipelineData.name && this.$set(this.jobData, 'name', pipelineData.name);
+          this.$set(this.formConfig.defaultVersion, 'isHidden', !!this.isNeedDefaultVersion);
+        }).finally(() => {
+          this.isReady = true;
+        });
+      } else {
+        this.isReady = true;
+      } 
     }
   },
   filter: {},
@@ -120,6 +150,7 @@ export default {
     id: {
       handler(val) {
         this.$set(this.jobData, 'pipelineId', val);
+        this.getPipelineById();
       },
       immediate: true
     }
