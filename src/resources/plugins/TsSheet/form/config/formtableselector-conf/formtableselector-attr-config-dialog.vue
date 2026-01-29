@@ -917,17 +917,22 @@ export default {
         delete reaction.setvalue;
       }
       // formexpression 覆盖 reaction
-      if (val === 'formexpression' && this.mapReaction['formexpression']) {
-        reaction = this.mapReaction['formexpression'];
+      if (val === 'formexpression' && this.mapReaction.formexpression) {
+        reaction = this.$utils.deepClone(this.mapReaction.formexpression);
         this.$set(this.propertyLocal.config, 'isReadOnly', true);
       }
       // 动态赋值开关
       this.$set(this.propertyLocal, 'isDynamicValue',
         val === 'formtext' || val === 'formtextarea'
       );
-      // 最后统一赋值（不会丢）
+      // 统一赋值
       this.$set(this.propertyLocal, 'reaction', reaction);
       this.$set(this.propertyLocal, 'value', null);
+      
+      this.isReady = false;
+      this.$nextTick(() => {
+        this.isReady = true;
+      });
     }
   },
   filter: {},

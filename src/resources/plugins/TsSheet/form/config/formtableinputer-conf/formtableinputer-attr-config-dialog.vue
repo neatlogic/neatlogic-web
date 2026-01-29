@@ -836,36 +836,41 @@ export default {
       return c;
     },
     changeHandler(val) {
-      this.propertyLocal.reaction = null;
+      let reaction = this.$utils.deepClone(this.reaction);
+     
+      if (val !== 'formtable') {
+        this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
+        reaction.setvalue = {};
+      } else {
+        this.$delete(this.reactionName, 'setvalue');
+        this.$delete(reaction, 'setvalue');
+      }
+      // 3. formexpression 特殊处理
+      if (val === 'formexpression') {
+        this.$set(this.propertyLocal.config, 'isReadOnly', true);
+
+        if (this.mapReaction.formexpression) {
+          reaction = this.$utils.deepClone(this.mapReaction.formexpression);
+        }
+      }
+
+      // 4. 动态赋值开关
+      this.$set(
+        this.propertyLocal,
+        'isDynamicValue',
+        val === 'formtext' || val === 'formtextarea'
+      );
+      // 5. userselect 强制单选
+      if (val === 'formuserselect') {
+        this.$set(this.propertyLocal.config, 'isMultiple', false);
+      }
+      // 统一赋值
+      this.$set(this.propertyLocal, 'reaction', reaction);
+      this.$set(this.propertyLocal, 'value', null);
+
+      this.isReady = false;
       this.$nextTick(() => {
-        this.$set(this.propertyLocal, 'reaction', this.$utils.deepClone(this.reaction));
-        this.$set(this.propertyLocal, 'value', null);
-        if (val != 'formtable') {
-          this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
-          this.$set(this.propertyLocal.reaction, 'setvalue', {});
-        } else {
-          this.$delete(this.reactionName, 'setvalue');
-          this.$delete(this.propertyLocal.reaction, 'setvalue');
-        }
-        if (val === 'formexpression') {
-          this.$set(this.propertyLocal.config, 'isReadOnly', true);
-          if (this.mapReaction['formexpression']) {
-            this.$set(this.propertyLocal, 'reaction', this.mapReaction['formexpression']);
-          }
-        }
-        if (val === 'formtext' || val === 'formtextarea') {
-          // 联动规则(赋值)：是否可以动态赋值
-          this.$set(this.propertyLocal, 'isDynamicValue', true);
-        } else {
-          this.$set(this.propertyLocal, 'isDynamicValue', false);
-        }
-        if (val === 'formuserselect') {
-          this.$set(this.propertyLocal.config, 'isMultiple', false);
-        }
-        this.isReady = false;
-        this.$nextTick(() => {
-          this.isReady = true;
-        });
+        this.isReady = true;
       });
     },
     changeMatrixUuid({value, selectItem}) {
