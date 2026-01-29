@@ -655,7 +655,14 @@ export default {
           }
         }
       ],
-      selectMatrixConfig: null
+      selectMatrixConfig: null,
+      mapReaction: { //联动配置
+        formexpression: {
+          hide: {},
+          display: {},
+          required: {}
+        }
+      }
       //filterComponentList: ['formtableselector', 'formtableinputer', 'formsubassembly'] //过滤不参与规则的组件
     };
   },
@@ -833,21 +840,24 @@ export default {
       this.$nextTick(() => {
         this.$set(this.propertyLocal, 'reaction', this.$utils.deepClone(this.reaction));
         this.$set(this.propertyLocal, 'value', null);
-        if (val === 'formexpression') {
-          this.$set(this.propertyLocal.config, 'isReadOnly', true);
-        }
-        if (val === 'formtext' || val === 'formtextarea') {
-          // 联动规则(赋值)：是否可以动态赋值
-          this.$set(this.propertyLocal, 'isDynamicValue', true);
-        } else {
-          this.$set(this.propertyLocal, 'isDynamicValue', false);
-        }
         if (val != 'formtable') {
           this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
           this.$set(this.propertyLocal.reaction, 'setvalue', {});
         } else {
           this.$delete(this.reactionName, 'setvalue');
           this.$delete(this.propertyLocal.reaction, 'setvalue');
+        }
+        if (val === 'formexpression') {
+          this.$set(this.propertyLocal.config, 'isReadOnly', true);
+          if (this.mapReaction['formexpression']) {
+            this.$set(this.propertyLocal, 'reaction', this.mapReaction['formexpression']);
+          }
+        }
+        if (val === 'formtext' || val === 'formtextarea') {
+          // 联动规则(赋值)：是否可以动态赋值
+          this.$set(this.propertyLocal, 'isDynamicValue', true);
+        } else {
+          this.$set(this.propertyLocal, 'isDynamicValue', false);
         }
         if (val === 'formuserselect') {
           this.$set(this.propertyLocal.config, 'isMultiple', false);

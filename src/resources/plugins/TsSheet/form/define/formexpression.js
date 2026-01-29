@@ -12,15 +12,11 @@ export default {
     isRequired: false,
     description: '',
     width: '100%',
-    isHide: false,
-    isReadOnly: true
+    isHide: false
   },
   reaction: {
     hide: {},
     display: {},
-    readonly: {},
-    setvalue: {},
-    required: {},
-    clearValue: {}
+    required: {}
   }
 };
