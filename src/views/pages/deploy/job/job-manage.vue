@@ -18,17 +18,17 @@
                   <ul slot="content">
                     <li v-if="!selectedApp.isConfig"><span>{{ $t('term.deploy.currentapplynoconfig') }}</span>,<span v-if="canEditAuth" class="text-href" @click="toPipeline()">{{ $t('dialog.title.addtarget', {target: $t('page.config')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.config')})}) }}</span></li>
                     <li v-else-if="!selectedApp.isHasModule"><span>{{ $t('term.deploy.applynoconfigmodule') }}</span>,<span v-if="canEditAuth" class="text-href" @click="addModule()">{{ $t('dialog.title.addtarget', {target: $t('page.module')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.module')})}) }}</span></li>
+                    <li v-else-if="selectedModule && !selectedModule.isHasEnv">
+                      <span>{{ selectedApp.abbrName }}/{{ selectedModule.abbrName }}{{ selectedModule.name?'['+selectedModule.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>,
+                      <span v-if="canEditAuth" class="text-href" @click="addEnv(selectedModule.id)">{{ $t('dialog.title.addtarget', {target: $t('page.environment')}) }}</span>
+                      <span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.environment')})}) }}</span>
+                    </li>
                     <li v-else-if="selectedApp.isHasModule && !selectedApp.isHasEnv">
                       <div v-for="item in moduleList" :key="item.id" class="pb-sm">
                         <span>{{ selectedApp.abbrName }}/{{ item.abbrName }}{{ item.name?'['+item.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>,
                         <span v-if="canEditAuth" class="text-href" @click="addEnv(item.id)">{{ $t('dialog.title.addtarget', {target: $t('page.environment')}) }}</span>
                         <span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.environment')})}) }}</span>
                       </div>
-                    </li>
-                    <li v-else-if="selectedModule && !selectedModule.isHasEnv">
-                      <span>{{ selectedApp.abbrName }}/{{ selectedModule.abbrName }}{{ selectedModule.name?'['+selectedModule.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>,
-                      <span v-if="canEditAuth" class="text-href" @click="addEnv(selectedModule.id)">{{ $t('dialog.title.addtarget', {target: $t('page.environment')}) }}</span>
-                      <span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.environment')})}) }}</span>
                     </li>
                     <li v-else-if="!hasScenarioAuth">
                       <div><span>{{ $t('term.deploy.noconfigscenauth') }}</span>,<span v-if="canEditAuth" class="text-href" @click="openAuthDialog">{{ $t('dialog.title.addtarget', {target: $t('page.auth')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('page.auth')}) }}</span></div>
@@ -346,8 +346,8 @@ export default {
       const {isConfig, isHasModule} = this.selectedApp;
       const isHasEnv = this.selectedModule ? this.selectedModule.isHasEnv : this.selectedApp.isHasEnv;
       //if (this.canEditAuth && !this.hasEnvAuth && (isConfig && isHasModule && !isHasEnv)) {
-        await this.getModuleList(this.selectedApp);
-       // return false;
+      await this.getModuleList(this.selectedApp);
+      // return false;
       // }
     },
     // toOperationDetail(row) {
