@@ -345,10 +345,10 @@ export default {
       this.authType = '';
       const {isConfig, isHasModule} = this.selectedApp;
       const isHasEnv = this.selectedModule ? this.selectedModule.isHasEnv : this.selectedApp.isHasEnv;
-      if (this.canEditAuth && !this.hasEnvAuth && (isConfig && isHasModule && !isHasEnv)) {
+      //if (this.canEditAuth && !this.hasEnvAuth && (isConfig && isHasModule && !isHasEnv)) {
         await this.getModuleList(this.selectedApp);
-        return false;
-      }
+       // return false;
+      // }
     },
     // toOperationDetail(row) {
     //   if (row.operationType == 'combop') {
