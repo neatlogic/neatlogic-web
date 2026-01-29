@@ -343,12 +343,12 @@ export default {
     async handleAuthAndConfigInfo() {
       // 处理权限和配置信息
       this.authType = '';
-      const {isConfig, isHasModule} = this.selectedApp;
-      const isHasEnv = this.selectedModule ? this.selectedModule.isHasEnv : this.selectedApp.isHasEnv;
-      //if (this.canEditAuth && !this.hasEnvAuth && (isConfig && isHasModule && !isHasEnv)) {
-      await this.getModuleList(this.selectedApp);
-      // return false;
-      // }
+      const {isConfig, isHasModule, isHasEnv} = this.selectedApp;
+      //moduleList 用于选择应用时，所有模块无环境配置，提示所有模块需添加环境
+      if (isHasModule && !isHasEnv && isConfig) {
+        await this.getModuleList(this.selectedApp);
+        return false;
+      }
     },
     // toOperationDetail(row) {
     //   if (row.operationType == 'combop') {
