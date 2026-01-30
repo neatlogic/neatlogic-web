@@ -757,6 +757,11 @@ export default {
                   }
                 });
               });
+              // 处理动态值
+              if (item.type === 'dynamic') {
+                const valueUuid = (item.value || '').split('#')[0];
+                map[extra.uuid].push(valueUuid);
+              }
             });
           } else {
             (reaction.ruleList || []).forEach(rule => {
@@ -790,6 +795,11 @@ export default {
                       }
                     });
                   });
+                  // 处理动态值
+                  if (item.type === 'dynamic') {
+                    const valueUuid = (item.value || '').split('#')[0];
+                    map[extra.uuid].push(valueUuid);
+                  }
                 });
               } else {
                 (reactionRule.ruleList || []).forEach(rule => {
