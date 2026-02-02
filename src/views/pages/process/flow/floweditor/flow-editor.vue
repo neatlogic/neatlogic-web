@@ -43,7 +43,8 @@ export default {
     width: { type: String },
     strictMode: { type: Boolean, default: false }, //严格框选模式
     edgeMode: { type: Boolean, default: false },
-    edgeType: { type: Boolean } //连线类型
+    edgeType: { type: Boolean }, //连线类型
+    disableAddDelete: { type: Boolean, default: false } //禁止添加删除节点和连线
   },
   data() {
     return {
@@ -338,6 +339,9 @@ export default {
             },
             //在移动边的时候判断连接是否有效，如果返回 false ，当鼠标放开的时候，不会连接到当前元素，否则会连接到当前元素。
             validateConnection: ({ sourceCell, targetCell }) => {
+              if (this.disableAddDelete) {
+                return false;
+              }
               const sourceElement = ElementFactory.getElement({ handler: sourceCell.getProp('handler'), type: sourceCell.getProp('type') });
               let can = true;
               //先校验起始节点，允许连线再继续校验目标节点
@@ -727,14 +731,16 @@ export default {
             }
           });
           if (node.getProp('setting') && node.getProp('setting')['deleteable']) {
-            node.addTools({
-              name: 'button-remove',
-              args: {
-                x: '100%',
-                y: 0,
-                offset: { x: 10, y: -10 }
-              }
-            });
+            if (!this.disableAddDelete) {
+              node.addTools({
+                name: 'button-remove',
+                args: {
+                  x: '100%',
+                  y: 0,
+                  offset: { x: 10, y: -10 }
+                }
+              });
+            }
           }
           this.selectedCell = node;
           //高亮连线
@@ -832,12 +838,14 @@ export default {
         this.graph.on('edge:mouseenter', ({ cell }) => {
           if (!this.readonly) {
             this.graph.disableHistory();
-            cell.addTools([
-              {
-                name: 'button-remove',
-                args: { distance: '50%' }
-              }
-            ]);
+            if (!this.disableAddDelete) {
+              cell.addTools([
+                {
+                  name: 'button-remove',
+                  args: { distance: '50%' }
+                }
+              ]);
+            }
             this.graph.enableHistory();
           }
         });
