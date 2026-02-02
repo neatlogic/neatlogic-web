@@ -10,6 +10,7 @@
             name="name"
             :validateList="nameValidateList"
             :maxlength="30"
+            :disabled="!!flowObj.processTaskId"
           ></TsFormInput>
         </keep-alive>
       </div>
