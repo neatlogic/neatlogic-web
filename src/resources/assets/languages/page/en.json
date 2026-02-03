@@ -1089,5 +1089,6 @@
   "pagesizedes": "Quantity limit: 10-500 pieces",
   "staticvalue": "static value",
   "middleware": "middleware",
-  "manage": "management"
+  "manage": "management",
+  "send": "send"
 }
