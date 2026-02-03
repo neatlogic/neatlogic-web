@@ -233,6 +233,19 @@ export default {
           },
           {
             type: 'select',
+            name: 'hasParent',
+            label: '作业分类',
+            dataList: [{
+              text: '父作业',
+              value: false
+            }, {
+              text: '子作业',
+              value: true
+            }],
+            transfer: true
+          },
+          {
+            type: 'select',
             name: 'statusList',
             label: this.$t('page.jobstatus'),
             multiple: true,
