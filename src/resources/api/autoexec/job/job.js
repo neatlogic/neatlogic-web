@@ -5,10 +5,6 @@ const job = {
   searchJobList(params) {
     return axios.post('/api/rest/autoexec/job/search', params);
   },
-  //作业搜索（组合工具视图）
-  searchJobByCombop(params) {
-    return axios.post('/api/rest/autoexec/job/combop/search', params);
-  },
   //删除作业
   deleteJob(params) {
     return axios.post('/api/rest/autoexec/job/delete', params);
