@@ -297,6 +297,7 @@ export default {
   destroyed() {},
   methods: {
     toggleChildJob(row) {
+      const { keyword = '' } = this.searchValue || {};
       const { id = '' } = row || {};
       if (row['showChildren']) {
         this.$set(row, 'showChildren', false);
@@ -316,6 +317,11 @@ export default {
         const { children = [] } = findChildItem || {};
         if (pIndex >= 0) {
           this.$set(row, 'showChildren', true);
+          children.forEach((item) => {
+            if (item.name) {
+              item.name = this.highlightKeywords(item.name, keyword ? [keyword] : []);
+            }
+          });
           this.jobData.tbodyList.splice(pIndex + 1, 0, ...children);
         }
       }
@@ -429,8 +435,10 @@ export default {
             row['showChildren'] = true;
             tbodyList.splice(index + 1, 0, ...(row.children || []));
           }
-          if (row.name) {
-            row.name = this.highlightKeywords(row.name, keyword ? [keyword] : []);
+        });
+        tbodyList.forEach((item) => {
+          if (item.name) {
+            item.name = this.highlightKeywords(item.name, keyword ? [keyword] : []);
           }
         });
         this.jobData = {
