@@ -172,6 +172,9 @@ const process = {
   },
   getManualinterventionStep(params) { //人工干预步骤
     return axios.post('/api/rest/manualintervention/processtask/step/active', params);
+  },
+  updateProcesstaskConfig(params) { //更新工单流程配置
+    return axios.post('/api/rest/processtask/config/update', params);
   }
 };
 
