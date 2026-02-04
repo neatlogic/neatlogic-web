@@ -432,7 +432,7 @@ export default {
         this.defaultTbodyList = [...tbodyList]; // 子作业数据源
 
         // 刷新列表的时候，展开的数据默认保持不变
-        const { keyword = '' } = this.searchValue || {};
+        const { keyword = '', hasParent = '' } = this.searchValue || {};
         const keywordLower = (keyword || '').toLowerCase();
         let resultList = [];
         tbodyList.forEach((row, index) => {
@@ -462,10 +462,26 @@ export default {
             }
           }
         });
-        resultList.forEach((item) => {
-          if (item.name) {
-            item.name = this.$utils.highlightTextByKeywords(item.name, keyword ? [keyword] : []);
+        const keywordList = keyword ? [keyword] : [];
+
+        const isParentMode = hasParent === 'false';
+        const isSubMode = hasParent === 'true';
+
+        let targetList = resultList.filter(item => item.name);
+
+        if (isParentMode) {
+          const parents = targetList.filter(item => item.parentId == -1);
+          if (parents.length > 0) {
+            targetList = parents;
+          } 
+        } else if (isSubMode) {
+          const subs = targetList.filter(item => item.parentId != -1);
+          if (subs.length > 0) {
+            targetList = subs;
           }
+        }
+        targetList.forEach(item => {
+          item.name = this.$utils.highlightTextByKeywords(item.name, keywordList);
         });
         this.jobData = {
           ...restParams,
