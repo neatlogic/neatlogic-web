@@ -14,7 +14,10 @@
     >
       <template v-slot:showChildren="{ row }">
         <span v-if="row.parentId == -1" class="text-href">
-          <span :class="{ 'tsfont-minus-square': row['showChildren'], 'tsfont-plus-square': !row['showChildren'] }" @click="toggleChildJob(row)"></span>
+          <span :class="{ 'tsfont-minus-square': row['showChildren'], 'tsfont-plus-square': !row['showChildren'] }" @click="toggleChildJob(row, defaultSearchValue)"></span>
+        </span>
+        <span v-else>
+          <!-- 勿删，仅为占位符，否则表格会默认显示 true -->
         </span>
       </template>
       <template v-slot:name="{ row }">
@@ -102,6 +105,7 @@ export default {
       isLoading: false,
       jobData: null,
       timmer: null,
+      searchController: null, // 用于取消上一个请求
       defaultTbodyList: [],
       expandIdList: [], // 展开子作业的父节点Id
       theadList: [
@@ -176,43 +180,71 @@ export default {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
+      // 取消上一个请求
+      if (this.searchController) {
+        this.searchController.abort();
+      }
+      // 创建新的 controller
+      this.searchController = new AbortController();
       this.isLoading = true;
       const param = { ...this.searchParam, ...searchValue || {} };
       if (this.$utils.isSame(this.searchParam, this.defaultSearchParam)) {
         this.$emit('updateParam', 'searchParam', this.searchParam);
       }
       try {
-        const res = await this.$api.deploy.job.searchJobList(param);
+        const res = await this.$api.deploy.job.searchJobList({
+          ...param
+        }, { signal: this.searchController.signal});
         const { tbodyList = [], ...restParams } = res.Return || {};
 
         this.defaultTbodyList = [...tbodyList]; // 子作业数据源
-
-        // 刷新列表的时候，展开的数据默认保持不变
         const { keyword = '' } = searchValue || {};
-        const sourceList = ['batchdeploy', 'deployschedulepipeline'];
+        const keywordLower = (keyword || '').toLowerCase();
+        let resultList = [];
         tbodyList.forEach((tbodyItem, index) => {
-          if (tbodyItem.id && this.expandIdList.includes(tbodyItem.id)) {
-            tbodyItem['showChildren'] = true;
-            tbodyList.splice(index + 1, 0, ...(tbodyItem.children || []));
+          if (!this.$utils.isEmpty(tbodyItem)) {
+            resultList.push(tbodyItem);
           }
-          if (sourceList.includes(tbodyItem.source) && keyword) {
-            // 搜索有关键词，需要展开子作业
-            tbodyItem['showChildren'] = true;
-            tbodyList.splice(index + 1, 0, ...(tbodyItem.children || []));
+          if (keyword) {
+            // 子作业匹配有关键词，需要展开子作业
+            const findMatchKeywordList = (tbodyItem.children || []).filter(item => {
+              const nameLowerCase = (item.name || '').toLowerCase();
+              return nameLowerCase.includes(keywordLower);
+            });
+            if (findMatchKeywordList.length > 0) {
+              const findChildItem = resultList.find((v) => v.id === tbodyItem.id);
+              if (findChildItem) {
+                findChildItem['showChildren'] = true;
+              }
+              resultList.splice(index + 1, 0, ...(tbodyItem.children || []));
+            }
+          } else {
+            // 刷新列表的时候，展开的数据默认保持不变
+            if (tbodyItem.id && this.expandIdList.includes(tbodyItem.id)) {
+              const findItem = resultList.find((v) => v.id === tbodyItem.id);
+              if (findItem) {
+                findItem['showChildren'] = true;
+              }
+              resultList.splice(index + 1, 0, ...(tbodyItem.children || []));
+            }
           }
         });
-        tbodyList.forEach((item) => {
+        resultList.forEach((item) => {
           if (item.name) {
             item.name = this.$utils.highlightTextByKeywords(item.name, keyword ? [keyword] : []);
           }
         });
         this.jobData = {
           ...restParams,
-          tbodyList: tbodyList
+          tbodyList: resultList
         };
 
         // 返回是否需要继续轮询（关键）
-        return tbodyList.length > 0;
+        return resultList.length > 0;
+      } catch (err) {
+        if (err.name === 'CanceledError') {
+          console.log('POST 请求被取消');
+        }
       } finally {
         this.isLoading = false;
       }
@@ -224,7 +256,6 @@ export default {
         this.searchJobData(currentPage, searchValue);
         return false;
       }
-
       this.timmer = this.$utils.setInterval(async() => {
         const needContinue = await this.searchJobData(currentPage, searchValue);
 
@@ -235,6 +266,9 @@ export default {
       }, 30 * 1000);
     },
     stopPollingSerchJobData() {
+      if (this.searchController) {
+        this.searchController.abort();
+      }
       if (this.timmer) {
         this.timmer.clear();
         this.timmer = null;
@@ -254,8 +288,9 @@ export default {
       }
       this.searchJob();
     },
-    toggleChildJob(row) {
+    toggleChildJob(row, searchValue) {
       const { id = '' } = row || {};
+      const { keyword } = searchValue || {};
       if (row['showChildren']) {
         this.$set(row, 'showChildren', false);
         this.expandIdList = this.expandIdList.filter((item) => item.id != id);

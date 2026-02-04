@@ -1195,6 +1195,10 @@ const methods = {
     return {
       clear: () => {
         isStopped = true;
+        if (timer) { // 解决上个定时器没有清空的问题
+          clearTimeout(timer);
+          timer = null;
+        }
       } // 用于手动清除定时器
     };
   },
@@ -1305,7 +1309,7 @@ const methods = {
     if (!keywordsList || keywordsList.length === 0) return text;
     const escapedWords = keywordsList.map(word => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     const regex = new RegExp(`(${escapedWords.join('|')})`, 'gi'); // 匹配关键字，忽略大小写
-    return text.replace(regex, '<span class="highlight text-error">$1</span>'); // 使用span加上高亮样式
+    return text.replace(regex, '<span class="highlight-search-keyword text-error">$1</span>'); // 使用span加上高亮样式
   }
 };
 export default methods;

@@ -30,6 +30,9 @@
             <span v-if="row.parentId == -1" class="text-href">
               <span :class="{ 'tsfont-minus-square': row['showChildren'], 'tsfont-plus-square': !row['showChildren'] }" @click="toggleChildJob(row)"></span>
             </span>
+            <span v-else>
+              <!-- 勿删，仅为占位符，否则表格会默认显示 true -->
+            </span>
           </template>
           <template v-slot:name="{ row }">
             <span
@@ -277,6 +280,7 @@ export default {
       editType: 'planStartTime',
       editDialog: false,
       jobConfig: null,
+      searchController: null,
       defaultTbodyList: [],
       expandIdList: [] // 展开ID列表
     };
@@ -406,6 +410,12 @@ export default {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
+      // 取消上一个请求
+      if (this.searchController) {
+        this.searchController.abort();
+      }
+      // 创建新的 controller
+      this.searchController = new AbortController();
 
       this.jobData = {};
       const param = { ...this.searchParam, ...this.searchValue, ...this.filterParams || {} };
@@ -414,31 +424,56 @@ export default {
       this.isLoading = true;
 
       try {
-        const res = await this.$api.autoexec.job.searchJobList(param);
+        const res = await this.$api.autoexec.job.searchJobList(param, {
+          signal: this.searchController.signal
+        });
         const { tbodyList = [], ...restParams } = res.Return || {};
 
         this.defaultTbodyList = [...tbodyList]; // 子作业数据源
 
         // 刷新列表的时候，展开的数据默认保持不变
         const { keyword = '' } = this.searchValue || {};
+        const keywordLower = (keyword || '').toLowerCase();
+        let resultList = [];
         tbodyList.forEach((row, index) => {
-          if (row.id && this.expandIdList.includes(row.id)) {
-            row['showChildren'] = true;
-            tbodyList.splice(index + 1, 0, ...(row.children || []));
+          if (!this.$utils.isEmpty(row)) {
+            resultList.push(row);
+          }
+          if (keyword) {
+            // 子作业匹配有关键词，需要展开子作业
+            const findMatchKeywordList = (row.children || []).filter(item => {
+              const nameLowerCase = (item.name || '').toLowerCase();
+              return nameLowerCase.includes(keywordLower);
+            });
+            if (findMatchKeywordList.length > 0) {
+              const findChildItem = resultList.find((v) => v.id === row.id);
+              if (findChildItem) {
+                findChildItem['showChildren'] = true;
+              }
+              resultList.splice(index + 1, 0, ...(row.children || []));
+            }
+          } else {
+            if (row.id && this.expandIdList.includes(row.id)) {
+              const findItem = resultList.find((v) => v.id === row.id);
+              if (findItem) {
+                findItem['showChildren'] = true;
+              }
+              resultList.splice(index + 1, 0, ...(row.children || []));
+            }
           }
         });
-        tbodyList.forEach((item) => {
+        resultList.forEach((item) => {
           if (item.name) {
             item.name = this.$utils.highlightTextByKeywords(item.name, keyword ? [keyword] : []);
           }
         });
         this.jobData = {
           ...restParams,
-          tbodyList: tbodyList
+          tbodyList: resultList
         };
 
         // 返回是否需要继续轮询（关键）
-        return tbodyList.length > 0;
+        return resultList.length > 0;
       } finally {
         this.isLoading = false;
       }
@@ -457,6 +492,9 @@ export default {
       }, 30 * 1000);
     },
     stopSearchJob() {
+      if (this.searchController) {
+        this.searchController.abort();
+      }
       if (this.timmer) {
         this.timmer.clear();
         this.timmer = null;
@@ -552,9 +590,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-::v-deep .highlight {
-  font-weight: bold;
-  line-height: 1;
-  vertical-align: baseline;
-}
 </style>

@@ -2,8 +2,8 @@ import axios from '../../http';
 
 const job = {
   //作业搜索（作业执行列表）
-  searchJobList(params) {
-    return axios.post('/api/rest/autoexec/job/search', params);
+  searchJobList(params, cancelRequest = {}) {
+    return axios.post('/api/rest/autoexec/job/search', params, cancelRequest);
   },
   //删除作业
   deleteJob(params) {

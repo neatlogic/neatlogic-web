@@ -157,7 +157,7 @@ export default {
   props: {},
   data() {
     return {
-      searchParam: { hasParent: false, authorityActionList: ['view'], sortOrder: {key: 'planStartTime', type: 'DESC'} },
+      searchParam: { authorityActionList: ['view'], sortOrder: {key: 'planStartTime', type: 'DESC'} },
       sortList: ['planStartTime', 'startTime'],
       sortOrder: [{planStartTime: 'DESC'}],
       noConfigInfo: false, // 无配置信息，模块和环境
