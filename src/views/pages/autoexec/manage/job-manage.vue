@@ -319,21 +319,12 @@ export default {
           this.$set(row, 'showChildren', true);
           children.forEach((item) => {
             if (item.name) {
-              item.name = this.highlightKeywords(item.name, keyword ? [keyword] : []);
+              item.name = this.$utils.highlightTextByKeywords(item.name, keyword ? [keyword] : []);
             }
           });
           this.jobData.tbodyList.splice(pIndex + 1, 0, ...children);
         }
       }
-    },
-    highlightKeywords(text, wordList) {
-      if (!wordList || wordList.length === 0) return text;
-      const escapedWords = wordList.map(word => this.escapeRegExp(word));
-      const regex = new RegExp(`(${escapedWords.join('|')})`, 'gi'); // 匹配关键字，忽略大小写
-      return text.replace(regex, '<span class="highlight text-error">$1</span>'); // 使用span加上高亮样式
-    },
-    escapeRegExp(string) {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // 转义正则特殊字符
     },
     openPortfolioToolsDialog() {
       this.isShowPortfolioToolsDialog = true;
@@ -438,7 +429,7 @@ export default {
         });
         tbodyList.forEach((item) => {
           if (item.name) {
-            item.name = this.highlightKeywords(item.name, keyword ? [keyword] : []);
+            item.name = this.$utils.highlightTextByKeywords(item.name, keyword ? [keyword] : []);
           }
         });
         this.jobData = {
