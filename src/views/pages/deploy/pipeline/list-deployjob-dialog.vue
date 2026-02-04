@@ -6,7 +6,8 @@
           <div class="mb-nm">
             <TsRow>
               <Col :span="12"></Col>
-              <Col :span="12"><CombineSearcher v-model="searchValue" v-bind="searchConfig" @change="searchDeployPipeline(1)"></CombineSearcher>
+              <Col :span="12">
+                <CombineSearcher v-model="searchValue" v-bind="searchConfig" @change="searchDeployPipeline(1)"></CombineSearcher>
               </Col>
             </TsRow>
           </div>
@@ -76,6 +77,23 @@ export default {
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'JobStatus' },
             transfer: true
+          },
+          {
+            type: 'radio',
+            name: 'hasParent',
+            label: this.$t('term.autoexec.jobcategory'),
+            dataList: [
+              {
+                text: this.$t('term.autoexec.parentjob'),
+                value: 'false'
+              },
+              {
+                text: this.$t('term.autoexec.subjob'),
+                value: 'true'
+              }
+            ],
+            transfer: true,
+            allowToggle: true
           }
         ]
       },

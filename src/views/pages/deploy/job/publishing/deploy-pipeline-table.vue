@@ -14,13 +14,10 @@
     >
       <template v-slot:showChildren="{ row }">
         <span v-if="row.parentId == -1" class="text-href">
-          <span v-if="!row.loading" :class="{ 'tsfont-minus-square': row['showChildren'], 'tsfont-plus-square': !row['showChildren'] }" @click="toggleChildJob(row)"></span>
-          <Icon
-            v-else
-            type="ios-loading"
-            size="16"
-            class="loading"
-          ></Icon>
+          <span :class="{ 'tsfont-minus-square': row['showChildren'], 'tsfont-plus-square': !row['showChildren'] }" @click="toggleChildJob(row, defaultSearchValue)"></span>
+        </span>
+        <span v-else>
+          <!-- 勿删，仅为占位符，否则表格会默认显示 true -->
         </span>
       </template>
       <template v-slot:name="{ row }">
@@ -29,7 +26,8 @@
           :class="{ 'ml-nm': (!!row.parentId && row.parentId != -1) }"
           @contextmenu="newTab($event, row)"
           @click="toJobDetail(row)"
-        >{{ row.name }}</span>
+        ><span v-html="row.name"></span>
+        </span>
         <span>
           <Status v-if="row.reviewStatus != 'passed'" :statusValue="row.reviewStatus" :statusName="row.reviewStatusName"></Status>
         </span>
@@ -89,7 +87,6 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     Status: () => import('@/resources/components/Status/CommonStatus.vue'),
     Liquid: () => import('@/resources/components/SimpleGraph/Liquid.vue')
-
   },
   props: {
     isNeedRefresh: {
@@ -107,7 +104,10 @@ export default {
       searchParam: this.defaultSearchParam || {},
       isLoading: false,
       jobData: null,
-      jobEndStatusList: ['completed', 'aborted', 'ignored', 'failed'], //终点状态节点列表，非终点状态列表的需要定时刷新。
+      timmer: null,
+      searchController: null, // 用于取消上一个请求
+      defaultTbodyList: [],
+      expandIdList: [], // 展开子作业的父节点Id
       theadList: [
         { key: 'showChildren' },
         {
@@ -158,8 +158,7 @@ export default {
           title: this.$t('term.autoexec.executionsituation'),
           key: 'completionRate'
         }
-      ],
-      timmer: null
+      ]
     };
   },
   beforeCreate() {},
@@ -173,49 +172,123 @@ export default {
   activated() {},
   deactivated() {},
   beforeDestroy() {
-    this.clearTimmer();
+    this.stopPollingSerchJobData();
   },
   destroyed() {},
   methods: {
-    searchJob(currentPage, searchValue) {
-      this.clearTimmer();
-      this.isLoading = true;
+    async searchJobData(currentPage, searchValue) {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
+      // 取消上一个请求
+      if (this.searchController) {
+        this.searchController.abort();
+      }
+      // 创建新的 controller
+      this.searchController = new AbortController();
+      this.isLoading = true;
       const param = { ...this.searchParam, ...searchValue || {} };
       if (this.$utils.isSame(this.searchParam, this.defaultSearchParam)) {
         this.$emit('updateParam', 'searchParam', this.searchParam);
       }
-      this.$api.deploy.job
-        .searchJobList(param)
-        .then(res => {
-          this.jobData = res.Return;
-          const idList = [];
-          if (this.jobData.tbodyList && this.jobData.tbodyList.length > 0) {
-            this.jobData.tbodyList.forEach(element => {
-              if (element.source === 'batchdeploy' || element.source === 'deployschedulepipeline') {
-                this.$set(element, '#expander', true);
-                if (searchValue && searchValue.keyword) { //keyword搜索时，匹配到的父作业也需要将子作业展开
-                  this.toggleChildJob(element);
-                }
-              } else {
-                this.$set(element, '#expander', false);
-              }
-              if (this.isNeedRefresh && !this.jobEndStatusList.includes(element.status)) {
-                idList.push(element.id);
-              }
+      try {
+        const res = await this.$api.deploy.job.searchJobList({
+          ...param
+        }, { signal: this.searchController.signal});
+        const { tbodyList = [], ...restParams } = res.Return || {};
+
+        this.defaultTbodyList = [...tbodyList]; // 子作业数据源
+        const { keyword = '', hasParent = '' } = searchValue || {};
+        const keywordLower = (keyword || '').toLowerCase();
+        let resultList = [];
+        tbodyList.forEach((tbodyItem, index) => {
+          if (!this.$utils.isEmpty(tbodyItem)) {
+            resultList.push(tbodyItem);
+          }
+          if (keyword) {
+            // 子作业匹配有关键词，需要展开子作业
+            const findMatchKeywordList = (tbodyItem.children || []).filter(item => {
+              const nameLowerCase = (item.name || '').toLowerCase();
+              return nameLowerCase.includes(keywordLower);
             });
-            if (this.isNeedRefresh && idList.length > 0) {
-              this.timmer = setTimeout(() => {
-                this.refresh(idList);
-              }, 5000);
+            if (findMatchKeywordList.length > 0) {
+              const findChildItem = resultList.find((v) => v.id === tbodyItem.id);
+              if (findChildItem) {
+                findChildItem['showChildren'] = true;
+              }
+              resultList.splice(index + 1, 0, ...(tbodyItem.children || []));
+            }
+          } else {
+            // 刷新列表的时候，展开的数据默认保持不变
+            if (tbodyItem.id && this.expandIdList.includes(tbodyItem.id)) {
+              const findItem = resultList.find((v) => v.id === tbodyItem.id);
+              if (findItem) {
+                findItem['showChildren'] = true;
+              }
+              resultList.splice(index + 1, 0, ...(tbodyItem.children || []));
             }
           }
-        })
-        .finally(() => {
-          this.isLoading = false;
         });
+        const keywordList = keyword ? [keyword] : [];
+
+        const isParentMode = hasParent === 'false';
+        const isSubMode = hasParent === 'true';
+
+        let targetList = resultList.filter(item => item.name);
+
+        if (isParentMode) {
+          const parents = targetList.filter(item => item.parentId == -1);
+          if (parents.length > 0) {
+            targetList = parents;
+          } 
+        } else if (isSubMode) {
+          const subs = targetList.filter(item => item.parentId != -1);
+          if (subs.length > 0) {
+            targetList = subs;
+          }
+        }
+        targetList.forEach(item => {
+          item.name = this.$utils.highlightTextByKeywords(item.name, keywordList);
+        });
+        this.jobData = {
+          ...restParams,
+          tbodyList: resultList
+        };
+
+        // 返回是否需要继续轮询（关键）
+        return resultList.length > 0;
+      } catch (err) {
+        if (err.name === 'CanceledError') {
+          console.log('POST 请求被取消');
+        }
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    searchJob(currentPage, searchValue) {
+      this.stopPollingSerchJobData(); // 防止重复启动
+
+      if (!this.isNeedRefresh) {
+        this.searchJobData(currentPage, searchValue);
+        return false;
+      }
+      this.timmer = this.$utils.setInterval(async() => {
+        const needContinue = await this.searchJobData(currentPage, searchValue);
+
+        // 没有数据了，自动停
+        if (!needContinue) {
+          this.stopPollingSerchJobData();
+        }
+      }, 30 * 1000);
+    },
+    stopPollingSerchJobData() {
+      if (this.searchController) {
+        this.searchController.abort();
+      }
+      if (this.timmer) {
+        this.timmer.clear();
+        this.timmer = null;
+      }
     },
     changePageSize(pageSize) {
       this.searchParam.pageSize = pageSize;
@@ -231,32 +304,35 @@ export default {
       }
       this.searchJob();
     },
-    toggleChildJob(row) {
+    toggleChildJob(row, searchValue) {
+      const { id = '' } = row || {};
+      const { keyword } = searchValue || {};
       if (row['showChildren']) {
         this.$set(row, 'showChildren', false);
+        this.expandIdList = this.expandIdList.filter((item) => item.id != id);
         for (let i = this.jobData.tbodyList.length - 1; i >= 0; i--) {
           const element = this.jobData.tbodyList[i];
-          if (element.parentId === row.id) {
+          if (element.parentId === id) {
             this.jobData.tbodyList.splice(i, 1);
           }
         }
       } else {
-        this.getChildrenJob(row);
-      }
-    },
-    getChildrenJob(parentRow) {
-      this.$set(parentRow, 'loading', true);
-      this.$api.deploy.job.searchJobList({ parentId: parentRow.id }).then(res => {
-        const jobList = res.Return.tbodyList;
-        if (jobList && jobList.length > 0) {
-          const pIndex = this.jobData.tbodyList.findIndex(d => d === parentRow);
-          if (pIndex >= 0) {
-            this.$set(parentRow, 'showChildren', true);
-            this.$set(parentRow, 'loading', false);
-            this.jobData.tbodyList.splice(pIndex + 1, 0, ...jobList);
-          }
+        if (id) {
+          this.expandIdList.push(id);
         }
-      });
+        const pIndex = this.jobData.tbodyList.findIndex(d => d.id === id);
+        const findChildItem = this.defaultTbodyList.find((v) => v.id === id);
+        const { children = [] } = findChildItem || {};
+        if (pIndex >= 0) {
+          this.$set(row, 'showChildren', true);
+          children.forEach((item) => {
+            if (item.name) {
+              item.name = this.$utils.highlightTextByKeywords(item.name, keyword ? [keyword] : []);
+            }
+          });
+          this.jobData.tbodyList.splice(pIndex + 1, 0, ...children);
+        }
+      }
     },
     newTab(e, row) {
       //鼠标右键打开新标签页
@@ -307,38 +383,6 @@ export default {
         window.open(HOME + '/deploy.html#/schedule-job-edit?id=' + routeConfig.id, '_blank');
       } else if (row.source == 'deployci' || row.source == 'deploycipipeline') {
         window.open(HOME + '/deploy.html#/config-add?appSystemId=' + routeConfig.appSystemId + '&id=' + routeConfig.id, '_blank');
-      }
-    },
-    refresh(idList) {
-      this.clearTimmer();
-      this.$api.deploy.job.searchJobList({ needPage: false, idList: idList }).then(res => {
-        const jobList = res.Return.tbodyList;
-        const newIdList = [];
-        if (jobList && jobList.length > 0 && this.jobData.tbodyList && this.jobData.tbodyList.length > 0) {
-          jobList.forEach(job => {
-            const element = this.jobData.tbodyList.find(d => d.id === job.id);
-            if (element) {
-              this.$set(element, 'status', job.status);
-              this.$set(element, 'statusName', job.statusName);
-            }
-          });
-          this.jobData.tbodyList.forEach(job => {
-            if (!this.jobEndStatusList.includes(job.status)) {
-              newIdList.push(job.id);
-            }
-          });
-          if (newIdList.length > 0) {
-            this.timmer = setTimeout(() => {
-              this.refresh(newIdList);
-            }, 5000);
-          }
-        }
-      });
-    },
-    clearTimmer() {
-      if (this.timmer) {
-        clearTimeout(this.timmer);
-        this.timmer = null;
       }
     }
   },

@@ -75,6 +75,7 @@ convertWoff2ToBase64                         将woff2文件转换为base64
 deepRemoveEmptyValues(data)                  深度移除对象中的空值
 getUserInfo()                                获取用户信息
 getInstanceIpPort()                          获取实例ip和端口
+highlightTextByKeywords                      高亮文字根据关键字
 */
 import _ from 'lodash';
 import store from '@/resources/store';
@@ -1194,6 +1195,10 @@ const methods = {
     return {
       clear: () => {
         isStopped = true;
+        if (timer) { // 解决上个定时器没有清空的问题
+          clearTimeout(timer);
+          timer = null;
+        }
       } // 用于手动清除定时器
     };
   },
@@ -1298,6 +1303,13 @@ const methods = {
       instanceIpPortStr += `[${ip}${instancePort}]`;  
     }
     return instanceIpPortStr;
+  },
+  highlightTextByKeywords(text, keywordsList = []) {
+    // 高亮文字根据关键词
+    if (!keywordsList || keywordsList.length === 0) return text;
+    const escapedWords = keywordsList.map(word => word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const regex = new RegExp(`(${escapedWords.join('|')})`, 'gi'); // 匹配关键字，忽略大小写
+    return text.replace(regex, '<span class="highlight-search-keyword text-error">$1</span>'); // 使用span加上高亮样式
   }
 };
 export default methods;

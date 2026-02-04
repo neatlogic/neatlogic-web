@@ -157,7 +157,7 @@ export default {
   props: {},
   data() {
     return {
-      searchParam: { hasParent: false, authorityActionList: ['view'], sortOrder: {key: 'planStartTime', type: 'DESC'} },
+      searchParam: { authorityActionList: ['view'], sortOrder: {key: 'planStartTime', type: 'DESC'} },
       sortList: ['planStartTime', 'startTime'],
       sortOrder: [{planStartTime: 'DESC'}],
       noConfigInfo: false, // 无配置信息，模块和环境
@@ -204,6 +204,23 @@ export default {
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'JobStatus' },
             transfer: true
+          },
+          {
+            type: 'radio',
+            name: 'hasParent',
+            label: this.$t('term.autoexec.jobcategory'),
+            dataList: [
+              {
+                text: this.$t('term.autoexec.parentjob'),
+                value: 'false'
+              },
+              {
+                text: this.$t('term.autoexec.subjob'),
+                value: 'true'
+              }
+            ],
+            transfer: true,
+            allowToggle: true
           }
         ]
       },

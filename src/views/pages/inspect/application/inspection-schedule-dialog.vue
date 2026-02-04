@@ -39,7 +39,7 @@
               <span v-else class="text-grey">{{ $t('page.no') }}</span>
             </template>
             <template v-slot:appSystem="{ row }">
-              <span class="text-href" @click="openCronDialog(row)">{{ row.appSystemAbbrName }} ({{ row.appSystemName }})</span>
+              <span class="text-href" @click="openCronDialog(row)">{{ row.appSystemAbbrName }} {{ row.appSystemName ? `(${row.appSystemName})` : '' }}</span>
             </template>
             <template v-slot:execCount="{ row }">
               <span v-if="row.execCount > 0" class="text-href" @click="openJobListDialog(row)">{{ row.execCount }}</span>
