@@ -924,7 +924,8 @@
     "preconditiontip": "If empty, inherit the global pre filter",
     "jobcategory": "Homework Classification",
     "parentjob": "Father's homework",
-    "subjob": "Sub homework"
+    "subjob": "Sub homework",
+    "ignoreall": "Do you want to ignore all nodes"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
