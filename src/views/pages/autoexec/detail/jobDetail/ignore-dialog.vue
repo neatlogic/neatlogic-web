@@ -1,7 +1,10 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-ok="okDialog" @on-close="closeDialog">
     <template v-slot>
-      <div v-if="pendingCount || succeedCount || runningCount" class="mb-nm">
+      <div v-if="isAll == 1">
+        <div class="mb-nm">{{ $t('term.autoexec.ignoreall') }}</div>
+      </div>
+      <div v-else-if="pendingCount || succeedCount || runningCount" class="mb-nm">
         <span>{{ $t('term.autoexec.selectednodeinclude') }}</span>
         <span v-if="ignoreCount" class="ml-xs mr-xs" v-html="$t('term.autoexec.ignorecount', {target: ignoreCount})"></span>
         <span v-if="pendingCount" class="ml-xs mr-xs" v-html="$t('term.autoexec.pendingcount', {target: pendingCount})"></span>
@@ -23,7 +26,8 @@ export default {
   props: {
     jobId: { type: Number }, //作业id
     phaseId: { type: Number }, //阶段id
-    nodeList: { type: Array, default: () => [] } //节点列表
+    nodeList: { type: Array, default: () => [] }, //节点列表
+    isAll: { type: Number } //是否全部忽略
   },
   data() {
     return {
@@ -35,7 +39,7 @@ export default {
         isShow: true,
         width: 'small'
       },
-      excludeStatusList: ['pending', 'ignored', 'running', 'succeed']
+      excludeStatusList: ['ignored', 'running', 'succeed']
     };
   },
   beforeCreate() {},
@@ -57,9 +61,10 @@ export default {
         jobId: this.jobId,
         jobPhaseId: this.phaseId,
         resourceIdList: this.nodeList.filter(d => !this.excludeStatusList.includes(d.status)).map(d => d.resourceId),
-        sqlIdList: this.nodeList.filter(d => !this.excludeStatusList.includes(d.status)).map(d => d.id)
+        sqlIdList: this.nodeList.filter(d => !this.excludeStatusList.includes(d.status)).map(d => d.id),
+        isAll: this.isAll
       };
-      if (param.resourceIdList.length == 0) {
+      if (this.isAll != 1 && param.resourceIdList.length == 0) {
         this.$Notice.info({ title: this.$t('page.tip'), desc: this.$t('term.autoexec.noignorenode')});
         return;
       }

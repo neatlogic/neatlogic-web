@@ -6,6 +6,7 @@
         <div class="div-btn-contain action-group no-line">
           <template v-if="jobData.isCanExecute && nodeData">
             <span class="action-item tsfont-minus-o" :class="{ disable: selectedNodeList.length <= 0 || phaseData.status == 'running' }" @click="ignoreNode()">{{ $t('page.ignore') }}</span>
+            <span class="action-item tsfont-minus-o" :class="phaseData.status == 'running'?'disable':''" @click="ignoreAllNode()">{{ $t('page.ignoreall') }}</span>
             <span class="action-item tsfont-restart" :class="{ disable: selectedNodeList.length <= 0 || phaseData.status == 'running' }" @click="resetNode()">{{ $t('page.reset') }}</span>
             <span class="action-item tsfont-restart" :class="phaseData.status == 'running'?'disable':''" @click="resetAllNode()">{{ $t('page.resetall') }}</span>
             <span class="action-item tsfont-run" :class="phaseData.status == 'running'?'disable':''" @click="refirePhase()">{{ $t('page.executeall') }}</span>
@@ -247,7 +248,7 @@
       :jobId="actionParam.jobId"
       :phaseId="actionParam.phaseId"
       :nodeList="actionParam.nodeList"
-      :isAll="actionParam.isAll"
+      :isAll="actionParam.isResetAll"
       @close="closeResetDialog"
     ></ResetDialog>
     <IgnoreDialog
@@ -255,6 +256,7 @@
       :jobId="actionParam.jobId"
       :phaseId="actionParam.phaseId"
       :nodeList="actionParam.nodeList"
+      :isAll="actionParam.isIgnoreAll"
       @close="closeIgnoreDialog"
     ></IgnoreDialog>
     <RefirePhaseDialog
@@ -366,7 +368,7 @@ export default {
         }
       ],
       statusActionMapping: {
-        pending: ['refire'],
+        pending: ['ignore', 'refire'],
         running: ['reset'],
         succeed: ['reset'],
         failed: ['ignore', 'reset', 'refire'],
@@ -472,6 +474,16 @@ export default {
       }
       this.isIgnoreDialogShow = true;
     },
+    ignoreAllNode() {
+      if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
+        return false;
+      }
+      this.actionParam = {};
+      this.actionParam.jobId = this.jobData.id;
+      this.actionParam.phaseId = this.phaseData.id;
+      this.actionParam.isIgnoreAll = 1;
+      this.isIgnoreDialogShow = true;
+    },
     resetNode(node) {
       if (this.phaseData.status == 'running') { //阶段状态判断:运行中状态：不可点击;其他状态，可以点击
         return false;
@@ -483,7 +495,7 @@ export default {
       this.actionParam = {};
       this.actionParam.jobId = this.jobData.id;
       this.actionParam.phaseId = this.phaseData.id;
-      this.actionParam.isAll = 0;
+      this.actionParam.isResetAll = 0;
       if (!node) {
         this.actionParam.nodeList = this.selectedNodeList;
       } else {
@@ -498,7 +510,7 @@ export default {
       this.actionParam = {};
       this.actionParam.jobId = this.jobData.id;
       this.actionParam.phaseId = this.phaseData.id;
-      this.actionParam.isAll = 1;
+      this.actionParam.isResetAll = 1;
       this.isResetDialogShow = true;
     },
     refirePhase() {
