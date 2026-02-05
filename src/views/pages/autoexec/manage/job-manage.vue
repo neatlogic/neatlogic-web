@@ -246,7 +246,7 @@ export default {
             url: '/api/rest/autoexec/job/source/list'
           },
           {
-            type: 'radio',
+            type: 'select',
             name: 'hasParent',
             label: this.$t('term.autoexec.jobcategory'),
             dataList: [
@@ -259,8 +259,7 @@ export default {
                 value: 'true'
               }
             ],
-            transfer: true,
-            allowToggle: true
+            transfer: true
           },
           {
             type: 'userselect',
