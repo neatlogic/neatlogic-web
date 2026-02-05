@@ -5,8 +5,8 @@ export default function deleteRange({ editor, position, options = {} }) {
   const { doc } = editor.state;
   const { attrs = {} } = options || {};
   const { startPosition, endPosition } = position || {};
-  const uuid = attrs?.['data-uuid'] || '';
-  const type = attrs?.['data-block-type'] || '';
+  const uuid = attrs?.blockUuid || '';
+  const type = attrs?.blockType || '';
 
   let targetPos = null;
 
@@ -22,7 +22,7 @@ export default function deleteRange({ editor, position, options = {} }) {
   }
 
   doc.descendants((node, pos) => {
-    if (node.attrs?.['data-uuid'] === uuid) {
+    if (node.attrs?.blockUuid === uuid) {
       targetPos = pos;
       return false; // 停止遍历
     }

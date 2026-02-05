@@ -66,7 +66,7 @@ export default {
       }
       this.$emit('close', {
         commandName: 'link',
-        value: {
+        options: {
           linkText: this.formData.name || this.formData.url,
           linkUrl: this.formData.url,
           operationType: 'addLink'

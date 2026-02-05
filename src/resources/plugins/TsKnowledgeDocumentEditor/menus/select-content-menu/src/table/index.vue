@@ -5,9 +5,9 @@
       v-for="(item, index) in componentList"
       :key="`${item.type}_${index}`"
       v-bind="item"
-      :nodeConfig="nodeConfig"
-      @emitMenuValue="(config)=> {
-        $emit('emitMenuValue', config)
+      :node-config="nodeConfig"
+      @menu-item-selected="(config)=> {
+        $emit('menu-item-selected', config)
       }"
     >
     </component>

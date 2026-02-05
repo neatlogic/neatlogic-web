@@ -15,6 +15,7 @@
 
 <script>
 import TsForm from '@/resources/plugins/TsForm/TsForm';
+import handler from '../../../dashboard/widget/handler';
 export default {
   name: '',
   components: {
@@ -24,8 +25,7 @@ export default {
     isShow: {
       type: Boolean,
       default: false
-    },
-    dataConfig: Object
+    }
   },
   data() {
     return {
@@ -76,13 +76,18 @@ export default {
     saveOk() {
       if (this.$refs.form.valid()) {
         let data = this.$refs.form.getFormValue();
-        let config = this.$parent.getAllSaveData();
+        let templateDataList = this.$parent.getTemplateData();
         let list = [];
-        if (config && config.lineList) {
-          config.lineList.forEach(item => {
-            if (item.handler == 'h1' || item.handler == 'h2') {
-              list.push(item);
-            }
+        const levelList = [1, 2];
+        if (templateDataList && templateDataList.length > 0) {
+          list = templateDataList.filter(item => levelList.includes(item.attrs.level)).map((item) => {
+            const handler = `h${item.attrs.level}`;
+            return {
+              handler: handler,
+              uuid: item.attrs.blockUuid,
+              content: item.content?.[0].text,
+              config: {}
+            };
           });
         }
         this.$api.knowledge.template.save({name: data.name, content: list})

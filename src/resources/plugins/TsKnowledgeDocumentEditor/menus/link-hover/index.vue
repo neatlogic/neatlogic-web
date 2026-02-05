@@ -40,7 +40,7 @@
             @click="()=> {
               $emit('click-menu', {
                 commandName: 'link',
-                value: {
+                options: {
                   operationType: 'removeLink',
                 }
               })
@@ -93,7 +93,7 @@ export default {
       }
       this.$emit('click-menu', {
         commandName: 'link',
-        value: {
+        options: {
           linkText: this.linkHoverConfig.text,
           linkUrl: this.linkUrl || this.linkHoverConfig.href,
           operationType: 'replaceLink'

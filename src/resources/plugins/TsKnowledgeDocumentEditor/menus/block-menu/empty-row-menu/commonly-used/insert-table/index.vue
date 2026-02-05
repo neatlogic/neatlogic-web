@@ -70,7 +70,7 @@ export default {
       const rowCount = r;
       this.$emit('click-menu', {
         commandName: 'insertTable',
-        value: {
+        options: {
           rows: rowCount,
           cols: c
         }}

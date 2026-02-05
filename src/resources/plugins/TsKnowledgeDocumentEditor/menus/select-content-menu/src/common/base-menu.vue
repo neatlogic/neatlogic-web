@@ -10,10 +10,10 @@
         :style="iconStyle"
         :class="[icon, activeMenuClassName(command)]"
         @click.stop="
-          $emit('emitMenuValue',
+          $emit('menu-item-selected',
                 {
                   commandName: command,
-                  value: {
+                  options: {
                     [capitalizeFirstWordKeepRest(command)]: isCommandActive(command),
                     ...(nodeConfig || {}),
                    ...(params || {})

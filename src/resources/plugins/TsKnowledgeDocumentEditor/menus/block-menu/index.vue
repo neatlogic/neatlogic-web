@@ -20,7 +20,7 @@
         top: (menuPosition.top) + 'px',
         left: menuPosition.left + 'px'
       }"
-      :nodeConfig="nodeConfig"
+      :node-config="nodeConfig"
       @click-menu="(menuData)=> {
         $emit('replace-menu-content', menuData)
       }"

@@ -2,9 +2,9 @@
   <div ref="bubbleMenuRef" class="selected-content-menu-wrapper bg-op border-base">
     <component
       :is="getComponentName(nodeName)"
-      :nodeConfig="nodeConfig"
-      :selectedText="selectedText"
-      @emitMenuValue="handleCommand"
+      :node-config="nodeConfig"
+      :selected-text="selectedText"
+      @menu-item-selected="handleCommand"
     />
   </div>
 </template>
@@ -45,7 +45,7 @@ export default {
   destroyed() {},
   methods: {
     handleCommand(menuDataConfig) {
-      this.$emit('handleSelectMenuContent', menuDataConfig);
+      this.$emit('handle-select-menu-content', menuDataConfig);
     }
   },
   filter: {},

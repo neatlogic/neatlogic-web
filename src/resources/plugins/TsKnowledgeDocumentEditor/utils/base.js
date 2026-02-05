@@ -6,14 +6,14 @@ export default {
     handleSelectMenuContent({ editor, menuData, hoverBlockDom }) {
       if (!editor) return;
       const insertPos = this.findInsertContentPosition({editor: editor, hoverBlockDom: hoverBlockDom});
-      const { commandName, value = {} } = menuData;
+      const { commandName, options = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
-        getCellSelectionByIndex({editor: editor, options: value});
+        getCellSelectionByIndex({editor: editor, options: options});
         commandMethod({
           editor: editor,
           position: insertPos,
-          options: value,
+          options: options,
           https: this.$https,
           _this: this
         });
@@ -129,14 +129,14 @@ export default {
       // 编辑菜单，在下方插入一行
       if (!editor) return;
       const position = this.findCurrentBlockPosition({editor: editor, hoverBlockDom: hoverBlockDom});
-      const { commandName, value = {} } = menuData;
+      const { commandName, options = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
-        getCellSelectionByIndex({editor: editor, options: value});
+        getCellSelectionByIndex({editor: editor, options: options});
         commandMethod({
           editor: editor,
           position: position,
-          options: value,
+          options: options,
           https: this.$https,
           _this: this
         });
@@ -146,14 +146,14 @@ export default {
       // 空白行插入菜单
       if (!editor) return;
       const position = this.findInsertContentPosition({editor: editor, hoverBlockDom: hoverBlockDom});
-      const { commandName, value = {} } = menuData;
+      const { commandName, options = {} } = menuData;
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
-        getCellSelectionByIndex({editor: editor, options: value});
+        getCellSelectionByIndex({editor: editor, options: options});
         commandMethod({
           editor: editor,
           position: position,
-          options: value,
+          options: options,
           https: this.$https,
           _this: this
         });
@@ -162,16 +162,16 @@ export default {
     handleReplaceMenuContent({editor, menuData, hoverBlockDom}) {
       // 编辑菜单，替换当前行
       if (!editor) return;
-      const { commandName, value = {} } = menuData;
+      const { commandName, options = {} } = menuData;
       const position = this.findCurrentBlockPosition({editor: editor, hoverBlockDom: hoverBlockDom});
       const commandMethod = InsertMenuCommands[commandName];
       if (commandMethod) {
-        const options = {...value, isToggle: true};
-        getCellSelectionByIndex({editor: editor, options: options});
+        const tempOptions = {...options, isToggle: true};
+        getCellSelectionByIndex({editor: editor, options: tempOptions});
         commandMethod({
           editor: editor,
           position: position || {},
-          options: options,
+          options: tempOptions,
           https: this.$https,
           _this: this
         });
@@ -222,7 +222,7 @@ export default {
       let result = null;
       const state = editor.state;
       state.doc.descendants((node, pos) => {
-        if (node.type.name === 'table' && node.attrs?.['data-uuid'] === uuid) {
+        if (node.type.name === 'table' && node.attrs?.blockUuid === uuid) {
           result = {
             nodeType: node?.type?.name,
             attrs: node?.attrs

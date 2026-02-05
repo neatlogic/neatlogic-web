@@ -22,9 +22,9 @@
                 @click.stop="
                   () => {
                     selectedFontColor = item.color;
-                    $emit('emitMenuValue', {
+                    $emit('menu-item-selected', {
                       commandName: 'color',
-                      value: {
+                      options: {
                         color: item.color,
                          ...(nodeConfig || {}),
                       }
@@ -61,9 +61,9 @@
                     @click.stop="
                       () => {
                         selectedBgColorLight = item.color;
-                        $emit('emitMenuValue', {
+                        $emit('menu-item-selected', {
                           commandName: 'backgroundColor',
-                          value: {
+                          options: {
                             backgroundColor: item.color,
                              ...(nodeConfig || {}),
                           }
@@ -91,9 +91,9 @@
                       () => {
                         selectedBgColor = item.color;
                         selectedBgColorLight = '';
-                        $emit('emitMenuValue', {
+                        $emit('menu-item-selected', {
                           commandName: 'backgroundColor',
-                          value: {
+                          options: {
                             backgroundColor: item.color,
                              ...(nodeConfig || {}),
                           }
@@ -250,16 +250,16 @@ export default {
       this.selectedBgColor = '#fff';
       this.selectedBgColorLight = '#fff';
       this.selectedFontColor = '#000';
-      this.$emit('emitMenuValue', {
+      this.$emit('menu-item-selected', {
         commandName: 'color',
-        value: {
+        options: {
           fontColor: this.selectedFontColor,
           ...(this.nodeConfig || {})
         }
       });
-      this.$emit('emitMenuValue', {
+      this.$emit('menu-item-selected', {
         commandName: 'backgroundColor',
-        value: {
+        options: {
           backgroundColor: this.selectedBgColorLight,
           ...(this.nodeConfig || {})
         }

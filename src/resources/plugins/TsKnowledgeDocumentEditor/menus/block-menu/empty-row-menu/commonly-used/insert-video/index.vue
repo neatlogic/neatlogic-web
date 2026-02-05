@@ -44,7 +44,7 @@ export default {
       const file = event?.target?.files?.[0];
       this.$emit('click-menu', {
         commandName: 'insertVideo',
-        value: { file: file }
+        options: { file: file }
       });
     }
   },

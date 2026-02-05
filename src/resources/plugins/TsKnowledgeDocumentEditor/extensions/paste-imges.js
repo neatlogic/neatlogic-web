@@ -1,6 +1,7 @@
 import { Extension } from '@tiptap/core';
 import { Plugin } from 'prosemirror-state';
-import { DOMParser as ProseMirrorDOMParser } from 'prosemirror-model';
+import utils from '@/resources/assets/js/util.js';
+import ViewUI from 'neatlogic-ui/iview/index.js';
 
 export const PasteUploadImages = Extension.create({
   name: 'pasteUploadImages',
@@ -35,47 +36,14 @@ export const PasteUploadImages = Extension.create({
               const div = document.createElement('div');
               div.innerHTML = html;
 
-              const imgs = Array.from(div.querySelectorAll('img'));
-              // Promise.all(
-              //   imgs.map(async img => {
-              //     try {
-              //       let src = img.getAttribute('src') || img.src || '';
-              //       if (!src) return;
-
-              //       // data:image -> 转 file 并上传
-              //       if (src.startsWith('data:')) {
-              //         const file = dataURLToFile(src);
-              //         const newUrl = await upload(file);
-              //         img.setAttribute('src', newUrl);
-              //       } else if ((src.startsWith('http://') || src.startsWith('https://')) && uploadExternalImages) {
-              //         // 外链 http/https -> 如果配置要上传，则 fetch -> upload
-              //         try {
-              //           const resp = await fetch(src, { mode: 'cors' });
-              //           const blob = await resp.blob();
-              //           // 从 URL 推测扩展名（保底为 png）
-              //           let ext = 'png';
-              //           const match = src.split('?')[0].match(/\.(jpeg|jpg|png|gif|webp|svg)$/i);
-              //           if (match && match[1]) ext = match[1];
-              //           const file = new File([blob], `external_${Date.now()}.${ext}`, { type: blob.type || `image/${ext}` });
-              //           const newUrl = await upload(file);
-              //           img.setAttribute('src', newUrl);
-              //         } catch (err) {
-              //           // 如果 fetch/upload 失败，保留原 src（可按需改成删除）
-              //           console.warn('外链图片下载或上传失败，保留原链接：', src, err);
-              //         }
-              //       }
-              //     } catch (err) {
-              //       console.error('处理 img 时出错', err);
-              //     }
-              //   })
-              // );
+              const imgsList = Array.from(div.querySelectorAll('img'));
 
               const tr = view.state.tr;
-              imgs.forEach((img) => {
-                const uploadId = `img_${Date.now()}_${Math.random()}`;
+              imgsList.forEach(img => {
+                const uploadId = utils.setUuid();
                 const src = img.getAttribute('src') || '';
 
-                const node = view.state.schema.nodes.image.create({ src, uploading: true, uploadId });
+                const node = view.state.schema.nodes.image.create({ uploadId });
                 tr.replaceSelectionWith(node);
                 tr.insertText('\n'); // 插入换行符
 
@@ -90,20 +58,41 @@ export const PasteUploadImages = Extension.create({
             // -----------------------------
             // 2) clipboard items 中有 file（截图等）
             // -----------------------------
+            const { state } = view;
+            const { schema } = state;
             const items = clipboard.items || [];
             for (let i = 0; i < items.length; i++) {
               const item = items[i];
+              const uploadId = utils.setUuid();
               if (item.kind === 'file' && item.type && item.type.startsWith('image/')) {
                 event.preventDefault();
                 const file = item.getAsFile();
                 try {
-                  upload && typeof upload == 'function' && upload(file).then((url) => {
-                    if (url) {
-                      const node = view.state.schema.nodes.image.create({ src: url });
-                      const tr = view.state.tr.replaceSelectionWith(node);
-                      view.dispatch(tr.scrollIntoView());
-                    }
+                  // 添加图片加载中动画
+                  const imageNode = schema.nodes.image.create({
+                    src: null,
+                    uploadId
                   });
+                  const tr = state.tr.replaceSelectionWith(imageNode);
+                  view.dispatch(tr.scrollIntoView());
+                  upload &&
+                    typeof upload == 'function' &&
+                    upload(file).then(url => {
+                      if (url) {
+                        const { state } = view;
+                        const tr = state.tr;
+                        state.doc.descendants((node, pos) => {
+                          // 更新图片资源
+                          if (node.type.name === 'image' && node.attrs.uploadId === uploadId) {
+                            tr.setNodeMarkup(pos, undefined, {
+                              ...node.attrs,
+                              src: url
+                            });
+                          }
+                        });
+                        view.dispatch(tr);
+                      }
+                    });
                 } catch (err) {
                   console.error('上传截图图片失败', err);
                 }
@@ -140,36 +129,37 @@ async function uploadImage(src, uploadId, view, self) {
     if (src.startsWith('data:')) {
       file = dataURLToFile(src);
     } else if (/^https?:\/\//.test(src) && uploadExternalImages) {
-      const resp = await fetch(src);
-      const blob = await resp.blob();
+      const responseData = await fetch(src);
+      if (responseData?.status != 200) {
+        ViewUI.Message.error('图片获取失败！');
+        return false;
+      }
+      const blob = await responseData.blob();
       file = new File([blob], 'paste.png', { type: blob.type });
     } else {
       return;
     }
-
-    const url = await upload(file);
-    if (!url) return;
-
-    // 🔑 查找并替换对应 uploadId 的 image node
     const { state } = view;
     let tr = state.tr;
-
-    state.doc.descendants((node, pos) => {
-      if (
-        node.type.name === 'image' &&
-        node.attrs.uploadId === uploadId
-      ) {
-        tr = tr.setNodeMarkup(pos, undefined, {
-          ...node.attrs,
-          src: url,
-          uploading: false,
-          uploadId: null
-        });
-      }
-    });
-
-    if (tr.steps.length) {
-      view.dispatch(tr);
+    if (typeof upload == 'function') {
+      upload(file).then((url) => {
+        if (url) {
+          state.doc.descendants((node, pos) => {
+            if (node.type.name === 'image' && node.attrs.uploadId === uploadId) {
+              tr = tr.setNodeMarkup(pos, undefined, {
+                ...node.attrs,
+                src: url,
+                uploadId: null
+              });
+            }
+          });
+          if (tr.steps.length) {
+            view.dispatch(tr);
+          }
+        }
+      }).catch((err) => {
+        ViewUI.Message.error('图片上传失败：' + err);
+      });
     }
   } catch (e) {
     console.error('图片上传失败', e);

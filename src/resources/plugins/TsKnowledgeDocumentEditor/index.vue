@@ -35,9 +35,9 @@
           </div>
           <BlockMenu
             v-show="isShowBlockMenu"
-            :isEmptyRow="isEmptyRow"
-            :menuPosition="menuPosition"
-            :nodeConfig="blockMenuNodeConfig"
+            :is-empty-row="isEmptyRow"
+            :menu-position="menuPosition"
+            :node-config="blockMenuNodeConfig"
             @insert-menu-content="(menuData) => handleInsertMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
             @replace-menu-content="(menuData) => handleReplaceMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
             @insert-below-position="menuData => handleInsertBelowPosition({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
@@ -45,22 +45,22 @@
           <SelectContentMenu
             v-show="isShowSelectContentMenu"
             ref="selectContentMenuRef"
-            :selectedText="selectedText"
-            :nodeConfig="nodeConfig"
-            :nodeName="nodeName"
+            :selected-text="selectedText"
+            :node-config="nodeConfig"
+            :node-name="nodeName"
             :style="{ top: `${selectContentMenuPos.top}px`, left: `${selectContentMenuPos.left}px` }"
-            @handleSelectMenuContent="menuData => handleSelectMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
+            @handle-select-menu-content="menuData => handleSelectMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
           ></SelectContentMenu>
           <TableHoverLayer
             v-show="isShowTableMenu"
-            :tableMenuPosition="tableMenuPosition"
-            :tableUuid="tableUuid"
+            :table-menu-position="tableMenuPosition"
+            :table-uuid="tableUuid"
             :row-height-list="rowHeightList"
-            :isClearHighlight="isClearTableRowColHighlight"
+            :is-clear-highlight="isClearTableRowColHighlight"
             :editor="editor"
             @click="tableRowColHeadClick"
           ></TableHoverLayer>
-          <LinkHover v-show="isShowLinkHover" :linkHoverConfig="linkHoverConfig" @click-menu="(menuData)=> handleReplaceMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"></LinkHover>
+          <LinkHover v-show="isShowLinkHover" :link-hover-config="linkHoverConfig" @click-menu="(menuData)=> handleReplaceMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"></LinkHover>
         </div>
       </div>
     </div>
@@ -73,7 +73,7 @@
     <SearchReplaceDialog
       v-if="isShowSearchReplaceDialog"
       :editor="editor"
-      :selectedText="selectedText"
+      :selected-text="selectedText"
       @close="
         () => {
           isShowSearchReplaceDialog = false;
@@ -94,16 +94,15 @@ import { Table, TableRow, TableHeader } from '@tiptap/extension-table';
 import { TextStyleKit } from '@tiptap/extension-text-style';
 import { TaskList, TaskItem } from '@tiptap/extension-list';
 import ExtensionsList from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/index.js';
-import BaseMixin from './base.js';
-import { menuState } from './state.js';
+import BaseMixin from './utils/base.js';
+import { menuState } from './utils/state.js';
 import { SearchHighlight } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
 import { PasteUploadImages } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/paste-imges.js';
 import { ImageResize } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/image-resize.js';
 import { RowColSelected } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/row-col-selected/index.js';
 import { TableUtils } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/table-utils.js';
-import DataContent from './data.js';
-import { getHoverTargetByEvent, getTableRowHeights, getLinksInfoFromParagraph } from '@/resources/plugins/TsKnowledgeDocumentEditor/node-utils.js';
-import { getSelectedTextInfo, getSelectionNode } from '@/resources/plugins/TsKnowledgeDocumentEditor/selection-utils.js';
+import { getHoverTargetByEvent, getTableRowHeights, getLinksInfoFromParagraph } from '@/resources/plugins/TsKnowledgeDocumentEditor/utils/node-utils.js';
+import { getSelectedTextInfo, getSelectionNode } from '@/resources/plugins/TsKnowledgeDocumentEditor/utils/selection-utils.js';
 export default {
   components: {
     EditorContent,
@@ -226,7 +225,13 @@ export default {
         ...ExtensionsList,
         SearchHighlight
       ],
-      content: DataContent,
+      content: {
+        type: 'doc',
+        content: [{
+          type: 'paragraph',
+          content: []
+        }]
+      },
       onCreate({ editor }) {
         // 编辑器初始化完成时触发，用于处理初始内容回显（左侧菜单渲染）
         _this.getAllHeadings(editor);
@@ -304,6 +309,8 @@ export default {
       }
       this.nodeName = selectedNode?.type || '';
     },
+
+    // 获取所有标题，用户左侧导航条
     getAllHeadings(editor) {
       const $headings = editor.$nodes('heading');
       let headings = [];
@@ -311,7 +318,7 @@ export default {
         let obj = {
           level: node.attributes.level,
           text: node.textContent,
-          uuid: node.attributes['data-uuid']
+          uuid: node.attributes.blockUuid
         };
         for (let i = index + 1; i < $headings.length; i++) {
           const afterNode = $headings[i];
@@ -371,7 +378,7 @@ export default {
 
       // 处理表格节点
       if (type == 'table') {
-        this.tableUuid = attrs?.['data-uuid'];
+        this.tableUuid = attrs?.blockUuid;
         this.rowHeightList = getTableRowHeights(nodeDom);
         if (nodeRect) {
           // 表格行列浮层，可点击表头
@@ -453,7 +460,7 @@ export default {
         this.handleSelectMenuContent({
           menuData: {
             commandName: 'selectedRow',
-            value: {
+            options: {
               nodeType: nodeType,
               nodeAttrs: attrs,
               index: index,
@@ -468,7 +475,7 @@ export default {
         this.handleSelectMenuContent({
           menuData: {
             commandName: 'selectedColumn',
-            value: {
+            options: {
               nodeType: nodeType,
               nodeAttrs: attrs,
               index: index,
@@ -483,15 +490,15 @@ export default {
     highlightHeading(node, editor) {
       const isHeading = editor.isActive('heading');
       const contentObj = editor.getJSON();
-      const uuid = node.attrs?.['data-uuid'] || '';
+      const uuid = node.attrs?.blockUuid || '';
       if (isHeading) {
         this.selectHeadingUuid = uuid;
       } else {
         const contentList = contentObj.content.reverse();
-        const index = contentList.findIndex(item => item?.attrs?.['data-uuid'] === uuid);
+        const index = contentList.findIndex(item => item?.attrs?.blockUuid === uuid);
         for (let i = index + 1; i < contentList.length; i++) {
           if (contentList[i].type === 'heading') {
-            this.selectHeadingUuid = contentList[i].attrs['data-uuid'];
+            this.selectHeadingUuid = contentList[i].attrs.blockUuid;
             break;
           }
         }
@@ -502,8 +509,8 @@ export default {
       let targetPos = null;
 
       doc.descendants((node, pos) => {
-        // 假设节点属性里有 node.attrs['data-uuid']
-        if (item.uuid === node.attrs['data-uuid']) {
+        // 假设节点属性里有 node.attrs['blockUuid']
+        if (item.uuid === node.attrs['blockUuid']) {
           // 光标放在节点内容开头
           targetPos = pos + 1;
           return false; // 找到就停止遍历
@@ -526,6 +533,9 @@ export default {
       formData.append('responseType', 'blob');
       let res = await this.$api.knowledge.knowledge.uploadFile(formData);
       return res.Return.url;
+    },
+    getSaveData() {
+      return this.editor.getJSON();
     }
   },
   computed: {

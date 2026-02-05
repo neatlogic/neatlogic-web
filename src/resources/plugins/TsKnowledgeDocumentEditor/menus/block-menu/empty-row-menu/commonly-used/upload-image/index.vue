@@ -20,8 +20,7 @@ export default {
   components: {},
   props: {},
   data() {
-    return {
-    };
+    return {};
   },
   beforeCreate() {},
   created() {},
@@ -43,7 +42,7 @@ export default {
     },
     handleFileChange(event) {
       const file = event?.target?.files?.[0];
-      this.$emit('click-menu', {commandName: 'uploadImage', value: {file: file}});
+      this.$emit('click-menu', { commandName: 'uploadImage', options: { file: file } });
     }
   },
   filter: {},
@@ -59,7 +58,7 @@ export default {
     .icon-image {
       margin-right: 14px;
       font-size: 16px;
-      color:#ffc60a;
+      color: #ffc60a;
     }
     .icon-text {
       font-size: 14px;

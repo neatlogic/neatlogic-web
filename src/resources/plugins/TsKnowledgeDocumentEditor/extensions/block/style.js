@@ -57,7 +57,7 @@ export const BlockStyle = Extension.create({
 
             if (uuid) {
               state.doc.descendants((node, pos) => {
-                if (node.isBlock && node.attrs['data-uuid'] === uuid) {
+                if (node.isBlock && node.attrs['blockUuid'] === uuid) {
                   target = { node, pos };
                   return false;
                 }

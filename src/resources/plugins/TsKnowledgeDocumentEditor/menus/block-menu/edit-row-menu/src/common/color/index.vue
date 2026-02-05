@@ -271,7 +271,7 @@ export default {
       this.selectedBorderColor = borderColor;
       this.$emit('click-menu', {
         commandName: 'blockBorderColor',
-        value: {
+        options: {
           borderColor: borderColor,
           ...(this.nodeConfig || {})
         }
@@ -283,7 +283,7 @@ export default {
       this.selectedBgColorLight = '';
       this.$emit('click-menu', {
         commandName: 'blockBackgroundColor',
-        value: {
+        options: {
           backgroundColor: bgColor,
           ...(this.nodeConfig || {})
         }
@@ -295,7 +295,7 @@ export default {
       this.selectedBgColorLight = bgColor;
       this.$emit('click-menu', {
         commandName: 'blockBackgroundColor',
-        value: {
+        options: {
           backgroundColor: bgColor,
           ...(this.nodeConfig || {})
         }
@@ -307,7 +307,7 @@ export default {
       this.selectedFontColor = color;
       this.$emit('click-menu', {
         commandName: 'blockTextColor',
-        value: {
+        options: {
           fontColor: color,
           ...(this.nodeConfig || {})
         }
@@ -321,14 +321,14 @@ export default {
       this.selectedFontColor = '#000';
       this.$emit('click-menu', {
         commandName: 'blockTextColor',
-        value: {
+        options: {
           fontColor: this.selectedFontColor,
           ...(this.nodeConfig || {})
         }
       });
       this.$emit('click-menu', {
         commandName: 'blockBackgroundColor',
-        value: {
+        options: {
           backgroundColor: this.selectedBgColorLight,
           ...(this.nodeConfig || {})
         }

@@ -3,7 +3,7 @@ import { findTablePosByUuid } from './utils.js';
 
 export default function splitCell({ editor, options }) {
   const { nodeAttrs = {}, index, type = '' } = options || {};
-  const tableUuid = nodeAttrs['data-uuid'];
+  const tableUuid = nodeAttrs.blockUuid;
 
   if (index == null || !tableUuid) return;
 

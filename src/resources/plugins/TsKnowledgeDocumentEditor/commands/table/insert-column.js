@@ -14,7 +14,7 @@ export default function insertColumn({ editor, options }) {
     colWidth = 100
   } = options || {};
 
-  const tableUuid = nodeAttrs['data-uuid'];
+  const tableUuid = nodeAttrs.blockUuid;
   const { state, view } = editor;
 
   if (!tableUuid || typeof columnIndex !== 'number') return;

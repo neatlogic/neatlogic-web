@@ -4,11 +4,11 @@
       :is="item.type"
       v-for="(item,index) in componentList"
       :key="`${item.type}_${index}`"
-      :nodeConfig="nodeConfig"
-      :selectedText="selectedText"
+      :node-config="nodeConfig"
+      :selected-text="selectedText"
       v-bind="item"
-      @emitMenuValue="(data)=> {
-        $emit('emitMenuValue', data)
+      @menu-item-selected="(data)=> {
+        $emit('menu-item-selected', data)
       }"
     ></component>
   </div>

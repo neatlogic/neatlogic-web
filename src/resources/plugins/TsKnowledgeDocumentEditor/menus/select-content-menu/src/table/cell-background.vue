@@ -165,9 +165,9 @@ export default {
       this.isVisibleColor = false;
     },
     handleEmitCommand(backgroundColor) {
-      this.$emit('emitMenuValue', {
+      this.$emit('menu-item-selected', {
         commandName: 'tableCellBackgorund',
-        value: {
+        options: {
           backgroundColor: backgroundColor,
           ...(this.nodeConfig || {})
         }

@@ -3,7 +3,7 @@ const InsertVideo = Node.create({
   name: 'insertVideo',
   group: 'block',
   atom: true,
-  selectable: true,
+  selectable: false,
   addAttributes() {
     return {
       src: { default: null },
@@ -37,20 +37,11 @@ const InsertVideo = Node.create({
         }
       },
       aspectRatio: { default: null }, // 宽高比（width / height），用于计算高度
-
-      loading: {
-        default: false,
-        renderHTML: attrs => (attrs.loading ? { 'data-loading': 'true' } : {})
-      },
-      'data-uuid': {
+      // 标记位，上传占位符，用于更新内容
+      recordUuid: {
         default: null,
-        parseHTML: (element) => element.getAttribute('data-uuid'),
-        renderHTML: (attributes) => ({ 'data-uuid': attributes['data-uuid'] })
-      },
-      'data-block-type': {
-        default: 'insert-video',
-        parseHTML: (element) => element.getAttribute('data-block-type'),
-        renderHTML: (attributes) => ({ 'data-block-type': attributes['data-block-type'] })
+        parseHTML: (element) => element.getAttribute('data-record-uuid'),
+        renderHTML: (attributes) => ({ 'data-record-uuid': attributes['recordUuid'] })
       }
     };
   },
@@ -58,45 +49,14 @@ const InsertVideo = Node.create({
     return [{ tag: 'div[data-block-type="insert-video"]' }];
   },
   renderHTML({ HTMLAttributes }) {
-    const { src, width, controls, loading } = HTMLAttributes;
-    // 加载中状态
-    if (loading || !src) {
-      return [
-        'div',
-        mergeAttributes(HTMLAttributes, {
-          'data-type': 'insert-video',
-          style: `
-            width:${width};
-            height:200px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            background:#f8f9fb;
-            border:1px dashed #dcdfe6;
-            border-radius:8px;
-          `
-        }),
-        [
-          'div',
-          {
-            style: `
-              width:40px;
-              height:40px;
-              border:4px solid #d3d3d3;
-              border-top-color:#409EFF;
-              border-radius:50%;
-              animation: videoLoadingSpin 1s linear infinite;
-            `
-          }
-        ]
-      ];
-    }
+    const { src, controls } = HTMLAttributes;
     return [
       'div',
       mergeAttributes(HTMLAttributes, {
-        'data-block-type': 'insert-video'
+        'data-block-type': 'insert-video',
+        'data-block-uuid': HTMLAttributes['data-block-uuid']
       }),
-      ['video', { src: src, controls: controls}]
+      ['video', { src: src, controls: controls }]
     ];
   },
   addCommands() {
@@ -106,30 +66,37 @@ const InsertVideo = Node.create({
         return commands.insertContentAt(position, {
           type: this.name,
           attrs: {
+            src: '',
             ...(restAttrs || {})
           }
         });
       },
       updateVideo: (options) => ({ tr, state }) => {
-        const { uuid, position, ...newAttrs } = options || {};
+        const { recordUuid, position, ...newAttrs } = options || {};
         tr.doc.descendants((node, pos) => { // 遍历文档中的所有节点
-          if (node.type.name === this.name && node.attrs['data-uuid'] === uuid) {
+          if (node.type.name === this.name && node.attrs['recordUuid'] === recordUuid) {
             tr.setNodeMarkup(pos, undefined, { ...node.attrs, ...newAttrs });
           }
         });
+        return true;
       }
     };
   },
   addNodeView() {
     return ({ editor, node, getPos }) => {
-      /** ========== DOM ========== */
+      /** 外层节点和属性 */
       const wrapper = document.createElement('div');
       wrapper.className = 'video-block';
+      wrapper.contentEditable = 'false';
       wrapper.dataset.blockType = 'insert-video';
-      wrapper.dataset.uuid = node.attrs['data-uuid'];
+      wrapper.dataset.recordUuid = node.attrs['recordUuid'];
+      wrapper.dataset.blockUuid = node.attrs['blockUuid'];
+
+      // loading的加载节点
+      const loading = document.createElement('div');
+      loading.className = 'video-loading';
 
       const video = document.createElement('video');
-      video.src = node.attrs.src;
       video.controls = node.attrs.controls;
 
       applySize(video, node.attrs);
@@ -137,8 +104,35 @@ const InsertVideo = Node.create({
       const resizeHandle = document.createElement('div');
       resizeHandle.className = 'video-resize-handle';
 
+      wrapper.appendChild(loading);
       wrapper.appendChild(video);
       wrapper.appendChild(resizeHandle);
+
+      const syncVideoState = (attrs) => {
+        const hasSrc = !!attrs.src;
+      
+        if (!hasSrc) {
+          // loading 态
+          loading.style.display = 'flex';
+          video.style.display = 'none';
+      
+          // ⚠️ 清空 src，避免旧视频残留
+          if (video.src) {
+            video.removeAttribute('src');
+            video.load();
+          }
+        } else {
+          // 显示视频
+          loading.style.display = 'none';
+          video.style.display = 'block';
+      
+          if (video.src !== attrs.src) {
+            video.src = attrs.src; // 更新视频地址
+          }
+        }
+      };
+
+      syncVideoState(node.attrs);
 
       /* ========== hover 状态 ========== */
       wrapper.addEventListener('mouseenter', () => {
@@ -237,6 +231,8 @@ const InsertVideo = Node.create({
         update(updatedNode) {
           if (updatedNode.type.name !== 'insertVideo') return false;
           forceStopResize();
+          node = updatedNode;
+          syncVideoState(node.attrs); // 异步请求返回视频地址的时候，需要更新src
           return true;
         },
         destroy() {

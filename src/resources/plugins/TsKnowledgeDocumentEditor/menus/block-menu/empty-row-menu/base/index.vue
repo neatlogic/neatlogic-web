@@ -171,7 +171,7 @@ export default {
       if (commandName.includes('heading')) {
         // 标题
         const level = commandName.split('heading')[1];
-        this.$emit('click-menu', { commandName: 'heading', value: { level: parseInt(level) } });
+        this.$emit('click-menu', { commandName: 'heading', options: { level: parseInt(level) } });
       } else if (commandName === 'link') {
         this.isShowLinkDialog = true;
       } else {

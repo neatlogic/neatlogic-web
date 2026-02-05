@@ -81,9 +81,9 @@ export default {
       this.dialogSetting.isShow = false;
     },
     okDialog() {
-      this.$emit('emitMenuValue', {
+      this.$emit('menu-item-selected', {
         commandName: this.command,
-        value: {
+        options: {
           linkUrl: this.linkUrl,
           linkText: this.selectedText,
           operationType: 'replaceLink',

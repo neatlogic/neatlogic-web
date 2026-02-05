@@ -10,10 +10,10 @@
       </div>
       <DropdownMenu slot="list">
         <template v-if="menuType === 'text'">
-          <TextMenu :nodeConfig="nodeConfig" @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
+          <TextMenu :node-config="nodeConfig" @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
         </template>
         <template v-else-if="atomNodeList.includes(menuType)">
-          <AtomMenu :nodeConfig="nodeConfig" @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
+          <AtomMenu :node-config="nodeConfig" @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
         </template>
       </DropdownMenu>
     </Dropdown>
@@ -51,7 +51,7 @@ export default {
   destroyed() {},
   methods: {
     handleClick(name) {
-      this.$emit('click-menu', { commandName: name, value: {...this.nodeConfig || {}} });
+      this.$emit('click-menu', { commandName: name, options: {...this.nodeConfig || {}} });
     },
     handleClickMenu(menuData) {
       this.$emit('click-menu', menuData);

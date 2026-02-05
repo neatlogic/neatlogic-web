@@ -42,9 +42,9 @@ export default {
   destroyed() {},
   methods: {
     handleClick() {
-      this.$emit('emitMenuValue', {
+      this.$emit('menu-item-selected', {
         commandName: this.command,
-        value: {
+        options: {
           direction: 'top',
           ...(this.nodeConfig || {})
         }

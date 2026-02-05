@@ -37,7 +37,7 @@ export const RowColSelectedPlugin = new Plugin({
       state.doc.descendants((node, pos) => {
         if (node.type.name !== 'table') return;
         
-        if (node.attrs['data-uuid'] !== tableUuid) return;
+        if (node.attrs['blockUuid'] !== tableUuid) return;
 
         const map = TableMap.get(node);
 

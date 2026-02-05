@@ -11,7 +11,7 @@ export function findTableByUuid(state, uuid) {
   state.doc.descendants((node, pos) => {
     if (
       node.type.name === 'table' &&
-      node.attrs?.['data-uuid'] === uuid
+      node.attrs?.['blockUuid'] === uuid
     ) {
       result = { node: node, pos: pos };
       return false; // 停止遍历

@@ -6,7 +6,7 @@ export function findTablePosByUuid(doc, tableUuid) {
     return null;
   }
   doc.descendants((node, pos) => {
-    if (node.type.name === 'table' && node.attrs && node.attrs['data-uuid'] === tableUuid) {
+    if (node.type.name === 'table' && node.attrs && node.attrs['blockUuid'] === tableUuid) {
       result = pos;
       return false;
     }
@@ -23,7 +23,7 @@ export function getCellSelectionByIndex({editor, options }) {
     type = '' // row || column
   } = options || {};
 
-  const tableUuid = nodeAttrs['data-uuid'];
+  const tableUuid = nodeAttrs['blockUuid'];
   const { state, view } = editor;
 
   if (tableUuid) {

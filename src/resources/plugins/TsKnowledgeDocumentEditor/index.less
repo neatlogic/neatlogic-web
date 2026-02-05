@@ -183,11 +183,34 @@
     margin: 0;
     line-height: 1.6;
   }
-  @keyframes videoLoadingSpin {
+  // 加载中动画
+  @keyframes loadingSpin {
     to {
       transform: rotate(360deg);
     }
   }
+
+  // 视频加载中动画
+  .video-loading {
+    width: 200px;
+    height: 200px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .video-loading::after {
+    content: '';
+    width: 28px;
+    height: 28px;
+    border: 3px solid #ddd;
+    border-top-color: #999;
+    border-radius: 50%;
+    animation: loadingSpin 1s linear infinite;
+  }
+
   .tiptap-search-highlight {
     background: yellow;
   }
@@ -223,7 +246,6 @@
     border: 1px solid #409eff;
     background: #fff;
     cursor: se-resize;
-
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.15s ease;

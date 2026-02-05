@@ -54,7 +54,7 @@ export default {
     handleClick(selectedMenuName) {
       this.$emit('click-menu', {
         commandName: 'textAlign',
-        value: {
+        options: {
           textAlign: selectedMenuName
         }
       });

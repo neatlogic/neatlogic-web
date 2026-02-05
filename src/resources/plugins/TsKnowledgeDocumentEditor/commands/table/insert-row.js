@@ -12,7 +12,7 @@ export default function insertRow({ editor, options }) {
     direction = 'bottom' // top | bottom
   } = options || {};
 
-  const tableUuid = nodeAttrs['data-uuid'];
+  const tableUuid = nodeAttrs.blockUuid;
   const { state, view } = editor;
 
   if (!tableUuid || typeof rowIndex !== 'number') return;

@@ -6,9 +6,21 @@
       </template>
       <template slot="topRight">
         <div class="action-group" style="text-align:right">
-          <span class="action-item tsfont-drafts" :class="{disable:disabledBtn.saveDraftDocument}" @click="saveDraftDocument(true)">{{ $t('term.knowledge.savedraft') }}</span>
-          <span class="action-item tsfont-send" :class="{disable:disabledBtn.submitDocument}" @click="submitDocument">{{ $t('page.submitaudit') }}</span>
-          <span v-if="hasTemplateAuth" class="action-item tsfont-save" @click="saveTempalet">{{ $t('term.rdm.saveastemplate') }}</span>
+          <span
+            class="action-item tsfont-drafts"
+            :class="{disable:disabledBtn.saveDraftDocument}"
+            @click="saveDraftDocument(true)"
+          >{{ $t('term.knowledge.savedraft') }}</span>
+          <span
+            class="action-item tsfont-send"
+            :class="{disable:disabledBtn.submitDocument}"
+            @click="submitDocument"
+          >{{ $t('page.submitaudit') }}</span>
+          <span
+            v-if="hasTemplateAuth"
+            class="action-item tsfont-save"
+            @click="saveTempalet"
+          >{{ $t('term.rdm.saveastemplate') }}</span>
           <span
             v-if="isMember"
             class="action-item tsfont-history"
@@ -18,7 +30,7 @@
       </template>
       <template slot="content">
         <div>
-          <TsKnowledgeDocumentEditor :documentTitle="title"></TsKnowledgeDocumentEditor>
+          <TsKnowledgeDocumentEditor ref="editorRef" :documentTitle="title"></TsKnowledgeDocumentEditor>
         </div>
       </template>
     </TsContain>
@@ -46,7 +58,6 @@ export default {
   filters: {},
   props: [''],
   data() {
-    let _this = this;
     return {
       disabledBtn: {
         saveDraftDocument: false,
@@ -144,29 +155,25 @@ export default {
       }
       return new Promise((resolve, reject) => {
         let data = _this.getAllSaveData();
-        // if (JSON.stringify(data) == JSON.stringify(_this.defaultData)) {
-        //   if (type) {
-        //     this.$Notice.success({ title: this.$t('message.savesuccess'), duration: 1.5 });
-        //   }
-        //   resolve(data);
-        // } else {
         _this.disabledBtn.saveDraftDocument = true;
-        this.$api.knowledge.knowledge.saveDraftDocument(data).then(res => {
-          if (res.Status == 'OK') {
-            if (type) {
-              this.$Message.success(this.$t('message.savesuccess')); //保存成功
+        this.$api.knowledge.knowledge
+          .saveDraftDocument(data)
+          .then(res => {
+            if (res.Status == 'OK') {
+              if (type) {
+                this.$Message.success(this.$t('message.savesuccess')); //保存成功
+              }
+              let config = res.Return;
+              _this.knowledgeDocumentId = config.knowledgeDocumentId;
+              _this.knowledgeDocumentVersionId = config.knowledgeDocumentVersionId;
+              _this.defaultData = _this.getAllSaveData();
+              this.addNewRule();
+              resolve(config);
             }
-            let config = res.Return;
-            _this.knowledgeDocumentId = config.knowledgeDocumentId;
-            _this.knowledgeDocumentVersionId = config.knowledgeDocumentVersionId;
-            _this.defaultData = _this.getAllSaveData();
-            this.addNewRule();
-            resolve(config);
-          }
-        }).finally(res => {
-          _this.disabledBtn.saveDraftDocument = false;
-        });
-        // }
+          })
+          .finally(res => {
+            _this.disabledBtn.saveDraftDocument = false;
+          });
       });
     },
     async submitDocument() {
@@ -237,7 +244,7 @@ export default {
         } else {
           this.$Notice.error({
             title: this.$t('page.title'),
-            desc: this.$t('form.validate.required', {target: this.$t('page.title')}),
+            desc: this.$t('form.validate.required', { target: this.$t('page.title') }),
             duration: 1.5
           });
           this.$nextTick(() => {
@@ -247,7 +254,9 @@ export default {
       }
     },
     updateType() {
-      if (!this.knowledgeDocumentId) { return; }
+      if (!this.knowledgeDocumentId) {
+        return;
+      }
       if (this.knowledgeDocumentTypeUuid != this.defaultConfig.knowledgeDocumentTypeUuid) {
         this.$set(this.defaultConfig, 'knowledgeDocumentTypeUuid', this.knowledgeDocumentTypeUuid);
         let data = {
@@ -266,43 +275,61 @@ export default {
       // 刷新左侧菜单
       this.$store.dispatch('leftMenu/getKnowledgeTypeMenu');
     },
-    saveTempalet() { //另存为模板前判断是否有导航目录
-      let config = this.getAllSaveData();
+    saveTempalet() {
+      //另存为模板前判断是否有导航目录
+      const { content = [] } = this.$refs?.editorRef?.getSaveData();
       let list = [];
-      if (config && config.lineList) {
-        config.lineList.forEach(item => {
-          if (item.handler == 'h1' || item.handler == 'h2') {
-            list.push(item);
-          }
-        });
-      }
+      content.forEach((item) => {
+        if (item.type == 'heading' && item.attrs?.level == 1 || item.attrs.level == 2) {
+          list.push(item);
+        }
+      });
       if (list.length === 0) {
-        this.$Notice.warning({ title: this.$t('form.validate.required', {target: this.$t('term.knowledge.navigationdirectory')}) });
+        this.$Notice.warning({ title: this.$t('form.validate.required', { target: this.$t('term.knowledge.navigationdirectory') }) });
         return;
       }
       this.isSaveShow = !this.isSaveShow;
+    },
+    getTemplateData() {
+      const { content = [] } = this.$refs?.editorRef?.getSaveData();
+      let templateList = [];
+      content.forEach((item) => {
+        if (item.type == 'heading' && item.attrs?.level == 1 || item.attrs.level == 2) {
+          templateList.push(item);
+        }
+      });
+      return templateList;
     }
   },
   computed: {
-    hasTemplateAuth() { //判断知识模板权限
+    hasTemplateAuth() {
+      //判断知识模板权限
       return this.$store.getters.userAuthList.includes('KNOWLEDGE_TEMPLATE_MODIFY');
     }
   },
   watch: {},
-  beforeRouteLeave(to, from, next, url) { //url为模块跳转，不经过路由，因此需要特别处理
+  beforeRouteLeave(to, from, next, url) {
+    //url为模块跳转，不经过路由，因此需要特别处理
     let newData = this.getAllSaveData();
     let isSame = this.$utils.isSame(newData, this.defaultData);
     if (isSame) {
       url ? this.$utils.gotoHref(url) : next();
     } else {
       let _this = this;
-      this.$utils.jumpDialog.call(this, {
-        save: {
-          fn: async(vnode) => {
-            return await _this.saveDraftDocument(true);
+      this.$utils.jumpDialog.call(
+        this,
+        {
+          save: {
+            fn: async vnode => {
+              return await _this.saveDraftDocument(true);
+            }
           }
-        }
-      }, to, from, next, url);
+        },
+        to,
+        from,
+        next,
+        url
+      );
     }
   }
 };
@@ -313,13 +340,13 @@ export default {
   right: 8px;
   top: 0;
 }
-.padding-t{
-  padding-top:4px;
+.padding-t {
+  padding-top: 4px;
 }
-::v-deep .left-sider{
-  border-right: 0px solid #ccc!important;
+::v-deep .left-sider {
+  border-right: 0px solid #ccc !important;
 }
-::v-deep .bg-three{
-  background:transparent!important;
+::v-deep .bg-three {
+  background: transparent !important;
 }
 </style>

@@ -92,10 +92,10 @@ export default {
         this.picUrl = this.getSelectedImageSrc(this.editorData);
         this.isShowDialog = true;
       } else {
-        this.$emit('emitMenuValue',
+        this.$emit('menu-item-selected',
           {
             commandName: 'imageAlign',
-            value: {
+            options: {
               align: item.command
             }
           }
@@ -127,7 +127,7 @@ export default {
               this.$emit('handleSelectMenuContent',
                 {
                   commandName: this.currentCommand,
-                  value: {
+                  options: {
                     src: res.Return.url
                   }
                 }
