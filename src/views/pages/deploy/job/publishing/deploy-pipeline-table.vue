@@ -105,7 +105,7 @@ export default {
       isLoading: false,
       jobData: null,
       timmer: null,
-      searchController: null, // 用于取消上一个请求
+      abortController: null, // 用于取消上一个请求
       defaultTbodyList: [],
       expandIdList: [], // 展开子作业的父节点Id
       theadList: [
@@ -180,12 +180,9 @@ export default {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
-      // 取消上一个请求
-      if (this.searchController) {
-        this.searchController.abort();
-      }
       // 创建新的 controller
-      this.searchController = new AbortController();
+      const abortController = new AbortController(); // 创建用新的否则取消前一个请求会把当前的请求的也取消
+      this.abortController = abortController;
       this.isLoading = true;
       const param = { ...this.searchParam, ...searchValue || {} };
       if (this.$utils.isSame(this.searchParam, this.defaultSearchParam)) {
@@ -194,45 +191,40 @@ export default {
       try {
         const res = await this.$api.deploy.job.searchJobList({
           ...param
-        }, { signal: this.searchController.signal});
+        }, { signal: abortController.signal});
         const { tbodyList = [], ...restParams } = res.Return || {};
 
         this.defaultTbodyList = [...tbodyList]; // 子作业数据源
         const { keyword = '', hasParent = '' } = searchValue || {};
-        const keywordLower = (keyword || '').toLowerCase();
-        let resultList = [];
-        tbodyList.forEach((tbodyItem, index) => {
-          if (!this.$utils.isEmpty(tbodyItem)) {
-            resultList.push(tbodyItem);
-          }
-          if (keyword) {
-            // 子作业匹配有关键词，需要展开子作业
-            const findMatchKeywordList = (tbodyItem.children || []).filter(item => {
-              const nameLowerCase = (item.name || '').toLowerCase();
-              return nameLowerCase.includes(keywordLower);
-            });
-            if (findMatchKeywordList.length > 0) {
-              const findChildItem = resultList.find((v) => v.id === tbodyItem.id);
-              if (findChildItem) {
-                findChildItem['showChildren'] = true;
-              }
-              resultList.splice(index + 1, 0, ...(tbodyItem.children || []));
-            }
-          } else {
-            // 刷新列表的时候，展开的数据默认保持不变
-            if (tbodyItem.id && this.expandIdList.includes(tbodyItem.id)) {
-              const findItem = resultList.find((v) => v.id === tbodyItem.id);
-              if (findItem) {
-                findItem['showChildren'] = true;
-              }
-              resultList.splice(index + 1, 0, ...(tbodyItem.children || []));
-            }
-          }
-        });
         const keywordList = keyword ? [keyword] : [];
-
+        const keywordLower = (keyword || '').toLowerCase();
         const isParentMode = hasParent === 'false';
         const isSubMode = hasParent === 'true';
+        let resultList = [];
+        if (tbodyList.length == 0) {
+          return false;
+        }
+        tbodyList.forEach((tbodyItem) => {
+          const children = tbodyItem.children || [];
+          const id = tbodyItem.id || '';
+          const parentItem = {
+            ...tbodyItem,
+            showChildren: false
+          };
+
+          resultList.push(parentItem);
+          
+          // 是否有子作业命中关键字
+          const hasMatchChild = keywordLower && children.some(child => (child.name || '').toLowerCase().includes(keywordLower));
+
+          // 是否需要展开子作业
+          const shouldExpand = isSubMode || (hasMatchChild && this.$utils.isEmpty(hasParent)) || (id && this.expandIdList.includes(id));
+          
+          if (shouldExpand && children.length) {
+            parentItem.showChildren = true;
+            resultList.push(...children);
+          }
+        });
 
         let targetList = resultList.filter(item => item.name);
 
@@ -247,6 +239,7 @@ export default {
             targetList = subs;
           }
         }
+        // 处理关键字高亮
         targetList.forEach(item => {
           item.name = this.$utils.highlightTextByKeywords(item.name, keywordList);
         });
@@ -282,8 +275,8 @@ export default {
       }, 30 * 1000);
     },
     stopPollingSerchJobData() {
-      if (this.searchController) {
-        this.searchController.abort();
+      if (this.abortController) {
+        this.abortController.abort();
       }
       if (this.timmer) {
         this.timmer.clear();
