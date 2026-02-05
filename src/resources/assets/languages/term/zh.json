@@ -921,7 +921,11 @@
     "jobcount": "自动化作业数",
     "precondition": "前置过滤器",
     "globalprecondition": "全局前置过滤器",
-    "preconditiontip": "如果为空时，继承全局前置过滤器"
+    "preconditiontip": "如果为空时，继承全局前置过滤器",
+    "jobcategory": "作业分类",
+    "parentjob": "父作业",
+    "subjob": "子作业",
+    "ignoreall": "是否忽略所有节点"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",
@@ -2182,7 +2186,8 @@
     "jobcount": "发布作业数",
     "jobrecord": "发布作业记录",
     "notapplyallexecuteauth": "您没有当前应用的执行权限",
-    "batchdeployauthtip": "当前用户缺少“批量发布管理权限”权限，请联系管理员"
+    "batchdeployauthtip": "当前用户缺少“批量发布管理权限”权限，请联系管理员",
+    "defaultversion": "默认版本号"
   },
   "inspect": {
     "alarmprompt": "告警提示",

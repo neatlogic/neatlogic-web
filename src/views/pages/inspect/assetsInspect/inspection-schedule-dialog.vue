@@ -42,7 +42,7 @@
               <span v-else class="text-grey">{{ $t('page.no') }}</span>
             </template>
             <template v-slot:ciLabel="{ row }">
-              <span class="text-href" @click="openCronDialog(row)">{{ row.ciLabel }} ({{ row.ciName }})</span>
+              <span class="text-href" @click="openCronDialog(row)">{{ row.ciLabel }} {{ row.ciName ? `(${row.ciName})` : '' }}</span>
             </template>
             <template v-slot:execCount="{ row }">
               <span v-if="row.execCount > 0" class="text-href" @click="openJobListDialog(row)">

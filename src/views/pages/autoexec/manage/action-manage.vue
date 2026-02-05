@@ -17,7 +17,7 @@
             class="action-item tsfont-upload"
             :class="{ 'text-disabled': !hasAuth }"
             :title="!hasAuth ? $t('page.notauthrelationadmin') : ''"
-            @click.self="hasAuth && $refs.uploadDialog.showDialog"
+            @click.self="openUploadDialog()"
           >{{ $t('page.import') }}</span>
           <!-- <span
             v-if="hasAuth"
@@ -639,6 +639,12 @@ export default {
           this.addActionForm.opType.dataList = res.Return;
         }
       });
+    },
+    openUploadDialog() {
+      if (!this.hasAuth) {
+        return;
+      }
+      this.$refs.uploadDialog.showDialog();
     }
   },
   computed: {

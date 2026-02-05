@@ -13,7 +13,7 @@
         <div class="div-btn-contain action-group" style="text-align: right">
           <!-- <span class="action-item tsfont-rotate-right" @click="resetFlow()">{{ $t('page.reset') }}</span>-->
           <span class="action-item tsfont-xitongpeizhi" @click.prevent="validFlow()">{{ $t('page.validate') }}</span>
-          <span class="action-item tsfont-tool" @click="isRelativeServiceShow = true">
+          <span v-if="!processTaskId" class="action-item tsfont-tool" @click="isRelativeServiceShow = true">
             {{ $t('term.process.relcatalog') }}
             <span v-if="referenceCount > 0" class="reference-number">{{ referenceCount }}</span>
           </span>
@@ -26,7 +26,7 @@
           <span v-else-if="referenceCount == 0 && isNew == false" class="action-item">
             <Button type="error" @click="deleteFlow()">{{ $t('page.delete') }}</Button>
           </span>
-          <span v-if="!processTaskId" class="action-item">
+          <span v-if="isHasSaveDataAuth" class="action-item">
             <Button type="primary" @click="saveFlow(true)">{{ $t('page.save') }}</Button>
           </span>
         </div>
@@ -76,6 +76,7 @@
               :needMinimap="true"
               :graph="graph"
               mode="graph"
+              :readonly="!!processTaskId"
             ></FlowEditorToolbar>
           </div>
           <div style="height: calc(100% - 40px)">
@@ -84,6 +85,7 @@
               :config="flowConfig"
               :muted="true"
               :callback="{ validateNode: validateNode }"
+              :disableAddDelete="!!processTaskId"
               @ready="ready"
               @node:selected="nodeSelected"
               @node:unselected="nodeUnSelected"
@@ -494,31 +496,13 @@ export default {
     },
     //保存流程
     async saveFlow(needRefresh) {
-      //清空所有选择
+      //清空所有选
       this.graph.cleanSelection();
       this.validFlow(true);
       if (this.validList && this.validList.length > 0) {
         return false;
       }
-      const saveData = this.getFlowData(false);
-      //console.log(JSON.stringify(saveData, null, 2));
-      await this.$api.process.process.processSave(saveData).then(res => {
-        if (res.Status == 'OK') {
-          this.$Message.success(this.$t('message.savesuccess'));
-          this.$route.meta.isSkip = true;
-          if (needRefresh) {
-            this.$router.push({
-              path: '/flow-edit',
-              query: {
-                uuid: saveData.uuid,
-                name: saveData.name,
-                referenceCount: this.referenceCount || 0,
-                time: new Date().getTime()
-              }
-            });
-          }
-        }
-      });
+      await this.updatedTaskFlow(needRefresh);
     },
     //校验流程
     validFlow(isSlient) {
@@ -706,6 +690,9 @@ export default {
       });
     },
     drag(event, component) {
+      if (this.processTaskId) {
+        return;
+      }
       //仅提取必要信息
       const { name, handler, type, isAllowStart, chartConfig, config: stepConfig } = component;
       const config = { name, handler, type, isAllowStart, icon: chartConfig.icon };
@@ -1337,7 +1324,40 @@ export default {
           }
         });
       }
+    },
+    async updatedTaskFlow(needRefresh) {
+      const saveData = this.getFlowData(false);
+
+      const queryParams = {
+        path: '/flow-edit',
+        query: {
+          uuid: saveData.uuid,
+          name: saveData.name,
+          referenceCount: this.referenceCount || 0,
+          time: Date.now()
+        }
+      };
+
+      let res;
+
+      if (this.processTaskId) {
+        queryParams.query.processTaskId = this.processTaskId;
+
+        res = await this.$api.process.process.updateProcesstaskConfig({config: saveData.config, processTaskId: this.processTaskId});
+      } else {
+        res = await this.$api.process.process.processSave(saveData);
+      }
+
+      if (res.Status !== 'OK') return;
+
+      this.$Message.success(this.$t('message.savesuccess'));
+
+      if (needRefresh) {
+        this.$route.meta.isSkip = true;
+        this.$router.push(queryParams);
+      }
     }
+
   },
   computed: {
     automaticList() {
@@ -1509,6 +1529,9 @@ export default {
         return this.flowData.topo.cells;
       }
       return { cells: cells };
+    },
+    isHasSaveDataAuth() {
+      return (this.processTaskId && this.$AuthUtils.hasRole('PROCESSTASK_MODIFY')) || !this.processTaskId;
     }
   },
   watch: {

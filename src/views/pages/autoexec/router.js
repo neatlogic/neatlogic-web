@@ -3,7 +3,6 @@ const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const actionManage = () => import('./manage/action-manage.vue');
 const jobManage = () => import('./manage/job-manage.vue');
-const jobOverview = () => import('./manage/job-overview.vue');
 const actionDetail = () => import('./detail/action-detail.vue');
 const runnerDetail = () => import('./detail/runner-detail.vue');
 const jobDetail = () => import('./detail/job-detail.vue');
@@ -123,18 +122,6 @@ export default [
       ismenu: false,
       icon: 'tsfont-formtime',
       authority: 'AUTOEXEC_SCHEDULE_MODIFY',
-      type: 'detail'
-    }
-  },
-  {
-    path: '/job-overview',
-    name: 'job-overview',
-    component: jobOverview,
-    meta: {
-      title: $t('router.autoexec.joblist'),
-      ismenu: false,
-      icon: 'tsfont-history',
-      authority: '',
       type: 'detail'
     }
   },
