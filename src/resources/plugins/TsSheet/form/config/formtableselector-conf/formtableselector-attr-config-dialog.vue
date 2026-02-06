@@ -292,10 +292,14 @@
                 </div>
                 <TsFormSelect
                   v-else-if="propertyLocal.config.defaultValueType === 'custom'"
-                  v-model="propertyLocal.config.defaultValue"
                   v-bind="defaultValueSetting"
+                  :value="propertyLocal.config.defaultValue"
+                  :isCustomValue="true"
                   search
                   transfer
+                  @on-change="(val, valObj, selectItem) => {
+                    propertyLocal.config.defaultValue = selectItem;
+                  }"
                 ></TsFormSelect>
               </div>
             </TsFormItem>
@@ -391,12 +395,26 @@
                     "
                   ></ReactionFilter>
                 </div>
+                <div v-else-if="key === 'setvalue'">
+                  <ReactionSetvalue
+                    :ref="'formitem_' + key"
+                    :value="propertyLocal.reaction[key]"
+                    :formItemList="allFormItemList"
+                    :formItem="propertyLocal"
+                    @input="
+                      rule => {
+                        setReaction(key, rule);
+                      }
+                    "
+                  ></ReactionSetvalue>
+                </div>
                 <ConditionGroup
                   v-else
                   :ref="'formitem_' + key"
                   :value="propertyLocal.reaction[key]"
                   :formItemList="allFormItemList"
                   :formItem="propertyLocal"
+                  :reactionKey="key"
                   @reactionValid="(isValid)=>{
                     reactionValid(key, isValid)
                   }"
@@ -406,52 +424,7 @@
                     }
                   "
                 ></ConditionGroup>
-                <div v-if="key === 'setvalue' && !$utils.isEmpty(propertyLocal.reaction[key])">
-                  <div class="mt-sm text-grey">{{ $t('term.framework.assignment') }}</div>
-                  <!--isDynamicValue: 是否可以动态赋值  -->
-                  <div v-if="propertyLocal.isDynamicValue" class="pb-sm">
-                    <TsFormRadio
-                      :value="propertyLocal.reaction[key].type || 'static'"
-                      :dataList="typeDataList"
-                      @change="
-                        val => {
-                          $set(propertyLocal.reaction[key], 'type', val);
-                          $set(propertyLocal.reaction[key], 'value', null);
-                        }
-                      "
-                    ></TsFormRadio>
-                  </div>
-                  <!--dynamic:动态赋值  -->
-                  <TsFormSelect
-                    v-if="propertyLocal.reaction[key].type === 'dynamic'"
-                    :value="propertyLocal.reaction[key].value"
-                    :dataList="hasValueFormItemList"
-                    valueName="uuid"
-                    textName="label"
-                    border="border"
-                    transfer
-                    @on-change="
-                      val => {
-                        $set(propertyLocal.reaction[key], 'value', val);
-                      }
-                    "
-                  ></TsFormSelect>
-                  <FormItem
-                    v-else
-                    ref="assignmentValue"
-                    :formItem="assignmentValueConfig"
-                    :value="propertyLocal.reaction[key].value"
-                    mode="defaultvalue"
-                    :showStatusIcon="false"
-                    isCustomValue
-                    @change="
-                      val => {
-                        $set(propertyLocal.reaction[key], 'value', val);
-                      }
-                    "
-                  ></FormItem>
-                </div>
-                <div v-else-if="key === 'setValueOther'">
+                <div v-if="key === 'setValueOther'">
                   <ReactionSetValueOtherSetting
                     v-if="propertyLocal && propertyLocal.config.hiddenFieldList && !$utils.isEmpty(propertyLocal.reaction[key])"
                     ref="setValueOther_valueList"
@@ -516,9 +489,10 @@ export default {
     ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
     ExpressionSetting: () => import('@/resources/plugins/TsSheet/form/config/common/expression-setting.vue'),
-    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
     ReactionSetValueOtherSetting: () => import('@/resources/plugins/TsSheet/form-item-reaction-setvalueother-setting.vue'),
-    TableConfig: () => import('@/resources/plugins/TsSheet/form/config/formtableinputer-conf/formtableinputer-table-config.vue')
+    TableConfig: () => import('@/resources/plugins/TsSheet/form/config/formtableinputer-conf/formtableinputer-table-config.vue'),
+    ReactionSetvalue: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-setvalue.vue')
+  
   },
   props: {
     formItemUuid: { type: String }, //表单组件uuid
@@ -694,16 +668,6 @@ export default {
           value: 'custom'
         }
       ],
-      typeDataList: [
-        {
-          text: this.$t('term.autoexec.static'),
-          value: 'static'
-        },
-        {
-          text: this.$t('page.dynamicvalue'),
-          value: 'dynamic'
-        }
-      ],
       regexValidateList: [
         {
           name: 'tomore',
@@ -722,7 +686,14 @@ export default {
             }
           }
         }
-      ]
+      ],
+      mapReaction: { //联动配置
+        formexpression: {
+          hide: {},
+          display: {},
+          required: {}
+        }
+      }
     };
   },
   beforeCreate() {},
@@ -936,26 +907,31 @@ export default {
       this.$set(this.reactionError, key, !isValid);
     },
     changeHandler(val) {
-      this.propertyLocal.reaction = null;
+      let reaction = this.$utils.deepClone(this.reaction);
+      // formtable 不需要 setvalue
+      if (val !== 'formtable') {
+        this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
+        reaction.setvalue = {};
+      } else {
+        this.$delete(this.reactionName, 'setvalue');
+        delete reaction.setvalue;
+      }
+      // formexpression 覆盖 reaction
+      if (val === 'formexpression' && this.mapReaction.formexpression) {
+        reaction = this.$utils.deepClone(this.mapReaction.formexpression);
+        this.$set(this.propertyLocal.config, 'isReadOnly', true);
+      }
+      // 动态赋值开关
+      this.$set(this.propertyLocal, 'isDynamicValue',
+        val === 'formtext' || val === 'formtextarea'
+      );
+      // 统一赋值
+      this.$set(this.propertyLocal, 'reaction', reaction);
+      this.$set(this.propertyLocal, 'value', null);
+      
+      this.isReady = false;
       this.$nextTick(() => {
-        this.$set(this.propertyLocal, 'reaction', this.$utils.deepClone(this.reaction));
-        this.$set(this.propertyLocal, 'value', null);
-        if (val === 'formexpression') {
-          this.$set(this.propertyLocal.config, 'isReadOnly', true);
-        }
-        if (val === 'formtext' || val === 'formtextarea') {
-          // 联动规则(赋值)：是否可以动态赋值
-          this.$set(this.propertyLocal, 'isDynamicValue', true);
-        } else {
-          this.$set(this.propertyLocal, 'isDynamicValue', false);
-        }
-        if (val != 'formtable') {
-          this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
-          this.$set(this.propertyLocal.reaction, 'setvalue', {});
-        } else {
-          this.$delete(this.reactionName, 'setvalue');
-          this.$delete(this.propertyLocal.reaction, 'setvalue');
-        }
+        this.isReady = true;
       });
     }
   },
@@ -997,6 +973,10 @@ export default {
           params.keywordColumn = config.mapping.text;
           params.valueField = config.mapping.value;
           params.textField = config.mapping.text;
+        }
+        //隐藏属性过滤
+        if (!this.$utils.isEmpty(config.hiddenFieldList)) {
+          params.hiddenFieldList = this.$utils.mapArray(config.hiddenFieldList, 'value');
         }
         setting.params = params;
       } else {
@@ -1044,30 +1024,6 @@ export default {
         this.$delete(reaction, 'setValueOther');
       }
       return this.$utils.sortByObj(reaction);
-    },
-    hasValueFormItemList() {
-      let list = this.allFormItemList.filter(d => d.hasValue && (!this.propertyLocal || (this.propertyLocal && d.uuid != this.propertyLocal.uuid)) && !d.excludedFromCondition /* !this.filterComponentList.includes(d.handler)*/);
-      let newList = [];
-      list.forEach(item => {
-        let obj = {
-          label: item.label,
-          uuid: item.uuid
-        };
-        let children = [];
-        if (item.config && !this.$utils.isEmpty(item.config.hiddenFieldList)) {
-          item.config.hiddenFieldList.forEach(a => {
-            children.push({
-              label: item.label + '.' + a.text,
-              uuid: item.uuid + '#' + a.value
-            });
-          });
-        }
-        newList.push(obj);
-        if (!this.$utils.isEmpty(children)) {
-          newList.push(...children);
-        }
-      });
-      return newList;
     },
     canShowAddBtn() {
       return (propertyLocal) => {

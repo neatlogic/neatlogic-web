@@ -497,6 +497,7 @@ export default {
         this.$delete(data, 'lcd');
         this.$delete(data, 'lcu');
         data.tableList && data.tableList.forEach(item => {
+          this.$delete(item, 'rowColUuid');
           if (item.component && item.component.formData && item.component.formData.formConfig) {
             this.filterFormData(item.component.formData.formConfig);
           }

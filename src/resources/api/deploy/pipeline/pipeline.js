@@ -23,6 +23,9 @@ const pipeline = {
   },
   deletePipeline(id) {
     return axios.post('/api/rest/deploy/pipeline/delete', {id: id});
+  },
+  getJobTemplateVersionList(params) {
+    return axios.post('/api/rest/deploy/pipeline/job/template/version/list', params);
   }
 };
 export default pipeline;

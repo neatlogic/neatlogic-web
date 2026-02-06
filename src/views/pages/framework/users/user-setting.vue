@@ -52,11 +52,11 @@
                   </div>
                 </template>
                 <template v-slot:userAuthList>
-                  <div v-if="userInfo?.userAuthList?.length > 0">
-                    <Tag v-for="item in userInfo.userAuthList.slice(0, 5)" :key="item.uuid" class="ivu-tag">
+                  <div v-if="userAuthList?.length > 0">
+                    <Tag v-for="(item, index) in userAuthList.slice(0, 5)" :key="index" class="ivu-tag">
                       <span>{{ item.authName }}</span>
                     </Tag>
-                    <span v-if="userInfo?.userAuthList?.length > 5" class="tsfont-option-horizontal text-href" @click.stop="openViewAuthorizationDialog">{{ $t('page.viewall') }}</span>
+                    <span v-if="userAuthList.length > 5" class="tsfont-option-horizontal text-href" @click.stop="openViewAuthorizationDialog">{{ $t('page.viewall') }}</span>
                   </div>
                 </template>
               </TsForm>
@@ -157,7 +157,7 @@
         </div>
       </template>
     </TsContain>
-    <ViewAuthorizationDialog v-if="isShowAuthDialog" :userAuthList="userInfo?.userAuthList || []" @close="closeViewAuthorizationDialog"></ViewAuthorizationDialog>
+    <ViewAuthorizationDialog v-if="isShowAuthDialog" :userAuthList="userAuthList || []" @close="closeViewAuthorizationDialog"></ViewAuthorizationDialog>
   </div>
 </template>
 
@@ -461,6 +461,10 @@ export default {
     },
     canShow() {
       return this.hasAuth && !this.$utils.isEmpty(this.moduleList) && this.moduleList.some(v => v.moduleId == 'process');
+    },
+    userAuthList() {
+      // 复用模块菜单列表的用户权限数据（保证数据来源统一）
+      return this.$store.state.userInfo?.userAuthList || [];
     }
   },
   watch: {}

@@ -11,17 +11,17 @@
         </div>
       </template>
       <template v-slot>
-        <JobList :params="{combopId: id, scheduleId: scheduleId}"></JobList>
+        <JobManage :filter-params="{combopId: id, scheduleId: scheduleId}" :can-add-job="false" :can-delete-job="false"></JobManage>
       </template>
     </TsDialog>
   </div>
 </template>
 <script>
-import JobList from '../job/job-list.vue';
+import JobManage from '@/views/pages/autoexec/manage/job-manage.vue';
 export default {
   name: '',
   components: {
-    JobList
+    JobManage
   },
   filters: {},
   props: {

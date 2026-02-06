@@ -6,9 +6,11 @@
     >
       <template v-slot>
         <div>
-          <JobList
-            :params="{scheduleId: id, sourceList: ['scheduleinspect']}"
-          ></JobList>
+          <JobManage
+            :filter-params="{scheduleId: id, sourceList: ['scheduleinspect']}"
+            :can-add-job="false"
+            :can-delete-job="false"
+          ></JobManage>
         </div>
       </template>
     </TsDialog>
@@ -18,7 +20,7 @@
 export default {
   name: '',
   components: {
-    JobList: () => import('pages/autoexec/manage/job/job-list.vue')
+    JobManage: () => import('@/views/pages/autoexec/manage/job-manage.vue')
   },
   props: {
     id: {type: Number}

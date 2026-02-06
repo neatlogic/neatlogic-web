@@ -18,17 +18,17 @@
                   <ul slot="content">
                     <li v-if="!selectedApp.isConfig"><span>{{ $t('term.deploy.currentapplynoconfig') }}</span>,<span v-if="canEditAuth" class="text-href" @click="toPipeline()">{{ $t('dialog.title.addtarget', {target: $t('page.config')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.config')})}) }}</span></li>
                     <li v-else-if="!selectedApp.isHasModule"><span>{{ $t('term.deploy.applynoconfigmodule') }}</span>,<span v-if="canEditAuth" class="text-href" @click="addModule()">{{ $t('dialog.title.addtarget', {target: $t('page.module')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.module')})}) }}</span></li>
+                    <li v-else-if="selectedModule && !selectedModule.isHasEnv">
+                      <span>{{ selectedApp.abbrName }}/{{ selectedModule.abbrName }}{{ selectedModule.name?'['+selectedModule.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>,
+                      <span v-if="canEditAuth" class="text-href" @click="addEnv(selectedModule.id)">{{ $t('dialog.title.addtarget', {target: $t('page.environment')}) }}</span>
+                      <span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.environment')})}) }}</span>
+                    </li>
                     <li v-else-if="selectedApp.isHasModule && !selectedApp.isHasEnv">
                       <div v-for="item in moduleList" :key="item.id" class="pb-sm">
                         <span>{{ selectedApp.abbrName }}/{{ item.abbrName }}{{ item.name?'['+item.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>,
                         <span v-if="canEditAuth" class="text-href" @click="addEnv(item.id)">{{ $t('dialog.title.addtarget', {target: $t('page.environment')}) }}</span>
                         <span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.environment')})}) }}</span>
                       </div>
-                    </li>
-                    <li v-else-if="selectedModule && !selectedModule.isHasEnv">
-                      <span>{{ selectedApp.abbrName }}/{{ selectedModule.abbrName }}{{ selectedModule.name?'['+selectedModule.name+']':'' }}{{ $t('term.deploy.noconfigenv') }}</span>,
-                      <span v-if="canEditAuth" class="text-href" @click="addEnv(selectedModule.id)">{{ $t('dialog.title.addtarget', {target: $t('page.environment')}) }}</span>
-                      <span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.environment')})}) }}</span>
                     </li>
                     <li v-else-if="!hasScenarioAuth">
                       <div><span>{{ $t('term.deploy.noconfigscenauth') }}</span>,<span v-if="canEditAuth" class="text-href" @click="openAuthDialog">{{ $t('dialog.title.addtarget', {target: $t('page.auth')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('page.auth')}) }}</span></div>
@@ -157,7 +157,7 @@ export default {
   props: {},
   data() {
     return {
-      searchParam: { hasParent: false, authorityActionList: ['view'], sortOrder: {key: 'planStartTime', type: 'DESC'} },
+      searchParam: { authorityActionList: ['view'], sortOrder: {key: 'planStartTime', type: 'DESC'} },
       sortList: ['planStartTime', 'startTime'],
       sortOrder: [{planStartTime: 'DESC'}],
       noConfigInfo: false, // 无配置信息，模块和环境
@@ -203,6 +203,22 @@ export default {
             multiple: true,
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'JobStatus' },
+            transfer: true
+          },
+          {
+            type: 'select',
+            name: 'hasParent',
+            label: this.$t('term.autoexec.jobcategory'),
+            dataList: [
+              {
+                text: this.$t('term.autoexec.parentjob'),
+                value: 'false'
+              },
+              {
+                text: this.$t('term.autoexec.subjob'),
+                value: 'true'
+              }
+            ],
             transfer: true
           }
         ]
@@ -343,9 +359,9 @@ export default {
     async handleAuthAndConfigInfo() {
       // 处理权限和配置信息
       this.authType = '';
-      const {isConfig, isHasModule} = this.selectedApp;
-      const isHasEnv = this.selectedModule ? this.selectedModule.isHasEnv : this.selectedApp.isHasEnv;
-      if (this.canEditAuth && !this.hasEnvAuth && (isConfig && isHasModule && !isHasEnv)) {
+      const {isConfig, isHasModule, isHasEnv} = this.selectedApp;
+      //moduleList 用于选择应用时，所有模块无环境配置，提示所有模块需添加环境
+      if (isHasModule && !isHasEnv && isConfig) {
         await this.getModuleList(this.selectedApp);
         return false;
       }

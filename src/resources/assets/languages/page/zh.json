@@ -1091,5 +1091,7 @@
   "pagesizedes": "数量限制：10-500条",
   "staticvalue": "静态值",
   "middleware": "中间件",
-  "manage": "管理"
+  "manage": "管理",
+  "send": "发送",
+  "ignoreall": "忽略所有"
 }

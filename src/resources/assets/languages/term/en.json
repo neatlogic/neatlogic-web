@@ -921,7 +921,11 @@
     "jobcount": "Number of automated tasks",
     "precondition": "pre-filter",
     "globalprecondition": "Global pre filter",
-    "preconditiontip": "If empty, inherit the global pre filter"
+    "preconditiontip": "If empty, inherit the global pre filter",
+    "jobcategory": "Homework Classification",
+    "parentjob": "Father's homework",
+    "subjob": "Sub homework",
+    "ignoreall": "Do you want to ignore all nodes"
   },
   "framework": {
     "roleauth": "Authorize immediately after creating the role",
@@ -1377,7 +1381,8 @@
     "licenserefresh": "After updating the license in nacos or config. properties, you can click this refresh button to update the license without restarting the service",
     "loginmethod": "Login method",
     "clicktocopyuuid": "Click to copy uuid",
-    "successcopyintegrationuuid": "Successfully copied integrated uuid"
+    "successcopyintegrationuuid": "Successfully copied integrated uuid",
+    "showalluserdata": "View all user data"
   },
   "knowledge": {
     "document": "Document",
@@ -2184,7 +2189,8 @@
     "jobcount": "Number of published assignments",
     "jobrecord": "Publish homework records",
     "notapplyallexecuteauth": "You do not have the execution permission for the current application",
-    "batchdeployauthtip": "The current user lacks the 'Batch Publishing Management Permission' permission. Please contact the administrator"
+    "batchdeployauthtip": "The current user lacks the 'Batch Publishing Management Permission' permission. Please contact the administrator",
+    "defaultversion": "Default version number"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
@@ -2937,7 +2943,11 @@
     "failedaction": "Failed action",
     "invokeresult": "call result",
     "invokeinterval": "Call interval",
-    "returnresult": "return message"
+    "returnresult": "return message",
+    "conditionresult": "judgment result",
+    "conditionmatch": "Condition met",
+    "conditionmotmatch": "Conditions not met",
+    "abeyrule": "If the above conditions are met, execute"
   },
   "runnergroup": {
     "ruletips": "The request for login authentication needs to carry a header as a rule expression (note that the header parameter in the expression is all lowercase). If the value of the expression after execution is true, the executor group will take effect, and false and syntax exceptions will not take effect. For example: ${env}==\\ bit \\&&(${test}==\\ 1 \\ | | ${test2}==\\ aaa \\)"

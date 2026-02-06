@@ -2,7 +2,7 @@
   <div>
     <TsContain border="border">
       <template v-slot:topLeft>
-        <div class="action-group">
+        <div v-if="canAddJob" class="action-group">
           <span class="tsfont-plus icon-right text-action" @click="openPortfolioToolsDialog">{{ $t('term.autoexec.job') }}</span>
           <span v-auth="['AUTOEXEC_MODIFY']" class="action-item">
             <AuditConfig auditName="AUTOEXEC-JOB"></AuditConfig>
@@ -22,19 +22,16 @@
           :loading="isLoading"
           :theadList="theadList"
           :sortMulti="false"
-          @changeCurrent="searchJob"
+          @changeCurrent="startSearchJob"
           @changePageSize="changePageSize"
           @updateSort="updateSort"
         >
           <template v-slot:showChildren="{ row }">
             <span v-if="row.parentId == -1" class="text-href">
-              <span v-if="!row.loading" :class="{ 'tsfont-minus-square': row['showChildren'], 'tsfont-plus-square': !row['showChildren'] }" @click="toggleChildJob(row)"></span>
-              <Icon
-                v-else
-                type="ios-loading"
-                size="16"
-                class="loading"
-              ></Icon>
+              <span :class="{ 'tsfont-minus-square': row['showChildren'], 'tsfont-plus-square': !row['showChildren'] }" @click="toggleChildJob(row)"></span>
+            </span>
+            <span v-else>
+              <!-- 勿删，仅为占位符，否则表格会默认显示 true -->
             </span>
           </template>
           <template v-slot:name="{ row }">
@@ -42,7 +39,7 @@
               class="text-href"
               :class="{ 'ml-nm': !!row.parentId && row.parentId != -1 }"
               @click="toJobDetail(row)"
-            >{{ row.name }}</span>
+            ><span v-html="row.name"></span></span>
             <Tooltip
               v-if="row.warnCount > 0 || row.isHasIgnored > 0"
               transfer
@@ -62,12 +59,6 @@
           <template slot="completionRate" slot-scope="{ row }">
             <Liquid :percent="row.completionRate" :size="7" :config="getconfig(row)" />
           </template>
-          <!-- <template slot="operationType" slot-scope="{ row }">
-            <span class="text-href" @click="toOperationDetail(row)">
-              <span>{{ row.operationTypeName }}</span>
-              <span v-if="row.operationName">({{ row.operationName }})</span>
-            </span>
-          </template> -->
           <template slot="routeName" slot-scope="{ row }">
             <div v-if="row.source == 'inspect' || row.source == 'inspectapp'" style="max-width:150px;" class="overflow">
               {{ row.route && row.route.name }}
@@ -111,7 +102,7 @@
                 <template v-if="row.isCanTakeOver">
                   <li class="icon tsfont-takeover" @click.stop="editRow(row, 'takeover')">{{ $t('page.takeover') }}</li>
                 </template>
-                <template v-if="row.source != 'batchdeploy' && row.parentId != -1">
+                <template v-if="row.source != 'batchdeploy' && row.parentId != -1 && canDeleteJob">
                   <li v-auth="'AUTOEXEC_JOB_MODIFY'" class="icon tsfont-trash-o" @click.stop="deleteRow(row)">{{ $t('page.delete') }}</li>
                 </template>
               </ul>
@@ -142,23 +133,34 @@ export default {
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   filters: {},
-  props: {},
+  props: {
+    // 过滤参数
+    filterParams: {
+      type: Object,
+      default: () => {}
+    },
+    // 能否添加作业
+    canAddJob: {
+      type: Boolean,
+      default: true
+    },
+    // 能否删除作业
+    canDeleteJob: {
+      type: Boolean,
+      default: true
+    }
+  },
   data() {
     return {
       isLoading: false,
       isShowPortfolioToolsDialog: false,
       timmer: null,
-      searchParam: { hasParent: false, sortOrder: { key: 'planStartTime', type: 'DESC' } },
+      searchParam: { sortOrder: { key: 'planStartTime', type: 'DESC' }, currentPage: 1, pageSize: 20 },
       sortOrder: [{ planStartTime: 'DESC' }],
       searchValue: {},
       jobData: {},
-      jobEndStatusList: ['completed', 'aborted', 'ignored', 'failed'], //终点状态节点列表，非终点状态列表的需要定时刷新。
       sortList: ['planStartTime', 'startTime'],
       theadList: [
-        /*{
-          title: '#',
-          key: 'id'
-        },*/
         { key: 'showChildren' },
         {
           title: this.$t('page.name'),
@@ -178,10 +180,6 @@ export default {
           type: 'user',
           uuid: 'uuid'
         },
-        // {
-        //   title: this.$t('page.sourcecategory'),
-        //   key: 'operationType'
-        // },
         {
           title: this.$t('page.sourcecategory'),
           key: 'routeName'
@@ -248,6 +246,22 @@ export default {
             url: '/api/rest/autoexec/job/source/list'
           },
           {
+            type: 'select',
+            name: 'hasParent',
+            label: this.$t('term.autoexec.jobcategory'),
+            dataList: [
+              {
+                text: this.$t('term.autoexec.parentjob'),
+                value: 'false'
+              },
+              {
+                text: this.$t('term.autoexec.subjob'),
+                value: 'true'
+              }
+            ],
+            transfer: true
+          },
+          {
             type: 'userselect',
             name: 'execUserList',
             label: this.$t('term.autoexec.operator'),
@@ -264,56 +278,56 @@ export default {
       },
       editType: 'planStartTime',
       editDialog: false,
-      jobConfig: null
+      jobConfig: null,
+      abortController: null,
+      defaultTbodyList: [],
+      expandIdList: [] // 展开ID列表
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   mounted() {
-    this.searchJob();
+    this.startSearchJob();
   },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {
-    if (this.timmer) {
-      clearTimeout(this.timmer);
-      this.timmer = null;
-    }
+    this.stopSearchJob();
   },
   destroyed() {},
   methods: {
-    toggleChildJob(row, isShow) {
+    toggleChildJob(row) {
+      const { keyword = '' } = this.searchValue || {};
+      const { id = '' } = row || {};
       if (row['showChildren']) {
         this.$set(row, 'showChildren', false);
+        this.expandIdList = this.expandIdList.filter((expandId) => expandId != id);
         for (let i = this.jobData.tbodyList.length - 1; i >= 0; i--) {
           const element = this.jobData.tbodyList[i];
-          if (element.parentId === row.id) {
+          if (element.parentId === id) {
             this.jobData.tbodyList.splice(i, 1);
           }
         }
       } else {
-        this.getChildrenJob(row);
-      }
-    },
-    getChildrenJob(parentRow) {
-      this.$set(parentRow, 'loading', true);
-      this.$api.autoexec.job.searchJobList({ parentId: parentRow.id }).then(res => {
-        const jobList = res.Return.tbodyList;
-        if (jobList && jobList.length > 0) {
-          const pIndex = this.jobData.tbodyList.findIndex(d => d === parentRow);
-          if (pIndex >= 0) {
-            this.$set(parentRow, 'showChildren', true);
-            this.$set(parentRow, 'loading', false);
-            this.jobData.tbodyList.splice(pIndex + 1, 0, ...jobList);
-          }
-        } else {
-          this.$set(parentRow, 'showChildren', true);
-          this.$set(parentRow, 'loading', false);
+        if (id) {
+          this.expandIdList.push(id);
         }
-      });
+        const pIndex = this.jobData.tbodyList.findIndex(d => d.id === id);
+        const findChildItem = this.defaultTbodyList.find((v) => v.id === id);
+        const { children = [] } = findChildItem || {};
+        if (pIndex >= 0) {
+          this.$set(row, 'showChildren', true);
+          children.forEach((item) => {
+            if (item.name) {
+              item.name = this.$utils.highlightTextByKeywords(item.name, keyword ? [keyword] : []);
+            }
+          });
+          this.jobData.tbodyList.splice(pIndex + 1, 0, ...children);
+        }
+      }
     },
     openPortfolioToolsDialog() {
       this.isShowPortfolioToolsDialog = true;
@@ -333,7 +347,9 @@ export default {
       }
     },
     toJobDetail(row) {
-      if (row.source === 'batchdeploy' || row.source === 'deployschedulepipeline') {
+      if (this.filterParams && this.filterParams.scheduleId) {
+        window.open(HOME + `/autoexec.html#/job-detail?id=` + row.id, '_blank');
+      } else if (row.source === 'batchdeploy' || row.source === 'deployschedulepipeline') {
         const {parentId = '', id = ''} = row || {};
         if (parentId != -1) {
           this.$router.push({
@@ -350,17 +366,6 @@ export default {
         });
       }
     },
-    // toOperationDetail(row) {
-    //   if (row.operationType == 'combop') {
-    //     this.$router.push({
-    //       path: 'action-detail?id=' + row.operationId
-    //     });
-    //   } else if (row.operationType == 'script') {
-    //     this.$router.push({
-    //       path: 'script-detail?versionId=' + row.operationId + '&status=' + row.status
-    //     });
-    //   }
-    // },
     toRoute(row) {
       let routeConfig = row.route?.config;
       if (routeConfig == null) {
@@ -400,74 +405,112 @@ export default {
         window.open(HOME + '/dr.html#/preparation-job-detail?id=' + routeConfig.id, '_blank');
       }
     },
-    searchJob(currentPage) {
-      if (this.timmer) {
-        clearTimeout(this.timmer);
-        this.timmer = null;
-      }
+    async searchJob(currentPage) {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
-      const param = { ...this.searchParam, ...this.searchValue };
+      // 创建新的 controller
+      const abortController = new AbortController();
+      this.abortController = abortController;
+
+      this.jobData = {};
+      const param = { ...this.searchParam, ...this.searchValue, ...this.filterParams || {} };
       this.$addHistoryData('searchValue', this.searchValue);
       this.$addHistoryData('searchParam', this.searchParam);
       this.isLoading = true;
-      this.$api.autoexec.job
-        .searchJobList(param)
-        .then(res => {
-          this.jobData = res.Return;
-          const idList = [];
-          if (this.jobData.tbodyList && this.jobData.tbodyList.length > 0) {
-            this.jobData.tbodyList.forEach(element => {
-              if (!this.jobEndStatusList.includes(element.status)) {
-                idList.push(element.id);
-              }
-            });
-            if (idList.length > 0) {
-              this.timmer = setTimeout(() => {
-                this.refresh(idList);
-              }, 5000);
-            }
-          }
-        })
-        .finally(() => {
-          this.isLoading = false;
+
+      try {
+        const res = await this.$api.autoexec.job.searchJobList(param, {
+          signal: abortController.signal
         });
-    },
-    refresh(idList) {
-      if (this.timmer) {
-        clearTimeout(this.timmer);
-        this.timmer = null;
-      }
-      this.$api.autoexec.job.searchJobList({ needPage: false, idList: idList }).then(res => {
-        const jobList = res.Return.tbodyList;
-        const newIdList = [];
-        if (jobList && jobList.length > 0) {
-          jobList.forEach(job => {
-            const element = this.jobData.tbodyList.find(d => d.id === job.id);
-            if (element) {
-              this.$set(element, 'status', job.status);
-              this.$set(element, 'statusName', job.statusName);
-              this.$set(element, 'startTime', job.startTime);
-              this.$set(element, 'endTime', job.endTime);
-            }
-          });
-          this.jobData.tbodyList.forEach(job => {
-            if (!this.jobEndStatusList.includes(job.status)) {
-              newIdList.push(job.id);
-            }
-          });
-          if (newIdList.length > 0) {
-            this.timmer = setTimeout(() => {
-              this.refresh(newIdList);
-            }, 5000);
+        const { tbodyList = [], ...restParams } = res.Return || {};
+
+        this.defaultTbodyList = [...tbodyList]; // 子作业数据源
+
+        // 刷新列表的时候，展开的数据默认保持不变
+        const { keyword = '', hasParent = '' } = this.searchValue || {};
+        const keywordLower = (keyword || '').toLowerCase();
+        const keywordList = keyword ? [keyword] : [];
+        const isParentMode = hasParent === 'false';
+        const isSubMode = hasParent === 'true';
+        let resultList = [];
+        if (tbodyList.length == 0) {
+          return false;
+        }
+        tbodyList.forEach((tbodyItem) => {
+          const children = tbodyItem.children || [];
+          const id = tbodyItem.id || '';
+          const parentItem = {
+            ...tbodyItem,
+            showChildren: false
+          };
+
+          resultList.push(parentItem);
+          
+          // 是否有子作业命中关键字
+          const hasMatchChild = keywordLower && children.some(child => (child.name || '').toLowerCase().includes(keywordLower));
+
+          // 是否需要展开子作业
+          const shouldExpand = isSubMode || (hasMatchChild && this.$utils.isEmpty(hasParent)) || (id && this.expandIdList.includes(id));
+          
+          if (shouldExpand && children.length) {
+            parentItem.showChildren = true;
+            resultList.push(...children);
+          }
+        });
+
+        let targetList = resultList.filter(item => item.name);
+
+        if (isParentMode) {
+          const parents = targetList.filter(item => item.parentId == -1);
+          if (parents.length > 0) {
+            targetList = parents;
+          } 
+        } else if (isSubMode) {
+          const subs = targetList.filter(item => item.parentId != -1);
+          if (subs.length > 0) {
+            targetList = subs;
           }
         }
-      });
+        targetList.forEach(item => {
+          item.name = this.$utils.highlightTextByKeywords(item.name, keywordList);
+        });
+        this.jobData = {
+          ...restParams,
+          tbodyList: resultList
+        };
+
+        // 返回是否需要继续轮询（关键）
+        return resultList.length > 0;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    startSearchJob(currentPage) {
+      // 防止重复启动
+      this.stopSearchJob();
+
+      this.timmer = this.$utils.setInterval(async() => {
+        const needContinue = await this.searchJob(currentPage);
+
+        // 没有数据了，自动停
+        if (!needContinue) {
+          this.stopSearchJob();
+        }
+      }, 30 * 1000);
+    },
+    stopSearchJob() {
+      if (this.abortController) {
+        this.abortController.abort();
+      }
+      if (this.timmer) {
+        this.timmer.clear();
+        this.timmer = null;
+      }
     },
     changePageSize(pageSize) {
       this.searchParam.pageSize = pageSize;
-      this.searchJob(1);
+      this.startSearchJob(1);
     },
     executeRow(row) {
       //执行作业
@@ -491,7 +534,7 @@ export default {
             .then(res => {
               if (res.Status == 'OK') {
                 this.$Message.success(this.$t('message.executesuccess'));
-                this.searchJob();
+                this.startSearchJob();
               }
             })
             .finally(() => {
@@ -508,7 +551,7 @@ export default {
     updateJobData(isUpdate) {
       this.editDialog = false;
       if (isUpdate) {
-        this.searchJob();
+        this.startSearchJob();
       }
     },
     deleteRow(row) {
@@ -521,7 +564,7 @@ export default {
             .deleteJob({ jobId: row.id })
             .then(res => {
               if (res.Status == 'OK') {
-                this.searchJob();
+                this.startSearchJob();
                 this.$Message.success(this.$t('message.deletesuccess'));
               }
             })
@@ -538,7 +581,7 @@ export default {
       for (let key in sort) {
         this.$set(this.searchParam, 'sortOrder', { key: key, type: sort[key] });
       }
-      this.searchJob();
+      this.startSearchJob();
     }
   },
   computed: {
@@ -554,3 +597,5 @@ export default {
   watch: {}
 };
 </script>
+<style lang="less" scoped>
+</style>

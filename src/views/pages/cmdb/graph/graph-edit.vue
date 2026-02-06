@@ -37,8 +37,8 @@
                 <Icon type="ios-arrow-down"></Icon>
               </span>
               <DropdownMenu slot="list">
-                <DropdownItem v-for="(graph, index) in invokeGraphList" :key="index">
-                  <a :class="graph.icon" href="javascript:void(0)" @click="toGraph(graph)">{{ graph.name }}</a>
+                <DropdownItem v-for="(graphItem, index) in invokeGraphList" :key="index">
+                  <a :class="graphItem.icon" href="javascript:void(0)" @click="toGraph(graphItem)">{{ graphItem.name }}</a>
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>

@@ -41,7 +41,7 @@
           <FormItem
             :ref="'formitem_' + row._selected + '_' + row.uuid"
             :formItem="getExtraFormItem(extra,row)"
-            :formItemList="$utils.deepClone(extraList.concat(formItemList))"
+            :formItemList="mergedFormItemList"
             :disabled="!row._selected || disabled"
             :value="row[extra.uuid]"
             :formData="{...$utils.deepClone(formData || {}), ...row}"
@@ -301,6 +301,8 @@ export default {
             if (['formselect', 'formradio', 'formcheckbox'].includes(dataConfig.handler)) {
               if (Array.isArray(defaultValue)) {
                 defaultValueObj = defaultValue.map(d => ({ text: d, value: d }));
+              } else if (typeof defaultValue === 'object') {
+                defaultValueObj = defaultValue;
               } else {
                 defaultValueObj = { text: defaultValue, value: defaultValue };
               }
@@ -389,6 +391,10 @@ export default {
     },
     extraList() {
       return this.config.dataConfig.filter(d => d.isExtra && d.isPC);
+    },
+    mergedFormItemList() {
+      const merged = [...this.extraList, ...this.formItemList];
+      return this.$utils.deepClone(merged);
     }
   },
   watch: {

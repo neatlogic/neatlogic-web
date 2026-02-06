@@ -9,6 +9,7 @@
       keyName="id"
       :disabled="disabled"
       @getSelected="getSelectedAppSystemModuleVersion"
+      @headerTitleOperation="headerTitleOperation"
     >
       <template v-slot:envScenario="{ row }">
         <div style="while-space:normal">
@@ -39,6 +40,7 @@
       </template>
     </TsTable>
     <VersionDialog v-if="isVersionDialogShow" :jobTemplateData="currentJobTemplate" @close="closeVersionDialog"></VersionDialog>
+    <EditPipelineVersionDialog v-if="isEditVersionDialogShow" :appSystemModuleVersionList="selectedAppSystemModuleVersionList" @close="closeEditVersionDialog"></EditPipelineVersionDialog>
   </div>
 </template>
 <script>
@@ -47,7 +49,8 @@ export default {
   components: {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    VersionDialog: () => import('@/views/pages/deploy/pipeline/version-dialog.vue')
+    VersionDialog: () => import('@/views/pages/deploy/pipeline/version-dialog.vue'),
+    EditPipelineVersionDialog: () => import('./edit-pipeline-version-dialog.vue')
 
   },
   props: {
@@ -58,6 +61,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    defaultVersion: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -73,12 +80,15 @@ export default {
         { key: 'appSystemAbbrName', title: this.$t('page.apply') },
         { key: 'appModuleAbbrName', title: this.$t('page.module') },
         { key: 'envScenario', title: this.$t('term.deploy.envscene') },
-        { key: 'version', title: this.$t('page.versions'), width: 250 }
+        { key: 'version', title: this.$t('page.versions'), width: 250, headerIcon: 'tsfont-edit' }
       ],
       appSystemModuleEnvList: [],
       valueList: [],
       isVersionDialogShow: false,
-      currentJobTemplate: null
+      currentJobTemplate: null,
+      isEditVersionDialogShow: false,
+      selectedAppSystemModuleVersionList: [],
+      jobTemplateVersionMap: {}
     };
   },
   beforeCreate() {},
@@ -101,7 +111,7 @@ export default {
     },
     listPipelineAppSystemModuleEnvScenario() {
       if (this.jobData.pipelineId) {
-        this.$api.deploy.pipeline.ListPipelineAppSystemModuleEnvScenario(this.jobData.pipelineId).then(res => {
+        this.$api.deploy.pipeline.ListPipelineAppSystemModuleEnvScenario(this.jobData.pipelineId).then(async(res) => {
           this.appSystemModuleEnvList = res.Return;
           this.appSystemModuleEnvList.forEach((item) => {
             let findItem = this.jobData.appSystemModuleVersionList.find(f => f.id == item.id);
@@ -113,6 +123,21 @@ export default {
           if (this.jobData.appSystemModuleVersionList.length) {
             this.valueList = this.jobData.appSystemModuleVersionList.map(v => {
               return v.id;
+            });
+          } else {
+            if (!this.$utils.isEmpty(this.appSystemModuleEnvList)) {
+              await this.getJobTemplateVersionList();
+            }
+            this.appSystemModuleEnvList && this.appSystemModuleEnvList.forEach(item => {
+              this.valueList.push(item.id);
+              this.$set(item, '_selected', true);
+              this.$set(item, 'versionId', this.jobTemplateVersionMap[item.id]);
+              this.jobData.appSystemModuleVersionList.push({
+                appSystemId: item.appSystemId,
+                appModuleId: item.appModuleId,
+                versionId: item.versionId,
+                id: item.id
+              });
             });
           }
         });
@@ -196,6 +221,57 @@ export default {
         appSystemModuleVersionList: this.jobData.appSystemModuleVersionList
       };
       return data;
+    },
+    headerTitleOperation() {
+      this.selectedAppSystemModuleVersionList = [];
+      if (this.$utils.isEmpty(this.valueList)) {
+        this.$Message.warning('请选择应用系统模块版本');
+        return;
+      }
+      this.appSystemModuleEnvList.forEach(item => {
+        if (item._selected && (item.isHasBuildTypeTool == 1 || item.isHasDeployTypeTool == 1)) {
+          this.selectedAppSystemModuleVersionList.push(item);
+        }
+      });
+      if (!this.selectedAppSystemModuleVersionList.length) {
+        this.$Message.info('应用系统模块中不需要设置版本');
+        return;
+      }
+      this.isEditVersionDialogShow = true;
+    },
+    closeEditVersionDialog(jobTemplateVersionMap) {
+      this.isEditVersionDialogShow = false;
+      if (!this.$utils.isEmpty(jobTemplateVersionMap)) {
+        this.appSystemModuleEnvList.forEach(item => {
+          item.versionId = jobTemplateVersionMap[item.id];
+        });
+        this.jobData.appSystemModuleVersionList.forEach(item => {
+          item.versionId = jobTemplateVersionMap[item.id];
+        });
+      }
+    },
+    getJobTemplateVersionList() { //获取选中的应用系统模块版本列表
+      if (!this.defaultVersion) {
+        return false;
+      }
+      let jobTemplateIdList = [];
+      this.appSystemModuleEnvList.forEach(item => {
+        if (item.isHasBuildTypeTool == 1 || item.isHasDeployTypeTool == 1) {
+          jobTemplateIdList.push(item.id);
+        }
+      });
+      if (!jobTemplateIdList.length) {
+        return false;
+      }
+      let data = {
+        jobTemplateIdList: jobTemplateIdList,
+        version: this.defaultVersion
+      };
+      return this.$api.deploy.pipeline.getJobTemplateVersionList(data).then(res => {
+        if (res.Status === 'OK') {
+          this.jobTemplateVersionMap = res.Return || {};
+        }
+      });
     }
   },
   filter: {},

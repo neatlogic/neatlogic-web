@@ -23,6 +23,19 @@
                 "
               ></ReactionFilter>
             </div>
+            <div v-else-if="key === 'setvalue'">
+              <ReactionSetvalue
+                :ref="'condition_' + key"
+                :formItemList="formItemList"
+                :formItem="formItemLocal"
+                :value="r"
+                @input="
+                  rule => {
+                    setReaction(key, rule);
+                  }
+                "
+              ></ReactionSetvalue>
+            </div>
             <ConditionGroup
               v-else
               :ref="'condition_' + key"
@@ -36,66 +49,8 @@
                 }
               "
             ></ConditionGroup>
-            <div v-if="key === 'setvalue'" class="pb-nm">
-              <template v-if="!$utils.isEmpty(r)">
-                <div class="mt-sm mb-sm text-grey">{{ $t('term.framework.assignment') }}</div>
-                <!--isDynamicValue: 是否可以动态赋值  -->
-                <div v-if="formItem.isDynamicValue" class="pb-sm">
-                  <TsFormRadio
-                    :value="r.type || 'static'"
-                    :dataList="typeDataList"
-                    @change="
-                      val => {
-                        $set(r, 'type', val);
-                        $set(r, 'value', null);
-                      }
-                    "
-                  ></TsFormRadio>
-                </div>
-                <!--dynamic:动态赋值  -->
-                <TsFormSelect
-                  v-if="r.type === 'dynamic'"
-                  :ref="'condition_' + key"
-                  :value="r.value"
-                  :dataList="hasValueFormItemList"
-                  :validateList="validateList"
-                  valueName="uuid"
-                  textName="label"
-                  border="border"
-                  transfer
-                  @on-change="
-                    val => {
-                      $set(r, 'value', val);
-                    }
-                  "
-                ></TsFormSelect>
-                <FormItem
-                  v-else
-                  :ref="'condition_' + key"
-                  :formItem="getFormItem()"
-                  :value="r.value"
-                  mode="condition"
-                  :showStatusIcon="false"
-                  isCustomValue
-                  isNeedVadliValidate
-                  @change="
-                    val => {
-                      $set(r, 'value', val);
-                    }
-                  "
-                ></FormItem>
-              </template>
-              <!--<div class="mt-sm mb-sm text-grey">初始化时执行</div>
-              <TsFormSwitch
-                :trueValue="true"
-                :falseValue="false"
-                :value="r.isFirstLoad"
-                @on-change="val => {
-                  $set(r, 'isFirstLoad', val);
-                }"
-              ></TsFormSwitch>-->
-            </div>
-            <div v-else-if="key === 'emit'">
+          
+            <div v-if="key === 'emit'">
               <div class="mt-sm mb-sm text-grey">{{ $t('page.triggerevent') }}</div>
               <TsFormRadio
                 :value="r.event"
@@ -141,10 +96,9 @@ export default {
   components: {
     ConditionGroup: () => import('@/resources/plugins/TsSheet/form/config/common/condition-group.vue'),
     ReactionFilter: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-filter.vue'),
-    FormItem: () => import('./form-item.vue'),
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    ReactionSetValueOtherSetting: () => import('./form-item-reaction-setvalueother-setting.vue')
+    ReactionSetValueOtherSetting: () => import('./form-item-reaction-setvalueother-setting.vue'),
+    ReactionSetvalue: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-setvalue.vue')
 
   },
   props: {
@@ -290,32 +244,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-    hasValueFormItemList() {
-      let list = this.formItemList.filter(d => d.hasValue && (!this.formItem || (this.formItem && d.uuid != this.formItem.uuid)) && !d.excludedFromCondition /*!this.filterComponentList.includes(d.handler)*/);
-      let newList = [];
-      list.forEach(item => {
-        let obj = {
-          label: item.label,
-          uuid: item.uuid
-        };
-        let children = [];
-        if (!this.$utils.isEmpty(item.config.hiddenFieldList)) {
-          item.config.hiddenFieldList.forEach(a => {
-            children.push({
-              label: item.label + '.' + a.text,
-              uuid: item.uuid + '#' + a.value
-            });
-          });
-        }
-        newList.push(obj);
-        if (!this.$utils.isEmpty(children)) {
-          newList.push(...children);
-        }
-      });
-      return newList;
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>

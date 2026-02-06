@@ -5,16 +5,26 @@
         <span v-if="$hasBack()" class="text-action tsfont-left" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <span>
-          <TsFormInput
-            ref="inputName"
-            v-model="pipelineData.name"
-            border="border"
-            :validateList="[{ name: 'required', message: ' ' }]"
-            :maxlength="50"
-            :width="450"
-          ></TsFormInput>
-        </span>
+        <TsRow :gutter="8">
+          <Col :span="isNeedDefaultVersion?'16':'24'">
+            <TsFormInput
+              ref="inputName"
+              v-model="pipelineData.name"
+              border="border"
+              :validateList="[{ name: 'required', message: ' ' }]"
+              :maxlength="50"
+            ></TsFormInput>
+          </Col>
+          <Col v-if="isNeedDefaultVersion" span="8">
+            <TsFormInput
+              v-model="pipelineData.defaultVersion"
+              :placeholder="$t('form.placeholder.pleaseinput',{'target':$t('term.deploy.defaultversion')})"
+              :validateList="versionValidateList"
+              border="border"
+              maxlength="50"
+            ></TsFormInput>
+          </Col>
+        </TsRow>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
@@ -174,7 +184,9 @@ export default {
       jobTemplateMap: {}, //编辑job时如果不存在则通过接口获取
       appConfigList: [], //应用配置列表
       validList: [], //校验列表
-      isValidPipelineDialogShow: false //校验弹窗是否显示
+      isValidPipelineDialogShow: false, //校验弹窗是否显示
+      versionValidateList: ['key-special'],
+      isNeedDefaultVersion: false
     };
   },
   beforeCreate() {},
@@ -188,6 +200,9 @@ export default {
     if (this.$route.query['id']) {
       this.id = parseInt(this.$route.query['id']);
       this.getPipelineById();
+    }
+    if (this.$route.query['isNeedDefaultVersion'] === 'true') {
+      this.isNeedDefaultVersion = true;
     }
   },
   beforeMount() {},
@@ -296,6 +311,7 @@ export default {
         this.$api.deploy.pipeline.getPipelineById(this.id).then(res => {
           this.pipelineData = res.Return;
           this.appConfigList = res.Return.appConfigList || [];
+          this.isNeedDefaultVersion = !!this.pipelineData.isNeedDefaultVersion || false;
           //在每个通道最后都增加一个空组
           this.pipelineData.laneList.forEach(lane => {
             lane.groupList.push({ jobTemplateList: [] });

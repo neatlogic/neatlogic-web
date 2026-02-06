@@ -11,8 +11,8 @@
       <template slot="topRight">
         <TsRow>
           <Col :span="12">
-            <TimeSelect 
-              v-model="timeParams" 
+            <TimeSelect
+              v-model="timeParams"
               :clearable="false"
               @change="changePage(1)"
             />
@@ -101,7 +101,7 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestory() {},
+  beforeDestroy() {},
   destroyed() {},
   methods: {
     searchUserLoginList() {

@@ -276,11 +276,7 @@ export default {
     },
     showLabel() {
       return data => {
-        let label = data.name || '';
-        if (data.ip) {
-          label += '[' + data.ip + ']';
-        }
-        return label;
+        return this.$utils.getInstanceIpPort(data);
       };
     }
   },
