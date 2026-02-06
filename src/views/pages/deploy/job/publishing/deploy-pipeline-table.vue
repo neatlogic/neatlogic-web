@@ -258,8 +258,8 @@ export default {
         this.isLoading = false;
       }
     },
-    searchJob(currentPage, searchValue) {
-      this.stopPollingSerchJobData(); // 防止重复启动
+    searchJob(currentPage, searchValue, isAbortRequest = false) {
+      this.stopPollingSerchJobData(isAbortRequest); // 防止重复启动
 
       if (!this.isNeedRefresh) {
         this.searchJobData(currentPage, searchValue);
@@ -274,13 +274,13 @@ export default {
         }
       }, 30 * 1000);
     },
-    stopPollingSerchJobData() {
-      if (this.abortController) {
-        this.abortController.abort();
-      }
+    stopPollingSerchJobData(isAbortRequest = false) {
       if (this.timmer) {
         this.timmer.clear();
         this.timmer = null;
+        if (this.abortController && isAbortRequest) {
+          this.abortController.abort();
+        }
       }
     },
     changePageSize(pageSize) {
