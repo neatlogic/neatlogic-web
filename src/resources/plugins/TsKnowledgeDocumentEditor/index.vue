@@ -41,7 +41,7 @@
             @insert-menu-content="(menuData) => handleInsertMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
             @replace-menu-content="(menuData) => handleReplaceMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
             @insert-below-position="menuData => handleInsertBelowPosition({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
-            @dragHandleMouse="dragHandleMouse"
+            @handleMouse="handleMouse"
           ></BlockMenu>
           <SelectContentMenu
             v-show="isShowSelectContentMenu"
@@ -540,7 +540,7 @@ export default {
     getSaveData() {
       return this.editor.getJSON();
     },
-    dragHandleMouse(status) { // 处理鼠标悬停, 悬停时添加行高亮
+    handleMouse(status) { // 处理鼠标悬停, 悬停时添加行高亮
       if (!this.hoverBlockDom) return;
 
       const { state, view } = this.editor;
