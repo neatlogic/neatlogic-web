@@ -1,7 +1,7 @@
 import axios from '../../http';
 const job = {
-  searchJobList(params) { //搜索作业
-    return axios.post('/api/rest/deploy/job/search', params);
+  searchJobList(params, cancelRequest = {}) { //搜索作业
+    return axios.post('/api/rest/deploy/job/search', params, cancelRequest);
   },
   getCreateJobData(params) { //获取创建发布作业初始化信息接口
     return axios.post('/api/rest/deploy/job/create/info/get', params);

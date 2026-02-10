@@ -69,7 +69,7 @@
       </template>
       <template v-slot:topRight>
         <div>
-          <CombineSearcher v-model="searchValue" v-bind="searchConfig" @change="searchJob(1)"></CombineSearcher>
+          <CombineSearcher v-model="searchValue" v-bind="searchConfig" @change="searchJob(1, true)"></CombineSearcher>
         </div>
       </template>
       <template v-slot:sider>
@@ -157,7 +157,7 @@ export default {
   props: {},
   data() {
     return {
-      searchParam: { hasParent: false, authorityActionList: ['view'], sortOrder: {key: 'planStartTime', type: 'DESC'} },
+      searchParam: { authorityActionList: ['view'], sortOrder: {key: 'planStartTime', type: 'DESC'} },
       sortList: ['planStartTime', 'startTime'],
       sortOrder: [{planStartTime: 'DESC'}],
       noConfigInfo: false, // 无配置信息，模块和环境
@@ -203,6 +203,22 @@ export default {
             multiple: true,
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'JobStatus' },
+            transfer: true
+          },
+          {
+            type: 'select',
+            name: 'hasParent',
+            label: this.$t('term.autoexec.jobcategory'),
+            dataList: [
+              {
+                text: this.$t('term.autoexec.parentjob'),
+                value: 'false'
+              },
+              {
+                text: this.$t('term.autoexec.subjob'),
+                value: 'true'
+              }
+            ],
             transfer: true
           }
         ]
@@ -316,14 +332,15 @@ export default {
     globalLockClose() {
       this.isShowResourceLockDialog = false;
     },
-    searchJob(currentPage) {
+    searchJob(currentPage, isAbortRequest = false) {
+      // isAbortRequest：搜索触发时，中止未完成的上一轮询请求
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
       this.$addHistoryData('searchValue', this.searchValue);
       this.$addHistoryData('searchParam', this.searchParam);
       if (this.$refs.tableData) {
-        this.$refs.tableData.searchJob(currentPage, this.searchValue);
+        this.$refs.tableData.searchJob(currentPage, this.searchValue, isAbortRequest);
       }
     },
     getSelectedApp(app) {

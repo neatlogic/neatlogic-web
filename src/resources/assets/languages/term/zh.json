@@ -921,7 +921,11 @@
     "jobcount": "自动化作业数",
     "precondition": "前置过滤器",
     "globalprecondition": "全局前置过滤器",
-    "preconditiontip": "如果为空时，继承全局前置过滤器"
+    "preconditiontip": "如果为空时，继承全局前置过滤器",
+    "jobcategory": "作业分类",
+    "parentjob": "父作业",
+    "subjob": "子作业",
+    "ignoreall": "是否忽略所有节点"
   },
   "framework": {
     "roleauth": "创建完角色立即授权",

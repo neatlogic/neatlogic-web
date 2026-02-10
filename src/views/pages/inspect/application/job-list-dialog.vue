@@ -21,7 +21,7 @@
           </Row>
         </div>
         <div>
-          <JobList :params="searchParam"></JobList>
+          <JobManage :filter-params="searchParam" :can-add-job="false" :can-delete-job="false"></JobManage>
         </div>
       </template>
     </TsDialog>
@@ -33,7 +33,7 @@ export default {
   components: {
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker.vue'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
-    JobList: () => import('pages/autoexec/manage/job/job-list.vue')
+    JobManage: () => import('@/views/pages/autoexec/manage/job-manage.vue')
   },
   props: {
     id: {
