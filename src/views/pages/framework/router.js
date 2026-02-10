@@ -1,3 +1,4 @@
+import ComponentManager from '@/resources/import/component-manager.js';
 const refresh = () => import('@/views/pages/common/refresh.vue');
 const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
@@ -801,4 +802,18 @@ let routerList = [
   }
 
 ];
+if (ComponentManager.getVueTemplate('ai-model-manage')) {
+  routerList.push({
+    path: '/ai-model-manage',
+    name: 'aiModelManage',
+    component: ComponentManager.getVueTemplate('ai-model-manage'),
+    meta: {
+      title: '模型管理',
+      ismenu: true,
+      icon: 'tsfont-ai',
+      authority: 'AI_ADMIN',
+      type: 'ai'
+    }
+  });
+}
 export default routerList;

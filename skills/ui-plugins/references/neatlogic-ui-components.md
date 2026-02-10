@@ -1,0 +1,78 @@
+# neatlogic-ui (iview) component inventory
+Source: `node_modules/neatlogic-ui/iview/index.js`. All components are globally registered via `Vue.use(ViewUI)` in `src/resources/base.js`.
+
+## Component modules
+- `Affix` from `node_modules/neatlogic-ui/iview/components/affix/`
+- `Alert` from `node_modules/neatlogic-ui/iview/components/alert/`
+- `Anchor` from `node_modules/neatlogic-ui/iview/components/anchor/`
+- `AnchorLink` from `node_modules/neatlogic-ui/iview/components/anchor-link/`
+- `AutoComplete` from `node_modules/neatlogic-ui/iview/components/auto-complete/`
+- `Avatar` from `node_modules/neatlogic-ui/iview/components/avatar/`
+- `BackTop` from `node_modules/neatlogic-ui/iview/components/back-top/`
+- `Badge` from `node_modules/neatlogic-ui/iview/components/badge/`
+- `Breadcrumb` from `node_modules/neatlogic-ui/iview/components/breadcrumb/`
+- `Button` from `node_modules/neatlogic-ui/iview/components/button/`
+- `Card` from `node_modules/neatlogic-ui/iview/components/card/`
+- `Carousel` from `node_modules/neatlogic-ui/iview/components/carousel/`
+- `Cascader` from `node_modules/neatlogic-ui/iview/components/cascader/`
+- `Cell` from `node_modules/neatlogic-ui/iview/components/cell/`
+- `Checkbox` from `node_modules/neatlogic-ui/iview/components/checkbox/`
+- `Circle` from `node_modules/neatlogic-ui/iview/components/circle/`
+- `Collapse` from `node_modules/neatlogic-ui/iview/components/collapse/`
+- `ColorPicker` from `node_modules/neatlogic-ui/iview/components/color-picker/`
+- `Content` from `node_modules/neatlogic-ui/iview/components/content/`
+- `DatePicker` from `node_modules/neatlogic-ui/iview/components/date-picker/`
+- `Divider` from `node_modules/neatlogic-ui/iview/components/divider/`
+- `Drawer` from `node_modules/neatlogic-ui/iview/components/drawer/`
+- `Dropdown` from `node_modules/neatlogic-ui/iview/components/dropdown/`
+- `Footer` from `node_modules/neatlogic-ui/iview/components/footer/`
+- `Form` from `node_modules/neatlogic-ui/iview/components/form/`
+- `Header` from `node_modules/neatlogic-ui/iview/components/header/`
+- `Icon` from `node_modules/neatlogic-ui/iview/components/icon/`
+- `Input` from `node_modules/neatlogic-ui/iview/components/input/`
+- `InputNumber` from `node_modules/neatlogic-ui/iview/components/input-number/`
+- `Scroll` from `node_modules/neatlogic-ui/iview/components/scroll/`
+- `Split` from `node_modules/neatlogic-ui/iview/components/split/`
+- `Layout` from `node_modules/neatlogic-ui/iview/components/layout/`
+- `LoadingBar` from `node_modules/neatlogic-ui/iview/components/loading-bar/`
+- `Menu` from `node_modules/neatlogic-ui/iview/components/menu/`
+- `Message` from `node_modules/neatlogic-ui/iview/components/message/`
+- `Modal` from `node_modules/neatlogic-ui/iview/components/modal/`
+- `Notice` from `node_modules/neatlogic-ui/iview/components/notice/`
+- `Page` from `node_modules/neatlogic-ui/iview/components/page/`
+- `Poptip` from `node_modules/neatlogic-ui/iview/components/poptip/`
+- `Progress` from `node_modules/neatlogic-ui/iview/components/progress/`
+- `Radio` from `node_modules/neatlogic-ui/iview/components/radio/`
+- `Rate` from `node_modules/neatlogic-ui/iview/components/rate/`
+- `Sider` from `node_modules/neatlogic-ui/iview/components/sider/`
+- `Slider` from `node_modules/neatlogic-ui/iview/components/slider/`
+- `Spin` from `node_modules/neatlogic-ui/iview/components/spin/`
+- `Steps` from `node_modules/neatlogic-ui/iview/components/steps/`
+- `Switch` from `node_modules/neatlogic-ui/iview/components/switch/`
+- `Table` from `node_modules/neatlogic-ui/iview/components/table/`
+- `Tabs` from `node_modules/neatlogic-ui/iview/components/tabs/`
+- `Tag` from `node_modules/neatlogic-ui/iview/components/tag/`
+- `Time` from `node_modules/neatlogic-ui/iview/components/time/`
+- `Timeline` from `node_modules/neatlogic-ui/iview/components/timeline/`
+- `TimePicker` from `node_modules/neatlogic-ui/iview/components/time-picker/`
+- `Tooltip` from `node_modules/neatlogic-ui/iview/components/tooltip/`
+- `Transfer` from `node_modules/neatlogic-ui/iview/components/transfer/`
+- `Tree` from `node_modules/neatlogic-ui/iview/components/tree/`
+- `Upload` from `node_modules/neatlogic-ui/iview/components/upload/`
+
+## Global component aliases
+- `iButton`
+- `iCircle`
+- `iCol`
+- `iContent`
+- `iForm`
+- `iFooter`
+- `iHeader`
+- `iInput`
+- `iMenu`
+- `iOption`
+- `iProgress`
+- `iSelect`
+- `iSwitch`
+- `iTable`
+- `iTime`

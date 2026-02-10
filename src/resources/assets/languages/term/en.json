@@ -2964,5 +2964,11 @@
   },
   "infromant": {
     "report": "analysis report"
+  },
+  "ai": {
+    "baseurl": "base address",
+    "temperature": "temperature",
+    "modelsetting": "Model Settings",
+    "session": "conversation"
   }
 }

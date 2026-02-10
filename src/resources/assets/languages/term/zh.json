@@ -2961,5 +2961,11 @@
   },
   "infromant": {
     "report": "分析报告"
+  },
+  "ai": {
+    "baseurl": "基地址",
+    "temperature": "温度",
+    "modelsetting": "模型设置",
+    "session": "会话"
   }
 }

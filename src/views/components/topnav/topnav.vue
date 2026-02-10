@@ -11,6 +11,7 @@
       <TopnavMenu v-if="!isAtNaviPage" />
     </div>
     <div v-if="!$store.state.isPwdRedirected" class="topnav-right-container">
+      <component :is="AiChatNav" v-if="AiChatNav" class="pr-nm"></component>
       <TopnavExportManage class="pr-nm"></TopnavExportManage>
       <TopnavHelp v-if="!isAtNaviPage" class="pr-nm"></TopnavHelp>
       <TopnavMessage class="pr-nm" />
@@ -20,6 +21,7 @@
 </template>
 
 <script>
+import ComponentManager from '@/resources/import/component-manager.js';
 import {store} from '@/views/pages/framework/theme/state.js';
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
 import TopnavUser from './topnav-user.vue';
@@ -36,8 +38,12 @@ export default {
   },
   data() {
     return {
-      home: HOME
+      home: HOME,
+      AiChatNav: null
     };
+  },
+  async created() {
+    this.AiChatNav = ComponentManager.getVueTemplate('ai-chat-nav');
   },
   methods: {
     toHomePage() {
