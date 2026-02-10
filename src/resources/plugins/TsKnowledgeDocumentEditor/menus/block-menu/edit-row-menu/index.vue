@@ -4,7 +4,7 @@
       :placement="menuType === 'text' ? 'bottom-start' : 'right'"
       @on-click="handleClick"
     >
-      <div class="knowledge-document-editor-plus-box">
+      <div class="knowledge-document-editor-plus-box" @mouseenter="handleEnter" @mouseleave="handleLeave">
         <span :class="getFontClassName" class="text-href" style="margin-right: -5px;"></span>
         <span class="tsfont-option-vertical cursor-pointer"></span>
       </div>
@@ -58,6 +58,12 @@ export default {
     },
     insertBelowPosition(menuData) {
       this.$emit('insert-below-position', menuData);
+    },
+    handleEnter(e) {
+      this.$emit('dragHandleMouse', true);
+    },
+    handleLeave(e) {
+      this.$emit('dragHandleMouse', false);
     }
   },
   filter: {},

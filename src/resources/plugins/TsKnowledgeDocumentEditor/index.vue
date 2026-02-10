@@ -41,6 +41,7 @@
             @insert-menu-content="(menuData) => handleInsertMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
             @replace-menu-content="(menuData) => handleReplaceMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
             @insert-below-position="menuData => handleInsertBelowPosition({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
+            @dragHandleMouse="dragHandleMouse"
           ></BlockMenu>
           <SelectContentMenu
             v-show="isShowSelectContentMenu"
@@ -103,6 +104,7 @@ import { RowColSelected } from '@/resources/plugins/TsKnowledgeDocumentEditor/ex
 import { TableUtils } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/table-utils.js';
 import { getHoverTargetByEvent, getTableRowHeights, getLinksInfoFromParagraph } from '@/resources/plugins/TsKnowledgeDocumentEditor/utils/node-utils.js';
 import { getSelectedTextInfo, getSelectionNode } from '@/resources/plugins/TsKnowledgeDocumentEditor/utils/selection-utils.js';
+import { HoverHighlightPlugin, hoverHighlightKey } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/hover-highlight.js';
 export default {
   components: {
     EditorContent,
@@ -235,6 +237,7 @@ export default {
       onCreate({ editor }) {
         // 编辑器初始化完成时触发，用于处理初始内容回显（左侧菜单渲染）
         _this.getAllHeadings(editor);
+        editor.registerPlugin(HoverHighlightPlugin());
       },
       onUpdate({ editor }) {
         // 文档内容发生变更时触发（用户输入、粘贴、命令等），用于更新左侧菜单
@@ -536,6 +539,34 @@ export default {
     },
     getSaveData() {
       return this.editor.getJSON();
+    },
+    dragHandleMouse(status) { // 处理鼠标悬停, 悬停时添加行高亮
+      if (!this.hoverBlockDom) return;
+
+      const { state, view } = this.editor;
+      const pos = view.posAtDOM(this.hoverBlockDom, 0);
+      if (pos == null) return;
+
+      const $pos = state.doc.resolve(pos);
+      const range = $pos.blockRange();
+      if (!range) return;
+
+      const from = range.start;
+      const to = range.end;
+
+      if (status) {
+        view.dispatch(
+          state.tr.setMeta(hoverHighlightKey, {
+            add: { from, to }
+          })
+        );
+      } else {
+        view.dispatch(
+          state.tr.setMeta(hoverHighlightKey, {
+            clear: true
+          })
+        );
+      }
     }
   },
   computed: {
@@ -606,5 +637,13 @@ export default {
     z-index: 9999;
     pointer-events: none;
   }
+}
+.editor-content-container {
+  line-height: 26px;
+}
+.block-hover-highlight {
+  background-color: rgba(22, 112, 240, 0.1) !important;
+  border-radius: 5px;
+  transition: background-color 0.15s ease;
 }
 </style>

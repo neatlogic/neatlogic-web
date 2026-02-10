@@ -27,6 +27,7 @@
       @insert-below-position="(menuData)=> {
         $emit('insert-below-position', menuData)
       }"
+      @dragHandleMouse="dragHandleMouse"
     >
     </EditRowMenu>
   </div>
@@ -73,7 +74,11 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {},
+  methods: {
+    dragHandleMouse(status) {
+      this.$emit('dragHandleMouse', status);
+    }
+  },
   filter: {},
   computed: {},
   watch: {}
