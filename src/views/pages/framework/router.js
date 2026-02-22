@@ -800,8 +800,8 @@ let routerList = [
       type: 'healthcheck'
     }
   }
-
 ];
+
 if (ComponentManager.getVueTemplate('ai-model-manage')) {
   routerList.push({
     path: '/ai-model-manage',
@@ -811,7 +811,22 @@ if (ComponentManager.getVueTemplate('ai-model-manage')) {
       title: '模型管理',
       ismenu: true,
       icon: 'tsfont-ai',
-      authority: 'AI_ADMIN',
+      authority: 'AI_MODEL_MODIFY',
+      type: 'ai'
+    }
+  });
+}
+
+if (ComponentManager.getVueTemplate('ai-agent-manage')) {
+  routerList.push({
+    path: '/ai-agent-manage',
+    name: 'aiAgentManage',
+    component: ComponentManager.getVueTemplate('ai-agent-manage'),
+    meta: {
+      title: '智能体管理',
+      ismenu: true,
+      icon: 'tsfont-ais',
+      authority: 'AI_AGENT_MODIFY',
       type: 'ai'
     }
   });
