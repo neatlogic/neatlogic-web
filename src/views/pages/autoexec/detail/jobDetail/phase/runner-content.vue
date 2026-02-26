@@ -165,8 +165,8 @@ export default {
       });
     },
     ignorePhase() {
-      if (this.phaseData.status != 'failed') {
-        //阶段状态判断:非失败状态：不可点击;其他状态，可以点击
+      if (this.phaseData.status == 'running' || this.phaseData.status == 'completed' || this.phaseData.status == 'ignored') {
+        //阶段状态判断:进行中、已成功和已忽略状态：不可点击;其他状态，可以点击
         return false;
       }
       this.isIgnorePhseeDialogShow = true;

@@ -1,3 +1,4 @@
+import ComponentManager from '@/resources/import/component-manager.js';
 const refresh = () => import('@/views/pages/common/refresh.vue');
 const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
@@ -799,6 +800,35 @@ let routerList = [
       type: 'healthcheck'
     }
   }
-
 ];
+
+if (ComponentManager.getVueTemplate('ai-model-manage')) {
+  routerList.push({
+    path: '/ai-model-manage',
+    name: 'aiModelManage',
+    component: ComponentManager.getVueTemplate('ai-model-manage'),
+    meta: {
+      title: '模型管理',
+      ismenu: true,
+      icon: 'tsfont-ai',
+      authority: 'AI_MODEL_MODIFY',
+      type: 'ai'
+    }
+  });
+}
+
+if (ComponentManager.getVueTemplate('ai-agent-manage')) {
+  routerList.push({
+    path: '/ai-agent-manage',
+    name: 'aiAgentManage',
+    component: ComponentManager.getVueTemplate('ai-agent-manage'),
+    meta: {
+      title: '智能体管理',
+      ismenu: true,
+      icon: 'tsfont-ais',
+      authority: 'AI_AGENT_MODIFY',
+      type: 'ai'
+    }
+  });
+}
 export default routerList;

@@ -2965,5 +2965,17 @@
   },
   "infromant": {
     "report": "分析报告"
+  },
+  "ai": {
+    "baseurl": "基地址",
+    "temperature": "温度",
+    "modelsetting": "模型设置",
+    "session": "会话",
+    "apitype": "接口类型",
+    "issystemagent": "是否系统智能体",
+    "agent": "智能体",
+    "systemprompt": "系统提示词",
+    "thinking": "深度思考",
+    "customparam": "额外配置"
   }
 }
