@@ -12,6 +12,7 @@
       transfer
       v-bind="config"
       border="border"
+      :multiple="canMultiple"
       :value="conditionData && conditionData.valueList"
       :validateList="mode == 'simple' ? [] : [{ name: 'required', message: ' ' }]"
       :isCustomValue="isCustomValue"
@@ -114,6 +115,10 @@ export default {
         transfer: true
       };
       return config;
+    },
+    canMultiple() {
+      const { isMultiple = false } = this.config || {};
+      return isMultiple;
     }
   },
   watch: {}

@@ -2968,5 +2968,17 @@
   },
   "infromant": {
     "report": "analysis report"
+  },
+  "ai": {
+    "baseurl": "base address",
+    "temperature": "temperature",
+    "modelsetting": "Model Settings",
+    "session": "conversation",
+    "apitype": "interface type",
+    "issystemagent": "Is it a system intelligent agent",
+    "agent": "agent",
+    "systemprompt": "system prompt",
+    "thinking": "deep thinking",
+    "customparam": "Additional configuration"
   }
 }

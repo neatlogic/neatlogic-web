@@ -33,6 +33,7 @@
  * alertEventHandlerEdit 告警中心事件处理配置
  * alertEventHandlerView 告警中心事件处理查看
  * alertEventHandlerConfig 告警中心事件处理配置（配置组件）
+ * alChatView AI聊天工具结果查看
  * router 跨模块路由
  *   使用方法：getRouterComponent(moduleName)，moduleName为模块名称
  *   注册方法：registerRouterComponent({
@@ -40,7 +41,7 @@
  *   })
  */
 class ComponentManager {
-  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'mqTopicConfig', 'mqSubscribeConfig', 'loginPage', 'formVersionList', 'router', 'deployAppConfigModule', 'diagramWidget', 'diagramWidgetConfig', 'diagramWidgetCustomConfig', 'alertEventHandlerEdit', 'alertEventHandlerView', 'alertEventHandlerConfig'];
+  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'mqTopicConfig', 'mqSubscribeConfig', 'loginPage', 'formVersionList', 'router', 'deployAppConfigModule', 'diagramWidget', 'diagramWidgetConfig', 'diagramWidgetCustomConfig', 'alertEventHandlerEdit', 'alertEventHandlerView', 'alertEventHandlerConfig', 'aiChatView'];
   static categoryConfig = {_template: {}};
   static generateMethods() {
     this.categoryList.forEach(category => {
@@ -87,7 +88,7 @@ class ComponentManager {
    * 新注册组件方法
    * @param {string} name 分类名称，如：timeLine、taskDetail、stepLog等
    * @param {object/array}  component 组件，如：{timeLine: {component: component}}
-   */ 
+   */
   static registerComponent(name, component) {
     const existing = this.categoryConfig[name];
     if (!existing) {
@@ -110,8 +111,8 @@ class ComponentManager {
    * 新获取组件方法
    * @param {string} name 分类名称，如：timeLine、taskDetail、stepLog等
    * @param {string} moduleName 模块名称，如：process、cmdb等。模块名称是路由(router)时必填，其他时候可以不传。
-   * 
-   */ 
+   *
+   */
   static getComponent(name, moduleName) {
     if (name && moduleName) {
       return this.categoryConfig[name] ? this.categoryConfig[name][moduleName] : '';

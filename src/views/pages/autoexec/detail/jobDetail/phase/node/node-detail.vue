@@ -25,7 +25,7 @@
             <span
               v-if="jobData.isCanExecute"
               class="action-item tsfont-minus-o"
-              :class="phaseData.status != 'failed' ? 'disable' : 'text-action'"
+              :class="(phaseData.status == 'running' || phaseData.status == 'completed' || phaseData.status == 'ignored')? 'disable' : 'text-action'"
               @click="runnerAction('ignore')"
             >{{ $t('page.ignore') }}
             </span>
