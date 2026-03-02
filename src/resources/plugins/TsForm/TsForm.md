@@ -1,83 +1,220 @@
-### 表格（TsTable）  
+# TsForm 组件说明文档
 
+> 组件名称：TsForm\
+> 类型：动态表单式表格容器
 
-#### 模版使用
-```javascript
+------------------------------------------------------------------------
+
+# 组件简介
+
+TsForm 是一个基于配置驱动的表单式表格容器组件，
+用于构建后台管理系统中的动态表单区域、筛选区域及复杂配置页面。
+
+特点：
+
+-   动态渲染表单项
+-   支持插槽扩展
+-   支持全局只读/禁用控制
+-   支持校验机制
+-   支持栅格布局
+-   支持统一数据收集（dataConfig）
+
+------------------------------------------------------------------------
+
+# 模板使用示例
+
+``` vue
 <TsForm :itemList="itemList" width="80%">
-  <!-- 标题slot -->
+
+  <!-- 标题 Slot -->
   <template v-slot:name1-label>
-    <div>我是标题<span>提示</span></div>
+    <div>
+      我是标题 <span>提示</span>
+    </div>
   </template>
-  <!-- 控件slot -->
+
+  <!-- 控件 Slot -->
   <template v-slot:name2>
-    <TsFormSelect v-model="itemList.name2.value" v-bind="itemList.name2" :selectItemList.sync="dataSourceJson" @on-change="changeFn()">
+    <TsFormSelect
+      v-model="itemList.name2.value"
+      v-bind="itemList.name2"
+      :selectItemList.sync="dataSourceJson"
+      @on-change="changeFn()"
+    >
       <template v-slot:first-ul>
-        <li class="tsfont-plus text-href first-slot" @click="addList()">数据源</li>
+        <li class="tsfont-plus text-href first-slot" @click="addList()">
+          数据源
+        </li>
       </template>
     </TsFormSelect>
   </template>
+
 </TsForm>
 ```
 
-#### 参数、方法说明
+------------------------------------------------------------------------
+
+# Props 参数说明
+
+| 参数名        | 类型               | 默认值       | 必填 | 说明                                     |
+| ------------- | ------------------ | ----------- | --   | ------------------------------------- |
+| labelPosition | `String`           | `right`     | 否  | label 显示位置：`right` / `left` / `top`   
+| itemList      | `Array \| Object`  | -           | 是  | 表单项配置集合                               
+| dataConfig    | `Object \| String \| Boolean` | -           | 否  | 控制所有控件 value 的数据集合（支持 `v-model` 双向绑定） 
+| border        | `String`           | `border`    | 否  | 边框样式：`border` / `bottom` / `none`     
+| labelWidth    | `Number`           | `120`       | 否  | label 宽度（仅在 `right` / `left` 布局时生效）   
+| itemWidth     | `Number \| String` | `100%`      | 否  | 每项整体宽度（包含 label），用于栅格布局               
+| width         | `String \| Number` | `100%`      | 否  | 控件区域宽度（不包含 label）                      
+| labelAlign    | `String`           | `top`       | 否  | 左右布局时 label 垂直对齐方式：`top` / `center`   
+| tooltip       | `String`           | -           | 否  | label 右侧提示文本                           
+| tipPlacement  | `String`           | `top-start` | 否  | tooltip 显示方向                           
+| filterEmpty   | `Boolean`          | `false`     | 否  | 是否自动过滤空值字段（常用于组合搜索组件）                 
+| readonly      | `Boolean`          | `false`     | 否  | 全局只读控制（子项可单独覆盖）                        
+| disabled      | `Boolean`          | `false`     | 否  | 全局禁用控制（子项可单独覆盖）                        
+| isHidden      | `Boolean`          | `false`     | 否  | 是否隐藏整个表单                              
+| theme         | `Object`           | -           | 否  | 自定义主题样式配置                             
 
 
->> 参数
+# 组件方法（通过 ref 调用）
+
+``` vue
+<TsForm ref="tsForm" />
+```
+| 方法名          | 返回值       | 说明               |
+| ------------ | --------- | ---------------- |
+| valid        | `Boolean` | 校验表单是否通过         |
+| clearForm    | `void`    | 清空表单值            |
+| resetForm    | `void`    | 重置为初始化值（不建议频繁使用） |
+| getFormValue | `Object`  | 获取当前表单值集合        |
 
 
-参数名|数据类型|默认值|必传|用途|说明
-:---:|:---:|:---:|:---:|:---:|:---|
-labelPosition|String|right|否|控制label相对于控件显示的位置| right、left、top
-itemList|Array Object|无|否|每项控件配置|如果类型为Array则每一项中的属性 type（必须存在）  name（必须存在、不能重复）；如果是object类型属性type（必须存在）
-dataConfig|Object|无|是|控制表单控控件所有value值的集合，方便获取值,可以通过v-model进行绑定|如：{name1:value1,name2:value2} 
-border|String|border|否|表单里面的控件边框对应的样式| border bottom none
-labelWidth|Number|120|否|label显示的宽度|当labelPosition值为right 和 left 有效
-itemWidth|Number, String|100%|否|每一个每项控件整体占用的宽度，实现栅格布局| 包含label  
-width|String, Number|75%|否|控件显示的宽度 |不包含label
-labelAlign|String|top|否|label和控件左右布局时，当控件的高度大于32时，label上下的对齐的方位 | top, center
-tooltip|String|-|否|label右侧的tooltip提示文本|
-tipPlacement|String|top-start|否|label右侧的tooltip提示文本方向|-
-filterEmpty|Boolean|false|否|当属性对应的值胃口时是否需要把属性从dataConfig中移除|主要用在CombineSearch组件中
-readonly|Boolean|false|否|默认设置表单里面所有的组件的readonly|如果控件自己设置readonly值，则会被覆盖
-disabled|Boolean|false|否|默认设置表单里面所有的组件的disabled|如果控件自己设置disabled值，则会被覆盖
-theme|Object|-|否|自定义主题样式
+示例：
 
->>  方法(通过ref调用方法)
+``` js
+this.$refs.tsForm.valid()
+this.$refs.tsForm.getFormValue()
+```
 
+------------------------------------------------------------------------
 
- 方法名|返回数据|用途|说明
-:---:|:---:|:---:|:---
-valid|Boolean|校验表单是否通过|-
-clearForm|-|清空表单值|-
-resetForm|-|重置表单值|控件会保留表单初始化值，然后中间用户通过浏览器修改了值，重置会把值设置为初始化的值，建议不使用
-getFormValue|Object|获取表单值|-
+# itemList 配置说明
 
-***
+## Object 格式（推荐）
 
->>>特殊数据说明
-
-1. itemList,与tbody的数据对应键名保持一致，title为显示文案），例子：
-
-```javascript
-itemList:{
-  name1:{
-    type:"text",//控件类型 text | textarea | number | url | email | tel | password  | select | radio |checkbox |date  |datetime |datetimerange | year | month | time  | timerange  | tree | quartz | switch  |  textspan | slot| ckeditor|userselect | codemirror
-    label:"textlabel",//控件标题
-    hideLabel:true,//是否隐藏label让其不占位置
-    isHidden:true,//是否隐藏这个配置项对应的控件
-    validateList:[//校验
-      "required",//通用校验，如果想知道全部校验可以参考 tsValidtor.js文件
-      {name:"number",message:"错误提示"},//在现有的基础上面，更改校验提示
-      {name: "regex", pattern: "^[a-z]+$", message: "错误提示" }//正则表达式校验
-      {name:"custom", message: '错误提示', validator: function(rule, value) { return value?true:false;}},//自定义方法校验
-   ],
-   onChange:function(val){}//控件对应的值发生改变时，调用的方法
-   ...//每个控件自身对应的属性，请参考相对应控件的具体属性
+``` js
+itemList: {
+  name1: {
+    type: "text",
+    label: "文本标题",
+    hideLabel: false,
+    isHidden: false,
+    validateList: [
+      "required",
+      { name: "number", message: "必须为数字" },
+      {
+        name: "regex",
+        pattern: "^[a-z]+$",
+        message: "仅支持小写字母"
+      },
+      {
+        name: "custom",
+        message: "自定义错误",
+        validator(rule, value) {
+          return value ? true : false
+        }
+      }
+    ],
+    onChange(val) {}
   },
-  name2:{
-    type:"slot",
-    label:"slotlable",
-    value:"",
+  name2: {
+    type: "slot",
+    label: "插槽标题",
+    value: ""
   }
 }
 ```
+
+## Array 格式
+
+``` js
+itemList: [
+  {
+    name: "name1",
+    type: "text",
+    label: "名称"
+  }
+]
+```
+
+要求：
+
+-   type 必须存在
+-   name 必须存在且唯一
+
+------------------------------------------------------------------------
+
+# 支持的控件类型
+
+text\
+textarea\
+number\
+url\
+email\
+tel\
+password\
+select\
+radio\
+checkbox\
+date\
+datetime\
+datetimerange\
+year\
+month\
+time\
+timerange\
+tree\
+quartz\
+switch\
+textspan\
+slot\
+ckeditor\
+userselect\
+teamselect\
+roleselect\
+codemirror\
+timeselect\
+cascader
+
+------------------------------------------------------------------------
+
+# Slot 说明
+
+## 标题 Slot
+
+``` vue
+<template v-slot:name-label>
+  自定义标题
+</template>
+```
+
+## 控件 Slot
+
+``` vue
+<template v-slot:name>
+  自定义控件
+</template>
+```
+
+------------------------------------------------------------------------
+
+# 数据结构说明
+
+dataConfig 示例：
+
+``` js
+{
+  name1: "value1",
+  name2: "value2"
+}
+```
+
