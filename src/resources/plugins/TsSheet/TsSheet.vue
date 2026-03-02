@@ -177,7 +177,12 @@
           </tr>
         </tbody>
       </table>
-      <table class="tssheet-main" :class="tssheetMainClass" :style="tssheetMainStyle">
+      <table
+        ref="tsSheetMainRef"
+        class="tssheet-main"
+        :class="tssheetMainClass"
+        :style="tssheetMainStyle"
+      >
         <colgroup>
           <col v-if="mode === 'edit'" :style="colStyle" />
           <col

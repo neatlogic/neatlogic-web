@@ -735,7 +735,7 @@ let routerList = [
     meta: {
       title: $t('router.framework.licensemanage'),
       ismenu: true,
-      icon: 'tsfont-plugin',
+      icon: 'tsfont-certificate',
       authority: 'LICENSE_MODIFY',
       type: 'license'
     }
@@ -810,7 +810,7 @@ if (ComponentManager.getVueTemplate('ai-model-manage')) {
     meta: {
       title: '模型管理',
       ismenu: true,
-      icon: 'tsfont-ai',
+      icon: 'tsfont-ais',
       authority: 'AI_MODEL_MODIFY',
       type: 'ai'
     }
@@ -825,7 +825,7 @@ if (ComponentManager.getVueTemplate('ai-agent-manage')) {
     meta: {
       title: '智能体管理',
       ismenu: true,
-      icon: 'tsfont-ais',
+      icon: 'tsfont-plugin',
       authority: 'AI_AGENT_MODIFY',
       type: 'ai'
     }
