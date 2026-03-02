@@ -8,13 +8,13 @@
         :class="[readonlyClass, readonlyTextHighlightClass]"
         :title="readonlyTitle"
         class="pre"
-        v-html="handleReadonlyValue(currentValue)"
+        v-html="handleReadonlyValue"
       ></span>
       <span
         v-else
         :class="[readonlyClass, readonlyTextHighlightClass]"
         :title="readonlyTitle"
-      >{{ handleReadonlyValue(currentValue) }}</span>
+      >{{ handleReadonlyValue }}</span>
     </template>
     <div v-else :style="getStyle">
       <Input
@@ -289,7 +289,7 @@ export default {
     getClass() {
       let classNameList = [];
       if (typeof this.width == 'string' && ['small', 'large', 'middle'].includes(this.width)) {
-        classNameList.push('input-' + small);
+        classNameList.push('input-' + this.width);
       }
       if (!this.isValidPass) {
         classNameList.push('tsForm-formItem-error');
@@ -317,9 +317,7 @@ export default {
       return clearable;
     },
     handleReadonlyValue() {
-      return (currentValue) => {
-        return currentValue || currentValue === 0 ? currentValue : '-';
-      };
+      return this.currentValue || this.currentValue === 0 ? this.currentValue : '-';
     }
   },
   watch: {

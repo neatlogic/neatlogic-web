@@ -117,11 +117,9 @@ export default {
   created() {},
   methods: {
     getFormSetting: function(itemList, isRest) {
-      let _this = this;
-      let isArray = itemList instanceof Array;
       let resultItemJson = {};
       if (itemList) {
-        let isArray = _this.itemList instanceof Array;
+        let isArray = itemList instanceof Array;
         for (let key in itemList) {
           let item = itemList[key];
           let keyName = isArray ? item.name : key;
@@ -140,15 +138,14 @@ export default {
       return _this.formItem;
     },
     getItemByName: function(name) {
-      var _this = this;
       var resultJson = null;
-      let isArray = _this.itemList instanceof Array;
-      for (let key in _this.itemList) {
-        let item = _this.itemList[key];
+      let isArray = this.itemList instanceof Array;
+      for (let key in this.itemList) {
+        let item = this.itemList[key];
         let keyName = isArray ? item.name : key;
         if (keyName == name) {
           resultJson = item;
-          return false;
+          return resultJson;
         }
       }
       return resultJson;
