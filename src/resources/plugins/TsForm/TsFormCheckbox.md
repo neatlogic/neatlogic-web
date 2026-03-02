@@ -1,70 +1,213 @@
-### 复选（TsFormCheckbox）  
+# TsFormCheckbox
 
+表单复选框组件。
 
-#### 模版使用
-```javascript
-<TsFormCheckbox v-model="value" v-bind="config"></TsFormCheckbox>
+基于 CheckboxGroup 封装，支持：
+
+-   v-model 双向绑定
+-   接口动态获取数据
+-   只读模式
+-   纵向/横向布局
+-   表单校验
+-   change-label 输出
+-   自定义字段映射
+-   自定义选项插槽
+
+------------------------------------------------------------------------
+
+# 基础用法
+
+``` vue
+<TsFormCheckbox
+  v-model="value"
+  :dataList="options"
+></TsFormCheckbox>
 ```
 
-#### 参数、方法说明
+------------------------------------------------------------------------
 
+# v-model 机制
 
->> 参数
-
-
-参数名|数据类型|默认值|必传|用途|说明
-:---:|:---:|:---:|:---:|:---:|:---|
-value|Array|-|是|控件值，可以通过v-model进行双向绑定|-
-readonly|Boolean|false|否|是否只读|显示只读文案
-disabled|Boolean|false|否|是否不可编辑|灰色背景，带边框样式
-vertical|Boolean|false|否|true：竖向布局  false 横向布局
-validateList|Array|-|否|-|-
-errorMessage|String|-|否|外层控制插件校验提示|-
-desc|String|-|否|描述|-
-descType|String|-|否|描述显示的类型普通模式和Alert组件模式|值为info、success、warning、error时为Alert模式，如果值为空则为普通模式
-dealDataByUrl|Function|-|否|从新处理下拉数据|主要用于通过接口获取的数据如果需要从新处理一层时调用
-ajaxType|String|post|否|通过url拿去数据的时调用接口的类型|post get
-dataList|Array|-|否|下拉选项数据|在url数据为空时有效,数据格式值为：{text:'名称',value:'值',disabled: true} 如果 disabled 为false，可直接不加这个字段
-sperateText|String|-|否|readonly为true时，分割符|-
-url|String|-|否|通过url来一次性获取下拉数据|接口在组件初始化时调用
-rootName|String|-|否|通过接口获取数据的路径key值|支持层级嵌套如果 root1.root2
-valueName|String|value|否|选中下拉选项中，最终获取值的key|-
-textName|String|text|否|选中下拉选项中，显示值的key|-
-params|Object|-|否|接口参数|在通过接口获取数据时，把它作为参数带入后台
-className|String|-|否|-|-
-onChange|Function|-|否|改变值调用的方法|主要与tsform一起使用
-
->>  方法(通过@调用方法)
- 方法名|用途|说明
-:---:|:---:|:---
-on-change|数据改变时触发| 入参 value：选中值
-
->>  插槽(slot)
- 名称|slot-scope|用途|说明
-:---:|:---:|:---:|:---
-validMessage|无|普通的校验和属性errorMessage不能满足需求是，可以使用插槽|-
-
-#### 入参
-
-```javascript
-config:{
-  dataList:[],
-  readonly:true,
-  disabled:false,
-  rootName:"",
-  valueName:"id",
-  textName:"name",
-  value:[],
-  validateList:[],
-  url:"/api/rest/matrix/column/data/search/forselect",
-  params:{},
-  className:"",
-  onChange:function(){},
-  vertical:false,
-  errorMessage:"",
-  desc:"",
-  sperateText:"|",
-  dealDataByUrl:function(list){return list},,
-  ajaxType:"post",
+``` js
+model: {
+  prop: 'value',
+  event: 'change'
 }
 ```
+
+------------------------------------------------------------------------
+
+# Props 参数说明
+
+| 参数名           | 类型       | 默认值       | 必填 | 说明                                     |
+| ------------- | -------- | ---------- | -- | -------------------------------------- |
+| value         | Array    | []         | 是  | 选中值数组（支持 v-model）                      |
+| readonly      | Boolean  | false      | 否  | 是否只读                                   |
+| disabled      | Boolean  | false      | 否  | 是否禁用                                   |
+| vertical      | Boolean  | false      | 否  | 是否竖向排列                                 |
+| validateList  | Array    | -          | 否  | 校验规则                                   |
+| errorMessage  | String   | -          | 否  | 外层控制校验提示                               |
+| desc          | String   | -          | 否  | 描述信息                                   |
+| descType      | String   | -          | 否  | 描述类型（info / success / warning / error） |
+| dataList      | Array    | -          | 否  | 选项数据（优先于 url）                          |
+| dealDataByUrl | Function | -          | 否  | 接口数据处理函数                               |
+| ajaxType      | String   | post       | 否  | 接口请求类型（post / get）                     |
+| url           | String   | -          | 否  | 数据接口地址                                 |
+| rootName      | String   | -          | 否  | 接口数据路径（支持 root1.root2）                 |
+| valueName     | String   | value      | 否  | 选项值字段名                                 |
+| textName      | String   | text       | 否  | 显示文本字段名                                |
+| params        | Object   | -          | 否  | 接口请求参数                                 |
+| className     | String   | -          | 否  | 自定义样式类名                                |
+| sperateText   | String   | \|         | 否  | 只读模式下分隔符                               |
+| isChangeWrite | Boolean  | true       | 否  | 赋值时是否触发 on-change 事件                    |
+| onChange      | Function | -          | 否  | 值变化回调函数                                |
+
+> 说明：
+> - dataList 与 url 同时存在时，优先使用 url 数据
+> - value 支持 Array 或 String，内部统一处理为数组
+------------------------------------------------------------------------
+
+# Events
+
+| 事件名 | 参数 | 说明 |
+|--------|------|------|
+| change | (value, selectedItem) | 值变化 |
+| update:value | value | 同步更新 |
+| on-change | (value, selectedItem) | 主动变更触发 |
+| change-label | labels[] | 返回选中项文本数组 |
+------------------------------------------------------------------------
+
+# 插槽(slot)
+名称|slot-scope|用途|说明
+:---:|:---:|:---:|:---
+validMessage|无|普通的校验和属性errorMessage不能满足需求是，可以使用插槽|-
+label|{node, index}|自定义选项显示内容|用于自定义每个复选框的显示内容
+
+## validMessage
+
+``` vue
+<TsFormCheckbox v-model="value">
+  <template v-slot:validMessage>
+    <span class="custom-error">自定义错误提示</span>
+  </template>
+</TsFormCheckbox>
+```
+
+## label
+
+``` vue
+<TsFormCheckbox v-model="value" :dataList="options">
+  <template v-slot:label="{node, index}">
+    {{ node.text }} - {{ node.value }}
+  </template>
+</TsFormCheckbox>
+```
+
+------------------------------------------------------------------------
+#  数据结构说明
+
+## dataList 格式
+
+```js
+[
+  {
+    text: '名称',
+    value: '值',
+    disabled: false
+  }
+]
+```
+
+如果字段不同，可通过：
+
+```js
+valueName="id"
+textName="name"
+```
+
+---
+
+# 接口模式说明
+
+当传入 url 时：
+
+- 组件初始化时自动请求数据
+
+- 使用 ajaxType 指定请求方式
+
+- 使用 params 作为请求参数
+
+- 使用 rootName 解析返回数据路径
+
+- 使用 dealDataByUrl 处理数据
+
+```js
+{
+  url: "/api/xxx",
+  ajaxType: "post",
+  params: {},
+  rootName: "data.list"
+}
+```
+```vue
+dealDataByUrl(list) {
+  return list.map(item => ({
+    ...item,
+    text: item.name,
+    value: item.id
+  }))
+}
+```
+### 注意
+
+- 返回格式要求：
+  
+  ```js
+  {
+    Status: 'OK',
+    Return: [...]
+  }
+  ```
+
+- 最大限制 500 条数据
+
+---
+
+# 完整配置
+
+```vue
+config: {
+  dataList: [],
+  readonly: true,
+  disabled: false,
+  rootName: "",
+  valueName: "id",
+  textName: "name",
+  value: [],
+  validateList: [],
+  url: "/api/rest/matrix/column/data/search/forselect",
+  params: {},
+  className: "",
+  onChange: function(){},
+  vertical: false,
+  errorMessage: "",
+  desc: "",
+  sperateText: "|",
+  dealDataByUrl: function(list){ return list },
+  ajaxType: "post"
+}
+```
+
+# 校验逻辑
+
+- 通过 formMixins 支持 valid()
+- 值变更时自动触发校验
+- 校验失败展示 validMesage
+- 支持 validMessage 插槽覆盖
+
+---
+
+
+# 版本
+
+适用于 Vue2 项目。

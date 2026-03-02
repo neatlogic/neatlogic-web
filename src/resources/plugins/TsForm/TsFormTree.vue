@@ -359,9 +359,6 @@ export default {
           nodeList = nodeList[str];
         });
       }
-      if (this.dealDataByUrl && typeof this.dealDataByUrl == 'function') {
-        nodeList = this.dealDataByUrl(nodeList);
-      }
       return nodeList;
     },
     renderContent: function(h, { root, node, data }) {
@@ -562,7 +559,7 @@ export default {
     getClass() {
       let classNameList = [];
       if (typeof this.width == 'string' && ['small', 'large', 'middle'].indexOf(this.width) >= 0) {
-        classNameList.push('input-' + small);
+        classNameList.push('input-' + this.width);
       }
       this.disabled && classNameList.push('tsform-select-disabled');
       this.readonly && classNameList.push('tsform-select-readonly');
