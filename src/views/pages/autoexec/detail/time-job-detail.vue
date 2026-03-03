@@ -221,9 +221,7 @@ export default {
       // 获取工具参数方法
       let params = {};
       let formData = {};
-      let config = {
-        roundCount: 64 // 执行工具
-      };
+      let config = {};
       if (this.$refs.basicForm) {
         formData = this.$refs.basicForm.getFormValue();
         Object.assign(params, formData);
