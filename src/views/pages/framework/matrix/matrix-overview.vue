@@ -17,46 +17,25 @@
       <template v-slot:topRight>
         <TsRow>
           <Col :span="6">
-            <RadioGroup v-model="modeType" type="button">
+            <RadioGroup v-model="modeType" type="button" @on-change="searchDataByModeType()">
               <Radio label="block"><i class="tsfont-blocklist"></i></Radio>
               <Radio label="list"><i class="tsfont-list"></i></Radio>
             </RadioGroup>
           </Col>
           <Col :span="6">
-            <TsFormSelect v-model="matrixType" v-bind="typeFormSelectConfig" @on-change="getMatrixList(1)" />
+            <TsFormSelect
+              v-model="matrixType"
+              v-bind="typeFormSelectConfig"
+              @on-change="searchDataByModeType()"
+            />
           </Col>
           <Col :span="12">
             <InputSearcher
               v-model="keyword"
-              @change="searchMatrix()"
+              @change="searchDataByModeType()"
             ></InputSearcher>
           </Col>
         </TsRow>
-
-        <!-- <div class="controller-group" style="--children:2">
-          <div style="text-align:right">
-            <div class="action-group">
-              <div class="action-item" :class="modeType == 'block' ? 'active text-href' : ''" @click="changeMode('block')">
-                <i class="tsfont-blocklist"></i>
-              </div>
-              <div class="action-item" :class="modeType == 'list' ? 'active text-href' : ''" @click="changeMode('list')">
-                <i class="tsfont-list"></i>
-              </div>
-            </div>
-          </div>
-          <div>
-            <TsFormInput
-              v-model="keyword"
-              class="search"
-              search
-              clearable
-              placeholder="关键字"
-              border="border"
-              @on-enter="searchMatrix()"
-              @on-clear="searchMatrix"
-            ></TsFormInput>
-          </div>
-        </div>-->
       </template>
       <div slot="content">
         <div v-show="modeType == 'block'" class="list-box">
@@ -614,11 +593,7 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    if (this.modeType == 'block') {
-      this.getMatrixList();
-    } else {
-      this.getPagedata();
-    }
+    this.searchDataByModeType();
   },
   beforeUpdate() {},
   updated() {},
@@ -627,6 +602,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    searchDataByModeType() {
+      if (this.modeType == 'block') {
+        this.getMatrixList(1);
+      } else {
+        this.getPagedata(1);
+      }
+    },
     allHidden(val) {
       let _this = this;
       let newData = this.addAtrixForm.type.dataList;
@@ -789,7 +771,8 @@ export default {
       });
     },
     restoreHistory(historyData) {
-      let modeType = historyData['modeType'];
+      const modeType = historyData['modeType'];
+      const matrixType = historyData['matrixType'];
       this.keyword = historyData['keyword'];
       if (this.modeType == 'block') {
         this.matrixCardData.currentPage = historyData['currentPage'];
@@ -799,6 +782,7 @@ export default {
         this.matrixTableConfig.pageSize = historyData['pageSize'];
       }
       this.modeType = modeType;
+      this.matrixType = matrixType;
     },
     action(row, value) {
       if (value == 'del') {
@@ -1208,17 +1192,7 @@ export default {
       };
     }
   },
-  watch: {
-    modeType: {
-      handler: function(val) {
-        if (val === 'block') {
-          this.getMatrixList(1);
-        } else {
-          this.getPagedata(1);
-        }
-      }
-    }
-  }
+  watch: {}
 };
 </script>
 
