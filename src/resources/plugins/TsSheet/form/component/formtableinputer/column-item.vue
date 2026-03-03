@@ -157,7 +157,8 @@ export default {
         currentItemReadonly: false, //当前组件是否只读
         cunrrentRequire: false //
       },
-      formItem: {}
+      formItem: {},
+      sourceColumnList: [] // 过滤条件
     };
   },
   beforeCreate() {},
@@ -181,21 +182,7 @@ export default {
       this.formItem = formItem ? this.$utils.deepClone(formItem) : {}; // 需要深拷贝，避免修改原数据，否则会影响到联动的禁用显示隐藏等功能
       const { config = {} } = this.formItem || {};
       const { sourceColumnList = [] } = config;
-      if (sourceColumnList.length == 0) {
-        return false;
-      }
-      // 处理矩阵过滤条件的值
-      const sourceColumnListMap = {};
-      sourceColumnList.forEach((item) => {
-        if (item && item.valueColumn) {
-          this.$watch(() => this.rowData[item.valueColumn], (newVal, oldVal) => {
-            if (newVal != oldVal) {
-              sourceColumnListMap[item.valueColumn] = newVal;
-              this.handleFilterConditionDataList(sourceColumnListMap);
-            }
-          });
-        }
-      });
+      this.sourceColumnList = sourceColumnList;
     },
     updateCurrentRow(reactionData) {
       this.$emit('getCurrentRowData', { reactionData: reactionData, rowData: this.rowData});
@@ -648,6 +635,16 @@ export default {
     },
     formDataForWatch() {
       return this.getFormDataForWatch();
+    },
+    sourceColumnMap() {
+      // 处理sourceColumnList，仅监听valueColumn的值
+      const result = {};
+      this.sourceColumnList.forEach(item => {
+        if (item?.valueColumn) {
+          result[item.valueColumn] = this.rowData[item.valueColumn];
+        }
+      });
+      return result;
     }
   },
   watch: {
@@ -662,6 +659,12 @@ export default {
         }
       },
       immediate: true,
+      deep: true
+    },
+    sourceColumnMap: {
+      handler(newVal, oldVal) {
+        this.handleFilterConditionDataList(newVal);
+      },
       deep: true
     }
   }
