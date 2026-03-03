@@ -139,7 +139,7 @@ export default {
       }
     },
     link() {
-      window.open(HOME + '/process.html#/subtasktype-manage?atrixFormDialogShow=true', '_blank');
+      window.open(HOME + '/process.html#/subtasktype-manage?matrixFormDialogShow=true', '_blank');
     },
     edit() {
       window.open(HOME + '/process.html#/subtasktype-manage', '_blank');
