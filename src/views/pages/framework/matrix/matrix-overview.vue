@@ -17,7 +17,7 @@
       <template v-slot:topRight>
         <TsRow>
           <Col :span="6">
-            <RadioGroup v-model="modeType" type="button" @on-change="searchDataByModeType()">
+            <RadioGroup v-model="modeType" type="button" @on-change="searchDataByModeType(1)">
               <Radio label="block"><i class="tsfont-blocklist"></i></Radio>
               <Radio label="list"><i class="tsfont-list"></i></Radio>
             </RadioGroup>
@@ -26,13 +26,13 @@
             <TsFormSelect
               v-model="matrixType"
               v-bind="typeFormSelectConfig"
-              @on-change="searchDataByModeType()"
+              @on-change="searchDataByModeType(1)"
             />
           </Col>
           <Col :span="12">
             <InputSearcher
               v-model="keyword"
-              @change="searchDataByModeType()"
+              @change="searchDataByModeType(1)"
             ></InputSearcher>
           </Col>
         </TsRow>
@@ -82,7 +82,7 @@
             keyName="uuid"
             :theadList="matrixTableThead"
             @operation="operation"
-            @changeCurrent="getPagedata"
+            @changeCurrent="changeCurrentPage"
             @changePageSize="changePageSize"
           >
             <template slot="error" slot-scope="{ row }">
@@ -174,7 +174,7 @@
     <TsDialog
       ref="TsDialog"
       type="modal"
-      :is-show.sync="atrixFormDialog"
+      :is-show.sync="matrixFormDialog"
       :mask-close="false"
       :has-footer="true"
       :title="isCopy ? $t('dialog.title.copytarget',{'target':$t('page.matrix')}) : $t('dialog.title.addtarget',{'target':$t('page.matrix')})"
@@ -571,12 +571,9 @@ export default {
           width: 10
         }
       ],
-      atrixFormDialog: false, //新建矩阵弹框
+      matrixFormDialog: false, //新建矩阵弹框
       isCopy: false, //是否复制
       uuid: null, //矩阵uuid
-      type: null, //矩阵类型
-      currentPage: 1, //当前页数
-      pageCount: 1, //总页数
       modeType: 'block', //显示方式
       cmdbCiEntityAttrList: [],
       matrixLoading: false
@@ -602,11 +599,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    searchDataByModeType() {
+    searchDataByModeType(currentPage) {
       if (this.modeType == 'block') {
-        this.getMatrixList(1);
+        this.getMatrixList(currentPage);
       } else {
-        this.getPagedata(1);
+        this.changeCurrentPage(currentPage);
       }
     },
     allHidden(val) {
@@ -712,7 +709,7 @@ export default {
       });
     },
     //数据源矩阵检索
-    getMatrixList: function(currentPage) {
+    getMatrixList(currentPage) {
       let data = {
         keyword: this.keyword,
         type: this.matrixType,
@@ -774,15 +771,15 @@ export default {
       const modeType = historyData['modeType'];
       const matrixType = historyData['matrixType'];
       this.keyword = historyData['keyword'];
-      if (this.modeType == 'block') {
+      this.modeType = modeType;
+      this.matrixType = matrixType;
+      if (modeType == 'block') {
         this.matrixCardData.currentPage = historyData['currentPage'];
         this.matrixCardData.pageSize = historyData['pageSize'];
       } else {
         this.matrixTableConfig.currentPage = historyData['currentPage'];
         this.matrixTableConfig.pageSize = historyData['pageSize'];
       }
-      this.modeType = modeType;
-      this.matrixType = matrixType;
     },
     action(row, value) {
       if (value == 'del') {
@@ -801,18 +798,18 @@ export default {
       }
     },
     //表格形式展示数据
-    getMatrixTableList(currentPage, pageSize) {
+    getMatrixTableList(currentPage) {
       this.loadingShow = true;
       this.$addHistoryData('matrixType', this.matrixType);
       this.$addHistoryData('modeType', this.modeType);
       this.$addHistoryData('keyword', this.keyword);
-      this.$addHistoryData('currentPage', currentPage);
-      this.$addHistoryData('pageSize', pageSize);
+      this.$addHistoryData('currentPage', currentPage || this.matrixTableConfig.currentPage);
+      this.$addHistoryData('pageSize', this.matrixTableConfig.pageSize);
       this.$api.framework.matrix.getMatrixList({
         keyword: this.keyword,
         type: this.matrixType,
-        currentPage: currentPage,
-        pageSize: pageSize
+        currentPage: currentPage || this.matrixTableConfig.currentPage,
+        pageSize: this.matrixTableConfig.pageSize
       }).then(res => {
         if (res.Status == 'OK') {
           this.matrixTableConfig = Object.assign(this.matrixTableConfig, res.Return || {});
@@ -822,20 +819,19 @@ export default {
         }
       });
     },
-    getPagedata(current = 1) {
+    changeCurrentPage(current) {
       if (current) {
         this.matrixTableConfig.currentPage = current;
-        this.matrixTableConfig.pageSize = 20;
       }
-      this.getMatrixTableList(this.matrixTableConfig.currentPage, this.matrixTableConfig.pageSize);
+      this.getMatrixTableList(this.matrixTableConfig.currentPage);
     },
     changePageSize(pageSize = 20) {
       this.matrixTableConfig.pageSize = pageSize;
-      this.getMatrixTableList(1, this.matrixTableConfig.pageSize);
+      this.getMatrixTableList(1);
     },
     //新建矩阵
     addMatrix: function() {
-      this.atrixFormDialog = true;
+      this.matrixFormDialog = true;
       this.addAtrixForm.name.value = null;
       this.addAtrixForm.label.value = null;
       this.addAtrixForm.integrationUuid.value = null;
@@ -880,7 +876,7 @@ export default {
       this.addAtrixForm.integrationUuid.value = row.integrationUuid;
       this.uuid = row.uuid;
       this.isCopy = true;
-      this.atrixFormDialog = true;
+      this.matrixFormDialog = true;
       this.addAtrixForm.type.disabled = true;
       this.allHidden(row.type);
     },
@@ -941,7 +937,7 @@ export default {
             if (res.Status == 'OK') {
               this.searchMatrix();
               this.$Message.success(this.$t('message.copysuccess'));
-              this.atrixFormDialog = false;
+              this.matrixFormDialog = false;
             }
           }).finally(() => {
             this.matrixLoading = false;
@@ -1086,7 +1082,6 @@ export default {
     editMatrix: function(uuid, name, type) {
       //编辑矩阵
       let path = null;
-      // console.log(type, '----');
       if (type == 'external') {
         path = '/matrix-external-edit';
       } else if (type == 'custom') {
@@ -1131,7 +1126,7 @@ export default {
         this.getMatrixList(1);
       } else {
         this.modeType = 'list';
-        this.getPagedata(1);
+        this.changeCurrentPage(1);
       }
     },
     //刷新集成设置列表
@@ -1172,7 +1167,7 @@ export default {
       }
     },
     closeMatrixDialog() {
-      this.atrixFormDialog = false;
+      this.matrixFormDialog = false;
     }
   },
   filter: {},
