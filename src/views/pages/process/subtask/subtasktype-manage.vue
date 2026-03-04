@@ -257,7 +257,7 @@ export default {
     async init() {
       await this.searchRelationList(1);
       await this.policyList();
-      if (this.$route.query.atrixFormDialogShow) {
+      if (this.$route.query.matrixFormDialogShow) {
         //跳转到这个页面时，需要进行新增
         this.addRelations();
         this.loadingShow = false;

@@ -13,6 +13,32 @@
           type="type"
           label-postion="right"
         >
+          <template v-slot:externalId>
+            <div>
+              <TsRow :gutter="0">
+                <Col :span="canEditExternalId ? 22 : 24">
+                  <TsFormSelect
+                    ref="formExternalIdRef"
+                    v-model="externalIdConfig.value"
+                    v-bind="externalIdConfig"
+                    @on-change="handleExternalIdChange"
+                  ></TsFormSelect>
+                </Col>
+                <Col v-if="canEditExternalId" span="2">
+                  <QuickOperation
+                    :config="{
+                      module: 'cmdb',
+                      type: 'ci',
+                      ciId: externalIdConfig.value
+                    }"
+                    @refresh="()=> {
+                      showAttribute(externalIdConfig.value);
+                    }"
+                  ></QuickOperation>
+                </Col>
+              </TsRow>
+            </div>
+          </template>
           <template v-slot:attributeMappingList>
             <div>
               <div v-for="(conItem, conIdex) in formSetting.attributeMappingList.value" :key="conIdex" class="pb-sm">
@@ -65,7 +91,8 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    QuickOperation: () => import('@/resources/components/quick-operation/index.vue')
   },
   filters: {},
   props: {
@@ -82,31 +109,21 @@ export default {
       integrationUuid: null,
       defaultModelAttributeList: _this.$utils.deepClone(_this.modelAttributeList), // 默认模型属性值列表
       defaultAttributeMappingList: _this.$utils.deepClone(_this.attributeMappingList), // 默认模型属性选中列表
+      externalIdConfig: {
+        transfer: true,
+        dataList: [],
+        value: null,
+        validateList: ['required'],
+        disabled: false,
+        disabledHoverTitle: '',
+        border: 'border'
+      },
       formSetting: {
         externalId: {
-          type: 'select',
+          type: 'slot',
           name: 'externalId',
           label: this.$t('term.framework.cidata'),
-          transfer: true,
-          dataList: [],
-          value: null,
-          validateList: ['required'],
-          disabled: false,
-          disabledHoverTitle: '',
-          onChange: val => {
-            let emptyRow = {
-              label: '',
-              uniqueIdentifier: '',
-              isNewLabel: true,
-              isNewUniqueIdentifier: true
-            };
-            let newList = [];
-            newList.push(emptyRow);
-            _this.formSetting.attributeMappingList.value = newList;
-            if (val) {
-              _this.showAttribute(val);
-            }
-          }
+          validateList: ['required']
         },
         attributeMappingList: {
           type: 'slot',
@@ -129,13 +146,9 @@ export default {
     });
     this.cmdbList();
     if (!this.$utils.isEmptyObj(this.fileObj) && this.fileObj.uuid) {
-      let isDisabled = await this.$frameworkUtils.isDependency(this.fileObj.uuid, 'matrix');
-      for (let i in this.formSetting) {
-        if (i == 'externalId') {
-          this.formSetting[i].disabled = isDisabled;
-          this.formSetting[i].disabledHoverTitle = isDisabled ? this.$t('term.framework.usedmatrixdesc') : '';
-        }
-      }
+      const isDisabled = await this.$frameworkUtils.isDependency(this.fileObj.uuid, 'matrix');
+      this.externalIdConfig.disabled = isDisabled;
+      this.externalIdConfig.disabledHoverTitle = isDisabled ? this.$t('term.framework.usedmatrixdesc') : '';
     }
   },
   beforeMount() {},
@@ -147,6 +160,20 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleExternalIdChange(externalId) {
+      const emptyRow = {
+        label: '',
+        uniqueIdentifier: '',
+        isNewLabel: true,
+        isNewUniqueIdentifier: true
+      };
+      let newList = [];
+      newList.push(emptyRow);
+      this.formSetting.attributeMappingList.value = newList;
+      if (externalId) {
+        this.showAttribute(externalId);
+      }
+    },
     showAttribute(val) {
       let data = {
         'matrixUuid': null,
@@ -181,8 +208,8 @@ export default {
               newData.push({text: j.label, value: j.id});
             });
           });
-          this.formSetting.externalId.dataList = newData;
-          this.formSetting.externalId.value = this.ciId;
+          this.externalIdConfig.dataList = newData;
+          this.externalIdConfig.value = this.ciId;
           this.showAttribute(this.ciId);
         }
       });
@@ -244,8 +271,16 @@ export default {
         });
       }
     },
+    validPass() {
+      let isValidPass = true;
+      const formExternalIdRef = this.$refs?.formExternalIdRef;
+      if (formExternalIdRef && !formExternalIdRef.valid()) {
+        isValidPass = false;
+      }
+      return isValidPass;
+    },
     async okEditTsDialog() {
-      if (this.$refs.mainForm.valid()) {
+      if (this.validPass()) {
         if (this.formSetting.attributeMappingList.value && this.formSetting.attributeMappingList.value.length > 0) {
           let attributeMappingList = this.formSetting.attributeMappingList.value;
           for (let i = 0; i < attributeMappingList.length; i++) {
@@ -287,7 +322,7 @@ export default {
           },
           type: datas.type
         };
-        data.ciId = this.formSetting.externalId.value;
+        data.ciId = this.externalIdConfig.value;
         let attributeMappingList = [];
         this.formSetting.attributeMappingList.value.forEach(item => {
           attributeMappingList.push({label: item.label, uniqueIdentifier: item.uniqueIdentifier});
@@ -295,7 +330,7 @@ export default {
         data.config = {
           attributeMappingList: attributeMappingList
         };
-        if (this.formSetting.externalId.disabled) {
+        if (this.externalIdConfig.disabled) {
           let isDependency = await this.isDependency();
           if (isDependency) {
           // 模型属性被表单引用，不可删除被引用的属性
@@ -344,6 +379,10 @@ export default {
         });
         return list;
       };
+    },
+    canEditExternalId() {
+      const { disabled = false } = this.externalIdConfig || {};
+      return !disabled;
     }
   },
   watch: {}
