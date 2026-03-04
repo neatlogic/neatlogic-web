@@ -202,6 +202,10 @@ export default {
         const isSubMode = hasParent === 'true';
         let resultList = [];
         if (tbodyList.length == 0) {
+          this.jobData = {
+            ...(restParams || {}),
+            tbodyList: tbodyList
+          };
           return false;
         }
         tbodyList.forEach((tbodyItem) => {
