@@ -581,7 +581,7 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.$route.query.atrixFormDialogShow) {
+    if (this.$route.query.matrixFormDialogShow) {
       //跳转到这个页面时，需要进行新增
       this.addMatrix();
     }

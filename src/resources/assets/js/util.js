@@ -718,7 +718,7 @@ const methods = {
       let path = dataSourceType[type] || defaultType;
       window.open(HOME + '/framework.html#' + path + '?uuid=' + dataSourceJson.uuid + '&name=' + dataSourceJson.name + '&type=' + dataSourceJson.type, '_blank');
     } else {
-      window.open(HOME + '/framework.html#/matrix-overview?atrixFormDialogShow=true', '_blank');
+      window.open(HOME + '/framework.html#/matrix-overview?matrixFormDialogShow=true', '_blank');
     }
   },
   handleInvalidDate(timeValue, format, styleType) {

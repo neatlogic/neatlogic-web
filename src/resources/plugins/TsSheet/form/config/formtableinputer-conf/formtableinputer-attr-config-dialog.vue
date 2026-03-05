@@ -139,27 +139,47 @@
             </TsFormItem>
             <template v-else-if="propertyLocal.config.dataSource === 'matrix'">
               <TsFormItem :label="$t('page.matrix')" required>
-                <TsFormSelect
-                  ref="formitem_matrixuuid"
-                  v-model="propertyLocal.config.matrixUuid"
-                  :validateList="validateList"
-                  dynamicUrl="/api/rest/matrix/search"
-                  rootName="tbodyList"
-                  textName="name"
-                  valueName="uuid"
-                  transfer
-                  :selectItemList.sync="selectMatrixConfig"
-                  @on-change="(val, valueCOnfig, selectItem)=>{
-                    changeMatrixUuid({value: val, selectItem: selectItem});
-                  }"
-                >
-                  <template v-slot:option="{item}">
-                    <div>
-                      {{ item.name }}
-                      <span v-if="item.type" class="text-grey cen-align">({{ item.type }})</span>
-                    </div>
-                  </template>
-                </TsFormSelect>
+                <div>
+                  <Row>
+                    <Col span="22">
+                      <TsFormSelect
+                        ref="formitem_matrixuuid"
+                        v-model="propertyLocal.config.matrixUuid"
+                        :validateList="validateList"
+                        :dynamicUrl="matrixDynamicUrl"
+                        rootName="tbodyList"
+                        textName="name"
+                        valueName="uuid"
+                        transfer
+                        :selectItemList.sync="selectMatrixConfig"
+                        @on-change="(val, valueCOnfig, selectItem)=>{
+                          changeMatrixUuid({value: val, selectItem: selectItem});
+                        }"
+                      >
+                        <template v-slot:option="{item}">
+                          <div>
+                            {{ item.name }}
+                            <span v-if="item.type" class="text-grey cen-align">({{ item.type }})</span>
+                          </div>
+                        </template>
+                      </TsFormSelect>
+                    </Col>
+                    <Col span="2">
+                      <QuickOperation
+                        :config="{
+                          module: 'framework',
+                          uuid: propertyLocal.config.matrixUuid,
+                          name: propertyLocal?.matrixName || propertyLocal?.config?.matrixName || selectMatrixConfig?.name,
+                          type: propertyLocal?.matrixType || propertyLocal?.config?.matrixType || selectMatrixConfig?.type,
+                        }"
+                        @refresh="()=> {
+                          matrixDynamicUrl = '/api/rest/matrix/search?refreshuuid=' + $utils.setUuid();;
+                          $Message.success($t('message.refreshsuccess'));
+                        }"
+                      ></QuickOperation>
+                    </Col>
+                  </Row>
+                </div>
               </TsFormItem>
               <TsFormItem v-if="propertyLocal.config.matrixUuid && mappingDataList.length > 0" :label="$t('page.fieldmapping')">
                 <div class="bg-block padding-md radius-md">
@@ -447,7 +467,8 @@ export default {
     TagSourceSetting: () => import('../common/tag-source-setting.vue'),
     FormuserselectSetting: () => import('./formuserselect-setting.vue'),
     DataSourceFilter: () => import('../common/data-source-filter.vue'),
-    ReactionSetvalue: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-setvalue.vue')
+    ReactionSetvalue: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-setvalue.vue'),
+    QuickOperation: () => import('@/resources/components/quick-operation/index.vue')
   },
   props: {
     formItemConfig: { type: Object }, //表单组件配置
@@ -475,6 +496,7 @@ export default {
     return {
       isReady: true,
       propertyLocal: null,
+      matrixDynamicUrl: '/api/rest/matrix/search',
       reaction: { 
         mask: {}, 
         hide: {},
@@ -877,8 +899,9 @@ export default {
       this.$set(this.propertyLocal.config, 'defaultValue', null);
       this.$set(this.propertyLocal.config, 'mapping', {});
       this.$set(this.propertyLocal.config, 'isAddData', false);
-      let {type = ''} = selectItem || {};
-      this.$set(this.propertyLocal, 'matrixType', type);
+      const { type = '', name = '' } = selectItem || {};
+      this.$set(this.propertyLocal.config, 'matrixType', type);
+      this.$set(this.propertyLocal.config, 'matrixName', name);
       if (value) {
         this.$set(this.propertyLocal.reaction, 'filter', {});
       } else {
@@ -1010,8 +1033,9 @@ export default {
     },
     canShowAddBtn() {
       return (propertyLocal) => {
-        let {handler = '', matrixType = ''} = propertyLocal || {};
-        return !!((handler == 'formselect' && matrixType == 'custom')); // 下拉框并且是自定义矩阵，才显示新增按钮
+        const { handler = '', matrixType = '', config = {} } = propertyLocal || {}; // matrixType 兼容老数据的配置
+        const { matrixType: configMatrixType = '' } = config || {};
+        return !!((handler == 'formselect' && (matrixType == 'custom' || configMatrixType == 'custom'))); // 下拉框并且是自定义矩阵，才显示新增按钮
       };
     },
     getType() {
