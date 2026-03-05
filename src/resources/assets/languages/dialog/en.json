@@ -82,6 +82,8 @@
     "syncconfirm": "Confirm Sync Data Source：{target}?",
     "resetcurrentvalueconfirm": "Are you sure to reset the current value of the parameter?",
     "batchupgradetagent": "This upgrade includes a total of {target} Tagents",
+    "batchreloadtagent": "This restart includes a total of {target} Tagents",
+    "batchresetpwdtagent": "This password reset includes a total of {target} Tagents",
     "formsavetip": "The current form has been modified. Are you sure to save the current form before version switching?",
     "updateformflowtip": "The current form has been referenced by an unfinished work order. Modifying the form may prevent the normal input of form information during the work order flow. Do you want to continue?",
     "unlinkconfirm": "Are you sure to dissolve the current association?",
