@@ -13,6 +13,35 @@
           type="type"
           label-postion="right"
         >
+          <template v-slot:customViewId>
+            <Row>
+              <Col span="22">
+                <TsFormSelect
+                  ref="customViewIdRef"
+                  v-model="formSetting.customViewId.value"
+                  v-bind="customViewIdConfig"
+                  border="border"
+                ></TsFormSelect>
+              </Col>
+              <Col span="2">
+                <QuickOperation
+                  :config="{
+                    module: 'cmdb',
+                    type: 'customView',
+                    customViewId: formSetting.customViewId.value
+                  }"
+                  @refresh="()=> {
+                    if(formSetting.customViewId.value) {
+                      showAttribute(formSetting.customViewId.value, true);
+                    } else {
+                      customViewIdConfig.dynamicUrl = '/api/rest/cmdb/customview/search?refreshUuid=' + $utils.setUuid();
+                      $Message.success($t('message.refreshsuccess'));
+                    }
+                  }"
+                ></QuickOperation>
+              </Col>
+            </Row>
+          </template>
           <template v-slot:attributeMappingList>
             <div>
               <div v-for="(conItem, conIdex) in formSetting.attributeMappingList.value" :key="conIdex" class="pb-sm">
@@ -65,7 +94,8 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    QuickOperation: () => import('@/resources/components/quick-operation/index.vue')
   },
   filters: {},
   props: {
@@ -82,32 +112,37 @@ export default {
       integrationUuid: null,
       defaultModelAttributeList: _this.$utils.deepClone(_this.modelAttributeList), // 默认模型属性值列表
       defaultAttributeMappingList: _this.$utils.deepClone(_this.attributeMappingList), // 默认模型属性选中列表
-      formSetting: {
-        customViewId: {
-          type: 'select',
-          name: 'customViewId',
-          label: this.$t('term.cmdb.customview'),
-          dynamicUrl: '/api/rest/cmdb/customview/search',
-          rootName: 'tbodyList',
-          textName: 'name',
-          valueName: 'id',
-          transfer: true,
-          dataList: [],
-          value: null,
-          validateList: ['required'],
-          disabled: false,
-          disabledHoverTitle: '',
-          onChange: val => {
-            this.$set(this.formSetting.attributeMappingList, 'value', [{
+      customViewIdConfig: {
+        dynamicUrl: '/api/rest/cmdb/customview/search',
+        rootName: 'tbodyList',
+        textName: 'name',
+        valueName: 'id',
+        transfer: true,
+        dataList: [],
+        disabled: false,
+        disabledHoverTitle: '',
+        validateList: ['required'],
+        onChange: val => {
+          this.$set(this.formSetting.attributeMappingList, 'value',
+            [{
               label: '',
               uniqueIdentifier: '',
               isNewLabel: true,
               isNewUniqueIdentifier: true
-            }]);
-            if (val) {
-              _this.showAttribute(val);
-            }
+            }]
+          );
+          if (val) {
+            this.showAttribute(val);
           }
+        }
+      },
+      formSetting: {
+        customViewId: {
+          type: 'slot',
+          name: 'customViewId',
+          value: null,
+          label: this.$t('term.cmdb.customview'),
+          validateList: ['required']
         },
         attributeMappingList: {
           type: 'slot',
@@ -152,7 +187,7 @@ export default {
         }
       }
     },
-    showAttribute(val) {
+    showAttribute(val, showSuccessMessage = false) {
       let data = {
         'matrixUuid': null,
         'type': 'cmdbcustomview',
@@ -170,6 +205,9 @@ export default {
               }
             });
             this.cmdbCiEntityAttrList = newData;
+            if (showSuccessMessage) {
+              this.$Message.success(this.$t('message.refreshsuccess'));
+            }
           }
         })
         .catch(error => {
@@ -233,7 +271,7 @@ export default {
       }
     },
     async okEditTsDialog() {
-      if (this.$refs.mainForm.valid()) {
+      if (this.$refs.customViewIdRef.valid()) {
         if (this.formSetting.attributeMappingList.value && this.formSetting.attributeMappingList.value.length > 0) {
           let attributeMappingList = this.formSetting.attributeMappingList.value;
           for (let i = 0; i < attributeMappingList.length; i++) {

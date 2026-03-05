@@ -29,12 +29,14 @@ export default {
   destroyed() {},
   methods: {
     toRedirect() {
-      const { uuid = '', module = '', type = '', ciId = '' } = this.config || {};
+      const { uuid = '', module = '', type = '', ciId = '', customViewId = '' } = this.config || {};
       if (module == 'framework') {
         this.$utils.matrixDataSourceRedirect(uuid, this.config);  
       } else if (module == 'cmdb') {
         if (type == 'ci') {
           window.open(HOME + '/cmdb.html#/ci-detail/' + ciId, '_blank');
+        } else if (type == 'customView') {
+          window.open(HOME + '/cmdb.html#/view-data/' + customViewId, '_blank'); // 跳转到自定义视图页面
         }
       }
     },
