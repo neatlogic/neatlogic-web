@@ -32,7 +32,7 @@
                       ciId: externalIdConfig.value
                     }"
                     @refresh="()=> {
-                      showAttribute(externalIdConfig.value);
+                      cmdbList({showSuccessMessage: true, externalId: externalIdConfig.value})
                     }"
                   ></QuickOperation>
                 </Col>
@@ -197,8 +197,9 @@ export default {
         .catch(error => {
         });
     },
-    async cmdbList() {
+    async cmdbList({showSuccessMessage = false, externalId = null } = {}) {
       let data = '';
+      const tempExternalId = showSuccessMessage ? externalId : this.ciId;
       await this.$https.post('/api/rest/cmdb/ci/citype/search' + data).then(res => {
         if (res.Status == 'OK') {
           let resData = res.Return;
@@ -209,8 +210,13 @@ export default {
             });
           });
           this.externalIdConfig.dataList = newData;
-          this.externalIdConfig.value = this.ciId;
-          this.showAttribute(this.ciId);
+          this.externalIdConfig.value = tempExternalId;
+          if (tempExternalId) {
+            this.showAttribute(tempExternalId);
+          }
+          if (showSuccessMessage) {
+            this.$Message.success(this.$t('message.refreshsuccess'));
+          }
         }
       });
     },
