@@ -204,7 +204,9 @@ export default {
       }
     },
     checkParamMappings() { //检查参数映射是否正确
-      this.list.forEach((item, index) => {
+      this.isUpdateSort = false;
+      let list = this.$utils.deepClone(this.list);
+      list.forEach((item, index) => {
         // 检查当前步骤的参数映射
         if (item.config && item.config.paramMappingList && item.config.paramMappingList.length) {
           let prevOutputList = this.getPrev(index, this.prevStepList);
@@ -227,6 +229,9 @@ export default {
           });
         }
       });
+      if (!this.$utils.isSame(list, this.list)) { //发生改变时更新列表
+        this.list = list;
+      }
     },
     updatedSort() {
       this.isUpdateSort = true;
