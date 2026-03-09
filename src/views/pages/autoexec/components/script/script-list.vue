@@ -200,6 +200,105 @@ export default {
       this.dragStatus = type;
       if (type == 'end') {
         this.updatedSort();
+        this.checkParamMappings();
+      }
+    },
+    checkParamMappings() { //检查参数映射是否正确
+      let list = this.$utils.deepClone(this.list);
+      list.forEach((item, index) => {
+        let prevOutputList = this.getPrevOutputList(index);
+        // 使用 Map 存储上游节点信息
+        const prevOutputMap = this.createPrevOutputMap(prevOutputList);
+        this.checkItemParamMappings(item, prevOutputMap, prevOutputList.length);
+      });
+      if (!this.$utils.isSame(list, this.list)) {
+        this.list = list;
+      }
+    },
+    getPrevOutputList(index) {
+      let prevOutputList = [];
+      // 同一个阶段的前面的脚本
+      let newList = this.list.filter((l, lindex) => {
+        return lindex < index;
+      });
+      newList = this.getPrevOperation(newList);
+      newList.forEach(n => {
+        if (n.operation && n.operation.outputParamList && n.operation.outputParamList.length) {
+          let item = n.operation.outputParamList;
+          item.forEach(i => {
+            prevOutputList.push({
+              operationUuid: n.uuid, // 工具
+              key: i.key // 参数
+            });
+          });
+        }
+      });
+      // 父级上游工具列表
+      if (!this.$utils.isEmpty(this.parentPrevOperationList)) {
+        this.parentPrevOperationList.forEach(item => {
+          prevOutputList.push({
+            operationUuid: item.operationUuid,
+            key: item.key
+          });
+        });
+      }
+      // 当前阶段的前面的所有输出参数
+      if (this.prevStepList && this.prevStepList.length) {
+        this.prevStepList.forEach(item => {
+          prevOutputList.push({
+            operationUuid: item.operationUuid,
+            key: item.key
+          });
+        });
+      }
+      return prevOutputList;
+    },
+    createPrevOutputMap(prevOutputList) {
+      const map = new Map();
+      prevOutputList.forEach(item => {
+        const key = `${item.operationUuid}_${item.key}`;
+        map.set(key, true);
+      });
+      return map;
+    },
+    checkItemParamMappings(item, prevOutputMap, hasPrevOutput) {
+      if (!item.config || this.$utils.isEmpty(item.config.paramMappingList)) {
+        return;
+      }
+      item.config.paramMappingList.forEach(m => {
+        // 检查参数映射
+        this.checkParamMapping(m, prevOutputMap, hasPrevOutput);
+      });
+      // 递归检查嵌套的参数映射
+      if (item.config.ifList) {
+        this.checkNestedParamMappings(item.config.ifList, prevOutputMap, hasPrevOutput);
+      }
+      if (item.config.elseList) {
+        this.checkNestedParamMappings(item.config.elseList, prevOutputMap, hasPrevOutput);
+      }
+      if (item.config.operations) {
+        this.checkNestedParamMappings(item.config.operations, prevOutputMap, hasPrevOutput);
+      }
+    },
+    checkNestedParamMappings(list, prevOutputMap, hasPrevOutput) {
+      list.forEach(item => {
+        this.checkItemParamMappings(item, prevOutputMap, hasPrevOutput);
+      });
+    },
+    checkParamMapping(m, prevOutputMap, hasPrevOutput) {
+      // 增加类型检查
+      if (!m.value || !Array.isArray(m.value) || (m.mappingMode != 'prenodeoutputparam' && m.mappingMode != 'prenodeoutputparamkey')) {
+        return;
+      }
+      
+      if (hasPrevOutput) {
+        const key = `${m.value[0]}_${m.value[1]}`;
+        if (!prevOutputMap.has(key)) {
+          this.$set(m, 'value', null);
+        }
+      } else {
+        this.$set(m, 'mappingMode', '');
+        this.$set(m, 'value', null);
       }
     },
     updatedSort() {
