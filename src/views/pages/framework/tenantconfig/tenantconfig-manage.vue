@@ -4,14 +4,14 @@
       <template v-slot:content>
         <Tabs v-model="currentTab" :animated="false">
           <TabPane :label="$t('page.param')" name="parameterSettings"></TabPane>
-          <TabPane :label="$t('page.middleware')" name="middleware"></TabPane>
+          <TabPane :label="$t('page.config')" name="config"></TabPane>
         </Tabs>
         <div>
           <div v-if="currentTab == 'parameterSettings'">
             <ParameterSettingsManage></ParameterSettingsManage>
           </div>
-          <div v-if="currentTab == 'middleware'">
-            <MiddlewareManage></MiddlewareManage>
+          <div v-if="currentTab == 'config'">
+            <ConfigManage></ConfigManage>
           </div>
         </div>
       </template>
@@ -23,7 +23,7 @@ export default {
   name: '',
   components: {
     ParameterSettingsManage: () => import('./parametersettings-manage.vue'),
-    MiddlewareManage: () => import('./middleware-manage.vue')
+    ConfigManage: () => import('./config-manage.vue')
   },
   props: {},
   data() {
