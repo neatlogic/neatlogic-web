@@ -200,6 +200,37 @@ export default {
       this.dragStatus = type;
       if (type == 'end') {
         this.updatedSort();
+        this.checkParamMappings();
+      }
+    },
+    checkParamMappings() { //检查参数映射是否正确
+      this.isUpdateSort = false;
+      let list = this.$utils.deepClone(this.list);
+      list.forEach((item, index) => {
+        // 检查当前步骤的参数映射
+        if (item.config && item.config.paramMappingList && item.config.paramMappingList.length) {
+          let prevOutputList = this.getPrev(index, this.prevStepList);
+          item.config.paramMappingList.forEach(param => {
+            // 检查引用前序节点输出参数的映射
+            if (param.mappingMode == 'prenodeoutputparam' || param.mappingMode == 'prenodeoutputparamkey') {
+              if (!this.$utils.isEmpty(param.value) && Array.isArray(param.value)) {
+                // 检查参数值是否在前置输出列表中
+                const key = `${param.value[0]}_${param.value[1]}_${param.value[2]}`;
+                let isParamValid = prevOutputList.some(output => {
+                  return `${output.combopUuid}_${output.operationUuid}_${output.key}` === key;
+                });
+                if (!isParamValid) {
+                  // 参数映射无效，设置标记或进行其他处理
+                  this.$set(param, 'mappingMode', '');
+                  this.$set(param, 'value', null);
+                }
+              }
+            }
+          });
+        }
+      });
+      if (!this.$utils.isSame(list, this.list)) { //发生改变时更新列表
+        this.list = list;
       }
     },
     updatedSort() {
@@ -408,15 +439,12 @@ export default {
       list.forEach(item => {
         operationList.push(item);
         if (item.config && !this.$utils.isEmpty(item.config.ifList)) {
-          operationList.push(...item.config.ifList);
           operationList.push(...this.getPrevOperation(item.config.ifList));
         } 
         if (item.config && !this.$utils.isEmpty(item.config.elseList)) {
-          operationList.push(...item.config.elseList);
           operationList.push(...this.getPrevOperation(item.config.elseList));
         } 
         if (item.config && !this.$utils.isEmpty(item.config.operations)) {
-          operationList.push(...item.config.operations);
           operationList.push(...this.getPrevOperation(item.config.operations));
         }
       });
