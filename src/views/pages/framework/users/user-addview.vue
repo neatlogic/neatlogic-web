@@ -198,8 +198,7 @@ export default {
   name: 'UserAddview',
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
-    CommonAuth,
-    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue')
+    CommonAuth
   },
   props: [''],
   data() {
