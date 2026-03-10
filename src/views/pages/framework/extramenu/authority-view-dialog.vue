@@ -140,24 +140,13 @@ export default {
       });
     },
     getRouterConfig() {
-      let routerConfig = {};
-      let routerJsPathList = [];
-      const communityConfig = require.context('@/views/pages', true, /\/router\.js$/); // 正则匹配/router.js文件
-      const commercialConfig = require.context('@/commercial-module', true, /\/router\.js$/);
-      const commercialRouterPathList = commercialConfig.keys() || [];
-      const communityRouterPathList = communityConfig.keys() || [];
-      let uniqueToCommercialList = commercialRouterPathList.filter(item => !communityRouterPathList.includes(item));// 过滤不存在社区版的模块
-      routerJsPathList.push(...communityRouterPathList, ...uniqueToCommercialList);
-      routerJsPathList.forEach(routerPath => {
-        const moduleId = routerPath.split('/')[1];
-        let routeList = [];
-        if (!this.$utils.isEmpty(commercialRouterPathList) && commercialRouterPathList.indexOf(routerPath) != -1) {
-          routeList = [...(communityRouterPathList.indexOf(routerPath) != -1 ? communityConfig(routerPath).default : []), ...(commercialConfig(routerPath) ? commercialConfig(routerPath).default : [])];
-        } else {
-          routeList = (communityConfig(routerPath).default || []);
-        }
+      const { getRouterConfig } = require('@/resources/import/router-config.js');
+      const merged = getRouterConfig();
+      const routerConfig = {};
+      Object.keys(merged).forEach(moduleId => {
+        const routeList = Array.isArray(merged[moduleId]) ? merged[moduleId] : [];
         const menuList = routeList
-          .filter(item => item.meta)
+          .filter(item => item && item.meta)
           .map(item => ({
             menuName: item.meta.title,
             menu: item.name,

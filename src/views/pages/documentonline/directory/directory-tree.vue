@@ -87,36 +87,25 @@ export default {
       return findItem && findItem.ismenu ? 'tsfont-bar icon-right' : 'tsfont-ITfuwu icon-right';
     },
     getRouterConfig() {
-      let routerConfig = {};
-      let routerJsPathList = [];
-      const communityConfig = require.context('@/views/pages', true, /\/router\.js$/);
-      const commercialConfig = require.context('@/commercial-module', true, /\/router\.js$/);
-      const commercialRouterPathList = commercialConfig.keys() || [];
-      const communityRouterPathList = communityConfig.keys() || [];
-      let uniqueToCommercialList = commercialRouterPathList.filter(item => !communityRouterPathList.includes(item));// 过滤不存在社区版的模块
-      routerJsPathList.push(...communityRouterPathList, ...uniqueToCommercialList);
-      routerJsPathList.forEach(routerPath => {
-        const moduleId = routerPath.split('/')[1];
-        let routeList = [];
-        if (!this.$utils.isEmpty(uniqueToCommercialList) && uniqueToCommercialList.indexOf(routerPath) != -1) {
-          routeList = [...(communityRouterPathList.indexOf(routerPath) != -1 ? communityConfig(routerPath).default : []), ...(commercialConfig(routerPath) ? commercialConfig(routerPath).default : [])];
-        } else {
-          routeList = (communityConfig(routerPath).default || []);
-        }
-        const menuList = routeList  
-          .filter(item => item.name && item.meta && item.meta.title && !this.whiteList.includes(item.name))  
-          .map(item => ({  
-            name: item.meta && item.meta.title ? (item.name ? `${item.meta.title}(${item.name})` : item.meta.title) : '',  
-            moduleGroup: moduleId,  
-            menu: item.name,  
-            configFathList: [moduleId, item.name],  
-            children: [],  
+      const { getRouterConfig } = require('@/resources/import/router-config.js');
+      const merged = getRouterConfig();
+      const routerConfig = {};
+      Object.keys(merged).forEach(moduleId => {
+        const routeList = Array.isArray(merged[moduleId]) ? merged[moduleId] : [];
+        const menuList = routeList
+          .filter(item => item && item.name && item.meta && item.meta.title && !this.whiteList.includes(item.name))
+          .map(item => ({
+            name: item.meta && item.meta.title ? (item.name ? `${item.meta.title}(${item.name})` : item.meta.title) : '',
+            moduleGroup: moduleId,
+            menu: item.name,
+            configFathList: [moduleId, item.name],
+            children: [],
             loading: false,
-            ismenu: item.meta?.ismenu || false
+            ismenu: item.meta && item.meta.ismenu ? item.meta.ismenu : false
           }));
-        if (menuList.length) {  
-          routerConfig[moduleId] = menuList;  
-        }  
+        if (menuList.length) {
+          routerConfig[moduleId] = menuList;
+        }
       });
       return routerConfig;
     },

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import '@/resources/base.js';
 import Index from './Index.vue';
 import indexRouter from './router.js';
 import store from '@/resources/store';
@@ -16,8 +17,6 @@ MENULIST = indexRouter;
 Vue.use(VueRouter);
 Vue.use(VueI18n);
 Vue.use(CompareUtil);//必须要在use router之后执行
-
-import '@/resources/base.js';
 
 let router = initRouter(VueRouter, store);//路由拦截处理
 let i18n = initI18n(VueI18n, {});//语言包配置
