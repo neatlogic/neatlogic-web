@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import '@/resources/base.js';
 import Documentonline from './documentonline.vue';
 import routers from './router.js';
 import store from '@/resources/store';
@@ -7,7 +8,6 @@ import VueI18n from 'vue-i18n';
 import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import md5 from 'js-md5';
 import api from '@/resources/api/api.js';
-import '@/resources/base.js';
 import LocalStore from '@/resources/assets/js/localStore.js';
 import State from '@/resources/assets/js/state.js';
 import {initRouter, initI18n} from '@/resources/init.js';

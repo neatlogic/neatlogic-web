@@ -462,7 +462,7 @@ export default {
         customViewId: {
           type: 'select',
           label: this.$t('term.cmdb.customview'),
-          dynamicUrl: '/api/rest/cmdb/customview/search',
+          dynamicUrl: '/api/rest/cmdb/customview/public/search', // 只查询公共视图
           rootName: 'tbodyList',
           textName: 'name',
           valueName: 'id',

@@ -1,5 +1,6 @@
 import commonApi from '@/resources/api/common';
 import commonStore from '@/resources/store/index.js';
+import { getRouterConfig, geRouterMenuTypeList } from '@/resources/import/router-config.js';
 
 const state = {
   moduleList: [], //所有的模块及其描述、菜单、默认页等
@@ -41,7 +42,7 @@ const actions = {
   // 获取模块列表
   async getModuleList({ commit, state }) {
     const routerConfig = getRouterConfig();
-    const menuConfigList = getAllMenuTypeList();
+    const menuConfigList = geRouterMenuTypeList();
     let moduleList = [];
     let userAuthList = [];
     state.gettingModuleList = commonApi.getModuleList();
@@ -301,72 +302,6 @@ const actions = {
   }
 };
 
-function getRouterConfig() {
-  let routerConfig = {};
-  let routerPathList = [require.context('@/views/pages', true, /router.js$/)];
-  routerPathList.forEach(item => {
-    if (item && item.keys()) {
-      item.keys().forEach(routerPath => {
-        const moduleNames = routerPath.split('/')[1];
-        const lastValue = moduleNames.split('-');
-        const moduleName = lastValue?.pop() || moduleNames;
-        const routeList = item(routerPath).default || [];
-        routerConfig[moduleName] = routeList;
-      });
-    }
-  });
-  let commercialRouterConfig = getCommercialRouter();
-  Object.keys(commercialRouterConfig).forEach(key => {
-    if (!routerConfig[key]) {
-      //模块引入
-      routerConfig[key] = commercialRouterConfig[key];
-    }
-  });
-  return routerConfig;
-}
-function getCommercialRouter() {
-  //商业版模块
-  let routerConfig = {};
-  let routerPathList = [];
-  try {
-    routerPathList.push(require.context('@/commercial-module', true, /router.js$/));
-    routerPathList.push(require.context('@/community-module', true, /router.js$/));
-  } catch {
-    // 模块找不到
-  }
-  routerPathList.forEach(item => {
-    if (item && item.keys()) {
-      item.keys().forEach(routerPath => {
-        const moduleNames = routerPath.split('/')[1];
-        const lastValue = moduleNames.split('-');
-        const moduleName = lastValue?.pop() || moduleNames;
-        const routeList = item(routerPath).default || [];
-        routerConfig[moduleName] = routeList;
-      });
-    }
-  });
-  return routerConfig;
-}
-function getAllMenuTypeList() {
-  // 获取菜单分类名称
-  let menuTypeList = [];
-  const configPathList = [require.context('@/views/pages', true, /config.js$/)];
-  try {
-    configPathList.push(require.context('@/commercial-module', true, /config.js$/));
-    configPathList.push(require.context('@/community-module', true, /config.js$/));
-  } catch (error) {
-    //
-  }
-  configPathList.forEach(configItem => {
-    configItem.keys().forEach(pathItem => {
-      const pathConfig = configItem(pathItem);
-      if (pathConfig && pathConfig.config) {
-        menuTypeList.push(pathConfig.config);
-      }
-    });
-  });
-  return menuTypeList;
-}
 function getMenuTypeList(module, list) {
   let menuType = {};
   if (list && list.length) {

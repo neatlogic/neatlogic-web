@@ -272,25 +272,43 @@ export default {
       stepList.forEach((item, index) => {
         let prevOutputList = this.getPrevOutputList(stepList, index);
         if (item.config && !this.$utils.isEmpty(item.config.phaseOperationList)) {
-          item.config.phaseOperationList.forEach(p => {
-            if (p.config && !this.$utils.isEmpty(p.config.paramMappingList)) {
-              p.config.paramMappingList.forEach(m => {
-                //如果上游节点不存在，则清空参数
-                if (!this.$utils.isEmpty(m.value) && m.mappingMode.indexOf('prenode') == 0) {
-                  if (prevOutputList.length && !prevOutputList.find(p => p.combopUuid == m.value[0] && p.operationUuid === m.value[1] && p.key === m.value[2])) {
-                    this.$set(m, 'value', []);
-                  } else if (!prevOutputList.length) {
-                    this.$set(m, 'mappingMode', '');
-                    this.$set(m, 'value', null);
-                  }
-                }
-              });
-            }
-          });
+          this.checkParamMapping(item.uuid, item.config.phaseOperationList, prevOutputList); 
         }
       });
       this.updatedCombopGroupList(stepList);
       this.$emit('updateSort', stepList);
+    },
+    checkParamMapping(combopUuid, phaseOperationList, prevOutputList) { //检查上游参数映射是否正确
+      phaseOperationList.forEach(p => {
+        if (p.config) {
+          if (!this.$utils.isEmpty(p.config.paramMappingList)) {
+            p.config.paramMappingList.forEach(m => {
+            //如果上游节点不存在，则清空参数
+              if (!this.$utils.isEmpty(m.value) && m.mappingMode.indexOf('prenode') == 0) {
+                if (prevOutputList.length && !prevOutputList.find(p => p.combopUuid == m.value[0] && p.operationUuid === m.value[1] && p.key === m.value[2])) {
+                  if (m.value[0] !== combopUuid) {
+                    this.$set(m, 'value', []);
+                  }
+                } else if (!prevOutputList.length) {
+                  if (m.value[0] !== combopUuid) {
+                    this.$set(m, 'mappingMode', '');
+                    this.$set(m, 'value', null);
+                  }
+                }
+              }
+            });
+          }
+          if (!this.$utils.isEmpty(p.config.ifList)) {
+            this.checkParamMapping(combopUuid, p.config.ifList, prevOutputList);
+          }
+          if (!this.$utils.isEmpty(p.config.elseList)) {
+            this.checkParamMapping(combopUuid, p.config.elseList, prevOutputList);
+          }
+          if (!this.$utils.isEmpty(p.config.operations)) {
+            this.checkParamMapping(combopUuid, p.config.operations, prevOutputList);
+          }
+        }
+      });
     },
     getPrevOutputList(stepList, index) {
       //更新排序，获取当前节点的上游节点输出参数

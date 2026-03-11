@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import '@/resources/base.js';
 import Globalsearch from './globalsearch.vue';
 import routers from './router.js';
 import store from '@/resources/store';
@@ -7,7 +8,6 @@ import VueI18n from 'vue-i18n';
 import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import api from '@/resources/api/api.js';
 //公共的全局组件、样式等
-import '@/resources/base.js';
 import {initRouter, initI18n} from '@/resources/init.js';
 
 Vue.use(VueRouter);

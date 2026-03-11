@@ -4,17 +4,10 @@ export default {
       const routerConfig = {};
       const dataList = [];
 
-      const routerPathList = [require.context('@/views/pages', true, /router.js$/)];
-      routerPathList.forEach(item => {
-        item.keys().forEach(routerPath => {
-          const moduleNames = routerPath.split('/')[1];
-          const moduleName = moduleNames.split('-').pop() || moduleNames;
-          const routeList = item(routerPath).default || [];
-          routerConfig[moduleName] = routeList;
-        });
-      });
+      const { getRouterConfig } = require('@/resources/import/router-config.js');
+      Object.assign(routerConfig, getRouterConfig());
 
-      const commercialRouterConfig = this.getCommercialModuleMenuInfo();
+      const commercialRouterConfig = this.getModuleMenuInfo();
       Object.keys(commercialRouterConfig)
         .filter(key => !routerConfig[key])
         .forEach(key => {
@@ -44,12 +37,13 @@ export default {
       }
       return dataList;
     },
-    getCommercialModuleMenuInfo() {
-      //商业版模块
+    getModuleMenuInfo() {
+      // 模块
       let routerConfig = {};
       let routerPathList = [];
       try {
         routerPathList.push(require.context('@/commercial-module', true, /router.js$/));
+        routerPathList.push(require.context('@/community-module', true, /router.js$/));
       } catch {
         // 模块找不到
       }

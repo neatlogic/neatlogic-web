@@ -1,7 +1,9 @@
 <template>
   <div v-if="hasAuthorization" class="home" :class="{ 'menu-min': !showmenu }">
     <TopNav></TopNav>
-    <LeftMenu :showmenu="showmenu" @menushow="menuToggle"></LeftMenu>
+    <LeftMenu :showmenu="showmenu" @menushow="menuToggle">
+      <DashboardMenu></DashboardMenu>
+    </LeftMenu>
     <div class="centermain">
       <div>
         <router-view
@@ -25,7 +27,8 @@ export default {
   },
   components: {
     TopNav: () => import('@/views/components/topnav/topnav.vue'),
-    LeftMenu: () => import('./leftmenu/dashboard-menu.vue'),
+    LeftMenu: () => import('@/views/components/leftmenu/leftmenu.vue'),
+    DashboardMenu: () => import('./leftmenu/dashboard-menu.vue'),
     LicenseValidator: () => import('@/views/components/license/license-validator.vue')
   },
   data() {
