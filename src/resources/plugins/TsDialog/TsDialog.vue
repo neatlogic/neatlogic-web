@@ -115,40 +115,6 @@
       </div>
     </div>
 
-    <!-- js初始化 -->
-    <div v-if="type == 'confirm'" v-transfer-dom :data-transfer="transfer">
-      <div :class="modalPrev + 'wrap'">
-        <div :class="setClass()" :style="setPosition(top, currentWidth)" @click.stop>
-          <!-- 中间body内容 -->
-          <div :class="modalPrev + 'body'" :style="setBody()">
-            <div :class="modalPrev + 'content'" :style="setHeight(height, isFull == true && fullscreen == true)">
-              <slot>
-                <div v-html="content"></div>
-              </slot>
-            </div>
-          </div>
-          <!-- 底部footer按钮内容 -->
-          <div v-if="hasFooter == true" :class="modalPrev + 'footer'">
-            <slot name="footer">
-              <Button @click.native="onCancel">{{ cancelText }}</Button>
-              <Button
-                v-if="loading"
-                type="primary"
-                :disabled="okBtnDisable"
-                :loading="loading"
-                @click.native="onOk"
-              >{{ okText }}</Button>
-              <Button
-                v-else
-                type="primary"
-                :disabled="okBtnDisable"
-                @click.native="onOk"
-              >{{ okText }}</Button>
-            </slot>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 <script>

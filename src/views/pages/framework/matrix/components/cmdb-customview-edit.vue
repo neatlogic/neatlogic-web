@@ -34,7 +34,7 @@
                     if(formSetting.customViewId.value) {
                       showAttribute(formSetting.customViewId.value, true);
                     } else {
-                      customViewIdConfig.dynamicUrl = '/api/rest/cmdb/customview/search?refreshUuid=' + $utils.setUuid();
+                      customViewIdConfig.dynamicUrl = `${CUSTOM_VIEW_PUBLIC_API_URL}?refreshUuid=${$utils.setUuid()}`;
                       $Message.success($t('message.refreshsuccess'));
                     }
                   }"
@@ -89,6 +89,7 @@
   </TsDialog>
 </template>
 <script>
+const CUSTOM_VIEW_PUBLIC_API_URL = '/api/rest/cmdb/customview/public/search';
 export default {
   name: '',
   components: {
@@ -113,7 +114,7 @@ export default {
       defaultModelAttributeList: _this.$utils.deepClone(_this.modelAttributeList), // 默认模型属性值列表
       defaultAttributeMappingList: _this.$utils.deepClone(_this.attributeMappingList), // 默认模型属性选中列表
       customViewIdConfig: {
-        dynamicUrl: '/api/rest/cmdb/customview/search',
+        dynamicUrl: CUSTOM_VIEW_PUBLIC_API_URL,
         rootName: 'tbodyList',
         textName: 'name',
         valueName: 'id',

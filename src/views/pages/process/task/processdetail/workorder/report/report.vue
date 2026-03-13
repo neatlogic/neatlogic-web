@@ -172,7 +172,6 @@ export default {
   name: '',
   components: {
     TsFormItem,
-    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
