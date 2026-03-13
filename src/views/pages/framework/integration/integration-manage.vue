@@ -54,20 +54,29 @@
             <span v-else>-</span>
           </template>
           <template slot="executeAuthorityVoList" slot-scope="{ row }">
-            <GroupList v-if="row.executeAuthorityVoList && row.executeAuthorityVoList.length" :dataList="row.executeAuthorityVoList" type="slot">
-              <template v-slot:top="{ item }">
-                <Tag>
-                  <i :class="getAuthorityIcon(item)" class="mr-xs"></i>
-                  <span>{{ item.name }}</span>
-                </Tag>
-              </template>
-              <template v-slot:drop="{ item }">
-                <Tag>
-                  <i :class="getAuthorityIcon(item)" class="mr-xs"></i>
-                  <span>{{ item.name }}</span>
-                </Tag>
-              </template>
-            </GroupList>
+            <div v-if="row.executeAuthorityVoList && row.executeAuthorityVoList.length">
+              <Tag v-for="(item, index) in getVisibleAuthorityList(row.executeAuthorityVoList)" :key="`${item.uuid}-${index}`">
+                <i :class="getAuthorityIcon(item)" class="mr-xs"></i>
+                <span>{{ item.name }}</span>
+              </Tag>
+              <Poptip v-if="row.executeAuthorityVoList.length > authorityShowNum" transfer placement="bottom-start">
+                <span class="tsfont-option-horizontal text-tip-active authority-more"></span>
+                <div slot="content">
+                  <ul>
+                    <li
+                      v-for="(item, index) in getHiddenAuthorityList(row.executeAuthorityVoList)"
+                      :key="`${item.uuid}-hidden-${index}`"
+                      class="pb-xs"
+                    >
+                      <Tag>
+                        <i :class="getAuthorityIcon(item)" class="mr-xs"></i>
+                        <span>{{ item.name }}</span>
+                      </Tag>
+                    </li>
+                  </ul>
+                </div>
+              </Poptip>
+            </div>
             <span v-else>-</span>
           </template>
           <template slot="action" slot-scope="{ row }">
@@ -130,7 +139,6 @@ export default {
     IntegrationHelp: () => import('./integration-help.vue'),
     IntegrationAudit: () => import('./integration-audit.vue'),
     IntegrationAuthDialog: () => import('./integration-auth-dialog.vue'),
-    GroupList: () => import('@/resources/components/GroupList/GroupList.vue'),
     ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
@@ -193,7 +201,8 @@ export default {
       selectList: [],
       isCopy: false,
       isExportIntegration: false,
-      integrationAuthConfig: null
+      integrationAuthConfig: null,
+      authorityShowNum: 3
     };
   },
   beforeCreate() {},
@@ -358,6 +367,12 @@ export default {
       };
       return iconMap[item && item.initType] || 'tsfont-user';
     },
+    getVisibleAuthorityList(list) {
+      return list.slice(0, this.authorityShowNum);
+    },
+    getHiddenAuthorityList(list) {
+      return list.slice(this.authorityShowNum);
+    },
     openIntegrationAuth(row) {
       this.$api.framework.integration.getIntegrationByUuid({ uuid: row.uuid }).then(res => {
         if (res.Status == 'OK') {
@@ -394,4 +409,8 @@ export default {
   }
 };
 </script>
-<style lang="less"></style>
+<style lang="less">
+.authority-more {
+  padding: 0 8px;
+}
+</style>
