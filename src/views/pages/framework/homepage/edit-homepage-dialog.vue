@@ -29,7 +29,7 @@
                 :class="{ 'module-default': module.isDefault }"
                 @click="changeDefaultModule(module)"
               >
-                <div class="module-icon" :class="'module-img-' + module.moduleId"></div>
+                <div class="module-icon" :style="getModuleBackgroundStyle(module.moduleId)"></div>
                 <div class="module-name overflow">{{ $t(module.moduleName) }}</div>
                 <i class="module-check tsfont-check"></i>
               </li>
@@ -79,12 +79,14 @@
   </div>
 </template>
 <script>
+import imageThemeMixins from '@/resources/mixins/imageThemeMixins.js';
 export default {
   name: '',
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   filters: {},
+  mixins: [imageThemeMixins],
   props: {
     id: Number
   },

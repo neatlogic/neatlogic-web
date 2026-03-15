@@ -22,6 +22,11 @@ const toolCatalogManage = () => import('./manage/tool-catalog-manage.vue'); // �
 const sceneDefinitionManage = () => import('./config/scene-definition/scene-definition-manage.vue'); // 场景定义
 const globalParamsManage = () => import('./config/global-params/global-params-manage.vue'); // 全局参数
 const toolProfileManage = () => import('./config/profile/tool-profile-manage.vue'); // 工具profile
+const applicationManage = () => import('@/views/pages/cmdb/application/application-manage.vue');
+const assetManage = () => import('@/views/pages/cmdb/asset/asset-manage.vue');
+const tagManage = () => import('@/views/pages/cmdb/Tag/tag-manage.vue');
+const accountManage = () => import('@/views/pages/cmdb/account/account-manage.vue');
+const resourceEntityManage = () => import('@/views/pages/cmdb/resourceentity/resourceentity-manage.vue');
 
 const batchPublishingJobEdit = () => import('@/views/pages/deploy/job/batch-job-edit.vue');//修改批量作业
 const batchPublishingJobExecute = () => import('@/views/pages/deploy/job/batch-job-detail.vue');//执行批量作业
@@ -355,6 +360,54 @@ export default [
       icon: 'tsfont-scene',
       authority: 'AUTOEXEC_MODIFY',
       type: 'config'
+    }
+  },
+  {
+    path: '/asset-manage',
+    name: 'asset-manage',
+    component: assetManage,
+    meta: {
+      title: $t('router.cmdb.assetlist'),
+      ismenu: true,
+      icon: 'tsfont-ip-list',
+      authority: 'AUTOEXEC_BASE',
+      type: 'resourceCenter'
+    }
+  },
+  {
+    path: '/tag-manage',
+    name: 'tag-manage',
+    component: tagManage,
+    meta: {
+      title: $t('router.cmdb.tagmanage'),
+      ismenu: true,
+      icon: 'tsfont-label',
+      authority: 'RESOURCECENTER_TAG_MODIFY',
+      type: 'resourceCenter'
+    }
+  },
+  {
+    path: '/account-manage',
+    name: 'account-manage',
+    component: accountManage,
+    meta: {
+      title: $t('router.cmdb.accountmanage'),
+      ismenu: true,
+      icon: 'tsfont-taskperson',
+      authority: 'RESOURCECENTER_ACCOUNT_MODIFY',
+      type: 'resourceCenter'
+    }
+  },
+  {
+    path: '/resourceentity-manage',
+    name: 'resourceentity-manage',
+    component: resourceEntityManage,
+    meta: {
+      title: $t('router.cmdb.viewmanage'),
+      ismenu: true,
+      icon: 'tsfont-setting',
+      authority: 'RESOURCECENTER_MODIFY',
+      type: 'resourceCenter'
     }
   },
   {

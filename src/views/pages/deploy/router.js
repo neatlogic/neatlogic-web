@@ -49,6 +49,11 @@ const toolClassificationManage = () => import('./toolclassification/tool-classif
 
 //预置参数集
 const toolProfileManage = () => import('@/views/pages/autoexec/config/profile/tool-profile-manage.vue'); // 工具profile
+const applicationManage = () => import('@/views/pages/cmdb/application/application-manage.vue');
+const assetManage = () => import('@/views/pages/cmdb/asset/asset-manage.vue');
+const tagManage = () => import('@/views/pages/cmdb/Tag/tag-manage.vue');
+const accountManage = () => import('@/views/pages/cmdb/account/account-manage.vue');
+const resourceEntityManage = () => import('@/views/pages/cmdb/resourceentity/resourceentity-manage.vue');
 
 import { $t } from '@/resources/init.js';
 
@@ -398,6 +403,30 @@ export default [
       icon: 'tsfont-file-single',
       authority: 'DEPLOY_MODIFY',
       type: 'config'
+    }
+  },
+  {
+    path: '/application-manage',
+    name: 'application-manage',
+    component: applicationManage,
+    meta: {
+      title: $t('router.cmdb.applicationlist'),
+      ismenu: true,
+      icon: 'tsfont-app',
+      authority: 'DEPLOY_BASE',
+      type: 'resourceCenter'
+    }
+  },
+  {
+    path: '/resourceentity-manage',
+    name: 'resourceentity-manage',
+    component: resourceEntityManage,
+    meta: {
+      title: $t('router.cmdb.viewmanage'),
+      ismenu: true,
+      icon: 'tsfont-setting',
+      authority: 'RESOURCECENTER_MODIFY',
+      type: 'resourceCenter'
     }
   }
 ];

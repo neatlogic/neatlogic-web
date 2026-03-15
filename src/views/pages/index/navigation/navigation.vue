@@ -9,7 +9,11 @@
         :href="`${home}/${module.moduleId}.html`"
         class="module-link"
       >
-        <Card class="module-item" :class="`background-${module.moduleId}`" :bordered="false">
+        <Card 
+          class="module-item" 
+          :style="getModuleBackgroundStyle(module.moduleId)"
+          :bordered="false"
+        >
           <div class="module-name text-default">{{ module.moduleName }}</div>
           <!-- <div class="divider-line dividing-bg-color "></div> -->
           <div class="module-desc text-title">{{ module.description }}</div>
@@ -19,8 +23,10 @@
   </div>
 </template>
 <script>
+import imageThemeMixins from '@/resources/mixins/imageThemeMixins.js';
 export default {
   name: 'Navigation',
+  mixins: [imageThemeMixins],
   data() {
     return {
       moduleList: [],
@@ -34,6 +40,9 @@ export default {
     } else {
       location.assign(HOME + '/' + this.defaultModuleId + '.html');
     }
+  },
+  methods: {
+
   },
   computed: {
     defaultModuleId() {
@@ -81,82 +90,10 @@ export default {
       text-align: center;
       cursor: pointer;
       position: relative;
-      .without-background('module');
-
-      &.background {
-        .with-background(@module) {
-          transition-property: none; //覆盖ivu-card组件自带的transition
-          // background: url('~@/resources/assets/images/modules/icon/big/@{module}-dark.png') no-repeat center 19px, url('~@/resources/assets/images/modules/background/@{module}.png') no-repeat center;
-          // .module-name {
-          //   color: @white;
-          // }
-          // .divider-line {
-          //   background-color: @white;
-          //   opacity: 0.2;
-          // }
-          // .module-desc {
-          //   color: @dark-text;
-          // }
-        }
-        &-module {
-           .without-background('module');
-        }
-
-        &-dashboard {
-          .without-background('dashboard');
-        }
-
-        &-process {
-          .without-background('process');
-        }
-
-        &-framework {
-          .without-background('framework');
-        }
-
-        &-cmdb {
-          .without-background('cmdb');
-        }
-
-        &-report {
-          .without-background('report');
-        }
-
-        &-knowledge {
-          .without-background('knowledge');
-        }
-        &-autoexec {
-          .without-background('autoexec');
-        }
-        &-inspect {
-          .without-background('inspect'); // 巡检
-        }
-        &-pbc {
-          .without-background('pbc'); // 监管报送
-        }
-        &-deploy {
-          .without-background('deploy'); // 自动发布
-        }
-        &-rdm {
-          .without-background('rdm'); // 研发管理
-        }
-        &-dr {
-          .without-background('dr'); // 灾切
-        }
-        &-diagram {
-          .without-background('diagram'); // 架构图
-        }
-        &-alert {
-          .without-background('alert');
-        }
-        &-codehub {
-          .without-background('codehub'); // 代码中心
-        }
-        &-informant {
-          .without-background('informant'); // 故障诊断
-        }
-      }
-
+      transition-property: none; //覆盖ivu-card组件自带的transition
+      background-position: center 40px;
+      background-repeat: no-repeat;
+      background-size: 70%;
       .module-logo {
         position: absolute;
         top: 19px;
@@ -196,15 +133,5 @@ export default {
     }
   }
 }
-.without-background(@module) {
-  transition-property: none;
-  background-image: url('@img-module/img/module/navigation/@{module}-default.png');
-  background-position: center 40px;
-  background-repeat: no-repeat;
-  background-size: 70%;
 
-  .theme-dark & {
-    background-image: url('@img-module/img/module/navigation/@{module}-dark.png');
-  }
-}
 </style>

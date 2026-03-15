@@ -166,7 +166,6 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     CommonAuth: () => import('./common/common-auth.vue'),
-    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
     CommonAdduserRole: () => import('./common/common-adduser-role.vue'),
     CommonAddgroup: () => import('./common/common-addgroup.vue')
   },
