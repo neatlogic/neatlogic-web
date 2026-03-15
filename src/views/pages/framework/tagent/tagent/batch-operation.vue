@@ -72,6 +72,7 @@ export default {
   filters: {},
   props: {},
   data() {
+    const _this = this;
     return {
       action: '', // tagent 动作类型，reload(重启)，resetcred(重启密码)
       isLoading: false,
@@ -79,6 +80,22 @@ export default {
       batchParams: {},
       tagentNumber: 0,
       itemList: {
+        selectType: {
+          type: 'select',
+          label: this.$t('page.type'),
+          labelPosition: 'top',
+          value: null,
+          clearable: false,
+          validateList: [{ name: 'required' }],
+          dataList: [
+            { text: this.$t('term.framework.runnergroup'), value: 'runnerGroup' },
+            { text: this.$t('term.framework.ipportselect'), value: 'ipPort' },
+            { text: this.$t('term.framework.networkselect'), value: 'network' }
+          ],
+          onChange(val) {
+            _this.changeSelectType(val);
+          }
+        },
         runnerGroupIdList: {
           type: 'select',
           label: this.$t('term.framework.runnergroup'),
@@ -89,7 +106,8 @@ export default {
           valueName: 'id',
           search: true,
           transfer: true,
-          multiple: true
+          multiple: true,
+          validateList: []
         },
         ipPortList: {
           type: 'textarea',
@@ -97,7 +115,7 @@ export default {
           value: '',
           labelPosition: 'top',
           placeholder: `192.168.0.25:3939\n192.168.0.33:3939\n192.168.1.80:3939`,
-          validateList: ['ipAndPort']
+          validateList: [{ name: 'ipAndPort' }]
         },
         networkVoList: {
           type: 'slot',
@@ -127,8 +145,8 @@ export default {
           {
             networkIp: '',
             mask: '',
-            validateIpList: ['ip'],
-            validateMaskList: ['mask']
+            validateIpList: [{ name: 'ip' }],
+            validateMaskList: [{ name: 'mask' }]
           }
         ]
       }
@@ -140,6 +158,7 @@ export default {
     if (query && !this.$utils.isEmptyObj(query)) {
       this.action = query.type;
     }
+    this.changeSelectType(this.itemList.selectType.value);
   },
   beforeMount() {},
   mounted() {},
@@ -153,9 +172,36 @@ export default {
     operationRow(type, index) {
       // 添加网段
       if (type == 'add') { // 添加
-        this.tableConfig.tbodyList.splice(index, 0, {networkIp: '', mask: '', validateIpList: ['ip'], validateMaskList: ['mask']});
+        this.tableConfig.tbodyList.splice(index, 0, {networkIp: '', mask: '', validateIpList: [{ name: 'ip' }], validateMaskList: [{ name: 'mask' }]});
       } else { // 删除
         this.tableConfig.tbodyList.splice(index, 1);
+      }
+    },
+    resetNetworkRows() {
+      this.tableConfig.tbodyList = [
+        {
+          networkIp: '',
+          mask: '',
+          validateIpList: [{ name: 'ip' }],
+          validateMaskList: [{ name: 'mask' }]
+        }
+      ];
+    },
+    changeSelectType(selectType) {
+      this.itemList.selectType.value = selectType;
+      this.$set(this.itemList.runnerGroupIdList, 'isHidden', selectType !== 'runnerGroup');
+      this.$set(this.itemList.ipPortList, 'isHidden', selectType !== 'ipPort');
+      this.$set(this.itemList.networkVoList, 'isHidden', selectType !== 'network');
+      this.$set(this.itemList.runnerGroupIdList, 'validateList', selectType === 'runnerGroup' ? [{ name: 'required' }] : []);
+      this.$set(this.itemList.ipPortList, 'validateList', selectType === 'ipPort' ? [{ name: 'required' }, { name: 'ipAndPort' }] : [{ name: 'ipAndPort' }]);
+      if (selectType !== 'runnerGroup') {
+        this.itemList.runnerGroupIdList.value = [];
+      }
+      if (selectType !== 'ipPort') {
+        this.itemList.ipPortList.value = '';
+      }
+      if (selectType !== 'network') {
+        this.resetNetworkRows();
       }
     },
     handleNetworkList() {
@@ -227,15 +273,19 @@ export default {
       this.tableConfig.tbodyList.forEach((item) => {
         // 解决如果有ip和位数，有一个设置值，另外一个也必填
         if (item.networkIp && !item.mask) {
-          this.$set(item, 'validateMaskList', ['required', 'mask']);
+          this.$set(item, 'validateMaskList', [{ name: 'required' }, { name: 'mask' }]);
         } else if (!item.networkIp && item.mask) {
-          this.$set(item, 'validateIpList', ['required', 'ip']);
+          this.$set(item, 'validateIpList', [{ name: 'required' }, { name: 'ip' }]);
         } else {
-          this.$set(item, 'validateIpList', ['ip']);
-          this.$set(item, 'validateMaskList', ['mask']);
+          this.$set(item, 'validateIpList', [{ name: 'ip' }]);
+          this.$set(item, 'validateMaskList', [{ name: 'mask' }]);
         }
       });
-      let requiredList = this.tableConfig.tbodyList.filter((item) => item.validateIpList.includes('required') || item.validateMaskList.includes('required')) || [];
+      let requiredList = this.tableConfig.tbodyList.filter((item) => {
+        const ipRequired = (item.validateIpList || []).some(v => v === 'required' || (typeof v === 'object' && v.name === 'required'));
+        const maskRequired = (item.validateMaskList || []).some(v => v === 'required' || (typeof v === 'object' && v.name === 'required'));
+        return ipRequired || maskRequired;
+      }) || [];
       if (requiredList && requiredList.length > 0) {
         // 为了验证，ip和位数，一个有值，另一个必须是必填
         this.$nextTick(() => {
@@ -245,39 +295,63 @@ export default {
         return this.validNetwork();
       }
     },
+    setNetworkRequired() {
+      this.tableConfig.tbodyList.forEach((item) => {
+        this.$set(item, 'validateIpList', [{ name: 'required' }, { name: 'ip' }]);
+        this.$set(item, 'validateMaskList', [{ name: 'required' }, { name: 'mask' }]);
+      });
+    },
     checkTagentNumber() {
       // 检测tagent的数量
       let form = this.$refs.form.getFormValue();
-      if (this.$utils.isEmpty(form.runnerGroupIdList) && this.$utils.isEmpty(form.ipPortList) && this.isEmptyNetworkVoList().length == 0) {
-        // 代理组、IP端口、网段、至少有一个
-        this.$Notice.warning({ title: '', desc: this.$t('message.framework.checktagentnumberdesc') });
+      const selectType = form.selectType || this.itemList.selectType.value;
+      if (!this.$refs.form.valid()) {
         return false;
       }
-      if (this.isEmptyNetworkVoList().length > 0 && !this.valid()) {
+      if (selectType === 'network' && this.isEmptyNetworkVoList().length == 0) {
+        this.setNetworkRequired();
+        this.$nextTick(() => {
+          this.validNetwork();
+        });
+        return false;
+      }
+      if (selectType === 'network' && this.isEmptyNetworkVoList().length > 0 && !this.valid()) {
         // 验证网段
         return false;
       }
-      let params = {
-        networkVoList: this.handleNetworkList(),
-        ipPortList: this.handleIpPortList(),
-        runnerGroupIdList: form.runnerGroupIdList
-      };
+      let params = this.getBatchParams(selectType, form);
       this.isLoading = true;
       this.batchParams = {};
       this.$api.framework.tagent.checkVersion(params).then((res) => {
         if (res.Status == 'OK') {
           this.tagentNumber = res.Return;
-          this.batchParams = {
-            action: this.action,
-            runnerGroupIdList: form.runnerGroupIdList, // 版本
-            ipPortList: this.handleIpPortList(), // ip + port
-            networkVoList: this.handleNetworkList() // 网段
-          };
+          this.batchParams = Object.assign({ action: this.action }, params);
           this.isShowBatchOperationDialog = true;
         }
       }).finally(() => {
         this.isLoading = false;
       });
+    },
+    getBatchParams(selectType, form) {
+      if (selectType === 'runnerGroup') {
+        return {
+          runnerGroupIdList: form.runnerGroupIdList || [],
+          ipPortList: [],
+          networkVoList: []
+        };
+      }
+      if (selectType === 'ipPort') {
+        return {
+          runnerGroupIdList: [],
+          ipPortList: this.handleIpPortList(),
+          networkVoList: []
+        };
+      }
+      return {
+        runnerGroupIdList: [],
+        ipPortList: [],
+        networkVoList: this.handleNetworkList()
+      };
     },
     isEmptyNetworkVoList(type = 'all') {
       let dataList = this.tableConfig.tbodyList.filter((val) => {

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import VueI18n from 'vue-i18n';
+import '@/resources/base.js';
 import Knowledge from './knowledge.vue';
 import routers from './router.js';
 import store from '@/resources/store';
@@ -8,9 +9,9 @@ import CompareUtil from '@/resources/assets/js/compareUtil.js';
 import api from '@/resources/api/api.js';
 import LocalStore from '@/resources/assets/js/localStore.js';
 import State from '@/resources/assets/js/state.js';
-import '@/resources/base.js';
 import { initRouter, initI18n, $t } from '@/resources/init.js';
 import commonRouters from '@/views/pages/common/router.js';
+import { buildMergedRoutes } from '@/resources/import/router-config.js';
 
 Vue.use(VueRouter);
 Vue.use(VueI18n);
@@ -18,7 +19,7 @@ Vue.use(CompareUtil); //必须要在use router之后执行
 
 import { config } from './config.js';
 MODULEID = config.module;
-MENULIST = [...commonRouters, ...routers];
+MENULIST = buildMergedRoutes(MODULEID, routers, commonRouters);
 MENUTYPE = config.menuType;
 
 let router = initRouter(VueRouter, store); //路由拦截处理

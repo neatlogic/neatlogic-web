@@ -179,7 +179,7 @@
     "manualdectip": "上传安装包到服务器，解压到/opt/tagent",
     "manualdecwindowstip": "上传安装包到服务器，解压到c:/tagent",
     "upgradedesc": "根据IP:PORT选择和根据网段选择必须选择其中一个",
-    "checktagentnumberdesc": "代理组、根据IP:PORT选择、根据网段选择、必须选择其中一个",
+    "checktagentnumberdesc": "执行器组、根据IP:PORT选择、根据网段选择、必须选择其中一个",
     "apihelperror": "获取接口帮助信息失败",
     "notapihelp": "当前接口{target}无帮助信息",
     "usercounttarget": "共计选中{target}个用户",

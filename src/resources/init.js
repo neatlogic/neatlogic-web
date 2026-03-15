@@ -4,6 +4,7 @@ import Zh from '@/resources/assets/languages/zh.js';
 import En from '@/resources/assets/languages/en.js';
 import VueI18n from 'vue-i18n';
 import authHeartbeat from '@/resources/assets/js/authHeartbeat';
+import ComponentManager from '@/resources/import/component-manager.js';
 let config = {
   locale: BASELANGUAGES, // 定义默认语言为中文
   messages: {
@@ -45,11 +46,26 @@ export function initRouter(VueRouter, store) {
   VueRouter.prototype.push = function push(location) {
     return originalPush.call(this, location).catch(err => err);
   };
+  const existingRoutes = Array.isArray(MENULIST) ? MENULIST : [];
+  const extraRoutes = (() => {
+    try {
+      const list = MODULEID ? (ComponentManager.getRouterComponent(MODULEID) || []) : [];
+      const nameSet = new Set(existingRoutes.map(r => r && r.name));
+      const pathSet = new Set(existingRoutes.map(r => r && r.path));
+      return Array.isArray(list) ? list.filter(r => {
+        const hasName = r && r.name && nameSet.has(r.name);
+        const hasPath = r && r.path && pathSet.has(r.path);
+        return !(hasName || hasPath);
+      }) : [];
+    } catch (e) {
+      return [];
+    }
+  })();
 
   let router = new VueRouter({
     mode: 'hash',
     base: '/' + TENANT + '/' + MODULEID + '.html',
-    routes: MENULIST
+    routes: [...existingRoutes, ...extraRoutes]
   });
   const gettingModuleList = store.dispatch('getModuleList');
   // 返回的路由(包含所有模块)

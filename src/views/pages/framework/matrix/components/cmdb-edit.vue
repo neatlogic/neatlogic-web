@@ -16,7 +16,7 @@
           <template v-slot:externalId>
             <div>
               <TsRow :gutter="0">
-                <Col :span="canEditExternalId ? 22 : 24">
+                <Col span="22">
                   <TsFormSelect
                     ref="formExternalIdRef"
                     v-model="externalIdConfig.value"
@@ -24,7 +24,7 @@
                     @on-change="handleExternalIdChange"
                   ></TsFormSelect>
                 </Col>
-                <Col v-if="canEditExternalId" span="2">
+                <Col span="2">
                   <QuickOperation
                     :config="{
                       module: 'cmdb',
@@ -385,10 +385,6 @@ export default {
         });
         return list;
       };
-    },
-    canEditExternalId() {
-      const { disabled = false } = this.externalIdConfig || {};
-      return !disabled;
     }
   },
   watch: {}
