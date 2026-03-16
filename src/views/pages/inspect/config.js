@@ -3,6 +3,7 @@ export const config = {
   module: 'inspect',
   menuType: {
     inspectmanage: $t('router.inspect.inspectmanage'),
-    inspectResult: $t('router.inspect.inspectresult')
+    inspectResult: $t('router.inspect.inspectresult'),
+    resourceCenter: $t('router.cmdb.resourcecenter')
   }
 };
