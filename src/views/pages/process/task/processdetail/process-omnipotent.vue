@@ -315,7 +315,6 @@ export default {
   tagComponent: 'taskDeal', //主要用来标识是上报页面，为表单修改优先级做标志
   components: {
     ButtonBar: () => import('@/views/pages/process/task/processdetail/workorder/common/button-bar.vue'),
-    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     CenterDetail: () => import('./workorder/CenterDetail.vue'),
     RightSetting: () => import('./workorder/RightSetting.vue'),

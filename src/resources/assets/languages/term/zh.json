@@ -1007,7 +1007,7 @@
     "upgradeversion": "升级版本",
     "pkgversion": "版本号",
     "ostype": "OS类型",
-    "runnergroup": "代理组",
+    "runnergroup": "执行器组",
     "tagentsearchpla": "包含IP/名称/OS版本",
     "includeip": "包含IP",
     "osversion": "OS/OS版本",
@@ -1024,7 +1024,7 @@
     "targetversion": "目标版本",
     "upgdetails": "升级详情",
     "nettyport": "NETTY端口",
-    "proxygroup": "代理组名",
+    "proxygroup": "执行器组名",
     "mask": "位数",
     "tagentlist": "tagent列表",
     "selectpackage": "选择已有安装包",
@@ -2187,7 +2187,8 @@
     "jobrecord": "发布作业记录",
     "notapplyallexecuteauth": "您没有当前应用的执行权限",
     "batchdeployauthtip": "当前用户缺少“批量发布管理权限”权限，请联系管理员",
-    "defaultversion": "默认版本号"
+    "defaultversion": "默认版本号",
+    "immediateexecution": "现在执行"
   },
   "inspect": {
     "alarmprompt": "告警提示",

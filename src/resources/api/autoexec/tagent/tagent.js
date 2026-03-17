@@ -4,11 +4,11 @@ const tagent = {
   serachData(params) {
     return axios.post('/api/rest/runnergroup/search', params);
   },
-  //保存代理组
+  //保存执行器组
   saveGroup(params) {
     return axios.post('/api/rest/runnergroup/save', params);
   },
-  //删除代理组
+  //删除执行器组
   deleteGroup(params) {
     return axios.post('/api/rest/runnergroup/delete', params);
   },

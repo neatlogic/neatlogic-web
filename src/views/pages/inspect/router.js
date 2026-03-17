@@ -28,6 +28,11 @@ const configfileListManage = () => import('./configfile/configfile-list-manage.v
 // 阈值规则
 const RuleOfThresholdManage = () => import('./application/threshold/rule-of-threshold-manage.vue'); // 阈值规则
 const RuleOfThresholdDetail = () => import('./application/threshold/rule-of-threshold-detail.vue'); // 阈值规则详情
+const resourceApplicationManage = () => import('@/views/pages/cmdb/application/application-manage.vue');
+const assetManage = () => import('@/views/pages/cmdb/asset/asset-manage.vue');
+const tagManage = () => import('@/views/pages/cmdb/Tag/tag-manage.vue');
+const accountManage = () => import('@/views/pages/cmdb/account/account-manage.vue');
+const resourceEntityManage = () => import('@/views/pages/cmdb/resourceentity/resourceentity-manage.vue');
 import { $t } from '@/resources/init.js';
 
 export default [
@@ -317,6 +322,66 @@ export default [
       icon: 'tsfont-file-single',
       authority: 'INSPECT_BASE',
       type: 'inspectmanage'
+    }
+  },
+  {
+    path: '/resource-application-manage',
+    name: 'resource-application-manage',
+    component: resourceApplicationManage,
+    meta: {
+      title: $t('router.cmdb.applicationlist'),
+      ismenu: true,
+      icon: 'tsfont-app',
+      authority: 'INSPECT_BASE',
+      type: 'resourceCenter'
+    }
+  },
+  {
+    path: '/asset-manage',
+    name: 'asset-manage',
+    component: assetManage,
+    meta: {
+      title: $t('router.cmdb.assetlist'),
+      ismenu: true,
+      icon: 'tsfont-ip-list',
+      authority: 'INSPECT_BASE',
+      type: 'resourceCenter'
+    }
+  },
+  {
+    path: '/tag-manage',
+    name: 'tag-manage',
+    component: tagManage,
+    meta: {
+      title: $t('router.cmdb.tagmanage'),
+      ismenu: true,
+      icon: 'tsfont-label',
+      authority: 'RESOURCECENTER_TAG_MODIFY',
+      type: 'resourceCenter'
+    }
+  },
+  {
+    path: '/account-manage',
+    name: 'account-manage',
+    component: accountManage,
+    meta: {
+      title: $t('router.cmdb.accountmanage'),
+      ismenu: true,
+      icon: 'tsfont-taskperson',
+      authority: 'RESOURCECENTER_ACCOUNT_MODIFY',
+      type: 'resourceCenter'
+    }
+  },
+  {
+    path: '/resourceentity-manage',
+    name: 'resourceentity-manage',
+    component: resourceEntityManage,
+    meta: {
+      title: $t('router.cmdb.viewmanage'),
+      ismenu: true,
+      icon: 'tsfont-setting',
+      authority: 'RESOURCECENTER_MODIFY',
+      type: 'resourceCenter'
     }
   }
 ];

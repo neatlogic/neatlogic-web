@@ -318,25 +318,54 @@ export default {
       let stepList = this.getUpdateSort();
       stepList.forEach((item, index) => {
         let prevOutputList = this.getPrevOutputList(stepList, index);
-        if (item.config && !this.$utils.isEmpty(item.config.phaseOperationList)) {
-          item.config.phaseOperationList.forEach(p => {
-            if (p.config && !this.$utils.isEmpty(p.config.paramMappingList)) {
-              p.config.paramMappingList.forEach(m => {
-                //如果上游节点不存在，则清空参数
-                if (!this.$utils.isEmpty(m.value) && m.mappingMode.indexOf('prenode') == 0) {
-                  if (prevOutputList.length && !prevOutputList.find(p => p.combopUuid == m.value[0] && p.operationUuid === m.value[1] && p.key === m.value[2])) {
-                    this.$set(m, 'value', []);
-                  } else if (!prevOutputList.length) {
-                    this.$set(m, 'mappingMode', '');
-                    this.$set(m, 'value', null);
-                  }
-                }
-              });
-            }
-          });
-        }
+        // 使用 Map 存储上游节点信息
+        const prevOutputMap = this.createPrevOutputMap(prevOutputList);
+        this.checkParamMappings(item, prevOutputMap, prevOutputList.length);
       });
       this.$emit('updateSort', stepList);
+    },
+    // 创建上游节点输出参数的 Map
+    createPrevOutputMap(prevOutputList) {
+      const map = new Map();
+      prevOutputList.forEach(item => {
+        const key = `${item.combopUuid}_${item.operationUuid}_${item.key}`;
+        map.set(key, true);
+      });
+      return map;
+    },
+    // 检查参数映射
+    checkParamMappings(item, prevOutputMap, hasPrevOutput) {
+      if (!item.config || this.$utils.isEmpty(item.config.phaseOperationList)) {
+        return;
+      }
+      item.config.phaseOperationList.forEach(p => {
+        if (!p.config || this.$utils.isEmpty(p.config.paramMappingList)) {
+          return;
+        }
+        p.config.paramMappingList.forEach(m => {
+          // 检查参数映射
+          this.checkParamMapping(m, prevOutputMap, hasPrevOutput, item.uuid);
+        });
+      });
+    },
+    // 检查单个参数映射
+    checkParamMapping(m, prevOutputMap, hasPrevOutput, itemUuid) {
+      // 增加类型检查
+      if (!m.value || !Array.isArray(m.value) || m.mappingMode.indexOf('prenode') !== 0) {
+        return;
+      }
+  
+      if (hasPrevOutput) {
+        const key = `${m.value[0]}_${m.value[1]}_${m.value[2]}`;
+        if (!prevOutputMap.has(key)) {
+          this.$set(m, 'value', []);
+        }
+      } else {
+        if (m.value[0] !== itemUuid) { // 同阶段上游节点参数，阶段移动时不变
+          this.$set(m, 'mappingMode', '');
+          this.$set(m, 'value', null);
+        }
+      }
     },
     getPrevOutputList(stepList, index) {
       //更新排序，获取当前节点的上游节点输出参数

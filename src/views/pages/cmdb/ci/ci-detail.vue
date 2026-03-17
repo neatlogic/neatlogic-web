@@ -19,7 +19,7 @@
                 <DropdownItem v-if="!ciData.isVirtual" class="tsfont-download" @click.native="exportExcel()">{{ $t('term.cmdb.exportforexcel') }}</DropdownItem>
                 <DropdownItem v-if="!ciData.isVirtual" class="tsfont-eye" @click.native="viewSetting()">{{ $t('page.display') }}/{{ $t('page.edit') }}{{ $t('page.setting') }}</DropdownItem>
                 <DropdownItem v-if="ciData.isVirtual" class="tsfont-eye" @click.native="viewSetting()">{{ $t('page.display') }}{{ $t('page.setting') }}</DropdownItem>
-                <DropdownItem v-if="!ciData.isVirtual" class="tsfont-unlock" @click.native="editAuth()">{{ $t('page.auth') }}</DropdownItem>
+                <DropdownItem class="tsfont-unlock" @click.native="editAuth()">{{ $t('page.auth') }}</DropdownItem>
                 <!--<DropdownItem v-if="!ciData.isVirtual && ciData.hasCollection" class="tsfont-accessendpoint" @click.native="editSync()">自动采集</DropdownItem>-->
                 <DropdownItem v-if="!ciData.isVirtual" class="tsfont-check-o" @click.native="editlegal()">{{ $t('term.cmdb.legalcheck') }}</DropdownItem>
               </DropdownMenu>

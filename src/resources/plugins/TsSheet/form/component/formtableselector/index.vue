@@ -42,7 +42,7 @@
                           <span class="tsfont-close text-action mr-nm" @click.stop="deleteItem(row)"></span>
                         </div>
                       </td>
-                      <td v-if="!readonly || !disabled">
+                      <td v-if="enableOperationSelected">
                         <Checkbox
                           :value="selectedCurrentPageMap[row.uuid]"
                           :disabled="readonly || disabled"
@@ -526,6 +526,9 @@ export default {
           this.$set(this.tbodyList, start + i, newPageList[i]);
         }
       } 
+    },
+    enableOperationSelected() {
+      return !this.readonly && !this.disabled && !(this.config.disableDeleteData && this.config.disableAddData);
     }
   },
   watch: {
