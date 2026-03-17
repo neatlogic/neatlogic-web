@@ -121,7 +121,7 @@ export default {
           node: node,
           startPosition: nodeStart,
           endPosition: nodeEnd,
-          insertPosition: nodeEnd + 1
+          insertPosition: nodeEnd + 1 // 下一个节点内部的开头
         };
       }
     },

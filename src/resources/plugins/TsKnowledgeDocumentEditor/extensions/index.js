@@ -5,6 +5,8 @@ import { BlockStyle } from './block/style.js';
 import { TableCellBackground } from './table/cell-style/add-background-command.js';
 import { TableCellVerticalAlign } from './table/cell-style/add-vertical-align-command.js';
 import { ExtendTableCell } from './table/cell-style/extend-cell-attr.js';
+import { RewriteUuidOnPaste } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/paste/rewrite-uuid.js';
+import { Rate } from './rate.js';
 export default [
   InsertVideo,
   HighlightBlock,
@@ -12,5 +14,7 @@ export default [
   BlockStyle,
   TableCellBackground,
   ExtendTableCell,
-  TableCellVerticalAlign
+  TableCellVerticalAlign,
+  Rate,
+  RewriteUuidOnPaste
 ];

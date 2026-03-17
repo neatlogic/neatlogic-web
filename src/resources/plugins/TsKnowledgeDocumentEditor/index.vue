@@ -98,13 +98,14 @@ import ExtensionsList from '@/resources/plugins/TsKnowledgeDocumentEditor/extens
 import BaseMixin from './utils/base.js';
 import { menuState } from './utils/state.js';
 import { SearchHighlight } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/search-highlight.js';
-import { PasteUploadImages } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/paste-imges.js';
+import { PasteUploadImages } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/paste/upload-images.js';
 import { ImageResize } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/image-resize.js';
 import { RowColSelected } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/row-col-selected/index.js';
 import { TableUtils } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/table/table-utils.js';
 import { getHoverTargetByEvent, getTableRowHeights, getLinksInfoFromParagraph } from '@/resources/plugins/TsKnowledgeDocumentEditor/utils/node-utils.js';
 import { getSelectedTextInfo, getSelectionNode } from '@/resources/plugins/TsKnowledgeDocumentEditor/utils/selection-utils.js';
 import { HoverHighlightPlugin, hoverHighlightKey } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/hover-highlight.js';
+import DataContent from './data.js';
 export default {
   components: {
     EditorContent,
@@ -227,13 +228,7 @@ export default {
         ...ExtensionsList,
         SearchHighlight
       ],
-      content: {
-        type: 'doc',
-        content: [{
-          type: 'paragraph',
-          content: []
-        }]
-      },
+      content: DataContent,
       onCreate({ editor }) {
         // 编辑器初始化完成时触发，用于处理初始内容回显（左侧菜单渲染）
         _this.getAllHeadings(editor);

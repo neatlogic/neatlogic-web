@@ -9,10 +9,16 @@ const REAL_BLOCKS = new Set([
   'paragraph',
   'heading',
   'blockquote',
+  'bulletList',
+  'orderedList',
+  'listItem',
+  'taskList',
+  'taskItem',
   'codeBlock',
+  'horizontalRule',
+  'table',
   'image',
   'insertVideo',
-  'horizontalRule',
   'highlightBlock'
 ]);
 
@@ -28,21 +34,19 @@ export const BlockUuid = Extension.create({
           blockUuid: {
             default: null,
             parseHTML: el => el.getAttribute('data-block-uuid'),
-            renderHTML: attrs =>
-              attrs.blockUuid ? { 'data-block-uuid': attrs.blockUuid } : {}
+            renderHTML: attrs => (attrs.blockUuid ? { 'data-block-uuid': attrs.blockUuid } : {})
           },
           blockType: {
             default: null,
             parseHTML: el => el.getAttribute('data-block-type'),
-            renderHTML: attrs =>
-              attrs.blockType ? { 'data-block-type': attrs.blockType } : {}
+            renderHTML: attrs => (attrs.blockType ? { 'data-block-type': attrs.blockType } : {})
           }
         }
       }
     ];
   },
 
-  // ② 行为层：只在“新 block 出现时”初始化
+  // ② 行为层：新 block 出现时初始化
   addProseMirrorPlugins() {
     return [
       new Plugin({
@@ -58,45 +62,39 @@ export const BlockUuid = Extension.create({
             }
           }
         },
-
         appendTransaction(transactions, oldState, newState) {
           if (isComposing) return null;
-
+        
           let tr = newState.tr;
           let modified = false;
-
+        
           for (const tx of transactions) {
             if (!tx.docChanged) continue;
-
-            for (const step of tx.steps) {
-              if (!(step instanceof ReplaceStep)) continue;
-
-              const from = tr.mapping.map(step.from);
-              const to = tr.mapping.map(step.to);
-
-              newState.doc.nodesBetween(from, to, (node, pos) => {
-                if (!node.isBlock) return;
-                if (!node.isTextblock) return;
-                if (!REAL_BLOCKS.has(node.type.name)) return;
-                if (node.attrs.blockUuid) return;
-
-                // 防止 position 炸
-                if (pos < 0 || pos + node.nodeSize > newState.doc.content.size) return;
-
-                tr.setNodeMarkup(pos, node.type, {
-                  ...node.attrs,
-                  blockUuid: utils.setUuid(),
-                  blockType:
-                    node.type.name === 'heading'
-                      ? `heading${node.attrs.level}`
-                      : node.type.name
+        
+            for (const stepMap of tx.mapping.maps) {
+              stepMap.forEach((oldStart, oldEnd, newStart, newEnd) => {
+                if (newEnd <= newStart) return;
+        
+                newState.doc.nodesBetween(newStart, newEnd, (node, pos) => {
+                  if (!node.isBlock) return;
+                  if (!REAL_BLOCKS.has(node.type.name)) return;
+                  if (node.attrs.blockUuid) return;
+        
+                  tr.setNodeMarkup(pos, node.type, {
+                    ...node.attrs,
+                    blockUuid: utils.setUuid(),
+                    blockType:
+                      node.type.name === 'heading'
+                        ? `heading${node.attrs.level}`
+                        : node.type.name
+                  });
+        
+                  modified = true;
                 });
-
-                modified = true;
               });
             }
           }
-
+        
           return modified ? tr : null;
         }
       })
