@@ -53,6 +53,32 @@
             ></ReferenceSelect>
             <span v-else>-</span>
           </template>
+          <template slot="executeAuthorityVoList" slot-scope="{ row }">
+            <div v-if="row.executeAuthorityVoList && row.executeAuthorityVoList.length">
+              <Tag v-for="(item, index) in getVisibleAuthorityList(row.executeAuthorityVoList)" :key="`${item.uuid}-${index}`">
+                <i :class="getAuthorityIcon(item)" class="mr-xs"></i>
+                <span>{{ item.name }}</span>
+              </Tag>
+              <Poptip v-if="row.executeAuthorityVoList.length > authorityShowNum" transfer placement="bottom-start">
+                <span class="tsfont-option-horizontal text-tip-active authority-more"></span>
+                <div slot="content">
+                  <ul>
+                    <li
+                      v-for="(item, index) in getHiddenAuthorityList(row.executeAuthorityVoList)"
+                      :key="`${item.uuid}-hidden-${index}`"
+                      class="pb-xs"
+                    >
+                      <Tag>
+                        <i :class="getAuthorityIcon(item)" class="mr-xs"></i>
+                        <span>{{ item.name }}</span>
+                      </Tag>
+                    </li>
+                  </ul>
+                </div>
+              </Poptip>
+            </div>
+            <span v-else>-</span>
+          </template>
           <template slot="action" slot-scope="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
@@ -68,6 +94,7 @@
                 </li>
                 <li v-if="row.hasHelp == 1" class="tsfont-question-o" @click="integrationHelpUuid = row.uuid">{{ $t('page.help') }}</li>
                 <li class="tsfont-formstaticlist" @click="integrationAuditUuid = row.uuid">{{ $t('term.process.callrecord') }}</li>
+                <li class="tsfont-user" @click="openIntegrationAuth(row)">{{ $t('page.executeauthority') }}</li>
                 <li class="tsfont-download" @click="exportRow(row)">{{ $t('page.export') }}</li>
                 <li class="tsfont-trash-o" :class="{ 'text-disabled': row.referenceCount > 0 }" @click="delIntegration(row)">{{ $t('page.delete') }}</li>
                 <li class="tsfont-copy" @click="copyIntegration(row.uuid)">{{ $t('page.copy') }}</li>
@@ -85,6 +112,11 @@
       @close="closeIntegrationDialog"
     ></IntegrationEdit>
     <IntegrationAudit v-if="integrationAuditUuid" :uuid="integrationAuditUuid" @close="integrationAuditUuid = null"></IntegrationAudit>
+    <IntegrationAuthDialog
+      v-if="integrationAuthConfig"
+      :integration="integrationAuthConfig"
+      @close="closeIntegrationAuthDialog"
+    ></IntegrationAuthDialog>
     <UploadDialog
       ref="uploadDialog"
       :actionUrl="actionUrl"
@@ -106,6 +138,7 @@ export default {
     IntegrationEdit: () => import('./integration-edit.vue'),
     IntegrationHelp: () => import('./integration-help.vue'),
     IntegrationAudit: () => import('./integration-audit.vue'),
+    IntegrationAuthDialog: () => import('./integration-auth-dialog.vue'),
     ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
@@ -136,10 +169,6 @@ export default {
           key: 'isActive'
         },
         {
-          title: this.$t('page.referencecount'),
-          key: 'referenceCount'
-        },
-        {
           title: this.$t('page.method'),
           key: 'method'
         },
@@ -148,8 +177,16 @@ export default {
           key: 'url'
         },
         {
+          title: this.$t('page.executeauthority'),
+          key: 'executeAuthorityVoList'
+        },
+        {
           title: this.$t('page.component'),
           key: 'handlerName'
+        },
+        {
+          title: this.$t('page.referencecount'),
+          key: 'referenceCount'
         },
         {
           title: '',
@@ -163,7 +200,9 @@ export default {
       exportType: '', //导出类型
       selectList: [],
       isCopy: false,
-      isExportIntegration: false
+      isExportIntegration: false,
+      integrationAuthConfig: null,
+      authorityShowNum: 3
     };
   },
   beforeCreate() {},
@@ -318,6 +357,38 @@ export default {
       this.integrationUuid = uuid;
       this.isCopy = true;
       this.isIntegrationDialogShow = true;
+    },
+    getAuthorityIcon(item) {
+      const iconMap = {
+        common: 'tsfont-common',
+        user: 'tsfont-user',
+        team: 'tsfont-team',
+        role: 'tsfont-role'
+      };
+      return iconMap[item && item.initType] || 'tsfont-user';
+    },
+    getVisibleAuthorityList(list) {
+      return list.slice(0, this.authorityShowNum);
+    },
+    getHiddenAuthorityList(list) {
+      return list.slice(this.authorityShowNum);
+    },
+    openIntegrationAuth(row) {
+      this.$api.framework.integration.getIntegrationByUuid({ uuid: row.uuid }).then(res => {
+        if (res.Status == 'OK') {
+          this.integrationAuthConfig = {
+            uuid: row.uuid,
+            name: row.name,
+            authorityList: res.Return.executeAuthorityList || []
+          };
+        }
+      });
+    },
+    closeIntegrationAuthDialog(needRefresh) {
+      this.integrationAuthConfig = null;
+      if (needRefresh) {
+        this.searchIntegration();
+      }
     }
   },
   filter: {},
@@ -338,4 +409,8 @@ export default {
   }
 };
 </script>
-<style lang="less"></style>
+<style lang="less">
+.authority-more {
+  padding: 0 8px;
+}
+</style>

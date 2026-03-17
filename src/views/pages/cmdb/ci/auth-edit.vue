@@ -42,6 +42,7 @@ export default {
           name: 'cimanage',
           label: this.$t('term.cmdb.cimanage'),
           transfer: true,
+          _scope: ['ci', 'vci'],
           desc: this.$t('message.cmdb.cimanage'),
           groupList: ['common', 'user', 'team', 'role'],
           onChange: function(name) {
@@ -51,6 +52,7 @@ export default {
         {
           type: 'userselect',
           name: 'cientityinsert',
+          _scope: ['ci'],
           label: this.$t('term.cmdb.addcientity'),
           transfer: true,
           desc: this.$t('message.cmdb.newcientity'),
@@ -62,6 +64,7 @@ export default {
         {
           type: 'userselect',
           name: 'cientityupdate',
+          _scope: ['ci'],
           label: this.$t('term.cmdb.editcientity'),
           transfer: true,
           desc: this.$t('message.cmdb.editcientity'),
@@ -73,6 +76,7 @@ export default {
         {
           type: 'userselect',
           name: 'cientitydelete',
+          _scope: ['ci'],
           label: this.$t('term.cmdb.deletecientity'),
           transfer: true,
           desc: this.$t('message.cmdb.deletecientity'),
@@ -84,6 +88,7 @@ export default {
         {
           type: 'userselect',
           name: 'cientityrecover',
+          _scope: ['ci'],
           label: this.$t('term.cmdb.recovercientity'),
           transfer: true,
           desc: this.$t('message.cmdb.recovercientity'),
@@ -95,6 +100,7 @@ export default {
         {
           type: 'userselect',
           name: 'cientityquery',
+          _scope: ['ci', 'vci'],
           label: this.$t('term.cmdb.viewcientity'),
           transfer: true,
           desc: this.$t('message.cmdb.viewcientity'),
@@ -106,6 +112,7 @@ export default {
         {
           type: 'userselect',
           name: 'transactionmanage',
+          _scope: ['ci'],
           label: this.$t('term.cmdb.transactionmanage'),
           transfer: true,
           desc: this.$t('message.cmdb.transactionmanage'),
@@ -117,6 +124,7 @@ export default {
         {
           type: 'userselect',
           name: 'passwordview',
+          _scope: ['ci'],
           label: this.$t('term.cmdb.viewpassword'),
           transfer: true,
           desc: this.$t('message.cmdb.viewpassword'),
@@ -135,7 +143,7 @@ export default {
   },
   beforeMount() {},
   mounted() {
-   
+
   },
   beforeUpdate() {},
   updated() {},
@@ -166,6 +174,10 @@ export default {
       if (this.ciId) {
         this.$api.cmdb.ci.getCiById(this.ciId).then(res => {
           this.ciData = res.Return;
+          console.log(this.ciData.isVirtual);
+          if (this.ciData.isVirtual) {
+            this.formConfig = this.formConfig.filter(item => item._scope && item._scope.includes('vci'));
+          }
         });
       }
     },

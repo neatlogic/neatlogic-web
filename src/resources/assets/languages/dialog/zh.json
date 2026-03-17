@@ -82,6 +82,8 @@
     "syncconfirm": "是否确认同步数据源：{target}？",
     "resetcurrentvalueconfirm": "是否确认重置参数的当前值？",
     "batchupgradetagent": "本次升级共包含{target}台Tagent",
+    "batchreloadtagent": "本次重启共包含{target}台Tagent",
+    "batchresetpwdtagent": "本次修改密码共包含{target}台Tagent",
     "formsavetip": "当前表单有修改，是否确认在版本切换之前保存当前表单？",
     "updateformflowtip": "当前表单已被未完成状态的工单引用，修改表单可能导致工单流转时无法正常输入表单信息，是否继续？",
     "unlinkconfirm": "是否确认解除当前关联？",

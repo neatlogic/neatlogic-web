@@ -304,6 +304,7 @@ export default {
         this.$set(app, 'isSelected', true);
         this.$set(this.returnValue, 'appId', app.id);
         this.emit(); // 详情页返回，缺少分发方法
+        return;
       }
       if (!disableEmit) {
         this.emit();
@@ -322,6 +323,7 @@ export default {
         this.$set(this.returnValue, 'appId', app.id);
         this.$set(this.returnValue, 'moduleId', module.id);
         this.emit(); // 详情页返回，缺少分发的方法
+        return;
       }
       if (!disableEmit) {
         this.emit();

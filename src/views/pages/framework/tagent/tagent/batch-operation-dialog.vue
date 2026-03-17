@@ -8,7 +8,7 @@
       <template v-slot>
         <Loading :loadingShow="isLoading" type="fix"></Loading>
         <ul>
-          <li v-if="!isFinish">{{ $t('dialog.content.batchupgradetagent', {target: tagentNumber || 0}) }}</li>
+          <li v-if="!isFinish">{{ $t(confirmContentKey, { target: tagentNumber || 0 }) }}</li>
           <template v-else>
             <template v-if="resultList && resultList.length > 0">
               <li v-for="(item, index) in resultList" :key="index">
@@ -156,6 +156,11 @@ export default {
   },
   filter: {},
   computed: {
+    confirmContentKey() {
+      return this.params && this.params.action === 'reload'
+        ? 'dialog.content.batchreloadtagent'
+        : 'dialog.content.batchresetpwdtagent';
+    },
     downloadConfig(url) {
       return (url) => {
         return {

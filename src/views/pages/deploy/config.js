@@ -3,6 +3,7 @@ export const config = {
   module: 'deploy',
   menuType: {
     job: $t('router.deploy.job'), 
-    config: $t('router.deploy.config')
+    config: $t('router.deploy.config'),
+    resourceCenter: $t('router.cmdb.resourcecenter')
   }
 };

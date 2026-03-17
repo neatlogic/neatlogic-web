@@ -1,39 +1,53 @@
-### 单选（TsFormRadio）  
+# TsFormSwitch 组件说明文档
 
+## 组件简介
 
-#### 模版使用
+`TsFormSwitch` 是一个基于 `i-switch` 封装的开关组件，支持：
+
+- 双向绑定（v-model）
+- 自定义 true / false 对应值
+- 切换前校验（支持 Promise）
+- 自定义切换文案
+- 只读模式
+- 状态文本展示
+- 描述信息提示
+
+适用于表单中布尔值或状态类字段控制场景。
+
+---
+
+## 基础用法
+
 ```javascript
 <TsFormSwitch v-model="value" v-bind="config"></TsFormSwitch>
 ```
 
-#### 参数、方法说明
+## Props 参数说明
+| 参数           | 类型                        | 默认值   | 必填 | 说明                  |
+| ------------ | ------------------------- | ----- | -- | ------------------- |
+| name         | String                    | -     | 否  | 表单字段名称              |
+| value        | String / Number / Boolean | false | 否  | 当前值（支持 v-model）     |
+| trueValue    | String / Number / Boolean | 1     | 否  | 开启时对应的值             |
+| falseValue   | String / Number / Boolean | 0     | 否  | 关闭时对应的值             |
+| disabled     | Boolean                   | false | 否  | 是否禁用                |
+| readonly     | Boolean                   | false | 否  | 是否只读模式              |
+| showStatus   | Boolean                   | false | 否  | 是否显示状态文本            |
+| trueText     | String                    | 启用    | 否  | 开启状态显示文本            |
+| falseText    | String                    | 禁用    | 否  | 关闭状态显示文本            |
+| desc         | String                    | -     | 否  | 描述信息                |
+| descType     | String                    | -     | 否  | 值为info、success、warning、error时为Alert模式，如果值为空则为普通模式      |
+| onChange     | Function                  | -     | 否  | 状态改变时触发             |
+| beforeChange | Function                  | -     | 否  | 切换前触发，返回 false 阻止切换 |
+
+## 事件说明
+| 事件名          | 说明           | 回调参数 |
+| ------------ | ------------ | ---- |
+| change       | 值变化时触发       | 当前值  |
+| on-change    | 值变化时触发       | 当前值  |
+| update:value | v-model 更新事件 | 当前值  |
 
 
->> 参数
-
-
-参数名|数据类型|默认值|必传|用途|说明
-:---:|:---:|:---:|:---:|:---:|:---|
-value|String, Number, Boolean|-|是|-|-
-falseValue|String, Number, Boolean|0|否|关闭时value的值|关闭
-trueValue|String, Number, Boolean|1|否|打开时value的值|打开
-disabled|Boolean|false|否|是否不可编辑|禁用开关
-showStatus|Boolean|false|否|是否在切换开关右侧显示开关状态的文本|默认是打开时显示“已激活”，关闭时显示“已禁用”
-trueText|String|已激活|否|开启的文案提示|-
-falseText|String|已禁用|否|关闭的文案提示|-
-desc|String|-|否|描述|-
-descType|String|-|否|描述显示的类型普通模式和Alert组件模式|值为info、success、warning、error时为Alert模式，如果值为空则为普通模式
-onChange|Function|-|否|值改变时触发|传人参数 value 当前的value值
-beforeChange|Function|-|否|改变前触发，主要用来阻止状态的改变|return 如果返回true则切换，返回false则不切换
-
-
->>  方法(通过@调用方法)
- 方法名|用途|说明
-:---:|:---:|:---
-on-change|数据改变时触发| 入参 value：选中值
-
-
-#### 入参
+## 入参
 
 ```javascript
 config:{
@@ -50,3 +64,8 @@ config:{
   beforeChange:()=>{ },
 }
 ```
+
+### 注意事项
+- trueValue 与 falseValue 类型必须与 value 类型一致，否则可能匹配失败。
+- beforeChange 若为异步逻辑，请确保返回 Promise。
+- readonly 模式下不会渲染开关组件，只显示状态文本。

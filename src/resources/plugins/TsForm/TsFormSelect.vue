@@ -1757,8 +1757,6 @@ function setWidth($contain, $target, transfer) {
         }
       }
     }
-    &.ivu-select-multiple {
-    }
   }
   .tsform-select-readonly {
     .ivu-input {

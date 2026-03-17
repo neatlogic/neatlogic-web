@@ -30,7 +30,7 @@ export default {
   },
   data() {
     return {
-      jobData: { pipelineId: this.id, appSystemModuleVersionList: [], triggerType: 'manual', defaultVersion: ''},
+      jobData: { pipelineId: this.id, appSystemModuleVersionList: [], triggerType: 'instant', defaultVersion: ''},
       pipelineData: {},
       formConfig: {
         name: {
@@ -43,19 +43,20 @@ export default {
           type: 'radio',
           label: this.$t('page.executionmode'),
           dataList: [
+            { value: 'instant', text: this.$t('term.deploy.immediateexecution')},
             { value: 'manual', text: this.$t('term.deploy.manualtrigger') },
             { value: 'auto', text: this.$t('term.deploy.automaticexecution') }
           ],
           validateList: ['required'],
           onChange: val => {
-            this.$set(this.jobData, 'triggerType', val);
+            this.changeTriggerType(val);
           }
         },
         planStartTime: {
           label: this.$t('page.plantime'),
           transfer: true,
           type: 'datetime',
-          isHidden: false,
+          isHidden: true,
           valueType: 'timestamp',
           format: 'yyyy-MM-dd HH:mm',
           desc: this.$t('term.deploy.tasktimelimitfiveminutes'),
@@ -95,6 +96,17 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    changeTriggerType(val) {
+      this.$set(this.jobData, 'triggerType', val);
+      const isAuto = val === 'auto';
+      this.$set(this.formConfig.planStartTime, 'isHidden', !isAuto);
+      this.$set(this.formConfig.planStartTime, 'validateList', isAuto ? ['required'] : []);
+      if (!isAuto) {
+        this.$delete(this.jobData, 'planStartTime');
+      } else if (!this.jobData.planStartTime) {
+        this.$set(this.jobData, 'planStartTime', (new Date()).getTime() + 60 * 10 * 1000);
+      }
+    },
     validateForm() {
       const form = this.$refs['form'];
       let isValid = true;
@@ -140,7 +152,8 @@ export default {
         });
       } else {
         this.isReady = true;
-      } 
+      }
+      this.changeTriggerType(this.jobData.triggerType);
     }
   },
   filter: {},
