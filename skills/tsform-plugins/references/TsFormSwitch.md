@@ -1,4 +1,4 @@
-### 单选（TsFormRadio）  
+### 开关（TsFormSwitch）  
 
 
 #### 模版使用
