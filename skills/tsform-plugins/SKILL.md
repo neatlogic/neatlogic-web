@@ -1,6 +1,6 @@
 ---
 name: tsform-plugins
-description: Use when building or editing UI in this repo that needs form controls (input/select/radio/checkbox/switch/date/tree) or form layouts. Always prefer TsForm* components (TsFormInput, TsFormSelect, TsFormRadio, TsFormCheckbox, TsFormSwitch, TsFormDatePicker, TsFormTree, TsFormItem, TsForm) instead of native HTML controls or other UI libs.
+description: Use when building or editing UI in this repo that needs form controls (input/select/radio/checkbox/switch/date/tree/cascader) or form layouts. Always prefer TsForm* components (TsFormInput, TsFormSelect, TsFormRadio, TsFormCheckbox, TsFormSwitch, TsFormDatePicker, TsFormTree, TsFormCascader, TsFormItem, TsForm) instead of native HTML controls or other UI libs.
 ---
 
 # Tsform Plugins
@@ -29,8 +29,25 @@ If no TsForm component fits, stop and ask for guidance before using a native con
 - Switch / toggle: `TsFormSwitch` (see `references/TsFormSwitch.md`)
 - Date / datetime / time: `TsFormDatePicker` (see `references/TsFormDatePicker.md`)
 - Tree select: `TsFormTree` (see `references/TsFormTree.md`)
+- Cascader / multi-level selection: `TsFormCascader` (inspect `src/resources/plugins/TsForm/TsFormCascader.vue`)
 - Form item wrapper / label handling: `TsFormItem` (see `references/TsFormItem.md`)
 - Form layout / item list: `TsForm` (see `references/TsForm.md`)
+
+When using config-driven `TsForm`, common `type` mappings in this repo include:
+
+- `text`, `textarea`, `number`, `url`, `email`, `tel`, `password`: `TsFormInput`
+- `select`: `TsFormSelect`
+- `radio`: `TsFormRadio`
+- `checkbox`: `TsFormCheckbox`
+- `switch`: `TsFormSwitch`
+- `date`, `datetime`, `datetimerange`, `year`, `month`, `time`, `timerange`: `TsFormDatePicker`
+- `tree`: `TsFormTree`
+- `cascader`: `TsFormCascader`
+- `quartz`: prefer `TsQuartz` from `src/resources/plugins/TsQuartz/`
+- `ckeditor`: prefer `TsCkeditor` from `src/resources/plugins/TsCkeditor/`
+- `codemirror`: prefer `TsCodemirror` from `src/resources/plugins/TsCodemirror/`
+- `userselect`: first inspect existing page usage or `TsSheet` implementations before adding a new control
+- `slot`, `textspan`: follow existing `TsForm` page patterns
 
 ## Reference Usage
 
