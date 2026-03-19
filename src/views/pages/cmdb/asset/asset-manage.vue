@@ -4,7 +4,7 @@
     <TsContain :isSiderHide="isSiderHide" :enableCollapse="true">
       <template v-slot:topLeft>
         <div class="action-group">
-          <span v-if="treeData && treeData.length > 0 && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item tsfont-setting" @click="editTree()">{{ $t('page.setting') }}</span>
+          <span v-if="!$utils.isEmpty(rootCiName) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item tsfont-setting" @click="editTree()">{{ $t('page.setting') }}</span>
           <span v-if="resourceIdList.length > 0 && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="action-item">
             <Dropdown trigger="click" placement="bottom-start">
               <div>
@@ -92,7 +92,7 @@
         </div>
       </template>
       <template v-slot:sider>
-        <span v-if="$utils.isEmpty(treeData) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="text-href" @click="editTree()">{{ $t('term.cmdb.resourcetypetreesettingdesc') }}</span>
+        <span v-if="$utils.isEmpty(rootCiName) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="text-href" @click="editTree()">{{ $t('term.cmdb.resourcetypetreesettingdesc') }}</span>
         <Tree
           v-if="!$utils.isEmpty(treeData)"
           :data="treeData"
@@ -286,6 +286,7 @@ export default {
       resourceIdList: [],
       tagList: [],
       loading: false,
+      rootCiName: null,
       treeData: [],
       disabled: false,
       operateType: '',
@@ -771,7 +772,8 @@ export default {
     getTreeType() {
       //获取树形类型
       return this.$api.cmdb.asset.getResourceTreeType().then(res => {
-        let data = res.Return;
+        this.rootCiName = res.Return.rootCiName;
+        let data = res.Return.tbodyList;
         this.treeTypeRootCiId = data[0]?.id;
         if (this.selectType.typeId) {
           this.setTreeDataSelect(this.selectType.typeId, data);
