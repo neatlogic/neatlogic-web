@@ -90,6 +90,7 @@ export default {
             label: this.$t('term.cmdb.citype'),
             multiple: true,
             url: '/api/rest/resourcecenter/resourcetype/tree',
+            rootName: 'tbodyList',
             textName: 'label',
             valueName: 'id',
             search: true,
@@ -213,6 +214,7 @@ export default {
           textName: 'label',
           valueName: 'id',
           url: '/api/rest/resourcecenter/resourcetype/tree',
+          rootName: 'tbodyList',
           validateList: [{name: 'required', message: ''}]
         },
         {
