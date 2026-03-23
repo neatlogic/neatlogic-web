@@ -407,7 +407,7 @@ export default {
     },
     getResourceList() {
       return this.$api.cmdb.asset.getResourceTreeType().then(res => {
-        this.resourceList = res.Return;
+        this.resourceList = res.Return.tbodyList;
         this.$nextTick(() => {
           this.flattenResourceList();
           if (this.searchParam.typeId) {

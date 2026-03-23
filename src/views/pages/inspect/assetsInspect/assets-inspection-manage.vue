@@ -670,7 +670,7 @@ export default {
     },
     async getResourceList() {
       await this.$api.cmdb.asset.getResourceTreeType().then(res => {
-        this.resourceList = res.Return;
+        this.resourceList = res.Return.tbodyList;
         //由于iview的Tree组件对数据做了二次处理，因此需要等下一个事件周期才能进行选中展开等处理
         this.$nextTick(() => {
           //对数据进行扁平化处理
