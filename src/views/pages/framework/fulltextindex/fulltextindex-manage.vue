@@ -74,6 +74,40 @@
               </template>
             </TsTable>
           </TabPane>
+          <TabPane label="Qdrant" name="qdrant">
+            <TsTable :tbodyList="fullTextIndexRebuildAuditData['qdrant']" :theadList="theadList">
+              <template v-slot:error="{ row }">
+                <Poptip
+                  v-if="row.error"
+                  trigger="hover"
+                  :title="$t('page.exception')"
+                  word-wrap
+                  width="400"
+                  :transfer="true"
+                  :content="row.error"
+                  placement="left"
+                >
+                  <span class="text-error tsfont-warning-s"></span>
+                </Poptip>
+              </template>
+              <template v-slot:statusText="{ row }">
+                <span v-if="row.status === 'done'" class="text-success">{{ row.statusText }}</span>
+                <Progress
+                  v-else-if="row.status === 'doing'"
+                  :percent="99"
+                  status="active"
+                  style="width: 110px"
+                ><span></span></Progress>
+              </template>
+              <template v-slot:action="{ row }">
+                <div class="tstable-action">
+                  <ul class="tstable-action-ul">
+                    <li :class="row.status === 'doing' ? 'text-disabled' : ''" class="tsfont-restart" @click="rebuildIndex(row)">{{ $t('page.rebuildindex') }}</li>
+                  </ul>
+                </div>
+              </template>
+            </TsTable>
+          </TabPane>
         </Tabs>
         <FullIndexRebuildDialog v-if="isRebuildDialogShow" :audit="currentAudit" @close="closeRebuildDialog"></FullIndexRebuildDialog>
       </div>
@@ -111,11 +145,13 @@ export default {
       ],
       fullTextIndexRebuildAuditData: {
         database: [],
-        elasticsearch: []
+        elasticsearch: [],
+        qdrant: []
       },
       doingIdList: {
         database: [],
-        elasticsearch: []
+        elasticsearch: [],
+        qdrant: []
       }, //正在创建的type列表
       timer: null //刷新定时器
     };
