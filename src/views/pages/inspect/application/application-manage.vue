@@ -98,6 +98,14 @@
               moduleName="inspect"
             ></InspectionAssetsManage>
           </TabPane>
+          <TabPane label="配置基线" name="configBaseline">
+            <ConfigBaselineManage
+              v-if="tabValue == 'configBaseline'"
+              class="tab-height-box"
+              :appSystemId="appCiEntityId"
+              :appModuleId="appModuleId"
+            ></ConfigBaselineManage>
+          </TabPane>
           <TabPane v-if="selectedApp && !selectedModule" :label="$t('term.deploy.applicationinformation')" name="applicationInfo">
             <AppInfo v-if="tabValue == 'applicationInfo'" :appSystemId="appCiEntityId"></AppInfo>
           </TabPane>
@@ -159,6 +167,7 @@ export default {
     AppModuleTree: () => import('@/views/pages/cmdb/application/app-module-tree'), // 应用模块树
     LatestQuestionsManage: () => import('./latest-questions-manage'), // 最新问题
     InspectionAssetsManage: () => import('./inspection-assets-manage'), // 资产清单
+    ConfigBaselineManage: () => import('./config-baseline-manage.vue'),
     BatchSystemInspectionDialog: () => import('./batch-system-inspection-dialog'), // 批量应用巡检
     BatchModuleInspectionDialog: () => import('./batch-module-inspection-dialog') // 批量模块巡检
   },
