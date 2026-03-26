@@ -687,7 +687,9 @@ export default {
     await this.getTreeType();
     await this.initData();
     if (resourceId) {
-      this.editAccount({ id: parseInt(resourceId) });
+      if (this.tableConfig.tbodyList && this.tableConfig.tbodyList.some(item => item.id == resourceId)) {
+        this.editAccount({ id: parseInt(resourceId) });
+      }
     }
   },
   beforeUpdate() {},
