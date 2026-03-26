@@ -81,7 +81,7 @@
               </div>
             </Col>
             <Col v-else-if="resultMap" span="2">
-              <div v-if="resultMap[conItem.uuid]" class="pt-xs" style="text-align:center">
+              <div v-if="resultMap[conItem.uuid]" class="pt-xs" style="text-align: center">
                 <span v-if="resultMap[conItem.uuid].result" class="tsfont-check text-success text-bold"></span>
                 <div v-else>
                   <Tooltip
