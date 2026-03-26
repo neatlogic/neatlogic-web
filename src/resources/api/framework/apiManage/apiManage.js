@@ -1,5 +1,27 @@
 import axios from '../../http';
 
+function getParamValue(params, key) {
+  if (!params) {
+    return undefined;
+  }
+  if (typeof FormData !== 'undefined' && params instanceof FormData) {
+    return params.get(key);
+  }
+  return params[key];
+}
+
+function replacePathParams(token, params) {
+  if (token.indexOf('{') > -1) {
+    const re = /\{([^\}]+)?\}/g;
+    let match;
+    // eslint-disable-next-line no-cond-assign
+    while ((match = re.exec(token))) {
+      token = token.replace(match[0], getParamValue(params, match[1]));
+    }
+  }
+  return token;
+}
+
 const apiManage = {
   // 获取接口树形目录
   getTree(params) {
@@ -40,25 +62,11 @@ const apiManage = {
     return axios.get(`${url}`);
   },
   upload(token, params, header) {
-    if (token.indexOf('{') > -1) {
-      const re = /\{([^\}]+)?\}/g;
-      let match;
-      // eslint-disable-next-line no-cond-assign
-      while ((match = re.exec(token))) {
-        token = token.replace(match[0], params[match[1]]);
-      }
-    }
+    token = replacePathParams(token, params);
     return axios.post(token, params, { headers: header || {}, responseType: 'blob', contentType: 'multipart/form-data' });
   },
   test(token, params, header) {
-    if (token.indexOf('{') > -1) {
-      const re = /\{([^\}]+)?\}/g;
-      let match;
-      // eslint-disable-next-line no-cond-assign
-      while ((match = re.exec(token))) {
-        token = token.replace(match[0], params[match[1]]);
-      }
-    }
+    token = replacePathParams(token, params);
 
     if (header) {
       if (header.type == 'get') {
