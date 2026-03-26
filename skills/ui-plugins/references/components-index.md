@@ -1,5 +1,6 @@
 # Component Index
-This index is generated from `src/resources/plugins`. Prefer these components over native HTML to keep UI consistent.
+This index is generated from `src/resources/plugins` only. It does not cover shared components under `src/resources/components`.
+Prefer these components over native HTML to keep UI consistent.
 For exact props/events/slots, open the component `.vue` file in the listed path.
 ## DslEditor
 Entry components:
@@ -61,6 +62,7 @@ Related modules:
 - `TsForm/label-slot.js`
 Docs:
 - `TsForm/TsForm.md`
+- `TsForm/TsFormCascader.md`
 - `TsForm/TsFormCheckbox.md`
 - `TsForm/TsFormDatePicker.md`
 - `TsForm/TsFormInput.md`
@@ -120,4 +122,3 @@ Related modules:
 ## VerticalPager
 Entry components:
 - `VerticalPager/vertical-pager.vue`
-

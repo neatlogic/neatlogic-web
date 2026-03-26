@@ -664,7 +664,7 @@
     "customtoollibrary": "自定义工具库",
     "toollibrary": "工具库",
     "hasauthinfo": "拥有权限的用户可在组合工具中添加分类下的自定义工具或工具库工具",
-    "hasauthtip": "拥有权限的用户可在组合工具中审核分类下的版本",
+    "hasauthtip": "拥有权限的用户可在自定义工具库中审核该分类下的版本，并同时具有该分类的使用授权",
     "auditauthorization": "审核授权",
     "libraryusageinstructions": "工具库使用说明",
     "alltemplates": "所有模板",
