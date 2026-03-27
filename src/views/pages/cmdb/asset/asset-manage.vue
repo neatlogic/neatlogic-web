@@ -116,7 +116,7 @@
           @changePageSize="changePageSize"
         >
           <template v-slot:ip="{ row }">
-            <span class="text-href" @click.stop="gotoDetails(row)">
+            <span class="text-href" @click.stop="urlOpen(row)">
               <span>{{ row.ip }}</span>
               <span v-if="row.port">:{{ row.port }}</span>
             </span>
