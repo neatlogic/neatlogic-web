@@ -234,8 +234,8 @@ export default {
           let newList = res.Return.list || [];
           if (!_this.$utils.isEmpty(_this.moduleId)) {
             newList.forEach(item => {
-              if (item.text.includes('#{moduleId}')) {
-                item.text = item.text.replace('#{moduleId}', _this.moduleId);
+              if (item.text.includes('{moduleId}')) {
+                item.text = item.text.replace('{moduleId}', _this.moduleId);
               }
             });
           }
