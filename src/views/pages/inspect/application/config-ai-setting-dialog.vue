@@ -2,7 +2,20 @@
   <TsDialog v-bind="dialogConfig" @on-ok="saveSetting" @on-close="$emit('close')">
     <template v-slot>
       <div class="padding">
-        <div class="text-tip pb-md">当前设置为全局配置，会作用于该维度下所有配置基线草稿生成。</div>
+        <div class="text-tip pb-md">当前设置为全局配置，会作用于该维度下所有配置基线草稿生成和自动基线比对。</div>
+        <TsFormSelect
+          ref="viewSelect"
+          v-model="formData.viewName"
+          label="操作系统入口"
+          transfer
+          border="border"
+          :dataList="viewOptionList"
+          valueName="value"
+          textName="text"
+          :validateList="validateList"
+          :clearable="false"
+        ></TsFormSelect>
+        <div v-if="viewTip" class="text-tip margin-top">{{ viewTip }}</div>
         <TsFormSelect
           ref="modelSelect"
           v-model="formData.modelId"
@@ -37,22 +50,19 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
-  props: {
-    schemaName: {
-      type: String,
-      default: 'os'
-    }
-  },
   data() {
     return {
       loadingShow: false,
       modelList: [],
+      viewOptionList: [],
       formData: {
+        viewName: '',
         modelId: null,
         prompt: ''
       },
       currentModel: null,
       currentSetting: null,
+      defaultViewName: '',
       defaultPrompt: '',
       validateList: ['required']
     };
@@ -60,39 +70,10 @@ export default {
   mounted() {
     this.getSetting();
   },
-  computed: {
-    dialogConfig() {
-      return {
-        type: 'modal',
-        title: '大模型设置',
-        isShow: true,
-        width: 'medium',
-        loading: this.loadingShow
-      };
-    },
-    currentModelText() {
-      if (!this.currentModel) {
-        return '';
-      }
-      let modelName = this.currentModel.modelName ? ` (${this.currentModel.modelName})` : '';
-      return `当前已选择：${this.currentModel.name || this.currentModel.modelName || ''}${modelName}`;
-    },
-    promptTip() {
-      if (!this.defaultPrompt) {
-        return '';
-      }
-      if (this.currentSetting && this.currentSetting.prompt) {
-        return '当前使用自定义 Prompt。清空或恢复为默认文案后保存，将回退为代码默认 Prompt。';
-      }
-      return '当前未单独设置 Prompt，已回显代码默认 Prompt。';
-    }
-  },
   methods: {
     getSetting() {
       this.loadingShow = true;
-      this.$api.inspect.applicationInspect.getConfigAiSetting({
-        schemaName: this.schemaName
-      }).then(res => {
+      this.$api.inspect.applicationInspect.getConfigAiSetting().then(res => {
         if (res && res.Status === 'OK') {
           let modelList = res.Return.modelList || [];
           this.modelList = modelList.map(item => {
@@ -107,8 +88,11 @@ export default {
           });
           let setting = res.Return.setting || {};
           this.currentSetting = setting;
+          this.viewOptionList = res.Return.viewOptionList || [];
+          this.defaultViewName = res.Return.defaultViewName || '';
           this.defaultPrompt = res.Return.defaultPrompt || '';
           this.currentModel = res.Return.model || null;
+          this.formData.viewName = setting.viewName || res.Return.effectiveViewName || this.defaultViewName || (this.viewOptionList[0] ? this.viewOptionList[0].value : '');
           this.formData.modelId = setting.modelId || (this.modelList.length > 0 ? this.modelList[0].value : null);
           this.formData.prompt = setting.prompt || res.Return.effectivePrompt || this.defaultPrompt;
         }
@@ -117,12 +101,15 @@ export default {
       });
     },
     saveSetting() {
+      if (this.$refs.viewSelect && !this.$refs.viewSelect.valid()) {
+        return;
+      }
       if (this.$refs.modelSelect && !this.$refs.modelSelect.valid()) {
         return;
       }
       this.loadingShow = true;
       this.$api.inspect.applicationInspect.saveConfigAiSetting({
-        schemaName: this.schemaName,
+        viewName: this.formData.viewName,
         modelId: this.formData.modelId,
         prompt: this.formData.prompt
       }).then(res => {
@@ -134,6 +121,42 @@ export default {
       }).finally(() => {
         this.loadingShow = false;
       });
+    }
+  },
+  computed: {
+    dialogConfig() {
+      return {
+        type: 'modal',
+        title: '配置设置',
+        isShow: true,
+        width: 'medium',
+        loading: this.loadingShow
+      };
+    },
+    currentModelText() {
+      if (!this.currentModel) {
+        return '';
+      }
+      let modelName = this.currentModel.modelName ? ` (${this.currentModel.modelName})` : '';
+      return `当前已选择：${this.currentModel.name || this.currentModel.modelName || ''}${modelName}`;
+    },
+    viewTip() {
+      if (!this.defaultViewName) {
+        return '';
+      }
+      if (this.currentSetting && this.currentSetting.viewName) {
+        return '当前使用自定义操作系统入口。恢复为默认入口后保存，将回退为应用清单默认第一项。';
+      }
+      return '当前未单独设置操作系统入口，已回显应用清单默认第一项。';
+    },
+    promptTip() {
+      if (!this.defaultPrompt) {
+        return '';
+      }
+      if (this.currentSetting && this.currentSetting.prompt) {
+        return '当前使用自定义 Prompt。清空或恢复为默认文案后保存，将回退为代码默认 Prompt。';
+      }
+      return '当前未单独设置 Prompt，已回显代码默认 Prompt。';
     }
   }
 };

@@ -23,12 +23,15 @@
       </Row>
     </div>
     <div class="bg-op radius-md padding mb-md">
-        <div class="flex-between pb-sm">
+      <div class="flex-between pb-sm">
+        <div>
           <div class="h3">基线列表</div>
-          <div v-auth="'INSPECT_MODIFY'" class="action-group">
-          <span class="action-item tsfont-setting" @click="openAiSettingDialog">大模型设置</span>
-          </div>
+          <div class="text-tip margin-top-xs">操作系统入口：{{ entryViewDisplayText }}</div>
         </div>
+        <div v-auth="'INSPECT_MODIFY'" class="action-group">
+          <span class="action-item tsfont-setting" @click="openAiSettingDialog">配置设置</span>
+        </div>
+      </div>
       <NoData v-if="!baselineData.tbodyList || baselineData.tbodyList.length === 0"></NoData>
       <TsTable
         v-else
@@ -217,15 +220,21 @@
           </template>
           <template v-slot:action="{ row }">
             <div class="tstable-action">
-              <ul class="tstable-action-ul">
+              <ul v-if="isEntryViewRow(row)" class="tstable-action-ul">
                 <li class="tsfont-eye" :class="{ 'text-grey': isActionLoading(getRowActionKey('snapshot', row)) }" @click="viewSnapshot(row)">
                   {{ isActionLoading(getRowActionKey('snapshot', row)) ? '查看中...' : '查看快照' }}
                 </li>
                 <li class="tsfont-compare" @click="openCompareDialog(row)">配置比对</li>
-                <li v-auth="'INSPECT_MODIFY'" class="tsfont-publish" :class="{ 'text-grey': isActionLoading(getRowActionKey('promote', row)) }" @click="promoteBaseline(row)">
+                <li
+                  v-auth="'INSPECT_MODIFY'"
+                  class="tsfont-publish"
+                  :class="{ 'text-grey': isActionLoading(getRowActionKey('promote', row)) }"
+                  @click="promoteBaseline(row)"
+                >
                   {{ isActionLoading(getRowActionKey('promote', row)) ? '生成中...' : '生成基线草稿' }}
                 </li>
               </ul>
+              <span v-else>-</span>
             </div>
           </template>
         </TsTable>
@@ -264,7 +273,6 @@
     ></ConfigBaselineVersionDialog>
     <ConfigAiSettingDialog
       v-if="isShowAiSettingDialog"
-      schemaName="os"
       @close="closeAiSettingDialog"
       @refresh="handleAiSettingRefresh"
     ></ConfigAiSettingDialog>
@@ -298,6 +306,8 @@ export default {
       envId: '',
       envList: [],
       tableList: [],
+      entryViewName: '',
+      entryViewOptionList: [],
       baselineData: {
         tbodyList: [],
         rowNum: 0,
@@ -343,8 +353,17 @@ export default {
     async initData() {
       this.tableData.currentPage = 1;
       await this.getEnvList();
+      await this.getEntrySetting();
       await this.getBaselineList();
       await this.getTableData();
+    },
+    async getEntrySetting() {
+      await this.$api.inspect.applicationInspect.getConfigAiSetting().then(res => {
+        if (res && res.Status === 'OK') {
+          this.entryViewOptionList = res.Return.viewOptionList || [];
+          this.entryViewName = res.Return.effectiveViewName || '';
+        }
+      });
     },
     async getEnvList() {
       this.loadingShow = true;
@@ -398,6 +417,7 @@ export default {
         appSystemId: this.appSystemId,
         appModuleId: this.appModuleId,
         envId: this.envId,
+        viewName: this.entryViewName || null,
         typeId: row && row.type ? row.type.id : null,
         currentPage: this.tableData.currentPage,
         pageSize: this.tableData.pageSize
@@ -406,15 +426,22 @@ export default {
         this.tableList = [];
         return false;
       }
+      if (!this.entryViewName) {
+        this.tableList = [];
+        return false;
+      }
       this.loadingShow = true;
       this.$api.inspect.applicationInspect.getNewapplicationInspectList(params).then(res => {
         if (res.Status == 'OK') {
           if (row && !this.$utils.isEmptyObj(row)) {
             let tableList = (res.Return && res.Return.tableList) ? res.Return.tableList[0] : [];
+            this.markTableRowViewName(tableList);
             currentRow = Object.assign({}, row, tableList);
             this.$set(this.tableList, index, currentRow);
           } else {
-            this.tableList = res.Return.tableList;
+            let tableList = res.Return.tableList || [];
+            tableList.forEach(item => this.markTableRowViewName(item));
+            this.tableList = tableList;
           }
         }
       }).finally(() => {
@@ -480,6 +507,20 @@ export default {
       let port = row && row.ip && row.ip.port ? ':' + row.ip.port : '';
       return (row && row.name ? row.name + ' ' : '') + ip + port;
     },
+    markTableRowViewName(table) {
+      if (!table || !table.tbodyList || !table.viewName) {
+        return;
+      }
+      table.tbodyList.forEach(item => {
+        this.$set(item, '_viewName', table.viewName);
+      });
+    },
+    isEntryViewRow(row) {
+      if (!row || !this.entryViewName) {
+        return false;
+      }
+      return row._viewName === this.entryViewName;
+    },
     getScopeAppModuleId(row) {
       if (row && row.appModule && row.appModule.id) {
         return row.appModule.id;
@@ -505,6 +546,9 @@ export default {
       return this.envNameMap[envId] || envId;
     },
     viewSnapshot(row) {
+      if (!this.isEntryViewRow(row)) {
+        return;
+      }
       const actionKey = this.getRowActionKey('snapshot', row);
       if (this.isActionLoading(actionKey)) {
         return;
@@ -532,6 +576,9 @@ export default {
       });
     },
     promoteBaseline(row) {
+      if (!this.isEntryViewRow(row)) {
+        return;
+      }
       const actionKey = this.getRowActionKey('promote', row);
       if (this.isActionLoading(actionKey)) {
         return;
@@ -570,6 +617,9 @@ export default {
       });
     },
     openCompareDialog(row) {
+      if (!this.isEntryViewRow(row)) {
+        return;
+      }
       this.currentRow = row;
       this.isShowCompareDialog = true;
     },
@@ -588,6 +638,9 @@ export default {
       this.isShowAiSettingDialog = false;
     },
     handleAiSettingRefresh() {
+      this.getEntrySetting().then(() => {
+        this.getTableData();
+      });
       this.getBaselineList();
     },
     closeVersionDialog() {
@@ -703,6 +756,13 @@ export default {
         });
       });
       return result;
+    },
+    entryViewDisplayText() {
+      if (!this.entryViewName) {
+        return '未设置';
+      }
+      let option = this.entryViewOptionList.find(item => item.value === this.entryViewName);
+      return option ? option.text : this.entryViewName;
     }
   },
   watch: {
