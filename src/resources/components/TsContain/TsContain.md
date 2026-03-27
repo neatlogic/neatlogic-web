@@ -1,88 +1,127 @@
-### 容器布局插件（TsContain）  
+### 容器布局组件（TsContain）
 
+`TsContain` 是项目里的通用页面容器组件，用来组织页面头部、正文、左侧栏、右侧栏等区域。
+适合管理页、详情页、弹窗内容区等需要统一布局的场景。
 
-#### 模版使用
+#### 基本能力
 
-```javascript
-<TsContain>
-       //头部布局，完全自定义，不推荐使用
-      <template v-slot:top>
-        <span class="tsfont-plus text-action" @click="edit({})">系统公告</span>
-      </template>
-       //头部左边布局
-      <template v-slot:topLeft>
-        <span class="tsfont-plus text-action" @click="edit({})">系统公告</span>
-      </template>
-      //头部中间的布局
-       <template v-slot:topCenter>
-        <span class="tsfont-plus text-action" @click="edit({})">系统公告</span>
-      </template>
-       //头部右侧布局，一般为搜索框
-      <template v-slot:topRight>
-        <Input />
-      </template>
-      <template v-slot:left>
-        左侧sider内容，可能没有
-      </template>
-      <template v-slot:content>
-        content内容
-      </template>
-      <template v-slot:right>
-        右侧sider内容，可能没有
-      </template>
-<TsContain>
+- 支持头部区域的 `navigation`、`topLeft`、`topCenter`、`topRight` 分区布局
+- 支持正文区域 `content`
+- 支持左侧 `sider` 和右侧 `right` 侧栏
+- 支持左侧栏折叠/展开
+- 支持右侧栏按钮切换展开/收起
+- 支持 `window` / `dialog` 两种高度计算模式
+- 支持头部隐藏、内容区内边距控制、顶部三列宽度控制
+
+#### 使用示例
+
+```vue
+<TsContain
+  :enableCollapse="true"
+  :siderWidth="240"
+  :rightWidth="320"
+  @toggleSiderHide="handleToggleSider"
+  @rightSiderToggle="handleRightToggle"
+  @scroll="handleScroll"
+>
+  <template v-slot:navigation>
+    <span class="text-grey">监控中心</span>
+  </template>
+
+  <template v-slot:topLeft>
+    <div class="action-group">
+      <span class="action-item tsfont-plus">新增</span>
+    </div>
+  </template>
+
+  <template v-slot:topRight>
+    <InputSearcher v-model="keyword"></InputSearcher>
+  </template>
+
+  <template v-slot:sider>
+    左侧栏内容
+  </template>
+
+  <template v-slot:content>
+    主体内容
+  </template>
+
+  <template v-slot:right>
+    右侧栏内容
+  </template>
+</TsContain>
 ```
 
-#### 参数、方法说明
+#### Props
 
-1. 可以通过设置rightWidth、leftWidth改变左中右布局默认的左右两侧宽度
-2. isSiderHide参数控制侧边栏是否展开（需要siderPosition设置哪边为活动侧边栏默认是左侧）
-3. isDrag参数控制侧边栏是否可以通过拖拽改变宽度（需要siderPosition设置哪边为活动侧边栏默认是左侧）
+参数 | 类型 | 默认值 | 说明
+---|---|---|---
+`hasContentPadding` | `Boolean` | `true` | 正文区域是否保留左右内边距
+`enableCollapse` | `Boolean` | `false` | 是否显示左侧栏收起/展开按钮，仅在存在 `sider` 插槽时生效
+`enableDivider` | `Boolean` | `false` | 头部 `navigation` 后是否额外显示分隔线
+`sessionName` | `String` | `-` | 预留的侧栏状态标识，当前源码中卸载时会清理对应 localStorage
+`isSiderHide` | `Boolean` | `false` | 外部控制左侧栏是否隐藏
+`isRightSiderHide` | `Boolean` | `false` | 外部控制右侧栏是否隐藏
+`gutter` | `Number` | `16` | 内容区间距控制，`0` 时正文会使用无 padding 高度类
+`border` | `String` | `'none'` | 头部/侧栏边框风格，常用值 `none`、`border`
+`navHeaderBottom` | `String` | `'none'` | 头部底部分隔样式控制
+`hideHeader` | `Boolean` | `false` | 是否隐藏整个头部区域
+`siderWidth` | `Number` | `200` | 左侧栏宽度
+`siderPosition` | `String` | `'left'` | 侧栏位置，支持 `left`、`right`
+`isBackgroung` | `Boolean` | `true` | 是否使用默认灰色头部背景
+`clearStyle` | `Boolean` | `false` | 是否清除侧栏默认背景/圆角等样式
+`rightWidth` | `Number` | `200` | 右侧栏宽度
+`mode` | `String` | `'window'` | 高度模式，支持 `window`、`dialog`
+`rightBtn` | `Boolean` | `false` | 右侧栏是否显示切换按钮
+`topLeftWidth` | `String` | `''` | 头部左侧区域宽度
+`topCenterWidth` | `String` | `''` | 头部中间区域宽度
+`topRightWidth` | `String` | `''` | 头部右侧区域宽度
 
->> 参数
+#### Slots
+
+插槽名 | 说明
+---|---
+`navigation` | 头部最左侧导航区域
+`top` | 自定义整个头部内容；使用后可覆盖默认的 `topLeft/topCenter/topRight` 结构
+`topLeft` | 头部左侧区域，通常放操作区
+`topCenter` | 头部中间区域
+`topRight` | 头部右侧区域，通常放搜索或筛选区
+`content` | 正文内容区域
+`sider` | 左侧栏内容
+`right` | 右侧栏内容
+
+#### Events
+
+事件名 | 参数 | 说明
+---|---|---
+`toggleSiderHide` | `(siderHide)` | 点击左侧栏折叠按钮时触发
+`on-collapse` | `($event)` | 左侧 `Sider` 折叠状态变化时透传
+`rightSiderToggle` | `-` | 点击右侧栏切换按钮时触发
+`scroll` | `(scrollTop, event)` | 正文滚动时触发
+`verticals` | `-` | 调用实例方法 `verticals()` 时触发
+
+#### 实例方法
+
+方法名 | 参数 | 说明
+---|---|---
+`scrollTop` | `(top)` | 将正文区域滚动到指定高度
+`rightSiderToggle` | `-` | 切换右侧栏展开/收起
+`handleContainHeight` | `-` | 重新计算容器高度
+`verticals` | `-` | 向外触发 `verticals` 事件
+
+#### 头部布局规则
+
+- 如果同时提供 `topLeft`、`topCenter`、`topRight`，组件会按三列 grid 布局渲染
+- 如果只提供左右两侧，会使用左右对齐布局
+- 如果传入 `topLeftWidth`、`topCenterWidth`、`topRightWidth`，会覆盖默认宽度
+- 如果传入 `top` 插槽，会使用自定义头部内容，不再使用默认三段式布局
+
+#### 高度规则
+
+- `mode="window"`：组件会基于当前容器到视口顶部的位置，自动计算剩余高度
+- `mode="dialog"`：容器高度固定为 `100%`，适用于弹窗内部
+- `hideHeader=true` 时，正文高度不再减去头部高度
+
+#### 说明
 
 
-参数名|数据类型|默认值|必传|用途|说明
-:---:|:---:|:---:|:---:|:---:|:---|
-sessionName|String|-|否|唯一标识用来在localStorage里面记录sider是否展开 |如果值存在则会记录页面的sider展开状态，下次同一个sessionName时，通过拿去localStorage里面的数据来改变sider展开状态
-isSiderHide|Boolean|false|否|是否隐藏sider内容|外部操控组件的sider是否展开
-gutter|Number|16|否|头部栅格布局之间的距离|-
-border|String|border|否|头部form表单是边框类型|-
-navHeaderBottom|String|none|否|头部布局下面是否有底部边框分割|-
-hideHeader|Boolean|false|否|是否需要头部|-
-clearStyle|Boolean|false|否|是否需要清除侧边栏的样式（背景色、圆角，不包含右侧固定高度）|-
-siderWidth|Number|200|否|sider的宽度|如果可以拖动，则拖动的范围为 siderWidth ~ siderWidth*2
-siderPosition|String|left|否|sider在布局的位置,主要是针对可拖动块是的插槽|left  right
-isDrag|Boolean|false|否|sider是否可以拖动|拖动产生的宽度会存在localStorage 下次进来时通过存储的值来渲染
-rightWidth|Number|200|否|如果是左中右布局的右侧宽度|需配合slot使用；在isDrag为true的前提下,如果siderWidth 和 rightWidth 同时存在，则优先使用siderWidth
-mode|String|window|否|显示模式|如果是window模式，会使用100vh来计算高度，如果是弹窗中使用，则需要使用dialog模式，则高度变成100%，避免弹窗下有大量留白
->>  slot卡槽说明
-
-
- 卡槽名|用途|说明
-:---:|:---:|:---
-top|头部自定布局| 尽量少用，除非头部只有左侧一个文案或者右侧是一堆按钮需要左右浮动的（特别是列表的标准排版为topLeft左侧内容+topRight右侧搜索框）
-topLeft|头部固定格式，左侧布局内容| -
-topCenter|头部固定模式，中间布局内容| 尽量少用
-topRight|头部固定模式，右侧布局内容| 主要是用来统一右侧搜索的宽度
-content|下部正文内容| -
-sider|左边侧边栏|;
-right|右边侧边栏| - 
-
-
-
-#### 入参数据参考
-
-```javascript
-config:{
-    sessionName: 'notice-manage', //localStorage 记录siderHide转态，下次进来时使用存储的转态来判断是否展开sider
-    isSiderHide: false, //是否隐藏sider内容
-    gutter: 16, //栅格之间的距离
-    border: 'border', //左右布局之间是否有边框分割
-    hideHeader: false, //是否隐藏头部
-    siderWidth: 200, //slider的宽度
-    siderPosition: 'left' , // left, right
-    isDrag: false, //slider是否可以拖动
-    rightWidth:280,//左边侧边栏宽度
-}
-```
