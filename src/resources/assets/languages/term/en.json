@@ -2980,6 +2980,7 @@
     "agent": "agent",
     "systemprompt": "system prompt",
     "thinking": "deep thinking",
-    "customparam": "Additional configuration"
+    "customparam": "Additional configuration",
+    "workflowtask": "process task"
   }
 }

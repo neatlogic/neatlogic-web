@@ -2977,6 +2977,7 @@
     "agent": "智能体",
     "systemprompt": "系统提示词",
     "thinking": "深度思考",
-    "customparam": "额外配置"
+    "customparam": "额外配置",
+    "workflowtask": "流程任务"
   }
 }
