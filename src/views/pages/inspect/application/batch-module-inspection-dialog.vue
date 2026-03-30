@@ -64,6 +64,7 @@
       </template>
     </TsDialog>
     <InspectToolSetting v-if="isShowInspectTool" :keyword="toolName" @close="closeInspectToolSetting"></InspectToolSetting>
+    <ResultDialog v-if="isShowResultDialog" :resultList="resultList" @close="closeResultDialog"></ResultDialog>
   </div>
 </template>
 <script>
@@ -71,6 +72,7 @@ export default {
   name: '',
   components: {
     TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox'),
+    ResultDialog: () => import('./result-dialog.vue'),
     InspectToolSetting: () => import('@/views/pages/inspect/definition/components/inspect-tool-setting')
   },
   filters: {},
@@ -101,6 +103,8 @@ export default {
       checkboxModel: [],
       envList: [],
       noCompobIdList: [], // 无组合工具id列表
+      isShowResultDialog: false,
+      resultList: [],
       isShowCompobList: false,
       isShowInspectTool: false,
       toolName: '',
@@ -231,18 +235,37 @@ export default {
         appSystemId: this.appSystemId,
         envList: envList
       };
-      this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => {
+      this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => { //
         this.loadingShow = true;
         if (res.Status == 'OK') {
-          this.$Message.success(this.$t('message.executesuccess'));
-          this.loadingShow = false;
-          this.dialogSetting.isShow = false;
-          this.isShowCompobList = false;
-          this.closeDialog();
+          this.openResultDialog(res.Return.tbodyList);
         }
       }).finally(() => {
         this.loadingShow = false;
       });
+    },
+    openResultDialog(list) {
+      if (list && list.length) {
+        this.resultList = list;
+        if (list.length == 1 && list[0].jobId) {
+          this.$router.push({
+            path: '/job-detail',
+            query: {id: list[0].jobId}
+          });
+        } else {
+          this.isShowResultDialog = true;
+        }
+      } else {
+        this.$Notice.error({ title: this.$t('term.autoexec.targetjoberror', {target: ''}) });
+      }
+    },
+    closeResultDialog() {
+      this.isShowResultDialog = false;
+      this.loadingShow = false;
+      this.dialogSetting.isShow = false;
+      this.isShowCompobList = false;
+      this.closeDialog();
+      this.closeDialog();
     },
     async okDialog() {
       // 执行操作

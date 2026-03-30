@@ -2088,7 +2088,7 @@
     "moduleconfigselectversion": "模块设置：【{target}】请选择版本",
     "moduleconfigatleastselectainstance": "模块设置：【{target}】至少选择一个实例",
     "createsuccess": "创建成功",
-    "createfail": "创建失败：",
+    "createfail": "创建失败",
     "appmodulecreatesuccess": "应用模块{target}创建成功，",
     "clickredirect": "请点击跳转",
     "applymodule": "应用模块",
