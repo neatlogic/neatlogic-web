@@ -97,6 +97,15 @@ const applicationInspect = {
   compareConfigSnapshot(params) {
     return axios.post('/api/rest/inspect/config/snapshot/compare', params);
   },
+  compareConfigSnapshotPeer(params) {
+    return axios.post('/api/rest/inspect/config/snapshot/peer/compare', params);
+  },
+  getCompareConfigTask(params) {
+    return axios.post('/api/rest/inspect/config/compare/task/get', params);
+  },
+  triggerCompareConfigTaskAiAnalysis(params) {
+    return axios.post('/api/rest/inspect/config/compare/task/ai/analysis/trigger', params);
+  },
   compareConfigResource(params) {
     return axios.post('/api/rest/inspect/config/resource/compare', params);
   }

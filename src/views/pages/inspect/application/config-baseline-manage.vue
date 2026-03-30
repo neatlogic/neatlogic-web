@@ -608,19 +608,6 @@ export default {
     }
   },
   computed: {
-    resourceOptions() {
-      let list = [];
-      this.tableList.forEach(table => {
-        let tbodyList = table.tbodyList || [];
-        tbodyList.forEach(row => {
-          list.push({
-            value: row.id,
-            text: this.getResourceLabel(row)
-          });
-        });
-      });
-      return list;
-    },
     appModuleNameMap() {
       let result = {};
       this.tableList.forEach(table => {

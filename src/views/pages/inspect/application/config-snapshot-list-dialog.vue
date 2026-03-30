@@ -65,7 +65,6 @@
       v-if="isShowCompareDialog"
       :snapshotId="currentCompareSnapshotId"
       :resourceLabel="resourceLabel"
-      :schemaName="schemaName"
       @close="closeCompareDialog"
     ></ConfigCompareDialog>
   </div>
@@ -142,21 +141,6 @@ export default {
       currentCompareSnapshotId: null,
       actionLoadingMap: {}
     };
-  },
-  computed: {
-    canPromoteBaseline() {
-      return !!this.envId;
-    },
-    dialogConfig() {
-      return {
-        type: 'slider',
-        title: `${this.resourceLabel || '当前节点'} 快照列表`,
-        maskClose: true,
-        isShow: true,
-        width: 'huge',
-        hasFooter: false
-      };
-    }
   },
   mounted() {
     this.loadSnapshotList();
@@ -348,6 +332,21 @@ export default {
         return this.$options.filters.formatDate(value);
       }
       return value;
+    }
+  },
+  computed: {
+    canPromoteBaseline() {
+      return !!this.envId;
+    },
+    dialogConfig() {
+      return {
+        type: 'slider',
+        title: `${this.resourceLabel || '当前节点'} 快照列表`,
+        maskClose: true,
+        isShow: true,
+        width: 'huge',
+        hasFooter: false
+      };
     }
   }
 };

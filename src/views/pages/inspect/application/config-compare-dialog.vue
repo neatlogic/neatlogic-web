@@ -1,30 +1,51 @@
 <template>
-  <TsDialog v-bind="dialogConfig" @on-close="$emit('close')">
+  <TsDialog v-bind="dialogConfig" @on-close="handleClose">
     <template v-slot>
       <div class="padding">
         <Loading :loadingShow="loadingShow" type="fix"></Loading>
-        <div class="pb-md flex-between">
-          <div>
-            <RadioGroup v-if="!snapshotId" v-model="mode" @on-change="handleModeChange">
-              <Radio label="baseline">与当前版本比对</Radio>
-              <Radio label="peer">与节点比对</Radio>
-            </RadioGroup>
-            <div v-else class="fz-medium">与当前版本比对</div>
-          </div>
-          <div class="inline-flex">
-            <TsFormSelect
-              v-if="mode === 'peer'"
-              v-model="targetResourceId"
-              :dataList="targetResourceDataList"
-              transfer
-              clearable
-              width="260px"
-              placeholder="请选择目标节点"
-            ></TsFormSelect>
-            <Button type="primary" class="ml-sm" :loading="loadingShow" @click="loadCompareData()">开始比对</Button>
-          </div>
-        </div>
-        <div v-if="summary" class="summary-grid pb-md">
+        <TsRow :gutter="16">
+          <Col span="12">
+            <div class="compare-box bg-op radius-md padding">
+              <div class="pb-sm compare-panel-header">
+                <div class="fz-medium compare-panel-title">{{ sourceTitle }}</div>
+              </div>
+              <TsCodemirror
+                :value="sourceValue"
+                codeMode="json"
+                :isReadOnly="true"
+                height="280px"
+              ></TsCodemirror>
+            </div>
+          </Col>
+          <Col span="12">
+            <div class="compare-box bg-op radius-md padding">
+              <div class="pb-sm compare-panel-header">
+                <TsFormSelect
+                  v-model="snapshotTargetType"
+                  :dataList="snapshotCompareTargetDataList"
+                  transfer
+                  clearable
+                  placeholder="请选择对比对象"
+                ></TsFormSelect>
+                <TsFormSelect
+                  v-if="snapshotTargetType !== 'baseline'"
+                  v-model="targetSnapshotId"
+                  :dataList="targetSnapshotDataList"
+                  transfer
+                  clearable
+                  placeholder="请选择目标快照"
+                ></TsFormSelect>
+              </div>
+              <TsCodemirror
+                :value="targetValue"
+                codeMode="json"
+                :isReadOnly="true"
+                height="280px"
+              ></TsCodemirror>
+            </div>
+          </Col>
+        </TsRow>
+        <div v-if="summary" class="summary-grid compare-summary-gap pt-md">
           <div class="summary-item bg-op">
             <div class="text-grey">总字段</div>
             <div class="summary-value">{{ summary.totalCount || 0 }}</div>
@@ -46,25 +67,14 @@
             <div class="summary-value">{{ summary.compareResult || '-' }}</div>
           </div>
         </div>
-        <TsRow :gutter="16">
-          <Col span="12">
-            <div class="compare-box bg-op radius-md padding">
-              <div class="pb-sm fz-medium">{{ sourceTitle }}</div>
-              <TsCodemirror :value="sourceValue" codeMode="json" :isReadOnly="true" height="280px"></TsCodemirror>
-            </div>
-          </Col>
-          <Col span="12">
-            <div class="compare-box bg-op radius-md padding">
-              <div class="pb-sm fz-medium">{{ targetTitle }}</div>
-              <TsCodemirror :value="targetValue" codeMode="json" :isReadOnly="true" height="280px"></TsCodemirror>
-            </div>
-          </Col>
-        </TsRow>
         <div class="pt-md">
           <TsTable
+            :key="tableRenderKey"
             v-bind="diffData"
             :theadList="theadList"
             :loading="loadingShow"
+            @changeCurrent="changeCurrent"
+            @changePageSize="changePageSize"
           >
             <template v-slot:isBlocked="{ row }">
               <span>{{ row.isBlocked ? '是' : '否' }}</span>
@@ -75,9 +85,31 @@
             <template v-slot:targetValue="{ row }">
               <span class="ellipsis-text">{{ formatCell(row.targetValue) }}</span>
             </template>
+            <template v-slot:aiRiskReason="{ row }">
+              <span v-if="isAiGenerating(row)" class="ai-inline-loading">
+                <i class="ivu-icon ivu-icon-ios-loading ivu-load-loop"></i>
+              </span>
+              <span v-else class="ellipsis-text">{{ formatAiText(row, 'aiRiskReason') }}</span>
+            </template>
+            <template v-slot:aiRepairSuggestion="{ row }">
+              <span v-if="isAiGenerating(row)" class="ai-inline-loading">
+                <i class="ivu-icon ivu-icon-ios-loading ivu-load-loop"></i>
+              </span>
+              <span v-else class="ellipsis-text">{{ formatAiText(row, 'aiRepairSuggestion') }}</span>
+            </template>
           </TsTable>
         </div>
       </div>
+    </template>
+    <template v-slot:footer>
+      <Button @click="handleClose">关闭</Button>
+      <Button
+        v-if="compareTaskId && diffData.tbodyList && diffData.tbodyList.length"
+        type="primary"
+        :loading="aiActionLoading"
+        :disabled="!canTriggerAiAnalysis"
+        @click="triggerAiAnalysis()"
+      >AI分析</Button>
     </template>
   </TsDialog>
 </template>
@@ -90,26 +122,6 @@ export default {
     TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue')
   },
   props: {
-    appSystemId: {
-      type: Number,
-      default: null
-    },
-    appModuleId: {
-      type: Number,
-      default: null
-    },
-    envId: {
-      type: [Number, String],
-      default: null
-    },
-    typeId: {
-      type: Number,
-      default: null
-    },
-    resourceId: {
-      type: Number,
-      default: null
-    },
     snapshotId: {
       type: Number,
       default: null
@@ -117,31 +129,31 @@ export default {
     resourceLabel: {
       type: String,
       default: ''
-    },
-    resourceOptions: {
-      type: Array,
-      default: () => []
-    },
-    schemaName: {
-      type: String,
-      default: 'os'
     }
   },
   data() {
     return {
       loadingShow: false,
-      mode: 'baseline',
-      targetResourceId: null,
+      snapshotTargetType: 'baseline',
       sourceData: null,
       targetData: null,
       sourceSnapshot: null,
       summary: null,
+      fullDiffList: [],
       diffData: {
         tbodyList: [],
         rowNum: 0,
         currentPage: 1,
         pageSize: 20
       },
+      targetSnapshotId: null,
+      peerSnapshotList: [],
+      targetSnapshotDataList: [],
+      compareTaskId: null,
+      aiActionLoading: false,
+      pollingTimer: null,
+      isClosed: false,
+      pollingRequesting: false,
       theadList: [
         { key: 'layer', title: '层级' },
         { key: 'label', title: '字段' },
@@ -150,126 +162,195 @@ export default {
         { key: 'isBlocked', title: '阻断' },
         { key: 'sourceValue', title: '源值' },
         { key: 'targetValue', title: '目标值' },
-        { key: 'reason', title: '说明' }
+        { key: 'reason', title: '说明' },
+        { key: 'aiRiskReason', title: 'AI风险说明' },
+        { key: 'aiRepairSuggestion', title: 'AI修复建议' }
       ]
     };
   },
-  computed: {
-    dialogConfig() {
-      return {
-        type: 'slider',
-        title: '配置比对',
-        maskClose: true,
-        isShow: true,
-        width: 'huge',
-        hasFooter: false
-      };
-    },
-    targetResourceDataList() {
-      return this.resourceOptions
-        .filter(item => item.value !== this.resourceId)
-        .map(item => ({ value: item.value, text: item.text }));
-    },
-    sourceTitle() {
-      if (this.snapshotId && this.sourceSnapshot && this.sourceSnapshot.collectTime) {
-        return `快照 ${this.formatSnapshotTime(this.sourceSnapshot.collectTime)}`;
-      }
-      return this.resourceLabel || '当前节点';
-    },
-    targetTitle() {
-      return this.mode === 'baseline' ? '当前版本' : (this.resourceOptions.find(item => item.value === this.targetResourceId)?.text || '目标节点');
-    },
-    sourceValue() {
-      return this.sourceData ? JSON.stringify(this.sourceData.layerData || this.sourceData, null, 2) : '{}';
-    },
-    targetValue() {
-      return this.targetData ? JSON.stringify(this.targetData.layerData || this.targetData, null, 2) : '{}';
-    }
-  },
-  watch: {
-    targetResourceId(val, oldVal) {
-      if (this.mode === 'peer' && val && val !== oldVal) {
-        this.loadCompareData();
-      }
-    }
-  },
   mounted() {
+    this.isClosed = false;
     this.loadCompareData();
   },
+  beforeDestroy() {
+    this.isClosed = true;
+    this.clearPolling();
+  },
   methods: {
-    handleModeChange() {
-      if (this.snapshotId) {
-        this.mode = 'baseline';
-        return;
-      }
-      this.summary = null;
-      this.diffData = {
-        tbodyList: [],
-        rowNum: 0,
-        currentPage: 1,
-        pageSize: 20
-      };
-      this.targetData = null;
-      if (this.mode === 'peer' && !this.targetResourceId && this.targetResourceDataList.length > 0) {
-        this.targetResourceId = this.targetResourceDataList[0].value;
-      }
-      this.$nextTick(() => {
-        if (this.mode === 'baseline') {
-          this.loadCompareData();
-        } else if (this.targetResourceId) {
-          this.loadCompareData();
-        }
-      });
+    handleClose() {
+      this.isClosed = true;
+      this.clearPolling();
+      this.$emit('close');
     },
     loadCompareData() {
       let request = null;
+      this.clearPolling();
+      this.compareTaskId = null;
+      this.fullDiffList = [];
       this.loadingShow = true;
-      if (this.snapshotId) {
-        request = this.$api.inspect.applicationInspect.compareConfigSnapshot({
-          snapshotId: this.snapshotId
-        });
-      } else if (this.mode === 'peer') {
-        if (!this.targetResourceId) {
-          this.$Message.warning('请选择目标节点');
+      if (this.snapshotTargetType !== 'baseline') {
+        if (!this.targetSnapshotId) {
+          this.$Message.warning('请选择目标快照');
           this.loadingShow = false;
           return;
         }
-        request = this.$api.inspect.applicationInspect.compareConfigResource({
-          appSystemId: this.appSystemId,
-          appModuleId: this.appModuleId,
-          envId: this.envId || null,
-          typeId: this.typeId,
-          sourceResourceId: this.resourceId,
-          targetResourceId: this.targetResourceId,
-          schemaName: this.schemaName
+        request = this.$api.inspect.applicationInspect.compareConfigSnapshotPeer({
+          snapshotId: this.snapshotId,
+          targetSnapshotId: this.targetSnapshotId
         });
-      } else {
-        request = this.$api.inspect.applicationInspect.compareConfigBaseline({
-          appSystemId: this.appSystemId,
-          appModuleId: this.appModuleId,
-          envId: this.envId || null,
-          typeId: this.typeId,
-          resourceId: this.resourceId,
-          schemaName: this.schemaName
+      } else if (this.snapshotId) {
+        request = this.$api.inspect.applicationInspect.compareConfigSnapshot({
+          snapshotId: this.snapshotId
         });
       }
+      if (!request) {
+        this.loadingShow = false;
+        return;
+      }
       request.then(res => {
+        if (this.isClosed) {
+          return;
+        }
         if (res && res.Status === 'OK') {
           this.summary = res.Return.summary || {};
           this.sourceData = res.Return.sourceData || {};
           this.targetData = res.Return.targetData || {};
           this.sourceSnapshot = res.Return.sourceSnapshot || null;
-          let tbodyList = res.Return.diffList || [];
-          this.diffData = {
-            tbodyList: tbodyList,
-            rowNum: tbodyList.length,
-            currentPage: 1,
-            pageSize: 20
-          };
+          this.compareTaskId = res.Return.task ? res.Return.task.id : null;
+          this.fullDiffList = res.Return.diffList || [];
+          this.updateDiffPage(1, this.diffData.pageSize || 20);
+          if (this.snapshotId) {
+            this.ensurePeerSnapshotOptions();
+          }
+          if (this.hasAiGeneratingRows(this.fullDiffList) && this.compareTaskId) {
+            this.startPolling();
+          }
         }
       }).finally(() => {
-        this.loadingShow = false;
+        if (!this.isClosed) {
+          this.loadingShow = false;
+        }
       });
+    },
+    startPolling() {
+      this.clearPolling();
+      if (!this.compareTaskId) {
+        return;
+      }
+      this.pollingTimer = setInterval(() => {
+        this.refreshCompareTask();
+      }, 3000);
+    },
+    clearPolling() {
+      if (this.pollingTimer) {
+        clearInterval(this.pollingTimer);
+        this.pollingTimer = null;
+      }
+      this.pollingRequesting = false;
+    },
+    triggerAiAnalysis() {
+      if (!this.compareTaskId || !this.canTriggerAiAnalysis) {
+        return;
+      }
+      this.aiActionLoading = true;
+      this.$api.inspect.applicationInspect.triggerCompareConfigTaskAiAnalysis({
+        taskId: this.compareTaskId
+      }).then(res => {
+        if (this.isClosed) {
+          return;
+        }
+        if (res && res.Status === 'OK') {
+          this.startPolling();
+          this.refreshCompareTask();
+        }
+      }).finally(() => {
+        this.aiActionLoading = false;
+      });
+    },
+    refreshCompareTask() {
+      if (!this.compareTaskId) {
+        this.clearPolling();
+        return;
+      }
+      if (this.pollingRequesting) {
+        return;
+      }
+      this.pollingRequesting = true;
+      this.$api.inspect.applicationInspect.getCompareConfigTask({
+        taskId: this.compareTaskId
+      }).then(res => {
+        if (this.isClosed) {
+          this.clearPolling();
+          return;
+        }
+        if (!res || res.Status !== 'OK') {
+          return;
+        }
+        this.summary = res.Return.summary || this.summary;
+        this.fullDiffList = res.Return.diffList || [];
+        this.updateDiffPage(this.diffData.currentPage || 1, this.diffData.pageSize || 20);
+        if (!this.hasAiGeneratingRows(this.fullDiffList)) {
+          this.clearPolling();
+        }
+      }).catch(() => {
+      }).finally(() => {
+        this.pollingRequesting = false;
+      });
+    },
+    ensurePeerSnapshotOptions() {
+      if (!this.snapshotId || !this.sourceSnapshot) {
+        return Promise.resolve();
+      }
+      return this.$api.inspect.applicationInspect.searchConfigSnapshot({
+        appSystemId: this.sourceSnapshot.appSystemId,
+        appModuleId: this.sourceSnapshot.appModuleId,
+        envId: this.sourceSnapshot.envId,
+        typeId: this.sourceSnapshot.typeId,
+        schemaName: this.sourceSnapshot.schemaName,
+        currentPage: 1,
+        pageSize: 100
+      }).then(res => {
+        if (!res || res.Status !== 'OK') {
+          return;
+        }
+        this.peerSnapshotList = (res.Return.tbodyList || []).filter(item => item.id !== this.snapshotId && item.resourceId !== this.sourceSnapshot.resourceId);
+        if (this.snapshotTargetType !== 'baseline' && !this.targetSnapshotResourceDataList.find(item => item.value === this.snapshotTargetType)) {
+          this.snapshotTargetType = this.targetSnapshotResourceDataList.length > 0 ? this.targetSnapshotResourceDataList[0].value : 'baseline';
+        } else {
+          this.syncTargetSnapshotOptions();
+        }
+      });
+    },
+    syncTargetSnapshotOptions() {
+      this.targetSnapshotDataList = (this.peerSnapshotList || [])
+        .filter(item => String(item.resourceId) === this.snapshotTargetType)
+        .map(item => {
+          return {
+            value: item.id,
+            text: `${item.resourceIp || item.resourceId || item.id} ${this.formatSnapshotTime(item.collectTime)}`
+          };
+        });
+      if (!this.targetSnapshotDataList.find(item => item.value === this.targetSnapshotId)) {
+        this.targetSnapshotId = this.targetSnapshotDataList.length > 0 ? this.targetSnapshotDataList[0].value : null;
+      }
+    },
+    updateDiffPage(currentPage, pageSize) {
+      const finalPageSize = pageSize || 20;
+      const finalCurrentPage = currentPage || 1;
+      const start = (finalCurrentPage - 1) * finalPageSize;
+      const end = start + finalPageSize;
+      this.diffData = {
+        tbodyList: (this.fullDiffList || []).slice(start, end),
+        rowNum: (this.fullDiffList || []).length,
+        currentPage: finalCurrentPage,
+        pageSize: finalPageSize
+      };
+    },
+    changeCurrent(currentPage) {
+      this.updateDiffPage(currentPage, this.diffData.pageSize);
+    },
+    changePageSize(pageSize) {
+      this.updateDiffPage(1, pageSize);
     },
     formatCell(value) {
       if (value === null || value === undefined) {
@@ -280,6 +361,24 @@ export default {
       }
       return JSON.stringify(value);
     },
+    isAiGenerating(row) {
+      return row && ['pending', 'running'].includes(row.aiStatus);
+    },
+    isAiTriggerable(row) {
+      return row && !['succeed', 'pending', 'running'].includes(row.aiStatus);
+    },
+    hasAiGeneratingRows(rowList) {
+      return Array.isArray(rowList) && rowList.some(row => this.isAiGenerating(row));
+    },
+    hasAiTriggerableRows(rowList) {
+      return Array.isArray(rowList) && rowList.some(row => this.isAiTriggerable(row));
+    },
+    formatAiText(row, key) {
+      if (row && row.aiStatus === 'succeed') {
+        return row[key] || '-';
+      }
+      return '-';
+    },
     formatSnapshotTime(value) {
       if (!value) {
         return '-';
@@ -289,6 +388,89 @@ export default {
       }
       return value;
     }
+  },
+  computed: {
+    dialogConfig() {
+      return {
+        type: 'slider',
+        title: '配置比对',
+        maskClose: true,
+        isShow: true,
+        width: 'huge',
+        hasFooter: true
+      };
+    },
+    snapshotCompareTargetDataList() {
+      return [{ value: 'baseline', text: '当前基线' }].concat(this.targetSnapshotResourceDataList);
+    },
+    targetSnapshotResourceDataList() {
+      let resourceMap = {};
+      (this.peerSnapshotList || []).forEach(item => {
+        if (item && item.resourceId && !resourceMap[item.resourceId]) {
+          resourceMap[item.resourceId] = {
+            value: String(item.resourceId),
+            text: item.resourceIp || item.resourceId
+          };
+        }
+      });
+      return Object.values(resourceMap);
+    },
+    sourceTitle() {
+      if (this.snapshotId && this.sourceSnapshot && this.sourceSnapshot.collectTime) {
+        let sourceIp = this.resourceLabel || (this.sourceSnapshot && this.sourceSnapshot.resourceIp) || '当前节点';
+        return `${sourceIp} ${this.formatSnapshotTime(this.sourceSnapshot.collectTime)}`;
+      }
+      return this.resourceLabel || '当前节点';
+    },
+    sourceValue() {
+      return this.sourceData ? JSON.stringify(this.sourceData.layerData || this.sourceData, null, 2) : '{}';
+    },
+    targetValue() {
+      return this.targetData ? JSON.stringify(this.targetData.layerData || this.targetData, null, 2) : '{}';
+    },
+    tableRenderKey() {
+      return [
+        this.compareTaskId || 'no-task',
+        this.diffData.currentPage || 1,
+        this.diffData.pageSize || 20,
+        this.diffData.rowNum || 0
+      ].join('_');
+    },
+    canTriggerAiAnalysis() {
+      return !!this.compareTaskId &&
+        !this.aiActionLoading &&
+        !this.hasAiGeneratingRows(this.fullDiffList) &&
+        this.hasAiTriggerableRows(this.fullDiffList);
+    }
+  },
+  watch: {
+    snapshotTargetType(val, oldVal) {
+      if (!this.snapshotId || val === oldVal) {
+        return;
+      }
+      if (val === 'baseline') {
+        this.targetSnapshotId = null;
+        this.summary = null;
+        this.compareTaskId = null;
+        this.clearPolling();
+        this.fullDiffList = [];
+        this.diffData = {
+          tbodyList: [],
+          rowNum: 0,
+          currentPage: 1,
+          pageSize: 20
+        };
+        this.targetData = null;
+        this.loadCompareData();
+      } else {
+        this.syncTargetSnapshotOptions();
+      }
+    },
+    targetSnapshotId(val, oldVal) {
+      if (this.snapshotTargetType !== 'baseline' && val && val !== oldVal) {
+        this.loadCompareData();
+      }
+    }
   }
 };
 </script>
@@ -297,6 +479,18 @@ export default {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
+}
+.compare-summary-gap {
+  margin-top: 16px;
+}
+.compare-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+}
+.compare-panel-title {
+  line-height: 32px;
 }
 .summary-item {
   padding: 12px 16px;
@@ -313,5 +507,11 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.ai-inline-loading {
+  display: inline-flex;
+  align-items: center;
+  color: #2d8cf0;
+  font-size: 16px;
 }
 </style>
