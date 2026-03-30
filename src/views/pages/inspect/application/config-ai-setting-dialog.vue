@@ -3,42 +3,12 @@
     <template v-slot>
       <div class="padding">
         <div class="text-tip pb-md">当前设置为全局配置，会作用于该维度下所有配置基线草稿生成和自动基线比对。</div>
-        <TsFormSelect
-          ref="viewSelect"
-          v-model="formData.viewName"
-          label="操作系统入口"
-          transfer
-          border="border"
-          :dataList="viewOptionList"
-          valueName="value"
-          textName="text"
-          :validateList="validateList"
-          :clearable="false"
-        ></TsFormSelect>
-        <div v-if="viewTip" class="text-tip margin-top">{{ viewTip }}</div>
-        <TsFormSelect
-          ref="modelSelect"
-          v-model="formData.modelId"
-          label="大模型"
-          transfer
-          border="border"
-          :dataList="modelList"
-          valueName="value"
-          textName="text"
-          :validateList="validateList"
-          :clearable="false"
-        ></TsFormSelect>
-        <div v-if="currentModelText" class="text-tip margin-top">{{ currentModelText }}</div>
-        <TsFormInput
-          ref="promptInput"
-          v-model="formData.prompt"
-          class="margin-top"
-          label="Prompt"
-          type="textarea"
-          :rows="12"
-          border="border"
-        ></TsFormInput>
-        <div class="text-tip margin-top">{{ promptTip }}</div>
+        <TsForm
+          ref="form"
+          v-model="formData"
+          :item-list="formConfig"
+          label-position="top"
+        ></TsForm>
       </div>
     </template>
   </TsDialog>
@@ -47,8 +17,7 @@
 export default {
   name: '',
   components: {
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   data() {
     return {
@@ -101,10 +70,7 @@ export default {
       });
     },
     saveSetting() {
-      if (this.$refs.viewSelect && !this.$refs.viewSelect.valid()) {
-        return;
-      }
-      if (this.$refs.modelSelect && !this.$refs.modelSelect.valid()) {
+      if (this.$refs.form && !this.$refs.form.valid()) {
         return;
       }
       this.loadingShow = true;
@@ -124,6 +90,41 @@ export default {
     }
   },
   computed: {
+    formConfig() {
+      return {
+        viewName: {
+          type: 'select',
+          label: '操作系统入口',
+          transfer: true,
+          border: 'border',
+          valueName: 'value',
+          textName: 'text',
+          clearable: false,
+          validateList: this.validateList,
+          dataList: this.viewOptionList,
+          desc: this.viewTip
+        },
+        modelId: {
+          type: 'select',
+          label: '大模型',
+          transfer: true,
+          border: 'border',
+          valueName: 'value',
+          textName: 'text',
+          clearable: false,
+          validateList: this.validateList,
+          dataList: this.modelList,
+          desc: this.currentModelText
+        },
+        prompt: {
+          type: 'textarea',
+          label: 'Prompt',
+          border: 'border',
+          rows: 12,
+          desc: this.promptTip
+        }
+      };
+    },
     dialogConfig() {
       return {
         type: 'modal',

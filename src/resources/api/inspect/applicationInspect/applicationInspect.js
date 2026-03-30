@@ -55,6 +55,9 @@ const applicationInspect = {
   getConfigSnapshot(params) {
     return axios.post('/api/rest/inspect/config/snapshot/get', params);
   },
+  searchConfigSnapshot(params) {
+    return axios.post('/api/rest/inspect/config/snapshot/search', params);
+  },
   getConfigBaselineVersion(params) {
     return axios.post('/api/rest/inspect/config/baseline/version/get', params);
   },
@@ -63,6 +66,9 @@ const applicationInspect = {
   },
   saveConfigBaselineVersion(params) {
     return axios.post('/api/rest/inspect/config/baseline/version/save', params);
+  },
+  saveConfigBaselineVersionFromSnapshot(params) {
+    return axios.post('/api/rest/inspect/config/baseline/version/snapshot/save', params);
   },
   saveConfigBaselineVersionDraft(params) {
     return axios.post('/api/rest/inspect/config/baseline/version/draft/save', params);
@@ -87,6 +93,9 @@ const applicationInspect = {
   },
   compareConfigBaseline(params) {
     return axios.post('/api/rest/inspect/config/baseline/compare', params);
+  },
+  compareConfigSnapshot(params) {
+    return axios.post('/api/rest/inspect/config/snapshot/compare', params);
   },
   compareConfigResource(params) {
     return axios.post('/api/rest/inspect/config/resource/compare', params);

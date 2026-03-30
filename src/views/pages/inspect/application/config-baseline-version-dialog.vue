@@ -8,25 +8,39 @@
             :theadList="theadList"
             :loading="loadingShow"
           >
-            <template v-slot:isCurrentActive="{ row }">
-              <span>{{ row.isCurrentActive ? '是' : '否' }}</span>
-            </template>
             <template v-slot:status="{ row }">
-              <span>{{ formatStatus(row.status) }}</span>
+              <Poptip v-if="hasStatusDetail(row)" :transfer="true" trigger="hover" placement="right-start" width="320">
+                <span :class="getStatusClass(row.status)">{{ formatStatus(row.status) }}</span>
+                <div slot="content" class="status-detail-box">
+                  <div class="status-detail-item">
+                    <span class="status-detail-label">提交人：</span>
+                    <span class="status-detail-value">{{ getUserText(row.submitterVo, row.submitter) }}</span>
+                  </div>
+                  <div class="status-detail-item">
+                    <span class="status-detail-label">提交时间：</span>
+                    <span class="status-detail-value">{{ row.submitTime ? $options.filters.formatDate(row.submitTime) : '-' }}</span>
+                  </div>
+                  <div class="status-detail-item">
+                    <span class="status-detail-label">审批人：</span>
+                    <span class="status-detail-value">{{ getUserText(row.approverVo, row.approver) }}</span>
+                  </div>
+                  <div class="status-detail-item">
+                    <span class="status-detail-label">审批意见：</span>
+                    <span class="status-detail-value break-all">{{ row.approvalComment || '-' }}</span>
+                  </div>
+                  <div class="status-detail-item">
+                    <span class="status-detail-label">审批时间：</span>
+                    <span class="status-detail-value">{{ getApprovalTimeText(row) }}</span>
+                  </div>
+                </div>
+              </Poptip>
+              <span v-else :class="getStatusClass(row.status)">{{ formatStatus(row.status) }}</span>
             </template>
-            <template v-slot:approvalStatus="{ row }">
-              <span>{{ formatApprovalStatus(row.approvalStatus) }}</span>
-            </template>
-            <template v-slot:approverVo="{ row }">
-              <UserCard v-if="row.approverVo && row.approverVo.uuid" :uuid="row.approverVo.uuid" :hideAvatar="true"></UserCard>
-              <span v-else>-</span>
+            <template v-slot:sourceIp="{ row }">
+              <span>{{ row.sourceIp || '-' }}</span>
             </template>
             <template v-slot:fcd="{ row }">
               <span v-if="row.fcd">{{ row.fcd | formatDate }}</span>
-              <span v-else>-</span>
-            </template>
-            <template v-slot:approvedTime="{ row }">
-              <span v-if="row.approvedTime">{{ row.approvedTime | formatDate }}</span>
               <span v-else>-</span>
             </template>
             <template v-slot:activatedTime="{ row }">
@@ -46,10 +60,7 @@
                   <li v-if="row.status === 'approved'" class="tsfont-publish" :class="{ 'text-grey': isActionLoading(row.id, 'publish') }" @click="publishVersion(row)">
                     {{ isActionLoading(row.id, 'publish') ? '发布中...' : '发布' }}
                   </li>
-                  <li v-if="!row.isCurrentActive && (row.status === 'approved' || row.status === 'active')" class="tsfont-history" :class="{ 'text-grey': isActionLoading(row.id, 'rollback') }" @click="rollbackVersion(row)">
-                    {{ isActionLoading(row.id, 'rollback') ? '回退中...' : '回退到此版本' }}
-                  </li>
-                  <li v-if="!row.isCurrentActive" v-auth="'INSPECT_MODIFY'" class="tsfont-trash-o text-error" :class="{ 'text-grey': isActionLoading(row.id, 'delete') }" @click="deleteVersion(row)">
+                  <li v-if="!row.isCurrentActive" v-auth="'INSPECT_MODIFY'" class="tsfont-trash-o" :class="{ 'text-grey': isActionLoading(row.id, 'delete') }" @click="deleteVersion(row)">
                     {{ isActionLoading(row.id, 'delete') ? '删除中...' : '删除版本' }}
                   </li>
                 </ul>
@@ -100,8 +111,7 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     ConfigJsonDialog: () => import('./config-json-dialog.vue'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
     baselineId: {
@@ -124,13 +134,10 @@ export default {
       },
       theadList: [
         { key: 'version', title: '版本号' },
+        { key: 'sourceIp', title: '来源' },
         { key: 'status', title: '状态' },
-        { key: 'isCurrentActive', title: '当前生效' },
         { key: 'fieldCount', title: '字段数' },
-        { key: 'approvalStatus', title: '审批' },
-        { key: 'approverVo', title: '审批人' },
         { key: 'fcd', title: '创建时间' },
-        { key: 'approvedTime', title: '审批时间' },
         { key: 'activatedTime', title: '生效时间' },
         { key: 'action', title: '' }
       ],
@@ -287,36 +294,6 @@ export default {
         }
       });
     },
-    rollbackVersion(row) {
-      if (this.isActionLoading(row.id, 'rollback')) {
-        return;
-      }
-      this.$createDialog({
-        title: '回退版本',
-        content: `确认回退到版本 ${row.version || ''} 吗？`,
-        btnType: 'error',
-        'on-ok': vnode => {
-          if (this.isActionLoading(row.id, 'rollback')) {
-            return;
-          }
-          this.setActionLoading(row.id, 'rollback', true);
-          vnode.loading = true;
-          vnode.okBtnDisable = true;
-          this.$api.inspect.applicationInspect.rollbackConfigBaselineVersion({ id: row.id }).then(res => {
-            if (res && res.Status === 'OK') {
-              this.$Message.success('版本已回退');
-              vnode.closeDailog && vnode.closeDailog();
-              this.getVersionList();
-              this.$emit('refresh');
-            }
-          }).finally(() => {
-            this.setActionLoading(row.id, 'rollback', false);
-            vnode.loading = false;
-            vnode.okBtnDisable = false;
-          });
-        }
-      });
-    },
     deleteVersion(row) {
       if (this.isActionLoading(row.id, 'delete')) {
         return;
@@ -419,13 +396,39 @@ export default {
       };
       return statusMap[status] || '-';
     },
-    formatApprovalStatus(status) {
-      const statusMap = {
-        pending: '待审批',
-        approved: '已通过',
-        rejected: '已驳回'
+    getStatusClass(status) {
+      const classMap = {
+        draft: 'text-grey',
+        pending_approval: 'text-warning',
+        approved: 'text-info',
+        active: 'text-success',
+        rejected: 'text-error'
       };
-      return statusMap[status] || '-';
+      return classMap[status] || '';
+    },
+    hasStatusDetail(row) {
+      return !!(
+        row &&
+        (row.submitterVo || row.submitter || row.submitTime || row.approverVo || row.approver || row.approvalComment || row.approvedTime)
+      );
+    },
+    getApprovalTimeText(row) {
+      if (!row) {
+        return '-';
+      }
+      if (row.approvedTime) {
+        return this.$options.filters.formatDate(row.approvedTime);
+      }
+      if (row.status === 'rejected' && row.lcd) {
+        return this.$options.filters.formatDate(row.lcd);
+      }
+      return '-';
+    },
+    getUserText(userVo, uuid) {
+      if (userVo) {
+        return userVo.userName || userVo.name || userVo.uuid || uuid || '-';
+      }
+      return uuid || '-';
     },
     getActionLoadingKey(id, action) {
       return `${id || 'unknown'}_${action}`;
@@ -466,3 +469,17 @@ export default {
   }
 };
 </script>
+<style lang="less" scoped>
+.status-detail-box {
+  line-height: 20px;
+}
+.status-detail-item + .status-detail-item {
+  margin-top: 6px;
+}
+.status-detail-label {
+  color: #8c8c8c;
+}
+.status-detail-value {
+  color: #222;
+}
+</style>

@@ -39,12 +39,15 @@
         :theadList="baselineTheadList"
         :loading="loadingShow"
       >
+        <template v-slot:name="{ row }">
+          <span>{{ getBaselineDisplayName(row) }}</span>
+        </template>
         <template v-slot:currentActivatedTime="{ row }">
           <span v-if="row.currentActivatedTime">{{ row.currentActivatedTime | formatDate }}</span>
           <span v-else>-</span>
         </template>
         <template v-slot:currentStatus="{ row }">
-          <span>{{ formatBaselineStatus(row.currentStatus) }}</span>
+          <span :class="getBaselineStatusClass(row.currentStatus)">{{ formatBaselineStatus(row.currentStatus) }}</span>
         </template>
         <template v-slot:envId="{ row }">
           <span>{{ getEnvName(row.envId) }}</span>
@@ -221,18 +224,7 @@
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul v-if="isEntryViewRow(row)" class="tstable-action-ul">
-                <li class="tsfont-eye" :class="{ 'text-grey': isActionLoading(getRowActionKey('snapshot', row)) }" @click="viewSnapshot(row)">
-                  {{ isActionLoading(getRowActionKey('snapshot', row)) ? '查看中...' : '查看快照' }}
-                </li>
-                <li class="tsfont-compare" @click="openCompareDialog(row)">配置比对</li>
-                <li
-                  v-auth="'INSPECT_MODIFY'"
-                  class="tsfont-publish"
-                  :class="{ 'text-grey': isActionLoading(getRowActionKey('promote', row)) }"
-                  @click="promoteBaseline(row)"
-                >
-                  {{ isActionLoading(getRowActionKey('promote', row)) ? '生成中...' : '生成基线草稿' }}
-                </li>
+                <li class="tsfont-eye" @click="viewSnapshot(row)">快照列表</li>
               </ul>
               <span v-else>-</span>
             </div>
@@ -241,32 +233,10 @@
       </div>
     </div>
     <NoData v-else></NoData>
-    <ConfigJsonDialog
-      v-if="isShowJsonDialog"
-      :title="jsonDialogTitle"
-      :value="jsonDialogValue"
-      :summary="jsonDialogSummary"
-      :editable="jsonDialogEditable"
-      :saveLoading="jsonDialogSaveLoading"
-      @close="closeJsonDialog"
-      @save="saveDraftVersion"
-    ></ConfigJsonDialog>
-    <ConfigCompareDialog
-      v-if="isShowCompareDialog"
-      :appSystemId="appSystemId"
-      :appModuleId="getScopeAppModuleId(currentRow)"
-      :envId="getScopeEnvId(currentRow)"
-      :typeId="currentRow && (currentRow.typeId || currentRow.ci && currentRow.ci.id)"
-      :resourceId="currentRow && currentRow.id"
-      :resourceLabel="getResourceLabel(currentRow)"
-      :resourceOptions="resourceOptions"
-      schemaName="os"
-      @close="closeCompareDialog"
-    ></ConfigCompareDialog>
     <ConfigBaselineVersionDialog
       v-if="isShowVersionDialog"
       :baselineId="currentBaselineRow && currentBaselineRow.id"
-      :baselineName="currentBaselineRow && currentBaselineRow.name"
+      :baselineName="getBaselineDisplayName(currentBaselineRow)"
       @close="closeVersionDialog"
       @refresh="getBaselineList"
       @deleted="handleBaselineDeleted"
@@ -276,6 +246,19 @@
       @close="closeAiSettingDialog"
       @refresh="handleAiSettingRefresh"
     ></ConfigAiSettingDialog>
+    <ConfigSnapshotListDialog
+      v-if="isShowSnapshotListDialog"
+      :appSystemId="appSystemId"
+      :appModuleId="getScopeAppModuleId(currentSnapshotRow)"
+      :envId="getScopeEnvId(currentSnapshotRow)"
+      :typeId="currentSnapshotRow && (currentSnapshotRow.typeId || currentSnapshotRow.ci && currentSnapshotRow.ci.id)"
+      :resourceId="currentSnapshotRow && currentSnapshotRow.id"
+      :resourceLabel="getResourceLabel(currentSnapshotRow)"
+      :baselineName="getBaselineName(currentSnapshotRow)"
+      schemaName="os"
+      @close="closeSnapshotListDialog"
+      @refresh="getBaselineList"
+    ></ConfigSnapshotListDialog>
   </div>
 </template>
 <script>
@@ -285,10 +268,9 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
-    ConfigJsonDialog: () => import('./config-json-dialog.vue'),
-    ConfigCompareDialog: () => import('./config-compare-dialog.vue'),
     ConfigBaselineVersionDialog: () => import('./config-baseline-version-dialog.vue'),
-    ConfigAiSettingDialog: () => import('./config-ai-setting-dialog.vue')
+    ConfigAiSettingDialog: () => import('./config-ai-setting-dialog.vue'),
+    ConfigSnapshotListDialog: () => import('./config-snapshot-list-dialog.vue')
   },
   props: {
     appSystemId: {
@@ -320,7 +302,7 @@ export default {
         { key: 'envId', title: '应用环境' },
         { key: 'appModuleId', title: '应用模块' },
         { key: 'currentVersion', title: '生效版本' },
-        { key: 'currentStatus', title: '生效状态' },
+        { key: 'currentStatus', title: '状态' },
         { key: 'currentFieldCount', title: '生效字段数' },
         { key: 'currentActivatedTime', title: '生效时间' },
         { key: 'currentPublisher', title: '发布人' },
@@ -331,15 +313,8 @@ export default {
         pageSize: 20,
         currentPage: 1
       },
-      isShowJsonDialog: false,
-      jsonDialogTitle: '',
-      jsonDialogValue: null,
-      jsonDialogSummary: null,
-      jsonDialogEditable: false,
-      jsonDialogSaveLoading: false,
-      jsonDialogVersionId: null,
-      isShowCompareDialog: false,
-      currentRow: null,
+      isShowSnapshotListDialog: false,
+      currentSnapshotRow: null,
       isShowVersionDialog: false,
       currentBaselineRow: null,
       isShowAiSettingDialog: false,
@@ -507,6 +482,27 @@ export default {
       let port = row && row.ip && row.ip.port ? ':' + row.ip.port : '';
       return (row && row.name ? row.name + ' ' : '') + ip + port;
     },
+    getBaselineName(row) {
+      return this.buildBaselineDisplayName(
+        row && row.appSystem && row.appSystem.name ? row.appSystem.name : this.currentAppSystemName,
+        row && row.appModule ? (row.appModule.name || row.appModule.abbrName || row.appModule.id) : null,
+        row && row.appEnvironment ? (row.appEnvironment.value || row.appEnvironment.name || row.appEnvironment.id) : null
+      );
+    },
+    getBaselineDisplayName(row) {
+      if (!row) {
+        return '-';
+      }
+      return this.buildBaselineDisplayName(this.currentAppSystemName, this.getAppModuleName(row.appModuleId), this.getEnvName(row.envId));
+    },
+    buildBaselineDisplayName(appSystemName, appModuleName, envName) {
+      let nameList = [
+        appSystemName || '应用系统',
+        appModuleName && appModuleName !== '-' ? appModuleName : '全部模块',
+        envName && envName !== '-' ? envName : '全部环境'
+      ];
+      return nameList.join('-');
+    },
     markTableRowViewName(table) {
       if (!table || !table.tbodyList || !table.viewName) {
         return;
@@ -549,83 +545,8 @@ export default {
       if (!this.isEntryViewRow(row)) {
         return;
       }
-      const actionKey = this.getRowActionKey('snapshot', row);
-      if (this.isActionLoading(actionKey)) {
-        return;
-      }
-      this.setActionLoading(actionKey, true);
-      this.$api.inspect.applicationInspect.getConfigSnapshot({
-        appSystemId: this.appSystemId,
-        appModuleId: this.getScopeAppModuleId(row),
-        envId: this.getScopeEnvId(row),
-        typeId: row.typeId || row.ci && row.ci.id,
-        resourceId: row.id,
-        schemaName: 'os'
-      }).then(res => {
-        if (res && res.Status === 'OK') {
-          let snapshot = res.Return.snapshot || {};
-          this.jsonDialogTitle = `${this.getResourceLabel(row)} 快照`;
-          this.jsonDialogValue = snapshot.normalizedData || '{}';
-          this.jsonDialogSummary = snapshot.summary ? this.parseJson(snapshot.summary) : null;
-          this.jsonDialogEditable = false;
-          this.jsonDialogVersionId = null;
-          this.isShowJsonDialog = true;
-        }
-      }).finally(() => {
-        this.setActionLoading(actionKey, false);
-      });
-    },
-    promoteBaseline(row) {
-      if (!this.isEntryViewRow(row)) {
-        return;
-      }
-      const actionKey = this.getRowActionKey('promote', row);
-      if (this.isActionLoading(actionKey)) {
-        return;
-      }
-      this.$createDialog({
-        title: '生成基线草稿',
-        content: `确认将 ${this.getResourceLabel(row)} 的当前采集快照生成基线草稿吗？`,
-        btnType: 'primary',
-        'on-ok': vnode => {
-          if (this.isActionLoading(actionKey)) {
-            return;
-          }
-          this.setActionLoading(actionKey, true);
-          vnode.loading = true;
-          vnode.okBtnDisable = true;
-          this.$api.inspect.applicationInspect.saveConfigBaselineVersion({
-            appSystemId: this.appSystemId,
-            appModuleId: this.getScopeAppModuleId(row),
-            envId: this.getScopeEnvId(row),
-            typeId: row.typeId || row.ci && row.ci.id,
-            resourceId: row.id,
-            schemaName: 'os',
-            name: `${row.ci && row.ci.label ? row.ci.label : 'OS'}基线`
-          }).then(res => {
-            if (res && res.Status === 'OK') {
-              this.$Message.success('基线草稿已生成');
-              vnode.closeDailog && vnode.closeDailog();
-              this.getBaselineList();
-            }
-          }).finally(() => {
-            this.setActionLoading(actionKey, false);
-            vnode.loading = false;
-            vnode.okBtnDisable = false;
-          });
-        }
-      });
-    },
-    openCompareDialog(row) {
-      if (!this.isEntryViewRow(row)) {
-        return;
-      }
-      this.currentRow = row;
-      this.isShowCompareDialog = true;
-    },
-    closeCompareDialog() {
-      this.currentRow = null;
-      this.isShowCompareDialog = false;
+      this.currentSnapshotRow = row;
+      this.isShowSnapshotListDialog = true;
     },
     openVersionDialog(row) {
       this.currentBaselineRow = row;
@@ -633,6 +554,10 @@ export default {
     },
     openAiSettingDialog() {
       this.isShowAiSettingDialog = true;
+    },
+    closeSnapshotListDialog() {
+      this.currentSnapshotRow = null;
+      this.isShowSnapshotListDialog = false;
     },
     closeAiSettingDialog() {
       this.isShowAiSettingDialog = false;
@@ -652,55 +577,6 @@ export default {
       this.closeVersionDialog();
       this.getBaselineList();
     },
-    saveDraftVersion(value) {
-      if (!this.jsonDialogVersionId) {
-        return;
-      }
-      let baselineData = null;
-      try {
-        baselineData = JSON.parse(value);
-      } catch (e) {
-        this.$Message.error('草稿内容不是合法的 JSON');
-        return;
-      }
-      this.jsonDialogSaveLoading = true;
-      this.$api.inspect.applicationInspect.saveConfigBaselineVersionDraft({
-        id: this.jsonDialogVersionId,
-        baselineData: baselineData
-      }).then(res => {
-        if (res && res.Status === 'OK') {
-          let version = res.Return.version || {};
-          this.jsonDialogValue = version.baselineData || '{}';
-          this.jsonDialogSummary = version.changeLog ? this.parseJson(version.changeLog) : null;
-          this.$Message.success('草稿已保存');
-          this.getBaselineList();
-        }
-      }).finally(() => {
-        this.jsonDialogSaveLoading = false;
-      });
-    },
-    closeJsonDialog() {
-      this.isShowJsonDialog = false;
-      this.jsonDialogTitle = '';
-      this.jsonDialogValue = null;
-      this.jsonDialogSummary = null;
-      this.jsonDialogEditable = false;
-      this.jsonDialogSaveLoading = false;
-      this.jsonDialogVersionId = null;
-    },
-    parseJson(value) {
-      if (!value) {
-        return null;
-      }
-      if (typeof value === 'string') {
-        try {
-          return JSON.parse(value);
-        } catch (e) {
-          return null;
-        }
-      }
-      return value;
-    },
     formatBaselineStatus(status) {
       const statusMap = {
         draft: '草稿',
@@ -710,6 +586,16 @@ export default {
         rejected: '已拒绝'
       };
       return statusMap[status] || '-';
+    },
+    getBaselineStatusClass(status) {
+      const classMap = {
+        draft: 'text-grey',
+        pending_approval: 'text-warning',
+        approved: 'text-info',
+        active: 'text-success',
+        rejected: 'text-error'
+      };
+      return classMap[status] || '';
     },
     getRowActionKey(action, row) {
       return `${action}_${row && row.id ? row.id : 'unknown'}`;
@@ -756,6 +642,18 @@ export default {
         });
       });
       return result;
+    },
+    currentAppSystemName() {
+      for (let i = 0; i < this.tableList.length; i++) {
+        let table = this.tableList[i];
+        let row = (table.tbodyList || []).find(item => item && item.appSystem && item.appSystem.name);
+        if (row) {
+          return row.appSystem.name;
+        }
+      }
+      return this.currentSnapshotRow && this.currentSnapshotRow.appSystem && this.currentSnapshotRow.appSystem.name
+        ? this.currentSnapshotRow.appSystem.name
+        : (this.currentBaselineRow && this.currentBaselineRow.appSystemName ? this.currentBaselineRow.appSystemName : '应用系统');
     },
     entryViewDisplayText() {
       if (!this.entryViewName) {

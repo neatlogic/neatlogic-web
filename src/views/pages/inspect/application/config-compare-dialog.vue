@@ -5,10 +5,11 @@
         <Loading :loadingShow="loadingShow" type="fix"></Loading>
         <div class="pb-md flex-between">
           <div>
-            <RadioGroup v-model="mode" @on-change="handleModeChange">
+            <RadioGroup v-if="!snapshotId" v-model="mode" @on-change="handleModeChange">
               <Radio label="baseline">与当前版本比对</Radio>
               <Radio label="peer">与节点比对</Radio>
             </RadioGroup>
+            <div v-else class="fz-medium">与当前版本比对</div>
           </div>
           <div class="inline-flex">
             <TsFormSelect
@@ -109,6 +110,10 @@ export default {
       type: Number,
       default: null
     },
+    snapshotId: {
+      type: Number,
+      default: null
+    },
     resourceLabel: {
       type: String,
       default: ''
@@ -129,6 +134,7 @@ export default {
       targetResourceId: null,
       sourceData: null,
       targetData: null,
+      sourceSnapshot: null,
       summary: null,
       diffData: {
         tbodyList: [],
@@ -165,6 +171,9 @@ export default {
         .map(item => ({ value: item.value, text: item.text }));
     },
     sourceTitle() {
+      if (this.snapshotId && this.sourceSnapshot && this.sourceSnapshot.collectTime) {
+        return `快照 ${this.formatSnapshotTime(this.sourceSnapshot.collectTime)}`;
+      }
       return this.resourceLabel || '当前节点';
     },
     targetTitle() {
@@ -189,6 +198,10 @@ export default {
   },
   methods: {
     handleModeChange() {
+      if (this.snapshotId) {
+        this.mode = 'baseline';
+        return;
+      }
       this.summary = null;
       this.diffData = {
         tbodyList: [],
@@ -211,7 +224,11 @@ export default {
     loadCompareData() {
       let request = null;
       this.loadingShow = true;
-      if (this.mode === 'peer') {
+      if (this.snapshotId) {
+        request = this.$api.inspect.applicationInspect.compareConfigSnapshot({
+          snapshotId: this.snapshotId
+        });
+      } else if (this.mode === 'peer') {
         if (!this.targetResourceId) {
           this.$Message.warning('请选择目标节点');
           this.loadingShow = false;
@@ -241,6 +258,7 @@ export default {
           this.summary = res.Return.summary || {};
           this.sourceData = res.Return.sourceData || {};
           this.targetData = res.Return.targetData || {};
+          this.sourceSnapshot = res.Return.sourceSnapshot || null;
           let tbodyList = res.Return.diffList || [];
           this.diffData = {
             tbodyList: tbodyList,
@@ -261,6 +279,15 @@ export default {
         return value;
       }
       return JSON.stringify(value);
+    },
+    formatSnapshotTime(value) {
+      if (!value) {
+        return '-';
+      }
+      if (this.$options.filters && this.$options.filters.formatDate) {
+        return this.$options.filters.formatDate(value);
+      }
+      return value;
     }
   }
 };

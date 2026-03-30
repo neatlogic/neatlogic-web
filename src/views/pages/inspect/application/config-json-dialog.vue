@@ -2,52 +2,112 @@
   <TsDialog v-bind="dialogConfig" @on-ok="saveDraft" @on-close="$emit('close')">
     <template v-slot>
       <div class="padding">
-        <div v-if="summary" class="summary-grid pb-md">
-          <div class="summary-item bg-op">
-            <div class="text-grey">字段数</div>
-            <div class="summary-value">{{ summary.fieldCount || 0 }}</div>
-          </div>
-          <div class="summary-item bg-op">
-            <div class="text-grey">硬件层</div>
-            <div class="summary-value">{{ summary.layerCount && summary.layerCount.hardware || 0 }}</div>
-          </div>
-          <div class="summary-item bg-op">
-            <div class="text-grey">内核层</div>
-            <div class="summary-value">{{ summary.layerCount && summary.layerCount.kernel || 0 }}</div>
-          </div>
-          <div class="summary-item bg-op">
-            <div class="text-grey">OS层</div>
-            <div class="summary-value">{{ summary.layerCount && summary.layerCount.os || 0 }}</div>
-          </div>
-          <div class="summary-item bg-op">
-            <div class="text-grey">应用层</div>
-            <div class="summary-value">{{ summary.layerCount && summary.layerCount.application || 0 }}</div>
-          </div>
-        </div>
-        <div v-if="aiCandidate" class="pb-md">
-          <div class="ai-candidate-header bg-op radius-sm" @click="toggleAiCandidate">
-            <div>
-              <span class="text-grey">AI候选说明</span>
-              <span v-if="aiAnalysisDurationText" class="text-tip margin-left">{{ aiAnalysisDurationText }}</span>
-              <span v-if="aiCallModeText" class="text-tip margin-left">{{ aiCallModeText }}</span>
+        <Tabs v-if="hasRawTab" v-model="activeTab" :animated="false">
+          <TabPane label="AI辅助版本" name="draft">
+            <div v-if="summary" class="summary-grid pb-md">
+              <div class="summary-item bg-op">
+                <div class="text-grey">字段数</div>
+                <div class="summary-value">{{ summary.fieldCount || 0 }}</div>
+              </div>
+              <div class="summary-item bg-op">
+                <div class="text-grey">硬件层</div>
+                <div class="summary-value">{{ summary.layerCount && summary.layerCount.hardware || 0 }}</div>
+              </div>
+              <div class="summary-item bg-op">
+                <div class="text-grey">内核层</div>
+                <div class="summary-value">{{ summary.layerCount && summary.layerCount.kernel || 0 }}</div>
+              </div>
+              <div class="summary-item bg-op">
+                <div class="text-grey">OS层</div>
+                <div class="summary-value">{{ summary.layerCount && summary.layerCount.os || 0 }}</div>
+              </div>
+              <div class="summary-item bg-op">
+                <div class="text-grey">应用层</div>
+                <div class="summary-value">{{ summary.layerCount && summary.layerCount.application || 0 }}</div>
+              </div>
             </div>
-            <span class="text-action">{{ isShowAiCandidate ? '收起' : '展开' }}</span>
-          </div>
-          <div v-if="isShowAiCandidate" class="margin-top-sm">
+            <div v-if="aiCandidate" class="pb-md">
+              <div class="ai-candidate-header bg-op radius-sm" @click="toggleAiCandidate">
+                <div>
+                  <span class="text-grey">AI候选说明</span>
+                  <span v-if="aiAnalysisDurationText" class="text-tip margin-left">{{ aiAnalysisDurationText }}</span>
+                  <span v-if="aiCallModeText" class="text-tip margin-left">{{ aiCallModeText }}</span>
+                </div>
+                <span class="text-action">{{ isShowAiCandidate ? '收起' : '展开' }}</span>
+              </div>
+              <div v-if="isShowAiCandidate" class="margin-top-sm">
+                <TsCodemirror
+                  v-model="aiCandidateValue"
+                  codeMode="json"
+                  :isReadOnly="true"
+                  height="220px"
+                ></TsCodemirror>
+              </div>
+            </div>
             <TsCodemirror
-              v-model="aiCandidateValue"
+              v-model="draftValue"
+              codeMode="json"
+              :isReadOnly="!editable"
+              height="calc(100vh - 300px)"
+            ></TsCodemirror>
+          </TabPane>
+          <TabPane :label="rawTitle" name="raw">
+            <TsCodemirror
+              v-model="rawSnapshotValue"
               codeMode="json"
               :isReadOnly="true"
-              height="220px"
+              height="calc(100vh - 220px)"
             ></TsCodemirror>
+          </TabPane>
+        </Tabs>
+        <div v-else>
+          <div v-if="summary" class="summary-grid pb-md">
+            <div class="summary-item bg-op">
+              <div class="text-grey">字段数</div>
+              <div class="summary-value">{{ summary.fieldCount || 0 }}</div>
+            </div>
+            <div class="summary-item bg-op">
+              <div class="text-grey">硬件层</div>
+              <div class="summary-value">{{ summary.layerCount && summary.layerCount.hardware || 0 }}</div>
+            </div>
+            <div class="summary-item bg-op">
+              <div class="text-grey">内核层</div>
+              <div class="summary-value">{{ summary.layerCount && summary.layerCount.kernel || 0 }}</div>
+            </div>
+            <div class="summary-item bg-op">
+              <div class="text-grey">OS层</div>
+              <div class="summary-value">{{ summary.layerCount && summary.layerCount.os || 0 }}</div>
+            </div>
+            <div class="summary-item bg-op">
+              <div class="text-grey">应用层</div>
+              <div class="summary-value">{{ summary.layerCount && summary.layerCount.application || 0 }}</div>
+            </div>
           </div>
+          <div v-if="aiCandidate" class="pb-md">
+            <div class="ai-candidate-header bg-op radius-sm" @click="toggleAiCandidate">
+              <div>
+                <span class="text-grey">AI候选说明</span>
+                <span v-if="aiAnalysisDurationText" class="text-tip margin-left">{{ aiAnalysisDurationText }}</span>
+                <span v-if="aiCallModeText" class="text-tip margin-left">{{ aiCallModeText }}</span>
+              </div>
+              <span class="text-action">{{ isShowAiCandidate ? '收起' : '展开' }}</span>
+            </div>
+            <div v-if="isShowAiCandidate" class="margin-top-sm">
+              <TsCodemirror
+                v-model="aiCandidateValue"
+                codeMode="json"
+                :isReadOnly="true"
+                height="220px"
+              ></TsCodemirror>
+            </div>
+          </div>
+          <TsCodemirror
+            v-model="draftValue"
+            codeMode="json"
+            :isReadOnly="!editable"
+            height="calc(100vh - 240px)"
+          ></TsCodemirror>
         </div>
-        <TsCodemirror
-          v-model="draftValue"
-          codeMode="json"
-          :isReadOnly="!editable"
-          height="calc(100vh - 240px)"
-        ></TsCodemirror>
       </div>
     </template>
   </TsDialog>
@@ -75,6 +135,14 @@ export default {
       type: [String, Object],
       default: null
     },
+    rawValue: {
+      type: [String, Object],
+      default: null
+    },
+    rawTitle: {
+      type: String,
+      default: '原始快照'
+    },
     editable: {
       type: Boolean,
       default: false
@@ -91,8 +159,10 @@ export default {
   data() {
     return {
       draftValue: '{}',
+      rawSnapshotValue: '{}',
       aiCandidateValue: '{}',
-      isShowAiCandidate: false
+      isShowAiCandidate: false,
+      activeTab: 'draft'
     };
   },
   computed: {
@@ -107,6 +177,9 @@ export default {
         okText: this.saveText,
         loading: this.saveLoading
       };
+    },
+    hasRawTab() {
+      return this.rawValue !== null && this.rawValue !== undefined;
     },
     displayValue() {
       if (!this.value) {
@@ -133,6 +206,19 @@ export default {
         }
       }
       return JSON.stringify(this.aiCandidate, null, 2);
+    },
+    displayRawValue() {
+      if (!this.rawValue) {
+        return '{}';
+      }
+      if (typeof this.rawValue === 'string') {
+        try {
+          return JSON.stringify(JSON.parse(this.rawValue), null, 2);
+        } catch (e) {
+          return this.rawValue;
+        }
+      }
+      return JSON.stringify(this.rawValue, null, 2);
     },
     aiAnalysisDurationText() {
       let duration = this.aiCandidateSummary && this.aiCandidateSummary.analysisDurationMillis;
@@ -176,6 +262,7 @@ export default {
     value: {
       handler() {
         this.draftValue = this.displayValue;
+        this.activeTab = 'draft';
       },
       immediate: true
     },
@@ -183,6 +270,15 @@ export default {
       handler() {
         this.aiCandidateValue = this.displayAiCandidateValue;
         this.isShowAiCandidate = false;
+      },
+      immediate: true
+    },
+    rawValue: {
+      handler() {
+        this.rawSnapshotValue = this.displayRawValue;
+        if (!this.hasRawTab) {
+          this.activeTab = 'draft';
+        }
       },
       immediate: true
     }
