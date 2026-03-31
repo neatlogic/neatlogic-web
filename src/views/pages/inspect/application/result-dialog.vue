@@ -13,7 +13,7 @@
             <span class="mr-xs text-grey">{{ item.appSystemName }}</span>
             <span class="mr-xs text-grey">{{ item.appModuleName }}</span>
             <span class="mr-xs text-grey">{{ item.envName }}</span>
-            <span class="mr-xs text-grey">{{ item.version }}</span>
+            <span class="mr-xs text-grey">{{ item.typeLabel }}</span>
             <span class="text-href" @click="gotoDetail(item)">{{ $t('term.deploy.clickredirect') }}</span>
           </div>
           <div v-else-if="item.errorMsg">
@@ -21,15 +21,23 @@
             <span class="mr-xs text-grey">{{ item.appSystemName }}</span>
             <span class="mr-xs text-grey">{{ item.appModuleName }}</span>
             <span class="mr-xs text-grey">{{ item.envName }}</span>
-            <span class="mr-xs text-grey">{{ item.version }}</span>
+            <span class="mr-xs text-grey">{{ item.typeLabel }}</span>
             <span>{{ item.errorMsg }}</span>
           </div>
-          <div v-else>
+          <div v-else-if="item.message">
             <span class="mr-xs text-error">{{ $t('term.deploy.createfail') }}</span>
             <span class="mr-xs text-grey">{{ item.appSystemName }}</span>
             <span class="mr-xs text-grey">{{ item.appModuleName }}</span>
             <span class="mr-xs text-grey">{{ item.envName }}</span>
-            <span class="mr-xs text-grey">{{ item.version }}</span>
+            <span class="mr-xs text-grey">{{ item.typeLabel }}</span>
+            <span>{{ item.message }}</span>
+          </div>
+          <div v-else>
+            <span class="text-error">{{ $t('term.deploy.createfail') }}</span>
+            <span class="mr-xs text-grey">{{ item.appSystemName }}</span>
+            <span class="mr-xs text-grey">{{ item.appModuleName }}</span>
+            <span class="mr-xs text-grey">{{ item.envName }}</span>
+            <span class="mr-xs text-grey">{{ item.typeLabel }}</span>
           </div>
         </div>
       </template>
