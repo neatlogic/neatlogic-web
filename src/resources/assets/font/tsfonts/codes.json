@@ -3562,5 +3562,23 @@
     "css": "tsfont-underline",
     "hexCodepoint": "0xea53",
     "codepoint": 59987
+  },
+  {
+    "name": "barcode",
+    "css": "tsfont-barcode",
+    "hexCodepoint": "0xea54",
+    "codepoint": 59988
+  },
+  {
+    "name": "environment",
+    "css": "tsfont-environment",
+    "hexCodepoint": "0xea55",
+    "codepoint": 59989
+  },
+  {
+    "name": "sound",
+    "css": "tsfont-sound",
+    "hexCodepoint": "0xea56",
+    "codepoint": 59990
   }
 ]
