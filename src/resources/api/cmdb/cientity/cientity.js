@@ -23,6 +23,9 @@ const cientity = {
   batchUpdateCiEntity(params) {
     return axios.post('/api/rest/cmdb/cientity/batchupdate', params);
   },
+  batchAddTag(params) {
+    return axios.post('/api/rest/cmdb/cientity/tag/batch/add', params);
+  },
   //批量检查配置项
   batchValidateCiEntity(params) {
     return axios.post('/api/rest/cmdb/cientity/batchvalidate', params);
