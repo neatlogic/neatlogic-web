@@ -165,6 +165,14 @@ export default {
       activeTab: 'draft'
     };
   },
+  methods: {
+    saveDraft() {
+      this.$emit('save', this.draftValue);
+    },
+    toggleAiCandidate() {
+      this.isShowAiCandidate = !this.isShowAiCandidate;
+    }
+  },
   computed: {
     dialogConfig() {
       return {
@@ -281,14 +289,6 @@ export default {
         }
       },
       immediate: true
-    }
-  },
-  methods: {
-    saveDraft() {
-      this.$emit('save', this.draftValue);
-    },
-    toggleAiCandidate() {
-      this.isShowAiCandidate = !this.isShowAiCandidate;
     }
   }
 };

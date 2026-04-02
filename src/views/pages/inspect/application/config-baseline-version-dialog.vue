@@ -9,7 +9,13 @@
             :loading="loadingShow"
           >
             <template v-slot:status="{ row }">
-              <Poptip v-if="hasStatusDetail(row)" :transfer="true" trigger="hover" placement="right-start" width="320">
+              <Poptip
+                v-if="hasStatusDetail(row)"
+                :transfer="true"
+                trigger="hover"
+                placement="right-start"
+                width="320"
+              >
                 <span :class="getStatusClass(row.status)">{{ formatStatus(row.status) }}</span>
                 <div slot="content" class="status-detail-box">
                   <div class="status-detail-item">
@@ -52,15 +58,31 @@
                 <ul class="tstable-action-ul">
                   <li class="tsfont-eye" @click="viewVersion(row)">查看</li>
                   <li v-if="row.status === 'draft' || row.status === 'rejected'" class="tsfont-edit" @click="editVersion(row)">编辑草稿</li>
-                  <li v-if="row.status === 'draft' || row.status === 'rejected'" class="tsfont-setting" :class="{ 'text-grey': isActionLoading(row.id, 'submit') }" @click="submitApproval(row)">
+                  <li
+                    v-if="row.status === 'draft' || row.status === 'rejected'"
+                    class="tsfont-setting"
+                    :class="{ 'text-grey': isActionLoading(row.id, 'submit') }"
+                    @click="submitApproval(row)"
+                  >
                     {{ isActionLoading(row.id, 'submit') ? '提交中...' : '提交审核' }}
                   </li>
                   <li v-if="row.status === 'pending_approval' && row.approvalStatus === 'pending'" class="tsfont-check" @click="auditVersion(row, 'approved')">审批通过</li>
                   <li v-if="row.status === 'pending_approval' && row.approvalStatus === 'pending'" class="tsfont-close" @click="auditVersion(row, 'rejected')">审批驳回</li>
-                  <li v-if="row.status === 'approved'" class="tsfont-publish" :class="{ 'text-grey': isActionLoading(row.id, 'publish') }" @click="publishVersion(row)">
+                  <li
+                    v-if="row.status === 'approved'"
+                    class="tsfont-publish"
+                    :class="{ 'text-grey': isActionLoading(row.id, 'publish') }"
+                    @click="publishVersion(row)"
+                  >
                     {{ isActionLoading(row.id, 'publish') ? '发布中...' : '发布' }}
                   </li>
-                  <li v-if="!row.isCurrentActive" v-auth="'INSPECT_MODIFY'" class="tsfont-trash-o" :class="{ 'text-grey': isActionLoading(row.id, 'delete') }" @click="deleteVersion(row)">
+                  <li
+                    v-if="!row.isCurrentActive"
+                    v-auth="'INSPECT_MODIFY'"
+                    class="tsfont-trash-o"
+                    :class="{ 'text-grey': isActionLoading(row.id, 'delete') }"
+                    @click="deleteVersion(row)"
+                  >
                     {{ isActionLoading(row.id, 'delete') ? '删除中...' : '删除版本' }}
                   </li>
                 </ul>
