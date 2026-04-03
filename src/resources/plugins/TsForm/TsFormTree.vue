@@ -108,7 +108,7 @@
               :data="nodeList"
               :render="renderContent"
               :multiple="multiple || false"
-              :show-checkbox="multiple || false"
+              :show-checkbox="multiple && isShowCheckbox || false"
               :check-strictly="true"
               :childrenKey="childrenKey"
               :load-data="loadData"
@@ -224,7 +224,11 @@ export default {
       type: String,
       default: 'post'
     },
-    onChangelabel: Function //改变时获取text触发
+    onChangelabel: Function, //改变时获取text触发
+    isShowCheckbox: { //是否显示复选框
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
