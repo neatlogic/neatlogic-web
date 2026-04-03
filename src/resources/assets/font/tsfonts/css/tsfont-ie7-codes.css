@@ -595,3 +595,6 @@
 .tsfont-table-merge-cell { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea51;&nbsp;'); }
 .tsfont-table-split-cell { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea52;&nbsp;'); }
 .tsfont-underline { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea53;&nbsp;'); }
+.tsfont-barcode { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea54;&nbsp;'); }
+.tsfont-environment { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea55;&nbsp;'); }
+.tsfont-sound { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea56;&nbsp;'); }

@@ -595,3 +595,6 @@
 .tsfont-table-merge-cell:before { content: '\ea51'; } /* '' */
 .tsfont-table-split-cell:before { content: '\ea52'; } /* '' */
 .tsfont-underline:before { content: '\ea53'; } /* '' */
+.tsfont-barcode:before { content: '\ea54'; } /* '' */
+.tsfont-environment:before { content: '\ea55'; } /* '' */
+.tsfont-sound:before { content: '\ea56'; } /* '' */
