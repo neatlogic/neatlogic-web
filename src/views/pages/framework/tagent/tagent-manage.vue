@@ -24,7 +24,7 @@
             <div slot="content" style="max-height: 400px;overflow:auto;">{{ $t('term.framework.batchdeletetagenttooltip') }}</div>
           </Tooltip>
           <span class="tsfont-anzhuangbao action-item" @click="goPages('installationPackage')">{{ $t('term.framework.tagentupgrade') }}</span>
-          <span class="tsfont-question-s action-item" @click="openInstallTipsDialog">{{ $t('term.framework.tagentinstall') }}</span>
+          <span class="tsfont-question-s action-item" @click="openInstallDoc">{{ $t('term.framework.tagentinstall') }}</span>
           <span class="tsfont-download action-item" @click="exportExcel">{{ $t('page.export') }}</span>
         </div>
       </template>
@@ -88,7 +88,6 @@
         </TsTable>
       </div>
     </TsContain>
-    <InstallTipsDialog v-if="isShowInstallTips" @close="closeInstallTipsDialog"></InstallTipsDialog>
     <ViewPasswordDialog v-if="isShowPasswordDialog" :accountId="accountId" @close="closeDialog"></ViewPasswordDialog>
     <ViewLogDialog v-if="isShowLogDialog" :tagentId="tagentId" @close="closeDialog"></ViewLogDialog>
     <UpgradeVersionDialog v-if="isShowVersionUpdate" :tagentId="tagentId" @close="closeDialog"></UpgradeVersionDialog>
@@ -102,7 +101,6 @@ export default {
   components: {
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    InstallTipsDialog: () => import('./tagent/install-tips-dialog'),
     ViewPasswordDialog: () => import('./tagent/view-password-dialog'), // 查看密码
     ViewLogDialog: () => import('./tagent/view-log-dialog'), // 查看日志
     UpgradeVersionDialog: () => import('./tagent/upgrade-version-dialog'), // 升级版本
@@ -120,7 +118,6 @@ export default {
       isShowConfigTagentDialog: false,
       isShowLogDialog: false,
       isShowVersionUpdate: false, // 升级版本
-      isShowInstallTips: false,
       tagentId: null,
       accountId: null,
       searchVal: {},
@@ -373,11 +370,8 @@ export default {
         }
       });
     },
-    openInstallTipsDialog() {
-      this.isShowInstallTips = true;
-    },
-    closeInstallTipsDialog() {
-      this.isShowInstallTips = false;
+    openInstallDoc() {
+      window.open(HOME + '/documentonline.html#/documentonline-detail?filePath=jar:file:/app/data/documentOnlineJars/neatlogic-document-online.jar!/neatlogic/resources/documentonline/zh/5.自动化/Tagent服务/Tagent服务.md', '_blank');
     },
     closeDialog() {
       this.tagentId = null;

@@ -2091,7 +2091,7 @@
     "moduleconfigselectversion": "Module settings: 【{target}】Please select a version",
     "moduleconfigatleastselectinstance": "Module configuration: [{target}] select at least one instance",
     "createsuccess": "Create successfully",
-    "createfail": "Failed to create:",
+    "createfail": "Failed to create",
     "appmodulecreatesuccess": "The application module {target} was created successfully,",
     "clickredirect": "Please click to redirect",
     "applymodule": "Apply Module",
