@@ -211,23 +211,41 @@
           </div>
         </div>
         <div style="text-align: right">
-          <Button
-            v-if="saveMode === 'save' && ((ciEntityQueue && ciEntityQueue.length > 1) || mode === 'dialog')"
-            style="margin-right: 10px"
-            type="default"
-            @click="cancel()"
-          >{{ $t('page.cancel') }}</Button>
-          <Button v-if="ciEntityQueue && ciEntityQueue.length > 1" type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
-          <Button
-            v-if="!hideButton && saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate)"
-            style="margin-right: 10px"
-            ghost
-            type="primary"
-            @click="save(false)"
-          >{{ $t('page.savetransaction') }}</Button>
-          <Button v-if="!hideButton && saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate) && ciEntityData.authData.transactionmanage" type="primary" @click="save(true)">{{ $t('page.savecommittransaction') }}</Button>
-          <Button v-if="!hideButton && saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" style="margin-right: 10px" @click="cancel">{{ $t('page.cancel') }}</Button>
-          <Button v-if="!hideButton && saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" type="primary" @click="save(false)">{{ $t('page.confirm') }}</Button>
+          <div class="action-group">
+            <div v-if="ciEntityData && ciEntityData.tagList && ciEntityData.tagList.length > 0" class="action-item">
+              <Tag
+                v-for="(tag, tindex) in ciEntityData.tagList"
+                :key="tindex"
+                closable
+                @on-close="removeTag(tag)"
+              >{{ tag.tagName }}</Tag>
+            </div>
+            <div class="action-item">
+              <a class="tsfont-plus" @click="openTagDialog">添加标签</a>
+            </div>
+            <div v-if="saveMode === 'save' && ((ciEntityQueue && ciEntityQueue.length > 1) || mode === 'dialog')" class="action-item">
+              <Button type="default" @click="cancel()">{{ $t('page.cancel') }}</Button>
+            </div>
+            <div v-if="ciEntityQueue && ciEntityQueue.length > 1" class="action-item">
+              <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
+            </div>
+            <div v-if="!hideButton && saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate)" class="action-item">
+              <Button
+                ghost
+                type="primary"
+                @click="save(false)"
+              >{{ $t('page.savetransaction') }}</Button>
+            </div>
+            <div v-if="!hideButton && saveMode === 'save' && ciEntityQueue && ciEntityQueue.length == 1 && ciEntityData.authData && (ciEntityData.authData.cientityinsert || ciEntityData.authData.cientityupdate) && ciEntityData.authData.transactionmanage" class="action-item">
+              <Button type="primary" @click="save(true)">{{ $t('page.savecommittransaction') }}</Button>
+            </div>
+            <div v-if="!hideButton && saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" class="action-item">
+              <Button @click="cancel">{{ $t('page.cancel') }}</Button>
+            </div>
+            <div v-if="!hideButton && saveMode === 'emit' && ciEntityQueue && ciEntityQueue.length == 1" class="action-item">
+              <Button type="primary" @click="save(false)">{{ $t('page.confirm') }}</Button>
+            </div>
+          </div>
         </div>
       </template>
       <div v-if="ciEntityData && ciEntityData.id && saveMode == 'save'" slot="right" class="pl-nm">
@@ -247,6 +265,11 @@
       @close="isCiEntityChooseShow = false"
       @confirm="getCheckCiEntity"
     ></CiEntityChoose>
+    <CiEntityTagDialog
+      v-if="isTagDialogShow"
+      :ciEntityList="[ciEntityData]"
+      @close="closeTagDialog"
+    ></CiEntityTagDialog>
   </div>
 </template>
 <script>
@@ -261,7 +284,8 @@ export default {
     //TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     //TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox'),
     // TsTable:()=>import('@/resources/components/TsTable/TsTable.vue'),
-    CiEntityChoose: () => import('./cientity-choose.vue')
+    CiEntityChoose: () => import('./cientity-choose.vue'),
+    CiEntityTagDialog: () => import('./cientity-tag-dialog.vue')
   },
   props: {
     padding: { type: Boolean, default: true }, //是否有白色底色和间距
@@ -288,7 +312,9 @@ export default {
       targetCiId: null,
       currentRel: null,
       currentRelEntityValue: null,
-      isLoading: false
+      isLoading: false,
+      newTagList: [], //新的标签
+      isTagDialogShow: false
       // ciEntityData: {}
     };
   },
@@ -303,6 +329,45 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    openTagDialog() {
+      if (!this.ciEntityData || !this.ciEntityData.id) {
+        return;
+      }
+      this.isTagDialogShow = true;
+    },
+    closeTagDialog(needRefresh) {
+      this.isTagDialogShow = false;
+      if (needRefresh) {
+        this.refreshTagList();
+      }
+    },
+    refreshTagList() {
+      if (!this.ciEntityData || !this.ciEntityData.ciId || !this.ciEntityData.id) {
+        return;
+      }
+      this.$api.cmdb.cientity.getCiEntityById(this.ciEntityData.ciId, this.ciEntityData.id, false, true, true).then(res => {
+        if (res.Status === 'OK') {
+          this.$set(this.ciEntityData, 'tagList', res.Return.tagList || []);
+        }
+      });
+    },
+    removeTag(tag) {
+      if (!this.ciEntityData || !this.ciEntityData.id || !tag || !tag.tagId) {
+        return;
+      }
+      this.$api.cmdb.cientity.batchDeleteTag({
+        ciEntityIdList: [this.ciEntityData.id],
+        tagIdList: [tag.tagId]
+      }).then(res => {
+        if (res.Status === 'OK') {
+          const index = this.ciEntityData.tagList.findIndex(d => d.tagId === tag.tagId);
+          if (index > -1) {
+            this.ciEntityData.tagList.splice(index, 1);
+          }
+          this.$Message.success(this.$t('message.deletesuccess'));
+        }
+      });
+    },
     refresh() {
       window.location.reload();
     },

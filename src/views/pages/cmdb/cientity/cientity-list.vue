@@ -10,8 +10,8 @@
             </Button>
             <DropdownMenu slot="list">
               <DropdownItem @click.native="batchEdit()">{{ $t('page.edit') }}</DropdownItem>
-              <DropdownItem @click.native="batchAddTag()">{{ $t('dialog.title.addtarget', { target: $t('page.tag') }) }}</DropdownItem>
               <DropdownItem @click.native="batchDelete()">{{ $t('page.delete') }}</DropdownItem>
+              <DropdownItem divided @click.native="batchAddTag()">{{ $t('dialog.title.addtarget', { target: $t('page.tag') }) }}</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>

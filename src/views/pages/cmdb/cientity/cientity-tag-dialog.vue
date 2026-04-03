@@ -1,10 +1,11 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-close="close">
     <template v-slot>
-      <TsForm ref="form" v-model="formData" :item-list="formConfig" type="type" label-position="right">
-        <template v-slot:tagIdList>
-          <TsFormSelect v-model="formData.tagIdList" v-bind="formConfig.tagIdList"></TsFormSelect>
-        </template>
+      <TsForm
+        ref="form"
+        v-model="formData"
+        :item-list="formConfig"
+      >
       </TsForm>
     </template>
     <template v-slot:footer>
@@ -18,8 +19,7 @@
 export default {
   name: 'CiEntityTagDialog',
   components: {
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     ciEntityList: {
@@ -31,27 +31,43 @@ export default {
     return {
       isSaving: false,
       formData: {
+        mode: 'append',
         tagIdList: []
       },
       dialogConfig: {
         type: 'modal',
-        title: this.$t('dialog.title.batchaddtarget', { target: this.$t('page.tag') }),
+        title: '添加标签',
         isShow: true,
         maskClose: false,
-        width: 'medium'
+        width: 'small'
       },
       formConfig: {
+        mode: {
+          type: 'radio',
+          name: 'mode',
+          label: '编辑模式',
+          dataList: [
+            {
+              value: 'append',
+              text: '追加'
+            },
+            {
+              value: 'replace',
+              text: '覆盖'
+            }
+          ]
+        },
         tagIdList: {
-          type: 'slot',
+          type: 'select',
           name: 'tagIdList',
-          label: this.$t('page.tag'),
+          label: '标签',
           multiple: true,
           transfer: true,
           search: true,
           dynamicUrl: '/api/rest/cmdb/tag/search',
           textName: 'name',
           valueName: 'id',
-          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.tag') }) }]
+          validateList: [{ name: 'required', message: '请选择标签' }]
         }
       }
     };
@@ -73,6 +89,7 @@ export default {
       this.isSaving = true;
       this.$api.cmdb.cientity.batchAddTag({
         ciEntityIdList,
+        mode: this.formData.mode,
         tagIdList: this.formData.tagIdList
       }).then(res => {
         if (res.Status === 'OK') {
