@@ -22,7 +22,6 @@ const toolCatalogManage = () => import('./manage/tool-catalog-manage.vue'); // �
 const sceneDefinitionManage = () => import('./config/scene-definition/scene-definition-manage.vue'); // 场景定义
 const globalParamsManage = () => import('./config/global-params/global-params-manage.vue'); // 全局参数
 const toolProfileManage = () => import('./config/profile/tool-profile-manage.vue'); // 工具profile
-const applicationManage = () => import('@/views/pages/cmdb/application/application-manage.vue');
 const assetManage = () => import('@/views/pages/cmdb/asset/asset-manage.vue');
 const tagManage = () => import('@/views/pages/cmdb/Tag/tag-manage.vue');
 const accountManage = () => import('@/views/pages/cmdb/account/account-manage.vue');

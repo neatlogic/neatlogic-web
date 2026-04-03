@@ -14,6 +14,11 @@
             @click="addAppModule()"
           >{{ $t('page.module') }}</span>
           <span
+            v-if="$AuthUtils.hasRole('RESOURCECENTER_MODIFY')"
+            class="action-item tsfont-plus"
+            @click="addSettingDialog()"
+          >{{ $t('page.setting') }}</span>
+          <span
             v-if="$AuthUtils.hasRole('INSPECT_SCHEDULE_EXECUTE')"
             class="action-item tsfont-sla"
             @click="openInspectionScheduleDialog()"
@@ -70,6 +75,7 @@
           ref="appModuleTree"
           v-model="appModueData"
           :allowInverse="false"
+          :moduleName="moduleName"
           @getSelectedApp="getSelectedApp"
           @getSelectedModule="getSelectedModule"
         ></AppModuleTree>
@@ -151,6 +157,7 @@
       :appSystemId="appCiEntityId"
       @close="isShowBatchModuleInspectionDialog = false"
     ></BatchModuleInspectionDialog>
+    <CiAttrSettingDialog v-if="isSettingDialogShow" :moduleName="moduleName" @close="closeSettingDialog"></CiAttrSettingDialog>
   </div>
 </template>
 <script>
@@ -163,6 +170,7 @@ export default {
     ModuleInfo: () => import('@/views/pages/deploy/application-config/config/module/module-info'),
     AppEditDialog: () => import('@/views/pages/cmdb/application/app-edit-dialog.vue'),
     AppModuleEditDialog: () => import('@/views/pages/cmdb/application/appmodule-edit-dialog.vue'),
+    CiAttrSettingDialog: () => import('@/views/pages/cmdb/application/ci-attr-setting-dialog.vue.vue'),
     DeleteCiEntityDialog: () => import('@/views/pages/cmdb/cientity/cientity-delete-dialog.vue'),
     InspectionScheduleDialog: () => import('./inspection-schedule-dialog.vue'),
     AppModuleTree: () => import('@/views/pages/cmdb/application/app-module-tree'), // 应用模块树
@@ -192,11 +200,17 @@ export default {
       appModueData: {},
       ciEntityData: {},
       isShowInspectionScheduleDialog: false,
-      scheduleId: null
+      scheduleId: null,
+      isSettingDialogShow: false
     };
   },
   beforeCreate() {},
   created() {
+    if (this.$route.query.tabValue) {
+      this.tabValue = this.$route.query.tabValue;
+    } else if (this.$route.name === 'baseline-manage') {
+      this.tabValue = 'configBaseline';
+    }
     if (this.$route.query.scheduleId) {
       this.scheduleId = Number(this.$route.query.scheduleId);
     }
@@ -261,9 +275,13 @@ export default {
       this.deleteCiEntityId = this.appModuleId;
       this.isDeleteDialogShow = true;
     },
-    closeAppEditDialog(needRefresh, uuid) {
+    async closeAppEditDialog(needRefresh, uuid) {
+      const isCreate = !this.appCiEntityId;
       this.isEditAppDialogShow = false;
       if (needRefresh && uuid) {
+        if (isCreate) {
+          await this.addManagedAppByUuid(uuid);
+        }
         // 添加应用成功，刷新树列表
         this.$refs.appModuleTree.refreshApp(uuid);
       }
@@ -282,6 +300,44 @@ export default {
         this.appModueData = {
           appId: this.appCiEntityId // 删除成功后，默认选中当前应用层
         };
+        this.$refs.appModuleTree.searchAppSystem();
+      }
+    },
+    addSettingDialog() {
+      this.isSettingDialogShow = true;
+    },
+    async addManagedAppByUuid(uuid) {
+      if (!this.moduleName || !uuid) {
+        return;
+      }
+      const appRes = await this.$api.cmdb.applicationManage.getAppsystemById({ uuid });
+      const appId = appRes && appRes.Return ? appRes.Return.id : null;
+      if (!appId) {
+        return;
+      }
+      const settingRes = await this.$api.cmdb.applicationManage.getApplicationlistSetting();
+      const currentConfig = (settingRes && settingRes.Return && settingRes.Return.config) || {};
+      const moduleVisibleAppSystemIdListMap = currentConfig.moduleVisibleAppSystemIdListMap || {};
+      const currentAppSystemIdList = moduleVisibleAppSystemIdListMap[this.moduleName] || [];
+      if (currentAppSystemIdList.includes(-1) || currentAppSystemIdList.includes(appId)) {
+        return;
+      }
+      moduleVisibleAppSystemIdListMap[this.moduleName] = [...currentAppSystemIdList, appId];
+      const data = {
+        config: {
+          ...currentConfig,
+          moduleVisibleAppSystemIdListMap
+        }
+      };
+      if (settingRes && settingRes.Return && settingRes.Return.id) {
+        data.id = settingRes.Return.id;
+      }
+      await this.$api.cmdb.applicationManage.saveApplicationlistSetting(data);
+    },
+    closeSettingDialog(needRefresh) {
+      this.isSettingDialogShow = false;
+      if (needRefresh) {
+        this.appModueData = {};
         this.$refs.appModuleTree.searchAppSystem();
       }
     },
@@ -336,6 +392,9 @@ export default {
   },
   filter: {},
   computed: {
+    moduleName() {
+      return this.$route.meta.moduleName || '';
+    },
     isHasInspectApplicationTab() {
       const items = ComponentManager.getComponent && ComponentManager.getComponent('inspectApplicationTab');
       return !!(items && items['inspectConfigBaselineTab']);
