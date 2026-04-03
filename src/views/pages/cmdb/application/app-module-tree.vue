@@ -96,6 +96,10 @@ export default {
         return {};
       }
     },
+    moduleName: {
+      type: String,
+      default: ''
+    },
     alignType: {
       // 输入框底边线和右边对齐
       type: String,
@@ -421,8 +425,12 @@ export default {
           }
         }
         this.$addHistoryData('searchParam', this.searchParam);
+        const requestParam = {
+          ...this.searchParam,
+          ...(this.moduleName ? {moduleName: this.moduleName} : {})
+        };
         await this.$api.cmdb.applicationManage
-          .getAppsystemListTree(this.searchParam)
+          .getAppsystemListTree(requestParam)
           .then(async res => {
             if (res && res.Status == 'OK') {
               const dataList = res.Return.tbodyList || [];

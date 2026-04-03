@@ -35,6 +35,7 @@
         <Poptip v-if="row.flag == 'internalRule'" :title="$t('page.rule')" :content="row.alertRule">
           <span class="text-href">{{ row.alertTips }}</span>
         </Poptip>
+        <span v-else-if="row.flag == 'configBaseline'">{{ row.alertTips }}</span>
         <span v-else class="text-href" @click="toInspectionDetail(row)">{{ row.alertTips }}</span>
       </template>
     </TsTable>
@@ -138,7 +139,9 @@ export default {
     },
     toInspectionDetail(row) {
       if (row && !this.$utils.isEmptyObj(row)) {
-        if (row.flag == 'globalRule') {
+        if (row.flag == 'configBaseline') {
+          return;
+        } else if (row.flag == 'globalRule') {
           // 跳转到全局阈值规则页面
           this.$router.push({
             path: '/definition-detail',
@@ -179,11 +182,12 @@ export default {
         if (list && !this.$utils.isEmpty(list)) {
           list.forEach((item) => {
             if (item) {
+              const ruleData = this.handleRule(item);
               this.tbodyList.push({
                 ...item,
-                flag: this.handleRule(item).ruleFlag,
-                ruleId: this.handleRule(item).ruleId,
-                appSystemName: this.handleRule(item).ruleFlag == 'appRule' ? (item.ruleSeq.split('#') && item.ruleSeq.split('#')[0]) : '-'
+                flag: item.flag || ruleData.ruleFlag,
+                ruleId: item.ruleId || ruleData.ruleId,
+                appSystemName: item.appSystemName || (ruleData.ruleFlag == 'appRule' ? (item.ruleSeq.split('#') && item.ruleSeq.split('#')[0]) : '-')
               });
             }
           });
