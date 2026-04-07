@@ -60,7 +60,7 @@
             class="mr-nm"
             :class="outline.cssClass"
           >
-            <Poptip trigger="hover" placement="right-start" width="650">
+            <Poptip trigger="hover" placement="right-start" width="900">
               <div class="cursor h4" @click="scrollToTarget(outline)">
                 <span class="tsfont-warning-s">{{ outline.name }}:</span>
                 <span>
@@ -106,7 +106,17 @@
               >
                 <template v-for="(head, hindex) in getFieldTheadList(field)" :slot="head.key" slot-scope="scope">
                   <div :key="hindex">
-                    <span :id="field.name + '_' + scope.index + '_' + head.key" :class="getFieldClass(field.name + '.' + scope.index + '.' + head.key)" style="word-break:break-all;white-space:normal">{{ scope.row[head.key] }}</span>
+                    <component
+                      :is="getFieldCellComponent(field)"
+                      v-if="getFieldCellComponent(field)"
+                      v-bind="getFieldCellProps(field, head, scope)"
+                    ></component>
+                    <span
+                      v-else
+                      :id="field.name + '_' + scope.index + '_' + head.key"
+                      :class="getFieldClass(field.name + '.' + scope.index + '.' + head.key)"
+                      style="word-break:break-all;white-space:normal"
+                    >{{ scope.row[head.key] }}</span>
                   </div>
                 </template>
               </TsTable>
@@ -141,6 +151,7 @@
 </template>
 <script>
 import download from '@/resources/directives/download.js';
+import ComponentManager from '@/resources/import/component-manager.js';
 
 export default {
   name: '',
@@ -283,6 +294,10 @@ export default {
     },
     getFieldTheadList(field) {
       if (field.subset) {
+        const handler = this.getReportFieldHandler(field);
+        if (handler && typeof handler.getTheadList === 'function') {
+          return handler.getTheadList(field);
+        }
         return field.subset.map(d => {
           return {
             key: d.name,
@@ -290,6 +305,24 @@ export default {
           };
         });
       }
+    },
+    getReportFieldHandler(field) {
+      const handlerMap = ComponentManager.getComponent('inspectReportFieldHandler') || {};
+      return field && field.name ? handlerMap[field.name] : null;
+    },
+    getFieldCellComponent(field) {
+      const handler = this.getReportFieldHandler(field);
+      return handler ? handler.component : null;
+    },
+    getFieldCellProps(field, head, scope) {
+      return {
+        field: field,
+        head: head,
+        row: scope.row,
+        index: scope.index,
+        cellId: field.name + '_' + scope.index + '_' + head.key,
+        cellClass: this.getFieldClass(field.name + '.' + scope.index + '.' + head.key)
+      };
     },
     toThresholdRuleDetail(row) {
       if (row && !this.$utils.isEmptyObj(row)) {
