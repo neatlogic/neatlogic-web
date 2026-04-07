@@ -125,15 +125,15 @@ export default {
       if (!this.collectionKeyword) {
         return this.collectionTypeList;
       } else {
+        const keyword = this.collectionKeyword.toLowerCase();
         const collectionTypeList = this.$utils.deepClone(this.collectionTypeList);
-        collectionTypeList.forEach(type => {
-          if (type.name.toLowerCase().indexOf(this.collectionKeyword.toLowerCase()) == -1 && type.label.toLowerCase().indexOf(this.collectionKeyword.toLowerCase()) == -1) {
-            if (type.collectionList && type.collectionList.length > 0) {
-              type.collectionList = type.collectionList.filter(collection => collection.label.toLowerCase().indexOf(this.collectionKeyword.toLowerCase()) > -1 || collection.name.toLowerCase().indexOf(this.collectionKeyword.toLowerCase()) > -1);
-            }
+        return collectionTypeList.filter(type => {
+          const isTypeMatched = type?.name?.toLowerCase().indexOf(keyword) > -1 || type?.label?.toLowerCase().indexOf(keyword) > -1;
+          if (type.collectionList && type.collectionList.length > 0) {
+            type.collectionList = type.collectionList.filter(collection => collection?.label?.toLowerCase().indexOf(keyword) > -1 || collection?.name?.toLowerCase().indexOf(keyword) > -1);
           }
+          return isTypeMatched || (type.collectionList && type.collectionList.length > 0);
         });
-        return collectionTypeList.filter(ct => ct.collectionList.length > 0);
       }
     }
   },
