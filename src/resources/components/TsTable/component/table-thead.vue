@@ -16,7 +16,9 @@
         :style="setTh()"
       >
         <template v-if="hitem.key == 'expander'">
-          <i class="text-href" :class="getAllExpanderClass" @click.stop="toggleExpandAll"></i>
+          <div>
+            <i class="text-href" :class="getAllExpanderClass" @click.stop="toggleExpandAll"></i>
+          </div>
         </template>
         <template v-if="hitem.key == 'selection'">
           <div

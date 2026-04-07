@@ -23,6 +23,7 @@
           ref="appModuleTree"
           v-model="appModueData"
           :allowInverse="false"
+          :moduleName="moduleName"
           @getSelectedApp="getSelectedApp"
           @getSelectedModule="getSelectedModule"
         ></AppModuleTree>
@@ -72,7 +73,7 @@
       :ciEntityId="deleteCiEntityId"
       @close="closeDeleteDialog"
     ></DeleteCiEntityDialog>
-    <CiAttrSettingDialog v-if="isSettingDialogShow" @close="closeSettingDialog"></CiAttrSettingDialog>
+    <CiAttrSettingDialog v-if="isSettingDialogShow" :moduleName="moduleName" @close="closeSettingDialog"></CiAttrSettingDialog>
   </div>
 </template>
 <script>
@@ -86,7 +87,7 @@ export default {
     DeleteCiEntityDialog: () => import('../cientity/cientity-delete-dialog.vue'),
     AssetsManage: () => import('./assets-manage'), // 资产清单
     AppModuleTree: () => import('./app-module-tree'), // 应用模块树
-    CiAttrSettingDialog: () => import('./ci-attr-setting-dialog.vue')
+    CiAttrSettingDialog: () => import('./ci-attr-setting-dialog.vue.vue')
   },
   props: {},
   data() {
@@ -160,9 +161,13 @@ export default {
       this.deleteCiEntityId = this.appModuleId;
       this.isDeleteDialogShow = true;
     },
-    closeAppEditDialog(needRefresh, uuid) {
+    async closeAppEditDialog(needRefresh, uuid) {
+      const isCreate = !this.appCiEntityId;
       this.isEditAppDialogShow = false;
       if (needRefresh && uuid) {
+        if (isCreate) {
+          await this.addManagedAppByUuid(uuid);
+        }
         // 添加应用成功，刷新树列表
         this.$refs.appModuleTree.refreshApp(uuid);
       }
@@ -231,9 +236,39 @@ export default {
     addSettingDialog() {
       this.isSettingDialogShow = true;
     },
+    async addManagedAppByUuid(uuid) {
+      if (!this.moduleName || !uuid) {
+        return;
+      }
+      const appRes = await this.$api.cmdb.applicationManage.getAppsystemById({ uuid });
+      const appId = appRes && appRes.Return ? appRes.Return.id : null;
+      if (!appId) {
+        return;
+      }
+      const settingRes = await this.$api.cmdb.applicationManage.getApplicationlistSetting();
+      const currentConfig = (settingRes && settingRes.Return && settingRes.Return.config) || {};
+      const moduleVisibleAppSystemIdListMap = currentConfig.moduleVisibleAppSystemIdListMap || {};
+      const currentAppSystemIdList = moduleVisibleAppSystemIdListMap[this.moduleName] || [];
+      if (currentAppSystemIdList.includes(-1) || currentAppSystemIdList.includes(appId)) {
+        return;
+      }
+      moduleVisibleAppSystemIdListMap[this.moduleName] = [...currentAppSystemIdList, appId];
+      const data = {
+        config: {
+          ...currentConfig,
+          moduleVisibleAppSystemIdListMap
+        }
+      };
+      if (settingRes && settingRes.Return && settingRes.Return.id) {
+        data.id = settingRes.Return.id;
+      }
+      await this.$api.cmdb.applicationManage.saveApplicationlistSetting(data);
+    },
     closeSettingDialog(needRefresh) {
       this.isSettingDialogShow = false;
       if (needRefresh) {
+        this.appModueData = {};
+        this.$refs.appModuleTree.searchAppSystem();
         if (this.tabValue === 'assetsList') {
           this.$refs.assetsManage.initData();
         }
@@ -241,7 +276,11 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    moduleName() {
+      return this.$route.meta.moduleName || '';
+    }
+  },
   watch: {}
 };
 </script>

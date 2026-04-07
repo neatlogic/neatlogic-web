@@ -2974,7 +2974,7 @@
     "session": "会话",
     "apitype": "接口类型",
     "issystemagent": "是否系统智能体",
-    "agent": "智能体",
+    "agent": "智能助手",
     "systemprompt": "系统提示词",
     "thinking": "深度思考",
     "customparam": "额外配置",

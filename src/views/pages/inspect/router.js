@@ -20,7 +20,7 @@ const recentIssues = () => import('./recentIssues/recent-issues.vue'); // 最新
 const ciEntityView = () => import('@/views/pages/cmdb/cientity/cientity-view.vue');//配置项详情
 const ciEntityEdit = () => import('@/views/pages/cmdb/cientity/cientity-edit.vue');//配置项编辑
 
-const applicationManage = () => import('./application/application-manage.vue');//应用巡检
+const inspectApplicationManage = () => import('./application/application-manage.vue');//应用巡检
 const configfileManage = () => import('./configfile/configfile-manage.vue');
 const configfileDetail = () => import('./configfile/configfile-detail.vue');
 const configfileListManage = () => import('./configfile/configfile-list-manage.vue');
@@ -28,7 +28,6 @@ const configfileListManage = () => import('./configfile/configfile-list-manage.v
 // 阈值规则
 const RuleOfThresholdManage = () => import('./application/threshold/rule-of-threshold-manage.vue'); // 阈值规则
 const RuleOfThresholdDetail = () => import('./application/threshold/rule-of-threshold-detail.vue'); // 阈值规则详情
-const resourceApplicationManage = () => import('@/views/pages/cmdb/application/application-manage.vue');
 const assetManage = () => import('@/views/pages/cmdb/asset/asset-manage.vue');
 const tagManage = () => import('@/views/pages/cmdb/Tag/tag-manage.vue');
 const accountManage = () => import('@/views/pages/cmdb/account/account-manage.vue');
@@ -135,10 +134,11 @@ export default [
     }
   },
   {
-    path: '/application-manage',
-    name: 'application-manage',
-    component: applicationManage,
+    path: '/inspect-application-manage',
+    name: 'inspect-application-manage',
+    component: inspectApplicationManage,
     meta: {
+      moduleName: 'inspect',
       title: $t('router.inspect.applicationinspection'),
       ismenu: true,
       icon: 'tsfont-app',
@@ -322,18 +322,6 @@ export default [
       icon: 'tsfont-file-single',
       authority: 'INSPECT_BASE',
       type: 'inspectmanage'
-    }
-  },
-  {
-    path: '/resource-application-manage',
-    name: 'resource-application-manage',
-    component: resourceApplicationManage,
-    meta: {
-      title: $t('router.cmdb.applicationlist'),
-      ismenu: true,
-      icon: 'tsfont-app',
-      authority: 'INSPECT_BASE',
-      type: 'resourceCenter'
     }
   },
   {

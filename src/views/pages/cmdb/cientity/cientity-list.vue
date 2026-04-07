@@ -11,6 +11,7 @@
             <DropdownMenu slot="list">
               <DropdownItem @click.native="batchEdit()">{{ $t('page.edit') }}</DropdownItem>
               <DropdownItem @click.native="batchDelete()">{{ $t('page.delete') }}</DropdownItem>
+              <DropdownItem divided @click.native="batchAddTag()">{{ $t('dialog.title.addtarget', { target: $t('page.tag') }) }}</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
@@ -416,6 +417,11 @@
       :ciEntityList="batchEditCiEntityList"
       @close="closeBatchEditDialog"
     ></BatchEditCiEntityDialog>
+    <CiEntityTagDialog
+      v-if="isTagDialogShow"
+      :ciEntityList="tagCiEntityList"
+      @close="closeTagDialog"
+    ></CiEntityTagDialog>
     <TsDialog
       v-if="isExportDialogShow"
       type="modal"
@@ -469,6 +475,7 @@ export default {
     RelCiEntityDialog: () => import('./rel-cientity-dialog.vue'),
     DeleteCiEntityDialog: () => import('./cientity-delete-dialog.vue'),
     BatchEditCiEntityDialog: () => import('./cientity-edit-batch.vue'),
+    CiEntityTagDialog: () => import('./cientity-tag-dialog.vue'),
     DslEditor: () => import('@/resources/plugins/DslEditor/dsl-editor.vue'),
     AccountEditDialog: () => import('@/views/pages/cmdb/asset/components/account-edit-dialog') // 帐户管理
   },
@@ -577,6 +584,8 @@ export default {
       isBatchEditDialogShow: false, //批量修改窗口
       batchEditCiId: null, //批量修改模型id
       batchEditCiEntityList: [], //批量修改配置项
+      isTagDialogShow: false,
+      tagCiEntityList: [],
       attrRelList: [], //属性和关系列表，用于导出excel时选择
       isShowAddAccountDialog: false, // 账号管理弹窗
       resourceId: null,
@@ -685,6 +694,17 @@ export default {
           this.deleteCiEntityList.push({ ciEntityId: d.id, ciId: d.ciId, ciEntityName: d.name });
         });
         this.isDeleteDialogShow = true;
+      }
+    },
+    batchAddTag() {
+      if (this.selectedCiEntityList && this.selectedCiEntityList.length > 0) {
+        const errorList = this.selectedCiEntityList.filter(e => !e.authData || !e.authData.cientityupdate);
+        if (errorList.length > 0) {
+          this.$Message.info(this.$t('message.cmdb.hasnoauth', { target: errorList.map(cientity => cientity.name).join(',') }));
+          return;
+        }
+        this.tagCiEntityList = this.selectedCiEntityList.map(item => ({ id: item.id, name: item.name, ciId: item.ciId }));
+        this.isTagDialogShow = true;
       }
     },
     changeActionType(row, action) {
@@ -1199,6 +1219,13 @@ export default {
     },
     closeBatchEditDialog(needRefresh) {
       this.isBatchEditDialogShow = false;
+      if (needRefresh) {
+        this.searchCiEntity();
+      }
+    },
+    closeTagDialog(needRefresh) {
+      this.isTagDialogShow = false;
+      this.tagCiEntityList = [];
       if (needRefresh) {
         this.searchCiEntity();
       }

@@ -6,8 +6,7 @@
       border="border"
       @toggleSiderHide="toggleSiderHide"
     >
-      :rightWidth="220"
-      >
+      :rightWidth="220" >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
@@ -126,11 +125,14 @@
               <div class="middle-block">
                 <div v-if="showContent === 'main'">
                   <Card :bordered="false" dis-hover>
-                    <div slot="title" class="card-top">
+                    <div slot="title" class="card-top" style="position: relative">
                       <div class="title text-grey">
                         <span :class="ciEntityData.ciIcon" class="mr-md"></span>
                         {{ ciEntityData.name }}
                         <sup style="font-weight: normal" class="fz10">{{ ciEntityData.ciLabel }}({{ ciEntityData.ciName }})</sup>
+                      </div>
+                      <div v-if="ciEntityData.tagList && ciEntityData.tagList.length > 0" style="position: absolute; right: 0px; top: 0px">
+                        <Tag v-for="(tag, tindex) in ciEntityData.tagList" :key="tindex">{{ tag.tagName }}</Tag>
                       </div>
                     </div>
                     <div>
@@ -479,7 +481,7 @@ export default {
                 path: '/no-authority',
                 query: { des: this.$t('term.cmdb.cientityisnotfound') }
               });
-            } 
+            }
             this.isLoading = false;
           });
       }
