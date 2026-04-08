@@ -3580,5 +3580,17 @@
     "css": "tsfont-sound",
     "hexCodepoint": "0xea56",
     "codepoint": 59990
+  },
+  {
+    "name": "code-block",
+    "css": "tsfont-code-block",
+    "hexCodepoint": "0xea57",
+    "codepoint": 59991
+  },
+  {
+    "name": "data-transformation",
+    "css": "tsfont-data-transformation",
+    "hexCodepoint": "0xea58",
+    "codepoint": 59992
   }
 ]

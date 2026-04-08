@@ -212,10 +212,21 @@
               :height="hasLoadMore ? ($slots['first-ul'] || firstLi ? 150 : 190) : 'auto'"
             >
               <template v-for="parentNode in nodeList">
-                <li v-if="parentNode[childrenName] && parentNode[childrenName].length > 0" :key="parentNode[parentValueName]" class="text-grey fz10 padding-xs overflow">
+                <li
+                  v-if="parentNode[childrenName] && parentNode[childrenName].length > 0"
+                  :key="parentNode[parentValueName]"
+                  class="text-grey fz10 padding-xs overflow"
+                  :class="{ 'group-title-collapsible': groupCollapsible }"
+                  @click.stop="toggleGroupExpand(parentNode)"
+                >
+                  <i
+                    v-if="groupCollapsible"
+                    class="tsfont-right group-title-icon"
+                    :class="{ 'group-title-icon-expand': isGroupExpanded(parentNode) }"
+                  ></i>
                   {{ parentNode[parentTextName] }}
                 </li>
-                <template v-if="parentNode[childrenName] && parentNode[childrenName].length > 0">
+                <template v-if="parentNode[childrenName] && parentNode[childrenName].length > 0 && isGroupExpanded(parentNode)">
                   <template v-for="(node, index) in parentNode[childrenName]">
                     <li
                       v-show="!node._isHidden"
@@ -415,6 +426,16 @@ export default {
       //父亲节点text渲染值
       default: 'text'
     },
+    groupCollapsible: {
+      // 分组模式下，父分组是否支持展开/收起
+      type: Boolean,
+      default: false
+    },
+    openGroupValueList: {
+      // 分组模式下，默认展开的父分组 value 列表
+      type: Array,
+      default: () => []
+    },
     isEqualValue: {
       //text值是否通过value来渲染，防止初始化调用接口
       type: Boolean,
@@ -548,6 +569,7 @@ export default {
       addItem: null,
       readonlyTitle: null,
       hiddenLength: 0,
+      groupExpandMap: {},
       moreSearchTip: {
         [this.showName ? this.showName : this.textName]: this.$t('page.searchformore'),
         [this.valueName]: 'moreSearchFlag',
@@ -621,6 +643,9 @@ export default {
     handleOpen() {
       if (this.disabled || this.readonly) {
         return;
+      }
+      if (!this.isVisible) {
+        this.syncGroupExpandMap(false);
       }
       this.isShowInput = true;
       this.currentPage = 1;
@@ -864,6 +889,58 @@ export default {
         }
       });
       this.updatePosition();
+    },
+    getGroupValue(parentNode) {
+      return parentNode ? parentNode[this.parentValueName] : null;
+    },
+    hasVisibleGroupChildren(parentNode) {
+      const children = parentNode && parentNode[this.childrenName];
+      return Array.isArray(children) && children.some(item => item && !item._isHidden);
+    },
+    isGroupExpanded(parentNode) {
+      if (this.mode !== 'group' || !this.groupCollapsible) {
+        return true;
+      }
+      if (this.searchKeyWord && this.hasVisibleGroupChildren(parentNode)) {
+        return true;
+      }
+      const groupValue = this.getGroupValue(parentNode);
+      return !!this.groupExpandMap[groupValue];
+    },
+    toggleGroupExpand(parentNode) {
+      if (!this.groupCollapsible || this.mode !== 'group') {
+        return;
+      }
+      const groupValue = this.getGroupValue(parentNode);
+      this.$set(this.groupExpandMap, groupValue, !this.isGroupExpanded(parentNode));
+      this.$nextTick(() => {
+        this.updatePosition();
+      });
+    },
+    syncGroupExpandMap(isKeepExisting = false) {
+      if (this.mode !== 'group') {
+        this.groupExpandMap = {};
+        return;
+      }
+      const expandMap = {};
+      const openGroupValueList = Array.isArray(this.openGroupValueList) ? this.openGroupValueList : [];
+      this.nodeList.forEach(parentNode => {
+        const children = parentNode && parentNode[this.childrenName];
+        if (!Array.isArray(children) || children.length === 0) {
+          return;
+        }
+        const groupValue = this.getGroupValue(parentNode);
+        if (!this.groupCollapsible) {
+          expandMap[groupValue] = true;
+        } else if (openGroupValueList.includes(groupValue)) {
+          expandMap[groupValue] = true;
+        } else if (isKeepExisting && Object.prototype.hasOwnProperty.call(this.groupExpandMap, groupValue)) {
+          expandMap[groupValue] = this.groupExpandMap[groupValue];
+        } else {
+          expandMap[groupValue] = false;
+        }
+      });
+      this.groupExpandMap = expandMap;
     },
     selectMatchItem(query, item) {
       let searchNameList = this.$utils.isEmpty(this.filterName) ? [this.textName, this.valueName] : typeof this.filterName == 'string' ? [this.filterName] : this.filterName;
@@ -1580,6 +1657,9 @@ export default {
       },
       deep: true
     },
+    nodeList() {
+      this.syncGroupExpandMap(true);
+    },
     url(newValue, oldValue) {
       newValue ? this.watchChange(false) : (this.nodeList = this.$utils.deepClone(this.dataList || []));
     },
@@ -1638,6 +1718,12 @@ export default {
         this.readonly && this.initReadolyTitle();
       },
       deep: true
+    },
+    openGroupValueList: {
+      handler() {
+        this.syncGroupExpandMap(false);
+      },
+      deep: true
     }
   }
 };
@@ -1680,6 +1766,21 @@ function setWidth($contain, $target, transfer) {
     overflow: auto;
     &.ivu-select-dropdown-transfer {
       max-height: auto;
+    }
+    .group-title-collapsible {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .group-title-icon {
+      margin-right: 4px;
+      font-size: 12px;
+      transform: rotate(0deg);
+      transition: transform 0.2s ease;
+    }
+    .group-title-icon-expand {
+      transform: rotate(90deg);
     }
   }
   .select-top {

@@ -1093,5 +1093,6 @@
   "middleware": "中间件",
   "manage": "管理",
   "send": "发送",
-  "ignoreall": "忽略所有"
+  "ignoreall": "忽略所有",
+  "codeblocklanguage": "代码块语言"
 }
