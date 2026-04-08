@@ -638,3 +638,5 @@
 .tsfont-barcode:before { content: '\ea54'; } /* '' */
 .tsfont-environment:before { content: '\ea55'; } /* '' */
 .tsfont-sound:before { content: '\ea56'; } /* '' */
+.tsfont-code-block:before { content: '\ea57'; } /* '' */
+.tsfont-data-transformation:before { content: '\ea58'; } /* '' */
