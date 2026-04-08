@@ -1,10 +1,10 @@
 import { $t } from '@/resources/init.js';
 export default {
   handler: 'formscript',
-  label: $t('page.script'),
+  label: $t('page.code'),
   type: 'form',
   category: 'basic',
-  icon: 'tsfont-script',
+  icon: 'tsfont-code-block',
   hasValue: true,
   override_config: {},
   config: {
@@ -17,7 +17,7 @@ export default {
     isReadOnly: false,
     isDisabled: false,
     isMultiple: false,
-    placeholder: $t('form.placeholder.pleaseinput', { target: $t('page.script') }),
+    placeholder: $t('form.placeholder.pleaseinput', { target: $t('page.code') }),
     codeMode: 'javascript',
     componentTopLeftTip: 'javascript'
   },

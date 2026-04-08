@@ -352,7 +352,7 @@
             </TsFormItem>
           </template>
           <template v-else-if="propertyLocal.handler === 'formexpression'" v-slot:config>
-            <TsFormItem :label="$t('term.cmdb.expression')">
+            <TsFormItem :label="$t('page.datachange')">
               <ExpressionSetting
                 ref="formitem_expression"
                 :formItemList="formItemList"
@@ -577,7 +577,7 @@ export default {
             { text: this.$t('page.time'), value: 'formtime' },
             { text: this.$t('term.framework.userselect'), value: 'formuserselect' },
             { text: this.$t('page.uploadattachment'), value: 'formupload' },
-            { text: this.$t('term.cmdb.expression'), value: 'formexpression' }
+            { text: this.$t('page.datachange'), value: 'formexpression' }
           ],
           validateList: ['required'],
           onChange: (val) => {
