@@ -249,7 +249,7 @@ export default {
         appSystemId: this.inspectionData.id,
         envList: envList
       };
-      this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => { //
+      this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => {
         this.loadingShow = true;
         if (res.Status == 'OK') {
           this.openResultDialog(res.Return.tbodyList);
