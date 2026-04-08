@@ -12,13 +12,13 @@
         "
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem :label="$t('page.scriptlanguage')" labelPosition="top">
+    <TsFormItem :label="$t('page.codeblocklanguage')" labelPosition="top">
       <TsFormSelect
         :value="config.codeMode"
         :dataList="codeModeList"
         transfer
         border="border"
-        :desc="`${$t('page.scriptlanguage')}${$t('page.example')}：javascript、python`"
+        :desc="`${$t('page.codeblocklanguage')}${$t('page.example')}：javascript、python`"
         @on-change="(val)=> {
           setConfig('codeMode', val);
           setConfig('componentTopLeftTip', val);
