@@ -85,6 +85,10 @@ export default {
       // 应用id
       type: Number,
       default: null
+    },
+    viewName: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -168,7 +172,7 @@ export default {
       this.$set(this.dialogSetting, 'isShow', true);
       this.loadingShow = true;
       this.$api.inspect.applicationInspect
-        .getInspectAppModuleEnvList({ appSystemId: this.appSystemId, appModuleId: this.inspectionData.id })
+        .getInspectAppModuleEnvList({ appSystemId: this.appSystemId, appModuleId: this.inspectionData.id, viewName: this.viewName || null })
         .then(res => {
           if (res && res.Status == 'OK') {
             this.envList = res.Return;
@@ -233,10 +237,11 @@ export default {
       let envList = this.getEnvList();
       const param = {
         appSystemId: this.appSystemId,
-        envList: envList
+        envList: envList,
+        viewName: this.viewName || null
       };
+      this.loadingShow = true;
       this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => {
-        this.loadingShow = true;
         if (res.Status == 'OK') {
           this.openResultDialog(res.Return.tbodyList);
         }
@@ -247,7 +252,7 @@ export default {
     openResultDialog(list) {
       if (list && list.length) {
         this.resultList = list;
-        if (list.length == 1 && list[0].jobId) {
+        if (list.length == 1 && list[0].jobId && Number(list[0].isCreateJobSuccess) === 1) {
           this.$router.push({
             path: '/job-detail',
             query: {id: list[0].jobId}

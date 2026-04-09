@@ -78,6 +78,10 @@ export default {
     inspectionData: {
       type: Object,
       default: () => ({})
+    },
+    viewName: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -181,7 +185,8 @@ export default {
       this.checkboxModel = [];
       this.loadingShow = true;
       let params = {
-        appSystemId: this.inspectionData.id
+        appSystemId: this.inspectionData.id,
+        viewName: this.viewName || null
       };
       this.$api.inspect.applicationInspect.getInspectionList(params).then((res) => {
         if (res && res.Status == 'OK') {
@@ -247,10 +252,11 @@ export default {
       let envList = this.getEnvList();
       const param = {
         appSystemId: this.inspectionData.id,
-        envList: envList
+        envList: envList,
+        viewName: this.viewName || null
       };
+      this.loadingShow = true;
       this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => {
-        this.loadingShow = true;
         if (res.Status == 'OK') {
           this.openResultDialog(res.Return.tbodyList);
         }
@@ -261,7 +267,7 @@ export default {
     openResultDialog(list) {
       if (list && list.length) {
         this.resultList = list;
-        if (list.length == 1 && list[0].jobId) {
+        if (list.length == 1 && list[0].jobId && Number(list[0].isCreateJobSuccess) === 1) {
           this.$router.push({
             path: '/job-detail',
             query: {id: list[0].jobId}
