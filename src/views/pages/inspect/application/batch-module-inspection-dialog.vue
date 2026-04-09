@@ -36,7 +36,13 @@
       <template v-slot:footer>
         <div>
           <Button :ghost="true" @click="closeDialog">{{ $t('page.cancel') }}</Button>
-          <Button v-if="hasAssets" type="primary" @click="okDialog">{{ $t('page.continue') }}</Button>
+          <Button
+            v-if="hasAssets"
+            type="primary"
+            :loading="continueLoading"
+            :disabled="continueLoading"
+            @click="okDialog"
+          >{{ $t('page.continue') }}</Button>
         </div>
       </template>
     </TsDialog>
@@ -59,7 +65,13 @@
       <template v-slot:footer>
         <div>
           <Button :ghost="true" @click="closeCompobDialog">{{ $t('page.cancel') }}</Button>
-          <Button v-if="hasContinueBtn" type="primary" @click="confirm">{{ $t('page.continue') }}</Button>
+          <Button
+            v-if="hasContinueBtn"
+            type="primary"
+            :loading="compobContinueLoading"
+            :disabled="compobContinueLoading"
+            @click="confirm"
+          >{{ $t('page.continue') }}</Button>
         </div>
       </template>
     </TsDialog>
@@ -113,7 +125,9 @@ export default {
       isShowInspectTool: false,
       toolName: '',
       loadingShow: false,
-      hasContinueBtn: false
+      hasContinueBtn: false,
+      continueLoading: false,
+      compobContinueLoading: false
     };
   },
   beforeCreate() {},
@@ -240,6 +254,7 @@ export default {
         envList: envList,
         viewName: this.viewName || null
       };
+      this.compobContinueLoading = true;
       this.loadingShow = true;
       this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => {
         if (res.Status == 'OK') {
@@ -247,6 +262,7 @@ export default {
         }
       }).finally(() => {
         this.loadingShow = false;
+        this.compobContinueLoading = false;
       });
     },
     openResultDialog(list) {
@@ -267,6 +283,8 @@ export default {
     closeResultDialog() {
       this.isShowResultDialog = false;
       this.loadingShow = false;
+      this.continueLoading = false;
+      this.compobContinueLoading = false;
       this.dialogSetting.isShow = false;
       this.isShowCompobList = false;
       this.closeDialog();
@@ -280,6 +298,7 @@ export default {
       if (!this.isValid()) {
         return false;
       }
+      this.continueLoading = true;
       this.loadingShow = true;
       for (let i = 0; i < envList.length; i++) {
         if (envList[i] && envList[i].ciVoList.length > 0 && (envList[i].value && envList[i].value.length > 0)) {
@@ -315,6 +334,7 @@ export default {
                 });
                 if (ajaxNumber && flag && ajaxNumber == flag) {
                   this.loadingShow = false;
+                  this.continueLoading = false;
                 }
               });
             }
@@ -327,6 +347,7 @@ export default {
         this.confirm();
       } else {
         this.isShowCompobList = true;
+        this.continueLoading = false;
         if (this.$utils.isEmpty(this.compobList)) {
           this.hasContinueBtn = false; // 一个配置都没有，不显示继续按钮
         } else {
@@ -337,8 +358,11 @@ export default {
     closeCompobDialog() {
       this.noCompobIdList = [];
       this.isShowCompobList = false;
+      this.compobContinueLoading = false;
     },
     closeDialog() {
+      this.continueLoading = false;
+      this.compobContinueLoading = false;
       this.$emit('close');
     },
     handleContinue() {
