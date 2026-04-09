@@ -2,10 +2,10 @@ import { $t } from '@/resources/init.js';
 
 export default {
   handler: 'formexpression',
-  label: $t('term.cmdb.expression'),
+  label: $t('page.datachange'),
   type: 'form',
   category: 'basic',
-  icon: 'tsfont-json',
+  icon: 'tsfont-data-transformation',
   override_config: {},
   hasValue: false,
   config: {

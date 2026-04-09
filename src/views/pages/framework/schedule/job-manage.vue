@@ -18,15 +18,7 @@
         </div>
       </template>
       <template slot="topRight">
-        <TsRow>
-          <Col :span="6"><TsFormSelect v-bind="handlerSelectSetting"></TsFormSelect></Col>
-          <Col :span="18">
-            <InputSearcher
-              v-model="searchParam.keyword"
-              @change="searchJob(1)"
-            ></InputSearcher>
-          </Col>
-        </TsRow>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="searchJob(1)"></CombineSearcher>
       </template>
       <div slot="content">
         <TsTable
@@ -135,10 +127,9 @@ export default {
   components: {
     JobAudit: () => import('./job-audit-dialog.vue'),
     schedulerMemory: () => import('./job-memory.vue'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
     JobEdit: () => import('./job-edit-dialog.vue')
   },
@@ -146,7 +137,6 @@ export default {
   },
   props: [''],
   data() {
-    let _this = this;
     return {
       isCopy: false,
       currentJobUuid: null,
@@ -158,6 +148,7 @@ export default {
       tableheight: 0,
       auditTableHeight: 0,
       pageSize: 20,
+      searchVal: {},
       theadList: [
         {
           title: this.$t('page.name'),
@@ -202,26 +193,24 @@ export default {
       clientHeight: document.documentElement.clientHeight, //窗口高度
       searchParam: {
         currentPage: 1,
-        pageSize: this.pageSize,
-        keyword: null,
-        handler: null
+        pageSize: this.pageSize
       },
-      handlerSelectSetting: {
-        name: 'handler',
+      searchConfig: {
         search: true,
-        url: '/api/rest/job/class/search',
-        rootName: 'tbodyList', //通过url来获取数据的rootName
-        valueName: 'className', //option渲染值
-        textName: 'name', //text渲染值
-        placeholder: this.$t('term.autoexec.jobmodule'),
-        onChange: function(value) {
-          if (value != '') {
-            _this.searchParam.handler = value;
-          } else {
-            delete _this.searchParam.handler;
+        placeholder: this.$t('page.insert') + this.$t('page.name'),
+        searchList: [
+          {
+            type: 'select',
+            name: 'handler',
+            label: this.$t('term.autoexec.jobmodule'),
+            search: true,
+            url: '/api/rest/job/class/search',
+            rootName: 'tbodyList',
+            valueName: 'className',
+            textName: 'name',
+            transfer: true
           }
-          _this.searchJob(1);
-        }
+        ]
       },
       propData: []
     };
@@ -270,6 +259,8 @@ export default {
       } else {
         _this.searchParam.pageSize = this.pageSize;
       }
+      _this.searchParam.keyword = _this.searchVal.keyword || _this.searchVal.searchWord || null;
+      _this.searchParam.handler = _this.searchVal.handler || null;
       this.$api.framework.schedule.search(_this.searchParam).then(res => {
         if (res.Status == 'OK') {
           _this.loadingShow = false;

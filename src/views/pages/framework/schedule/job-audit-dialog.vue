@@ -131,7 +131,7 @@ export default {
       ],
       dialogConfig: {
         type: 'modal',
-        title: this.$t('page.log'),
+        title: '执行记录',
         hasFooter: false,
         maskClose: true,
         isShow: true,
