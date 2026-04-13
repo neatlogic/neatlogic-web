@@ -208,8 +208,6 @@ export default {
   created() {
     if (this.$route.query.tabValue) {
       this.tabValue = this.$route.query.tabValue;
-    } else if (this.$route.name === 'baseline-manage') {
-      this.tabValue = 'configBaseline';
     }
     if (this.$route.query.scheduleId) {
       this.scheduleId = Number(this.$route.query.scheduleId);
