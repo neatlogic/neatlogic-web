@@ -139,9 +139,9 @@ let routerArr = [
     meta: {
       type: 'resourceCenter',
       title: $t('router.cmdb.applicationlist'),
-      ismenu: false,
+      ismenu: true,
       icon: 'tsfont-app',
-      authority: ['AUTOEXEC_BASE', 'DEPLOY_BASE', 'INSPECT_BASE', 'DR_BASE'] //只有cmdb模块权限不显示
+      authority: 'RESOURCECENTER_APP_VIEW'
     }
   },
   {
@@ -150,10 +150,10 @@ let routerArr = [
     component: assetManage,
     meta: {
       title: $t('router.cmdb.assetlist'),
-      ismenu: false,
+      ismenu: true,
       type: 'resourceCenter',
       icon: 'tsfont-ip-list',
-      authority: ['AUTOEXEC_BASE', 'DEPLOY_BASE', 'INSPECT_BASE', 'DR_BASE'] //只有cmdb模块权限不显示
+      authority: 'RESOURCECENTER_RESOURCE_VIEW'
     }
   },
   {
@@ -163,7 +163,7 @@ let routerArr = [
     meta: {
       type: 'resourceCenter',
       title: $t('router.cmdb.tagmanage'),
-      ismenu: false,
+      ismenu: true,
       icon: 'tsfont-label',
       authority: 'RESOURCECENTER_TAG_MODIFY'
     }
@@ -175,7 +175,7 @@ let routerArr = [
     meta: {
       type: 'resourceCenter',
       title: $t('router.cmdb.accountmanage'),
-      ismenu: false,
+      ismenu: true,
       icon: 'tsfont-taskperson',
       authority: 'RESOURCECENTER_ACCOUNT_MODIFY'
     }
@@ -186,7 +186,7 @@ let routerArr = [
     component: resourceEntityManage,
     meta: {
       title: $t('router.cmdb.viewmanage'),
-      ismenu: false,
+      ismenu: true,
       type: 'resourceCenter',
       icon: 'tsfont-setting',
       authority: 'RESOURCECENTER_MODIFY'
