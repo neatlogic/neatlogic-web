@@ -23,11 +23,11 @@
 <script>
 import Vue from 'vue';
 import ViewUI from 'neatlogic-ui/iview/index.js';
+import TsFormItem from '@/resources/plugins/TsForm/TsFormItem';
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 import TsFormCheckbox from '@/resources/plugins/TsForm/TsFormCheckbox';
 import TsFormRadio from '@/resources/plugins/TsForm/TsFormRadio';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
-import TsFormSwitch from '@/resources/plugins/TsForm/TsFormSwitch';
 import TsTable from '@/resources/components/TsTable/TsTable.vue';
 import TsFormDatePicker from '@/resources/plugins/TsForm/TsFormDatePicker';
 
@@ -79,11 +79,11 @@ export default {
     async init() {
       this.templateData.components = {
         ViewUI,
+        TsFormItem,
         TsFormInput,
         TsFormCheckbox,
         TsFormRadio,
         TsFormSelect,
-        TsFormSwitch,
         TsFormDatePicker,
         TsTable
       };
@@ -120,6 +120,15 @@ export default {
             }
             if (config.data) {
               this.templateData.data = config.data;
+            }
+            if (config.watch) {
+              this.templateData.watch = config.watch;
+            }
+            if (config.created) {
+              this.templateData.created = config.created;
+            }
+            if (config.mounted) {
+              this.templateData.mounted = config.mounted;
             }
             //加载完毕调用resize
             this.templateData.mounted = () => {
