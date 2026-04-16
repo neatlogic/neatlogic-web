@@ -2,7 +2,6 @@
   <div
     class="form-li"
     data-type="combine-searcher"
-    style="display: inline-block;"
     :style="containerStyle"
   >
     <div v-if="readonly">
@@ -48,7 +47,7 @@
           ref="dropdownContain"
           trigger="custom"
           :visible="isVisible"
-          :style="{width: containerWidth}"
+          style="width: 100%"
           :transfer="transfer"
           transferClassName="combinesearcher-drop"
         >
@@ -146,6 +145,7 @@
   </div> 
 </template>
 <script>
+import debounce from 'lodash/debounce';
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 import TsForm from '@/resources/plugins/TsForm/TsForm.vue';
 import { directive as ClickOutside } from '../../directives/v-click-outside-x';
@@ -269,13 +269,11 @@ export default {
   beforeMount() {},
   mounted() {
     this.initWidth();
-    this.resizeHandler = this.initWidth.bind(this);
+    this.resizeHandler = debounce(this.initWidth, 200);
     window.addEventListener('resize', this.resizeHandler);
   },
   beforeUpdate() {},
-  updated() {
-    this.initWidth();
-  },
+  updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {
@@ -303,11 +301,20 @@ export default {
     },
     initWidth() {
       if (this.width !== null && this.width !== undefined && this.width !== '') {
-        this.containerWidth = typeof this.width === 'number' ? this.width + 'px' : this.width;
-        this.containerStyle.width = this.containerWidth;
+        const containerWidth = typeof this.width === 'number' ? this.width + 'px' : this.width;
+        if (containerWidth !== this.containerWidth) {
+          this.containerStyle = {
+            ...(this.containerStyle || {}),
+            width: containerWidth,
+            display: 'inline-block'
+          };
+          this.containerWidth = containerWidth;
+        }
       } else if (this.$el) {
-        this.containerWidth = this.$el.getBoundingClientRect().width + 'px';
-        this.containerStyle = {};
+        const containerWidth = Math.round(this.$el.getBoundingClientRect().width) + 'px';
+        if (containerWidth !== this.containerWidth) {
+          this.containerWidth = containerWidth;
+        }
       }
     },
     onClickOutside(event) {
