@@ -307,7 +307,7 @@ export default {
         this.containerStyle.width = this.containerWidth;
       } else if (this.$el) {
         this.containerWidth = this.$el.getBoundingClientRect().width + 'px';
-        this.containerStyle.width = '100%';
+        this.containerStyle = {};
       }
     },
     onClickOutside(event) {
