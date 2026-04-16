@@ -1,5 +1,10 @@
 <template>
-  <div class="form-li" data-type="combine-searcher">
+  <div
+    class="form-li"
+    data-type="combine-searcher"
+    style="display: inline-block;"
+    :style="containerStyle"
+  >
     <div v-if="readonly">
       <span v-if="(totalText && Object.keys(totalText).length) ||$slots.textItem" class="tag-item" data-type="combine-searcher-readonly-box">
         <span
@@ -249,6 +254,7 @@ export default {
         border: 'none'
       },
       containerWidth: '200px',
+      containerStyle: {},
       searchValue: {}, //下拉的所有值数据，{key1:value1,key2:value2}
       textConfig: {}, //下拉的所有text数据，{key1:text1,key2:text2}
       inputWidth: '100%',
@@ -298,8 +304,10 @@ export default {
     initWidth() {
       if (this.width !== null && this.width !== undefined && this.width !== '') {
         this.containerWidth = typeof this.width === 'number' ? this.width + 'px' : this.width;
+        this.containerStyle.width = this.containerWidth;
       } else if (this.$el) {
         this.containerWidth = this.$el.getBoundingClientRect().width + 'px';
+        this.containerStyle = {};
       }
     },
     onClickOutside(event) {
