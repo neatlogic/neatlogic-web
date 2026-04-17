@@ -1099,5 +1099,6 @@
   "send": "send",
   "ignoreall": "Ignore all",
   "codeblocklanguage": "Code Block Language",
-  "os": "operating system"
+  "os": "operating system",
+  "mq": "message queue"
 }

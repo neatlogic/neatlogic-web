@@ -2,34 +2,48 @@
   <TsDialog v-bind="dialogConfig" @on-close="close()">
     <template v-slot>
       <div>
+        <TsFormItem v-if="!topicData || !topicData.isEmbed" :label="$t('page.uniquekey')" :required="true">
+          <TsFormInput
+            v-model="topicData.name"
+            border="border"
+            :validateList="['required']"
+          ></TsFormInput>
+        </TsFormItem>
+        <TsFormItem v-if="!topicData || !topicData.isEmbed" :label="$t('page.name')" :required="true">
+          <TsFormInput
+            v-model="topicData.label"
+            border="border"
+            :validateList="['required']"
+          ></TsFormInput>
+        </TsFormItem>
+        <TsFormItem v-if="!topicData || !topicData.isEmbed" :label="$t('page.mq')" :required="true">
+          <TsFormRadio
+            v-if="handlerList && handlerList.length > 0"
+            :readonly="!!name"
+            :value="topicData.handler"
+            :dataList="handlerList"
+            :validateList="['required']"
+            @on-change="
+              name => {
+                $set(topicData, 'handler', name);
+              }
+            "
+          ></TsFormRadio>
+          <span v-else class="text-grey">没有可用的消息队列</span>
+        </TsFormItem>
+        <TsFormItem :label="$t('term.report.isactive')">
+          <TsFormSwitch
+            v-model="topicData.isActive"
+            :trueValue="1"
+            :falseValue="0"
+          ></TsFormSwitch>
+        </TsFormItem>
         <component
           :is="config[topicData.name]"
           v-if="topicData && topicData.isEmbed && config[topicData.name]"
           :config="topicData.config"
           @setConfig="setConfig"
         ></component>
-        <TsForm
-          v-else-if="!topicData || !topicData.isEmbed"
-          ref="formConfig"
-          v-model="topicData"
-          :item-list="formConfig"
-        >
-          <template v-slot:handler>
-            <TsFormRadio
-              v-if="handlerList && handlerList.length > 0"
-              :readonly="!!name"
-              :value="topicData.handler"
-              :dataList="handlerList"
-              :validateList="['required']"
-              @on-change="
-                name => {
-                  $set(topicData, 'handler', name);
-                }
-              "
-            ></TsFormRadio>
-            <span v-else class="text-grey">没有可用的消息队列</span>
-          </template>
-        </TsForm>
       </div>
     </template>
     <template v-slot:footer>
@@ -43,8 +57,10 @@ import config from '@/views/pages/framework/mq/topic/config/index.js';
 export default {
   name: '',
   components: {
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
-    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     name: { type: String }
@@ -55,28 +71,6 @@ export default {
       configLocal: null,
       handlerList: [],
       topicData: this.topic ? this.$utils.deepClone(this.topic) : { isActive: 1 },
-      formConfig: {
-        name: {
-          type: 'text',
-          label: this.$t('page.uniquekey'),
-          validateList: ['required'],
-          maxlength: 50
-        },
-        label: {
-          type: 'text',
-          label: this.$t('page.name'),
-          validateList: ['required'],
-          maxlength: 50
-        },
-        handler: {
-          type: 'slot',
-          label: '消息队列'
-        },
-        isActive: {
-          type: 'switch',
-          label: this.$t('term.report.isactive')
-        }
-      },
       dialogConfig: {
         title: this.$t('dialog.title.edittarget', { target: this.$t('page.theme') }),
         type: 'modal',

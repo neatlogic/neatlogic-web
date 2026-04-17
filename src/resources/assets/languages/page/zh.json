@@ -1101,5 +1101,6 @@
   "send": "发送",
   "ignoreall": "忽略所有",
   "codeblocklanguage": "代码块语言",
-  "os": "操作系统"
+  "os": "操作系统",
+  "mq": "消息队列"
 }
