@@ -354,7 +354,6 @@
   "baseline": "Baseline",
   "baselinetemplateauthdesc": "Unauthorized users can only view parameters in this hierarchy",
   "baselinetemplateparaminherittip": "Parent hierarchy parameters are automatically inherited by the current hierarchy, and values can be overridden in the current hierarchy.",
-  "baselinetemplatereadonlytip": "Without the \"Baseline Management Permissions\", hierarchy description and edit authority are read-only.",
   "displaysetting": "Display Setting",
   "customtemplate": "Custom Template",
   "updatetime": "Update time",
@@ -1099,5 +1098,6 @@
   "manage": "management",
   "send": "send",
   "ignoreall": "Ignore all",
-  "codeblocklanguage": "Code Block Language"
+  "codeblocklanguage": "Code Block Language",
+  "os": "operating system"
 }
