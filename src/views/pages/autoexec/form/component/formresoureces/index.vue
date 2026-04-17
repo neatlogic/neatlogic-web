@@ -3,7 +3,7 @@
     <div v-if="!readonly && !disabled" class="pb-sm">
       <Button icon="tsfont tsfont-plus" @click="addResoureces">{{ $t('term.autoexec.executetarget') }}</Button>
     </div>
-    <div v-if="value" class="view-detail">
+    <div v-if="value" class="view-detail" data-type="form-resources">
       <!-- 过滤器 -->
       <template v-if="!$utils.isEmpty(value.filter)">
         <FilterSearch :defaultValue="value.filter" :readonly="true" class="filter-text"></FilterSearch>
@@ -17,6 +17,7 @@
           class="item border-color bg-op overflow tag-item-text"
           :class="readonlyTextHighlightClass"
           :title="targetText(item)"
+          data-type="execution-target"
         >{{ targetText(item) }}</span>
         <span v-if="value.inputNodeList.length>showNumber" class="text-tip-active detail-btn" @click="lookDetail()">
           ...{{ $t('page.viewdetails') }}
@@ -27,6 +28,7 @@
         <span
           v-for="(item,index) in getShowList(value.selectNodeList)"
           :key="index"
+          data-type="execution-target"
           class="item border-color bg-op overflow tag-item-text"
           :class="readonlyTextHighlightClass"
           :title="targetText(item)"

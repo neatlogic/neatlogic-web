@@ -6,6 +6,7 @@ export const config = {
     job: $t('router.autoexec.job'), 
     quickService: $t('router.autoexec.quickService'), 
     tool: $t('router.autoexec.tool'), 
-    config: $t('router.autoexec.config') 
+    config: $t('router.autoexec.config'),
+    resourceCenter: $t('router.cmdb.resourcecenter')
   } 
 };

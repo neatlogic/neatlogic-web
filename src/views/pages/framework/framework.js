@@ -1,3 +1,6 @@
+//公共的全局组件、样式等 由于路由中可能有自定义模块，因此需要放第一位加载
+import '@/resources/base.js';
+
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Framework from './framework.vue';
@@ -11,9 +14,8 @@ import frameworkUtils from '@/views/pages/framework/matrix/utils/utils';
 import LocalStore from '@/resources/assets/js/localStore.js';
 import State from '@/resources/assets/js/state.js';
 import commonRouters from '@/views/pages/common/router.js';
+import { buildMergedRoutes } from '@/resources/import/router-config.js';
 
-//公共的全局组件、样式等
-import '@/resources/base.js';
 import { initRouter, initI18n } from '@/resources/init.js';
 
 Vue.use(VueRouter);
@@ -22,7 +24,7 @@ Vue.use(CompareUtil); //必须要在use router之后执行
 
 import { config } from './config.js';
 MODULEID = config.module;
-MENULIST = [...commonRouters, ...routers];
+MENULIST = buildMergedRoutes(MODULEID, routers, commonRouters);
 MENUTYPE = config.menuType;
 
 let router = initRouter(VueRouter, store); //路由拦截处理

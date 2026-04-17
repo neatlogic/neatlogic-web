@@ -1,7 +1,7 @@
 <template>
-  <div class="form-li">
+  <div class="form-li" data-type="combine-searcher">
     <div v-if="readonly">
-      <span v-if="(totalText && Object.keys(totalText).length) ||$slots.textItem" class="tag-item">
+      <span v-if="(totalText && Object.keys(totalText).length) ||$slots.textItem" class="tag-item" data-type="combine-searcher-readonly-box">
         <span
           v-for="(text,tindex) in getShowTotalText(totalText)"
           :key="tindex"

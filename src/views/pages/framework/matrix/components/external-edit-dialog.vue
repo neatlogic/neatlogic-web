@@ -292,7 +292,7 @@ export default {
   .editForm {
     .action-list {
       position: absolute;
-      left: 75%;
+      left: 78%;
       top: 0;
       line-height: 32px;
       .action-item{

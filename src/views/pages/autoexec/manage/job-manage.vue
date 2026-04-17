@@ -246,7 +246,7 @@ export default {
             url: '/api/rest/autoexec/job/source/list'
           },
           {
-            type: 'radio',
+            type: 'select',
             name: 'hasParent',
             label: this.$t('term.autoexec.jobcategory'),
             dataList: [
@@ -259,8 +259,7 @@ export default {
                 value: 'true'
               }
             ],
-            transfer: true,
-            allowToggle: true
+            transfer: true
           },
           {
             type: 'userselect',
@@ -280,7 +279,7 @@ export default {
       editType: 'planStartTime',
       editDialog: false,
       jobConfig: null,
-      searchController: null,
+      abortController: null,
       defaultTbodyList: [],
       expandIdList: [] // 展开ID列表
     };
@@ -410,12 +409,9 @@ export default {
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
-      // 取消上一个请求
-      if (this.searchController) {
-        this.searchController.abort();
-      }
       // 创建新的 controller
-      this.searchController = new AbortController();
+      const abortController = new AbortController();
+      this.abortController = abortController;
 
       this.jobData = {};
       const param = { ...this.searchParam, ...this.searchValue, ...this.filterParams || {} };
@@ -425,7 +421,7 @@ export default {
 
       try {
         const res = await this.$api.autoexec.job.searchJobList(param, {
-          signal: this.searchController.signal
+          signal: abortController.signal
         });
         const { tbodyList = [], ...restParams } = res.Return || {};
 
@@ -434,38 +430,34 @@ export default {
         // 刷新列表的时候，展开的数据默认保持不变
         const { keyword = '', hasParent = '' } = this.searchValue || {};
         const keywordLower = (keyword || '').toLowerCase();
-        let resultList = [];
-        tbodyList.forEach((row, index) => {
-          if (!this.$utils.isEmpty(row)) {
-            resultList.push(row);
-          }
-          if (keyword) {
-            // 子作业匹配有关键词，需要展开子作业
-            const findMatchKeywordList = (row.children || []).filter(item => {
-              const nameLowerCase = (item.name || '').toLowerCase();
-              return nameLowerCase.includes(keywordLower);
-            });
-            if (findMatchKeywordList.length > 0) {
-              const findChildItem = resultList.find((v) => v.id === row.id);
-              if (findChildItem) {
-                findChildItem['showChildren'] = true;
-              }
-              resultList.splice(index + 1, 0, ...(row.children || []));
-            }
-          } else {
-            if (row.id && this.expandIdList.includes(row.id)) {
-              const findItem = resultList.find((v) => v.id === row.id);
-              if (findItem) {
-                findItem['showChildren'] = true;
-              }
-              resultList.splice(index + 1, 0, ...(row.children || []));
-            }
-          }
-        });
         const keywordList = keyword ? [keyword] : [];
-
         const isParentMode = hasParent === 'false';
         const isSubMode = hasParent === 'true';
+        let resultList = [];
+        if (tbodyList.length == 0) {
+          return false;
+        }
+        tbodyList.forEach((tbodyItem) => {
+          const children = tbodyItem.children || [];
+          const id = tbodyItem.id || '';
+          const parentItem = {
+            ...tbodyItem,
+            showChildren: false
+          };
+
+          resultList.push(parentItem);
+          
+          // 是否有子作业命中关键字
+          const hasMatchChild = keywordLower && children.some(child => (child.name || '').toLowerCase().includes(keywordLower));
+
+          // 是否需要展开子作业
+          const shouldExpand = isSubMode || (hasMatchChild && this.$utils.isEmpty(hasParent)) || (id && this.expandIdList.includes(id));
+          
+          if (shouldExpand && children.length) {
+            parentItem.showChildren = true;
+            resultList.push(...children);
+          }
+        });
 
         let targetList = resultList.filter(item => item.name);
 
@@ -508,8 +500,8 @@ export default {
       }, 30 * 1000);
     },
     stopSearchJob() {
-      if (this.searchController) {
-        this.searchController.abort();
+      if (this.abortController) {
+        this.abortController.abort();
       }
       if (this.timmer) {
         this.timmer.clear();

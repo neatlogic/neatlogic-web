@@ -42,7 +42,7 @@ function getTableSizeByUuid(editor, uuid) {
 function getColumnWidthsFromTableNode(tableNode) {
   // 获取列宽
   const map = TableMap.get(tableNode);
-  const colWidths = new Array(map.width);
+  const colWidths = new Array(map.width) || [];
 
   const firstRow = tableNode.firstChild;
   if (!firstRow) return colWidths;
@@ -55,7 +55,7 @@ function getColumnWidthsFromTableNode(tableNode) {
 
     // 你的前提：widths 一定存在，且长度 = colspan
     for (let i = 0; i < colspan; i++) {
-      colWidths[colIndex + i] = widths[i];
+      colWidths[colIndex + i] = widths?.[i] || 0;
     }
 
     colIndex += colspan;

@@ -129,7 +129,7 @@
                 :size="26"
                 class="uploading"
               >
-                <span class="tips">{{ Math.round(item.Status) }}</span>
+                <span class="tips">{{ percent(Math.round(item.Status)) }}</span>
               </i-circle>
             </div>
             <span v-if="item.removable" class="remove-file">
@@ -438,6 +438,15 @@ export default {
             return this.$t('message.supportuploadingsinglefileswithsuffixtarget', {target: formatList.join('、.')});
           }
         }
+      };
+    },
+    percent() {
+      return (val) => {
+        let num = val;
+        if (num == '100') {
+          num = num - 1;
+        }
+        return num;
       };
     }
   },

@@ -79,6 +79,7 @@
     "neatlogic-ui": "^1.0.7",
     "particles.vue": "^2.42.2",
     "prosemirror-model": "^1.25.4",
+    "prosemirror-schema-basic": "^1.2.4",
     "prosemirror-state": "^1.4.3",
     "prosemirror-tables": "^1.8.3",
     "prosemirror-transform": "^1.11.0",

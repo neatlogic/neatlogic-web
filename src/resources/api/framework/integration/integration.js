@@ -58,6 +58,9 @@ const integration = {
   getIntegrationAuditDetail(params) {
     // 查看集成调用记录内容
     return axios.post('/api/rest/integration/audit/detail/get', params);
+  },
+  saveIntegrationAuthority(params) {
+    return axios.post('/api/rest/integration/auth/save', params || {});
   }
 };
 

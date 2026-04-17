@@ -127,6 +127,10 @@ export default {
             });
           }
         }
+        // 处理下拉组件表格依赖
+        if (extra?.config?.dataSource && extra?.config?.dataSource === 'formtableinputer' && extra.config.formtableinputerUuid) {
+          map[extra.uuid].push(extra.config.formtableinputerUuid);
+        }
         //内嵌表格
         const {dataConfig = []} = extra.config || {};
         if (dataConfig.length > 0) {

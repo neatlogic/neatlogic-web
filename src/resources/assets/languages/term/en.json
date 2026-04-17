@@ -2190,7 +2190,8 @@
     "jobrecord": "Publish homework records",
     "notapplyallexecuteauth": "You do not have the execution permission for the current application",
     "batchdeployauthtip": "The current user lacks the 'Batch Publishing Management Permission' permission. Please contact the administrator",
-    "defaultversion": "Default version number"
+    "defaultversion": "Default version number",
+    "immediateexecution": "execute now"
   },
   "inspect": {
     "alarmprompt": "Alarm Prompt",
@@ -2968,5 +2969,17 @@
   },
   "infromant": {
     "report": "analysis report"
+  },
+  "ai": {
+    "baseurl": "base address",
+    "temperature": "temperature",
+    "modelsetting": "Model Settings",
+    "session": "conversation",
+    "apitype": "interface type",
+    "issystemagent": "Is it a system intelligent agent",
+    "agent": "agent",
+    "systemprompt": "system prompt",
+    "thinking": "deep thinking",
+    "customparam": "Additional configuration"
   }
 }

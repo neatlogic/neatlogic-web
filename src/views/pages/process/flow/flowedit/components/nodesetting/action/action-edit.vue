@@ -188,7 +188,6 @@ export default {
     TsForm,
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
     FormTagSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/form-tag-setting.vue') // 表单扩展数据标签
   },

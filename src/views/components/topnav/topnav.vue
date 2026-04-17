@@ -5,12 +5,13 @@
         <!-- <h1 class="topnav-logo"></h1> -->
         <img
           class="topnav-newlogo"
-          :src="setLogo"
+          :src="getNavigationLogo"
         />
       </span>
       <TopnavMenu v-if="!isAtNaviPage" />
     </div>
     <div v-if="!$store.state.isPwdRedirected" class="topnav-right-container">
+      <component :is="AiChatNav" v-if="AiChatNav" class="pr-nm"></component>
       <TopnavExportManage class="pr-nm"></TopnavExportManage>
       <TopnavHelp v-if="!isAtNaviPage" class="pr-nm"></TopnavHelp>
       <TopnavMessage class="pr-nm" />
@@ -20,11 +21,11 @@
 </template>
 
 <script>
-import {store} from '@/views/pages/framework/theme/state.js';
-import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
+import ComponentManager from '@/resources/import/component-manager.js';
 import TopnavUser from './topnav-user.vue';
 import TopnavMessage from './topnav-message/topnav-message';
-import logoConfig from '@/resources/import/logo-manager.js';
+import NavigationLogoMixin from '@/views/components/topnav/navigation-logo-mixin.js';
+
 export default {
   name: 'TopNav',
   components: {
@@ -34,10 +35,15 @@ export default {
     TopnavHelp: () => import('./topnav-help.vue'),
     TopnavExportManage: () => import('./topnav-export-manage.vue')
   },
+  mixins: [NavigationLogoMixin],
   data() {
     return {
-      home: HOME
+      home: HOME,
+      AiChatNav: null
     };
+  },
+  async created() {
+    this.AiChatNav = ComponentManager.getVueTemplate('ai-chat-nav');
   },
   methods: {
     toHomePage() {
@@ -58,22 +64,6 @@ export default {
     },
     defaultModuleId() {
       return this.$store.getters.defaultModule.moduleId;
-    },
-    setLogo() {
-      // 首先尝试使用用户上传的logo，若无则自动切换至默认前端定制包的logo，最后若两者均不可用，则采用项目本地预设的logo
-      let src = '';
-      store.logo;//此句不能删，用于激活cache
-      let logo = ThemeUtils.getValueByType('logo');
-      let themeClass = localStorage.getItem('themeClass') || 'theme-default';
-      let {logoWhiteIcon = '', logoDarkIcon = ''} = logoConfig || {};
-      if (logo && typeof logo == 'number') { //如果类型是数字代表是上传的图片
-        src = HOME + '/api/binary/image/download?id=' + logo;
-      } else if (themeClass == 'theme-default') {
-        src = logoWhiteIcon || require('@/resources/assets/images/logo_big_white.png');
-      } else if (themeClass == 'theme-dark') {
-        src = logoDarkIcon || require('@/resources/assets/images/logo_big_dark.png');
-      }
-      return src;
     }
   }
 };

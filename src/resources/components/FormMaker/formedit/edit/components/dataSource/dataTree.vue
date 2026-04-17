@@ -150,7 +150,7 @@ export default {
     //     let path = this.dataSourceJson.type == 'external' ? '/matrix-external-edit' : '/matrix-edit';
     //     window.open(HOME + '/framework.html#' + path + '?uuid=' + this.dataSourceJson.uuid + '&name=' + this.dataSourceJson.name + '&type=' + this.dataSourceJson.type, '_blank');
     //   } else {
-    //     window.open(HOME + '/framework.html#/matrix-overview?atrixFormDialogShow=true', '_blank');
+    //     window.open(HOME + '/framework.html#/matrix-overview?matrixFormDialogShow=true', '_blank');
     //   }
     // },
     refreshDataSource() {

@@ -4,7 +4,7 @@
       <a :href="`${home}/${defaultModuleId}.html`" class="homeLink" @click.prevent="toHomePage()">
         <img
           class="topnav-newlogo"
-          :src="setLogo"
+          :src="getNavigationLogo"
         />
       </a>
       <span class="text-href h3 pl-lg" @click="toDocumentonlinePage()">{{ $t('term.documentonline.helpcenter') }}</span>
@@ -23,14 +23,14 @@
   </div>
 </template>
 <script>
-import {store} from '@/views/pages/framework/theme/state.js';
-import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
+import NavigationLogoMixin from '@/views/components/topnav/navigation-logo-mixin.js';
 export default {
   name: '',
   components: {
     TopnavUser: () => import('@/views/components/topnav/topnav-user.vue'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
+  mixins: [NavigationLogoMixin],
   props: {},
   data() {
     return {
@@ -84,18 +84,6 @@ export default {
   computed: {
     defaultModuleId() {
       return this.$store.getters.defaultModule.moduleId;
-    },
-    setLogo() {
-      let src = '';
-      store.logo;//此句不能删，用于激活cache
-      let logo = ThemeUtils.getValueByType('logo');
-      //如果类型是数字代表是上传的图片
-      if (typeof logo == 'number') {
-        src = HOME + '/api/binary/image/download?id=' + logo;
-      } else {
-        src = require('@/resources/assets/images/' + logo);
-      }
-      return src;
     },
     isDocumentonline() {
       return this.$route.fullPath == '/documentonline';
