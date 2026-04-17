@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsFormItem :label="$t('term.cmdb.topicci')" labelPosition="top">
+    <TsFormItem :label="$t('term.cmdb.topicci')">
       <TsFormSelect
         :value="configLocal.ciIdList || []"
         :dataList="ciList"

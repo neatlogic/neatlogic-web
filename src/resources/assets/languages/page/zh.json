@@ -1101,5 +1101,6 @@
   "manage": "管理",
   "send": "发送",
   "ignoreall": "忽略所有",
-  "codeblocklanguage": "代码块语言"
+  "codeblocklanguage": "代码块语言",
+  "mq": "消息队列"
 }
