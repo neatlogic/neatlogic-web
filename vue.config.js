@@ -260,6 +260,20 @@ module.exports = {
         secure: false,
         pathRewrite: {
           '^/([^/]+)/anonymous/api/(.*)': '/neatlogic/anonymous/api/$2'
+        },
+        headers: {
+          Tenant: tenantName
+        }
+      },
+      '/([^/]+)/any/api/': {
+        target: urlPrefix,
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: {
+          '^/([^/]+)/any/api/(.*)': '/neatlogic/any/api/$2'
+        },
+        headers: {
+          Tenant: tenantName
         }
       },
       '/([^/]+)/public/api/': {
