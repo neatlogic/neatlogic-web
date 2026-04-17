@@ -463,7 +463,7 @@ export default {
     getTreeType() {
       //获取树形类型
       return this.$api.cmdb.asset.getResourceTreeType().then(res => {
-        let data = res.Return;
+        let data = res.Return.tbodyList;
         if (this.selectType.typeId) {
           this.setTreeDataSelect(this.selectType.typeId, data);
         } else if (data[0]) {

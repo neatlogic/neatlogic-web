@@ -664,7 +664,7 @@
     "customtoollibrary": "自定义工具库",
     "toollibrary": "工具库",
     "hasauthinfo": "拥有权限的用户可在组合工具中添加分类下的自定义工具或工具库工具",
-    "hasauthtip": "拥有权限的用户可在组合工具中审核分类下的版本",
+    "hasauthtip": "拥有权限的用户可在自定义工具库中审核该分类下的版本，并同时具有该分类的使用授权",
     "auditauthorization": "审核授权",
     "libraryusageinstructions": "工具库使用说明",
     "alltemplates": "所有模板",
@@ -2088,7 +2088,7 @@
     "moduleconfigselectversion": "模块设置：【{target}】请选择版本",
     "moduleconfigatleastselectainstance": "模块设置：【{target}】至少选择一个实例",
     "createsuccess": "创建成功",
-    "createfail": "创建失败：",
+    "createfail": "创建失败",
     "appmodulecreatesuccess": "应用模块{target}创建成功，",
     "clickredirect": "请点击跳转",
     "applymodule": "应用模块",
@@ -2974,9 +2974,10 @@
     "session": "会话",
     "apitype": "接口类型",
     "issystemagent": "是否系统智能体",
-    "agent": "智能体",
+    "agent": "智能助手",
     "systemprompt": "系统提示词",
     "thinking": "深度思考",
-    "customparam": "额外配置"
+    "customparam": "额外配置",
+    "workflowtask": "流程任务"
   }
 }

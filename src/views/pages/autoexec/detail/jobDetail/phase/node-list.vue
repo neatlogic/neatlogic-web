@@ -249,6 +249,7 @@
       :phaseId="actionParam.phaseId"
       :nodeList="actionParam.nodeList"
       :isAll="actionParam.isResetAll"
+      :statusActionMapping="statusActionMapping"
       @close="closeResetDialog"
     ></ResetDialog>
     <IgnoreDialog
@@ -257,6 +258,7 @@
       :phaseId="actionParam.phaseId"
       :nodeList="actionParam.nodeList"
       :isAll="actionParam.isIgnoreAll"
+      :statusActionMapping="statusActionMapping"
       @close="closeIgnoreDialog"
     ></IgnoreDialog>
     <RefirePhaseDialog

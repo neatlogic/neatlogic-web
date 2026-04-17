@@ -256,9 +256,12 @@ export default {
             });
             aLink.href = URL.createObjectURL(blob);
             let contentDisposition = decodeURI(res.headers['content-disposition']);
+            let fileName = '接口测试下载数据';
             let filePath = '';
             filePath = contentDisposition.indexOf('filename=') > -1 ? contentDisposition.split('filename=')[1] : contentDisposition.split('fileName=')[1];
-            let fileName = filePath.substring(1, filePath.length - 1);
+            if (!_this.$utils.isEmpty(filePath)) {
+              fileName = filePath.substring(1, filePath.length - 1);
+            }
             aLink.download = fileName;
             document.body.appendChild(aLink);
             aLink.click();

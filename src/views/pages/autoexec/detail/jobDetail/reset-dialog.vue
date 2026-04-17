@@ -6,6 +6,7 @@
         <div>{{ $t('term.autoexec.resetnodescene') }}</div>
         <div>1.{{ $t('term.autoexec.waitrunnodetip') }}</div>
         <div>2.{{ $t('term.autoexec.malfunctionrerunjob') }}</div>
+        <div v-if="unresettableStatusText" class="mt-xs  text-warning">不可重置状态：{{ unresettableStatusText }}</div>
       </Alert>
     </template>
   </TsDialog>
@@ -18,7 +19,8 @@ export default {
     jobId: { type: Number }, //作业id
     phaseId: { type: Number }, //阶段id
     nodeList: { type: Array, default: () => [] }, //节点id
-    isAll: { type: Number } //是否全部重置
+    isAll: { type: Number }, //是否全部重置
+    statusActionMapping: { type: Object, default: () => ({}) }
   },
   data() {
     return {
@@ -29,6 +31,17 @@ export default {
         maskClose: false,
         isShow: true,
         width: 'small'
+      },
+      statusTextMapping: {
+        pending: '待运行',
+        running: '运行中',
+        succeed: '已成功',
+        failed: '已失败',
+        aborted: '已中止',
+        aborting: '中止中',
+        paused: '已暂停',
+        ignored: '已忽略',
+        invalid: '非法节点'
       }
     };
   },
@@ -69,7 +82,24 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    unresettableStatusList() {
+      if (!this.statusActionMapping || !Object.keys(this.statusActionMapping).length) {
+        return [];
+      }
+      const statusList = Object.keys(this.statusActionMapping).filter(status => {
+        const actionList = this.statusActionMapping[status] || [];
+        return !actionList.includes('reset');
+      });
+      if (!statusList.includes('invalid')) {
+        statusList.push('invalid');
+      }
+      return statusList;
+    },
+    unresettableStatusText() {
+      return this.unresettableStatusList.map(status => this.statusTextMapping[status] || status).join('、');
+    }
+  },
   watch: {}
 };
 </script>

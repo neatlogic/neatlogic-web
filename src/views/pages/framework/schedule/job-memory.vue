@@ -5,16 +5,9 @@
         <div>
           <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
           <div class="clearfix">
-            <TsRow>
-              <div class="mb-nm float-right" style="width: 50%">
-                <Col :span="12">
-                  <TsFormSelect v-model="searchParams.jobGroupName" v-bind="jobGroupNameSetting"></TsFormSelect>
-                </Col>
-                <Col :span="12">
-                  <TsFormSelect v-model="searchParams.jobName" v-bind="jobNameSetting"></TsFormSelect>
-                </Col>
-              </div>
-            </TsRow>
+            <div class="mb-nm float-right" style="width: 50%">
+              <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="handleSearchChange"></CombineSearcher>
+            </div>
           </div>
           <TsTable
             v-if="schedulerMemoryTableData"
@@ -24,7 +17,12 @@
             @changePageSize="changePageSize"
           >
             <template v-slot:cron="{ row }">
+              <div v-if="row.intervalInSeconds">
+                <span class="text-grey">间隔</span><span class="text-bold">{{ row.intervalInSeconds }}s</span>
+                <span v-if="row.repeatCount" class="ml-xs text-grey">重复</span><span v-if="row.repeatCount" class="text-bold">{{ row.repeatCount }}</span><span v-if="row.repeatCount" class="text-grey">次</span>
+              </div>
               <TsQuartz
+                v-else
                 v-model="row.cron"
                 showType="read"
                 :transfer="true"
@@ -41,44 +39,40 @@ export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue')
+    TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
   },
   props: {},
   data() {
     return {
       isLoading: false,
-      jobGroupNameSetting: {
-        type: 'select',
-        name: 'jobGroupName',
-        value: '',
-        placeholder: this.$t('page.jobgroupname'),
-        dynamicUrl: '/api/rest/scheduler/groupname/search',
-        textName: 'text',
-        valueName: 'value',
-        search: true,
-        transfer: true,
-        border: 'border',
-        onChange: val => {
-          this.changeJobGroupName(val);
-        }
-      },
-      jobNameSetting: {
-        type: 'select',
-        name: 'jobName',
-        value: '',
-        placeholder: this.$t('page.jobname'),
-        dynamicUrl: '/api/rest/scheduler/name/search',
-        params: { jobGroupName: '' },
-        textName: 'text',
-        valueName: 'value',
-        search: true,
-        transfer: true,
-        disabled: true,
-        border: 'border',
-        onChange: val => {
-          this.changeJobName(val);
-        }
+      searchVal: {},
+      searchConfig: {
+        search: false,
+        searchList: [
+          {
+            type: 'select',
+            name: 'jobGroupName',
+            label: this.$t('page.jobgroupname'),
+            dynamicUrl: '/api/rest/scheduler/groupname/search',
+            textName: 'text',
+            valueName: 'value',
+            search: true,
+            transfer: true
+          },
+          {
+            type: 'select',
+            name: 'jobName',
+            label: this.$t('page.jobname'),
+            dynamicUrl: '/api/rest/scheduler/name/search',
+            params: { jobGroupName: '' },
+            textName: 'text',
+            valueName: 'value',
+            search: true,
+            transfer: true,
+            disabled: true
+          }
+        ]
       },
       searchParams: {
         currentPage: 1,
@@ -116,12 +110,12 @@ export default {
         }
       ],
       dialogConfig: {
-        type: 'slider',
+        type: 'modal',
         title: this.$t('term.autoexec.loadedjob'),
         hasFooter: false,
         maskClose: true,
         isShow: true,
-        width: '80%'
+        width: 'large'
       }
     };
   },
@@ -149,19 +143,19 @@ export default {
       this.searchParams.pageSize = pageSize;
       this.searchMemoryJob();
     },
-    changeJobGroupName(jobGroupName) {
-      if (!jobGroupName) {
+    handleSearchChange() {
+      const jobGroupName = this.searchVal.jobGroupName || '';
+      const jobName = this.searchVal.jobName || '';
+      if (jobGroupName !== this.searchParams.jobGroupName) {
+        this.searchVal.jobName = '';
         this.searchParams.jobName = '';
       }
-      this.jobNameSetting.disabled = !jobGroupName;
-      this.jobNameSetting.params.jobGroupName = jobGroupName;
+      this.searchConfig.searchList[1].disabled = !jobGroupName;
+      this.searchConfig.searchList[1].params.jobGroupName = jobGroupName;
       this.searchParams.jobGroupName = jobGroupName;
+      this.searchParams.jobName = this.searchVal.jobName || jobName;
       this.searchParams.currentPage = 1;
       this.searchParams.pageSize = 20;
-      this.searchMemoryJob();
-    },
-    changeJobName(jobName) {
-      this.searchParams.jobName = jobName;
       this.searchMemoryJob();
     },
     searchMemoryJob() {

@@ -9,21 +9,13 @@
         </div>
       </template>
       <template slot="topRight">
-        <TsRow>
-          <Col :span="12">
-            <TimeSelect
-              v-model="timeParams"
-              :clearable="false"
-              @change="changePage(1)"
-            />
-          </Col>
-          <Col :span="12">
-            <InputSearcher
-              v-model="searchParam.keyword"
-              @change="changePage(1)"
-            ></InputSearcher>
-          </Col>
-        </TsRow>
+        <div class="login-search">
+          <CombineSearcher
+            v-model="searchValue"
+            v-bind="searchConfig"
+            @change="changePage(1)"
+          ></CombineSearcher>
+        </div>
       </template>
       <div slot="content">
         <TsTable
@@ -47,25 +39,37 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
-    TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   props: {},
   data() {
     return {
+      searchValue: {
+        dateRange: {
+          timeRange: 1,
+          timeUnit: 'day',
+          startTime: null,
+          endTime: null
+        }
+      },
+      searchConfig: {
+        searchList: [
+          {
+            type: 'timeselect',
+            name: 'dateRange',
+            label: this.$t('page.date'),
+            transfer: true,
+            clearable: false
+          }
+        ]
+      },
       searchParam: {
         keyword: '',
         currentPage: 1,
         pageSize: 20,
         timeRange: null,
         timeUnit: '',
-        startTime: null,
-        endTime: null
-      },
-      timeParams: {
-        timeRange: 1,
-        timeUnit: 'day',
         startTime: null,
         endTime: null
       },
@@ -105,10 +109,12 @@ export default {
   destroyed() {},
   methods: {
     searchUserLoginList() {
-      this.searchParam.timeRange = this.timeParams.timeRange;
-      this.searchParam.timeUnit = this.timeParams.timeUnit;
-      this.searchParam.startTime = this.timeParams.startTime;
-      this.searchParam.endTime = this.timeParams.endTime;
+      const { keyword = '', dateRange = null } = this.searchValue || {};
+      this.searchParam.keyword = keyword;
+      this.searchParam.timeRange = dateRange ? dateRange.timeRange : null;
+      this.searchParam.timeUnit = dateRange ? dateRange.timeUnit : null;
+      this.searchParam.startTime = dateRange ? dateRange.startTime : null;
+      this.searchParam.endTime = dateRange ? dateRange.endTime : null;
       this.$api.framework.loginaudit.searchLoginList(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -134,4 +140,9 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped>
+.login-search {
+  width: 100%;
+  min-width: 280px;
+}
+</style>

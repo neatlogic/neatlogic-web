@@ -49,6 +49,7 @@
               :id="row.id"
               calleeType="resourceaccount"
               :isTable="true"
+              :moduleId="moduleId"
               :referenceCount="row.resourceReferredCount"
             ></ReferenceSelect>
           </template>
@@ -136,7 +137,8 @@ export default {
         }
       },
       isShow: false,
-      title: this.$t('page.procotolmanage')
+      title: this.$t('page.procotolmanage'),
+      moduleId: MODULEID
     };
   },
   beforeCreate() {},

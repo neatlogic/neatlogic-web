@@ -1,5 +1,9 @@
 <template>
-  <div class="form-li" data-type="combine-searcher">
+  <div
+    class="form-li"
+    data-type="combine-searcher"
+    :style="containerStyle"
+  >
     <div v-if="readonly">
       <span v-if="(totalText && Object.keys(totalText).length) ||$slots.textItem" class="tag-item" data-type="combine-searcher-readonly-box">
         <span
@@ -43,7 +47,7 @@
           ref="dropdownContain"
           trigger="custom"
           :visible="isVisible"
-          style="width:100%"
+          style="width: 100%"
           :transfer="transfer"
           transferClassName="combinesearcher-drop"
         >
@@ -98,7 +102,7 @@
             <div v-if="clearable && totalText && Object.keys(totalText).length" class="tsfont-close-s icon-dropdown bg-op item-clear" @click.stop="clearSearch"></div>
           </div>
           <DropdownMenu v-if="searchList && searchList.length > 0" slot="list" ref="dropdown">
-            <li :style="'padding: 16px 20px;width:' + width + 'px;max-height:400px;overflow:auto;'" @click="isVisible = true">
+            <li :style="{width: containerWidth}" style="padding: 16px 20px;max-height:400px;overflow:auto;" @click="isVisible = true">
               <TsForm
                 ref="form"
                 v-model="searchValue"
@@ -141,6 +145,7 @@
   </div> 
 </template>
 <script>
+import debounce from 'lodash/debounce';
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput.vue';
 import TsForm from '@/resources/plugins/TsForm/TsForm.vue';
 import { directive as ClickOutside } from '../../directives/v-click-outside-x';
@@ -233,6 +238,10 @@ export default {
       default() {
         return this.$t('page.search');
       }
+    },
+    width: {
+      type: [Number, String],
+      default: null
     }
   },
   data() {
@@ -244,31 +253,31 @@ export default {
         size: 'small',
         border: 'none'
       },
-      width: 200,
+      containerWidth: '200px',
+      containerStyle: {},
       searchValue: {}, //下拉的所有值数据，{key1:value1,key2:value2}
       textConfig: {}, //下拉的所有text数据，{key1:text1,key2:text2}
       inputWidth: '100%',
       keywordValue: '', //组件内部对应搜索关键字的值
       totalText: {},
-      validMesage: ''
+      validMesage: '',
+      resizeHandler: null
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
   mounted() {
-    let _this = this;
-    window.addEventListener('resize', _this.initWidth);
+    this.initWidth();
+    this.resizeHandler = debounce(this.initWidth, 200);
+    window.addEventListener('resize', this.resizeHandler);
   },
   beforeUpdate() {},
-  updated() {
-    this.initWidth();
-  },
+  updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {
-    let _this = this;
-    window.removeEventListener('resize', _this.initWidth);
+    this.resizeHandler && window.removeEventListener('resize', this.resizeHandler);
   },
   destroyed() {},
   methods: {
@@ -291,7 +300,22 @@ export default {
       this.$emit('switchMode');
     },
     initWidth() {
-      this.$el && (this.width = this.$el.getBoundingClientRect().width);
+      if (this.width !== null && this.width !== undefined && this.width !== '') {
+        const containerWidth = typeof this.width === 'number' ? this.width + 'px' : this.width;
+        if (containerWidth !== this.containerWidth) {
+          this.containerStyle = {
+            ...(this.containerStyle || {}),
+            width: containerWidth,
+            display: 'inline-block'
+          };
+          this.containerWidth = containerWidth;
+        }
+      } else if (this.$el) {
+        const containerWidth = Math.round(this.$el.getBoundingClientRect().width) + 'px';
+        if (containerWidth !== this.containerWidth) {
+          this.containerWidth = containerWidth;
+        }
+      }
     },
     onClickOutside(event) {
       //点击外部，dropdown消失
@@ -582,6 +606,12 @@ export default {
     }
   },
   watch: {
+    width: {
+      handler() {
+        this.initWidth();
+      },
+      immediate: true
+    },
     searchValue: {
       handler(val, oldval) {
         if (val) {

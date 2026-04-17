@@ -81,7 +81,7 @@
               </div>
             </Col>
             <Col v-else-if="resultMap" span="2">
-              <div v-if="resultMap[conItem.uuid]" class="pt-xs" style="text-align:center">
+              <div v-if="resultMap[conItem.uuid]" class="pt-xs" style="text-align: center">
                 <span v-if="resultMap[conItem.uuid].result" class="tsfont-check text-success text-bold"></span>
                 <div v-else>
                   <Tooltip
@@ -269,10 +269,12 @@ export default {
         this.$set(condition, 'id', item.name);
         this.$set(condition, 'name', item.name);
         this.$set(condition, 'label', item.label);
+        this.$set(condition, 'type', item.type || '');
       } else {
         this.$set(condition, 'id', null);
         this.$set(condition, 'name', null);
         this.$set(condition, 'label', null);
+        this.$set(condition, 'type', '');
       }
       //切换属性后清空条件和值，避免残余数据留下
       this.$set(condition, 'expression', '');

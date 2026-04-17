@@ -3562,5 +3562,35 @@
     "css": "tsfont-underline",
     "hexCodepoint": "0xea53",
     "codepoint": 59987
+  },
+  {
+    "name": "barcode",
+    "css": "tsfont-barcode",
+    "hexCodepoint": "0xea54",
+    "codepoint": 59988
+  },
+  {
+    "name": "environment",
+    "css": "tsfont-environment",
+    "hexCodepoint": "0xea55",
+    "codepoint": 59989
+  },
+  {
+    "name": "sound",
+    "css": "tsfont-sound",
+    "hexCodepoint": "0xea56",
+    "codepoint": 59990
+  },
+  {
+    "name": "code-block",
+    "css": "tsfont-code-block",
+    "hexCodepoint": "0xea57",
+    "codepoint": 59991
+  },
+  {
+    "name": "data-transformation",
+    "css": "tsfont-data-transformation",
+    "hexCodepoint": "0xea58",
+    "codepoint": 59992
   }
 ]

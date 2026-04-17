@@ -25,7 +25,7 @@
               </DropdownMenu>
             </Dropdown>
           </span>
-          <span class="action-item tsfont-formstaticlist" @click="toCiEntityList()">{{ $t('term.cmdb.viewcientity') }}</span>
+          <span class="action-item"><Button type="info" @click="toCiEntityList()">{{ $t('term.cmdb.viewcientity') }}</Button></span>
           <span class="ci-del-btn action-item">
             <Button type="error" @click="deleteCi()">{{ $t('page.delete') }}</Button>
           </span>

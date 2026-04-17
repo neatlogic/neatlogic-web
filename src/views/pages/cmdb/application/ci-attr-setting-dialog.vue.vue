@@ -7,82 +7,97 @@
     @on-ok="save"
   >
     <div>
-      <div>
-        <Button class="mb-sm" @click="addData()">{{ $t('term.pbc.adddata') }}</Button>
-      </div>
-      <draggable
-        v-if="tableSettingList && tableSettingList.length"
-        class="clearfix"
-        tag="div"
-        :list="tableSettingList"
-        handle=".move"
-      >
-        <div v-for="(item,index) in tableSettingList" :key="index" class="bg-op radius-sm mb-md">
-          <div class="flex-between border-base-bottom padding-sm">
-            <span
-              class="move tsfont-bar pr-xs"
-              :title="$t('term.deploy.dragtochangetheorder')"
-              @click.stop
-            ></span>
-            <div>
-              <span class="text-action tsfont-plus pr-xs" @click="addData(index+1)"></span>
-              <span class="text-action tsfont-trash-o pr-xs" @click="deleteItem(index)"></span>
-              <span class="text-action" :class="item._isShow?'tsfont-down':'tsfont-up'" @click="toggleshow(item)"></span>
-            </div>
+      <Tabs v-model="activeTab" :animated="false">
+        <TabPane label="资产清单" name="tableSetting">
+          <div>
+            <Button class="mb-sm" @click="addData()">{{ $t('term.pbc.adddata') }}</Button>
           </div>
-          <div class="padding-sm">
-            <TsFormItem label="资产清单" labelPosition="left">
-              <TsFormSelect
-                ref="formItem"
-                v-model="item.viewName"
-                v-bind="viewConfig"
-                :dealDataByUrl="(nodeList)=>dealDataByViewList(nodeList, item.viewName)"
-                @on-change="(val)=>changeViewName(val, item)"
-              ></TsFormSelect>
-            </TsFormItem>
-            <div v-show="item._isShow">
-              <TsFormItem label="表头属性" labelPosition="left">
+          <draggable
+            v-if="tableSettingList && tableSettingList.length"
+            class="clearfix"
+            tag="div"
+            :list="tableSettingList"
+            handle=".move"
+          >
+            <div v-for="(item,index) in tableSettingList" :key="index" class="bg-op radius-sm mb-md">
+              <div class="flex-between border-base-bottom padding-sm">
+                <span
+                  class="move tsfont-bar pr-xs"
+                  :title="$t('term.deploy.dragtochangetheorder')"
+                  @click.stop
+                ></span>
                 <div>
-                  <Tag
-                    v-for="(a,aindex) in assetTheadlist"
-                    :key="aindex"
-                    :checked="item.fieldList.includes(a.value)"
-                    checkable
-                    color="primary"
-                    size="medium"
-                    class="border-color tag"
-                    @on-change="selectItem(a.value, item)"
-                  >{{ a.text }}</Tag>
+                  <span class="text-action tsfont-plus pr-xs" @click="addData(index+1)"></span>
+                  <span class="text-action tsfont-trash-o pr-xs" @click="deleteItem(index)"></span>
+                  <span class="text-action" :class="item._isShow?'tsfont-down':'tsfont-up'" @click="toggleshow(item)"></span>
                 </div>
-                <div v-if="$utils.isEmpty(item.fieldList)" class="text-error">{{ $t('form.placeholder.pleaseselect',{'target':$t('page.attribute')}) }}</div>
-              </TsFormItem>
-              <template v-if="item.fieldList && item.fieldList.length > 0">
-                <Divider orientation="left" style="font-size: 14px">{{ $t('term.process.attrdragtip') }}</Divider>
-                <draggable
-                  class="clearfix"
-                  tag="div"
-                  :list="item.fieldList"
-                  handle=".move"
-                >
-                  <Tag
-                    v-for="value in item.fieldList"
-                    :key="value"
-                    :name="value"
-                    closable
-                    size="medium"
-                    @on-close="handleClose(value, item)"
-                  ><span class="move tsfont-bar"></span> {{ getAssetTheadLabel(value) }}</Tag>
-                </draggable>
-              </template>
+              </div>
+              <div class="padding-sm">
+                <TsFormItem label="资产清单" labelPosition="left">
+                  <TsFormSelect
+                    ref="formItem"
+                    v-model="item.viewName"
+                    v-bind="viewConfig"
+                    :dealDataByUrl="(nodeList)=>dealDataByViewList(nodeList, item.viewName)"
+                    @on-change="(val)=>changeViewName(val, item)"
+                  ></TsFormSelect>
+                </TsFormItem>
+                <div v-show="item._isShow">
+                  <TsFormItem label="表头属性" labelPosition="left">
+                    <div>
+                      <Tag
+                        v-for="(a,aindex) in assetTheadlist"
+                        :key="aindex"
+                        :checked="item.fieldList.includes(a.value)"
+                        checkable
+                        color="primary"
+                        size="medium"
+                        class="border-color tag"
+                        @on-change="selectItem(a.value, item)"
+                      >{{ a.text }}</Tag>
+                    </div>
+                    <div v-if="$utils.isEmpty(item.fieldList)" class="text-error">{{ $t('form.placeholder.pleaseselect',{'target':$t('page.attribute')}) }}</div>
+                  </TsFormItem>
+                  <template v-if="item.fieldList && item.fieldList.length > 0">
+                    <Divider orientation="left" style="font-size: 14px">{{ $t('term.process.attrdragtip') }}</Divider>
+                    <draggable
+                      class="clearfix"
+                      tag="div"
+                      :list="item.fieldList"
+                      handle=".move"
+                    >
+                      <Tag
+                        v-for="value in item.fieldList"
+                        :key="value"
+                        :name="value"
+                        closable
+                        size="medium"
+                        @on-close="handleClose(value, item)"
+                      ><span class="move tsfont-bar"></span> {{ getAssetTheadLabel(value) }}</Tag>
+                    </draggable>
+                  </template>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </draggable>
+          </draggable>
+        </TabPane>
+        <TabPane v-if="moduleName" label="纳管应用" name="visibleApp">
+          <TsFormItem :labelWidth="0" label="" labelPosition="left">
+            <TsFormSelect
+              v-model="visibleAppSystemIdList"
+              v-bind="visibleAppConfig"
+            ></TsFormSelect>
+            <div class="text-tip mt-xs">仅已纳管的应用会在应用清单中显示</div>
+          </TsFormItem>
+        </TabPane>
+      </Tabs>
     </div>
   </TsDialog>
 </template>
 <script>
 import draggable from 'vuedraggable';
+
+const ALL_APP_SYSTEM_ID = -1;
 export default {
   name: '',
   components: {
@@ -92,13 +107,17 @@ export default {
   },
   filters: {},
   props: {
-   
+    moduleName: {
+      type: String,
+      default: ''
+    }
   },
   data() {
     return {
       id: null,
       config: {},
       tableSettingList: [],
+      activeTab: 'tableSetting',
       setting: {
         title: this.$t('page.setting'),
         type: 'slider',
@@ -114,8 +133,22 @@ export default {
         border: 'border',
         validateList: ['required']
       },
+      visibleAppConfig: {
+        dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
+        rootName: 'tbodyList',
+        textName: 'abbrName',
+        valueName: 'id',
+        dealDataByUrl: (nodeList) => this.dealVisibleAppList(nodeList),
+        search: true,
+        transfer: true,
+        multiple: true,
+        border: 'border',
+        clearable: true,
+        placeholder: '请选择应用'
+      },
       isSaveLoading: false,
-      assetTheadlist: []
+      assetTheadlist: [],
+      visibleAppSystemIdList: []
     };
   },
   beforeCreate() {},
@@ -138,6 +171,7 @@ export default {
           this.id = res.Return.id || null;
           this.config = res.Return.config || {};
           this.tableSettingList = this.config.tableSettingList || [];
+          this.syncVisibleAppSystemIdList();
           if (this.tableSettingList.length) {
             this.tableSettingList.forEach(item => {
               this.$set(item, '_isShow', true);
@@ -184,6 +218,11 @@ export default {
       if (this.id) {
         data.id = this.id;
       }
+      if (this.moduleName) {
+        const moduleVisibleAppSystemIdListMap = this.config.moduleVisibleAppSystemIdListMap || {};
+        moduleVisibleAppSystemIdListMap[this.moduleName] = this.visibleAppSystemIdList || [];
+        data.config.moduleVisibleAppSystemIdListMap = moduleVisibleAppSystemIdListMap;
+      }
       this.$api.cmdb.applicationManage.saveApplicationlistSetting(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
@@ -192,6 +231,9 @@ export default {
       }).finally(() => {
         this.isSaveLoading = false;
       });
+    },
+    dealVisibleAppList(nodeList) {
+      return [{ id: ALL_APP_SYSTEM_ID, abbrName: '所有应用' }, ...(nodeList || [])];
     },
     dealDataByViewList(nodeList, viewName) {
       nodeList.forEach(item => {
@@ -229,6 +271,10 @@ export default {
     },
     toggleshow(item) {
       this.$set(item, '_isShow', !item._isShow); 
+    },
+    syncVisibleAppSystemIdList() {
+      const moduleVisibleAppSystemIdListMap = this.config.moduleVisibleAppSystemIdListMap || {};
+      this.visibleAppSystemIdList = moduleVisibleAppSystemIdListMap[this.moduleName] || [];
     }
   },
   computed: {
@@ -244,7 +290,20 @@ export default {
       };
     }
   },
-  watch: {}
+  watch: {
+    visibleAppSystemIdList(val) {
+      if (!Array.isArray(val) || val.length <= 1) {
+        return;
+      }
+      if (val.includes(ALL_APP_SYSTEM_ID)) {
+        const lastValue = val[val.length - 1];
+        this.visibleAppSystemIdList = lastValue === ALL_APP_SYSTEM_ID ? [ALL_APP_SYSTEM_ID] : val.filter(item => item !== ALL_APP_SYSTEM_ID);
+      }
+    },
+    moduleName() {
+      this.syncVisibleAppSystemIdList();
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

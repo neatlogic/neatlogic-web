@@ -664,7 +664,7 @@
     "customtoollibrary": "Custom Toollibrary",
     "toollibrary": "Tool Library",
     "hasauthinfo": "Users with permission can add custom tools or tool library tools under the category to combined tools",
-    "hasauthtip": "Users with permission can audit versions under category in composite tool",
+    "hasauthtip": "Users with permission can review versions under this category in the custom tool library and also have usage authorization for this category",
     "auditauthorization": "Audit Authorization",
     "libraryusageinstructions": "Tool library usage instructions",
     "alltemplates": "All templates",
@@ -2091,7 +2091,7 @@
     "moduleconfigselectversion": "Module settings: 【{target}】Please select a version",
     "moduleconfigatleastselectinstance": "Module configuration: [{target}] select at least one instance",
     "createsuccess": "Create successfully",
-    "createfail": "Failed to create:",
+    "createfail": "Failed to create",
     "appmodulecreatesuccess": "The application module {target} was created successfully,",
     "clickredirect": "Please click to redirect",
     "applymodule": "Apply Module",
@@ -2980,6 +2980,7 @@
     "agent": "agent",
     "systemprompt": "system prompt",
     "thinking": "deep thinking",
-    "customparam": "Additional configuration"
+    "customparam": "Additional configuration",
+    "workflowtask": "process task"
   }
 }

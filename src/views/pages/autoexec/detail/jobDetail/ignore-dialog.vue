@@ -15,6 +15,7 @@
       <div v-else class="mb-nm">{{ $t('term.autoexec.ignoreselectednodeconfirm') }}</div>
       <Alert show-icon>
         <div>{{ $t('term.autoexec.jobruntip') }}</div>
+        <div class="mt-xs text-warning">不可忽略状态：{{ unignoreableStatusText }}</div>
       </Alert>
     </template>
   </TsDialog>
@@ -27,7 +28,8 @@ export default {
     jobId: { type: Number }, //作业id
     phaseId: { type: Number }, //阶段id
     nodeList: { type: Array, default: () => [] }, //节点列表
-    isAll: { type: Number } //是否全部忽略
+    isAll: { type: Number }, //是否全部忽略
+    statusActionMapping: { type: Object, default: () => ({}) }
   },
   data() {
     return {
@@ -39,7 +41,17 @@ export default {
         isShow: true,
         width: 'small'
       },
-      excludeStatusList: ['ignored', 'running', 'succeed']
+      statusTextMapping: {
+        running: '运行中',
+        succeed: '已成功',
+        ignored: '已忽略',
+        invalid: '非法节点',
+        pending: '待运行',
+        failed: '已失败',
+        aborted: '已中止',
+        aborting: '中止中',
+        paused: '已暂停'
+      }
     };
   },
   beforeCreate() {},
@@ -53,6 +65,13 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    canIgnoreStatus(status) {
+      if (status === 'invalid') {
+        return false;
+      }
+      const actionList = this.statusActionMapping[status] || [];
+      return actionList.includes('ignore');
+    },
     closeDialog(needRefresh) {
       this.$emit('close', needRefresh);
     },
@@ -60,8 +79,8 @@ export default {
       const param = {
         jobId: this.jobId,
         jobPhaseId: this.phaseId,
-        resourceIdList: this.nodeList.filter(d => !this.excludeStatusList.includes(d.status)).map(d => d.resourceId),
-        sqlIdList: this.nodeList.filter(d => !this.excludeStatusList.includes(d.status)).map(d => d.id),
+        resourceIdList: this.nodeList.filter(d => this.canIgnoreStatus(d.status)).map(d => d.resourceId),
+        sqlIdList: this.nodeList.filter(d => this.canIgnoreStatus(d.status)).map(d => d.id),
         isAll: this.isAll
       };
       if (this.isAll != 1 && param.resourceIdList.length == 0) {
@@ -84,6 +103,16 @@ export default {
   },
   filter: {},
   computed: {
+    unignoreableStatusList() {
+      const statusList = Object.keys(this.statusActionMapping).filter(status => !this.canIgnoreStatus(status));
+      if (!statusList.includes('invalid')) {
+        statusList.push('invalid');
+      }
+      return statusList;
+    },
+    unignoreableStatusText() {
+      return this.unignoreableStatusList.map(status => this.statusTextMapping[status] || status).join('、');
+    },
     ignoreCount() {
       if (this.nodeList && this.nodeList.length > 0) {
         return this.nodeList.filter(d => d.status == 'ignored').length;

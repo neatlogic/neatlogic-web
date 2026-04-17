@@ -53,6 +53,7 @@ export default {
             label: '模型类型',
             multiple: true,
             url: '/api/rest/resourcecenter/resourcetype/tree',
+            rootName: 'tbodyList',
             textName: 'label',
             valueName: 'id',
             search: true,

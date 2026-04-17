@@ -2083,6 +2083,7 @@ span {
   //   .tscontain-header {
   //     border-top-left-radius: @block-border-radius;
   //     border-top-right-radius: @block-border-radius;
+
   //   }
   //   .tscontain-body {
   //     border-bottom-left-radius: @block-border-radius;
@@ -2105,6 +2106,29 @@ span {
   .table-radius-main {
     border-bottom-left-radius: @block-border-radius;
     border-bottom-right-radius: @block-border-radius;
+  }
+}
+
+.status-active {
+  position: relative;
+  overflow: hidden;
+  background-image: repeating-linear-gradient(
+    -60deg,
+    rgba(255, 255, 255, 0.2) 0,
+    rgba(255, 255, 255, 0.2) 8px,
+    rgba(255, 255, 255, 0.02) 8px,
+    rgba(255, 255, 255, 0.02) 16px
+  );
+  background-size: 24px 24px;
+  animation: status-active-flow 0.9s linear infinite;
+}
+
+@keyframes status-active-flow {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 24px 0;
   }
 }
 

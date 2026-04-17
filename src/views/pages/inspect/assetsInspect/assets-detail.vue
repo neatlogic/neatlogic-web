@@ -60,7 +60,7 @@
             class="mr-nm"
             :class="outline.cssClass"
           >
-            <Poptip trigger="hover" placement="right-start" width="650">
+            <Poptip trigger="hover" placement="right-start" width="900">
               <div class="cursor h4" @click="scrollToTarget(outline)">
                 <span class="tsfont-warning-s">{{ outline.name }}:</span>
                 <span>
@@ -106,7 +106,17 @@
               >
                 <template v-for="(head, hindex) in getFieldTheadList(field)" :slot="head.key" slot-scope="scope">
                   <div :key="hindex">
-                    <span :id="field.name + '_' + scope.index + '_' + head.key" :class="getFieldClass(field.name + '.' + scope.index + '.' + head.key)" style="word-break:break-all;white-space:normal">{{ scope.row[head.key] }}</span>
+                    <component
+                      :is="getFieldCellComponent(field)"
+                      v-if="getFieldCellComponent(field)"
+                      v-bind="getFieldCellProps(field, head, scope)"
+                    ></component>
+                    <span
+                      v-else
+                      :id="field.name + '_' + scope.index + '_' + head.key"
+                      :class="getFieldClass(field.name + '.' + scope.index + '.' + head.key)"
+                      style="word-break:break-all;white-space:normal"
+                    >{{ scope.row[head.key] }}</span>
                   </div>
                 </template>
               </TsTable>
@@ -141,6 +151,7 @@
 </template>
 <script>
 import download from '@/resources/directives/download.js';
+import ComponentManager from '@/resources/import/component-manager.js';
 
 export default {
   name: '',
@@ -283,6 +294,10 @@ export default {
     },
     getFieldTheadList(field) {
       if (field.subset) {
+        const handler = this.getReportFieldHandler(field);
+        if (handler && typeof handler.getTheadList === 'function') {
+          return handler.getTheadList(field);
+        }
         return field.subset.map(d => {
           return {
             key: d.name,
@@ -290,6 +305,24 @@ export default {
           };
         });
       }
+    },
+    getReportFieldHandler(field) {
+      const handlerMap = ComponentManager.getComponent('inspectReportFieldHandler') || {};
+      return field && field.name ? handlerMap[field.name] : null;
+    },
+    getFieldCellComponent(field) {
+      const handler = this.getReportFieldHandler(field);
+      return handler ? handler.component : null;
+    },
+    getFieldCellProps(field, head, scope) {
+      return {
+        field: field,
+        head: head,
+        row: scope.row,
+        index: scope.index,
+        cellId: field.name + '_' + scope.index + '_' + head.key,
+        cellClass: this.getFieldClass(field.name + '.' + scope.index + '.' + head.key)
+      };
     },
     toThresholdRuleDetail(row) {
       if (row && !this.$utils.isEmptyObj(row)) {
@@ -354,14 +387,15 @@ export default {
         const inspectStatus = this.reportData['inspectStatus'];
         if (alertFields && alertFields.length > 0) {
           alertFields.forEach(element => {
+            const alertLevel = (element.alertLevel || '').toLowerCase();
             const key = element.alertField
               .replace('$.', '')
               .replace(/\[/g, '.')
               .replace(/\]/g, '')
               .toLowerCase();
-            alertLevelData[key] = { level: element.alertLevel };
-            if (inspectStatus && inspectStatus[element.alertLevel.toLowerCase()]) {
-              const status = inspectStatus[element.alertLevel.toLowerCase()];
+            alertLevelData[key] = { level: alertLevel };
+            if (inspectStatus && inspectStatus[alertLevel]) {
+              const status = inspectStatus[alertLevel];
               alertLevelData[key]['cssClass'] = status['cssClass'];
             }
           });
@@ -387,20 +421,21 @@ export default {
 
         if (alertList && alertList.length > 0) {
           alertList.forEach(alert => {
-            if (!outlineData[alert['ruleLevel']]) {
-              outlineData[alert['ruleLevel']] = {
-                level: alert['ruleLevel'],
+            const ruleLevel = (alert['ruleLevel'] || '').toLowerCase();
+            if (!outlineData[ruleLevel]) {
+              outlineData[ruleLevel] = {
+                level: ruleLevel,
                 alertList: []
               };
-              if (inspectStatus && inspectStatus[alert['ruleLevel'].toLowerCase()]) {
-                const status = inspectStatus[alert['ruleLevel'].toLowerCase()];
-                outlineData[alert['ruleLevel']]['name'] = status['text'];
-                outlineData[alert['ruleLevel']]['cssClass'] = status['cssClass'];
+              if (inspectStatus && inspectStatus[ruleLevel]) {
+                const status = inspectStatus[ruleLevel];
+                outlineData[ruleLevel]['name'] = status['text'];
+                outlineData[ruleLevel]['cssClass'] = status['cssClass'];
               }
             }
-            const alertList = outlineData[alert['ruleLevel']]['alertList'];
+            const alertList = outlineData[ruleLevel]['alertList'];
             const outline = {
-              level: alert['ruleLevel'],
+              level: ruleLevel,
               path: alert['jsonPath']
                 .replace('$.', '')
                 .replace(/\./g, '_')

@@ -171,6 +171,11 @@ export default {
       // 状态 value值
       type: String,
       default: 'versionStatus'
+    },
+    moduleId: {
+      // 模块ID
+      type: String,
+      default: ''
     }
 
   },
@@ -221,11 +226,19 @@ export default {
       if (this.id) {
         this.$set(params, 'id', this.id);
       }
+      let _this = this;
       this.$https.post('/api/rest/dependency/list', params).then(res => {
         if (res.Status == 'OK') {
           this.pageCount = res.Return.pageCount;
           this.isReference = true;
           let newList = res.Return.list || [];
+          if (!_this.$utils.isEmpty(_this.moduleId)) {
+            newList.forEach(item => {
+              if (item.text.includes('{moduleId}')) {
+                item.text = item.text.replace('{moduleId}', _this.moduleId);
+              }
+            });
+          }
           if (currentPage > 1) {
             this.referenceList.push(...newList);
           } else {

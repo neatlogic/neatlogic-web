@@ -42,7 +42,7 @@
                 <span v-if="isIcon" class="icon-type text-grey" :class="iconConfig[item[valueName]]?iconConfig[item[valueName]]:'tsfont-forminput'"></span>
                 <span>{{ item[textName] }}</span>
               </div>
-              <div class="text-tip type-tip pl-sm">{{ item.description }}</div>
+              <div class="text-tip type-tip pl-sm">{{ item[descriptionName] }}</div>
             </div>
           </div>
         </div>
@@ -110,6 +110,10 @@ export default {
     textName: {
       //text渲染值
       default: 'text'
+    },
+    descriptionName: {
+      //description渲染值
+      default: 'description'
     },
     isIcon: { //是否显示图标
       type: Boolean,

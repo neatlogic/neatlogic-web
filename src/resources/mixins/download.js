@@ -1,6 +1,7 @@
 import axios from '@/resources/api/http.js';
 import qs from 'qs';
 import ViewUI from 'neatlogic-ui/iview/index.js';
+import { downloadBlobFile } from '@/resources/assets/js/downloadUtil.js';
 export default {
   methods: {
     download(params) {
@@ -36,20 +37,9 @@ export default {
           .then(res => {
             _this.downloadSuccess();
             if (res.status == '200') {
-              const aLink = document.createElement('a');
-              let blob = new Blob([res.data], {
-                type: 'application/x-msdownload'
+              downloadBlobFile(res.data, {
+                contentDisposition: res.headers['content-disposition']
               });
-              aLink.href = URL.createObjectURL(blob);
-              //content-disposition的返回数据格式为: attachment; filename="名字“ ，通过截取filenamefileName）=后的字符串去掉首位引号获取名字
-              let contentDisposition = decodeURI(res.headers['content-disposition']);
-              let filePath = '';
-              filePath = contentDisposition.indexOf('filename=') > -1 ? contentDisposition.split('filename=')[1] : contentDisposition.split('fileName=')[1];
-              let fileName = filePath.substring(1, filePath.length - 1);
-              aLink.download = fileName;
-              document.body.appendChild(aLink);
-              aLink.click();
-              aLink.remove();
             } else if (res.status == '220') {
               ViewUI.Notice.success({
                 duration: 0,
@@ -83,4 +73,3 @@ export default {
     }
   }
 };
-
