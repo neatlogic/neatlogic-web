@@ -97,6 +97,31 @@ function tableCellToHtml(cell = {}) {
   }).join('<br>');
 }
 
+function attrsToHtml(attrs = {}) {
+  return Object.keys(attrs).filter(key => attrs[key] !== null && attrs[key] !== undefined && attrs[key] !== '').map(key => `${key}="${escapeHtml(attrs[key])}"`).join(' ');
+}
+
+function tableNodeToHtml(node = {}, className = 'sheet-table') {
+  const rows = (node.content || []).map(row => {
+    const cells = (row.content || []).map(cell => {
+      const attrs = cell.attrs || {};
+      const tagName = cell.type === 'tableHeader' ? 'th' : 'td';
+      const style = [
+        attrs.background ? `background:${attrs.background}` : '',
+        attrs.verticalAlign ? `vertical-align:${attrs.verticalAlign}` : ''
+      ].filter(Boolean).join(';');
+      const htmlAttrs = attrsToHtml({
+        colspan: attrs.colspan > 1 ? attrs.colspan : null,
+        rowspan: attrs.rowspan > 1 ? attrs.rowspan : null,
+        style
+      });
+      return `<${tagName}${htmlAttrs ? ` ${htmlAttrs}` : ''}>${tableCellToHtml(cell)}</${tagName}>`;
+    }).join('');
+    return `<tr>${cells}</tr>`;
+  }).join('');
+  return `<table class="${escapeHtml(className)}"><tbody>${rows}</tbody></table>`;
+}
+
 function getDefaultTableStyle() {
   return {
     table: 'table-layout:fixed;border-collapse:collapse;width:100%;text-align:left;border:none;',
@@ -133,6 +158,8 @@ function tableNodeToConfig(node = {}) {
   return {
     row: rows.length,
     col: colCount,
+    headerList: Array.from({ length: colCount }).map(() => ({ width: 200 })),
+    lefterList: Array.from({ length: rows.length }).map(() => ({ height: 45 })),
     tableList,
     tableStyle: getDefaultTableStyle()
   };
@@ -162,7 +189,13 @@ export function tiptapToLineList(doc = EMPTY_TIPTAP_DOC) {
       const handler = attrs.level === 1 ? 'h1' : attrs.level === 2 ? 'h2' : 'p';
       lineList.push(createLineItem(handler, node, inlineToHtml(node.content || [])));
     } else if (node.type === 'paragraph') {
-      lineList.push(createLineItem('p', node, inlineToHtml(node.content || [])));
+      if (attrs.blockType === 'markdown') {
+        lineList.push(createLineItem('markdown', node, nodeText(node)));
+      } else if (attrs.blockType === 'editor') {
+        lineList.push(createLineItem('editor', node, inlineToHtml(node.content || [])));
+      } else {
+        lineList.push(createLineItem('p', node, inlineToHtml(node.content || [])));
+      }
     } else if (node.type === 'bulletList') {
       lineList.push(createLineItem('ul', node, listToHtml(node), { className: 'disc' }));
     } else if (node.type === 'orderedList') {
@@ -183,7 +216,8 @@ export function tiptapToLineList(doc = EMPTY_TIPTAP_DOC) {
       }));
     } else if (node.type === 'table') {
       const handler = attrs.blockType === 'formtable' ? 'formtable' : 'table';
-      lineList.push(createLineItem(handler, node, handler === 'formtable' ? { type: 'doc', content: [node] } : '', tableNodeToConfig(node)));
+      // 详情页 formtable 仍按 v-html 渲染，保存协议必须输出 HTML 字符串，不能把 Tiptap JSON 直接塞进 content。
+      lineList.push(createLineItem(handler, node, handler === 'formtable' ? tableNodeToHtml(node) : '', tableNodeToConfig(node)));
     } else {
       lineList.push(createLineItem('editor', node, inlineToHtml(node.content || []) || nodeText(node), {
         tiptapType: node.type,
@@ -372,6 +406,19 @@ function htmlToTiptapNodes(html = '', attrs = {}) {
   return blockElements.map(element => domBlockToTiptapNode(element, { ...attrs, blockUuid: utils.setUuid() }));
 }
 
+function formtableHtmlToTiptapNodes(html = '', attrs = {}) {
+  if (typeof document === 'undefined') {
+    return htmlToTiptapNodes(html, attrs);
+  }
+  const container = document.createElement('div');
+  container.innerHTML = String(html || '');
+  const tableElements = Array.from(container.querySelectorAll('table'));
+  if (tableElements.length > 0) {
+    return tableElements.map(table => domTableToTiptapTable(table, { ...attrs, blockUuid: utils.setUuid(), blockType: 'formtable' }));
+  }
+  return htmlToTiptapNodes(html, { ...attrs, blockType: 'formtable' });
+}
+
 function textNodeFromHtml(html = '') {
   const text = htmlToText(html);
   return text ? [{ type: 'text', text }] : [];
@@ -506,7 +553,7 @@ function lineToTiptapNodes(item = {}) {
         }
       }];
     }
-    return htmlToTiptapNodes(item.content, { ...attrs, blockType: 'formtable' });
+    return formtableHtmlToTiptapNodes(item.content, { ...attrs, blockType: 'formtable' });
   }
   return [{
     type: 'paragraph',
