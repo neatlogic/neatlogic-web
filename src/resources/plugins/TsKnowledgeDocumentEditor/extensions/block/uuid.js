@@ -67,33 +67,36 @@ export const BlockUuid = Extension.create({
         
           let tr = newState.tr;
           let modified = false;
+          const seenBlockUuid = new Set();
         
-          for (const tx of transactions) {
-            if (!tx.docChanged) continue;
-        
-            for (const stepMap of tx.mapping.maps) {
-              stepMap.forEach((oldStart, oldEnd, newStart, newEnd) => {
-                if (newEnd <= newStart) return;
-        
-                newState.doc.nodesBetween(newStart, newEnd, (node, pos) => {
-                  if (!node.isBlock) return;
-                  if (!REAL_BLOCKS.has(node.type.name)) return;
-                  if (node.attrs.blockUuid) return;
-        
-                  tr.setNodeMarkup(pos, node.type, {
-                    ...node.attrs,
-                    blockUuid: utils.setUuid(),
-                    blockType:
-                      node.type.name === 'heading'
-                        ? `heading${node.attrs.level}`
-                        : node.type.name
-                  });
-        
-                  modified = true;
-                });
-              });
-            }
+          if (!transactions.some(tx => tx.docChanged)) {
+            return null;
           }
+
+          newState.doc.descendants((node, pos) => {
+            if (!node.isBlock || !REAL_BLOCKS.has(node.type.name)) {
+              return;
+            }
+
+            const currentUuid = node.attrs.blockUuid;
+            // 历史数据、拖拽或外部转换可能带入重复 uuid；统一在编辑器层修正，避免目录和块级命令定位冲突。
+            if (currentUuid && !seenBlockUuid.has(currentUuid)) {
+              seenBlockUuid.add(currentUuid);
+              return;
+            }
+
+            const nextUuid = utils.setUuid();
+            seenBlockUuid.add(nextUuid);
+            tr.setNodeMarkup(pos, node.type, {
+              ...node.attrs,
+              blockUuid: nextUuid,
+              blockType:
+                node.type.name === 'heading'
+                  ? `heading${node.attrs.level}`
+                  : node.type.name
+            });
+            modified = true;
+          });
         
           return modified ? tr : null;
         }

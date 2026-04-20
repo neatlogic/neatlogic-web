@@ -34,6 +34,7 @@
         $emit('insert-below-position', menuData)
       }"
       @handleMouse="handleMouse"
+      @drag-start="event => $emit('drag-start', event)"
       @dropdown-visible-change="status => $emit('dropdown-visible-change', status)"
     >
     </EditRowMenu>

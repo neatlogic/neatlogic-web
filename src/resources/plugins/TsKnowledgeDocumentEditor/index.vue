@@ -3,7 +3,7 @@
     <div class="editor-main" :class="{ 'is-readonly': readonly }" @click.stop="hidePlus">
       <div class="editor-menu">
         <ul>
-          <li v-for="(item, index) in menuList" :key="item.uuid || index" :class="getMenuClass(item)">
+          <li v-for="(item, index) in menuList" :key="`${item.uuid || 'heading'}_${index}`" :class="getMenuClass(item)">
             <div class="menu-text" @click="selectHeading(item)">
               <span class="heading-icon" :class="getHeadingIcon(item)" @click.stop="handleClick(item, index)"></span>
               <span :class="{ 'text-href': selectHeadingUuid === item.uuid }">{{ item.text }}</span>
@@ -57,6 +57,7 @@
             @insert-below-position="menuData => handleInsertBelowPosition({ menuData, editor, hoverBlockDom })"
             @handleMouse="handleMouse"
             @menu-hover="handleBlockMenuHover"
+            @drag-start="handleBlockDragStart"
             @dropdown-visible-change="handleBlockMenuDropdownVisible"
           ></BlockMenu>
           <SelectContentMenu
@@ -83,6 +84,11 @@
             :readonly="!isContentEditable"
             @click-menu="menuData => handleReplaceMenuContent({ menuData, editor, hoverBlockDom })"
           ></LinkHover>
+          <div
+            v-if="isDraggingBlock && blockDragIndicator.visible"
+            class="knowledge-document-editor-drag-indicator"
+            :style="{ top: `${blockDragIndicator.top}px`, left: `${blockDragIndicator.left}px`, width: `${blockDragIndicator.width}px` }"
+          ></div>
         </div>
       </div>
     </div>
@@ -191,6 +197,15 @@ export default {
       blockMenuDropdownVisibleCount: 0,
       blockMenuHideTimer: null,
       lastMouseEvent: null,
+      isDraggingBlock: false,
+      blockDragSource: null,
+      blockDragTarget: null,
+      blockDragIndicator: {
+        visible: false,
+        top: 0,
+        left: 0,
+        width: 0
+      },
       editor: null,
       hoverBlockDom: null,
       menuList: [],
@@ -353,6 +368,7 @@ export default {
       this.cancelBlockMenuHide();
       this.handleMouseMove?.cancel && this.handleMouseMove.cancel();
       document.removeEventListener('mousemove', this.handleDocumentMouseMove, true);
+      this.removeBlockDragListeners();
       this.isShowBlockMenu = false;
       this.isShowTableMenu = false;
       this.isShowSelectContentMenu = false;
@@ -360,6 +376,10 @@ export default {
       this.isShowLinkHover = false;
       this.hoverBlockDom = null;
       this.lastMouseEvent = null;
+      this.isDraggingBlock = false;
+      this.blockDragSource = null;
+      this.blockDragTarget = null;
+      this.blockDragIndicator.visible = false;
       this.linkHoverConfig = {};
       const editor = this.editor;
       // Break shared editor references before destroy so floating menus cannot touch a stale Tiptap view during route leave.
@@ -575,6 +595,9 @@ export default {
         this.hidePlus();
         return;
       }
+      if (this.isDraggingBlock) {
+        return;
+      }
       this.lastMouseEvent = event;
       const wrapper = this.$refs.editorWrapper;
       const editorEl = wrapper?.querySelector('.ProseMirror');
@@ -641,6 +664,10 @@ export default {
     }, 500),
     handleDocumentMouseMove(event) {
       this.lastMouseEvent = event;
+      if (this.isDraggingBlock) {
+        this.cancelBlockMenuHide();
+        return;
+      }
       if (this.isBlockMenuTarget(event.target)) {
         this.cancelBlockMenuHide();
       }
@@ -665,6 +692,10 @@ export default {
       return this.isBlockMenuTarget(target);
     },
     handleEditorMouseLeave(event) {
+      if (this.isDraggingBlock) {
+        this.cancelBlockMenuHide();
+        return;
+      }
       const toEl = event.relatedTarget;
       if (this.isBlockMenuTarget(toEl) || this.isMovingToBlockMenu(event)) {
         this.cancelBlockMenuHide();
@@ -694,6 +725,10 @@ export default {
       return event.clientX >= menuLeft && event.clientX <= menuRight && event.clientY >= menuTop - 8 && event.clientY <= menuBottom;
     },
     handleBlockMenuHover(status, event) {
+      if (this.isDraggingBlock) {
+        this.cancelBlockMenuHide();
+        return;
+      }
       if (!status && this.isBlockMenuTarget(event?.relatedTarget)) {
         return;
       }
@@ -716,6 +751,10 @@ export default {
       }
     },
     scheduleBlockMenuHide() {
+      if (this.isDraggingBlock) {
+        this.cancelBlockMenuHide();
+        return;
+      }
       this.cancelBlockMenuHide();
       this.blockMenuHideTimer = window.setTimeout(() => {
         if (!this.isBlockMenuHover && !this.isBlockMenuDropdownVisible && !this.isMouseInBlockMenuLayer()) {
@@ -730,6 +769,9 @@ export default {
       }
     },
     hidePlus() {
+      if (this.isDraggingBlock) {
+        return;
+      }
       if (this.isBlockMenuHover || this.isBlockMenuDropdownVisible || this.isMouseInBlockMenuLayer()) {
         return;
       }
@@ -737,6 +779,143 @@ export default {
       this.isShowTableMenu = false;
       this.isShowLinkHover = false;
       this.hoverBlockDom = null;
+    },
+    handleBlockDragStart(event) {
+      if (!this.isContentEditable || !this.hoverBlockDom) {
+        return;
+      }
+      const rect = this.hoverBlockDom.getBoundingClientRect?.();
+      const source = rect ? this.getRootBlockRangeByCoords(rect.left + 4, rect.top + Math.min(rect.height / 2, 24)) : null;
+      if (!source || !source.node || source.node.type.name === 'doc') {
+        return;
+      }
+      this.isDraggingBlock = true;
+      this.blockDragSource = source;
+      this.blockDragTarget = null;
+      this.blockDragIndicator.visible = false;
+      this.cancelBlockMenuHide();
+      document.addEventListener('mousemove', this.handleBlockDragMove, true);
+      document.addEventListener('mouseup', this.handleBlockDragEnd, true);
+      event.dataTransfer && event.dataTransfer.setData('text/plain', '');
+    },
+    handleBlockDragMove(event) {
+      if (!this.isDraggingBlock) {
+        return;
+      }
+      event.preventDefault();
+      const target = this.getRootBlockRangeByCoords(event.clientX, event.clientY);
+      if (!target || !this.blockDragSource || this.isSameOrInsideDragSource(target)) {
+        this.blockDragTarget = null;
+        this.blockDragIndicator.visible = false;
+        return;
+      }
+      const view = this.getEditorView();
+      const wrapperRect = this.$refs.editorWrapper?.getBoundingClientRect?.();
+      const targetDom = view?.nodeDOM(target.from);
+      const targetRect = targetDom?.getBoundingClientRect?.();
+      if (!wrapperRect || !targetRect) {
+        return;
+      }
+      const dropPosition = event.clientY < targetRect.top + targetRect.height / 2 ? 'before' : 'after';
+      this.blockDragTarget = {
+        ...target,
+        dropPosition,
+        insertPosition: dropPosition === 'before' ? target.from : target.to
+      };
+      this.blockDragIndicator = {
+        visible: true,
+        top: Math.max((dropPosition === 'before' ? targetRect.top : targetRect.bottom) - wrapperRect.top, 0),
+        left: Math.max(targetRect.left - wrapperRect.left, 0),
+        width: Math.max(targetRect.width, 80)
+      };
+    },
+    handleBlockDragEnd(event) {
+      if (!this.isDraggingBlock) {
+        return;
+      }
+      event.preventDefault();
+      const source = this.blockDragSource;
+      const target = this.blockDragTarget;
+      this.removeBlockDragListeners();
+      this.isDraggingBlock = false;
+      this.blockDragSource = null;
+      this.blockDragTarget = null;
+      this.blockDragIndicator.visible = false;
+      if (!source || !target) {
+        return;
+      }
+      this.moveBlock(source, target);
+    },
+    removeBlockDragListeners() {
+      document.removeEventListener('mousemove', this.handleBlockDragMove, true);
+      document.removeEventListener('mouseup', this.handleBlockDragEnd, true);
+    },
+    getRootBlockRangeByCoords(clientX, clientY) {
+      const view = this.getEditorView();
+      const { state } = this.editor || {};
+      const { doc } = state || {};
+      if (!view || !doc) {
+        return null;
+      }
+      const result = view.posAtCoords({ left: clientX, top: clientY });
+      if (!result) {
+        return null;
+      }
+      const safePos = Math.max(0, Math.min(result.pos, doc.content.size));
+      const $pos = doc.resolve(safePos);
+      if ($pos.depth > 0) {
+        const topNode = $pos.node(1);
+        const from = $pos.before(1);
+        return {
+          node: topNode,
+          from,
+          to: from + topNode.nodeSize
+        };
+      }
+      let range = null;
+      doc.descendants((node, pos) => {
+        if (range || !node.type.isBlock) {
+          return false;
+        }
+        if (pos <= safePos && safePos <= pos + node.nodeSize) {
+          range = {
+            node,
+            from: pos,
+            to: pos + node.nodeSize
+          };
+          return false;
+        }
+      });
+      return range;
+    },
+    isSameOrInsideDragSource(target) {
+      const source = this.blockDragSource;
+      if (!source || !target) {
+        return false;
+      }
+      return target.from === source.from || (target.from > source.from && target.from < source.to);
+    },
+    moveBlock(source, target) {
+      const view = this.getEditorView();
+      const { state } = this.editor || {};
+      const { doc } = state || {};
+      if (!view || !doc || !source.node) {
+        return;
+      }
+      let insertPosition = target.insertPosition;
+      if (insertPosition > source.from) {
+        insertPosition -= source.node.nodeSize;
+      }
+      if (insertPosition === source.from || insertPosition === source.to) {
+        return;
+      }
+      const slice = doc.slice(source.from, source.to);
+      const tr = state.tr.delete(source.from, source.to).insert(insertPosition, slice.content);
+      view.dispatch(tr.scrollIntoView());
+      this.emitChange();
+      this.$nextTick(() => {
+        this.getAllHeadings(this.editor);
+      });
     },
     tableRowColHeadClick({ event, index, type, rowHeight }) {
       if (!this.isContentEditable) {
@@ -955,6 +1134,24 @@ export default {
     transform: translate(-50%, -50%);
     z-index: 9999;
     pointer-events: none;
+  }
+}
+.knowledge-document-editor-drag-indicator {
+  position: absolute;
+  height: 2px;
+  background: #1670f0;
+  border-radius: 2px;
+  z-index: 20;
+  pointer-events: none;
+  &:before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: -3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #1670f0;
   }
 }
 .editor-content-container {

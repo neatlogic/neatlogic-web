@@ -10,7 +10,12 @@
         @mouseenter="handleEnter"
         @mouseleave="handleLeave"
       >
-        <span :class="getFontClassName" class="text-href" style="margin-right: -5px;"></span>
+        <span
+          :class="getFontClassName"
+          class="text-href knowledge-document-editor-drag-handle"
+          style="margin-right: -5px;"
+          @mousedown.stop.prevent="handleDragStart"
+        ></span>
         <span class="tsfont-option-vertical cursor-pointer"></span>
       </div>
       <DropdownMenu slot="list">
@@ -79,6 +84,9 @@ export default {
     },
     handleLeave(e) {
       this.$emit('handleMouse', false);
+    },
+    handleDragStart(event) {
+      this.$emit('drag-start', event);
     }
   },
   filter: {},
