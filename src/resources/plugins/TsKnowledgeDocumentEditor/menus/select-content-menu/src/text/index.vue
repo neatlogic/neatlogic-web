@@ -18,12 +18,12 @@ import mixin from '@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-co
 export default {
   name: '',
   components: {
-    BaseMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/base-menu.vue'),
-    ColorDropdown: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/color-dropdown.vue'),
-    DivideMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/divide-menu.vue'),
-    AlignmentDropdown: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/alignment-dropdown.vue'),
-    BlockTypeDropdown: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/block-type-dropdown.vue'),
-    LinkMenu: () => import('@/resources/plugins/TsKnowledgeDocumentEditor/menus/select-content-menu/src/common/link-menu.vue')
+    BaseMenu: () => import('../common/base-menu.vue'),
+    ColorDropdown: () => import('../common/color-dropdown.vue'),
+    DivideMenu: () => import('../common/divide-menu.vue'),
+    AlignmentDropdown: () => import('../common/alignment-dropdown.vue'),
+    BlockTypeDropdown: () => import('../common/block-type-dropdown.vue'),
+    LinkMenu: () => import('../common/link-menu.vue')
   },
   mixins: [mixin],
   props: {},

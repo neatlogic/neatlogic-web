@@ -6,6 +6,9 @@ import {
 } from 'prosemirror-tables';
 import { findTablePosByUuid } from './utils.js';
 export default function insertRow({ editor, options }) {
+  const view = getEditorView(editor);
+  if (!view) return;
+
   const {
     nodeAttrs = {},
     index: rowIndex,
@@ -13,7 +16,7 @@ export default function insertRow({ editor, options }) {
   } = options || {};
 
   const tableUuid = nodeAttrs.blockUuid;
-  const { state, view } = editor;
+  const { state } = editor;
 
   if (!tableUuid || typeof rowIndex !== 'number') return;
 
@@ -66,4 +69,15 @@ function setSelectionToRow(state, tr, tablePos, rowIndex) {
   return tr.setSelection(
     CellSelection.create(tr.doc, from, to)
   );
+}
+
+function getEditorView(editor) {
+  if (!editor || editor.isDestroyed) {
+    return null;
+  }
+  try {
+    return editor.view || null;
+  } catch (error) {
+    return null;
+  }
 }

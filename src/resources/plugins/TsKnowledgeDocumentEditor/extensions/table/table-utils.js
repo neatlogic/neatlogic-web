@@ -7,6 +7,9 @@ import { TextSelection } from 'prosemirror-state';
  */
 export function findTableByUuid(state, uuid) {
   let result = null;
+  if (!state || !state.doc) {
+    return result;
+  }
 
   state.doc.descendants((node, pos) => {
     if (
@@ -25,7 +28,7 @@ export function findTableByUuid(state, uuid) {
  * 根据 uuid 获取表格行列数
  */
 function getTableSizeByUuid(editor, uuid) {
-  if (!editor || !uuid) return null;
+  if (!editor || editor.isDestroyed || !editor.state || !uuid) return null;
 
   const { node } = findTableByUuid(editor.state, uuid) || {};
   if (!node) return null;
@@ -66,7 +69,9 @@ function getColumnWidthsFromTableNode(tableNode) {
 
 // 根据 uuid 和列索引删除列
 export function deleteColumnByUuid(editor, uuid, colIndex) {
-  const { state, view } = editor;
+  const view = getEditorView(editor);
+  if (!view) return;
+  const { state } = editor;
 
   const tableInfo = findTableByUuid(state, uuid);
   if (!tableInfo) return;
@@ -102,7 +107,9 @@ export function deleteColumnByUuid(editor, uuid, colIndex) {
  * 根据 uuid 删除表格中的指定行
  */
 export function deleteRowByUuid(editor, uuid, rowIndex) {
-  const { state, view } = editor;
+  const view = getEditorView(editor);
+  if (!view) return;
+  const { state } = editor;
 
   const tableInfo = findTableByUuid(state, uuid);
   if (!tableInfo) return;
@@ -153,3 +160,14 @@ export const TableUtils = Extension.create({
       getTableSizeByUuid(this.editor, uuid);
   }
 });
+
+function getEditorView(editor) {
+  if (!editor || editor.isDestroyed || !editor.state) {
+    return null;
+  }
+  try {
+    return editor.view || null;
+  } catch (error) {
+    return null;
+  }
+}

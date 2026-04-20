@@ -215,7 +215,9 @@ export default {
   .basic-menu-box {
     display: grid;
     grid-template-columns: repeat(7, 30px);
-    justify-content: space-between;
+    justify-content: start;
+    column-gap: 8px;
+    row-gap: 8px;
     margin-top: 6px;
   }
   .basic-menu-text {
@@ -223,17 +225,14 @@ export default {
     width: 24px;
     height: 24px;
     line-height: 24px;
-    margin-right: 8px;
-    margin-bottom: 8px;
+    margin-right: 0;
+    margin-bottom: 0;
     font-size: 15px;
     cursor: pointer;
     text-align: center;
     &:hover {
       background: #1f23291f;
       border-radius: 4px;
-    }
-    &:nth-last-child(-n + 6) {
-      margin-bottom: 0;
     }
   }
 }

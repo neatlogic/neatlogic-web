@@ -212,7 +212,7 @@ export default {
             type: 'BaseMenu',
             icon: 'tsfont-table-split-cell',
             tipContentList: ['拆分单元格'],
-            command: 'splitRow'
+            command: 'splitCell'
           },
           ...this.baseComponentList,
           ...commonList
@@ -223,7 +223,7 @@ export default {
             type: 'BaseMenu',
             icon: 'tsfont-table-split-cell',
             tipContentList: ['拆分单元格'],
-            command: 'splitRow'
+            command: 'splitCell'
           },
           ...this.baseComponentList
         ];

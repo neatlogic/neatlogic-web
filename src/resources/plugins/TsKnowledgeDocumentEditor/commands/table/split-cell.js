@@ -12,7 +12,9 @@ export default function splitCell({ editor, options }) {
   while (guard++ < 100) {
     let found = false;
 
-    const { state, view } = editor;
+    const view = getEditorView(editor);
+    if (!view) return;
+    const { state } = editor;
 
     const tablePos = findTablePosByUuid(state.doc, tableUuid);
     if (tablePos == null) return;
@@ -95,5 +97,16 @@ export default function splitCell({ editor, options }) {
     }
 
     if (!found) break;
+  }
+}
+
+function getEditorView(editor) {
+  if (!editor || editor.isDestroyed) {
+    return null;
+  }
+  try {
+    return editor.view || null;
+  } catch (error) {
+    return null;
   }
 }

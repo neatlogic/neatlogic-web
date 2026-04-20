@@ -1,3 +1,5 @@
+import { getKnowledgeDocumentIdFromHref, getKnowledgeLinkType } from './link-utils.js';
+
 /* 
  获取表格节点
  @param {position} 坐标
@@ -252,24 +254,35 @@ export function getTableRowHeights(tableOrWrapperEl) {
     target: '_blank' // 可选，默认为 '_self'
   }
 */
-export function getLinksInfoFromParagraph(paragraphNode) {
+export function getLinksInfoFromParagraph(paragraphNode, paragraphPos = 0, hoverPos = null) {
   let links = {};
   const { content = {} } = paragraphNode || {};
   const contentList = content.content || [];
 
-  contentList.forEach((child) => {
+  contentList.forEach((child, index) => {
     if (!child.isText || !child.marks?.length) return;
 
     const linkMark = child.marks.find((mark) => mark.type.name === 'link');
     if (linkMark) {
+      const startPosition = paragraphPos + 1 + contentList.slice(0, index).reduce((sum, item) => sum + item.nodeSize, 0);
+      const endPosition = startPosition + child.nodeSize;
+      if (hoverPos != null && (hoverPos < startPosition || hoverPos >= endPosition)) {
+        return;
+      }
+      const { href = '', target = '', class: className = '' } = linkMark.attrs || {};
+      const linkType = getKnowledgeLinkType(href, className);
       links = {
         type: 'link',
         text: child.text,
-        href: linkMark.attrs.href,
-        target: linkMark.attrs.target
+        href,
+        target,
+        class: className,
+        linkType,
+        knowledgeDocumentId: getKnowledgeDocumentIdFromHref(href),
+        startPosition,
+        endPosition
       };
     }
   });
   return links;
 }
-

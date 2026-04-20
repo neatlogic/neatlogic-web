@@ -116,17 +116,19 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.clearSearchHighlight();
+  },
   destroyed() {},
   methods: {
     closeDialog() {
-      this.editor.view.dispatch( // 清空高亮
-        this.editor.state.tr.setMeta(SearchHighlightKey, { results: [] })
-      );
+      this.clearSearchHighlight();
       this.$emit('close');
     },
     searchContentChange(keyword) {
       if (this.composing) return;
+      const view = this.getEditorView();
+      if (!view) return;
       const matchResultList = this.findMatchElements(keyword);
       this.matchResultList = matchResultList;
       this.totalNum = matchResultList.length;
@@ -136,7 +138,7 @@ export default {
         results: matchResultList,
         activeIndex: 0
       });
-      this.editor.view.dispatch(tr);
+      view.dispatch(tr);
     },
     onCompositionEnd(e) {
       // 组合结束，手动把最终汉字当成一次有效输入
@@ -145,8 +147,9 @@ export default {
     },
     findMatchElements(keyword) {
       const results = [];
-      const doc = this.editor.view.state.doc;
-      if (!keyword) {
+      const view = this.getEditorView();
+      const doc = view?.state?.doc;
+      if (!keyword || !doc) {
         return results;
       }
       doc.descendants((node, pos, parent) => {
@@ -169,6 +172,8 @@ export default {
     },
     goNext() {
       if (!this.totalNum) return;
+      const view = this.getEditorView();
+      if (!view) return;
 
       this.searchNum = (this.searchNum % this.totalNum) + 1;
 
@@ -177,10 +182,12 @@ export default {
         results: this.matchResultList,
         activeIndex: this.searchNum - 1
       });
-      this.editor.view.dispatch(tr);
+      view.dispatch(tr);
     },
     goPrev() {
       if (!this.totalNum) return;
+      const view = this.getEditorView();
+      if (!view) return;
 
       this.searchNum = (this.searchNum - 2 + this.totalNum) % this.totalNum + 1;
 
@@ -189,9 +196,11 @@ export default {
         results: this.matchResultList,
         activeIndex: this.searchNum - 1
       });
-      this.editor.view.dispatch(tr);
+      view.dispatch(tr);
     },
     replaceAll() {
+      const view = this.getEditorView();
+      if (!view) return;
       const reverseCopy = [...this.matchResultList].reverse();
       const {replaceContent} = this.formData;
       reverseCopy.forEach(match => {
@@ -201,13 +210,15 @@ export default {
         );
       });
       // 替换完成后清空高亮
-      this.editor.view.dispatch(
+      view.dispatch(
         this.editor.state.tr.setMeta(SearchHighlightKey, { results: [] })
       );
       this.totalNum = 0;
       this.searchNum = 0;
     },
     replaceSingle() {
+      const view = this.getEditorView();
+      if (!view) return;
       const {replaceContent} = this.formData;
       const matchIndex = this.searchNum - 1;
       const match = this.matchResultList[matchIndex];
@@ -224,9 +235,24 @@ export default {
         .map(d => ({ from: d.from, to: d.to })); // 转回 meta 结构
 
       // 更新 DecorationSet
-      this.editor.view.dispatch(
+      view.dispatch(
         this.editor.state.tr.setMeta(SearchHighlightKey, { results: newResults })
       );
+    },
+    clearSearchHighlight() {
+      const view = this.getEditorView();
+      if (!view) return;
+      view.dispatch(this.editor.state.tr.setMeta(SearchHighlightKey, { results: [] }));
+    },
+    getEditorView() {
+      if (!this.editor || this.editor.isDestroyed) {
+        return null;
+      }
+      try {
+        return this.editor.view || null;
+      } catch (error) {
+        return null;
+      }
     }
 
   },

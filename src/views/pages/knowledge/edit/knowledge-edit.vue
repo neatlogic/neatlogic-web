@@ -30,7 +30,16 @@
       </template>
       <template slot="content">
         <div>
-          <TsKnowledgeDocumentEditor ref="editorRef" :documentTitle="title"></TsKnowledgeDocumentEditor>
+          <TsKnowledgeDocumentEditor
+            ref="editorRef"
+            :documentTitle.sync="title"
+            :documentConfig="knowledgeConfing"
+            :can-edit-title="isReviewer === 1"
+            :can-edit-content="isMember === 1"
+            :can-edit-tag="isMember === 1"
+            :can-edit-attachment="isMember === 1"
+            @title-change="handleTitleChange"
+          ></TsKnowledgeDocumentEditor>
         </div>
       </template>
     </TsContain>
@@ -43,7 +52,7 @@
     ></ReviewDialog>
     <!-- 活动 -->
     <ActivityOverview :isShow.sync="isActivityShow" :knowledgeDocumentId="knowledgeDocumentId"></ActivityOverview>
-    <SaveOverview :isShow.sync="isSaveShow" :dataConfig="getAllSaveData()"></SaveOverview>
+    <SaveOverview :isShow.sync="isSaveShow" :dataConfig="saveOverviewData"></SaveOverview>
   </div>
 </template>
 <script>
@@ -72,7 +81,9 @@ export default {
       isReviewShow: false, //提交审核弹框
       isActivityShow: false, //活动
       isSaveShow: false, //另存为模板弹窗
+      saveOverviewData: {},
       defaultData: null,
+      lastEditorSaveData: {},
       isReviewer: 1, //修改标题和类型权限
       isMember: 1,
       defaultConfig: {
@@ -92,13 +103,21 @@ export default {
     if (this.$route.query.knowledgeDocumentId) {
       this.knowledgeDocumentId = parseInt(this.$route.query.knowledgeDocumentId);
       this.getDocument();
+    } else {
+      this.$nextTick(() => {
+        this.initDefaultData();
+      });
     }
   },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.isSaveShow = false;
+    this.isActivityShow = false;
+    this.isReviewShow = false;
+  },
   destroyed() {},
   methods: {
     getDocument() {
@@ -117,6 +136,9 @@ export default {
           this.isMember = config.isMember;
           this.$set(this.defaultConfig, 'title', config.title);
           this.$set(this.defaultConfig, 'knowledgeDocumentTypeUuid', config.knowledgeDocumentTypeUuid);
+          this.$nextTick(() => {
+            this.initDefaultData();
+          });
         }
       });
     },
@@ -128,7 +150,7 @@ export default {
       if (this.title == '' || !this.$utils.nameRegularValid(this.title)) {
         isVaild = false;
         this.$nextTick(() => {
-          this.$refs.titleInput.focus();
+          this.focusEditorTitle();
         });
       }
       return isVaild;
@@ -144,9 +166,26 @@ export default {
       if (isSubmit) {
         this.$set(data, 'isSubmit', 1);
       }
-      let editConfig = this.$refs.editConfig ? this.$refs.editConfig.getAllData() : {};
+      let editConfig = this.getEditorSaveData();
       Object.assign(data, editConfig);
       return data;
+    },
+    // 路由层只关心知识库保存协议；编辑器内部的新旧格式转换由组件自己处理。
+    getEditorSaveData() {
+      const editorRef = this.$refs.editorRef;
+      if (editorRef && editorRef.getAllData && !editorRef.isDestroyingEditor) {
+        this.lastEditorSaveData = editorRef.getAllData();
+        return this.lastEditorSaveData;
+      }
+      if (this.$refs.editConfig && this.$refs.editConfig.getAllData) {
+        this.lastEditorSaveData = this.$refs.editConfig.getAllData();
+        return this.lastEditorSaveData;
+      }
+      // Route leave and modal re-render can happen after the editor starts destroying.
+      return this.lastEditorSaveData || {};
+    },
+    handleTitleChange(title) {
+      this.title = title || '';
     },
     saveDraftDocument(type) {
       let _this = this;
@@ -248,7 +287,7 @@ export default {
             duration: 1.5
           });
           this.$nextTick(() => {
-            this.$refs.titleInput.focus();
+            this.focusEditorTitle();
           });
         }
       }
@@ -277,28 +316,26 @@ export default {
     },
     saveTempalet() {
       //另存为模板前判断是否有导航目录
-      const { content = [] } = this.$refs?.editorRef?.getSaveData();
-      let list = [];
-      content.forEach((item) => {
-        if (item.type == 'heading' && item.attrs?.level == 1 || item.attrs.level == 2) {
-          list.push(item);
-        }
-      });
+      let list = this.getTemplateData();
       if (list.length === 0) {
         this.$Notice.warning({ title: this.$t('form.validate.required', { target: this.$t('term.knowledge.navigationdirectory') }) });
         return;
       }
+      this.saveOverviewData = this.getAllSaveData();
       this.isSaveShow = !this.isSaveShow;
     },
+    // 模板弹窗沿用导航目录校验，但目录数据优先从新 Tiptap 编辑器读取。
     getTemplateData() {
-      const { content = [] } = this.$refs?.editorRef?.getSaveData();
-      let templateList = [];
-      content.forEach((item) => {
-        if (item.type == 'heading' && item.attrs?.level == 1 || item.attrs.level == 2) {
-          templateList.push(item);
-        }
-      });
-      return templateList;
+      if (this.$refs.editorRef && this.$refs.editorRef.getTemplateData) {
+        return this.$refs.editorRef.getTemplateData();
+      }
+      return [];
+    },
+    focusEditorTitle() {
+      const editorRef = this.$refs.editorRef;
+      if (editorRef && typeof editorRef.focusTitle === 'function') {
+        editorRef.focusTitle();
+      }
     }
   },
   computed: {

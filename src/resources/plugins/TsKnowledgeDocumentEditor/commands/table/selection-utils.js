@@ -5,6 +5,9 @@ import { splitCell } from 'prosemirror-tables';
  * 获取当前 selection 所在的 tableCell
  */
 export function getSelectedTableCell(editor) {
+  if (!editor || editor.isDestroyed || !editor.state) {
+    return null;
+  }
   const { selection } = editor.state;
 
   return findParentNodeClosestToPos(
@@ -28,6 +31,9 @@ export function isMergedCell(editor) {
  * 拆分当前单元格（安全方式）
  */
 export function splitCurrentCell(editor) {
+  if (!editor || editor.isDestroyed) {
+    return false;
+  }
   return editor
     .chain()
     .command(({ state, dispatch }) => {

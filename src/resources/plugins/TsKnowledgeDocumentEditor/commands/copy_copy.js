@@ -5,7 +5,6 @@ import { $t } from '@/resources/init.js';
 export default function copy({ editor, position, options }) {
   const { startPosition } = position || {};
   if (startPosition == null) return;
-  console.log('复制的内容1', options);
 
   const { view } = editor;
   const { state } = view;
@@ -44,8 +43,6 @@ export default function copy({ editor, position, options }) {
         break;
       }
     }
-    console.log('复制的内容2', blockDepth);
-
     if (blockDepth == null) return;
 
     from = $pos.before(blockDepth);
@@ -55,7 +52,6 @@ export default function copy({ editor, position, options }) {
   // 3️⃣ 防御边界
   from = Math.max(0, from);
   to = Math.min(doc.content.size, to);
-  console.log('复制的内容3');
 
   if (from >= to) return;
 

@@ -74,6 +74,9 @@ export default {
   border-radius: 6px;
   padding: 10px 16px;
   z-index: 100;
+  max-width: calc(100vw - 32px);
+  overflow: visible;
+  white-space: nowrap;
   span {
     cursor: pointer;
   } 

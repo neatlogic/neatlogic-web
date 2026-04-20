@@ -110,6 +110,8 @@ const InsertVideo = Node.create({
 
       const syncVideoState = (attrs) => {
         const hasSrc = !!attrs.src;
+        applySize(video, attrs);
+        video.controls = attrs.controls !== false;
       
         if (!hasSrc) {
           // loading 态
@@ -126,8 +128,9 @@ const InsertVideo = Node.create({
           loading.style.display = 'none';
           video.style.display = 'block';
       
-          if (video.src !== attrs.src) {
-            video.src = attrs.src; // 更新视频地址
+          // video.src becomes an absolute URL in the browser, so compare the raw attribute.
+          if (video.getAttribute('src') !== attrs.src) {
+            video.setAttribute('src', attrs.src);
           }
         }
       };

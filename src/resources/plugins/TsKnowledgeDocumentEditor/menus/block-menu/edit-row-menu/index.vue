@@ -3,6 +3,7 @@
     <Dropdown
       :placement="menuType === 'text' ? 'bottom-start' : 'right'"
       @on-click="handleClick"
+      @on-visible-change="status => $emit('dropdown-visible-change', status)"
     >
       <div
         class="knowledge-document-editor-plus-box"
@@ -14,10 +15,20 @@
       </div>
       <DropdownMenu slot="list">
         <template v-if="menuType === 'text'">
-          <TextMenu :node-config="nodeConfig" @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
+          <TextMenu
+            :node-config="nodeConfig"
+            @click-menu="handleClickMenu"
+            @insert-below-position="insertBelowPosition"
+            @dropdown-visible-change="status => $emit('dropdown-visible-change', status)"
+          />
         </template>
         <template v-else-if="atomNodeList.includes(menuType)">
-          <AtomMenu :node-config="nodeConfig" @click-menu="handleClickMenu" @insert-below-position="insertBelowPosition" />
+          <AtomMenu
+            :node-config="nodeConfig"
+            @click-menu="handleClickMenu"
+            @insert-below-position="insertBelowPosition"
+            @dropdown-visible-change="status => $emit('dropdown-visible-change', status)"
+          />
         </template>
       </DropdownMenu>
     </Dropdown>

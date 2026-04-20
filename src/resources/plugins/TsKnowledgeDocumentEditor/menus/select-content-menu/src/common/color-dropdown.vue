@@ -286,7 +286,7 @@ export default {
     },
     handleDropDownMenuMouseLeave(e) {
       const toEl = e.relatedTarget;
-      const btnEl = this.$el.querySelector('.tsfont-horizontal-left');
+      const btnEl = this.$el.querySelector('.tsfont-font-color');
       if (btnEl && btnEl.contains(toEl)) return;
 
       this.isEnterMenu = false;

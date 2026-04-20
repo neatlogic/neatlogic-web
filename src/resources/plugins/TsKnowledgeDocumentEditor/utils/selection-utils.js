@@ -12,6 +12,12 @@ import { TextSelection, NodeSelection} from 'prosemirror-state';
 import { CellSelection, findTable } from 'prosemirror-tables';
 
 export function getSelectedTextInfo(editor) {
+  if (!editor || editor.isDestroyed || !editor.state) {
+    return {
+      hasTextSelection: false,
+      selectedText: ''
+    };
+  }
   const { selection, doc } = editor.state;
 
   if (!(selection instanceof TextSelection)) return false;
@@ -35,6 +41,9 @@ export function getSelectedTextInfo(editor) {
 
 // 获取选中的节点
 export function getSelectionNode(editor) {
+  if (!editor || editor.isDestroyed || !editor.state) {
+    return null;
+  }
   const { selection } = editor.state;
 
   // 处理图片

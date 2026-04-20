@@ -7,6 +7,9 @@ import {
 } from 'prosemirror-tables';
 
 export default function insertColumn({ editor, options }) {
+  const view = getEditorView(editor);
+  if (!view) return;
+
   const {
     nodeAttrs = {},
     index: columnIndex,
@@ -15,7 +18,7 @@ export default function insertColumn({ editor, options }) {
   } = options || {};
 
   const tableUuid = nodeAttrs.blockUuid;
-  const { state, view } = editor;
+  const { state } = editor;
 
   if (!tableUuid || typeof columnIndex !== 'number') return;
 
@@ -72,6 +75,17 @@ export default function insertColumn({ editor, options }) {
   });
 
   view.dispatch(widthTr);
+}
+
+function getEditorView(editor) {
+  if (!editor || editor.isDestroyed) {
+    return null;
+  }
+  try {
+    return editor.view || null;
+  } catch (error) {
+    return null;
+  }
 }
 function setSelectionToColumn(state, tr, tablePos, colIndex) {
   const tableNode = state.doc.nodeAt(tablePos);

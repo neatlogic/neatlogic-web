@@ -16,8 +16,12 @@ export const ImageResize = Node.create({
       height: { default: null },
       align: {
         default: 'left', // left / center / right
+        parseHTML: element => element.getAttribute('data-align') || element.style.textAlign || 'left',
         renderHTML: attrs => {
-          return { 'data-align': attrs.align };
+          return {
+            'data-align': attrs.align,
+            style: `text-align: ${attrs.align || 'left'}`
+          };
         }
       },
       uploadId: { // 上传的ID，用于粘贴图片时，给一个加载中的占位符，图片异步成功后，替换加载中的占位符的内容为真实的内容
@@ -52,10 +56,12 @@ export const ImageResize = Node.create({
   },
 
   renderHTML({ HTMLAttributes }) {
+    const align = HTMLAttributes['data-align'] || 'left';
     return [
       'div',
       mergeAttributes(HTMLAttributes, {
-        'data-block-type': 'image'
+        'data-block-type': 'image',
+        style: `text-align: ${align}`
       }),
       ['img', mergeAttributes(HTMLAttributes)]
     ];
@@ -253,15 +259,19 @@ export const ImageResize = Node.create({
   
       /* ================= sync from node ================= */
       const syncFromNode = node => {
+        // 图片对齐依赖外层块的 text-align；节点属性更新后必须同步到 NodeView DOM。
+        dom.style.textAlign = node.attrs.align || 'left';
+
         if (!node.attrs.src) {
           setStatus('loading');
           img.removeAttribute('src');
           return;
         }
   
-        if (img.src !== node.attrs.src) {
+        // img.src 会被浏览器转换成绝对地址，对齐更新时用原始属性比较可避免误判重载图片。
+        if (img.getAttribute('src') !== node.attrs.src) {
           setStatus('loading');
-          img.src = node.attrs.src;
+          img.setAttribute('src', node.attrs.src);
         }
   
         if (node.attrs.width) img.style.width = node.attrs.width + 'px';

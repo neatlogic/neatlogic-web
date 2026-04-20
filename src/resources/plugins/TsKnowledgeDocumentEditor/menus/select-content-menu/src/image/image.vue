@@ -124,7 +124,7 @@ export default {
         this.$api.knowledge.knowledge.uploadFile(formData)
           .then(res => {
             if (res.Return) {
-              this.$emit('handleSelectMenuContent',
+              this.$emit('menu-item-selected',
                 {
                   commandName: this.currentCommand,
                   options: {

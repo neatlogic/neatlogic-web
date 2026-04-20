@@ -1,9 +1,9 @@
 <template>
   <div class="knowledge-editor-box">
-    <div class="editor-main" @click.stop="() => hidePlus()">
+    <div class="editor-main" :class="{ 'is-readonly': readonly }" @click.stop="hidePlus">
       <div class="editor-menu">
         <ul>
-          <li v-for="(item, index) in menuList" :key="index" :class="getMenuClass(item)">
+          <li v-for="(item, index) in menuList" :key="item.uuid || index" :class="getMenuClass(item)">
             <div class="menu-text" @click="selectHeading(item)">
               <span class="heading-icon" :class="getHeadingIcon(item)" @click.stop="handleClick(item, index)"></span>
               <span :class="{ 'text-href': selectHeadingUuid === item.uuid }">{{ item.text }}</span>
@@ -14,46 +14,62 @@
       <div class="editor-wrapper bg-op">
         <div class="head-info-box">
           <TsFormInput
+            ref="titleInput"
             v-model="title"
             border="none"
             class="document-title"
-            placeholder="请输入标题"
+            :readonly="!isTitleEditable"
+            :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.title') })"
+            @on-change="handleTitleChange"
           ></TsFormInput>
-          <DocumentTag class="mt-sm mb-sm"></DocumentTag>
-          <DocumentAttachment />
+          <DocumentTag
+            ref="tagRef"
+            class="mt-sm mb-sm"
+            :list="tagList"
+            :readonly="!isTagEditable"
+            @change="handleTagChange"
+          ></DocumentTag>
+          <DocumentAttachment
+            ref="attachmentRef"
+            :list="fileList"
+            :readonly="!isAttachmentEditable"
+            @change="handleAttachmentChange"
+          ></DocumentAttachment>
           <div class="border-base-bottom mt-nm mb-nm"></div>
         </div>
         <div
           ref="editorWrapper"
           class="editor-content-box"
           @mousemove="handleMouseMove"
-          @mouseleave="hidePlus"
+          @mouseleave="handleEditorMouseLeave"
           @click="handleClickPlus"
         >
           <div ref="editorContentContainer" class="editor-content-container" @click.stop>
             <EditorContent v-if="editor" :editor="editor" class="editor-content"></EditorContent>
           </div>
           <BlockMenu
-            v-show="isShowBlockMenu"
+            v-show="isShowBlockMenu && isContentEditable"
             :is-empty-row="isEmptyRow"
             :menu-position="menuPosition"
             :node-config="blockMenuNodeConfig"
-            @insert-menu-content="(menuData) => handleInsertMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
-            @replace-menu-content="(menuData) => handleReplaceMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
-            @insert-below-position="menuData => handleInsertBelowPosition({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
+            @insert-menu-content="menuData => handleInsertMenuContent({ menuData, editor, hoverBlockDom })"
+            @replace-menu-content="menuData => handleReplaceMenuContent({ menuData, editor, hoverBlockDom })"
+            @insert-below-position="menuData => handleInsertBelowPosition({ menuData, editor, hoverBlockDom })"
             @handleMouse="handleMouse"
+            @menu-hover="handleBlockMenuHover"
+            @dropdown-visible-change="handleBlockMenuDropdownVisible"
           ></BlockMenu>
           <SelectContentMenu
-            v-show="isShowSelectContentMenu"
+            v-show="isShowSelectContentMenu && isContentEditable"
             ref="selectContentMenuRef"
             :selected-text="selectedText"
             :node-config="nodeConfig"
             :node-name="nodeName"
             :style="{ top: `${selectContentMenuPos.top}px`, left: `${selectContentMenuPos.left}px` }"
-            @handle-select-menu-content="menuData => handleSelectMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"
+            @handle-select-menu-content="menuData => handleSelectMenuContent({ menuData, editor, hoverBlockDom })"
           ></SelectContentMenu>
           <TableHoverLayer
-            v-show="isShowTableMenu"
+            v-show="isShowTableMenu && isContentEditable"
             :table-menu-position="tableMenuPosition"
             :table-uuid="tableUuid"
             :row-height-list="rowHeightList"
@@ -61,25 +77,20 @@
             :editor="editor"
             @click="tableRowColHeadClick"
           ></TableHoverLayer>
-          <LinkHover v-show="isShowLinkHover" :link-hover-config="linkHoverConfig" @click-menu="(menuData)=> handleReplaceMenuContent({ menuData: menuData, editor: editor, hoverBlockDom: hoverBlockDom })"></LinkHover>
+          <LinkHover
+            v-show="isShowLinkHover"
+            :link-hover-config="linkHoverConfig"
+            :readonly="!isContentEditable"
+            @click-menu="menuData => handleReplaceMenuContent({ menuData, editor, hoverBlockDom })"
+          ></LinkHover>
         </div>
       </div>
     </div>
-    <Button
-      style="position: absolute; right: 20px; top: 10px"
-      type="primary"
-      class="mr-xs"
-      @click="getData()"
-    >保存</Button>
     <SearchReplaceDialog
-      v-if="isShowSearchReplaceDialog"
+      v-if="isShowSearchReplaceDialog && isContentEditable"
       :editor="editor"
       :selected-text="selectedText"
-      @close="
-        () => {
-          isShowSearchReplaceDialog = false;
-        }
-      "
+      @close="isShowSearchReplaceDialog = false"
     ></SearchReplaceDialog>
   </div>
 </template>
@@ -105,7 +116,8 @@ import { TableUtils } from '@/resources/plugins/TsKnowledgeDocumentEditor/extens
 import { getHoverTargetByEvent, getTableRowHeights, getLinksInfoFromParagraph } from '@/resources/plugins/TsKnowledgeDocumentEditor/utils/node-utils.js';
 import { getSelectedTextInfo, getSelectionNode } from '@/resources/plugins/TsKnowledgeDocumentEditor/utils/selection-utils.js';
 import { HoverHighlightPlugin, hoverHighlightKey } from '@/resources/plugins/TsKnowledgeDocumentEditor/extensions/hover-highlight.js';
-import DataContent from './data.js';
+import { EMPTY_TIPTAP_DOC, knowledgePayloadToTiptap, tiptapToKnowledgePayload } from '@/resources/plugins/TsKnowledgeDocumentEditor/adapters/knowledge-data-adapter.js';
+
 export default {
   components: {
     EditorContent,
@@ -128,30 +140,68 @@ export default {
     documentTitle: {
       type: String,
       default: ''
+    },
+    documentConfig: {
+      type: Object,
+      default: null
+    },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
+    canEditTitle: {
+      type: Boolean,
+      default: true
+    },
+    canEditContent: {
+      type: Boolean,
+      default: true
+    },
+    canEditTag: {
+      type: Boolean,
+      default: true
+    },
+    canEditAttachment: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
     return {
       tableUuid: '',
       title: this.documentTitle,
-      isShowLinkHover: false, // 是否显示链接悬浮框
-      isEmptyRow: false, // 是否是空行，用于判断显示鼠标经过时的加号
+      tagList: [],
+      fileList: [],
+      meta: {},
+      isSettingContent: false,
+      isDestroyingEditor: false,
+      selectionUpdateHandler: null,
+      isSelectionUpdateBound: false,
+      keydownHandler: null,
+      editorDomEl: null,
+      isShowLinkHover: false,
+      isEmptyRow: false,
       isShowBlockMenu: false,
       isShowTableMenu: false,
       isShowSelectContentMenu: false,
       isShowSearchReplaceDialog: false,
       isClearTableRowColHighlight: false,
+      isBlockMenuHover: false,
+      isBlockMenuDropdownVisible: false,
+      blockMenuDropdownVisibleCount: 0,
+      blockMenuHideTimer: null,
+      lastMouseEvent: null,
       editor: null,
-      hoverBlockDom: null, // 鼠标悬停快速响应的节点，作为菜单替换/插入时获取位置的依据
+      hoverBlockDom: null,
       menuList: [],
-      rowHeightList: [], // 表格行高列表，用于表格菜单
+      rowHeightList: [],
       selectHeadingUuid: '',
       selectedText: '',
-      nodeName: '', // 节点名称，如：heading、paragraph、listItem等
-      nodeConfig: null, // 节点的配置 如：{type: 'heading', attrs: {level: 1}} 等信息
+      nodeName: '',
+      nodeConfig: null,
       menuPosition: { top: 0, left: 0 },
       tableMenuPosition: { top: -12, left: 0 },
-      selectContentMenuPos: { top: 0, left: 0 }, // 选中内容菜单的位置
+      selectContentMenuPos: { top: 0, left: 0 },
       blockMenuNodeConfig: {
         type: '',
         attrs: {}
@@ -160,117 +210,294 @@ export default {
     };
   },
   mounted() {
-    let _this = this;
-    this.editor = new Editor({
-      // // 启用核心扩展（包含粘贴处理）
-      // enableCoreExtensions: true,
-      // // 配置核心扩展选项
-      // coreExtensionOptions: {
-      //   clipboardTextSerializer: {
-      //     // 设置块级元素分隔符，例如段落之间用两个换行符分隔
-      //     blockSeparator: '\n\n'
-      //   }
-      // },
-      // // 启用粘贴规则系统
-      // enablePasteRules: true,
-      extensions: [
-        StarterKit.configure({
-          bulletList: {
-            itemTypeName: 'listItem',
-            HTMLAttributes: {
-              class: 'bullet-list'
-            }
-          },
-          orderedList: {
-            itemTypeName: 'listItem',
-            HTMLAttributes: {
-              class: 'ordered-list'
-            }
-          },
-          heading: {
-            HTMLAttributes: {
-              class: 'heading'
-            }
-          },
-          link: {
-            HTMLAttributes: {
-              class: 'link'
-            }
-          }
-        }),
-        Placeholder.configure({
-          placeholder: '可在此处输入内容'
-        }),
-        TextAlign.configure({
-          types: ['heading', 'paragraph']
-        }),
-        Table.configure({
-          resizable: true,
-          cell: false
-        }),
-        TableRow,
-        TableHeader,
-        TextStyleKit,
-        ImageResize,
-        RowColSelected,
-        TableUtils,
-        PasteUploadImages.configure({
-          upload: file => {
-            // 返回 Promise<string>（图片 url）
-            return _this.uploadFileToServer(file);
-          },
-          uploadExternalImages: true // 是否把外链强制下载再上传（true 推荐）
-        }),
-        TaskList,
-        TaskItem.configure({
-          nested: true
-        }),
-        ...ExtensionsList,
-        SearchHighlight
-      ],
-      content: DataContent,
-      onCreate({ editor }) {
-        // 编辑器初始化完成时触发，用于处理初始内容回显（左侧菜单渲染）
-        _this.getAllHeadings(editor);
-        editor.registerPlugin(HoverHighlightPlugin());
-      },
-      onUpdate({ editor }) {
-        // 文档内容发生变更时触发（用户输入、粘贴、命令等），用于更新左侧菜单
-        _this.getAllHeadings(editor);
-      },
-      onFocus({ editor, event }) {
-        const { $from } = editor?.state?.selection;
-        const node = $from.node($from.depth);
-        _this.highlightHeading(node, editor);
-      }
-    });
-    // 监听 selectionUpdate 事件，当选择变化时，高亮当前选中的标题
-    this?.editor?.on('selectionUpdate', ({ editor, event }) => {
-      // 编辑器获得焦点。
-      const { $from, from, to } = editor?.state?.selection;
-
-      const node = $from.node($from.depth);
-      _this.highlightHeading(node, editor);
-      
-      this.handleSelectionText({ editor: editor, from: from, to: to, $from: $from });
-    });
-    this.editor?.view?.dom?.addEventListener('keydown', e => {
-      if (e.ctrlKey && e.key === 'f') {
-        e.preventDefault(); // 阻止浏览器默认搜索
-        this.isShowSearchReplaceDialog = true;
-      }
-    });
-    menuState.editorData = this.editor;
+    this.createEditor();
+    document.addEventListener('mousemove', this.handleDocumentMouseMove, true);
+    if (this.documentConfig) {
+      this.setData(this.documentConfig);
+    }
   },
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.cleanupEditorRuntime();
+  },
+  destroyed() {
+    this.destroyEditor();
+  },
+  activated() {
+    this.isDestroyingEditor = false;
+    document.addEventListener('mousemove', this.handleDocumentMouseMove, true);
+    if (!this.editor) {
+      this.createEditor();
+      if (this.documentConfig) {
+        this.setData(this.documentConfig);
+      }
+    } else {
+      if (this.selectionUpdateHandler && !this.isSelectionUpdateBound) {
+        this.editor.on('selectionUpdate', this.selectionUpdateHandler);
+        this.isSelectionUpdateBound = true;
+      }
+      menuState.editorData = this.editor;
+      this.$nextTick(() => {
+        if (!this.editor || this.editor.isDestroyed || this.isDestroyingEditor) {
+          return;
+        }
+        this.editorDomEl = this.$refs.editorContentContainer?.querySelector?.('.ProseMirror') || null;
+        this.editorDomEl && this.editorDomEl.addEventListener('keydown', this.keydownHandler);
+      });
+    }
+  },
+  deactivated() {
+    this.cleanupEditorRuntime();
+  },
   methods: {
-    getData() {
-      const saveData = this.editor.getJSON();
-      console.log(saveData);
-    },
+    createEditor() {
+      if (this.editor && !this.editor.isDestroyed) {
+        return;
+      }
+      this.isDestroyingEditor = false;
+      this.editor = new Editor({
+        editable: this.isContentEditable,
+        extensions: [
+          StarterKit.configure({
+            bulletList: {
+              itemTypeName: 'listItem',
+              HTMLAttributes: { class: 'bullet-list' }
+            },
+            orderedList: {
+              itemTypeName: 'listItem',
+              HTMLAttributes: { class: 'ordered-list' }
+            },
+            heading: {
+              HTMLAttributes: { class: 'heading' }
+            },
+            link: {
+              HTMLAttributes: { class: 'link' }
+            }
+          }),
+          Placeholder.configure({
+            placeholder: this.$t('form.placeholder.pleaseinput', { target: this.$t('page.content') })
+          }),
+          TextAlign.configure({
+            types: ['heading', 'paragraph']
+          }),
+          Table.configure({
+            resizable: true,
+            cell: false
+          }),
+          TableRow,
+          TableHeader,
+          TextStyleKit,
+          ImageResize,
+          RowColSelected,
+          TableUtils,
+          PasteUploadImages.configure({
+            upload: file => this.uploadFileToServer(file),
+            uploadExternalImages: true
+          }),
+          TaskList,
+          TaskItem.configure({
+            nested: true
+          }),
+          ...ExtensionsList,
+          SearchHighlight
+        ],
+        content: JSON.parse(JSON.stringify(EMPTY_TIPTAP_DOC)),
+        onCreate: ({ editor }) => {
+          this.getAllHeadings(editor);
+          editor.registerPlugin(HoverHighlightPlugin());
+        },
+        onUpdate: ({ editor }) => {
+          this.getAllHeadings(editor);
+          if (!this.isSettingContent) {
+            this.emitChange();
+          }
+        },
+        onFocus: ({ editor }) => {
+          const { $from } = editor?.state?.selection || {};
+          const node = $from && $from.node($from.depth);
+          node && this.highlightHeading(node, editor);
+        }
+      });
 
-    // 处理用户选中文案内容
-    handleSelectionText({ editor: editor, from: from, to: to, $from: $from }) {
+      this.selectionUpdateHandler = ({ editor }) => {
+        const { $from, from, to } = editor?.state?.selection || {};
+        if (!$from) {
+          return;
+        }
+        const node = $from.node($from.depth);
+        this.highlightHeading(node, editor);
+        this.handleSelectionText({ editor, from, to, $from });
+      };
+      this.editor.on('selectionUpdate', this.selectionUpdateHandler);
+      this.isSelectionUpdateBound = true;
+
+      this.keydownHandler = e => {
+        if (!this.isContentEditable) {
+          return;
+        }
+        if (e.ctrlKey && e.key === 'f') {
+          e.preventDefault();
+          this.isShowSearchReplaceDialog = true;
+        }
+      };
+      this.$nextTick(() => {
+        if (!this.editor || this.editor.isDestroyed || this.isDestroyingEditor) {
+          return;
+        }
+        this.editorDomEl = this.$refs.editorContentContainer?.querySelector?.('.ProseMirror') || null;
+        this.editorDomEl && this.editorDomEl.addEventListener('keydown', this.keydownHandler);
+      });
+      menuState.editorData = this.editor;
+    },
+    cleanupEditorRuntime() {
+      this.isDestroyingEditor = true;
+      this.cancelBlockMenuHide();
+      this.handleMouseMove?.cancel && this.handleMouseMove.cancel();
+      document.removeEventListener('mousemove', this.handleDocumentMouseMove, true);
+      this.isShowBlockMenu = false;
+      this.isShowTableMenu = false;
+      this.isShowSelectContentMenu = false;
+      this.isShowSearchReplaceDialog = false;
+      this.isShowLinkHover = false;
+      this.hoverBlockDom = null;
+      this.lastMouseEvent = null;
+      this.linkHoverConfig = {};
+      const editor = this.editor;
+      // Break shared editor references before destroy so floating menus cannot touch a stale Tiptap view during route leave.
+      if (menuState.editorData === editor) {
+        menuState.editorData = null;
+      }
+      if (!editor) {
+        this.isSettingContent = false;
+        return;
+      }
+      if (this.selectionUpdateHandler && this.isSelectionUpdateBound) {
+        editor.off('selectionUpdate', this.selectionUpdateHandler);
+        this.isSelectionUpdateBound = false;
+      }
+      if (this.keydownHandler && this.editorDomEl) {
+        this.editorDomEl.removeEventListener('keydown', this.keydownHandler);
+      }
+      this.editorDomEl = null;
+      this.isSettingContent = false;
+    },
+    destroyEditor() {
+      const editor = this.editor;
+      this.cleanupEditorRuntime();
+      this.editor = null;
+      if (!editor) {
+        return;
+      }
+      if (!editor.isDestroyed) {
+        try {
+          editor.destroy();
+        } catch (error) {
+          // Tiptap may already have detached its view while Vue is leaving the route.
+        }
+      }
+    },
+    handleTitleChange() {
+      if (!this.isTitleEditable) {
+        return;
+      }
+      this.$emit('title-change', this.title);
+      this.$emit('update:documentTitle', this.title);
+      this.emitChange();
+    },
+    handleTagChange(list) {
+      if (!this.isTagEditable) {
+        return;
+      }
+      this.tagList = list || [];
+      this.emitChange();
+    },
+    handleAttachmentChange(list) {
+      if (!this.isAttachmentEditable) {
+        return;
+      }
+      this.fileList = list || [];
+      this.emitChange();
+    },
+    emitChange() {
+      this.$emit('change', this.getSaveData());
+    },
+    // 新组件内部统一数据模型：以 Tiptap JSON 为正文主格式，标签和附件保持结构化列表。
+    getSaveData() {
+      const hasEditor = this.editor && !this.editor.isDestroyed;
+      return {
+        title: this.title || '',
+        content: hasEditor ? this.editor.getJSON() : JSON.parse(JSON.stringify(EMPTY_TIPTAP_DOC)),
+        tagList: this.$refs.tagRef ? this.$refs.tagRef.getTagList() : this.tagList,
+        fileList: this.$refs.attachmentRef ? this.$refs.attachmentRef.getAttachmentList() : this.fileList,
+        meta: this.meta || {}
+      };
+    },
+    // 兼容当前知识库后台保存协议，路由保存时仍可直接取得 lineList/fileIdList/tagList。
+    getAllData() {
+      return tiptapToKnowledgePayload(this.getSaveData());
+    },
+    // 支持两种输入：新组件数据模型，或旧知识库详情数据；旧数据会通过 adapter 转成 Tiptap 文档。
+    setData(config = {}) {
+      const editorData = config.content && config.content.type === 'doc' ? config : knowledgePayloadToTiptap(config);
+      this.title = editorData.title || '';
+      this.tagList = editorData.tagList || [];
+      this.fileList = editorData.fileList || [];
+      this.meta = editorData.meta || {};
+      this.setContent(editorData.content || EMPTY_TIPTAP_DOC);
+    },
+    setContent(content = EMPTY_TIPTAP_DOC) {
+      if (!this.editor || this.editor.isDestroyed) {
+        return;
+      }
+      this.isSettingContent = true;
+      try {
+        this.editor.commands.setContent(content);
+      } catch (error) {
+        this.editor.commands.setContent(JSON.parse(JSON.stringify(EMPTY_TIPTAP_DOC)));
+        // Keep editor available even when legacy data contains nodes unsupported by current Tiptap schema.
+        console.error('[TsKnowledgeDocumentEditor] setContent failed:', error);
+      }
+      this.$nextTick(() => {
+        if (!this.editor || this.editor.isDestroyed || this.isDestroyingEditor) {
+          return;
+        }
+        this.isSettingContent = false;
+        this.getAllHeadings(this.editor);
+      });
+    },
+    clearContent() {
+      this.setContent(JSON.parse(JSON.stringify(EMPTY_TIPTAP_DOC)));
+    },
+    validate() {
+      return !!(this.title && this.title.trim());
+    },
+    focusTitle() {
+      this.$refs.titleInput && this.$refs.titleInput.focus && this.$refs.titleInput.focus();
+    },
+    focus() {
+      if (!this.isContentEditable || !this.editor || this.editor.isDestroyed || this.isDestroyingEditor) {
+        return;
+      }
+      this.editor?.commands?.focus();
+    },
+    getEditorView(editor = this.editor) {
+      if (!editor || editor.isDestroyed) {
+        return null;
+      }
+      try {
+        return editor.view || null;
+      } catch (error) {
+        return null;
+      }
+    },
+    // 模板目录只读取 h1/h2，保持和旧知识库目录层级一致。
+    getTemplateData() {
+      const { content = [] } = this.editor && !this.editor.isDestroyed ? this.editor.getJSON() : {};
+      return content.filter(item => item.type === 'heading' && (item.attrs?.level === 1 || item.attrs?.level === 2));
+    },
+    handleSelectionText({ editor, from, to }) {
+      if (!this.isContentEditable || !editor || editor.isDestroyed || this.isDestroyingEditor) {
+        return false;
+      }
       const { hasTextSelection = false, selectedText = '' } = getSelectedTextInfo(editor);
       const selectedNode = getSelectionNode(editor);
       if (selectedNode?.type?.includes('table')) {
@@ -278,41 +505,44 @@ export default {
       } else if (selectedNode?.type?.includes('image')) {
         this.isShowSelectContentMenu = true;
         this.selectedText = '';
-        const selectionRect = posToDOMRect(editor.view, from, to);
-        const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
-        const textSelectedMenuRect = this.$refs?.selectContentMenuRef?.$refs?.bubbleMenuRef?.getBoundingClientRect();
-        const { width: bubbleMenuWidth = 0 } = textSelectedMenuRect || {};
-        const { top: editorWrapperTop = 0, left: editorWrapperRectLeft = 0 } = editorWrapperRect || {};
-        const { top: selectionRectTop = 0, height: selectionRectHight = 0, left: selectionRectLeft = 0, width: selectionRectWidth = 0 } = selectionRect || {};
-        this.selectContentMenuPos = {
-          top: (selectionRectTop + selectionRectHight - editorWrapperTop + 5).toFixed(0),
-          left: Math.max(selectionRectLeft + selectionRectWidth / 2 - editorWrapperRectLeft - bubbleMenuWidth / 2, 10)
-        };
+        this.updateSelectContentMenuPosition(editor, from, to);
         this.nodeName = selectedNode?.type || '';
         return false;
       }
       this.isShowSelectContentMenu = hasTextSelection;
       this.selectedText = selectedText;
       if (hasTextSelection) {
-        const selectionRect = posToDOMRect(editor.view, from, to);
-        const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
-        const textSelectedMenuRect = this.$refs?.selectContentMenuRef?.$refs?.bubbleMenuRef?.getBoundingClientRect();
-        const { width: bubbleMenuWidth = 0 } = textSelectedMenuRect || {};
-        const { top: editorWrapperTop = 0, left: editorWrapperRectLeft = 0 } = editorWrapperRect || {};
-        const { top: selectionRectTop = 0, height: selectionRectHight = 0, left: selectionRectLeft = 0, width: selectionRectWidth = 0 } = selectionRect || {};
-        this.selectContentMenuPos = {
-          top: (selectionRectTop + selectionRectHight - editorWrapperTop + 5).toFixed(0),
-          left: Math.max(selectionRectLeft + selectionRectWidth / 2 - editorWrapperRectLeft - bubbleMenuWidth / 2, 10)
-        };
+        this.updateSelectContentMenuPosition(editor, from, to);
       }
       this.nodeName = selectedNode?.type || '';
     },
-
-    // 获取所有标题，用户左侧导航条
+    updateSelectContentMenuPosition(editor, from, to) {
+      const view = this.getEditorView(editor);
+      if (!view) {
+        return;
+      }
+      const selectionRect = posToDOMRect(view, from, to);
+      const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
+      const textSelectedMenuRect = this.$refs?.selectContentMenuRef?.$refs?.bubbleMenuRef?.getBoundingClientRect();
+      const { width: bubbleMenuWidth = 0 } = textSelectedMenuRect || {};
+      const { top: editorWrapperTop = 0, left: editorWrapperRectLeft = 0 } = editorWrapperRect || {};
+      const { top: selectionRectTop = 0, height: selectionRectHight = 0, left: selectionRectLeft = 0, width: selectionRectWidth = 0 } = selectionRect || {};
+      this.selectContentMenuPos = {
+        top: (selectionRectTop + selectionRectHight - editorWrapperTop + 5).toFixed(0),
+        left: Math.max(selectionRectLeft + selectionRectWidth / 2 - editorWrapperRectLeft - bubbleMenuWidth / 2, 10)
+      };
+    },
     getAllHeadings(editor) {
+      if (!editor || editor.isDestroyed || this.isDestroyingEditor) {
+        this.menuList = [];
+        return;
+      }
       const $headings = editor.$nodes('heading');
       let headings = [];
       $headings.forEach((node, index) => {
+        if (!node.textContent) {
+          return;
+        }
         let obj = {
           level: node.attributes.level,
           text: node.textContent,
@@ -340,100 +570,178 @@ export default {
         }
       }
     },
-
-    // 鼠标移动事件
     handleMouseMove: throttle(function(event) {
+      if (!this.isContentEditable) {
+        this.hidePlus();
+        return;
+      }
+      this.lastMouseEvent = event;
       const wrapper = this.$refs.editorWrapper;
       const editorEl = wrapper?.querySelector('.ProseMirror');
-      if (event.target.closest('.plus-button') || event.target.closest('.drag-button') || event.target.closest('.menu-wrapper')) {
+      const view = this.getEditorView();
+      if (!view || this.isBlockMenuTarget(event.target)) {
+        this.cancelBlockMenuHide();
         return;
       }
       if (!editorEl?.contains(event.target)) {
         return;
       }
-      const { view, state } = this.editor;
-      const coords = { left: event.clientX, top: event.clientY };
-      const position = view.posAtCoords(coords);
-
+      this.cancelBlockMenuHide();
+      const { state } = this.editor;
+      const position = view.posAtCoords({ left: event.clientX, top: event.clientY });
       if (!position) return;
-      const editorWrapperRect = wrapper.getBoundingClientRect();
 
+      const editorWrapperRect = wrapper.getBoundingClientRect();
       const $pos = state?.doc?.resolve(position.pos);
       if (!$pos || $pos.depth < 0) return;
 
-      // 优先处理表格
-      const { type, attrs = {}, pos, isEmpty: nodeContentIsEmpty = false, node } = getHoverTargetByEvent({state: state, $pos: $pos}) || {};
+      const { type, attrs = {}, pos, isEmpty: nodeContentIsEmpty = false, node } = getHoverTargetByEvent({ state, $pos }) || {};
       this.$set(this.blockMenuNodeConfig, 'type', type);
       this.$set(this.blockMenuNodeConfig, 'attrs', attrs);
       const nodeDom = view.nodeDOM(pos);
       const nodeRect = nodeDom && nodeDom.getBoundingClientRect && nodeDom.getBoundingClientRect();
       this.hoverBlockDom = nodeDom;
 
-      const linkInfo = getLinksInfoFromParagraph(node); // 获取链接节点信息
-      const { type: linkType, href: linkHref} = linkInfo;
-
+      const linkInfo = getLinksInfoFromParagraph(node, pos, position.pos);
+      const { type: linkType, href: linkHref } = linkInfo;
       if (!nodeRect) return;
 
-      // 处理表格节点
-      if (type == 'table') {
+      if (type === 'table') {
         this.tableUuid = attrs?.blockUuid;
         this.rowHeightList = getTableRowHeights(nodeDom);
-        if (nodeRect) {
-          // 表格行列浮层，可点击表头
-          this.isShowTableMenu = true;
-          this.isClearHighlight = false;
-          this.tableMenuPosition = {
-            top: Number(nodeRect.top - editorWrapperRect.top).toFixed(0) <= 0 ? -10 : Number((nodeRect.top - editorWrapperRect.top).toFixed(0)) - 10, // 16 头部点击菜单的高度
-            left: Number((nodeRect.left - editorWrapperRect.left).toFixed(0))
-          };
-
-          // 右边编辑菜单
-          this.isShowBlockMenu = true;
-          this.isEmptyRow = false;
-          this.menuPosition = {
-            top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
-            left: -50
-          };
-        }
-      } else if (linkType === 'link' && linkHref) {
-        // 处理链接节点（悬浮）
-        const top = Number((nodeRect.top - editorWrapperRect.top).toFixed(0));
-        const left = Number((nodeRect.left - editorWrapperRect.left).toFixed(0));
-        this.linkHoverConfig = {
-          ...(linkInfo || {}),
-          top: top,
-          left: left
-        };
-        this.isShowLinkHover = true;
-
-        // 右边编辑菜单
-        this.isShowBlockMenu = true;
-        this.isEmptyRow = false;
-        this.menuPosition = {
-          top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
-          left: -50
+        this.isShowTableMenu = true;
+        this.isClearTableRowColHighlight = false;
+        this.tableMenuPosition = {
+          top: Number(nodeRect.top - editorWrapperRect.top).toFixed(0) <= 0 ? -10 : Number((nodeRect.top - editorWrapperRect.top).toFixed(0)) - 10,
+          left: Number((nodeRect.left - editorWrapperRect.left).toFixed(0))
         };
       } else {
-        // 处理非表格节点
         this.isShowTableMenu = false;
-        this.isShowBlockMenu = true;
-        this.isClearHighlight = true;
+        this.isClearTableRowColHighlight = true;
+      }
+
+      if (linkType === 'link' && linkHref) {
+        this.linkHoverConfig = {
+          ...(linkInfo || {}),
+          top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
+          left: Number((nodeRect.left - editorWrapperRect.left).toFixed(0))
+        };
+        this.isShowLinkHover = true;
+      } else {
         this.isShowLinkHover = false;
         this.linkHoverConfig = {};
-        this.isEmptyRow = nodeContentIsEmpty;
-        this.menuPosition = {
-          top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
-          left: -50
-        };
       }
+
+      this.isShowBlockMenu = true;
+      this.isEmptyRow = type === 'table' ? false : nodeContentIsEmpty;
+      this.menuPosition = {
+        top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
+        left: -50
+      };
     }, 500),
-
-    hidePlus: throttle(function() {
-      // this.hoverBlockDom = null;
-    }, 400),
-
-    // 表格行列浮动菜单点击，点击可出现操作按钮，如：前后插入行列
-    tableRowColHeadClick({ event, index, type, rowHeight, columnHeight }) {
+    handleDocumentMouseMove(event) {
+      this.lastMouseEvent = event;
+      if (this.isBlockMenuTarget(event.target)) {
+        this.cancelBlockMenuHide();
+      }
+    },
+    isBlockMenuTarget(target) {
+      return !!target?.closest?.([
+        '.knowledge-document-editor-block-menu',
+        '.knowledge-document-editor-plus-box',
+        '.ivu-dropdown',
+        '.ivu-dropdown-menu',
+        '.ivu-dropdown-item',
+        '.ivu-select-dropdown',
+        '.ivu-poptip-popper',
+        '.ivu-tooltip-popper'
+      ].join(', '));
+    },
+    isMouseInBlockMenuLayer(event = this.lastMouseEvent) {
+      if (!event) {
+        return false;
+      }
+      const target = document.elementFromPoint(event.clientX, event.clientY);
+      return this.isBlockMenuTarget(target);
+    },
+    handleEditorMouseLeave(event) {
+      const toEl = event.relatedTarget;
+      if (this.isBlockMenuTarget(toEl) || this.isMovingToBlockMenu(event)) {
+        this.cancelBlockMenuHide();
+        return;
+      }
+      this.scheduleBlockMenuHide();
+    },
+    isMovingToBlockMenu(event) {
+      const wrapperRect = this.$refs.editorWrapper?.getBoundingClientRect();
+      if (!wrapperRect || !this.isShowBlockMenu) {
+        return false;
+      }
+      const blockRect = this.hoverBlockDom?.getBoundingClientRect?.();
+      if (blockRect) {
+        const safeLeft = wrapperRect.left + Number(this.menuPosition.left || 0) - 24;
+        const safeRight = Math.max(blockRect.left + 16, wrapperRect.left + 24);
+        const safeTop = blockRect.top - 12;
+        const safeBottom = blockRect.bottom + 12;
+        if (event.clientX >= safeLeft && event.clientX <= safeRight && event.clientY >= safeTop && event.clientY <= safeBottom) {
+          return true;
+        }
+      }
+      const menuTop = wrapperRect.top + Number(this.menuPosition.top || 0);
+      const menuBottom = menuTop + 44;
+      const menuLeft = wrapperRect.left + Number(this.menuPosition.left || 0) - 8;
+      const menuRight = wrapperRect.left + 12;
+      return event.clientX >= menuLeft && event.clientX <= menuRight && event.clientY >= menuTop - 8 && event.clientY <= menuBottom;
+    },
+    handleBlockMenuHover(status, event) {
+      if (!status && this.isBlockMenuTarget(event?.relatedTarget)) {
+        return;
+      }
+      this.isBlockMenuHover = status;
+      if (!status && !this.isBlockMenuDropdownVisible) {
+        this.scheduleBlockMenuHide();
+      } else {
+        this.cancelBlockMenuHide();
+      }
+    },
+    handleBlockMenuDropdownVisible(status) {
+      // iView 的多级 Dropdown 会分别触发显隐事件，用计数保留所有仍打开的菜单层，避免二级菜单打开时左侧菜单被提前隐藏。
+      this.blockMenuDropdownVisibleCount += status ? 1 : -1;
+      if (this.blockMenuDropdownVisibleCount < 0) {
+        this.blockMenuDropdownVisibleCount = 0;
+      }
+      this.isBlockMenuDropdownVisible = this.blockMenuDropdownVisibleCount > 0;
+      if (status) {
+        this.cancelBlockMenuHide();
+      }
+    },
+    scheduleBlockMenuHide() {
+      this.cancelBlockMenuHide();
+      this.blockMenuHideTimer = window.setTimeout(() => {
+        if (!this.isBlockMenuHover && !this.isBlockMenuDropdownVisible && !this.isMouseInBlockMenuLayer()) {
+          this.hidePlus();
+        }
+      }, 160);
+    },
+    cancelBlockMenuHide() {
+      if (this.blockMenuHideTimer) {
+        window.clearTimeout(this.blockMenuHideTimer);
+        this.blockMenuHideTimer = null;
+      }
+    },
+    hidePlus() {
+      if (this.isBlockMenuHover || this.isBlockMenuDropdownVisible || this.isMouseInBlockMenuLayer()) {
+        return;
+      }
+      this.isShowBlockMenu = false;
+      this.isShowTableMenu = false;
+      this.isShowLinkHover = false;
+      this.hoverBlockDom = null;
+    },
+    tableRowColHeadClick({ event, index, type, rowHeight }) {
+      if (!this.isContentEditable) {
+        return;
+      }
       const editorWrapperRect = this.$refs?.editorWrapper?.getBoundingClientRect();
       const { nodeType, attrs } = this.findTableNodeByUuid({ editor: this.editor, uuid: this.tableUuid }) || {};
 
@@ -444,26 +752,21 @@ export default {
         left: event.clientX - editorWrapperRect.left
       };
       this.nodeConfig = {
-        nodeType: nodeType,
+        nodeType,
         nodeAttrs: attrs,
-        index: index,
-        type: type
+        index,
+        type
       };
 
-      if (type == 'row') {
+      if (type === 'row') {
         this.selectContentMenuPos = {
-          top: event.clientY - editorWrapperRect.top - rowHeight - 15, // 10 间隙
+          top: event.clientY - editorWrapperRect.top - rowHeight - 15,
           left: event.clientX - editorWrapperRect.left + 6
         };
         this.handleSelectMenuContent({
           menuData: {
             commandName: 'selectedRow',
-            options: {
-              nodeType: nodeType,
-              nodeAttrs: attrs,
-              index: index,
-              type: 'row'
-            }
+            options: { nodeType, nodeAttrs: attrs, index, type: 'row' }
           },
           editor: this.editor,
           hoverBlockDom: this.hoverBlockDom
@@ -473,12 +776,7 @@ export default {
         this.handleSelectMenuContent({
           menuData: {
             commandName: 'selectedColumn',
-            options: {
-              nodeType: nodeType,
-              nodeAttrs: attrs,
-              index: index,
-              type: 'column'
-            }
+            options: { nodeType, nodeAttrs: attrs, index, type: 'column' }
           },
           editor: this.editor,
           hoverBlockDom: this.hoverBlockDom
@@ -492,7 +790,7 @@ export default {
       if (isHeading) {
         this.selectHeadingUuid = uuid;
       } else {
-        const contentList = contentObj.content.reverse();
+        const contentList = [...(contentObj.content || [])].reverse();
         const index = contentList.findIndex(item => item?.attrs?.blockUuid === uuid);
         for (let i = index + 1; i < contentList.length; i++) {
           if (contentList[i].type === 'heading') {
@@ -503,26 +801,26 @@ export default {
       }
     },
     selectHeading(item) {
-      const { doc } = this.editor.state;
+      if (!this.editor || this.editor.isDestroyed || this.isDestroyingEditor) {
+        return;
+      }
+      const { doc } = this.editor.state || {};
+      if (!doc) {
+        return;
+      }
       let targetPos = null;
-
       doc.descendants((node, pos) => {
-        // 假设节点属性里有 node.attrs['blockUuid']
-        if (item.uuid === node.attrs['blockUuid']) {
-          // 光标放在节点内容开头
+        if (item.uuid === node.attrs.blockUuid) {
           targetPos = pos + 1;
-          return false; // 找到就停止遍历
+          return false;
         }
       });
-
       if (targetPos !== null) {
         this.editor.commands.focus();
         this.editor.commands.setTextSelection(targetPos);
       }
     },
-    handleClickPlus() {
-      // this.editor.chain().focus('end').run();
-    },
+    handleClickPlus() {},
     async uploadFileToServer(file) {
       let formData = new FormData();
       formData.append('file', file);
@@ -532,13 +830,12 @@ export default {
       let res = await this.$api.knowledge.knowledge.uploadFile(formData);
       return res.Return.url;
     },
-    getSaveData() {
-      return this.editor.getJSON();
-    },
-    handleMouse(status) { // 处理鼠标悬停, 悬停时添加行高亮
-      if (!this.hoverBlockDom) return;
+    handleMouse(status) {
+      if (!this.isContentEditable || !this.hoverBlockDom || !this.editor) return;
 
-      const { state, view } = this.editor;
+      const view = this.getEditorView();
+      if (!view) return;
+      const { state } = this.editor;
       const pos = view.posAtDOM(this.hoverBlockDom, 0);
       if (pos == null) return;
 
@@ -549,22 +846,24 @@ export default {
       const from = range.start;
       const to = range.end;
 
-      if (status) {
-        view.dispatch(
-          state.tr.setMeta(hoverHighlightKey, {
-            add: { from, to }
-          })
-        );
-      } else {
-        view.dispatch(
-          state.tr.setMeta(hoverHighlightKey, {
-            clear: true
-          })
-        );
-      }
+      view.dispatch(
+        state.tr.setMeta(hoverHighlightKey, status ? { add: { from, to } } : { clear: true })
+      );
     }
   },
   computed: {
+    isTitleEditable() {
+      return !this.readonly && this.canEditTitle;
+    },
+    isContentEditable() {
+      return !this.readonly && this.canEditContent;
+    },
+    isTagEditable() {
+      return !this.readonly && this.canEditTag;
+    },
+    isAttachmentEditable() {
+      return !this.readonly && this.canEditAttachment;
+    },
     getMenuClass() {
       return item => {
         const className = 'heading-level-' + item.level;
@@ -578,12 +877,37 @@ export default {
       return item => {
         let classStr = '';
         if (item.hasOwnProperty('showNextIcon')) {
-          classStr = classStr + (item.showNextIcon ? 'tsfont-drop-down' : 'tsfont-drop-right');
-        } else if (item.level == 1) {
-          classStr = classStr + 'tsfont-dot';
+          classStr += item.showNextIcon ? 'tsfont-drop-down' : 'tsfont-drop-right';
+        } else if (item.level === 1) {
+          classStr += 'tsfont-dot';
         }
         return classStr;
       };
+    }
+  },
+  watch: {
+    documentTitle(val) {
+      if (val !== this.title) {
+        this.title = val || '';
+      }
+    },
+    documentConfig: {
+      handler(val) {
+        if (val && this.editor) {
+          this.setData(val);
+        }
+      },
+      deep: true
+    },
+    isContentEditable(val) {
+      if (this.editor && !this.editor.isDestroyed) {
+        this.editor.setEditable(val);
+      }
+      if (!val) {
+        this.hidePlus();
+        this.isShowSelectContentMenu = false;
+        this.isShowSearchReplaceDialog = false;
+      }
     }
   }
 };

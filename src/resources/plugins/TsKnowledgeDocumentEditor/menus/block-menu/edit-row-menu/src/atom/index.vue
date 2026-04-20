@@ -16,7 +16,11 @@
       <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
         <div class="border-base-bottom"></div>
       </DropdownItem>
-      <InsertedBelowMenu placement="right" @click-menu="insertBelowPosition"></InsertedBelowMenu>
+      <InsertedBelowMenu
+        placement="right"
+        @click-menu="insertBelowPosition"
+        @dropdown-visible-change="status => $emit('dropdown-visible-change', status)"
+      ></InsertedBelowMenu>
     </DropdownMenu>
   </div>
 </template>

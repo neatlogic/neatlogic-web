@@ -12,14 +12,26 @@
       <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
         <div class="border-base-bottom"></div>
       </DropdownItem>
-      <ColorMenu :nodeConfig="nodeConfig" :isShowBorderColor="true" @click-menu="emitClickMenu"></ColorMenu>
+      <ColorMenu
+        :nodeConfig="nodeConfig"
+        :isShowBorderColor="true"
+        @click-menu="emitClickMenu"
+        @dropdown-visible-change="status => $emit('dropdown-visible-change', status)"
+      ></ColorMenu>
     </template>
     <template v-else-if="isShowMenu">
       <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
         <div class="border-base-bottom"></div>
       </DropdownItem>
-      <AlignMenu @click-menu="emitClickMenu"></AlignMenu>
-      <ColorMenu :nodeConfig="nodeConfig" @click-menu="emitClickMenu"></ColorMenu>
+      <AlignMenu
+        @click-menu="emitClickMenu"
+        @dropdown-visible-change="status => $emit('dropdown-visible-change', status)"
+      ></AlignMenu>
+      <ColorMenu
+        :nodeConfig="nodeConfig"
+        @click-menu="emitClickMenu"
+        @dropdown-visible-change="status => $emit('dropdown-visible-change', status)"
+      ></ColorMenu>
     </template>
   
     <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
@@ -40,7 +52,11 @@
     <DropdownItem class="knowledge-document-editor-dropdown-item-divide">
       <div class="border-base-bottom"></div>
     </DropdownItem>
-    <InsertedBelowMenu placement="right" @click-menu="insertBelowPosition"></InsertedBelowMenu>
+    <InsertedBelowMenu
+      placement="right"
+      @click-menu="insertBelowPosition"
+      @dropdown-visible-change="status => $emit('dropdown-visible-change', status)"
+    ></InsertedBelowMenu>
   </DropdownMenu>
 </template>
 <script>

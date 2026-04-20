@@ -4,7 +4,7 @@
       :style="{
         position: 'absolute',
         left: linkHoverConfig.left + 'px',
-        top: getTop,
+        top: getTop
       }"
     >
       <div class="bg-op radius-sm shadow block-border flex-start padding-sm">
@@ -13,11 +13,13 @@
             ref="hrefInput"
             :value="linkHoverConfig.href"
             border="border"
+            :readonly="readonly"
             :validate-list="['required']"
             @on-change="handleHrefChange"
           ></TsFormInput>
         </div>
-        <Tooltip 
+        <Tooltip
+          v-if="!readonly"
           placement="top"
           :transfer="true"
           theme="light"
@@ -29,23 +31,14 @@
             <span>点击替换链接</span>
           </div>
         </Tooltip>
-        <Tooltip 
+        <Tooltip
+          v-if="!readonly"
           placement="top"
           :transfer="true"
           theme="light"
           max-width="300"
         >
-          <span
-            class="tsfont-unbind cursor-pointer"
-            @click="()=> {
-              $emit('click-menu', {
-                commandName: 'link',
-                options: {
-                  operationType: 'removeLink',
-                }
-              })
-            }"
-          ></span>
+          <span class="tsfont-unbind cursor-pointer" @click="removeLink"></span>
           <div slot="content">
             <span>移除链接</span>
           </div>
@@ -54,7 +47,10 @@
     </div>
   </div>
 </template>
+
 <script>
+import { getKnowledgeDocumentIdFromHref, isInnerKnowledgeLink } from '../../utils/link-utils.js';
+
 export default {
   name: '',
   components: {
@@ -64,53 +60,81 @@ export default {
     linkHoverConfig: {
       type: Object,
       default: () => {}
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      isShowEditLinkDialog: false,
       linkUrl: ''
     };
   },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
   methods: {
     handleHrefChange(href) {
+      if (this.readonly) {
+        return;
+      }
       this.linkUrl = href;
     },
-    replaceLink() {
-      const formRef = this.$refs.hrefInput;
-      if (!formRef.valid()) {
-        return false;
+    removeLink() {
+      if (this.readonly) {
+        return;
       }
       this.$emit('click-menu', {
         commandName: 'link',
         options: {
+          // 由鼠标悬停时记录的链接范围精确移除当前链接，避免误删整段文本链接。
+          operationType: 'removeLink',
+          startPosition: this.linkHoverConfig.startPosition,
+          endPosition: this.linkHoverConfig.endPosition
+        }
+      });
+    },
+    replaceLink() {
+      if (this.readonly) {
+        return;
+      }
+      const formRef = this.$refs.hrefInput;
+      if (formRef && typeof formRef.valid === 'function' && !formRef.valid()) {
+        return false;
+      }
+      const linkUrl = this.linkUrl || this.linkHoverConfig.href;
+      const linkType = this.getLinkType(linkUrl);
+      this.$emit('click-menu', {
+        commandName: 'link',
+        options: {
           linkText: this.linkHoverConfig.text,
-          linkUrl: this.linkUrl || this.linkHoverConfig.href,
+          linkUrl,
+          target: this.linkHoverConfig.target || '_blank',
+          linkType,
+          knowledgeDocumentId: linkType === 'inner' ? this.getKnowledgeDocumentId(linkUrl) : null,
+          startPosition: this.linkHoverConfig.startPosition,
+          endPosition: this.linkHoverConfig.endPosition,
           operationType: 'replaceLink'
         }
       });
+    },
+    getLinkType(href) {
+      if (isInnerKnowledgeLink(href, this.linkHoverConfig.class)) {
+        return 'inner';
+      }
+      return this.linkHoverConfig.linkType || 'outer';
+    },
+    getKnowledgeDocumentId(href) {
+      return getKnowledgeDocumentIdFromHref(href);
     }
   },
-  filter: {},
   computed: {
     getTop() {
       const { top } = this.linkHoverConfig || {};
       return top - 55 + 'px';
     }
-  },
-  watch: {}
+  }
 };
 </script>
+
 <style lang="less" scoped>
 .link-hover-box {
   .href-text {

@@ -1,5 +1,8 @@
 <template>
-  <Dropdown :placement="placement">
+  <Dropdown
+    :placement="placement"
+    @on-visible-change="status => $emit('dropdown-visible-change', status)"
+  >
     <template v-if="placement === 'bottom-start'">
       <div class="knowledge-document-editor-plus-box cursor-pointer">
         <span class="tsfont-plus"></span>
@@ -42,6 +45,7 @@
       <InsertTable
         @click-menu="(menuData)=> {
           $emit('click-menu', menuData)}"
+        @dropdown-visible-change="status => $emit('dropdown-visible-change', status)"
       ></InsertTable>
     </DropdownMenu>
   </Dropdown>

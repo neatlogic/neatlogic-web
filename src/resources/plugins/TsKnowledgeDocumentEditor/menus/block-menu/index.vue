@@ -1,5 +1,10 @@
 <template>
-  <div @click.stop>
+  <div
+    class="knowledge-document-editor-block-menu"
+    @click.stop
+    @mouseenter="$emit('menu-hover', true)"
+    @mouseleave="$emit('menu-hover', false, $event)"
+  >
     <EmptyRowMenu
       v-if="isEmptyRow"
       class="menu-wrapper"
@@ -11,6 +16,7 @@
       @click-menu="(menuData)=> {
         $emit('insert-menu-content', menuData)
       }"
+      @dropdown-visible-change="status => $emit('dropdown-visible-change', status)"
     >
     </EmptyRowMenu>
     <EditRowMenu
@@ -28,6 +34,7 @@
         $emit('insert-below-position', menuData)
       }"
       @handleMouse="handleMouse"
+      @dropdown-visible-change="status => $emit('dropdown-visible-change', status)"
     >
     </EditRowMenu>
   </div>

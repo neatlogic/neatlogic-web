@@ -1,5 +1,8 @@
 <template>
-  <Dropdown placement="right">
+  <Dropdown
+    placement="right"
+    @on-visible-change="status => $emit('dropdown-visible-change', status)"
+  >
     <DropdownItem>
       <div class="insert-table-box">
         <div class="icon-text-box">

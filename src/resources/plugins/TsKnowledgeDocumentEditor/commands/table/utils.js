@@ -16,6 +16,9 @@ export function findTablePosByUuid(doc, tableUuid) {
 }
 
 export function getCellSelectionByIndex({editor, options }) {
+  const view = getEditorView(editor);
+  if (!view) return;
+
   // 根据行列的索引获取选区
   const {
     nodeAttrs = {},
@@ -24,7 +27,7 @@ export function getCellSelectionByIndex({editor, options }) {
   } = options || {};
 
   const tableUuid = nodeAttrs['blockUuid'];
-  const { state, view } = editor;
+  const { state } = editor;
 
   if (tableUuid) {
     const tablePos = findTablePosByUuid(state.doc, tableUuid);
@@ -59,5 +62,16 @@ export function getCellSelectionByIndex({editor, options }) {
         view.dispatch(tr);
       }
     }
+  }
+}
+
+function getEditorView(editor) {
+  if (!editor || editor.isDestroyed) {
+    return null;
+  }
+  try {
+    return editor.view || null;
+  } catch (error) {
+    return null;
   }
 }

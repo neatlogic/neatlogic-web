@@ -3,7 +3,7 @@
     <div class="file-content-box">
       <div>
         <span class="text-grey tsfont-attachment icon-right">文档附件：</span>
-        <span class="border-primary text-href tsfont-plus add-tag" @click.stop="openUploadDialog"></span>
+        <span v-if="!readonly" class="border-primary text-href tsfont-plus add-tag" @click.stop="openUploadDialog"></span>
       </div>
       <div class="file-list-box">
         <div v-for="(item, index) in getFileList" :key="item.id" class="mr-xs ml-xs radius-sm bg-grey file-item">
@@ -23,7 +23,7 @@
             <div class="text-grey" style="font-size: 12px;">{{ item.sizeText }}</div>
           </div>
           <div>
-            <span class="remove-item tsfont-close-o" @click.stop="removeFile({ index: index, fileId: item.id })"></span>
+            <span v-if="!readonly" class="remove-item tsfont-close-o" @click.stop="removeFile({ index: index, fileId: item.id })"></span>
             <span
               v-if="downloadLoading[item.id]"
               class="action-item disable"
@@ -38,6 +38,7 @@
       </div>
     </div>
     <UploadDialog
+      v-if="!readonly"
       ref="uploadDialog"
       v-bind="fileConfig"
       @on-success="uploadSuccess"
@@ -57,7 +58,10 @@ export default {
   },
   directives: { download },
   mixins: [AttachmentMixins],
-  props: {},
+  props: {
+    list: { type: Array, default: () => [] },
+    readonly: { type: Boolean, default: false }
+  },
   data() {
     return {
       isShowViewAttachmentDialog: false,
@@ -85,11 +89,18 @@ export default {
   destroyed() {},
   methods: {
     openUploadDialog() {
+      if (this.readonly) {
+        return;
+      }
       this.$refs.uploadDialog.showDialog();
     },
     uploadSuccess(data, file, fileList) {
+      if (this.readonly) {
+        return;
+      }
       if (data.Status === 'OK') {
         this.fileList.push(data.Return);
+        this.$emit('change', this.fileList);
       }
     },
     closeUploadDialog() {
@@ -102,10 +113,21 @@ export default {
       this.isShowViewAttachmentDialog = false;
       if (needRefresh) {
         this.fileList = fileList;
+        this.$emit('change', this.fileList);
       }
     },
-    removeFile(index) {
+    removeFile({ index }) {
+      if (this.readonly) {
+        return;
+      }
       this.fileList.splice(index, 1);
+      this.$emit('change', this.fileList);
+    },
+    getFileIdList() {
+      return this.fileList.map(item => item.id).filter(id => id !== null && id !== undefined);
+    },
+    getAttachmentList() {
+      return this.fileList;
     }
   },
   filter: {},
@@ -114,7 +136,15 @@ export default {
       return this.fileList.slice(0, 4);
     }
   },
-  watch: {}
+  watch: {
+    list: {
+      handler(val) {
+        this.fileList = Array.isArray(val) ? this.$utils.deepClone(val) : [];
+      },
+      deep: true,
+      immediate: true
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

@@ -2,7 +2,7 @@ import utils from '@/resources/assets/js/util.js';
 export default function insertVideo({ editor, position, options, https }) {
   const { file } = options || {};
   const { insertPosition } = position || {};
-  if (!file) {
+  if (!file || insertPosition == null) {
     return;
   }
   const uploadUrl = '/api/binary/file/upload';
@@ -24,5 +24,5 @@ export default function insertVideo({ editor, position, options, https }) {
       if (Status === 'OK' && url) {
         editor.chain().focus().updateVideo({ recordUuid: uuid, position: insertPosition, src: url, loading: false }).run();
       }
-    });
+    }).catch(() => {});
 }

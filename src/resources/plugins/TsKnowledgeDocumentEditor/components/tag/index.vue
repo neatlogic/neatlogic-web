@@ -3,10 +3,10 @@
     <div>
       <span class="text-grey tsfont-addtag icon-right">文档标签：</span>
       <span v-for="(item, index) in selectTagList" :key="index" class="icon-padding">
-        <Tag :name="item.value" closable @on-close="closeTag(index)">{{ item.text }}</Tag>
+        <Tag :name="item.value" :closable="!readonly" @on-close="closeTag(index)">{{ item.text }}</Tag>
       </span>
     </div>
-    <div>
+    <div v-if="!readonly">
       <TsFormSelect
         v-if="editTag"
         ref="selectInput"
@@ -29,7 +29,8 @@ export default {
   },
   filters: {},
   props: {
-    list: { type: Array, default: () => [] }
+    list: { type: Array, default: () => [] },
+    readonly: { type: Boolean, default: false }
   },
   data() {
     return {
@@ -62,16 +63,26 @@ export default {
   destroyed() {},
   methods: {
     addTag() {
+      if (this.readonly) {
+        return;
+      }
       this.editTag = true;
       this.$nextTick(() => {
         this.$refs.selectInput?.$refs?.input?.focus();
       });
     },
     closeTag(index) {
+      if (this.readonly) {
+        return;
+      }
       this.selectTagList.splice(index, 1);
+      this.$emit('change', this.getTagList());
       this.$emit('inputBlur', this.selectTagList);
     },
     createTag(val) {
+      if (this.readonly) {
+        return;
+      }
       if (val) {
         let newVal = val.trim();
         if (newVal != '') {
@@ -86,15 +97,20 @@ export default {
       }
       this.editTag = false;
       this.tagKeyword = '';
+      this.$emit('change', this.getTagList());
     },
     inputBlur() {
       setTimeout(() => {
         this.$nextTick(() => {
           this.editTag = false;
           this.tagKeyword = '';
+          this.$emit('change', this.getTagList());
           this.$emit('inputBlur', this.selectTagList);
         });
       }, 200);
+    },
+    getTagList() {
+      return this.selectTagList.map(item => item.value).filter(item => item);
     }
   },
   computed: {},
@@ -104,13 +120,16 @@ export default {
         if (val && val.length > 0) {
           let list = [];
           val.forEach(i => {
+            const value = typeof i === 'object' ? (i.value || i.text || i.name) : i;
             let obj = {
-              text: i,
-              value: i
+              text: value,
+              value: value
             };
             list.push(obj);
           });
           this.selectTagList = list;
+        } else {
+          this.selectTagList = [];
         }
       },
       deep: true,

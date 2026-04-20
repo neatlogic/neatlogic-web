@@ -1,7 +1,7 @@
 export default function uploadImage({ editor, position, options, https }) {
   const { file } = options || {};
   const { insertPosition } = position || {};
-  if (!file) {
+  if (!file || insertPosition == null) {
     return;
   }
   const uploadUrl = '/api/binary/file/upload';
@@ -25,5 +25,5 @@ export default function uploadImage({ editor, position, options, https }) {
           .insertContentAt(insertPosition, { type: 'image', attrs: {src: url} })
           .run();
       }
-    });
+    }).catch(() => {});
 }

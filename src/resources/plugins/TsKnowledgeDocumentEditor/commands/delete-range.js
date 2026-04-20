@@ -2,6 +2,8 @@
 import { NodeSelection } from 'prosemirror-state';
 
 export default function deleteRange({ editor, position, options = {} }) {
+  const view = getEditorView(editor);
+  if (!view) return;
   const { doc } = editor.state;
   const { attrs = {} } = options || {};
   const { startPosition, endPosition } = position || {};
@@ -34,6 +36,17 @@ export default function deleteRange({ editor, position, options = {} }) {
     NodeSelection.create(doc, targetPos)
   );
 
-  editor.view.dispatch(tr);
+  view.dispatch(tr);
   editor.commands.deleteSelection();
+}
+
+function getEditorView(editor) {
+  if (!editor || editor.isDestroyed) {
+    return null;
+  }
+  try {
+    return editor.view || null;
+  } catch (error) {
+    return null;
+  }
 }

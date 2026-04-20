@@ -7,11 +7,13 @@
       @on-clickoutside="closeDropdownMenu"
     >
       <span
+        class="block-type-trigger"
         @mouseenter.stop="handleBtnMouseEnter"
         @mouseleave.stop="handleBtnMouseLeave"
+        @click.stop="toggleDropdownMenu"
       >
-        <span class="tsfont-title" :style="iconStyle"></span>
-        <Icon type="ios-arrow-down"></Icon>
+        <span class="block-type-trigger-icon" :class="activeMenuItem.iconClass" :style="iconStyle"></span>
+        <Icon class="block-type-arrow" type="ios-arrow-down"></Icon>
       </span>
       <DropdownMenu slot="list">
         <div class="padding" @mouseenter.stop="handleDropDownMenuMouseEnter" @mouseleave.stop="handleDropDownMenuMouseLeave">
@@ -19,17 +21,18 @@
             <li
               v-for="(item, index) in alignmentList"
               :key="index"
-              class="mb-sm cursor-pointer"
+              class="block-type-item cursor-pointer"
               :class="{ 'text-href': isActiveMenu(item.value) }"
+              @mousedown.prevent
               @click.stop="handleClick(item.value)"
             >
               <span
                 :class="item.iconClass"
                 :style="iconStyle"
-                class="pr-nm"
+                class="block-type-item-icon"
               ></span>
-              <span>{{ item.text }}</span>
-              <span v-if="isActiveMenu(item.value)" class="tsfont-check text-href ml-nm"></span>
+              <span class="block-type-item-text">{{ item.text }}</span>
+              <span v-if="isActiveMenu(item.value)" class="tsfont-check text-href block-type-check"></span>
             </li>
           </ul>
         </div>
@@ -139,6 +142,7 @@ export default {
             ...(this.nodeConfig || {})
           }
         });
+        this.closeDropdownMenu();
         return;
       } else {
         this.$emit('menu-item-selected', {
@@ -149,9 +153,14 @@ export default {
           }
         });
       }
+      this.closeDropdownMenu();
     },
     closeDropdownMenu() {
       this.isVisibleAlignment = false;
+    },
+    toggleDropdownMenu() {
+      clearTimeout(this.hideTimer);
+      this.isVisibleAlignment = !this.isVisibleAlignment;
     },
     handleBtnMouseEnter() {
       clearTimeout(this.hideTimer);
@@ -173,7 +182,7 @@ export default {
     },
     handleDropDownMenuMouseLeave(e) {
       const toEl = e.relatedTarget;
-      const btnEl = this.$el.querySelector('.tsfont-horizontal-left');
+      const btnEl = this.$el.querySelector('.block-type-trigger');
       if (btnEl && btnEl.contains(toEl)) return;
 
       this.isEnterMenu = false;
@@ -193,18 +202,72 @@ export default {
           return this.isCommandActive(menuName);
         }
       };
+    },
+    activeMenuItem() {
+      return this.alignmentList.find(item => this.isActiveMenu(item.value)) || this.alignmentList[0];
     }
   },
   watch: {}
 };
 </script>
 <style lang="less" scoped>
+.block-type-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 28px;
+  line-height: 28px;
+  cursor: pointer;
+  vertical-align: middle;
+  .block-type-trigger-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 28px;
+    line-height: 28px;
+    overflow: visible;
+  }
+  .block-type-arrow {
+    flex: none;
+    margin-left: 2px;
+    font-size: 12px;
+  }
+}
 .alignment-box {
-    li {
-      white-space: nowrap;
-      &:last-child {
-        margin-bottom: 0;
-      }
+  min-width: 136px;
+  max-height: 360px;
+  overflow-y: auto;
+  .block-type-item {
+    display: flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 4px 8px;
+    white-space: nowrap;
+    border-radius: 4px;
+    &:last-child {
+      margin-bottom: 0;
     }
+  }
+  .block-type-item-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 20px;
+    height: 22px;
+    line-height: 22px;
+    margin-right: 8px;
+    overflow: visible;
+  }
+  .block-type-item-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .block-type-check {
+    flex: none;
+    margin-left: 8px;
+  }
   }
 </style>
