@@ -42,7 +42,7 @@
  */
 class ComponentManager {
   static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'mqTopicConfig', 'mqSubscribeConfig', 'loginPage', 'formVersionList', 'router', 'deployAppConfigModule', 'diagramWidget', 'diagramWidgetConfig', 'diagramWidgetCustomConfig', 'alertEventHandlerEdit', 'alertEventHandlerView', 'alertEventHandlerConfig', 'aiChatView'];
-  static categoryConfig = {_template: {}};
+  static categoryConfig = {_template: {}, _menuTypeConfig: {}};
   static generateMethods() {
     this.categoryList.forEach(category => {
       const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
@@ -119,6 +119,38 @@ class ComponentManager {
     } else {
       return this.categoryConfig[name];
     }
+  }
+  /**
+   * 注册菜单分类配置
+   * @param {*} config 菜单分类配置，如：{moduleName: { key: value }}
+   * @returns {}
+   */
+  static registerMenuTypeConfig(config = {}) {
+    const existing = this.categoryConfig._menuTypeConfig || {};
+    Object.keys(config).forEach(moduleName => {
+      existing[moduleName] = {
+        ...(existing[moduleName] || {}),
+        ...(config[moduleName] || {})
+      };
+    });
+    this.categoryConfig._menuTypeConfig = existing;
+  }
+
+  // 根据模块名称获取菜单分类配置
+  static getMenuTypeConfig(moduleName) {
+    const config = this.categoryConfig._menuTypeConfig || {};
+    if (moduleName) {
+      return {
+        menuType: config[moduleName] || {}
+      };
+    }
+    const result = {};
+    Object.keys(config).forEach(name => {
+      result[name] = {
+        menuType: config[name] || {}
+      };
+    });
+    return result;
   }
 }
 ComponentManager.generateMethods();

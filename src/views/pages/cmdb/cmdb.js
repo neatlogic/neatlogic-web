@@ -10,7 +10,7 @@ import api from '@/resources/api/api.js';
 import LocalStore from '@/resources/assets/js/localStore.js';
 import State from '@/resources/assets/js/state.js';
 import commonRouters from '@/views/pages/common/router.js';
-import { buildMergedRoutes } from '@/resources/import/router-config.js';
+import { buildMergedRoutes, buildMergedMenuType } from '@/resources/import/router-config.js';
 
 //公共的全局组件、样式等
 import { initRouter, initI18n } from '@/resources/init.js';
@@ -22,7 +22,7 @@ Vue.use(CompareUtil); //必须要在use router之后执行
 import { config } from './config.js';
 MODULEID = config.module;
 MENULIST = buildMergedRoutes(MODULEID, routers, commonRouters);
-MENUTYPE = config.menuType;
+MENUTYPE = buildMergedMenuType(MODULEID, config);
 
 let router = initRouter(VueRouter, store); //路由拦截处理
 let i18n = initI18n(VueI18n, {}); //语言包配置

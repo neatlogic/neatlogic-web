@@ -6,7 +6,7 @@ function collect(contexts = []) {
     if (ctx && ctx.keys) {
       ctx.keys().forEach(p => {
         const names = p.split('/')[1];
-        const moduleName = (names.split('-').pop() || names);
+        const moduleName = names.split('-').pop() || names;
         const list = ctx(p).default || [];
         config[moduleName] = list;
       });
@@ -24,6 +24,16 @@ function mergeModuleRoutes(base = [], extra = []) {
     return !(hasName || hasPath);
   }) : [];
   return [...base, ...filtered];
+}
+
+function mergeMenuTypeConfig(base = {}, extra = {}) {
+  return {
+    module: extra.module || base.module,
+    menuType: {
+      ...(base.menuType || {}),
+      ...(extra.menuType || {})
+    }
+  };
 }
 
 export function getRouterConfig() {
@@ -63,9 +73,17 @@ export function buildMergedRoutes(moduleName, routers = [], commonRouters = []) 
   return mergeModuleRoutes(base, extra);
 }
 
+export function buildMergedMenuType(moduleName, baseConfig = {}) {
+  const extraConfig = ComponentManager.getMenuTypeConfig(moduleName) || {};
+  return {
+    ...(baseConfig.menuType || {}),
+    ...(extraConfig.menuType || {})
+  };
+}
+
 export function geRouterMenuTypeList() {
   // 获取菜单分类名称
-  let menuTypeList = [];
+  const menuTypeMap = {};
   const configPathList = [require.context('@/views/pages', true, /config.js$/)];
   try {
     configPathList.push(require.context('@/commercial-module', true, /config.js$/));
@@ -77,10 +95,22 @@ export function geRouterMenuTypeList() {
     configItem.keys().forEach(pathItem => {
       const pathConfig = configItem(pathItem);
       if (pathConfig && pathConfig.config) {
-        menuTypeList.push(pathConfig.config);
+        const currentConfig = pathConfig.config;
+        const moduleName = currentConfig.module;
+        if (!moduleName) {
+          return;
+        }
+        menuTypeMap[moduleName] = mergeMenuTypeConfig(menuTypeMap[moduleName] || { module: moduleName }, currentConfig);
       }
     });
   });
-  return menuTypeList;
+  const extraMenuTypeConfig = ComponentManager.getMenuTypeConfig() || {};
+  Object.keys(extraMenuTypeConfig).forEach(moduleName => {
+    menuTypeMap[moduleName] = mergeMenuTypeConfig(menuTypeMap[moduleName] || { module: moduleName }, {
+      module: moduleName,
+      menuType: extraMenuTypeConfig[moduleName].menuType || {}
+    });
+  });
+  return Object.keys(menuTypeMap).map(moduleName => menuTypeMap[moduleName]);
 }
 
