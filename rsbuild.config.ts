@@ -210,17 +210,25 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/([^/]+)/anonymous/api/': {
+      [`/${tenantName}/anonymous/api/`]: {
         target: urlPrefix,
         changeOrigin: true,
         secure: false,
-        pathRewrite: { '^/([^/]+)/anonymous/api/(.*)': '/neatlogic/anonymous/api/$2' }
+        pathRewrite: { [`^/${tenantName}/anonymous/api/(.*)`]: '/neatlogic/anonymous/api/$1' },
+        headers: { Tenant: tenantName }
       },
-      '/([^/]+)/public/api/': {
+      [`/${tenantName}/any/api/`]: {
         target: urlPrefix,
         changeOrigin: true,
         secure: false,
-        pathRewrite: { '^/([^/]+)/public/api/(.*)': '/neatlogic/public/api/$2' },
+        pathRewrite: { [`^/${tenantName}/any/api/(.*)`]: '/neatlogic/any/api/$1' },
+        headers: { Tenant: tenantName }
+      },
+      [`/${tenantName}/public/api/`]: {
+        target: urlPrefix,
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: { [`^/${tenantName}/public/api/(.*)`]: '/neatlogic/public/api/$1' },
         headers: { Tenant: tenantName }
       },
       [`/${tenantName}/api/`]: {
@@ -235,14 +243,14 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         pathRewrite: { [`/${tenantName}/tenant/check`]: '/neatlogic/tenant/check/' + tenantName },
-        headers: { Tenant: tenantName, 'Neatlogic-Rule-Env': 'sit', 'Neatlogic-Rule-Test': '1' }
+        headers: { Tenant: tenantName }
       },
       [`/${tenantName}/login/`]: {
         target: urlPrefix,
         changeOrigin: true,
         secure: false,
         pathRewrite: { [`/${tenantName}/login/check`]: '/neatlogic/login/check/' + tenantName },
-        headers: { Tenant: tenantName, 'Neatlogic-Rule-Env': 'sit', 'Neatlogic-Rule-Test': '1' }
+        headers: { Tenant: tenantName }
       }
     }
   },

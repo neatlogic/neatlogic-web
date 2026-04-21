@@ -38,7 +38,13 @@
       <template v-slot:footer>
         <div>
           <Button :ghost="true" @click="closeDialog">{{ $t('page.cancel') }}</Button>
-          <Button v-if="!$utils.isEmpty(envModuleList)" type="primary" @click="confirm">{{ $t('page.continue') }}</Button>
+          <Button
+            v-if="!$utils.isEmpty(envModuleList)"
+            type="primary"
+            :loading="continueLoading"
+            :disabled="continueLoading"
+            @click="confirm"
+          >{{ $t('page.continue') }}</Button>
         </div>
       </template>
     </TsDialog>
@@ -57,7 +63,13 @@
       <template v-slot:footer>
         <div>
           <Button :ghost="true" @click="closeCompobDialog">{{ $t('page.cancel') }}</Button>
-          <Button v-if="hasContinueBtn" type="primary" @click="okCompobDialog">{{ $t('page.continue') }}</Button>
+          <Button
+            v-if="hasContinueBtn"
+            type="primary"
+            :loading="compobContinueLoading"
+            :disabled="compobContinueLoading"
+            @click="okCompobDialog"
+          >{{ $t('page.continue') }}</Button>
         </div>
       </template>
     </TsDialog>
@@ -78,6 +90,10 @@ export default {
     inspectionData: {
       type: Object,
       default: () => ({})
+    },
+    viewName: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -97,7 +113,9 @@ export default {
       hasContinueBtn: false,
       loadingShow: false,
       isShowInspectTool: false,
-      typeName: '' // 巡检工具名称
+      typeName: '', // 巡检工具名称
+      continueLoading: false,
+      compobContinueLoading: false
     };
   },
   beforeCreate() {},
@@ -181,7 +199,8 @@ export default {
       this.checkboxModel = [];
       this.loadingShow = true;
       let params = {
-        appSystemId: this.inspectionData.id
+        appSystemId: this.inspectionData.id,
+        viewName: this.viewName || null
       };
       this.$api.inspect.applicationInspect.getInspectionList(params).then((res) => {
         if (res && res.Status == 'OK') {
@@ -247,21 +266,24 @@ export default {
       let envList = this.getEnvList();
       const param = {
         appSystemId: this.inspectionData.id,
-        envList: envList
+        envList: envList,
+        viewName: this.viewName || null
       };
-      this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => { //
-        this.loadingShow = true;
+      this.continueLoading = true;
+      this.loadingShow = true;
+      this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => {
         if (res.Status == 'OK') {
           this.openResultDialog(res.Return.tbodyList);
         }
       }).finally(() => {
         this.loadingShow = false;
+        this.continueLoading = false;
       });
     },
     openResultDialog(list) {
       if (list && list.length) {
         this.resultList = list;
-        if (list.length == 1 && list[0].jobId) {
+        if (list.length == 1 && list[0].jobId && Number(list[0].isCreateJobSuccess) === 1) {
           this.$router.push({
             path: '/job-detail',
             query: {id: list[0].jobId}
@@ -276,6 +298,8 @@ export default {
     closeResultDialog() {
       this.isShowResultDialog = false;
       this.isShowCompobDialog = false;
+      this.continueLoading = false;
+      this.compobContinueLoading = false;
       this.closeDialog();
     },
     handleDataList() {
@@ -395,13 +419,21 @@ export default {
       }
     },
     closeDialog() {
+      this.continueLoading = false;
+      this.compobContinueLoading = false;
       this.$emit('close');
     },
     closeCompobDialog() {
       this.isShowCompobDialog = false;
+      this.compobContinueLoading = false;
     },
     okCompobDialog() {
       let flag = 0;
+      this.compobContinueLoading = true;
+      if (!this.subDataList || this.subDataList.length === 0) {
+        this.compobContinueLoading = false;
+        return;
+      }
       this.subDataList && this.subDataList.forEach((item) => {
         this.$api.inspect.applicationInspect.executeInspect(item).then((res) => {
           if (res.Status == 'OK') {
@@ -409,11 +441,13 @@ export default {
             if (flag == this.subDataList.length) {
               this.$Message.success(this.$t('message.executesuccess'));
               this.isShowCompobDialog = false;
+              this.compobContinueLoading = false;
               this.closeDialog();
             }
           }
         }).catch(() => {
           this.loadingShow = false;
+          this.compobContinueLoading = false;
         });
       });
     },

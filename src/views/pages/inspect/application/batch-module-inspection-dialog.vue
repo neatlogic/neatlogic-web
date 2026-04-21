@@ -36,7 +36,13 @@
       <template v-slot:footer>
         <div>
           <Button :ghost="true" @click="closeDialog">{{ $t('page.cancel') }}</Button>
-          <Button v-if="hasAssets" type="primary" @click="okDialog">{{ $t('page.continue') }}</Button>
+          <Button
+            v-if="hasAssets"
+            type="primary"
+            :loading="continueLoading"
+            :disabled="continueLoading"
+            @click="okDialog"
+          >{{ $t('page.continue') }}</Button>
         </div>
       </template>
     </TsDialog>
@@ -59,7 +65,13 @@
       <template v-slot:footer>
         <div>
           <Button :ghost="true" @click="closeCompobDialog">{{ $t('page.cancel') }}</Button>
-          <Button v-if="hasContinueBtn" type="primary" @click="confirm">{{ $t('page.continue') }}</Button>
+          <Button
+            v-if="hasContinueBtn"
+            type="primary"
+            :loading="compobContinueLoading"
+            :disabled="compobContinueLoading"
+            @click="confirm"
+          >{{ $t('page.continue') }}</Button>
         </div>
       </template>
     </TsDialog>
@@ -85,6 +97,10 @@ export default {
       // 应用id
       type: Number,
       default: null
+    },
+    viewName: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -109,7 +125,9 @@ export default {
       isShowInspectTool: false,
       toolName: '',
       loadingShow: false,
-      hasContinueBtn: false
+      hasContinueBtn: false,
+      continueLoading: false,
+      compobContinueLoading: false
     };
   },
   beforeCreate() {},
@@ -168,7 +186,7 @@ export default {
       this.$set(this.dialogSetting, 'isShow', true);
       this.loadingShow = true;
       this.$api.inspect.applicationInspect
-        .getInspectAppModuleEnvList({ appSystemId: this.appSystemId, appModuleId: this.inspectionData.id })
+        .getInspectAppModuleEnvList({ appSystemId: this.appSystemId, appModuleId: this.inspectionData.id, viewName: this.viewName || null })
         .then(res => {
           if (res && res.Status == 'OK') {
             this.envList = res.Return;
@@ -233,21 +251,24 @@ export default {
       let envList = this.getEnvList();
       const param = {
         appSystemId: this.appSystemId,
-        envList: envList
+        envList: envList,
+        viewName: this.viewName || null
       };
-      this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => { //
-        this.loadingShow = true;
+      this.compobContinueLoading = true;
+      this.loadingShow = true;
+      this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => {
         if (res.Status == 'OK') {
           this.openResultDialog(res.Return.tbodyList);
         }
       }).finally(() => {
         this.loadingShow = false;
+        this.compobContinueLoading = false;
       });
     },
     openResultDialog(list) {
       if (list && list.length) {
         this.resultList = list;
-        if (list.length == 1 && list[0].jobId) {
+        if (list.length == 1 && list[0].jobId && Number(list[0].isCreateJobSuccess) === 1) {
           this.$router.push({
             path: '/job-detail',
             query: {id: list[0].jobId}
@@ -262,6 +283,8 @@ export default {
     closeResultDialog() {
       this.isShowResultDialog = false;
       this.loadingShow = false;
+      this.continueLoading = false;
+      this.compobContinueLoading = false;
       this.dialogSetting.isShow = false;
       this.isShowCompobList = false;
       this.closeDialog();
@@ -275,6 +298,7 @@ export default {
       if (!this.isValid()) {
         return false;
       }
+      this.continueLoading = true;
       this.loadingShow = true;
       for (let i = 0; i < envList.length; i++) {
         if (envList[i] && envList[i].ciVoList.length > 0 && (envList[i].value && envList[i].value.length > 0)) {
@@ -310,6 +334,7 @@ export default {
                 });
                 if (ajaxNumber && flag && ajaxNumber == flag) {
                   this.loadingShow = false;
+                  this.continueLoading = false;
                 }
               });
             }
@@ -322,6 +347,7 @@ export default {
         this.confirm();
       } else {
         this.isShowCompobList = true;
+        this.continueLoading = false;
         if (this.$utils.isEmpty(this.compobList)) {
           this.hasContinueBtn = false; // 一个配置都没有，不显示继续按钮
         } else {
@@ -332,8 +358,11 @@ export default {
     closeCompobDialog() {
       this.noCompobIdList = [];
       this.isShowCompobList = false;
+      this.compobContinueLoading = false;
     },
     closeDialog() {
+      this.continueLoading = false;
+      this.compobContinueLoading = false;
       this.$emit('close');
     },
     handleContinue() {

@@ -6,7 +6,6 @@ export const config = {
     customview: $t('router.cmdb.customview'),
     resourceCenter: $t('router.cmdb.resourcecenter'),
     discovery: $t('router.cmdb.discovery'),
-    cmdbmanage: $t('router.cmdb.cmdbmanage'),
-    bsmdatasync: $t('router.cmdb.bsmdatasync')
+    cmdbmanage: $t('router.cmdb.cmdbmanage')
   }
 };

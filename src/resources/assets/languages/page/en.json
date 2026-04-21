@@ -57,6 +57,7 @@
   "afteredit": "After modification",
   "uniquekey": "Unique key",
   "build": "New",
+  "child": "Child",
   "new": "New",
   "alias": "Alias",
   "newtarget": "New {target}",
@@ -137,6 +138,7 @@
   "bottom": "bottom",
   "tag": "Tag",
   "title": "Title",
+  "tree": "Tree",
   "linkname": "Link name",
   "linktype": "Link Type",
   "subtitle": "Subtitle",
@@ -349,6 +351,9 @@
   "write": "write",
   "size": "size",
   "authority": "authority",
+  "baseline": "Baseline",
+  "baselinetemplateauthdesc": "Unauthorized users can only view parameters in this hierarchy",
+  "baselinetemplateparaminherittip": "Parent hierarchy parameters are automatically inherited by the current hierarchy, and values can be overridden in the current hierarchy.",
   "displaysetting": "Display Setting",
   "customtemplate": "Custom Template",
   "updatetime": "Update time",
@@ -455,6 +460,7 @@
   "ipaddress": "IP address",
   "defaultscenario": "Default Scenario",
   "history": "History",
+  "hierarchydescandeditauthority": "Hierarchy Description and Edit Authority",
   "ignore": "ignore",
   "reset": "Reset",
   "resetall": "Reset all",
@@ -1092,5 +1098,7 @@
   "manage": "management",
   "send": "send",
   "ignoreall": "Ignore all",
-  "codeblocklanguage": "Code Block Language"
+  "codeblocklanguage": "Code Block Language",
+  "os": "operating system",
+  "mq": "message queue"
 }

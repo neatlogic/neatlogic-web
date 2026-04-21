@@ -29,7 +29,6 @@
                           <Tag>TsFormCheckbox</Tag>
                           <Tag>TsFormRadio</Tag>
                           <Tag>TsFormSelect</Tag>
-                          <Tag>TsFormSwitch</Tag>
                           <Tag>TsFormDatePicker</Tag>
                           <Tag>TsTable</Tag>
                         </div>

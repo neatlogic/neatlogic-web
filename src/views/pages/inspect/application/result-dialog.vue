@@ -8,7 +8,7 @@
     >
       <template v-slot>
         <div v-for="(item,index) in resultList" :key="index" class="pb-sm">
-          <div v-if="item.jobId">
+          <div v-if="Number(item.isCreateJobSuccess) === 1 && item.jobId">
             <span class="mr-xs text-success">{{ $t('term.deploy.createsuccess') }}</span>
             <span class="mr-xs text-grey">{{ item.appSystemName }}</span>
             <span class="mr-xs text-grey">{{ item.appModuleName }}</span>

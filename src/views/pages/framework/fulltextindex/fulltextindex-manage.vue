@@ -74,7 +74,7 @@
               </template>
             </TsTable>
           </TabPane>
-          <TabPane label="Qdrant" name="qdrant">
+          <!--<TabPane label="Qdrant" name="qdrant">
             <TsTable :tbodyList="fullTextIndexRebuildAuditData['qdrant']" :theadList="theadList">
               <template v-slot:error="{ row }">
                 <Poptip
@@ -107,7 +107,7 @@
                 </div>
               </template>
             </TsTable>
-          </TabPane>
+          </TabPane>-->
         </Tabs>
         <FullIndexRebuildDialog v-if="isRebuildDialogShow" :audit="currentAudit" @close="closeRebuildDialog"></FullIndexRebuildDialog>
       </div>

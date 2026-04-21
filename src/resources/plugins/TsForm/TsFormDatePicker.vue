@@ -511,6 +511,7 @@ export default {
           this.currentMultiple = value.multiple;
           this.validMesage = '';
           this.isValidPass = true;
+          this.$emit('change-label', this.currentValue);
         }
       } else if (newValue != this.getFormatValue()) {
         let value = this.getCurrentValue();
@@ -518,6 +519,7 @@ export default {
         this.currentMultiple = value.multiple;
         this.validMesage = '';
         this.isValidPass = true;
+        this.$emit('change-label', this.currentValue); // 修复combineSearcher 组件默认值回显异常问题
       }
     },
     format(newValue, oldValue) {
