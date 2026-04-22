@@ -101,6 +101,10 @@ export default {
     viewName: {
       type: String,
       default: ''
+    },
+    baselineId: {
+      type: Number,
+      default: null
     }
   },
   data() {
@@ -252,12 +256,14 @@ export default {
       const param = {
         appSystemId: this.appSystemId,
         envList: envList,
-        viewName: this.viewName || null
+        viewName: this.viewName || null,
+        baselineId: this.baselineId
       };
       this.compobContinueLoading = true;
       this.loadingShow = true;
       this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => {
         if (res.Status == 'OK') {
+          this.$emit('job-created');
           this.openResultDialog(res.Return.tbodyList);
         }
       }).finally(() => {
@@ -394,7 +400,9 @@ export default {
             invokeId: v.id,
             routeId: this.appSystemId,
             roundCount: 64,
-            param: {},
+            param: {
+              baselineId: this.baselineId
+            },
             executeConfig: {
               executeNodeConfig: {
                 filter: {

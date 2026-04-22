@@ -53,8 +53,7 @@
     "resourcecenter": "Resource Center",
     "discovery": "Auto Discovery",
     "cmdbmanage": "System Management",
-    "objmanage": "Object Management",
-    "bsmdatasync": "BSM data synchronization"
+    "objmanage": "Object Management"
   },
   "process": {
     "workordercenter": "Work Center",
