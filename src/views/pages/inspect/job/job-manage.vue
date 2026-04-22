@@ -1,60 +1,62 @@
 
 <template>
-  <TsContain border="border">
-    <template v-slot:topRight>
-      <div>
-        <CombineSearcher
-          v-model="searchValue"
-          v-bind="searchConfig"
-          @change="searchJob(1)"
-        ></CombineSearcher>
-      </div>
-    </template>
-    <template v-slot:content>
-      <TsTable
-        v-bind="jobData"
-        :theadList="theadList"
-        @changeCurrent="searchJob"
-        @changePageSize="changePageSize"
-      >
-        <template v-slot:name="{ row }">
-          <span class="text-href" @click="toJobDetail(row)">{{ row.name }}</span>
-        </template>
-        <template slot="completionRate" slot-scope="{row}">
-          <Liquid
-            :percent="row.completionRate"
-            :size="7"
-            :config="getconfig(row)"
-          />
-        </template>
-        <!-- <template slot="operationType" slot-scope="{row}">
-          <span class="text-href" @click="goDetail(row)">
-            <span>{{ row.operationTypeName }}</span>
-            <span v-if="row.operationName">({{ row.operationName }})</span>
-          </span>
-        </template> -->
-        <template slot="routeName" slot-scope="{ row }">
-          <span v-if="row.source == 'inspect' || row.source == 'inspectapp'">
-            <span>{{ row.route && row.route.name }}</span>
-          </span>
-          <span v-else class="text-href" @click="toRoute(row)">
-            <span>{{ row.route && row.route.name }}</span>
-          </span>
-        </template>
-        <template slot="status" slot-scope="{row}">
-          <Status :statusValue="row.status" :statusName="row.statusName" type="text"></Status>
-        </template>
-        <template v-slot:action="{ row }">
-          <div class="tstable-action">
-            <ul class="tstable-action-ul">
-              <li class="tsfont-ipliebiao" @click="toInspectResuit(row)">{{ $t('term.inspect.inspectresult') }}</li>
-              <li class="tsfont-file-single" @click="toProblemReport(row)">{{ $t('term.inspect.problemreport') }}</li>
-            </ul>
-          </div>
-        </template>
-      </TsTable>
-    </template>
-  </TsContain>
+  <div class="job-manage" :class="{ 'job-manage--embedded': isEmbedded }">
+    <TsContain border="border">
+      <template v-slot:topRight>
+        <div>
+          <CombineSearcher
+            v-model="searchValue"
+            v-bind="searchConfig"
+            @change="searchJob(1)"
+          ></CombineSearcher>
+        </div>
+      </template>
+      <template v-slot:content>
+        <TsTable
+          v-bind="jobData"
+          :theadList="displayTheadList"
+          @changeCurrent="searchJob"
+          @changePageSize="changePageSize"
+        >
+          <template v-slot:name="{ row }">
+            <span class="text-href" @click="toJobDetail(row)">{{ row.name }}</span>
+          </template>
+          <template slot="completionRate" slot-scope="{row}">
+            <Liquid
+              :percent="row.completionRate"
+              :size="7"
+              :config="getconfig(row)"
+            />
+          </template>
+          <!-- <template slot="operationType" slot-scope="{row}">
+            <span class="text-href" @click="goDetail(row)">
+              <span>{{ row.operationTypeName }}</span>
+              <span v-if="row.operationName">({{ row.operationName }})</span>
+            </span>
+          </template> -->
+          <template slot="routeName" slot-scope="{ row }">
+            <span v-if="row.source == 'inspect' || row.source == 'inspectapp'">
+              <span>{{ row.route && row.route.name }}</span>
+            </span>
+            <span v-else class="text-href" @click="toRoute(row)">
+              <span>{{ row.route && row.route.name }}</span>
+            </span>
+          </template>
+          <template slot="status" slot-scope="{row}">
+            <Status :statusValue="row.status" :statusName="row.statusName" type="text"></Status>
+          </template>
+          <template v-if="showAction" v-slot:action="{ row }">
+            <div class="tstable-action">
+              <ul class="tstable-action-ul">
+                <li class="tsfont-ipliebiao" @click="toInspectResuit(row)">{{ $t('term.inspect.inspectresult') }}</li>
+                <li class="tsfont-file-single" @click="toProblemReport(row)">{{ $t('term.inspect.problemreport') }}</li>
+              </ul>
+            </div>
+          </template>
+        </TsTable>
+      </template>
+    </TsContain>
+  </div>
 </template>
 <script>
 export default {
@@ -66,11 +68,26 @@ export default {
     Status: () => import('@/resources/components/Status/CommonStatus.vue')
   },
   filters: {},
-  props: {},
+  props: {
+    showAction: {
+      type: Boolean,
+      default: true
+    },
+    defaultPageSize: {
+      type: Number,
+      default: null
+    },
+    isEmbedded: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       timmer: null,
-      searchParam: {},
+      searchParam: {
+        pageSize: this.defaultPageSize || undefined
+      },
       searchValue: {},
       jobData: {},
       jobEndStatusList: ['completed', 'aborted', 'ignored', 'failed'], //终点状态节点列表，非终点状态列表的需要定时刷新。
@@ -284,6 +301,9 @@ export default {
     }
   },
   computed: {
+    displayTheadList() {
+      return this.showAction ? this.theadList : this.theadList.filter(item => item.key !== 'action');
+    },
     getconfig() {
       return row => {
         let config = {};
@@ -297,3 +317,22 @@ export default {
   watch: {}
 };
 </script>
+<style lang="less" scoped>
+.job-manage {
+  height: 100%;
+
+  &.job-manage--embedded {
+    ::v-deep .tscontain-li {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    ::v-deep .tscontain-content {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+  }
+}
+</style>
