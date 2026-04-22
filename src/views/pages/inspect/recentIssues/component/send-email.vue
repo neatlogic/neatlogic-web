@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      :title="$t('term.inspect.sendanemail')"
+      :title="$t('page.sendanemail')"
       type="modal"
       :isShow.sync="isShowDialog"
       @on-ok="okDialog"

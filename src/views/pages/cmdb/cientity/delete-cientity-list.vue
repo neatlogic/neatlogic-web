@@ -133,7 +133,7 @@ export default {
             name: 'deleteUser',
             groupList: ['user'],
             multiple: false,
-            label: this.$t('term.autoexec.operator'),
+            label: this.$t('page.operator'),
             transfer: true
           },
           {

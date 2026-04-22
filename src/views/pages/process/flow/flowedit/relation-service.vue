@@ -17,7 +17,7 @@
               <tr class>
                 <th width="60px">#</th>
                 <th width="100px">{{ $t('page.type') }}</th>
-                <th>{{ $t('term.process.catalogname') }}</th>
+                <th>{{ $t('page.servicename') }}</th>
                 <th style="text-align: right;padding-right: 16px;width:200px;">
                   <div class="tsfont-refresh text-action" @click="refreshFlow">
                     {{ $t('page.refresh') }}

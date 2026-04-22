@@ -56,7 +56,7 @@ export default {
       },
       theadList: [
         {
-          title: this.$t('term.codehub.issuesnumber'),
+          title: this.$t('page.requirementid'),
           key: 'no'
         },
         {

@@ -12,7 +12,7 @@
             @click="exportList()"
           >{{ $t('page.export') }}</span>
           <span v-else class="action-item">
-            <Icon type="ios-loading" size="16" class="loading">{{ $t('term.codehub.exporting') }}</Icon>
+            <Icon type="ios-loading" size="16" class="loading">{{ $t('page.downloadloadingtip') }}</Icon>
           </span>
           <span v-auth="['ADMIN']" class="action-item"><AuditConfig :title="$t('term.framework.saveexpire')" auditName="DATAWAREHOUSE-AUDIT"></AuditConfig></span>
         </div>

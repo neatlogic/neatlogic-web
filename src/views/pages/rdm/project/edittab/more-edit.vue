@@ -15,7 +15,7 @@
       <Divider></Divider>
     </div>
     <div v-if="projectData.isOwner || $AuthUtils.hasRole('PROJECT_MANAGE')">
-      <Button type="error" @click="deleteProject">{{ $t('dialog.title.deletetarget', { target: $t('term.rdm.project') }) }}</Button>
+      <Button type="error" @click="deleteProject">{{ $t('dialog.title.deletetarget', { target: $t('page.project') }) }}</Button>
       <div class="text-grey mt-md">{{ $t('term.rdm.deleteprojectdesc') }}</div>
     </div>
     <TsDialog
@@ -100,7 +100,7 @@ export default {
       if (this.projectId) {
         this.$createDialog({
           title: this.$t('dialog.title.closecomfirm'),
-          content: this.$t('dialog.content.closecomfirm', { target: this.$t('term.rdm.project') }),
+          content: this.$t('dialog.content.closecomfirm', { target: this.$t('page.project') }),
           btnType: 'error',
           'on-ok': vnode => {
             this.$api.rdm.project.closeProjectById(this.projectId).then(res => {
@@ -119,7 +119,7 @@ export default {
       if (this.projectId) {
         this.$createDialog({
           title: this.$t('dialog.title.openconfirm'),
-          content: this.$t('dialog.content.opencomfirm', { target: this.$t('term.rdm.project') }),
+          content: this.$t('dialog.content.opencomfirm', { target: this.$t('page.project') }),
           btnType: 'error',
           'on-ok': vnode => {
             this.$api.rdm.project.openProjectById(this.projectId).then(res => {
