@@ -7,113 +7,13 @@
   >
     <template v-slot>
       <div class="input-border">
-        <TsForm ref="form" :itemList="formConfig" labelPosition="right">
-          <!-- 认证方式自定义slot -->
-          <template v-slot:authtype>
-            <Row>
-              <Col span="12">
-                <TsFormSelect
-                  ref="authtype"
-                  v-model="formConfig['authtype'].value"
-                  :dataList="formConfig['authtype'].dataList"
-                  :transfer="true"
-                  :validateList="formConfig['authtype'].validateList"
-                  :clearable="formConfig['authtype'].clearable"
-                  @on-change="authChange"
-                ></TsFormSelect>
-              </Col>
-              <Col span="12">
-                <Poptip
-                  class="poptip"
-                  word-wrap
-                  width="500"
-                  placement="bottom"
-                  trigger="hover"
-                  transfer
-                >
-                  <i class="tsfont-question-o text-href"></i>
-                  <div slot="title">{{ authConfig ? authConfig.title : $t('page.nothave') }}</div>
-                  <div v-if="authConfig" slot="content">
-                    <p v-for="(item, index) in authConfig.detailList" :key="index">
-                      <span class="tsfont-dot fz10">{{ item }}</span>
-                    </p>
-                  </div>
-                </Poptip>
-              </Col>
-            </Row>
-          </template>
-          <!-- 请求时效自定义slot -->
-          <template v-slot:timeout>
-            <Row>
-              <Col span="12">
-                <TsFormInput
-                  ref="timeout"
-                  v-model="formConfig['timeout'].value"
-                  type="number"
-                  :validateList="formConfig['timeout'].validateList"
-                ></TsFormInput>
-              </Col>
-              <Col span="12">
-                <!-- <span>秒</span> -->
-                <Poptip
-                  class="poptip"
-                  word-wrap
-                  transfer
-                  placement="bottom"
-                  trigger="hover"
-                >
-                  <i class="tsfont-question-o text-href"></i>
-                  <div slot="title">{{ $t('term.framework.timeout') }}</div>
-                  <div slot="content">
-                    {{ $t('message.framework.timeouttip') }}
-                  </div>
-                </Poptip>
-              </Col>
-            </Row>
-          </template>
-          <!-- 访问频率自定义slot -->
-          <template v-slot:qps>
-            <Row>
-              <Col span="12">
-                <TsFormInput
-                  ref="qps"
-                  v-model="formConfig['qps'].value"
-                  type="number"
-                  :validateList="formConfig['qps'].validateList"
-                ></TsFormInput>
-              </Col>
-              <Col span="12">
-                <!-- <span>次/秒</span> -->
-                <Poptip
-                  class="poptip"
-                  transfer
-                  word-wrap
-                  placement="bottom"
-                  trigger="hover"
-                >
-                  <i class="tsfont-question-o text-href"></i>
-                  <div slot="title">{{ $t('term.framework.qps') }}</div>
-                  <div slot="content">
-                    <span v-html="$t('message.framework.qpstip')"></span>
-                  </div>
-                </Poptip>
-              </Col>
-            </Row>
-          </template>
-          <template v-slot:basicInfo>
-            <div v-if="formConfig?.basic?.value === 'true'">
-              <TsForm ref="basicForm" :item-list="basicFormConfig"></TsForm>
-            </div>
-          </template>
-        </TsForm>
+        <TsForm ref="form" :itemList="formConfig" labelPosition="right"></TsForm>
       </div>
     </template>
     <template v-slot:footer>
       <Button @click.native="handleClose">{{ $t('page.cancel') }}</Button>
       <Button
         type="primary"
-        :disabled="dialogConfig.isButtonDisabled"
-        :loading="dialogConfig.loading"
         @click.native="handleOk"
       >{{ $t('page.confirm') }}</Button>
     </template>
@@ -124,43 +24,33 @@
 export default {
   name: 'ApiForm',
   components: {
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
   props: {
     isShow: { type: Boolean, required: true },
-    operationType: { type: String, required: true },
-    apiType: { type: String, required: true },
-    rowData: { type: Object, required: true }
+    token: { type: String, default: '' }
   },
   data() {
-    let vm = this;
     return {
       dialogConfig: {
         type: 'modal',
-        title: '',
+        title: this.$t('dialog.title.edittarget', {'target': this.$t('page.interface')}),
         isShow: true,
-        width: '700px',
-        loading: false,
-        isButtonDisabled: false
+        width: 'medium'
       },
-      defaultFormConfig: {
+      formConfig: {
         token: {
           type: 'text',
           name: 'token',
           value: '',
-          width: 400,
           label: this.$t('page.address'),
           validateList: ['required', 'token', { name: 'searchUrl', url: 'api/rest/apimanage/save', message: this.$t('message.targetisexists', { target: this.$t('page.address') }) }],
-          disabled: false
+          disabled: true
         },
         name: {
           type: 'text',
           name: 'name',
           value: '',
-          maxlength: 30,
-          width: 400,
           label: this.$t('page.name'),
           validateList: [
             'required',
@@ -169,46 +59,16 @@ export default {
               name: 'searchUrl',
               url: 'api/rest/apimanage/save',
               message: this.$t('message.targetisexists', { target: this.$t('page.name') }),
-              params: () => ({ token: this.rowData.token })
+              params: () => ({ token: this.token })
             }
           ],
-          disabled: false
-        },
-        handler: {
-          type: 'select',
-          clearable: false,
-          name: 'handler',
-          value: '',
-          width: 400,
-          label: this.$t('page.handler'),
-          url: '/api/rest/apimanage/apihandler/list',
-          params: {
-            isPrivate: false
-          },
-          disabled: false,
-          rootName: 'tbodyList',
-          valueName: 'handler',
-          textName: 'name',
-          validateList: ['required']
-        },
-        isActive: {
-          type: 'radio',
-          name: 'isActive',
-          value: 1,
-          label: this.$t('page.status'),
-          validateList: ['required'],
-          valueName: 'value',
-          textName: 'text',
-          dataList: [
-            { value: 1, text: this.$t('page.enable') },
-            { value: 0, text: this.$t('page.disable') }
-          ]
+          disabled: true
         },
         needAudit: {
           type: 'radio',
           name: 'needAudit',
           value: 1,
-          label: this.$t('page.keeprecords'),
+          label: '启用审计',
           validateList: ['required'],
           valueName: 'value',
           textName: 'text',
@@ -217,208 +77,57 @@ export default {
             { value: 0, text: this.$t('page.no') }
           ]
         },
-        authtype: {
-          type: 'slot',
-          name: 'authtype',
-          clearable: false,
-          value: '',
-          label: this.$t('page.authtype'),
-          validateList: ['required'],
-          valueName: 'value',
-          textName: 'text',
-          dataList: [
-            // { value: '-', text: '无' },
-            // { value: 'basic', text: 'Basic' },
-            // { value: 'token', text: '用户令牌' },
-            // { value: 'hmac-sha1', text: 'HMAC-SHA1' }
-          ]
-        },
-        username: {
-          type: 'text',
-          name: 'username',
-          value: '',
-          maxlength: 20,
-          width: 400,
-          label: this.$t('page.username'),
-          isHidden: true,
-          validateList: ['required']
-        },
-        password: {
-          type: 'password',
-          name: 'password',
-          value: '',
-          maxlength: 20,
-          width: 400,
-          label: this.$t('page.password'),
-          isHidden: true,
-          validateList: [
-            'required',
-            {
-              name: 'passcode',
-              message: this.$t('message.passcode')
-            }
-          ]
-        },
-        timeout: {
-          type: 'slot',
-          name: 'timeout',
-          value: 0,
-          width: 200,
-          label: this.$t('term.framework.timeout'),
-          validateList: ['required', 'integer_natural', 'number']
-        },
         qps: {
-          type: 'slot',
+          type: 'number',
           name: 'qps',
           label: this.$t('term.framework.qps'),
           value: 0,
+          desc: this.$t('message.framework.qpstip'),
           validateList: ['required', 'integer_natural', 'number']
         },
-        expire: {
-          type: 'datetime',
-          name: 'expire',
-          value: '',
-          transfer: true,
-          label: this.$t('page.servicelife')
-        },
-        description: {
-          type: 'textarea',
-          name: 'description',
-          value: '',
-          label: this.$t('page.description')
-        },
-        basic: {
+        isMcp: {
           type: 'radio',
-          name: 'basicSupport',
-          value: 'false',
-          label: 'basic认证',
+          name: 'isMcp',
+          value: 0,
+          label: 'MCP服务',
+          disabled: false,
           validateList: ['required'],
           valueName: 'value',
           textName: 'text',
           dataList: [
-            { value: 'true', text: this.$t('page.yes') },
-            { value: 'false', text: this.$t('page.no') }
-          ],
-          onChange: val => {
-            if (val === 'false') {
-              this.$set(this.basicFormConfig['username'], 'value', null);
-              this.$set(this.basicFormConfig['password'], 'value', null);
-              this.$delete(this.formConfig, 'basicInfo');
-            } else {
-              this.$set(this.formConfig, 'basicInfo', this.defaultFormConfig.basicInfo);
-            }
-          }
-        },
-        basicInfo: {
-          hideLabel: true,
-          type: 'slot',
-          lable: ''
-        }
-      },
-      formConfig: {},
-      authConfig: null,
-      basicFormConfig: {
-        username: {
-          type: 'text',
-          name: 'basicUsername',
-          value: '',
-          maxlength: 20,
-          width: 400,
-          label: this.$t('page.username'),
-          validateList: ['required']
-        },
-        password: {
-          type: 'password',
-          name: 'basicPassword',
-          value: '',
-          maxlength: 20,
-          width: 400,
-          label: this.$t('page.password'),
-          validateList: [
-            'required',
-            {
-              name: 'passcode',
-              message: this.$t('message.passcode')
-            }
+            { value: 1, text: this.$t('page.yes') },
+            { value: 0, text: this.$t('page.no') }
           ]
         }
-      }
+      },
+      currentApiData: null
     };
   },
-  mounted() {
-    this.getAuthTypeList();
+  created() {
+    this.fetchFormValue(this.token);
   },
   methods: {
-    getAuthTypeList() {
-      let data = {};
-      this.$api.framework.apiManage.authTypeList(data).then(res => {
-        if (res.Status === 'OK') {
-          this.defaultFormConfig.authtype.dataList = res.Return;
-        }
-      });
+    isObjectApiType(type) {
+      return type === 'object';
     },
-    authChange(val) {
-      let nowList = this.defaultFormConfig.authtype.dataList.find(d => d.value == val);
-      this.authConfig = nowList && nowList.help ? nowList.help : null;
-    },
-    createApi() {
-      this.dialogConfig.title = this.$t('dialog.title.addtarget', { target: this.$t('page.interface') });
-      this.formConfig = this.$utils.deepClone(this.defaultFormConfig);
-    },
-    updateApi() {
-      this.dialogConfig.title = this.$t('dialog.title.edittarget', { target: this.$t('page.interface') });
-      if (this.rowData.apiType === 'custom') {
-        this.formConfig = this.$utils.deepClone(this.defaultFormConfig);
-        this.fetchFormValue(this.rowData.token).then(() => {
-          this.formConfig['token'].disabled = true;
-        });
-      } else if (this.rowData.apiType === 'system') {
-        const { token, name, isActive, handler, needAudit, authtype, qps } = this.$utils.deepClone(this.defaultFormConfig);
-        this.formConfig = { token, name, isActive, handler, needAudit, authtype, qps };
-        this.formConfig['isActive'].isHidden = true;
-        this.formConfig['handler'].isHidden = true;
-        this.formConfig['authtype'].isHidden = true;
-        this.fetchFormValue(this.rowData.token).then(() => {
-          this.formConfig['token'].disabled = true;
-          this.formConfig['name'].disabled = true;
-        });
+    updateMcpFormItem(apiData) {
+      if (!this.formConfig || !this.formConfig.isMcp) {
+        return;
       }
-    },
-    copyApi() {
-      this.dialogConfig.title = this.$t('dialog.title.copytarget', { target: this.$t('page.interface') });
-      this.formConfig = this.$utils.deepClone(this.defaultFormConfig);
-      this.fetchFormValue(this.rowData.token).then(() => {
-        this.formConfig['token'].value += '_copy';
-        this.formConfig['name'].value += '_copy';
-        this.formConfig['handler'].disabled = true;
-      });
-    },
-    deleteApi({ token }) {
-      this.$emit('on-hide');
-      this.$createDialog({
-        title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deletetargetconfirm', { target: token }),
-        btnType: 'error',
-        'on-ok': vnode => {
-          const params = { token };
-          this.$api.framework.apiManage
-            .delete(params)
-            .then(res => {
-              if (res.Status == 'OK') {
-                this.$Message.success(this.$t('message.deletesuccess'));
-              }
-            })
-            .finally(() => {
-              vnode.isShow = false;
-              this.$parent.getTableConfig();
-            });
-        }
-      });
+      const currentApiMode = apiData && apiData.type;
+      if (!currentApiMode) {
+        return;
+      }
+      const isObjectApi = this.isObjectApiType(currentApiMode);
+      this.$set(this.formConfig.isMcp, 'disabled', !isObjectApi);
+      if (!isObjectApi) {
+        this.formConfig.isMcp.value = 0;
+      }
     },
     handleClose() {
       this.$emit('on-hide');
       this.dialogConfig.title = '';
-      this.formConfig = this.$utils.deepClone(this.defaultFormConfig);
+      this.currentApiData = null;
     },
     handleOk() {
       const isValid = Object.values(this.$refs)
@@ -429,11 +138,12 @@ export default {
       }
       this.dialogConfig.loading = true;
       const params = {
-        ...this.$refs.form.getFormValue(),
-        ...(this.$refs.basicForm ? this.$refs.basicForm.getFormValue() : {}),
-        apiType: this.apiType,
-        operationType: this.operationType === 'copy' ? 'create' : this.operationType
+        ...(this.currentApiData || {}),
+        ...this.$refs.form.getFormValue()
       };
+      if (!this.isObjectApiType(this.currentApiData && this.currentApiData.type)) {
+        params.isMcp = 0;
+      }
       this.$api.framework.apiManage
         .save(params)
         .then(res => {
@@ -457,49 +167,18 @@ export default {
       }); //从服务器获取数据时禁止修改表单内容
       return this.$api.framework.apiManage.get({ token }).then(res => {
         if (res.Status === 'OK') {
+          this.currentApiData = res.Return;
           Object.values(this.formConfig).forEach(item => {
             item.value = res.Return[item.name];
-            item.disabled = false;
-          });
-          // 设置basic认证信息
-          if (res.Return.basicSupport) {
-            this.$set(this.formConfig, 'basic', this.defaultFormConfig.basic);
-          }
-
-          if (res.Return.basicSupport) {
-            if (res.Return.username || res.Return.password) {
-              this.$set(this.formConfig['basic'], 'value', 'true');
-              this.$set(this.formConfig, 'basicInfo', this.defaultFormConfig.basicInfo);
-              this.basicFormConfig['username']['value'] = res.Return.username;
-              this.basicFormConfig['password']['value'] = res.Return.password;
-            } else {
-              this.$set(this.formConfig['basic'], 'value', 'false');
+            if (!['token', 'name'].includes(item.name)) {
+              item.disabled = false;
             }
-          }
+          });
+          this.updateMcpFormItem(res.Return);
           this.dialogConfig.isButtonDisabled = false;
         }
       });
     }
-  },
-  computed: {
-
-  },
-  watch: {
-    isShow(isShow) {
-      const strategies = {
-        create: this.createApi,
-        update: this.updateApi,
-        copy: this.copyApi,
-        delete: this.deleteApi
-      };
-      if (isShow) return strategies[this.operationType](this.rowData);
-    }
   }
 };
 </script>
-
-<style lang="less" scoped>
-.poptip {
-  margin-left: 6px;
-}
-</style>

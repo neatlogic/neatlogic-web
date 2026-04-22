@@ -190,7 +190,7 @@
     "exportformtip": "当前表单的版本校验不通过，是否确认导出时放弃未保存的修改？",
     "templateparamstip": "左侧“标题”或“内容”输入框获取光标后，点击下方参数，自动填充对应代码段",
     "timeouttip": "设置一个请求的有效时间，单位：秒；<br>0代表无限制；<br>如果请求时效大于0，request header需要包含键值对：<br>x-access-date：时间戳",
-    "qpstip": "接口每秒允许访问的次数，单位：次/秒；<br>0代表不限制",
+    "qpstip": "接口每秒允许访问的次数，单位：次/秒；0代表不限制",
     "calldetailerror": "获取调用详情失败",
     "maxnumbervalid": "最大值不得小于等于最小值",
     "matrixtip": "勾选PC端/移动端需要展示或搜索的属性，搜索和显示列的显示互不影响",
