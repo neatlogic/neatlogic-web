@@ -2175,3 +2175,34 @@ span {
   line-height: 1;
   vertical-align: baseline;
 }
+
+.countdown-clock {
+  @clock-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: @clock-size;
+  height: @clock-size;
+  border-radius: 50%;
+  position: relative;
+  box-sizing: border-box;
+  background: conic-gradient(@default-primary-color calc(var(--countdown-progress, 0) * 1%), @default-dividing 0);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: @default-blockbg;
+  }
+}
+
+.theme-dark {
+  .countdown-clock {
+    background: conic-gradient(@dark-primary-color calc(var(--countdown-progress, 0) * 1%), @dark-dividing 0);
+
+    &::before {
+      background: @dark-blockbg;
+    }
+  }
+}
