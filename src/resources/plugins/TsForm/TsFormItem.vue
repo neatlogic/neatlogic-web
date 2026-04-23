@@ -15,7 +15,7 @@
             :title="btn.title"
             class="cursor"
             :class="btn.icon"
-            @click="btn.click()"
+            @click="handleButtonClick(btn)"
           >{{ btn.name }}</div>
           <div></div>
         </div>
@@ -26,8 +26,10 @@
         word-wrap
         trigger="hover"
         width="300"
+        :placement="tipPlacement"
       >
         <i class="tsfont-info-o text-tip-active tips" :style="{ 'margin-left': '3px', transform: 'translateY(-1px)' }"></i>
+        <!-- tooltip 为了兼容仍保留 HTML 渲染能力，因此内容必须来自可信来源。 -->
         <div slot="content" class="tooltip-content" v-html="tooltip"></div>
       </Poptip>
       <!-- <Tooltip
@@ -138,10 +140,7 @@ export default {
   },
   data() {
     return {
-      prefixCls: prefixCls,
-      validateMessage: '',
-      validateDisabled: false,
-      validator: {}
+      prefixCls: prefixCls
     };
   },
   created() {},
@@ -150,11 +149,16 @@ export default {
       this.validate('blur');
     },
     onFieldChange() {
-      if (this.validateDisabled) {
-        this.validateDisabled = false;
-        return;
-      }
       this.validate('change');
+    },
+    validate() {
+      // 保留历史公开方法，避免外部触发 blur/change 时因为缺少 validate 而报错。
+      return true;
+    },
+    handleButtonClick(btn) {
+      if (btn && typeof btn.click === 'function') {
+        btn.click();
+      }
     },
     dispatch(componentName, eventName, params) {
       let parent = this.$parent || this.$root;
@@ -205,7 +209,7 @@ export default {
       //const labelWidth = this.labelWidth === 0 || this.labelWidth ? this.labelWidth : this.FormInstance ? this.FormInstance.labelWidth :0;
       const labelWidth = this.labelWidth || 0;
       if (this.labelPosition != 'top') {
-        style.marginLeft = `${labelWidth}px !important`;
+        style.marginLeft = `${labelWidth}px`;
       }
       if (this.contentAlign) {
         style['text-align'] = this.contentAlign;
@@ -220,21 +224,6 @@ export default {
         resultJson.width = this.itemWidth;
       }
       return resultJson;
-    }
-  },
-  watch: {
-    error: {
-      handler(val) {
-        this.validateMessage = val;
-      },
-      immediate: true
-    },
-
-    required(n, o) {
-      this.isRequired = n;
-      if (o && !n) {
-        // this.resetField();
-      }
     }
   }
 };
