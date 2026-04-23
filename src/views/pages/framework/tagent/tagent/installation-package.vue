@@ -128,7 +128,7 @@ export default {
             key: 'size'
           },
           {
-            title: this.$t('term.framework.pkgversion'),
+            title: this.$t('page.versionnumber'),
             key: 'version'
           },
           {
@@ -162,7 +162,7 @@ export default {
       itemList: {
         version: {
           type: 'text', 
-          label: this.$t('term.framework.pkgversion'),
+          label: this.$t('page.versionnumber'),
           value: '',
           maxlength: 50,
           width: '100%',
@@ -383,7 +383,7 @@ export default {
           params.isOverWrite = res.Return;
           this.$createDialog({
             title: this.$t('page.warning'),
-            content: this.$t('term.framework.pkgversion') + `【${formValue.version}】，` + this.$t('term.framework.ostype') + `【${formValue.osType}】，` + this.$t('term.framework.osbit') + `【${formValue.osbit}】 ` + this.$t('message.framework.isreplacepkg'),
+            content: this.$t('page.versionnumber') + `【${formValue.version}】，` + this.$t('term.framework.ostype') + `【${formValue.osType}】，` + this.$t('term.framework.osbit') + `【${formValue.osbit}】 ` + this.$t('message.framework.isreplacepkg'),
             btnType: 'error',
             btnList: [   
               {

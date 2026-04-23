@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      :title="$t('term.inspect.filelist')"
+      :title="$t('page.filelist')"
       type="slider"
       width="medium"
       :isShow="true"

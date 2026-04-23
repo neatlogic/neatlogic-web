@@ -162,7 +162,7 @@ export default {
           {
             type: 'userselect',
             name: 'execUserList',
-            label: this.$t('term.autoexec.operator'),
+            label: this.$t('page.operator'),
             groupList: ['user'],
             transfer: true
           },

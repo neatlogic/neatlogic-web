@@ -75,7 +75,7 @@ export default {
       },
       theadList: [
         {
-          title: this.$t('term.deploy.commitid'),
+          title: this.$t('page.commitid'),
           key: 'commitId'
         },
         {
