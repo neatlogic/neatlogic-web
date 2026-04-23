@@ -7,7 +7,7 @@
     >
       <template v-slot>
         <div>
-          <TsFormItem :label="$t('term.framework.pkgversion')" labelPosition="left" required>
+          <TsFormItem :label="$t('page.versionnumber')" labelPosition="left" required>
             <TsFormInput
               ref="version"
               v-model="version"

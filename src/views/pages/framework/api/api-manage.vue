@@ -7,15 +7,11 @@
           <span v-auth="['ADMIN']" class="action-item">
             <AuditConfig auditName="API-AUDIT" :title="$t('term.framework.apiaccesstime')"></AuditConfig>
           </span>
-          <span v-if="searchParams.apiType === 'system'" class="action-item tsfont-download" @click="exportHelp()">{{ $t('page.export') }}</span>
-          <span v-if="searchParams.apiType === 'custom'" class="create-api action-item" @click="showApiForm({}, 'create')">
-            <i class="tsfont-plus">{{ $t('page.customapi') }}</i>
-          </span>
+          <span class="action-item tsfont-download" @click="exportHelp()">{{ $t('page.export') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
         <div style="text-align: right" :style="{ '--children': 3 }" class="controller-group">
-          <!-- <div><TsformSelect v-model="apiType" v-bind="apiTypeConfig" @on-change="handleApiTypeChange" /></div> -->
           <div>
             <CombineSearcher
               v-model="searchVal"
@@ -47,6 +43,10 @@
             <span v-if="row.isActive" class="text-success">{{ $t('page.enable') }}</span>
             <span v-else class="text-grey">{{ $t('page.disable') }}</span>
           </template>
+          <template v-slot:isMcp="{ row }">
+            <span v-if="row.isMcp" class="text-success">{{ $t('page.yes') }}</span>
+            <span v-else class="text-grey">{{ $t('page.no') }}</span>
+          </template>
           <template v-slot:needAudit="{ row }">
             <i-switch
               :key="row.token"
@@ -57,7 +57,7 @@
             ></i-switch>
           </template>
           <template v-slot:token="{ row }">
-            <span class="text-href" @click.stop="showApiForm(row, 'update')">{{ row.token }}</span>
+            <span class="text-href" @click.stop="showApiForm(row)">{{ row.token }}</span>
           </template>
           <template v-slot:authTypeNameList="{ row }">
             <Tag v-for="(authTypeName, index) in row.authTypeNameList" :key="index">{{ authTypeName }}</Tag>
@@ -72,10 +72,9 @@
                 <li class="tsfont-question-o" @click="showApiHelp(row)">{{ $t('page.help') }}</li>
                 <li v-if="row.needAudit" class="tsfont-putongjigui" @click="showCallRecord(row)">{{ $t('term.process.callrecord') }}</li>
                 <!-- <li class="tsfont-edit icon" @click="">{{ $t('page.edit') }}</li> -->
-                <li v-if="!row.isPrivate" class="tsfont-copy icon" @click="showApiForm(row, 'copy')">
+                <!--<li v-if="!row.isPrivate" class="tsfont-copy icon" @click="showApiForm(row)">
                   {{ $t('page.copy') }}
-                </li>
-                <li v-if="row.isDeletable == 1" class="tsfont-trash-o icon" @click="showApiForm(row, 'delete')">{{ $t('page.delete') }}</li>
+                </li>-->
               </ul>
             </div>
           </template>
@@ -95,10 +94,9 @@
       @on-hide="isCallRecordShow = false"
     />
     <FormDialog
+      v-if="isFormDialogShow"
       :isShow="isFormDialogShow"
-      :rowData="rowData"
-      :operationType="operationType"
-      :apiType="searchParams.apiType"
+      :token="currentToken"
       @on-hide="isFormDialogShow = false"
     />
     <ApiTest v-if="isTestShow" :rowData="rowData" @close="isTestShow = false"></ApiTest>
@@ -119,7 +117,7 @@ export default {
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   filters: {
-    
+
   },
   mixins: [download],
   data() {
@@ -129,8 +127,6 @@ export default {
       isTestShow: false, //是否显示测试
       isCallRecordShow: false, //是否显示接口调用记录
       isFormDialogShow: false, //是否显示对话框
-      apiType: 'system',
-      operationType: '', //对话框操作类型('creatre','update','copy','delete')
       treeList: [
         {
           title: this.$t('page.all'),
@@ -146,6 +142,7 @@ export default {
         { title: this.$t('page.address'), key: 'token', width: 300 },
         { title: this.$t('page.name'), key: 'name', width: 300 },
         { title: this.$t('page.needaudit'), key: 'needAudit', minWidth: 80 },
+        { title: 'MCP服务', key: 'isMcp', minWidth: 80 },
         { title: this.$t('page.authtype'), key: 'authTypeNameList', minWidth: 80 },
         // { title: this.$t('page.status'), key: 'isActive', minWidth: 60 },
         { title: this.$t('page.module'), key: 'moduleGroupName', minWidth: 60 },
@@ -161,9 +158,9 @@ export default {
         rowNum: null
       },
       rowData: {}, //表格行数据
+      currentToken: '',
       searchParams: {
         //搜索参数
-        apiType: 'system',
         keyword: null,
         moduleGroup: null,
         funcId: null,
@@ -174,6 +171,7 @@ export default {
       needAudit: null,
       initSearchVal: {
         needAudit: null,
+        isMcp: null,
         authType: null,
         keyword: null
       },
@@ -187,6 +185,19 @@ export default {
             name: 'needAudit',
             value: null,
             label: this.$t('page.isneedaudit'),
+            placeholder: this.$t('page.pleaseselect'),
+            dataList: [
+              { value: 1, text: this.$t('page.yes') },
+              { value: 0, text: this.$t('page.no') }
+            ],
+            transfer: true,
+            allowToggle: true
+          },
+          {
+            type: 'radio',
+            name: 'isMcp',
+            value: null,
+            label: 'MCP服务',
             placeholder: this.$t('page.pleaseselect'),
             dataList: [
               { value: 1, text: this.$t('page.yes') },
@@ -217,7 +228,8 @@ export default {
       this.isSiderHide = !this.isSiderHide;
     },
     // 获取目录树数据
-    getTree(menuType = this.searchParams.apiType) {
+    getTree() {
+      const menuType = 'system';
       const params = { menuType };
       this.$api.framework.apiManage.getTree(params).then(res => {
         if (res.Status === 'OK') {
@@ -243,7 +255,7 @@ export default {
       const params = {
         moduleGroup,
         funcId,
-        type: this.searchParams.apiType
+        type: 'system'
       };
       this.$api.framework.apiManage.getSubtree(params).then(res => {
         if (res.Status === 'OK') {
@@ -284,39 +296,6 @@ export default {
           this.isLoading = false;
         });
     },
-    // 处理接口类型更改
-    handleApiTypeChange() {
-      this.$refs.tree.getSelectedNodes().forEach(node => {
-        node.selected = false;
-      }); //取消选中目录树的所有节点
-      this.treeList[0].selected = true; //选中目录树“所有”项
-      const params = {
-        apiType: this.apiType,
-        // keyword: null,
-        moduleGroup: null,
-        funcId: null,
-        currentPage: 1,
-        needAudit: typeof this.needAudit == 'number' ? this.needAudit : null
-      };
-      this.getTableConfig(params);
-      this.getTree(this.apiType);
-    },
-    filterAudit() {
-      //树图的接口没有审计
-      this.$refs.tree.getSelectedNodes().forEach(node => {
-        node.selected = false;
-      }); //取消选中目录树的所有节点
-      this.treeList[0].selected = true; //选中目录树“所有”项
-      const params = {
-        apiType: this.apiType,
-        // keyword: null,
-        moduleGroup: null,
-        funcId: null,
-        currentPage: 1,
-        needAudit: typeof this.needAudit == 'number' ? this.needAudit : null
-      };
-      this.getTableConfig(params);
-    },
     // 搜索数据
     handleSearchChange() {
       this.$refs.tree.getSelectedNodes().forEach(node => {
@@ -332,37 +311,19 @@ export default {
     },
     // 处理保存记录按钮的切换
     handleSwitchChange(row) {
-      if (this.apiType == 'custom') {
-        // 外部接口
-        let datas = {
-          token: row.token
-        };
-        this.$api.framework.apiManage
-          .apiUdpateList(datas)
-          .then(res => {
-            if (res.Status === 'OK') {
-              this.$Message.success(this.$t('message.savesuccess'));
-            }
-          })
-          .catch(error => {
-            row.needAudit = row.needAudit === 0 ? 1 : 0;
-          });
-      } else {
-        const params = {
-          ...row,
-          operationType: 'update'
-        };
-        this.$api.framework.apiManage
-          .save(params)
-          .then(res => {
-            if (res.Status === 'OK') {
-              this.$Message.success(this.$t('message.savesuccess'));
-            }
-          })
-          .catch(error => {
-            row.needAudit = row.needAudit === 0 ? 1 : 0;
-          });
-      }
+      const params = {
+        ...row
+      };
+      this.$api.framework.apiManage
+        .save(params)
+        .then(res => {
+          if (res.Status === 'OK') {
+            this.$Message.success(this.$t('message.savesuccess'));
+          }
+        })
+        .catch(error => {
+          row.needAudit = row.needAudit === 0 ? 1 : 0;
+        });
     },
     testApi(row) {
       this.rowData = row;
@@ -378,10 +339,9 @@ export default {
       this.rowData = row;
       this.isCallRecordShow = true;
     },
-    // 显示接口表单对话框(添加/删除/编辑/复制)
-    showApiForm(row, type) {
-      this.rowData = row;
-      this.operationType = type;
+    // 显示接口表单对话框
+    showApiForm(row) {
+      this.currentToken = row && row.token ? row.token : '';
       this.isFormDialogShow = true;
     },
     t(arg) {

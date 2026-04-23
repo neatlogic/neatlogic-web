@@ -34,7 +34,7 @@
             ></TsForm>
           </li>
           <li>
-            <Divider orientation="start">{{ $t('term.deploy.warehouse') }}</Divider>
+            <Divider orientation="start">{{ $t('page.warehouse') }}</Divider>
             <TsForm
               ref="storehouseForm"
               v-model="formValue"
@@ -172,7 +172,7 @@ export default {
         {
           name: 'repoType',
           type: 'select',
-          label: this.$t('term.deploy.warehousetype'),
+          label: this.$t('page.warehousetype'),
           validateList: ['required'],
           defaultValueIsFirst: true,
           url: '/api/rest/universal/enum/get',
@@ -208,7 +208,7 @@ export default {
         {
           name: 'repoName',
           type: 'text',
-          label: this.$t('term.deploy.warehousename'),
+          label: this.$t('page.warehousename'),
           validateList: ['required'],
           maxlength: 128
         },

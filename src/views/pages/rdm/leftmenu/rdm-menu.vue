@@ -4,7 +4,7 @@
       <ul>
         <li class="link">
           <a class="tsfont-plus text-primary" @click="addProject">
-            <span class="text-primary">{{ $t('term.rdm.project') }}</span>
+            <span class="text-primary">{{ $t('page.project') }}</span>
           </a>
         </li>
         <li

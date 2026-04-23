@@ -3,7 +3,7 @@
     <TsContain>
       <template v-slot:topLeft>
         <div class="action-group">
-          <div class="action-item tsfont-plus" @click="addProject()">{{ $t('term.rdm.project') }}</div>
+          <div class="action-item tsfont-plus" @click="addProject()">{{ $t('page.project') }}</div>
         </div>
       </template>
       <template v-slot:content>

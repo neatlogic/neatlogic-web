@@ -40,6 +40,36 @@ export function $t(value, targetObj) {
   }
 }
 
+function normalizeBackPath(fullPath) {
+  if (!fullPath) {
+    return fullPath;
+  }
+  // 只移除回退标识，保留业务查询参数，避免 ?isBack=true&id=1 被处理成非法路径。
+  const hashIndex = fullPath.indexOf('#');
+  const hash = hashIndex > -1 ? fullPath.slice(hashIndex) : '';
+  const pathWithQuery = hashIndex > -1 ? fullPath.slice(0, hashIndex) : fullPath;
+  const queryIndex = pathWithQuery.indexOf('?');
+  if (queryIndex === -1) {
+    return fullPath;
+  }
+  const path = pathWithQuery.slice(0, queryIndex);
+  const query = pathWithQuery
+    .slice(queryIndex + 1)
+    .split('&')
+    .filter(item => item && item.split('=')[0] !== 'isBack')
+    .join('&');
+  return path + (query ? '?' + query : '') + hash;
+}
+
+function findLastFromPageIndex(fromPageList, fullPath) {
+  for (let i = fromPageList.length - 1; i >= 0; i--) {
+    if (normalizeBackPath(fromPageList[i].fullPath) === fullPath) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 export function initRouter(VueRouter, store) {
   //20191128_zqp 修复路由跳转的时候两次push的path地址相同导致的控制台报错
   const originalPush = VueRouter.prototype.push;
@@ -126,23 +156,25 @@ export function initRouter(VueRouter, store) {
         //处理回退请求，从最后匹配的路径开始截断
         //debugger;
         if (isBack) {
-          const toFullPath = to.fullPath.replace('&isBack=true', '').replace('?isBack=true', '');
-          if (fromPageList.length > 0) {
-            if (fromPageList[fromPageList.length - 1].fullPath === toFullPath) {
-              fromPageList.splice(fromPageList.length - 1);
-              routerFromPageConfig[MODULEID] = fromPageList;
-              sessionStorage.setItem('moduleFromPage', JSON.stringify(routerFromPageConfig));
-            }
+          const toFullPath = normalizeBackPath(to.fullPath);
+          // 显式回退支持跨层返回：从历史栈里最后一个匹配页开始截断。
+          const backIndex = findLastFromPageIndex(fromPageList, toFullPath);
+          if (backIndex > -1) {
+            fromPageList.splice(backIndex);
+            routerFromPageConfig[MODULEID] = fromPageList;
+            sessionStorage.setItem('moduleFromPage', JSON.stringify(routerFromPageConfig));
           }
         } else {
           if (!from.meta.clearHistory) {
             if (!from.meta.isSkip) {
-              const frompath = from.fullPath.replace('&isBack=true', '').replace('?isBack=true', '');
-              const topath = to.fullPath.replace('&isBack=true', '').replace('?isBack=true', '');
+              const frompath = normalizeBackPath(from.fullPath);
+              const topath = normalizeBackPath(to.fullPath);
               //防止通过浏览器的back到达，判断formPageList最后一个对象是否和当前路径匹配，如果是则按照back处理
               let isBack = false;
               if (fromPageList.length > 0) {
-                if (fromPageList[fromPageList.length - 1].fullPath === topath) {
+                const lastFromPage = fromPageList[fromPageList.length - 1];
+                // 普通跳转只判断栈顶，避免用户点击历史中已有页面时误截断中间历史。
+                if (normalizeBackPath(lastFromPage.fullPath) === topath) {
                   fromPageList.splice(fromPageList.length - 1);
                   isBack = true;
                 }
