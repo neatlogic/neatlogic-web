@@ -5,14 +5,7 @@
         <span class="text-action tsfont-plus" @click="addReportInstance()">{{ $t('term.report.report') }}</span>
       </template>
       <template slot="topRight">
-        <TsRow>
-          <Col :span="8">
-            <TsFormSelect v-model="searchParam.reportId" v-bind="reportSelectConfig" @change="searchReportInstance()"></TsFormSelect>
-          </Col>
-          <Col :span="16">
-            <InputSearcher v-model="searchParam.keyword" @change="() => updatePagesize()"></InputSearcher>
-          </Col>
-        </TsRow>
+        <CombineSearcher v-model="searchParam" v-bind="searchConfig" @change="updatePagesize()"></CombineSearcher>
       </template>
       <div slot="content">
         <TsTable
@@ -62,9 +55,8 @@ export default {
   components: {
     TsContain: () => import('@/resources/components/TsContain/TsContain.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     ReportInstanceEdit: () => import('./reportinstance-edit.vue')
   },
   props: {},
@@ -74,15 +66,39 @@ export default {
       reportInstanceId: null,
       searchParam: {},
       reportInstanceData: {},
-      reportSelectConfig: {
-        search: true,
-        value: null,
-        label: this.$t('page.status'),
-        valueName: 'id',
-        textName: 'name',
-        dynamicUrl: '/api/rest/report/list',
-        rootName: 'tbodyList',
-        placeholder: this.$t('term.report.describe.choosetemplate')
+      searchConfig: {
+        searchMode: 'clickBtnSearch',
+        labelPosition: 'left',
+        placeholder: this.$t('page.insert') + this.$t('page.name'),
+        searchList: [
+          {
+            type: 'select',
+            name: 'reportId',
+            label: this.$t('page.template'),
+            search: true,
+            valueName: 'id',
+            textName: 'name',
+            dynamicUrl: '/api/rest/report/list',
+            rootName: 'tbodyList',
+            placeholder: this.$t('term.report.describe.choosetemplate'),
+            transfer: true
+          },
+          {
+            type: 'radio',
+            name: 'isActive',
+            label: this.$t('term.report.isactive'),
+            dataList: [
+              {
+                text: this.$t('page.yes'),
+                value: 1
+              },
+              {
+                text: this.$t('page.no'),
+                value: 0
+              }
+            ]
+          }
+        ]
       },
       theadList: [
         {

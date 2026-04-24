@@ -16,25 +16,7 @@
         </div>
       </template>
       <template v-slot:topRight>
-        <div>
-          <InputSearcher
-            v-model="keyword"
-            @change="() => updatePagesize()"
-          ></InputSearcher>
-        </div>
-      </template>
-      <template v-slot:sider>
-        <div class="pr-md">
-          <TsUlList
-            v-if="reportTypeList && reportTypeList.length > 0"
-            :isToggle="true"
-            valueName="name"
-            textName="label"
-            value="all"
-            :dataList="reportTypeList"
-            @on-click="changeMenu"
-          ></TsUlList>
-        </div>
+        <CombineSearcher v-model="searchParam" v-bind="searchConfig" @change="updatePagesize()"></CombineSearcher>
       </template>
       <template v-slot:content>
         <TsTable
@@ -103,16 +85,14 @@ export default {
   components: {
     ReportEdit: () => import('./report-edit.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    TsUlList: () => import('@/resources/components/TsUlList/TsUlList.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue')
   },
   directives: { download },
   props: {},
   data() {
     return {
-      keyword: '',
       actionUrl: BASEURLPREFIX + '/api/binary/report/import', //导入地址
       formatList: ['pak'], //导入文件格式
       selectList: [],
@@ -123,7 +103,37 @@ export default {
       reportId: null,
       searchParam: {},
       reportData: {},
-      reportTypeList: [],
+      searchConfig: {
+        searchMode: 'clickBtnSearch',
+        labelPosition: 'left',
+        placeholder: this.$t('page.insert') + this.$t('page.name'),
+        searchList: [
+          {
+            type: 'select',
+            name: 'type',
+            label: this.$t('page.type'),
+            dynamicUrl: '/api/rest/report/type/get',
+            valueName: 'name',
+            textName: 'label',
+            transfer: true
+          },
+          {
+            type: 'radio',
+            name: 'isActive',
+            label: this.$t('term.report.isactive'),
+            dataList: [
+              {
+                text: this.$t('page.yes'),
+                value: 1
+              },
+              {
+                text: this.$t('page.no'),
+                value: 0
+              }
+            ]
+          }
+        ]
+      },
       theadList: [
         {key: 'selection', multiple: true},
         {
@@ -155,7 +165,6 @@ export default {
   beforeMount() {},
   mounted() {
     this.searchReport();
-    this.getReportType();
   },
   beforeUpdate() {},
   updated() {},
@@ -196,11 +205,7 @@ export default {
       this.selectList = selectedList;
     },
     searchReport: function() {
-      let params = {
-        ...this.searchParam,
-        keyword: this.keyword
-      };
-      this.$api.report.report.searchReport(params).then(res => {
+      this.$api.report.report.searchReport(this.searchParam).then(res => {
         this.reportData = res.Return;
       });
     },
@@ -241,7 +246,6 @@ export default {
             this.$Message.success(this.$t('message.deletesuccess'));
             vnode.isShow = false;
             this.searchReport();
-            this.getReportType();
           }
         }
       });
@@ -250,34 +254,7 @@ export default {
       this.reportDislogShow = false;
       if (needFresh) {
         this.searchReport();
-        this.getReportType();
       }
-    },
-    getReportType: function() {
-      this.$api.report.report.getReportType().then(res => {
-        if (res && res.Status == 'OK') {
-          let typeList = res.Return;
-          this.reportTypeList = [];
-          if (!this.$utils.isEmpty(typeList)) {
-            typeList.forEach((item) => {
-              this.reportTypeList.push({
-                name: item.name,
-                label: `${item.label}(${item.count})`
-              });
-            });
-          }
-        }
-      });
-    },
-    changeMenu: function(name) {
-      if (this.searchParam.type == name) {
-        // type == ''代表未分类
-        this.$delete(this.searchParam, 'type');
-      } else {
-        this.searchParam.type = name;
-      }
-      this.selectList = [];
-      this.searchReport();
     },
     showReport: function(id) {
       this.$router.push({ path: '/report-show/' + id });

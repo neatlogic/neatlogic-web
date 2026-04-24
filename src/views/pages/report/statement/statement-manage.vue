@@ -5,10 +5,7 @@
         <span class="text-action tsfont-plus" @click="addStatement()">{{ $t('term.report.screen') }}</span>
       </template>
       <template slot="topRight">
-        <InputSearcher
-          v-model="searchParam.keyword"
-          @change="searchStatement()"
-        ></InputSearcher>
+        <CombineSearcher v-model="searchParam" v-bind="searchConfig" @change="searchStatement()"></CombineSearcher>
       </template>
       <div slot="content" ref="maintable" class="content">
         <TsTable
@@ -62,7 +59,7 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
   },
   props: {},
   data() {
@@ -94,6 +91,28 @@ export default {
       },
       searchParam: {
         keyword: ''
+      },
+      searchConfig: {
+        searchMode: 'clickBtnSearch',
+        labelPosition: 'left',
+        placeholder: this.$t('page.insert') + this.$t('page.name') + '、' + this.$t('page.explain'),
+        searchList: [
+          {
+            type: 'radio',
+            name: 'isActive',
+            label: this.$t('term.report.isactive'),
+            dataList: [
+              {
+                text: this.$t('page.yes'),
+                value: 1
+              },
+              {
+                text: this.$t('page.no'),
+                value: 0
+              }
+            ]
+          }
+        ]
       }
     };
   },
