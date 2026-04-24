@@ -6,12 +6,7 @@
         <span class="text-action tsfont-plus" @click="addRow()">{{ $t('page.priority') }}</span>
       </template>
       <template slot="topRight">
-        <TsRow>
-          <Col :span="6"><TsFormSelect v-bind="isActiveSelectSetting"></TsFormSelect></Col>
-          <Col :span="18">
-            <InputSearcher v-model="searchParam.keyword" @change="getTableDataSearch(1)"></InputSearcher>
-          </Col>
-        </TsRow>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="getTableDataSearch(1)"></CombineSearcher>
       </template>
       <div slot="content" ref="maintable">
         <TsTable
@@ -28,7 +23,8 @@
             <div :style="{ color: row.color ? row.color : '' }" class="cur" @click="editRow(row.uuid)">{{ row.name }}</div>
           </template>
           <template slot="isActive" slot-scope="{ row }">
-            <div>{{ row.isActive == 1 ? $t('page.enable') : $t('page.disable') }}</div>
+            <span v-if="row.isActive == 1" class="text-success">{{ $t('page.yes') }}</span>
+            <span v-else class="text-grey">{{ $t('page.no') }}</span>
           </template>
         </TsTable>
       </div>
@@ -88,14 +84,12 @@
 <script>
 import TsTable from '@/resources/components/TsTable/TsTable.vue';
 import TsForm from '@/resources/plugins/TsForm/TsForm';
-import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 export default {
   name: '',
   components: {
     TsTable,
     TsForm,
-    TsFormSelect,
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
   },
   filters: {},
   props: [],
@@ -106,7 +100,7 @@ export default {
       pageSize: 20,
       theadList: [
         { title: this.$t('page.name'), key: 'name', minWidth: 300, resizable: true },
-        { title: this.$t('page.status'), key: 'isActive', minWidth: 300, resizable: true },
+        { title: this.$t('term.report.isactive'), key: 'isActive', minWidth: 300, resizable: true },
         { title: this.$t('page.description'), key: 'desc', minWidth: 300, resizable: true },
         { key: 'action', title: '', type: 'action', operations: [{ icon: 'tsfont-trash-o', name: this.$t('page.delete'), action: 'del', type: 'text', style: '' }] }
       ],
@@ -167,31 +161,32 @@ export default {
         }
       ],
       searchParam: {
-        keyword: null,
-        isActive: null,
         currentPage: 1,
         pageSize: 22,
         timestamp: null
       },
-      isActiveSelectSetting: {
-        name: 'isActive',
-        search: true,
-        value: null,
-        label: this.$t('page.status'),
-        valueName: 'value',
-        textName: 'text',
-        placeholder: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.status')}),
-        border: 'border',
-        dataList: [
-          { value: 1, text: this.$t('page.enable') },
-          { value: 0, text: this.$t('page.disable') }
-        ],
-        onChange: (value) => {
-          Object.assign(this.searchParam, {
-            isActive: value === '' ? null : value
-          });
-          this.getTableDataSearch(1);
-        }
+      searchVal: {},
+      searchConfig: {
+        searchMode: 'clickBtnSearch',
+        labelPosition: 'left',
+        placeholder: this.$t('page.insert') + this.$t('page.name'),
+        searchList: [
+          {
+            type: 'radio',
+            name: 'isActive',
+            label: this.$t('term.report.isactive'),
+            dataList: [
+              {
+                text: this.$t('page.yes'),
+                value: 1
+              },
+              {
+                text: this.$t('page.no'),
+                value: 0
+              }
+            ]
+          }
+        ]
       },
       colorList: ['#D18CBD', '#FFBA5A', '#78D8DE', '#A78375', '#B9D582', '#898DDD', '#F3E67B', '#527CA6', '#50BFF2', '#FF6666', '#15BF81', '#90A4AE'],
       selectedColor: '#50BFF2',
@@ -225,8 +220,9 @@ export default {
         this.searchParam.pageSize = this.pageSize;
       }
       this.searchParam.timestamp = new Date().getTime();
+      const param = {...this.searchParam, ...this.searchVal};
       this.$api.process.priority
-        .search(this.searchParam)
+        .search(param)
         .then(res => {
           if (res.Status == 'OK') {
             this.tableData = res.Return;

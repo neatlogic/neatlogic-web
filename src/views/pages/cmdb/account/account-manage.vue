@@ -9,7 +9,7 @@
         </div>
       </template>
       <template slot="topRight">
-        <CombineSearcher v-model="searchParams" v-bind="searchConfig" @change="getTableData(1)"></CombineSearcher>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="getTableData(1)"></CombineSearcher>
       </template>
       <template v-slot:content>
         <TsTable
@@ -125,6 +125,7 @@ export default {
         currentPage: 1,
         pageSize: 20
       },
+      searchVal: {},
       theadList: [
         { key: 'name', title: this.$t('page.name') },
         { key: 'account', title: this.$t('page.username') },
@@ -187,6 +188,7 @@ export default {
     getTableData(currentPage, pageSize) {
       let data = {
         ...this.searchParams,
+        ...this.searchVal,
         currentPage: currentPage || this.tableData.currentPage,
         pageSize: pageSize || this.tableData.pageSize
       };

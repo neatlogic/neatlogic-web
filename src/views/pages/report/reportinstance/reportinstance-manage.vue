@@ -5,7 +5,7 @@
         <span class="text-action tsfont-plus" @click="addReportInstance()">{{ $t('term.report.report') }}</span>
       </template>
       <template slot="topRight">
-        <CombineSearcher v-model="searchParam" v-bind="searchConfig" @change="updatePagesize()"></CombineSearcher>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="updatePagesize()"></CombineSearcher>
       </template>
       <div slot="content">
         <TsTable
@@ -65,6 +65,7 @@ export default {
       reportInstanceDialogShow: false,
       reportInstanceId: null,
       searchParam: {},
+      searchVal: {},
       reportInstanceData: {},
       searchConfig: {
         searchMode: 'clickBtnSearch',
@@ -139,7 +140,7 @@ export default {
   destroyed() {},
   methods: {
     searchReportInstance: function() {
-      this.$api.report.report.searchReportInstance(this.searchParam).then(res => {
+      this.$api.report.report.searchReportInstance({...this.searchParam, ...this.searchVal}).then(res => {
         this.reportInstanceData = res.Return;
       });
     },

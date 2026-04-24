@@ -5,7 +5,7 @@
         <span class="text-action tsfont-plus" @click="addStatement()">{{ $t('term.report.screen') }}</span>
       </template>
       <template slot="topRight">
-        <CombineSearcher v-model="searchParam" v-bind="searchConfig" @change="searchStatement()"></CombineSearcher>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="searchStatement()"></CombineSearcher>
       </template>
       <div slot="content" ref="maintable" class="content">
         <TsTable
@@ -92,6 +92,7 @@ export default {
       searchParam: {
         keyword: ''
       },
+      searchVal: {},
       searchConfig: {
         searchMode: 'clickBtnSearch',
         labelPosition: 'left',
@@ -175,7 +176,7 @@ export default {
       } else {
         this.searchParam.currentPage = 1;
       }
-      this.$api.report.statement.searchStatement(this.searchParam).then(res => {
+      this.$api.report.statement.searchStatement({...this.searchParam, ...this.searchVal}).then(res => {
         this.statementData = res.Return;
       });
     }

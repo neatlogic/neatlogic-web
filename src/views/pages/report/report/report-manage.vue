@@ -16,7 +16,7 @@
         </div>
       </template>
       <template v-slot:topRight>
-        <CombineSearcher v-model="searchParam" v-bind="searchConfig" @change="updatePagesize()"></CombineSearcher>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="updatePagesize()"></CombineSearcher>
       </template>
       <template v-slot:content>
         <TsTable
@@ -102,6 +102,7 @@ export default {
       reportDislogShow: false,
       reportId: null,
       searchParam: {},
+      searchVal: {},
       reportData: {},
       searchConfig: {
         searchMode: 'clickBtnSearch',
@@ -205,7 +206,7 @@ export default {
       this.selectList = selectedList;
     },
     searchReport: function() {
-      this.$api.report.report.searchReport(this.searchParam).then(res => {
+      this.$api.report.report.searchReport({...this.searchParam, ...this.searchVal}).then(res => {
         this.reportData = res.Return;
       });
     },
