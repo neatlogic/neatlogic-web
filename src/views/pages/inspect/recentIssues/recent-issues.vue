@@ -47,7 +47,8 @@
                     if (val) {
                       $set(textConfig, 'batchSearchList', val.split('\n'));
                     } else {
-                      $set(textConfig, 'batchSearchList', '');
+                      $delete(valueConfig, 'batchSearchList');
+                      $delete(textConfig, 'batchSearchList');
                     }
                   }"
                 >
@@ -458,13 +459,19 @@ export default {
   destroyed() {},
   methods: {
     changeLabel(val) {
-      if (!this.$utils.isEmpty(val)) {
-        if (this.$utils.isEmpty(this.searchVal.batchSearchList)) {
-          this.$delete(val, 'batchSearchList');
-        } else {
-          this.$set(val, 'batchSearchList', this.searchVal.batchSearchList.split('\n'));
-        }
+      val = val || {};
+      if (this.$utils.isEmpty(this.searchVal.batchSearchList)) {
+        this.$delete(val, 'batchSearchList');
+      } else {
+        this.$set(val, 'batchSearchList', this.searchVal.batchSearchList.split('\n'));
       }
+    },
+    syncCombineSearcherLabel() {
+      this.$nextTick(() => {
+        if (this.$refs.combineSearcher && typeof this.$refs.combineSearcher.refreshTextConfig === 'function') {
+          this.$refs.combineSearcher.refreshTextConfig();
+        }
+      });
     },
     async init() {
       await this.getInspectStatusList();
@@ -492,9 +499,12 @@ export default {
     },
     searchTableData() {
       this.$refs.combineSearcher.doSearch();
-      this.getTableData(1);
     },
     searchCondition(searchVal) {
+      this.searchVal = {
+        searchField: 'ip',
+        ...(searchVal || {})
+      };
       if (searchVal && this.$utils.isEmptyObj(searchVal)) {
         this.searchVal.searchField = 'ip'; // 设置默认值
       }
@@ -559,6 +569,7 @@ export default {
               let conditionConfig = dataInfo.conditionConfig || {};
               this.$set(this.selectType, 'typeId', conditionConfig.treeId);
               this.searchVal = conditionConfig.searchCondition;
+              this.syncCombineSearcherLabel();
               if (this.searchVal && this.searchVal.appSystemIdList) {
                 this.searchConfig.searchList.forEach((v) => {
                   if (v.name == 'appModuleIdList') {
@@ -767,6 +778,7 @@ export default {
       this.tableConfig.pageSize = historyData['pageSize'];
       this.recordExpandCollapseList = historyData['recordExpandCollapseList'];
       this.isExpandCollapse = historyData['isExpandCollapse'];
+      this.syncCombineSearcherLabel();
     },
     renderContent(h, { root, node, data }) {
       //渲染树的lable名称
