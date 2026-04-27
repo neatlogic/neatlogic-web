@@ -186,23 +186,21 @@ export default {
       pageCount: 1,
       isReference: false,
       referenceList: [],
-      isVisible: false
+      isVisible: false,
+      reachBottomTimer: null,
+      currentRequestSeq: 0
     };
   },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
   mounted() {
     window.addEventListener('resize', this.handleVisible);
   },
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
   beforeDestroy() {
+    if (this.reachBottomTimer) {
+      clearTimeout(this.reachBottomTimer);
+      this.reachBottomTimer = null;
+    }
     window.removeEventListener('resize', this.handleVisible);
   },
-  destroyed() {},
   methods: {
     handleVisible() {
       // 处理窗口改变的时候，关闭Dropdown内容
@@ -214,6 +212,7 @@ export default {
       }
     },
     getPageCount(currentPage) {
+      const requestSeq = ++this.currentRequestSeq;
       let params = {
         pageSize: this.pageSize,
         calleeType: this.calleeType,
@@ -226,16 +225,18 @@ export default {
       if (this.id) {
         this.$set(params, 'id', this.id);
       }
-      let _this = this;
       this.$https.post('/api/rest/dependency/list', params).then(res => {
+        if (requestSeq !== this.currentRequestSeq) {
+          return;
+        }
         if (res.Status == 'OK') {
           this.pageCount = res.Return.pageCount;
           this.isReference = true;
           let newList = res.Return.list || [];
-          if (!_this.$utils.isEmpty(_this.moduleId)) {
+          if (!this.$utils.isEmpty(this.moduleId)) {
             newList.forEach(item => {
               if (item.text.includes('{moduleId}')) {
-                item.text = item.text.replace('{moduleId}', _this.moduleId);
+                item.text = item.text.replace('{moduleId}', this.moduleId);
               }
             });
           }
@@ -253,10 +254,15 @@ export default {
       if (!visible[0]) {
         return;
       }
+      if (this.reachBottomTimer) {
+        clearTimeout(this.reachBottomTimer);
+        this.reachBottomTimer = null;
+      }
       this.referenceList = [];
       this.isReference = false;
       this.loadingTip = this.$t('page.loadingtip');
       this.currentPage = 1;
+      this.pageCount = 1;
       if (this.isUrl) {
         // 接口请求
         this.getPageCount(this.currentPage);
@@ -268,17 +274,21 @@ export default {
     },
     handleReachBottom() {
       //引用滚动加载
-      let _this = this;
-      if (_this.currentPage) {
-        _this.currentPage += 1;
+      if (this.currentPage) {
+        this.currentPage += 1;
       }
       return new Promise(resolve => {
-        setTimeout(() => {
-          if (_this.currentPage > 1 && _this.currentPage > _this.pageCount) {
-            _this.loadingTip = _this.$t('page.loadfinish');
+        if (this.reachBottomTimer) {
+          clearTimeout(this.reachBottomTimer);
+        }
+        this.reachBottomTimer = setTimeout(() => {
+          this.reachBottomTimer = null;
+          if (this.currentPage > 1 && this.currentPage > this.pageCount) {
+            this.loadingTip = this.$t('page.loadfinish');
+            resolve();
             return;
           } else {
-            _this.getPageCount(_this.currentPage);
+            this.getPageCount(this.currentPage);
           }
           resolve();
         }, 500);
@@ -294,11 +304,11 @@ export default {
         if (!$el || $el === event.target || $el.contains(event.target)) {
           return;
         }
-        this.isVisible = false;
         const $contain = this.$refs.dropdownContain ? this.$refs.dropdownContain.$el || null : null;
-        if ((!$contain && $contain === event.target) || $contain.contains(event.target)) {
+        if ($contain && ($contain === event.target || $contain.contains(event.target))) {
           return;
         }
+        this.isVisible = false;
       }
     },
     goPage(id) {

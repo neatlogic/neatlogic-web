@@ -168,8 +168,14 @@ export default {
     }
   },
   data() {
+    let currentValue = '';
+    if (this.$utils.isEmpty(this.value)) {
+      currentValue = this.type != 'number' ? '' : null;
+    } else {
+      currentValue = typeof this.value === 'object' && this.value !== null ? this.formatValue(this.value) : this.value;
+    }
     return {
-      currentValue: this.$utils.isEmpty(this.value) ? (this.type != 'number' ? '' : null) : (typeof this.value === 'object' ? this.value.toString() : this.value),
+      currentValue: currentValue,
       validMesage: this.errorMessage || '',
       currentValidList: this.filterValid(this.validateList) || [],
       readonlyTitle: null,
@@ -182,6 +188,25 @@ export default {
   },
   beforeDestroy() {},
   methods: {
+    getInitValue(value) {
+      if (this.$utils.isEmpty(value)) {
+        return this.type != 'number' ? '' : null;
+      }
+      return this.formatValue(value);
+    },
+    formatValue(value) {
+      if (typeof value === 'object' && value !== null) {
+        if (Array.isArray(value)) {
+          return value.toString();
+        }
+        // 误传普通对象时优先显示可读文本，避免出现 [object Object]。
+        return typeof value.text === 'string' ? value.text : JSON.stringify(value);
+      }
+      return value;
+    },
+    trimValue(value) {
+      return typeof value === 'string' ? value.trim() : value;
+    },
     setThemeColor() {
       if (this.theme) {
         if (this.theme.common || this.theme.TsFormInput) {
@@ -193,7 +218,7 @@ export default {
     },
     onChangeValue: function() {
       this.currentValue = this.getForbidContent ? this.currentValue.replace(new RegExp(this.getForbidContent), '') : this.currentValue; //过滤掉禁止输入的字符串
-      let value = typeof this.currentValue === 'string' ? this.currentValue.trim() : this.currentValue;
+      let value = this.trimValue(this.currentValue);
       let isSame = this.value == value;
       // this.type == 'number' && value && (value = Math.floor(value));
       this.$emit('change', value);
@@ -220,7 +245,7 @@ export default {
       this.$emit('on-focus');
     },
     onEnterValue: function() {
-      let value = typeof this.currentValue === 'string' ? this.currentValue.trim() : this.currentValue;
+      let value = this.trimValue(this.currentValue);
       this.$emit('on-enter', value);
     },
     onSearchValue() {
@@ -231,9 +256,7 @@ export default {
       this.$emit('on-clear');
     },
     onBlurValue: function() {
-      if (typeof this.currentValue === 'string') {
-        this.currentValue = this.currentValue.trim(); // 去除首尾空格；否则由于前后值一致不会触发 watch，this.currentValue 的空格无法更新，最终导致校验失败。
-      }
+      this.currentValue = this.trimValue(this.currentValue); // 去除首尾空格；否则由于前后值一致不会触发 watch，this.currentValue 的空格无法更新，最终导致校验失败。
       const value = this.currentValue;
       typeof this.onBlur == 'function' && this.onBlur(value);
       this.$emit('on-blur', value);
@@ -245,9 +268,13 @@ export default {
       this.$emit('on-' + type, evt, this.currentValue);
     },
     initReadolyTitle() {
-      let width = this.$el.clientWidth;
+      if (!this.$el) {
+        this.readonlyTitle = null;
+        return;
+      }
+      let width = this.$el.clientWidth || 0;
       let text_length = 0;
-      let str = JSON.stringify(this.currentValue);
+      let str = String(this.handleReadonlyValue || '');
       for (var i = 0; i < str.length; i++) {
         if (str.charCodeAt(i) > 256) {
           text_length = text_length + 1;
@@ -259,14 +286,16 @@ export default {
     },
     setTextareaHeight() {
       //dingl 2021-1-7 调整高度使用元素
-      if (this.type == 'textarea' && this.height && this.$refs.input && this.$refs.input.$refs.textarea) {
+      this.$nextTick(() => {
+        if (this.type != 'textarea' || !this.height || !this.$refs.input || !this.$refs.input.$refs || !this.$refs.input.$refs.textarea) {
+          return;
+        }
         if (typeof this.height == 'number' && this.height < 32) {
           return;
-        } else {
-          let height = typeof this.height == 'number' ? this.height + 'px' : this.height;
-          this.$refs.input.$refs.textarea.style.height = height;
         }
-      }
+        let height = typeof this.height == 'number' ? this.height + 'px' : this.height;
+        this.$refs.input.$refs.textarea.style.height = height;
+      });
     },
     focus() {
       this.$refs.input && this.$refs.input.focus();
@@ -328,7 +357,7 @@ export default {
           //主要是兼容 number  和 string 對比相同的情况下面 1 和 "1"
           return;
         }
-        this.currentValue = newValue !== null && newValue !== undefined ? newValue : '';
+        this.currentValue = this.getInitValue(newValue);
         // this.validMesage = ''; //值改变时会使校验信息消失，先屏蔽
         this.isValidPass = true;
         this.$emit('change-label', this.currentValue, {text: this.currentValue, value: this.currentValue});
@@ -339,6 +368,16 @@ export default {
     },
     type() {
       this.setTextareaHeight();
+    },
+    currentValue() {
+      if (this.readonly) {
+        this.$nextTick(() => {
+          this.initReadolyTitle();
+        });
+      }
+      if (this.type == 'textarea' && this.height) {
+        this.setTextareaHeight();
+      }
     }
   }
 };

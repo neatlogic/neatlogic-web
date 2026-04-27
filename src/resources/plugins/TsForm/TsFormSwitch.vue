@@ -11,7 +11,7 @@
         :before-change="handleBeforeChange"
         @on-change="onChangeValue"
       />
-      <span v-if="showStatus" class="status-text" @click="toogle">{{ value === trueValue ? trueText : falseText }}</span>
+      <span v-if="showStatus" class="status-text" @click="toggle">{{ value === trueValue ? trueText : falseText }}</span>
     </template>
     <div v-if="desc && !descType" class="text-tip tips">{{ desc }}</div>
     <Alert v-else-if="desc && descType" :type="descType">{{ desc }}</Alert>
@@ -73,17 +73,34 @@ export default {
       this.$emit('on-change', this.currentValue);
       typeof this.onChange == 'function' && this.onChange(this.currentValue);
     },
+    toggle() {
+      const switchRef = this.$refs && this.$refs.switch;
+      if (switchRef && switchRef.$el && typeof switchRef.$el.click === 'function') {
+        switchRef.$el.click();
+      }
+    },
     toogle() {
-      this.$refs?.switch.$el?.click();
+      this.toggle();
     },
     handleBeforeChange() {
-      let _this = this;
-      return new Promise((resolve) => {
-        let isToggle = true;
-        if (_this.beforeChange && typeof _this.beforeChange == 'function') {
-          isToggle = _this.beforeChange();
+      return new Promise((resolve, reject) => {
+        let beforeChangeResult = true;
+        if (this.beforeChange && typeof this.beforeChange == 'function') {
+          beforeChangeResult = this.beforeChange();
         }
-        if (isToggle) {
+        if (beforeChangeResult && typeof beforeChangeResult.then === 'function') {
+          beforeChangeResult.then(result => {
+            if (result === false) {
+              reject(new Error('beforeChange rejected'));
+            } else {
+              resolve();
+            }
+          }).catch(error => {
+            reject(error);
+          });
+        } else if (beforeChangeResult === false) {
+          reject(new Error('beforeChange rejected'));
+        } else {
           resolve();
         }
       });

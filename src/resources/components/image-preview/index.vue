@@ -55,7 +55,6 @@ const ObjectFit = {
   FILL: 'fill',
   SCALE_DOWN: 'scale-down'
 };
-let prevOverflow = '';
 export default {
   name: '',
   components: {
@@ -111,22 +110,37 @@ export default {
       showViewer: false,
       isShowVideoViewer: false,
       urlList: [],
-      videoUrlList: []
+      videoUrlList: [],
+      prevOverflow: ''
     };
   },
   mounted() {
     this.loadImage();
   },
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.restoreBodyScroll();
+  },
   methods: {
+    lockBodyScroll() {
+      if (this.$isServer || !document.body) {
+        return;
+      }
+      this.prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+    },
+    restoreBodyScroll() {
+      if (this.$isServer || !document.body) {
+        return;
+      }
+      document.body.style.overflow = this.prevOverflow;
+    },
     handlePreview(id) {
       let initSrcUrl = `${HOME}${this.fileDownloadUrl}?id=`;
       let srcList = this.fileList.filter((a) => a && a[this.idName] !== id && (this.$utils.isImage(a[this.fileName]) || this.$utils.isVideo(a[this.fileName]))).map((v) =>
-        `${initSrcUrl}${v.id}`
+        `${initSrcUrl}${v[this.idName]}`
       );
       let url = `${initSrcUrl}${id}`;
-      prevOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+      this.lockBodyScroll();
       this.showViewer = true;
       this.urlList = [url, ...srcList];
     },
@@ -158,12 +172,12 @@ export default {
       }
     },
     closeViewer() {
-      document.body.style.overflow = prevOverflow;
+      this.restoreBodyScroll();
       this.showViewer = false;
       this.$emit('close');
     },
     closeVideoViewer() {
-      document.body.style.overflow = prevOverflow;
+      this.restoreBodyScroll();
       this.isShowVideoViewer = false;
       this.$emit('close');
     },
@@ -239,10 +253,13 @@ export default {
     isShow: {
       handler(val) {
         if (val) {
-          prevOverflow = document.body.style.overflow;
-          document.body.style.overflow = 'hidden';
+          this.lockBodyScroll();
           this.showViewer = true;
           this.urlList = this.getSrcList();
+        } else {
+          this.restoreBodyScroll();
+          this.showViewer = false;
+          this.isShowVideoViewer = false;
         }
       },
       deep: true,

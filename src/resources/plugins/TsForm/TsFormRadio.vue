@@ -123,59 +123,90 @@ export default {
     return {
       currentValue: '',
       validMesage: this.errorMessage || '',
-      nodeList: this.url ? [] : this.dataList,
-      currentValidList: this.filterValid(this.validateList) || []
+      nodeList: [],
+      currentValidList: this.filterValid(this.validateList) || [],
+      currentRequestSeq: 0,
+      setSelectTime: null
     };
   },
   created() {
+    this.nodeList = this.url ? [] : this.normalizeNodeList(this.dataList);
     this.currentValue = this.handleCurrentValue(this.value);
     this.setSelectList();
     this.initDataListByUrl();
   },
   mounted() {},
   beforeDestroy() {
+    this.currentRequestSeq += 1;
+    this.setSelectTime && clearTimeout(this.setSelectTime);
+    this.setSelectTime = null;
     this.cancelAxios && this.cancelAxios.cancel();
+    this.cancelAxios = null;
   },
   methods: {
+    normalizeNodeList(nodeList) {
+      return Array.isArray(nodeList) ? nodeList.slice(0, 500) : [];
+    },
+    getSelectedItemByValue(value) {
+      if (!Array.isArray(this.nodeList) || this.$utils.isEmpty(value)) {
+        return null;
+      }
+      let selectedItem = this.nodeList.find(item => item[this.valueName] === value);
+      if (!selectedItem) {
+        // 兼容历史表单中字符串/数字类型不完全一致的回显场景。
+        selectedItem = this.nodeList.find(item => item[this.valueName] == value);
+      }
+      return selectedItem || null;
+    },
     initDataListByUrl() {
       let _this = this;
       if (this.readonly && !this.$utils.isEmpty(this.historyValue)) {
         // 只读模式下不需要调接口获取数据
         return false;
       }
+      this.cancelAxios && this.cancelAxios.cancel();
+      this.cancelAxios = null;
       if (_this.url) {
         let params = { pageSize: 100 };
         typeof _this.params == 'object' && (params = Object.assign(params, _this.params));
         _this.nodeList = [];
-        this.cancelAxios && this.cancelAxios.cancel();
+        const requestSeq = ++this.currentRequestSeq;
         this.cancelAxios = this.$https.CancelToken.source();
         let ajaxArr = { method: _this.ajaxType, url: _this.url, cancelToken: this.cancelAxios.token};
         let needdataLi = ['post', 'put'];
         needdataLi.indexOf(_this.ajaxType) < 0 ? Object.assign(ajaxArr, {params: params}) : Object.assign(ajaxArr, {data: params});
         this.$https(ajaxArr).then(res => {
+          if (requestSeq !== this.currentRequestSeq) {
+            return;
+          }
           if (res && res.Status == 'OK') {
-            _this.nodeList = _this.rootName ? (res.Return?.[_this.rootName] || []) : res.Return;
-            _this.nodeList.length > 500 && (_this.nodeList.length = 500);
+            let nodeList = _this.rootName ? (res.Return?.[_this.rootName] || []) : res.Return;
             if (_this.dealDataByUrl && typeof _this.dealDataByUrl == 'function') {
-              _this.nodeList = _this.dealDataByUrl(_this.nodeList);
+              nodeList = _this.dealDataByUrl(nodeList);
             }
+            _this.nodeList = _this.normalizeNodeList(nodeList);
             _this.setSelectList();
             _this.handleEchoFailedDefaultValue();
-          } 
+          }
         });
-      } else if (_this.nodeList && _this.nodeList.length) {
-        if (!_this.value) {
-          //如果没有值的
-          let selectedItem = _this.nodeList.find(n => {
-            return n['isSelect'];
-          }); 
-          if (selectedItem) {
-            _this.currentValue = selectedItem[this.valueName];
-            _this.onChangeValue();
-          } 
+      } else {
+        this.currentRequestSeq += 1;
+        _this.nodeList = _this.normalizeNodeList(_this.dataList);
+        if (_this.nodeList && _this.nodeList.length) {
+          if (!_this.value) {
+            //如果没有值的
+            let selectedItem = _this.nodeList.find(n => {
+              return n['isSelect'];
+            }); 
+            if (selectedItem) {
+              _this.currentValue = selectedItem[this.valueName];
+              _this.onChangeValue();
+            } 
+          }
+          this.handleDisableNodeList();
+          this.handleEchoFailedDefaultValue();
         }
-        this.handleDisableNodeList();
-        this.handleEchoFailedDefaultValue();
+        this.setSelectList();
       }
     },
     handleDisableNodeList() {
@@ -212,12 +243,7 @@ export default {
     onChangeValue() {
       let isSame = this.$utils.isSame(this.value, this.currentValue); // 使用isSame比较两个字符串是否一致，避免 '' == 0 为true情况，导致没有emit on-change方法，form表单获取不到值问题
       let value = this.currentValue;
-      let selectedItem = null;
-      if (this.nodeList && this.nodeList.length && value) {
-        selectedItem = this.nodeList.find(n => {
-          return n[this.valueName] === value;
-        });
-      }
+      let selectedItem = this.getSelectedItemByValue(value);
       if (this.isCustomValue) {
         value = selectedItem || null;
       }
@@ -245,10 +271,9 @@ export default {
         _this.$emit('change-label', selectedLabel);
       } else {
         this.setSelectTime = setTimeout(function() {
-          if (_this.nodeList && _this.nodeList.length) {
-            let node = _this.nodeList.find(item => item[_this.valueName] == _this.value);
-            _this.$emit('change-label', node ? node[_this.textName] || '' : '');
-          }
+          _this.setSelectTime = null;
+          let node = _this.getSelectedItemByValue(_this.currentValue);
+          _this.$emit('change-label', node ? node[_this.textName] || '' : '');
         }, 100);
       }
     },
@@ -283,7 +308,7 @@ export default {
     dataList: {
       handler(newValue) {
         if (!this.url) {
-          this.$set(this, 'nodeList', this.$utils.deepClone(newValue) || []);
+          this.$set(this, 'nodeList', this.normalizeNodeList(this.$utils.deepClone(newValue)));
           this.handleDisableNodeList();
           this.setSelectList();
           this.handleEchoFailedDefaultValue();
