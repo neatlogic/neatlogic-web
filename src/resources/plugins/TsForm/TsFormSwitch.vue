@@ -79,9 +79,6 @@ export default {
         switchRef.$el.click();
       }
     },
-    toogle() {
-      this.toggle();
-    },
     handleBeforeChange() {
       return new Promise((resolve, reject) => {
         let beforeChangeResult = true;

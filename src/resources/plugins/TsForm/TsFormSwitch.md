@@ -72,5 +72,4 @@ config:{
 
 ### 兼容性说明
 - `beforeChange` 现在同时兼容同步布尔值和异步 Promise；返回 `false` 或 Promise reject 时都会阻止切换。
-- 组件内部方法已统一为 `toggle()`，同时保留 `toogle()` 作为兼容别名，不影响旧调用方。
 - 状态文本点击时增加了 `ref` 安全访问，开关节点尚未就绪时不会再抛错。
