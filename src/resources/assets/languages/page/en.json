@@ -763,6 +763,8 @@
   "lastmonth": "Last month",
   "lastsixmonths": "Last 6 months",
   "lastyear": "Last year",
+  "lasttwoyears": "Last 2 years",
+  "lastthreeyears": "Last 3 years",
   "eg": "Example",
   "count": "quantity",
   "plugins": "plugin unit",

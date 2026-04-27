@@ -317,22 +317,3 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scoped>
-.job-manage {
-  height: 100%;
-
-  &.job-manage--embedded {
-    ::v-deep .tscontain-li {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    ::v-deep .tscontain-content {
-      flex: 1;
-      min-height: 0;
-      overflow: auto;
-    }
-  }
-}
-</style>

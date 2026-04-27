@@ -4,6 +4,7 @@
     <TsContain border="border">
       <template v-slot:topLeft>
         <div class="action-group">
+          <span class="tsfont-plus action-item" @click="toDashboardPage()">{{ $t('term.dashboard.dashboard') }}</span>
           <span
             class="tsfont-upload action-item"
             @click="uploadAction()"
@@ -12,21 +13,7 @@
         </div>
       </template>
       <div slot="topRight">
-        <div class="controller-group" style="--children:2">
-          <div>
-            <TsFormRadio
-              v-model="searchParam.searchType"
-              :dataList="[{value:'all',text:$t('page.allofthem')},{value:'system',text:$t('term.dashboard.systemdashboard')},{value:'custom',text:$t('term.dashboard.personaldashboard')}]"
-              @change="searchDashboard()"
-            ></TsFormRadio>
-          </div>
-          <div>
-            <InputSearcher
-              v-model="searchParam.keyword"
-              @change="searchDashboard()"
-            ></InputSearcher>
-          </div>
-        </div>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="searchDashboard(1)"></CombineSearcher>
       </div>
       <div slot="content">
         <TsCard
@@ -105,11 +92,10 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
     WidgetOverview: () => import('./widget/widget-overview.vue'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue')
   },
   mixins: [download],
@@ -122,9 +108,24 @@ export default {
       searchParam: {
         currentPage: 1,
         pageSize: 24,
-        needPage: true,
-        keyword: '',
-        searchType: 'all'
+        needPage: true
+      },
+      searchVal: {},
+      searchConfig: {
+        searchMode: 'clickBtnSearch',
+        labelPosition: 'left',
+        placeholder: this.$t('page.insert') + this.$t('page.name'),
+        searchList: [
+          {
+            type: 'radio',
+            name: 'searchType',
+            label: this.$t('page.type'),
+            dataList: [
+              { value: 'system', text: this.$t('term.dashboard.systemdashboard') },
+              { value: 'custom', text: this.$t('term.dashboard.personaldashboard') }
+            ]
+          }
+        ]
       },
       actionUrl: BASEURLPREFIX + '/api/binary/dashboard/import', //导入地址
       formatList: ['pak'] //导入文件格式
@@ -162,11 +163,16 @@ export default {
     copyDashboard(dashboard) {
       this.$router.push({name: 'dashboard-edit', params: {dashboard: dashboard}});
     },
+    toDashboardPage() {
+      this.$router.push({
+        path: '/dashboard-edit'
+      });
+    },
     searchDashboard: function(page) {
       if (page) {
         this.searchParam.currentPage = page;
       }
-      this.$api.dashboard.dashboard.searchDashboard(this.searchParam).then(res => {
+      this.$api.dashboard.dashboard.searchDashboard({...this.searchParam, ...this.searchVal}).then(res => {
         if (res.Status == 'OK') {
           this.dashboardData = res.Return;
         }
@@ -194,7 +200,7 @@ export default {
     exportDashboard() {
       let param = {
         url: 'api/binary/dashboard/export',
-        params: this.searchParam
+        params: {...this.searchParam, ...this.searchVal}
       };
       this.download(param);
     },
