@@ -71,7 +71,7 @@
                 <span v-if="row.data.repository && row.data.repository.git_http_url && row.data.repository.name" class="mr-sm">
                   <a :href="row.data.repository.git_http_url" target="_blank">{{ row.data.repository.name }}</a>
                 </span>
-                <span class="mr-xs text-grey">{{ $t('term.framework.pkgversion') }}</span>
+                <span class="mr-xs text-grey">{{ $t('page.versionnumber') }}</span>
                 <span class="mr-sm">{{ commit.id }}</span>
               </div>
               <div v-if="commit.added && commit.added.length > 0" class="mb-sm fz10">

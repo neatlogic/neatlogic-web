@@ -95,7 +95,7 @@ export default {
           key: 'ip'
         },
         {
-          title: this.$t('term.framework.pkgversion'),
+          title: this.$t('page.versionnumber'),
           key: 'version'
         },
         {

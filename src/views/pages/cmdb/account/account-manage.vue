@@ -9,17 +9,7 @@
         </div>
       </template>
       <template slot="topRight">
-        <TsRow>
-          <Col :span="6">
-            <TsFormSelect v-model="tableData.protocolIdList" v-bind="protocolConfig"></TsFormSelect>
-          </Col>
-          <Col :span="18">
-            <InputSearcher
-              v-model="keyword"
-              @change="getTableData()"
-            ></InputSearcher>
-          </Col>
-        </TsRow>
+        <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="getTableData(1)"></CombineSearcher>
       </template>
       <template v-slot:content>
         <TsTable
@@ -82,10 +72,9 @@ export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
     NewAccount: () => import('./components/new-account'),
     Agreement: () => import('./components/agreement'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue')
   },
   filters: {},
@@ -99,14 +88,44 @@ export default {
       id: null,
       isNewAccountShow: false,
       loadingShow: false,
-      keyword: '',
       searchConfig: {
-        placeholder: this.$t('page.name')
+        searchMode: 'clickBtnSearch',
+        labelPosition: 'left',
+        placeholder: this.$t('page.name') + '、' + this.$t('page.username') + '、' + this.$t('page.protocol'),
+        searchList: [
+          {
+            type: 'select',
+            name: 'protocolIdList',
+            label: this.$t('page.protocol'),
+            multiple: true,
+            rootName: 'tbodyList',
+            dynamicUrl: 'api/rest/resourcecenter/account/protocol/search',
+            dealDataByUrl: nodeList => this.getPrototalDataList(nodeList),
+            params: {isExcludeTagent: 1},
+            transfer: true
+          },
+          {
+            type: 'radio',
+            name: 'isDefault',
+            label: this.$t('page.isdefault'),
+            dataList: [
+              {
+                text: this.$t('page.yes'),
+                value: 1
+              },
+              {
+                text: this.$t('page.no'),
+                value: 0
+              }
+            ]
+          }
+        ]
       },
       searchParams: {
         currentPage: 1,
         pageSize: 20
       },
+      searchVal: {},
       theadList: [
         { key: 'name', title: this.$t('page.name') },
         { key: 'account', title: this.$t('page.username') },
@@ -120,21 +139,7 @@ export default {
       tableData: {
         rowNum: 0,
         pageSize: 20,
-        currentPage: 1,
-        protocolIdList: []
-      },
-      protocolConfig: {
-        placeholder: this.$t('page.protocol'),
-        multiple: true,
-        rootName: 'tbodyList',
-        dynamicUrl: 'api/rest/resourcecenter/account/protocol/search',
-        dealDataByUrl: (nodeList) => this.getPrototalDataList(nodeList),
-        params: {isExcludeTagent: 1}, // 是否排除tagent
-        nowrapHead: true,
-        onChange: (value) => {
-          this.tableData.protocolIdList = value;
-          this.getTableData(1);
-        }
+        currentPage: 1
       },
       isShow: false,
       title: this.$t('page.procotolmanage'),
@@ -180,12 +185,12 @@ export default {
         this.editAccount(row);
       }
     },
-    getTableData(currentPage, pageSize, protocolIdList) {
+    getTableData(currentPage, pageSize) {
       let data = {
-        keyword: this.keyword,
+        ...this.searchParams,
+        ...this.searchVal,
         currentPage: currentPage || this.tableData.currentPage,
-        pageSize: pageSize || this.tableData.pageSize,
-        protocolIdList: protocolIdList || this.tableData.protocolIdList
+        pageSize: pageSize || this.tableData.pageSize
       };
       this.tableData.pageSize = pageSize || this.tableData.pageSize;
       this.loadingShow = true;

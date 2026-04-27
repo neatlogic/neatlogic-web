@@ -151,7 +151,9 @@ export default {
         { value: '15', text: this.$t('page.lasthalfmonth'), timeUnit: 'day' },
         { value: '1', text: this.$t('page.lastmonth'), timeUnit: 'month' },
         { value: '6', text: this.$t('page.lastsixmonths'), timeUnit: 'month' },
-        { value: '1', text: this.$t('page.lastyear'), timeUnit: 'year' }
+        { value: '1', text: this.$t('page.lastyear'), timeUnit: 'year' },
+        { value: '2', text: this.$t('page.lasttwoyears'), timeUnit: 'year' },
+        { value: '3', text: this.$t('page.lastthreeyears'), timeUnit: 'year' }
       ],
       timeValue: null,
       showText: '',

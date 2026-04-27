@@ -190,7 +190,7 @@
     "exportformtip": "The version verification of the current form did not pass. Are you sure to discard unsaved modifications during export?",
     "templateparamstip": "After obtaining the cursor from the \"Title\" or \"Content\" input box on the left, click on the parameter below to automatically fill in the corresponding code segment",
     "timeouttip": "Set the effective time of a request, in seconds< Br>0 represents unlimited< If the request time is greater than 0, the requestheader needs to include key value pairs:<br>x-access date: timestamp",
-    "qpstip": "The number of times the interface is allowed to access per second, in units of times per second< Br>0 represents unrestricted",
+    "qpstip": "The number of times the interface is allowed to access per second, in units of times per second, 0 represents unrestricted",
     "calldetailerror": "Failed to obtain call details",
     "maxnumbervalid": "The maximum value must not be less than or equal to the minimum value",
     "matrixtip": "Check the attributes that need to be displayed or searched on PC/mobile devices, and the display of search and display columns does not affect each other",

@@ -59,7 +59,7 @@ export default {
       formConfig: {
         createMethod: {
           type: 'radio',
-          label: this.$t('term.deploy.creationmode'),
+          label: this.$t('page.creationmethod'),
           dataList: [
             { value: 'custom', text: this.$t('term.deploy.directcreation') },
             { value: 'pipeline', text: this.$t('term.deploy.superpipeline') }

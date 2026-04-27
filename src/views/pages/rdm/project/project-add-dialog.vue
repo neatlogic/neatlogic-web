@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: !this.id ? this.$t('dialog.title.createtarget', {'target': this.$t('term.rdm.project')}) : this.$t('dialog.title.edittarget', {'target': this.$t('term.rdm.project')}),
+        title: !this.id ? this.$t('dialog.title.createtarget', {'target': this.$t('page.project')}) : this.$t('dialog.title.edittarget', {'target': this.$t('page.project')}),
         type: 'modal',
         maskClose: false,
         isShow: true,
