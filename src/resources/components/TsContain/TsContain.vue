@@ -120,7 +120,7 @@ export default {
     return {
       dragWidth: null,
       siderHide: this.isSiderHide,
-      rightSiderHide: this.isRightSiderHide ? this.isRightSiderHide : !!(this.isRightSiderHide && this.siderPosition == 'right'),
+      rightSiderHide: !!this.isRightSiderHide,
       containHeight: '100%'
     };
   },
@@ -166,12 +166,11 @@ export default {
           this.dragWidth = width;
         }
       } else {
-        let _this = this;
         this.initSetTime && clearTimeout(this.initSetTime);
-        this.initSetTime = setTimeout(function() {
+        this.initSetTime = setTimeout(() => {
           this.initSetTime = null;
-          let value = localStorage.getItem(_this.href);
-          _this.initConfig('', value);
+          let value = localStorage.getItem(this.href);
+          this.initConfig('', value);
         }, 200);
       }
     },
@@ -207,6 +206,9 @@ export default {
           this.containHeight = this.containHeight = this.mode == 'window' ? `calc(100vh - ${rect.top.toFixed(0)}px - 16px)` : '100%'; // 减去底部间隙16
         }
       });
+    },
+    refreshContainHeight() {
+      this.handleContainHeight();
     }
   },
   computed: {
@@ -270,18 +272,10 @@ export default {
         return { 'grid-template-columns': 'min-content auto' };
       } else if (this.hasNavigation && this.hasCollapse && this.hasTop) {
         //全部都有
-        if (this.siderHide) {
-          return { 'grid-template-columns': 'min-content min-content auto' };
-        } else {
-          return { 'grid-template-columns': 'min-content min-content auto' };
-        }
+        return { 'grid-template-columns': 'min-content min-content auto' };
       } else if (!this.hasNavigation && this.hasCollapse && this.hasTop) {
         //只有收起栏和内容
-        if (this.siderHide) {
-          return { 'grid-template-columns': 'min-content auto' };
-        } else {
-          return { 'grid-template-columns': 'min-content auto' };
-        }
+        return { 'grid-template-columns': 'min-content auto' };
       } else if (!this.hasNavigation && !this.hasCollapse && this.hasTop) {
         //只有内容
         return { 'grid-template-columns': 'auto' };

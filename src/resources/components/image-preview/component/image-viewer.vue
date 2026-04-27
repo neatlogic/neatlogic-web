@@ -158,6 +158,8 @@ export default {
     this.$refs['image-preview-box-viewer-wrapper'] && this.$refs['image-preview-box-viewer-wrapper'].focus();
   },
   destroyed() {
+    this.deviceSupportUninstall();
+    this.clearDragListeners();
     if (this.appendToBody && this.$el && this.$el.parentNode) {
       this.$el.parentNode.removeChild(this.$el);
     }
@@ -221,6 +223,12 @@ export default {
       this._keyDownHandler = null;
       this._mouseWheelHandler = null;
     },
+    clearDragListeners() {
+      off(document, 'mousemove', this._dragHandler);
+      off(document, 'mouseup', this._dragEndHandler);
+      this._dragHandler = null;
+      this._dragEndHandler = null;
+    },
     handleImgLoad(e) {
       this.loading = false;
     },
@@ -237,10 +245,11 @@ export default {
         this.transform.offsetX = offsetX + ev.pageX - startX;
         this.transform.offsetY = offsetY + ev.pageY - startY;
       });
+      this._dragEndHandler = () => {
+        this.clearDragListeners();
+      };
       on(document, 'mousemove', this._dragHandler);
-      on(document, 'mouseup', ev => {
-        off(document, 'mousemove', this._dragHandler);
-      });
+      on(document, 'mouseup', this._dragEndHandler);
       e.preventDefault();
     },
     handleMaskClick() {
@@ -354,7 +363,11 @@ export default {
     },
     currentImg(val) {
       this.$nextTick(_ => {
-        const $img = this.$refs.img[0];
+        const imgRef = this.$refs.img;
+        const $img = Array.isArray(imgRef) ? imgRef[0] : imgRef;
+        if (!$img) {
+          return;
+        }
         if ($img.tagName === 'VIDEO' && $img.readyState < 4) {
           this.loading = true;
         } else if ($img.tagName === 'IMG' && !$img.complete) {

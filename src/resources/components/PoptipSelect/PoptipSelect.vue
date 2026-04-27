@@ -174,16 +174,6 @@ export default {
       validMesage: ''
     };
   },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
   methods: {
     changeValue(event, item) {
       let value = item ? item[this.valueName] : '';
@@ -220,6 +210,7 @@ export default {
       //清除数据
       this.selectValue = '';
       this.$emit('change', this.selectValue);
+      !this.isRequired && (this.validMesage = '');
     },
     valid() {
       let isValid = true;
@@ -236,7 +227,7 @@ export default {
     showName() {
       return function(val) {
         let textName = '';
-        let findItem = this.list.find(i => i[this.valueName] == val);
+        let findItem = Array.isArray(this.list) ? this.list.find(i => i[this.valueName] == val) : null;
         if (findItem) {
           textName = findItem[this.textName];
         }
@@ -258,7 +249,8 @@ export default {
       return () => {
         let width = this.popWidth;
         if (this.$el) {
-          let clientWidth = this.$el.querySelector('.type-select').clientWidth;
+          let $target = this.$el.querySelector('.type-select');
+          let clientWidth = $target ? $target.clientWidth || 0 : 0;
           if (clientWidth > width) {
             width = clientWidth;
           }

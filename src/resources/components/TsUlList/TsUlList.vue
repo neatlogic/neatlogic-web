@@ -157,13 +157,21 @@ export default {
   },
   created() {},
   mounted() {
-    this.selectedValue = this.value;
+    this.selectedValue = this.multiple ? (Array.isArray(this.value) ? [...this.value] : []) : this.value;
     this.$on('on-click', this.handleClick);
     this.filterData();
+  },
+  beforeDestroy() {
+    this.$off('on-click', this.handleClick);
   },
   methods: {
     handleReachBottom() {
       this.updatePage(this.currentPage + 1);
+    },
+    setItemSelected(item, selected) {
+      if (item) {
+        this.$set(item, '_isSelected', selected);
+      }
     },
     updatePage(pa) {
       let page = Math.floor(pa) || 1;
@@ -183,59 +191,87 @@ export default {
     },
     handleClick(val) {
       let item = this.flatList.get(val);
+      if (!item) {
+        return;
+      }
       if (this.multiple) {
         if (!item._isSelected) {
           this.selectedValue.push(val);
         } else {
-          this.selectedValue.splice(this.selectedValue.indexOf(val), 1);
+          const index = this.selectedValue.indexOf(val);
+          if (index >= 0) {
+            this.selectedValue.splice(index, 1);
+          }
         }
-        this.$set(item, '_isSelected', !item._isSelected);
+        this.setItemSelected(item, !item._isSelected);
       } else if (!this.multiple && this.selectedValue == val) {
         if (!this.isToggle) {
           return;
         } else {
-          this.$set(item, '_isSelected', false);
+          this.setItemSelected(item, false);
           this.selectedValue = null;
         }
       } else {
         //this.selectedValue需要支持空字符串或0
         if (typeof this.selectedValue != 'undefined' && this.selectedValue != null && this.flatList.get(this.selectedValue)) {
-          this.$set(this.flatList.get(this.selectedValue), '_isSelected', false);
+          this.setItemSelected(this.flatList.get(this.selectedValue), false);
         }
         this.selectedValue = val;
-        this.$set(item, '_isSelected', true);
+        this.setItemSelected(item, true);
       }
       this.$emit('li-click', this.selectedValue);
     },
     filterData() {
       this.flatList = new Map();
-      const compileFlatList = (dataList, valueName, childName, value) => {
+      const clearSelectedState = (dataList, childName) => {
+        if (!Array.isArray(dataList)) {
+          return;
+        }
+        dataList.forEach(item => {
+          this.setItemSelected(item, false);
+          if (Array.isArray(item[childName]) && item[childName].length > 0) {
+            clearSelectedState(item[childName], childName);
+          }
+        });
+      };
+      const compileFlatList = (dataList, valueName, childName) => {
+        if (!Array.isArray(dataList)) {
+          return;
+        }
         dataList.forEach(item => {
           if (this.multiple) {
-            if (this.selectedValue.indexOf(item[valueName]) >= 0) {
-              this.$set(item, '_isSelected', true);
+            if (Array.isArray(this.selectedValue) && this.selectedValue.indexOf(item[valueName]) >= 0) {
+              this.setItemSelected(item, true);
             }
           } else {
             if (typeof item[valueName] != 'undefined') {
               if (this.selectedValue == item[valueName]) {
-                this.$set(item, '_isSelected', true);
+                this.setItemSelected(item, true);
               }
             }
           }
           this.flatList.set(item[valueName], item);
-          if (item[childName] && item[childName].length > 0) {
+          if (Array.isArray(item[childName]) && item[childName].length > 0) {
             compileFlatList(item[childName], valueName, childName);
           }
         });
       };
-      if (this.currentList && this.currentList.length) {
+      clearSelectedState(this.currentList, this.childName);
+      if (Array.isArray(this.currentList) && this.currentList.length) {
         compileFlatList(this.currentList, this.valueName, this.childName);
       }
     }
   },
   computed: {},
   watch: {
-    dataList(oldValue, newValue) {
+    value: {
+      handler: function(val) {
+        this.selectedValue = this.multiple ? (Array.isArray(val) ? [...val] : []) : val;
+        this.filterData();
+      },
+      deep: true
+    },
+    dataList(newValue, oldValue) {
       this.currentList = this.dataList || [];
       this.filterData();
     },

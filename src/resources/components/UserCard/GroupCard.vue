@@ -62,7 +62,9 @@ export default {
     return {
       isshow: false,
       groupList: null,
-      currentPage: 1
+      currentPage: 1,
+      cancelSource: null,
+      requestSeq: 0
     };
   },
 
@@ -72,6 +74,10 @@ export default {
   mounted() {
   },
   beforeDestroy() {
+    if (this.cancelSource) {
+      this.cancelSource.cancel();
+      this.cancelSource = null;
+    }
   },
 
   methods: {
@@ -81,15 +87,23 @@ export default {
       }
     },
     getGrouplist(page) {
-      let _this = this;
-      _this.isshow = false;
-      _this.currentPage = page || _this.currentPage;
-      let param = {keyword: '', currentPage: _this.currentPage, pageSize: 12};
-      param[_this.type + 'Uuid'] = _this.uuid;
-      this.$https.post('/api/rest/user/search/forselect', param).then(res => {
+      if (this.cancelSource) {
+        this.cancelSource.cancel();
+      }
+      this.cancelSource = this.$https.CancelToken.source();
+      const requestSeq = ++this.requestSeq;
+      const currentUuid = this.uuid;
+      this.isshow = false;
+      this.currentPage = page || this.currentPage;
+      let param = {keyword: '', currentPage: this.currentPage, pageSize: 12};
+      param[this.type + 'Uuid'] = this.uuid;
+      this.$https.post('/api/rest/user/search/forselect', param, { cancelToken: this.cancelSource.token }).then(res => {
+        if (requestSeq !== this.requestSeq || currentUuid !== this.uuid) {
+          return;
+        }
         if (res && res.Status == 'OK') {
-          _this.isshow = true;
-          _this.$set(_this, 'groupList', res.Return);
+          this.isshow = true;
+          this.$set(this, 'groupList', res.Return || null);
         }
       });
     },

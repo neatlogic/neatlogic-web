@@ -3,6 +3,32 @@ import axios from '@/resources/api/http.js';
 import utils from '@/resources/assets/js/util.js';
 import { $t } from '@/resources/init.js';
 
+function getStringValue(value) {
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (typeof value === 'number') {
+    return value + '';
+  }
+  return '';
+}
+
+function getSearchUrlState(vueNode) {
+  if (!vueNode) {
+    return null;
+  }
+  if (!vueNode._tsSearchUrlState) {
+    vueNode._tsSearchUrlState = {
+      searchTime: null,
+      cancelAxios: null,
+      requestSeq: 0,
+      isValid: true,
+      errorMessage: ''
+    };
+  }
+  return vueNode._tsSearchUrlState;
+}
+
 let validtor = {
   required: {
     trigger: 'change',
@@ -176,7 +202,7 @@ let validtor = {
   },
   maxNum: {
     validator: function(rule, value) {
-      return /^[0-9]\d*|(\-1)$/.test(value);
+      return /^(?:[0-9]\d*|-1)$/.test(value);
     },
     trigger: 'change',
     message: $t('message.pleaseentertruetarget', { target: $t('term.plugin.positivenumberor-1') })
@@ -286,6 +312,7 @@ let validtor = {
   },
   range: {
     validator: function(rule, value) {
+      value = getStringValue(value);
       if (value.indexOf('-') == -1) {
         return false;
       } else {
@@ -307,7 +334,7 @@ let validtor = {
   },
   stepindex: {
     validator: function(rule, value) {
-      value = value.trim();
+      value = getStringValue(value).trim();
       if (value != '') {
         if (value.indexOf('.') > -1) {
           var vl = value.split('.');
@@ -453,8 +480,12 @@ let validtor = {
     validator: function(rule, value) {
       let pattern = rule.pattern || this.pattern;
       if (typeof value != 'undefined' && value != null && typeof value == 'string' && value.trim() != '') {
-        var reg = new RegExp(pattern);
-        return reg.test(value);
+        try {
+          var reg = new RegExp(pattern);
+          return reg.test(value);
+        } catch (e) {
+          return false;
+        }
       }
       return true;
     },
@@ -465,23 +496,31 @@ let validtor = {
   searchUrl: {
     validator: function(rule, value, vueNode) {
       rule = rule || this;
-      let _this = this;
-      this.searchTime && clearTimeout(this.searchTime);
+      let state = getSearchUrlState(vueNode);
+      if (!state) {
+        return true;
+      }
+      state.searchTime && clearTimeout(state.searchTime);
       if (utils.isEmpty(value)) {
         //值为空时不进行调用接口，校验通过
-        _this.searchTime = null;
-        _this.cancelAxios = null;
-        _this.isValid = true;
+        if (state.cancelAxios) {
+          state.cancelAxios.cancel();
+          state.cancelAxios = null;
+        }
+        state.searchTime = null;
+        state.isValid = true;
+        state.errorMessage = '';
         vueNode.$set(vueNode, 'validMesage', '');
         return true;
       }
 
-      this.searchTime = setTimeout(function() {
+      state.searchTime = setTimeout(function() {
         //调用接口的预处理
-        let cancel = _this.cancelAxios;
-        cancel && (_this.cancelAxios = null) && cancel.cancel();
+        let cancel = state.cancelAxios;
+        cancel && (state.cancelAxios = null) && cancel.cancel();
         const CancelToken = axios.CancelToken;
-        _this.cancelAxios = CancelToken.source();
+        state.cancelAxios = CancelToken.source();
+        const requestSeq = ++state.requestSeq;
         let params = typeof rule.params === 'function' ? rule.params(value, rule) || {} : rule.params || {};
         let headers = { unConsole: 1 };
         let key = rule.key || vueNode.name;
@@ -491,24 +530,33 @@ let validtor = {
         }
         let errorMessage = '';
         axios
-          .post(rule.url, params, { cancelToken: _this.cancelAxios.token, headers: headers })
+          .post(rule.url, params, { cancelToken: state.cancelAxios.token, headers: headers })
           .then(res => {
-            _this.isValid = true;
+            if (requestSeq !== state.requestSeq) {
+              return;
+            }
+            state.isValid = true;
             if (res.Status == 'OK') {
               if (!res.Return) {
-                vueNode.validMesage == _this.errorMessage ? (errorMessage = '') : (errorMessage = vueNode.validMesage);
-                _this.isValid = true;
+                vueNode.validMesage == state.errorMessage ? (errorMessage = '') : (errorMessage = vueNode.validMesage);
+                state.isValid = true;
               } else {
-                _this.errorMessage = errorMessage = rule.message || res.Message;
-                _this.isValid = false;
+                state.errorMessage = errorMessage = rule.message || res.Message;
+                state.isValid = false;
               }
             } else {
-              _this.errorMessage = errorMessage = rule.message || res.Message;
-              _this.isValid = false;
+              state.errorMessage = errorMessage = rule.message || res.Message;
+              state.isValid = false;
             }
           })
           .catch(res => {
-            if (res.response.status == 530) {
+            if (requestSeq !== state.requestSeq) {
+              return;
+            }
+            if (axios.isCancel && axios.isCancel(res)) {
+              return;
+            }
+            if (res && res.response && res.response.status == 530) {
               //翻译处理
               let text = res.response.data.Message;
               let arr = text.split('.');
@@ -516,15 +564,18 @@ let validtor = {
               if (!(arr.length < 1 || text1 == text)) {
                 text = text1;
               }
-              _this.errorMessage = errorMessage = _this.message || text;
-              _this.isValid = false;
+              state.errorMessage = errorMessage = rule.message || text;
+              state.isValid = false;
             }
           })
           .finally(() => {
-            _this.searchTime = null;
-            _this.cancelAxios = null;
+            if (requestSeq !== state.requestSeq) {
+              return;
+            }
+            state.searchTime = null;
+            state.cancelAxios = null;
             vueNode.$set(vueNode, 'validMesage', errorMessage);
-            rule.validSearchUrl && rule.validSearchUrl(_this.isValid, errorMessage);
+            rule.validSearchUrl && rule.validSearchUrl(state.isValid, errorMessage);
           });
       }, 500);
       return true;
