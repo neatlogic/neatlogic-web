@@ -225,8 +225,11 @@ export default {
       default: -1
     },
     searchMode: {
-      type: String, // 搜索模式可选：实时搜索(realtimeSearch)，非实时搜索(clickBtnSearch)
-      default: 'realtimeSearch' // 默认实时搜索
+      type: String, // 搜索模式可选：实时搜索(auto)，点击按钮搜索(click)
+      default: 'auto', // 默认选择内容后即时搜索    
+      validator(value) {
+        return ['realtimeSearch', 'auto', 'clickBtnSearch', 'click'].includes(value);
+      }
     },
     isShowAdvanceMode: {
       // 底部是否显示高级模式文案
@@ -292,7 +295,7 @@ export default {
     },
     handleToggleOpen() {
       this.isVisible = !this.isVisible;
-      if (this.isVisible && this.searchMode == 'clickBtnSearch') {
+      if (this.isVisible && this.isClickSearchMode) {
         this.isCloseAutomaticSearch = true; // 关闭实时搜索
       }
     },
@@ -389,7 +392,7 @@ export default {
     handleCancel() {
       // 点击取消
       this.isVisible = false;
-      if (this.searchMode == 'clickBtnSearch' && !this.isVisible) {
+      if (this.isClickSearchMode && !this.isVisible) {
         // 点击取消按钮时，删除已选择但是没有搜索的字段
         for (let key in this.searchValue) {
           if (key && !this.totalText.hasOwnProperty([key])) {
@@ -406,7 +409,7 @@ export default {
       this.isVisible = false;
       let fullSearch = this.getFullSearch();
       this.$emit('change', fullSearch);
-      if (this.searchMode == 'clickBtnSearch') {
+      if (this.isClickSearchMode) {
         this.refreshTextConfig(); // 点击确认时，需要把搜索结果显示在搜索栏中
       }
     },
@@ -561,6 +564,12 @@ export default {
     }
   },
   computed: {
+    isRealtimeSearchMode() {
+      return ['realtimeSearch', 'auto'].includes(this.searchMode);
+    },
+    isClickSearchMode() {
+      return ['clickBtnSearch', 'click'].includes(this.searchMode);
+    },
     getLabel() {
       return function(key) {
         if (key == this.keywordName) { // 搜索框隐藏时，有关键字也可正常回显
@@ -618,7 +627,7 @@ export default {
           let totalSearch = this.getFullSearch();
           let isEmit = this.$utils.isSame(totalSearch, this.value);
           if (!isEmit) {
-            if (this.searchMode == 'realtimeSearch') {
+            if (this.isRealtimeSearchMode) {
               this.$emit('change', totalSearch);
             }
           }
@@ -657,7 +666,7 @@ export default {
     textConfig: {
       handler(val) {
         if (val && typeof val == 'object') {
-          if (this.searchMode == 'realtimeSearch' || (this.searchMode == 'clickBtnSearch' && !this.isCloseAutomaticSearch)) {
+          if (this.isRealtimeSearchMode || (this.isClickSearchMode && !this.isCloseAutomaticSearch)) {
             this.refreshTextConfig();
           }
         }
@@ -765,11 +774,6 @@ export default {
       vertical-align: initial;
     }
   }
-  // &.seachable{
-  //   .tag-item{
-  //     max-width: calc(100% - 200px);
-  //   }
-  // }
 }
 .none{
   display: none;
