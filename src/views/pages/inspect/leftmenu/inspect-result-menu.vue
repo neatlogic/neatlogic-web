@@ -1,5 +1,5 @@
 <template>
-  <div class="OverviewMenu menu_link">
+  <div class="menu_link">
     <div class="title text-grey">{{ $t('term.inspect.inspectresult') }}</div>
     <ul>
       <li
@@ -72,7 +72,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import draggable from 'vuedraggable';
-import LeftMenu from '@/views/components/leftmenu/leftmenu';
+import LeftMenuMixin from '@/views/components/leftmenu/leftmenu-mixin';
 import inspectRouterList from '@/views/pages/inspect/router.js'; // 巡检路由列表
 export default {
   name: '', // 巡检结果菜单
@@ -80,7 +80,7 @@ export default {
     CategoryEditDialog: () => import('@/views/pages/inspect/recentIssues/category-edit-dialog'), // 编辑新分类
     draggable
   },
-  extends: LeftMenu,
+  mixins: [LeftMenuMixin],
   props: {},
   data() {
     return {
@@ -228,9 +228,6 @@ export default {
 
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
-.OverviewMenu {
-  padding-top: 8px;
-}
   .navlist-ul {
     .navlist-li {
       position: relative;

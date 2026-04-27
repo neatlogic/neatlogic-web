@@ -34,13 +34,13 @@
   </div>
 </template>
 <script>
-import LeftMenu from '@/views/components/leftmenu/leftmenu';
+import LeftMenuMixin from '@/views/components/leftmenu/leftmenu-mixin';
 export default {
   name: '',
   components: {
     VerticalPager: () => import('@/resources/plugins/VerticalPager/vertical-pager.vue')
   },
-  extends: LeftMenu,
+  mixins: [LeftMenuMixin],
   props: {},
   data() {
     return {

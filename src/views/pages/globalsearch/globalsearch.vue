@@ -1,5 +1,5 @@
-<template>
-  <div v-if="hasAuthorization" class="home" :class="{ 'menu-min': !showmenu }">
+﻿<template>
+  <div v-if="hasAuthorization" class="home menu-min">
     <TopNav></TopNav>
     <div class="centermain">
       <div>
@@ -23,7 +23,6 @@ export default {
   },
   data() {
     return {
-      showmenu: false, //菜单收起时的class
       hasAuthorization: true,
       isRouterAlive: true
     };
@@ -31,10 +30,6 @@ export default {
   created() {},
   beforeDestroy() {},
   methods: {
-    //菜单显示隐藏
-    menuToggle: function(data) {
-      this.showmenu = data;
-    },
     reloadRouter() { //切换多语言时，刷新路由
       this.isRouterAlive = false;
       this.$store.dispatch('getModuleList');
