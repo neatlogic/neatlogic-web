@@ -30,6 +30,8 @@ function mergeByKey(targetCategory, key, value) {
   targetCategory[key] = deepMerge(targetCategory[key], value);
 }
 
+const ROOT_MERGE_CATEGORY_SET = new Set(['title', 'group', 'description']);
+
 function handleLanguageConfig(languagesCategoryConfig, languagesConfig, languagePath, languageCode) {
   const pathParts = languagePath.split('/');
   const moduleName = pathParts[1]?.split('-')?.pop() ?? pathParts[1];
@@ -45,6 +47,11 @@ function handleLanguageConfig(languagesCategoryConfig, languagesConfig, language
 
   const targetCategory = languagesCategoryConfig[category];
   const exportKeys = Object.keys(exportValue);
+
+  if (ROOT_MERGE_CATEGORY_SET.has(category)) {
+    languagesCategoryConfig[category] = deepMerge(targetCategory, exportValue);
+    return;
+  }
 
   if (Object.prototype.hasOwnProperty.call(exportValue, moduleName)) {
     mergeByKey(targetCategory, moduleName, exportValue[moduleName]);
