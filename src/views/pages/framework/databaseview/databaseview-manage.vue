@@ -24,6 +24,12 @@
             </span>
             <span v-else-if="row.status === 'SUCCESS'" class="text-success">{{ row.status }}</span>
           </template>
+          <template v-slot:timeCost="{ row }">
+            <span v-if="row.timeCost != null">
+              {{ row.timeCost | formatTimeCost({ language: 'zh', unit: 'millisecond' }) }}
+            </span>
+            <span v-else>-</span>
+          </template>
         </TsTable>
       </template>
     </TsContain>
@@ -49,7 +55,8 @@ export default {
           title: this.$t('term.cmdb.view')
         },
         { key: 'label', title: this.$t('page.name') },
-        { key: 'status', title: this.$t('page.status') }
+        { key: 'status', title: this.$t('page.status') },
+        { key: 'timeCost', title: this.$t('page.timecost') }
       ],
       tbodyList: []
     };
