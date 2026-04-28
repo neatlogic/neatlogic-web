@@ -26,7 +26,7 @@
           </template>
           <template v-slot:timeCost="{ row }">
             <span v-if="row.timeCost != null">
-              {{ row.timeCost | formatTimeCost({ unitNumber: 2, language: 'zh', unit: 'millisecond' }) }}
+              {{ row.timeCost | formatTimeCost({ language: 'zh', unit: 'millisecond' }) }}
             </span>
             <span v-else>-</span>
           </template>
