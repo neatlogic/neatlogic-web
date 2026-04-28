@@ -94,10 +94,6 @@ export default {
     viewName: {
       type: String,
       default: ''
-    },
-    baselineId: {
-      type: Number,
-      default: null
     }
   },
   data() {
@@ -271,8 +267,7 @@ export default {
       const param = {
         appSystemId: this.inspectionData.id,
         envList: envList,
-        viewName: this.viewName || null,
-        baselineId: this.baselineId
+        viewName: this.viewName || null
       };
       this.continueLoading = true;
       this.loadingShow = true;
@@ -398,9 +393,7 @@ export default {
           invokeId: item.ciId,
           routeId: this.inspectionData.id,
           roundCount: 64,
-          param: {
-            baselineId: this.baselineId
-          },
+          param: {},
           executeConfig: {
             executeNodeConfig: {
               filter: {
