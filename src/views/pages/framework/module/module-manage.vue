@@ -1,59 +1,76 @@
 <template>
   <div>
     <TsContain>
+      <template v-slot:topRight>
+        <div class="action-group">
+          <span class="action-item tsfont-setting" @click="openSettingDialog">{{ $t('page.setting') }}</span>
+        </div>
+      </template>
       <template v-slot:content>
-        <div v-for="(moduleGroup, index) in moduleGroupList" :key="index" class="mb-nm">
-          <div v-if="moduleGroup.moduleList && moduleGroup.moduleList.length > 0" class="grid">
-            <div class="mb-sm">
-              <div>
-                <span>{{ moduleGroup.groupName }}</span>
-                <span class="text-grey">({{ moduleGroup.group }})</span>
-              </div>
-              <div class="mt-xs text-grey fz10">{{ moduleGroup.groupDescription }}</div>
-            </div>
+        <TsTable
+          :theadList="groupTheadList"
+          :tbodyList="moduleGroupTableList"
+          :fixedHeader="false"
+          :showPager="false"
+          keyName="group"
+          class="inner-table"
+        >
+          <template v-slot:groupName="{ row }">
             <div>
-              <TsCard
-                v-if="moduleGroup.moduleList && moduleGroup.moduleList.length > 0"
-                :cardList="moduleGroup.moduleList"
-                :sm="8"
-                :lg="6"
-                :xl="6"
-                :xxl="4"
-                :padding="false"
+              <span>{{ row.groupName }}</span>
+              <span class="text-grey ml-xs">({{ row.group }})</span>
+            </div>
+            <div v-if="row.groupDescription" class="mt-xs text-grey fz10">{{ row.groupDescription }}</div>
+          </template>
+          <template v-slot:moduleList="{ row }">
+            <div class="job-expand-table-box">
+              <TsTable
+                :theadList="moduleTheadList"
+                :tbodyList="row.moduleList"
+                :hideAction="false"
+                :showPager="false"
+                :showTotal="false"
+                height="auto"
               >
-                <template slot-scope="{ row }">
-                  <div class="padding cursor-pointer" @click.stop="openVersionLogDialog(row)">
-                    <div>
-                      <span :class="{ 'tsfont-plugin': row.hasInitialData }">{{ row.name }}</span>
-                      <span class="text-grey ml-xs">({{ row.id }})</span>
-                    </div>
-                    <div class="mt-xs">
-                      <span class="text-grey mr-xs">{{ 'changelog ' + $t('page.versions') }}</span>
-                      <span>{{ row.changelogVersion || '-' }}</span>
-                    </div>
-                    <div class="mt-xs">
-                      <span v-if="row.id !== 'web'" class="text-grey mr-xs">{{ 'pom ' + $t('page.versions') }}</span>
-                      <span v-else class="text-grey mr-xs">{{ $t('page.versions') }}</span>
-                      <span>{{ row.version || '-' }}</span>
-                    </div>
-                    <div class="mt-xs">
-                      <span class="text-grey mr-xs">{{ $t('page.installtime') }}</span>
-                      <span>{{ new Date(row.lastModified).toLocaleString() || '-' }}</span>
-                    </div>
+                <template v-slot:name="{ row: module }">
+                  <span class="cursor-pointer text-href" :class="{ 'tsfont-plugin': module.hasInitialData }" @click.stop="openVersionLogDialog(module)">{{ module.name }}</span>
+                  <span class="text-grey ml-xs">({{ module.id }})</span>
+                </template>
+                <template v-slot:version="{ row: module }">
+                  <span>{{ module.version || '-' }}</span>
+                </template>
+                <template v-slot:changelogVersion="{ row: module }">
+                  <span>{{ module.changelogVersion || '-' }}</span>
+                </template>
+                <template v-slot:lastModified="{ row: module }">
+                  <span>{{ formatDate(module.lastModified) }}</span>
+                </template>
+                <template v-slot:action="{ row: module }">
+                  <div class="tstable-action">
+                    <ul class="tstable-action-ul">
+                      <li class="tsfont-history" @click.stop="openVersionLogDialog(module)">{{ $t('term.framework.versionlog') }}</li>
+                      <li v-if="module.hasInitialData" class="tsfont-download" @click.stop="exportData(module)">{{ $t('page.exportinitdata') }}</li>
+                      <li v-if="module.hasInitialData" class="tsfont-upload" @click.stop="openImportDialog(module)">{{ $t('page.importinitdata') }}</li>
+                    </ul>
                   </div>
                 </template>
-                <template v-slot:control="{ row }">
-                  <div v-if="row.hasInitialData" class="tsfont-download text-action" @click="exportData(row)">{{ $t('page.exportinitdata') }}</div>
-                  <div v-if="row.hasInitialData" class="tsfont-upload text-action" @click="openImportDialog(row)">{{ $t('page.importinitdata') }}</div>
-                </template>
-              </TsCard>
+              </TsTable>
             </div>
-          </div>
-        </div>
+          </template>
+          <template v-slot:alias="{ row }">
+            <span>{{ row.alias || '-' }}</span>
+          </template>
+        </TsTable>
       </template>
     </TsContain>
     <ModuleImportDialog v-if="isImportDialogShow" :moduleId="currentModuleId" @close="closeImportDialog"></ModuleImportDialog>
     <VersionLogDialog v-if="isShowVersionLogDialog" :moduleId="currentModuleId" @close="closeVersionLogDialog"></VersionLogDialog>
+    <ModuleSettingDialog
+      v-if="isSettingDialogShow"
+      :groupList="settingGroupList"
+      :config="moduleManageConfig"
+      @close="closeSettingDialog"
+    ></ModuleSettingDialog>
   </div>
 </template>
 <script>
@@ -61,9 +78,10 @@ import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
-    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     ModuleImportDialog: () => import('./module-import-dialog.vue'),
-    VersionLogDialog: () => import('./version-log-dialog')
+    VersionLogDialog: () => import('./version-log-dialog'),
+    ModuleSettingDialog: () => import('./module-setting-dialog.vue')
   },
   mixins: [download],
   props: {},
@@ -71,8 +89,10 @@ export default {
     return {
       isImportDialogShow: false,
       isShowVersionLogDialog: false,
+      isSettingDialogShow: false,
       currentModuleId: '',
-      moduleGroupList: []
+      moduleGroupList: [],
+      moduleManageConfig: {}
     };
   },
   beforeCreate() {},
@@ -88,16 +108,17 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    searchModule() {
-      this.$api.framework.module.searchModule().then(res => {
-        this.moduleGroupList = res.Return;
+    async searchModule() {
+      await Promise.all([this.getModuleManageSetting(), this.getModuleList()]);
+    },
+    getModuleList() {
+      return this.$api.framework.module.searchModule().then(res => {
+        const moduleGroupList = res.Return || [];
         //补充前端版本和最后修改时间
-        fetch('/version.md')
+        return fetch('/version.md')
           .then(response => response.json())
           .then(data => {
-            this.webBuildDate = data.fcd;
-            this.webBuildVersion = data.version;
-            this.moduleGroupList.push({
+            moduleGroupList.push({
               group: 'web',
               groupName: '前端',
               groupDescription: '前端页面',
@@ -110,10 +131,17 @@ export default {
                 }
               ]
             });
+            this.moduleGroupList = moduleGroupList;
           }).catch(error => {
-            this.error = error.message;
             console.log('Error fetching the version file:', error);
+            this.moduleGroupList = moduleGroupList;
           });
+      });
+    },
+    getModuleManageSetting() {
+      return this.$api.framework.module.getModuleManageSetting().then(res => {
+        const setting = res.Return || {};
+        this.moduleManageConfig = setting.config || {};
       });
     },
     openImportDialog(row) {
@@ -138,16 +166,88 @@ export default {
     closeVersionLogDialog() {
       this.currentModuleId = '';
       this.isShowVersionLogDialog = false;
+    },
+    openSettingDialog() {
+      this.isSettingDialogShow = true;
+    },
+    closeSettingDialog(config) {
+      this.isSettingDialogShow = false;
+      if (config) {
+        this.moduleManageConfig = config;
+      }
+    },
+    formatDate(value) {
+      if (!value) {
+        return '-';
+      }
+      const date = new Date(value);
+      if (isNaN(date.getTime())) {
+        return value;
+      }
+      return date.toLocaleString();
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    groupTheadList() {
+      return [
+        { key: 'groupName', title: this.$t('page.group'), width: 240 },
+        { key: 'alias', title: this.$t('page.alias'), width: 180 },
+        { key: 'moduleList', title: this.$t('page.module') }
+      ];
+    },
+    moduleTheadList() {
+      return [
+        { key: 'name', title: this.$t('page.module'), width: 240 },
+        { key: 'changelogVersion', title: 'changelog ' + this.$t('page.versions'), width: 160 },
+        { key: 'version', title: this.$t('page.versions'), width: 160 },
+        { key: 'lastModified', title: this.$t('page.installtime'), width: 180 },
+        { key: 'action', title: '', width: 220 }
+      ];
+    },
+    settingGroupList() {
+      return this.moduleGroupList
+        .filter(group => group.group !== 'web' && group.moduleList && group.moduleList.length > 0)
+        .map(group => ({
+          group: group.group,
+          groupName: group.groupName,
+          groupDescription: group.groupDescription
+        }));
+    },
+    groupSettingMap() {
+      const settingMap = {};
+      const groupList = this.moduleManageConfig.groupList || [];
+      groupList.forEach((item, index) => {
+        settingMap[item.group] = {
+          alias: item.alias,
+          sort: item.sort != null ? item.sort : index
+        };
+      });
+      return settingMap;
+    },
+    moduleGroupTableList() {
+      const settingMap = this.groupSettingMap;
+      return this.moduleGroupList
+        .map((group, index) => {
+          const setting = settingMap[group.group] || {};
+          return {
+            ...group,
+            alias: setting.alias || '',
+            sort: setting.sort != null ? setting.sort : index,
+            moduleList: group.moduleList || []
+          };
+        })
+        .filter(group => group.moduleList && group.moduleList.length > 0)
+        .sort((a, b) => a.sort - b.sort);
+    }
+  },
   watch: {}
 };
 </script>
 <style lang="less" scoped>
-.grid {
-  display: grid;
-  grid-template-columns: 250px auto;
+.job-expand-table-box {
+  &.tstable-container .tstable-body th {
+    height: 32px !important;
+  }
 }
 </style>
