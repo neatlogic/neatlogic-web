@@ -1,5 +1,5 @@
 <template>
-  <div class="leftmenu">
+  <div class="leftmenu" :class="{ resizing: isResizing }">
     <div :class="isSlider ? 'menubar slider' : 'menubar'">
       <div class="menu_content">
         <slot :menuList="menuList"></slot>
@@ -27,6 +27,7 @@
       </div>
       <div :class="menuToggleButtonClass" @click="menuToggle()"></div>
     </div>
+    <div v-if="isMenuExpanded" class="resize-handle" @mousedown.prevent="startResize"></div>
   </div>
 </template>
 
@@ -34,10 +35,11 @@
 import { mapMutations, mapState } from 'vuex';
 import * as Types from '@/resources/store/mutation-type';
 import LeftMenuMixin from './leftmenu-mixin';
+import LeftMenuResizeMixin from './leftmenu-resize-mixin';
 
 export default {
   name: 'LeftMenu',
-  mixins: [LeftMenuMixin],
+  mixins: [LeftMenuMixin, LeftMenuResizeMixin],
   data() {
     return {
       isMenuExpanded: false, //菜单是否展开
@@ -75,8 +77,7 @@ export default {
       this.onChangeMenu(this.menuActive);
       setTimeout(() => {
         this.isSlider = true;
-        //手动触发窗口变化事件
-        window.dispatchEvent(new CustomEvent('resize'));
+        this.emitResizeEvent();
       }, 100);
     },
     ...mapMutations({
