@@ -611,3 +611,4 @@
 .tsfont-sound { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea56;&nbsp;'); }
 .tsfont-code-block { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea57;&nbsp;'); }
 .tsfont-data-transformation { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea58;&nbsp;'); }
+.tsfont-unlink { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea59;&nbsp;'); }
