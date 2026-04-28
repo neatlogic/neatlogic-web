@@ -53,7 +53,6 @@ function mergeByKey(targetCategory, key, value) {
   targetCategory[key] = deepMerge(targetCategory[key], value);
 }
 
-const ROOT_MERGE_CATEGORY_SET = new Set(['title', 'group', 'description']);
 
 /**
  * 处理单个语言文件，并按分类及模块名写入最终语言配置。
@@ -62,7 +61,7 @@ const ROOT_MERGE_CATEGORY_SET = new Set(['title', 'group', 'description']);
  * @param {string} languagePath 当前语言文件路径
  * @param {string} languageCode 语言编码
  */
-function handleLanguageConfig(languagesCategoryConfig, languagesConfig, languagePath, languageCode) {
+function handleLanguageConfig(languagesCategoryConfig, baseCategorySet, languagesConfig, languagePath, languageCode) {
   const pathParts = languagePath.split('/');
   const moduleName = pathParts[1]?.split('-')?.pop() ?? pathParts[1];
   const category = getCategoryName(languagePath, languageCode);
@@ -78,7 +77,8 @@ function handleLanguageConfig(languagesCategoryConfig, languagesConfig, language
   const targetCategory = languagesCategoryConfig[category];
   const exportKeys = Object.keys(exportValue);
 
-  if (ROOT_MERGE_CATEGORY_SET.has(category)) {
+  // 非基础分类直接平铺合并，不额外挂载模块名这一层。如 title: {informant: {}}
+   if (!baseCategorySet.has(category)) {
     languagesCategoryConfig[category] = deepMerge(targetCategory, exportValue);
     return;
   }
@@ -105,10 +105,10 @@ function handleLanguageConfig(languagesCategoryConfig, languagesConfig, language
  * @param {Function} languagesConfig 语言文件上下文加载函数
  * @param {string} languageCode 语言编码
  */
-function loadModuleLanguages(languagesCategoryConfig, languagesConfig, languageCode) {
+function loadModuleLanguages(languagesCategoryConfig, baseCategorySet, languagesConfig, languageCode) {
   languagesConfig.keys().forEach(languagePath => {
     if (languagePath) {
-      handleLanguageConfig(languagesCategoryConfig, languagesConfig, languagePath, languageCode);
+      handleLanguageConfig(languagesCategoryConfig, baseCategorySet, languagesConfig, languagePath, languageCode);
     }
   });
 }
@@ -122,14 +122,14 @@ function loadModuleLanguages(languagesCategoryConfig, languagesConfig, languageC
  */
 export function createLanguageConfig(baseCategoryConfig, languageCode, languageContexts = []) {
   const languagesCategoryConfig = { ...baseCategoryConfig };
+  const baseCategorySet = new Set(Object.keys(baseCategoryConfig));
 
   try {
     languageContexts.forEach(languagesConfig => {
-      loadModuleLanguages(languagesCategoryConfig, languagesConfig, languageCode);
+      loadModuleLanguages(languagesCategoryConfig, baseCategorySet, languagesConfig, languageCode);
     });
   } catch (error) {
     console.error(`${languageCode}.json`, error);
   }
-
   return languagesCategoryConfig;
 }
