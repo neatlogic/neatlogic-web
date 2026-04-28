@@ -11,19 +11,15 @@ export default {
     }
   },
   render: (h, ctx) => {
-    const parent = ctx.parent;
-    const parentScopedSlots = parent && parent.$scopedSlots ? parent.$scopedSlots : {};
-    const upperParent = parent && parent.$parent ? parent.$parent : null;
-    const upperScopedSlots = upperParent && upperParent.$scopedSlots ? upperParent.$scopedSlots : {};
-    const slotName = parent && parent.name ? parent.name + '-label' : '';
-
-    if (parentScopedSlots['_label']) {
-      return h('span', parentScopedSlots['_label']());
-    } else if (slotName && upperScopedSlots[slotName]) {
-      return h('span', upperScopedSlots[slotName]());
+    if (ctx.parent.$scopedSlots['_label']) {
+      //通过卡槽渲染
+      return h('span', ctx.parent.$scopedSlots['_label']());
+    } else if (ctx.parent.$parent.$scopedSlots[ctx.parent.name + '-label']) {
+      //通过卡槽渲染
+      return h('span', ctx.parent.$parent.$scopedSlots[ctx.parent.name + '-label']());
     } else {
-      // HTML label 内容需保证来源可信
-      return h('span', { domProps: { innerHTML: parent && parent.label ? parent.label : '' } });
+      //通过数据渲染
+      return h('span', { domProps: { innerHTML: ctx.parent.label } });
     }
   }
 };
