@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Loading :loadingShow="isShowLoading" type="fix"></Loading>
     <TsContain>
       <template v-slot:topLeft>
         <div class="action-group">
@@ -23,6 +24,12 @@
             </span>
             <span v-else-if="row.status === 'SUCCESS'" class="text-success">{{ row.status }}</span>
           </template>
+          <template v-slot:timeCost="{ row }">
+            <span v-if="row.timeCost != null">
+              {{ row.timeCost | formatTimeCost({ language: 'zh', unit: 'millisecond' }) }}
+            </span>
+            <span v-else>-</span>
+          </template>
         </TsTable>
       </template>
     </TsContain>
@@ -38,6 +45,7 @@ export default {
   props: {},
   data() {
     return {
+      isShowLoading: false,
       keyword: '',
       currentEntityId: null,
       isEditShow: false,
@@ -47,7 +55,8 @@ export default {
           title: this.$t('term.cmdb.view')
         },
         { key: 'label', title: this.$t('page.name') },
-        { key: 'status', title: this.$t('page.status') }
+        { key: 'status', title: this.$t('page.status') },
+        { key: 'timeCost', title: this.$t('page.timecost') }
       ],
       tbodyList: []
     };
@@ -64,9 +73,11 @@ export default {
   destroyed() {},
   methods: {
     rebuildAll() {
+      this.isShowLoading = true;
       this.$api.framework.databaseview
         .rebuildDatabaesView()
         .then(res => {
+          this.isShowLoading = false;
           if (res.Status === 'OK') {
             this.$Message.success('重建完毕');
             this.tbodyList = res.Return.tbodyList;
