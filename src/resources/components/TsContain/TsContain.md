@@ -124,4 +124,9 @@
 
 #### 说明
 
+#### 兼容性说明
+
+- 当前版本保留了 `sessionName` 相关的历史缓存清理语义，组件销毁时仍会移除对应的 `localStorage` 记录，没有改成自动记忆侧栏状态。
+- `initConfig` 的延时重试改为使用组件实例作用域清理 timer，避免定时器状态残留，但不会改变原有重试时机。
+- 新增实例方法 `refreshContainHeight()`，内部仍复用 `handleContainHeight()`，默认不会额外绑定全局 `resize` 监听。
 

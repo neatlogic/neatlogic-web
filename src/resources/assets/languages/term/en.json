@@ -2803,9 +2803,7 @@
     "httpport": "HTTP port",
     "httpsport": "HTTPS port",
     "ostype": "Operating system type",
-    "ipandname": "IP/Name"
-  },
-  "infromant": {
+    "ipandname": "IP/Name",
     "report": "analysis report"
   },
   "ai": {

@@ -1,5 +1,5 @@
 <template>
-  <div class="OverviewMenu menu_link">
+  <div class="menu_link">
     <div>
       <div v-if="$AuthUtils.hasRole('PRIVATE_CUSTOMVIEW_MODIFY')" class="title text-grey">
         {{ $t('term.cmdb.customview') }}
@@ -14,7 +14,6 @@
             <DropdownItem v-auth="'GRAPH_MODIFY'" @click.native="addGraphView">{{ $t('term.cmdb.publicsceneview') }}</DropdownItem>
           </DropdownMenu>
         </Dropdown>
-        <!-- <a class="tsfont-plus text-primary" @click="addCustomView"><span class="text-primary">自定义视图</span></a>-->
       </div>
       <Divider v-if="customViewData && customViewData.tbodyList && customViewData.tbodyList.length > 0" style="margin: 0px" orientation="left">
         <span class="text-grey fz10">{{ $t('term.cmdb.dataview') }}</span>
@@ -99,14 +98,14 @@
   </div>
 </template>
 <script>
-import LeftMenu from '@/views/components/leftmenu/leftmenu';
+import LeftMenuMixin from '@/views/components/leftmenu/leftmenu-mixin';
 export default {
   name: 'CmdbMenu',
   components: {
     VerticalPager: () => import('@/resources/plugins/VerticalPager/vertical-pager.vue')
   },
-  extends: LeftMenu,
-  data: function() {
+  mixins: [LeftMenuMixin],
+  data() {
     return {
       searchCustomViewData: { currentPage: 1, pageSize: 10, isActive: 1 },
       customViewPageCount: 0,
@@ -172,12 +171,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-//@import (reference) '~@/resources/assets/css/variable.less';
-
-.OverviewMenu {
-  padding-top: 8px;
-}
-
 .grid {
   display: grid;
   grid-template-columns: auto 23px;

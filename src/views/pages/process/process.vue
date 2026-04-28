@@ -1,7 +1,7 @@
-<template>
-  <div v-if="hasAuthorization" class="home" :class="{ 'menu-min': !showmenu }">
+﻿<template>
+  <div v-if="hasAuthorization" class="home" :class="{ 'menu-min': !isMenuExpanded }">
     <TopNav></TopNav>
-    <LeftMenu :showmenu="showmenu" @menushow="menuToggle">
+    <LeftMenu @menuToggle="menuToggle">
       <ProcessMenu></ProcessMenu>
     </LeftMenu>
     <div class="centermain">
@@ -41,7 +41,7 @@ export default {
   },
   data() {
     return {
-      showmenu: false, //菜单收起时的class
+      isMenuExpanded: false, //左侧菜单是否展开
       hasAuthorization: true,
       isTaskoverview: false,
       isRouterAlive: true
@@ -54,8 +54,8 @@ export default {
   },
   methods: {
     //菜单显示隐藏
-    menuToggle(data) {
-      this.showmenu = data;
+    menuToggle(isMenuExpanded) {
+      this.isMenuExpanded = isMenuExpanded;
     },
     reloadRouter() { //切换多语言时，刷新路由
       this.isRouterAlive = false;

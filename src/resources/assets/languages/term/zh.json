@@ -2796,9 +2796,7 @@
     "httpport": "HTTP端口",
     "httpsport": "HTTPS端口",
     "ostype": "操作系统类型",
-    "ipandname": "IP/名称"
-  },
-  "infromant": {
+    "ipandname": "IP/名称",
     "report": "分析报告"
   },
   "ai": {

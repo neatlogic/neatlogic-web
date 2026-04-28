@@ -130,6 +130,8 @@ this.$refs.inputRef.valid()
 - props.onChange = 兼容写法，与 on-change 功能相同
 - valid() 可手动触发校验，返回校验结果
 - 所有值默认自动 trim（字符串）
+- `prepend`、`append` 以及 textarea 只读态仍支持 `v-html`，内容必须来自可信配置，避免直接透传未清洗的用户输入
+- 误传普通 object 值时，组件会优先尝试展示 `text` 字段，否则回退为 JSON 字符串，避免出现 `[object Object]`
 
 >  插槽(slot)
 

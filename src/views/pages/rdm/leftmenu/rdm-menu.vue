@@ -43,15 +43,15 @@
   </div>
 </template>
 <script>
-import LeftMenu from '@/views/components/leftmenu/leftmenu';
+import LeftMenuMixin from '@/views/components/leftmenu/leftmenu-mixin';
 export default {
   name: 'RdmMenu',
   components: {
     ProjectEditDialog: () => import('@/views/pages/rdm/project/project-add-dialog.vue'),
     VerticalPager: () => import('@/resources/plugins/VerticalPager/vertical-pager.vue')
   },
-  extends: LeftMenu,
-  data: function() {
+  mixins: [LeftMenuMixin],
+  data() {
     return {
       isProjectDialogShow: false,
       projectList: [],
@@ -98,7 +98,10 @@ export default {
 .rdm-menu-box {
   .grid {
     display: grid;
-    grid-template-columns: 177px 23px;
+    grid-template-columns: minmax(0, 1fr) 23px;
+    > ul {
+      min-width: 0;
+    }
     .rdm-menu-link {
       padding: 0 0 0 6px !important;
     }

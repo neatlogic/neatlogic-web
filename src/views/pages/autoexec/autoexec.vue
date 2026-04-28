@@ -1,7 +1,9 @@
-<template>
-  <div v-if="hasAuthorization" class="home" :class="{ 'menu-min': !showmenu }">
+﻿<template>
+  <div v-if="hasAuthorization" class="home" :class="{ 'menu-min': !isMenuExpanded }">
     <TopNav></TopNav>
-    <AutoexecMenu :showmenu="showmenu" @menushow="menuToggle"></AutoexecMenu>
+    <LeftMenu @menuToggle="menuToggle">
+      <AutoexecMenu></AutoexecMenu>
+    </LeftMenu>
     <div class="centermain">
       <div>
         <router-view
@@ -25,12 +27,13 @@ export default {
   },
   components: {
     TopNav: () => import('@/views/components/topnav/topnav.vue'),
+    LeftMenu: () => import('@/views/components/leftmenu/leftmenu.vue'),
     AutoexecMenu: () => import('./leftmenu/autoexec-menu'),
     LicenseValidator: () => import('@/views/components/license/license-validator.vue')
   },
   data() {
     return {
-      showmenu: false, //菜单收起时的class
+      isMenuExpanded: false, //左侧菜单是否展开
       hasAuthorization: true,
       isRouterAlive: true
     };
@@ -39,8 +42,8 @@ export default {
   beforeDestroy() {},
   methods: {
     //菜单显示隐藏
-    menuToggle: function(data) {
-      this.showmenu = data;
+    menuToggle(isMenuExpanded) {
+      this.isMenuExpanded = isMenuExpanded;
     },
     reloadRouter() { //切换多语言时，刷新路由
       this.isRouterAlive = false;

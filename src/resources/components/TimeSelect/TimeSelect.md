@@ -48,3 +48,7 @@ getFormValue|Object|获取表单值|-
 
 >>>特殊数据说明
 
+### 兼容说明
+
+- 清空时仍保持历史事件语义：触发 `change`、`on-change`、`change-label`，当前版本未额外补发 `update:value`，以避免影响既有调用方。
+- 组件已补充 dropdown 父节点和外部点击的空引用保护，嵌套在 `CombineSearcher` 等场景下更稳定。

@@ -69,3 +69,7 @@ config:{
 - trueValue 与 falseValue 类型必须与 value 类型一致，否则可能匹配失败。
 - beforeChange 若为异步逻辑，请确保返回 Promise。
 - readonly 模式下不会渲染开关组件，只显示状态文本。
+
+### 兼容性说明
+- `beforeChange` 现在同时兼容同步布尔值和异步 Promise；返回 `false` 或 Promise reject 时都会阻止切换。
+- 状态文本点击时增加了 `ref` 安全访问，开关节点尚未就绪时不会再抛错。
