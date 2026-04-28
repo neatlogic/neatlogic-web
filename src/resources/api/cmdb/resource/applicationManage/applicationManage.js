@@ -16,10 +16,6 @@ const applicationManage = {
   getResourceList(params) {
     return axios.post('api/rest/resourcecenter/resource/list', params);
   },
-  // 查询应用模块中资源列表
-  postAppmoduleResourceList(params) {
-    return axios.post('api/rest/resourcecenter/appmodule/resource/list', params);
-  },
   getAppsystemListTree(params) {
     // 获取资源中心，应用列表
     return axios.post('api/rest/resourcecenter/appsystem/list/fortree', params);
@@ -46,7 +42,7 @@ const applicationManage = {
   saveApplicationlistSetting(params) { //保存应用清单显示设置
     return axios.post('/api/rest/resourcecenter/applicationlist/display/save', params);
   },
-  getAppResourceList(params) { 
+  getAppResourceList(params) {
     return axios.post('/api/rest/resourcecenter/app/resource/list', params);
   },
   getAppAssetTheadlist() {

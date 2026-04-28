@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Loading :loadingShow="isShowLoading" type="fix"></Loading>
     <TsContain>
       <template v-slot:topLeft>
         <div class="action-group">
@@ -38,6 +39,7 @@ export default {
   props: {},
   data() {
     return {
+      isShowLoading: false,
       keyword: '',
       currentEntityId: null,
       isEditShow: false,
@@ -64,9 +66,11 @@ export default {
   destroyed() {},
   methods: {
     rebuildAll() {
+      this.isShowLoading = true;
       this.$api.framework.databaseview
         .rebuildDatabaesView()
         .then(res => {
+          this.isShowLoading = false;
           if (res.Status === 'OK') {
             this.$Message.success('重建完毕');
             this.tbodyList = res.Return.tbodyList;
