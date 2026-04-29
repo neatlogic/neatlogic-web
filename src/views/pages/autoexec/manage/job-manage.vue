@@ -393,6 +393,14 @@ export default {
         window.open(HOME + '/inspect.html#/assets-inspection-manage?scheduleId=' + routeConfig.scheduleId + '&isShowInspectionScheduleDialog=true', '_blank');
       } else if (row.source == 'scheduleinspectapp') {
         window.open(HOME + '/inspect.html#/application-manage?scheduleId=' + routeConfig.scheduleId + '&isShowInspectionScheduleDialog=true', '_blank');
+      } else if (row.source == 'tagbaselineinspect') {
+        window.open(HOME + '/inspect.html#/baseline-manage?activeTab=tag', '_blank');
+      } else if (row.source == 'appbaselineinspect') {
+        window.open(HOME + '/inspect.html#/baseline-manage?activeTab=application', '_blank');
+      } else if (row.source == 'tagbaselinescheduleinspect') {
+        window.open(HOME + '/inspect.html#/baseline-manage?activeTab=tag&scheduleId=' + routeConfig.scheduleId + '&isShowBaselineScheduleDialog=true', '_blank');
+      } else if (row.source == 'appbaselinescheduleinspect') {
+        window.open(HOME + '/inspect.html#/baseline-manage?activeTab=application&scheduleId=' + routeConfig.scheduleId + '&isShowBaselineScheduleDialog=true', '_blank');
       } else if (row.source == 'deploy') {
         window.open(HOME + '/deploy.html#/application-config-pipeline-detail?appSystemId=' + routeConfig.appSystemId, '_blank');
       } else if (row.source == 'batchdeploy') {
