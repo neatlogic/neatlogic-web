@@ -61,7 +61,7 @@ export default {
     startResize(event) {
       this.isResizing = true;
       this.isSlider = false;
-      document.body.style.cursor = 'col-resize';
+      document.body.style.cursor = 'ew-resize';
       document.body.style.userSelect = 'none';
       document.addEventListener('mousemove', this.onResizing);
       document.addEventListener('mouseup', this.stopResize);

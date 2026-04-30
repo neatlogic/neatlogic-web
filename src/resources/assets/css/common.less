@@ -833,8 +833,31 @@ li {
     right: -4px;
     width: 8px;
     height: 100%;
-    cursor: col-resize;
     z-index: 4;
+
+    .resize-handle-icon {
+      position: absolute;
+      right: 1px;
+      width: 8px;
+      height: 60px;
+      line-height: normal;
+      text-align: center;
+      font-size: 14px;
+      cursor: ew-resize;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      .transform(translateY(-50%));
+
+      &:first-child {
+        top: 35%;
+      }
+
+      &:last-child {
+        top: 70%;
+      }
+    }
   }
 
   .toggle-btn-switch {
@@ -943,6 +966,13 @@ li {
       }
     }
   }
+
+  &:hover,
+  &.resizing {
+    .resize-handle-icon {
+      display: flex;
+    }
+  }
 }
 
 .menu-min {
@@ -961,6 +991,17 @@ li {
       }
     }
 
+    .menubar.slider:hover + .resize-handle,
+    &.resizing .resize-handle {
+      right: calc(-1 * var(--left-menu-width, 200px) - 8px);
+    }
+
+    &.resizing {
+      .menubar {
+        .transform(translateX(0));
+      }
+    }
+
     .toggle-btn {
       display: block;
     }
@@ -970,6 +1011,40 @@ li {
         &:before {
           content: '\e986';
           // tsfont-right 类名
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-height: 700px) {
+  .leftmenu {
+    .resize-handle {
+      .resize-handle-icon {
+        &:first-child {
+          top: calc(50% - 64px);
+        }
+
+        &:last-child {
+          top: calc(50% + 64px);
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-height: 480px) {
+  .leftmenu {
+    .resize-handle {
+      .resize-handle-icon {
+        &:first-child {
+          top: 64px;
+        }
+
+        &:last-child {
+          top: auto;
+          bottom: 64px;
+          .transform(translateY(50%));
         }
       }
     }
