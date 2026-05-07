@@ -130,6 +130,18 @@ let validtor = {
     trigger: 'change',
     message: $t('message.pleaseentertruetarget', { target: $t('page.ipaddress') })
   },
+  IPv4: {
+    validator: function(rule, value) {
+      if (!utils.isEmpty(value)) {
+        const IPv4 = /^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$/;
+        return IPv4.test(value);
+      } else {
+        return true;
+      }
+    },
+    trigger: 'change',
+    message: $t('message.pleaseentertruetarget', { target: 'IPv4' + $t('page.address') })
+  },
   domainOrIP: {
     validator: function(rule, value) {
       // 校验域名或者IP是否合法
