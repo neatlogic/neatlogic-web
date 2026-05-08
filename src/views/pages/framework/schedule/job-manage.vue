@@ -76,13 +76,13 @@
               <span class="text-grey">{{ $t('page.execcount') }}：</span>
               <span>{{ getJobStatus(row).execCount || '-' }}</span>
             </div>
-            <div v-if="getJobStatus(row).beginTime != null">
-              <span class="text-grey">{{ $t('term.autoexec.planstarttime') }}：</span>
-              <span>{{ getJobStatus(row).beginTime | formatDate }}</span>
+            <div v-if="row.jobStatus.beginTime != null">
+              <span class="text-grey">{{ $t('page.planstarttime') }}：</span>
+              <span>{{ row.jobStatus.beginTime | formatDate }}</span>
             </div>
-            <div v-if="getJobStatus(row).endTime != null">
-              <span class="text-grey">{{ $t('term.autoexec.planendtime') }}：</span>
-              <span>{{ getJobStatus(row).endTime | formatDate }}</span>
+            <div v-if="row.jobStatus.endTime != null">
+              <span class="text-grey">{{ $t('page.planendtime') }}：</span>
+              <span>{{ row.jobStatus.endTime | formatDate }}</span>
             </div>
             <div v-if="getJobStatus(row).lastFireTime != null">
               <span class="text-grey">{{ $t('term.autoexec.lastactivetime') }}：</span>

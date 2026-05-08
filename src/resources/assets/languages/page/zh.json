@@ -1125,5 +1125,7 @@
   "service": "服务",
   "servicename": "服务名称",
   "operator": "操作人",
-  "versionprefix": "版本前缀"
+  "versionprefix": "版本前缀",
+  "planstarttime": "计划开始时间",
+  "planendtime": "计划结束时间"
 }

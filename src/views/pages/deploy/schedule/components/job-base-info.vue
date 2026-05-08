@@ -78,14 +78,14 @@ export default {
         },
         beginTime: {
           type: 'datetime',
-          label: this.$t('term.autoexec.planstarttime'),
+          label: this.$t('page.planstarttime'),
           value: '',
           transfer: true,
           disabled: this.disabled
         },
         endTime: {
           type: 'datetime',
-          label: this.$t('term.autoexec.planendtime'),
+          label: this.$t('page.planendtime'),
           value: '',
           transfer: true,
           options: {
