@@ -1124,5 +1124,7 @@
   "servicename": "Service Name",
   "inheritedfrom": "Inherited from",
   "operator": "Operator",
-  "versionprefix": "Version prefix"
+  "versionprefix": "Version prefix",
+  "planstarttime": "Plan start time",
+  "planendtime": "plan end time"
 }

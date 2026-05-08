@@ -153,7 +153,7 @@ export default {
           value: '',
           defaultValue: '', //默认值
           transfer: true,
-          label: this.$t('term.autoexec.planstarttime') // 计划开始时间
+          label: this.$t('page.planstarttime')
         },
         endTime: {
           type: 'datetime',
@@ -161,7 +161,7 @@ export default {
           value: '',
           defaultValue: '', //默认值
           transfer: true,
-          label: this.$t('term.autoexec.planendtime'), // 计划结束时间
+          label: this.$t('page.planendtime'),
           options: {
             disabledDate(date) {
               if (_this.formSetting.beginTime.value) {
