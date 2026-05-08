@@ -155,7 +155,7 @@ export default {
           value: '',
           defaultValue: '', //默认值
           transfer: true,
-          label: _this.$t('term.autoexec.planstarttime') // 计划开始时间
+          label: _this.$t('page.planstarttime')
         },
         endTime: {
           type: 'datetime',
@@ -163,7 +163,7 @@ export default {
           value: '',
           defaultValue: '', //默认值
           transfer: true,
-          label: _this.$t('term.autoexec.planendtime') // 计划结束时间
+          label: _this.$t('page.planendtime')
         }
       }
     };
