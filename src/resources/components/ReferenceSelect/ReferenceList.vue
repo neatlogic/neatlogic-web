@@ -47,23 +47,16 @@ export default {
     return {
       dataList: [],
       currentPage: 1,
-      pageCount: 0
+      pageCount: 0,
+      currentRequestSeq: 0
     };
   },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
   mounted() {
     this.getDataList(1);
   },
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivaed() {},
-  beforeDestroy() {},
-  destroyed() {},
   methods: {
     getDataList(currentPage) {
+      const requestSeq = ++this.currentRequestSeq;
       this.currentPage = currentPage;
       let params = {
         pageSize: this.pageSize,
@@ -77,10 +70,13 @@ export default {
         this.$set(params, 'id', this.id);
       }
       this.$https.post('/api/rest/dependency/list', params).then(res => {
+        if (requestSeq !== this.currentRequestSeq) {
+          return;
+        }
         if (res.Status == 'OK') {
           this.pageCount = res.Return.pageCount;
           this.isReference = true;
-          let newList = res.Return.list;
+          let newList = res.Return.list || [];
           if (currentPage > 1) {
             this.dataList.push(...newList);
           } else {

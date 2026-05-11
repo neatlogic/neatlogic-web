@@ -259,7 +259,7 @@ export default {
         {
           name: 'versionPrefix',
           type: 'text',
-          label: this.$t('term.deploy.versionprefix'),
+          label: this.$t('page.versionprefix'),
           maxlength: 64,
           desc: this.$t('term.deploy.versionprefixdesc')
         },

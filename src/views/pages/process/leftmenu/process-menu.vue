@@ -1,5 +1,5 @@
 <template>
-  <div class="OverviewMenu menu_link">
+  <div class="menu_link">
     <ul v-if="$AuthUtils.hasRole('PROCESS_BASE')">
       <li class="link">
         <a href="javascript:void(0)" class="tsfont-plus text-primary" @click="openWorkOrderDialog">
@@ -27,7 +27,6 @@
               :class="{ active: $isMenuActive('/task-overview-' + childrenItem.uuid), editable: ditem.isCanEdit || 2 }"
             >
               <li class="overflow navlist-text">
-                <!--<router-link :to="{ path: `/task-overview-${childrenItem.uuid}` }" class="router-link tsfont-tickets">{{ childrenItem.name }}</router-link>-->
                 <a class="router-link tsfont-tickets" @click="clickWorkcenter(childrenItem.uuid)">{{ childrenItem.name }}</a>
                 <i class="item-icon handle tsfont-drag hide text-actiongit"></i>
                 <span class="navlist-action">
@@ -77,37 +76,27 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import draggable from 'vuedraggable';
-import LeftMenu from '@/views/components/leftmenu/leftmenu';
+import LeftMenuMixin from '@/views/components/leftmenu/leftmenu-mixin';
 
 export default {
-  name: 'OverviewMenu',
+  name: 'ProcessMenu',
   components: {
     draggable,
     EditWorkcenterDialog: () => import('./edit-workcenter-dialog.vue'),
     AuthDialog: () => import('./auth-dialog.vue'),
     WorkOrderDialog: () => import('./work-order-dialog')
-  }, // 工单中心左侧菜单
-  extends: LeftMenu,
+  },
+  mixins: [LeftMenuMixin],
   props: {},
   data() {
     return {
       loadingShow: true,
       isShowWorkOrderDialog: false,
-      showMode: 'table',
       workcenterList: null, //左侧列表
       editRenameDialog: false, //重命名弹框
       editAuthorizationDialog: false, //授权弹框
-      defaultName: '', //默认名称
-      defaultAuthList: [], //默认授权
-      defaultType: 'custom',
-      defaultSupport: null, // 默认使用范围
-      menuUuid: '', //弹框uuid
       currentWorkcenterUuid: '', //当前编辑的工单中心Uuid
-      uuid: '',
-      selectedUuid: null, //标志实际选中哪一个，用于做选中效果
-      menuCatalogList: [], // 编辑菜单类型列表
-      catalogId: null, // 编辑菜单类型id
-      catalogName: '' // 编辑菜单类型名称
+      selectedUuid: null //标志实际选中哪一个，用于做选中效果
     };
   },
   async created() {
@@ -145,7 +134,7 @@ export default {
         .workcenterMenuSort(data)
         .then(res => {
           if (res.Status == 'OK') {
-            //
+            this.$Message.success(this.$t('message.executesuccess'));
           }
         })
         .catch(error => {
@@ -209,24 +198,20 @@ export default {
       }
     },
     delName(name, uuid, index) {
-      let _this = this;
       this.$createDialog({
         type: 'modal',
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deletetargetconfirm', {target: name}),
         maskClose: true,
         btnType: 'error',
-        'on-ok': function(vnode) {
-          let data = {
-            uuid: uuid
-          };
-          this.$api.process.processtask.delMenu(data).then(res => {
+        'on-ok': (vnode) => {
+          this.$api.process.processtask.delMenu({ uuid: uuid }).then(res => {
             if (res.Status == 'OK') {
-              this.$delete(_this.workcenterList, index);
-              if (uuid === _this.$route.params.taskTypeid) {
-                _this.initData('first');
+              this.$delete(this.workcenterList, index);
+              if (uuid === this.$route.params.taskTypeid) {
+                this.initData('first');
               } else {
-                _this.initData(true);
+                this.initData(true);
               }
             }
           });
@@ -242,7 +227,6 @@ export default {
       if (action) {
         await this.getWorkCenterTypeMenu();
       }
-      // let workCenterMenuData = this.workCenterMenuData || {};
       let workcenterList = this.$store.state.leftMenu.workcenterList || [];
       if (workcenterList && workcenterList.length) {
         for (let i = 0; i < workcenterList.length; i++) {
@@ -310,35 +294,9 @@ export default {
 
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
-.OverviewMenu.menu_link {
-  padding-top: 8px;
-
-  .showMode {
-    position: absolute;
-    bottom: 30px;
-    left: 0px;
-    right: 0px;
-    text-align: center;
-    span {
-      display: inline-block;
-      width: 60%;
-      padding: 6px;
-      border-radius: 4px;
-      cursor: pointer;
-      color: @white;
-    }
-  }
-  .headline {
-    color: @default-icon;
-    height: 30px;
-    line-height: 30px;
-    font-size: 12px;
-  }
+.menu_link {
   .subtitle-padding {
-    // 二级标题
     padding-left: 18px !important;
-    padding-right: 30px;
-    cursor: pointer;
   }
   .navlist-ul {
     .navlist-li {
@@ -362,9 +320,6 @@ export default {
             opacity: 0;
           }
         }
-        // .btn-isdone{
-        //   right: 26px;
-        // }
       }
       &.editable:hover {
         .navlist-action {
@@ -421,8 +376,6 @@ export default {
         font-size: 10px;
       }
       .btn-isdone {
-        // position: absolute;
-        // right: 16px;
         font-size: 10px;
         padding: 0 4px;
         line-height: 16px;

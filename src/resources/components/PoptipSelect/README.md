@@ -61,6 +61,12 @@ export default {
 | change | 值改变时触发 | 当前选中的值 |
 | on-keydown | 键盘事件触发 | (event, value) |
 
+## 兼容说明
+
+- `on-keydown` 事件名称沿用历史实现，当前版本继续保留，不做删除。
+- 清空时仍只触发 `change`；本次仅清除非必填场景下的残留错误提示，不改变必填即时校验时机。
+- `list` 非数组和 `.type-select` DOM 未就绪时已补充保护，避免直接报错。
+
 ## Methods 方法
 
 | 方法名 | 说明 | 参数 |

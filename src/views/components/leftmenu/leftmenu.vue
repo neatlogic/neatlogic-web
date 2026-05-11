@@ -1,15 +1,15 @@
 <template>
-  <div class="leftmenu">
+  <div class="leftmenu" :class="{ resizing: isResizing }">
     <div :class="isSlider ? 'menubar slider' : 'menubar'">
       <div class="menu_content">
-        <slot :menuList="menulist"></slot>
-        <div v-if="menulist && Object.keys(menulist).length">
-          <div v-for="(menus, ind) in menulist" :key="ind" class="menu_link">
+        <slot :menuList="menuList"></slot>
+        <div v-if="menuList && Object.keys(menuList).length">
+          <div v-for="(menus, ind) in menuList" :key="ind" class="menu_link">
             <div v-if="menus.isFirst" :class="$isMenuActive(menus.url) ? 'active link' : 'link'">
               <router-link :to="menus.url ? menus.url : '/'" :class="menus.icon">{{ menus.name }}</router-link>
             </div>
             <div v-else>
-              <div v-if="menutype[ind]" class="title text-grey">{{ menutype[ind] }}</div>
+              <div v-if="menuCategoryType[ind]" class="title text-grey">{{ menuCategoryType[ind] }}</div>
               <ul v-if="menus && menus.length > 0">
                 <li
                   v-for="(menu, mindex) in menus"
@@ -18,16 +18,18 @@
                   @click="goTo(menu.url ? menu.url : '/')"
                   @contextmenu="newTab($event, menu, menu.url ? menu.url : '/')"
                 >
-                  <!-- <router-link :to="menu.url ? menu.url : '/'" :class="menu.icon">{{ menu.name }}</router-link> -->
                   <a class="cursor" :class="menu.icon">{{ menu.name }}</a>
                 </li>
               </ul>
             </div>
           </div>
         </div>
-        <!-- <div v-else class="text-center" style="line-height:4">暂无菜单</div> -->
       </div>
-      <div :class="setMenushow" @click="menuToggle()"></div>
+      <div :class="menuToggleButtonClass" @click="menuToggle()"></div>
+    </div>
+    <div class="resize-handle">
+      <span class="resize-handle-icon tsfont-drag" aria-hidden="true" @mousedown.prevent="startResize"></span>
+      <span class="resize-handle-icon tsfont-drag" aria-hidden="true" @mousedown.prevent="startResize"></span>
     </div>
   </div>
 </template>
@@ -35,28 +37,28 @@
 <script>
 import { mapMutations, mapState } from 'vuex';
 import * as Types from '@/resources/store/mutation-type';
+import LeftMenuMixin from './leftmenu-mixin';
+import LeftMenuResizeMixin from './leftmenu-resize-mixin';
+
 export default {
   name: 'LeftMenu',
-  components: {},
-  props: ['action'],
+  mixins: [LeftMenuMixin, LeftMenuResizeMixin],
   data() {
     return {
-      menushow: false, //菜单展开，默认展开还是收起与index的showmenu需同步
-      menu_key: true,
-      menulist: [],
-      menutype: null,
+      isMenuExpanded: false, //菜单是否展开
+      menuList: [],
+      menuCategoryType: null,
       isSlider: true
     };
   },
   beforecreated() {},
   created() {
     this.getMenuList();
-    let menu_storage = localStorage.getItem('menuActive');
-    if (menu_storage == 'show' || menu_storage == null) {
-      this.menushow = true;
+    const menuActive = localStorage.getItem('menuActive');
+    if (menuActive == 'show' || menuActive == null) {
+      this.isMenuExpanded = true;
     } else {
-      this.menushow = false;
-      this.menu_key = false;
+      this.isMenuExpanded = false;
       this.$store.commit(Types.UPDATE_MENU, 'show');
     }
   },
@@ -71,62 +73,24 @@ export default {
       }
     });
   },
-
   methods: {
-    canClick() {
-      let {isDisabled = false, disabledReason = ''} = this.currentModuleItem || {};
-      if (isDisabled) {
-        this.$Notice.error({
-          title: this.$t('page.licenseexception'),
-          desc: disabledReason
-        });
-        return false;
-      } else {
-        return true;
-      }
-    },
-    newTab(e, menu, path) {
-      //鼠标右键打开新标签页
-      if (!this.canClick()) {
-        return false;
-      }
-      let base = this.$router.options.base;
-      let replaceStr = `<a href="${base}#${path}" class="cursor ${menu.icon}">${menu.name}</a>`;
-      e.currentTarget.innerHTML = replaceStr;
-    },
-    goTo(path) {
-      //从左侧菜单点链接，激活清理历史标记
-      if (!this.canClick()) {
-        return false;
-      }
-      this.$route.meta.clearHistory = true;
-      this.$router.push({ path: path });
-    },
-    menuToggle: function() {
-      let _this = this;
-      if (this.menushow == true) {
-        this.menu_key = false;
-      } else {
-        this.menu_key = true;
-      }
+    menuToggle() {
       this.isSlider = false;
-      this.$emit('menushow', this.menushow); //向home父组件传值
       localStorage.setItem('menuActive', this.menuActive);
       this.onChangeMenu(this.menuActive);
-      setTimeout(function() {
-        _this.isSlider = true;
-        //手动触发窗口变化事件
-        window.dispatchEvent(new CustomEvent('resize'));
+      setTimeout(() => {
+        this.isSlider = true;
+        this.emitResizeEvent();
       }, 100);
     },
     ...mapMutations({
       onChangeMenu: Types.UPDATE_MENU // this.onChangeMenu()映射为 `this.$store.commit('UPDATE_MENU')`
     }),
     getMenuList() {
-      let menulist = MENULIST;
+      let menuList = MENULIST;
       let menugroup = null;
-      this.menulist = {};
-      this.menutype = MENUTYPE;
+      this.menuList = {};
+      this.menuCategoryType = MENUTYPE;
 
       this.$store.state.topMenu.gettingModuleList.then(res => {
         if (res && res.Status == 'OK') {
@@ -139,7 +103,7 @@ export default {
             }
           });
           let authList = userAuthList.filter(item => item && item.name).map(item => item.name);
-          menulist
+          menuList
             .filter(menu => menu.meta && menu.meta.ismenu && !menu.meta.istitle && ((authList && (typeof menu.meta.authority == 'string' ? authList.indexOf(menu.meta.authority) > -1 : this.$utils.checkHasSomeitem(authList, menu.meta.authority))) || !menu.meta.authority))
             .map(m => {
               if (m.meta.type) {
@@ -171,9 +135,9 @@ export default {
                 sortedMenuGroup[key] = menugroup[key];
               }
             }
-            this.menulist = sortedMenuGroup;
+            this.menuList = sortedMenuGroup;
           } else {
-            this.menulist = menugroup;
+            this.menuList = menugroup;
           }
         }
       });
@@ -181,42 +145,25 @@ export default {
   },
   computed: {
     ...mapState(['menuActive']),
-    setMenushow() {
+    menuToggleButtonClass() {
       let showclass = 'toggle-btn tsfont-bar';
-      if (this.menushow) {
+      if (this.isMenuExpanded) {
         showclass = 'toggle-btn tsfont-left';
       }
       return showclass;
-    },
-    getFinalmenu() {
-      return function(list) {
-        //需要过滤掉那种作为菜单但是是菜单二级分类的，比如工单中心和知识库的知识分类
-        let groupList = [];
-        if (list && list.length > 0) {
-          groupList = list.filter(l => {
-            return !l.istitle;
-          });
-        }
-        return groupList;
-      };
-    },
-    currentModuleItem() {
-      let moduleList = this.$store.state.topMenu.moduleList;
-      let findItem = moduleList.find(item => item.moduleId === MODULEID);
-      return findItem || {};
     }
   },
   watch: {
     menuActive: function() {
       if (this.menuActive === 'show') {
-        this.menushow = true;
+        this.isMenuExpanded = true;
       } else {
-        this.menushow = false;
+        this.isMenuExpanded = false;
       }
       localStorage.setItem('menuActive', this.menuActive);
     },
-    menushow: function() {
-      this.$emit('menushow', this.menushow);
+    isMenuExpanded: function() {
+      this.$emit('menuToggle', this.isMenuExpanded);
     }
   }
 };

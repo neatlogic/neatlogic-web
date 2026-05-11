@@ -116,22 +116,44 @@ export default {
     return {
       currentValue: [],
       validMesage: this.errorMessage || '',
-      nodeList: this.url ? [] : this.dataList,
-      currentValidList: this.filterValid(this.validateList) || []
+      nodeList: [],
+      currentValidList: this.filterValid(this.validateList) || [],
+      currentRequestSeq: 0,
+      setSelectTime: null
     };
   },
   created() {
+    this.nodeList = this.url ? [] : this.normalizeNodeList(this.dataList);
     this.currentValue = this.handleCurrentValue(this.value) || [];
     this.setSelectList();
     this.initDataListByUrl();
   },
   mounted() {},
   beforeDestroy() {
+    this.currentRequestSeq += 1;
+    this.setSelectTime && clearTimeout(this.setSelectTime);
+    this.setSelectTime = null;
     this.cancelAxios && this.cancelAxios.cancel();
+    this.cancelAxios = null;
   },
   methods: {
-    test() {
-      return false;
+    normalizeNodeList(nodeList) {
+      return Array.isArray(nodeList) ? this.$utils.deepClone(nodeList).slice(0, 500) : [];
+    },
+    getSelectedItems(valueList) {
+      let selectedList = [];
+      if (this.nodeList && this.nodeList.length && valueList && valueList.length) {
+        selectedList = this.nodeList.filter(n => {
+          return valueList.includes(n[this.valueName]);
+        });
+      }
+      return selectedList;
+    },
+    buildRequestOptions(params) {
+      let ajaxArr = { method: this.ajaxType, url: this.url, cancelToken: this.cancelAxios.token };
+      let needdataLi = ['post', 'put'];
+      needdataLi.indexOf(this.ajaxType) < 0 ? Object.assign(ajaxArr, { params: params }) : Object.assign(ajaxArr, { data: params });
+      return ajaxArr;
     },
     initDataListByUrl() {
       let _this = this;
@@ -139,38 +161,37 @@ export default {
         // 只读模式下不需要调接口获取数据
         return false;
       }
+      this.cancelAxios && this.cancelAxios.cancel();
+      this.cancelAxios = null;
       if (_this.url) {
         _this.nodeList = [];
         let params = { pageSize: 100 };
         typeof _this.params == 'object' && (params = Object.assign(params, _this.params));
-        _this.nodeList = [];
-        this.cancelAxios && this.cancelAxios.cancel();
+        const requestSeq = ++this.currentRequestSeq;
         this.cancelAxios = this.$https.CancelToken.source();
-        let ajaxArr = {method: _this.ajaxType, url: _this.url, cancelToken: this.cancelAxios.token };
-        let needdataLi = ['post', 'put'];
-        needdataLi.indexOf(_this.ajaxType) < 0 ? Object.assign(ajaxArr, {params: params}) : Object.assign(ajaxArr, {data: params});
+        let ajaxArr = this.buildRequestOptions(params);
         this.$https(ajaxArr).then(res => {
+          if (requestSeq !== this.currentRequestSeq) {
+            return;
+          }
           if (res && res.Status == 'OK') {
-            _this.nodeList = _this.rootName ? (res.Return?.[_this.rootName] || []) : res.Return;
-            _this.nodeList && _this.nodeList.length > 500 && (_this.nodeList.length = 500);
+            let nodeList = _this.rootName ? (res.Return?.[_this.rootName] || []) : res.Return;
             if (_this.dealDataByUrl && typeof _this.dealDataByUrl == 'function') {
-              _this.nodeList = _this.dealDataByUrl(_this.nodeList);
+              nodeList = _this.dealDataByUrl(nodeList);
             }
+            _this.nodeList = _this.normalizeNodeList(nodeList);
+            _this.handleDisabledNodeList();
             this.setSelectList();
           }
         });
-      } else if (_this.nodeList && _this.nodeList.length) {
-        this.handleEchoFailedDefaultValue();
-        // if (!_this.value.length) {
-        //   //如果没有值的
-        //   let selectedItem = _this.nodeList.filter(n => {
-        //     return n['isSelect'];
-        //   }); 
-        //   if (selectedItem.length) {
-        //     _this.currentValue = selectedItem.map(s => { return s[_this.valueName]; });
-        //     _this.onChangeValue();
-        //   } 
-        // }
+      } else {
+        this.currentRequestSeq += 1;
+        _this.nodeList = _this.normalizeNodeList(_this.dataList);
+        if (_this.nodeList && _this.nodeList.length) {
+          this.handleDisabledNodeList();
+          this.handleEchoFailedDefaultValue();
+        }
+        this.setSelectList();
       }
     },
     handleDisabledNodeList() {
@@ -202,14 +223,11 @@ export default {
       let isSame = JSON.stringify(this.value) == JSON.stringify(this.currentValue);
       let value = this.$utils.deepClone(this.currentValue);
       //20210129_zqp_新增支持on-change方法第二个参数获取选中的选项的完整数据
-      let selectedItem = [];
+      let selectedItem = this.getSelectedItems(value);
       let label = [];
-      if (this.nodeList && this.nodeList.length && value && value.length) {
-        selectedItem = this.nodeList.filter(n => {
-          if (value.includes(n[this.valueName])) {
-            label.push(n[this.textName]);
-            return true;
-          }
+      if (selectedItem.length > 0) {
+        selectedItem.forEach(n => {
+          label.push(n[this.textName]);
         });
         if (this.isCustomValue) {
           value = selectedItem;
@@ -281,7 +299,7 @@ export default {
     dataList: {
       handler(newValue) {
         if (!this.url) {
-          this.$set(this, 'nodeList', this.$utils.deepClone(newValue) || []);
+          this.$set(this, 'nodeList', this.normalizeNodeList(newValue));
           this.handleDisabledNodeList();
           this.setSelectList();
         }

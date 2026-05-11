@@ -151,7 +151,9 @@ export default {
         { value: '15', text: this.$t('page.lasthalfmonth'), timeUnit: 'day' },
         { value: '1', text: this.$t('page.lastmonth'), timeUnit: 'month' },
         { value: '6', text: this.$t('page.lastsixmonths'), timeUnit: 'month' },
-        { value: '1', text: this.$t('page.lastyear'), timeUnit: 'year' }
+        { value: '1', text: this.$t('page.lastyear'), timeUnit: 'year' },
+        { value: '2', text: this.$t('page.lasttwoyears'), timeUnit: 'year' },
+        { value: '3', text: this.$t('page.lastthreeyears'), timeUnit: 'year' }
       ],
       timeValue: null,
       showText: '',
@@ -164,15 +166,14 @@ export default {
   created() {
     this.initShowText();
   },
-  beforeMount() {},
   mounted() {
     const $el = this.$refs.dropdown ? this.$refs.dropdown.$el || null : null;
-    if ($el) {
-      $el.parentNode.style.maxHeight = 'initial';
-      $el.parentNode.style.overflow = 'initial';
+    const $parent = $el && $el.parentNode ? $el.parentNode : null;
+    if ($parent) {
+      $parent.style.maxHeight = 'initial';
+      $parent.style.overflow = 'initial';
     }
   },
-  beforeDestroy() {},
   methods: {
     getCustomTimeType(customTimeType) {
       // 修复CombineSearcher 组件，timeselect 组件内容显示问题
@@ -333,7 +334,7 @@ export default {
         this.isVisible = false;
         !this.datetimerange.selected && (this.showTimeRange = false);
         const $contain = this.$refs.dropdownContain ? this.$refs.dropdownContain.$el || null : null;
-        if ((!$contain && $contain === event.target) || $contain.contains(event.target)) {
+        if ($contain && ($contain === event.target || $contain.contains(event.target))) {
           return;
         }
       }
@@ -358,7 +359,7 @@ export default {
       // 验证时间范围必填
       let isValid = true;
       let currentValidList = this.filterValid(this.validateList) || [];
-      if ((!currentValue || JSON.stringify(currentValue, null, 2) == '{}') && !this.$utils.isEmpty(currentValidList) && (currentValidList instanceof Array) && currentValidList.find((item) => item.name == 'required')) {
+      if (this.$utils.isEmpty(currentValue) && !this.$utils.isEmpty(currentValidList) && (currentValidList instanceof Array) && currentValidList.find((item) => item.name == 'required')) {
         if (!currentValue || (!currentValue.timeRange && !currentValue.startTime)) {
           this.validMesage = '请选择时间范围';
           isValid = false;
@@ -387,7 +388,7 @@ export default {
   watch: {
     value: {
       handler(newValue, oldValue) {
-        if (JSON.stringify(newValue) != JSON.stringify(this.currentValue)) {
+        if (!this.$utils.isSame(newValue, this.currentValue)) {
           this.currentValue = this.value;
           this.timeList.forEach(item => {
             this.$set(item, 'selected', false);

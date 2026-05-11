@@ -32,7 +32,7 @@ importCustomConfig.forEach((filePath) => {
       imgModule = imgPath;
     }
     if (faviconIconPath) {
-      faviconPath = faviconIconPath; 
+      faviconPath = faviconIconPath;
     }
   }
 });
@@ -55,7 +55,7 @@ importCustomConfig.forEach((filePath) => {
       imgModule = imgPath;
     }
     if (faviconIconPath) {
-      faviconPath = faviconIconPath; 
+      faviconPath = faviconIconPath;
     }
   }
 });
@@ -190,7 +190,7 @@ export default defineConfig({
         }),
         new rspack.CopyRspackPlugin({
           patterns: [...copyRsPack, ...copyFavicon]
-        }) 
+        })
       ]
     }
   },
@@ -229,6 +229,13 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         pathRewrite: { [`^/${tenantName}/public/api/(.*)`]: '/neatlogic/public/api/$1' },
+        headers: { Tenant: tenantName }
+      },
+      [`/${tenantName}/mcp`]: {
+        target: urlPrefix,
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: { [`^/${tenantName}/mcp(.*)`]: '/neatlogic/api/mcp$1' },
         headers: { Tenant: tenantName }
       },
       [`/${tenantName}/api/`]: {
@@ -274,10 +281,10 @@ export default defineConfig({
       /**
        * 解决报错：You are using the runtime-only build of Vue where the template compiler is not available. Either pre-compile the templates into render functions, or use the compiler-included build.
        * vue/dist/vue.esm.js 表示完整版的vue文件，同时包含编辑器和运行时的版本
-       * 
+       *
        * 解决错误的原理：通过设置这个别名，让项目从引入 Runtime-only 版本转变为引入包含编译器的 vue.esm.js 文件。
        *                 这样，当代码中使用 template 选项定义模板字符串时，在运行时 Vue 就可以使用其自带的编译器将模板字符串编译成渲染函数，从而避免了因缺少编译器而产生的错误
-       *  */ 
+       *  */
       'vue$': 'vue/dist/vue.esm.js' // 将vue的模式改成运行时才编译，解决template动态编译模板的问题
     }
   }

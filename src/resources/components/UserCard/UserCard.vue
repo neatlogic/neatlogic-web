@@ -193,7 +193,12 @@ export default {
   },
   data() {
     return {
-      cancelAxios: null,
+      configCancelSource: null,
+      detailCancelSource: null,
+      configRequestSeq: 0,
+      detailRequestSeq: 0,
+      popperTimer: null,
+      currentListUuid: '',
       isshow: false,
       isLoading: false,
       userInfo: {},
@@ -216,10 +221,42 @@ export default {
     this.init();
   },
   beforeDestroy() {
-    this.cancelAxios && this.cancelAxios.cancel();
-    this.cancelAxios = null;
+    this.clearPopperTimer();
+    this.cancelConfigRequest();
+    this.cancelDetailRequest();
   },
   methods: {
+    clearPopperTimer() {
+      if (this.popperTimer) {
+        clearTimeout(this.popperTimer);
+        this.popperTimer = null;
+      }
+    },
+    scheduleUpdatePopper() {
+      this.clearPopperTimer();
+      this.popperTimer = setTimeout(() => {
+        this.popperTimer = null;
+        this.$refs.pop && this.$refs.pop.updatePopper && this.$refs.pop.updatePopper();
+      }, 200);
+    },
+    cancelConfigRequest() {
+      if (this.configCancelSource) {
+        this.configCancelSource.cancel();
+        this.configCancelSource = null;
+      }
+    },
+    cancelDetailRequest() {
+      if (this.detailCancelSource) {
+        this.detailCancelSource.cancel();
+        this.detailCancelSource = null;
+      }
+    },
+    normalizeUuid(uuid) {
+      if (!uuid) {
+        return uuid;
+      }
+      return uuid.includes('#') ? uuid.split('#')[1] : uuid;
+    },
     init() {
       if (this.initType == 'common') {
         this.config.name = this.common[this.uuid];
@@ -228,7 +265,8 @@ export default {
     initConfig() {
       //初始化 name 等信息，接口有缓存
       if (this.uuid && this.initType && this['init' + _.upperFirst(this.initType) + 'Config']) {
-        this.cancelAxios = this.$https.CancelToken.source();
+        this.cancelConfigRequest();
+        this.configCancelSource = this.$https.CancelToken.source();
         this['init' + _.upperFirst(this.initType) + 'Config']();
       } else if (!this.uuid) {
         this.userInfo = {};
@@ -237,12 +275,16 @@ export default {
     initUserConfig() {
       if (!this.name || this.vipLevel === undefined || !this.avatar || !this.pinyin) {
         if (this.isInterface) {
-          let uuid = this.uuid.includes('#') ? this.uuid.split('#')[1] : this.uuid;
+          const requestSeq = ++this.configRequestSeq;
+          let uuid = this.normalizeUuid(this.uuid);
           const params = { uuid };
           this.config.isLoading = true;
           return this.$https
-            .get('/api/rest/user/cache/get', { params: params, headers: { unConsole: 1 }, cancelToken: this.cancelAxios.token })
+            .get('/api/rest/user/cache/get', { params: params, headers: { unConsole: 1 }, cancelToken: this.configCancelSource.token })
             .then(res => {
+              if (requestSeq !== this.configRequestSeq || uuid !== this.normalizeUuid(this.uuid)) {
+                return;
+              }
               if (res && res.Return) {
                 this.config.name = res.Return.name;
                 this.config.vipLevel = res.Return.vipLevel || 0;
@@ -253,7 +295,9 @@ export default {
               }
             })
             .finally(() => {
-              this.config.isLoading = false;
+              if (requestSeq === this.configRequestSeq) {
+                this.config.isLoading = false;
+              }
             });
         } else {
           this.config.name = this.name;
@@ -267,42 +311,52 @@ export default {
     },
     initTeamConfig() {
       if (!this.name) {
-        let uuid = this.uuid.includes('#') ? this.uuid.split('#')[1] : this.uuid;
+        const requestSeq = ++this.configRequestSeq;
+        let uuid = this.normalizeUuid(this.uuid);
         const params = { uuid };
         this.config.isLoading = true;
         return this.$https
-          .get('/api/rest/team/cache/get', { params: params, headers: { unConsole: 1 }, cancelToken: this.cancelAxios.token })
+          .get('/api/rest/team/cache/get', { params: params, headers: { unConsole: 1 }, cancelToken: this.configCancelSource.token })
           .then(res => {
+            if (requestSeq !== this.configRequestSeq || uuid !== this.normalizeUuid(this.uuid)) {
+              return;
+            }
             this.config.name = res.Return.name;
           })
           .finally(() => {
-            this.config.isLoading = false;
+            if (requestSeq === this.configRequestSeq) {
+              this.config.isLoading = false;
+            }
           });
       }
     },
     initRoleConfig() {
       if (!this.name) {
-        let uuid = this.uuid.includes('#') ? this.uuid.split('#')[1] : this.uuid;
+        const requestSeq = ++this.configRequestSeq;
+        let uuid = this.normalizeUuid(this.uuid);
         const params = { uuid };
         this.config.isLoading = true;
         return this.$https
-          .get('/api/rest/role/cache/get', { params: params, headers: { unConsole: 1 }, cancelToken: this.cancelAxios.token })
+          .get('/api/rest/role/cache/get', { params: params, headers: { unConsole: 1 }, cancelToken: this.configCancelSource.token })
           .then(res => {
+            if (requestSeq !== this.configRequestSeq || uuid !== this.normalizeUuid(this.uuid)) {
+              return;
+            }
             this.config.name = res.Return.name;
           })
           .finally(() => {
-            this.config.isLoading = false;
+            if (requestSeq === this.configRequestSeq) {
+              this.config.isLoading = false;
+            }
           });
       }
     },
     getInfo() {
-      if ((this.isshow && this.initType != 'team' && this.initType != 'role') || !this.cancelAxios) {
+      if ((this.isshow && this.initType != 'team' && this.initType != 'role') || !this.uuid) {
         return;
       }
-      let cancel = this.cancelAxios;
-      cancel && (this.cancelAxios = null) && cancel.cancel();
-      const CancelToken = this.$https.CancelToken;
-      this.cancelAxios = CancelToken.source();
+      this.cancelDetailRequest();
+      this.detailCancelSource = this.$https.CancelToken.source();
 
       if (this.initType === 'user') {
         this.getUserInfo(this.uuid);
@@ -322,8 +376,8 @@ export default {
       if (!userUuid) {
         return;
       }
-      let _this = this;
-      userUuid = userUuid.includes('#') ? userUuid.split('#')[1] : userUuid;
+      const requestSeq = ++this.detailRequestSeq;
+      userUuid = this.normalizeUuid(userUuid);
       if (this.userInfo.uuid === userUuid) return;
       const params = { userUuid };
       this.isLoading = true;
@@ -331,69 +385,84 @@ export default {
         .get('/api/rest/user/get', {
           params: params,
           headers: { unConsole: 1 },
-          cancelToken: this.cancelAxios.token
+          cancelToken: this.detailCancelSource.token
         })
         .then(res => {
-          setTimeout(function() {
-            _this.$refs.pop && _this.$refs.pop.updatePopper();
-          }, 200);
+          this.scheduleUpdatePopper();
+          if (requestSeq !== this.detailRequestSeq) {
+            return;
+          }
           if (res.Status === 'OK') {
             this.userInfo = res.Return;
           }
         })
         .catch(error => {
-          this.userInfo = {};
+          if (requestSeq === this.detailRequestSeq) {
+            this.userInfo = {};
+          }
         })
         .finally(() => {
-          this.isLoading = false;
+          if (requestSeq === this.detailRequestSeq) {
+            this.isLoading = false;
+          }
         });
     },
     getTeamUserList(teamUuid) {
       if (!teamUuid) {
         return;
       }
-      let _this = this;
-      if (this.userList.length > 0) return;
+      const requestSeq = ++this.detailRequestSeq;
+      const currentUuid = this.normalizeUuid(teamUuid);
+      if (this.userList.length > 0 && this.currentListUuid === currentUuid) return;
       const params = { teamUuid };
+      this.currentListUuid = currentUuid;
       this.isLoading = true;
       return this.$https
-        .post('/api/rest/team/user/list', params, { headers: { unConsole: 1 }, cancelToken: this.cancelAxios.token })
+        .post('/api/rest/team/user/list', params, { headers: { unConsole: 1 }, cancelToken: this.detailCancelSource.token })
         .then(res => {
-          setTimeout(function() {
-            _this.$refs.pop && _this.$refs.pop.updatePopper();
-          }, 200);
+          this.scheduleUpdatePopper();
+          if (requestSeq !== this.detailRequestSeq || currentUuid !== this.currentListUuid) {
+            return;
+          }
           if (res.Status == 'OK') {
             this.userList = res.Return.teamUserList || [];
           }
         })
         .finally(() => {
-          this.isLoading = false;
+          if (requestSeq === this.detailRequestSeq) {
+            this.isLoading = false;
+          }
         });
     },
     getRoleUserList(roleUuid) {
       if (!roleUuid) {
         return;
       }
-      let _this = this;
-      if (this.userList.length > 0) return;
+      const requestSeq = ++this.detailRequestSeq;
+      const currentUuid = this.normalizeUuid(roleUuid);
+      if (this.userList.length > 0 && this.currentListUuid === currentUuid) return;
       const params = {
         keyword: '',
         needPage: false,
         roleUuid
       };
+      this.currentListUuid = currentUuid;
       this.isLoading = true;
       this.$https
-        .post('/api/rest/user/search/forselect', params, { headers: { unConsole: 1 }, cancelToken: this.cancelAxios.token })
+        .post('/api/rest/user/search/forselect', params, { headers: { unConsole: 1 }, cancelToken: this.detailCancelSource.token })
         .then(res => {
-          setTimeout(function() {
-            _this.$refs.pop && _this.$refs.pop.updatePopper();
-          }, 200);
+          this.scheduleUpdatePopper();
+          if (requestSeq !== this.detailRequestSeq || currentUuid !== this.currentListUuid) {
+            return;
+          }
           if (res.Status == 'OK') {
             this.userList = res.Return.tbodyList || [];
           }
         })
         .finally(() => {
-          this.isLoading = false;
+          if (requestSeq === this.detailRequestSeq) {
+            this.isLoading = false;
+          }
         });
     },
     onClickOutside(event) {
@@ -479,7 +548,14 @@ export default {
   },
   watch: {
     uuid: {
-      handler(val) {
+      handler() {
+        this.cancelDetailRequest();
+        this.clearPopperTimer();
+        this.userInfo = {};
+        this.userList = [];
+        this.currentListUuid = '';
+        this.multiple = this.initType === 'team' || this.initType === 'role';
+        this.isLoading = false;
         this.initConfig();
       },
       immediate: true

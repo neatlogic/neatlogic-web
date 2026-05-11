@@ -162,7 +162,7 @@ export default {
           {
             type: 'userselect',
             name: 'execUserList',
-            label: this.$t('term.autoexec.operator'),
+            label: this.$t('page.operator'),
             groupList: ['user'],
             transfer: true
           },
@@ -283,6 +283,14 @@ export default {
         window.open(HOME + '/inspect.html#/assets-inspection-manage?scheduleId=' + routeConfig.scheduleId + '&isShowInspectionScheduleDialog=true', '_blank');
       } else if (row.source == 'scheduleinspectapp') {
         window.open(HOME + '/inspect.html#/application-manage?scheduleId=' + routeConfig.scheduleId + '&isShowInspectionScheduleDialog=true', '_blank');
+      } else if (row.source == 'tagbaselineinspect') {
+        window.open(HOME + '/inspect.html#/baseline-manage?activeTab=tag', '_blank');
+      } else if (row.source == 'appbaselineinspect') {
+        window.open(HOME + '/inspect.html#/baseline-manage?activeTab=application', '_blank');
+      } else if (row.source == 'tagbaselinescheduleinspect') {
+        window.open(HOME + '/inspect.html#/baseline-manage?activeTab=tag&scheduleId=' + routeConfig.scheduleId + '&isShowBaselineScheduleDialog=true', '_blank');
+      } else if (row.source == 'appbaselinescheduleinspect') {
+        window.open(HOME + '/inspect.html#/baseline-manage?activeTab=application&scheduleId=' + routeConfig.scheduleId + '&isShowBaselineScheduleDialog=true', '_blank');
       }
     },
     goDetail(row) {
@@ -317,22 +325,3 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scoped>
-.job-manage {
-  height: 100%;
-
-  &.job-manage--embedded {
-    ::v-deep .tscontain-li {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    ::v-deep .tscontain-content {
-      flex: 1;
-      min-height: 0;
-      overflow: auto;
-    }
-  }
-}
-</style>

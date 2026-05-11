@@ -61,7 +61,7 @@ export default {
 | readonly | Boolean | false | 否 | 是否只读 | 是否为只读模式，只读模式下只显示已选条件，不允许修改 |
 | border | Boolean | true | 否 | 是否显示边框 | 是否显示组件边框，默认存在 |
 | showSearchNumber | Number | -1 | 否 | 只读模式下显示条件数量 | 只读模式下展示搜索条件的数量，默认值 -1 表示展示所有 |
-| searchMode | String | 'realtimeSearch' | 否 | 搜索模式 | 搜索模式可选：实时搜索(realtimeSearch)，非实时搜索(clickBtnSearch) |
+| searchMode | String | 'auto' | 否 | 搜索模式 | 搜索模式可选：实时搜索(auto)，点击按钮搜索(click) |
 | isShowAdvanceMode | Boolean | false | 否 | 是否显示高级模式 | 底部是否显示高级模式文案 |
 | searchText | String | '搜索' | 否 | 搜索按钮文本 | 搜索按钮的显示文本，默认值会根据语言环境自动获取 |
 

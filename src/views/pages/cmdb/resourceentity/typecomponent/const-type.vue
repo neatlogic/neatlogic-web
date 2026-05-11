@@ -96,7 +96,7 @@ export default {
         },
         {
           'value': '_typeName',
-          'text': this.$t('term.codehub.typename')
+          'text': this.$t('page.typename')
         },
         {
           'value': '_typeLabel',

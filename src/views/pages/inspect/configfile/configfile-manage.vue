@@ -92,7 +92,7 @@
             <template v-slot:action="{ row }">
               <div class="tstable-action">
                 <ul class="tstable-action-ul">
-                  <li class="tsfont-file-single" @click="openFileList(row)">{{ $t('term.inspect.filelist') }}</li>
+                  <li class="tsfont-file-single" @click="openFileList(row)">{{ $t('page.filelist') }}</li>
                   <li v-auth="'INSPECT_CONFIG_FILE_MODIFY'" class="tsfont-setting" @click="editFilePath(row)">{{ $t('term.inspect.pathconfig') }}</li>
                   <li v-auth="'INSPECT_CONFIG_FILE_MODIFY'" class="tsfont-trash-o" @click="clearFile(row)">{{ $t('term.inspect.clearfile') }}</li>
                 </ul>

@@ -2,13 +2,32 @@ const HistoryUtil = {};
 const Storage = sessionStorage.getItem('routeStorage') ? JSON.parse(sessionStorage.getItem('routeStorage')) : {};
 import { $t } from '@/resources/init.js';
 
+function normalizeBackPath(fullPath) {
+  if (!fullPath) {
+    return fullPath;
+  }
+  // 只移除回退标识，保留业务查询参数，避免 ?isBack=true&id=1 被处理成非法路径。
+  const hashIndex = fullPath.indexOf('#');
+  const hash = hashIndex > -1 ? fullPath.slice(hashIndex) : '';
+  const pathWithQuery = hashIndex > -1 ? fullPath.slice(0, hashIndex) : fullPath;
+  const queryIndex = pathWithQuery.indexOf('?');
+  if (queryIndex === -1) {
+    return fullPath;
+  }
+  const path = pathWithQuery.slice(0, queryIndex);
+  const query = pathWithQuery
+    .slice(queryIndex + 1)
+    .split('&')
+    .filter(item => item && item.split('=')[0] !== 'isBack')
+    .join('&');
+  return path + (query ? '?' + query : '') + hash;
+}
+
 HistoryUtil.install = function (Vue, options) {
   //判断当前页面是否需要active左侧菜单
   Vue.prototype.$isMenuActive = function (url) {
     //处理掉isBack的两种情况：?isBack=true|&isBack=true
-    let path = this.$route.fullPath;
-    path = path.replace('&isBack=true', '');
-    path = path.replace('?isBack=true', '');
+    let path = normalizeBackPath(this.$route.fullPath);
 
     if (url === path) {
       return true;
@@ -18,9 +37,7 @@ HistoryUtil.install = function (Vue, options) {
     if (fromPageList && fromPageList.length > 0) {
       for (let i = 0; i < fromPageList.length; i++) {
         const fromRoute = fromPageList[i];
-        let fpath = fromRoute.fullPath;
-        fpath = fpath.replace('&isBack=true', '');
-        fpath = fpath.replace('?isBack=true', '');
+        let fpath = normalizeBackPath(fromRoute.fullPath);
         if (url === fpath) {
           return true;
         }

@@ -54,7 +54,12 @@ export default {
   },
   mounted() {
     if (!this.size) {
-      this.avatarSize = +getComputedStyle(this.$parent && this.$parent.$refs.avatar && this.$parent.$refs.avatar.$el).width.slice(0, -2);
+      const avatarEl = this.$parent && this.$parent.$refs.avatar && this.$parent.$refs.avatar.$el;
+      if (avatarEl) {
+        this.avatarSize = +getComputedStyle(avatarEl).width.slice(0, -2);
+      } else {
+        this.avatarSize = 32;
+      }
     } else if (isNaN(this.size)) {
       this.avatarSize = { large: 40, defautl: 32, small: 24 }[this.size];
     } else {

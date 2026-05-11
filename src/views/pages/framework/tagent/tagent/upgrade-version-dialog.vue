@@ -37,7 +37,7 @@ export default {
       versionUpdateConfig: {
         pkgVersion: {
           type: 'select',
-          label: this.$t('term.framework.pkgversion'),
+          label: this.$t('page.versionnumber'),
           validateList: ['required'],
           url: 'api/rest/tagent/pkg/list',
           rootName: 'tbodyList',

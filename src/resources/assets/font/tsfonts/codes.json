@@ -3592,5 +3592,11 @@
     "css": "tsfont-data-transformation",
     "hexCodepoint": "0xea58",
     "codepoint": 59992
+  },
+  {
+    "name": "unlink",
+    "css": "tsfont-unlink",
+    "hexCodepoint": "0xea59",
+    "codepoint": 59993
   }
 ]
