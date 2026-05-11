@@ -97,7 +97,9 @@ function transformExecuteTarget(tableEl) {
   }
 
   const appendContent = tableEl.querySelector('[data-type="form-resources"]');
-  appendContent.textContent = resultContent;
+  if (appendContent) {
+    appendContent.textContent = resultContent;
+  }
 }
 
 // 折叠面板组件
