@@ -747,8 +747,6 @@
     "toolnamedescription": "Tool name, description",
     "customtool": "Custom Tool",
     "timingplan": "Schedule",
-    "planstarttime": "Plan start time",
-    "planendtime": "plan end time",
     "executetargettips": "Only support selecting assets containing the test tag as execution targets",
     "selectcombinationtool": "Select Combination Tool",
     "job": "job",

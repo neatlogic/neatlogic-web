@@ -197,7 +197,7 @@ export default {
           defaultValue: '', //默认值
           transfer: true,
           width: '100%',
-          label: this.$t('term.autoexec.planstarttime')
+          label: this.$t('page.planstarttime')
         },
         endTime: {
           type: 'datetime',
@@ -205,7 +205,7 @@ export default {
           defaultValue: '', //默认值
           transfer: true,
           width: '100%',
-          label: this.$t('term.autoexec.planendtime')
+          label: this.$t('page.planendtime')
         },
         propList: {
           type: 'slot',

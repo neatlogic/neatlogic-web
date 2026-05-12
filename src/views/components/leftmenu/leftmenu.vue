@@ -27,7 +27,10 @@
       </div>
       <div :class="menuToggleButtonClass" @click="menuToggle()"></div>
     </div>
-    <div v-if="isMenuExpanded" class="resize-handle" @mousedown.prevent="startResize"></div>
+    <div class="resize-handle">
+      <span class="resize-handle-icon tsfont-drag" aria-hidden="true" @mousedown.prevent="startResize"></span>
+      <span class="resize-handle-icon tsfont-drag" aria-hidden="true" @mousedown.prevent="startResize"></span>
+    </div>
   </div>
 </template>
 

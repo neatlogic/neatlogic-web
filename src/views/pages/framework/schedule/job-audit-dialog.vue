@@ -31,6 +31,15 @@
                 <span v-else>-</span>
               </div>
             </template>
+            <template slot="jobGroupName" slot-scope="{ row }">
+              <span>{{ row.jobGroupName || '-' }}</span>
+            </template>
+            <template slot="jobHandlerName" slot-scope="{ row }">
+              <span>{{ row.jobHandlerName || row.jobHandler || '-' }}</span>
+            </template>
+            <template slot="moduleName" slot-scope="{ row }">
+              <span>{{ row.moduleName || row.moduleId || '-' }}</span>
+            </template>
             <template slot="startTime" slot-scope="{ row }">
               <span v-if="row.startTime">{{ row.startTime | formatDate }}</span>
               <span v-else>-</span>
@@ -101,6 +110,19 @@ export default {
       theadList: [
         //日志table
         {
+          title: this.$t('page.jobgroupname'),
+          key: 'jobGroupName',
+          maxLength: 60
+        },
+        {
+          title: this.$t('term.autoexec.jobmodule'),
+          key: 'jobHandlerName'
+        },
+        {
+          title: this.$t('term.framework.belongmodule'),
+          key: 'moduleName'
+        },
+        {
           title: this.$t('page.status'),
           key: 'status'
         },
@@ -111,10 +133,6 @@ export default {
         {
           title: this.$t('page.endtime'),
           key: 'endTime'
-        },
-        {
-          title: 'cron',
-          key: 'cron'
         },
         {
           title: this.$t('page.nextfiretime'),
