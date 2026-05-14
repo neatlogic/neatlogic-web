@@ -3,7 +3,8 @@ export const WidgetBase = {
   props: {
     presetData: { type: Object }, //预设数据，用于替换内置变量
     widgetComponent: { type: Object }, //组件配置
-    widget: { type: Object } //组件数据
+    widget: { type: Object }, //组件数据
+    height: { type: Number, default: 0 } //组件高度
   },
   data() {
     return {
