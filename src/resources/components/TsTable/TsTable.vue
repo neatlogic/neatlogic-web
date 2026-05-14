@@ -648,6 +648,11 @@ export default {
     if (!this.height) {
       window.removeEventListener('resize', this.initTable);
     }
+    if (this.resizeTimer) {
+      clearTimeout(this.resizeTimer);
+      this.resizeTimer = null;
+    }
+    this.unActiveAutoScroll();
   },
   updated() {
     if (!this.height) {
@@ -764,40 +769,51 @@ export default {
       }
     },
     activeAutoScroll: function() {
-      //激活自动滚动
-      if (this.$refs['tablemain']) {
-        let scrollHeight = this.$refs['tablemain'].scrollHeight;
-        let offsetHeight = this.$refs['tablemain'].offsetHeight;
-        if (this.scrollTimmer) {
-          clearInterval(this.scrollTimmer);
-          this.scrollTimmer = null;
+      const getTableMain = () => {
+        const tableMain = this.$refs && this.$refs['tablemain'];
+        if (!tableMain) {
+          this.unActiveAutoScroll();
         }
-        if (scrollHeight > offsetHeight) {
-          this.scrollTimmer = setInterval(() => {
-            let scrollHeight = this.$refs['tablemain'].scrollHeight;
-            let offsetHeight = this.$refs['tablemain'].offsetHeight;
-            let scrollTop = this.$refs['tablemain'].scrollTop;
-            if (scrollHeight <= offsetHeight) {
-              clearInterval(this.scrollTimmer);
-              this.scrollTimmer = null;
-              return;
-            }
-            let i = 0;
-            const that = this;
-            requestAnimationFrame(function fn() {
-              that.$refs['tablemain'].scrollTop += 1;
-              if (scrollTop == that.$refs['tablemain'].scrollTop) {
-                that.$refs['tablemain'].scrollTop = 0; //如果滚到底自动回到最上面重新滚动
-              } else {
-                i += 1;
-              }
-              if (i <= 35) {
-                requestAnimationFrame(fn);
-              }
-            });
-          }, 3000);
-        }
+        return tableMain;
+      };
+      const hasOverflow = tableMain => tableMain.scrollHeight > tableMain.offsetHeight;
+      const tableMain = getTableMain();
+      if (!tableMain) {
+        return;
       }
+      // 激活自动滚动
+      this.unActiveAutoScroll();
+      if (!hasOverflow(tableMain)) {
+        return;
+      }
+      this.scrollTimmer = setInterval(() => {
+        const tableMain = getTableMain();
+        if (!tableMain) {
+          return;
+        }
+        if (!hasOverflow(tableMain)) {
+          this.unActiveAutoScroll();
+          return;
+        }
+        const scrollTop = tableMain.scrollTop;
+        let i = 0;
+        const scrollFrame = () => {
+          const tableMain = getTableMain();
+          if (!tableMain) {
+            return;
+          }
+          tableMain.scrollTop += 1;
+          if (scrollTop == tableMain.scrollTop) {
+            tableMain.scrollTop = 0; //如果滚到底自动回到最上面重新滚动
+          } else {
+            i += 1;
+          }
+          if (i <= 35) {
+            requestAnimationFrame(scrollFrame);
+          }
+        };
+        requestAnimationFrame(scrollFrame);
+      }, 3000);
     },
     selectOne: function(item, index) {
       if (this.disabled) {
