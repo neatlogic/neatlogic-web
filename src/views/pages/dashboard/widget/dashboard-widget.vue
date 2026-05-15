@@ -11,24 +11,24 @@
         </div>
       </div>
     </div>
-    <div ref="container" style="width: 100%; height: 100%">
-      <component
-        :is="widgetComponent.type + 'widget'"
-        v-if="isReady"
-        ref="chart"
-        :width="width - widget.padding * 2"
-        :height="height - widget.padding * 2"
-        :widgetComponent="widgetComponent"
-        :widget="widget"
-        :presetData="presetData"
-        :style="{
-          overflow: 'auto',
-          padding: widget.padding + 'px',
-          width: width + 'px',
-          height: height + 'px'
-        }"
-        @changeComponent="changeComponent"
-      ></component>
+    <div ref="container" class="dashboard-widget-container">
+      <div class="dashboard-widget-content" :style="componentStyle">
+        <component
+          :is="widgetComponent.type + 'widget'"
+          v-if="isReady"
+          ref="chart"
+          :width="contentWidth"
+          :height="contentHeight"
+          :widgetComponent="widgetComponent"
+          :widget="widget"
+          :presetData="presetData"
+          :style="{
+            width: '100%',
+            height: '100%'
+          }"
+          @changeComponent="changeComponent"
+        ></component>
+      </div>
       <Loading
         v-if="isLoading"
         :loading-show="isLoading"
@@ -69,6 +69,10 @@ export default {
       clearInterval(this.timeInterval);
       this.timeInterval = null;
     }
+    if (this.resizeTimmer) {
+      clearTimeout(this.resizeTimmer);
+      this.resizeTimmer = null;
+    }
   },
   mounted() {
     this.resizeWidget();
@@ -92,20 +96,45 @@ export default {
       });
     },
     changeComponent() {},
-    resizeWidget() {
+    resizeWidget(option = {}) {
+      const { keepReady = false, delay = 500 } = option;
       if (this.resizeTimmer) {
         clearTimeout(this.resizeTimmer);
         this.resizeTimmer = null;
       }
-      this.isReady = false;
-      this.resizeTimmer = setTimeout(() => {
+      if (!keepReady) {
+        this.isReady = false;
+      }
+      const resize = () => {
         const container = this.$refs.container;
         if (container) {
           this.width = container.clientWidth;
           this.height = container.clientHeight;
           this.isReady = true;
         }
-      }, 500);
+      };
+      if (delay > 0) {
+        this.resizeTimmer = setTimeout(resize, delay);
+      } else {
+        this.$nextTick(resize);
+      }
+    }
+  },
+  computed: {
+    contentWidth() {
+      return Math.max(this.width - (this.widget?.padding || 0) * 2, 0);
+    },
+    contentHeight() {
+      return Math.max(this.height - (this.widget?.padding || 0) * 2, 0);
+    },
+    componentStyle() {
+      return {
+        overflow: 'auto',
+        'box-sizing': 'border-box',
+        padding: (this.widget?.padding || 0) + 'px',
+        width: this.width ? this.width + 'px' : '100%',
+        height: this.height ? this.height + 'px' : '100%'
+      };
     }
   },
   watch: {
@@ -113,8 +142,6 @@ export default {
       handler: function(val) {
         if (!val) {
           this.resizeWidget();
-        } else {
-          this.isReady = false;
         }
       }
     }
@@ -162,5 +189,13 @@ export default {
 }
 .dashboard-li.selected {
   background-color: rgba(45, 132, 251, 0.2) !important;
+}
+.dashboard-widget-container {
+  width: 100%;
+  height: 100%;
+}
+.dashboard-widget-content {
+  width: 100%;
+  height: 100%;
 }
 </style>

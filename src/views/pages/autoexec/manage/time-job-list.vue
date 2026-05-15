@@ -313,7 +313,11 @@ export default {
         .toggleAction({ id: row.id })
         .then(res => {
           if (res.Status == 'OK') {
+            row.jobStatus = res.Return.jobStatus;
             row.isActive = res.Return.isActive;
+            row.lcd = res.Return.lcd;
+            row.lcu = res.Return.lcu;
+            row.lcuVo = res.Return.lcuVo;
             this.$Message.success(this.$t('message.executesuccess'));
           }
         })

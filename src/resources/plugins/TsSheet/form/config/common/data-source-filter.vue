@@ -179,7 +179,7 @@ export default {
         if (value && value.length > 0) {
           if (type == 'select') {
             value.forEach(s => {
-              valueList.push(s.uuid);
+              !this.$utils.isEmpty(s.value) && valueList.push(s.value);
             });
           } else {
             valueList = value;

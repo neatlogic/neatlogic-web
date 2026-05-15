@@ -203,6 +203,8 @@ export default {
       isLoading: false,
       isWindowReszing: false,
       resizeStatus: {},
+      // 按 widget 记录 resize 节流计时器，避免拖拽过程中每个 mousemove 都刷新表格尺寸。
+      resizeThrottleTimer: {},
       copedWidget: null, //复制的组件
       mode: 'edit',
       dashboardNameValidateList: [
@@ -214,6 +216,11 @@ export default {
   beforeCreate() {},
   beforeDestroy() {
     window.removeEventListener('resize', this.resizeWindow);
+    // 组件销毁前清掉未执行的节流任务，避免异步回调继续访问已销毁的 ref。
+    Object.keys(this.resizeThrottleTimer).forEach(uuid => {
+      clearTimeout(this.resizeThrottleTimer[uuid]);
+    });
+    this.resizeThrottleTimer = {};
     if (screenfull.isEnabled) {
       screenfull.off('change', this.screenfullChange);
     }
@@ -378,11 +385,45 @@ export default {
       }
     },
     resizeStart(uuid) {
-      this.$set(this.resizeStatus, uuid, true);
-      this.addHistory(true);
+      if (!this.resizeStatus[uuid]) {
+        this.$set(this.resizeStatus, uuid, true);
+        // 一次拖拽只记录一次历史，避免连续 resize 事件把撤销栈刷满。
+        this.addHistory(true);
+      }
+      // 拖拽中只做轻量尺寸测量，让内部表格跟随变化但不重建 widget。
+      this.throttleResizeWidget(uuid);
     },
     resizeEnd(uuid) {
+      // 松手后取消待执行的节流任务，并做一次完整尺寸确认。
+      this.clearResizeThrottleTimer(uuid);
       this.$set(this.resizeStatus, uuid, false);
+      this.resizeDashboardWidget(uuid);
+    },
+    throttleResizeWidget(uuid) {
+      if (this.resizeThrottleTimer[uuid]) {
+        return;
+      }
+      const timer = setTimeout(() => {
+        // 轻量刷新只同步真实像素尺寸，不切换 isReady，避免拖拽中销毁/重建组件。
+        this.resizeDashboardWidget(uuid, { keepReady: true, delay: 0 });
+        this.$delete(this.resizeThrottleTimer, uuid);
+      }, 120);
+      this.$set(this.resizeThrottleTimer, uuid, timer);
+    },
+    clearResizeThrottleTimer(uuid) {
+      if (this.resizeThrottleTimer[uuid]) {
+        clearTimeout(this.resizeThrottleTimer[uuid]);
+        this.$delete(this.resizeThrottleTimer, uuid);
+      }
+    },
+    resizeDashboardWidget(uuid, option = {}) {
+      this.$nextTick(() => {
+        const widgetRef = this.$refs['widget' + uuid];
+        const widget = Array.isArray(widgetRef) ? widgetRef[0] : widgetRef;
+        if (widget && widget.resizeWidget) {
+          widget.resizeWidget(option);
+        }
+      });
     },
     toDashboardManage() {
       this.$router.push({
