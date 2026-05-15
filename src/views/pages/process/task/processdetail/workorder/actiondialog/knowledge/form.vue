@@ -12,7 +12,7 @@
   </div>
 </template>
 <script>
-import { createEditorFromDom } from '@/views/pages/process/task/processdetail/workorder/actiondialog/knowledge-utils/index.js';
+import { createEditorFromDom } from '@/views/pages/process/task/processdetail/workorder/actiondialog/knowledgeutils/index.js';
 export default {
   name: '',
   components: {

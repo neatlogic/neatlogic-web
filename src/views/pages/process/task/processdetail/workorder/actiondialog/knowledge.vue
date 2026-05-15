@@ -319,32 +319,30 @@ export default {
       this.isDragrerender = true;
     },
     saveDraftDocument() {
-      // if (!this.$refs.form.valid()) {
-      //   return;
-      // }
+      if (!this.$refs.form.valid()) {
+        return;
+      }
       let data = this.saveData();
       let obj = this.$refs.form.getFormValue();
       Object.assign(data, obj);
-      console.log('最后存储的值', data);
-      
-      // this.$api.process.processtask.saveDraftDocument(data).then(res => {
-      //   if (res.Status == 'OK') {
-      //     this.$Message.success(this.$t('message.executesuccess'));
-      //     this.getKnowledgeAudit();
-      //     let config = res.Return;
-      //     _this.knowledgeDocumentId = config.knowledgeDocumentId;
-      //     _this.knowledgeDocumentVersionId = config.knowledgeDocumentVersionId;
-      //     let isReviewable = config.isReviewable;
-      //     if (isReviewable == 1) {
-      //       _this.userType = 'review';
-      //     } else {
-      //       _this.userType = 'submit';
-      //     }
-      //     _this.isReviewShow = true;
-      //     _this.$parent.getKnowledgeDetail();
-      //     _this.$emit('update:isShow', false);
-      //   }
-      // });
+      this.$api.process.processtask.saveDraftDocument(data).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.executesuccess'));
+          this.getKnowledgeAudit();
+          let config = res.Return;
+          this.knowledgeDocumentId = config.knowledgeDocumentId;
+          this.knowledgeDocumentVersionId = config.knowledgeDocumentVersionId;
+          let isReviewable = config.isReviewable;
+          if (isReviewable == 1) {
+            this.userType = 'review';
+          } else {
+            this.userType = 'submit';
+          }
+          this.isReviewShow = true;
+          this.$parent.getKnowledgeDetail();
+          this.$emit('update:isShow', false);
+        }
+      });
     },
     getKnowledgeAudit() {
       //知识活动

@@ -1,16 +1,16 @@
 import axios from '../../http';
 
 const circle = {
-  search(params) {
+  searchCircle(params) {
     return axios.post('/api/rest/knowledge/circle/search', params);
   },
-  get(params) {
+  getCircle(params) {
     return axios.post('/api/rest/knowledge/circle/get', params);
   },
-  save(params) {
+  saveCircle(params) {
     return axios.post('/api/rest/knowledge/circle/save', params);
   },
-  delete(params) {
+  deleteCircle(params) {
     return axios.post('/api/rest/knowledge/circle/delete', params);
   }
 };

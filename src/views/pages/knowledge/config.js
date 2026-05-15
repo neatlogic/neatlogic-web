@@ -3,6 +3,6 @@ export const config = {
   module: 'knowledge',
   menuType: {  
     overview: $t('router.knowledge.knowledgetypemanage'),
-    others: $t('page.others') 
+    others: $t('router.knowledge.knowledgemanagement')
   }
 };

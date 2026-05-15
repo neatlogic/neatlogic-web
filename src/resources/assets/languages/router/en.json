@@ -184,7 +184,8 @@
     "templateedit": "Edit template",
     "reviewdetail": "Review Details",
     "knowledgetypemanage": "Knowledge Type",
-    "knowledgesearch": "Knowledge Search"
+    "knowledgesearch": "Knowledge Search",
+    "knowledgemanagement": "Knowledge Management"
   },
   "report": {
     "reportmanage": "Report Management",

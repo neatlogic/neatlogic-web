@@ -184,7 +184,8 @@
     "templateedit": "编辑模版",
     "reviewdetail": "审批详情",
     "knowledgetypemanage": "知识分类",
-    "knowledgesearch": "知识搜索"
+    "knowledgesearch": "知识搜索",
+    "knowledgemanagement": "知识库管理"
   },
   "report": {
     "reportmanage": "报表管理",

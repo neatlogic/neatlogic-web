@@ -1,15 +1,15 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
 const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
-const knowledgeDetail = () => import('./detail/knowledge-detail.vue');
-const knowledgeEdit = () => import('./edit/knowledge-edit.vue');
-const circleManage = () => import('./manage/circle-manage.vue');
-const circleEdit = () => import('./manage/circle-edit.vue');
-const templateManage = () => import('./manage/template-manage.vue');
-const templateEdit = () => import('./manage/template-edit.vue');
-const reviewDetail = () => import('./overview/review-detail.vue');
-const KnowledgeOverview = () => import('./overview/knowledge-overview.vue');
-const KnowledgeSearch = () => import('./overview/knowledge-search.vue');
+const knowledgeDetail = () => import('./category/category/knowledge-detail.vue');
+const knowledgeEdit = () => import('./category/category/knowledge-edit.vue');
+const circleManage = () => import('./circle/circle-manage.vue');
+const circleEdit = () => import('./circle/circle-edit.vue');
+const templateManage = () => import('./template/template-manage.vue');
+const templateEdit = () => import('./template/template-edit.vue');
+const reviewDetail = () => import('./category/review/review-detail.vue');
+const KnowledgeOverview = () => import('./category/category/knowledge-overview.vue');
+const KnowledgeSearch = () => import('./category/category/knowledge-search.vue');
 import {$t} from '@/resources/init.js';
 
 export default [
@@ -138,7 +138,6 @@ export default [
     props: true,
     component: KnowledgeOverview,
     meta: {
-      // title: '\u200E',
       title: $t('router.knowledge.knowledgetypemanage'),
       ismenu: false,
       icon: 'tsfont-label',
