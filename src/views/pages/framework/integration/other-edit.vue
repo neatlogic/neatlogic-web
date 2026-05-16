@@ -24,6 +24,24 @@ export default {
           width: '100%',
           value: ''
         },
+        rateLimitIntervalSeconds: {
+          label: '调用时间间隔(秒)',
+          type: 'number',
+          min: 0,
+          width: '100%',
+          value: '',
+          validateList: ['integer_natural'],
+          desc: '和调用次数同时配置后生效，0或为空表示不启用'
+        },
+        rateLimitCount: {
+          label: '调用次数',
+          type: 'number',
+          min: 0,
+          width: '100%',
+          value: '',
+          validateList: ['integer_natural'],
+          desc: '在调用时间间隔内允许调用的最大次数'
+        },
         charset: {
           label: '字符编码',
           type: 'select',

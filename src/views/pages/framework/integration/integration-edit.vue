@@ -264,7 +264,7 @@ export default {
     },
     saveIntegration: function() {
       let form = this.$refs['integrationForm'];
-      if (form.valid()) {
+      if (form.valid() && this.validRateLimitConfig()) {
         this.isSaving = true;
         this.$api.framework.integration
           .saveIntegration(this.integrationData)
@@ -278,6 +278,39 @@ export default {
             this.isSaving = false;
           });
       }
+    },
+    validRateLimitConfig: function() {
+      let otherConfig = (this.integrationData.config && this.integrationData.config.other) || {};
+      let interval = otherConfig.rateLimitIntervalSeconds;
+      let count = otherConfig.rateLimitCount;
+      if (!this.isNaturalNumber(interval) || !this.isNaturalNumber(count)) {
+        this.$Message.warning('调用时间间隔和调用次数必须为非负整数');
+        return false;
+      }
+      let hasInterval = this.isPositiveNumber(interval);
+      let hasCount = this.isPositiveNumber(count);
+      if (hasInterval !== hasCount) {
+        this.$Message.warning('启用调用时间控制时，调用时间间隔和调用次数必须同时填写正整数');
+        return false;
+      }
+      return true;
+    },
+    isEmptyRateLimitValue: function(value) {
+      return value === null || value === undefined || value === '';
+    },
+    isNaturalNumber: function(value) {
+      if (this.isEmptyRateLimitValue(value)) {
+        return true;
+      }
+      let numberValue = Number(value);
+      return Number.isInteger(numberValue) && numberValue >= 0;
+    },
+    isPositiveNumber: function(value) {
+      if (this.isEmptyRateLimitValue(value)) {
+        return false;
+      }
+      let numberValue = Number(value);
+      return Number.isInteger(numberValue) && numberValue > 0;
     },
     isReset() {
       this.integrationData = { config: {} };
