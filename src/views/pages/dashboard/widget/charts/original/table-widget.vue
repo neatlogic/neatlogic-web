@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="dashboard-table-widget">
     <TsTable
       ref="table"
       :isAutoScroll="widget.config && widget.config.autoscroll ? true : false"
       :fixedHeader="widget.config && widget.config.autoscroll ? true : false"
       :theadList="theadList"
       v-bind="tableData"
-      :height="widget.height - 2"
+      :height="tableHeight"
     ></TsTable>
   </div>
 </template>
@@ -52,6 +52,9 @@ export default {
       }
       return [];
     },
+    tableHeight() {
+      return this.height > 200 ? Math.max(this.height - 22, 0) : 200;
+    },
     style() {
       const style = {};
       if (this.widget.config) {
@@ -65,4 +68,8 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.dashboard-table-widget {
+  height: 100%;
+}
+</style>
