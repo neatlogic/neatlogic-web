@@ -1,6 +1,7 @@
 import commonApi from '@/resources/api/common';
 import commonStore from '@/resources/store/index.js';
 import { getRouterConfig, geRouterMenuTypeList } from '@/resources/import/router-config.js';
+import { $t } from '@/resources/init.js';
 
 const state = {
   moduleList: [], //所有的模块及其描述、菜单、默认页等
@@ -128,7 +129,7 @@ const actions = {
     }));
     const newMenuGroup = [
       {
-        menuTypeName: '工单中心',
+        menuTypeName: $t('term.process.workordercenter'),
         menuList: processType
       }
     ];
@@ -152,7 +153,7 @@ const actions = {
     }));
     const newMenuGroup = [
       {
-        menuTypeName: '知识分类',
+        menuTypeName: $t('term.knowledge.knowtype'),
         menuList: knowledgeType
       }
     ];
@@ -178,7 +179,7 @@ const actions = {
     }));
     const newMenuGroup = [
       {
-        menuTypeName: '仪表板列表',
+        menuTypeName: $t('router.dashboard.dashboardlist'),
         menuList: topVisit
       }
     ];
@@ -202,7 +203,7 @@ const actions = {
     }));
     const newMenuGroup = [
       {
-        menuTypeName: '报表',
+        menuTypeName: $t('term.report.report'),
         menuList: reportInstanceList
       }
     ];
@@ -293,7 +294,7 @@ const actions = {
     }
     const newMenuGroup = [
       {
-        menuTypeName: '巡检结果',
+        menuTypeName: $t('term.inspect.inspectresult'),
         menuList: [...firstRouteList, ...recentIssuesRouteList, ...otherRouteList]
       }
     ];

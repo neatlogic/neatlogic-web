@@ -358,7 +358,7 @@ let routerArr = [
     name: 'sync-wizard',
     component: syncWizard,
     meta: {
-      title: '自动采集管理',
+      title: $t('router.cmdb.syncwizard'),
       ismenu: true,
       type: 'cmdbmanage',
       icon: 'tsfont-auto',
