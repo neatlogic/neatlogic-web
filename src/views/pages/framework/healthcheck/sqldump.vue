@@ -67,6 +67,9 @@
         <div>
           <div class="dbinfo padding">
             <div>
+              <span>{{ '数据库' }}：{{ datasourceData.database + '(' + datasourceData.databaseVersion + ')' }}</span>
+            </div>
+            <div>
               <span>{{ $t('term.framework.datapool') }}：{{ datasourceData.poolName }}</span>
             </div>
             <div>
@@ -178,6 +181,7 @@ export default {
       theadList: [
         { key: 'timeCost', title: this.$t('page.timecost'), width: 200 },
         { key: 'id', title: 'id' },
+        { key: 'threadName', title: '线程' },
         { key: 'tenant', title: this.$t('page.tenant') },
         { key: 'userId', title: this.$t('page.user') },
         { key: 'recordCount', title: this.$t('page.datacapacity') },
