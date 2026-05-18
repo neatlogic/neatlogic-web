@@ -2870,7 +2870,11 @@
     "premitupgrade": "允许升级",
     "skipupgradetarget": "过滤升级目标",
     "upgradecheck": "升级检查",
-    "notopodata": "暂无服务拓扑数据"
+    "notopodata": "暂无服务拓扑数据",
+    "versionmanage": "版本管理",
+    "osdumpdetail": "系统快照详情",
+    "threaddumpdetail": "Threaddump详情",
+    "nodemanage": "节点管理"
   },
   "ai": {
     "baseurl": "基地址",

@@ -2877,7 +2877,11 @@
     "premitupgrade": "Allow upgrade",
     "skipupgradetarget": "Filter upgrade targets",
     "upgradecheck": "Upgrade check",
-    "notopodata": "No service topology data available at the moment"
+    "notopodata": "No service topology data available at the moment",
+    "versionmanage": "version control",
+    "osdumpdetail": "System snapshot details",
+    "threaddumpdetail": "Threaddump Details",
+    "nodemanage": "Node Management"
   },
   "ai": {
     "baseurl": "base address",
