@@ -2882,7 +2882,12 @@
     "versionmanage": "version control",
     "osdumpdetail": "System snapshot details",
     "threaddumpdetail": "Threaddump Details",
-    "nodemanage": "Node Management"
+    "nodemanage": "Node Management",
+    "listen": "monitor",
+    "javaprocess": "JAVA Process",
+    "autotrigger": "auto-trigger",
+    "level": "level",
+    "plevel": "Last level"
   },
   "ai": {
     "baseurl": "base address",

@@ -2875,7 +2875,12 @@
     "versionmanage": "版本管理",
     "osdumpdetail": "系统快照详情",
     "threaddumpdetail": "Threaddump详情",
-    "nodemanage": "节点管理"
+    "nodemanage": "节点管理",
+    "listen": "监听",
+    "javaprocess": "JAVA进程",
+    "autotrigger": "自动触发",
+    "level": "等级",
+    "plevel": "上次等级"
   },
   "ai": {
     "baseurl": "基地址",
