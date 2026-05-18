@@ -54,9 +54,9 @@
               </span>
             </span>
             <div v-else-if="row.value && row.type == 'userselect'">
-              <span v-for="(user,uindex) in JSON.parse(row.value)" :key="uindex">
+              <span v-for="(user,uindex) in row._userList" :key="uindex">
                 <UserCard v-bind="getConfig(user)"></UserCard>
-                <span v-if="JSON.parse(row.value).length-1 > uindex">、</span>
+                <span v-if="row._userList.length - 1 > uindex">、</span>
               </span>
             </div>
             <div v-else-if="row.value" style="max-width: 500px" class="overflow">
@@ -68,13 +68,13 @@
                 :disabled="isDisabledPoptipContent(row)"
               >
                 <div slot="content" style="max-height: 350px;overflow: auto;">
-                  <span v-if="!isJson(row.value)" :class="row.type === 'textarea'?'pre':''">{{ row.value }}</span>
+                  <span v-if="!row._isJsonValue" :class="row.type === 'textarea'?'pre':''">{{ row.value }}</span>
                   <JsonViewer
                     v-else
                     class="popTipContent"
                     copyable
                     :expand-depth="5"
-                    :value="JSON.parse(row.value)"
+                    :value="row._jsonValue"
                   ></JsonViewer>
                 </div>
                 <span :class="row.type === 'textarea'?'pre':''">{{ formattedValue(row.value) }}</span>
@@ -180,14 +180,38 @@ export default {
       };
       if (this.type === 'output') {
         this.$api.autoexec.job.getOutputNodeParam(param).then(res => {
-          this.paramList = res.Return.operationOutputParamArray || [];
+          this.paramList = this.normalizeParamList(res.Return.operationOutputParamArray || []);
           this.isLoading = false;
         });
       } else {
         this.$api.autoexec.job.getInputNodeParam(param).then(res => {
-          this.paramList = res.Return.operationInputParamArray || [];
+          this.paramList = this.normalizeParamList(res.Return.operationInputParamArray || []);
           this.isLoading = false;
         });
+      }
+    },
+    normalizeParamList(paramList) {
+      paramList.forEach(item => {
+        if (item.paramList && item.paramList.length > 0) {
+          item.paramList.forEach(row => this.normalizeParamRow(row));
+        }
+      });
+      return paramList;
+    },
+    normalizeParamRow(row) {
+      const jsonValue = this.parseJsonValue(row.value);
+      this.$set(row, '_isJsonValue', jsonValue.isJson);
+      this.$set(row, '_jsonValue', jsonValue.value);
+      this.$set(row, '_userList', row.type === 'userselect' && Array.isArray(jsonValue.value) ? jsonValue.value : []);
+    },
+    parseJsonValue(value) {
+      if (typeof value !== 'string') {
+        return { isJson: false, value: null };
+      }
+      try {
+        return { isJson: true, value: JSON.parse(value) };
+      } catch (e) {
+        return { isJson: false, value: null };
       }
     },
     changeDownStatus(type, event) {
@@ -197,16 +221,6 @@ export default {
       } else if (type != 'progress') {
         this.downLoading = false;
       }
-    },
-    isJson(value) {
-      let isJson = false;
-      try {
-        JSON.parse(value);
-        isJson = true;
-      } catch (e) {
-        isJson = false;
-      }
-      return isJson;
     },
     runnerAction(action) {
       this.$emit('runnerAction', action);
