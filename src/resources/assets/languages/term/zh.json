@@ -2892,6 +2892,15 @@
     "toolmanage": "工具管理",
     "aiagentmanage": "智能助手管理",
     "modelmanage": "模型管理",
-    "knowledgerepo": "知识库"
+    "knowledgerepo": "知识库",
+    "llmmodel": "大语言模型",
+    "embedmodel": "向量化模型",
+    "rerankmodel": "重排序模型",
+    "modelextendattrerror": "额外配置必须是JSON对象",
+    "previewprompt": "预览提示词",
+    "toolinstance": "工具实例",
+    "dimensions": "向量维度",
+    "thinkingprogress": "思考过程",
+    "returncontent": "返回内容"
   }
 }

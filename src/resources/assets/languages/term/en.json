@@ -2899,6 +2899,15 @@
     "toolmanage": "Tool Management",
     "aiagentmanage": "Intelligent Assistant Management",
     "modelmanage": "Model Management",
-    "knowledgerepo": "knowledge base"
+    "knowledgerepo": "knowledge base",
+    "llmmodel": "Large Language Model (LLM)",
+    "embedmodel": "Vectorized model",
+    "rerankmodel": "Reordering model",
+    "modelextendattrerror": "Additional configuration must be a JSON object",
+    "previewprompt": "Preview prompt words",
+    "toolinstance": "Tool Examples",
+    "dimensions": "vector dimension",
+    "thinkingprogress": "thought process",
+    "returncontent": "return content"
   }
 }
