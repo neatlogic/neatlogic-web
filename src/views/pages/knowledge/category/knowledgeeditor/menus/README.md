@@ -1,0 +1,5 @@
+- block-menu 快菜单
+  - empty-row-menu 插入快菜单(空行时前面出现的菜单)
+  - edit-row-menu 快菜单(鼠标经过当前行时出现的菜单，区别在于这个快菜单里面是有内容的)
+- select-content-menu 选中内容菜单(文字/图片/表格)，选中位置区域出现的菜单
+- toolbar 工具栏菜单

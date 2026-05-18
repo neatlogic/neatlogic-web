@@ -319,11 +319,10 @@ export default {
       this.isDragrerender = true;
     },
     saveDraftDocument() {
-      let _this = this;
-      if (!_this.$refs.form.valid()) {
+      if (!this.$refs.form.valid()) {
         return;
       }
-      let data = _this.saveData();
+      let data = this.saveData();
       let obj = this.$refs.form.getFormValue();
       Object.assign(data, obj);
       this.$api.process.processtask.saveDraftDocument(data).then(res => {
@@ -331,17 +330,17 @@ export default {
           this.$Message.success(this.$t('message.executesuccess'));
           this.getKnowledgeAudit();
           let config = res.Return;
-          _this.knowledgeDocumentId = config.knowledgeDocumentId;
-          _this.knowledgeDocumentVersionId = config.knowledgeDocumentVersionId;
+          this.knowledgeDocumentId = config.knowledgeDocumentId;
+          this.knowledgeDocumentVersionId = config.knowledgeDocumentVersionId;
           let isReviewable = config.isReviewable;
           if (isReviewable == 1) {
-            _this.userType = 'review';
+            this.userType = 'review';
           } else {
-            _this.userType = 'submit';
+            this.userType = 'submit';
           }
-          _this.isReviewShow = true;
-          _this.$parent.getKnowledgeDetail();
-          _this.$emit('update:isShow', false);
+          this.isReviewShow = true;
+          this.$parent.getKnowledgeDetail();
+          this.$emit('update:isShow', false);
         }
       });
     },

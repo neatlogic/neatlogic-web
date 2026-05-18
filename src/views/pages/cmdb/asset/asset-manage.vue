@@ -111,9 +111,11 @@
           :selectedRemain="selectedRemain"
           :loading="loading"
           :hideAction="hasResourceCenterAuth"
+          :canEdit="canEditThead()"
           @getSelected="getSelected"
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
+          @checkshow="saveAssetTheadSetting"
         >
           <template v-slot:ip="{ row }">
             <span class="text-href" @click.stop="urlOpen(row)">
@@ -304,6 +306,35 @@ export default {
       searchVal: {
         searchField: 'ip'
       },
+      // 资产清单显示配置，和根模型配置共用 assetlist_display.config 存储
+      assetListDisplayId: null,
+      assetListDisplayConfig: {},
+      // 表头显示字段存储方式：server 保存到数据库，对所有用户生效；local 保存到当前浏览器，只对当前用户生效
+      assetTheadFieldStorageType: 'local',
+      // 前端固定维护的资产清单可选表头
+      assetTheadList: [],
+      // 未配置过表头时沿用原资产清单默认展示列
+      defaultTheadFieldList: [
+        'ip',
+        'typeLabel',
+        'name',
+        'monitorTime',
+        'inspectTime',
+        'appModuleName',
+        'appSystemName',
+        'allIp',
+        'bgList',
+        'ownerList',
+        'stateName',
+        'networkArea',
+        'tagList',
+        'maintenanceWindow',
+        'accountList',
+        'description'
+      ],
+      theadSaveTimer: null,
+      displayedTheadFieldList: [],
+      pendingAddedTheadFieldList: [],
       searchConfig: {
         isShowAdvanceMode: true,
         searchMode: 'clickBtnSearch',
@@ -430,90 +461,7 @@ export default {
           }
         ]
       },
-      theadList: [
-        {
-          key: 'selection',
-          title: ''
-        },
-        {
-          title: this.$t('page.ipaddress'),
-          key: 'ip'
-        },
-        {
-          title: this.$t('page.type'),
-          key: 'typeLabel'
-        },
-        {
-          title: this.$t('page.name'),
-          key: 'name'
-        },
-        {
-          title: this.$t('term.inspect.monitoringstate'),
-          key: 'monitorTime'
-        },
-        {
-          title: this.$t('term.autoexec.inspectstatus'),
-          key: 'inspectTime'
-        },
-        // {
-        //   title: '巡检作业状态', // 需求变更，屏蔽
-        //   key: 'taskStatus'
-        // },
-        {
-          title: this.$t('page.module'),
-          key: 'appModuleName'
-        },
-        {
-          title: this.$t('page.apply'),
-          key: 'appSystemName'
-        },
-        {
-          title: this.$t('term.inspect.iplist'),
-          key: 'allIp',
-          type: 'tag',
-          valueKey: 'ip'
-        },
-        {
-          title: this.$t('term.autoexec.subordinatedepartment'),
-          key: 'bgList',
-          type: 'tag',
-          valueKey: 'bgName'
-        },
-        {
-          title: this.$t('page.owner'),
-          key: 'ownerList',
-          type: 'usercards'
-        },
-        {
-          title: this.$t('term.autoexec.assetstatus'),
-          key: 'stateName'
-        },
-        {
-          title: this.$t('page.networkarea'),
-          key: 'networkArea'
-        },
-        {
-          title: this.$t('page.tag'),
-          key: 'tagList',
-          type: 'tag'
-        },
-        {
-          title: this.$t('term.deploy.maintenancewindow'),
-          key: 'maintenanceWindow'
-        },
-        {
-          title: this.$t('page.account'),
-          key: 'accountList'
-        },
-        {
-          title: this.$t('page.description'),
-          key: 'description'
-        },
-        {
-          title: '',
-          key: 'action'
-        }
-      ],
+      theadList: [],
       tableConfig: {
         keyName: 'id',
         tbodyList: [],
@@ -685,6 +633,7 @@ export default {
     let { resourceId = '' } = this.$route.query || {};
     this.defaultValue = resourceId ? [parseInt(resourceId)] : [];
     await this.getTreeType();
+    await this.initAssetTheadSetting();
     await this.initData();
     if (resourceId) {
       if (this.tableConfig.tbodyList && this.tableConfig.tbodyList.some(item => item.id == resourceId)) {
@@ -696,9 +645,216 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.theadSaveTimer && clearTimeout(this.theadSaveTimer);
+  },
   destroyed() {},
   methods: {
+    canEditThead() {
+      if (this.assetTheadFieldStorageType == 'server') {
+        return this.$AuthUtils.hasRole('RESOURCECENTER_MODIFY');
+      } else {
+        return true;
+      }
+    },
+    async initAssetTheadSetting() {
+      // 全量表头固定在前端，再按已保存的显示/排序配置组装 TsTable 表头
+      this.assetTheadList = this.getAssetTheadList();
+      if (this.assetTheadFieldStorageType == 'server') {
+        await this.getAssetlistSetting();
+      } else {
+        this.assetListDisplayConfig = this.getLocalAssetTheadConfig() || {};
+      }
+      this.applyAssetTheadSetting(this.assetListDisplayConfig);
+    },
+    getAssetlistSetting() {
+      return this.$api.cmdb.resourceentity.getAssetlist().then(res => {
+        if (res.Status == 'OK' && res.Return) {
+          this.assetListDisplayId = res.Return.id || null;
+          this.assetListDisplayConfig = res.Return.config || {};
+        }
+      }).catch(() => {
+        this.assetListDisplayConfig = {};
+      });
+    },
+    getAssetTheadLocalStorageKey() {
+      const userInfo = this.$store && this.$store.state ? (this.$store.state.userInfo || {}) : {};
+      const userKey = userInfo.uuid || userInfo.userUuid || userInfo.userId || 'anonymous';
+      return 'neatlogic.cmdb.assetManage.theadFieldList.' + userKey;
+    },
+    getLocalAssetTheadConfig() {
+      const configStr = localStorage.getItem(this.getAssetTheadLocalStorageKey());
+      if (!configStr) {
+        return null;
+      }
+      try {
+        return JSON.parse(configStr);
+      } catch (e) {
+        localStorage.removeItem(this.getAssetTheadLocalStorageKey());
+        return null;
+      }
+    },
+    saveLocalAssetTheadConfig(config) {
+      localStorage.setItem(this.getAssetTheadLocalStorageKey(), JSON.stringify(config || {}));
+    },
+    getAssetTheadList() {
+      // 资产清单全量表头固定在前端，避免每次打开页面都请求表头接口
+      return [
+        { key: 'id', title: 'ID' },
+        { key: 'ip', title: this.$t('page.ipaddress') },
+        { key: 'typeLabel', title: this.$t('page.type') },
+        { key: 'name', title: this.$t('page.name') },
+        { key: 'monitorTime', title: this.$t('term.inspect.monitoringstate') },
+        { key: 'inspectTime', title: this.$t('term.autoexec.inspectstatus') },
+        { key: 'envName', title: this.$t('page.environment') },
+        { key: 'appModuleName', title: this.$t('page.module') },
+        { key: 'appSystemName', title: this.$t('page.apply') },
+        { key: 'allIp', title: this.$t('term.inspect.iplist'), type: 'tag', valueKey: 'ip' },
+        { key: 'bgList', title: this.$t('term.autoexec.subordinatedepartment'), type: 'tag', valueKey: 'bgName' },
+        { key: 'ownerList', title: this.$t('page.owner'), type: 'usercards' },
+        { key: 'stateName', title: this.$t('term.autoexec.assetstatus') },
+        { key: 'networkArea', title: this.$t('page.networkarea') },
+        // { key: 'vendorName', title: this.$t('page.manufacturer') },
+        // { key: 'dataCenterName', title: this.$t('term.inspect.datacenter') },
+        { key: 'tagList', title: this.$t('page.tag'), type: 'tag' },
+        { key: 'maintenanceWindow', title: this.$t('term.deploy.maintenancewindow') },
+        { key: 'accountList', title: this.$t('page.account') },
+        { key: 'description', title: this.$t('page.description') }
+        // { key: 'fcu', title: '创建者' },
+        // { key: 'fcd', title: '创建日期', type: 'time' },
+        // { key: 'lcu', title: '修改者' },
+        // { key: 'lcd', title: '修改日期', type: 'time' }
+      ];
+    },
+    applyAssetTheadSetting(config = {}) {
+      const allTheadMap = {};
+      this.assetTheadList.forEach(item => {
+        allTheadMap[item.key] = item;
+      });
+      // fieldList 保存全量字段的显示状态和排序，勾选/取消勾选不改变原有排序
+      const fieldSettingList = this.getAssetTheadFieldSettingList(config);
+      const fieldSettingMap = {};
+      fieldSettingList.forEach(item => {
+        fieldSettingMap[item.name] = item;
+      });
+      const fieldOrderList = fieldSettingList.map(item => item.name);
+      // selection/action 为固定功能列，不参与用户显隐保存
+      const theadList = [
+        { key: 'selection', title: '', isShow: 1, isDisabled: true },
+        ...fieldOrderList
+          .filter(key => allTheadMap[key])
+          .map(key => ({
+            ...allTheadMap[key],
+            isShow: fieldSettingMap[key] && fieldSettingMap[key].isShow == '1' ? 1 : 0
+          })),
+        { title: '', key: 'action', isShow: 1 }
+      ];
+      this.theadList = theadList;
+      this.displayedTheadFieldList = this.getVisibleTheadFieldList(theadList);
+    },
+    getAssetTheadFieldSettingList(config = {}) {
+      const configFieldList = Array.isArray(config.fieldList) ? config.fieldList : [];
+      const configFieldMap = {};
+      configFieldList
+        .filter(item => item && item.name)
+        .forEach((item, index) => {
+          configFieldMap[item.name] = {
+            name: item.name,
+            isShow: item.isShow == '1' || item.isShow == 1 ? '1' : '0',
+            sort: item.sort != null && item.sort !== '' && !isNaN(parseInt(item.sort)) ? parseInt(item.sort) : index
+          };
+        });
+      const fieldSettingList = [];
+      this.assetTheadList.forEach((item, index) => {
+        if (configFieldMap[item.key]) {
+          fieldSettingList.push(configFieldMap[item.key]);
+        } else {
+          fieldSettingList.push({
+            name: item.key,
+            isShow: this.defaultTheadFieldList.includes(item.key) ? '1' : '0',
+            sort: index
+          });
+        }
+      });
+      return fieldSettingList
+        .sort((a, b) => a.sort - b.sort)
+        .map((item, index) => ({
+          name: item.name,
+          isShow: item.isShow,
+          sort: index.toString()
+        }));
+    },
+    saveAssetTheadSetting(theadList = []) {
+      // TsTable 在勾选和拖拽排序时都会触发 checkshow，这里统一持久化
+      const fieldTheadList = theadList.filter(item => item.key && !['selection', 'action'].includes(item.key));
+      const fieldList = fieldTheadList.map((item, index) => ({
+        name: item.key,
+        isShow: item.isShow || item.isShow == undefined ? '1' : '0',
+        sort: index.toString()
+      }));
+      const visibleFieldList = fieldList.filter(item => item.isShow == '1').map(item => item.name);
+      if (this.$utils.isEmpty(visibleFieldList)) {
+        this.$Message.warning(this.$t('form.placeholder.pleaseselect', { target: this.$t('page.field') }));
+        return;
+      }
+      const oldDisplayedTheadFieldList = this.displayedTheadFieldList || [];
+      const addedFieldList = visibleFieldList.filter(field => !oldDisplayedTheadFieldList.includes(field));
+      this.displayedTheadFieldList = visibleFieldList;
+      this.pendingAddedTheadFieldList = this.uniqArray([...this.pendingAddedTheadFieldList, ...addedFieldList]);
+      this.theadSaveTimer && clearTimeout(this.theadSaveTimer);
+      // 拖拽排序会连续触发，短暂防抖避免频繁保存
+      this.theadSaveTimer = setTimeout(() => {
+        const pendingAddedTheadFieldList = this.pendingAddedTheadFieldList;
+        this.pendingAddedTheadFieldList = [];
+        const config = {
+          ...(this.assetListDisplayConfig || {}),
+          fieldList: fieldList
+        };
+        if (this.assetTheadFieldStorageType == 'local') {
+          this.saveLocalAssetTheadConfig(config);
+          this.assetListDisplayConfig = config;
+          this.refreshAssetDataWhenAddVisibleThead(pendingAddedTheadFieldList);
+        } else {
+          const data = {
+            id: this.assetListDisplayId,
+            rootCiName: this.rootCiName,
+            config: config
+          };
+          this.$api.cmdb.resourceentity.saveAssetlistData(data).then(res => {
+            if (res.Status == 'OK') {
+              this.assetListDisplayConfig = config;
+              this.refreshAssetDataWhenAddVisibleThead(pendingAddedTheadFieldList);
+            }
+          });
+        }
+      }, 300);
+    },
+    getVisibleTheadFieldList(theadList = this.theadList) {
+      return (theadList || [])
+        .filter(item => item.key && !['selection', 'action'].includes(item.key))
+        .filter(item => item.isShow || item.isShow == undefined)
+        .map(item => item.key);
+    },
+    refreshAssetDataWhenAddVisibleThead(addedFieldList = []) {
+      if (this.$utils.isEmpty(addedFieldList)) {
+        return;
+      }
+      const tbodyFieldList = this.tableConfig.theadFieldList || [];
+      const hasAddedFieldData = addedFieldList.every(field => tbodyFieldList.includes(field));
+      if (hasAddedFieldData) {
+        return;
+      }
+      this.searchAssetData();
+    },
+    uniqArray(list = []) {
+      const resultList = [];
+      list.forEach(item => {
+        if (item && !resultList.includes(item)) {
+          resultList.push(item);
+        }
+      });
+      return resultList;
+    },
     async initData() {
       await this.searchAssetData();
       await this.listForselect();
@@ -827,6 +983,7 @@ export default {
         rowNum: this.tableConfig.rowNum,
         ...this.searchVal,
         ...this.selectType,
+        theadFieldNameList: this.getVisibleTheadFieldList(),
         batchSearchList: this.searchVal.batchSearchList ? this.searchVal.batchSearchList : []
       };
       if (!this.$utils.isEmpty(params.batchSearchList)) {
