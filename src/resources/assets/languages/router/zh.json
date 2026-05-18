@@ -1,6 +1,7 @@
 {
   "common": {
-    "pagenoexist": "页面不存在"
+    "pagenoexist": "页面不存在",
+    "extramenudetail": "扩展菜单"
   },
   "dashboard": {
     "dashboardmanage": "仪表板管理",
@@ -53,7 +54,8 @@
     "resourcecenter": "资源中心",
     "discovery": "自动发现",
     "cmdbmanage": "系统管理",
-    "objmanage": "对象管理"
+    "objmanage": "对象管理",
+    "syncwizard": "自动采集管理"
   },
   "process": {
     "workordercenter": "工单中心",
@@ -78,7 +80,10 @@
     "eventsolutionedit": "编辑事件解决方案",
     "changeedit": "变更编辑",
     "eoatemplate": "EOA模板",
-    "eoatemplateedit": "EOA模板编辑"
+    "eoatemplateedit": "EOA模板编辑",
+    "taskoverview": "工单中心",
+    "flowdemo": "流程图demo",
+    "collection": "工单集合"
   },
   "autoexec": {
     "detail": "自动化明显",
@@ -173,7 +178,10 @@
     "extramenu": "菜单管理",
     "homepage": "默认首页",
     "changelogaudit": "数据库变更记录",
-    "log": "查看日志"
+    "log": "查看日志",
+    "regionmanage": "地域管理",
+    "threadpool": "线程池监控",
+    "ai": "人工智能"
   },
   "knowledge": {
     "knowledgedetail": "词条详情",

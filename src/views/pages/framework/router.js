@@ -167,7 +167,7 @@ let routerList = [
     name: 'region-manage',
     component: regionManage,
     meta: {
-      title: '地域管理',
+      title: $t('router.framework.regionmanage'),
       ismenu: true,
       icon: 'tsfont-location-o',
       authority: 'REGION_MODIFY',
@@ -697,7 +697,7 @@ let routerList = [
     name: 'threadpool',
     component: threadpool,
     meta: {
-      title: '线程池监控',
+      title: $t('router.framework.threadpool'),
       ismenu: true,
       icon: 'tsfont-accessendpoint',
       authority: 'ADMIN',

@@ -90,7 +90,7 @@ let routerList = [
     name: 'task-overview',
     component: taskOverview,
     meta: {
-      title: '工单中心',
+      title: $t('router.process.taskoverview'),
       ismenu: false,
       icon: 'tsfont-task',
       authority: 'PROCESS_BASE',
@@ -333,7 +333,7 @@ let routerList = [
     name: 'flow-demo',
     component: flowDemo,
     meta: {
-      title: '流程图demo',
+      title: $t('router.process.flowdemo'),
       ismenu: false
     }
   },

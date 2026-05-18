@@ -9,7 +9,7 @@ export const config = {
     agent: $t('router.framework.agent'),
     others: $t('router.framework.others'),
     healthcheck: $t('router.framework.healthcheck'),
-    ai: '人工智能',
+    ai: $t('router.framework.ai'),
     license: $t('router.framework.license')
   }
 };

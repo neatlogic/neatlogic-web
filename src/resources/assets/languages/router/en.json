@@ -1,6 +1,7 @@
 {
   "common": {
-    "pagenoexist": "Page does not exist"
+    "pagenoexist": "Page does not exist",
+    "extramenudetail": "Extended Menu"
   },
   "dashboard": {
     "dashboardmanage": "Dashboard Sets",
@@ -53,7 +54,12 @@
     "resourcecenter": "Resource Center",
     "discovery": "Auto Discovery",
     "cmdbmanage": "System Management",
-    "objmanage": "Object Management"
+    "objmanage": "Object Management",
+    "syncwizard": "Auto Collection Management",
+    "cientityedit": "Configuration Item Edit",
+    "cientitybatchedit": "Configuration Item Batch Edit",
+    "cientityview": "Configuration item details",
+    "cientitylist": "Query Configuration Items"
   },
   "process": {
     "workordercenter": "Work Center",
@@ -78,7 +84,10 @@
     "eventsolutionedit": "Edit Event Solution",
     "changeedit": "Change Edit",
     "eoatemplate": "EOA template",
-    "eoatemplateedit": "EOA template editing"
+    "eoatemplateedit": "EOA template editing",
+    "taskoverview": "Work Order Center",
+    "flowdemo": "Workflow Diagram Demo",
+    "collection": "Ticket Collection"
   },
   "autoexec": {
     "detail": "Automation is obvious",
@@ -173,7 +182,10 @@
     "extramenu": "Menu management",
     "homepage": "default page ",
     "changelogaudit": "Database Change Log",
-    "log": "view log"
+    "log": "view log",
+    "regionmanage": "Region Management",
+    "threadpool": "Thread Pool Monitoring",
+    "ai": "Artificial Intelligence"
   },
   "knowledge": {
     "knowledgedetail": "entry details",
