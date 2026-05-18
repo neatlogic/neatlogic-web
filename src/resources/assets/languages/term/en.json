@@ -2831,7 +2831,8 @@
     "p24hour": "last 24 hours",
     "p3day": "the last 3 days",
     "p7day": "the last 7 days",
-    "workerteam": "treatment group"
+    "workerteam": "treatment group",
+    "taskaudit": "Task log"
   },
   "runnergroup": {
     "ruletips": "The request for login authentication needs to carry a header as a rule expression (note that the header parameter in the expression is all lowercase). If the value of the expression after execution is true, the executor group will take effect, and false and syntax exceptions will not take effect. For example: ${env}==\\ bit \\&&(${test}==\\ 1 \\ | | ${test2}==\\ aaa \\)"
@@ -2912,6 +2913,20 @@
     "toolinstance": "Tool Examples",
     "dimensions": "vector dimension",
     "thinkingprogress": "thought process",
-    "returncontent": "return content"
+    "returncontent": "return content",
+    "createtask": "initiate a task",
+    "setversion": "Set as current version",
+    "versioninfo": "Currently viewing historical versions, saving will generate a new version",
+    "nodepanel": "Node panel",
+    "prompttitle": "Natural language input title",
+    "promptplaceholder": "Natural language input prompt",
+    "inputform": "input form ",
+    "workflowsetting": "Process Configuration",
+    "attrsetting": "Property Configuration",
+    "workflowversioncurrent": "(Currently)",
+    "recalltest": "recall test",
+    "schedulesync": "timed synchronization",
+    "syncprogress": "sync progress",
+    "scope": "business domain"
   }
 }

@@ -2827,7 +2827,8 @@
     "p24hour": "最近24小时",
     "p3day": "最近3天",
     "p7day": "最近7天",
-    "workerteam": "处理组"
+    "workerteam": "处理组",
+    "taskaudit": "任务记录"
   },
   "informant": {
     "last5dump": "最近5次快照",
@@ -2905,6 +2906,20 @@
     "toolinstance": "工具实例",
     "dimensions": "向量维度",
     "thinkingprogress": "思考过程",
-    "returncontent": "返回内容"
+    "returncontent": "返回内容",
+    "createtask": "发起任务",
+    "setversion": "设为当前版本",
+    "versioninfo": "当前正在查看历史版本，保存后会生成新版本",
+    "nodepanel": "节点面板",
+    "prompttitle": "自然语言输入标题",
+    "promptplaceholder": "自然语言输入提示",
+    "inputform": "输入表单",
+    "workflowsetting": "流程配置",
+    "attrsetting": "属性配置",
+    "workflowversioncurrent": "(当前)",
+    "recalltest": "召回测试",
+    "schedulesync": "定时同步",
+    "syncprogress": "同步进度",
+    "scope": "业务域"
   }
 }
