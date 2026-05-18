@@ -1,0 +1,168 @@
+<template>
+  <div class="knowledge-circle-manage">
+    <TsContain>
+      <template v-slot:topLeft>
+        <span class="tsfont-plus text-action" @click="isDialogShow = true">{{ $t('term.knowledge.intellectualcircle') }}</span>
+      </template>
+      <template v-slot:topRight>
+        <div>
+          <InputSearcher
+            v-model="searchParams.keyword"
+            @change="searchData()"
+          ></InputSearcher>
+        </div>
+      </template>
+      <template v-slot:content>
+        <Loading :loadingShow="isLoading" type="fix"></Loading>
+        <TsTable
+          class="table"
+          :theadList="theadList"
+          v-bind="tableConfig"
+          @changeCurrent="changeCurrent"
+          @changePageSize="changePageSize"
+        >
+          <template v-slot:approverVoList="{row}">
+            <span v-if="!$utils.isEmpty(row.approverVoList)">
+              <span v-for="(item,index) in slice(row.approverVoList, true)" :key="index" style="margin-right:10px">
+                <UserCard v-bind="item" hideAvatar></UserCard>
+              </span>
+              <span v-if="row.approverVoList && row.approverVoList.length > 4" @click.stop>
+                <Poptip
+                  transfer
+                  placement="bottom-start"
+                  popper-class="workcenterpoper"
+                  offset="-16"
+                  style="position: relative;top: 3px;"
+                >
+                  <span class="tsfont-option-horizontal colorgray"></span>
+                  <div slot="content">
+                    <div v-for="(item, index) in slice(row.approverVoList, false)" :key="index" @click.stop>
+                      <UserCard v-bind="item" hideAvatar></UserCard>
+                    </div>
+                  </div>
+                </Poptip>
+              </span>
+            </span>
+            <span v-else> </span>
+          </template>
+          <template v-slot:name="{row}">
+            <span class="text-href" @click.stop="toEditPage('edit',{id:row.id})">{{ row.name }}</span>
+          </template>
+          <template v-slot:action="{row}">
+            <div class="tstable-action">
+              <ul class="tstable-action-ul">
+                <li
+                  class="tsfont-trash-s"
+                  :title="row.documentCount > 0 ? '知识数量为0时才能删除知识圈' : ''"
+                  :class="{'text-grey text-disabled':row.documentCount > 0}"
+                  @click="deleteCircle(row)"
+                >{{ $t('page.delete') }}</li>
+              </ul>
+            </div>
+          </template>
+        </TsTable>
+      </template>
+    </TsContain>
+
+    <CircleAddDialog v-if="isDialogShow" @close="closeAddDialog"></CircleAddDialog>
+  </div>
+</template>
+<script>
+export default {
+  name: 'CircleManage',
+  components: {
+    TsTable: () => import('@/resources/components/TsTable/TsTable'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
+    CircleAddDialog: () => import('./circle-add-dialog.vue')
+  },
+  data() {
+    return {
+      isLoading: false,
+      isDialogShow: false,
+      searchParams: {
+        keyword: '',
+        currentPage: 1,
+        pageSize: 20
+      },
+      theadList: [
+        {title: this.$t('page.name'), key: 'name'},
+        {title: this.$t('term.knowledge.approver'), key: 'approverVoList'},
+        {title: this.$t('term.knowledge.member'), key: 'memberCount'},
+        {title: this.$t('term.knowledge.documentcount'), 'tooltip': this.$t('term.knowledge.tooltip.documentcount'), key: 'documentCount'},
+        {title: '', key: 'action'}
+      ],
+      tableConfig: {
+        tbodyList: [],
+        rowNum: 0,
+        pageSize: 20,
+        currentPage: 1
+      }
+    };
+  },
+  created() {
+    this.searchData();
+  },
+  methods: {
+    searchData() {
+      this.isLoading = true;
+      this.$api.knowledge.circle.searchCircle(this.searchParams).then((res) => {
+        if (res.Status === 'OK') {
+          const { circleList: tbodyList, rowNum, pageSize, currentPage } = res.Return || {};
+          this.tableConfig = { tbodyList, rowNum, pageSize, currentPage };
+        }
+      }).finally(() => {
+        this.isLoading = false;
+      });
+    },
+    changeCurrent(currentPage) {
+      this.searchParams.currentPage = currentPage;
+      this.searchData();
+    },
+    changePageSize(pageSize) {
+      this.searchParams.currentPage = 1;
+      this.searchParams.pageSize = pageSize;
+      this.searchData();
+    },
+    deleteCircle(row) {
+      if (row.documentCount > 0) return;
+      const {id, name} = row;
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deletetargetconfirm', {target: name}),
+        btnType: 'error',
+        'on-ok': vnode => {
+          const params = { id };
+          this.$api.knowledge.circle.deleteCircle(params).then((res) => {
+            if (res.Status === 'OK') {
+              this.$Message.success(this.$t('message.deletesuccess'));
+              this.$store.commit('leftMenu/isKnowledgeCircleUpdated', true);
+              vnode.isShow = false;
+              this.searchData();
+            }
+          });
+        }
+      });
+    },
+    toEditPage(operation, data) {
+      this.$router.push({
+        name: 'circle-edit',
+        query: { operation, ...data }
+      });
+    },
+    closeAddDialog() {
+      this.isDialogShow = false;
+    },
+    slice(list, key) {
+      if (list.length > 0) {
+        if (key) {
+          return list.slice(0, 4);
+        } else {
+          return list.slice(4, list.length);
+        }
+      }
+    }
+  }
+};
+
+</script>

@@ -1,19 +1,19 @@
 import axios from '../../http';
 
 const template = {
-  search(params) {
+  searchTemplate(params) {
     return axios.post('/api/rest/knowledge/template/search', params);
   },
-  get(params) {
+  getTemplate(params) {
     return axios.post('/api/rest/knowledge/template/get', params);
   },
-  save(params) {
+  saveTemplate(params) {
     return axios.post('/api/rest/knowledge/template/save', params);
   },
-  delete(params) {
+  deleteTemplate(params) {
     return axios.post('/api/rest/knowledge/template/delete', params);
   },
-  updateStatus(params) {
+  updateStatusTemplate(params) {
     return axios.post('/api/rest/knowledge/template/status/update', params);
   }
 };
