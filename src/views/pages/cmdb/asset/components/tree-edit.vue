@@ -39,6 +39,7 @@ export default {
       isReady: false,
       isSaveLoading: false,
       id: null,
+      config: {},
       formData: {},
       dialogConfig: {
         title: this.$t('page.setting'),
@@ -95,6 +96,8 @@ export default {
       this.$api.cmdb.resourceentity.getAssetlist().then(res => {
         if (res.Status == 'OK' && res.Return) {
           this.id = res.Return.id;
+          // 根模型和表头显示配置共用同一条记录，编辑根模型时需要保留已有表头配置
+          this.config = res.Return.config || {};
           this.$set(this.formData, 'rootCiName', res.Return.rootCiName || '');
         }
       }).finally(() => {
@@ -121,7 +124,8 @@ export default {
       let data = {
         id: this.id,
         rootCiName: this.formData.rootCiName,
-        config: {}
+        // 只更新根模型，不清空资产清单表头显隐/排序配置
+        config: this.config || {}
       };
       this.$api.cmdb.resourceentity.saveAssetlistData(data).then(res => {
         if (res.Status == 'OK') {
