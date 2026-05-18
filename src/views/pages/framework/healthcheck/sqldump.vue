@@ -38,20 +38,40 @@
           <div v-if="sqlIdList && sqlIdList.length > 0" class="action-item">
             <Poptip
               trigger="hover"
-              :title="$t('term.framework.monitorlist')"
+              title="SQL ID监控列表"
               word-wrap
               width="500"
               :transfer="true"
               placement="bottom"
             >
-              <span class="tsfont-zirenwu">{{ sqlIdList.length }}</span>
+              <span class="tsfont-zirenwu">SQL {{ sqlIdList.length }}</span>
               <div slot="content" class="api">
                 <Tag
                   v-for="(sql, index) in sqlIdList"
-                  :key="index"
+                  :key="'sql_' + index"
                   :closable="true"
-                  @on-close="removeSql(sql)"
+                  @on-close="removeMonitor('id', sql)"
                 >{{ sql }}</Tag>
+              </div>
+            </Poptip>
+          </div>
+          <div v-if="urlList && urlList.length > 0" class="action-item">
+            <Poptip
+              trigger="hover"
+              title="URL监控列表"
+              word-wrap
+              width="500"
+              :transfer="true"
+              placement="bottom"
+            >
+              <span class="tsfont-zirenwu">URL {{ urlList.length }}</span>
+              <div slot="content" class="api">
+                <Tag
+                  v-for="(url, index) in urlList"
+                  :key="'url_' + index"
+                  :closable="true"
+                  @on-close="removeMonitor('url', url)"
+                >{{ url }}</Tag>
               </div>
             </Poptip>
           </div>
@@ -59,7 +79,13 @@
       </div>
       <div slot="topRight">
         <InputSearcher
+          v-if="activeTab === 'sql'"
           v-model="searchParam.id"
+          @change="searchSql()"
+        ></InputSearcher>
+        <InputSearcher
+          v-else
+          v-model="searchParam.url"
           @change="searchSql()"
         ></InputSearcher>
       </div>
@@ -113,42 +139,91 @@
               <span v-else>-</span>
             </div>
           </div>
-          <TsTable v-if="sqlAuditData" v-bind="sqlAuditData" @changeCurrent="searchSql">
-            <template v-slot:id="{ row }">
-              <Tooltip :content="row.id" max-width="200">
-                {{ row.id.substring(row.id.lastIndexOf('.') + 1) }}
-              </Tooltip>
-            </template>
-            <template v-slot:timeCost="{ row }">
-              <div>
-                <Progress :status="row.timeCost < 1000 ? 'normal' : 'wrong'" :percent="(row.timeCost / maxTimeCost) * 100" :stroke-width="10">
-                  <span>{{ row.timeCost }}{{ $t('page.ms') }}</span>
-                </Progress>
-              </div>
-            </template>
-            <template v-slot:sql="{ row, index }">
-              <Poptip
-                v-if="row.sql"
-                trigger="hover"
-                :title="$t('term.framework.sqlsstatement')"
-                word-wrap
-                width="700"
-                :transfer="true"
-                placement="left"
-              >
-                <span class="tsfont-zirenwu" style="cursor:pointer"></span>
-                <div
-
-                  slot="content"
-                  class="fz10 scroll"
-                  style="max-height:500px"
-                >
-                  <div :id="'sql_' + row.id.replace(/\./ig,'_') + '_' + index">{{ row.sql }}</div>
-                  <div style="text-align:right"><Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_') + '_' + index)">{{ $t('page.copy') }}</Button></div>
-                </div>
-              </Poptip>
-            </template>
-          </TsTable>
+          <Tabs v-model="activeTab" :animated="false" @on-click="changeTab">
+            <TabPane label="SQL ID监控" name="sql">
+              <TsTable v-if="sqlAuditData" v-bind="sqlAuditData" @changeCurrent="searchSql">
+                <template v-slot:id="{ row }">
+                  <Tooltip :content="row.id" max-width="200">
+                    {{ row.id.substring(row.id.lastIndexOf('.') + 1) }}
+                  </Tooltip>
+                </template>
+                <template v-slot:timeCost="{ row }">
+                  <div>
+                    <Progress :status="row.timeCost < 1000 ? 'normal' : 'wrong'" :percent="getPercent(row.timeCost, maxTimeCost)" :stroke-width="10">
+                      <span>{{ row.timeCost }}{{ $t('page.ms') }}</span>
+                    </Progress>
+                  </div>
+                </template>
+                <template v-slot:sql="{ row, index }">
+                  <Poptip
+                    v-if="row.sql"
+                    trigger="hover"
+                    :title="$t('term.framework.sqlsstatement')"
+                    word-wrap
+                    width="700"
+                    :transfer="true"
+                    placement="left"
+                  >
+                    <span class="tsfont-zirenwu" style="cursor:pointer"></span>
+                    <div
+                      slot="content"
+                      class="fz10 scroll"
+                      style="max-height:500px"
+                    >
+                      <div :id="'sql_' + row.id.replace(/\./ig,'_') + '_' + index">{{ row.sql }}</div>
+                      <div style="text-align:right"><Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_') + '_' + index)">{{ $t('page.copy') }}</Button></div>
+                    </div>
+                  </Poptip>
+                </template>
+              </TsTable>
+            </TabPane>
+            <TabPane label="URL监控" name="url">
+              <TsTable v-if="requestSqlAuditData" v-bind="requestSqlAuditData" @changeCurrent="searchRequestSql">
+                <template v-slot:totalTimeCost="{ row }">
+                  <div>
+                    <Progress :status="row.totalTimeCost < 1000 ? 'normal' : 'wrong'" :percent="getPercent(row.totalTimeCost, maxRequestTimeCost)" :stroke-width="10">
+                      <span>{{ row.totalTimeCost }}{{ $t('page.ms') }}</span>
+                    </Progress>
+                  </div>
+                </template>
+                <template v-slot:sameIdSqlAuditList="{ row, index }">
+                  <Poptip
+                    v-if="row.sameIdSqlAuditList && row.sameIdSqlAuditList.length > 0"
+                    trigger="hover"
+                    title="请求SQL明细"
+                    word-wrap
+                    width="800"
+                    :transfer="true"
+                    placement="left"
+                  >
+                    <span class="tsfont-zirenwu" style="cursor:pointer">{{ row.sqlCount }}</span>
+                    <div
+                      slot="content"
+                      class="fz10 scroll"
+                      style="max-height:500px"
+                    >
+                      <div
+                        v-for="(sqlAudit, sqlIndex) in row.sameIdSqlAuditList"
+                        :key="sqlAudit.id + '_' + sqlIndex"
+                        class="request-sql-item"
+                      >
+                        <div class="text-title">{{ sqlAudit.id }}</div>
+                        <div>{{ $t('page.timecost') }}：{{ sqlAudit.totalTimeCost }}{{ $t('page.ms') }}</div>
+                        <div
+                          v-for="(sql, itemIndex) in sqlAudit.sqlList"
+                          :key="itemIndex"
+                          class="request-sql-content"
+                        >
+                          <div :id="'request_sql_' + index + '_' + sqlIndex + '_' + itemIndex">{{ sql }}</div>
+                          <div style="text-align:right"><Button size="small" @click="copySql('#request_sql_' + index + '_' + sqlIndex + '_' + itemIndex)">{{ $t('page.copy') }}</Button></div>
+                        </div>
+                      </div>
+                    </div>
+                  </Poptip>
+                </template>
+              </TsTable>
+            </TabPane>
+          </Tabs>
         </div>
       </div>
     </TsContain>
@@ -174,10 +249,13 @@ export default {
       timer: null,
       timerDatasource: null,
       sqlIdList: [],
+      urlList: [],
+      activeTab: 'sql',
       isDialogShow: false,
       isStatusDialogShow: false,
-      searchParam: { orderBy: 'runtime' },
+      searchParam: { orderBy: 'runtime', id: '', url: '' },
       sqlAuditData: {},
+      requestSqlAuditData: {},
       theadList: [
         { key: 'timeCost', title: this.$t('page.timecost'), width: 200 },
         { key: 'id', title: 'id' },
@@ -189,9 +267,21 @@ export default {
         { key: 'useCacheLevel', title: this.$t('page.cache') },
         { key: 'sql', title: this.$t('term.framework.sqlsstatement') }
       ],
+      requestTheadList: [
+        { key: 'totalTimeCost', title: this.$t('page.timecost'), width: 200 },
+        { key: 'url', title: 'url' },
+        { key: 'threadName', title: '线程' },
+        { key: 'tenant', title: this.$t('page.tenant') },
+        { key: 'userId', title: this.$t('page.user') },
+        { key: 'sqlCount', title: 'SQL数量' },
+        { key: 'notUseCacheTotalTimeCost', title: '未用缓存耗时(ms)' },
+        { key: 'runTime', title: this.$t('term.autoexec.executiontime'), type: 'time' },
+        { key: 'sameIdSqlAuditList', title: this.$t('term.framework.sqlsstatement') }
+      ],
       fromPath: '',
       leftHeight: 0,
-      maxTimeCost: 0
+      maxTimeCost: 0,
+      maxRequestTimeCost: 0
     };
   },
   beforeCreate() {},
@@ -219,6 +309,13 @@ export default {
     openStatusDialog() {
       this.isStatusDialogShow = true;
     },
+    getPercent(value, maxValue) {
+      // 进度条最大值可能为0，统一兜底避免NaN影响表格渲染
+      if (!maxValue) {
+        return 0;
+      }
+      return (value / maxValue) * 100;
+    },
     getDataSourceInfo() {
       if (this.timerDatasource) {
         clearTimeout(this.timerDatasource);
@@ -231,41 +328,70 @@ export default {
         }, 5000);
       });
     },
-    removeSql(sqlId) {
-      this.$api.framework.healthcheck.toggleSqlInterceptor({ action: 'remove', id: sqlId }).then(res => {
+    removeMonitor(type, value) {
+      // 顶部两个监控列表共用删除逻辑，根据类型传递id或url
+      const param = { action: 'remove' };
+      if (type === 'url') {
+        param.url = value;
+      } else {
+        param.id = value;
+      }
+      this.$api.framework.healthcheck.toggleSqlInterceptor(param).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
-          const index = this.sqlIdList.findIndex(d => d == sqlId);
-          if (index > -1) {
-            this.sqlIdList.splice(index, 1);
-          }
+          this.searchSql();
         }
       });
     },
     closeDialog() {
       this.isDialogShow = false;
+      this.searchSql();
     },
     addSql() {
       this.isDialogShow = true;
     },
-    searchSql(currentPage) {
+    changeTab() {
+      // Tab切换时清理另一个维度的搜索词，避免SQL ID和URL搜索条件互相影响
+      if (this.activeTab === 'sql') {
+        this.searchParam.url = '';
+      } else {
+        this.searchParam.id = '';
+      }
+      this.searchSql();
+    },
+    searchRequestSql(currentPage) {
+      this.searchSql(null, currentPage);
+    },
+    searchSql(currentPage, requestCurrentPage) {
       if (this.timer) {
         clearTimeout(this.timer);
         this.timer = null;
       }
+      // SQL ID和URL监控分别维护当前页，满足两个TsTable独立分页
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
-      } else {
+      } else if (this.activeTab === 'sql') {
         this.searchParam.currentPage = 1;
       }
+      if (requestCurrentPage) {
+        this.searchParam.requestCurrentPage = requestCurrentPage;
+      } else if (this.activeTab === 'url') {
+        this.searchParam.requestCurrentPage = 1;
+      }
       this.$api.framework.healthcheck.searchSqlAudit(this.searchParam).then(res => {
-        this.sqlAuditData = res.Return;
+        this.sqlAuditData = res.Return.sqlAuditData || {};
         this.sqlAuditData.theadList = this.theadList;
+        this.requestSqlAuditData = res.Return.requestSqlAuditData || {};
+        this.requestSqlAuditData.theadList = this.requestTheadList;
         this.maxTimeCost = res.Return.maxTimeCost;
+        this.maxRequestTimeCost = res.Return.maxRequestTimeCost;
         this.sqlIdList = res.Return.sqlIdList;
-        this.timer = setTimeout(() => {
-          this.searchSql(currentPage);
-        }, 5000);
+        this.urlList = res.Return.urlList;
+        if (this.isAutoRefresh) {
+          this.timer = setTimeout(() => {
+            this.searchSql(currentPage, requestCurrentPage);
+          }, 5000);
+        }
       });
     }
   },
@@ -299,6 +425,12 @@ export default {
   width: 60%;
   display: inline-block;
   float: right;
+}
+.request-sql-item + .request-sql-item {
+  margin-top: 10px;
+}
+.request-sql-content {
+  margin-top: 6px;
 }
 ::v-deep .ivu-radio-wrapper {
   background: transparent !important;
