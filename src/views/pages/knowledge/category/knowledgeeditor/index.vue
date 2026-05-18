@@ -48,7 +48,7 @@
         <div
           ref="editorWrapper"
           class="editor-content-box"
-          @mousemove="handleMouseMove"
+          @mousemove="handleEditorMouseMove"
           @mouseleave="handleEditorMouseLeave"
           @click="handleClickPlus"
         >
@@ -79,6 +79,7 @@
           ></SelectContentMenu>
           <TableHoverLayer
             v-show="isShowTableMenu && isContentEditable"
+            ref="tableHoverLayerRef"
             :table-menu-position="tableMenuPosition"
             :table-uuid="tableUuid"
             :row-height-list="rowHeightList"
@@ -688,6 +689,118 @@ export default {
         }
       }
     },
+    handleEditorMouseMove(event) {
+      if (this.showTableMenuByControlArea(event)) {
+        this.handleMouseMove?.cancel && this.handleMouseMove.cancel();
+        return;
+      }
+      const editorEl = this.$refs.editorWrapper?.querySelector?.('.ProseMirror');
+      if (!editorEl?.contains(event.target)) {
+        this.clearTableRowColHighlight();
+        return;
+      }
+      this.handleMouseMove(event);
+    },
+    showTableMenuByControlArea(event) {
+      if (!this.isContentEditable || this.isDraggingBlock) {
+        return false;
+      }
+      if (event.target?.closest?.('table')) {
+        return false;
+      }
+      const tableTarget = this.getTableControlAreaHoverTarget(event);
+      if (!tableTarget) {
+        return false;
+      }
+      const editorWrapperRect = this.$refs.editorWrapper?.getBoundingClientRect?.();
+      if (!editorWrapperRect) {
+        return false;
+      }
+      this.lastMouseEvent = event;
+      this.cancelBlockMenuHide();
+      this.$set(this.blockMenuNodeConfig, 'type', 'table');
+      this.$set(this.blockMenuNodeConfig, 'attrs', tableTarget.attrs);
+      this.updateTableHoverState({
+        ...tableTarget,
+        editorWrapperRect
+      });
+      this.isShowLinkHover = false;
+      this.linkHoverConfig = {};
+      return true;
+    },
+    getTableControlAreaHoverTarget(event) {
+      const editorEl = this.$refs.editorWrapper?.querySelector?.('.ProseMirror');
+      const topHandleSize = 10;
+      const leftHandleSize = 54;
+      if (!editorEl) {
+        return null;
+      }
+      const tableList = Array.from(editorEl.querySelectorAll('table[data-block-uuid], .tableWrapper[data-block-uuid]'));
+      for (const tableDom of tableList) {
+        const tableEl = tableDom.tagName === 'TABLE' ? tableDom : tableDom.querySelector('table');
+        const tableUuid = tableDom.dataset.blockUuid || tableEl?.dataset?.blockUuid;
+        if (!tableEl || !tableUuid) {
+          continue;
+        }
+        const nodeRect = tableEl.getBoundingClientRect?.();
+        if (!nodeRect) {
+          continue;
+        }
+        const isInTopControl =
+          event.clientX >= nodeRect.left &&
+          event.clientX <= nodeRect.right &&
+          event.clientY >= nodeRect.top - topHandleSize &&
+          event.clientY < nodeRect.top;
+        const isInLeftControl =
+          event.clientX >= nodeRect.left - leftHandleSize &&
+          event.clientX < nodeRect.left &&
+          event.clientY >= nodeRect.top &&
+          event.clientY <= nodeRect.bottom;
+        if (!isInTopControl && !isInLeftControl) {
+          continue;
+        }
+        const attrs = this.getTableAttrsByUuid(tableUuid);
+        if (!attrs?.blockUuid) {
+          continue;
+        }
+        return {
+          attrs,
+          nodeDom: tableEl.closest('.tableWrapper') || tableEl,
+          nodeRect
+        };
+      }
+      return null;
+    },
+    getTableAttrsByUuid(uuid) {
+      if (!uuid) {
+        return null;
+      }
+      let attrs = null;
+      this.editor?.state?.doc?.descendants((node) => {
+        if (node.type.name === 'table' && node.attrs?.blockUuid === uuid) {
+          attrs = { ...node.attrs };
+          return false;
+        }
+      });
+      return attrs;
+    },
+    updateTableHoverState({ attrs = {}, nodeDom, nodeRect, editorWrapperRect }) {
+      this.tableUuid = attrs?.blockUuid;
+      this.rowHeightList = getTableRowHeights(nodeDom);
+      this.isShowTableMenu = true;
+      this.isClearTableRowColHighlight = false;
+      this.hoverBlockDom = nodeDom;
+      this.tableMenuPosition = {
+        top: Number(nodeRect.top - editorWrapperRect.top).toFixed(0) <= 0 ? -10 : Number((nodeRect.top - editorWrapperRect.top).toFixed(0)) - 10,
+        left: Number((nodeRect.left - editorWrapperRect.left).toFixed(0))
+      };
+      this.isShowBlockMenu = true;
+      this.isEmptyRow = false;
+      this.menuPosition = {
+        top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
+        left: -50
+      };
+    },
     handleMouseMove: throttle(function(event) {
       if (!this.isContentEditable) {
         this.hidePlus();
@@ -728,17 +841,15 @@ export default {
       if (!nodeRect) return;
 
       if (type === 'table') {
-        this.tableUuid = attrs?.blockUuid;
-        this.rowHeightList = getTableRowHeights(nodeDom);
-        this.isShowTableMenu = true;
-        this.isClearTableRowColHighlight = false;
-        this.tableMenuPosition = {
-          top: Number(nodeRect.top - editorWrapperRect.top).toFixed(0) <= 0 ? -10 : Number((nodeRect.top - editorWrapperRect.top).toFixed(0)) - 10,
-          left: Number((nodeRect.left - editorWrapperRect.left).toFixed(0))
-        };
+        this.updateTableHoverState({
+          attrs,
+          nodeDom,
+          nodeRect,
+          editorWrapperRect
+        });
       } else {
         this.isShowTableMenu = false;
-        this.isClearTableRowColHighlight = true;
+        this.clearTableRowColHighlight();
       }
 
       if (linkType === 'link' && linkHref) {
@@ -753,12 +864,14 @@ export default {
         this.linkHoverConfig = {};
       }
 
-      this.isShowBlockMenu = true;
-      this.isEmptyRow = type === 'table' ? false : nodeContentIsEmpty;
-      this.menuPosition = {
-        top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
-        left: -50
-      };
+      if (type !== 'table') {
+        this.isShowBlockMenu = true;
+        this.isEmptyRow = nodeContentIsEmpty;
+        this.menuPosition = {
+          top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
+          left: -50
+        };
+      }
     }, 500),
     handleDocumentMouseMove(event) {
       this.lastMouseEvent = event;
@@ -876,7 +989,15 @@ export default {
       this.isShowBlockMenu = false;
       this.isShowTableMenu = false;
       this.isShowLinkHover = false;
+      this.clearTableRowColHighlight();
       this.hoverBlockDom = null;
+    },
+    clearTableRowColHighlight() {
+      this.isClearTableRowColHighlight = true;
+      this.$refs.tableHoverLayerRef?.clearSelected?.();
+      if (this.editor && !this.editor.isDestroyed && this.editor.commands?.clearTableHighlight) {
+        this.editor.commands.clearTableHighlight();
+      }
     },
     handleBlockDragStart(event) {
       if (!this.isContentEditable || !this.hoverBlockDom) {

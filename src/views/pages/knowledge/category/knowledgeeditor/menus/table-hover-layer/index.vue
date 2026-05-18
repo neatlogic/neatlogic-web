@@ -7,6 +7,7 @@
         left: `${tableMenuPosition.left}px`
       }"
       @click.stop
+      @mouseleave.stop="clearSelected"
     >
       <ul class="flex-start">
         <template v-if="getTableRowCount">
@@ -28,6 +29,7 @@
         left: `${tableMenuPosition.left - 10}px`
       }"
       @click.stop
+      @mouseleave.stop="clearSelected"
     >
       <ul>
         <template v-if="getTableColCount">
