@@ -797,6 +797,8 @@ export default {
         this.$Message.warning(this.$t('form.placeholder.pleaseselect', { target: this.$t('page.field') }));
         return;
       }
+      // 同步 TsTable 内部拖拽后的最新表头顺序，避免勾选隐藏字段并刷新数据时回退到父组件旧顺序
+      this.theadList = theadList.map(item => ({ ...item }));
       const oldDisplayedTheadFieldList = this.displayedTheadFieldList || [];
       const addedFieldList = visibleFieldList.filter(field => !oldDisplayedTheadFieldList.includes(field));
       this.displayedTheadFieldList = visibleFieldList;
@@ -1157,42 +1159,6 @@ export default {
       if (needFresh) {
         this.searchAssetData();
       }
-    },
-    // 巡检功能
-    implement(row, once) {
-      // combopId 树的id
-      let id = this.selectType.typeId;
-      let data = {};
-      if (once == 'one') {
-        // 点击具体的一个
-        id = row.id;
-        data = {
-          roundCount: 64,
-          combopId: '',
-          source: 'inspect',
-          param: {},
-          name: row.name + this.$t('term.inspect.inspect'),
-          typeLabel: row.typeLabel,
-          typeName: row.typeName,
-          executeConfig: {
-            executeNodeConfig: { selectNodeList: [{ id: id, ip: row.ip, name: row.name, port: row.port }] }
-          }
-        };
-      } else if (once == 'move') {
-        data = {
-          roundCount: 64,
-          combopId: '',
-          source: 'inspect',
-          param: {},
-          name: this.implementName,
-          executeConfig: {
-            executeNodeConfig: { filter: { typeIdList: [] } }
-          }
-        };
-      } else if (once == 'timing') {
-        // data = row;
-      }
-      this.$emit('implement', data, id, once);
     },
     restoreHistory(historyData) {
       this.searchVal = historyData['searchVal'];
