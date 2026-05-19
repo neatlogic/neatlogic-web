@@ -209,8 +209,9 @@
                         <span>{{ sqlRow.totalTimeCost }}{{ $t('page.ms') }}</span>
                       </template>
                       <template v-slot:sqlList="{ row: sqlRow }">
+                        <!-- SQL语句列改为读取sqlAuditList，逐条展示SQL执行耗时和缓存级别 -->
                         <Poptip
-                          v-if="sqlRow.sqlList && sqlRow.sqlList.length > 0"
+                          v-if="getSqlAuditList(sqlRow).length > 0"
                           trigger="hover"
                           :title="$t('term.framework.sqlsstatement')"
                           word-wrap
@@ -218,25 +219,26 @@
                           :transfer="true"
                           placement="left"
                         >
-                          <span class="tsfont-zirenwu" style="cursor:pointer">{{ sqlRow.sqlList.length }}</span>
+                          <span class="tsfont-zirenwu" style="cursor:pointer">{{ getSqlAuditList(sqlRow).length }}</span>
                           <div
                             slot="content"
                             class="fz10 scroll"
                             style="max-height:500px"
                           >
                             <div
-                              v-for="(sql, itemIndex) in sqlRow.sqlList"
+                              v-for="(sqlAudit, itemIndex) in getSqlAuditList(sqlRow)"
                               :key="itemIndex"
                               class="request-sql-content"
                             >
-                              <div :id="getRequestSqlDomId(row, sqlRow, itemIndex)">{{ sql }}</div>
+                              <div class="request-sql-meta text-grey">
+                                <span>{{ $t('page.timecost') }}：{{ sqlAudit.timeCost }}{{ $t('page.ms') }}</span>
+                                <span class="ml-sm">{{ $t('page.cache') }}：{{ getSqlAuditCacheLevel(sqlAudit) }}</span>
+                              </div>
+                              <div :id="getRequestSqlDomId(row, sqlRow, itemIndex)">{{ sqlAudit.sql }}</div>
                               <div style="text-align:right"><Button size="small" @click="copySql('#' + getRequestSqlDomId(row, sqlRow, itemIndex))">{{ $t('page.copy') }}</Button></div>
                             </div>
                           </div>
                         </Poptip>
-                      </template>
-                      <template v-slot:useCacheLevelList="{ row: sqlRow }">
-                        <span>{{ getCacheLevelText(sqlRow.useCacheLevelList) }}</span>
                       </template>
                     </TsTable>
                   </div>
@@ -305,7 +307,6 @@ export default {
         { key: 'totalTimeCost', title: this.$t('page.timecost'), width: 120 },
         { key: 'notUseCacheTotalTimeCost', title: '未用缓存耗时(ms)', width: 160 },
         { key: 'notUseCacheCount', title: '未用缓存次数', width: 140 },
-        { key: 'useCacheLevelList', title: this.$t('page.cache'), width: 160 },
         { key: 'sqlList', title: this.$t('term.framework.sqlsstatement'), width: 120 }
       ],
       fromPath: '',
@@ -374,9 +375,14 @@ export default {
       // 复制SQL需要稳定的DOM id，替换url和sqlId中的特殊字符以避免选择器失效
       return ('request_sql_' + requestRow.runTime + '_' + sqlRow.id + '_' + itemIndex).replace(/[^A-Za-z0-9_-]/g, '_');
     },
-    getCacheLevelText(useCacheLevelList) {
-      // 缓存级别数组按SQL执行顺序合并展示，空值统一显示为未使用缓存
-      return (useCacheLevelList || []).map(item => item || '未使用缓存').join(' / ') || '-';
+    getSqlAuditList(sqlRow) {
+      // SQL语句列按新的sqlAuditList取数，确保每条SQL能同时拿到耗时和缓存级别
+      console.log(sqlRow.sqlAuditList, 'sqlRow.sqlAuditList');
+      return sqlRow.sqlAuditList || [];
+    },
+    getSqlAuditCacheLevel(sqlAudit) {
+      // 单条SQL未命中缓存时后端返回空字符串，前端统一显示为未使用缓存
+      return sqlAudit.useCacheLevel || '未使用缓存';
     },
     getDataSourceInfo() {
       if (this.timerDatasource) {
@@ -500,6 +506,10 @@ export default {
 }
 .request-sql-content {
   margin-top: 6px;
+}
+/* URL监控SQL弹窗中展示单条SQL的耗时和缓存信息，和SQL正文保持轻量分隔 */
+.request-sql-meta {
+  margin-bottom: 4px;
 }
 ::v-deep .ivu-radio-wrapper {
   background: transparent !important;
