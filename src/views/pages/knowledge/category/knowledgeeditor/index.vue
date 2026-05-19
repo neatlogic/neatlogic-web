@@ -100,13 +100,6 @@
           ></div>
         </div>
       </div>
-      <Button
-        v-if="showDebugButton"
-        style="position: absolute; right: 20px; top: 10px"
-        type="primary"
-        class="mr-xs"
-        @click="getData()"
-      >保存</Button>
     </div>
     <SearchReplaceDialog
       v-if="isShowSearchReplaceDialog && isContentEditable"
@@ -310,9 +303,6 @@ export default {
     this.cleanupEditorRuntime();
   },
   methods: {
-    getData() {
-      console.log(this.editor.getJSON());
-    },
     createEditor() {
       if (this.editor && !this.editor.isDestroyed) {
         return;
