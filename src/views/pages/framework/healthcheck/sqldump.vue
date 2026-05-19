@@ -178,7 +178,13 @@
               </TsTable>
             </TabPane>
             <TabPane label="URL监控" name="url">
-              <TsTable v-if="requestSqlAuditData" v-bind="requestSqlAuditData" @changeCurrent="searchRequestSql">
+              <TsTable
+                v-if="requestSqlAuditData"
+                v-bind="requestSqlAuditData"
+                :canExpand="true"
+                @toggleExpand="toggleRequestExpand"
+                @changeCurrent="searchRequestSql"
+              >
                 <template v-slot:totalTimeCost="{ row }">
                   <div>
                     <Progress :status="row.totalTimeCost < 1000 ? 'normal' : 'wrong'" :percent="getPercent(row.totalTimeCost, maxRequestTimeCost)" :stroke-width="10">
@@ -186,40 +192,54 @@
                     </Progress>
                   </div>
                 </template>
-                <template v-slot:sameIdSqlAuditList="{ row, index }">
-                  <Poptip
-                    v-if="row.sameIdSqlAuditList && row.sameIdSqlAuditList.length > 0"
-                    trigger="hover"
-                    title="请求SQL明细"
-                    word-wrap
-                    width="800"
-                    :transfer="true"
-                    placement="left"
-                  >
-                    <span class="tsfont-zirenwu" style="cursor:pointer">{{ row.sqlCount }}</span>
-                    <div
-                      slot="content"
-                      class="fz10 scroll"
-                      style="max-height:500px"
+                <template v-slot:expand="{ row }">
+                  <!-- URL监控每一行通过展开区域嵌套展示sameIdSqlAuditList明细表格 -->
+                  <div class="request-sql-expand">
+                    <TsTable
+                      v-bind="getRequestSqlDetailData(row)"
+                      :showPager="false"
+                      :canResize="false"
                     >
-                      <div
-                        v-for="(sqlAudit, sqlIndex) in row.sameIdSqlAuditList"
-                        :key="sqlAudit.id + '_' + sqlIndex"
-                        class="request-sql-item"
-                      >
-                        <div class="text-title">{{ sqlAudit.id }}</div>
-                        <div>{{ $t('page.timecost') }}：{{ sqlAudit.totalTimeCost }}{{ $t('page.ms') }}</div>
-                        <div
-                          v-for="(sql, itemIndex) in sqlAudit.sqlList"
-                          :key="itemIndex"
-                          class="request-sql-content"
+                      <template v-slot:id="{ row: sqlRow }">
+                        <Tooltip :content="sqlRow.id" max-width="400">
+                          {{ sqlRow.id.substring(sqlRow.id.lastIndexOf('.') + 1) }}
+                        </Tooltip>
+                      </template>
+                      <template v-slot:totalTimeCost="{ row: sqlRow }">
+                        <span>{{ sqlRow.totalTimeCost }}{{ $t('page.ms') }}</span>
+                      </template>
+                      <template v-slot:sqlList="{ row: sqlRow }">
+                        <Poptip
+                          v-if="sqlRow.sqlList && sqlRow.sqlList.length > 0"
+                          trigger="hover"
+                          :title="$t('term.framework.sqlsstatement')"
+                          word-wrap
+                          width="800"
+                          :transfer="true"
+                          placement="left"
                         >
-                          <div :id="'request_sql_' + index + '_' + sqlIndex + '_' + itemIndex">{{ sql }}</div>
-                          <div style="text-align:right"><Button size="small" @click="copySql('#request_sql_' + index + '_' + sqlIndex + '_' + itemIndex)">{{ $t('page.copy') }}</Button></div>
-                        </div>
-                      </div>
-                    </div>
-                  </Poptip>
+                          <span class="tsfont-zirenwu" style="cursor:pointer">{{ sqlRow.sqlList.length }}</span>
+                          <div
+                            slot="content"
+                            class="fz10 scroll"
+                            style="max-height:500px"
+                          >
+                            <div
+                              v-for="(sql, itemIndex) in sqlRow.sqlList"
+                              :key="itemIndex"
+                              class="request-sql-content"
+                            >
+                              <div :id="getRequestSqlDomId(row, sqlRow, itemIndex)">{{ sql }}</div>
+                              <div style="text-align:right"><Button size="small" @click="copySql('#' + getRequestSqlDomId(row, sqlRow, itemIndex))">{{ $t('page.copy') }}</Button></div>
+                            </div>
+                          </div>
+                        </Poptip>
+                      </template>
+                      <template v-slot:useCacheLevelList="{ row: sqlRow }">
+                        <span>{{ getCacheLevelText(sqlRow.useCacheLevelList) }}</span>
+                      </template>
+                    </TsTable>
+                  </div>
                 </template>
               </TsTable>
             </TabPane>
@@ -267,16 +287,26 @@ export default {
         { key: 'useCacheLevel', title: this.$t('page.cache') },
         { key: 'sql', title: this.$t('term.framework.sqlsstatement') }
       ],
+      // URL监控主表增加展开列，用于在每个请求行下方展示sameIdSqlAuditList嵌套表格
       requestTheadList: [
+        { key: 'expander', width: 40 },
         { key: 'totalTimeCost', title: this.$t('page.timecost'), width: 200 },
         { key: 'url', title: 'url' },
         { key: 'threadName', title: '线程' },
         { key: 'tenant', title: this.$t('page.tenant') },
         { key: 'userId', title: this.$t('page.user') },
         { key: 'sqlCount', title: 'SQL数量' },
-        { key: 'notUseCacheTotalTimeCost', title: '未用缓存耗时(ms)' },
-        { key: 'runTime', title: this.$t('term.autoexec.executiontime'), type: 'time' },
-        { key: 'sameIdSqlAuditList', title: this.$t('term.framework.sqlsstatement') }
+        { key: 'notUseCacheTotalTimeCost', title: '未用缓存耗时(ms)', width: 160 },
+        { key: 'runTime', title: this.$t('term.autoexec.executiontime'), type: 'time' }
+      ],
+      // URL监控嵌套表格表头，用于展示每个请求内按sqlId聚合后的SQL明细
+      requestSqlDetailTheadList: [
+        { key: 'id', title: 'id' },
+        { key: 'totalTimeCost', title: this.$t('page.timecost'), width: 120 },
+        { key: 'notUseCacheTotalTimeCost', title: '未用缓存耗时(ms)', width: 160 },
+        { key: 'notUseCacheCount', title: '未用缓存次数', width: 140 },
+        { key: 'useCacheLevelList', title: this.$t('page.cache'), width: 160 },
+        { key: 'sqlList', title: this.$t('term.framework.sqlsstatement'), width: 120 }
       ],
       fromPath: '',
       leftHeight: 0,
@@ -315,6 +345,38 @@ export default {
         return 0;
       }
       return (value / maxValue) * 100;
+    },
+    setRequestSqlAuditExpandStatus(tbodyList) {
+      // URL监控主表需要把sameIdSqlAuditList作为嵌套表格直接展示，有明细的请求行默认展开
+      (tbodyList || []).forEach(row => {
+        const hasDetail = !!(row.sameIdSqlAuditList && row.sameIdSqlAuditList.length > 0);
+        this.$set(row, '#expander', hasDetail);
+        this.$set(row, '_expand', hasDetail);
+      });
+      return tbodyList || [];
+    },
+    toggleRequestExpand(row, isExpand) {
+      // URL监控展开按钮只维护当前请求行的_expand状态，兼容表头全展开传入的布尔值
+      this.$set(row, '_expand', typeof isExpand === 'boolean' ? isExpand : !row._expand);
+    },
+    getRequestSqlDetailData(row) {
+      // 将后端返回的sameIdSqlAuditList转换成嵌套TsTable需要的数据结构
+      const tbodyList = row.sameIdSqlAuditList || [];
+      return {
+        theadList: this.requestSqlDetailTheadList,
+        tbodyList: tbodyList,
+        rowNum: tbodyList.length,
+        currentPage: 1,
+        pageSize: 0
+      };
+    },
+    getRequestSqlDomId(requestRow, sqlRow, itemIndex) {
+      // 复制SQL需要稳定的DOM id，替换url和sqlId中的特殊字符以避免选择器失效
+      return ('request_sql_' + requestRow.runTime + '_' + sqlRow.id + '_' + itemIndex).replace(/[^A-Za-z0-9_-]/g, '_');
+    },
+    getCacheLevelText(useCacheLevelList) {
+      // 缓存级别数组按SQL执行顺序合并展示，空值统一显示为未使用缓存
+      return (useCacheLevelList || []).map(item => item || '未使用缓存').join(' / ') || '-';
     },
     getDataSourceInfo() {
       if (this.timerDatasource) {
@@ -383,6 +445,8 @@ export default {
         this.sqlAuditData.theadList = this.theadList;
         this.requestSqlAuditData = res.Return.requestSqlAuditData || {};
         this.requestSqlAuditData.theadList = this.requestTheadList;
+        // URL监控查询完成后补充展开状态，确保sameIdSqlAuditList按嵌套表格显示
+        this.requestSqlAuditData.tbodyList = this.setRequestSqlAuditExpandStatus(this.requestSqlAuditData.tbodyList);
         this.maxTimeCost = res.Return.maxTimeCost;
         this.maxRequestTimeCost = res.Return.maxRequestTimeCost;
         this.sqlIdList = res.Return.sqlIdList;
@@ -426,7 +490,12 @@ export default {
   display: inline-block;
   float: right;
 }
-.request-sql-item + .request-sql-item {
+/* URL监控展开区承载嵌套TsTable，留出内边距避免子表贴边 */
+.request-sql-expand {
+  padding: 8px 16px;
+}
+/* URL监控SQL内容列表在复制弹窗内分隔展示，提升多条SQL的可读性 */
+.request-sql-content + .request-sql-content {
   margin-top: 10px;
 }
 .request-sql-content {
