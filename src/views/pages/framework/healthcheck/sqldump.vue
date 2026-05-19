@@ -348,11 +348,11 @@ export default {
       return (value / maxValue) * 100;
     },
     setRequestSqlAuditExpandStatus(tbodyList) {
-      // URL监控主表需要把sameIdSqlAuditList作为嵌套表格直接展示，有明细的请求行默认展开
+      // URL监控主表保留sameIdSqlAuditList嵌套表格入口，有明细的请求行默认不展开
       (tbodyList || []).forEach(row => {
         const hasDetail = !!(row.sameIdSqlAuditList && row.sameIdSqlAuditList.length > 0);
         this.$set(row, '#expander', hasDetail);
-        this.$set(row, '_expand', hasDetail);
+        this.$set(row, '_expand', false);
       });
       return tbodyList || [];
     },
