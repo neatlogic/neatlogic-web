@@ -163,6 +163,8 @@
                     width="700"
                     :transfer="true"
                     placement="left"
+                    @on-popper-show="pauseAutoRefreshBySqlPoptip"
+                    @on-popper-hide="resumeAutoRefreshAfterSqlPoptipHide"
                   >
                     <span class="tsfont-zirenwu" style="cursor:pointer"></span>
                     <div
@@ -271,6 +273,7 @@ export default {
       timer: null,
       timerDatasource: null,
       isAutoRefreshPausedByExpand: false,
+      isAutoRefreshPausedBySqlPoptip: false,
       sqlIdList: [],
       urlList: [],
       activeTab: 'sql',
@@ -392,6 +395,20 @@ export default {
       // 所有URL嵌套表格关闭后，只恢复由展开动作临时暂停的自动刷新
       if (!this.hasExpandedRequestSqlRow() && this.isAutoRefreshPausedByExpand) {
         this.isAutoRefreshPausedByExpand = false;
+        this.isAutoRefresh = true;
+      }
+    },
+    pauseAutoRefreshBySqlPoptip() {
+      // 查看SQL ID表格的SQL语句时，仅暂停原本开启的自动刷新，避免弹窗被刷新数据冲掉
+      if (this.isAutoRefresh) {
+        this.isAutoRefreshPausedBySqlPoptip = true;
+        this.isAutoRefresh = false;
+      }
+    },
+    resumeAutoRefreshAfterSqlPoptipHide() {
+      // SQL语句弹窗关闭后，只恢复由弹窗查看动作临时暂停的自动刷新
+      if (this.isAutoRefreshPausedBySqlPoptip) {
+        this.isAutoRefreshPausedBySqlPoptip = false;
         this.isAutoRefresh = true;
       }
     },
