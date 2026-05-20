@@ -270,6 +270,7 @@ export default {
       datasourceData: {},
       timer: null,
       timerDatasource: null,
+      isAutoRefreshPausedByExpand: false,
       sqlIdList: [],
       urlList: [],
       activeTab: 'sql',
@@ -370,6 +371,29 @@ export default {
     toggleRequestExpand(row, isExpand) {
       // URL监控展开按钮只维护当前请求行的_expand状态，兼容表头全展开传入的布尔值
       this.$set(row, '_expand', typeof isExpand === 'boolean' ? isExpand : !row._expand);
+      if (row._expand) {
+        this.pauseAutoRefreshByRequestExpand();
+      } else {
+        this.resumeAutoRefreshAfterRequestCollapse();
+      }
+    },
+    hasExpandedRequestSqlRow() {
+      // 判断URL监控表格中是否仍有展开的嵌套表格，用于决定是否恢复自动刷新
+      return !!(this.requestSqlAuditData && this.requestSqlAuditData.tbodyList && this.requestSqlAuditData.tbodyList.some(row => row._expand));
+    },
+    pauseAutoRefreshByRequestExpand() {
+      // 展开URL嵌套表格时仅暂停原本开启的自动刷新，记录暂停来源避免误恢复用户手动关闭的刷新
+      if (this.isAutoRefresh) {
+        this.isAutoRefreshPausedByExpand = true;
+        this.isAutoRefresh = false;
+      }
+    },
+    resumeAutoRefreshAfterRequestCollapse() {
+      // 所有URL嵌套表格关闭后，只恢复由展开动作临时暂停的自动刷新
+      if (!this.hasExpandedRequestSqlRow() && this.isAutoRefreshPausedByExpand) {
+        this.isAutoRefreshPausedByExpand = false;
+        this.isAutoRefresh = true;
+      }
     },
     getRequestSqlDetailData(row) {
       // 将后端返回的sameIdSqlAuditList转换成嵌套TsTable需要的数据结构
@@ -388,7 +412,6 @@ export default {
     },
     getSqlAuditList(sqlRow) {
       // SQL语句列按新的sqlAuditList取数，确保每条SQL能同时拿到耗时和缓存级别
-      console.log(sqlRow.sqlAuditList, 'sqlRow.sqlAuditList');
       return sqlRow.sqlAuditList || [];
     },
     getSqlAuditCacheLevel(sqlAudit) {
