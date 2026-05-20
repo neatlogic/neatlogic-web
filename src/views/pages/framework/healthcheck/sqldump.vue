@@ -273,6 +273,7 @@ export default {
       sqlIdList: [],
       urlList: [],
       activeTab: 'sql',
+      isInitDefaultTab: false,
       isDialogShow: false,
       isStatusDialogShow: false,
       searchParam: { orderBy: 'runtime', id: '', url: '' },
@@ -339,6 +340,16 @@ export default {
     },
     openStatusDialog() {
       this.isStatusDialogShow = true;
+    },
+    setDefaultActiveTab() {
+      // 页面首次进入时根据两张表是否有数据选择默认Tab，后续刷新不再覆盖用户手动选择
+      if (this.isInitDefaultTab) {
+        return;
+      }
+      const hasSqlAudit = !!(this.sqlAuditData && this.sqlAuditData.tbodyList && this.sqlAuditData.tbodyList.length > 0);
+      const hasRequestSqlAudit = !!(this.requestSqlAuditData && this.requestSqlAuditData.tbodyList && this.requestSqlAuditData.tbodyList.length > 0);
+      this.activeTab = !hasSqlAudit && hasRequestSqlAudit ? 'url' : 'sql';
+      this.isInitDefaultTab = true;
     },
     getPercent(value, maxValue) {
       // 进度条最大值可能为0，统一兜底避免NaN影响表格渲染
@@ -453,6 +464,8 @@ export default {
         this.requestSqlAuditData.theadList = this.requestTheadList;
         // URL监控查询完成后补充展开状态，确保sameIdSqlAuditList按嵌套表格显示
         this.requestSqlAuditData.tbodyList = this.setRequestSqlAuditExpandStatus(this.requestSqlAuditData.tbodyList);
+        // 首次加载完成两张表数据后再判断默认Tab，兼容SQL ID和URL监控任一表有数据的场景
+        this.setDefaultActiveTab();
         this.maxTimeCost = res.Return.maxTimeCost;
         this.maxRequestTimeCost = res.Return.maxRequestTimeCost;
         this.sqlIdList = res.Return.sqlIdList;
