@@ -1,5 +1,10 @@
 export { default as textWidgetConfig } from './original/text-widget-config.vue';
 export { default as imageWidgetConfig } from './original/image-widget-config.vue';
+export { default as metricWidgetConfig } from './others/metric-widget-config.vue';
+export { default as rankingWidgetConfig } from './others/ranking-widget-config.vue';
+export { default as flowlineWidgetConfig } from './effects/flowline-widget-config.vue';
+export { default as scanlightWidgetConfig } from './effects/scanlight-widget-config.vue';
+export { default as topologyflowWidgetConfig } from './effects/topologyflow-widget-config.vue';
 export { default as tableWidgetConfig } from './original/table-widget-config.vue';
 export { default as pieWidgetConfig } from './original/pie-widget-config.vue';
 export { default as radarWidgetConfig } from './original/radar-widget-config.vue';

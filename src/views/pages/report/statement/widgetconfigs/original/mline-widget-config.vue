@@ -6,7 +6,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormSwitch
-          :value="config.legend.visible"
+          :value="config.legend?.visible"
           :true-value="true"
           :false-value="false"
           @change="
@@ -17,13 +17,13 @@
         ></TsFormSwitch>
       </div>
     </div>
-    <div v-if="config.legend.visible" class="ivu-form-item tsform-item ivu-form-label-top">
+    <div v-if="config.legend?.visible" class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">
         {{ $t('term.report.axis.legendposition') }}
       </label>
       <div class="ivu-form-item-content">
         <TsFormSelect
-          :value="config.legend.position"
+          :value="config.legend?.position"
           :transfer="true"
           :clearable="false"
           :dataList="positionList"
@@ -62,7 +62,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormInput
-          :value="config.yAxis.title && config.yAxis.title.text"
+          :value="config.yAxis?.title?.text"
           border="border"
           @change="
             val => {
@@ -105,7 +105,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormInput
-          :value="config.xAxis.title && config.xAxis.title.text"
+          :value="config.xAxis?.title?.text"
           border="border"
           @change="
             val => {
@@ -134,7 +134,7 @@
     </div>
     <TsFormItem :label="$t('term.report.showdata')" labelPosition="top">
       <TsFormSwitch
-        :value="config?.label?.hasOwnProperty('visible') ? config.label.visible : false"
+        :value="config?.label?.hasOwnProperty('visible') ? config?.label?.visible : false"
         :true-value="true"
         :false-value="false"
         @change="
@@ -146,7 +146,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.report.statisticcolor')" labelPosition="top">
       <ColorPicker
-        :value="config.label && config.label.style && config.label.style.fill || ''"
+        :value="config.label?.style?.fill || ''"
         :transfer="true"
         alpha
         recommend
@@ -177,7 +177,7 @@
     </TsFormItem>
     <TsFormItem label="辅助线" labelPosition="top">
       <TsFormSwitch
-        :value="!!config?.yAxis?.hasOwnProperty('grid')?!!config.yAxis.grid:true"
+        :value="config?.yAxis?.hasOwnProperty('grid') ? !!config?.yAxis?.grid : true"
         :true-value="true"
         :false-value="false"
         @change="

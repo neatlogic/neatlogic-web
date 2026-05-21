@@ -1,4 +1,26 @@
 import * as themes from '../widgetthemes/index.js';
+
+function mergeWidgetConfig(defaultConfig, currentConfig) {
+  const result = Array.isArray(defaultConfig) ? [...defaultConfig] : { ...(defaultConfig || {}) };
+  Object.keys(currentConfig || {}).forEach(key => {
+    const currentValue = currentConfig[key];
+    const defaultValue = result[key];
+    if (
+      currentValue &&
+      typeof currentValue === 'object' &&
+      !Array.isArray(currentValue) &&
+      defaultValue &&
+      typeof defaultValue === 'object' &&
+      !Array.isArray(defaultValue)
+    ) {
+      result[key] = mergeWidgetConfig(defaultValue, currentValue);
+    } else {
+      result[key] = currentValue;
+    }
+  });
+  return result;
+}
+
 export const WidgetBase = {
   props: {
     width: { type: Number },
@@ -48,8 +70,9 @@ export const WidgetBase = {
           res.Return.tbodyList.forEach(element => {
             const d = {};
             if (this.widgetComponent.fields && this.widgetComponent.fields.length > 0) {
+              const widgetFields = this.widget.fields || [];
               this.widgetComponent.fields.forEach(field => {
-                const f = this.widget.fields.find(d => d.name === field.name);
+                const f = widgetFields.find(d => d.name === field.name);
                 if (f) {
                   d[field.name] = element['field_' + f.datasourceField];
                 }
@@ -95,6 +118,22 @@ export const WidgetBase = {
         return a;
       }
       return a;
+    },
+    isDynamicDataReady(widget) {
+      if (!widget || widget.dataType !== 'dynamic' || !widget.datasourceId) {
+        return false;
+      }
+      if (!this.widgetComponent.fields || this.widgetComponent.fields.length === 0) {
+        return true;
+      }
+      const widgetFields = widget.fields || [];
+      // 只要求必填字段完成绑定，可选字段未绑定时不阻塞动态数据加载。
+      return this.widgetComponent.fields
+        .filter(field => field.isRequired !== false)
+        .every(field => {
+          const bindField = widgetFields.find(item => item.name === field.name);
+          return bindField && bindField.datasourceField;
+        });
     }
   },
   beforeDestroy() {
@@ -124,7 +163,8 @@ export const WidgetBase = {
         const widget = val;
         if (widget) {
           //合并图形配置
-          Object.assign(this.chartConfig, widget.config);
+          // 深度合并图形配置，避免旧报表的局部配置覆盖掉组件默认嵌套配置。
+          this.chartConfig = mergeWidgetConfig(this.chartConfig, widget.config || {});
           if (!this.oldChartConfig) {
             //旧配置为空代表是首次加载
             this.oldChartConfig = this.$utils.deepClone(this.chartConfig);
@@ -135,7 +175,7 @@ export const WidgetBase = {
                 d[element.name] = element.value;
                 this.data.push(d);
               });
-            } else if (widget.dataType === 'dynamic' && widget.datasourceId && (!this.widgetComponent.fields || this.widgetComponent.fields.length == 0 || (widget.fields && widget.fields.length == this.widgetComponent.fields.length && widget.fields.filter(d => !d.datasourceField).length == 0))) {
+            } else if (this.isDynamicDataReady(widget)) {
               await this.getData(true);
             } else {
               await this.createRandomData();
@@ -178,7 +218,7 @@ export const WidgetBase = {
                 this.data.push(d);
               });
               this.changeData();
-            } else if (widget.dataType === 'dynamic' && widget.datasourceId && (!this.widgetComponent.fields || this.widgetComponent.fields.length == 0 || (widget.fields && widget.fields.length == this.widgetComponent.fields.length && widget.fields.filter(d => !d.datasourceField).length == 0))) {
+            } else if (this.isDynamicDataReady(widget)) {
               this.getData();
             } else {
               this.createRandomData();

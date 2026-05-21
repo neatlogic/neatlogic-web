@@ -48,7 +48,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormSelect
-          :value="config.pattern.type"
+          :value="config.pattern?.type"
           :dataList="[
             { value: '', text: $t('term.report.purecolor') },
             { value: 'dot', text: $t('term.report.dot') },
@@ -71,7 +71,7 @@
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.outline.border"
+            :value="config.outline?.border || 0"
             :min="0"
             :max="10"
             :step="1"
@@ -92,7 +92,7 @@
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.outline.distance"
+            :value="config.outline?.distance || 0"
             :min="0"
             :max="10"
             :step="1"
@@ -112,7 +112,7 @@
       </label>
       <div class="ivu-form-item-content">
         <ColorPicker
-          :value="config.outline.style.stroke"
+          :value="config.outline?.style?.stroke"
           :transfer="true"
           alpha
           recommend
@@ -133,7 +133,7 @@
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.wave.length"
+            :value="config.wave?.length || 50"
             :min="50"
             :max="300"
             :step="1"
@@ -154,7 +154,7 @@
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.statistic.content.style.fontSize"
+            :value="config.statistic?.content?.style?.fontSize || 20"
             :min="12"
             :max="80"
             :step="1"
@@ -172,7 +172,7 @@
       </label>
       <div class="ivu-form-item-content">
         <ColorPicker
-          :value="config.statistic.content.style.color"
+          :value="config.statistic?.content?.style?.color"
           :transfer="true"
           alpha
           recommend

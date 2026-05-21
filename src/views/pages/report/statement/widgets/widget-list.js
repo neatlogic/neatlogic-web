@@ -2,12 +2,18 @@ import {$t} from '@/resources/init.js';
 
 export const WIDGET_TYPES = [
   { name: 'basic', label: $t('term.report.basicwidget') },
+  { name: 'effect', label: '效果组件' },
   //{ name: 'geography', label: '地理组件' },
   { name: 'other', label: $t('term.report.otherwidget') }
 ];
 import { default as text } from './define/text.js';
 import { default as image } from './define/image.js';
 
+import { default as metric } from './define/metric.js';
+import { default as ranking } from './define/ranking.js';
+import { default as flowline } from './define/flowline.js';
+import { default as scanlight } from './define/scanlight.js';
+import { default as topologyflow } from './define/topologyflow.js';
 //import { default as table } from './define/table.js';
 import { default as pie } from './define/pie.js';
 import { default as radar } from './define/radar.js';
@@ -42,6 +48,12 @@ import { default as autoexec } from './define/autoexec.js';
 export const WIDGETS = [
   text,
   image,
+  metric,
+  ranking,
+  flowline,
+  scanlight,
+  point,
+  topologyflow,
   //table,
   pie,
   radar,
@@ -62,7 +74,6 @@ export const WIDGETS = [
   //firework,
   //spark,
   funnel,
-  point,
   gauge,
   liquid,
   scatter,

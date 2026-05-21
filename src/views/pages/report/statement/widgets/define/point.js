@@ -5,11 +5,12 @@ export default {
   label: $t('term.report.chartsetting.pointchart'), 
   type: 'point', 
   icon: 'tsfont-chart-scatterbubble', 
-  widgetType: 'other', 
+  widgetType: 'effect',
   width: 200, 
   height: 200, 
   padding: 5, 
   config: { 
+    fpsLimit: 30,
     background: { 
       color: { 
         value: '' 

@@ -45,7 +45,6 @@ export default {
         this.plot.destroy();
         this.plot = null;
       }
-      console.log(this.data);
       if (this.$refs.container) {
         this.plot = new Choropleth(this.$refs.container, {
           ...this.chartConfig, source: {
@@ -59,7 +58,6 @@ export default {
       }
     },
     changeData() {
-      console.log(JSON.stringify(this.data, null, 2));
       // this.polt.changeView({ adcode, level }, { source: { data } });
     }
   },

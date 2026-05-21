@@ -19,7 +19,7 @@
             <span>开始</span>
           </div>
         </div>
-        <span class="step_a tsfont-arrow-down" :style="{'color': widget?.config.arrowcolor || '#25b864'}"></span>
+        <span class="step_a tsfont-arrow-down" :style="{'color': widget?.config?.arrowcolor || '#25b864'}"></span>
       </div>
       <div
         v-for="(item,index) in dataList"
@@ -36,7 +36,7 @@
             <span>{{ litem.jobPhaseName }}</span>
           </div>
         </div>
-        <span class="step_a tsfont-arrow-down" :style="{'color': widget?.config.arrowcolor || '#25b864'}"></span>
+        <span class="step_a tsfont-arrow-down" :style="{'color': widget?.config?.arrowcolor || '#25b864'}"></span>
       </div>
       <div class="item-list">
         <div class="step-content">
@@ -87,8 +87,9 @@ export default {
   beforeMount() {},
   mounted() {
     this.$nextTick(() => {
-      if (this.widget?.config.statusColorList && this.widget.config.statusColorList.length) {
-        this.statusColorList = this.widget?.config.statusColorList;
+      const statusColorList = this.widget?.config?.statusColorList;
+      if (statusColorList && statusColorList.length) {
+        this.statusColorList = statusColorList;
       }
     });
   },

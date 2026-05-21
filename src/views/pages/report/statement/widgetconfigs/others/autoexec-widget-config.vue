@@ -149,8 +149,9 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.config.statusColorList && this.config.statusColorList.length) {
-      this.statusColorList = this.config.statusColorList;
+    const statusColorList = this.config?.statusColorList;
+    if (statusColorList && statusColorList.length) {
+      this.statusColorList = statusColorList;
     }
   },
   beforeMount() {},

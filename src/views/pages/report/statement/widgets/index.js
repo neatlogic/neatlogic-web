@@ -1,5 +1,10 @@
 export { default as textwidget } from './original/text-widget.vue';
 export { default as imagewidget } from './original/image-widget.vue';
+export { default as metricwidget } from './others/metric-widget.vue';
+export { default as rankingwidget } from './others/ranking-widget.vue';
+export { default as flowlinewidget } from './effects/flowline-widget.vue';
+export { default as scanlightwidget } from './effects/scanlight-widget.vue';
+export { default as topologyflowwidget } from './effects/topologyflow-widget.vue';
 export { default as tablewidget } from './original/table-widget.vue';
 export { default as piewidget } from './original/pie-widget.vue';
 export { default as radarwidget } from './original/radar-widget.vue';
