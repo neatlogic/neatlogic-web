@@ -16,7 +16,7 @@
           :style="getFlowStyle(flowIndex, index)"
         ></path>
       </template>
-      <g v-if="config.showNodes !== false">
+      <g v-if="showNodes">
         <g v-for="(node, index) in nodeList" :key="'node-' + index" class="topology-node">
           <circle
             v-if="nodeStyle === 'pulse'"
@@ -109,8 +109,17 @@ export default {
     isLowPerformance() {
       return this.config.lowPerformance === true;
     },
+    isAmbient() {
+      return this.config.renderMode === 'ambient';
+    },
+    isPerformanceReduced() {
+      return this.isLowPerformance || this.isAmbient;
+    },
+    showNodes() {
+      return !this.isAmbient && this.config.showNodes !== false;
+    },
     flowCount() {
-      if (this.isLowPerformance) {
+      if (this.isPerformanceReduced) {
         return 1;
       }
       return clampNumber(this.config.flowDensity, 1, 3, 1);
@@ -125,22 +134,23 @@ export default {
       return clampNumber(this.config.nodeSize, 2, 12, 4);
     },
     nodeStyle() {
-      return this.isLowPerformance && this.config.nodeStyle === 'pulse' ? 'dot' : this.config.nodeStyle || 'dot';
+      return this.isPerformanceReduced && this.config.nodeStyle === 'pulse' ? 'dot' : this.config.nodeStyle || 'dot';
     },
     topologyClass() {
       return {
+        'is-ambient': this.isAmbient,
         'is-dashed': this.config.lineStyle === 'dashed',
         'is-reverse': this.config.direction === 'reverse',
-        'is-low-performance': this.isLowPerformance,
+        'is-low-performance': this.isPerformanceReduced,
         'is-round-line': this.config.lineCap !== 'butt',
         [`node-${this.nodeStyle}`]: true
       };
     },
     topologyStyle() {
       const width = clampNumber(this.config.lineWidth, 1, 10, 2);
-      const baseOpacity = clampNumber(this.config.baseOpacity, 0.05, 1, 0.24);
+      const baseOpacity = this.isAmbient ? Math.min(clampNumber(this.config.baseOpacity, 0.05, 1, 0.24), 0.12) : clampNumber(this.config.baseOpacity, 0.05, 1, 0.24);
       const nodeOpacity = clampNumber(this.config.nodeOpacity, 0.1, 1, 1);
-      const gap = Math.max(this.flowLength * 4, 32);
+      const gap = this.isAmbient ? Math.max(this.flowLength * 6, 54) : Math.max(this.flowLength * 4, 32);
       const dashOffset = this.flowLength + gap;
       return {
         '--topology-primary-color': (this.widget && this.widget.color) || '#00e5ff',
@@ -202,6 +212,16 @@ svg {
 .is-low-performance .topology-node-core,
 .is-low-performance .topology-node-ring {
   filter: none;
+}
+.is-ambient {
+  opacity: 0.58;
+}
+.is-ambient .topology-path-flow {
+  filter: none;
+  opacity: 0.62;
+}
+.is-ambient .topology-path-base {
+  opacity: var(--topology-base-opacity);
 }
 .topology-node-core,
 .topology-node-ring,

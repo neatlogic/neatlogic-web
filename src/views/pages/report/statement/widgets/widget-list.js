@@ -3,6 +3,7 @@ import {$t} from '@/resources/init.js';
 export const WIDGET_TYPES = [
   { name: 'basic', label: $t('term.report.basicwidget') },
   { name: 'effect', label: '效果组件' },
+  { name: 'network', label: '网络组件' },
   //{ name: 'geography', label: '地理组件' },
   { name: 'other', label: $t('term.report.otherwidget') }
 ];
@@ -11,9 +12,11 @@ import { default as image } from './define/image.js';
 
 import { default as metric } from './define/metric.js';
 import { default as ranking } from './define/ranking.js';
+import { default as progress } from './define/progress.js';
 import { default as flowline } from './define/flowline.js';
 import { default as scanlight } from './define/scanlight.js';
 import { default as topologyflow } from './define/topologyflow.js';
+import { default as networktopology } from './define/networktopology.js';
 //import { default as table } from './define/table.js';
 import { default as pie } from './define/pie.js';
 import { default as radar } from './define/radar.js';
@@ -30,6 +33,7 @@ import { default as stackedcolumn } from './define/stackedcolumn.js';
 import { default as groupedcolumn } from './define/groupedcolumn.js';
 import { default as gauge } from './define/gauge.js';
 import { default as bullet } from './define/bullet.js';
+import { default as treemap } from './define/treemap.js';
 //import { default as maparea } from './define/maparea.js';
 //import { default as district } from './define/district.js';
 //import { default as firework } from './define/firework.js';
@@ -50,10 +54,12 @@ export const WIDGETS = [
   image,
   metric,
   ranking,
+  progress,
   flowline,
   scanlight,
   point,
   topologyflow,
+  networktopology,
   //table,
   pie,
   radar,
@@ -68,6 +74,7 @@ export const WIDGETS = [
   stackedcolumn,
   groupedcolumn,
   bullet,
+  treemap,
   custom,
   //maparea,
   //district,

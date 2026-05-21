@@ -13,6 +13,7 @@ export default {
   accentColor: '#00ffa8',
   needData: false,
   config: {
+    renderMode: 'normal',
     preset: 'ops',
     enabled: true,
     speed: 8,

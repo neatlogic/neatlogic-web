@@ -128,7 +128,7 @@
           :style="{
             width: (widget.width - 2 - widget.padding * 2) + 'px',
             height: (widget.height - 2 - widget.padding * 2) + 'px',
-            overflow: 'auto'
+            overflow: widgetOverflow
           }"
         ></component>
       </div>
@@ -321,6 +321,9 @@ export default {
     },
     zindex() {
       return this.widget.zindex;
+    },
+    widgetOverflow() {
+      return this.widget.type === 'gauge' ? 'hidden' : 'auto';
     }
   },
   watch: {

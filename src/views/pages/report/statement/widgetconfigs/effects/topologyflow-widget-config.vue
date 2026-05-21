@@ -1,5 +1,13 @@
 <template>
   <div>
+    <TsFormItem label="展示模式" labelPosition="top">
+      <TsFormSelect
+        :value="getConfigValue('renderMode', 'normal')"
+        :dataList="renderModeList"
+        :transfer="true"
+        @change="changeRenderMode"
+      ></TsFormSelect>
+    </TsFormItem>
     <TsFormItem label="启用动画" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('enabled', true)"
@@ -47,7 +55,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="流光密度" labelPosition="top">
+    <TsFormItem v-if="!isAmbientMode" label="流光密度" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('flowDensity', 1)"
@@ -88,7 +96,7 @@
     <TsFormItem label="基础线透明度" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
-          :value="getConfigValue('baseOpacity', 0.24)"
+          :value="getConfigValue('baseOpacity', isAmbientMode ? 0.12 : 0.24)"
           :min="0.05"
           :max="1"
           :step="0.05"
@@ -97,53 +105,55 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="显示节点" labelPosition="top">
-      <TsFormSwitch
-        :value="getConfigValue('showNodes', true)"
-        :true-value="true"
-        :false-value="false"
-        @change="val => setConfigValue('showNodes', val)"
-      ></TsFormSwitch>
-    </TsFormItem>
-    <TsFormItem v-if="getConfigValue('showNodes', true)" label="节点样式" labelPosition="top">
-      <TsFormRadio
-        :value="getConfigValue('nodeStyle', 'dot')"
-        :dataList="nodeStyleList"
-        @change="val => setConfigValue('nodeStyle', val)"
-      ></TsFormRadio>
-    </TsFormItem>
-    <TsFormItem v-if="getConfigValue('showNodes', true)" label="节点大小" labelPosition="top">
-      <div class="pl-sm pr-sm">
-        <Slider
-          :value="getConfigValue('nodeSize', 4)"
-          :min="2"
-          :max="12"
-          :step="1"
-          show-tip="never"
-          @on-change="val => setConfigValue('nodeSize', val)"
-        ></Slider>
-      </div>
-    </TsFormItem>
-    <TsFormItem v-if="getConfigValue('showNodes', true)" label="节点透明度" labelPosition="top">
-      <div class="pl-sm pr-sm">
-        <Slider
-          :value="getConfigValue('nodeOpacity', 1)"
-          :min="0.1"
-          :max="1"
-          :step="0.05"
-          show-tip="never"
-          @on-change="val => setConfigValue('nodeOpacity', val)"
-        ></Slider>
-      </div>
-    </TsFormItem>
-    <TsFormItem label="低性能模式" labelPosition="top">
-      <TsFormSwitch
-        :value="getConfigValue('lowPerformance', false)"
-        :true-value="true"
-        :false-value="false"
-        @change="val => setConfigValue('lowPerformance', val)"
-      ></TsFormSwitch>
-    </TsFormItem>
+    <template v-if="!isAmbientMode">
+      <TsFormItem label="显示节点" labelPosition="top">
+        <TsFormSwitch
+          :value="getConfigValue('showNodes', true)"
+          :true-value="true"
+          :false-value="false"
+          @change="val => setConfigValue('showNodes', val)"
+        ></TsFormSwitch>
+      </TsFormItem>
+      <TsFormItem v-if="getConfigValue('showNodes', true)" label="节点样式" labelPosition="top">
+        <TsFormRadio
+          :value="getConfigValue('nodeStyle', 'dot')"
+          :dataList="nodeStyleList"
+          @change="val => setConfigValue('nodeStyle', val)"
+        ></TsFormRadio>
+      </TsFormItem>
+      <TsFormItem v-if="getConfigValue('showNodes', true)" label="节点大小" labelPosition="top">
+        <div class="pl-sm pr-sm">
+          <Slider
+            :value="getConfigValue('nodeSize', 4)"
+            :min="2"
+            :max="12"
+            :step="1"
+            show-tip="never"
+            @on-change="val => setConfigValue('nodeSize', val)"
+          ></Slider>
+        </div>
+      </TsFormItem>
+      <TsFormItem v-if="getConfigValue('showNodes', true)" label="节点透明度" labelPosition="top">
+        <div class="pl-sm pr-sm">
+          <Slider
+            :value="getConfigValue('nodeOpacity', 1)"
+            :min="0.1"
+            :max="1"
+            :step="0.05"
+            show-tip="never"
+            @on-change="val => setConfigValue('nodeOpacity', val)"
+          ></Slider>
+        </div>
+      </TsFormItem>
+      <TsFormItem label="低性能模式" labelPosition="top">
+        <TsFormSwitch
+          :value="getConfigValue('lowPerformance', false)"
+          :true-value="true"
+          :false-value="false"
+          @change="val => setConfigValue('lowPerformance', val)"
+        ></TsFormSwitch>
+      </TsFormItem>
+    </template>
   </div>
 </template>
 <script>
@@ -161,6 +171,10 @@ export default {
   props: { config: { type: Object } },
   data() {
     return {
+      renderModeList: [
+        { value: 'normal', text: '普通' },
+        { value: 'ambient', text: '氛围' }
+      ],
       presetList: [
         { value: 'ops', text: '运维链路' },
         { value: 'mesh', text: '网状链路' },
@@ -191,6 +205,20 @@ export default {
   methods: {
     setConfigValue(attrName, attrValue) {
       this.$emit('setConfig', attrName, attrValue);
+    },
+    changeRenderMode(val) {
+      this.setConfigValue('renderMode', val);
+      if (val === 'ambient') {
+        this.setConfigValue('showNodes', false);
+        this.setConfigValue('flowDensity', 1);
+        this.setConfigValue('lowPerformance', true);
+        this.setConfigValue('baseOpacity', Math.min(Number(this.getConfigValue('baseOpacity', 0.12)) || 0.12, 0.12));
+      }
+    }
+  },
+  computed: {
+    isAmbientMode() {
+      return this.getConfigValue('renderMode', 'normal') === 'ambient';
     }
   }
 };
