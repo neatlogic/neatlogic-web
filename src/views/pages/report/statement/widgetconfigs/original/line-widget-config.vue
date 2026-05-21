@@ -27,7 +27,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormInput
-          :value="config.yAxis.title && config.yAxis.title.text"
+          :value="config.yAxis?.title?.text"
           border="border"
           @change="
             val => {
@@ -70,7 +70,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormInput
-          :value="config.xAxis.title && config.xAxis.title.text"
+          :value="config.xAxis?.title?.text"
           border="border"
           @change="
             val => {
@@ -114,7 +114,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.report.statisticcolor')" labelPosition="top">
       <ColorPicker
-        :value="config.label && config.label.style && config.label.style.fill"
+        :value="config.label?.style?.fill"
         :transfer="true"
         alpha
         recommend
@@ -145,7 +145,7 @@
     </TsFormItem>
     <TsFormItem label="辅助线" labelPosition="top">
       <TsFormSwitch
-        :value="!!config.yAxis?.hasOwnProperty('grid')?!!config.yAxis.grid:true"
+        :value="config?.yAxis?.hasOwnProperty('grid') ? !!config?.yAxis?.grid : true"
         :true-value="true"
         :false-value="false"
         @change="

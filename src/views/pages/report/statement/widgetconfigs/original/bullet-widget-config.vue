@@ -33,7 +33,7 @@
     </TsFormItem>
     <TsFormItem v-if="config.yAxis" :label="$t('term.report.axis.yaxistitle') " labelPosition="top">
       <TsFormInput
-        :value="config.yAxis.title && config.yAxis.title.text"
+        :value="config.yAxis?.title?.text"
         border="border"
         @change="
           val => {
@@ -60,7 +60,7 @@
     </TsFormItem>
     <TsFormItem v-if="config.xAxis" :label="$t('term.report.axis.xaxistitle') " labelPosition="top">
       <TsFormInput
-        :value="config.xAxis.title && config.xAxis.title.text"
+        :value="config.xAxis?.title?.text"
         border="border"
         @change="
           val => {
@@ -73,7 +73,7 @@
       <div class="pl-md pr-md">
         <div class="text-grey">{{ $t('page.background') }}</div>
         <ColorPicker
-          :value="config.color && config.color.range"
+          :value="config.color?.range"
           :transfer="true"
           alpha
           recommend
@@ -87,7 +87,7 @@
         />
         <div class="text-grey">{{ $t('term.dashboard.frontend') }}</div>
         <ColorPicker
-          :value="config.color && config.color.measure"
+          :value="config.color?.measure"
           :transfer="true"
           alpha
           recommend
@@ -101,7 +101,7 @@
         />
         <div class="text-grey">{{ $t('term.dashboard.target') }}</div>
         <ColorPicker
-          :value="config.color && config.color.target"
+          :value="config.color?.target"
           :transfer="true"
           alpha
           recommend

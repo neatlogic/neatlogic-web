@@ -48,6 +48,7 @@
           <ColorPicker
             :transfer="true"
             :value="config.color"
+            recommend
             transfer-class-name="color-picker-transfer-class"
             @on-change="
               val => {
@@ -66,6 +67,7 @@
             :transfer="true"
             alpha
             :value="config.cocolor"
+            recommend
             transfer-class-name="color-picker-transfer-class"
             @on-change="
               val => {

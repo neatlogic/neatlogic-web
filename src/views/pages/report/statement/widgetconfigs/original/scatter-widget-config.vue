@@ -27,7 +27,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormInput
-          :value="config.yAxis.title && config.yAxis.title.text"
+          :value="config.yAxis?.title?.text"
           border="border"
           @change="
             val => {
@@ -70,7 +70,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormInput
-          :value="config.xAxis.title && config.xAxis.title.text"
+          :value="config.xAxis?.title?.text"
           border="border"
           @change="
             val => {
@@ -124,7 +124,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormSwitch
-          :value="config.legend.visible"
+          :value="config.legend?.visible"
           :true-value="true"
           :false-value="false"
           @change="val => {
@@ -133,13 +133,13 @@
         ></TsFormSwitch>
       </div>
     </div>
-    <div v-if="config.legend.visible" class="ivu-form-item tsform-item ivu-form-label-top">
+    <div v-if="config.legend?.visible" class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">
         {{ $t('term.report.axis.legendposition') }}
       </label>
       <div class="ivu-form-item-content">
         <TsFormSelect
-          :value="config.legend.position"
+          :value="config.legend?.position"
           :transfer="true"
           :clearable="false"
           :dataList="positionList"
@@ -157,7 +157,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormInput
-          :value="config.meta.yField.alias"
+          :value="config.meta?.yField?.alias"
           @change="val => {
             setConfigValue('meta.yField.alias', val);
           }"
@@ -170,7 +170,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormInput
-          :value="config.meta.xField.alias"
+          :value="config.meta?.xField?.alias"
           @change="val => {
             setConfigValue('meta.xField.alias', val);
           }"
@@ -183,7 +183,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormInput
-          :value="config.meta.colorField.alias"
+          :value="config.meta?.colorField?.alias"
           @change="val => {
             setConfigValue('meta.colorField.alias', val);
           }"
@@ -196,7 +196,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormInput
-          :value="config.meta.sizeField.alias"
+          :value="config.meta?.sizeField?.alias"
           @change="val => {
             setConfigValue('meta.sizeField.alias', val);
           }"

@@ -38,7 +38,7 @@ export default {
         },
         detectRetina: true,
         duration: 0,
-        fpsLimit: 120,
+        fpsLimit: Number(this.widget?.config?.fpsLimit) || 30,
         particles: {
           /*color: {
             value: 'random'
@@ -64,7 +64,12 @@ export default {
   },
   beforeCreate() {},
   created() {
-    Object.assign(this.options.particles, this.widget.config.particles);
+    const config = this.widget?.config || {};
+    Object.assign(this.options.particles, config.particles || {});
+    this.options.fpsLimit = Number(config.fpsLimit) || 30;
+    if (config.background?.color?.value) {
+      this.options.background.color.value = config.background.color.value;
+    }
   },
   beforeMount() {},
   mounted() {},
@@ -98,8 +103,20 @@ export default {
       },
       deep: true
     },
+    'widget.config.fpsLimit': {
+      handler: function(val) {
+        if (!this.particleContainer?.options) {
+          return;
+        }
+        this.$set(this.particleContainer.options, 'fpsLimit', Number(val) || 30);
+        this.particleContainer.refresh();
+      }
+    },
     'widget.config.particles.isRandomColor': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.color) {
+          return;
+        }
         if (val) {
           this.$set(this.particleContainer.options.particles.color, 'value', 'random');
         } else {
@@ -111,6 +128,9 @@ export default {
     },
     'widget.config.particles.color.value': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.color) {
+          return;
+        }
         this.$set(this.particleContainer.options.particles.color, 'value', val);
         this.particleContainer.refresh();
       },
@@ -118,6 +138,9 @@ export default {
     },
     'widget.config.particles.number.value': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.number) {
+          return;
+        }
         this.$set(this.particleContainer.options.particles.number, 'value', val);
         this.particleContainer.refresh();
       },
@@ -125,6 +148,9 @@ export default {
     },
     'widget.config.particles.opacity.value': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.opacity) {
+          return;
+        }
         this.$set(this.particleContainer.options.particles.opacity, 'value', val);
         this.particleContainer.refresh();
       },
@@ -132,6 +158,9 @@ export default {
     },
     'widget.config.particles.size.value': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.size) {
+          return;
+        }
         this.$set(this.particleContainer.options.particles.size, 'value', val);
         this.particleContainer.refresh();
       },
@@ -139,6 +168,9 @@ export default {
     },
     'widget.config.particles.links.enable': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.links) {
+          return;
+        }
         this.$set(this.particleContainer.options.particles.links, 'enable', val);
         this.particleContainer.refresh();
       },
@@ -146,6 +178,9 @@ export default {
     },
     'widget.config.particles.links.isRandomColor': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.links?.color) {
+          return;
+        }
         if (val) {
           this.$set(this.particleContainer.options.particles.links.color, 'value', 'random');
         } else {
@@ -157,6 +192,9 @@ export default {
     },
     'widget.config.particles.links.color.value': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.links?.color) {
+          return;
+        }
         this.$set(this.particleContainer.options.particles.links.color, 'value', val);
         this.particleContainer.refresh();
       },
@@ -164,6 +202,9 @@ export default {
     },
     'widget.config.particles.links.opacity': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.links) {
+          return;
+        }
         this.$set(this.particleContainer.options.particles.links, 'opacity', val);
         this.particleContainer.refresh();
       },
@@ -171,6 +212,9 @@ export default {
     },
     'widget.config.particles.links.width': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.links) {
+          return;
+        }
         this.$set(this.particleContainer.options.particles.links, 'width', val);
         this.particleContainer.refresh();
       },
@@ -178,6 +222,9 @@ export default {
     },
     'widget.config.particles.links.distance': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.links) {
+          return;
+        }
         this.$set(this.particleContainer.options.particles.links, 'distance', val);
         this.particleContainer.refresh();
       },
@@ -185,6 +232,9 @@ export default {
     },
     'widget.config.particles.move.enable': {
       handler: function(val) {
+        if (!this.particleContainer?.options?.particles?.move) {
+          return;
+        }
         this.$set(this.particleContainer.options.particles.move, 'enable', val);
         this.particleContainer.refresh();
       },

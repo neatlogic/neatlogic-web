@@ -5,7 +5,7 @@
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.wordStyle.fontSize"
+            :value="getConfigValue('wordStyle.fontSize', [12, 30])"
             :min="1"
             :max="50"
             :step="1"
@@ -23,10 +23,12 @@
   </div>
 </template>
 <script>
+import { WidgetBaseConfig } from '../original/base-config.js';
 export default {
   name: '',
   components: {
   },
+  extends: WidgetBaseConfig,
   props: { config: { type: Object } },
   data() {
     return {
