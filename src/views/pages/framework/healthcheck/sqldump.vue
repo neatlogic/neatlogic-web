@@ -203,7 +203,8 @@
                       :canResize="false"
                     >
                       <template v-slot:id="{ row: sqlRow }">
-                        <Tooltip :content="sqlRow.id" max-width="400">
+                        <!-- URL嵌套表格id提示框使用transfer，避免被展开表格容器裁剪导致完整id显示不全 -->
+                        <Tooltip :content="sqlRow.id" max-width="500" transfer>
                           {{ sqlRow.id.substring(sqlRow.id.lastIndexOf('.') + 1) }}
                         </Tooltip>
                       </template>
