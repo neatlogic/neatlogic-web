@@ -16,11 +16,11 @@ export default {
   dataTypes: [{ value: 'dynamic', text: $t('term.report.datatype.dynamicdata') }],
   needData: true,
   fields: [
-    { name: 'title', label: '标题', type: ['text'], isRequired: false },
-    { name: 'value', label: '数值', type: ['number', 'text'], isRequired: true },
-    { name: 'unit', label: '单位', type: ['text'], isRequired: false },
-    { name: 'trendLabel', label: '趋势标签', type: ['text'], isRequired: false },
-    { name: 'trendValue', label: '趋势值', type: ['number', 'text'], isRequired: false }
+    { name: 'title', label: '标题', type: ['text'], isRequired: false, isRecommended: true, description: '可选；不绑定时使用组件配置里的默认标题。' },
+    { name: 'value', label: '数值', type: ['number', 'text'], isRequired: true, description: '必填；指标卡动态展示的核心数值。' },
+    { name: 'unit', label: '单位', type: ['text'], isRequired: false, description: '可选；不绑定时使用组件配置里的默认单位。' },
+    { name: 'trendLabel', label: '趋势标签', type: ['text'], isRequired: false, description: '可选；仅开启趋势展示时使用。' },
+    { name: 'trendValue', label: '趋势值', type: ['number', 'text'], isRequired: false, description: '可选；仅开启趋势展示时使用。' }
   ],
   config: {
     title: '核心指标',
