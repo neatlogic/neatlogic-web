@@ -173,7 +173,11 @@
                       style="max-height:500px"
                     >
                       <div :id="'sql_' + row.id.replace(/\./ig,'_') + '_' + index">{{ row.sql }}</div>
-                      <div style="text-align:right"><Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_') + '_' + index)">{{ $t('page.copy') }}</Button></div>
+                      <div style="text-align:right">
+                        <!-- SQL ID监控SQL弹窗新增查看执行计划入口，点击后把当前SQL提交给sqlexplain接口 -->
+                        <Button size="small" @click="openSqlExplain(row.sql)">查看执行计划</Button>
+                        <Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_') + '_' + index)">{{ $t('page.copy') }}</Button>
+                      </div>
                     </div>
                   </Poptip>
                 </template>
@@ -238,7 +242,11 @@
                                 <span class="ml-sm">{{ $t('page.cache') }}：{{ getSqlAuditCacheLevel(sqlAudit) }}</span>
                               </div>
                               <div :id="getRequestSqlDomId(row, sqlRow, itemIndex)">{{ sqlAudit.sql }}</div>
-                              <div style="text-align:right"><Button size="small" @click="copySql('#' + getRequestSqlDomId(row, sqlRow, itemIndex))">{{ $t('page.copy') }}</Button></div>
+                              <div style="text-align:right">
+                                <!-- URL监控SQL弹窗新增查看执行计划入口，点击后把当前SQL提交给sqlexplain接口 -->
+                                <Button size="small" @click="openSqlExplain(sqlAudit.sql)">查看执行计划</Button>
+                                <Button size="small" @click="copySql('#' + getRequestSqlDomId(row, sqlRow, itemIndex))">{{ $t('page.copy') }}</Button>
+                              </div>
                             </div>
                           </div>
                         </Poptip>
@@ -254,6 +262,27 @@
     </TsContain>
     <SqlDumpEdit v-if="isDialogShow" @close="closeDialog"></SqlDumpEdit>
     <StatusDialog v-if="isStatusDialogShow" @close="isStatusDialogShow = false"></StatusDialog>
+    <TsDialog
+      v-bind="sqlExplainDialogConfig"
+      @on-close="closeSqlExplainDialog"
+    >
+      <template v-slot>
+        <!-- SQL执行计划弹框使用TsTable展示/healthcheck/sqlexplain返回的tbodyList -->
+        <div class="sql-explain-dialog">
+          <div v-if="sqlExplainSql" class="sql-explain-text">
+            <span class="text-title">SQL：</span>{{ sqlExplainSql }}
+          </div>
+          <TsTable
+            v-bind="sqlExplainData"
+            :showPager="false"
+            :canResize="false"
+          ></TsTable>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <Button @click="closeSqlExplainDialog">{{ $t('page.close') }}</Button>
+      </template>
+    </TsDialog>
   </div>
 </template>
 <script>
@@ -284,6 +313,31 @@ export default {
       searchParam: { orderBy: 'runtime', id: '', url: '' },
       sqlAuditData: {},
       requestSqlAuditData: {},
+      // SQL执行计划弹框配置，点击SQL语句里的查看执行计划按钮后展示
+      sqlExplainDialogConfig: {
+        type: 'modal',
+        maskClose: true,
+        isShow: false,
+        width: 'huge', // huge large
+        title: 'SQL执行计划'
+      },
+      sqlExplainSql: '',
+      sqlExplainData: {},
+      // SQL执行计划表头固定按EXPLAIN结果字段展示，ken_len字段由后端兼容返回
+      sqlExplainTheadList: [
+        { key: 'id', title: 'id' },
+        { key: 'select_type', title: 'select_type' },
+        { key: 'table', title: 'table' },
+        { key: 'partitions', title: 'partitions' },
+        { key: 'type', title: 'type' },
+        { key: 'possible_keys', title: 'possible_keys' },
+        { key: 'key', title: 'key' },
+        { key: 'key_len', title: 'key_len' },
+        { key: 'ref', title: 'ref' },
+        { key: 'rows', title: 'rows' },
+        { key: 'filtered', title: 'filtered' },
+        { key: 'Extra', title: 'Extra' }
+      ],
       theadList: [
         { key: 'timeCost', title: this.$t('page.timecost'), width: 200 },
         { key: 'id', title: 'id' },
@@ -345,6 +399,24 @@ export default {
     },
     openStatusDialog() {
       this.isStatusDialogShow = true;
+    },
+    openSqlExplain(sql) {
+      // 查看执行计划时把当前Poptip里展示的SQL原文传给后端，由后端拼接EXPLAIN并返回表格数据
+      this.$api.framework.healthcheck.getSqlExplain({ sql: sql }).then(res => {
+        const result = res.Return || {};
+        this.sqlExplainSql = result.sql || '';
+        this.sqlExplainData = {
+          theadList: this.sqlExplainTheadList,
+          tbodyList: result.tbodyList || []
+        };
+        this.sqlExplainDialogConfig.isShow = true;
+      });
+    },
+    closeSqlExplainDialog() {
+      // 关闭执行计划弹框时清理展示数据，避免下一次打开时短暂看到旧SQL结果
+      this.sqlExplainDialogConfig.isShow = false;
+      this.sqlExplainSql = '';
+      this.sqlExplainData = {};
     },
     setDefaultActiveTab() {
       // 页面首次进入时根据两张表是否有数据选择默认Tab，后续刷新不再覆盖用户手动选择
