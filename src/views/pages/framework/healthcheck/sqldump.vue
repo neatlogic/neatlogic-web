@@ -245,6 +245,7 @@
                                 <span>{{ $t('page.timecost') }}：{{ sqlAudit.timeCost }}{{ $t('page.ms') }}</span>
                                 <span class="ml-sm">{{ $t('page.cache') }}：{{ getSqlAuditCacheLevel(sqlAudit) }}</span>
                                 <span class="ml-sm">{{ $t('page.datacapacity') }}：{{ sqlAudit.recordCount }}</span>
+                                <span class="ml-sm">{{ $t('term.autoexec.executiontime') }}：{{ sqlAudit.runTime | formatDate }}</span>
                               </div>
                               <div :id="getRequestSqlDomId(row, sqlRow, itemIndex)">{{ sqlAudit.sql }}</div>
                               <div class="action-group" style="text-align:right">
