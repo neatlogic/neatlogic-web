@@ -78,11 +78,16 @@
         </div>
       </div>
       <div slot="topRight">
-        <CombineSearcher
-          v-model="searchValue"
-          v-bind="searchConfig"
-          @change="searchSql()"
-        ></CombineSearcher>
+        <TsRow>
+          <Col :span="6"></Col>
+          <Col :span="18">
+            <CombineSearcher
+              v-model="searchValue"
+              v-bind="searchConfig"
+              @change="searchSql()"
+            ></CombineSearcher>
+          </Col>
+        </TsRow>
       </div>
       <div slot="content" class="content">
         <div>
@@ -168,10 +173,14 @@
                       style="max-height:500px"
                     >
                       <div :id="'sql_' + row.id.replace(/\./ig,'_') + '_' + index">{{ row.sql }}</div>
-                      <div style="text-align:right">
-                        <!-- SQL ID监控SQL弹窗新增查看执行计划入口，点击后把当前SQL提交给sqlexplain接口 -->
-                        <Button size="small" @click="openSqlExplain(row.sql)">查看执行计划</Button>
-                        <Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_') + '_' + index)">{{ $t('page.copy') }}</Button>
+                      <div class="action-group" style="text-align:right">
+                        <div class="action-item">
+                          <!-- SQL ID监控SQL弹窗新增查看执行计划入口，点击后把当前SQL提交给sqlexplain接口 -->
+                          <Button size="small" @click="openSqlExplain(row.sql)">查看执行计划</Button>
+                        </div>
+                        <div class="action-item">
+                          <Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_') + '_' + index)">{{ $t('page.copy') }}</Button>
+                        </div>
                       </div>
                     </div>
                   </Poptip>
@@ -238,10 +247,14 @@
                                 <span class="ml-sm">{{ $t('page.datacapacity') }}：{{ sqlAudit.recordCount }}</span>
                               </div>
                               <div :id="getRequestSqlDomId(row, sqlRow, itemIndex)">{{ sqlAudit.sql }}</div>
-                              <div style="text-align:right">
-                                <!-- URL监控SQL弹窗新增查看执行计划入口，点击后把当前SQL提交给sqlexplain接口 -->
-                                <Button size="small" @click="openSqlExplain(sqlAudit.sql)">查看执行计划</Button>
-                                <Button size="small" @click="copySql('#' + getRequestSqlDomId(row, sqlRow, itemIndex))">{{ $t('page.copy') }}</Button>
+                              <div class="action-group" style="text-align:right">
+                                <div class="action-item">
+                                  <!-- URL监控SQL弹窗新增查看执行计划入口，点击后把当前SQL提交给sqlexplain接口 -->
+                                  <Button size="small" @click="openSqlExplain(sqlAudit.sql)">查看执行计划</Button>
+                                </div>
+                                <div class="action-item">
+                                  <Button size="small" @click="copySql('#' + getRequestSqlDomId(row, sqlRow, itemIndex))">{{ $t('page.copy') }}</Button>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -331,20 +344,20 @@ export default {
       sqlExplainSql: '',
       sqlExplainData: {},
       // SQL执行计划表头固定按EXPLAIN结果字段展示，ken_len字段由后端兼容返回
-      sqlExplainTheadList: [
-        { key: 'id', title: 'id' },
-        { key: 'select_type', title: 'select_type' },
-        { key: 'table', title: 'table' },
-        { key: 'partitions', title: 'partitions' },
-        { key: 'type', title: 'type' },
-        { key: 'possible_keys', title: 'possible_keys' },
-        { key: 'key', title: 'key' },
-        { key: 'key_len', title: 'key_len' },
-        { key: 'ref', title: 'ref' },
-        { key: 'rows', title: 'rows' },
-        { key: 'filtered', title: 'filtered' },
-        { key: 'Extra', title: 'Extra' }
-      ],
+      // sqlExplainTheadList: [
+      //   { key: 'id', title: 'id' },
+      //   { key: 'select_type', title: 'select_type' },
+      //   { key: 'table', title: 'table' },
+      //   { key: 'partitions', title: 'partitions' },
+      //   { key: 'type', title: 'type' },
+      //   { key: 'possible_keys', title: 'possible_keys' },
+      //   { key: 'key', title: 'key' },
+      //   { key: 'key_len', title: 'key_len' },
+      //   { key: 'ref', title: 'ref' },
+      //   { key: 'rows', title: 'rows' },
+      //   { key: 'filtered', title: 'filtered' },
+      //   { key: 'Extra', title: 'Extra' }
+      // ],
       theadList: [
         { key: 'timeCost', title: this.$t('page.timecost'), width: 200 },
         { key: 'id', title: 'id' },
@@ -413,7 +426,8 @@ export default {
         const result = res.Return || {};
         this.sqlExplainSql = result.sql || '';
         this.sqlExplainData = {
-          theadList: this.sqlExplainTheadList,
+          // theadList: this.sqlExplainTheadList,
+          theadList: result.theadList || [],
           tbodyList: result.tbodyList || []
         };
         this.sqlExplainDialogConfig.isShow = true;
