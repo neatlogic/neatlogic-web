@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="time-widget" :style="timeContainerStyle">
     <span class="tsfont-formtime" :style="getTimeStyle">  {{ currentTime | formatDate }}</span>
   </div>
 </template>
@@ -33,6 +33,7 @@ export default {
   destroyed() {},
   methods: {
     updateTime() {
+      this.currentTime = Date.now();
       this.timer = setInterval(() => {
         this.currentTime = Date.now();
       }, 1000);
@@ -41,9 +42,27 @@ export default {
   filter: {},
   computed: {
     getTimeStyle() {
+      const config = (this.widget && this.widget.config) || {};
       return {
-        fontSize: this.widget && this.widget.config && this.widget.config.fontsize ? `${this.widget.config.fontsize}px` : '14px',
-        color: this.widget && this.widget.config && this.widget.config.fontcolor
+        fontSize: config.fontsize ? `${config.fontsize}px` : '14px',
+        color: config.fontcolor || config.color
+      };
+    },
+    timeContainerStyle() {
+      const config = (this.widget && this.widget.config) || {};
+      const horizontalAlignMap = {
+        left: 'flex-start',
+        center: 'center',
+        right: 'flex-end'
+      };
+      const verticalAlignMap = {
+        top: 'flex-start',
+        middle: 'center',
+        bottom: 'flex-end'
+      };
+      return {
+        justifyContent: horizontalAlignMap[config.align] || 'flex-start',
+        alignItems: verticalAlignMap[config.verticalAlign] || 'flex-start'
       };
     }
   },
@@ -51,4 +70,11 @@ export default {
   }
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped>
+.time-widget {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+}
+</style>

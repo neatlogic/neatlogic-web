@@ -2,7 +2,7 @@
   <div class="pb-nm">
     <TsFormItem :label="$t('term.report.axis.showlegend')" labelPosition="top">
       <TsFormSwitch
-        :value="config.legend.visible"
+        :value="config.legend?.visible"
         :true-value="true"
         :false-value="false"
         @change="
@@ -14,7 +14,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.report.axis.legendposition')" labelPosition="top">
       <TsFormSelect
-        :value="config.legend.position"
+        :value="config.legend?.position"
         :transfer="true"
         :clearable="false"
         :dataList="positionList"

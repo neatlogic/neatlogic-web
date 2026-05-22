@@ -24,7 +24,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.report.axis.yaxistitle')" labelPosition="top">
       <TsFormInput
-        :value="config.yAxis.title && config.yAxis.title.text"
+        :value="config.yAxis?.title?.text"
         border="border"
         @change="
           val => {
@@ -51,7 +51,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.report.axis.xaxistitle') " labelPosition="top">
       <TsFormInput
-        :value="config.xAxis.title && config.xAxis.title.text"
+        :value="config.xAxis?.title?.text"
         border="border"
         @change="
           val => {
@@ -91,7 +91,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.report.statisticcolor')" labelPosition="top">
       <ColorPicker
-        :value="config.label && config.label.style && config.label.style.fill"
+        :value="config.label?.style?.fill"
         :transfer="true"
         alpha
         recommend
@@ -123,7 +123,7 @@
     </TsFormItem>
     <TsFormItem label="辅助线" labelPosition="top">
       <TsFormSwitch
-        :value="!!config.xAxis?.hasOwnProperty('grid')?!!config.xAxis.grid:true"
+        :value="config?.xAxis?.hasOwnProperty('grid') ? !!config?.xAxis?.grid : true"
         :true-value="true"
         :false-value="false"
         @change="

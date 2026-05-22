@@ -1,5 +1,11 @@
 export { default as textWidgetConfig } from './original/text-widget-config.vue';
 export { default as imageWidgetConfig } from './original/image-widget-config.vue';
+export { default as metricWidgetConfig } from './others/metric-widget-config.vue';
+export { default as rankingWidgetConfig } from './others/ranking-widget-config.vue';
+export { default as progressWidgetConfig } from './others/progress-widget-config.vue';
+export { default as flowlineWidgetConfig } from './effects/flowline-widget-config.vue';
+export { default as scanlightWidgetConfig } from './effects/scanlight-widget-config.vue';
+export { default as topologyflowWidgetConfig } from './effects/topologyflow-widget-config.vue';
 export { default as tableWidgetConfig } from './original/table-widget-config.vue';
 export { default as pieWidgetConfig } from './original/pie-widget-config.vue';
 export { default as radarWidgetConfig } from './original/radar-widget-config.vue';
@@ -12,6 +18,7 @@ export { default as mlineWidgetConfig } from './original/mline-widget-config.vue
 export { default as areaWidgetConfig } from './original/area-widget-config.vue';
 export { default as mareaWidgetConfig } from './original/marea-widget-config.vue';
 export { default as gaugeWidgetConfig } from './original/gauge-widget-config.vue';
+export { default as treemapWidgetConfig } from './original/treemap-widget-config.vue';
 export { default as bulletWidgetConfig } from './original/bullet-widget-config.vue';
 export { default as liquidWidgetConfig } from './original/liquid-widget-config.vue';
 export { default as scatterWidgetConfig } from './original/scatter-widget-config.vue';
@@ -27,3 +34,4 @@ export { default as pointWidgetConfig } from './others/point-widget-config.vue';
 export { default as customWidgetConfig } from './others/custom-widget-config.vue';
 export { default as timeWidgetConfig } from './others/time-widget-config.vue';
 export { default as autoexecWidgetConfig } from './others/autoexec-widget-config.vue';
+export { default as networktopologyWidgetConfig } from './network/networktopology-widget-config.vue';

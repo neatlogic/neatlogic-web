@@ -1,6 +1,39 @@
 <template>
   <div>
     <div class="ivu-form-item tsform-item ivu-form-label-top">
+      <label class="ivu-form-item-label overflow">文本模板</label>
+      <div class="ivu-form-item-content">
+        <TsFormSelect
+          :value="config.titleTemplate || 'plain'"
+          :dataList="titleTemplateList"
+          :clearable="false"
+          transfer
+          @change="val => setConfigValue('titleTemplate', val)"
+        ></TsFormSelect>
+      </div>
+    </div>
+    <div v-if="isDecorateTitle" class="ivu-form-item tsform-item ivu-form-label-top">
+      <label class="ivu-form-item-label overflow">副标题</label>
+      <div class="ivu-form-item-content">
+        <TsFormInput
+          :value="config.subTitle"
+          border="border"
+          @change="val => setConfigValue('subTitle', val)"
+        ></TsFormInput>
+      </div>
+    </div>
+    <div v-if="isDecorateTitle" class="ivu-form-item tsform-item ivu-form-label-top">
+      <label class="ivu-form-item-label overflow">显示流光线</label>
+      <div class="ivu-form-item-content">
+        <TsFormSwitch
+          :value="config.showLine"
+          :true-value="true"
+          :false-value="false"
+          @change="val => setConfigValue('showLine', val)"
+        ></TsFormSwitch>
+      </div>
+    </div>
+    <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">
         {{ $t('term.report.positions.horizontalalign') }}
       </label>
@@ -28,7 +61,7 @@
           <Slider
             :value="config.fontsize"
             :min="12"
-            :max="50"
+            :max="isDecorateTitle ? 80 : 50"
             :step="1"
             @on-change="
               val => {
@@ -45,7 +78,7 @@
       </label>
       <div class="ivu-form-item-content">
         <ColorPicker
-          v-model="config.color"
+          :value="config.color || ''"
           :transfer="true"
           alpha
           recommend
@@ -109,11 +142,15 @@
   </div>
 </template>
 <script>
+import { TEXT_TITLE_TEMPLATE_LIST, isTitleTemplate } from '../../widgets/original/text-title-template.js';
 export default {
   name: '',
   components: {
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
-    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     config: { type: Object }
@@ -122,6 +159,7 @@ export default {
     return {
       HOME: HOME,
       colorList: ['#EFF0F3', '#F5F6FA', '#E5E5E5', '#A1A1A1', '#212121', '#1670F0', '#FFBA5A', '#25B864', '#F33B3B', '#E7F0FF', '#FFF5E7', '#E4F6EC', '#F8E3E3'],
+      titleTemplateList: TEXT_TITLE_TEMPLATE_LIST,
       alignList: [
         { value: 'left', text: this.$t('page.leftalign') },
         { value: 'center', text: this.$t('page.centeralign') },
@@ -150,7 +188,11 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    isDecorateTitle() {
+      return isTitleTemplate(this.config && this.config.titleTemplate);
+    }
+  },
   watch: {}
 };
 </script>

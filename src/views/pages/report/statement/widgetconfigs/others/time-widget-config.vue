@@ -1,5 +1,19 @@
 <template>
   <div>
+    <TsFormItem label="左右对齐" labelPosition="top">
+      <TsFormRadio
+        :value="config.align || 'left'"
+        :dataList="horizontalAlignList"
+        @change="val => setConfigValue('align', val)"
+      ></TsFormRadio>
+    </TsFormItem>
+    <TsFormItem label="上下对齐" labelPosition="top">
+      <TsFormRadio
+        :value="config.verticalAlign || 'top'"
+        :dataList="verticalAlignList"
+        @change="val => setConfigValue('verticalAlign', val)"
+      ></TsFormRadio>
+    </TsFormItem>
     <TsFormItem :label="$t('page.fontsize')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
@@ -34,13 +48,25 @@
 export default {
   name: '',
   components: {
-    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {
     config: { type: Object }
   },
   data() {
-    return {};
+    return {
+      horizontalAlignList: [
+        { value: 'left', text: this.$t('page.leftalign') },
+        { value: 'center', text: this.$t('page.centeralign') },
+        { value: 'right', text: this.$t('page.rightalign') }
+      ],
+      verticalAlignList: [
+        { value: 'top', text: '顶部' },
+        { value: 'middle', text: '居中' },
+        { value: 'bottom', text: '底部' }
+      ]
+    };
   },
   beforeCreate() {},
   created() {},

@@ -6,7 +6,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormSwitch
-          :value="config.legend.visible"
+          :value="config.legend?.visible"
           :true-value="true"
           :false-value="false"
           @change="
@@ -17,13 +17,13 @@
         ></TsFormSwitch>
       </div>
     </div>
-    <div v-if="config.legend.visible" class="ivu-form-item tsform-item ivu-form-label-top">
+    <div v-if="config.legend?.visible" class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">
         {{ $t('term.report.axis.legendposition') }}
       </label>
       <div class="ivu-form-item-content">
         <TsFormSelect
-          :value="config.legend.position"
+          :value="config.legend?.position"
           :transfer="true"
           :clearable="false"
           :dataList="positionList"

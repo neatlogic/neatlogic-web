@@ -11,7 +11,7 @@
     :class="widget._selected ? 'selected' : (widget._aligned?'aligned':'')"
     @mousedown="startDrag"
   >
-    <div :style="{position:'relative',width:'100%',height:'100%', padding:widget.padding+'px'}">
+    <div :style="widgetBoxStyle">
       <div v-if="mode == 'edit' && widget._selected" class="config-btn">
         <Dropdown>
           <a href="javascript:void(0)" class="text-href tsfont-option-horizontal">
@@ -128,7 +128,7 @@
           :style="{
             width: (widget.width - 2 - widget.padding * 2) + 'px',
             height: (widget.height - 2 - widget.padding * 2) + 'px',
-            overflow: 'auto'
+            overflow: widgetOverflow
           }"
         ></component>
       </div>
@@ -311,8 +311,19 @@ export default {
   },
   filter: {},
   computed: {
+    widgetBoxStyle() {
+      return {
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        padding: this.widget.padding + 'px'
+      };
+    },
     zindex() {
-      return this.widget._selected ? 99999 : this.widget.zindex;
+      return this.widget.zindex;
+    },
+    widgetOverflow() {
+      return this.widget.type === 'gauge' ? 'hidden' : 'auto';
     }
   },
   watch: {

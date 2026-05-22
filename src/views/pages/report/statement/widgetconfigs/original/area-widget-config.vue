@@ -18,7 +18,7 @@
     </TsFormItem>
     <TsFormItem v-if="config.yAxis" :label="$t('term.report.axis.yaxistitle')" labelPosition="top">
       <TsFormInput
-        :value="config.yAxis.title && config.yAxis.title.text"
+        :value="config.yAxis?.title?.text"
         border="border"
         @change="
           val => {
@@ -51,7 +51,7 @@
     </TsFormItem>
     <TsFormItem v-if="config.xAxis" :label="$t('term.report.axis.xaxistitle')" labelPosition="top">
       <TsFormInput
-        :value="config.xAxis.title && config.xAxis.title.text"
+        :value="config.xAxis?.title?.text"
         border="border"
         @change="
           val => {

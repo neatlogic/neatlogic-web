@@ -12,5 +12,13 @@ export default {
   padding: 5,
   needData: false,
   fields: [{ name: 'text', label: $t('page.copywriting'), type: ['text', 'number', 'datetime', 'time', 'date'], isRequired: true }],
-  config: { align: 'left', backgroundColor: '', backgroundImage: '', fontsize: 12, color: '' }
+  config: {
+    align: 'left',
+    verticalAlign: 'top',
+    backgroundColor: '',
+    backgroundImage: '',
+    fontsize: 12,
+    color: '',
+    fontcolor: ''
+  }
 };

@@ -24,7 +24,6 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
-    console.log(this.width, this.height);
     this.init();
   },
   beforeUpdate() {},
@@ -37,7 +36,6 @@ export default {
     init() {
       this.$nextTick(() => {
         this.createPlot();
-        console.log('load!');
       });
     },
     createPlot() {

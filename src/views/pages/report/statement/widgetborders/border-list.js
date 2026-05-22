@@ -2,6 +2,17 @@ import {$t} from '@/resources/init.js';
 
 export const BORDER_LIST = [
   {
+    name: 'techpanel',
+    label: '科技面板',
+    config: {
+      cornersize: 28,
+      width: 1,
+      color: '#00e5ff',
+      backgroundColor: 'rgba(6,27,45,0.74)',
+      shadowColor: 'rgba(0,229,255,0.22)'
+    }
+  },
+  {
     name: 'highlight',
     label: $t('term.report.highlightborder'),
     config: {
