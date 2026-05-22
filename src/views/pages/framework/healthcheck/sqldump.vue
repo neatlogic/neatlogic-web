@@ -240,6 +240,7 @@
                               <div class="request-sql-meta text-grey">
                                 <span>{{ $t('page.timecost') }}：{{ sqlAudit.timeCost }}{{ $t('page.ms') }}</span>
                                 <span class="ml-sm">{{ $t('page.cache') }}：{{ getSqlAuditCacheLevel(sqlAudit) }}</span>
+                                <span class="ml-sm">{{ $t('page.datacapacity') }}：{{ sqlAudit.recordCount }}</span>
                               </div>
                               <div :id="getRequestSqlDomId(row, sqlRow, itemIndex)">{{ sqlAudit.sql }}</div>
                               <div style="text-align:right">
@@ -353,19 +354,19 @@ export default {
       requestTheadList: [
         { key: 'expander', width: 40 },
         { key: 'totalTimeCost', title: this.$t('page.timecost'), width: 200 },
+        { key: 'notUseCacheTotalTimeCost', title: '未用缓存耗时(ms)', width: 160 },
         { key: 'url', title: 'url' },
         { key: 'threadName', title: '线程' },
         { key: 'tenant', title: this.$t('page.tenant') },
         { key: 'userId', title: this.$t('page.user') },
         { key: 'sqlCount', title: 'SQL数量' },
-        { key: 'notUseCacheTotalTimeCost', title: '未用缓存耗时(ms)', width: 160 },
         { key: 'runTime', title: this.$t('term.autoexec.executiontime'), type: 'time' }
       ],
       // URL监控嵌套表格表头，用于展示每个请求内按sqlId聚合后的SQL明细
       requestSqlDetailTheadList: [
-        { key: 'id', title: 'id' },
         { key: 'totalTimeCost', title: this.$t('page.timecost'), width: 120 },
         { key: 'notUseCacheTotalTimeCost', title: '未用缓存耗时(ms)', width: 160 },
+        { key: 'id', title: 'id' },
         { key: 'notUseCacheCount', title: '未用缓存次数', width: 140 },
         { key: 'sqlList', title: this.$t('term.framework.sqlsstatement'), width: 120 }
       ],
@@ -613,7 +614,7 @@ export default {
 @import '~@/resources/assets/css/variable.less';
 .dbinfo {
   display: grid;
-  grid-template-columns: 20% 20% 20% 20% 20%;
+  grid-template-columns: 16% 16% 16% 16% 16% 16%;
   grid-gap: 10px;
 }
 .topRight {
