@@ -10,6 +10,10 @@ const healthcheck = {
   toggleSqlInterceptor(params) {
     return axios.post('/api/rest/healthcheck/togglesqlinterceptor', params);
   },
+  getSqlExplain(params) {
+    // SQL监控查看执行计划接口，用于把用户当前查看的SQL提交给后端执行EXPLAIN
+    return axios.post('/api/rest/healthcheck/sqlexplain', params);
+  },
   getDataSourceInfo() {
     return axios.get('/api/rest/healthcheck/datasource', {});
   },
