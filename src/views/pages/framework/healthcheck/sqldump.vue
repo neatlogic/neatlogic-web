@@ -78,16 +78,11 @@
         </div>
       </div>
       <div slot="topRight">
-        <InputSearcher
-          v-if="activeTab === 'sql'"
-          v-model="searchParam.id"
+        <CombineSearcher
+          v-model="searchValue"
+          v-bind="searchConfig"
           @change="searchSql()"
-        ></InputSearcher>
-        <InputSearcher
-          v-else
-          v-model="searchParam.url"
-          @change="searchSql()"
-        ></InputSearcher>
+        ></CombineSearcher>
       </div>
       <div slot="content" class="content">
         <div>
@@ -292,7 +287,7 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     SqlDumpEdit: () => import('./sqldump-edit.vue'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     StatusDialog: () => import('./status-dialog.vue')
   },
@@ -311,7 +306,18 @@ export default {
       isInitDefaultTab: false,
       isDialogShow: false,
       isStatusDialogShow: false,
-      searchParam: { orderBy: 'runtime', id: '', url: '' },
+      searchParam: { orderBy: 'runtime' },
+      searchValue: {},
+      // SQL监控组合搜索器统一输出keyword、tenant、userId，避免SQL ID和URL两个Tab使用不同入参
+      searchConfig: {
+        search: true,
+        searchMode: 'clickBtnSearch',
+        placeholder: this.$t('form.placeholder.pleaseinput', { target: this.$t('page.keyword') }),
+        searchList: [
+          { type: 'text', name: 'tenant', label: this.$t('page.tenant') },
+          { type: 'text', name: 'userId', label: this.$t('page.user') }
+        ]
+      },
       sqlAuditData: {},
       requestSqlAuditData: {},
       // SQL执行计划弹框配置，点击SQL语句里的查看执行计划按钮后展示
@@ -544,34 +550,33 @@ export default {
       this.isDialogShow = true;
     },
     changeTab() {
-      // Tab切换时清理另一个维度的搜索词，避免SQL ID和URL搜索条件互相影响
-      if (this.activeTab === 'sql') {
-        this.searchParam.url = '';
-      } else {
-        this.searchParam.id = '';
-      }
+      // 关键字、租户和用户是两张表共用的过滤条件，切换Tab时保留当前组合搜索条件
       this.searchSql();
     },
     searchRequestSql(currentPage) {
       this.searchSql(null, currentPage);
+    },
+    getSqlSearchParam() {
+      // /healthcheck/sqldump接口统一接收keyword、tenant、userId，这里合并排序分页和组合搜索条件
+      return Object.assign({}, this.searchParam, this.searchValue);
     },
     searchSql(currentPage, requestCurrentPage) {
       if (this.timer) {
         clearTimeout(this.timer);
         this.timer = null;
       }
-      // SQL ID和URL监控分别维护当前页，满足两个TsTable独立分页
+      // SQL ID和URL监控分别维护当前页；组合搜索条件变化时两个表格都回到第一页
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
-      } else if (this.activeTab === 'sql') {
+      } else if (!requestCurrentPage) {
         this.searchParam.currentPage = 1;
       }
       if (requestCurrentPage) {
         this.searchParam.requestCurrentPage = requestCurrentPage;
-      } else if (this.activeTab === 'url') {
+      } else if (!currentPage) {
         this.searchParam.requestCurrentPage = 1;
       }
-      this.$api.framework.healthcheck.searchSqlAudit(this.searchParam).then(res => {
+      this.$api.framework.healthcheck.searchSqlAudit(this.getSqlSearchParam()).then(res => {
         this.sqlAuditData = res.Return.sqlAuditData || {};
         this.sqlAuditData.theadList = this.theadList;
         this.requestSqlAuditData = res.Return.requestSqlAuditData || {};
