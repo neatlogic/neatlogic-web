@@ -5,7 +5,7 @@ export default {
   label: '网络拓扑',
   type: 'networktopology',
   icon: 'tsfont-topo',
-  widgetType: 'network',
+  widgetType: 'basic',
   hasCustomConfig: true,
   supportAppearanceColor: true,
   width: 760,

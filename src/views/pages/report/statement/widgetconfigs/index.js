@@ -6,7 +6,6 @@ export { default as progressWidgetConfig } from './others/progress-widget-config
 export { default as flowlineWidgetConfig } from './effects/flowline-widget-config.vue';
 export { default as scanlightWidgetConfig } from './effects/scanlight-widget-config.vue';
 export { default as topologyflowWidgetConfig } from './effects/topologyflow-widget-config.vue';
-export { default as networktopologyWidgetConfig } from './network/networktopology-widget-config.vue';
 export { default as tableWidgetConfig } from './original/table-widget-config.vue';
 export { default as pieWidgetConfig } from './original/pie-widget-config.vue';
 export { default as radarWidgetConfig } from './original/radar-widget-config.vue';
@@ -35,3 +34,4 @@ export { default as pointWidgetConfig } from './others/point-widget-config.vue';
 export { default as customWidgetConfig } from './others/custom-widget-config.vue';
 export { default as timeWidgetConfig } from './others/time-widget-config.vue';
 export { default as autoexecWidgetConfig } from './others/autoexec-widget-config.vue';
+export { default as networktopologyWidgetConfig } from './network/networktopology-widget-config.vue';

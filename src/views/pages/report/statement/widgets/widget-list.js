@@ -3,7 +3,6 @@ import {$t} from '@/resources/init.js';
 export const WIDGET_TYPES = [
   { name: 'basic', label: $t('term.report.basicwidget') },
   { name: 'effect', label: '效果组件' },
-  { name: 'network', label: '网络组件' },
   //{ name: 'geography', label: '地理组件' },
   { name: 'other', label: $t('term.report.otherwidget') }
 ];
@@ -16,7 +15,6 @@ import { default as progress } from './define/progress.js';
 import { default as flowline } from './define/flowline.js';
 import { default as scanlight } from './define/scanlight.js';
 import { default as topologyflow } from './define/topologyflow.js';
-import { default as networktopology } from './define/networktopology.js';
 //import { default as table } from './define/table.js';
 import { default as pie } from './define/pie.js';
 import { default as radar } from './define/radar.js';
@@ -48,6 +46,7 @@ import { default as wordcloud } from './define/wordcloud.js';
 import { default as columnline } from './define/columnline.js';
 import { default as time } from './define/time.js';
 import { default as autoexec } from './define/autoexec.js';
+import { default as networktopology } from './define/networktopology.js';
 
 export const WIDGETS = [
   text,
@@ -59,7 +58,6 @@ export const WIDGETS = [
   scanlight,
   point,
   topologyflow,
-  networktopology,
   //table,
   pie,
   radar,
@@ -89,5 +87,6 @@ export const WIDGETS = [
   wordcloud,
   columnline,
   time,
-  autoexec
+  autoexec,
+  networktopology
 ];
