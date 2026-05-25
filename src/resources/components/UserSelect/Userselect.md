@@ -35,7 +35,8 @@ onChange|Function|-|否|改变值调用的方法|主要与tsform一起使用
 scrollParent|Object, String|-|否|组件外层对应的滚动容器|当控件滚出可视区域时，下拉框而然显示，需要通过监听滚动容器隐
 errorMessage|String|-|否|外层控制插件校验提示|-
 border|String|-|否|边框样式|border none bottom
-total|Number|18|否|搜索时接口一次性放回的数据量|-
+total|Number|20|否|搜索时接口一次性放回的数据量|-
+pageSize|Number|20|否|下拉加载每页数量|-
 sperateText|String|-|否|多选只读分割线|用在readonly的模式下面
 rangeList|Boolean, Array|-|否|指派范围|主要用在接口里面
 theme|Object|-|否|自定义主题样式
@@ -93,5 +94,6 @@ config:{
   errorMessage:"",
   border:"border",
   total:20,
+  pageSize:20,
 }
 ```
