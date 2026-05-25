@@ -93,7 +93,7 @@ config:{
   scrollParent:"",
   errorMessage:"",
   border:"border",
-  total:60,
+  total:20,
   pageSize:20,
 }
 ```
