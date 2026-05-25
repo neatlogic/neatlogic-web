@@ -40,8 +40,15 @@ export default {
           type: 'text',
           name: 'id',
           label: 'sql id',
-          validateList: ['required'],
+          // SQL ID监控保留原输入框，但不再强制必填，允许只配置URL监控
           desc: this.$t('message.framework.sqliddesc')
+        },
+        {
+          type: 'text',
+          name: 'url',
+          label: 'url',
+          // URL用于按一次HTTP请求聚合SQL，*代表监控所有请求URL
+          desc: '按HTTP请求URL统计本次请求内执行的所有SQL，*代表全部URL'
         }
       ]
     };
@@ -61,7 +68,13 @@ export default {
     save() {
       const form = this.$refs['form'];
       if (form.valid()) {
-        this.$api.framework.healthcheck.toggleSqlInterceptor(form.getFormValue()).then(res => {
+        const formValue = form.getFormValue();
+        // clear不需要额外参数，insert/remove至少需要填写sql id或url中的一个
+        if (formValue.action !== 'clear' && !formValue.id && !formValue.url) {
+          this.$Message.warning('请输入sql id或url');
+          return;
+        }
+        this.$api.framework.healthcheck.toggleSqlInterceptor(formValue).then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
             this.close();
