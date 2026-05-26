@@ -7,13 +7,21 @@
   >
     <template v-slot>
       <div class="input-border">
-        <TsForm ref="form" :itemList="formConfig" labelPosition="right"></TsForm>
+        <TsForm ref="form" :itemList="formConfig" labelPosition="right">
+          <template v-slot:basicInfo>
+            <div v-if="formConfig?.basic?.value === 'true'">
+              <TsForm ref="basicForm" :item-list="basicFormConfig"></TsForm>
+            </div>
+          </template>
+        </TsForm>
       </div>
     </template>
     <template v-slot:footer>
       <Button @click.native="handleClose">{{ $t('page.cancel') }}</Button>
       <Button
         type="primary"
+        :disabled="dialogConfig.isButtonDisabled"
+        :loading="dialogConfig.loading"
         @click.native="handleOk"
       >{{ $t('page.confirm') }}</Button>
     </template>
@@ -36,7 +44,9 @@ export default {
         type: 'modal',
         title: this.$t('dialog.title.edittarget', {'target': this.$t('page.interface')}),
         isShow: true,
-        width: 'medium'
+        width: 'medium',
+        loading: false,
+        isButtonDisabled: false
       },
       formConfig: {
         token: {
@@ -98,6 +108,61 @@ export default {
             { value: 1, text: this.$t('page.yes') },
             { value: 0, text: this.$t('page.no') }
           ]
+        },
+        basic: {
+          type: 'radio',
+          name: 'basicSupport',
+          value: 'false',
+          label: 'basic认证',
+          validateList: ['required'],
+          valueName: 'value',
+          textName: 'text',
+          dataList: [
+            { value: 'true', text: this.$t('page.yes') },
+            { value: 'false', text: this.$t('page.no') }
+          ],
+          isHidden: true,
+          onChange: val => {
+            if (val === 'false') {
+              this.$set(this.basicFormConfig['username'], 'value', null);
+              this.$set(this.basicFormConfig['password'], 'value', null);
+              this.$set(this.formConfig.basicInfo, 'isHidden', true);
+            } else {
+              this.$set(this.formConfig.basicInfo, 'isHidden', false);
+            }
+          }
+        },
+        basicInfo: {
+          hideLabel: true,
+          type: 'slot',
+          lable: '',
+          isHidden: true
+        }
+      },
+      basicFormConfig: {
+        username: {
+          type: 'text',
+          name: 'basicUsername',
+          value: '',
+          maxlength: 20,
+          width: 400,
+          label: this.$t('page.username'),
+          validateList: ['required']
+        },
+        password: {
+          type: 'password',
+          name: 'basicPassword',
+          value: '',
+          maxlength: 20,
+          width: 400,
+          label: this.$t('page.password'),
+          validateList: [
+            'required',
+            {
+              name: 'passcode',
+              message: this.$t('message.passcode')
+            }
+          ]
         }
       },
       currentApiData: null
@@ -138,9 +203,11 @@ export default {
       }
       this.dialogConfig.loading = true;
       const params = {
-        ...(this.currentApiData || {}),
-        ...this.$refs.form.getFormValue()
+        ...this.$refs.form.getFormValue(),
+        ...(this.$refs.basicForm ? this.$refs.basicForm.getFormValue() : {})
       };
+      params.handler = this.currentApiData.handler;
+      params.isActive = this.currentApiData.isActive;
       if (!this.isObjectApiType(this.currentApiData && this.currentApiData.type)) {
         params.isMcp = 0;
       }
@@ -174,6 +241,18 @@ export default {
               item.disabled = false;
             }
           });
+          if (res.Return.basicSupport) {
+            this.$set(this.formConfig.basic, 'isHidden', false);
+            if (res.Return.username || res.Return.password) {
+              this.$set(this.formConfig['basic'], 'value', 'true');
+              this.$set(this.formConfig.basicInfo, 'isHidden', false);
+              this.basicFormConfig['username']['value'] = res.Return.username;
+              this.basicFormConfig['password']['value'] = res.Return.password;
+            } else {
+              this.$set(this.formConfig['basic'], 'value', 'false');
+              this.$set(this.formConfig.basicInfo, 'isHidden', true);
+            }
+          }
           this.updateMcpFormItem(res.Return);
           this.dialogConfig.isButtonDisabled = false;
         }
