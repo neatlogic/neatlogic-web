@@ -2,7 +2,7 @@
   <div v-if="isShow">
     <!-- modal -->
     <div v-if="type == 'modal'" v-transfer-dom :data-transfer="transfer">
-      <div :style="(zindex ? 'z-index:' + zindex : '') + (';background-color:' + !hasMask ? 'transparent' : '')" :class="modalPrev + 'wrap'" @click.stop="maskClose ? onRemove() : ''">
+      <div :style="modalWrapStyle" :class="modalPrev + 'wrap'" @click.stop="maskClose ? onRemove() : ''">
         <div :class="setClass()" :style="setPosition(top, currentWidth)" @click.stop>
           <!-- 头部header内容设置 -->
           <div v-if="hasHeader == true" :class="isFull ? modalPrev + 'header isfull' : modalPrev + 'header'">
@@ -74,7 +74,7 @@
       :data-transfer="transfer"
       :class="{ isScrollbar: isScrollbar }"
     >
-      <div :style="zindex ? 'z-index:' + zindex : ''" :class="hasMask == true ? modalPrev + 'wrap' : ''" @click.stop="maskClose ? onRemove() : ''">
+      <div :style="sliderWrapStyle" :class="hasMask == true ? modalPrev + 'wrap' : ''" @click.stop="maskClose ? onRemove() : ''">
         <div :class="setClass(position)" :style="setWidth()" @click.stop>
           <!-- 头部header内容设置 -->
           <div v-if="hasHeader == true" :class="modalPrev + 'header'">
@@ -321,6 +321,23 @@ export default {
     }
   },
   computed: {
+    modalWrapStyle() {
+      const style = {};
+      if (typeof this.zindex === 'number' && this.zindex) {
+        style.zIndex = this.zindex;
+      }
+      if (!this.hasMask) {
+        style.backgroundColor = 'transparent';
+      }
+      return style;
+    },
+    sliderWrapStyle() {
+      const style = {};
+      if (typeof this.zindex === 'number' && this.zindex) {
+        style.zIndex = this.zindex;
+      }
+      return style;
+    },
     //slider数据
     setClass() {
       var _this = this;

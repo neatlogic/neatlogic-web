@@ -1,5 +1,11 @@
 export { default as textwidget } from './original/text-widget.vue';
 export { default as imagewidget } from './original/image-widget.vue';
+export { default as metricwidget } from './others/metric-widget.vue';
+export { default as rankingwidget } from './others/ranking-widget.vue';
+export { default as progresswidget } from './others/progress-widget.vue';
+export { default as flowlinewidget } from './effects/flowline-widget.vue';
+export { default as scanlightwidget } from './effects/scanlight-widget.vue';
+export { default as topologyflowwidget } from './effects/topologyflow-widget.vue';
 export { default as tablewidget } from './original/table-widget.vue';
 export { default as piewidget } from './original/pie-widget.vue';
 export { default as radarwidget } from './original/radar-widget.vue';
@@ -20,6 +26,7 @@ export { default as pscatterwidget } from './original/pscatter-widget.vue';
 export { default as scatterwidget } from './original/scatter-widget.vue';
 export { default as heatmapwidget } from './original/heatmap-widget.vue';
 export { default as columnlinewidget } from './original/columnline-widget.vue';
+export { default as treemapwidget } from './original/treemap-widget.vue';
 
 export { default as funnelwidget } from './others/funnel-widget.vue';
 export { default as wordcloudwidget } from './others/wordcloud-widget.vue';
@@ -30,3 +37,4 @@ export { default as districtwidget } from './geography/district-widget.vue';
 export { default as pointwidget } from './others/point-widget.vue';
 export { default as timewidget } from './others/time-widget.vue';
 export { default as autoexecwidget } from './others/autoexec-widget.vue';
+export { default as networktopologywidget } from './network/networktopology-widget.vue';

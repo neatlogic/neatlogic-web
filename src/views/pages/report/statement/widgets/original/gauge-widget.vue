@@ -1,5 +1,5 @@
 <template>
-  <div ref="container"></div>
+  <div ref="container" class="gauge-widget"></div>
 </template>
 <script>
 import { Gauge } from '@antv/g2plot';
@@ -15,8 +15,10 @@ export default {
   data() {
     return {
       plot: null,
+      lastPercent: null,
       chartConfig: {
         autoFit: true,
+        animation: false,
         range: {
           color: ''
         },
@@ -66,16 +68,27 @@ export default {
         this.plot = null;
       }
       if (this.$refs.container) {
+        this.setContainerOverflow();
+        const percent = this.finalData;
         this.plot = new Gauge(this.$refs.container, {
           ...this.chartConfig,
-          percent: this.finalData
+          percent: percent
         });
+        this.lastPercent = percent;
         this.plot.render();
+        this.setContainerOverflow();
       }
     },
     changeData() {
-      if (this.plot) {
-        this.plot.changeData(this.finalData);
+      const percent = this.finalData;
+      if (this.plot && percent !== this.lastPercent) {
+        this.plot.changeData(percent);
+        this.lastPercent = percent;
+      }
+    },
+    setContainerOverflow() {
+      if (this.$refs.container) {
+        this.$refs.container.style.overflow = 'hidden';
       }
     }
   },
@@ -95,4 +108,13 @@ export default {
   }
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped>
+.gauge-widget {
+  overflow: hidden !important;
+  width: 100%;
+  height: 100%;
+  ::v-deep div {
+    overflow: hidden !important;
+  }
+}
+</style>

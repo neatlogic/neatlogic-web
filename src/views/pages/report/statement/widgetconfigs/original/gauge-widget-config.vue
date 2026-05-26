@@ -6,7 +6,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormRadio
-          :value="config.type"
+          :value="getConfigValue('type', '')"
           :dataList="[
             { value: '', text: $t('page.default') },
             { value: 'meter', text: $t('term.report.meter') }
@@ -23,7 +23,7 @@
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="1 - config.innerRadius"
+            :value="1 - getConfigValue('innerRadius', 0.8)"
             :min="0.05"
             :max="0.5"
             :step="0.05"
@@ -42,7 +42,7 @@
       </label>
       <div class="ivu-form-item-content">
         <ColorPicker
-          :value="config.range.color"
+          :value="getColorValue(getConfigValue('range.color', ''))"
           :transfer="true"
           alpha
           recommend
@@ -61,7 +61,7 @@
       </label>
       <div class="ivu-form-item-content">
         <ColorPicker
-          :value="config.indicator.pointer.style.stroke"
+          :value="getColorValue(getConfigValue('indicator.pointer.style.stroke', ''))"
           :transfer="true"
           alpha
           recommend
@@ -80,7 +80,7 @@
       </label>
       <div class="ivu-form-item-content">
         <ColorPicker
-          :value="config.indicator.pin.style.stroke"
+          :value="getColorValue(getConfigValue('indicator.pin.style.stroke', ''))"
           :transfer="true"
           alpha
           recommend
@@ -101,7 +101,7 @@
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.statistic.content.style.fontSize"
+            :value="getConfigValue('statistic.content.style.fontSize', 20)"
             :min="12"
             :max="80"
             :step="1"
@@ -119,7 +119,7 @@
       </label>
       <div class="ivu-form-item-content">
         <ColorPicker
-          :value="config.statistic.content.style.color"
+          :value="getColorValue(getConfigValue('statistic.content.style.color', ''))"
           :transfer="true"
           alpha
           recommend
@@ -135,11 +135,13 @@
   </div>
 </template>
 <script>
+import { WidgetBaseConfig } from './base-config.js';
 export default {
   name: '',
   components: {
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
+  extends: WidgetBaseConfig,
   props: { config: { type: Object } },
   data() {
     return {};
@@ -155,6 +157,12 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getColorValue(value) {
+      if (Array.isArray(value)) {
+        return typeof value[0] === 'string' ? value[0] : '';
+      }
+      return typeof value === 'string' ? value : '';
+    },
     setConfigValue(attrName, attrValue) {
       if (attrName) {
         this.$emit('setConfig', attrName, attrValue);

@@ -73,76 +73,133 @@
           <i v-if="clearable && selectedList && selectedList.length > 0 && !disabled" class="clearBtn text-icon ivu-icon tsfont-close-s bg-op" @click="clearValue"></i>
         </div>
         <DropdownMenu slot="list" ref="dropdown" class="userselect-dropdown">
-          <!-- :class="dropdownCls" -->
-
-          <ul v-if="userList.length > 0" class="dropdown-ul" @click.stop>
-            <li v-for="(group, gindex) in userList" :key="gindex" class>
-              <div v-if="groupList.length > 1" class="text-grey userselect-title">
-                {{ group.text }}
-              </div>
-              <ul v-if="group.dataList && group.dataList.length > 0">
-                <li
-                  v-for="(user, uindex) in group.dataList"
-                  :key="gindex + '_' + uindex"
-                  :class="setLicalss(user, group)"
-                  @click="toggleSelect(user)"
-                >
-                  <!-- 分组需要添加tooltip来显示层级关系 -->
-                  <Tooltip
-                    v-if="group.value === 'team' && user.fullPath && user.value != '......'"
-                    :key="gindex + '_' + uindex"
-                    placement="right"
-                    theme="light"
-                    :disabled="$utils.isEmpty(user.parentPathList)"
-                    transfer
+          <div v-if="userList.length > 0" class="userselect-tabs-wrap">
+            <div
+              v-if="isShowSearchAction"
+              class="userselect-search-action text-href"
+              @click.stop="openSearchDialog"
+            >
+              <Tooltip 
+                placement="top"
+                :transfer="true"
+                theme="light"
+                max-width="300"
+              >
+                <span class="tsfont-filter"></span>
+                <div slot="content">
+                  {{ $t('page.advancesearch') }}
+                </div>
+              </Tooltip>
+            </div>
+            <Tabs
+              v-model="activeGroup"
+              :animated="false"
+              class="userselect-tabs"
+              @click.native.stop
+              @on-click="changeActiveGroup"
+            >
+              <TabPane
+                v-for="(group, gindex) in userList"
+                :key="getGroupName(group, gindex)"
+                :label="h => renderGroupLabel(h, group)"
+                :name="getGroupName(group, gindex)"
+              >
+                <div class="userselect-tab-content" :class="{ 'is-active': activeGroup === getGroupName(group, gindex) }">
+                  <Scroll
+                    v-if="group.dataList && group.dataList.length > 0"
+                    class="userselect-scroll"
+                    :on-reach-bottom="group._isMore || group._isLoadFinish ? () => loadMoreGroupData(group) : null"
+                    :loading-text="getGroupLoadingText(group)"
+                    :distance-to-edge="10"
+                    :height="getScrollHeight(group)"
+                    @scroll.native.capture="handleScrollReachBottom(group, $event)"
+                    @wheel.native="handleScrollReachBottom(group, $event)"
+                    @touchmove.native="handleScrollReachBottom(group, $event)"
                   >
-                    <slot name="option" :row="user" :group="group">
-                      <div class="overflow team-text">{{ user.text }}</div>
-                    </slot>
-                    <div v-if="user.parentPathList && user.parentPathList.length" slot="content" class="team-tip">
-                      <template v-for="path in user.parentPathList">
-                        <span :key="path" class="span-tip">{{ path }}</span>
-                      </template>
-                    </div>
-                  </Tooltip>
-                  <template v-else>
-                    <slot
-                      v-if="user.value != '......'"
-                      name="option"
-                      :row="user"
-                      :group="group"
-                    >
-                      <Tooltip
-                        theme="light"
-                        placement="right"
-                        :disabled="(group.value === 'user' && $utils.isEmpty(user.team)) || $utils.isEmpty(user.text)"
-                        transfer
+                    <ul class="dropdown-ul" @click.stop>
+                      <li
+                        v-for="(user, uindex) in group.dataList"
+                        :key="getGroupName(group, gindex) + '_' + uindex"
+                        :class="setLicalss(user, group)"
+                        @click="toggleSelect(user)"
                       >
-                        <div class="overflow team-text">{{ user.text }}</div>
-                        <div slot="content" class="team-tip">
-                          <span v-if="group.value == 'user'" class="span-tip">{{ user.team }}</span>
-                          <span v-else>{{ user.text }}</span>
-                        </div>
-                      </Tooltip>
-                    </slot>
-                    <div v-else>{{ user.text }}</div>
-                  </template>
-                </li>
-              </ul>
-            </li>
-          </ul>
+                        <!-- 分组需要添加tooltip来显示层级关系 -->
+                        <Tooltip
+                          v-if="group.value === 'team' && user.fullPath && user.value != '......'"
+                          :key="gindex + '_' + uindex"
+                          placement="right"
+                          theme="light"
+                          :disabled="$utils.isEmpty(user.parentPathList)"
+                          transfer
+                        >
+                          <slot name="option" :row="user" :group="group">
+                            <div class="overflow team-text">{{ user.text }}</div>
+                          </slot>
+                          <div v-if="user.parentPathList && user.parentPathList.length" slot="content" class="team-tip">
+                            <template v-for="path in user.parentPathList">
+                              <span :key="path" class="span-tip">{{ path }}</span>
+                            </template>
+                          </div>
+                        </Tooltip>
+                        <template v-else>
+                          <slot
+                            v-if="user.value != '......'"
+                            name="option"
+                            :row="user"
+                            :group="group"
+                          >
+                            <Tooltip
+                              theme="light"
+                              placement="right"
+                              :disabled="(group.value === 'user' && $utils.isEmpty(user.team)) || $utils.isEmpty(user.text)"
+                              transfer
+                            >
+                              <div class="overflow team-text">{{ user.text }}</div>
+                              <div slot="content" class="team-tip">
+                                <span v-if="group.value == 'user'" class="span-tip">{{ user.team }}</span>
+                                <span v-else>{{ user.text }}</span>
+                              </div>
+                            </Tooltip>
+                          </slot>
+                          <div v-else>{{ user.text }}</div>
+                        </template>
+                      </li>
+                      <li
+                        v-if="group._isMore"
+                        :class="[setLicalss(moretip, group), { 'userselect-load-more': group._isLoadingMore }]"
+                      >
+                        <template v-if="group._isLoadingMore">
+                          <span class="userselect-loading">
+                            <Icon
+                              type="ios-loading"
+                              size="18"
+                              class="loading userselect-loading-icon"
+                            ></Icon>
+                            <span class="userselect-loading-text">{{ $t('page.loadingtip') }}</span>
+                          </span>
+                        </template>
+                        <template v-else>
+                          {{ moretip.text }}
+                        </template>
+                      </li>
+                    </ul>
+                  </Scroll>
+                </div>
+              </TabPane>
+            </Tabs>
+          </div>
           <ul v-else class="dropdown-ul">
             <li class="ivu-dropdown-item ivu-dropdown-item-disabled">
               {{ $t('page.nodata') }}
             </li>
           </ul>
-          <!--
-                搜索频繁反应慢，导致页面频繁更新切换问题
-                <ul class="dropdown-ul" v-if="isLoading">
-                <li class="ivu-dropdown-item ivu-dropdown-item-disabled"><i class="tsfont-rotate-right"></i>数据加载中</li>
-          </ul>-->
         </DropdownMenu>
       </Dropdown>
+      <UserselectSearchDialog
+        v-if="isShowSearchDialog"
+        :multiple="multiple"
+        @close="closeSearchDialog"
+      ></UserselectSearchDialog>
       <div v-if="desc && !descType" class="text-tip tips">{{ desc }}</div>
       <Alert v-else-if="desc && descType" :type="descType">{{ desc }}</Alert>
       <transition name="fade">
@@ -162,11 +219,15 @@
 //差一个点击其他地方收起的，还有单选模式的，还有滚动时定位重新计算
 import formMixins from '@/resources/mixins/formMixins.js';
 import formScrollMixins from '@/resources/mixins/formScrollMixins.js';
-import { directive as ClickOutside } from '../../directives/v-click-outside-x';
+import { directive as ClickOutside } from '@/resources/directives/v-click-outside-x.js';
+const LOAD_MORE_MIN_VISIBLE_TIME = 400;
 export default {
   name: 'UserSelect',
   tagComponent: 'TsForm',
   directives: { ClickOutside },
+  components: {
+    UserselectSearchDialog: () => import('./userselect-search-dialog.vue')
+  },
   mixins: [formMixins, formScrollMixins],
   model: {
     prop: 'value',
@@ -238,7 +299,11 @@ export default {
     total: {
       //下拉选项的数量
       type: Number,
-      default: 18
+      default: 20
+    },
+    pageSize: {
+      type: Number,
+      default: 20
     },
     sperateText: {
       type: String,
@@ -274,12 +339,15 @@ export default {
       keyword: '', //搜索关键字
       isTransferDom: true,
       isVisible: false,
+      activeGroup: '',
+      isShowSearchDialog: false,
+      isLoadMoreLoading: false,
+      searchActionGroupList: ['user', 'role', 'team'],
       readonlyTitle: null,
       isSingel: false // 单选，true单选，false非单选
     };
   },
   created() {},
-
   mounted() {
     this.initValue();
     this.validMesage = '';
@@ -287,6 +355,8 @@ export default {
   beforeDestroy() {
     this.cancelAxios && this.cancelAxios.cancel();
     this.cancelAxios = null;
+    this.loadMoreCancelAxios && this.loadMoreCancelAxios.cancel();
+    this.loadMoreCancelAxios = null;
   },
   methods: {
     styleFn() {
@@ -329,7 +399,7 @@ export default {
       }
       this.readonlyTitle = width > text_length * 14 ? null : str;
     },
-    getUserlist(query) {
+    getUserlist(query, isInit = true) {
       //获取选中的值回显的
       let _this = this;
       let params = { total: this.total };
@@ -337,7 +407,8 @@ export default {
       //不管是不是数组都统一处理为数组（兼容后台valueList字段是[]）
       if (valueList.length <= 0) {
         _this.selectedList = [];
-        return;
+        !isInit && _this.changeSelectedList(_this.selectedList);
+        return Promise.resolve();
       }
 
       //调用接口获取默认值的初始化
@@ -357,7 +428,7 @@ export default {
       if (this.extendCondition && typeof this.extendCondition == 'object') {
         Object.assign(params, this.extendCondition);
       }
-      this.$https
+      return this.$https
         .post('/api/rest/user/role/team/search', params)
         .then(res => {
           _this.selectedList = [];
@@ -371,8 +442,7 @@ export default {
                   _this.selectedList = _this.selectedList.concat(datalist);
                 }
               });
-              // _this.dealNoExist(_this.selectedList, _this.currentValue);
-              _this.changeSelectedList(_this.selectedList, true);
+              _this.changeSelectedList(_this.selectedList, isInit);
             } else {
               _this.$Notice.warning({
                 title: this.$t('message.executefailed'),
@@ -430,7 +500,6 @@ export default {
       } else if (!this.multiple) {
         this.currentValue instanceof Array ? (this.actualValue = this.currentValue[0] || '') : (this.actualValue = this.currentValue);
       }
-      // this.keyword = this.multiple ? '' : this.selectedList.length > 0 ? this.selectedList[0].text.replace(/\(.*?\)/g, '') : '';
       this.keyword = '';
       this.isSingel = !this.multiple; // 解决下拉框选择一个之后，需要把原有数据删除，才能换选项
       !isInit && this.onChangeValue(val);
@@ -457,24 +526,11 @@ export default {
     },
     search(keyword) {
       let _this = this;
-      let params = { keyword: keyword, total: this.total };
+      let params = this.getSearchParams(keyword, 1, this.pageSize);
       _this.isLoading = true;
-      if (_this.groupList) {
-        params.groupList = _this.groupList;
-      }
-      if (_this.excludeList) {
-        params.excludeList = _this.excludeList;
-      }
-      if (_this.includeList) {
-        params.includeList = _this.includeList;
-      }
-      if (_this.rangeList && _this.rangeList.length > 0) {
-        params.rangeList = _this.rangeList;
-      }
-      if (_this.extendCondition && typeof _this.extendCondition == 'object') {
-        Object.assign(params, _this.extendCondition);
-      }
       this.cancelAxios && this.cancelAxios.cancel();
+      this.loadMoreCancelAxios && this.loadMoreCancelAxios.cancel();
+      this.isLoadMoreLoading = false;
       this.cancelAxios = this.$https.CancelToken.source();
       this.$https
         .post('/api/rest/user/role/team/search', params, {
@@ -489,14 +545,14 @@ export default {
               let userList = res.Return;
               _this.userList = [];
               userList.forEach(users => {
-                let datalist = users.dataList;
-                if (users.isMore && datalist.length > 0) {
-                  datalist.push(_this.moretip);
-                }
+                let datalist = Array.isArray(users.dataList) ? users.dataList : [];
+                users.dataList = datalist;
+                _this.updateGroupLoadState(users);
                 if (datalist && datalist.length > 0) {
                   _this.userList.push(users);
                 }
               });
+              _this.setActiveGroup();
               this.updatePosition();
             } else {
               _this.$Notice.warning({
@@ -514,6 +570,207 @@ export default {
           this.cancelAxios = null;
         });
     },
+    getSearchParams(keyword, currentPage, pageSize, groupList) {
+      let params = {
+        keyword: keyword,
+        currentPage: currentPage || 1,
+        pageSize: pageSize || this.pageSize
+      };
+      if (groupList || this.groupList) {
+        params.groupList = groupList || this.groupList;
+      }
+      if (this.excludeList) {
+        params.excludeList = this.excludeList;
+      }
+      if (this.includeList) {
+        params.includeList = this.includeList;
+      }
+      if (this.rangeList && this.rangeList.length > 0) {
+        params.rangeList = this.rangeList;
+      }
+      if (this.extendCondition && typeof this.extendCondition == 'object') {
+        Object.assign(params, this.extendCondition);
+      }
+      return params;
+    },
+    getGroupLoadingText(group) {
+      return group && group._isLoadFinish ? this.$t('page.loadfinish') : this.$t('page.loadingtip');
+    },
+    getScrollHeight(group) {
+      let dataLength = group && group.dataList ? group.dataList.length : 0;
+      group && group._isMore && dataLength++;
+      return Math.min(286, Math.max(dataLength * 32 + 10, 42));
+    },
+    handleScrollReachBottom(group, event) {
+      if (!group || !group._isMore || group._isLoadingMore || this.isLoadMoreLoading) {
+        return;
+      }
+      let scrollContainer = event && event.currentTarget ? event.currentTarget.querySelector('.ivu-scroll-container') : null;
+      if (!scrollContainer) {
+        return;
+      }
+      setTimeout(() => {
+        let distanceToBottom = scrollContainer.scrollHeight - scrollContainer.clientHeight - scrollContainer.scrollTop;
+        if (distanceToBottom <= 10) {
+          this.loadMoreGroupData(group);
+        }
+      }, 0);
+    },
+    loadMoreGroupData(group) {
+      if (!this.canLoadMoreGroup(group)) {
+        return Promise.resolve();
+      }
+      let request = this.getLoadMoreRequest(group);
+      let startTime = Date.now();
+      this.loadMoreCancelAxios && this.loadMoreCancelAxios.cancel();
+      this.loadMoreCancelAxios = this.$https.CancelToken.source();
+      this.isLoadMoreLoading = true;
+      this.$set(group, '_isLoadingMore', true);
+      return this.$https
+        .post('/api/rest/user/role/team/search', request.params, {
+          cancelToken: this.loadMoreCancelAxios.token
+        })
+        .then(res => {
+          return this.waitLoadMoreVisible(startTime).then(() => {
+            if (request.keyword !== this.keyword) {
+              return;
+            }
+            if (res && res.Status == 'OK') {
+              this.applyLoadMoreData(group, request, res.Return || []);
+            } else if (res) {
+              this.$Notice.warning({
+                title: this.$t('message.executefailed'),
+                desc: res.Message
+              });
+            }
+          });
+        })
+        .catch(error => {
+          return this.waitLoadMoreVisible(startTime);
+        })
+        .finally(() => {
+          this.finishLoadMore(group, request.groupName);
+        });
+    },
+    canLoadMoreGroup(group) {
+      return !!(group && group._isMore && !group._isLoadingMore && !this.isLoadMoreLoading);
+    },
+    getLoadMoreRequest(group) {
+      let groupName = group.value;
+      let nextCurrentPage = (Number(group.currentPage) || 1) + 1;
+      return {
+        groupName,
+        keyword: this.keyword,
+        nextCurrentPage,
+        params: this.getSearchParams(this.keyword, nextCurrentPage, this.pageSize, groupName ? [groupName] : this.groupList)
+      };
+    },
+    waitLoadMoreVisible(startTime) {
+      let waitTime = LOAD_MORE_MIN_VISIBLE_TIME - (Date.now() - startTime);
+      return waitTime > 0 ? new Promise(resolve => setTimeout(resolve, waitTime)) : Promise.resolve();
+    },
+    getTargetGroup(groupName, defaultGroup) {
+      return this.userList.find(item => item.value === groupName) || defaultGroup;
+    },
+    finishGroupLoad(targetGroup) {
+      this.$set(targetGroup, '_isMore', false);
+      this.$set(targetGroup, '_isLoadFinish', true);
+      this.$nextTick(() => {
+        this.updatePosition();
+      });
+    },
+    applyLoadMoreData(group, request, returnList) {
+      let targetGroup = this.getTargetGroup(request.groupName, group);
+      let responseGroup = returnList.find(item => item.value === request.groupName) || returnList[0];
+      if (!responseGroup) {
+        this.finishGroupLoad(targetGroup);
+        return;
+      }
+      let currentDataList = targetGroup.dataList || [];
+      let responseDataList = Array.isArray(responseGroup.dataList) ? responseGroup.dataList : [];
+      let newDataList = uniqueUserDataList(currentDataList.concat(responseDataList));
+      this.$set(targetGroup, 'dataList', newDataList);
+      this.$set(targetGroup, 'currentPage', Number(responseGroup.currentPage) || request.nextCurrentPage);
+      ['rowNum', 'pageCount'].forEach(key => {
+        responseGroup[key] !== null && responseGroup[key] !== undefined && this.$set(targetGroup, key, responseGroup[key]);
+      });
+      this.updateGroupLoadState(targetGroup, newDataList.length > currentDataList.length, responseDataList.length);
+      this.$nextTick(() => {
+        this.updatePosition();
+      });
+    },
+    finishLoadMore(group, groupName) {
+      let targetGroup = this.getTargetGroup(groupName, group);
+      targetGroup && this.$set(targetGroup, '_isLoadingMore', false);
+      this.isLoadMoreLoading = false;
+      this.loadMoreCancelAxios = null;
+    },
+    renderGroupLabel(h, group) {
+      let rowNum = group && group.rowNum;
+      let isShowRowNum = this.keyword && this.keyword.trim && this.keyword.trim();
+      return h('span', { class: 'userselect-tab-label' }, [
+        h('span', group.text),
+        isShowRowNum && rowNum !== null && rowNum !== undefined && rowNum !== '' ? h('span', { class: 'userselect-tab-rownum' }, rowNum) : null
+      ]);
+    },
+    updateGroupLoadState(group, hasNewData = true, pageDataLength) {
+      let { dataList = [], currentPage = 1, pageCount = 0, rowNum = 0 } = group || {};
+      let dataLength = dataList.length;
+      currentPage = Number(currentPage);
+      pageCount = Number(pageCount);
+      rowNum = Number(rowNum);
+      let currentPageSize = pageDataLength === undefined ? dataLength : pageDataLength;
+      let isMore = hasNewData && dataLength > 0 && (pageCount ? currentPage < pageCount : rowNum ? dataLength < rowNum : currentPageSize >= this.pageSize);
+      let isLoadFinish = dataLength > 0 && !isMore;
+      this.$set(group, '_isMore', isMore);
+      this.$set(group, '_isLoadFinish', isLoadFinish);
+    },
+    getGroupName(group, index) {
+      return (group && group.value) || String(index);
+    },
+    setActiveGroup() {
+      let activeGroup = this.getActiveGroupData();
+      this.activeGroup = activeGroup ? this.getGroupName(activeGroup, this.userList.indexOf(activeGroup)) : '';
+      this.clearFocusItem();
+      this.focusIndex = 0;
+    },
+    changeActiveGroup() {
+      this.clearFocusItem();
+      this.focusIndex = 0;
+      this.$nextTick(() => {
+        this.updatePosition();
+      });
+    },
+    getActiveGroupData() {
+      let userList = this.userList || [];
+      return userList.find((group, index) => this.getGroupName(group, index) === this.activeGroup) || userList[0] || null;
+    },
+    clearFocusItem() {
+      (this.userList || []).forEach(group => {
+        (group.dataList || []).forEach(data => {
+          data['_focusSelect'] && this.$set(data, '_focusSelect', false);
+        });
+      });
+    },
+    openSearchDialog() {
+      this.isVisible = false;
+      this.isShowSearchDialog = true;
+    },
+    closeSearchDialog(params) {
+      this.isShowSearchDialog = false;
+      let selectedUuidList = Array.isArray(params) ? params : params && params.selectedUuidList;
+      if (!selectedUuidList || !selectedUuidList.length) {
+        return;
+      }
+      let valueList = selectedUuidList.filter(uuid => !!uuid).map(uuid => (uuid.includes('#') ? uuid : 'user#' + uuid));
+      if (!this.multiple) {
+        valueList = valueList.slice(-1);
+        this.currentValue = [];
+        this.selectedList = [];
+      }
+      this.currentValue = this.currentValue.concat(valueList.filter(value => value && this.currentValue.indexOf(value) < 0));
+      this.getUserlist(this.currentValue, false);
+    },
     focusInput() {
       this.$refs.input && this.$refs.input.focus();
     },
@@ -524,7 +781,6 @@ export default {
       let selectli = this.selectedList;
       if (selectli && selectli.length > 0) {
         if (this.multiple) {
-          //多选
           if (this.currentValue.indexOf(item.value) > -1) {
             this.currentValue.splice(this.currentValue.indexOf(item.value), 1);
             selectli.forEach((se, ind) => {
@@ -537,7 +793,6 @@ export default {
             this.currentValue.push(item.value);
           }
         } else {
-          //单选
           this.selectedList = [];
           this.selectedList.push(item);
           this.currentValue = [item.value];
@@ -553,7 +808,6 @@ export default {
       this.changeSelectedList(this.selectedList);
     },
     onClickOutside(event) {
-      //点击外部，dropdown消失
       if (this.isVisible) {
         const $el = this.$refs.dropdown ? this.$refs.dropdown.$el || null : null;
         if ((!$el && $el === event.target) || $el.contains(event.target)) {
@@ -566,7 +820,6 @@ export default {
         }
 
         if (this.transfer) {
-        //如果是transfer的时候下拉的区域点击时是在dropdown外层的div上
           if ($el && $el.offsetParent && ($el.offsetParent === event.target || $el.offsetParent.contains(event.target))) {
             return;
           }
@@ -575,7 +828,6 @@ export default {
       }
     },
     updatePosition() {
-      //更新dropdown，下拉框的位置
       if (this.$el) {
         setWidth(this.$el.querySelector('.userselect-body') || null, this.$refs.dropdown ? this.$refs.dropdown.$el : null);
         this.$refs.dropdownContain && this.$refs.dropdownContain.$refs.drop && this.$refs.dropdownContain.$refs.drop.update();
@@ -583,7 +835,11 @@ export default {
     },
     handleKeydown(e) {
       if (this.userList && this.userList.length > 0) {
-        let length = getDataLength(this.userList);
+        let activeGroup = this.getActiveGroupData();
+        let length = getDataLength(activeGroup ? [activeGroup] : []);
+        if (length <= 0) {
+          return;
+        }
         const keyCode = e.keyCode;
 
         if (keyCode == '38') {
@@ -591,7 +847,7 @@ export default {
           e.preventDefault();
           this.focusIndex = this.focusIndex <= 1 ? length : this.focusIndex - 1;
           let focusItem = this.setFocusItem();
-          if (focusItem._disabled) {
+          if (focusItem && focusItem._disabled) {
             this.focusIndex = this.focusIndex <= 1 ? length : this.focusIndex - 1;
             this.setFocusItem();
           }
@@ -603,7 +859,7 @@ export default {
           this.focusIndex = this.focusIndex >= length ? 1 : this.focusIndex + 1;
           let focusItem = this.setFocusItem();
 
-          if (focusItem._disabled) {
+          if (focusItem && focusItem._disabled) {
             this.focusIndex = this.focusIndex >= length ? 1 : this.focusIndex + 1;
             this.setFocusItem();
           }
@@ -618,20 +874,19 @@ export default {
       }
     },
     setFocusItem() {
-      //利用键盘，选中的元素样色
       let length = 0;
       let _this = this;
       let selectData = null;
-      this.userList.forEach(item => {
-        item.dataList.forEach(data => {
+      let activeGroup = this.getActiveGroupData();
+      this.clearFocusItem();
+      if (activeGroup && activeGroup.dataList) {
+        activeGroup.dataList.forEach(data => {
           length++;
-          data['_focusSelect'] && (data['_focusSelect'] = false);
           length == _this.focusIndex && _this.$set(data, '_focusSelect', true) && (selectData = data);
         });
-      });
+      }
       this.$nextTick(function() {
-        //内容的滚动
-        let $scrollContain = _this.$refs.dropdown.$el.parentNode;
+        let $scrollContain = (_this.$refs.dropdown && _this.$refs.dropdown.$el && (_this.$refs.dropdown.$el.querySelector('.userselect-tab-content.is-active .ivu-scroll-container') || _this.$refs.dropdown.$el.querySelector('.userselect-tab-content.is-active .dropdown-ul'))) || _this.$refs.dropdown.$el.parentNode;
         let $selected = $scrollContain.querySelector(' .userselect-li.hover');
         if ($selected) {
           $scrollContain.scrollTop = $selected.offsetTop - 100;
@@ -654,7 +909,7 @@ export default {
       let userlist = this.selectedList;
       if (userlist && userlist.length > 0) {
         userlist.forEach((it, index) => {
-          title += it.text + (index < userlist.length - 1 && userlist.length > 1 ? '、' : '');
+          title += it.text + (index < userlist.length - 1 && userlist.length > 1 ? '\u3001' : '');
         });
       }
       return title;
@@ -672,7 +927,7 @@ export default {
     setLicalss() {
       return function(list, group) {
         let classtxt = 'userselect-li ivu-dropdown-item overflow text-action';
-        if (list && list.value == '......') {
+        if (list && list._disabled) {
           classtxt = 'userselect-li ivu-dropdown-item ivu-dropdown-item-disabled overflow';
         } else if (this.currentValue && this.currentValue.indexOf(list.value) > -1) {
           classtxt = 'userselect-li ivu-dropdown-item selected overflow text-href';
@@ -681,7 +936,7 @@ export default {
         if (list._focusSelect) {
           classtxt = classtxt + ' hover';
         }
-        if (list.value != '......') {
+        if (!list._disabled) {
           classtxt = classtxt + ' ' + group.value;
         }
 
@@ -720,6 +975,13 @@ export default {
         }
         return style;
       };
+    },
+    isShowSearchAction() {
+      if (this.rangeList && this.rangeList.length > 0) {
+        return false;
+      }
+      let activeGroup = this.getActiveGroupData();
+      return !!(activeGroup && this.searchActionGroupList.indexOf(activeGroup.value) > -1);
     }
   },
   watch: {
@@ -800,6 +1062,21 @@ function getCurrentValue(val, groupList) {
   return valueList;
 }
 
+function uniqueUserDataList(list) {
+  let valueMap = {};
+  let resultList = [];
+  (list || []).forEach(item => {
+    if (!item || item.value == '......') {
+      return;
+    }
+    if (!valueMap[item.value]) {
+      valueMap[item.value] = true;
+      resultList.push(item);
+    }
+  });
+  return resultList;
+}
+
 function getDataLength(list) {
   let length = 0;
   list &&
@@ -812,162 +1089,8 @@ function getDataLength(list) {
 }
 </script>
 <style lang="less">
-@import (reference) '~@/resources/assets/css/variable.less';
-.theme(@color) {
-  .userselect-dropdown {
-    .team-tip {
-      .span-tip {
-        &:not(:last-of-type)::after {
-          color: @color;
-        }
-      }
-    }
-  }
-}
-html {
-  .theme(@default-disable);
-
-  &.theme-dark {
-    .theme(@dark-disable);
-  }
-}
+@import "./userselect.global.less";
 </style>
 <style lang="less" scoped>
-.userselect-container {
-  // width: 100%;
-  ::v-deep .ivu-select-dropdown {
-    max-height: 200px;
-    overflow: auto;
-    &.ivu-select-dropdown-transfer {
-      max-height: auto;
-    }
-  }
-  .userlist {
-    display: flex;
-  }
-  .userselect-text {
-    height: auto;
-    padding: 2px 4px;
-  }
-  .userselect-input {
-    height: 28px;
-    border: 0 none !important;
-    padding: 0 0px !important;
-  }
-  .userselect-top {
-    width: 100%;
-    display: block;
-    min-height: 32px;
-    line-height: 30px;
-    height: auto;
-    padding: 0 8px;
-    vertical-align: middle;
-    cursor: pointer;
-    &.disabled-cursor {
-      cursor: not-allowed;
-    }
-    .clearBtn {
-      position: absolute;
-      right: 4px;
-      top: 8px;
-      font-size: 14px;
-      cursor: pointer;
-      display: none;
-    }
-    &:hover {
-      .clearBtn {
-        display: block;
-      }
-    }
-    .ivu-tag {
-      margin-top: 0px;
-      .ivu-icon-ios-close {
-        line-height: initial;
-      }
-    }
-  }
-  .userselect-body {
-    display: inline-block;
-    position: relative;
-  }
-  ::v-deep .ivu-tag {
-    // 解决宽度超出组件边界，超出隐藏问题
-    position: relative;
-    max-width: 100%;
-    .ivu-tag-text {
-      display: inline-block;
-      margin-right: 10px;
-      max-width: 99%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .ivu-icon-ios-close {
-      display: block;
-      position: absolute;
-      top: 0;
-      right: 3px;
-    }
-  }
-  .type-icon {
-    padding-right: 4px;
-    font-size: 13px;
-    opacity: 0.6;
-  }
-}
-.userselect-dropdown {
-  .userselect-title {
-    opacity: 0.8;
-    padding-left: 8px;
-  }
-  .userselect-li {
-    padding-right: 30px;
-    &.team {
-      padding: 0px;
-      .team-text {
-        padding: 7px 16px;
-        padding-right: 30px;
-      }
-    }
-    &.selected {
-      //   background: transparent;
-      position: relative;
-      &:after {
-        content: '';
-        position: absolute;
-        right: 10px;
-        top: 9px;
-        width: 5px;
-        height: 10px;
-        border: 2px solid;
-        border-top-color: transparent;
-        border-left-color: transparent;
-        border-radius: 2px;
-        transform: rotate(45deg);
-      }
-    }
-  }
-  .tsform-select-disabled {
-    .select-top {
-      cursor: not-allowed;
-      ::v-deep .ivu-tag .ivu-tag-text {
-        margin-right: 0px;
-      }
-    }
-  }
-}
-.team-tip {
-  word-break: break-all;
-  white-space: normal;
-  .span-tip {
-    &:not(:last-of-type)::after {
-      content: '/';
-      padding: 0px 3px;
-      color: #8c8c8c;
-    }
-  }
-}
-.ivu-tooltip {
-  width: 100%;
-}
+@import "./userselect.less";
 </style>

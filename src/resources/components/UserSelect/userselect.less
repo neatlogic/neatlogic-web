@@ -1,0 +1,245 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.userselect-container {
+  .userlist {
+    display: flex;
+  }
+  .userselect-text {
+    height: auto;
+    padding: 2px 4px;
+  }
+  .userselect-input {
+    height: 28px;
+    border: 0 none !important;
+    padding: 0 0px !important;
+  }
+  .userselect-top {
+    width: 100%;
+    display: block;
+    min-height: 32px;
+    line-height: 30px;
+    height: auto;
+    padding: 0 8px;
+    cursor: pointer;
+    &.disabled-cursor {
+      cursor: not-allowed;
+    }
+    .clearBtn {
+      position: absolute;
+      right: 4px;
+      top: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+    }
+    &:hover {
+      .clearBtn {
+        display: block;
+      }
+    }
+    .ivu-tag {
+      margin-top: 0px;
+      .ivu-icon-ios-close {
+        line-height: initial;
+      }
+    }
+  }
+  .userselect-body {
+    display: inline-block;
+    position: relative;
+  }
+  ::v-deep .ivu-tag {
+    position: relative;
+    max-width: 100%;
+    .ivu-tag-text {
+      display: inline-block;
+      margin-right: 10px;
+      max-width: 99%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .ivu-icon-ios-close {
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 3px;
+    }
+  }
+  .type-icon {
+    padding-right: 4px;
+    font-size: 13px;
+    opacity: 0.6;
+  }
+}
+
+.userselect-dropdown {
+  .userselect-search-action {
+    position: absolute;
+    top: 0;
+    right: 8px;
+    z-index: 1;
+    cursor: pointer;
+    align-items: center;
+    gap: 4px;
+    height: 34px;
+    padding: 8px 0;
+    display: flex;
+    font-size: 12px;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+  .userselect-tabs-wrap {
+    position: relative;
+  }
+  .userselect-tabs {
+    ::v-deep .ivu-tabs-bar {
+      align-items: center;
+      display: flex;
+      margin-bottom: 0;
+      padding: 0 40px 0 8px;
+      width: 100%;
+    }
+    ::v-deep .ivu-tabs-nav-container {
+      flex: 1 1 auto;
+      min-width: 0;
+      order: 1;
+    }
+    ::v-deep .ivu-tabs-nav-container-scrolling {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    ::v-deep .ivu-tabs-nav-prev,
+    ::v-deep .ivu-tabs-nav-next {
+      width: 24px;
+      text-align: center;
+    }
+    ::v-deep .ivu-tabs-nav-scroll {
+      min-width: 0;
+    }
+    ::v-deep .ivu-tabs-tab {
+      flex: 0 0 auto;
+      margin-right: 16px;
+      padding: 8px 0;
+    }
+    ::v-deep .userselect-tab-label {
+      align-items: center;
+      display: inline-flex;
+      flex: 0 0 auto;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    ::v-deep .userselect-tab-rownum {
+      color: @default-error-color;
+      font-weight: bold;
+    }
+  }
+  .userselect-tab-content {
+    max-height: 320px;
+    text-align: left;
+    .userselect-scroll {
+      width: 100%;
+      margin-bottom: 6px;
+      ::v-deep .ivu-scroll-container {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      ::v-deep .ivu-scroll-container::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+    }
+    .dropdown-ul {
+      overflow: visible;
+      max-height: none;
+      width: 100%;
+    }
+  }
+  .userselect-li {
+    padding-right: 30px;
+    display: block;
+    width: 100%;
+    &.userselect-load-more {
+      align-items: center;
+      cursor: default;
+      display: flex;
+      height: 43px;
+      justify-content: center;
+      line-height: 1;
+      padding: 0;
+      white-space: normal;
+      &:hover {
+        background-color: transparent;
+      }
+    }
+    .userselect-loading {
+      align-items: center;
+      color: var(--primary-color, @primary-color);
+      display: inline-flex;
+      flex-direction: column;
+      font-size: 12px;
+      gap: 6px;
+      justify-content: center;
+    }
+    .userselect-loading-icon {
+      animation: ani-demo-spin 1s linear infinite;
+      display: inline-block;
+      line-height: 1;
+    }
+    .userselect-loading-text {
+      line-height: 20px;
+    }
+    .ivu-tooltip,
+    .team-text {
+      display: block;
+      text-align: left;
+      width: 100%;
+    }
+    &.team {
+      padding: 0px;
+      .team-text {
+        padding: 7px 16px;
+        padding-right: 30px;
+      }
+    }
+    &.selected {
+      position: relative;
+      &:after {
+        content: '';
+        position: absolute;
+        right: 10px;
+        top: 9px;
+        width: 5px;
+        height: 10px;
+        border: 2px solid;
+        border-top-color: transparent;
+        border-left-color: transparent;
+        border-radius: 2px;
+        transform: rotate(45deg);
+      }
+    }
+  }
+  .tsform-select-disabled {
+    .select-top {
+      cursor: not-allowed;
+      ::v-deep .ivu-tag .ivu-tag-text {
+        margin-right: 0px;
+      }
+    }
+  }
+}
+
+.team-tip {
+  word-break: break-all;
+  white-space: normal;
+  .span-tip {
+    &:not(:last-of-type)::after {
+      content: '/';
+      padding: 0px 3px;
+    }
+  }
+}
+
+.ivu-tooltip {
+  width: 100%;
+}

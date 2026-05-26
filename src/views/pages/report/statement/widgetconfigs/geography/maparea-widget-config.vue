@@ -6,7 +6,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormRadio
-          :value="config.viewLevel.level"
+          :value="config.viewLevel?.level"
           :true-value="true"
           :false-value="false"
           :dataList="[
@@ -29,7 +29,7 @@
       </label>
       <div class="ivu-form-item-content">
         <TsFormSelect
-          :value="config.viewLevel.accode"
+          :value="config.viewLevel?.accode"
           :dataList="districtList"
           @change="
             val => {

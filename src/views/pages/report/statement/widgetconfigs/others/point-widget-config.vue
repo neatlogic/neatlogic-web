@@ -4,7 +4,7 @@
       <label class="ivu-form-item-label overflow">{{ $t('page.backgroundcolor') }}</label>
       <div class="ivu-form-item-content">
         <ColorPicker
-          :value="config.background.color.value"
+          :value="getConfigValue('background.color.value', '')"
           :transfer="true"
           recommend
           format="hex"
@@ -17,10 +17,26 @@
       </div>
     </div>
     <div class="ivu-form-item tsform-item ivu-form-label-top">
+      <label class="ivu-form-item-label overflow">帧率上限</label>
+      <div class="ivu-form-item-content">
+        <div class="pl-md pr-md">
+          <Slider
+            :value="getConfigValue('fpsLimit', 30)"
+            :min="15"
+            :max="60"
+            :step="5"
+            @on-change="val => {
+              setConfigValue('fpsLimit', val);
+            }"
+          ></Slider>
+        </div>
+      </div>
+    </div>
+    <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">{{ $t('term.report.particle.motion') }}</label>
       <div class="ivu-form-item-content">
         <TsFormSwitch
-          :value="config.particles.move.enable"
+          :value="getConfigValue('particles.move.enable', true)"
           :showStatus="true"
           :true-value="true"
           :false-value="false"
@@ -34,7 +50,7 @@
       <label class="ivu-form-item-label overflow">{{ $t('term.report.particle.color') }}</label>
       <div class="ivu-form-item-content">
         <TsFormSwitch
-          :value="config.particles.isRandomColor"
+          :value="getConfigValue('particles.isRandomColor', true)"
           :showStatus="true"
           :trueText="$t('term.report.customcolor')"
           :falseText="$t('term.report.randomcolor')"
@@ -45,8 +61,8 @@
           }"
         ></TsFormSwitch>
         <ColorPicker
-          v-if="!config.particles.isRandomColor"
-          :value="config.particles.color.value"
+          v-if="!getConfigValue('particles.isRandomColor', true)"
+          :value="getConfigValue('particles.color.value', '')"
           :transfer="true"
           recommend
           format="hex"
@@ -63,7 +79,7 @@
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.particles.opacity.value"
+            :value="getConfigValue('particles.opacity.value', 0.6)"
             :min="0.1"
             :max="1"
             :step="0.1"
@@ -79,9 +95,9 @@
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.particles.number.value"
+            :value="getConfigValue('particles.number.value', 10)"
             :min="1"
-            :max="200"
+            :max="120"
             :step="1"
             @on-change="val => {
               setConfigValue('particles.number.value', val);
@@ -95,9 +111,9 @@
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.particles.size.value"
+            :value="getConfigValue('particles.size.value', 4)"
             :min="1"
-            :max="100"
+            :max="40"
             :step="1"
             @on-change="val => {
               setConfigValue('particles.size.value', val);
@@ -110,7 +126,7 @@
       <label class="ivu-form-item-label overflow">{{ $t('term.report.particle.autoconnect') }}</label>
       <div class="ivu-form-item-content">
         <TsFormSwitch
-          :value="config.particles.links.enable"
+          :value="getConfigValue('particles.links.enable', false)"
           :true-value="true"
           :false-value="false"
           @change="val => {
@@ -119,14 +135,14 @@
         ></TsFormSwitch>
       </div>
     </div>
-    <div v-if="config.particles.links.enable" class="ivu-form-item tsform-item ivu-form-label-top">
+    <div v-if="getConfigValue('particles.links.enable', false)" class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">{{ $t('term.report.particle.connectdistance') }}</label>
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.particles.links.distance"
+            :value="getConfigValue('particles.links.distance', 100)"
             :min="10"
-            :max="500"
+            :max="300"
             :step="10"
             @on-change="val => {
               setConfigValue('particles.links.distance', val);
@@ -135,11 +151,11 @@
         </div>
       </div>
     </div>
-    <div v-if="config.particles.links.enable" class="ivu-form-item tsform-item ivu-form-label-top">
+    <div v-if="getConfigValue('particles.links.enable', false)" class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">{{ $t('term.report.particle.connectcolor') }}</label>
       <div class="ivu-form-item-content">
         <TsFormSwitch
-          :value="config.particles.links.isRandomColor"
+          :value="getConfigValue('particles.links.isRandomColor', true)"
           :showStatus="true"
           :trueText="$t('term.report.customcolor')"
           :falseText="$t('term.report.randomcolor')"
@@ -150,8 +166,8 @@
           }"
         ></TsFormSwitch>
         <ColorPicker
-          v-if="!config.particles.links.isRandomColor"
-          :value="config.particles.links.color.value"
+          v-if="!getConfigValue('particles.links.isRandomColor', true)"
+          :value="getConfigValue('particles.links.color.value', '')"
           :transfer="true"
           recommend
           format="hex"
@@ -163,12 +179,12 @@
         />
       </div>
     </div>
-    <div v-if="config.particles.links.enable" class="ivu-form-item tsform-item ivu-form-label-top">
+    <div v-if="getConfigValue('particles.links.enable', false)" class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">{{ $t('term.report.particle.connectopacity') }}</label>
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.particles.links.opacity"
+            :value="getConfigValue('particles.links.opacity', 0.4)"
             :min="0.1"
             :max="1"
             :step="0.1"
@@ -179,12 +195,12 @@
         </div>
       </div>
     </div>
-    <div v-if="config.particles.links.enable" class="ivu-form-item tsform-item ivu-form-label-top">
+    <div v-if="getConfigValue('particles.links.enable', false)" class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">{{ $t('term.report.particle.connectwidth') }}</label>
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider
-            :value="config.particles.links.width"
+            :value="getConfigValue('particles.links.width', 1)"
             :min="1"
             :max="5"
             :step="1"
@@ -198,39 +214,23 @@
   </div>
 </template>
 <script>
+import { WidgetBaseConfig } from '../original/base-config.js';
+
 export default {
   name: '',
   components: {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
+  extends: WidgetBaseConfig,
   props: {
     config: { type: Object }
   },
-  data() {
-    return {
-    };
-  },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
   methods: {
     setConfigValue(attrName, attrValue) {
       if (attrName) {
         this.$emit('setConfig', attrName, attrValue);
       }
     }
-  },
-  filter: {},
-  computed: {
-  },
-  watch: {
   }
 };
 </script>

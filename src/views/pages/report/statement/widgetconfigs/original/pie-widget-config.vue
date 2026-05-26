@@ -3,7 +3,7 @@
     <TsFormItem :label="$t('term.report.innerradius')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
-          :value="config.innerRadius"
+          :value="getConfigValue('innerRadius', 0)"
           :min="0"
           :max="0.9"
           :step="0.1"
@@ -16,7 +16,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.report.axis.showlegend')" labelPosition="top">
       <TsFormSwitch
-        :value="config.legend.visible"
+        :value="getConfigValue('legend.visible', true)"
         :true-value="true"
         :false-value="false"
         @change="val => {
@@ -26,7 +26,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.report.axis.legendlayout')" labelPosition="top">
       <TsFormRadio
-        :value="config.legend.layout"
+        :value="getConfigValue('legend.layout', 'horizontal')"
         :dataList="layoutList"
         @change="val => {
           setConfigValue('legend.layout', val);
@@ -35,7 +35,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.report.axis.legendposition')" labelPosition="top">
       <TsFormSelect
-        :value="config.legend.position"
+        :value="getConfigValue('legend.position', 'bottom')"
         :transfer="true"
         :clearable="false"
         :dataList="positionList"
@@ -46,7 +46,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.report.datalayout')" labelPosition="top">
       <TsFormRadio
-        :value="config.label.type"
+        :value="getConfigValue('label.type', 'inner')"
         :dataList="labelTypeList"
         @change="val => {
           setConfigValue('label.type', val);
@@ -55,7 +55,7 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.report.statisticcolor')" labelPosition="top">
       <ColorPicker
-        :value="config.label && config.label.style && config.label.style.fill || ''"
+        :value="getConfigValue('label.style.fill', '')"
         :transfer="true"
         alpha
         recommend
@@ -73,7 +73,7 @@
     <TsFormItem label="统计数据字体大小" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
-          :value="config.labelFontSize || 12"
+          :value="getConfigValue('labelFontSize', 12)"
           :min="12"
           :max="50"
           :step="1"

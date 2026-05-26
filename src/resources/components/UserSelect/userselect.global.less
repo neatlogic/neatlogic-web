@@ -1,0 +1,26 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.theme(@color) {
+  .userselect-dropdown {
+    .team-tip {
+      .span-tip {
+        &:not(:last-of-type)::after {
+          color: @color;
+        }
+      }
+    }
+  }
+}
+
+html {
+  .theme(@default-disable);
+
+  &.theme-dark {
+    .theme(@dark-disable);
+  }
+}
+
+.ivu-select-dropdown:has(.userselect-dropdown) {
+  max-height: none;
+  overflow: hidden;
+}

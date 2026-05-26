@@ -75,25 +75,30 @@
             <Panel v-if="reportData.widgetList && reportData.widgetList.length > 0" name="#">
               {{ $t('term.report.selectedwidget') }}
               <div slot="content">
-                <TsRow :gutter="8">
-                  <Col
-                    v-for="widget in reportData.widgetList"
+                <div class="layer-list">
+                  <div
+                    v-for="(widget, index) in sortedLayerWidgetList"
                     :key="widget.uuid"
-                    :span="8"
-                    class="form-item mt-md"
+                    class="layer-item text-action"
+                    :class="{ 'bg-selected': currentWidget && currentWidget.uuid === widget.uuid }"
+                    @click="selectWidget(widget)"
                   >
-                    <div
-                      v-if="getWidgetComponentByType(widget)"
-                      :draggable="true"
-                      style="cursor: pointer"
-                      :class="currentWidget && currentWidget.uuid === widget.uuid ? 'text-href' : ''"
-                      @click="selectWidget(widget)"
-                    >
-                      <div v-if="getWidgetComponentByType(widget).icon" :class="getWidgetComponentByType(widget).icon" style="font-size: 24px"></div>
-                      <div class="overflow" :title="getWidgetComponentByType(widget).label">{{ getWidgetComponentByType(widget).label }}</div>
+                    <div class="layer-info">
+                      <i
+                        class="layer-icon"
+                        :class="getWidgetComponentByType(widget) && getWidgetComponentByType(widget).icon ? getWidgetComponentByType(widget).icon : 'tsfont-question-o'"
+                      ></i>
+                      <span class="layer-name overflow" :title="getWidgetLabel(widget)">{{ getWidgetLabel(widget) }}</span>
+                      <span class="layer-index">#{{ sortedLayerWidgetList.length - index }}</span>
                     </div>
-                  </Col>
-                </TsRow>
+                    <div class="layer-actions">
+                      <span class="text-action" title="置顶" @click.stop="moveTopWidget(widget)">顶</span>
+                      <span class="text-action" title="上移" @click.stop="moveUpWidget(widget)">上</span>
+                      <span class="text-action" title="下移" @click.stop="moveDownWidget(widget)">下</span>
+                      <span class="text-action" title="置底" @click.stop="moveFloorWidget(widget)">底</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </Panel>
             <Panel v-for="widgetType in widgetTypeList" :key="widgetType.name" :name="widgetType.name">
@@ -404,62 +409,54 @@ export default {
       }
     },
     moveTopWidget(widget) {
-      let maxindex = 0;
-      this.reportData.widgetList.forEach(element => {
-        if (widget.zindex < element.zindex) {
-          if (maxindex < element.zindex) {
-            maxindex = element.zindex;
-          }
-          element.zindex -= 1;
-        }
-      });
-      widget.zindex = maxindex;
+      this.reorderWidgetLayer(widget, 'top');
     },
     moveFloorWidget(widget) {
-      let minindex = Number.MAX_VALUE;
-      this.reportData.widgetList.forEach(element => {
-        if (widget.zindex > element.zindex) {
-          if (minindex > element.zindex) {
-            minindex = element.zindex;
-          }
-          element.zindex += 1;
-        }
-      });
-      widget.zindex = minindex;
+      this.reorderWidgetLayer(widget, 'floor');
     },
     moveUpWidget(widget) {
-      let minOffset = Number.MAX_VALUE;
-      let switchWidget = null;
-      this.reportData.widgetList.forEach(element => {
-        if (element.zindex > widget.zindex) {
-          if (minOffset > element.zindex - widget.zindex) {
-            minOffset = element.zindex - widget.zindex;
-            switchWidget = element;
-          }
-        }
-      });
-      if (switchWidget) {
-        const i = switchWidget.zindex;
-        switchWidget.zindex = widget.zindex;
-        widget.zindex = i;
-      }
+      this.reorderWidgetLayer(widget, 'up');
     },
     moveDownWidget(widget) {
-      let minOffset = Number.MAX_VALUE;
-      let switchWidget = null;
-      this.reportData.widgetList.forEach(element => {
-        if (element.zindex < widget.zindex) {
-          if (minOffset > widget.zindex - element.zindex) {
-            minOffset = widget.zindex - element.zindex;
-            switchWidget = element;
-          }
-        }
-      });
-      if (switchWidget) {
-        const i = switchWidget.zindex;
-        switchWidget.zindex = widget.zindex;
-        widget.zindex = i;
+      this.reorderWidgetLayer(widget, 'down');
+    },
+    reorderWidgetLayer(widget, action) {
+      if (!widget || !this.reportData.widgetList || this.reportData.widgetList.length <= 1) {
+        return;
       }
+      const widgetList = [...this.reportData.widgetList].sort((a, b) => this.getWidgetZindex(a) - this.getWidgetZindex(b));
+      const index = widgetList.findIndex(item => item.uuid === widget.uuid);
+      if (index === -1) {
+        return;
+      }
+      const target = widgetList.splice(index, 1)[0];
+      if (action === 'top') {
+        widgetList.push(target);
+      } else if (action === 'floor') {
+        widgetList.unshift(target);
+      } else if (action === 'up') {
+        widgetList.splice(Math.min(index + 1, widgetList.length), 0, target);
+      } else if (action === 'down') {
+        widgetList.splice(Math.max(index - 1, 0), 0, target);
+      }
+      this.addHistory(true);
+      this.applyWidgetLayerOrder(widgetList);
+    },
+    applyWidgetLayerOrder(widgetList) {
+      widgetList.forEach((widget, index) => {
+        this.$set(widget, 'zindex', 100 + index);
+      });
+    },
+    normalizeWidgetZindex() {
+      if (!this.reportData.widgetList || this.reportData.widgetList.length === 0) {
+        return;
+      }
+      const widgetList = [...this.reportData.widgetList].sort((a, b) => this.getWidgetZindex(a) - this.getWidgetZindex(b));
+      this.applyWidgetLayerOrder(widgetList);
+    },
+    getWidgetZindex(widget) {
+      const zindex = Number(widget && widget.zindex);
+      return Number.isFinite(zindex) ? zindex : 0;
     },
     fullscreen() {
       let fullDiv = this.$refs.canvasContainer;
@@ -471,12 +468,17 @@ export default {
       if (this.id) {
         this.$api.report.statement.getStatementById(this.id).then(res => {
           this.reportData = res.Return;
+          this.normalizeWidgetZindex();
         });
       }
     },
 
     getWidgetComponentByType(widget) {
       return WIDGETS.find(d => d.type === widget.type);
+    },
+    getWidgetLabel(widget) {
+      const widgetComponent = this.getWidgetComponentByType(widget);
+      return widgetComponent ? widgetComponent.label : widget.type;
     },
     changeDataType(val) {
       this.$set(this.currentWidget, 'dataType', val);
@@ -621,6 +623,7 @@ export default {
       newWidget.uuid = this.$utils.setUuid(); //前端使用uuid作为唯一标识
       newWidget.x = newWidget.x + 100;
       newWidget.y = newWidget.y + 100;
+      newWidget.zindex = this.createZindex();
       newWidget._selected = false;
       this.addHistory(true);
       this.reportData.widgetList.push(newWidget);
@@ -631,7 +634,9 @@ export default {
         width: widget.width,
         height: widget.height,
         padding: widget.padding,
-        config: widget.config,
+        config: this.$utils.deepClone(widget.config || {}),
+        color: widget.color || '',
+        accentColor: widget.accentColor || '',
         border: ''
       };
       newWidget.x = x;
@@ -643,10 +648,11 @@ export default {
         }
       }
       newWidget.uuid = this.$utils.setUuid(); //前端使用uuid作为唯一标识
+      this.addHistory(true);
       this.reportData.widgetList.push(newWidget);
     },
     createZindex() {
-      //从100开始，100以下留给其他用途
+      // 从 100 开始，100 以下保留给画布背景和辅助层。
       let zindex = 99;
       if (this.reportData.widgetList && this.reportData.widgetList.length > 0) {
         this.reportData.widgetList.forEach(widget => {
@@ -658,12 +664,12 @@ export default {
       return zindex + 1;
     },
     saveReport() {
-      console.log(this.$refs['name'].valid());
       if (this.$refs['name'] && this.$refs['name'].valid()) {
         if (!this.reportData.widgetList || this.reportData.widgetList.length <= 0) {
           this.$Message.warning(this.$t('message.report.addreportwidget'));
           return;
         }
+        this.normalizeWidgetZindex();
         //_开头的属性都是编辑器的控制属性，不需要保存
         this.reportData.widgetList.forEach(widget => {
           for (let key in widget) {
@@ -701,6 +707,12 @@ export default {
   },
   filter: {},
   computed: {
+    sortedLayerWidgetList() {
+      if (!this.reportData.widgetList) {
+        return [];
+      }
+      return [...this.reportData.widgetList].sort((a, b) => this.getWidgetZindex(b) - this.getWidgetZindex(a));
+    },
     getWidgetByType() {
       return type => {
         return this.widgetList.filter(d => d.widgetType === type);
@@ -861,6 +873,47 @@ export default {
   cursor: move;
   // width: 50%;
   display: inline-block;
+}
+.layer-list {
+  max-height: 320px;
+  overflow: auto;
+}
+.layer-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 20px;
+}
+.layer-info {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+}
+.layer-icon {
+  flex: 0 0 auto;
+  margin-right: 6px;
+  font-size: 16px;
+}
+.layer-name {
+  flex: 1;
+  min-width: 0;
+}
+.layer-index {
+  flex: 0 0 auto;
+  margin-left: 6px;
+  font-size: 12px;
+  color: @default-tip;
+}
+.layer-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  font-size: 12px;
 }
 .theme(@background-color) {
   .formitem-container {
