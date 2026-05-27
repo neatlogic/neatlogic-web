@@ -146,14 +146,11 @@ export default {
     },
     validData() {
       const editorRef = this.$refs.editorRef;
+      let isValid = true;
       if (editorRef && typeof editorRef.validData === 'function') {
-        const isValid = editorRef.validData();
-        return isValid;
+        isValid = editorRef.validData();
       }
-      return false;
-    },
-    vaildData() {
-      return this.validData();
+      return isValid;
     },
     getAllSaveData(isSubmit) {
       //保存数据
@@ -180,8 +177,6 @@ export default {
       return saveData;
     },
     handleTitleChange(title) {
-      console.log('handleTitleChange', title);
-      
       this.title = title || '';
     },
     saveDraftDocument(type) {
