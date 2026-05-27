@@ -22,6 +22,10 @@
         <span v-if="row.isActive == 1" class="text-success">{{ $t('page.yes') }}</span>
         <span v-else class="text-grey">{{ $t('page.no') }}</span>
       </template>
+      <template v-slot:type="{ row }">
+        <span v-if="row.isEmbed">系统订阅</span>
+        <span v-else>自定义订阅</span>
+      </template>
       <template slot="error" slot-scope="{ row }">
         <Poptip
           v-if="row.error"
@@ -47,8 +51,8 @@
               ></TsFormSwitch>
             </li>
             <li class="tsfont-heart-s" @click.stop="healthCheck(row)">状态检查</li>
-            <li class="tsfont-edit" @click.stop="editSubscribe(row)">{{ $t('page.edit') }}</li>
-            <li class="tsfont-trash-o" @click="deleteSubscribe(row)">{{ $t('page.delete') }}</li>
+            <li v-if="!row.isEmbed" class="tsfont-edit" @click.stop="editSubscribe(row)">{{ $t('page.edit') }}</li>
+            <li v-if="!row.isEmbed" class="tsfont-trash-o" @click="deleteSubscribe(row)">{{ $t('page.delete') }}</li>
           </ul>
         </div>
       </template>
@@ -77,6 +81,7 @@ export default {
           title: this.$t('page.uniquekey')
         },
         { key: 'topicLabel', title: this.$t('page.theme') },
+        { key: 'type', title: this.$t('page.type') },
         { key: 'handlerName', title: this.$t('term.framework.mqhandler') },
         { key: 'isActive', title: this.$t('page.enable') },
         { key: 'error', title: this.$t('page.exception') },

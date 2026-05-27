@@ -110,7 +110,7 @@ export default {
           type: 'select',
           name: 'className',
           label: this.$t('page.handler'),
-          url: '/api/rest/mq/subscribehandler/list',
+          dataList: [],
           valueName: 'className',
           validateList: ['required'],
           textName: 'label',
@@ -172,6 +172,7 @@ export default {
   beforeCreate() {},
   async created() {
     await this.getSubscribeById();
+    await this.getSubscribeHandlerList();
     this.getMqHandlerList();
     this.getTopicList(this.subscribeData.handler);
   },
@@ -187,6 +188,15 @@ export default {
     getMqHandlerList() {
       this.$api.framework.mq.listMqHandler({ isEnable: true }).then(res => {
         this.handlerList = res.Return;
+      });
+    },
+    getSubscribeHandlerList() {
+      return this.$api.framework.mq.listSubscribeHandler().then(res => {
+        const subscribeHandlerList = (res.Return || []).filter(item => !item.isEmbed);
+        const formItem = this.formConfig.find(item => item.name === 'className');
+        if (formItem) {
+          this.$set(formItem, 'dataList', subscribeHandlerList);
+        }
       });
     },
     getTopicList(mq) {
