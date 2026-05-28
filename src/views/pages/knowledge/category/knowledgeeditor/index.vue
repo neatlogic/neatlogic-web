@@ -24,6 +24,7 @@
             v-model="title"
             border="none"
             class="document-title"
+            :validateList="['name-special', 'required']"
             :readonly="!isTitleEditable"
             :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.title') })"
             @on-change="handleTitleChange"
@@ -561,11 +562,18 @@ export default {
     clearContent() {
       this.setContent(JSON.parse(JSON.stringify(EMPTY_TIPTAP_DOC)));
     },
-    validate() {
-      return !!(this.title && this.title.trim());
-    },
-    focusTitle() {
-      this.$refs.titleInput && this.$refs.titleInput.focus && this.$refs.titleInput.focus();
+    validData() {
+      let titleRef = this.$refs.titleInput;
+      let isValid = true;
+      if (titleRef && !titleRef.valid()) {
+        isValid = false;
+      }
+      if (!isValid) {
+        this.$nextTick(() => {
+          this.$refs.titleInput && this.$refs.titleInput.focus && this.$refs.titleInput.focus();
+        });
+      }
+      return isValid;
     },
     focus() {
       if (!this.isContentEditable || !this.editor || this.editor.isDestroyed || this.isDestroyingEditor) {

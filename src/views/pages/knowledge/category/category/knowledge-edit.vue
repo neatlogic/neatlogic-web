@@ -74,7 +74,7 @@ export default {
       },
       knowledgeConfing: null,
       title: '',
-      userType: 'submit', //审核人权?
+      userType: 'submit', //审核人
       knowledgeDocumentId: null, //文档id
       knowledgeDocumentVersionId: null, //版本id
       knowledgeDocumentTypeUuid: null, //类型
@@ -83,7 +83,6 @@ export default {
       isSaveShow: false, //另存为模板弹框
       saveOverviewData: {},
       defaultData: null,
-      lastEditorSaveData: {},
       isReviewer: 1, //修改标题和类型权限?
       isMember: 1,
       defaultConfig: {
@@ -145,15 +144,13 @@ export default {
     initDefaultData() {
       this.defaultData = this.getAllSaveData();
     },
-    vaildData() {
-      let isVaild = true;
-      if (this.title == '' || !this.$utils.nameRegularValid(this.title)) {
-        isVaild = false;
-        this.$nextTick(() => {
-          this.focusEditorTitle();
-        });
+    validData() {
+      const editorRef = this.$refs.editorRef;
+      let isValid = true;
+      if (editorRef && typeof editorRef.validData === 'function') {
+        isValid = editorRef.validData();
       }
-      return isVaild;
+      return isValid;
     },
     getAllSaveData(isSubmit) {
       //保存数据
@@ -173,23 +170,18 @@ export default {
     // 路由层只关心知识库保存协议；编辑器内部的新旧格式转换由组件自己处理
     getEditorSaveData() {
       const editorRef = this.$refs.editorRef;
-      if (editorRef && editorRef.getAllData && !editorRef.isDestroyingEditor) {
-        this.lastEditorSaveData = editorRef.getAllData();
-        return this.lastEditorSaveData;
+      let saveData = {};
+      if (editorRef && editorRef.getAllData) {
+        saveData = {...(editorRef.getAllData() || {}), title: this.title};
       }
-      if (this.$refs.editConfig && this.$refs.editConfig.getAllData) {
-        this.lastEditorSaveData = this.$refs.editConfig.getAllData();
-        return this.lastEditorSaveData;
-      }
-      // Route leave and modal re-render can happen after the editor starts destroying.
-      return this.lastEditorSaveData || {};
+      return saveData;
     },
     handleTitleChange(title) {
       this.title = title || '';
     },
     saveDraftDocument(type) {
       let _this = this;
-      if (!this.vaildData() || _this.disabledBtn.saveDraftDocument) {
+      if (!this.validData() || _this.disabledBtn.saveDraftDocument) {
         return false;
       }
       return new Promise((resolve, reject) => {
@@ -219,6 +211,9 @@ export default {
       if (this.disabledBtn.submitDocument) {
         return;
       }
+      if (!this.validData()) {
+        return false;
+      }
       this.disabledBtn.submitDocument = true;
       try {
         let data = this.getAllSaveData(1);
@@ -245,32 +240,6 @@ export default {
     selectType(uuid) {
       this.knowledgeDocumentTypeUuid = uuid;
       this.updateType();
-    },
-    updateTitle() {
-      if (this.knowledgeDocumentId && this.isReviewer == 1 && this.title != this.defaultConfig.title) {
-        if (this.title != '' && this.$utils.nameRegularValid(this.title)) {
-          this.$set(this.defaultConfig, 'title', this.title);
-          let data = {
-            knowledgeDocumentId: this.knowledgeDocumentId,
-            title: this.title
-          };
-          this.$api.knowledge.knowledge.updateTitle(data).then(res => {
-            if (res.Status == 'OK') {
-              this.defaultData.title = this.title;
-              this.$Message.success(this.$t('message.executesuccess'));
-            }
-          });
-        } else {
-          this.$Notice.error({
-            title: this.$t('page.title'),
-            desc: this.$t('form.validate.required', { target: this.$t('page.title') }),
-            duration: 1.5
-          });
-          this.$nextTick(() => {
-            this.focusEditorTitle();
-          });
-        }
-      }
     },
     updateType() {
       if (!this.knowledgeDocumentId) {
@@ -352,18 +321,4 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.action-top {
-  position: absolute;
-  right: 8px;
-  top: 0;
-}
-.padding-t {
-  padding-top: 4px;
-}
-::v-deep .left-sider {
-  border-right: 0px solid #ccc !important;
-}
-::v-deep .bg-three {
-  background: transparent !important;
-}
 </style>

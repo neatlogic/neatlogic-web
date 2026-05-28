@@ -103,7 +103,7 @@ export default {
       this.$api.knowledge.knowledge.reviewDraftDocument(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess')); //操作成功
-          this.viewDocument('passed');
+          this.viewDocument('submit');
         }
       });
     },
