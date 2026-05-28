@@ -3598,5 +3598,11 @@
     "css": "tsfont-unlink",
     "hexCodepoint": "0xea59",
     "codepoint": 59993
+  },
+  {
+    "name": "video",
+    "css": "tsfont-video",
+    "hexCodepoint": "0xea5a",
+    "codepoint": 59994
   }
 ]
