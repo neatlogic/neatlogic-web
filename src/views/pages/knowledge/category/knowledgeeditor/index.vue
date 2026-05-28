@@ -24,6 +24,7 @@
             v-model="title"
             border="none"
             class="document-title"
+            readonly-class="document-readonly-title"
             :validateList="['name-special', 'required']"
             :readonly="!isTitleEditable"
             :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.title') })"
