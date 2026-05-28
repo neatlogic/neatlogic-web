@@ -7,6 +7,7 @@ const circleManage = () => import('./circle/circle-manage.vue');
 const circleEdit = () => import('./circle/circle-edit.vue');
 const templateManage = () => import('./template/template-manage.vue');
 const templateEdit = () => import('./template/template-edit.vue');
+const feishuSyncManage = () => import('./feishu/feishu-sync-manage.vue');
 const reviewDetail = () => import('./category/review/review-detail.vue');
 const KnowledgeOverview = () => import('./category/category/knowledge-overview.vue');
 const KnowledgeSearch = () => import('./category/category/knowledge-search.vue');
@@ -28,7 +29,7 @@ export default [
       }
       if (from.path === defaultPage) {
         //通过跳转到中间路由,并立刻返回原路由,实现刷新路由页面的效果
-        next({ name: 'refresh', replace: true, query: { path: defaultPage} }); 
+        next({ name: 'refresh', replace: true, query: { path: defaultPage} });
       } else {
         next({ path: defaultPage, replace: true});
       }
@@ -118,6 +119,18 @@ export default [
       title: $t('router.knowledge.templateedit'),
       ismenu: false,
       authority: 'KNOWLEDGE_TEMPLATE_MODIFY'
+    }
+  },
+  {
+    path: '/feishu-sync-manage',
+    name: 'feishu-sync-manage',
+    component: feishuSyncManage,
+    meta: {
+      title: '飞书云文档同步',
+      ismenu: true,
+      icon: 'tsfont-sync',
+      authority: 'KNOWLEDGE_FEISHU_SYNC_MODIFY',
+      type: 'others'
     }
   },
   {
