@@ -852,10 +852,11 @@ export default {
       }
 
       if (linkType === 'link' && linkHref) {
+        const linkRect = posToDOMRect(view, linkInfo.startPosition, linkInfo.endPosition);
         this.linkHoverConfig = {
           ...(linkInfo || {}),
-          top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
-          left: Number((nodeRect.left - editorWrapperRect.left).toFixed(0))
+          top: Number(((linkRect?.top || nodeRect.top) - editorWrapperRect.top).toFixed(0)),
+          left: Number(((linkRect?.left || nodeRect.left) - editorWrapperRect.left).toFixed(0))
         };
         this.isShowLinkHover = true;
       } else {
@@ -891,7 +892,8 @@ export default {
         '.ivu-dropdown-item',
         '.ivu-select-dropdown',
         '.ivu-poptip-popper',
-        '.ivu-tooltip-popper'
+        '.ivu-tooltip-popper',
+        '.link-hover-box'
       ].join(', '));
     },
     isMouseInBlockMenuLayer(event = this.lastMouseEvent) {

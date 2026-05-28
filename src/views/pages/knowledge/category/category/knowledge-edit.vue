@@ -1,8 +1,18 @@
 <template>
-  <div>
+  <div class="knowledge-edit-box">
     <TsContain border="border">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+      </template>
+      <template v-slot:topLeft>
+        <div v-if="documentPathText">
+          <span
+            v-if="documentPathText"
+            class="document-path text-tip overflow"
+            :title="documentPathText"
+          >({{ documentPathText }})</span>
+          <span class="tsfont-edit text-action" @click="openKnowledgeCategoryDialog">编辑分类</span>
+        </div>
       </template>
       <template slot="topRight">
         <div class="action-group" style="text-align:right">
@@ -43,16 +53,26 @@
         </div>
       </template>
     </TsContain>
-    <!-- 提交审核 -->
     <ReviewDialog
       :isShow.sync="isReviewShow"
       :documentId="knowledgeDocumentId"
       :versionId="knowledgeDocumentVersionId"
       :type="userType"
     ></ReviewDialog>
-    <!-- 活动 -->
-    <ActivityOverview :isShow.sync="isActivityShow" :knowledgeDocumentId="knowledgeDocumentId"></ActivityOverview>
-    <SaveOverview :isShow.sync="isSaveShow" :dataConfig="saveOverviewData"></SaveOverview>
+    <ActivityOverview
+      :isShow.sync="isActivityShow" 
+      :knowledgeDocumentId="knowledgeDocumentId"
+    ></ActivityOverview>
+    <SaveOverview
+      :isShow.sync="isSaveShow"
+      :dataConfig="saveOverviewData"
+    ></SaveOverview>
+    <KnowledgeCategoryDialog
+      v-if="isKnowledgeCategoryShow"
+      :knowledge-document-id="knowledgeDocumentId"
+      :knowledge-document-type-uuid="knowledgeDocumentTypeUuid"
+      @close="closeKnowledgeCategoryDialog"
+    ></KnowledgeCategoryDialog>
   </div>
 </template>
 <script>
@@ -62,16 +82,14 @@ export default {
     ReviewDialog: () => import('../review/review-dialog.vue'),
     ActivityOverview: () => import('@/views/pages/knowledge/category/category/activity-detail-dialog.vue'),
     SaveOverview: () => import('./save-overview'),
-    KnowledgeEditor: () => import('@/views/pages/knowledge/category/knowledgeeditor/index.vue')
+    KnowledgeEditor: () => import('@/views/pages/knowledge/category/knowledgeeditor/index.vue'),
+    KnowledgeCategoryDialog: () => import('./knowledge-category-dialog.vue')
   },
   filters: {},
   props: [''],
   data() {
     return {
-      disabledBtn: {
-        saveDraftDocument: false,
-        submitDocument: false
-      },
+      isKnowledgeCategoryShow: false,
       knowledgeConfing: null,
       title: '',
       userType: 'submit', //审核人
@@ -83,12 +101,16 @@ export default {
       isSaveShow: false, //另存为模板弹框
       saveOverviewData: {},
       defaultData: null,
-      isReviewer: 1, //修改标题和类型权限?
+      isReviewer: 1, //修改标题和类型权限
       isMember: 1,
       defaultConfig: {
-        //默认配置?
+        //默认配置
         title: '',
         knowledgeDocumentTypeUuid: null
+      },
+      disabledBtn: {
+        saveDraftDocument: false,
+        submitDocument: false
       }
     };
   },
@@ -236,29 +258,6 @@ export default {
         this.disabledBtn.submitDocument = false;
       }
     },
-    //选择分类
-    selectType(uuid) {
-      this.knowledgeDocumentTypeUuid = uuid;
-      this.updateType();
-    },
-    updateType() {
-      if (!this.knowledgeDocumentId) {
-        return;
-      }
-      if (this.knowledgeDocumentTypeUuid != this.defaultConfig.knowledgeDocumentTypeUuid) {
-        this.$set(this.defaultConfig, 'knowledgeDocumentTypeUuid', this.knowledgeDocumentTypeUuid);
-        let data = {
-          knowledgeDocumentId: this.knowledgeDocumentId,
-          knowledgeDocumentTypeUuid: this.knowledgeDocumentTypeUuid
-        };
-        this.$api.knowledge.knowledge.updateType(data).then(res => {
-          if (res.Status == 'OK') {
-            this.defaultData.knowledgeDocumentTypeUuid = this.knowledgeDocumentTypeUuid;
-            this.$Message.success(this.$t('message.executesuccess'));
-          }
-        });
-      }
-    },
     addNewRule() {
       // 刷新左侧菜单
       this.$store.dispatch('leftMenu/getKnowledgeTypeMenu');
@@ -285,9 +284,36 @@ export default {
       if (editorRef && typeof editorRef.focusTitle === 'function') {
         editorRef.focusTitle();
       }
+    },
+    closeKnowledgeCategoryDialog(data = {}) {
+      const { path = '', knowledgeDocumentTypeUuid = '' } = data || {};
+      this.knowledgeDocumentTypeUuid = knowledgeDocumentTypeUuid || '';
+      this.knowledgeConfing.path = path || '';
+      this.isKnowledgeCategoryShow = false;
+    },
+    openKnowledgeCategoryDialog() {
+      this.isKnowledgeCategoryShow = true;
     }
   },
   computed: {
+    documentPathText() {
+      const path = (this.knowledgeConfing && this.knowledgeConfing.path) || '';
+      if (Array.isArray(path)) {
+        return path.join(' / ');
+      }
+      if (typeof path === 'string') {
+        try {
+          const parsedPath = JSON.parse(path);
+          if (Array.isArray(parsedPath)) {
+            return parsedPath.join(' / ');
+          }
+        } catch (error) {
+          return path;
+        }
+        return path;
+      }
+      return '';
+    },
     hasTemplateAuth() {
       //判断知识模板权限
       return this.$store.getters.userAuthList.includes('KNOWLEDGE_TEMPLATE_MODIFY');
@@ -321,4 +347,18 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.knowledge-edit-box {
+  .detail-title {
+    display: inline-block;
+    max-width: 520px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .document-path {
+    margin: 0 4px;
+    font-size: 12px;
+  }
+}
 </style>

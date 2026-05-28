@@ -116,8 +116,8 @@ export default {
   data() {
     return {
       selectedFontColor: '#000',
-      selectedBgColor: '#fff',
-      selectedBgColorLight: '#fff',
+      selectedBgColor: '',
+      selectedBgColorLight: '',
       selectedBorderColor: '',
       textColorList: TEXT_COLOR_LIST,
       bgColorList: BACKGROUND_COLOR_LIST,
@@ -186,9 +186,9 @@ export default {
 
     handleRestoreDefault() {
       // 恢复默认
-      this.selectedBgColor = '#fff';
-      this.selectedBgColorLight = '#fff';
-      this.selectedFontColor = '#000';
+      this.selectedBgColor = '';
+      this.selectedBgColorLight = '';
+      this.selectedFontColor = '';
       this.$emit('click-menu', {
         commandName: 'blockTextColor',
         options: {

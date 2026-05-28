@@ -75,8 +75,8 @@ export default {
   props: {},
   data() {
     return {
-      selectedBgColor: '#fff',
-      selectedBgColorLight: '#fff',
+      selectedBgColor: '',
+      selectedBgColorLight: '',
       isVisibleColor: false,
       hideTimer: null,
       isEnterMenu: false,
@@ -108,8 +108,8 @@ export default {
       });
     },
     clearValue() {
-      this.selectedBgColor = '#fff';
-      this.selectedBgColorLight = '#fff';
+      this.selectedBgColor = '';
+      this.selectedBgColorLight = '';
       this.handleEmitCommand(this.selectedBgColorLight);
       this.closeDropdownMenu();
     },

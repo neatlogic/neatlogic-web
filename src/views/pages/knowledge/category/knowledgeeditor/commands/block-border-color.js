@@ -6,8 +6,6 @@ export default function blockBorderColor({ editor, position, options }) {
   editor.commands.setBlockStyle({
     uuid: uuid,
     pos: startPosition,
-    blockTextColor: '',
-    blockBackgroundColor: '',
     blockBorderColor: borderColor
   });
 }
