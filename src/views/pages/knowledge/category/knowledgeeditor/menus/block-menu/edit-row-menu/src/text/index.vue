@@ -1,5 +1,5 @@
 <template>
-  <DropdownMenu slot="list">
+  <DropdownMenu slot="list" class="knowledge-document-editor-edit-row-menu">
     <DropdownItem class="clear-dropdown-item-hover-background">
       <BaseMenu
         :hideBaseText="true"

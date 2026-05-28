@@ -4,17 +4,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-width: 180px;
-  min-height: 36px;
+  min-width: 208px;
+  height: 32px;
   margin: -7px -16px;
-  padding: 7px 16px;
+  padding: 0 14px;
   cursor: pointer;
   .icon-text-box {
     display: flex;
     align-items: center;
     .icon-image {
       font-size: 16px;
-      margin-right: 14px;
+      margin-right: 12px;
     }
     .icon-text {
       font-size: 14px;
@@ -24,8 +24,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     margin-right: -8px;
     font-size: 18px;
   }
@@ -47,10 +47,28 @@
   }
 }
 .@{classNamePrefix}-dropdown-item-divide {
-  padding: 7px 0;
+  padding: 5px 0;
   cursor: default;
   &.ivu-dropdown-item:hover {
     background: transparent !important;
+  }
+}
+.@{classNamePrefix}-edit-row-menu {
+  > .ivu-dropdown {
+    display: block;
+  }
+  > .clear-dropdown-item-hover-background {
+    padding: 6px 14px;
+  }
+  > .ivu-dropdown-item:not(.clear-dropdown-item-hover-background):not(.@{classNamePrefix}-dropdown-item-divide) {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 6px 14px;
+    box-sizing: border-box;
+  }
+  > .@{classNamePrefix}-dropdown-item-divide {
+    min-height: auto;
   }
 }
 .@{classNamePrefix}-plus-box {

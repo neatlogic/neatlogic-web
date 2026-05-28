@@ -13,7 +13,7 @@
           v-if="item.tipConentList"
           transfer
           theme="dark"
-          placement="right"
+          placement="top"
         >
           <span v-if="item.iconClass" style="font-size: 16px" :class="[item.iconClass, setSelectedTextClassName(item.value)]"></span>
           <template v-else>{{ item.text }}</template>
@@ -214,11 +214,11 @@ export default {
   }
   .basic-menu-box {
     display: grid;
-    grid-template-columns: repeat(7, 30px);
+    grid-template-columns: repeat(6, 28px);
     justify-content: start;
     column-gap: 8px;
-    row-gap: 8px;
-    margin-top: 6px;
+    row-gap: 6px;
+    margin-top: 0;
   }
   .basic-menu-text {
     display: inline-block;
