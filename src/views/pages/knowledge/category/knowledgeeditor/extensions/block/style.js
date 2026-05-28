@@ -21,6 +21,7 @@ export const BlockStyle = Extension.create({
               return element.style.color || null;
             },
             renderHTML: attributes => {
+              if (!attributes.blockTextColor) return {};
               return { style: `color:${attributes.blockTextColor}` };
             }
           },
@@ -31,6 +32,7 @@ export const BlockStyle = Extension.create({
               return element.style.backgroundColor || null;
             },
             renderHTML: attributes => {
+              if (!attributes.blockBackgroundColor) return {};
               return { style: `background-color:${attributes.blockBackgroundColor}` };
             }
           },
@@ -40,6 +42,7 @@ export const BlockStyle = Extension.create({
               return element.style.borderColor || null;
             },
             renderHTML: attributes => {
+              if (!attributes.blockBorderColor) return {};
               return { style: `border-color:${attributes.blockBorderColor}` };
             }
           }
@@ -75,18 +78,19 @@ export const BlockStyle = Extension.create({
               }
             }
             if (!target) return false;
+            const getNextAttrs = nodeAttrs => ({
+              ...nodeAttrs,
+              ...(blockTextColor !== undefined ? { blockTextColor: blockTextColor || null } : {}),
+              ...(blockBackgroundColor !== undefined ? { blockBackgroundColor: blockBackgroundColor || null } : {}),
+              ...(blockBorderColor !== undefined ? { blockBorderColor: blockBorderColor || null } : {})
+            });
 
             if (target.node.type.name === 'taskItem') {
               // 如果是任务列表，单独处理子节点
               target.node.descendants((child, childPos) => {
                 if (child.type.name === 'paragraph') {
                   dispatch(
-                    state.tr.setNodeMarkup(target.pos + childPos + 1, undefined, {
-                      ...child.attrs,
-                      ...(blockTextColor ? { blockTextColor } : {}),
-                      ...(blockBackgroundColor ? { blockBackgroundColor } : {}),
-                      ...(blockBorderColor ? { blockBorderColor } : {})
-                    })
+                    state.tr.setNodeMarkup(target.pos + childPos + 1, undefined, getNextAttrs(child.attrs))
                   );
                   return false;
                 }
@@ -95,12 +99,7 @@ export const BlockStyle = Extension.create({
             }
 
             dispatch(
-              state.tr.setNodeMarkup(target.pos, undefined, {
-                ...target.node.attrs,
-                ...(blockTextColor ? { blockTextColor } : {}),
-                ...(blockBackgroundColor ? { blockBackgroundColor } : {}),
-                ...(blockBorderColor ? { blockBorderColor } : {})
-              })
+              state.tr.setNodeMarkup(target.pos, undefined, getNextAttrs(target.node.attrs))
             );
 
             return true;

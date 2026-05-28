@@ -115,8 +115,8 @@ export default {
   data() {
     return {
       selectedFontColor: '#000',
-      selectedBgColor: '#fff',
-      selectedBgColorLight: '#fff',
+      selectedBgColor: '',
+      selectedBgColorLight: '',
       selectedBorderColor: '',
       textColorList: [
         {
@@ -188,7 +188,7 @@ export default {
       ],
       bgColorlightList: [
         {
-          color: '#fff',
+          color: '',
           text: '透明',
           hasAfter: true
         },
@@ -223,7 +223,7 @@ export default {
       ],
       borderColorList: [
         {
-          color: '#fff',
+          color: '',
           text: '透明',
           hasAfter: true
         },
@@ -319,9 +319,9 @@ export default {
 
     handleRestoreDefault() {
       // 恢复默认
-      this.selectedBgColor = '#fff';
-      this.selectedBgColorLight = '#fff';
-      this.selectedFontColor = '#000';
+      this.selectedBgColor = '';
+      this.selectedBgColorLight = '';
+      this.selectedFontColor = '';
       this.$emit('click-menu', {
         commandName: 'blockTextColor',
         options: {
