@@ -122,8 +122,8 @@ export default {
   data() {
     return {
       selectedFontColor: '#000',
-      selectedBgColor: '#fff',
-      selectedBgColorLight: '#fff',
+      selectedBgColor: '',
+      selectedBgColorLight: '',
       isVisibleColor: false,
       hideTimer: null,
       isEnterMenu: false,
@@ -197,7 +197,7 @@ export default {
       ],
       bgColorlightList: [
         {
-          color: '#fff',
+          color: '',
           text: '无颜色',
           hasAfter: true
         },
@@ -247,13 +247,13 @@ export default {
       this.isVisibleColor = false;
     },
     handleRestoreDefault() {
-      this.selectedBgColor = '#fff';
-      this.selectedBgColorLight = '#fff';
-      this.selectedFontColor = '#000';
+      this.selectedBgColor = '';
+      this.selectedBgColorLight = '';
+      this.selectedFontColor = '';
       this.$emit('menu-item-selected', {
         commandName: 'color',
         options: {
-          fontColor: this.selectedFontColor,
+          color: this.selectedFontColor,
           ...(this.nodeConfig || {})
         }
       });

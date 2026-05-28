@@ -36,7 +36,7 @@ export const TableCellBackground = Extension.create({
   
                 tr.setNodeMarkup(tablePos + cellPos + 1, undefined, {
                   ...cell.attrs,
-                  background: color
+                  background: color || null
                 });
               }
             } else if (type == 'column') {
@@ -49,7 +49,7 @@ export const TableCellBackground = Extension.create({
   
                 tr.setNodeMarkup(tablePos + cellPos + 1, undefined, {
                   ...cell.attrs,
-                  background: color
+                  background: color || null
                 });
               }
             }

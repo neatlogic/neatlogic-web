@@ -6,7 +6,6 @@ export default function blockBackgroundColor({ editor, position, options }) {
   editor.commands.setBlockStyle({
     uuid: uuid,
     pos: startPosition,
-    blockTextColor: null,
     blockBackgroundColor: backgroundColor
   });
 }
