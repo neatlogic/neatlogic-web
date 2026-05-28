@@ -79,6 +79,10 @@ export default {
           title: this.$t('page.server') + 'ID'
         },
         {
+          key: 'serverGroup',
+          title: this.$t('page.group')
+        },
+        {
           key: 'status',
           title: this.$t('page.status')
         },
@@ -102,7 +106,7 @@ export default {
         },
         {
           key: 'heartbeatRate',
-          title: this.$t('term.framework.heartbeatrate') + '（' + this.$t('page.minute') + '）'
+          title: this.$t('term.framework.heartbeatrate') + '（' + this.$t('page.second') + '）'
         },
         {
           key: 'heartbeatThreshold',
