@@ -109,7 +109,7 @@ export default {
         orderedList: 'tsfont-orderlist',
         table: 'tsfont-chart-table',
         image: 'tsfont-image',
-        insertVideo: 'tsfont-play-o'
+        insertVideo: 'tsfont-video'
       };
       const { type, attrs = {} } = this.nodeConfig || {};
       if (type == 'heading') {

@@ -124,8 +124,6 @@ function joinStyle(styleList = []) {
   return styleList.map(normalizeStyle).filter(Boolean).join(';');
 }
 
-const TABLE_CELL_BORDER_BOTTOM = 'border-bottom:1px solid #dfe1e5';
-
 function getStyleValue(style = '', name = '') {
   const match = String(style || '').match(new RegExp(`${name}\\s*:\\s*([^;]+)`, 'i'));
   return match ? match[1].trim() : null;
@@ -197,8 +195,7 @@ function getCellStyle(config = {}, cell = {}) {
   const cellStyle = removeStyleProperties(cell.cellStyle, ['border-bottom']);
   return joinStyle([
     tdStyle,
-    cellStyle,
-    TABLE_CELL_BORDER_BOTTOM
+    cellStyle
   ]);
 }
 
@@ -269,7 +266,7 @@ function getDefaultTableStyle() {
   return {
     table: 'table-layout:fixed;border-collapse:collapse;width:100%;text-align:left;border:none;',
     tr: 'height:42px',
-    td: TABLE_CELL_BORDER_BOTTOM
+    td: ''
   };
 }
 
