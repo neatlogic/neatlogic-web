@@ -7,6 +7,7 @@ import { TableCellVerticalAlign } from './table/cell-style/add-vertical-align-co
 import { ExtendTableCell, ExtendTableHeader } from './table/cell-style/extend-cell-attr.js';
 import { TableStyle } from './table/style.js';
 import { RewriteUuidOnPaste } from '@/views/pages/knowledge/category/knowledgeeditor/extensions/paste/rewrite-uuid.js';
+import { PasteMarkdown } from '@/views/pages/knowledge/category/knowledgeeditor/extensions/paste/markdown.js';
 import { Rate } from './rate.js';
 import { CompareBlockAttrs, CompareMark } from './compare-mark.js';
 export default [
@@ -22,5 +23,6 @@ export default [
   ExtendTableHeader,
   TableCellVerticalAlign,
   Rate,
+  PasteMarkdown,
   RewriteUuidOnPaste
 ];
