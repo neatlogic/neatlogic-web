@@ -9,8 +9,6 @@ function joinStyle(styleList = []) {
   return styleList.map(normalizeStyle).filter(Boolean).join('; ');
 }
 
-const TABLE_CELL_BORDER_BOTTOM = 'border-bottom: 1px solid #dfe1e5';
-
 function removeStyleProperties(style = '', propertyList = []) {
   const propertySet = new Set(propertyList.map(property => property.toLowerCase()));
   return String(style || '').split(';').map(item => item.trim()).filter(item => {
@@ -23,8 +21,7 @@ function buildCellStyle(attrs = {}) {
   return joinStyle([
     removeStyleProperties(attrs.cellStyle, ['border-bottom']),
     attrs.background ? `background-color: ${attrs.background}` : '',
-    attrs.verticalAlign && attrs.verticalAlign !== 'top' ? `vertical-align: ${attrs.verticalAlign}` : '',
-    TABLE_CELL_BORDER_BOTTOM
+    attrs.verticalAlign && attrs.verticalAlign !== 'top' ? `vertical-align: ${attrs.verticalAlign}` : ''
   ]);
 }
 

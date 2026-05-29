@@ -189,7 +189,17 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@info-color) {
+  .icon-box {
+    color: @info-color;
+  }
+}
 .attachment-box {
+  .theme(@default-info-color);
+  .theme-dark & {
+    .theme(@dark-info-color);
+  }
   .file-content-box {
     display: flex;
     align-items: center;
@@ -207,7 +217,6 @@ export default {
       }
       .icon-box {
         font-size: 20px;
-        color: skyblue;
       }
       .file-item {
         position: relative;

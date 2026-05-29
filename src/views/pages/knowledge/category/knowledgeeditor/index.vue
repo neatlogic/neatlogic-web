@@ -1401,7 +1401,7 @@ export default {
     position: fixed;
     width: 16px;
     height: 16px;
-    background: #3b82f6;
+    background: var(--knowledge-editor-primary);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     z-index: 9999;
@@ -1411,7 +1411,7 @@ export default {
 .knowledge-document-editor-drag-indicator {
   position: absolute;
   height: 2px;
-  background: #1670f0;
+  background: var(--knowledge-editor-primary);
   border-radius: 2px;
   z-index: 20;
   pointer-events: none;
@@ -1423,14 +1423,14 @@ export default {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #1670f0;
+    background: var(--knowledge-editor-primary);
   }
 }
 .editor-content-container {
   line-height: 26px;
 }
 .block-hover-highlight {
-  background-color: rgba(22, 112, 240, 0.1) !important;
+  background-color: var(--knowledge-editor-primary-bg) !important;
   border-radius: 5px;
   transition: background-color 0.15s ease;
 }

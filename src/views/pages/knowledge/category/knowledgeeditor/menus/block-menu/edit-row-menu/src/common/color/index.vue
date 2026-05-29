@@ -211,6 +211,32 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@border-color-base, @blockbg-color, @icon-color) {
+  .font-color-ul-box {
+    li {
+      border-color: @border-color-base;
+    }
+  }
+  .bg-color-box {
+    li {
+      &.bg-color-divide-line {
+        box-shadow: inset 0 0 0 1px @blockbg-color;
+        border-color: @border-color-base;
+        &::after {
+          background-color: @icon-color;
+        }
+      }
+    }
+  }
+}
+html {
+  .theme(@default-border, @default-blockbg, @default-icon);
+
+  &.theme-dark {
+    .theme(@dark-border, @dark-blockbg, @dark-icon);
+  }
+}
 .font-color-ul-box {
   display: flex;
   flex-wrap: nowrap;
@@ -220,7 +246,7 @@ export default {
     text-align: center;
     margin-right: 5px;
     white-space: nowrap;
-    border: 1px solid #ccc;
+    border: 1px solid;
     border-radius: 3px;
     &.active {
       border-width: 2px;
@@ -239,8 +265,7 @@ export default {
     border-radius: 2px;
     cursor: pointer;
     &.bg-color-divide-line {
-      box-shadow: inset 0 0 0 1px #fff;
-      border: 1px solid #ccc;
+      border: 1px solid;
       &::after {
         content: '';
         position: absolute;
@@ -248,7 +273,6 @@ export default {
         height: 56px;
         top: 1px;
         left: 21px;
-        background-color: #8f959e;
         -webkit-transform: rotate(45deg) scale(0.5);
         transform: rotate(45deg) scale(0.5);
         -webkit-transform-origin: -1px -2px;

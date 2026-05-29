@@ -86,6 +86,34 @@ export default {
 };
 </script>
 <style lang="less">
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@blockbg-color, @text-color, @gray-color, @border-color-base, @primary-grey, @boxshadow-bolck) {
+  .table-grid-selector {
+    border-color: @border-color-base;
+    background: @blockbg-color;
+    box-shadow: 0 2px 10px @boxshadow-bolck;
+    .header {
+      color: @text-color;
+    }
+    .grid {
+      border-color: @border-color-base;
+      background: @gray-color;
+    }
+    .cell {
+      background: @gray-color;
+    }
+    .cell.active {
+      background: @primary-grey;
+    }
+  }
+}
+html {
+  .theme(@default-blockbg, @default-text, @default-gray, @default-border, @default-primary-grey, @default-boxshadow-bolck);
+
+  &.theme-dark {
+    .theme(@dark-blockbg, @dark-text, @dark-gray, @dark-border, @dark-primary-grey, @dark-boxshadow-bolck);
+  }
+}
 .insert-table-box {
   display: flex;
   justify-content: space-between;
@@ -102,24 +130,20 @@ export default {
   }
 }
 .table-grid-selector {
-  border: 1px solid #e0e0e0;
+  border: 1px solid;
   border-radius: 8px;
   padding: 8px;
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   user-select: none;
   .header {
     display: flex;
     justify-content: space-between;
     font-size: 13px;
     margin-bottom: 6px;
-    color: #555;
   }
   .grid {
     display: flex;
     flex-direction: column;
-    border: 1px solid #eee;
-    background: #fafafa;
+    border: 1px solid;
     padding: 8px;
     transition: all 0.2s ease;
   }
@@ -130,15 +154,11 @@ export default {
     width: 18px;
     height: 18px;
     margin: 2px;
-    background: #f3f3f3;
     border-radius: 3px;
     transition: background 0.15s, transform 0.15s;
   }
   .cell:hover {
     transform: scale(1.05);
-  }
-  .cell.active {
-    background: #7eaaff;
   }
 }
 </style>

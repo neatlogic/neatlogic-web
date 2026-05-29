@@ -206,7 +206,19 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@menu-hover) {
+  .basic-menu-text {
+    &:hover {
+      background: @menu-hover;
+    }
+  }
+}
 .base-tool-box {
+  .theme(@default-menu-hover);
+  .theme-dark & {
+    .theme(@dark-menu-hover);
+  }
   box-sizing: border-box;
   .catagory-name {
     margin-bottom: 10px;
@@ -231,7 +243,6 @@ export default {
     cursor: pointer;
     text-align: center;
     &:hover {
-      background: #1f23291f;
       border-radius: 4px;
     }
   }

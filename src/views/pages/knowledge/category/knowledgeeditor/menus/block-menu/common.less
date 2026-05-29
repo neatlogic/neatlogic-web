@@ -1,4 +1,22 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
 @classNamePrefix: knowledge-document-editor;
+
+.theme(@blockbg-color, @border-color-base) {
+  .@{classNamePrefix}-plus-box {
+    background: @blockbg-color;
+    border-color: @border-color-base;
+  }
+}
+
+html {
+  .theme(@default-blockbg, @default-border);
+
+  &.theme-dark {
+    .theme(@dark-blockbg, @dark-border);
+  }
+}
+
 .@{classNamePrefix}-menu-item-content {
   position: relative;
   display: flex;
@@ -78,9 +96,8 @@
   max-width: 36px;
   height: 26px;
   padding: 2px 4px;
-  background: #fff;
   border-radius: 6px;
-  border: 1px solid #dee0e3;
+  border: 1px solid;
 }
 .@{classNamePrefix}-drag-handle {
   cursor: grab;

@@ -1,7 +1,7 @@
 <template>
   <div ref="uploadVideoRef" class="upload-video-box" @click.stop>
     <div class="icon-box" @click="openFileDialog">
-      <span class="tsfont-play icon-image"></span>
+      <span class="tsfont-video icon-image"></span>
       <span class="icon-text">视频</span>
     </div>
     <input

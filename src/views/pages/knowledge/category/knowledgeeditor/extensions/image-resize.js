@@ -129,7 +129,7 @@ export const ImageResize = Node.create({
       Object.assign(loading.style, {
         width: '200px',
         height: '200px',
-        background: '#f5f6fa',
+        background: 'var(--knowledge-editor-gray)',
         borderRadius: '8px',
         display: 'flex',
         alignItems: 'center',
@@ -141,8 +141,8 @@ export const ImageResize = Node.create({
       Object.assign(spinner.style, {
         width: '20px',
         height: '20px',
-        border: '4px solid #d3d3d3',
-        borderTopColor: '#409EFF',
+        border: '4px solid var(--knowledge-editor-disable)',
+        borderTopColor: 'var(--knowledge-editor-primary)',
         borderRadius: '50%',
         animation: 'loadingSpin 1s linear infinite'
       });
@@ -186,8 +186,8 @@ export const ImageResize = Node.create({
             width: '10px',
             height: '10px',
             borderRadius: '50%',
-            background: '#fff',
-            border: '1px solid #000',
+            background: 'var(--knowledge-editor-blockbg)',
+            border: '1px solid var(--knowledge-editor-text)',
             position: 'absolute',
             zIndex: 10,
             cursor: `${pos}-resize`,
