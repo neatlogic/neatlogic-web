@@ -18,7 +18,7 @@
     <!-- accept_end -->
     <!-- 暂存、保存_start -->
     <span
-      v-if="actionConfig.save"
+      v-if="actionConfig.save && isDetailReady"
       :class="{ disable: disabledConfig.saving }"
       class="action-item tsfont-save"
       @click="doBtnBarAction('saveTaskData')"
@@ -26,7 +26,7 @@
     <!-- 暂存、保存_end -->
     <!-- 转交_start -->
     <span
-      v-if="actionConfig.transfer"
+      v-if="actionConfig.transfer && isDetailReady"
       :class="{ disable: disabledConfig.transferring }"
       class="action-item tsfont-arrow-corner-right"
       @click="doBtnBarAction('transferTask')"
@@ -124,17 +124,17 @@
       </Dropdown>
     </span>
     <!-- 重审 -->
-    <span v-if="actionConfig.reapproval" class="action-item">
+    <span v-if="actionConfig.reapproval && isDetailReady" class="action-item">
       <Button
         icon="tsfont tsfont-rotate-right"
         @click="doBtnBarAction('reapprovalTask')"
       >{{ actionConfig.reapproval }}</Button>
     </span>
     <!-- 回退s -->
-    <span v-if="actionConfig.back && backStepList.length > 1" class="action-item">
+    <span v-if="actionConfig.back && isDetailReady && backStepList.length > 1" class="action-item">
       <Button icon="tsfont tsfont-reply" @click="doBtnBarAction('backTask')">{{ actionConfig.back }}</Button>
     </span>
-    <span v-if="actionConfig.back && backStepList.length == 1" class="action-item">
+    <span v-if="actionConfig.back && isDetailReady && backStepList.length == 1" class="action-item">
       <Button
         style="max-width: 180px"
         class="overflow"
@@ -148,7 +148,7 @@
     <slot name="action"></slot>
 
     <!-- 流转_start -->
-    <span v-if="actionConfig.complete" class="action-item">
+    <span v-if="actionConfig.complete && isDetailReady" class="action-item">
       <!-- 接下来步骤大于1个，弹窗选择 -->
       <Button
         v-if="nextStepList.length > 1"
@@ -189,6 +189,7 @@
   </div>
 </template>
 <script>
+import {store as processStore} from '@/views/pages/process/task/processdetail/processStore.js';
 export default {
   name: '',
   components: {
@@ -246,6 +247,9 @@ export default {
   },
   filter: {},
   computed: {
+    isDetailReady() {
+      return processStore.isDetailReady;
+    },
     isMoreAction() {
       //更多操作按钮
       let actionConfig = this.actionConfig;

@@ -3,13 +3,13 @@
   <div class="footer-operation-btn-wrap">
     <!-- 回退 -->
     <Button
-      v-if="actionConfig.back && backStepList.length > 1"
+      v-if="actionConfig.back && isDetailReady && backStepList.length > 1"
       icon="tsfont tsfont-reply"
       class="btn-margin-right"
       @click="backTask"
     >{{ actionConfig.back }}</Button>
     <Button
-      v-if="actionConfig.back && backStepList.length == 1"
+      v-if="actionConfig.back && isDetailReady && backStepList.length == 1"
       style="max-width:180px"
       class="overflow btn-margin-right"
       icon="tsfont tsfont-reply"
@@ -27,18 +27,18 @@
         ghost
         @click="startchange"
       >{{ actionStepconfig.startchange }}</Button>
-      <Button 
-        v-if="actionStepconfig.succeedchange" 
-        class="btn-margin-right" 
+      <Button
+        v-if="actionStepconfig.succeedchange && isDetailReady"
+        class="btn-margin-right"
         icon="tsfont tsfont-check-o"
         type="primary"
         ghost 
         @click="succeedchange"
       >{{ actionStepconfig.succeedchange }}
       </Button>
-      <Button 
-        v-if="actionStepconfig.failedchange" 
-        class="btn-margin-right" 
+      <Button
+        v-if="actionStepconfig.failedchange && isDetailReady"
+        class="btn-margin-right"
         icon="tsfont tsfont-danger-o"
         type="primary"
         ghost 
@@ -48,7 +48,7 @@
     </div>
     <div v-else>
       <!-- 其他节点 流转按钮相关 -->
-      <template v-if="actionConfig.complete">
+      <template v-if="actionConfig.complete && isDetailReady">
         <template v-if="lineBtnList.length > 0">
           <Tooltip
             v-for="l in lineBtnList"
@@ -108,7 +108,7 @@
       </template>
     </div>
     <Button
-      v-if="actionConfig.comment"
+      v-if="actionConfig.comment && isDetailReady"
       type="primary"
       :disabled="isDisableCommet"
       :title="isDisableCommet ? $t('term.process.disablecommettip') : null"
@@ -117,6 +117,7 @@
   </div>
 </template>
 <script>
+import {store as processStore} from '@/views/pages/process/task/processdetail/processStore.js';
 export default {
   name: 'FooterOperationBtn',
   componentName: 'FooterOperationBtn',
@@ -172,13 +173,16 @@ export default {
   methods: {
     completeStep(obj) {
       // 流转
-      if (!this.completeAuth) {
+      if (!this.completeAuth || !this.isDetailReady) {
         return;
       }
       this.$emit('completeStep', obj);
     },
     backTask() {
       // 回退
+      if (!this.isDetailReady) {
+        return;
+      }
       this.$emit('backTask');
     },
     startchange() {
@@ -187,10 +191,16 @@ export default {
     },
     succeedchange() {
       // 变更确认成功
+      if (!this.isDetailReady) {
+        return;
+      }
       this.$emit('succeedchange');
     },
     failedchange() {
       // 变更确认失败
+      if (!this.isDetailReady) {
+        return;
+      }
       this.$emit('failedchange');
     },
     getCompleteList(list) {
@@ -207,10 +217,16 @@ export default {
       }
     },
     comment() {
+      if (!this.isDetailReady) {
+        return;
+      }
       this.$emit('comment');
     }
   },
   computed: {
+    isDetailReady() {
+      return processStore.isDetailReady;
+    },
     getBackText() {
       // 获取回退文案
       let backText = '';
