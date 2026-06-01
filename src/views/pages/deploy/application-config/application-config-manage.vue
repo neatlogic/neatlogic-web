@@ -66,9 +66,36 @@
                 :authList="authList"
                 :hasEditPipelineAuth="canShow ? hasEditPipelineAuth : canShow"
                 :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
+                :activeTabValue="appTabValue"
+                @updateTab="updateAppTabValue"
                 @updateAuth="updateAuth"
-              ></AppManage>
-              <ModuleManage v-if="configType == 'module'" :params="{appSystemId,appModuleId}" :hasEditConfigAuth="canEdit"></ModuleManage>
+              >
+                <template v-slot:extraTab="slotProps">
+                  <slot name="appExtraTab" v-bind="slotProps"></slot>
+                </template>
+              </AppManage>
+              <Tabs
+                v-if="configType == 'module'"
+                v-model="moduleTabValue"
+                :animated="false"
+                class="block-tabs"
+                @on-click="updateModuleTabValue"
+              >
+                <TabPane :label="$t('term.deploy.moduleinformation')" name="moduleConfig">
+                  <ModuleManage
+                    v-if="moduleTabValue == 'moduleConfig'"
+                    :params="{appSystemId,appModuleId}"
+                    :hasEditConfigAuth="canEdit"
+                  ></ModuleManage>
+                </TabPane>
+                <slot
+                  name="moduleExtraTab"
+                  :tabValue="moduleTabValue"
+                  :appSystemId="appSystemId"
+                  :appModuleId="appModuleId"
+                  :hasEditConfigAuth="canEdit"
+                ></slot>
+              </Tabs>
               <EnvManage
                 v-if="configType == 'env' && canShow"
                 :params="{appSystemId,appModuleId, envId, appSystemName: selectedApp?.abbrName, envName: selectedEnv?.name, moduleName: selectedModule?.abbrName}"
@@ -105,9 +132,36 @@
                   :authList="authList"
                   :hasEditPipelineAuth="canShow ? hasEditPipelineAuth : canShow"
                   :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
+                  :activeTabValue="appTabValue"
+                  @updateTab="updateAppTabValue"
                   @updateAuth="updateAuth"
-                ></AppManage>
-                <ModuleManage v-else-if="configType == 'module'" :params="{appSystemId,appModuleId}" :hasEditConfigAuth="canEdit"></ModuleManage>
+                >
+                  <template v-slot:extraTab="slotProps">
+                    <slot name="appExtraTab" v-bind="slotProps"></slot>
+                  </template>
+                </AppManage>
+                <Tabs
+                  v-else-if="configType == 'module'"
+                  v-model="moduleTabValue"
+                  :animated="false"
+                  class="block-tabs"
+                  @on-click="updateModuleTabValue"
+                >
+                  <TabPane :label="$t('term.deploy.moduleinformation')" name="moduleConfig">
+                    <ModuleManage
+                      v-if="moduleTabValue == 'moduleConfig'"
+                      :params="{appSystemId,appModuleId}"
+                      :hasEditConfigAuth="canEdit"
+                    ></ModuleManage>
+                  </TabPane>
+                  <slot
+                    name="moduleExtraTab"
+                    :tabValue="moduleTabValue"
+                    :appSystemId="appSystemId"
+                    :appModuleId="appModuleId"
+                    :hasEditConfigAuth="canEdit"
+                  ></slot>
+                </Tabs>
               </template>
             </template>
           </div>
@@ -183,7 +237,10 @@ export default {
       envParam: {},
       authList: [], // 应用配置所有权限列表
       isHasAppSystemIdList: true, //是否有应用列表
-      isShowBlueGreenDialog: false
+      isShowBlueGreenDialog: false,
+      appTabValue: 'appConfig',
+      moduleTabValue: 'moduleConfig',
+      sharedTabList: ['codehubProjectMapping', 'codehubChasePolicy', 'codehubMergeGate']
     };
   },
   beforeCreate() {},
@@ -502,6 +559,18 @@ export default {
     },
     closeBlueGreenDialog() {
       this.isShowBlueGreenDialog = false;
+    },
+    updateAppTabValue(tabValue) {
+      this.appTabValue = tabValue || 'appConfig';
+      if (this.sharedTabList.includes(this.appTabValue)) {
+        this.moduleTabValue = this.appTabValue;
+      }
+    },
+    updateModuleTabValue(tabValue) {
+      this.moduleTabValue = tabValue || 'moduleConfig';
+      if (this.sharedTabList.includes(this.moduleTabValue)) {
+        this.appTabValue = this.moduleTabValue;
+      }
     }
   },
   filter: {},
