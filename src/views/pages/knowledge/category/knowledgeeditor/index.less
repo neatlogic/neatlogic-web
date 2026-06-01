@@ -589,6 +589,54 @@ html {
     padding: 12px 20px;
     border-radius: 0;
   }
+  .compare-meta-box {
+    padding: 4px 0 2px;
+  }
+  .compare-meta-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 24px;
+    word-break: break-word;
+  }
+  .compare-meta-label {
+    flex: 0 0 auto;
+    color: var(--knowledge-editor-tip);
+  }
+  .compare-tag-list {
+    display: flex;
+    flex: 1 1 0;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+  }
+  .compare-tag-item {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    min-height: 22px;
+    padding: 0 6px;
+    border: 1px solid var(--knowledge-editor-weak-border);
+    border-radius: 3px;
+    line-height: 20px;
+    word-break: break-all;
+  }
+  .compare-tag-item.knowledge-compare-mark {
+    border-radius: 3px;
+    padding: 0 6px;
+    font-weight: 600;
+  }
+  .compare-tag-item.knowledge-compare-insert {
+    background: var(--knowledge-editor-success-bg-deep);
+  }
+  .compare-tag-item.knowledge-compare-delete {
+    background: var(--knowledge-editor-error-bg-deep);
+    text-decoration: line-through;
+    text-decoration-color: var(--knowledge-editor-error-outline);
+  }
+  .compare-tag-item.knowledge-compare-update {
+    background: var(--knowledge-editor-warning-bg-deep);
+  }
   .ProseMirror {
     pre {
       margin: 4px 0;
