@@ -1,8 +1,26 @@
 <template>
-  <div>
+  <div class="knowledge-edit-box">
     <TsContain border="border">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
+      </template>
+      <template v-slot:topLeft>
+        <div class="top-left-action">
+          <span
+            v-if="documentPathText"
+            class="document-path text-tip overflow"
+            :title="documentPathText"
+          >({{ documentPathText }})</span>
+          <span
+            class="tsfont-edit text-action"
+            @click="openKnowledgeCategoryDialog"
+          >{{ $t('term.knowledge.knowtype') }}</span>
+          <span
+            class="tsfont-addtag text-action"
+            :class="{disable: isMember !== 1}"
+            @click="openDocumentTagDialog"
+          >{{ $t('term.knowledge.documenttag') }}</span>
+        </div>
       </template>
       <template slot="topRight">
         <div class="action-group" style="text-align:right">
@@ -22,6 +40,10 @@
             @click="saveTempalet"
           >{{ $t('term.rdm.saveastemplate') }}</span>
           <span
+            class="action-item tsfont-attachment"
+            @click="openAttachmentListDialog"
+          >{{ $t('term.process.accessorieslist') }}</span>
+          <span
             v-if="isMember"
             class="action-item tsfont-history"
             @click="isActivityShow = !isActivityShow"
@@ -36,23 +58,41 @@
             :documentConfig="knowledgeConfing"
             :can-edit-title="isReviewer === 1"
             :can-edit-content="isMember === 1"
-            :can-edit-tag="isMember === 1"
-            :can-edit-attachment="isMember === 1"
             @title-change="handleTitleChange"
           ></KnowledgeEditor>
         </div>
       </template>
     </TsContain>
-    <!-- 提交审核 -->
     <ReviewDialog
       :isShow.sync="isReviewShow"
       :documentId="knowledgeDocumentId"
       :versionId="knowledgeDocumentVersionId"
       :type="userType"
     ></ReviewDialog>
-    <!-- 活动 -->
-    <ActivityOverview :isShow.sync="isActivityShow" :knowledgeDocumentId="knowledgeDocumentId"></ActivityOverview>
-    <SaveOverview :isShow.sync="isSaveShow" :dataConfig="saveOverviewData"></SaveOverview>
+    <ActivityOverview
+      :isShow.sync="isActivityShow" 
+      :knowledgeDocumentId="knowledgeDocumentId"
+    ></ActivityOverview>
+    <SaveOverview
+      :isShow.sync="isSaveShow"
+      :dataConfig="saveOverviewData"
+    ></SaveOverview>
+    <KnowledgeCategoryDialog
+      v-if="isKnowledgeCategoryShow"
+      :knowledge-document-id="knowledgeDocumentId"
+      :knowledge-document-type-uuid="knowledgeDocumentTypeUuid"
+      @close="closeKnowledgeCategoryDialog"
+    ></KnowledgeCategoryDialog>
+    <AttachmentListDialog
+      v-if="isAttachmentListShow"
+      :file-list="attachmentList"
+      @close="closeAttachmentListDialog"
+    ></AttachmentListDialog>
+    <DocumentTagDialog
+      v-if="isDocumentTagShow"
+      :list="documentTagList"
+      @close="closeDocumentTagDialog"
+    ></DocumentTagDialog>
   </div>
 </template>
 <script>
@@ -62,16 +102,16 @@ export default {
     ReviewDialog: () => import('../review/review-dialog.vue'),
     ActivityOverview: () => import('@/views/pages/knowledge/category/category/activity-detail-dialog.vue'),
     SaveOverview: () => import('./save-overview'),
-    KnowledgeEditor: () => import('@/views/pages/knowledge/category/knowledgeeditor/index.vue')
+    KnowledgeEditor: () => import('@/views/pages/knowledge/category/knowledgeeditor/index.vue'),
+    KnowledgeCategoryDialog: () => import('./knowledge-category-dialog.vue'),
+    AttachmentListDialog: () => import('./attachment-list-dialog.vue'),
+    DocumentTagDialog: () => import('./document-tag-dialog.vue')
   },
   filters: {},
   props: [''],
   data() {
     return {
-      disabledBtn: {
-        saveDraftDocument: false,
-        submitDocument: false
-      },
+      isKnowledgeCategoryShow: false,
       knowledgeConfing: null,
       title: '',
       userType: 'submit', //审核人
@@ -81,14 +121,22 @@ export default {
       isReviewShow: false, //提交审核弹框
       isActivityShow: false, //活动
       isSaveShow: false, //另存为模板弹框
+      isAttachmentListShow: false,
+      isDocumentTagShow: false,
+      attachmentList: [],
+      documentTagList: [],
       saveOverviewData: {},
       defaultData: null,
-      isReviewer: 1, //修改标题和类型权限?
+      isReviewer: 1, //修改标题和类型权限
       isMember: 1,
       defaultConfig: {
-        //默认配置?
+        //默认配置
         title: '',
         knowledgeDocumentTypeUuid: null
+      },
+      disabledBtn: {
+        saveDraftDocument: false,
+        submitDocument: false
       }
     };
   },
@@ -131,6 +179,8 @@ export default {
           this.title = config.title;
           this.knowledgeDocumentVersionId = config.knowledgeDocumentVersionId;
           this.knowledgeDocumentTypeUuid = config.knowledgeDocumentTypeUuid;
+          this.documentTagList = config.tagList || [];
+          this.attachmentList = config.fileList || [];
           this.isReviewer = config.isReviewer;
           this.isMember = config.isMember;
           this.$set(this.defaultConfig, 'title', config.title);
@@ -165,6 +215,7 @@ export default {
       }
       let editConfig = this.getEditorSaveData();
       Object.assign(data, editConfig);
+      data.tagList = this.documentTagList || [];
       return data;
     },
     // 路由层只关心知识库保存协议；编辑器内部的新旧格式转换由组件自己处理
@@ -218,7 +269,7 @@ export default {
       try {
         let data = this.getAllSaveData(1);
         let res = await this.$api.knowledge.knowledge.saveDraftDocument(data);
-        this.$Message.success(this.$t('message.executesuccess')); //操作成功
+        this.$Message.success(this.$t('message.executesuccess'));
         let config = res.Return;
         this.knowledgeDocumentId = config.knowledgeDocumentId;
         this.knowledgeDocumentVersionId = config.knowledgeDocumentVersionId;
@@ -234,29 +285,6 @@ export default {
         this.addNewRule();
       } finally {
         this.disabledBtn.submitDocument = false;
-      }
-    },
-    //选择分类
-    selectType(uuid) {
-      this.knowledgeDocumentTypeUuid = uuid;
-      this.updateType();
-    },
-    updateType() {
-      if (!this.knowledgeDocumentId) {
-        return;
-      }
-      if (this.knowledgeDocumentTypeUuid != this.defaultConfig.knowledgeDocumentTypeUuid) {
-        this.$set(this.defaultConfig, 'knowledgeDocumentTypeUuid', this.knowledgeDocumentTypeUuid);
-        let data = {
-          knowledgeDocumentId: this.knowledgeDocumentId,
-          knowledgeDocumentTypeUuid: this.knowledgeDocumentTypeUuid
-        };
-        this.$api.knowledge.knowledge.updateType(data).then(res => {
-          if (res.Status == 'OK') {
-            this.defaultData.knowledgeDocumentTypeUuid = this.knowledgeDocumentTypeUuid;
-            this.$Message.success(this.$t('message.executesuccess'));
-          }
-        });
       }
     },
     addNewRule() {
@@ -285,9 +313,54 @@ export default {
       if (editorRef && typeof editorRef.focusTitle === 'function') {
         editorRef.focusTitle();
       }
+    },
+    closeKnowledgeCategoryDialog(data = {}) {
+      const { path = '', knowledgeDocumentTypeUuid = '' } = data || {};
+      this.knowledgeDocumentTypeUuid = knowledgeDocumentTypeUuid || '';
+      this.knowledgeConfing.path = path || '';
+      this.isKnowledgeCategoryShow = false;
+    },
+    openKnowledgeCategoryDialog() {
+      this.isKnowledgeCategoryShow = true;
+    },
+    openDocumentTagDialog() {
+      if (this.isMember !== 1) {
+        return;
+      }
+      this.isDocumentTagShow = true;
+    },
+    closeDocumentTagDialog(data = {}) {
+      if (data && Array.isArray(data.tagList)) {
+        this.documentTagList = data.tagList;
+      }
+      this.isDocumentTagShow = false;
+    },
+    openAttachmentListDialog() {
+      this.isAttachmentListShow = true;
+    },
+    closeAttachmentListDialog() {
+      this.isAttachmentListShow = false;
     }
   },
   computed: {
+    documentPathText() {
+      const path = (this.knowledgeConfing && this.knowledgeConfing.path) || '';
+      if (Array.isArray(path)) {
+        return path.join(' / ');
+      }
+      if (typeof path === 'string') {
+        try {
+          const parsedPath = JSON.parse(path);
+          if (Array.isArray(parsedPath)) {
+            return parsedPath.join(' / ');
+          }
+        } catch (error) {
+          return path;
+        }
+        return path;
+      }
+      return '';
+    },
     hasTemplateAuth() {
       //判断知识模板权限
       return this.$store.getters.userAuthList.includes('KNOWLEDGE_TEMPLATE_MODIFY');
@@ -321,4 +394,23 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.knowledge-edit-box {
+  .top-left-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .detail-title {
+    display: inline-block;
+    max-width: 520px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .document-path {
+    margin: 0 4px;
+    font-size: 12px;
+  }
+}
 </style>

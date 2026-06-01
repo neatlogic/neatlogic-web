@@ -25,8 +25,8 @@ function syncCompareState(element, attrs = {}) {
   }
 }
 
-const InsertVideo = Node.create({
-  name: 'insertVideo',
+const video = Node.create({
+  name: 'video',
   group: 'block',
   atom: true,
   selectable: false,
@@ -72,14 +72,14 @@ const InsertVideo = Node.create({
     };
   },
   parseHTML() {
-    return [{ tag: 'div[data-block-type="insert-video"]' }];
+    return [{ tag: 'div[data-block-type="video"]' }];
   },
   renderHTML({ HTMLAttributes }) {
     const { src, controls } = HTMLAttributes;
     return [
       'div',
       mergeAttributes(HTMLAttributes, {
-        'data-block-type': 'insert-video',
+        'data-block-type': 'video',
         'data-block-uuid': HTMLAttributes['data-block-uuid']
       }),
       ['video', { src: src, controls: controls }]
@@ -87,7 +87,7 @@ const InsertVideo = Node.create({
   },
   addCommands() {
     return {
-      insertVideo: (options) => ({ commands }) => {
+      video: (options) => ({ commands }) => {
         const { position, ...restAttrs } = options || {};
         return commands.insertContentAt(position, {
           type: this.name,
@@ -99,7 +99,7 @@ const InsertVideo = Node.create({
       },
       updateVideo: (options) => ({ tr, state }) => {
         const { recordUuid, position, ...newAttrs } = options || {};
-        tr.doc.descendants((node, pos) => { // 遍历文档中的所有节点
+        tr.doc.descendants((node, pos) => { // 遍历文档中的所有节�?
           if (node.type.name === this.name && node.attrs['recordUuid'] === recordUuid) {
             tr.setNodeMarkup(pos, undefined, { ...node.attrs, ...newAttrs });
           }
@@ -110,11 +110,11 @@ const InsertVideo = Node.create({
   },
   addNodeView() {
     return ({ editor, node, getPos }) => {
-      /** 外层节点和属性 */
+      /** 外层节点和属�?*/
       const wrapper = document.createElement('div');
       wrapper.className = 'video-block';
       wrapper.contentEditable = 'false';
-      wrapper.dataset.blockType = 'insert-video';
+      wrapper.dataset.blockType = 'video';
       wrapper.dataset.recordUuid = node.attrs['recordUuid'];
       wrapper.dataset.blockUuid = node.attrs['blockUuid'];
 
@@ -141,7 +141,7 @@ const InsertVideo = Node.create({
         video.controls = attrs.controls !== false;
       
         if (!hasSrc) {
-          // loading 态
+          // loading 显示
           loading.style.display = 'flex';
           video.style.display = 'none';
       
@@ -178,7 +178,7 @@ const InsertVideo = Node.create({
       let startWidth = 0;
       let ratio = node.attrs.aspectRatio;
       let isResizing = false;
-      const MIN_WIDTH = 50; // 最小宽度
+      const MIN_WIDTH = 50; // 最小宽�?
 
       let onMove = null;
       let onUp = null;
@@ -199,7 +199,7 @@ const InsertVideo = Node.create({
       };
 
       resizeHandle.addEventListener('mousedown', e => {
-        if (e.button !== 0) return; // 只允许左键
+        if (e.button !== 0) return; // 只允许左�?
         e.preventDefault();
         e.stopPropagation();
         e.preventDefault();
@@ -259,7 +259,7 @@ const InsertVideo = Node.create({
         dom: wrapper,
 
         update(updatedNode) {
-          if (updatedNode.type.name !== 'insertVideo') return false;
+          if (updatedNode.type.name !== 'video') return false;
           forceStopResize();
           node = updatedNode;
           syncVideoState(node.attrs); // 异步请求返回视频地址的时候，需要更新src
@@ -277,4 +277,4 @@ function applySize(video, attrs) {
   if (attrs.width) video.style.width = `${attrs.width}px`;
   if (attrs.height) video.style.height = `${attrs.height}px`;
 }
-export default InsertVideo;
+export default video;

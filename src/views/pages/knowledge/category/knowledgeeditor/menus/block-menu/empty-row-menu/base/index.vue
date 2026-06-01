@@ -13,7 +13,7 @@
           v-if="item.tipConentList"
           transfer
           theme="dark"
-          placement="right"
+          placement="top"
         >
           <span v-if="item.iconClass" style="font-size: 16px" :class="[item.iconClass, setSelectedTextClassName(item.value)]"></span>
           <template v-else>{{ item.text }}</template>
@@ -138,13 +138,13 @@ export default {
         {
           tipConentList: ['高亮快'],
           iconClass: 'tsfont-callout',
-          value: 'highlightBlock',
+          value: 'callout',
           text: '高亮快'
         },
         {
           tipConentList: ['分割线', 'Markdown: --- ***'],
           iconClass: 'tsfont-divider',
-          value: 'horizontalRule',
+          value: 'divider',
           text: '分割线'
         },
         {
@@ -206,7 +206,19 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@menu-hover) {
+  .basic-menu-text {
+    &:hover {
+      background: @menu-hover;
+    }
+  }
+}
 .base-tool-box {
+  .theme(@default-menu-hover);
+  .theme-dark & {
+    .theme(@dark-menu-hover);
+  }
   box-sizing: border-box;
   .catagory-name {
     margin-bottom: 10px;
@@ -214,11 +226,11 @@ export default {
   }
   .basic-menu-box {
     display: grid;
-    grid-template-columns: repeat(7, 30px);
+    grid-template-columns: repeat(6, 28px);
     justify-content: start;
     column-gap: 8px;
-    row-gap: 8px;
-    margin-top: 6px;
+    row-gap: 6px;
+    margin-top: 0;
   }
   .basic-menu-text {
     display: inline-block;
@@ -231,7 +243,6 @@ export default {
     cursor: pointer;
     text-align: center;
     &:hover {
-      background: #1f23291f;
       border-radius: 4px;
     }
   }

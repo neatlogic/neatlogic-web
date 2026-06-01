@@ -1,5 +1,5 @@
 import utils from '@/resources/assets/js/util.js';
-export default function insertVideo({ editor, position, options, https }) {
+export default function video({ editor, position, options, https }) {
   const { file } = options || {};
   const { insertPosition } = position || {};
   if (!file || insertPosition == null) {
@@ -12,7 +12,7 @@ export default function insertVideo({ editor, position, options, https }) {
   formData.append('responseType', 'blob');
   formData.append('param', 'file');
   formData.append('file', file);
-  editor.chain().focus().insertVideo({recordUuid: uuid, position: insertPosition}).run();
+  editor.chain().focus().video({recordUuid: uuid, position: insertPosition}).run();
   https
     .post(uploadUrl, formData, {
       headers: {

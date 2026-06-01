@@ -102,6 +102,7 @@
 </template>
 <script>
 import mixin from '@/views/pages/knowledge/category/knowledgeeditor/menus/select-content-menu/src/mixin.js';
+import { BACKGROUND_COLOR_LIST, BLOCK_LIGHT_BACKGROUND_COLOR_LIST, BORDER_COLOR_LIST, TEXT_COLOR_LIST } from '@/views/pages/knowledge/category/knowledgeeditor/menus/color-options.js';
 export default {
   name: '',
   components: {},
@@ -115,147 +116,13 @@ export default {
   data() {
     return {
       selectedFontColor: '#000',
-      selectedBgColor: '#fff',
-      selectedBgColorLight: '#fff',
+      selectedBgColor: '',
+      selectedBgColorLight: '',
       selectedBorderColor: '',
-      textColorList: [
-        {
-          color: '#000',
-          text: '黑色'
-        },
-        {
-          color: '#bbbfc4',
-          text: '灰色'
-        },
-        {
-          color: '#f76964',
-          text: '红色'
-        },
-        {
-          color: '#ffa53d',
-          text: '橙色'
-        },
-        {
-          color: '#ffe928',
-          text: '黄色'
-        },
-        {
-          color: '#62d256',
-          text: '绿色'
-        },
-        {
-          color: '#9ebbfe',
-          text: '蓝色'
-        },
-        {
-          color: '#c4a4fa',
-          text: '紫色'
-        }
-      ],
-      bgColorList: [
-        {
-          color: '#dee0e3cc',
-          text: '浅灰色'
-        },
-        {
-          color: '#bbbfc4',
-          text: '灰色'
-        },
-        {
-          color: '#f76964',
-          text: '红色'
-        },
-        {
-          color: '#ffa53d',
-          text: '橙色'
-        },
-        {
-          color: '#ffe928',
-          text: '黄色'
-        },
-        {
-          color: '#62d256',
-          text: '绿色'
-        },
-        {
-          color: '#9ebbfe',
-          text: '蓝色'
-        },
-        {
-          color: '#c4a4fa',
-          text: '紫色'
-        }
-      ],
-      bgColorlightList: [
-        {
-          color: '#fff',
-          text: '透明',
-          hasAfter: true
-        },
-        {
-          color: '#bbbfc4',
-          text: '浅灰色'
-        },
-        {
-          color: '#fbbfbc',
-          text: '浅红色'
-        },
-        {
-          color: '#feddb6',
-          text: '浅橙色'
-        },
-        {
-          color: '#fff895',
-          text: '浅黄色'
-        },
-        {
-          color: '#c5f1c1',
-          text: '浅绿色'
-        },
-        {
-          color: '#cfddfe',
-          text: '浅蓝色'
-        },
-        {
-          color: '#dcc9fb',
-          text: '浅紫色'
-        }
-      ],
-      borderColorList: [
-        {
-          color: '#fff',
-          text: '透明',
-          hasAfter: true
-        },
-        {
-          color: '#bbbfc4',
-          text: '灰色'
-        },
-        {
-          color: '#f76964',
-          text: '红色'
-        },
-        {
-          color: '#ffa53d',
-          text: '橙色'
-        },
-        {
-          color: '#ffe928',
-          text: '黄色'
-        },
-        {
-          color: '#62d256',
-          text: '绿色'
-        },
-        {
-          color: '#9ebbfe',
-          text: '蓝色'
-        },
-        {
-          color: '#c4a4fa',
-          text: '紫色'
-        }
-      ]
+      textColorList: TEXT_COLOR_LIST,
+      bgColorList: BACKGROUND_COLOR_LIST,
+      bgColorlightList: BLOCK_LIGHT_BACKGROUND_COLOR_LIST,
+      borderColorList: BORDER_COLOR_LIST
     };
   },
   beforeCreate() {},
@@ -319,9 +186,9 @@ export default {
 
     handleRestoreDefault() {
       // 恢复默认
-      this.selectedBgColor = '#fff';
-      this.selectedBgColorLight = '#fff';
-      this.selectedFontColor = '#000';
+      this.selectedBgColor = '';
+      this.selectedBgColorLight = '';
+      this.selectedFontColor = '';
       this.$emit('click-menu', {
         commandName: 'blockTextColor',
         options: {
@@ -344,6 +211,32 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@border-color-base, @blockbg-color, @icon-color) {
+  .font-color-ul-box {
+    li {
+      border-color: @border-color-base;
+    }
+  }
+  .bg-color-box {
+    li {
+      &.bg-color-divide-line {
+        box-shadow: inset 0 0 0 1px @blockbg-color;
+        border-color: @border-color-base;
+        &::after {
+          background-color: @icon-color;
+        }
+      }
+    }
+  }
+}
+html {
+  .theme(@default-border, @default-blockbg, @default-icon);
+
+  &.theme-dark {
+    .theme(@dark-border, @dark-blockbg, @dark-icon);
+  }
+}
 .font-color-ul-box {
   display: flex;
   flex-wrap: nowrap;
@@ -353,7 +246,7 @@ export default {
     text-align: center;
     margin-right: 5px;
     white-space: nowrap;
-    border: 1px solid #ccc;
+    border: 1px solid;
     border-radius: 3px;
     &.active {
       border-width: 2px;
@@ -372,8 +265,7 @@ export default {
     border-radius: 2px;
     cursor: pointer;
     &.bg-color-divide-line {
-      box-shadow: inset 0 0 0 1px #fff;
-      border: 1px solid #ccc;
+      border: 1px solid;
       &::after {
         content: '';
         position: absolute;
@@ -381,7 +273,6 @@ export default {
         height: 56px;
         top: 1px;
         left: 21px;
-        background-color: #8f959e;
         -webkit-transform: rotate(45deg) scale(0.5);
         transform: rotate(45deg) scale(0.5);
         -webkit-transform-origin: -1px -2px;

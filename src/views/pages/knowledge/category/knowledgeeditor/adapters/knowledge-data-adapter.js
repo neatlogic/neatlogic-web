@@ -39,6 +39,72 @@ function normalizeFileList(payload = {}) {
   return (payload.fileIdList || []).map(id => ({ id }));
 }
 
+const CONTENT_FILE_HANDLER_SET = new Set(['image', 'video', 'file']);
+const LEGACY_FILE_HANDLER = ['insert', 'File'].join('');
+
+function getDownloadFileId(url = '') {
+  const value = String(url || '');
+  if (!value) {
+    return null;
+  }
+  const query = value.split('#')[0].split('?').slice(1).join('?');
+  if (!query) {
+    return null;
+  }
+  const idList = query.split('&').map(param => {
+    const [key, ...rest] = param.split('=');
+    return key === 'id' ? rest.join('=') : null;
+  }).filter(Boolean);
+  const id = idList.pop();
+  if (!id) {
+    return null;
+  }
+  try {
+    return decodeURIComponent(id);
+  } catch (error) {
+    return id;
+  }
+}
+
+function normalizeDownloadUrl(url) {
+  const value = String(url || '');
+  if (/^(https?:)?\/\//.test(value) || /^(blob|data):/.test(value) || value.startsWith('/')) {
+    return value;
+  }
+  if (value) {
+    return `/${value.replace(/^\/+/, '')}`;
+  }
+  return '';
+}
+
+function getLineFileId(item = {}) {
+  if (!CONTENT_FILE_HANDLER_SET.has(item.handler) && item.handler !== LEGACY_FILE_HANDLER) {
+    return null;
+  }
+  const config = item.config || {};
+  if (item.handler === 'file' || item.handler === LEGACY_FILE_HANDLER) {
+    return config.id || getDownloadFileId(config.url);
+  }
+  return config.id || getDownloadFileId(config.src || config.url || config.value);
+}
+
+function mergeFileIdList(...fileIdListGroup) {
+  const result = [];
+  const idSet = new Set();
+  fileIdListGroup.flat().forEach(id => {
+    if (id === null || id === undefined || id === '') {
+      return;
+    }
+    const key = String(id);
+    if (idSet.has(key)) {
+      return;
+    }
+    idSet.add(key);
+    result.push(id);
+  });
+  return result;
+}
+
 function safeParseJson(value) {
   if (typeof value !== 'string') {
     return value;
@@ -124,8 +190,6 @@ function joinStyle(styleList = []) {
   return styleList.map(normalizeStyle).filter(Boolean).join(';');
 }
 
-const TABLE_CELL_BORDER_BOTTOM = 'border-bottom:1px solid #dfe1e5';
-
 function getStyleValue(style = '', name = '') {
   const match = String(style || '').match(new RegExp(`${name}\\s*:\\s*([^;]+)`, 'i'));
   return match ? match[1].trim() : null;
@@ -197,8 +261,7 @@ function getCellStyle(config = {}, cell = {}) {
   const cellStyle = removeStyleProperties(cell.cellStyle, ['border-bottom']);
   return joinStyle([
     tdStyle,
-    cellStyle,
-    TABLE_CELL_BORDER_BOTTOM
+    cellStyle
   ]);
 }
 
@@ -269,7 +332,7 @@ function getDefaultTableStyle() {
   return {
     table: 'table-layout:fixed;border-collapse:collapse;width:100%;text-align:left;border:none;',
     tr: 'height:42px',
-    td: TABLE_CELL_BORDER_BOTTOM
+    td: ''
   };
 }
 
@@ -354,7 +417,7 @@ function blockNodeToHtml(node = {}) {
 
 function taskListToConfig(node = {}) {
   return {
-    content: (node.content || []).map(item => {
+    contentList: (node.content || []).map(item => {
       const paragraph = (item.content || []).find(child => child.type === 'paragraph');
       return {
         checked: !!item.attrs?.checked,
@@ -371,12 +434,12 @@ function attrsToConfig(node = {}, config = {}) {
   };
 }
 
-function createLineItem(handler, node, content, config = {}) {
+function createLineItem(handler, node, content, config = {}, options = {}) {
   return {
     handler,
     uuid: getUuid(node.attrs),
     content,
-    config: attrsToConfig(node, config)
+    config: options.mergeAttrs === false ? config : attrsToConfig(node, config)
   };
 }
 
@@ -396,14 +459,22 @@ export function tiptapToLineList(doc = EMPTY_TIPTAP_DOC) {
       lineList.push(createLineItem('orderedList', node, listToHtml(node), { className: 'decimal' }));
     } else if (node.type === 'image') {
       lineList.push(createLineItem('image', node, '', {
-        url: attrs.src,
-        title: attrs.title || '',
+        blockUuid: attrs.blockUuid,
+        blockType: 'image',
+        url: attrs.src || attrs.url || attrs.value || '',
         name: attrs.name || '',
-        value: attrs.value || '',
         align: attrs.align || 'left',
         width: attrs.width,
         height: attrs.height
-      }));
+      }, { mergeAttrs: false }));
+    } else if (node.type === 'file') {
+      const url = normalizeDownloadUrl(attrs.url);
+      lineList.push(createLineItem('file', node, '', {
+        url,
+        id: attrs.id || getDownloadFileId(url),
+        name: attrs.name || attrs.pathName || '',
+        size: attrs.size || null
+      }, { mergeAttrs: false }));
     } else if (node.type === 'codeBlock') {
       const content = nodeText(node);
       lineList.push(createLineItem('codeBlock', node, content, {
@@ -419,8 +490,12 @@ export function tiptapToLineList(doc = EMPTY_TIPTAP_DOC) {
       // formtable is stored as handler "table" and distinguished by config.blockType.
     } else if (node.type === 'taskList') {
       lineList.push(createLineItem('taskList', node, listToHtml(node), taskListToConfig(node)));
-    } else if (node.type === 'blockquote' || node.type === 'highlightBlock') {
+    } else if (node.type === 'blockquote' || node.type === 'callout') {
       lineList.push(createLineItem(node.type, node, blockChildrenToHtml(node.content || [])));
+    } else if (node.type === 'horizontalRule') {
+      lineList.push(createLineItem('divider', node, '', {
+        blockType: 'divider'
+      }));
     } else {
       lineList.push(createLineItem(node.type, node, inlineToHtml(node.content || []) || nodeText(node)));
     }
@@ -584,9 +659,7 @@ function domImageToTiptapNode(domNode, attrs = {}) {
     attrs: {
       ...attrs,
       src: domNode.getAttribute('src') || '',
-      title: domNode.getAttribute('title') || domNode.getAttribute('alt') || '',
       name: domNode.getAttribute('alt') || domNode.getAttribute('title') || '',
-      value: domNode.getAttribute('src') || '',
       align: 'left',
       width: domNode.getAttribute('width') || null,
       height: domNode.getAttribute('height') || null
@@ -877,7 +950,7 @@ function normalizeLineHandler(item = {}) {
   const handler = item.handler || 'paragraph';
   const config = item.config || {};
   if (handler === 'editor' && config.tiptapType) {
-    return config.tiptapType;
+    return config.tiptapType === 'highlightBlock' ? 'callout' : config.tiptapType;
   }
   return {
     p: 'paragraph',
@@ -888,7 +961,10 @@ function normalizeLineHandler(item = {}) {
     markdown: 'markdown',
     ul: 'bulletList',
     ol: 'orderedList',
-    formtable: 'table'
+    divider: 'horizontalRule',
+    [LEGACY_FILE_HANDLER]: 'file',
+    formtable: 'table',
+    highlightBlock: 'callout'
   }[handler] || handler;
 }
 
@@ -940,7 +1016,7 @@ function legacyTaskContentToList(content = '') {
 }
 
 function taskListConfigToTiptapNode(item = {}, attrs = {}) {
-  const taskList = item.config?.content || legacyTaskContentToList(item.content);
+  const taskList = item.config?.contentList || item.config?.content || legacyTaskContentToList(item.content);
   return {
     type: 'taskList',
     attrs,
@@ -980,20 +1056,25 @@ function lineToTiptapNodes(item = {}) {
     return markdownToTiptapNodes(item.content, attrs);
   }
   if (handler === 'image') {
+    const imageSrc = attrs.src || attrs.url || attrs.value || item.config?.url || item.config?.value || '';
+    const imageAttrs = { ...attrs };
+    delete imageAttrs.url;
+    delete imageAttrs.value;
+    delete imageAttrs.title;
     return [{
       type: 'image',
       attrs: {
-        ...attrs,
-        src: attrs.src || item.config?.url || '',
-        align: attrs.align || 'left',
-        width: attrs.width || null,
-        height: attrs.height || null
+        ...imageAttrs,
+        src: imageSrc,
+        align: imageAttrs.align || 'left',
+        width: imageAttrs.width || null,
+        height: imageAttrs.height || null
       }
     }];
   }
-  if (handler === 'insertVideo') {
+  if (handler === 'video') {
     return [{
-      type: 'insertVideo',
+      type: 'video',
       attrs: {
         ...attrs,
         src: attrs.src || '',
@@ -1002,6 +1083,27 @@ function lineToTiptapNodes(item = {}) {
         height: attrs.height || null,
         aspectRatio: attrs.aspectRatio || null,
         recordUuid: attrs.recordUuid || null
+      }
+    }];
+  }
+  if (handler === 'file') {
+    const url = normalizeDownloadUrl(attrs.url);
+    const fileAttrs = { ...attrs };
+    delete fileAttrs.src;
+    delete fileAttrs.url;
+    delete fileAttrs.value;
+    return [{
+      type: 'file',
+      attrs: {
+        ...fileAttrs,
+        url,
+        id: attrs.id || getDownloadFileId(url),
+        name: attrs.name || '',
+        size: attrs.size || null,
+        sizeText: attrs.sizeText || '',
+        recordUuid: attrs.recordUuid || null,
+        loading: false,
+        error: false
       }
     }];
   }
@@ -1055,7 +1157,7 @@ function lineToTiptapNodes(item = {}) {
   if (handler === 'taskList') {
     return [taskListConfigToTiptapNode(item, attrs)];
   }
-  if (handler === 'blockquote' || handler === 'highlightBlock') {
+  if (handler === 'blockquote' || handler === 'callout') {
     return [{
       type: handler,
       attrs,
@@ -1088,11 +1190,12 @@ export function lineListToTiptap(lineList = []) {
 
 export function tiptapToKnowledgePayload(editorData = {}) {
   const content = editorData.content || EMPTY_TIPTAP_DOC;
-  const fileList = editorData.fileList || [];
+  const lineList = tiptapToLineList(content);
+  const contentFileIdList = lineList.map(item => getLineFileId(item)).filter(Boolean);
   return {
     title: editorData.title || '',
-    lineList: tiptapToLineList(content),
-    fileIdList: fileList.map(file => file.id).filter(id => id !== null && id !== undefined),
+    lineList,
+    fileIdList: mergeFileIdList(contentFileIdList),
     tagList: editorData.tagList || []
   };
 }

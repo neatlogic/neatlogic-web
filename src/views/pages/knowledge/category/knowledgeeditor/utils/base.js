@@ -66,7 +66,7 @@ export default {
       };
     },
 
-    findCurrentBlockPosition({ editor, hoverBlockDom }) {
+    findCurrentBlockPosition({ editor, hoverBlockDom, nodeConfig = {} }) {
       const view = getEditorView(editor);
       const { state } = editor || {};
       const { doc, selection } = state || {};
@@ -75,11 +75,28 @@ export default {
       }
 
       const docSize = doc.content.size;
+      const atomBlockList = ['image', 'video', 'file', 'horizontalRule'];
+      const nodeConfigPos = Number.isInteger(nodeConfig.pos) ? nodeConfig.pos : null;
+      const nodeConfigType = nodeConfig.type;
+
+      if (nodeConfigPos != null && nodeConfigPos >= 0 && nodeConfigPos <= docSize) {
+        const explicitNode = doc.nodeAt(nodeConfigPos);
+        if (explicitNode && explicitNode.type.isBlock && atomBlockList.includes(explicitNode.type.name) && (!nodeConfigType || explicitNode.type.name === nodeConfigType)) {
+          const nodeStart = nodeConfigPos;
+          const nodeEnd = nodeStart + explicitNode.nodeSize;
+          return {
+            node: explicitNode,
+            startPosition: nodeStart,
+            endPosition: nodeEnd,
+            insertPosition: Math.min(nodeEnd, docSize)
+          };
+        }
+      }
+
       const coords = hoverBlockDom?.getBoundingClientRect();
       const posResult = coords ? view.posAtCoords({ left: coords.left, top: coords.top }) : null;
       const pos = posResult?.pos;
       const directNode = pos != null ? doc.nodeAt(pos) : null;
-      const atomBlockList = ['image', 'insertVideo', 'horizontalRule'];
 
       // 图片、视频、分割线这类原子块没有可编辑正文，需直接定位到节点结束处，避免在下方插入时越界
       if (directNode && directNode.type.isBlock && atomBlockList.includes(directNode.type.name)) {
@@ -120,7 +137,7 @@ export default {
       runMenuCommand(this, {
         editor,
         menuData,
-        position: this.findCurrentBlockPosition({ editor, hoverBlockDom })
+        position: this.findCurrentBlockPosition({ editor, hoverBlockDom, nodeConfig: menuData?.options || {} })
       });
     },
 
@@ -133,7 +150,7 @@ export default {
     },
 
     handleReplaceMenuContent({ editor, menuData, hoverBlockDom }) {
-      const position = this.findCurrentBlockPosition({ editor, hoverBlockDom });
+      const position = this.findCurrentBlockPosition({ editor, hoverBlockDom, nodeConfig: menuData?.options || {} });
       runMenuCommand(this, {
         editor,
         menuData: {

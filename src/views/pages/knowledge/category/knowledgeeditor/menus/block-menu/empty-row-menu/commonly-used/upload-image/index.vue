@@ -51,14 +51,23 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@import (reference) '~@/resources/assets/css/variable.less';
+.theme(@warning-color) {
+  .icon-image {
+    color: @warning-color;
+  }
+}
 .upload-image-box {
+  .theme(@default-warning-color);
+  .theme-dark & {
+    .theme(@dark-warning-color);
+  }
   .icon-box {
     display: flex;
     align-items: center;
     .icon-image {
       margin-right: 14px;
       font-size: 16px;
-      color: #ffc60a;
     }
     .icon-text {
       font-size: 14px;

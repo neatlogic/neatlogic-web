@@ -13,6 +13,28 @@ function getCompareChangeType(attrs = {}) {
   return ['insert', 'delete', 'update'].includes(attrs.compareChangeType) ? attrs.compareChangeType : null;
 }
 
+function normalizeInternalResourceUrl(url) {
+  if (!url || /^(data:|blob:|mailto:|tel:|#)/i.test(url) || /^api\//i.test(url)) {
+    return url;
+  }
+
+  try {
+    const parsedUrl = new URL(url, document.baseURI);
+    if (parsedUrl.origin !== window.location.origin) {
+      return url;
+    }
+
+    const apiIndex = parsedUrl.pathname.indexOf('/api/');
+    if (apiIndex > -1) {
+      return parsedUrl.pathname.slice(apiIndex + 1) + parsedUrl.search + parsedUrl.hash;
+    }
+  } catch (e) {
+    return url;
+  }
+
+  return url;
+}
+
 function syncCompareState(elements = [], attrs = {}) {
   const changeType = getCompareChangeType(attrs);
   elements.forEach(element => {
@@ -38,7 +60,10 @@ export const ImageResize = Node.create({
 
   addAttributes() {
     return {
-      src: { default: null },
+      src: {
+        default: null,
+        parseHTML: element => normalizeInternalResourceUrl(element.getAttribute('src') || element.querySelector('img')?.getAttribute('src') || '')
+      },
       width: { default: null },
       height: { default: null },
       align: {
@@ -129,7 +154,7 @@ export const ImageResize = Node.create({
       Object.assign(loading.style, {
         width: '200px',
         height: '200px',
-        background: '#f5f6fa',
+        background: 'var(--knowledge-editor-gray)',
         borderRadius: '8px',
         display: 'flex',
         alignItems: 'center',
@@ -141,8 +166,8 @@ export const ImageResize = Node.create({
       Object.assign(spinner.style, {
         width: '20px',
         height: '20px',
-        border: '4px solid #d3d3d3',
-        borderTopColor: '#409EFF',
+        border: '4px solid var(--knowledge-editor-disable)',
+        borderTopColor: 'var(--knowledge-editor-primary)',
         borderRadius: '50%',
         animation: 'loadingSpin 1s linear infinite'
       });
@@ -186,8 +211,8 @@ export const ImageResize = Node.create({
             width: '10px',
             height: '10px',
             borderRadius: '50%',
-            background: '#fff',
-            border: '1px solid #000',
+            background: 'var(--knowledge-editor-blockbg)',
+            border: '1px solid var(--knowledge-editor-text)',
             position: 'absolute',
             zIndex: 10,
             cursor: `${pos}-resize`,

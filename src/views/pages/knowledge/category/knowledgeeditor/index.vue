@@ -30,22 +30,7 @@
             :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.title') })"
             @on-change="handleTitleChange"
           ></TsFormInput>
-          <DocumentTag
-            v-if="isShowDocumentTag"
-            ref="tagRef"
-            class="mt-sm mb-sm"
-            :list="tagList"
-            :readonly="!isTagEditable"
-            @change="handleTagChange"
-          ></DocumentTag>
-          <DocumentAttachment
-            v-if="isShowDocumentAttachment"
-            ref="attachmentRef"
-            :list="fileList"
-            :readonly="!isAttachmentEditable"
-            @change="handleAttachmentChange"
-          ></DocumentAttachment>
-          <div v-if="isShowHeadInfoDivider" class="border-base-bottom mt-nm mb-nm"></div>
+          <div class="border-base-bottom mt-nm mb-nm"></div>
         </div>
         <div
           ref="editorWrapper"
@@ -144,9 +129,7 @@ export default {
     SelectContentMenu: () => import('@/views/pages/knowledge/category/knowledgeeditor/menus/select-content-menu/index.vue'),
     TableHoverLayer: () => import('@/views/pages/knowledge/category/knowledgeeditor/menus/table-hover-layer/index.vue'),
     SearchReplaceDialog: () => import('@/views/pages/knowledge/category/knowledgeeditor/components/search-replace-dialog/index.vue'),
-    LinkHover: () => import('@/views/pages/knowledge/category/knowledgeeditor/menus/link-hover/index.vue'),
-    DocumentTag: () => import('@/views/pages/knowledge/category/knowledgeeditor/components/tag/index.vue'),
-    DocumentAttachment: () => import('@/views/pages/knowledge/category/knowledgeeditor/components/attachment/index.vue')
+    LinkHover: () => import('@/views/pages/knowledge/category/knowledgeeditor/menus/link-hover/index.vue')
   },
   provide() {
     return {
@@ -172,14 +155,6 @@ export default {
       default: true
     },
     canEditContent: {
-      type: Boolean,
-      default: true
-    },
-    canEditTag: {
-      type: Boolean,
-      default: true
-    },
-    canEditAttachment: {
       type: Boolean,
       default: true
     },
@@ -256,7 +231,9 @@ export default {
       selectContentMenuPos: { top: 0, left: 0 },
       blockMenuNodeConfig: {
         type: '',
-        attrs: {}
+        attrs: {},
+        pos: null,
+        nodeSize: null
       },
       linkHoverConfig: {}
     };
@@ -462,20 +439,6 @@ export default {
       this.$emit('update:documentTitle', this.title);
       this.emitChange();
     },
-    handleTagChange(list) {
-      if (!this.isTagEditable) {
-        return;
-      }
-      this.tagList = list || [];
-      this.emitChange();
-    },
-    handleAttachmentChange(list) {
-      if (!this.isAttachmentEditable) {
-        return;
-      }
-      this.fileList = list || [];
-      this.emitChange();
-    },
     emitChange() {
       this.$emit('change', this.getSaveData());
     },
@@ -497,8 +460,7 @@ export default {
       return {
         title: this.title || '',
         content: hasEditor ? this.editor.getJSON() : JSON.parse(JSON.stringify(EMPTY_TIPTAP_DOC)),
-        tagList: this.$refs.tagRef ? this.$refs.tagRef.getTagList() : this.tagList,
-        fileList: this.$refs.attachmentRef ? this.$refs.attachmentRef.getAttachmentList() : this.fileList,
+        fileList: this.fileList,
         meta: this.meta || {}
       };
     },
@@ -831,6 +793,8 @@ export default {
       const { type, attrs = {}, pos, isEmpty: nodeContentIsEmpty = false, node } = getHoverTargetByEvent({ state, $pos }) || {};
       this.$set(this.blockMenuNodeConfig, 'type', type);
       this.$set(this.blockMenuNodeConfig, 'attrs', attrs);
+      this.$set(this.blockMenuNodeConfig, 'pos', pos);
+      this.$set(this.blockMenuNodeConfig, 'nodeSize', node?.nodeSize || null);
       const nodeDom = view.nodeDOM(pos);
       const nodeRect = nodeDom && nodeDom.getBoundingClientRect && nodeDom.getBoundingClientRect();
       this.hoverBlockDom = nodeDom;
@@ -852,10 +816,11 @@ export default {
       }
 
       if (linkType === 'link' && linkHref) {
+        const linkRect = posToDOMRect(view, linkInfo.startPosition, linkInfo.endPosition);
         this.linkHoverConfig = {
           ...(linkInfo || {}),
-          top: Number((nodeRect.top - editorWrapperRect.top).toFixed(0)),
-          left: Number((nodeRect.left - editorWrapperRect.left).toFixed(0))
+          top: Number(((linkRect?.top || nodeRect.top) - editorWrapperRect.top).toFixed(0)),
+          left: Number(((linkRect?.left || nodeRect.left) - editorWrapperRect.left).toFixed(0))
         };
         this.isShowLinkHover = true;
       } else {
@@ -891,7 +856,8 @@ export default {
         '.ivu-dropdown-item',
         '.ivu-select-dropdown',
         '.ivu-poptip-popper',
-        '.ivu-tooltip-popper'
+        '.ivu-tooltip-popper',
+        '.link-hover-box'
       ].join(', '));
     },
     isMouseInBlockMenuLayer(event = this.lastMouseEvent) {
@@ -1258,29 +1224,8 @@ export default {
     isContentEditable() {
       return !this.compareMode && !this.readonly && this.canEditContent;
     },
-    isTagEditable() {
-      return !this.compareMode && !this.readonly && this.canEditTag;
-    },
-    isAttachmentEditable() {
-      return !this.compareMode && !this.readonly && this.canEditAttachment;
-    },
-    hasDocumentTag() {
-      return Array.isArray(this.tagList) && this.tagList.length > 0;
-    },
-    hasDocumentAttachment() {
-      return Array.isArray(this.fileList) && this.fileList.length > 0;
-    },
-    isShowDocumentTag() {
-      return this.isTagEditable || this.hasDocumentTag;
-    },
-    isShowDocumentAttachment() {
-      return this.isAttachmentEditable || this.hasDocumentAttachment;
-    },
     isShowHeadInfo() {
-      return !this.readonly || this.isShowDocumentTag || this.isShowDocumentAttachment;
-    },
-    isShowHeadInfoDivider() {
-      return !this.readonly || this.isShowDocumentTag || this.isShowDocumentAttachment;
+      return !this.readonly;
     },
     getMenuClass() {
       return item => {
@@ -1399,7 +1344,7 @@ export default {
     position: fixed;
     width: 16px;
     height: 16px;
-    background: #3b82f6;
+    background: var(--knowledge-editor-primary);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     z-index: 9999;
@@ -1409,7 +1354,7 @@ export default {
 .knowledge-document-editor-drag-indicator {
   position: absolute;
   height: 2px;
-  background: #1670f0;
+  background: var(--knowledge-editor-primary);
   border-radius: 2px;
   z-index: 20;
   pointer-events: none;
@@ -1421,14 +1366,14 @@ export default {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #1670f0;
+    background: var(--knowledge-editor-primary);
   }
 }
 .editor-content-container {
   line-height: 26px;
 }
 .block-hover-highlight {
-  background-color: rgba(22, 112, 240, 0.1) !important;
+  background-color: var(--knowledge-editor-primary-bg) !important;
   border-radius: 5px;
   transition: background-color 0.15s ease;
 }

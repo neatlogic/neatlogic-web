@@ -1388,6 +1388,7 @@
     "documentcount": "知识数量",
     "knowtype": "知识分类",
     "knowtypename": "知识分类名称",
+    "documenttag": "文档标签",
     "approve": "审批",
     "rejected": "驳回了申请，原因",
     "savedraft": "存草稿",

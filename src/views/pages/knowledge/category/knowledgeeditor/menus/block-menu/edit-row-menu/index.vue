@@ -56,7 +56,7 @@ export default {
   },
   data() {
     return {
-      atomNodeList: ['image', 'insertVideo', 'table', 'horizontalRule'] // 不可编辑的节点
+      atomNodeList: ['image', 'video', 'file', 'table', 'horizontalRule'] // 不可编辑的节点
     };
   },
   beforeCreate() {},
@@ -74,7 +74,13 @@ export default {
       this.$emit('click-menu', { commandName: name, options: {...this.nodeConfig || {}} });
     },
     handleClickMenu(menuData) {
-      this.$emit('click-menu', menuData);
+      this.$emit('click-menu', {
+        ...(menuData || {}),
+        options: {
+          ...(this.nodeConfig || {}),
+          ...(menuData?.options || {})
+        }
+      });
     },
     insertBelowPosition(menuData) {
       this.$emit('insert-below-position', menuData);
@@ -101,7 +107,7 @@ export default {
         heading6: 'tsfont-h6',
         paragraph: 'tsfont-title',
         horizontalRule: 'tsfont-divider',
-        highlightBlock: 'tsfont-callout',
+        callout: 'tsfont-callout',
         blockquote: 'tsfont-quote',
         codeBlock: 'tsfont-code',
         taskList: 'tsfont-check-square-o',
@@ -109,7 +115,8 @@ export default {
         orderedList: 'tsfont-orderlist',
         table: 'tsfont-chart-table',
         image: 'tsfont-image',
-        insertVideo: 'tsfont-play-o'
+        video: 'tsfont-video',
+        file: 'tsfont-file-single'
       };
       const { type, attrs = {} } = this.nodeConfig || {};
       if (type == 'heading') {

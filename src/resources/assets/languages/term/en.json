@@ -1388,6 +1388,7 @@
     "documentcount": "Document count",
     "knowtype": "Knowledge Type",
     "knowtypename": "Knowledge Type Name",
+    "documenttag": "Document Tag",
     "approve": "Approval",
     "rejected": "Application rejected, reason",
     "savedraft": "Save Draft",

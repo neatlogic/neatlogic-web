@@ -1,5 +1,10 @@
 <template>
-  <div class="link-hover-box">
+  <div
+    class="link-hover-box"
+    @mousedown.stop
+    @pointerdown.stop
+    @click.stop
+  >
     <div
       :style="{
         position: 'absolute',

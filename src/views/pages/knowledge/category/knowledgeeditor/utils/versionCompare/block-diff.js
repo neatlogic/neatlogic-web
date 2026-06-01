@@ -78,11 +78,11 @@ function isLegacyRenderAttr(key) {
 }
 
 function isMediaBlock(block = {}) {
-  return block.type === 'image' || block.type === 'insertVideo';
+  return block.type === 'image' || block.type === 'video' || block.type === 'file';
 }
 
-function isHighlightBlock(block = {}) {
-  return block.type === 'highlightBlock';
+function isCallout(block = {}) {
+  return block.type === 'callout';
 }
 
 function isMediaDisplayAttr(key) {
@@ -145,9 +145,12 @@ function getMediaBlockIdentity(block = {}) {
     const src = attrs.src || attrs.url || attrs.value;
     return src ? `image:${src}` : '';
   }
-  if (block.type === 'insertVideo') {
+  if (block.type === 'video') {
     const src = attrs.src || attrs.recordUuid || attrs.value;
-    return src ? `insertVideo:${src}` : '';
+    return src ? `video:${src}` : '';
+  }
+  if (block.type === 'file') {
+    return attrs.url ? `file:${attrs.url}` : '';
   }
   return '';
 }
@@ -169,9 +172,9 @@ function isSameWithoutMediaDisplayAttrs(oldBlock, newBlock) {
   return serializeBlock(oldBlock, { ignoreMediaDisplayAttrs: true }) === serializeBlock(newBlock, { ignoreMediaDisplayAttrs: true });
 }
 
-function isSameHighlightBlockText(oldBlock = {}, newBlock = {}) {
-  return isHighlightBlock(oldBlock) &&
-    isHighlightBlock(newBlock) &&
+function isSameCalloutText(oldBlock = {}, newBlock = {}) {
+  return isCallout(oldBlock) &&
+    isCallout(newBlock) &&
     normalizeText(getNodeText(oldBlock)) === normalizeText(getNodeText(newBlock));
 }
 
@@ -674,7 +677,7 @@ function getLcsPairs(oldKeys = [], newKeys = []) {
 }
 
 function pushComparedPair(result, oldBlock, newBlock) {
-  if (isSameBlock(oldBlock, newBlock) || isSameHighlightBlockText(oldBlock, newBlock)) {
+  if (isSameBlock(oldBlock, newBlock) || isSameCalloutText(oldBlock, newBlock)) {
     result.oldBlocks.push(cloneData(oldBlock));
     result.newBlocks.push(cloneData(newBlock));
     return;
@@ -773,7 +776,7 @@ function canCompareByMediaDisplayOnly(oldBlockList = [], newBlockList = []) {
 function compareByMediaDisplayOnly(oldBlockList = [], newBlockList = []) {
   return oldBlockList.reduce((result, oldBlock, index) => {
     const newBlock = newBlockList[index];
-    if (isSameBlock(oldBlock, newBlock) || isSameHighlightBlockText(oldBlock, newBlock) || isSameVisibleTextBlock(oldBlock, newBlock)) {
+    if (isSameBlock(oldBlock, newBlock) || isSameCalloutText(oldBlock, newBlock) || isSameVisibleTextBlock(oldBlock, newBlock)) {
       result.oldBlocks.push(cloneData(oldBlock));
       result.newBlocks.push(cloneData(newBlock));
     } else if (isMediaBlock(oldBlock) && isMediaBlock(newBlock)) {

@@ -1,6 +1,6 @@
 <template>
-  <div style="width: 200px;">
-    <DropdownMenu slot="list">
+  <div style="width: 236px;">
+    <DropdownMenu slot="list" class="knowledge-document-editor-edit-row-menu">
       <DropdownItem name="cut">
         <span class="tsfont-cut mr-nm knowledge-document-editor-menu-icon"></span>
         <span>剪切</span>

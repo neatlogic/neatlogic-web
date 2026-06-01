@@ -16,8 +16,9 @@ const COMPARE_BLOCK_TYPES = [
   'tableCell',
   'tableHeader',
   'image',
-  'insertVideo',
-  'highlightBlock'
+  'video',
+  'file',
+  'callout'
 ];
 
 const ALLOWED_CHANGE_TYPES = ['insert', 'delete', 'update'];

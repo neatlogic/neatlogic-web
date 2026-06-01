@@ -1,3 +1,105 @@
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.theme(
+  @text-color,
+  @title-color,
+  @tip-color,
+  @dividing-color,
+  @blockbg-color,
+  @gray-color,
+  @border-color-base,
+  @disable-color,
+  @placeholder-color,
+  @primary-color,
+  @link-color,
+  @primary-bg-color,
+  @success-color,
+  @success-bg-color,
+  @warning-color,
+  @warning-bg-color,
+  @error-color,
+  @error-bg-color
+) {
+  &,
+  .knowledge-editor-box {
+    --knowledge-editor-text: @text-color;
+    --knowledge-editor-title: @title-color;
+    --knowledge-editor-tip: @tip-color;
+    --knowledge-editor-blockbg: @blockbg-color;
+    --knowledge-editor-gray: @gray-color;
+    --knowledge-editor-border: @border-color-base;
+    --knowledge-editor-disable: @disable-color;
+    --knowledge-editor-placeholder: @placeholder-color;
+    --knowledge-editor-primary: @primary-color;
+    --knowledge-editor-link: @link-color;
+    --knowledge-editor-primary-bg: @primary-bg-color;
+    --knowledge-editor-primary-bg-light: fade(@primary-color, 8%);
+    --knowledge-editor-primary-bg-deep: fade(@primary-color, 16%);
+    --knowledge-editor-selected-bg: fade(@primary-color, 18%);
+    --knowledge-editor-muted-bg: fade(@text-color, 10%);
+    --knowledge-editor-weak-border: fade(@text-color, 14%);
+    --knowledge-editor-compare-shadow: fade(@text-color, 12%);
+    --knowledge-editor-success-bg: @success-bg-color;
+    --knowledge-editor-success-bg-light: fade(@success-color, 16%);
+    --knowledge-editor-success-bg-deep: fade(@success-color, 32%);
+    --knowledge-editor-success-outline: fade(@success-color, 75%);
+    --knowledge-editor-warning-bg: @warning-bg-color;
+    --knowledge-editor-warning-bg-light: fade(@warning-color, 20%);
+    --knowledge-editor-warning-bg-deep: fade(@warning-color, 46%);
+    --knowledge-editor-warning-outline: fade(@warning-color, 75%);
+    --knowledge-editor-error-bg: @error-bg-color;
+    --knowledge-editor-error-bg-light: fade(@error-color, 16%);
+    --knowledge-editor-error-bg-deep: fade(@error-color, 32%);
+    --knowledge-editor-error-outline: fade(@error-color, 75%);
+  }
+}
+
+html {
+  .theme(
+    @default-text,
+    @default-title,
+    @default-tip,
+    @default-dividing,
+    @default-blockbg,
+    @default-gray,
+    @default-border,
+    @default-disable,
+    @default-placeholder,
+    @default-primary-color,
+    @default-link-color,
+    @default-primary-bg-color,
+    @default-success-color,
+    @default-success-bg-color,
+    @default-warning-color,
+    @default-warning-bg-color,
+    @default-error-color,
+    @default-error-bg-color
+  );
+
+  &.theme-dark {
+    .theme(
+      @dark-text,
+      @dark-title,
+      @dark-tip,
+      @dark-dividing,
+      @dark-blockbg,
+      @dark-gray,
+      @dark-border,
+      @dark-disable,
+      @dark-placeholder,
+      @dark-primary-color,
+      @dark-link-color,
+      @dark-primary-bg-color,
+      @dark-success-color,
+      @dark-success-bg-color,
+      @dark-warning-color,
+      @dark-warning-bg-color,
+      @dark-error-color,
+      @dark-error-bg-color
+    );
+  }
+}
+
 .ProseMirror {
   &.resize-cursor {
     // 鼠标左右可拖动的光标样式
@@ -12,17 +114,17 @@
   }
   .table-col-hover,
   .table-row-hover {
-    background: rgba(24, 144, 255, 0.08);
+    background: var(--knowledge-editor-primary-bg-light);
   }
 
   .table-row-active,
   .table-col-active {
-    background: rgba(24, 144, 255, 0.16);
+    background: var(--knowledge-editor-primary-bg-deep);
   }
 
   .ProseMirror-selectednode {
     .image-wrapper {
-      border: 1px solid #3b82f6;
+      border: 1px solid var(--knowledge-editor-primary);
       .resize-handle {
         display: block;
       }
@@ -33,8 +135,8 @@
     margin: 16px 0;
     .resize-handle {
       border-radius: 50%;
-      background: #fff;
-      border: 1px solid #000;
+      background: var(--knowledge-editor-blockbg);
+      border: 1px solid var(--knowledge-editor-text);
       display: none;
     }
   }
@@ -48,9 +150,9 @@
     border-radius: 4px;
   }
   pre {
-    background: rgba(#616161, 0.1);
+    background: var(--knowledge-editor-muted-bg);
     border-radius: 8px;
-    color: #000;
+    color: var(--knowledge-editor-text);
     margin: 16px 0;
     padding: 16px;
     code {
@@ -63,14 +165,14 @@
   }
   hr {
     border: none;
-    border-top: 1px solid #3d251414;
+    border-top: 1px solid var(--knowledge-editor-border);
     margin: 16px 0;
   }
   blockquote {
-    border-left: 3px solid #3d25141f;
+    border-left: 3px solid var(--knowledge-editor-weak-border);
     margin: 16px 0;
     padding-left: 12px;
-    color: #646a73;
+    color: var(--knowledge-editor-title);
   }
   ul,
   ol {
@@ -113,18 +215,18 @@
     }
     li[data-checked='true'] div {
       text-decoration: line-through;
-      color: #999;
+      color: var(--knowledge-editor-tip);
     }
   }
   table {
     border-collapse: collapse;
-    box-shadow: 0 0 0 1px #dfe1e5 inset;
+    box-shadow: 0 0 0 1px var(--knowledge-editor-border) inset;
     margin: 0;
     overflow: hidden;
     table-layout: fixed;
     td,
     th {
-      border: 1px solid #dfe1e5;
+      border: 1px solid var(--knowledge-editor-border);
       box-sizing: border-box;
       min-width: 1em;
       padding: 6px 8px;
@@ -138,18 +240,18 @@
     tr:last-child {
       td,
       th {
-        border-bottom-color: #dfe1e5 !important;
+        border-bottom-color: var(--knowledge-editor-border) !important;
       }
     }
 
     th {
-      background-color: #3d25140d;
+      background-color: var(--knowledge-editor-gray);
       font-weight: bold;
       text-align: left;
     }
     // 选中单元格背景颜色
     .selectedCell:after {
-      background: #1456f02e;
+      background: var(--knowledge-editor-selected-bg);
       content: '';
       left: 0;
       right: 0;
@@ -160,7 +262,7 @@
       z-index: 2;
     }
     .column-resize-handle {
-      background-color: blue;
+      background-color: var(--knowledge-editor-primary);
       bottom: -2px;
       pointer-events: none;
       position: absolute;
@@ -176,20 +278,20 @@
     text-decoration: line-through;
   }
   code {
-    background-color: #f5f6f7;
+    background-color: var(--knowledge-editor-gray);
     border-radius: 6px;
-    border: 1px solid #dee0e3;
+    border: 1px solid var(--knowledge-editor-border);
   }
-  .highlight-block {
+  .callout {
     margin: 16px 0;
     padding: 16px;
     border-radius: 8px;
-    background-color: #fff5eb; /* 浅黄色背景，模拟高亮 */
-    border: 1px solid #fed4a4; /* 左侧橙色边框，增强视觉区分 */
+    background-color: var(--knowledge-editor-warning-bg);
+    border: 1px solid var(--knowledge-editor-warning-outline);
   }
 
   /* 可选：高亮块内的段落样式 */
-  .highlight-block p {
+  .callout p {
     margin: 0;
     line-height: 1.6;
   }
@@ -204,7 +306,7 @@
   .video-loading {
     width: 200px;
     height: 200px;
-    background: #f5f5f5;
+    background: var(--knowledge-editor-gray);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -215,33 +317,33 @@
     content: '';
     width: 28px;
     height: 28px;
-    border: 3px solid #ddd;
-    border-top-color: #999;
+    border: 3px solid var(--knowledge-editor-disable);
+    border-top-color: var(--knowledge-editor-title);
     border-radius: 50%;
     animation: loadingSpin 1s linear infinite;
   }
 
   .tiptap-search-highlight {
-    background: yellow;
+    background: var(--knowledge-editor-warning-bg);
   }
 
   .tiptap-search-active {
-    background: orange;
+    background: var(--knowledge-editor-warning-bg-deep);
   }
   .knowledge-compare-block {
     border-radius: 4px;
     padding: 2px 4px;
   }
   .knowledge-compare-insert {
-    background: rgba(82, 196, 26, 0.16);
+    background: var(--knowledge-editor-success-bg-light);
   }
   .knowledge-compare-delete {
-    background: rgba(245, 34, 45, 0.16);
+    background: var(--knowledge-editor-error-bg-light);
     text-decoration: line-through;
-    text-decoration-color: rgba(245, 34, 45, 0.75);
+    text-decoration-color: var(--knowledge-editor-error-outline);
   }
   .knowledge-compare-update {
-    background: rgba(250, 173, 20, 0.2);
+    background: var(--knowledge-editor-warning-bg-light);
   }
   table.knowledge-compare-block {
     padding: 0;
@@ -249,46 +351,50 @@
   }
   td.knowledge-compare-block,
   th.knowledge-compare-block {
-    border-color: rgba(61, 37, 20, 0.22);
+    border-color: var(--knowledge-editor-weak-border);
     border-radius: 0;
     padding: 6px 8px;
   }
   td.knowledge-compare-update,
   th.knowledge-compare-update {
-    box-shadow: inset 0 0 0 9999px rgba(250, 173, 20, 0.2);
+    box-shadow: inset 0 0 0 9999px var(--knowledge-editor-warning-bg-light);
   }
   td.knowledge-compare-insert,
   th.knowledge-compare-insert {
-    box-shadow: inset 0 0 0 9999px rgba(82, 196, 26, 0.16);
+    box-shadow: inset 0 0 0 9999px var(--knowledge-editor-success-bg-light);
   }
   td.knowledge-compare-delete,
   th.knowledge-compare-delete {
-    box-shadow: inset 0 0 0 9999px rgba(245, 34, 45, 0.16);
+    box-shadow: inset 0 0 0 9999px var(--knowledge-editor-error-bg-light);
   }
   [data-block-type='image'].knowledge-compare-block {
     padding: 0;
     background: transparent;
   }
   .image-wrapper.knowledge-compare-block,
-  .video-block.knowledge-compare-block {
+  .video-block.knowledge-compare-block,
+  .file-block.knowledge-compare-block {
     border-radius: 6px;
   }
   .image-wrapper.knowledge-compare-update,
-  .video-block.knowledge-compare-update {
+  .video-block.knowledge-compare-update,
+  .file-block.knowledge-compare-update {
     background: transparent;
-    outline: 2px solid rgba(250, 173, 20, 0.75);
+    outline: 2px solid var(--knowledge-editor-warning-outline);
     outline-offset: 4px;
   }
   .image-wrapper.knowledge-compare-insert,
-  .video-block.knowledge-compare-insert {
+  .video-block.knowledge-compare-insert,
+  .file-block.knowledge-compare-insert {
     background: transparent;
-    outline: 2px solid rgba(82, 196, 26, 0.75);
+    outline: 2px solid var(--knowledge-editor-success-outline);
     outline-offset: 4px;
   }
   .image-wrapper.knowledge-compare-delete,
-  .video-block.knowledge-compare-delete {
+  .video-block.knowledge-compare-delete,
+  .file-block.knowledge-compare-delete {
     background: transparent;
-    outline: 2px solid rgba(245, 34, 45, 0.75);
+    outline: 2px solid var(--knowledge-editor-error-outline);
     outline-offset: 4px;
     text-decoration: none;
   }
@@ -296,16 +402,16 @@
     border-radius: 3px;
     padding: 0 2px;
     font-weight: 600;
-    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: inset 0 -2px 0 var(--knowledge-editor-compare-shadow);
   }
   .knowledge-compare-mark.knowledge-compare-insert {
-    background: rgba(82, 196, 26, 0.32);
+    background: var(--knowledge-editor-success-bg-deep);
   }
   .knowledge-compare-mark.knowledge-compare-delete {
-    background: rgba(245, 34, 45, 0.32);
+    background: var(--knowledge-editor-error-bg-deep);
   }
   .knowledge-compare-mark.knowledge-compare-update {
-    background: rgba(250, 173, 20, 0.46);
+    background: var(--knowledge-editor-warning-bg-deep);
   }
   .heading {
     margin: 10px 0;
@@ -317,7 +423,7 @@
   }
 
   .video-block.is-selected {
-    outline: 2px solid #409eff;
+    outline: 2px solid var(--knowledge-editor-primary);
   }
 
   .video-block video {
@@ -332,8 +438,8 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    border: 1px solid #409eff;
-    background: #fff;
+    border: 1px solid var(--knowledge-editor-primary);
+    background: var(--knowledge-editor-blockbg);
     cursor: se-resize;
     opacity: 0;
     pointer-events: none;
@@ -350,8 +456,63 @@
     display: block;
     pointer-events: auto;
   }
+  .file-block {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    margin: 8px 0;
+    border: 1px solid var(--knowledge-editor-border);
+    border-radius: 6px;
+    background: var(--knowledge-editor-blockbg);
+    overflow: hidden;
+    .file-card-link {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      min-width: 180px;
+      padding: 8px 12px;
+      color: var(--knowledge-editor-text);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .file-card-icon {
+      flex: 0 0 auto;
+      margin-right: 8px;
+      color: var(--knowledge-editor-primary);
+      font-size: 28px;
+    }
+    .file-card-content {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .file-card-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 18px;
+    }
+    .file-card-meta {
+      color: var(--knowledge-editor-tip);
+      font-size: 12px;
+      line-height: 16px;
+    }
+  }
+  .file-block.is-loading,
+  .file-block.is-error {
+    .file-card-link {
+      cursor: default;
+    }
+  }
+  .file-block.is-error {
+    border-color: var(--knowledge-editor-error-outline);
+    .file-card-meta {
+      color: var(--knowledge-editor-error-outline);
+    }
+  }
   a[href=''] {
-    color: #000;
+    color: var(--knowledge-editor-text);
     cursor: none;
     &:hover {
       text-decoration: none;
@@ -359,7 +520,7 @@
   }
   // 超链接不为空的时候，鼠标经过有下划线
   a:not([href='']) {
-    color: #409eff;
+    color: var(--knowledge-editor-link);
     cursor: pointer;
     :hover {
       text-decoration: underline;
@@ -372,10 +533,10 @@
   // 评分组件样式
   .star {
     font-size: 18px;
-    color: #666;
+    color: var(--knowledge-editor-title);
   }
   .star-active {
-    color: #f6b73c;
+    color: var(--knowledge-editor-warning-outline);
   }
 }
 .knowledge-editor-box {
@@ -389,7 +550,7 @@
       height: 0;
       pointer-events: none;
       content: attr(data-placeholder);
-      color: #adb5bd;
+      color: var(--knowledge-editor-placeholder);
     }
     .head-info-box {
       .document-title {
@@ -432,9 +593,9 @@
     pre {
       margin: 4px 0;
     }
-    .highlight-block:not(.knowledge-compare-block) {
-      background-color: #f5f6f7;
-      border-color: #e5e6eb;
+    .callout:not(.knowledge-compare-block) {
+      background-color: var(--knowledge-editor-gray);
+      border-color: var(--knowledge-editor-border);
     }
   }
   .attachment-box {
