@@ -20,18 +20,15 @@ export function getSelectedTextInfo(editor) {
   }
   const { selection, doc } = editor.state;
 
-  if (!(selection instanceof TextSelection)) return false;
-  if (selection.from === selection.to) return false;
+  if (!(selection instanceof TextSelection) || selection.from === selection.to) {
+    return {
+      hasTextSelection: false,
+      selectedText: ''
+    };
+  }
 
-  let hasTextSelection = false;
-  let selectedText = '';
-  doc.nodesBetween(selection.from, selection.to, node => {
-    if (node.isText && node.text?.trim()) {
-      hasTextSelection = true;
-      selectedText += node.text;
-      return false;
-    }
-  });
+  const selectedText = doc.textBetween(selection.from, selection.to, '\n', '');
+  const hasTextSelection = !!selectedText.trim();
 
   return {
     hasTextSelection: hasTextSelection,

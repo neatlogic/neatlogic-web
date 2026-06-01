@@ -13,6 +13,28 @@ function getCompareChangeType(attrs = {}) {
   return ['insert', 'delete', 'update'].includes(attrs.compareChangeType) ? attrs.compareChangeType : null;
 }
 
+function normalizeInternalResourceUrl(url) {
+  if (!url || /^(data:|blob:|mailto:|tel:|#)/i.test(url) || /^api\//i.test(url)) {
+    return url;
+  }
+
+  try {
+    const parsedUrl = new URL(url, document.baseURI);
+    if (parsedUrl.origin !== window.location.origin) {
+      return url;
+    }
+
+    const apiIndex = parsedUrl.pathname.indexOf('/api/');
+    if (apiIndex > -1) {
+      return parsedUrl.pathname.slice(apiIndex + 1) + parsedUrl.search + parsedUrl.hash;
+    }
+  } catch (e) {
+    return url;
+  }
+
+  return url;
+}
+
 function syncCompareState(elements = [], attrs = {}) {
   const changeType = getCompareChangeType(attrs);
   elements.forEach(element => {
@@ -38,7 +60,10 @@ export const ImageResize = Node.create({
 
   addAttributes() {
     return {
-      src: { default: null },
+      src: {
+        default: null,
+        parseHTML: element => normalizeInternalResourceUrl(element.getAttribute('src') || element.querySelector('img')?.getAttribute('src') || '')
+      },
       width: { default: null },
       height: { default: null },
       align: {
