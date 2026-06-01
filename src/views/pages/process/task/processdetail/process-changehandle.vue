@@ -33,7 +33,7 @@
                 @click="startchange"
               >{{ actionStepconfig.startchange }}</span>
               <span
-                v-if="actionStepconfig.pausechange"
+                v-if="actionStepconfig.pausechange && isDetailReady"
                 :class="{disable: changeDisableConfig.pausing}"
                 class="tsfont-pause-o action-item"
                 @click="pausechange"
@@ -69,7 +69,7 @@
               <!-- accept_end -->
               <!-- 暂存、保存_start -->
               <span
-                v-if="actionConfig.save"
+                v-if="actionConfig.save && isDetailReady"
                 :class="{disable: disabledConfig.saving}"
                 class="action-item tsfont-save"
                 @click="saveTaskData()"
@@ -77,7 +77,7 @@
               <!-- 暂存、保存_end -->
               <!-- 转交_start -->
               <span
-                v-if="actionConfig.transfer"
+                v-if="actionConfig.transfer && isDetailReady"
                 :class="{disable: disabledConfig.transferring}"
                 class="action-item tsfont-arrow-corner-right"
                 @click="transferTask"
@@ -157,13 +157,13 @@
                 </Dropdown>
               </span>
               <!-- 回退s -->
-              <span v-if="actionConfig.back && backStepList.length > 1" class="action-item">
+              <span v-if="actionConfig.back && isDetailReady && backStepList.length > 1" class="action-item">
                 <Button
                   icon="tsfont tsfont-reply"
                   @click="backTask"
                 >{{ actionConfig.back }}</Button>
               </span>
-              <span v-if="actionConfig.back && backStepList.length == 1" class="action-item">
+              <span v-if="actionConfig.back && isDetailReady && backStepList.length == 1" class="action-item">
                 <Button
                   style="max-width:180px"
                   class="overflow"
@@ -175,13 +175,13 @@
               <!-- 回退_end -->
 
               <!-- 流转_start -->
-              <span v-if="actionStepconfig.succeedchange" class="action-item">
+              <span v-if="actionStepconfig.succeedchange && isDetailReady" class="action-item">
                 <Button
                   icon="tsfont tsfont-check-o"
                   @click="succeedchange"
                 >{{ actionStepconfig.succeedchange }}</Button>
               </span>
-              <span v-if="actionStepconfig.failedchange" class="action-item">
+              <span v-if="actionStepconfig.failedchange && isDetailReady" class="action-item">
                 <Button
                   icon="tsfont tsfont-danger-o"
                   @click="failedchange"
@@ -624,6 +624,9 @@ export default {
     },
     async completeTask() {
       //流转
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       let val = this.$refs.TaskCenterDetail ? this.$refs.TaskCenterDetail.getTaskStepContent() : null;
       this.completeList[0].value = val;
       if (this.changeCompletetype == 'succeedchange') {
@@ -641,6 +644,9 @@ export default {
     },
     async completeOk() {
       //流转完成
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       let completeForm = this.$refs.completeForm;
       if (completeForm.valid()) {
         await this.saveTaskData(true);
@@ -697,6 +703,9 @@ export default {
     },
     saveCompleData() {
       if (!this.disabledConfig.completing) {
+        if (!this.isSaveActionReady()) {
+          return;
+        }
         let conntent = this.$refs.TaskCenterDetail ? this.$refs.TaskCenterDetail.getTaskStepContent() : null;
         let data = {
           processTaskId: this.processTaskId,
@@ -776,6 +785,9 @@ export default {
       this.completeTask();
     },
     async changeCompleteOk() {
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       await this.saveTaskData(true);
       let obj = completeForm.getFormValue();
       let data = {
@@ -797,6 +809,9 @@ export default {
     },
     //暂停变更
     pausechange() {
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       let content = this.$refs.TaskCenterDetail ? this.$refs.TaskCenterDetail.getTaskStepContent() : null;
       this.pausechangeForm[0].value = content;
       this.pausechangeModal = true;

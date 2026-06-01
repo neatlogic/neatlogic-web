@@ -1,4 +1,5 @@
 import dealFormMix from '@/views/pages/process/task/taskcommon/dealNewFormData.js';
+import { store as processStore, mutations as processMutations } from '@/views/pages/process/task/processdetail/processStore.js';
 export default {
   mixins: [dealFormMix],
   props: {
@@ -269,6 +270,7 @@ export default {
     },
     //初始化数据
     getAllData() {
+      this.setDetailReady(false);
       this.getTaskActionObj();
       if (this.actionConfig.pocesstaskview) {
         if (this.processTaskStepId) {
@@ -291,6 +293,7 @@ export default {
       console.log(this.startProcessTaskStep, 'startProcessTaskStep');
     },
     getConmmonData() {
+      this.setDetailReady(false);
       //获取工单和步骤信息接口
       this.processTaskConfig = this.processTask;
       if (this.processTaskConfig.hasOwnProperty('isShowBaseInfo')) {
@@ -429,6 +432,13 @@ export default {
         this.draftData = this.$utils.deepClone(data);
       }
     },
+    setDetailReady(val) {
+      processMutations.setDetailReady(val);
+    },
+    isSaveActionReady() {
+      // 所有会读取 TaskCenterDetail 表单/回复数据的入口，都必须等详情就绪后再执行。
+      return !!(processStore.isDetailReady && this.$refs.TaskCenterDetail);
+    },
     getData() {
       let data = (this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.getData()) || {};
       //检查子组件是否有myGetData方法
@@ -445,7 +455,7 @@ export default {
     },
     isDraftData(to, from, next, url) {
       //路由跳转比较对比  父组件beforeRouterLeave调用
-      if (this.actionConfig.save && this.$refs.TaskCenterDetail) {
+      if (this.actionConfig.save && this.isSaveActionReady()) {
         const draftData = this.getData();
         const filterAttrList = ['hidecomponentList', 'formExtendAttributeDataList'];
         let newData = draftData;
@@ -484,6 +494,9 @@ export default {
     },
     isDataChangeSwitchTsak() {
       // 切换任务列表时，对比数据是否变化
+      if (!this.isSaveActionReady()) {
+        return false;
+      }
       let draftData = this.$refs.TaskCenterDetail ? this.$refs.TaskCenterDetail.getData() : '';
       let isSame = this.$utils.isSame(this.draftData, draftData);
       let isDataChange = false;
@@ -501,7 +514,7 @@ export default {
 
     saveTask(val) {
       //暂存 数据对比
-      if (this.$refs.TaskCenterDetail) {
+      if (this.isSaveActionReady()) {
         let draftData = this.$refs.TaskCenterDetail.getData();
         let isSame = this.$utils.isSame(this.draftData, draftData);
         if (!isSame) {
@@ -513,6 +526,9 @@ export default {
     },
     saveTaskData(val) {
       //暂存 保存
+      if (!this.isSaveActionReady()) {
+        return Promise.resolve(false);
+      }
       let _this = this;
       let data = this.getData();
       return new Promise((resolve, reject) => {
@@ -551,6 +567,9 @@ export default {
       });
     },
     assignOk() {
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       let isSave = true;
       for (let i = 0; i < this.assignableWorkerStepList.length; i++) {
         if (this.assignableWorkerStepList[i].isRequired == 1 && !this.assignableWorkerStepList[i].value.length) {
@@ -568,11 +587,17 @@ export default {
     },
     transferTask() {
       //转交
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       this.transferContent = this.$refs.TaskCenterDetail.getTaskStepContent();
       this.transferModal = true;
     },
     //回退
     backTask() {
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       let val = this.$refs.TaskCenterDetail ? this.$refs.TaskCenterDetail.getTaskStepContent() : null;
       this.backList.forEach(item => {
         if (item.name == 'content') {
@@ -582,6 +607,9 @@ export default {
       this.backModal = true;
     },
     async backOk() {
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       if (!this.disabledConfig.backing) {
         let backForm = this.$refs.backForm;
         if (backForm.valid()) {
@@ -876,6 +904,7 @@ export default {
     wipeData() {
       //切换任务前清空当前数据
       let _this = this;
+      this.setDetailReady(false);
       _this.formConfig = {};
       clearInterval(_this.timer);
       _this.timer = null;
@@ -908,6 +937,9 @@ export default {
     //此方法迁到button-bar
     async completeStep(obj) {
       //单个节点流转
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       this.nestStepId = obj.id;
       this.selectStepConfig = obj;
       this.assignableWorkerStepList = obj.assignableWorkerStepList || [];
@@ -985,8 +1017,11 @@ export default {
     },
     async reapprovalTask() {
       //重审
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       if (!this.disabledConfig.reapproval) {
-        let isValid = this.taskValid();
+        let isValid = await this.taskValid();
         if (isValid) {
           await this.saveTaskData(true);
           this.disabledConfig.reapproval = true;
@@ -1016,6 +1051,9 @@ export default {
     },
     // 校验
     async taskValid() {
+      if (!this.isSaveActionReady()) {
+        return false;
+      }
       let isComplete = true;
       //先检查子组件是否有自定义校验方法，有得话先调用
       if (this.$options.mixins && this.$options.mixins.length > 0) {
@@ -1141,10 +1179,15 @@ export default {
       }
     },
     comment() {
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       this.$refs.TaskCenterDetail.comment();
     },
     async saveTransferTask(data) {
-      //保存并转交工单
+      if (!this.isSaveActionReady()) {
+        return;
+      }
       await this.saveTaskData(true);
       this.$api.process.processtask.transferTaskDetail(data).then(res => {
         if (res.Status == 'OK') {
@@ -1154,6 +1197,9 @@ export default {
     }
   },
   computed: {
+    isDetailReady() {
+      return processStore.isDetailReady;
+    },
     allClassifyData() {
       return this.$store.state.leftMenu.workcenterList;
     }
