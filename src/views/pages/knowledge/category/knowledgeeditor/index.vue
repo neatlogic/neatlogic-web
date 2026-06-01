@@ -17,7 +17,7 @@
         @mouseover="$emit('updateMouseover')"
         @scroll="handleContentScroll"
       >
-        <div v-if="showHeader && isShowHeadInfo" class="head-info-box">
+        <div v-if="showHeader && (isShowHeadInfo || hasCompareMetaInfo)" class="head-info-box">
           <TsFormInput
             v-if="!readonly"
             ref="titleInput"
@@ -30,6 +30,19 @@
             :placeholder="$t('form.placeholder.pleaseinput', { target: $t('page.title') })"
             @on-change="handleTitleChange"
           ></TsFormInput>
+          <div v-else-if="hasCompareMetaInfo" class="compare-meta-box">
+            <div v-if="compareTagList.length" class="compare-meta-row">
+              <span class="compare-meta-label">{{ $t('term.knowledge.documenttag') }}{{ $t('page.colon') }}</span>
+              <span class="compare-tag-list">
+                <span
+                  v-for="(tag, index) in compareTagList"
+                  :key="`${tag.text}_${index}`"
+                  class="compare-tag-item"
+                  :class="getCompareTagClass(tag)"
+                >{{ tag.text }}</span>
+              </span>
+            </div>
+          </div>
           <div class="border-base-bottom mt-nm mb-nm"></div>
         </div>
         <div
@@ -1215,6 +1228,9 @@ export default {
       view.dispatch(
         state.tr.setMeta(hoverHighlightKey, status ? { add: { from, to } } : { clear: true })
       );
+    },
+    getCompareTagClass(tag = {}) {
+      return tag.changeType ? `knowledge-compare-mark knowledge-compare-${tag.changeType}` : '';
     }
   },
   computed: {
@@ -1226,6 +1242,12 @@ export default {
     },
     isShowHeadInfo() {
       return !this.readonly;
+    },
+    compareTagList() {
+      return this.meta?.tagCompareList || [];
+    },
+    hasCompareMetaInfo() {
+      return this.compareMode && this.compareTagList.length > 0;
     },
     getMenuClass() {
       return item => {

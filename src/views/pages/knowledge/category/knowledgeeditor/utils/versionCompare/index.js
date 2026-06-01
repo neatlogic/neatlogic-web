@@ -20,6 +20,37 @@ function createCompareDoc(editorData = {}, content = []) {
   };
 }
 
+function getTagText(tag) {
+  if (tag === null || tag === undefined) {
+    return '';
+  }
+  if (typeof tag === 'object') {
+    return String(tag.name || tag.text || tag.label || tag.value || '').trim();
+  }
+  return String(tag).trim();
+}
+
+function getTagCompareList(currentTagList = [], oppositeTagList = [], side) {
+  const oppositeTagSet = new Set((oppositeTagList || []).map(getTagText).filter(Boolean));
+  return (currentTagList || []).map(tag => {
+    const text = getTagText(tag);
+    return {
+      text,
+      changeType: text && !oppositeTagSet.has(text) ? side === 'old' ? 'delete' : 'insert' : ''
+    };
+  }).filter(tag => tag.text);
+}
+
+function withTagCompareMeta(editorData = {}, oppositeEditorData = {}, side) {
+  return {
+    ...editorData,
+    meta: {
+      ...(editorData.meta || {}),
+      tagCompareList: getTagCompareList(editorData.tagList, oppositeEditorData.tagList, side)
+    }
+  };
+}
+
 export { normalizeDocumentVoToDoc };
 
 export function compareDocumentVos(oldDocumentVo = {}, newDocumentVo = {}) {
@@ -31,7 +62,7 @@ export function compareDocumentVos(oldDocumentVo = {}, newDocumentVo = {}) {
   );
 
   return {
-    oldCompareDoc: createCompareDoc(cloneData(oldEditorData), oldBlocks),
-    newCompareDoc: createCompareDoc(cloneData(newEditorData), newBlocks)
+    oldCompareDoc: createCompareDoc(withTagCompareMeta(cloneData(oldEditorData), newEditorData, 'old'), oldBlocks),
+    newCompareDoc: createCompareDoc(withTagCompareMeta(cloneData(newEditorData), oldEditorData, 'new'), newBlocks)
   };
 }

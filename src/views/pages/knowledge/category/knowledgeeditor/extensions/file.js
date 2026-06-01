@@ -130,12 +130,37 @@ function getFileId(attrs = {}) {
   return attrs.id || getDownloadFileId(attrs.url);
 }
 
+function getBaseUrlPrefix() {
+  const prefix = typeof BASEURLPREFIX === 'undefined'
+    ? (typeof HOME === 'undefined' ? '' : HOME)
+    : BASEURLPREFIX;
+  return prefix && prefix !== '/' ? prefix : '';
+}
+
+function normalizeHref(url = '') {
+  const value = String(url || '');
+  if (!value || /^(https?:)?\/\//.test(value) || /^(blob|data):/.test(value)) {
+    return value;
+  }
+  const baseUrlPrefix = getBaseUrlPrefix();
+  if (baseUrlPrefix && value.indexOf(baseUrlPrefix + '/') === 0) {
+    return value;
+  }
+  if (value.charAt(0) === '/') {
+    return baseUrlPrefix + value;
+  }
+  if (value.indexOf('api/') === 0) {
+    return `${baseUrlPrefix}/${value}`;
+  }
+  return value;
+}
+
 function getFileHref(attrs = {}) {
   const id = getFileId(attrs);
   if (id) {
-    return `${FILE_DOWNLOAD_URL}?id=${encodeURIComponent(id)}`;
+    return `${normalizeHref(FILE_DOWNLOAD_URL)}?id=${encodeURIComponent(id)}`;
   }
-  return attrs.url || '';
+  return normalizeHref(attrs.url);
 }
 
 function downloadFile(attrs = {}, changeStatus) {
@@ -269,14 +294,16 @@ const File = Node.create({
           event.preventDefault();
           return;
         }
-        if (!getFileId(currentAttrs)) {
+        event.preventDefault();
+        event.stopPropagation();
+        const fileId = getFileId(currentAttrs) || getDownloadFileId(link.getAttribute('href') || link.href);
+        if (!fileId) {
           return;
         }
-        event.preventDefault();
         if (isDownloading) {
           return;
         }
-        downloadFile(currentAttrs, status => {
+        downloadFile({ ...currentAttrs, id: fileId }, status => {
           if (status === 'start') {
             isDownloading = true;
             wrapper.classList.add('is-downloading');
@@ -292,7 +319,7 @@ const File = Node.create({
       link.appendChild(icon);
       link.appendChild(content);
       wrapper.appendChild(link);
-      link.addEventListener('click', handleDownload);
+      link.addEventListener('click', handleDownload, true);
 
       const syncFileState = (attrs = {}) => {
         currentAttrs = { ...attrs };
@@ -339,7 +366,7 @@ const File = Node.create({
           return true;
         },
         destroy() {
-          link.removeEventListener('click', handleDownload);
+          link.removeEventListener('click', handleDownload, true);
         }
       };
     };
