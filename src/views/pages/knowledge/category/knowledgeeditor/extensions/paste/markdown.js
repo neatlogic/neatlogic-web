@@ -106,6 +106,9 @@ function markdownToDOM(markdown) {
     return renderLink(href, title, text);
   };
   renderer.image = (href, title, text) => {
+    if (isLocalImageUrl(href)) {
+      return renderMarkdownImageText(href, title, text);
+    }
     const src = sanitizeUrl(href);
     if (!src) {
       return escapeHTML(text || '');
@@ -273,6 +276,28 @@ function sanitizeUrl(value) {
     return '';
   }
   return url;
+}
+
+function isLocalImageUrl(value) {
+  const url = String(value || '').trim();
+  if (!url) {
+    return false;
+  }
+  if (/^[a-z]:[\\/]/i.test(url) || /^file:/i.test(url)) {
+    return true;
+  }
+  if (/^(data:image\/|blob:|https?:|\/\/)/i.test(url) || /^\/?api\//i.test(url)) {
+    return false;
+  }
+  if (/^[a-z][a-z0-9+.-]*:/i.test(url)) {
+    return false;
+  }
+  return true;
+}
+
+function renderMarkdownImageText(href, title, text) {
+  const titleText = title ? ` "${String(title).replace(/"/g, '\\"')}"` : '';
+  return escapeHTML(`![${text || ''}](${href || ''}${titleText})`);
 }
 
 function isVideoUrl(value) {

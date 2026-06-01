@@ -173,6 +173,16 @@ export const ImageResize = Node.create({
       });
   
       loading.appendChild(spinner);
+
+      const errorTip = document.createElement('div');
+      errorTip.textContent = '图片加载失败';
+      Object.assign(errorTip.style, {
+        display: 'none',
+        color: 'var(--knowledge-editor-error-outline)',
+        fontSize: '13px',
+        lineHeight: '20px'
+      });
+      loading.appendChild(errorTip);
       wrapper.appendChild(loading);
   
       /* ================= status ================= */
@@ -185,6 +195,7 @@ export const ImageResize = Node.create({
       const setStatus = s => {
         status = s;
         wrapper.classList.remove('loading', 'loaded', 'error');
+        wrapper.classList.add(s);
   
         if (s === 'loaded') {
           img.style.visibility = 'visible';
@@ -193,12 +204,24 @@ export const ImageResize = Node.create({
         } else {
           img.style.visibility = 'hidden';
           loading.style.display = 'flex';
+          spinner.style.display = s === 'error' ? 'none' : 'block';
+          errorTip.style.display = s === 'error' ? 'block' : 'none';
         }
       };
   
       /* ================= image load events ================= */
       img.onload = () => setStatus('loaded');
       img.onerror = () => setStatus('error');
+
+      const syncLoadedImage = () => {
+        if (img.complete && img.naturalWidth > 0) {
+          setStatus('loaded');
+        }
+      };
+      const queueLoadedImageSync = () => {
+        syncLoadedImage();
+        window.requestAnimationFrame(syncLoadedImage);
+      };
   
       /* ================= resize handles ================= */
 
@@ -343,6 +366,7 @@ export const ImageResize = Node.create({
           setStatus('loading');
           img.setAttribute('src', node.attrs.src);
         }
+        queueLoadedImageSync();
   
         if (node.attrs.width) img.style.width = node.attrs.width + 'px';
         if (node.attrs.height) img.style.height = node.attrs.height + 'px';
