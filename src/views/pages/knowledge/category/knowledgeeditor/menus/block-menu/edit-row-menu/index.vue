@@ -74,7 +74,13 @@ export default {
       this.$emit('click-menu', { commandName: name, options: {...this.nodeConfig || {}} });
     },
     handleClickMenu(menuData) {
-      this.$emit('click-menu', menuData);
+      this.$emit('click-menu', {
+        ...(menuData || {}),
+        options: {
+          ...(this.nodeConfig || {}),
+          ...(menuData?.options || {})
+        }
+      });
     },
     insertBelowPosition(menuData) {
       this.$emit('insert-below-position', menuData);

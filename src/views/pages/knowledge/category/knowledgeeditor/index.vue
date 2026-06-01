@@ -231,7 +231,9 @@ export default {
       selectContentMenuPos: { top: 0, left: 0 },
       blockMenuNodeConfig: {
         type: '',
-        attrs: {}
+        attrs: {},
+        pos: null,
+        nodeSize: null
       },
       linkHoverConfig: {}
     };
@@ -791,6 +793,8 @@ export default {
       const { type, attrs = {}, pos, isEmpty: nodeContentIsEmpty = false, node } = getHoverTargetByEvent({ state, $pos }) || {};
       this.$set(this.blockMenuNodeConfig, 'type', type);
       this.$set(this.blockMenuNodeConfig, 'attrs', attrs);
+      this.$set(this.blockMenuNodeConfig, 'pos', pos);
+      this.$set(this.blockMenuNodeConfig, 'nodeSize', node?.nodeSize || null);
       const nodeDom = view.nodeDOM(pos);
       const nodeRect = nodeDom && nodeDom.getBoundingClientRect && nodeDom.getBoundingClientRect();
       this.hoverBlockDom = nodeDom;
