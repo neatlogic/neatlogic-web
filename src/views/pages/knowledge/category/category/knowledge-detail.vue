@@ -94,7 +94,6 @@
             :can-edit-title="false"
             :can-edit-content="false"
             :can-edit-tag="false"
-            :can-edit-attachment="false"
             :show-header="true"
             :show-debug-button="false"
           ></KnowledgeEditor>

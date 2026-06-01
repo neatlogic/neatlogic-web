@@ -85,7 +85,7 @@ function markdownToDOM(markdown) {
     return `<li>${text}</li>`;
   };
   renderer.paragraph = text => {
-    if (/^<div\b[^>]*data-block-type="(?:image|insert-video)"[^>]*><\/div>$/.test(text.trim())) {
+    if (/^<div\b[^>]*data-block-type="(?:image|video)"[^>]*><\/div>$/.test(text.trim())) {
       return text;
     }
     return `<p>${text}</p>`;
@@ -162,7 +162,7 @@ function renderVideoBlock(attrs = {}) {
     return escapeHTML(attrs.alt || '');
   }
   const videoAttrs = {
-    'data-block-type': 'insert-video',
+    'data-block-type': 'video',
     src,
     title: attrs.title || attrs.alt,
     width: normalizeSize(attrs.width),
@@ -188,7 +188,7 @@ function videoHtmlToDOM(html) {
     return null;
   }
   const node = document.createElement('div');
-  node.setAttribute('data-block-type', 'insert-video');
+  node.setAttribute('data-block-type', 'video');
   node.setAttribute('src', src);
   const width = normalizeSize(video.getAttribute('width') || video.style.width);
   const height = normalizeSize(video.getAttribute('height') || video.style.height);

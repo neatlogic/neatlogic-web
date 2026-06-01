@@ -36,10 +36,10 @@ export default {
   data() {
     return {
       dialogSetting: {
-        title: '编辑知识分类',
+        title: this.$t('term.knowledge.knowtype'),
         type: 'modal',
         isShow: true,
-        okText: '保存'
+        okText: this.$t('page.save')
       },
       formData: {
         knowledgeDocumentTypeUuid: this.knowledgeDocumentTypeUuid

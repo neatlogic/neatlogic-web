@@ -5,13 +5,21 @@
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
       <template v-slot:topLeft>
-        <div v-if="documentPathText">
+        <div class="top-left-action">
           <span
             v-if="documentPathText"
             class="document-path text-tip overflow"
             :title="documentPathText"
           >({{ documentPathText }})</span>
-          <span class="tsfont-edit text-action" @click="openKnowledgeCategoryDialog">编辑分类</span>
+          <span
+            class="tsfont-edit text-action"
+            @click="openKnowledgeCategoryDialog"
+          >{{ $t('term.knowledge.knowtype') }}</span>
+          <span
+            class="tsfont-addtag text-action"
+            :class="{disable: isMember !== 1}"
+            @click="openDocumentTagDialog"
+          >{{ $t('term.knowledge.documenttag') }}</span>
         </div>
       </template>
       <template slot="topRight">
@@ -32,6 +40,10 @@
             @click="saveTempalet"
           >{{ $t('term.rdm.saveastemplate') }}</span>
           <span
+            class="action-item tsfont-attachment"
+            @click="openAttachmentListDialog"
+          >{{ $t('term.process.accessorieslist') }}</span>
+          <span
             v-if="isMember"
             class="action-item tsfont-history"
             @click="isActivityShow = !isActivityShow"
@@ -46,8 +58,6 @@
             :documentConfig="knowledgeConfing"
             :can-edit-title="isReviewer === 1"
             :can-edit-content="isMember === 1"
-            :can-edit-tag="isMember === 1"
-            :can-edit-attachment="isMember === 1"
             @title-change="handleTitleChange"
           ></KnowledgeEditor>
         </div>
@@ -73,6 +83,16 @@
       :knowledge-document-type-uuid="knowledgeDocumentTypeUuid"
       @close="closeKnowledgeCategoryDialog"
     ></KnowledgeCategoryDialog>
+    <AttachmentListDialog
+      v-if="isAttachmentListShow"
+      :file-list="attachmentList"
+      @close="closeAttachmentListDialog"
+    ></AttachmentListDialog>
+    <DocumentTagDialog
+      v-if="isDocumentTagShow"
+      :list="documentTagList"
+      @close="closeDocumentTagDialog"
+    ></DocumentTagDialog>
   </div>
 </template>
 <script>
@@ -83,7 +103,9 @@ export default {
     ActivityOverview: () => import('@/views/pages/knowledge/category/category/activity-detail-dialog.vue'),
     SaveOverview: () => import('./save-overview'),
     KnowledgeEditor: () => import('@/views/pages/knowledge/category/knowledgeeditor/index.vue'),
-    KnowledgeCategoryDialog: () => import('./knowledge-category-dialog.vue')
+    KnowledgeCategoryDialog: () => import('./knowledge-category-dialog.vue'),
+    AttachmentListDialog: () => import('./attachment-list-dialog.vue'),
+    DocumentTagDialog: () => import('./document-tag-dialog.vue')
   },
   filters: {},
   props: [''],
@@ -99,6 +121,10 @@ export default {
       isReviewShow: false, //提交审核弹框
       isActivityShow: false, //活动
       isSaveShow: false, //另存为模板弹框
+      isAttachmentListShow: false,
+      isDocumentTagShow: false,
+      attachmentList: [],
+      documentTagList: [],
       saveOverviewData: {},
       defaultData: null,
       isReviewer: 1, //修改标题和类型权限
@@ -153,6 +179,8 @@ export default {
           this.title = config.title;
           this.knowledgeDocumentVersionId = config.knowledgeDocumentVersionId;
           this.knowledgeDocumentTypeUuid = config.knowledgeDocumentTypeUuid;
+          this.documentTagList = config.tagList || [];
+          this.attachmentList = config.fileList || [];
           this.isReviewer = config.isReviewer;
           this.isMember = config.isMember;
           this.$set(this.defaultConfig, 'title', config.title);
@@ -187,6 +215,7 @@ export default {
       }
       let editConfig = this.getEditorSaveData();
       Object.assign(data, editConfig);
+      data.tagList = this.documentTagList || [];
       return data;
     },
     // 路由层只关心知识库保存协议；编辑器内部的新旧格式转换由组件自己处理
@@ -240,7 +269,7 @@ export default {
       try {
         let data = this.getAllSaveData(1);
         let res = await this.$api.knowledge.knowledge.saveDraftDocument(data);
-        this.$Message.success(this.$t('message.executesuccess')); //操作成功
+        this.$Message.success(this.$t('message.executesuccess'));
         let config = res.Return;
         this.knowledgeDocumentId = config.knowledgeDocumentId;
         this.knowledgeDocumentVersionId = config.knowledgeDocumentVersionId;
@@ -293,6 +322,24 @@ export default {
     },
     openKnowledgeCategoryDialog() {
       this.isKnowledgeCategoryShow = true;
+    },
+    openDocumentTagDialog() {
+      if (this.isMember !== 1) {
+        return;
+      }
+      this.isDocumentTagShow = true;
+    },
+    closeDocumentTagDialog(data = {}) {
+      if (data && Array.isArray(data.tagList)) {
+        this.documentTagList = data.tagList;
+      }
+      this.isDocumentTagShow = false;
+    },
+    openAttachmentListDialog() {
+      this.isAttachmentListShow = true;
+    },
+    closeAttachmentListDialog() {
+      this.isAttachmentListShow = false;
     }
   },
   computed: {
@@ -348,6 +395,11 @@ export default {
 </script>
 <style lang="less" scoped>
 .knowledge-edit-box {
+  .top-left-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
   .detail-title {
     display: inline-block;
     max-width: 520px;

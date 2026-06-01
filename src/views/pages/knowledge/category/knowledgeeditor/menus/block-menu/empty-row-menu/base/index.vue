@@ -138,13 +138,13 @@ export default {
         {
           tipConentList: ['高亮快'],
           iconClass: 'tsfont-callout',
-          value: 'highlightBlock',
+          value: 'callout',
           text: '高亮快'
         },
         {
           tipConentList: ['分割线', 'Markdown: --- ***'],
           iconClass: 'tsfont-divider',
-          value: 'horizontalRule',
+          value: 'divider',
           text: '分割线'
         },
         {

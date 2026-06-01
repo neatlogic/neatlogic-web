@@ -115,7 +115,7 @@ export default {
         },
         {
           text: '高亮快',
-          value: 'highlightBlock',
+          value: 'callout',
           iconClass: 'tsfont-callout'
         }
       ]

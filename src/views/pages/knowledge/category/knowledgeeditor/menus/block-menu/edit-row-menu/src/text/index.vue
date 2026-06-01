@@ -106,7 +106,7 @@ export default {
     },
     isShowColorMenu() {
       const { type } = this.nodeConfig || {};
-      const disabledTypeList = ['highlightBlock'];
+      const disabledTypeList = ['callout'];
       return !!disabledTypeList.includes(type);
     }
   },

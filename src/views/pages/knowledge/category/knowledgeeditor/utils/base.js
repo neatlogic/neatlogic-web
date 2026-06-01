@@ -79,7 +79,7 @@ export default {
       const posResult = coords ? view.posAtCoords({ left: coords.left, top: coords.top }) : null;
       const pos = posResult?.pos;
       const directNode = pos != null ? doc.nodeAt(pos) : null;
-      const atomBlockList = ['image', 'insertVideo', 'horizontalRule'];
+      const atomBlockList = ['image', 'video', 'file', 'horizontalRule'];
 
       // 图片、视频、分割线这类原子块没有可编辑正文，需直接定位到节点结束处，避免在下方插入时越界
       if (directNode && directNode.type.isBlock && atomBlockList.includes(directNode.type.name)) {

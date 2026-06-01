@@ -37,10 +37,16 @@
         ></UploadImage>
       </DropdownItem>
       <DropdownItem>
-        <InsertVideo
+        <KnowledgeVideo
           @click-menu="(menuData)=> {
             $emit('click-menu', menuData)}"
-        ></InsertVideo>
+        ></KnowledgeVideo>
+      </DropdownItem>
+      <DropdownItem>
+        <File
+          @click-menu="(menuData)=> {
+            $emit('click-menu', menuData)}"
+        ></File>
       </DropdownItem>
       <InsertTable
         @click-menu="(menuData)=> {
@@ -56,7 +62,8 @@ export default {
   components: {
     BaseMenu: () => import('./base/index.vue'),
     UploadImage: () => import('./commonly-used/upload-image/index.vue'),
-    InsertVideo: () => import('./commonly-used/insert-video/index.vue'),
+    KnowledgeVideo: () => import('./commonly-used/video/index.vue'),
+    File: () => import('./commonly-used/file/index.vue'),
     InsertTable: () => import('./commonly-used/insert-table/index.vue')
   },
   props: {

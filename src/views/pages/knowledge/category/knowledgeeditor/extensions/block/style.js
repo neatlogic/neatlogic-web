@@ -12,7 +12,7 @@ export const BlockStyle = Extension.create({
           'blockquote',
           'listItem',
           'taskItem',
-          'highlightBlock'
+          'callout'
         ],
         attributes: {
           blockTextColor: {
