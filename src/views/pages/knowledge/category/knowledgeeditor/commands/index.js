@@ -1,12 +1,13 @@
 import heading from './heading';
 import bulletList from './bullet-list';
 import codeBlock from './code-block';
-import highlightBlock from './highlight-block';
+import callout from './callout';
 import orderedList from './ordered-list';
 import uploadImage from './upload-image';
-import insertVideo from './insert-video';
+import video from './video';
+import file from './file';
 import blockquote from './blockquote';
-import horizontalRule from './horizontal-rule';
+import divider from './divider';
 import taskList from './task-list';
 import insertTable from './table/insert-table';
 import insertColumn from './table/insert-column.js';
@@ -41,14 +42,16 @@ import blockBorderColor from './block-border-color.js';
 export default {
   heading,
   codeBlock,
-  highlightBlock,
+  callout,
   bulletList,
   orderedList,
   taskList,
   uploadImage,
-  insertVideo,
+  video,
+  file,
   blockquote,
-  horizontalRule,
+  divider,
+  horizontalRule: divider,
   insertTable,
   insertColumn,
   insertRow,

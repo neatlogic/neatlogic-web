@@ -17,8 +17,9 @@ const REAL_BLOCKS = new Set([
   'horizontalRule',
   'table',
   'image',
-  'insertVideo',
-  'highlightBlock'
+  'video',
+  'file',
+  'callout'
 ]);
 
 export const BlockUuid = Extension.create({
@@ -78,21 +79,23 @@ export const BlockUuid = Extension.create({
             }
 
             const currentUuid = node.attrs.blockUuid;
+            const expectedBlockType =
+              node.type.name === 'heading'
+                ? `heading${node.attrs.level}`
+                : node.type.name;
+            const isDuplicateUuid = currentUuid && seenBlockUuid.has(currentUuid);
             // 历史数据、拖拽或外部转换可能带入重复 uuid；统一在编辑器层修正，避免目录和块级命令定位冲突。
-            if (currentUuid && !seenBlockUuid.has(currentUuid)) {
+            if (currentUuid && !isDuplicateUuid && node.attrs.blockType === expectedBlockType) {
               seenBlockUuid.add(currentUuid);
               return;
             }
 
-            const nextUuid = utils.setUuid();
+            const nextUuid = isDuplicateUuid || !currentUuid ? utils.setUuid() : currentUuid;
             seenBlockUuid.add(nextUuid);
             tr.setNodeMarkup(pos, node.type, {
               ...node.attrs,
               blockUuid: nextUuid,
-              blockType:
-                node.type.name === 'heading'
-                  ? `heading${node.attrs.level}`
-                  : node.type.name
+              blockType: expectedBlockType
             });
             modified = true;
           });

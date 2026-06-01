@@ -1,5 +1,6 @@
-import InsertVideo from './insert-video';
-import HighlightBlock from './highlight-block';
+import Video from './video';
+import File from './file';
+import Callout from './callout';
 import { BlockUuid } from './block/uuid.js';
 import { BlockStyle } from './block/style.js';
 import { TableCellBackground } from './table/cell-style/add-background-command.js';
@@ -11,8 +12,9 @@ import { PasteMarkdown } from '@/views/pages/knowledge/category/knowledgeeditor/
 import { Rate } from './rate.js';
 import { CompareBlockAttrs, CompareMark } from './compare-mark.js';
 export default [
-  InsertVideo,
-  HighlightBlock,
+  Video,
+  File,
+  Callout,
   BlockUuid,
   BlockStyle,
   CompareBlockAttrs,

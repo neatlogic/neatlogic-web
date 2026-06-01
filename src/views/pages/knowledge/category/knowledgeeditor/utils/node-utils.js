@@ -19,10 +19,10 @@ export function findTableNode($pos) {
   return null;
 }
 
-export function findHighlightBlockNode($pos) {
+export function findCalloutNode($pos) {
   for (let d = $pos.depth; d > 0; d--) {
     const node = $pos.node(d);
-    if (node.type.name === 'highlightBlock') {
+    if (node.type.name === 'callout') {
       return {
         node,
         depth: d,
@@ -93,7 +93,7 @@ export function findBlockNode($pos) {
 export function getHoverTargetByEvent({ state, $pos}) {
   // 处理原子节点（image、video）
   const atomNode = state.doc.nodeAt($pos.pos);
-  const atomNodeList = ['image', 'insertVideo', 'horizontalRule'];
+  const atomNodeList = ['image', 'video', 'file', 'horizontalRule', 'divider'];
   const { attrs: atomAttrs = {} } = atomNode || {};
   const atomNodeName = atomNode?.type?.name;
   if (atomNodeName && atomNodeList.includes(atomNodeName)) {
@@ -130,15 +130,15 @@ export function getHoverTargetByEvent({ state, $pos}) {
     };
   }
 
-  // highlightBlock
-  const highlightBlock = findHighlightBlockNode($pos);
-  if (highlightBlock) {
+  // callout
+  const callout = findCalloutNode($pos);
+  if (callout) {
     return {
-      type: 'highlightBlock',
-      attrs: {...highlightBlock.node.attrs },
-      isEmpty: isNodeEmptyByType(highlightBlock.node),
-      node: highlightBlock.node,
-      pos: highlightBlock.pos
+      type: 'callout',
+      attrs: {...callout.node.attrs },
+      isEmpty: isNodeEmptyByType(callout.node),
+      node: callout.node,
+      pos: callout.pos
     };
   }
 
@@ -182,10 +182,12 @@ export function isNodeEmptyByType(node) {
 
     // ❗ 明确声明：这些节点永远不为空
     case 'image':
+    case 'file':
     case 'horizontalRule':
     case 'video':
     case 'table':
-    case 'highlightBlock':
+    case 'callout':
+    case 'divider':
       return false;
 
     default:

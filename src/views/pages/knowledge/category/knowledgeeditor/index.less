@@ -282,7 +282,7 @@ html {
     border-radius: 6px;
     border: 1px solid var(--knowledge-editor-border);
   }
-  .highlight-block {
+  .callout {
     margin: 16px 0;
     padding: 16px;
     border-radius: 8px;
@@ -291,7 +291,7 @@ html {
   }
 
   /* 可选：高亮块内的段落样式 */
-  .highlight-block p {
+  .callout p {
     margin: 0;
     line-height: 1.6;
   }
@@ -372,23 +372,27 @@ html {
     background: transparent;
   }
   .image-wrapper.knowledge-compare-block,
-  .video-block.knowledge-compare-block {
+  .video-block.knowledge-compare-block,
+  .file-block.knowledge-compare-block {
     border-radius: 6px;
   }
   .image-wrapper.knowledge-compare-update,
-  .video-block.knowledge-compare-update {
+  .video-block.knowledge-compare-update,
+  .file-block.knowledge-compare-update {
     background: transparent;
     outline: 2px solid var(--knowledge-editor-warning-outline);
     outline-offset: 4px;
   }
   .image-wrapper.knowledge-compare-insert,
-  .video-block.knowledge-compare-insert {
+  .video-block.knowledge-compare-insert,
+  .file-block.knowledge-compare-insert {
     background: transparent;
     outline: 2px solid var(--knowledge-editor-success-outline);
     outline-offset: 4px;
   }
   .image-wrapper.knowledge-compare-delete,
-  .video-block.knowledge-compare-delete {
+  .video-block.knowledge-compare-delete,
+  .file-block.knowledge-compare-delete {
     background: transparent;
     outline: 2px solid var(--knowledge-editor-error-outline);
     outline-offset: 4px;
@@ -451,6 +455,61 @@ html {
   .video-block video {
     display: block;
     pointer-events: auto;
+  }
+  .file-block {
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    margin: 8px 0;
+    border: 1px solid var(--knowledge-editor-border);
+    border-radius: 6px;
+    background: var(--knowledge-editor-blockbg);
+    overflow: hidden;
+    .file-card-link {
+      display: inline-flex;
+      align-items: center;
+      max-width: 100%;
+      min-width: 180px;
+      padding: 8px 12px;
+      color: var(--knowledge-editor-text);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .file-card-icon {
+      flex: 0 0 auto;
+      margin-right: 8px;
+      color: var(--knowledge-editor-primary);
+      font-size: 28px;
+    }
+    .file-card-content {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .file-card-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 18px;
+    }
+    .file-card-meta {
+      color: var(--knowledge-editor-tip);
+      font-size: 12px;
+      line-height: 16px;
+    }
+  }
+  .file-block.is-loading,
+  .file-block.is-error {
+    .file-card-link {
+      cursor: default;
+    }
+  }
+  .file-block.is-error {
+    border-color: var(--knowledge-editor-error-outline);
+    .file-card-meta {
+      color: var(--knowledge-editor-error-outline);
+    }
   }
   a[href=''] {
     color: var(--knowledge-editor-text);
@@ -534,7 +593,7 @@ html {
     pre {
       margin: 4px 0;
     }
-    .highlight-block:not(.knowledge-compare-block) {
+    .callout:not(.knowledge-compare-block) {
       background-color: var(--knowledge-editor-gray);
       border-color: var(--knowledge-editor-border);
     }

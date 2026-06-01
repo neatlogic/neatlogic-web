@@ -56,7 +56,7 @@ export default {
   },
   data() {
     return {
-      atomNodeList: ['image', 'insertVideo', 'table', 'horizontalRule'] // 不可编辑的节点
+      atomNodeList: ['image', 'video', 'file', 'table', 'horizontalRule'] // 不可编辑的节点
     };
   },
   beforeCreate() {},
@@ -101,7 +101,7 @@ export default {
         heading6: 'tsfont-h6',
         paragraph: 'tsfont-title',
         horizontalRule: 'tsfont-divider',
-        highlightBlock: 'tsfont-callout',
+        callout: 'tsfont-callout',
         blockquote: 'tsfont-quote',
         codeBlock: 'tsfont-code',
         taskList: 'tsfont-check-square-o',
@@ -109,7 +109,8 @@ export default {
         orderedList: 'tsfont-orderlist',
         table: 'tsfont-chart-table',
         image: 'tsfont-image',
-        insertVideo: 'tsfont-video'
+        video: 'tsfont-video',
+        file: 'tsfont-file-single'
       };
       const { type, attrs = {} } = this.nodeConfig || {};
       if (type == 'heading') {
