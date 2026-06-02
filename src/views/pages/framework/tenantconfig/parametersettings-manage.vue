@@ -138,13 +138,22 @@ export default {
       await this.$api.framework.tenantconfig.getTenantConfig({ key }).then(res => {
         if (res.Status === 'OK') {
           this.rowData = res.Return;
+          this.updateValueFormType(this.rowData.type);
         }
       });
       this.isShowFormDialog = true;
     },
+    updateValueFormType(type) {
+      const valueConfig = this.formSetting.value;
+      if (!valueConfig) {
+        return;
+      }
+      this.$set(valueConfig, 'type', type === 'password' ? 'password' : 'text');
+    },
     close() {
       this.isShowFormDialog = false;
       this.rowData = {};
+      this.updateValueFormType();
     },
     save() {
       let form = this.$refs.mainForm;

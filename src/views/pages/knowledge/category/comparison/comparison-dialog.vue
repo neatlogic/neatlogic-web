@@ -134,8 +134,9 @@ export default {
           let config = res.Return;
           this.newDataConfig = config.newDocumentVo;
           this.oldDataConfig = config.oldDocumentVo;
-          this.knowledgeLoading = false;
         }
+      }).finally(() => {
+        this.knowledgeLoading = false;
       });
     },
     close() {

@@ -85,5 +85,26 @@ function hasExternalImage(html) {
 
   const div = document.createElement('div');
   div.innerHTML = html;
-  return Array.from(div.querySelectorAll('img')).some(img => /^https?:\/\//i.test(img.getAttribute('src') || ''));
+  return Array.from(div.querySelectorAll('img')).some(img => isExternalImageUrl(img.getAttribute('src') || ''));
+}
+
+function isExternalImageUrl(url) {
+  if (!url || /^(data:|blob:|api\/)/i.test(url)) {
+    return false;
+  }
+
+  try {
+    const parsedUrl = new URL(url, document.baseURI);
+    if (!/^https?:$/i.test(parsedUrl.protocol)) {
+      return false;
+    }
+
+    if (parsedUrl.origin === window.location.origin && parsedUrl.pathname.includes('/api/')) {
+      return false;
+    }
+
+    return parsedUrl.origin !== window.location.origin;
+  } catch (e) {
+    return false;
+  }
 }

@@ -12,26 +12,26 @@
           <template v-if="configType == 'app' && canEdit">
             <span class="action-item tsfont-plus" @click="addModuleTree">{{ $t('page.module') }}</span>
             <span class="action-item tsfont-edit" @click="editAppTree">{{ $t('page.apply') }}</span>
-            <span v-show="hasConfig && canShow" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('page.clearconfig') }}</span>
+            <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('page.clearconfig') }}</span>
           </template>
 
           <!-- 模块层 -->
           <template v-if="configType == 'module' && canEdit">
-            <span v-if="canShow" class="action-item tsfont-plus" @click="addEnv">{{ $t('page.environment') }}</span>
+            <span class="action-item tsfont-plus" @click="addEnv">{{ $t('page.environment') }}</span>
             <span class="action-item tsfont-edit" @click="editModule">{{ $t('page.module') }}</span>
-            <span v-show="hasConfig && canShow" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('page.clearconfig') }}</span>
-            <span v-show="hasConfig && canShow" class="action-item tsfont-copy text-action" @click="openCopyConfig">{{ $t('term.deploy.copyconfig') }}</span>
+            <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('page.clearconfig') }}</span>
+            <span v-show="hasConfig" class="action-item tsfont-copy text-action" @click="openCopyConfig">{{ $t('term.deploy.copyconfig') }}</span>
           </template>
 
           <!-- 环境层 -->
-          <template v-if="configType == 'env' && canEdit && canShow">
+          <template v-if="configType == 'env' && canEdit">
             <span class="action-item tsfont-setting" @click="editBlueGreen()">{{ $t('term.deploy.blueset') }}</span>
             <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('page.clearconfig') }}</span>
             <span v-show="hasConfig && selectedEnv && selectedEnv.isDeletable" class="action-item tsfont-trash-o text-action" @click="delEnvConfig">{{ $t('term.deploy.deleteenv') }}</span>
             <span v-show="hasConfig" class="action-item tsfont-copy text-action" @click="openCopyConfig">{{ $t('term.deploy.copyconfig') }}</span>
           </template>
           <Button
-            v-if="hasConfig && canShow"
+            v-if="hasConfig"
             class="ml-nm"
             type="primary"
             @click="openPipelineEdit()"
@@ -42,7 +42,7 @@
         <AppModuleList
           ref="appModuleList"
           v-model="appModuleData"
-          :level="canShow ? 'env' : 'module'"
+          level="env"
           alignType="tag"
           :allowInverse="false"
           :isShowFavorite="true"
@@ -64,20 +64,33 @@
                 :hasEditConfigAuth="canEdit"
                 :hasAuthConfigAuth="canAuth"
                 :authList="authList"
-                :hasEditPipelineAuth="canShow ? hasEditPipelineAuth : canShow"
-                :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
+                :hasEditPipelineAuth="hasEditPipelineAuth"
                 @updateAuth="updateAuth"
               ></AppManage>
-              <ModuleManage v-if="configType == 'module'" :params="{appSystemId,appModuleId}" :hasEditConfigAuth="canEdit"></ModuleManage>
+              <Tabs
+                v-if="configType == 'module'"
+                v-model="moduleTabValue"
+                :animated="false"
+                class="block-tabs"
+                @on-click="updateModuleTabValue"
+              >
+                <TabPane :label="$t('term.deploy.moduleinformation')" name="moduleConfig">
+                  <ModuleManage
+                    v-if="moduleTabValue == 'moduleConfig'"
+                    :params="{appSystemId,appModuleId}"
+                    :hasEditConfigAuth="canEdit"
+                  ></ModuleManage>
+                </TabPane>
+              </Tabs>
               <EnvManage
-                v-if="configType == 'env' && canShow"
+                v-if="configType == 'env'"
                 :params="{appSystemId,appModuleId, envId, appSystemName: selectedApp?.abbrName, envName: selectedEnv?.name, moduleName: selectedModule?.abbrName}"
                 :hasEditConfigAuth="canEdit"
                 @close="closeEnvManage"
               ></EnvManage>
             </template>
             <template v-else-if="!hasConfig && !loadingShow">
-              <div v-if="canShow" class="no-data-box">
+              <div class="no-data-box">
                 <NoData text=""></NoData>
                 <div v-if="!canEdit" class="no-data-box">
                   <div class="flex-center pt-nm">
@@ -96,19 +109,6 @@
                   </div>
                 </div>
               </div>
-              <template v-else>
-                <!-- codehub无配置流水线时，需要展示应用层和模块层 -->
-                <AppManage
-                  v-if="configType == 'app'"
-                  :appSystemId="appSystemId"
-                  :hasEditConfigAuth="canEdit"
-                  :authList="authList"
-                  :hasEditPipelineAuth="canShow ? hasEditPipelineAuth : canShow"
-                  :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
-                  @updateAuth="updateAuth"
-                ></AppManage>
-                <ModuleManage v-else-if="configType == 'module'" :params="{appSystemId,appModuleId}" :hasEditConfigAuth="canEdit"></ModuleManage>
-              </template>
             </template>
           </div>
         </div>
@@ -153,13 +153,7 @@ export default {
     ImportPipelineConfigDialog: () => import('pages/deploy/application-config/import-pipeline-config-dialog'), // 导入流水线配置
     BlueGreenDialog: () => import('./config/bluegreen-dialog.vue') // 蓝绿部署配置
   },
-  props: {
-    hideFucntionExcludeAppModuleRunner: {
-      //  codehub新增应用配置入口，为了维护应用和模块，应用权限以及模块对应的runner组,发布其他功能全部屏蔽
-      type: Boolean,
-      default: false
-    }
-  },
+  props: {},
   data() {
     return {
       loadingShow: true,
@@ -183,7 +177,8 @@ export default {
       envParam: {},
       authList: [], // 应用配置所有权限列表
       isHasAppSystemIdList: true, //是否有应用列表
-      isShowBlueGreenDialog: false
+      isShowBlueGreenDialog: false,
+      moduleTabValue: 'moduleConfig'
     };
   },
   beforeCreate() {},
@@ -382,12 +377,15 @@ export default {
       // 关闭应用
       this.isShowAppEdit = false;
       if (needRefresh && appSystemId) {
-        let appId = parseInt(appSystemId);
-        this.$refs.appModuleList.refreshApp(appId || this.appSystemId);
-        this.appModuleData = {
-          appId: appId || this.appSystemId
-        };
+        this.selectAppSystem(appSystemId || this.appSystemId);
       }
+    },
+    selectAppSystem(appSystemId) {
+      let appId = parseInt(appSystemId);
+      this.$refs.appModuleList.refreshApp(appId);
+      this.appModuleData = {
+        appId: appId
+      };
     },
     closeClearConfigDialog(needRefresh, configType) {
       // 清空配置
@@ -502,6 +500,9 @@ export default {
     },
     closeBlueGreenDialog() {
       this.isShowBlueGreenDialog = false;
+    },
+    updateModuleTabValue(tabValue) {
+      this.moduleTabValue = tabValue || 'moduleConfig';
     }
   },
   filter: {},
@@ -525,10 +526,6 @@ export default {
         return true;
       }
       return false;
-    },
-    canShow() {
-      // 应用和模块以及模块对应的runner组，其他功能全部屏蔽
-      return !this.hideFucntionExcludeAppModuleRunner;
     }
 
   },

@@ -128,6 +128,10 @@ export default {
       // 输入框底边线和右边对齐
       type: String,
       default: 'table' // table / tag
+    },
+    treeApi: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -332,7 +336,7 @@ export default {
     //提供给外部使用，用于刷新某个app下的所有节点
     async refreshApp(appId) {
       if (appId) {
-        await this.$api.deploy.applicationConfig.searchAppSystemList({ appSystemIdList: [appId], ...this.filter }).then(res => {
+        await this.appConfigApi.searchAppSystemList({ appSystemIdList: [appId], ...this.filter }).then(res => {
           const newAppNode = res.Return.tbodyList.length > 0 && res.Return.tbodyList[0];
           const index = this.appSystemList.findIndex(d => d.id === appId);
           if (index > -1) {
@@ -353,7 +357,7 @@ export default {
           if (app.appModuleList && app.appModuleList.length > 0) {
             const index = app.appModuleList.findIndex(d => d.id === moduleId);
             if (index > -1) {
-              await this.$api.deploy.applicationConfig.getAppModuleTreeList({ appModuleIdList: [moduleId], ...this.filter }).then(res => {
+              await this.appConfigApi.getAppModuleTreeList({ appModuleIdList: [moduleId], ...this.filter }).then(res => {
                 const newModuleNode = res.Return.length > 0 && res.Return[0];
                 if (newModuleNode) {
                   this.$set(app.appModuleList, index, newModuleNode);
@@ -388,7 +392,7 @@ export default {
     async showModule(app) {
       if (!app.isExpand) {
         this.$set(app, 'isLoading', true);
-        await this.$api.deploy.applicationConfig
+        await this.appConfigApi
           .getAppModuleTreeList({ appSystemId: app.id })
           .then(res => {
             if (res.Status == 'OK') {
@@ -411,7 +415,7 @@ export default {
           appModuleId: module.id,
           isHasEnv: 1
         };
-        await this.$api.deploy.applicationConfig
+        await this.appConfigApi
           .getEnvTreeList(params)
           .then(res => {
             if (res && res.Status == 'OK') {
@@ -443,7 +447,7 @@ export default {
           }
         }
         this.$addHistoryData('searchParam', this.searchParam);
-        await this.$api.deploy.applicationConfig
+        await this.appConfigApi
           .searchAppSystemList(this.searchParam)
           .then(async res => {
             if (res && res.Status == 'OK') {
@@ -564,7 +568,11 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    appConfigApi() {
+      return this.treeApi || this.$api.deploy.applicationConfig;
+    }
+  },
   watch: {
     height: {
       handler(val) {
