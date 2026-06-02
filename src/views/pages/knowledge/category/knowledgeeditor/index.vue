@@ -75,7 +75,7 @@
             :node-config="nodeConfig"
             :node-name="nodeName"
             :style="{ top: `${selectContentMenuPos.top}px`, left: `${selectContentMenuPos.left}px` }"
-            @handle-select-menu-content="menuData => handleSelectMenuContent({ menuData, editor, hoverBlockDom })"
+            @handle-select-menu-content="menuData => handleSelectContentMenuItem({ menuData, editor, hoverBlockDom })"
           ></SelectContentMenu>
           <TableHoverLayer
             v-show="isShowTableMenu && isContentEditable"
@@ -239,6 +239,7 @@ export default {
       selectedText: '',
       nodeName: '',
       nodeConfig: null,
+      selectContentMenuSource: '',
       menuPosition: { top: 0, left: 0 },
       tableMenuPosition: { top: -12, left: 0 },
       selectContentMenuPos: { top: 0, left: 0 },
@@ -404,6 +405,8 @@ export default {
       this.isShowSelectContentMenu = false;
       this.isShowSearchReplaceDialog = false;
       this.isShowLinkHover = false;
+      this.selectContentMenuSource = '';
+      this.nodeConfig = null;
       this.hoverBlockDom = null;
       this.lastMouseEvent = null;
       this.isDraggingBlock = false;
@@ -581,18 +584,123 @@ export default {
       if (selectedNode?.type?.includes('table')) {
         return false;
       } else if (selectedNode?.type?.includes('image')) {
-        this.isShowSelectContentMenu = true;
-        this.selectedText = '';
-        this.updateSelectContentMenuPosition(editor, from, to);
         this.nodeName = selectedNode?.type || '';
+        this.selectedText = '';
+        this.nodeConfig = {
+          ...selectedNode,
+          pos: from,
+          nodeSize: selectedNode?.node?.nodeSize || null
+        };
+        this.selectContentMenuSource = 'selection-image';
+        this.isShowSelectContentMenu = true;
+        this.updateImageSelectContentMenuPosition(editor, from, to);
+        this.$nextTick(() => {
+          if (!this.isShowSelectContentMenu || this.nodeName !== 'image') {
+            return;
+          }
+          this.updateImageSelectContentMenuPosition(editor, from, to);
+        });
         return false;
       }
+      this.selectContentMenuSource = hasTextSelection ? 'selection-text' : '';
       this.isShowSelectContentMenu = hasTextSelection;
       this.selectedText = selectedText;
       if (hasTextSelection) {
         this.updateSelectContentMenuPosition(editor, from, to);
       }
       this.nodeName = selectedNode?.type || '';
+    },
+    handleSelectContentMenuItem({ editor, menuData, hoverBlockDom }) {
+      if (this.nodeName === 'image' && ['imageAlign', 'imageCrop'].includes(menuData?.commandName)) {
+        this.selectImageMenuTarget(editor);
+      }
+      this.handleSelectMenuContent({ editor, menuData, hoverBlockDom });
+    },
+    selectImageMenuTarget(editor) {
+      const imagePos = Number.isInteger(this.nodeConfig?.pos)
+        ? this.nodeConfig.pos
+        : Number.isInteger(this.blockMenuNodeConfig?.pos)
+          ? this.blockMenuNodeConfig.pos
+          : null;
+      if (!editor || editor.isDestroyed || imagePos == null) {
+        return;
+      }
+      const node = editor.state?.doc?.nodeAt(imagePos);
+      if (node?.type?.name !== 'image') {
+        return;
+      }
+      editor.commands?.setNodeSelection?.(imagePos);
+    },
+    getSelectContentMenuOffsetParentRect() {
+      return this.$refs?.editorContentContainer?.parentElement?.getBoundingClientRect?.() || this.$refs?.editorWrapper?.getBoundingClientRect?.();
+    },
+    getSelectedImageRect(editor, from) {
+      const view = this.getEditorView(editor);
+      if (!view) {
+        return null;
+      }
+      const nodeDom = view.nodeDOM(from);
+      const nodeElement = nodeDom?.nodeType === 1 ? nodeDom : nodeDom?.parentElement;
+      const imageWrapper = nodeElement?.classList?.contains('image-wrapper') ? nodeElement : nodeElement?.querySelector?.('.image-wrapper');
+      const targetElement = imageWrapper || nodeElement?.querySelector?.('img') || nodeElement;
+      const targetRect = targetElement?.getBoundingClientRect?.();
+      if (!targetRect || (!targetRect.width && !targetRect.height)) {
+        return null;
+      }
+      return targetRect;
+    },
+    updateImageSelectContentMenuPosition(editor, from, to) {
+      const view = this.getEditorView(editor);
+      if (!view) {
+        return;
+      }
+      const imageRect = this.getSelectedImageRect(editor, from) || posToDOMRect(view, from, to);
+      const offsetParentRect = this.getSelectContentMenuOffsetParentRect();
+      const menuRect = this.$refs?.selectContentMenuRef?.$refs?.bubbleMenuRef?.getBoundingClientRect?.();
+      const gap = 8;
+      const menuWidth = menuRect?.width || 0;
+      const menuHeight = menuRect?.height || 0;
+      const { top: parentTop = 0, left: parentLeft = 0 } = offsetParentRect || {};
+      const { top: imageTop = 0, left: imageLeft = 0, width: imageWidth = 0 } = imageRect || {};
+      const topAboveImage = imageTop - parentTop - menuHeight - gap;
+
+      this.selectContentMenuPos = this.normalizeSelectContentMenuPosition({
+        top: topAboveImage >= gap ? topAboveImage : imageTop - parentTop + gap,
+        left: imageLeft + imageWidth / 2 - parentLeft - menuWidth / 2
+      });
+    },
+    showImageSelectContentMenu({ editor, pos, attrs = {}, node }) {
+      if (!editor || editor.isDestroyed || !Number.isInteger(pos)) {
+        return;
+      }
+      this.nodeName = 'image';
+      this.selectedText = '';
+      this.selectContentMenuSource = 'hover-image';
+      this.nodeConfig = {
+        node,
+        type: 'image',
+        attrs,
+        pos,
+        nodeSize: node?.nodeSize || null
+      };
+      this.isShowSelectContentMenu = true;
+      this.updateImageSelectContentMenuPosition(editor, pos, pos + (node?.nodeSize || 1));
+      this.$nextTick(() => {
+        if (!this.isShowSelectContentMenu || this.nodeName !== 'image' || this.nodeConfig?.pos !== pos) {
+          return;
+        }
+        this.updateImageSelectContentMenuPosition(editor, pos, pos + (node?.nodeSize || 1));
+      });
+    },
+    hideHoverImageSelectContentMenu() {
+      if (this.selectContentMenuSource !== 'hover-image') {
+        return;
+      }
+      this.isShowSelectContentMenu = false;
+      this.selectContentMenuSource = '';
+      this.nodeConfig = null;
+      this.nodeName = '';
+      this.selectedText = '';
     },
     updateSelectContentMenuPosition(editor, from, to) {
       const view = this.getEditorView(editor);
@@ -670,6 +778,9 @@ export default {
       }
       const editorEl = this.$refs.editorWrapper?.querySelector?.('.ProseMirror');
       if (!editorEl?.contains(event.target)) {
+        if (!this.isSelectContentMenuTarget(event.target)) {
+          this.hideHoverImageSelectContentMenu();
+        }
         this.clearTableRowColHighlight();
         return;
       }
@@ -816,6 +927,17 @@ export default {
       const { type: linkType, href: linkHref } = linkInfo;
       if (!nodeRect) return;
 
+      if (type === 'image') {
+        this.showImageSelectContentMenu({
+          editor: this.editor,
+          pos,
+          attrs,
+          node
+        });
+      } else {
+        this.hideHoverImageSelectContentMenu();
+      }
+
       if (type === 'table') {
         this.updateTableHoverState({
           attrs,
@@ -880,12 +1002,18 @@ export default {
       const target = document.elementFromPoint(event.clientX, event.clientY);
       return this.isBlockMenuTarget(target);
     },
+    isSelectContentMenuTarget(target) {
+      return !!target?.closest?.('.selected-content-menu-wrapper');
+    },
     handleEditorMouseLeave(event) {
       if (this.isDraggingBlock) {
         this.cancelBlockMenuHide();
         return;
       }
       const toEl = event.relatedTarget;
+      if (!this.isSelectContentMenuTarget(toEl)) {
+        this.hideHoverImageSelectContentMenu();
+      }
       if (this.isBlockMenuTarget(toEl) || this.isMovingToBlockMenu(event)) {
         this.cancelBlockMenuHide();
         return;
@@ -967,6 +1095,7 @@ export default {
       this.isShowBlockMenu = false;
       this.isShowTableMenu = false;
       this.isShowLinkHover = false;
+      this.hideHoverImageSelectContentMenu();
       this.clearTableRowColHighlight();
       this.hoverBlockDom = null;
     },

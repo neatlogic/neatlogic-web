@@ -191,6 +191,8 @@ export const ImageResize = Node.create({
       const handles = {};
       const positions = ['nw', 'ne', 'sw', 'se'];
       const isResizeEnabled = () => editor && editor.isEditable;
+      let isHovering = false;
+      let isResizing = false;
   
       const setStatus = s => {
         status = s;
@@ -207,6 +209,7 @@ export const ImageResize = Node.create({
           spinner.style.display = s === 'error' ? 'none' : 'block';
           errorTip.style.display = s === 'error' ? 'block' : 'none';
         }
+        updateHandleVisible();
       };
   
       /* ================= image load events ================= */
@@ -261,6 +264,15 @@ export const ImageResize = Node.create({
       };
      
       /* ================= selection ================= */
+      const selectCurrentImage = () => {
+        const { view } = editor;
+        view.dispatch(
+          view.state.tr.setSelection(
+            NodeSelection.create(view.state.doc, getPos())
+          )
+        );
+      };
+
       const updateHandleVisible = () => {
         if (!isResizeEnabled()) {
           Object.values(handles).forEach(h => {
@@ -269,19 +281,27 @@ export const ImageResize = Node.create({
           });
           return;
         }
-        const { selection } = editor.state;
-        const selected =
-          selection instanceof NodeSelection &&
-          selection.node === node;
   
         Object.values(handles).forEach(h => {
           if (!h) return;
           // 仅在图片加载完成后显示 handles
-          h.style.display = status === 'loaded' && selected ? 'block' : 'none';
+          h.style.display = status === 'loaded' && (isHovering || isResizing) ? 'block' : 'none';
         });
       };
   
       editor.on('selectionUpdate', updateHandleVisible);
+
+      wrapper.addEventListener('mouseenter', () => {
+        isHovering = true;
+        wrapper.classList.add('is-hovering');
+        updateHandleVisible();
+      });
+
+      wrapper.addEventListener('mouseleave', () => {
+        isHovering = false;
+        wrapper.classList.remove('is-hovering');
+        updateHandleVisible();
+      });
   
       img.addEventListener('click', () => {
         if (!isResizeEnabled()) {
@@ -306,6 +326,10 @@ export const ImageResize = Node.create({
           return;
         }
         e.preventDefault();
+        selectCurrentImage();
+        isResizing = true;
+        wrapper.classList.add('is-resizing');
+        updateHandleVisible();
         startX = e.clientX;
         startY = e.clientY;
         startW = img.offsetWidth;
@@ -337,6 +361,9 @@ export const ImageResize = Node.create({
             width: img.offsetWidth,
             height: img.offsetHeight
           });
+          isResizing = false;
+          wrapper.classList.remove('is-resizing');
+          updateHandleVisible();
         };
   
         document.addEventListener('mousemove', move);

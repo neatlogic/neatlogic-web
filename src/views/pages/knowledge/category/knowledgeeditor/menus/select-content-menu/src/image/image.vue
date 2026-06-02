@@ -59,6 +59,10 @@ export default {
     command: {
       type: String,
       default: 'image'
+    },
+    nodeConfig: {
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -112,7 +116,7 @@ export default {
       if (selection instanceof NodeSelection && selection.node.type.name === 'image') {
         return selection.node.attrs.src;
       }
-      return null;
+      return this.nodeConfig?.attrs?.src || this.nodeConfig?.node?.attrs?.src || null;
     },
     save() {
       this.$refs.cropper.getCropBlob(picFile => {
