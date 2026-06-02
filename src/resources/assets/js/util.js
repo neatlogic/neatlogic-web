@@ -691,7 +691,9 @@ const methods = {
         if (n.name) {
           text += '(' + n.name + ')';
         }
-        columlist.push({ text: text, value: n.id, config: n });
+        if(text) {
+          columlist.push({ text: text, value: n.id, config: n });
+        }
       });
     return columlist;
   },
