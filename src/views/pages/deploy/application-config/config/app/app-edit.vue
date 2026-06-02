@@ -32,7 +32,7 @@
                     ></AuthEdit>
                   </div>
                 </li>
-                <li v-if="canShowEnvScenario" class="bg-op radius-sm mb-nm">
+                <li class="bg-op radius-sm mb-nm">
                   <div class="padding">
                     <div class="text-grey auth-text">{{ $t('term.deploy.envauth') }}</div>
                     <AuthEdit
@@ -43,7 +43,7 @@
                     ></AuthEdit>
                   </div>
                 </li>
-                <li v-if="canShowEnvScenario" class="bg-op radius-sm mb-nm">
+                <li class="bg-op radius-sm mb-nm">
                   <div class="padding">
                     <div class="text-grey auth-text">{{ $t('term.deploy.scenarioauth') }}</div>
                     <AuthEdit
@@ -77,12 +77,7 @@ export default {
         return {};
       }
     },
-    isEdit: Number, // 是否是编辑：0否 1是
-    hideFucntionExcludeAppModuleRunner: {
-      //  codehub新增应用配置入口，为了维护应用和模块，应用权限以及模块对应的runner组,发布其他功能全部屏蔽
-      type: Boolean,
-      default: false
-    }
+    isEdit: Number // 是否是编辑：0否 1是
   },
   data() {
     return {
@@ -154,8 +149,7 @@ export default {
         authorityStrList,
         appSystemId: this.params.appSystemId,
         isEdit: this.isEdit,
-        actionList: this.handleActionList(this.authConfig),
-        includeActionList: this.canShowEnvScenario ? [] : ['view', 'edit']
+        actionList: this.handleActionList(this.authConfig)
       };
       this.$api.deploy.applicationConfig.saveAppConfigAuth(params).then((res) => {
         if (res && res.Status == 'OK') {
@@ -246,7 +240,7 @@ export default {
       });
     },
     getAuthList() {
-      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId, includeActionList: this.canShowEnvScenario ? [] : ['view', 'edit']}).then((res) => {
+      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.params.appSystemId}).then((res) => {
         if (res && res.Status == 'OK') {
           this.authSetting = res.Return || {};
           for (let key in res.Return) {
@@ -261,12 +255,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-    canShowEnvScenario() {
-      // 显示环境场景
-      return !this.hideFucntionExcludeAppModuleRunner;
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>

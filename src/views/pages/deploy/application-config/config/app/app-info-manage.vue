@@ -129,14 +129,12 @@
     <AppEdit
       v-if="isShowAuthDialog"
       :isEdit="isEdit"
-      :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
       :params="appEditParams"
       @close="closeAuthDialog"
     ></AppEdit>
     <BatchEditAuthDialog
       v-if="isShowBatchEditDialog"
       :params="batchEditAppParams"
-      :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
       @close="closeBatchEditDialog"
     ></BatchEditAuthDialog>
   </div>
@@ -164,11 +162,6 @@ export default {
     },
     hasAuthConfigAuth: {
       // 是否有“权限”的权限
-      type: Boolean,
-      default: false
-    },
-    hideFucntionExcludeAppModuleRunner: {
-      //  codehub新增应用配置入口，为了维护应用和模块，应用权限以及模块对应的runner组,发布其他功能全部屏蔽
       type: Boolean,
       default: false
     }
@@ -217,7 +210,7 @@ export default {
   destroyed() {},
   methods: {
     getAuthList() {
-      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.appSystemId, includeActionList: !this.canShow ? ['view', 'edit'] : []}).then((res) => {
+      return this.$api.deploy.applicationConfig.getAuthList({appSystemId: this.appSystemId}).then((res) => {
         if (res && res.Status == 'OK') {
           let dataInfo = res.Return || {};
           this.handleAuthListData(dataInfo);
@@ -242,8 +235,7 @@ export default {
       let searchParam = {
         ...this.searchParam,
         actionList: this.handleActionList(this.actionList),
-        authorityStrList: this.authorityStrList ? [this.authorityStrList] : [],
-        includeActionList: !this.canShow ? ['view', 'edit'] : []
+        authorityStrList: this.authorityStrList ? [this.authorityStrList] : []
       };
       this.loadingShow = true;
       this.$api.deploy.applicationConfig.getAppConfigAuthList(searchParam).then((res) => {
@@ -514,11 +506,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-    canShow() {
-      return !this.hideFucntionExcludeAppModuleRunner;
-    }
-  },
+  computed: {},
   watch: {}
 };
 </script>
