@@ -3604,5 +3604,11 @@
     "css": "tsfont-video",
     "hexCodepoint": "0xea5a",
     "codepoint": 59994
+  },
+  {
+    "name": "microphone",
+    "css": "tsfont-microphone",
+    "hexCodepoint": "0xea5b",
+    "codepoint": 59995
   }
 ]
