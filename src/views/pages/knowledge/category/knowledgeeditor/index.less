@@ -124,11 +124,14 @@ html {
 
   .ProseMirror-selectednode {
     .image-wrapper {
-      border: 1px solid var(--knowledge-editor-primary);
       .resize-handle {
         display: block;
       }
     }
+  }
+  .image-wrapper.is-hovering,
+  .image-wrapper.is-resizing {
+    outline: 1px solid var(--knowledge-editor-primary);
   }
   .image-container {
     max-width: 100%;
@@ -665,7 +668,7 @@ html {
   .ProseMirror {
     .ProseMirror-selectednode {
       .image-wrapper {
-        border: none;
+        outline: none;
       }
     }
     .image-wrapper {
