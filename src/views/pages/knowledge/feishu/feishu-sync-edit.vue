@@ -108,6 +108,24 @@ export default {
             this.formData.appSecret = value;
           }
         },
+        {
+          type: 'select',
+          name: 'knowledgeCircleId',
+          label: '知识圈',
+          value: this.formData.knowledgeCircleId,
+          width: '100%',
+          transfer: true,
+          search: true,
+          url: '/api/rest/knowledge/circle/search',
+          rootName: 'circleList',
+          valueName: 'id',
+          textName: 'name',
+          validateList: ['required'],
+          onChange: value => {
+            // 保存值字段按接口要求写入 knowledgeCircleId。
+            this.formData.knowledgeCircleId = value;
+          }
+        },
         // {
         //   type: 'password',
         //   name: 'userAccessToken',
