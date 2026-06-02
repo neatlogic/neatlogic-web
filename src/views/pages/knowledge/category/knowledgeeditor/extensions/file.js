@@ -229,15 +229,28 @@ const File = Node.create({
         'data-block-uuid': HTMLAttributes['data-block-uuid']
       }),
       [
-        'a',
-        {
-          href,
-          download: title,
-          class: 'file-card-link'
-        },
+        'div',
+        { class: 'file-card-link' },
         ['span', { class: getFileIconClass(HTMLAttributes) }],
-        ['span', { class: 'file-card-name' }, title],
-        ['span', { class: 'file-card-size' }, sizeText || formatFileSize(size)]
+        [
+          'span',
+          { class: 'file-card-content' },
+          ['span', { class: 'file-card-name' }, title],
+          [
+            'span',
+            { class: 'file-card-meta-row' },
+            ['span', { class: 'file-card-meta' }, sizeText || formatFileSize(size)],
+            [
+              'a',
+              {
+                href,
+                download: title,
+                class: 'file-card-download tsfont-download',
+                title: 'download'
+              }
+            ]
+          ]
+        ]
       ]
     ];
   },
@@ -272,8 +285,8 @@ const File = Node.create({
       wrapper.dataset.recordUuid = node.attrs['recordUuid'];
       wrapper.dataset.blockUuid = node.attrs['blockUuid'];
 
-      const link = document.createElement('a');
-      link.className = 'file-card-link';
+      const card = document.createElement('div');
+      card.className = 'file-card-link';
 
       const icon = document.createElement('span');
       icon.className = getFileIconClass(node.attrs);
@@ -286,17 +299,31 @@ const File = Node.create({
 
       const meta = document.createElement('span');
       meta.className = 'file-card-meta';
+
+      const metaRow = document.createElement('span');
+      metaRow.className = 'file-card-meta-row';
+
+      const downloadButton = document.createElement('span');
+      downloadButton.className = 'file-card-download tsfont-download';
+      downloadButton.setAttribute('role', 'button');
+      downloadButton.setAttribute('title', 'download');
+      downloadButton.tabIndex = 0;
+
       let currentAttrs = { ...node.attrs };
       let isDownloading = false;
 
+      const preventDownloadEvent = event => {
+        event?.preventDefault?.();
+        event?.stopPropagation?.();
+        event?.stopImmediatePropagation?.();
+      };
+
       const handleDownload = event => {
+        preventDownloadEvent(event);
         if (currentAttrs.loading || currentAttrs.error) {
-          event.preventDefault();
           return;
         }
-        event.preventDefault();
-        event.stopPropagation();
-        const fileId = getFileId(currentAttrs) || getDownloadFileId(link.getAttribute('href') || link.href);
+        const fileId = getFileId(currentAttrs) || getDownloadFileId(downloadButton.dataset.downloadUrl);
         if (!fileId) {
           return;
         }
@@ -307,19 +334,31 @@ const File = Node.create({
           if (status === 'start') {
             isDownloading = true;
             wrapper.classList.add('is-downloading');
+            downloadButton.setAttribute('aria-disabled', 'true');
           } else if (status === 'success' || status === 'error') {
             isDownloading = false;
             wrapper.classList.remove('is-downloading');
+            downloadButton.setAttribute('aria-disabled', 'false');
           }
         });
       };
 
+      const handleDownloadKeydown = event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          handleDownload(event);
+        }
+      };
+
+      metaRow.appendChild(meta);
+      metaRow.appendChild(downloadButton);
       content.appendChild(name);
-      content.appendChild(meta);
-      link.appendChild(icon);
-      link.appendChild(content);
-      wrapper.appendChild(link);
-      link.addEventListener('click', handleDownload, true);
+      content.appendChild(metaRow);
+      card.appendChild(icon);
+      card.appendChild(content);
+      wrapper.appendChild(card);
+      downloadButton.addEventListener('mousedown', preventDownloadEvent, true);
+      downloadButton.addEventListener('click', handleDownload, true);
+      downloadButton.addEventListener('keydown', handleDownloadKeydown, true);
 
       const syncFileState = (attrs = {}) => {
         currentAttrs = { ...attrs };
@@ -330,14 +369,16 @@ const File = Node.create({
         name.title = fileName;
         if (attrs.loading) {
           meta.textContent = '上传中...';
-          link.removeAttribute('href');
-          link.removeAttribute('download');
+          delete downloadButton.dataset.downloadUrl;
+          downloadButton.setAttribute('aria-disabled', 'true');
+          downloadButton.tabIndex = -1;
           wrapper.classList.add('is-loading');
           wrapper.classList.remove('is-error');
         } else if (attrs.error) {
           meta.textContent = '上传失败';
-          link.removeAttribute('href');
-          link.removeAttribute('download');
+          delete downloadButton.dataset.downloadUrl;
+          downloadButton.setAttribute('aria-disabled', 'true');
+          downloadButton.tabIndex = -1;
           wrapper.classList.add('is-error');
           wrapper.classList.remove('is-loading');
         } else {
@@ -345,11 +386,13 @@ const File = Node.create({
           meta.textContent = attrs.sizeText || meta.textContent;
           const href = getFileHref(attrs);
           if (href) {
-            link.href = href;
-            link.download = fileName;
+            downloadButton.dataset.downloadUrl = href;
+            downloadButton.setAttribute('aria-disabled', 'false');
+            downloadButton.tabIndex = 0;
           } else {
-            link.removeAttribute('href');
-            link.removeAttribute('download');
+            delete downloadButton.dataset.downloadUrl;
+            downloadButton.setAttribute('aria-disabled', 'true');
+            downloadButton.tabIndex = -1;
           }
           wrapper.classList.remove('is-loading', 'is-error');
         }
@@ -366,7 +409,9 @@ const File = Node.create({
           return true;
         },
         destroy() {
-          link.removeEventListener('click', handleDownload, true);
+          downloadButton.removeEventListener('mousedown', preventDownloadEvent, true);
+          downloadButton.removeEventListener('click', handleDownload, true);
+          downloadButton.removeEventListener('keydown', handleDownloadKeydown, true);
         }
       };
     };

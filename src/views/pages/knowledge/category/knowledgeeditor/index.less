@@ -473,7 +473,7 @@ html {
       padding: 8px 12px;
       color: var(--knowledge-editor-text);
       text-decoration: none;
-      cursor: pointer;
+      cursor: default;
     }
     .file-card-icon {
       flex: 0 0 auto;
@@ -497,6 +497,50 @@ html {
       color: var(--knowledge-editor-tip);
       font-size: 12px;
       line-height: 16px;
+    }
+    .file-card-meta-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 16px;
+    }
+    .file-card-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      color: var(--knowledge-editor-link);
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 16px;
+      opacity: 0;
+      pointer-events: none;
+      text-decoration: none;
+      transition: opacity 0.15s ease;
+      &:hover,
+      &:focus {
+        text-decoration: none;
+      }
+    }
+    &:hover,
+    &:focus-within {
+      .file-card-download {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+    &.is-loading,
+    &.is-error {
+      .file-card-download {
+        display: none;
+      }
+    }
+    &.is-downloading {
+      .file-card-download {
+        opacity: 1;
+        pointer-events: none;
+      }
     }
   }
   .file-block.is-loading,
