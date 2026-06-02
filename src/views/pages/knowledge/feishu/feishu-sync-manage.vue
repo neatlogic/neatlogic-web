@@ -43,32 +43,12 @@
       </template>
     </TsContain>
 
-    <TsDialog
+    <!-- 新增/编辑同步配置表单拆到独立组件，父页面只负责打开弹框和刷新列表。 -->
+    <FeishuSyncEdit
       v-if="isEditDialogShow"
-      :isShow.sync="isEditDialogShow"
-      :title="editForm.id ? '编辑同步配置' : '新增同步配置'"
-      width="medium"
-      @on-ok="saveConfig"
-    >
-      <template v-slot>
-        <div class="form-grid">
-          <label>名称</label>
-          <Input v-model="editForm.name"></Input>
-          <label>飞书平台地址</label>
-          <Input v-model="editForm.baseUrl"></Input>
-          <label>App ID</label>
-          <Input v-model="editForm.appId"></Input>
-          <label>User Access Token</label>
-          <Input v-model="editForm.userAccessToken" type="password" placeholder="编辑时留空表示不修改"></Input>
-          <label>Wiki Space ID</label>
-          <Input v-model="editForm.spaceId"></Input>
-          <label>Wiki Space 名称</label>
-          <Input v-model="editForm.spaceName"></Input>
-          <label>启用</label>
-          <i-switch :value="editForm.isActive === 1" @on-change="editForm.isActive = $event ? 1 : 0"></i-switch>
-        </div>
-      </template>
-    </TsDialog>
+      :config-data="currentEditConfig"
+      @close="closeEditDialog"
+    ></FeishuSyncEdit>
 
     <TsDialog
       v-if="isAuditDialogShow"
@@ -102,7 +82,8 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
-    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue')
+    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
+    FeishuSyncEdit: () => import('./feishu-sync-edit.vue')
   },
   data() {
     return {
@@ -110,12 +91,13 @@ export default {
       isEditDialogShow: false,
       isAuditDialogShow: false,
       currentConfig: null,
+      // 当前编辑对象单独保存，避免弹框组件直接修改表格行数据。
+      currentEditConfig: null,
       searchParams: { keyword: '', currentPage: 1, pageSize: 20 },
-      editForm: this.getDefaultForm(),
       auditSearchParams: { configId: null, currentPage: 1, pageSize: 10 },
       theadList: [
         { title: '名称', key: 'name' },
-        { title: 'Wiki Space', key: 'spaceName' },
+        // { title: 'Wiki Space', key: 'spaceName' },
         { title: '知识圈', key: 'knowledgeCircleName' },
         { title: '启用', key: 'isActive' },
         { title: '最近同步状态', key: 'lastSyncStatus' },
@@ -140,19 +122,6 @@ export default {
     this.searchData();
   },
   methods: {
-    getDefaultForm() {
-      return {
-        id: null,
-        name: '',
-        baseUrl: 'https://lqnnbz38z5y.feishu.cn',
-        appId: '',
-        appSecret: '',
-        userAccessToken: '',
-        spaceId: '',
-        spaceName: '',
-        isActive: 1
-      };
-    },
     searchData() {
       this.isLoading = true;
       this.$api.knowledge.feishu.searchConfig(this.searchParams).then(res => {
@@ -165,17 +134,17 @@ export default {
       });
     },
     openEditDialog(row) {
-      this.editForm = row ? { ...row, appSecret: '', userAccessToken: '' } : this.getDefaultForm();
+      // 传入副本给编辑弹框，兼容旧数据中没有 userAccessToken 的配置。
+      this.currentEditConfig = row ? { ...row, userAccessToken: '' } : null;
       this.isEditDialogShow = true;
     },
-    saveConfig() {
-      this.$api.knowledge.feishu.saveConfig(this.editForm).then(res => {
-        if (res.Status === 'OK') {
-          this.$Message.success(this.$t('message.savesuccess'));
-          this.isEditDialogShow = false;
-          this.searchData();
-        }
-      });
+    closeEditDialog(needRefresh) {
+      // 弹框保存成功后统一回到父页面刷新列表，保持数据入口单一。
+      this.isEditDialogShow = false;
+      this.currentEditConfig = null;
+      if (needRefresh) {
+        this.searchData();
+      }
     },
     updateStatus(row, value) {
       this.$api.knowledge.feishu.updateStatus({ id: row.id, isActive: value ? 1 : 0 }).then(res => {
@@ -255,14 +224,3 @@ export default {
   }
 };
 </script>
-
-<style lang="less" scoped>
-.feishu-sync-manage {
-  .form-grid {
-    display: grid;
-    grid-template-columns: 120px minmax(0, 1fr);
-    gap: 16px;
-    align-items: center;
-  }
-}
-</style>

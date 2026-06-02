@@ -16,9 +16,9 @@ const feishu = {
   deleteConfig(params) {
     return axios.post('/api/rest/knowledge/feishu/sync/config/delete', params);
   },
-  listSpaces(params) {
-    return axios.post('/api/rest/knowledge/feishu/sync/space/list', params);
-  },
+  // listSpaces(params) {
+  //   return axios.post('/api/rest/knowledge/feishu/sync/space/list', params);
+  // },
   execute(params) {
     return axios.post('/api/rest/knowledge/feishu/sync/execute', params);
   },
