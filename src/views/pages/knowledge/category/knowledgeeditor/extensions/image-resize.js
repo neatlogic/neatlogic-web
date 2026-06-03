@@ -173,6 +173,16 @@ export const ImageResize = Node.create({
       });
   
       loading.appendChild(spinner);
+
+      const errorTip = document.createElement('div');
+      errorTip.textContent = '图片加载失败';
+      Object.assign(errorTip.style, {
+        display: 'none',
+        color: 'var(--knowledge-editor-error-outline)',
+        fontSize: '13px',
+        lineHeight: '20px'
+      });
+      loading.appendChild(errorTip);
       wrapper.appendChild(loading);
   
       /* ================= status ================= */
@@ -181,10 +191,13 @@ export const ImageResize = Node.create({
       const handles = {};
       const positions = ['nw', 'ne', 'sw', 'se'];
       const isResizeEnabled = () => editor && editor.isEditable;
+      let isHovering = false;
+      let isResizing = false;
   
       const setStatus = s => {
         status = s;
         wrapper.classList.remove('loading', 'loaded', 'error');
+        wrapper.classList.add(s);
   
         if (s === 'loaded') {
           img.style.visibility = 'visible';
@@ -193,12 +206,25 @@ export const ImageResize = Node.create({
         } else {
           img.style.visibility = 'hidden';
           loading.style.display = 'flex';
+          spinner.style.display = s === 'error' ? 'none' : 'block';
+          errorTip.style.display = s === 'error' ? 'block' : 'none';
         }
+        updateHandleVisible();
       };
   
       /* ================= image load events ================= */
       img.onload = () => setStatus('loaded');
       img.onerror = () => setStatus('error');
+
+      const syncLoadedImage = () => {
+        if (img.complete && img.naturalWidth > 0) {
+          setStatus('loaded');
+        }
+      };
+      const queueLoadedImageSync = () => {
+        syncLoadedImage();
+        window.requestAnimationFrame(syncLoadedImage);
+      };
   
       /* ================= resize handles ================= */
 
@@ -238,6 +264,15 @@ export const ImageResize = Node.create({
       };
      
       /* ================= selection ================= */
+      const selectCurrentImage = () => {
+        const { view } = editor;
+        view.dispatch(
+          view.state.tr.setSelection(
+            NodeSelection.create(view.state.doc, getPos())
+          )
+        );
+      };
+
       const updateHandleVisible = () => {
         if (!isResizeEnabled()) {
           Object.values(handles).forEach(h => {
@@ -246,19 +281,27 @@ export const ImageResize = Node.create({
           });
           return;
         }
-        const { selection } = editor.state;
-        const selected =
-          selection instanceof NodeSelection &&
-          selection.node === node;
   
         Object.values(handles).forEach(h => {
           if (!h) return;
           // 仅在图片加载完成后显示 handles
-          h.style.display = status === 'loaded' && selected ? 'block' : 'none';
+          h.style.display = status === 'loaded' && (isHovering || isResizing) ? 'block' : 'none';
         });
       };
   
       editor.on('selectionUpdate', updateHandleVisible);
+
+      wrapper.addEventListener('mouseenter', () => {
+        isHovering = true;
+        wrapper.classList.add('is-hovering');
+        updateHandleVisible();
+      });
+
+      wrapper.addEventListener('mouseleave', () => {
+        isHovering = false;
+        wrapper.classList.remove('is-hovering');
+        updateHandleVisible();
+      });
   
       img.addEventListener('click', () => {
         if (!isResizeEnabled()) {
@@ -283,6 +326,10 @@ export const ImageResize = Node.create({
           return;
         }
         e.preventDefault();
+        selectCurrentImage();
+        isResizing = true;
+        wrapper.classList.add('is-resizing');
+        updateHandleVisible();
         startX = e.clientX;
         startY = e.clientY;
         startW = img.offsetWidth;
@@ -314,6 +361,9 @@ export const ImageResize = Node.create({
             width: img.offsetWidth,
             height: img.offsetHeight
           });
+          isResizing = false;
+          wrapper.classList.remove('is-resizing');
+          updateHandleVisible();
         };
   
         document.addEventListener('mousemove', move);
@@ -343,6 +393,7 @@ export const ImageResize = Node.create({
           setStatus('loading');
           img.setAttribute('src', node.attrs.src);
         }
+        queueLoadedImageSync();
   
         if (node.attrs.width) img.style.width = node.attrs.width + 'px';
         if (node.attrs.height) img.style.height = node.attrs.height + 'px';

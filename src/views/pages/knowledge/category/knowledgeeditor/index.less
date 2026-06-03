@@ -124,11 +124,14 @@ html {
 
   .ProseMirror-selectednode {
     .image-wrapper {
-      border: 1px solid var(--knowledge-editor-primary);
       .resize-handle {
         display: block;
       }
     }
+  }
+  .image-wrapper.is-hovering,
+  .image-wrapper.is-resizing {
+    outline: 1px solid var(--knowledge-editor-primary);
   }
   .image-container {
     max-width: 100%;
@@ -473,7 +476,7 @@ html {
       padding: 8px 12px;
       color: var(--knowledge-editor-text);
       text-decoration: none;
-      cursor: pointer;
+      cursor: default;
     }
     .file-card-icon {
       flex: 0 0 auto;
@@ -497,6 +500,50 @@ html {
       color: var(--knowledge-editor-tip);
       font-size: 12px;
       line-height: 16px;
+    }
+    .file-card-meta-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 16px;
+    }
+    .file-card-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      color: var(--knowledge-editor-link);
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 16px;
+      opacity: 0;
+      pointer-events: none;
+      text-decoration: none;
+      transition: opacity 0.15s ease;
+      &:hover,
+      &:focus {
+        text-decoration: none;
+      }
+    }
+    &:hover,
+    &:focus-within {
+      .file-card-download {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+    &.is-loading,
+    &.is-error {
+      .file-card-download {
+        display: none;
+      }
+    }
+    &.is-downloading {
+      .file-card-download {
+        opacity: 1;
+        pointer-events: none;
+      }
     }
   }
   .file-block.is-loading,
@@ -589,6 +636,54 @@ html {
     padding: 12px 20px;
     border-radius: 0;
   }
+  .compare-meta-box {
+    padding: 4px 0 2px;
+  }
+  .compare-meta-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 24px;
+    word-break: break-word;
+  }
+  .compare-meta-label {
+    flex: 0 0 auto;
+    color: var(--knowledge-editor-tip);
+  }
+  .compare-tag-list {
+    display: flex;
+    flex: 1 1 0;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 0;
+  }
+  .compare-tag-item {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    min-height: 22px;
+    padding: 0 6px;
+    border: 1px solid var(--knowledge-editor-weak-border);
+    border-radius: 3px;
+    line-height: 20px;
+    word-break: break-all;
+  }
+  .compare-tag-item.knowledge-compare-mark {
+    border-radius: 3px;
+    padding: 0 6px;
+    font-weight: 600;
+  }
+  .compare-tag-item.knowledge-compare-insert {
+    background: var(--knowledge-editor-success-bg-deep);
+  }
+  .compare-tag-item.knowledge-compare-delete {
+    background: var(--knowledge-editor-error-bg-deep);
+    text-decoration: line-through;
+    text-decoration-color: var(--knowledge-editor-error-outline);
+  }
+  .compare-tag-item.knowledge-compare-update {
+    background: var(--knowledge-editor-warning-bg-deep);
+  }
   .ProseMirror {
     pre {
       margin: 4px 0;
@@ -617,7 +712,7 @@ html {
   .ProseMirror {
     .ProseMirror-selectednode {
       .image-wrapper {
-        border: none;
+        outline: none;
       }
     }
     .image-wrapper {
