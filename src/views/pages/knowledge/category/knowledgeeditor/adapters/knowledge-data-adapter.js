@@ -66,15 +66,39 @@ function getDownloadFileId(url = '') {
   }
 }
 
-function normalizeDownloadUrl(url) {
+function normalizeInternalResourceUrl(url = '') {
   const value = String(url || '');
-  if (/^(https?:)?\/\//.test(value) || /^(blob|data):/.test(value) || value.startsWith('/')) {
+  if (!value || /^(data:|blob:|mailto:|tel:|#)/i.test(value) || /^api\//i.test(value)) {
     return value;
   }
-  if (value) {
-    return `/${value.replace(/^\/+/, '')}`;
+  if (value.indexOf('/api/') === 0) {
+    return value.slice(1);
   }
-  return '';
+
+  try {
+    const baseUrl = typeof document === 'undefined' ? undefined : document.baseURI;
+    const parsedUrl = new URL(value, baseUrl);
+    if (typeof window === 'undefined') {
+      if (/^(https?:)?\/\//.test(value)) {
+        return value;
+      }
+    } else if (parsedUrl.origin !== window.location.origin) {
+      return value;
+    }
+
+    const apiIndex = parsedUrl.pathname.indexOf('/api/');
+    if (apiIndex > -1) {
+      return parsedUrl.pathname.slice(apiIndex + 1) + parsedUrl.search + parsedUrl.hash;
+    }
+  } catch (e) {
+    return value;
+  }
+
+  return value;
+}
+
+function getVideoUrl(attrs = {}) {
+  return normalizeInternalResourceUrl(attrs.url || attrs.src || attrs.value || '');
 }
 
 function getLineFileId(item = {}) {
@@ -461,14 +485,24 @@ export function tiptapToLineList(doc = EMPTY_TIPTAP_DOC) {
       lineList.push(createLineItem('image', node, '', {
         blockUuid: attrs.blockUuid,
         blockType: 'image',
-        url: attrs.src || attrs.url || attrs.value || '',
+        url: normalizeInternalResourceUrl(attrs.src || attrs.url || attrs.value || ''),
         name: attrs.name || '',
         align: attrs.align || 'left',
         width: attrs.width,
         height: attrs.height
       }, { mergeAttrs: false }));
+    } else if (node.type === 'video') {
+      lineList.push(createLineItem('video', node, '', {
+        blockUuid: attrs.blockUuid,
+        blockType: 'video',
+        url: getVideoUrl(attrs),
+        controls: attrs.controls !== false,
+        width: attrs.width,
+        height: attrs.height,
+        aspectRatio: attrs.aspectRatio
+      }, { mergeAttrs: false }));
     } else if (node.type === 'file') {
-      const url = normalizeDownloadUrl(attrs.url);
+      const url = normalizeInternalResourceUrl(attrs.url);
       lineList.push(createLineItem('file', node, '', {
         url,
         id: attrs.id || getDownloadFileId(url),
@@ -1056,7 +1090,7 @@ function lineToTiptapNodes(item = {}) {
     return markdownToTiptapNodes(item.content, attrs);
   }
   if (handler === 'image') {
-    const imageSrc = attrs.src || attrs.url || attrs.value || item.config?.url || item.config?.value || '';
+    const imageSrc = normalizeInternalResourceUrl(attrs.src || attrs.url || attrs.value || item.config?.url || item.config?.value || '');
     const imageAttrs = { ...attrs };
     delete imageAttrs.url;
     delete imageAttrs.value;
@@ -1073,11 +1107,15 @@ function lineToTiptapNodes(item = {}) {
     }];
   }
   if (handler === 'video') {
+    const videoUrl = getVideoUrl(attrs);
+    const videoAttrs = { ...attrs };
+    delete videoAttrs.src;
+    delete videoAttrs.value;
     return [{
       type: 'video',
       attrs: {
-        ...attrs,
-        src: attrs.src || '',
+        ...videoAttrs,
+        url: videoUrl,
         controls: attrs.controls !== false,
         width: attrs.width || null,
         height: attrs.height || null,
@@ -1087,7 +1125,7 @@ function lineToTiptapNodes(item = {}) {
     }];
   }
   if (handler === 'file') {
-    const url = normalizeDownloadUrl(attrs.url);
+    const url = normalizeInternalResourceUrl(attrs.url);
     const fileAttrs = { ...attrs };
     delete fileAttrs.src;
     delete fileAttrs.url;
