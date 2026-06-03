@@ -21,10 +21,7 @@
               <UserCard alignMode="vertical" :iconSize="32" :uuid="row.fcu"></UserCard>
             </div>
             <div>
-              <TsCkeditor
-                :readonly="true"
-                :value="row.content"
-              ></TsCkeditor>
+              <div class="comment-content" v-html="row.content"></div>
               <div v-if="commentReady['c_' + row.id] && row.childCount > 0" class="mt-md">
                 <CommentList
                   :issueData="issueData"
@@ -200,6 +197,9 @@ export default {
   display: grid;
   grid-template-columns: 50px calc(100% - 50px - 20px); // auto时，由内容撑开，不受父级元素的影响，导致图片没有自适应宽度
   grid-gap: 20px;
+  > div:last-child {
+    min-width: 0;
+  }
 }
 .comment-grid:hover {
   .comment-action {
@@ -208,5 +208,13 @@ export default {
 }
 .comment-action {
   visibility: hidden;
+}
+.comment-content {
+  max-width: 100%;
+  overflow-x: auto;
+}
+::v-deep .comment-content img {
+  max-width: 100% !important;
+  height: auto !important;
 }
 </style>

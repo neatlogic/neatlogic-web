@@ -68,6 +68,7 @@
                   @click.stop="toIssueDetail(issue)"
                 >{{ issue.name }}</span>
                 <span v-else v-html="highlightKeywords(issue.name, issueData.wordList)"></span>
+                <IssueCopyTag v-if="issue.sourceIssueId" class="ml-xs"></IssueCopyTag>
               </div>
               <div class="mt-xs mb-xs text-grey fz10">{{ issue.createDate | formatDate('yyyy-mm-dd') }}</div>
               <div class="flex">
@@ -136,6 +137,7 @@ export default {
     AttrHandler: () => import('@/views/pages/rdm/project/attr-handler/attr-handler.vue'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    IssueCopyTag: () => import('@/views/pages/rdm/project/viewtab/components/issue-copy-tag.vue'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   props: {

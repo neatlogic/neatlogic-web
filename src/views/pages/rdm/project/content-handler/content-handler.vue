@@ -57,7 +57,8 @@ export default {
     issueData: { type: Object },
     autoSave: { type: Boolean, default: true },
     mode: { type: String, default: 'read' },
-    readonly: { type: Boolean, default: false }
+    readonly: { type: Boolean, default: false },
+    saveHandler: { type: Function }
   },
   data() {
     return {
@@ -89,18 +90,36 @@ export default {
       });
       this.$emit('cancel');
     },
-    saveIssue() {
+    async saveIssue() {
+      const oldContent = this.issueData.content;
       const component = this.$refs['component'];
       if (component && component.save) {
         component.save();
       } else {
         this.$set(this.issueData, 'content', this.content);
       }
-      this.$api.rdm.issue.saveIssue(this.issueData).then(res => {
+      const saveData = this.getSaveData();
+      if (this.saveHandler) {
+        const isSaved = await this.saveHandler(saveData);
+        if (isSaved === false) {
+          this.$set(this.issueData, 'content', oldContent);
+          return;
+        }
+        this.cancelEdit();
+        return;
+      }
+      this.$api.rdm.issue.saveIssue(saveData).then(res => {
         if (res.Status === 'OK') {
           this.cancelEdit();
         }
       });
+    },
+    getSaveData() {
+      return {
+        id: this.issueData.id,
+        appId: this.issueData.appId,
+        content: this.issueData.content
+      };
     }
   },
   filter: {},

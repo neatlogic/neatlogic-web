@@ -2926,6 +2926,13 @@
     "recalltest": "召回测试",
     "schedulesync": "定时同步",
     "syncprogress": "同步进度",
-    "scope": "业务域"
+    "scope": "业务域",
+    "voiceinput": "语音输入",
+    "stopvoiceinput": "停止语音输入",
+    "insertvoiceinput": "插入识别文本",
+    "recognized": "已识别：",
+    "recognizing": "正在识别：",
+    "voiceinputnotsupported": "当前浏览器不支持语音输入",
+    "defaultmicrophone": "默认麦克风"
   }
 }

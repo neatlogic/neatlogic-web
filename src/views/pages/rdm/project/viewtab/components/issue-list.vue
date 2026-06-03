@@ -14,9 +14,10 @@
             @click="linkIssue()"
           >{{ $t('dialog.title.linktarget', { target: getAppByType(relAppType).name }) }}</a>
         </span>
-        <span v-if="canBatch" class="action-item">
-          <a class="tsfont-mark-all" @click="batchExecute()">批量处理</a>
-        </span>
+        <span v-if="canBatch" class="action-item tsfont-mark-all" @click="batchExecute()">批量处理</span>
+        <span v-if="app && app.id" v-download="exportDownloadConfig" class="action-item tsfont-download">导出</span>
+        <span v-if="app && app.id" v-download="templateDownloadConfig" class="action-item tsfont-download">下载导入模板</span>
+        <span v-if="app && app.id" class="action-item tsfont-upload" @click="importIssue">导入</span>
       </div>
       <div>
         <!--由于每次搜索都会更新isSearchReady，导致AttrHandler处于不可用状态，为了让某些AttrHandler可以连续输入，例如文本框，搜索绑定在点击确认和删除条件的时候触发-->
@@ -138,6 +139,8 @@
           :sortData="sortData"
           :projectId="projectId"
           :checkedIdList="checkedIdList"
+          :canSelect="canSelect"
+          :selectedIdList="selectedIdList"
           @updateSort="updateSort"
           @selected="getSelected"
           @searchIssue="searchIssue"
@@ -225,13 +228,16 @@
       :appId="app.id"
       @close="closeBatchExecute"
     ></BatchExecDialog>
+    <IssueImportDialog v-if="isImportIssueShow && app && app.id" :appId="app.id" @close="closeImportIssue"></IssueImportDialog>
   </div>
 </template>
 <script>
 import * as issueDetailHandler from '@/views/pages/rdm/project/viewtab/issus-detail-index.js';
+import download from '@/resources/directives/download.js';
 
 export default {
   name: '',
+  directives: { download },
   components: {
     ...issueDetailHandler,
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
@@ -247,7 +253,8 @@ export default {
     BatchExecDialog: () => import('@/views/pages/rdm/project/viewtab/components/batchexecute-issue-dialog.vue'),
     IssueListTable: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-table.vue'),
     IssueListGantt: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-gantt.vue'),
-    IssueListStorywall: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-storywall.vue')
+    IssueListStorywall: () => import('@/views/pages/rdm/project/viewtab/components/issue-list-storywall.vue'),
+    IssueImportDialog: () => import('@/views/pages/rdm/project/viewtab/components/issue-import-dialog.vue')
   },
   props: {
     mode: { type: String, default: 'list' }, //显示模式，有level和list两种
@@ -255,7 +262,7 @@ export default {
     canSearch: { type: Boolean, default: false },
     canAppend: { type: Boolean, default: false },
     canAction: { type: Boolean, default: false },
-    //canSelect: { type: Boolean, default: false },
+    canSelect: { type: Boolean, default: false },
     canBatch: { type: Boolean, default: false }, //是否允许批量处理
     showStatus: { type: Boolean, default: false }, //是否显示状态统计信息
     checkedIdList: { type: Array },
@@ -271,6 +278,8 @@ export default {
     isExpired: { type: Number }, //是否过期
     isFavorite: { type: Number }, //是否关注
     isProcessed: { type: Number }, //是否处理过
+    isCopy: { type: Number, default: null }, //是否副本
+    sourceIssueId: { type: Number }, //来源issue id，用于查询副本
     displayAttrList: { type: Array }, //需要显示的内部属性列表，一般用在工作台
     isShowEmptyTable: { type: Boolean, default: false }, //没数据时是否显示空白table
     relType: {
@@ -359,7 +368,9 @@ export default {
       linkApp: null,
       linkRelType: null,
       completeRate: 0,
-      isBatchExecuteShow: false //批量执行确认框
+      isBatchExecuteShow: false, //批量执行确认框
+      isImportIssueShow: false,
+      selectedIssueMap: {}
     };
   },
   beforeCreate() {},
@@ -553,11 +564,40 @@ export default {
         this.$set(row, '_expand', false);
       }
     },
-    getSelected(itemList) {
-      this.$emit('selected', itemList);
+    getSelected(selectedIdList, itemList) {
+      if (!this.canSelect) {
+        this.$emit('selected', selectedIdList);
+        return;
+      }
+      const selectedIdSet = new Set((selectedIdList || []).map(id => id && id.toString()));
+      const checkedIdSet = new Set((this.checkedIdList || []).map(id => id && id.toString()));
+      const tbodyList = this.issueData && this.issueData.tbodyList ? this.issueData.tbodyList : [];
+      tbodyList.forEach(row => {
+        const rowId = row.id && row.id.toString();
+        if (!rowId || checkedIdSet.has(rowId)) {
+          return;
+        }
+        if (selectedIdSet.has(rowId)) {
+          this.$set(this.selectedIssueMap, rowId, row);
+        } else {
+          this.$delete(this.selectedIssueMap, rowId);
+        }
+      });
+      this.applySelectedStatus();
+      this.$emit('selected', this.selectedSelectIssueList);
     },
     batchExecute() {
       this.isBatchExecuteShow = true;
+    },
+    importIssue() {
+      this.isImportIssueShow = true;
+    },
+    closeImportIssue(needRefresh) {
+      this.isImportIssueShow = false;
+      if (needRefresh) {
+        this.searchIssue(1);
+        this.$emit('refresh');
+      }
     },
     linkIssue() {
       this.isLinkShow = true;
@@ -613,23 +653,13 @@ export default {
       }
     },
     unlinkIssue(issue) {
+      const param = this.getUnlinkParam(issue);
+      const isDeleteCopyIssue = !!(param.fromId && param.toId && issue.sourceIssueId);
       this.$createDialog({
         title: this.$t('dialog.title.unlinkconfirm'),
-        content: this.$t('dialog.content.unlinkconfirm'),
+        content: isDeleteCopyIssue ? '断联后会删除这个副本，重新关联会生成新的副本。确定断联？' : this.$t('dialog.content.unlinkconfirm'),
         btnType: 'error',
         'on-ok': vnode => {
-          const param = {};
-          if (this.fromId) {
-            param.fromId = this.fromId;
-            param.toId = issue.id;
-          } else if (this.toId) {
-            param.toId = this.toId;
-            param.fromId = issue.id;
-          } else if (this.parentId) {
-            param.id = issue.id;
-          } else if (issue.parentId) {
-            param.id = issue.parentId;
-          }
           if (param.fromId && param.toId) {
             this.$api.rdm.issue.deleteIssueRel(param).then(res => {
               if (res.Status == 'OK') {
@@ -651,6 +681,21 @@ export default {
           }
         }
       });
+    },
+    getUnlinkParam(issue) {
+      const param = {};
+      if (this.fromId) {
+        param.fromId = this.fromId;
+        param.toId = issue.id;
+      } else if (this.toId) {
+        param.toId = this.toId;
+        param.fromId = issue.id;
+      } else if (this.parentId) {
+        param.id = issue.id;
+      } else if (issue.parentId) {
+        param.id = issue.parentId;
+      }
+      return param;
     },
     searchChildIssue(row, index) {
       const searchParam = {};
@@ -707,6 +752,10 @@ export default {
       this.searchIssueData.isExpired = this.isExpired;
       this.searchIssueData.isFavorite = this.isFavorite;
       this.searchIssueData.isProcessed = this.isProcessed;
+      this.searchIssueData.sourceIssueId = this.sourceIssueId;
+      if (this.isCopy !== null) {
+        this.searchIssueData.isCopy = this.isCopy;
+      }
 
       if (!this.$utils.isEmpty(this.searchValue)) {
         for (let key in this.searchValue) {
@@ -742,11 +791,27 @@ export default {
         .searchIssue(this.searchIssueData)
         .then(res => {
           this.issueData = res.Return;
+          this.applySelectedStatus();
           this.isSearchReady = true;
         })
         .finally(() => {
           this.isLoading = false;
         });
+    },
+    applySelectedStatus() {
+      if (!this.canSelect || !this.issueData || !this.issueData.tbodyList) {
+        return;
+      }
+      const checkedIdSet = new Set((this.checkedIdList || []).map(id => id && id.toString()));
+      const selectedIdSet = new Set(this.selectedIdList.map(id => id && id.toString()));
+      this.issueData.tbodyList.forEach(row => {
+        const rowId = row.id && row.id.toString();
+        const isChecked = checkedIdSet.has(rowId);
+        const isSelected = selectedIdSet.has(rowId);
+        this.$set(row, 'isDisabled', isChecked);
+        this.$set(row, 'isSelected', isSelected);
+        this.$set(row, '_selected', isSelected);
+      });
     }
   },
   filter: {},
@@ -768,7 +833,9 @@ export default {
     },
     finalTheadList() {
       const list = [];
-      if (this.canBatch) {
+      if (this.canSelect) {
+        list.push({ key: 'selection', multiple: true });
+      } else if (this.canBatch) {
         list.push({ key: 'checked' });
       }
       list.push(...this.theadList);
@@ -776,6 +843,38 @@ export default {
         list.push({ key: 'action' });
       }
       return list;
+    },
+    selectedIdList() {
+      const idList = [];
+      (this.checkedIdList || []).forEach(id => {
+        if (id != null) {
+          idList.push(id);
+        }
+      });
+      Object.keys(this.selectedIssueMap).forEach(id => {
+        idList.push(Number(id));
+      });
+      return idList;
+    },
+    selectedSelectIssueList() {
+      return Object.keys(this.selectedIssueMap)
+        .map(id => this.selectedIssueMap[id])
+        .filter(item => !!item);
+    },
+    exportDownloadConfig() {
+      return {
+        url: '/api/binary/rdm/issue/export',
+        params: Object.assign({}, this.searchIssueData, {
+          appId: this.app && this.app.id,
+          projectId: this.projectId
+        })
+      };
+    },
+    templateDownloadConfig() {
+      return {
+        url: '/api/binary/rdm/issue/import/template',
+        params: { appId: this.app && this.app.id }
+      };
     },
     searchAttrList() {
       return this.attrList.filter(d => d.id);
@@ -844,6 +943,11 @@ export default {
     mode: {
       handler: function(val) {
         this.searchIssue(1);
+      }
+    },
+    checkedIdList: {
+      handler: function() {
+        this.applySelectedStatus();
       }
     }
   }

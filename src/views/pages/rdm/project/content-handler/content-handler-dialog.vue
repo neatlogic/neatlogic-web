@@ -55,7 +55,11 @@ export default {
   destroyed() {},
   methods: {
     okDialog() {
-      this.$api.rdm.issue.saveIssue({...this.issueData, content: this.content}).then(res => {
+      this.$api.rdm.issue.saveIssue({
+        id: this.issueData.id,
+        appId: this.issueData.appId,
+        content: this.content
+      }).then(res => {
         if (res.Status === 'OK') {
           this.closeDialog(true);
         }

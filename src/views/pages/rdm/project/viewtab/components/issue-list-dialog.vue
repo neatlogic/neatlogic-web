@@ -13,6 +13,7 @@
             :checkedIdList="relIssueIdList"
             :projectId="projectId"
             :app="app"
+            :isCopy="app && app.type === 'testcase' ? 0 : null"
             @selected="selectIssue"
           ></IssueList>
         </div>
@@ -74,7 +75,7 @@ export default {
   destroyed() {},
   methods: {
     getRelIssueIdList() {
-      this.$api.rdm.issue.getRelIssueList(this.id, this.reltype, this.direction).then(res => {
+      this.$api.rdm.issue.getRelIssueList(this.id, this.reltype, this.direction, this.app && this.app.id).then(res => {
         this.relIssueIdList = res.Return;
       });
     },
@@ -85,19 +86,23 @@ export default {
       this.$emit('close', needRefresh);
     },
     confirm() {
-      if (this.targetIssueList.length > 0) {
+      const relIssueIdSet = new Set((this.relIssueIdList || []).map(id => id && id.toString()));
+      const targetIssueList = (this.targetIssueList || []).filter(item => item && item.id && !relIssueIdSet.has(item.id.toString()));
+      if (targetIssueList.length > 0) {
         const param = {
           direction: this.direction,
           relType: this.reltype,
           appId: this.app.id,
           id: this.id,
-          idList: this.targetIssueList.map(d => d.id)
+          idList: targetIssueList.map(d => d.id)
         };
         this.$api.rdm.issue.saveIssueRel(param).then(res => {
           if (res.Status == 'OK') {
             this.close(true);
           }
         });
+      } else {
+        this.close();
       }
     }
   },

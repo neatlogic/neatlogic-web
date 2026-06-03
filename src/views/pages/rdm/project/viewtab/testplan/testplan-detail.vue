@@ -164,7 +164,7 @@ export default {
       }
     },
     saveIssue() {
-      this.$api.rdm.issue.saveIssue(this.issueData).then(async res => {
+      this.$api.rdm.issue.saveIssue(this.getSubmitIssueData()).then(async res => {
         this.init();
       });
     },

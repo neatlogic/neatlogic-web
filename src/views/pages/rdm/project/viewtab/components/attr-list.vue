@@ -92,7 +92,8 @@ export default {
   props: {
     projectId: { type: Number },
     appId: { type: Number },
-    issueData: { type: Object }
+    issueData: { type: Object },
+    saveHandler: { type: Function }
   },
   data() {
     return {
@@ -191,16 +192,68 @@ export default {
       if (this.$utils.isSame(this.issueDataLocal, this.issueData)) {
         return;
       }
+      const attrId = field && field.startsWith('attr_') ? parseInt(field.replace('attr_', '')) : null;
       this.isEditing = true;
-      await this.$api.rdm.issue.saveIssue(this.issueDataLocal).then(res => {
+      const saveData = this.getSaveData(attrId);
+      if (this.saveHandler) {
+        const isSaved = await this.saveHandler(saveData);
+        this.isEditing = false;
+        if (isSaved === false) {
+          this.cancelUpdate(field);
+          return;
+        }
+        this.editingField = null;
+        this.$emit('save', this.issueDataLocal);
+        if (field && field.startsWith('attr_')) {
+          this.refreshAttr(attrId);
+        }
+        return;
+      }
+      await this.$api.rdm.issue.saveIssue(saveData).then(res => {
         this.isEditing = false;
         this.editingField = null;
         this.$emit('save', this.issueDataLocal);
         if (field && field.startsWith('attr_')) {
-          const attrId = parseInt(field.replace('attr_', ''));
           this.refreshAttr(attrId);
         }
       });
+    },
+    getSaveData(attrId) {
+      const saveData = {
+        id: this.issueDataLocal.id,
+        appId: this.issueDataLocal.appId
+      };
+      const attrConfig = this.attrList && this.attrList.find(item => item.id === attrId);
+      if (attrConfig && attrConfig.isPrivate) {
+        const issueField = this.getPrivateAttrField(attrConfig.type);
+        if (issueField) {
+          saveData[issueField] = this.$utils.deepClone(this.issueDataLocal[issueField]);
+        }
+        return saveData;
+      }
+      const attr = this.issueDataLocal.attrList && this.issueDataLocal.attrList.find(item => item.attrId === attrId);
+      // 扩展属性被清空后会从 attrList 移除，此时仍需提交空值用于清空后台动态属性列。
+      saveData.attrList = [this.getValidAttrData(attr, attrId)];
+      return saveData;
+    },
+    getValidAttrData(attr, attrId) {
+      const attrData = attr ? this.$utils.deepClone(attr) : { attrId: attrId };
+      const valueList = attrData.valueList instanceof Array ? attrData.valueList : [];
+      attrData.valueList = valueList.filter(item => item !== null && typeof item !== 'undefined' && item !== '');
+      return attrData;
+    },
+    getPrivateAttrField(type) {
+      const privateAttrFieldMap = {
+        priority: 'priority',
+        tag: 'tagList',
+        worker: 'userIdList',
+        catalog: 'catalog',
+        iteration: 'iteration',
+        startdate: 'startDate',
+        enddate: 'endDate',
+        timecost: 'timecost'
+      };
+      return privateAttrFieldMap[type];
     }
   },
   filter: {},

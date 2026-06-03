@@ -45,7 +45,11 @@ export default {
       this.isEditing = false;
     },
     saveContent(issueData) {
-      this.$api.rdm.issue.saveIssue(issueData).then(res => {
+      this.$api.rdm.issue.saveIssue({
+        id: issueData.id,
+        appId: issueData.appId,
+        content: issueData.content
+      }).then(res => {
         this.isEditing = false;
       });
     }

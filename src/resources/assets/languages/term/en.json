@@ -2933,6 +2933,13 @@
     "recalltest": "recall test",
     "schedulesync": "timed synchronization",
     "syncprogress": "sync progress",
-    "scope": "business domain"
+    "scope": "business domain",
+    "voiceinput": "Voice input",
+    "stopvoiceinput": "Stop voice input",
+    "insertvoiceinput": "Insert recognized text",
+    "recognized": "Recognized: ",
+    "recognizing": "Recognizing: ",
+    "voiceinputnotsupported": "Voice input is not supported by this browser",
+    "defaultmicrophone": "Default microphone"
   }
 }

@@ -182,6 +182,52 @@ export default {
           this.appList = res.Return;
         });
       }
+    },
+    getSubmitIssueData() {
+      const issueData = {
+        id: this.issueData.id,
+        appId: this.issueData.appId,
+        status: this.issueData.status,
+        comment: this.issueData.comment
+      };
+      const requiredAttrList = this.$refs.requiredAttrList && this.$refs.requiredAttrList.requiredAttrList;
+      if (requiredAttrList && requiredAttrList.length > 0) {
+        const attrList = [];
+        requiredAttrList.forEach(attr => {
+          if (attr.isPrivate) {
+            const issueField = this.getPrivateAttrField(attr.type);
+            if (issueField) {
+              issueData[issueField] = this.$utils.deepClone(this.issueData[issueField]);
+            }
+          } else {
+            attrList.push(this.getSubmitAttrData(attr.id));
+          }
+        });
+        if (attrList.length > 0) {
+          issueData.attrList = attrList;
+        }
+      }
+      return issueData;
+    },
+    getSubmitAttrData(attrId) {
+      const attr = this.issueData.attrList && this.issueData.attrList.find(item => item.attrId === attrId);
+      const attrData = attr ? this.$utils.deepClone(attr) : { attrId: attrId };
+      const valueList = attrData.valueList instanceof Array ? attrData.valueList : [];
+      attrData.valueList = valueList.filter(item => item !== null && typeof item !== 'undefined' && item !== '');
+      return attrData;
+    },
+    getPrivateAttrField(type) {
+      const privateAttrFieldMap = {
+        priority: 'priority',
+        tag: 'tagList',
+        worker: 'userIdList',
+        catalog: 'catalog',
+        iteration: 'iteration',
+        startdate: 'startDate',
+        enddate: 'endDate',
+        timecost: 'timecost'
+      };
+      return privateAttrFieldMap[type];
     }
   },
   filter: {},

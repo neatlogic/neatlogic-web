@@ -29,6 +29,7 @@
           :canSearch="true"
           :canAction="true"
           :catalog="currentCatalog"
+          :isCopy="0"
           :isShowEmptyTable="true"
         ></IssueList>
       </template>
