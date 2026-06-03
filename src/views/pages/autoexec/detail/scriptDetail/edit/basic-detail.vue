@@ -15,6 +15,11 @@
         </div>
       </div>
     </div>
+    <component
+      :is="autoexecScriptExecrtoolAuthorityComponent"
+      v-if="autoexecScriptExecrtoolAuthorityComponent"
+      :config="config"
+    ></component>
     <div v-if="config.referenceCount > 0" class="action-list bg-op padding radius-lg">
       <div class="action-title h4">{{ $t('term.autoexec.relatecombinationtool') }}</div>
       <ReferenceList
@@ -33,6 +38,8 @@
   </div>
 </template>
 <script>
+import ImportComponent from '@/views/components/import-component.js';
+
 export default {
   name: '',
   components: {
@@ -201,6 +208,10 @@ export default {
   computed: {
     hasAuth() { //脚本基本信息的保存权限
       return this.$store.getters.userAuthList.includes('AUTOEXEC_SCRIPT_MODIFY');
+    },
+    autoexecScriptExecrtoolAuthorityComponent() {
+      // 商业模块不存在时 ImportComponent 中不会有该组件，基础页面保持静默不显示。
+      return ImportComponent && ImportComponent.autoexecScriptExecrtoolAuthority ? ImportComponent.autoexecScriptExecrtoolAuthority : null;
     }
   },
   watch: {

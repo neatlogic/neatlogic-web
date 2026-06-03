@@ -12,11 +12,10 @@
           :appSystemId="appSystemId"
           :hasEditConfigAuth="hasEditConfigAuth"
           :hasAuthConfigAuth="hasAuthConfigAuth"
-          :hideFucntionExcludeAppModuleRunner="hideFucntionExcludeAppModuleRunner"
           @updateAuth="updateAuth"
         ></AppInfoManage>
       </TabPane>
-      <TabPane v-if="!hideFucntionExcludeAppModuleRunner" :label="$t('term.deploy.continuousintegration')" name="integrated">
+      <TabPane :label="$t('term.deploy.continuousintegration')" name="integrated">
         <IntegratedManage
           v-if="tabValue == 'integrated'"
           :appSystemId="appSystemId"
@@ -30,12 +29,6 @@
           :appSystemId="appSystemId"
         ></AppPipeline>
       </TabPane>
-      <slot
-        name="extraTab"
-        :tabValue="tabValue"
-        :appSystemId="appSystemId"
-        :hasEditConfigAuth="hasEditConfigAuth"
-      ></slot>
     </Tabs>
   </div>
 </template>
@@ -73,20 +66,11 @@ export default {
       // 是否有超级流水线权限
       type: Boolean,
       default: false
-    },
-    hideFucntionExcludeAppModuleRunner: {
-      // codehub新增应用配置入口，为了维护应用和模块，应用权限以及模块对应的runner组,发布其他功能全部屏蔽
-      type: Boolean,
-      default: false
-    },
-    activeTabValue: {
-      type: String,
-      default: ''
     }
   },
   data() {
     return {
-      tabValue: this.activeTabValue || 'appConfig'
+      tabValue: 'appConfig'
     };
   },
   beforeCreate() {},
@@ -101,12 +85,10 @@ export default {
   destroyed() {},
   methods: {
     tabClick(tabValue) {
-      this.$emit('updateTab', tabValue);
       this.$addHistoryData('tabValue', tabValue);
     },
     restoreHistory(historyData) {
       this.tabValue = historyData['tabValue'] || 'appConfig';
-      this.$emit('updateTab', this.tabValue);
     },
     updateAuth() {
       this.$emit('updateAuth');
@@ -114,13 +96,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-    activeTabValue(tabValue) {
-      if (tabValue && tabValue !== this.tabValue) {
-        this.tabValue = tabValue;
-      }
-    }
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>
