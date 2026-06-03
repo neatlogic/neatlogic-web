@@ -56,7 +56,10 @@ export default {
       };
     },
     getVersionSource(value) {
-      return value === 'sourceBranch' ? 'sourceBranch' : 'targetBranch';
+      if (value === 'sourceBranch' || value === 'mrVersion') {
+        return value;
+      }
+      return 'targetBranch';
     },
     isSameId(a, b) {
       return (a || '') + '' === (b || '') + '';
@@ -161,7 +164,8 @@ export default {
           validateList: ['required'],
           dataList: [
             { value: 'sourceBranch', text: '源分支' },
-            { value: 'targetBranch', text: '目标分支' }
+            { value: 'targetBranch', text: '目标分支' },
+            { value: 'mrVersion', text: 'MR版本号' }
           ],
           transfer: true,
           onChange: value => {
@@ -170,7 +174,7 @@ export default {
             }
             this.$set(this.formValue, 'versionSource', this.getVersionSource(value));
           },
-          desc: '选择使用MR源分支或目标分支作为发布版本号'
+          desc: '选择使用MR源分支、目标分支或MR版本号作为发布版本号'
         }
       };
     },
