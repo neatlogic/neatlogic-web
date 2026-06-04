@@ -146,7 +146,7 @@ function getMediaBlockIdentity(block = {}) {
     return src ? `image:${src}` : '';
   }
   if (block.type === 'video') {
-    const src = attrs.src || attrs.recordUuid || attrs.value;
+    const src = attrs.url || attrs.src || attrs.value;
     return src ? `video:${src}` : '';
   }
   if (block.type === 'file') {

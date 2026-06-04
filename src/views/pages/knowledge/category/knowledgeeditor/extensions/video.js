@@ -25,6 +25,29 @@ function syncCompareState(element, attrs = {}) {
   }
 }
 
+function normalizeVideoSrc(url = '') {
+  const value = String(url || '');
+  if (!value || /^(data:|blob:|mailto:|tel:|#)/i.test(value) || /^api\//i.test(value)) {
+    return value;
+  }
+
+  try {
+    const parsedUrl = new URL(value, document.baseURI);
+    if (parsedUrl.origin !== window.location.origin) {
+      return value;
+    }
+
+    const apiIndex = parsedUrl.pathname.indexOf('/api/');
+    if (apiIndex > -1) {
+      return parsedUrl.pathname.slice(apiIndex + 1) + parsedUrl.search + parsedUrl.hash;
+    }
+  } catch (e) {
+    return value;
+  }
+
+  return value;
+}
+
 const video = Node.create({
   name: 'video',
   group: 'block',
@@ -32,7 +55,14 @@ const video = Node.create({
   selectable: false,
   addAttributes() {
     return {
-      src: { default: null },
+      src: {
+        default: null,
+        parseHTML: element => normalizeVideoSrc(element.getAttribute('src') || element.querySelector('video')?.getAttribute('src') || null)
+      },
+      url: {
+        default: null,
+        parseHTML: element => normalizeVideoSrc(element.getAttribute('url') || element.getAttribute('data-url') || null)
+      },
       controls: { default: true },
       width: {
         default: null,
@@ -75,14 +105,17 @@ const video = Node.create({
     return [{ tag: 'div[data-block-type="video"]' }];
   },
   renderHTML({ HTMLAttributes }) {
-    const { src, controls } = HTMLAttributes;
+    const { src, url, controls } = HTMLAttributes;
+    const videoSrc = normalizeVideoSrc(url || src);
+    const wrapperAttributes = { ...HTMLAttributes };
+    delete wrapperAttributes.src;
     return [
       'div',
-      mergeAttributes(HTMLAttributes, {
+      mergeAttributes(wrapperAttributes, {
         'data-block-type': 'video',
         'data-block-uuid': HTMLAttributes['data-block-uuid']
       }),
-      ['video', { src: src, controls: controls }]
+      ['video', { src: videoSrc, controls: controls }]
     ];
   },
   addCommands() {
@@ -99,7 +132,7 @@ const video = Node.create({
       },
       updateVideo: (options) => ({ tr, state }) => {
         const { recordUuid, position, ...newAttrs } = options || {};
-        tr.doc.descendants((node, pos) => { // 遍历文档中的所有节�?
+        tr.doc.descendants((node, pos) => { // 遍历文档中的所有节点
           if (node.type.name === this.name && node.attrs['recordUuid'] === recordUuid) {
             tr.setNodeMarkup(pos, undefined, { ...node.attrs, ...newAttrs });
           }
@@ -135,7 +168,8 @@ const video = Node.create({
       wrapper.appendChild(resizeHandle);
 
       const syncVideoState = (attrs) => {
-        const hasSrc = !!attrs.src;
+        const videoSrc = normalizeVideoSrc(attrs.url || attrs.src);
+        const hasSrc = !!videoSrc;
         syncCompareState(wrapper, attrs);
         applySize(video, attrs);
         video.controls = attrs.controls !== false;
@@ -156,8 +190,8 @@ const video = Node.create({
           video.style.display = 'block';
       
           // video.src becomes an absolute URL in the browser, so compare the raw attribute.
-          if (video.getAttribute('src') !== attrs.src) {
-            video.setAttribute('src', attrs.src);
+          if (video.getAttribute('src') !== videoSrc) {
+            video.setAttribute('src', videoSrc);
           }
         }
       };
