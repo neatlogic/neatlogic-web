@@ -7,6 +7,25 @@
       <template v-slot:topRight>
         <InputSearcher v-model="searchParams.keyword" @change="searchData()"></InputSearcher>
       </template>
+      <template v-slot:sider>
+        <div class="tenantconfig-module-index">
+          <div
+            v-for="wikiSpace in wikiSpaceList"
+            :key="wikiSpace.space_id"
+            class="module-index-item text-action"
+            :class="{ 'is-active': selectedWikiSpaceId === wikiSpace.space_id }"
+            @click="changeModuleGroup(wikiSpace.space_id)"
+          >
+            <div class="module-index-name overflow" :title="wikiSpace.name">
+              {{ wikiSpace.name }}
+            </div>
+            <!-- <div class="module-index-meta text-grey overflow" :title="moduleGroup.moduleGroup">
+              {{ moduleGroup.configCount || 0 }} {{ $t('page.strip') }}
+            </div> -->
+          </div>
+          <NoData v-if="!wikiSpaceLoading && wikiSpaceList.length === 0"></NoData>
+        </div>
+      </template>
       <template v-slot:content>
         <Loading :loadingShow="isLoading" type="fix"></Loading>
         <TsTable
@@ -115,13 +134,32 @@ export default {
         { title: '', key: 'action' }
       ],
       tableConfig: { tbodyList: [], rowNum: 0, pageSize: 20, currentPage: 1 },
-      auditTableConfig: { tbodyList: [], rowNum: 0, pageSize: 10, currentPage: 1 }
+      auditTableConfig: { tbodyList: [], rowNum: 0, pageSize: 10, currentPage: 1 },
+      wikiSpaceLoading: false,
+      selectedWikiSpaceId: null,
+      wikiSpaceList: []
     };
   },
   created() {
+    this.listWikiSpace();
     this.searchData();
   },
   methods: {
+    listWikiSpace() {
+      this.wikiSpaceLoading = true;
+      this.$api.knowledge.feishu.listWikiSpace({}).then(res => {
+        if (res.Status === 'OK') {
+          // 后端使用 TableResultUtil 返回 Wiki 空间列表，前端统一从 tbodyList 取数。
+          this.wikiSpaceList = (res.Return && res.Return.tbodyList) || [];
+          if (this.selectedWikiSpaceId && !this.wikiSpaceList.find(wikiSpace => wikiSpace.space_id === this.selectedWikiSpaceId)) {
+            // 当前选中的空间已不存在时清空选中态，避免左侧控件展示过期状态。
+            this.selectedWikiSpaceId = null;
+          }
+        }
+      }).finally(() => {
+        this.wikiSpaceLoading = false;
+      });
+    },
     searchData() {
       this.isLoading = true;
       this.$api.knowledge.feishu.searchConfig(this.searchParams).then(res => {
@@ -216,6 +254,10 @@ export default {
       this.auditSearchParams.currentPage = 1;
       this.auditSearchParams.pageSize = pageSize;
       this.searchAudit();
+    },
+    changeModuleGroup(spaceId) {
+      // 左侧 Wiki 空间支持再次点击取消选中，当前后端配置搜索未开放 spaceId 筛选，仅维护控件选中态。
+      this.selectedWikiSpaceId = this.selectedWikiSpaceId === spaceId ? null : spaceId;
     },
     statusText(status) {
       const map = { succeed: '成功', failed: '失败', running: '执行中' };

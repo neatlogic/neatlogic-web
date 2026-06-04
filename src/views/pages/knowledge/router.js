@@ -126,7 +126,7 @@ export default [
     name: 'feishu-sync-manage',
     component: feishuSyncManage,
     meta: {
-      title: '飞书云文档同步',
+      title: '同步飞书知识库',
       ismenu: true,
       icon: 'tsfont-sync',
       authority: 'KNOWLEDGE_FEISHU_SYNC_MODIFY',
