@@ -2880,6 +2880,10 @@
     "listen": "监听",
     "javaprocess": "JAVA进程",
     "autotrigger": "自动触发",
+    "objectname": "对象名",
+    "dumpid": "#",
+    "downloadrawthreaddump": "下载原始线程快照",
+    "servicename": "服务名",
     "level": "等级",
     "plevel": "上次等级"
   },

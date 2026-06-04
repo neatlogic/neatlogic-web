@@ -1261,6 +1261,39 @@ select {
   cursor: pointer;
 }
 
+.metric-value {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  max-width: none;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.metric-value > span,
+.metric-value > .ivu-tooltip {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.metric-value > span:first-child,
+.metric-value > .ivu-tooltip:first-child {
+  flex: 0 0 auto;
+  min-width: auto;
+}
+
+.metric-value > span.ml-md:not(.cursor) {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.metric-value .ivu-icon {
+  line-height: 1;
+}
+
 //移上去才显示的滚动条，主要兼容chrome浏览器
 .tsscroll-container {
   overflow: auto;

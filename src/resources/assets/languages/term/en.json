@@ -2887,6 +2887,10 @@
     "listen": "monitor",
     "javaprocess": "JAVA Process",
     "autotrigger": "auto-trigger",
+    "objectname": "Object Name",
+    "dumpid": "#",
+    "downloadrawthreaddump": "Download raw thread dump",
+    "servicename": "Service",
     "level": "level",
     "plevel": "Last level"
   },
