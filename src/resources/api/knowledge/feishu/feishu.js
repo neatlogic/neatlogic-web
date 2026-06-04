@@ -17,8 +17,16 @@ const feishu = {
     return axios.post('/api/rest/knowledge/feishu/sync/config/delete', params);
   },
   listWikiSpace(params) {
-    // 获取飞书 Wiki 空间列表，供同步配置管理页左侧控件展示使用。
+    // Load Feishu Wiki spaces for the left-side space selector.
     return axios.post('/api/rest/knowledge/feishu/wiki/space/list', params);
+  },
+  listWikiNode(params) {
+    // Load Feishu Wiki nodes for the main table after a space is selected.
+    return axios.post('/api/rest/knowledge/feishu/wiki/node/list', params);
+  },
+  syncWikiDocument(params) {
+    // Batch sync selected Feishu Wiki spaces into NeatLogic knowledge documents.
+    return axios.post('/api/rest/knowledge/feishu/wiki/document/sync', params);
   },
   execute(params) {
     return axios.post('/api/rest/knowledge/feishu/sync/execute', params);
