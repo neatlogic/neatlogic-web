@@ -1,4 +1,28 @@
 import utils from '@/resources/assets/js/util.js';
+
+function normalizeInternalResourceUrl(url = '') {
+  const value = String(url || '');
+  if (!value || /^(data:|blob:|mailto:|tel:|#)/i.test(value) || /^api\//i.test(value)) {
+    return value;
+  }
+
+  try {
+    const parsedUrl = new URL(value, document.baseURI);
+    if (parsedUrl.origin !== window.location.origin) {
+      return value;
+    }
+
+    const apiIndex = parsedUrl.pathname.indexOf('/api/');
+    if (apiIndex > -1) {
+      return parsedUrl.pathname.slice(apiIndex + 1) + parsedUrl.search + parsedUrl.hash;
+    }
+  } catch (e) {
+    return value;
+  }
+
+  return value;
+}
+
 export default function video({ editor, position, options, https }) {
   const { file } = options || {};
   const { insertPosition } = position || {};
@@ -22,7 +46,7 @@ export default function video({ editor, position, options, https }) {
     }).then((res) => {
       const { Status = 'OK', Return: { url = '' } = {} } = res || {};
       if (Status === 'OK' && url) {
-        editor.chain().focus().updateVideo({ recordUuid: uuid, position: insertPosition, src: url, loading: false }).run();
+        editor.chain().focus().updateVideo({ recordUuid: uuid, position: insertPosition, url: normalizeInternalResourceUrl(url), loading: false }).run();
       }
     }).catch(() => {});
 }

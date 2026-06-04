@@ -1,14 +1,30 @@
 import utils from '@/resources/assets/js/util.js';
 
-function normalizeDownloadUrl(url) {
+function normalizeInternalResourceUrl(url = '') {
   const value = String(url || '');
-  if (/^(https?:)?\/\//.test(value) || /^(blob|data):/.test(value) || value.startsWith('/')) {
+  if (!value || /^(data:|blob:|mailto:|tel:|#)/i.test(value) || /^api\//i.test(value)) {
     return value;
   }
-  if (value) {
-    return `/${value.replace(/^\/+/, '')}`;
+
+  if (value.indexOf('/api/') === 0) {
+    return value.slice(1);
   }
-  return '';
+
+  try {
+    const parsedUrl = new URL(value, document.baseURI);
+    if (parsedUrl.origin !== window.location.origin) {
+      return value;
+    }
+
+    const apiIndex = parsedUrl.pathname.indexOf('/api/');
+    if (apiIndex > -1) {
+      return parsedUrl.pathname.slice(apiIndex + 1) + parsedUrl.search + parsedUrl.hash;
+    }
+  } catch (e) {
+    return value;
+  }
+
+  return value;
 }
 
 export default function file({ editor, position, options, https }) {
@@ -40,7 +56,7 @@ export default function file({ editor, position, options, https }) {
     }).then((res) => {
       const { Status = 'OK', Return: fileInfo = {} } = res || {};
       const { id = null, name = file.name, size = file.size, ext = '', sizeText = '' } = fileInfo || {};
-      const url = normalizeDownloadUrl(fileInfo?.url);
+      const url = normalizeInternalResourceUrl(fileInfo?.url);
       if (Status === 'OK' && url) {
         editor.chain().focus().updateFile({
           recordUuid: uuid,
