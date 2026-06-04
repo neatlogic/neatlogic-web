@@ -1,10 +1,11 @@
 export default function italic({ editor, position, options }) {
-  const { isStrike } = options || {};
-  if (isStrike) {
+  const { isItalic } = options || {};
+  if (isItalic) {
     editor
       .chain()
       .focus()
-      .unsetItalic();
+      .unsetItalic()
+      .run();
   } else {
     editor
       .chain()

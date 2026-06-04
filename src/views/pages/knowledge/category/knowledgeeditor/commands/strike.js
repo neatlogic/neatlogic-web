@@ -4,7 +4,8 @@ export default function strike({ editor, position, options }) {
     editor
       .chain()
       .focus()
-      .unsetStrike();
+      .unsetStrike()
+      .run();
   } else {
     editor
       .chain()
