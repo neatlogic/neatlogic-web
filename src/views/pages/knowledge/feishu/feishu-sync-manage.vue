@@ -505,6 +505,10 @@ export default {
       this.searchAudit();
     },
     changeModuleGroup(spaceId) {
+      if (this.selectedWikiSpaceId === spaceId) {
+        // 重复点击当前空间时不重新查询，避免相同参数连续调用节点列表接口。
+        return;
+      }
       // 切换空间时刷新右侧节点表格，并清空表格节点勾选状态。
       this.selectedWikiSpaceId = spaceId;
       this.selectedNodeTokenList = [];
@@ -560,6 +564,12 @@ export default {
   padding: 6px 8px;
   margin-bottom: 8px;
   border-radius: 4px;
+
+  &.is-active {
+    // 当前空间选中后使用蓝色背景，明确展示右侧表格对应的数据来源。
+    background-color: #2d8cf0;
+    color: #fff;
+  }
 }
 
 .wiki-space-checkbox {
