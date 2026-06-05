@@ -262,20 +262,26 @@ export default {
         return;
       }
       this.isLoading = true;
-      this.$api.knowledge.feishu.listWikiNode({ spaceId: this.selectedWikiSpaceId }).then(res => {
+      this.$api.knowledge.feishu.listWikiNode({
+        spaceId: this.selectedWikiSpaceId,
+        currentPage: this.searchParams.currentPage,
+        pageSize: this.searchParams.pageSize
+      }).then(res => {
         if (res.Status === 'OK') {
-          // 根节点仍通过 spaceId 获取；子节点在点击展开时再通过 parentNodeToken 懒加载。
-          const allNodeList = this.decorateNodeList((res.Return && res.Return.tbodyList) || []);
+          const { tbodyList = [], rowNum = 0, pageSize = this.searchParams.pageSize, currentPage = this.searchParams.currentPage } = res.Return || {};
+          // 主表分页大小以 wiki/node/list 接口返回的 pageSize 为准，避免前端固定页大小导致分页显示不正确。
+          const allNodeList = this.decorateNodeList(tbodyList);
           const filteredNodeList = this.filterNodeList(allNodeList);
-          const startIndex = (this.searchParams.currentPage - 1) * this.searchParams.pageSize;
-          const tbodyList = filteredNodeList.slice(startIndex, startIndex + this.searchParams.pageSize);
           const filteredNodeTokenList = this.getAllNodeTokenList(filteredNodeList);
           this.selectedNodeTokenList = this.selectedNodeTokenList.filter(nodeToken => filteredNodeTokenList.includes(nodeToken));
+          // 同步接口返回的分页状态，保证后续翻页继续使用后端返回的 pageSize。
+          this.searchParams.pageSize = pageSize;
+          this.searchParams.currentPage = currentPage;
           this.tableConfig = {
-            tbodyList,
-            rowNum: filteredNodeList.length,
-            pageSize: this.searchParams.pageSize,
-            currentPage: this.searchParams.currentPage
+            tbodyList: filteredNodeList,
+            rowNum: this.searchParams.keyword ? filteredNodeList.length : rowNum,
+            pageSize,
+            currentPage
           };
         }
       }).finally(() => {
