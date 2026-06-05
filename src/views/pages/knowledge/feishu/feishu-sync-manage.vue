@@ -51,15 +51,17 @@
       <template v-slot:content>
         <Loading :loadingShow="isLoading" type="fix"></Loading>
         <TsTable
-          :theadList="theadList"
+          :theadList="nodeTheadList"
           :value="selectedNodeTokenList"
           keyName="nodeToken"
           multiple
           selectedRemain
+          canExpand
           v-bind="tableConfig"
           @changeCurrent="changeCurrent"
           @changePageSize="changePageSize"
           @getSelected="getSelectedNode"
+          @toggleExpand="toggleNodeExpand"
         >
           <template v-slot:title="{row}">
             <span>{{ row.title }}</span>
@@ -69,6 +71,17 @@
           </template>
           <template v-slot:hasChild="{row}">
             <span>{{ row.hasChild ? '是' : '否' }}</span>
+          </template>
+          <template v-slot:expand="{ row }">
+            <!-- 有 hasChild 的节点在当前行下方递归嵌套子表，展开时再加载 children 数据。 -->
+            <WikiNodeNestedTable
+              :row="row"
+              :thead-list="nodeTheadList"
+              :selected-node-token-list="selectedNodeTokenList"
+              :get-path-text="getPathText"
+              :toggle-node-expand="toggleNodeExpand"
+              :get-selected-node="getSelectedNode"
+            ></WikiNodeNestedTable>
           </template>
         </TsTable>
       </template>
@@ -108,13 +121,79 @@
 </template>
 
 <script>
+const WikiNodeNestedTable = {
+  name: 'WikiNodeNestedTable',
+  components: {
+    TsTable: () => import('@/resources/components/TsTable/TsTable')
+  },
+  props: {
+    row: { type: Object, default: () => ({}) },
+    theadList: { type: Array, default: () => [] },
+    selectedNodeTokenList: { type: Array, default: () => [] },
+    getPathText: { type: Function, required: true },
+    toggleNodeExpand: { type: Function, required: true },
+    getSelectedNode: { type: Function, required: true }
+  },
+  methods: {
+    getChildTableConfig(row) {
+      // 子表格不分页，只展示展开接口返回并写入当前行 children 的下一层节点。
+      const tbodyList = row && row.children ? row.children : [];
+      return {
+        theadList: this.theadList,
+        tbodyList,
+        rowNum: tbodyList.length,
+        pageSize: tbodyList.length || 1,
+        currentPage: 1
+      };
+    }
+  },
+  render(h) {
+    // 使用 render 函数声明递归子表，避免在同一 SFC 中拆出额外文件。
+    return h('div', { class: 'wiki-node-expand' }, [
+      this.row.childrenLoading ? h('Loading', { props: { loadingShow: true, type: 'fix' } }) : null,
+      h('TsTable', {
+        props: {
+          ...this.getChildTableConfig(this.row),
+          value: this.selectedNodeTokenList,
+          keyName: 'nodeToken',
+          multiple: true,
+          selectedRemain: true,
+          showPager: false,
+          canResize: false,
+          canExpand: true
+        },
+        on: {
+          toggleExpand: this.toggleNodeExpand,
+          getSelected: this.getSelectedNode
+        },
+        scopedSlots: {
+          title: ({ row }) => h('span', [row.title]),
+          path: ({ row }) => h('span', [this.getPathText(row.path)]),
+          hasChild: ({ row }) => h('span', [row.hasChild ? '是' : '否']),
+          expand: ({ row }) => h(WikiNodeNestedTable, {
+            props: {
+              row,
+              theadList: this.theadList,
+              selectedNodeTokenList: this.selectedNodeTokenList,
+              getPathText: this.getPathText,
+              toggleNodeExpand: this.toggleNodeExpand,
+              getSelectedNode: this.getSelectedNode
+            }
+          })
+        }
+      })
+    ]);
+  }
+};
+
 export default {
   name: 'FeishuSyncManage',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
-    FeishuSyncEdit: () => import('./feishu-sync-edit.vue')
+    FeishuSyncEdit: () => import('./feishu-sync-edit.vue'),
+    WikiNodeNestedTable
   },
   data() {
     return {
@@ -126,13 +205,14 @@ export default {
       currentEditConfig: null,
       searchParams: { keyword: '', currentPage: 1, pageSize: 20 },
       auditSearchParams: { configId: null, currentPage: 1, pageSize: 10 },
-      theadList: [
+      nodeTheadList: [
         { key: 'selection', multiple: true, width: 20 },
-        { title: '标题', key: 'title' },
-        { title: '类型', key: 'objType' },
-        { title: '路径', key: 'path' },
-        { title: '更新时间', key: 'updateTime', type: 'time' },
-        { title: '包含子节点', key: 'hasChild' },
+        { key: 'expander', width: 40 },
+        { title: '标题', key: 'title', width: 220 },
+        { title: '类型', key: 'objType', width: 90 },
+        { title: '路径', key: 'path', width: 240 },
+        { title: '更新时间', key: 'updateTime', type: 'time', width: 160 },
+        { title: '包含子节点', key: 'hasChild', width: 100 },
         { title: '节点 Token', key: 'nodeToken' }
       ],
       auditTheadList: [
@@ -190,12 +270,12 @@ export default {
       this.isLoading = true;
       this.$api.knowledge.feishu.listWikiNode({ spaceId: this.selectedWikiSpaceId }).then(res => {
         if (res.Status === 'OK') {
-          // 表格数据来源改为 knowledge/feishu/wiki/node/list，前端负责关键字过滤和分页。
-          const allNodeList = (res.Return && res.Return.tbodyList) || [];
+          // 根节点仍通过 spaceId 获取；子节点在点击展开时再通过 parentNodeToken 懒加载。
+          const allNodeList = this.decorateNodeList((res.Return && res.Return.tbodyList) || []);
           const filteredNodeList = this.filterNodeList(allNodeList);
           const startIndex = (this.searchParams.currentPage - 1) * this.searchParams.pageSize;
           const tbodyList = filteredNodeList.slice(startIndex, startIndex + this.searchParams.pageSize);
-          const filteredNodeTokenList = filteredNodeList.map(node => node.nodeToken);
+          const filteredNodeTokenList = this.getAllNodeTokenList(filteredNodeList);
           this.selectedNodeTokenList = this.selectedNodeTokenList.filter(nodeToken => filteredNodeTokenList.includes(nodeToken));
           this.tableConfig = {
             tbodyList,
@@ -207,6 +287,42 @@ export default {
       }).finally(() => {
         this.isLoading = false;
       });
+    },
+    decorateNodeList(nodeList) {
+      // 是否显示嵌套表格入口只由 hasChild 字段决定，不再依赖 children 是否有数据。
+      return (nodeList || []).map(node => {
+        return {
+          ...node,
+          children: [],
+          childrenLoaded: false,
+          childrenLoading: false,
+          '#expander': node.hasChild === true,
+          _expand: false
+        };
+      });
+    },
+    decorateChildNodeList(nodeList) {
+      // 展开接口返回的子节点也补充展开字段，方便继续按 hasChild 懒加载下一层。
+      return (nodeList || []).map(node => {
+        return {
+          ...node,
+          children: [],
+          childrenLoaded: false,
+          childrenLoading: false,
+          '#expander': node.hasChild === true,
+          _expand: false
+        };
+      });
+    },
+    getAllNodeTokenList(nodeList) {
+      // 递归收集当前已加载节点里的所有 nodeToken，确保嵌套行勾选不会在刷新后丢失。
+      return (nodeList || []).reduce((tokenList, node) => {
+        if (node.nodeToken) {
+          tokenList.push(node.nodeToken);
+        }
+        tokenList.push(...this.getAllNodeTokenList(node.children || []));
+        return tokenList;
+      }, []);
     },
     filterNodeList(nodeList) {
       const keyword = this.searchParams.keyword;
@@ -221,12 +337,39 @@ export default {
         });
       });
     },
+    toggleNodeExpand(row, isExpand) {
+      const nextExpand = typeof isExpand === 'boolean' ? isExpand : !row._expand;
+      // 展开按钮只维护当前行 _expand 状态，兼容表头全展开传入的布尔值。
+      this.$set(row, '_expand', nextExpand);
+      if (nextExpand) {
+        this.loadChildNodeList(row);
+      }
+    },
+    loadChildNodeList(row) {
+      if (!row || row.hasChild !== true || row.childrenLoaded || row.childrenLoading) {
+        return;
+      }
+      this.$set(row, 'childrenLoading', true);
+      this.$api.knowledge.feishu.listWikiNode({
+        spaceId: this.selectedWikiSpaceId,
+        parentNodeToken: row.nodeToken
+      }).then(res => {
+        if (res.Status === 'OK') {
+          // 点击展开时按 parentNodeToken 获取当前节点下一层 children 数据。
+          const childList = this.decorateChildNodeList((res.Return && res.Return.tbodyList) || []);
+          this.$set(row, 'children', childList);
+          this.$set(row, 'childrenLoaded', true);
+        }
+      }).finally(() => {
+        this.$set(row, 'childrenLoading', false);
+      });
+    },
     getPathText(path) {
       // FeishuNode.path 是数组，表格中展示为层级路径文本。
       return Array.isArray(path) ? path.join(' / ') : (path || '-');
     },
     getSelectedNode(selectedNodeTokenList) {
-      // TsTable 内置勾选列通过 getSelected 返回 keyName 列表，这里保存为 nodeTokenList 入参。
+      // 主表和嵌套表都通过 getSelected 返回 keyName 列表，这里统一保存为 nodeTokenList 入参。
       this.selectedNodeTokenList = selectedNodeTokenList || [];
     },
     batchSyncWikiNodeDocument() {
@@ -429,5 +572,11 @@ export default {
 
 .wiki-space-name {
   flex: 1;
+}
+
+.wiki-node-expand {
+  min-height: 48px;
+  padding: 8px 16px;
+  position: relative;
 }
 </style>
