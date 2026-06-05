@@ -66,6 +66,13 @@
           <template v-slot:hasChild="{row}">
             <span>{{ row.hasChild ? '是' : '否' }}</span>
           </template>
+          <template v-slot:config="{row}">
+            <div class="node-action-list">
+              <span class="text-action" @click.stop="confirmSyncWikiNode(row)">同步</span>
+              <span class="text-action" @click.stop="openFeishuWikiDocument(row)">查看飞书文档</span>
+              <span class="text-action" @click.stop="openKnowledgeSyncResult(row)">查看同步结果</span>
+            </div>
+          </template>
           <template v-slot:expand="{ row }">
             <!-- 有 hasChild 的节点在当前行下方递归嵌套子表，展开时再加载 children 数据。 -->
             <WikiNodeNestedTable
@@ -75,6 +82,9 @@
               :get-path-text="getPathText"
               :toggle-node-expand="toggleNodeExpand"
               :get-selected-node="getSelectedNode"
+              :confirm-sync-wiki-node="confirmSyncWikiNode"
+              :open-feishu-wiki-document="openFeishuWikiDocument"
+              :open-knowledge-sync-result="openKnowledgeSyncResult"
             ></WikiNodeNestedTable>
           </template>
         </TsTable>
@@ -126,7 +136,10 @@ const WikiNodeNestedTable = {
     selectedNodeTokenList: { type: Array, default: () => [] },
     getPathText: { type: Function, required: true },
     toggleNodeExpand: { type: Function, required: true },
-    getSelectedNode: { type: Function, required: true }
+    getSelectedNode: { type: Function, required: true },
+    confirmSyncWikiNode: { type: Function, required: true },
+    openFeishuWikiDocument: { type: Function, required: true },
+    openKnowledgeSyncResult: { type: Function, required: true }
   },
   methods: {
     getChildTableConfig(row) {
@@ -164,6 +177,12 @@ const WikiNodeNestedTable = {
           title: ({ row }) => h('span', [row.title]),
           path: ({ row }) => h('span', [this.getPathText(row.path)]),
           hasChild: ({ row }) => h('span', [row.hasChild ? '是' : '否']),
+          config: ({ row }) => h('div', { class: 'node-action-list' }, [
+            // 子表格操作按钮和主表保持一致，避免嵌套节点缺少同步和跳转入口。
+            h('span', { class: 'text-action', on: { click: event => { event.stopPropagation(); this.confirmSyncWikiNode(row); } } }, ['同步']),
+            h('span', { class: 'text-action', on: { click: event => { event.stopPropagation(); this.openFeishuWikiDocument(row); } } }, ['查看飞书文档']),
+            h('span', { class: 'text-action', on: { click: event => { event.stopPropagation(); this.openKnowledgeSyncResult(row); } } }, ['查看同步结果'])
+          ]),
           expand: ({ row }) => h(WikiNodeNestedTable, {
             props: {
               row,
@@ -171,7 +190,10 @@ const WikiNodeNestedTable = {
               selectedNodeTokenList: this.selectedNodeTokenList,
               getPathText: this.getPathText,
               toggleNodeExpand: this.toggleNodeExpand,
-              getSelectedNode: this.getSelectedNode
+              getSelectedNode: this.getSelectedNode,
+              confirmSyncWikiNode: this.confirmSyncWikiNode,
+              openFeishuWikiDocument: this.openFeishuWikiDocument,
+              openKnowledgeSyncResult: this.openKnowledgeSyncResult
             }
           })
         }
@@ -204,11 +226,11 @@ export default {
         { key: 'selection', multiple: true, width: 20 },
         { key: 'expander', width: 40 },
         { title: '标题', key: 'title', width: 220 },
-        { title: '类型', key: 'objType', width: 90 },
-        { title: '路径', key: 'path', width: 240 },
-        { title: '更新时间', key: 'updateTime', type: 'time', width: 160 },
-        { title: '包含子节点', key: 'hasChild', width: 100 },
-        { title: '节点 Token', key: 'nodeToken' }
+        { title: '最后一次修改时间', key: 'updateTime', type: 'time', width: 160 },
+        { title: '状态', key: 'statusText', width: 90 },
+        { title: '异常', key: 'config', width: 100 },
+        { title: '上次同步时间', key: 'lcd', type: 'time', width: 160 },
+        { key: 'action' }
       ],
       auditTheadList: [
         { title: '方向', key: 'direction' },
@@ -414,6 +436,44 @@ export default {
         this.isBatchSyncing = false;
       });
     },
+    confirmSyncWikiNode(row) {
+      if (!row || !row.nodeToken || this.isBatchSyncing) {
+        return;
+      }
+      this.$createDialog({
+        title: '确认同步',
+        content: '同步将会为文档创建一个新版本',
+        'on-ok': vnode => {
+          this.isBatchSyncing = true;
+          // 单行同步只提交当前行 nodeToken，接口入参仍沿用 nodeTokenList 数组结构。
+          this.$api.knowledge.feishu.syncWikiDocument({ nodeTokenList: [row.nodeToken] }).then(res => {
+            if (res.Status === 'OK') {
+              vnode.isShow = false;
+              this.$Message.success('同步已提交');
+              this.searchData();
+            }
+          }).finally(() => {
+            this.isBatchSyncing = false;
+          });
+        }
+      });
+    },
+    openFeishuWikiDocument(row) {
+      if (!row || !row.nodeToken) {
+        return;
+      }
+      // 飞书 Wiki 文档地址由节点 token 拼接，点击后在新标签页打开原文档。
+      window.open(`https://lqnnbz38z5y.feishu.cn/wiki/${row.nodeToken}`, '_blank');
+    },
+    openKnowledgeSyncResult(row) {
+      if (!row || !row.knowledgeDocumentId || !row.knowledgeDocumentTypeUuid || !row.knowledgeDocumentVersionId) {
+        this.$Message.warning('暂无同步结果');
+        return;
+      }
+      // 同步结果地址使用接口返回的知识文档 ID、类型 UUID 和版本 ID 拼接。
+      const url = `http://localhost:8081/develop/knowledge.html#/knowledge-detail?knowledgeDocumentId=${row.knowledgeDocumentId}&knowledgeDocumentTypeUuid=${row.knowledgeDocumentTypeUuid}&knowledgeDocumentVersionId=${row.knowledgeDocumentVersionId}&status=passed`;
+      window.open(url, '_blank');
+    },
     isWikiSpaceChecked(spaceId) {
       // 集中判断左侧空间勾选状态，避免模板中出现复杂表达式。
       return this.selectedWikiSpaceIdList.includes(spaceId);
@@ -605,5 +665,12 @@ export default {
   min-height: 48px;
   padding: 8px 16px;
   position: relative;
+}
+
+.node-action-list {
+  // 操作列宽度较窄，三个按钮纵向排列可以避免文字互相挤压。
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 </style>
