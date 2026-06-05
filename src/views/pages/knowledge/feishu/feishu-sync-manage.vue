@@ -66,11 +66,14 @@
           <template v-slot:hasChild="{row}">
             <span>{{ row.hasChild ? '是' : '否' }}</span>
           </template>
-          <template v-slot:config="{row}">
-            <div class="node-action-list">
-              <span class="text-action" @click.stop="confirmSyncWikiNode(row)">同步</span>
-              <span class="text-action" @click.stop="openFeishuWikiDocument(row)">查看飞书文档</span>
-              <span class="text-action" @click.stop="openKnowledgeSyncResult(row)">查看同步结果</span>
+          <template v-slot:action="{row}">
+            <!-- 文档行操作统一放在 action 列，避免占用异常/信息列。 -->
+            <div class="tstable-action">
+              <ul class="tstable-action-ul">
+                <li class="tsfont-play" @click="confirmSyncWikiNode(row)">{{ '同步' }}</li>
+                <li @click="openFeishuWikiDocument(row)">{{ '查看飞书文档' }}</li>
+                <li v-if="row.knowledgeDocumentId && row.knowledgeDocumentVersionId && row.knowledgeDocumentTypeUuid" @click="openKnowledgeSyncResult(row)">{{ '查看同步结果' }}</li>
+              </ul>
             </div>
           </template>
           <template v-slot:expand="{ row }">
@@ -177,11 +180,13 @@ const WikiNodeNestedTable = {
           title: ({ row }) => h('span', [row.title]),
           path: ({ row }) => h('span', [this.getPathText(row.path)]),
           hasChild: ({ row }) => h('span', [row.hasChild ? '是' : '否']),
-          config: ({ row }) => h('div', { class: 'node-action-list' }, [
-            // 子表格操作按钮和主表保持一致，避免嵌套节点缺少同步和跳转入口。
-            h('span', { class: 'text-action', on: { click: event => { event.stopPropagation(); this.confirmSyncWikiNode(row); } } }, ['同步']),
-            h('span', { class: 'text-action', on: { click: event => { event.stopPropagation(); this.openFeishuWikiDocument(row); } } }, ['查看飞书文档']),
-            h('span', { class: 'text-action', on: { click: event => { event.stopPropagation(); this.openKnowledgeSyncResult(row); } } }, ['查看同步结果'])
+          action: ({ row }) => h('div', { class: 'tstable-action' }, [
+            // 嵌套表格行也使用 action 列展示同步和跳转操作，和最外层表格保持一致。
+            h('ul', { class: 'tstable-action-ul' }, [
+              h('li', { class: 'tsfont-play', on: { click: event => { event.stopPropagation(); this.confirmSyncWikiNode(row); } } }, ['同步']),
+              h('li', { on: { click: event => { event.stopPropagation(); this.openFeishuWikiDocument(row); } } }, ['查看飞书文档']),
+              h('li', { on: { click: event => { event.stopPropagation(); this.openKnowledgeSyncResult(row); } } }, ['查看同步结果'])
+            ])
           ]),
           expand: ({ row }) => h(WikiNodeNestedTable, {
             props: {
@@ -223,13 +228,14 @@ export default {
       searchParams: { keyword: '', currentPage: 1, pageSize: 20 },
       auditSearchParams: { configId: null, currentPage: 1, pageSize: 10 },
       nodeTheadList: [
-        { key: 'selection', multiple: true, width: 20 },
-        { key: 'expander', width: 40 },
-        { title: '标题', key: 'title', width: 220 },
-        { title: '最后一次修改时间', key: 'updateTime', type: 'time', width: 160 },
-        { title: '状态', key: 'statusText', width: 90 },
-        { title: '异常', key: 'config', width: 100 },
-        { title: '上次同步时间', key: 'lcd', type: 'time', width: 160 },
+        { key: 'selection', multiple: true },
+        { key: 'expander' },
+        { title: '标题', key: 'title' },
+        { title: '最后一次修改时间', key: 'updateTime', type: 'time' },
+        { title: '状态', key: 'statusText' },
+        { title: '异常', key: 'config' },
+        { title: '上次同步时间', key: 'lcd', type: 'time' },
+        // 行操作按钮统一放在 action 列，config 列保留给接口返回的异常信息。
         { key: 'action' }
       ],
       auditTheadList: [
