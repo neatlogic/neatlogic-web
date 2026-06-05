@@ -4,10 +4,10 @@
       <template v-slot:topLeft>
         <span class="tsfont-plus text-action" @click="openEditDialog()">同步配置</span>
         <span
-          v-if="selectedNodeTokenList.length > 0"
+          v-if="hasBatchSyncSelection"
           class="text-action tsfont-sync table-batch-action"
           :class="{ 'text-disabled': isBatchSyncing }"
-          @click="batchSyncWikiNodeDocument"
+          @click="batchSyncSelectedDocument"
         >批量同步</span>
       </template>
       <template v-slot:topRight>
@@ -21,12 +21,6 @@
               :value="isAllWikiSpaceChecked"
               @click.prevent.native="toggleAllWikiSpaceChecked"
             >全选</Checkbox>
-            <span
-              v-if="selectedWikiSpaceIdList.length > 0"
-              class="text-action tsfont-sync wiki-space-batch-action"
-              :class="{ 'text-disabled': isBatchSyncing }"
-              @click="batchSyncWikiDocument"
-            >批量同步</span>
           </div>
           <div
             v-for="wikiSpace in wikiSpaceList"
@@ -372,15 +366,24 @@ export default {
       // 主表和嵌套表都通过 getSelected 返回 keyName 列表，这里统一保存为 nodeTokenList 入参。
       this.selectedNodeTokenList = selectedNodeTokenList || [];
     },
-    batchSyncWikiNodeDocument() {
-      if (this.selectedNodeTokenList.length === 0 || this.isBatchSyncing) {
+    batchSyncSelectedDocument() {
+      if (!this.hasBatchSyncSelection || this.isBatchSyncing) {
         return;
       }
+      const params = {};
+      if (this.selectedWikiSpaceIdList.length > 0) {
+        // 左侧空间勾选项统一通过顶部批量同步按钮提交，入参使用 spaceIdList。
+        params.spaceIdList = this.selectedWikiSpaceIdList;
+      }
+      if (this.selectedNodeTokenList.length > 0) {
+        // 表格和嵌套表格勾选项统一通过顶部批量同步按钮提交，入参使用 nodeTokenList。
+        params.nodeTokenList = this.selectedNodeTokenList;
+      }
       this.isBatchSyncing = true;
-      this.$api.knowledge.feishu.syncWikiDocument({ nodeTokenList: this.selectedNodeTokenList }).then(res => {
+      this.$api.knowledge.feishu.syncWikiDocument(params).then(res => {
         if (res.Status === 'OK') {
           this.$Message.success('批量同步已提交');
-          // 节点同步完成后刷新当前表格，保持页面数据状态最新。
+          // 空间和节点批量同步共用一个入口，提交成功后刷新当前节点表格状态。
           this.searchData();
         }
       }).finally(() => {
@@ -410,21 +413,6 @@ export default {
         // 勾选当前加载出的全部 Wiki 空间。
         this.selectedWikiSpaceIdList = [...this.allWikiSpaceIdList];
       }
-    },
-    batchSyncWikiDocument() {
-      if (this.selectedWikiSpaceIdList.length === 0 || this.isBatchSyncing) {
-        return;
-      }
-      this.isBatchSyncing = true;
-      this.$api.knowledge.feishu.syncWikiDocument({ spaceIdList: this.selectedWikiSpaceIdList }).then(res => {
-        if (res.Status === 'OK') {
-          this.$Message.success('批量同步已提交');
-          // 空间同步完成后刷新当前节点表格。
-          this.searchData();
-        }
-      }).finally(() => {
-        this.isBatchSyncing = false;
-      });
     },
     openEditDialog(row) {
       // 传入副本给编辑弹框，避免弹框内直接修改父页面数据。
@@ -523,6 +511,10 @@ export default {
     }
   },
   computed: {
+    hasBatchSyncSelection() {
+      // 顶部批量同步按钮作为唯一入口，空间或节点任一勾选时都需要显示。
+      return this.selectedWikiSpaceIdList.length > 0 || this.selectedNodeTokenList.length > 0;
+    },
     allWikiSpaceIdList() {
       // 将可选空间 id 汇总成统一列表，供左侧全选状态判断使用。
       return this.wikiSpaceList.map(wikiSpace => wikiSpace.space_id);
@@ -551,7 +543,6 @@ export default {
   margin-bottom: 8px;
 }
 
-.wiki-space-batch-action,
 .table-batch-action {
   margin-left: 12px;
 }
