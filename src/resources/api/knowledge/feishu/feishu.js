@@ -10,6 +10,14 @@ const feishu = {
   saveConfig(params) {
     return axios.post('/api/rest/knowledge/feishu/sync/config/save', params);
   },
+  getAppCredentials(params) {
+    // Get the latest Feishu app credentials for the credentials dialog and page-entry check.
+    return axios.post('/api/rest/knowledge/feishu/app/credentials/get', params);
+  },
+  saveAppCredentials(params) {
+    // Save Feishu app credentials used by Wiki space and document sync.
+    return axios.post('/api/rest/knowledge/feishu/app/credentials/save', params);
+  },
   updateStatus(params) {
     return axios.post('/api/rest/knowledge/feishu/sync/config/status/update', params);
   },

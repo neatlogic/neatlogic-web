@@ -2,7 +2,7 @@
   <div class="feishu-sync-manage">
     <TsContain>
       <template v-slot:topLeft>
-        <span class="tsfont-plus text-action" @click="openEditDialog()">同步配置</span>
+        <span class="tsfont-setting text-action" @click="openEditDialog()">应用凭证</span>
         <span
           v-if="hasBatchSyncSelection"
           class="text-action tsfont-sync table-batch-action"
@@ -81,7 +81,7 @@
       </template>
     </TsContain>
 
-    <!-- 新增/编辑同步配置弹框仍由独立组件负责，当前页面只管理弹框开关。 -->
+    <!-- 应用凭证弹框仍由独立组件负责，当前页面只管理弹框开关和保存后刷新。 -->
     <FeishuSyncEdit
       v-if="isEditDialogShow"
       :config-data="currentEditConfig"
@@ -197,6 +197,7 @@ export default {
       isBatchSyncing: false,
       currentConfig: null,
       currentEditConfig: null,
+      appCredentials: null,
       searchParams: { keyword: '', currentPage: 1, pageSize: 20 },
       auditSearchParams: { configId: null, currentPage: 1, pageSize: 10 },
       nodeTheadList: [
@@ -229,9 +230,26 @@ export default {
     };
   },
   created() {
-    this.listWikiSpace();
+    this.initPage();
   },
   methods: {
+    initPage() {
+      // 每次进入页面先获取最新应用凭证，缺失时主动弹出设置弹框。
+      this.getLatestAppCredentials(true).finally(() => {
+        this.listWikiSpace();
+      });
+    },
+    getLatestAppCredentials(needAutoOpen) {
+      return this.$api.knowledge.feishu.getAppCredentials({}).then(res => {
+        if (res.Status === 'OK') {
+          this.appCredentials = res.Return || {};
+          if (needAutoOpen && (!this.appCredentials.appId || !this.appCredentials.appSecret)) {
+            // appId 或 appSecret 缺失时主动弹出应用凭证设置弹框，引导用户先完成配置。
+            this.openEditDialog();
+          }
+        }
+      });
+    },
     listWikiSpace() {
       this.wikiSpaceLoading = true;
       this.$api.knowledge.feishu.listWikiSpace({}).then(res => {
@@ -420,17 +438,19 @@ export default {
         this.selectedWikiSpaceIdList = [...this.allWikiSpaceIdList];
       }
     },
-    openEditDialog(row) {
-      // 传入副本给编辑弹框，避免弹框内直接修改父页面数据。
-      this.currentEditConfig = row ? { ...row, userAccessToken: '' } : null;
+    openEditDialog() {
+      // 打开应用凭证弹框时只传入当前页面缓存，弹框自身会再次调用接口获取最新数据。
+      this.currentEditConfig = this.appCredentials ? { ...this.appCredentials } : null;
       this.isEditDialogShow = true;
     },
     closeEditDialog(needRefresh) {
-      // 配置保存后重新加载空间和节点，避免凭证变更后页面仍展示旧数据。
+      // 凭证保存后重新加载凭证、空间和节点，避免页面仍展示旧数据。
       this.isEditDialogShow = false;
       this.currentEditConfig = null;
       if (needRefresh) {
-        this.listWikiSpace();
+        this.getLatestAppCredentials(false).finally(() => {
+          this.listWikiSpace();
+        });
       }
     },
     updateStatus(row, value) {
