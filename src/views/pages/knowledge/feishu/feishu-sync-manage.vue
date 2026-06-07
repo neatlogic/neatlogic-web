@@ -106,7 +106,7 @@
             <!-- 文档行操作统一放在 action 列，避免占用异常/信息列。 -->
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-play" @click="confirmSyncWikiNode(row)">{{ '同步' }}</li>
+                <li v-if="!isNodeRefreshing(row)" class="tsfont-play" @click="confirmSyncWikiNode(row)">{{ '同步' }}</li>
                 <li @click="openFeishuWikiDocument(row)">{{ '查看飞书文档' }}</li>
                 <li v-if="row.knowledgeDocumentId && row.knowledgeDocumentVersionId && row.knowledgeDocumentTypeUuid" @click="openKnowledgeSyncResult(row)">{{ '查看同步结果' }}</li>
               </ul>
@@ -125,6 +125,7 @@
               :open-feishu-wiki-document="openFeishuWikiDocument"
               :open-knowledge-sync-result="openKnowledgeSyncResult"
               :copy-error-info="copyErrorInfo"
+              :is-node-refreshing="isNodeRefreshing"
             ></WikiNodeNestedTable>
           </template>
         </TsTable>
@@ -180,7 +181,8 @@ const WikiNodeNestedTable = {
     confirmSyncWikiNode: { type: Function, required: true },
     openFeishuWikiDocument: { type: Function, required: true },
     openKnowledgeSyncResult: { type: Function, required: true },
-    copyErrorInfo: { type: Function, required: true }
+    copyErrorInfo: { type: Function, required: true },
+    isNodeRefreshing: { type: Function, required: true }
   },
   methods: {
     getChildTableConfig(row) {
@@ -255,7 +257,7 @@ const WikiNodeNestedTable = {
           action: ({ row }) => h('div', { class: 'tstable-action' }, [
             // 嵌套表格行也使用 action 列展示同步和跳转操作，和最外层表格保持一致。
             h('ul', { class: 'tstable-action-ul' }, [
-              h('li', { class: 'tsfont-play', on: { click: event => { event.stopPropagation(); this.confirmSyncWikiNode(row); } } }, ['同步']),
+              !this.isNodeRefreshing(row) ? h('li', { class: 'tsfont-play', on: { click: event => { event.stopPropagation(); this.confirmSyncWikiNode(row); } } }, ['同步']) : null,
               h('li', { on: { click: event => { event.stopPropagation(); this.openFeishuWikiDocument(row); } } }, ['查看飞书文档']),
               h('li', { on: { click: event => { event.stopPropagation(); this.openKnowledgeSyncResult(row); } } }, ['查看同步结果'])
             ])
@@ -271,7 +273,8 @@ const WikiNodeNestedTable = {
               confirmSyncWikiNode: this.confirmSyncWikiNode,
               openFeishuWikiDocument: this.openFeishuWikiDocument,
               openKnowledgeSyncResult: this.openKnowledgeSyncResult,
-              copyErrorInfo: this.copyErrorInfo
+              copyErrorInfo: this.copyErrorInfo,
+              isNodeRefreshing: this.isNodeRefreshing
             }
           })
         }
@@ -324,6 +327,8 @@ export default {
       tableConfig: { tbodyList: [], rowNum: 0, pageSize: 20, currentPage: 1 },
       auditTableConfig: { tbodyList: [], rowNum: 0, pageSize: 10, currentPage: 1 },
       wikiSpaceLoading: false,
+      refreshStatusTimer: null,
+      isRefreshingStatus: false,
       selectedWikiSpaceId: null,
       selectedWikiSpaceIdList: [],
       selectedNodeTokenList: [],
@@ -332,6 +337,10 @@ export default {
   },
   created() {
     this.initPage();
+  },
+  beforeDestroy() {
+    // 离开页面时清理状态轮询定时器，避免后台继续请求节点列表接口。
+    this.stopRefreshStatusTimer();
   },
   methods: {
     copyErrorInfo(id) {
@@ -381,6 +390,7 @@ export default {
         // 未选中空间时不能调用节点列表接口，表格保持空数据。
         this.tableConfig = { tbodyList: [], rowNum: 0, pageSize: this.searchParams.pageSize, currentPage: 1 };
         this.selectedNodeTokenList = [];
+        this.stopRefreshStatusTimer();
         return;
       }
       this.isLoading = true;
@@ -394,6 +404,8 @@ export default {
           // 主表分页大小以 wiki/node/list 接口返回的 pageSize 为准，避免前端固定页大小导致分页显示不正确。
           const allNodeList = this.decorateNodeList(tbodyList);
           const filteredNodeList = this.filterNodeList(allNodeList);
+          // 刷新主表时保留已展开子表，避免轮询期间展开状态被重置。
+          this.mergeLoadedNodeState(filteredNodeList, this.tableConfig.tbodyList);
           const filteredNodeTokenList = this.getAllNodeTokenList(filteredNodeList);
           this.selectedNodeTokenList = this.selectedNodeTokenList.filter(nodeToken => filteredNodeTokenList.includes(nodeToken));
           // 同步接口返回的分页状态，保证后续翻页继续使用后端返回的 pageSize。
@@ -408,6 +420,7 @@ export default {
         }
       }).finally(() => {
         this.isLoading = false;
+        this.updateRefreshStatusTimer();
       });
     },
     decorateNodeList(nodeList) {
@@ -434,6 +447,101 @@ export default {
           '#expander': node.hasChild === true,
           _expand: false
         };
+      });
+    },
+    mergeLoadedNodeState(newNodeList, oldNodeList) {
+      const oldNodeMap = new Map((oldNodeList || []).map(node => [node.nodeToken, node]));
+      (newNodeList || []).forEach(newNode => {
+        const oldNode = oldNodeMap.get(newNode.nodeToken);
+        if (oldNode) {
+          // 轮询刷新只更新行数据，保留已经展开并加载过的子表数据。
+          newNode.children = oldNode.children || [];
+          newNode.childrenLoaded = oldNode.childrenLoaded || false;
+          newNode.childrenLoading = oldNode.childrenLoading || false;
+          newNode._expand = oldNode._expand || false;
+        }
+      });
+    },
+    isNodeRefreshing(row) {
+      // running、waitting/waiting 都表示同步未结束，需要隐藏同步按钮并参与定时刷新。
+      return row && ['running', 'waitting', 'waiting'].includes(row.status);
+    },
+    hasRefreshingNode(nodeList) {
+      // 递归检查主表和已加载嵌套表中是否存在需要轮询刷新的节点。
+      return (nodeList || []).some(node => this.isNodeRefreshing(node) || this.hasRefreshingNode(node.children || []));
+    },
+    updateRefreshStatusTimer() {
+      if (this.hasRefreshingNode(this.tableConfig.tbodyList)) {
+        this.startRefreshStatusTimer();
+      } else {
+        this.stopRefreshStatusTimer();
+      }
+    },
+    startRefreshStatusTimer() {
+      if (this.refreshStatusTimer) {
+        return;
+      }
+      // 存在 running/waitting 行时每 3 秒刷新一次当前表格数据。
+      this.refreshStatusTimer = setInterval(() => {
+        this.refreshStatusNodeData();
+      }, 3000);
+    },
+    stopRefreshStatusTimer() {
+      if (this.refreshStatusTimer) {
+        // 清理轮询定时器，避免状态结束后继续重复请求。
+        clearInterval(this.refreshStatusTimer);
+        this.refreshStatusTimer = null;
+      }
+    },
+    refreshStatusNodeData() {
+      if (this.isRefreshingStatus || !this.selectedWikiSpaceId) {
+        return;
+      }
+      this.isRefreshingStatus = true;
+      this.$api.knowledge.feishu.listWikiNode({
+        spaceId: this.selectedWikiSpaceId,
+        currentPage: this.searchParams.currentPage,
+        pageSize: this.searchParams.pageSize
+      }).then(res => {
+        if (res.Status === 'OK') {
+          const { tbodyList = [], rowNum = 0, pageSize = this.searchParams.pageSize, currentPage = this.searchParams.currentPage } = res.Return || {};
+          // 定时刷新时更新当前页行数据，并保留已有的展开子表状态。
+          const allNodeList = this.decorateNodeList(tbodyList);
+          const filteredNodeList = this.filterNodeList(allNodeList);
+          this.mergeLoadedNodeState(filteredNodeList, this.tableConfig.tbodyList);
+          this.searchParams.pageSize = pageSize;
+          this.searchParams.currentPage = currentPage;
+          this.tableConfig = {
+            tbodyList: filteredNodeList,
+            rowNum: this.searchParams.keyword ? filteredNodeList.length : rowNum,
+            pageSize,
+            currentPage
+          };
+          this.refreshLoadedChildNodeList(this.tableConfig.tbodyList);
+        }
+      }).finally(() => {
+        this.isRefreshingStatus = false;
+        this.updateRefreshStatusTimer();
+      });
+    },
+    refreshLoadedChildNodeList(nodeList) {
+      (nodeList || []).forEach(node => {
+        if (node.childrenLoaded && node.children && node.children.length > 0) {
+          // 已展开的子表也需要刷新，确保嵌套表 running/waitting 行状态能自动更新。
+          this.$api.knowledge.feishu.listWikiNode({
+            spaceId: this.selectedWikiSpaceId,
+            parentNodeToken: node.nodeToken
+          }).then(res => {
+            if (res.Status === 'OK') {
+              const childList = this.decorateChildNodeList((res.Return && res.Return.tbodyList) || []);
+              this.mergeLoadedNodeState(childList, node.children);
+              this.$set(node, 'children', childList);
+            }
+          }).finally(() => {
+            this.updateRefreshStatusTimer();
+          });
+        }
+        this.refreshLoadedChildNodeList(node.children || []);
       });
     },
     getAllNodeTokenList(nodeList) {
@@ -484,6 +592,7 @@ export default {
         }
       }).finally(() => {
         this.$set(row, 'childrenLoading', false);
+        this.updateRefreshStatusTimer();
       });
     },
     getPathText(path) {
@@ -526,7 +635,8 @@ export default {
       });
     },
     confirmSyncWikiNode(row) {
-      if (!row || !row.nodeToken || this.isBatchSyncing) {
+      if (!row || !row.nodeToken || this.isBatchSyncing || this.isNodeRefreshing(row)) {
+        // running/waitting 行正在处理中，隐藏按钮之外也在方法入口阻止重复同步。
         return;
       }
       this.$createDialog({
