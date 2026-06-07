@@ -11,11 +11,11 @@
         >批量同步</span>
       </template>
       <template v-slot:topRight>
-        <CombineSearcher
+        <!-- <CombineSearcher
           v-model="searchValue"
           v-bind="searchConfig"
           @change="changeSearchValue"
-        ></CombineSearcher>
+        ></CombineSearcher> -->
       </template>
       <template v-slot:sider>
         <div class="wiki-space-list">
@@ -64,12 +64,6 @@
           <template v-slot:title="{row}">
             <span>{{ row.title }}</span>
           </template>
-          <!-- <template v-slot:path="{row}">
-            <span>{{ getPathText(row.path) }}</span>
-          </template>
-          <template v-slot:hasChild="{row}">
-            <span>{{ row.hasChild ? '是' : '否' }}</span>
-          </template> -->
           <template v-slot:status="{row}">
             <div>
               <div v-if="row.status == 'running'" style="width: 42px">
@@ -202,8 +196,6 @@ const WikiNodeNestedTable = {
         },
         scopedSlots: {
           title: ({ row }) => h('span', [row.title]),
-          // path: ({ row }) => h('span', [this.getPathText(row.path)]),
-          // hasChild: ({ row }) => h('span', [row.hasChild ? '是' : '否']),
           status: ({ row }) => h('div', [
             // 嵌套表状态列复用外层表格展示规则：运行中显示进度条，其余状态只展示 statusText。
             row.status === 'running'
@@ -267,7 +259,7 @@ export default {
   name: 'FeishuSyncManage',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable'),
-    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    // CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     FeishuSyncEdit: () => import('./feishu-sync-edit.vue'),
     WikiNodeNestedTable
   },
