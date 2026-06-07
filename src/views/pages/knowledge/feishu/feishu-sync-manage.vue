@@ -193,6 +193,10 @@ const WikiNodeNestedTable = {
         pageSize: tbodyList.length || 1,
         currentPage: 1
       };
+    },
+    getConfigText(config) {
+      // render 函数不能直接渲染对象类型 config，需要转成字符串才能和外层表格展示一致。
+      return typeof config === 'string' ? config : JSON.stringify(config, null, 2);
     }
   },
   render(h) {
@@ -239,7 +243,7 @@ const WikiNodeNestedTable = {
             // 嵌套表异常列复用外层表格展示规则：表格内只显示图标，详情放到悬浮层中。
             h('span', { class: 'tsfont-zirenwu', style: { cursor: 'pointer' } }),
             h('div', { slot: 'content', class: 'fz10 scroll', style: { maxHeight: '500px' } }, [
-              h('div', { attrs: { id: `nested_error_${row.nodeToken}` } }, [row.config]),
+              h('div', { attrs: { id: `nested_error_${row.nodeToken}` } }, [this.getConfigText(row.config)]),
               h('div', { style: { textAlign: 'right' } }, [
                 h('Button', {
                   props: { size: 'small' },
