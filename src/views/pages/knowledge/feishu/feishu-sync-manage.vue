@@ -11,7 +11,11 @@
         >批量同步</span>
       </template>
       <template v-slot:topRight>
-        <InputSearcher v-model="searchParams.keyword" @change="searchData()"></InputSearcher>
+        <CombineSearcher
+          v-model="searchValue"
+          v-bind="searchConfig"
+          @change="changeSearchValue"
+        ></CombineSearcher>
       </template>
       <template v-slot:sider>
         <div class="wiki-space-list">
@@ -263,7 +267,7 @@ export default {
   name: 'FeishuSyncManage',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     FeishuSyncEdit: () => import('./feishu-sync-edit.vue'),
     WikiNodeNestedTable
   },
@@ -274,7 +278,25 @@ export default {
       isBatchSyncing: false,
       currentEditConfig: null,
       appCredentials: null,
-      searchParams: { keyword: '', currentPage: 1, pageSize: 20 },
+      searchValue: {},
+      searchParams: { keyword: '', status: null, currentPage: 1, pageSize: 20 },
+      searchConfig: {
+        search: true,
+        transfer: true,
+        width: 620,
+        searchList: [
+          {
+            type: 'select',
+            name: 'status',
+            label: '状态',
+            transfer: true,
+            url: '/api/rest/universal/enum/get',
+            params: { enumClass: 'neatlogic.framework.knowledge.constvalue.Status' },
+            valueName: 'value',
+            textName: 'text'
+          }
+        ]
+      },
       nodeTheadList: [
         { key: 'selection', multiple: true },
         { key: 'expander' },
@@ -306,6 +328,14 @@ export default {
   methods: {
     copyErrorInfo(id) {
       this.$utils.copyText(id);
+    },
+    changeSearchValue(searchValue) {
+      // CombineSearcher 输出的 keyword/status 作为接口入参，搜索条件变化时从第一页重新查询。
+      this.searchValue = searchValue || {};
+      this.searchParams.keyword = this.searchValue.keyword || '';
+      this.searchParams.status = this.searchValue.status || null;
+      this.searchParams.currentPage = 1;
+      this.searchData();
     },
     initPage() {
       // 每次进入页面先获取最新应用凭证，缺失时主动弹出设置弹框。
@@ -357,6 +387,8 @@ export default {
       this.isLoading = true;
       this.$api.knowledge.feishu.listWikiNode({
         spaceId: this.selectedWikiSpaceId,
+        keyword: this.searchParams.keyword,
+        status: this.searchParams.status,
         currentPage: this.searchParams.currentPage,
         pageSize: this.searchParams.pageSize
       }).then(res => {
@@ -374,7 +406,7 @@ export default {
           this.searchParams.currentPage = currentPage;
           this.tableConfig = {
             tbodyList: filteredNodeList,
-            rowNum: this.searchParams.keyword ? filteredNodeList.length : rowNum,
+            rowNum,
             pageSize,
             currentPage
           };
@@ -461,6 +493,8 @@ export default {
       this.isRefreshingStatus = true;
       this.$api.knowledge.feishu.listWikiNode({
         spaceId: this.selectedWikiSpaceId,
+        keyword: this.searchParams.keyword,
+        status: this.searchParams.status,
         currentPage: this.searchParams.currentPage,
         pageSize: this.searchParams.pageSize
       }).then(res => {
@@ -474,7 +508,7 @@ export default {
           this.searchParams.currentPage = currentPage;
           this.tableConfig = {
             tbodyList: filteredNodeList,
-            rowNum: this.searchParams.keyword ? filteredNodeList.length : rowNum,
+            rowNum,
             pageSize,
             currentPage
           };
@@ -516,17 +550,8 @@ export default {
       }, []);
     },
     filterNodeList(nodeList) {
-      const keyword = this.searchParams.keyword;
-      if (!keyword) {
-        return nodeList;
-      }
-      // 节点列表接口没有 keyword 入参，所以关键字搜索在前端本地处理。
-      return nodeList.filter(node => {
-        const pathText = this.getPathText(node.path);
-        return [node.title, node.objType, node.nodeToken, node.objToken, pathText].some(value => {
-          return value && String(value).toLowerCase().includes(keyword.toLowerCase());
-        });
-      });
+      // 关键字和状态筛选已经通过 wiki/node/list 接口入参处理，这里只保留方法以兼容既有调用链。
+      return nodeList;
     },
     toggleNodeExpand(row, isExpand) {
       const nextExpand = typeof isExpand === 'boolean' ? isExpand : !row._expand;
