@@ -138,30 +138,6 @@
       :config-data="currentEditConfig"
       @close="closeEditDialog"
     ></FeishuSyncEdit>
-
-    <TsDialog
-      v-if="isAuditDialogShow"
-      :isShow.sync="isAuditDialogShow"
-      title="同步记录"
-      width="large"
-      :hasFooter="false"
-    >
-      <template v-slot>
-        <TsTable
-          :theadList="auditTheadList"
-          v-bind="auditTableConfig"
-          @changeCurrent="changeAuditCurrent"
-          @changePageSize="changeAuditPageSize"
-        >
-          <template v-slot:status="{row}">
-            <span :class="row.status === 'failed' ? 'text-error' : 'text-success'">{{ statusText(row.status) }}</span>
-          </template>
-          <template v-slot:action="{row}">
-            <span v-if="row.status === 'failed'" class="text-action tsfont-refresh" @click="retry(row)">重试</span>
-          </template>
-        </TsTable>
-      </template>
-    </TsDialog>
   </div>
 </template>
 
@@ -288,7 +264,6 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
-    TsDialog: () => import('@/resources/plugins/TsDialog/TsDialog.vue'),
     FeishuSyncEdit: () => import('./feishu-sync-edit.vue'),
     WikiNodeNestedTable
   },
@@ -296,13 +271,10 @@ export default {
     return {
       isLoading: false,
       isEditDialogShow: false,
-      isAuditDialogShow: false,
       isBatchSyncing: false,
-      currentConfig: null,
       currentEditConfig: null,
       appCredentials: null,
       searchParams: { keyword: '', currentPage: 1, pageSize: 20 },
-      auditSearchParams: { configId: null, currentPage: 1, pageSize: 10 },
       nodeTheadList: [
         { key: 'selection', multiple: true },
         { key: 'expander' },
@@ -314,18 +286,7 @@ export default {
         // 行操作按钮统一放在 action 列，config 列保留给接口返回的异常信息。
         { key: 'action' }
       ],
-      auditTheadList: [
-        { title: '方向', key: 'direction' },
-        { title: '状态', key: 'status' },
-        { title: '总数', key: 'totalCount' },
-        { title: '成功', key: 'successCount' },
-        { title: '失败', key: 'failedCount' },
-        { title: '错误', key: 'error' },
-        { title: '开始时间', key: 'startTime', type: 'time' },
-        { title: '', key: 'action' }
-      ],
       tableConfig: { tbodyList: [], rowNum: 0, pageSize: 20, currentPage: 1 },
-      auditTableConfig: { tbodyList: [], rowNum: 0, pageSize: 10, currentPage: 1 },
       wikiSpaceLoading: false,
       refreshStatusTimer: null,
       isRefreshingStatus: false,
@@ -742,29 +703,6 @@ export default {
         }
       });
     },
-    openAuditDialog(row) {
-      this.currentConfig = row;
-      this.auditSearchParams = { configId: row.id, currentPage: 1, pageSize: 10 };
-      this.isAuditDialogShow = true;
-      this.searchAudit();
-    },
-    searchAudit() {
-      this.$api.knowledge.feishu.searchAudit(this.auditSearchParams).then(res => {
-        if (res.Status === 'OK') {
-          const { tbodyList, rowNum, pageSize, currentPage } = res.Return || {};
-          this.auditTableConfig = { tbodyList, rowNum, pageSize, currentPage };
-        }
-      });
-    },
-    retry(row) {
-      this.$api.knowledge.feishu.retry({ auditId: row.id }).then(res => {
-        if (res.Status === 'OK') {
-          this.$Message.success('重试已完成');
-          this.searchAudit();
-          this.searchData();
-        }
-      });
-    },
     changeCurrent(currentPage) {
       this.searchParams.currentPage = currentPage;
       this.searchData();
@@ -773,15 +711,6 @@ export default {
       this.searchParams.currentPage = 1;
       this.searchParams.pageSize = pageSize;
       this.searchData();
-    },
-    changeAuditCurrent(currentPage) {
-      this.auditSearchParams.currentPage = currentPage;
-      this.searchAudit();
-    },
-    changeAuditPageSize(pageSize) {
-      this.auditSearchParams.currentPage = 1;
-      this.auditSearchParams.pageSize = pageSize;
-      this.searchAudit();
     },
     changeModuleGroup(spaceId) {
       if (this.selectedWikiSpaceId === spaceId) {
@@ -793,10 +722,6 @@ export default {
       this.selectedNodeTokenList = [];
       this.searchParams.currentPage = 1;
       this.searchData();
-    },
-    statusText(status) {
-      const map = { succeed: '成功', failed: '失败', running: '执行中' };
-      return map[status] || '-';
     }
   },
   computed: {
