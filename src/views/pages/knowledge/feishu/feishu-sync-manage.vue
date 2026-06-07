@@ -24,16 +24,16 @@
           </div>
           <div
             v-for="wikiSpace in wikiSpaceList"
-            :key="wikiSpace.space_id"
+            :key="wikiSpace.spaceId"
             class="wiki-space-item text-action"
-            :class="{ 'is-active': selectedWikiSpaceId === wikiSpace.space_id }"
-            @click="changeModuleGroup(wikiSpace.space_id)"
+            :class="{ 'is-active': selectedWikiSpaceId === wikiSpace.spaceId }"
+            @click="changeModuleGroup(wikiSpace.spaceId)"
           >
             <Checkbox
               class="wiki-space-checkbox"
-              :value="isWikiSpaceChecked(wikiSpace.space_id)"
+              :value="isWikiSpaceChecked(wikiSpace.spaceId)"
               @click.native.stop
-              @on-change="toggleWikiSpaceChecked(wikiSpace.space_id, $event)"
+              @on-change="toggleWikiSpaceChecked(wikiSpace.spaceId, $event)"
             ></Checkbox>
             <div class="wiki-space-name overflow" :title="wikiSpace.name">
               {{ wikiSpace.name }}
@@ -60,11 +60,47 @@
           <template v-slot:title="{row}">
             <span>{{ row.title }}</span>
           </template>
-          <template v-slot:path="{row}">
+          <!-- <template v-slot:path="{row}">
             <span>{{ getPathText(row.path) }}</span>
           </template>
           <template v-slot:hasChild="{row}">
             <span>{{ row.hasChild ? '是' : '否' }}</span>
+          </template> -->
+          <template v-slot:status="{row}">
+            <div>
+              <div v-if="row.status == 'running'" style="width: 42px">
+                <Progress
+                  :percent="99"
+                  :stroke-width="10"
+                  status="active"
+                  :hide-info="true"
+                />
+              </div>
+              <div v-else>{{ row.statusText }}</div>
+            </div>
+          </template>
+          <template v-slot:config="{ row }">
+            <Poptip
+              v-if="row.config"
+              trigger="hover"
+              :title="$t('term.cmdbtransfer.exceptioninfo')"
+              word-wrap
+              width="700"
+              :transfer="true"
+              placement="left"
+            >
+              <span class="tsfont-zirenwu" style="cursor:pointer"></span>
+              <div
+                slot="content"
+                class="fz10 scroll"
+                style="max-height:500px"
+              >
+                <div :id="'error_' + row.nodeToken">{{ row.config }}</div>
+                <div style="text-align:right">
+                  <Button size="small" @click="copyErrorInfo('#error_' + row.nodeToken)">{{ $t('page.copy') }}</Button>
+                </div>
+              </div>
+            </Poptip>
           </template>
           <template v-slot:action="{row}">
             <!-- 文档行操作统一放在 action 列，避免占用异常/信息列。 -->
@@ -178,8 +214,8 @@ const WikiNodeNestedTable = {
         },
         scopedSlots: {
           title: ({ row }) => h('span', [row.title]),
-          path: ({ row }) => h('span', [this.getPathText(row.path)]),
-          hasChild: ({ row }) => h('span', [row.hasChild ? '是' : '否']),
+          // path: ({ row }) => h('span', [this.getPathText(row.path)]),
+          // hasChild: ({ row }) => h('span', [row.hasChild ? '是' : '否']),
           action: ({ row }) => h('div', { class: 'tstable-action' }, [
             // 嵌套表格行也使用 action 列展示同步和跳转操作，和最外层表格保持一致。
             h('ul', { class: 'tstable-action-ul' }, [
@@ -232,7 +268,7 @@ export default {
         { key: 'expander' },
         { title: '标题', key: 'title' },
         { title: '最后一次修改时间', key: 'updateTime', type: 'time' },
-        { title: '状态', key: 'statusText' },
+        { title: '状态', key: 'status' },
         { title: '异常', key: 'config' },
         { title: '上次同步时间', key: 'lcd', type: 'time' },
         // 行操作按钮统一放在 action 列，config 列保留给接口返回的异常信息。
@@ -261,6 +297,9 @@ export default {
     this.initPage();
   },
   methods: {
+    copyErrorInfo(id) {
+      this.$utils.copyText(id);
+    },
     initPage() {
       // 每次进入页面先获取最新应用凭证，缺失时主动弹出设置弹框。
       this.getLatestAppCredentials(true).finally(() => {
@@ -286,9 +325,9 @@ export default {
           this.wikiSpaceList = (res.Return && res.Return.tbodyList) || [];
           if (!this.selectedWikiSpaceId && this.wikiSpaceList.length > 0) {
             // 节点列表接口必须传 spaceId，因此默认选中第一个空间。
-            this.selectedWikiSpaceId = this.wikiSpaceList[0].space_id;
+            this.selectedWikiSpaceId = this.wikiSpaceList[0].spaceId;
           }
-          if (this.selectedWikiSpaceId && !this.wikiSpaceList.find(wikiSpace => wikiSpace.space_id === this.selectedWikiSpaceId)) {
+          if (this.selectedWikiSpaceId && !this.wikiSpaceList.find(wikiSpace => wikiSpace.spaceId === this.selectedWikiSpaceId)) {
             // 当前空间不存在时清空选中态，避免右侧查询使用过期 spaceId。
             this.selectedWikiSpaceId = null;
           }
@@ -431,15 +470,22 @@ export default {
         // 表格和嵌套表格勾选项统一通过顶部批量同步按钮提交，入参使用 nodeTokenList。
         params.nodeTokenList = this.selectedNodeTokenList;
       }
-      this.isBatchSyncing = true;
-      this.$api.knowledge.feishu.syncWikiDocument(params).then(res => {
-        if (res.Status === 'OK') {
-          this.$Message.success('批量同步已提交');
-          // 空间和节点批量同步共用一个入口，提交成功后刷新当前节点表格状态。
-          this.searchData();
+      this.$createDialog({
+        title: '确认同步',
+        content: '同步将会为文档创建一个新版本',
+        'on-ok': vnode => {
+          this.isBatchSyncing = true;
+          this.$api.knowledge.feishu.syncWikiDocument(params).then(res => {
+            if (res.Status === 'OK') {
+              vnode.isShow = false;
+              this.$Message.success('批量同步已提交');
+              // 空间和节点批量同步共用一个入口，提交成功后刷新当前节点表格状态。
+              this.searchData();
+            }
+          }).finally(() => {
+            this.isBatchSyncing = false;
+          });
         }
-      }).finally(() => {
-        this.isBatchSyncing = false;
       });
     },
     confirmSyncWikiNode(row) {
@@ -613,7 +659,7 @@ export default {
     },
     allWikiSpaceIdList() {
       // 将可选空间 id 汇总成统一列表，供左侧全选状态判断使用。
-      return this.wikiSpaceList.map(wikiSpace => wikiSpace.space_id);
+      return this.wikiSpaceList.map(wikiSpace => wikiSpace.spaceId);
     },
     isAllWikiSpaceChecked() {
       // 所有空间都被勾选时，全选框展示选中态。
