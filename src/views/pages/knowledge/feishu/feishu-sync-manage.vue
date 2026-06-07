@@ -124,6 +124,7 @@
               :confirm-sync-wiki-node="confirmSyncWikiNode"
               :open-feishu-wiki-document="openFeishuWikiDocument"
               :open-knowledge-sync-result="openKnowledgeSyncResult"
+              :copy-error-info="copyErrorInfo"
             ></WikiNodeNestedTable>
           </template>
         </TsTable>
@@ -178,7 +179,8 @@ const WikiNodeNestedTable = {
     getSelectedNode: { type: Function, required: true },
     confirmSyncWikiNode: { type: Function, required: true },
     openFeishuWikiDocument: { type: Function, required: true },
-    openKnowledgeSyncResult: { type: Function, required: true }
+    openKnowledgeSyncResult: { type: Function, required: true },
+    copyErrorInfo: { type: Function, required: true }
   },
   methods: {
     getChildTableConfig(row) {
@@ -216,6 +218,36 @@ const WikiNodeNestedTable = {
           title: ({ row }) => h('span', [row.title]),
           // path: ({ row }) => h('span', [this.getPathText(row.path)]),
           // hasChild: ({ row }) => h('span', [row.hasChild ? '是' : '否']),
+          status: ({ row }) => h('div', [
+            // 嵌套表状态列复用外层表格展示规则：运行中显示进度条，其余状态只展示 statusText。
+            row.status === 'running'
+              ? h('div', { style: { width: '42px' } }, [
+                h('Progress', { props: { percent: 99, strokeWidth: 10, status: 'active', hideInfo: true } })
+              ])
+              : h('div', [row.statusText])
+          ]),
+          config: ({ row }) => row.config ? h('Poptip', {
+            props: {
+              trigger: 'hover',
+              title: this.$t('term.cmdbtransfer.exceptioninfo'),
+              wordWrap: true,
+              width: '700',
+              transfer: true,
+              placement: 'left'
+            }
+          }, [
+            // 嵌套表异常列复用外层表格展示规则：表格内只显示图标，详情放到悬浮层中。
+            h('span', { class: 'tsfont-zirenwu', style: { cursor: 'pointer' } }),
+            h('div', { slot: 'content', class: 'fz10 scroll', style: { maxHeight: '500px' } }, [
+              h('div', { attrs: { id: `nested_error_${row.nodeToken}` } }, [row.config]),
+              h('div', { style: { textAlign: 'right' } }, [
+                h('Button', {
+                  props: { size: 'small' },
+                  on: { click: () => this.copyErrorInfo(`#nested_error_${row.nodeToken}`) }
+                }, [this.$t('page.copy')])
+              ])
+            ])
+          ]) : null,
           action: ({ row }) => h('div', { class: 'tstable-action' }, [
             // 嵌套表格行也使用 action 列展示同步和跳转操作，和最外层表格保持一致。
             h('ul', { class: 'tstable-action-ul' }, [
@@ -234,7 +266,8 @@ const WikiNodeNestedTable = {
               getSelectedNode: this.getSelectedNode,
               confirmSyncWikiNode: this.confirmSyncWikiNode,
               openFeishuWikiDocument: this.openFeishuWikiDocument,
-              openKnowledgeSyncResult: this.openKnowledgeSyncResult
+              openKnowledgeSyncResult: this.openKnowledgeSyncResult,
+              copyErrorInfo: this.copyErrorInfo
             }
           })
         }
