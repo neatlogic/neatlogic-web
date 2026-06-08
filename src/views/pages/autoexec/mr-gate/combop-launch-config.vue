@@ -5,8 +5,8 @@
       <div v-if="runtimeParamList.length > 0" class="section-block">
         <div class="section-title">作业参数</div>
         <SetParam
-          ref="param"
           :id="formValue.targetId"
+          ref="param"
           :param="formValue.param"
           :param-list="runtimeParamList"
           :phase-list="stepList"
@@ -26,8 +26,8 @@
       <div v-if="needExecuteNode" class="section-block">
         <div class="section-title">执行节点</div>
         <AddTarget
-          ref="addTarget"
           :id="formValue.targetId"
+          ref="addTarget"
           :value="executeNodeConfig"
           :canEdit="true"
           type="runtime"
