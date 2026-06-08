@@ -615,6 +615,11 @@ export default {
         title: this.$t('page.confirmsynchronization'),
         content: this.$t('term.knowledge.confirmsynchronization.content'),
         'on-ok': vnode => {
+          if (vnode.loading) {
+            return;
+          }
+          // 确认同步提交后置灰确认按钮，避免用户连续点击重复提交同步任务。
+          vnode.loading = true;
           this.isBatchSyncing = true;
           this.$api.knowledge.feishu.syncWikiDocument(params).then(res => {
             if (res.Status === 'OK') {
@@ -625,6 +630,7 @@ export default {
             }
           }).finally(() => {
             this.isBatchSyncing = false;
+            vnode.loading = false;
           });
         }
       });
@@ -638,6 +644,11 @@ export default {
         title: this.$t('page.confirmsynchronization'),
         content: this.$t('term.knowledge.confirmsynchronization.content'),
         'on-ok': vnode => {
+          if (vnode.loading) {
+            return;
+          }
+          // 单行确认同步提交后置灰确认按钮，避免用户连续点击重复提交同步任务。
+          vnode.loading = true;
           this.isBatchSyncing = true;
           // 单行同步只提交当前行 nodeToken，接口入参仍沿用 nodeTokenList 数组结构。
           this.$api.knowledge.feishu.syncWikiDocument({ nodeTokenList: [row.nodeToken] }).then(res => {
@@ -648,6 +659,7 @@ export default {
             }
           }).finally(() => {
             this.isBatchSyncing = false;
+            vnode.loading = false;
           });
         }
       });
