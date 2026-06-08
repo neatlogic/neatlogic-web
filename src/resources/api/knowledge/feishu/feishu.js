@@ -20,6 +20,10 @@ const feishu = {
   syncWikiDocument(params) {
     // Batch sync selected Feishu Wiki spaces into NeatLogic knowledge documents.
     return axios.post('/api/rest/knowledge/feishu/wiki/document/sync', params);
+  },
+  cancelSyncWikiDocument(params) {
+    // Cancel selected Feishu Wiki document sync tasks by node token.
+    return axios.post('/api/rest/knowledge/feishu/wiki/document/sync/cancel', params);
   }
 };
 
