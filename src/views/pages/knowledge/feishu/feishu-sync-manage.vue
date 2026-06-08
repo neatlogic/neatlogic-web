@@ -11,11 +11,11 @@
         >批量同步</span>
       </template>
       <template v-slot:topRight>
-        <!-- <CombineSearcher
+        <CombineSearcher
           v-model="searchValue"
           v-bind="searchConfig"
           @change="changeSearchValue"
-        ></CombineSearcher> -->
+        ></CombineSearcher>
       </template>
       <template v-slot:sider>
         <div class="wiki-space-list">
@@ -259,7 +259,7 @@ export default {
   name: 'FeishuSyncManage',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable'),
-    // CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     FeishuSyncEdit: () => import('./feishu-app-credentials-edit.vue'),
     WikiNodeNestedTable
   },
