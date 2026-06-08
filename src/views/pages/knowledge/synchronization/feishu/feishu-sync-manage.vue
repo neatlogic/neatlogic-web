@@ -105,6 +105,7 @@
             <div class="tstable-action">
               <ul class="tstable-action-ul">
                 <li v-if="!isNodeRefreshing(row)" class="tsfont-play" @click="confirmSyncWikiNode(row)">{{ $t('page.synchronous') }}</li>
+                <li v-if="isNodeWaiting(row)" class="tsfont-close" @click="cancelSyncWikiNode(row)">{{ $t('page.cancel') }}</li>
                 <li @click="openFeishuWikiDocument(row)">{{ $t('term.knowledge.viewfeishudocument') }}</li>
                 <li v-if="hasSyncResults(row)" @click="openKnowledgeSyncResult(row)">{{ $t('page.viewsynchronizationresults') }}</li>
               </ul>
@@ -120,10 +121,12 @@
               :toggle-node-expand="toggleNodeExpand"
               :get-selected-node="getSelectedNode"
               :confirm-sync-wiki-node="confirmSyncWikiNode"
+              :cancel-sync-wiki-node="cancelSyncWikiNode"
               :open-feishu-wiki-document="openFeishuWikiDocument"
               :open-knowledge-sync-result="openKnowledgeSyncResult"
               :copy-error-info="copyErrorInfo"
               :is-node-refreshing="isNodeRefreshing"
+              :is-node-waiting="isNodeWaiting"
               :has-sync-results="hasSyncResults"
             ></WikiNodeNestedTable>
           </template>
@@ -154,10 +157,12 @@ const WikiNodeNestedTable = {
     toggleNodeExpand: { type: Function, required: true },
     getSelectedNode: { type: Function, required: true },
     confirmSyncWikiNode: { type: Function, required: true },
+    cancelSyncWikiNode: { type: Function, required: true },
     openFeishuWikiDocument: { type: Function, required: true },
     openKnowledgeSyncResult: { type: Function, required: true },
     copyErrorInfo: { type: Function, required: true },
     isNodeRefreshing: { type: Function, required: true },
+    isNodeWaiting: { type: Function, required: true },
     hasSyncResults: { type: Function, required: true }
   },
   methods: {
@@ -232,6 +237,7 @@ const WikiNodeNestedTable = {
             // 嵌套表格行也使用 action 列展示同步和跳转操作，和最外层表格保持一致。
             h('ul', { class: 'tstable-action-ul' }, [
               !this.isNodeRefreshing(row) ? h('li', { class: 'tsfont-play', on: { click: event => { event.stopPropagation(); this.confirmSyncWikiNode(row); } } }, [this.$t('page.synchronous')]) : null,
+              isNodeWaiting(row) ? h('li', { class: 'tsfont-close', on: { click: event => { event.stopPropagation(); this.cancelSyncWikiNode(row); } } }, [this.$t('page.cancel')]) : null,
               h('li', { on: { click: event => { event.stopPropagation(); this.openFeishuWikiDocument(row); } } }, [this.$t('term.knowledge.viewfeishudocument')]),
               this.hasSyncResults(row) ? h('li', { on: { click: event => { event.stopPropagation(); this.openKnowledgeSyncResult(row); } } }, [this.$t('page.viewsynchronizationresults')]) : null
             ])
@@ -245,10 +251,12 @@ const WikiNodeNestedTable = {
               toggleNodeExpand: this.toggleNodeExpand,
               getSelectedNode: this.getSelectedNode,
               confirmSyncWikiNode: this.confirmSyncWikiNode,
+              cancelSyncWikiNode: this.cancelSyncWikiNode,
               openFeishuWikiDocument: this.openFeishuWikiDocument,
               openKnowledgeSyncResult: this.openKnowledgeSyncResult,
               copyErrorInfo: this.copyErrorInfo,
               isNodeRefreshing: this.isNodeRefreshing,
+              isNodeWaiting: this.isNodeWaiting,
               hasSyncResults: this.hasSyncResults
             }
           })
@@ -451,8 +459,11 @@ export default {
       });
     },
     isNodeRefreshing(row) {
-      // running、waitting/waiting 都表示同步未结束，需要隐藏同步按钮并参与定时刷新。
-      return row && ['running', 'waitting', 'waiting'].includes(row.status);
+      // running、waiting 都表示同步未结束，需要隐藏同步按钮并参与定时刷新。
+      return row && ['running', 'waiting'].includes(row.status);
+    },
+    isNodeWaiting(row) {
+      return row && ['waiting'].includes(row.status);
     },
     hasSyncResults(row) {
       return row && row.knowledgeDocumentId && row.knowledgeDocumentVersionId && row.knowledgeDocumentTypeUuid;
@@ -472,7 +483,7 @@ export default {
       if (this.refreshStatusTimer) {
         return;
       }
-      // 存在 running/waitting 行时每 3 秒刷新一次当前表格数据。
+      // 存在 running/waiting 行时每 3 秒刷新一次当前表格数据。
       this.refreshStatusTimer = setInterval(() => {
         this.refreshStatusNodeData();
       }, 3000);
@@ -520,7 +531,7 @@ export default {
     refreshLoadedChildNodeList(nodeList) {
       (nodeList || []).forEach(node => {
         if (node.childrenLoaded && node.children && node.children.length > 0) {
-          // 已展开的子表也需要刷新，确保嵌套表 running/waitting 行状态能自动更新。
+          // 已展开的子表也需要刷新，确保嵌套表 running/waiting 行状态能自动更新。
           this.$api.knowledge.feishu.listWikiNode({
             spaceId: this.selectedWikiSpaceId,
             parentNodeToken: node.nodeToken
@@ -620,7 +631,7 @@ export default {
     },
     confirmSyncWikiNode(row) {
       if (!row || !row.nodeToken || this.isBatchSyncing || this.isNodeRefreshing(row)) {
-        // running/waitting 行正在处理中，隐藏按钮之外也在方法入口阻止重复同步。
+        // running/waiting 行正在处理中，隐藏按钮之外也在方法入口阻止重复同步。
         return;
       }
       this.$createDialog({
@@ -639,6 +650,20 @@ export default {
             this.isBatchSyncing = false;
           });
         }
+      });
+    },
+    cancelSyncWikiNode(row) {
+      if (!row || !row.nodeToken || this.isBatchSyncing) {
+        return;
+      }
+      this.isBatchSyncing = true;
+      this.$api.knowledge.feishu.cancelSyncWikiDocument({ nodeToken: row.nodeToken }).then(res => {
+        if (res.Status === 'OK') {
+          this.$Message.success(this.$t('page.cancel'));
+          this.searchData();
+        }
+      }).finally(() => {
+        this.isBatchSyncing = false;
       });
     },
     openFeishuWikiDocument(row) {
