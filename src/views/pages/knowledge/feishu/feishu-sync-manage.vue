@@ -2,13 +2,13 @@
   <div class="feishu-sync-manage">
     <TsContain>
       <template v-slot:topLeft>
-        <span class="tsfont-setting text-action" @click="openEditDialog()">应用凭证</span>
+        <span class="tsfont-setting text-action" @click="openEditDialog()">{{ $t('term.knowledge.appcredentials') }}</span>
         <span
           v-if="hasBatchSyncSelection"
           class="text-action tsfont-sync table-batch-action"
           :class="{ 'text-disabled': isBatchSyncing }"
           @click="batchSyncSelectedDocument"
-        >批量同步</span>
+        >{{ $t('page.batchsynchronization') }}</span>
       </template>
       <template v-slot:topRight>
         <CombineSearcher
@@ -24,7 +24,7 @@
               :indeterminate="isWikiSpaceIndeterminate"
               :value="isAllWikiSpaceChecked"
               @click.prevent.native="toggleAllWikiSpaceChecked"
-            >全选</Checkbox>
+            >{{ $t('page.selectall') }}</Checkbox>
           </div>
           <div
             v-for="wikiSpace in wikiSpaceList"
@@ -104,9 +104,9 @@
             <!-- 文档行操作统一放在 action 列，避免占用异常/信息列。 -->
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li v-if="!isNodeRefreshing(row)" class="tsfont-play" @click="confirmSyncWikiNode(row)">{{ '同步' }}</li>
-                <li @click="openFeishuWikiDocument(row)">{{ '查看飞书文档' }}</li>
-                <li v-if="row.knowledgeDocumentId && row.knowledgeDocumentVersionId && row.knowledgeDocumentTypeUuid" @click="openKnowledgeSyncResult(row)">{{ '查看同步结果' }}</li>
+                <li v-if="!isNodeRefreshing(row)" class="tsfont-play" @click="confirmSyncWikiNode(row)">{{ $t('page.synchronous') }}</li>
+                <li @click="openFeishuWikiDocument(row)">{{ $t('term.knowledge.viewfeishudocument') }}</li>
+                <li v-if="hasSyncResults(row)" @click="openKnowledgeSyncResult(row)">{{ $t('page.viewsynchronizationresults') }}</li>
               </ul>
             </div>
           </template>
@@ -124,6 +124,7 @@
               :open-knowledge-sync-result="openKnowledgeSyncResult"
               :copy-error-info="copyErrorInfo"
               :is-node-refreshing="isNodeRefreshing"
+              :has-sync-results="hasSyncResults"
             ></WikiNodeNestedTable>
           </template>
         </TsTable>
@@ -156,7 +157,8 @@ const WikiNodeNestedTable = {
     openFeishuWikiDocument: { type: Function, required: true },
     openKnowledgeSyncResult: { type: Function, required: true },
     copyErrorInfo: { type: Function, required: true },
-    isNodeRefreshing: { type: Function, required: true }
+    isNodeRefreshing: { type: Function, required: true },
+    hasSyncResults: { type: Function, required: true }
   },
   methods: {
     getChildTableConfig(row) {
@@ -229,9 +231,9 @@ const WikiNodeNestedTable = {
           action: ({ row }) => h('div', { class: 'tstable-action' }, [
             // 嵌套表格行也使用 action 列展示同步和跳转操作，和最外层表格保持一致。
             h('ul', { class: 'tstable-action-ul' }, [
-              !this.isNodeRefreshing(row) ? h('li', { class: 'tsfont-play', on: { click: event => { event.stopPropagation(); this.confirmSyncWikiNode(row); } } }, ['同步']) : null,
-              h('li', { on: { click: event => { event.stopPropagation(); this.openFeishuWikiDocument(row); } } }, ['查看飞书文档']),
-              h('li', { on: { click: event => { event.stopPropagation(); this.openKnowledgeSyncResult(row); } } }, ['查看同步结果'])
+              !this.isNodeRefreshing(row) ? h('li', { class: 'tsfont-play', on: { click: event => { event.stopPropagation(); this.confirmSyncWikiNode(row); } } }, [this.$t('page.synchronous')]) : null,
+              h('li', { on: { click: event => { event.stopPropagation(); this.openFeishuWikiDocument(row); } } }, [this.$t('term.knowledge.viewfeishudocument')]),
+              this.hasSyncResults(row) ? h('li', { on: { click: event => { event.stopPropagation(); this.openKnowledgeSyncResult(row); } } }, [this.$t('page.viewsynchronizationresults')]) : null
             ])
           ]),
           expand: ({ row }) => h(WikiNodeNestedTable, {
@@ -246,7 +248,8 @@ const WikiNodeNestedTable = {
               openFeishuWikiDocument: this.openFeishuWikiDocument,
               openKnowledgeSyncResult: this.openKnowledgeSyncResult,
               copyErrorInfo: this.copyErrorInfo,
-              isNodeRefreshing: this.isNodeRefreshing
+              isNodeRefreshing: this.isNodeRefreshing,
+              hasSyncResults: this.hasSyncResults
             }
           })
         }
@@ -280,7 +283,7 @@ export default {
           {
             type: 'select',
             name: 'status',
-            label: '状态',
+            label: this.$t('page.status'),
             transfer: true,
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'neatlogic.framework.knowledge.constvalue.Status' },
@@ -292,11 +295,11 @@ export default {
       nodeTheadList: [
         { key: 'selection', multiple: true },
         { key: 'expander' },
-        { title: '标题', key: 'title' },
-        { title: '最后一次修改时间', key: 'updateTime', type: 'time' },
-        { title: '状态', key: 'status' },
-        { title: '异常', key: 'config' },
-        { title: '上次同步时间', key: 'lcd', type: 'time' },
+        { title: this.$t('page.title'), key: 'title' },
+        { title: this.$t('page.lastmodifiedtime'), key: 'updateTime', type: 'time' },
+        { title: this.$t('page.status'), key: 'status' },
+        { title: this.$t('page.exception'), key: 'config' },
+        { title: this.$t('page.lastsynchronizationtime'), key: 'lcd', type: 'time' },
         // 行操作按钮统一放在 action 列，config 列保留给接口返回的异常信息。
         { key: 'action' }
       ],
@@ -451,6 +454,9 @@ export default {
       // running、waitting/waiting 都表示同步未结束，需要隐藏同步按钮并参与定时刷新。
       return row && ['running', 'waitting', 'waiting'].includes(row.status);
     },
+    hasSyncResults(row) {
+      return row && row.knowledgeDocumentId && row.knowledgeDocumentVersionId && row.knowledgeDocumentTypeUuid;
+    },
     hasRefreshingNode(nodeList) {
       // 递归检查主表和已加载嵌套表中是否存在需要轮询刷新的节点。
       return (nodeList || []).some(node => this.isNodeRefreshing(node) || this.hasRefreshingNode(node.children || []));
@@ -595,14 +601,14 @@ export default {
         params.nodeTokenList = this.selectedNodeTokenList;
       }
       this.$createDialog({
-        title: '确认同步',
-        content: '同步将会为文档创建一个新版本',
+        title: this.$t('page.confirmsynchronization'),
+        content: this.$t('term.knowledge.confirmsynchronization.content'),
         'on-ok': vnode => {
           this.isBatchSyncing = true;
           this.$api.knowledge.feishu.syncWikiDocument(params).then(res => {
             if (res.Status === 'OK') {
               vnode.isShow = false;
-              this.$Message.success('批量同步已提交');
+              this.$Message.success(this.$t('page.batchsynchronizationhasbeensubmitted'));
               // 空间和节点批量同步共用一个入口，提交成功后刷新当前节点表格状态。
               this.searchData();
             }
@@ -618,15 +624,15 @@ export default {
         return;
       }
       this.$createDialog({
-        title: '确认同步',
-        content: '同步将会为文档创建一个新版本',
+        title: this.$t('page.confirmsynchronization'),
+        content: this.$t('term.knowledge.confirmsynchronization.content'),
         'on-ok': vnode => {
           this.isBatchSyncing = true;
           // 单行同步只提交当前行 nodeToken，接口入参仍沿用 nodeTokenList 数组结构。
           this.$api.knowledge.feishu.syncWikiDocument({ nodeTokenList: [row.nodeToken] }).then(res => {
             if (res.Status === 'OK') {
               vnode.isShow = false;
-              this.$Message.success('同步已提交');
+              this.$Message.success(this.$t('page.submittedinsync'));
               this.searchData();
             }
           }).finally(() => {
@@ -648,8 +654,8 @@ export default {
         return;
       }
       // 同步结果地址使用接口返回的知识文档 ID、类型 UUID 和版本 ID 拼接。
-      const url = `http://localhost:8081/develop/knowledge.html#/knowledge-detail?knowledgeDocumentId=${row.knowledgeDocumentId}&knowledgeDocumentTypeUuid=${row.knowledgeDocumentTypeUuid}&knowledgeDocumentVersionId=${row.knowledgeDocumentVersionId}&status=passed`;
-      window.open(url, '_blank');
+      const url = `/knowledge.html#/knowledge-detail?knowledgeDocumentId=${row.knowledgeDocumentId}&knowledgeDocumentTypeUuid=${row.knowledgeDocumentTypeUuid}&knowledgeDocumentVersionId=${row.knowledgeDocumentVersionId}&status=passed`;
+      window.open(HOME + url, '_blank');
     },
     isWikiSpaceChecked(spaceId) {
       // 集中判断左侧空间勾选状态，避免模板中出现复杂表达式。

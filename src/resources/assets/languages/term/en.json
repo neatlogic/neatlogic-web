@@ -1430,7 +1430,12 @@
     "norelateknowledge": "No relevant knowledge",
     "strikethrough": "strikethrough ",
     "uploadimages": "Upload images",
-    "enterlinkdescription": "Enter link description"
+    "enterlinkdescription": "Enter link description",
+    "appcredentials": "application credentials",
+    "viewfeishudocument": "View Feishu document",
+    "confirmsynchronization": {
+      "content": "Synchronization will create a new version for the document"
+    }
   },
   "report": {
     "report": "Report",

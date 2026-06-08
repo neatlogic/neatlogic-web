@@ -1,7 +1,7 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-close="close">
     <template v-slot:header>
-      <div>设置应用凭证</div>
+      <div>{{ $t('page.setapplicationcredentials') }}设置应用凭证</div>
     </template>
     <template v-slot>
       <TsForm ref="form" :item-list="formConfig" :labelWidth="120"></TsForm>
@@ -80,7 +80,7 @@ export default {
         {
           type: 'select',
           name: 'knowledgeCircleId',
-          label: '知识圈',
+          label: this.$t('term.knowledge.intellectualcircle'),
           value: this.formData.knowledgeCircleId,
           width: '100%',
           transfer: true,

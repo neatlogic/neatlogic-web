@@ -1429,7 +1429,12 @@
     "norelateknowledge": "无相关知识",
     "strikethrough": "中划线",
     "uploadimages": "上传图片",
-    "enterlinkdescription": "输入链接说明"
+    "enterlinkdescription": "输入链接说明",
+    "appcredentials": "应用凭证",
+    "viewfeishudocument": "查看飞书文档",
+    "confirmsynchronization": {
+      "content": "同步将会为文档创建一个新版本"
+    }
   },
   "report": {
     "report": "报表",
