@@ -1435,7 +1435,8 @@
     "viewfeishudocument": "View Feishu document",
     "confirmsynchronization": {
       "content": "Synchronization will create a new version for the document"
-    }
+    },
+    "feishu": "Lark"
   },
   "report": {
     "report": "Report",

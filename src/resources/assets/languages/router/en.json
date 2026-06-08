@@ -197,7 +197,8 @@
     "reviewdetail": "Review Details",
     "knowledgetypemanage": "Knowledge Type",
     "knowledgesearch": "Knowledge Search",
-    "knowledgemanagement": "Knowledge Management"
+    "knowledgemanagement": "Knowledge Management",
+    "synchronizationmanage": "synchronized management"
   },
   "report": {
     "reportmanage": "Report Management",

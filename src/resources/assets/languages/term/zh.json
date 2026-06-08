@@ -1434,7 +1434,8 @@
     "viewfeishudocument": "查看飞书文档",
     "confirmsynchronization": {
       "content": "同步将会为文档创建一个新版本"
-    }
+    },
+    "feishu": "飞书"
   },
   "report": {
     "report": "报表",

@@ -7,7 +7,7 @@ const circleManage = () => import('./circle/circle-manage.vue');
 const circleEdit = () => import('./circle/circle-edit.vue');
 const templateManage = () => import('./template/template-manage.vue');
 const templateEdit = () => import('./template/template-edit.vue');
-const feishuSyncManage = () => import('./feishu/feishu-sync-manage.vue');
+const dataSynchronizationManage = () => import('./synchronization/data-synchronization-manage.vue');
 const reviewDetail = () => import('./category/review/review-detail.vue');
 const KnowledgeOverview = () => import('./category/category/knowledge-overview.vue');
 const KnowledgeSearch = () => import('./category/category/knowledge-search.vue');
@@ -122,11 +122,11 @@ export default [
     }
   },
   {
-    path: '/feishu-sync-manage',
-    name: 'feishu-sync-manage',
-    component: feishuSyncManage,
+    path: '/data-synchronization-manage',
+    name: 'data-synchronization-manage',
+    component: dataSynchronizationManage,
     meta: {
-      title: '同步飞书知识库',
+      title: $t('router.knowledge.synchronizationmanage'),
       ismenu: true,
       icon: 'tsfont-sync',
       authority: 'KNOWLEDGE_FEISHU_SYNC_MODIFY',
