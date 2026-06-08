@@ -57,6 +57,14 @@ const apiManage = {
   getApiManageAuditDetail(params) {
     return axios.post('/api/rest/apimanage/audit/detail/get', params);
   },
+  // 获取接口MCP服务说明
+  getMcpHelp(params) {
+    return axios.post('/api/rest/apimanage/mcp/help/get', params);
+  },
+  // 按MCP协议调用tool
+  mcpCall(endpoint, params) {
+    return axios.post(endpoint || '/api/mcp', params);
+  },
   // 获取接口的使用帮助
   help(url) {
     return axios.get(`${url}`);
