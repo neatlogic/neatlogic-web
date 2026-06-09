@@ -18,7 +18,7 @@
               type="primary"
               style="width:190px;"
               @click="togoDocument('submit')"
-            >{{ $t('term.knowledge.viewdoc') }}</Button>
+            >{{ $t('term.process.viewdocs') }}</Button>
           </div>
           <div class="submit-btn-list">
             <Button size="large" style="width:190px;" @click="close">{{ $t('page.keepthecurrentpage') }}</Button>

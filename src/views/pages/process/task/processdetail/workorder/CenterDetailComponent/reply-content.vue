@@ -216,7 +216,7 @@ export default {
           statusList: ['passed'],
           type: 'document'
         },
-        placeholder: this.$t('form.placeholder.pleaseselect', { target: this.$t('term.knowledge.knowledge') }),
+        placeholder: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.knowledge') }),
         rootName: 'dataList',
         valueName: 'knowledgeDocumentId',
         textName: 'title',
