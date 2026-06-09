@@ -89,6 +89,18 @@ const script = {
   },
   batchDeleteScript(params) {
     return axios.post('/api/rest/autoexec/script/batchdelete', params);
+  },
+  startAiAssistantTask(params) {
+    return axios.post('/api/rest/autoexec/script/aiassistant/task/start', params);
+  },
+  getAiAssistantTask(params) {
+    return axios.post('/api/rest/autoexec/script/aiassistant/task/get', params);
+  },
+  getAiAssistantConfig() {
+    return axios.post('/api/rest/autoexec/script/aiassistant/config/get', {});
+  },
+  saveAiAssistantConfig(params) {
+    return axios.post('/api/rest/autoexec/script/aiassistant/config/save', params);
   }
 };
 

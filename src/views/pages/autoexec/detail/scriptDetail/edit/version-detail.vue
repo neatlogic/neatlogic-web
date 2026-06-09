@@ -122,6 +122,14 @@ export default {
     },
     save() {
       return this.$refs.versionEdit.save();
+    },
+    getAiAssistantContext() {
+      return this.$refs.versionEdit ? this.$refs.versionEdit.getAiAssistantContext() : {};
+    },
+    setCodeValue(code) {
+      if (this.$refs.versionEdit) {
+        this.$refs.versionEdit.setCodeValue(code);
+      }
     }
   },
   computed: {},

@@ -120,6 +120,12 @@
         </div>
       </template>
     </TsDialog>
+    <AiAssistantDialog
+      v-if="isAiAssistantShow"
+      :isShow.sync="isAiAssistantShow"
+      :context="aiAssistantContext"
+      @applyScript="applyAiScript"
+    ></AiAssistantDialog>
   </div>
 </template>
 <script>
@@ -135,7 +141,8 @@ export default {
     VersionCompare: () => import('./scriptDetail/edit/version-compare'),
     VersionValid: () => import('./scriptDetail/common/version-valid'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
-    DataDialog: () => import('./scriptDetail/common/data-dialog.vue')
+    DataDialog: () => import('./scriptDetail/common/data-dialog.vue'),
+    AiAssistantDialog: () => import('./scriptDetail/edit/ai-assistant-dialog.vue')
   },
   filters: {},
   mixins: [download],
@@ -169,7 +176,8 @@ export default {
         reject: 'tsfont-close-o',
         edit: 'tsfont-edit',
         cancel: 'tsfont-close-o',
-        switchversion: 'tsfont-arrow-right'
+        switchversion: 'tsfont-arrow-right',
+        aiAssistant: 'tsfont-ai'
       },
       versionType: 'passed',
       currentVersionVo: {}, //当前激活版本
@@ -178,10 +186,17 @@ export default {
       userType: 'submit', //审核人权限
       isReviewShow: false,
       isCompareShow: false,
+      isAiAssistantShow: false,
+      aiAssistantContext: {},
       validVisible: false, //校验列表是否显示
       validList: [{ text: '', type: '', config: {} }], //校验产生的数据列表
       isEdit: false,
       editBtnList: [
+        {
+          disabled: 0,
+          text: 'AI助手',
+          value: 'aiAssistant'
+        },
         {
           disabled: 0,
           text: this.$t('page.compare'),
@@ -464,6 +479,28 @@ export default {
       this.isTipShow = true;
     },
     copy() {},
+    aiAssistant(item) {
+      if (item && item.disabled) {
+        return;
+      }
+      this.aiAssistantContext = this.getAiAssistantContext();
+      this.isAiAssistantShow = true;
+    },
+    getAiAssistantContext() {
+      let versionContext = this.$refs.versionDetail && this.$refs.versionDetail.getAiAssistantContext ? this.$refs.versionDetail.getAiAssistantContext() : {};
+      return {
+        scriptName: this.name,
+        title: this.title,
+        execMode: this.scriptConfig ? this.scriptConfig.execMode : null,
+        isLib: this.scriptConfig ? this.scriptConfig.isLib : null,
+        ...versionContext
+      };
+    },
+    applyAiScript(code) {
+      if (this.$refs.versionDetail && this.$refs.versionDetail.setCodeValue) {
+        this.$refs.versionDetail.setCodeValue(code);
+      }
+    },
     updateVersion(type, id) {
       this.versionType = type;
       if (type == 'submitted') {

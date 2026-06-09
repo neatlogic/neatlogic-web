@@ -325,6 +325,45 @@ export default {
         return newList;
       }
     },
+    getCurrentCode() {
+      if (this.versionVo.parser == 'package') {
+        return '';
+      }
+      if (this.$refs.TsCodemirror && this.$refs.TsCodemirror.codemirror) {
+        return this.$refs.TsCodemirror.codemirror.getValue();
+      }
+      return this.versionVo.codeValue || '';
+    },
+    setCodeValue(code) {
+      if (this.versionVo.parser == 'package') {
+        return;
+      }
+      this.versionVo.codeValue = code || '';
+      this.$nextTick(() => {
+        if (this.$refs.TsCodemirror && this.$refs.TsCodemirror.codemirror) {
+          this.$refs.TsCodemirror.codemirror.setValue(this.versionVo.codeValue);
+        }
+      });
+    },
+    getAiAssistantContext() {
+      let inputParamList = this.$refs.inputParamList ? this.$refs.inputParamList.saveParamList() : this.versionVo.inputParamList;
+      let outputParamList = this.$refs.outputParamList ? this.$refs.outputParamList.saveParamList() : this.versionVo.outputParamList;
+      let argument = this.$refs.argument ? this.$refs.argument.save() : this.versionVo.argument;
+      let code = this.getCurrentCode();
+      let lineList = [];
+      if (code) {
+        lineList = code.split('\n').map(content => {
+          return { content: content };
+        });
+      }
+      return {
+        parser: this.versionVo.parser,
+        useLib: this.versionVo.useLib || [],
+        paramList: [...(inputParamList || []), ...(outputParamList || [])],
+        argument: argument,
+        lineList: lineList
+      };
+    },
     initData(config) {
       this.getScriptParser();
       if (config) {
