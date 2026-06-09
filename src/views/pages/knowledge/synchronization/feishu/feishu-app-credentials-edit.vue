@@ -67,12 +67,14 @@ export default {
           }
         },
         {
-          type: 'text',
+          type: 'password',
           name: 'appSecret',
           label: 'App Secret',
           value: this.formData.appSecret,
           width: '100%',
           validateList: ['required'],
+          showPassword: false,
+          clearable: true,
           onChange: value => {
             this.formData.appSecret = value;
           }
