@@ -122,6 +122,19 @@ export default {
     },
     save() {
       return this.$refs.versionEdit.save();
+    },
+    getAiAssistantContext() {
+      return this.$refs.versionEdit && this.$refs.versionEdit.getAiAssistantContext ? this.$refs.versionEdit.getAiAssistantContext() : {};
+    },
+    replaceCode(code) {
+      if (this.$refs.versionEdit && this.$refs.versionEdit.replaceCode) {
+        this.$refs.versionEdit.replaceCode(code);
+      }
+    },
+    insertCode(code) {
+      if (this.$refs.versionEdit && this.$refs.versionEdit.insertCode) {
+        this.$refs.versionEdit.insertCode(code);
+      }
     }
   },
   computed: {},

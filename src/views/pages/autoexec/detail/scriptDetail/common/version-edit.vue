@@ -429,6 +429,45 @@ export default {
       }
       return data;
     },
+    getAiAssistantContext() {
+      return {
+        parser: this.versionVo.parser,
+        language: this.versionVo.parser,
+        useLib: this.versionVo.useLib || [],
+        inputParamList: this.versionVo.inputParamList || [],
+        outputParamList: this.versionVo.outputParamList || [],
+        argument: this.versionVo.argument || {},
+        isLib: this.config ? this.config.isLib : 0,
+        code: this.getCodeValue()
+      };
+    },
+    getCodeValue() {
+      if (this.$refs.TsCodemirror && this.$refs.TsCodemirror.codemirror) {
+        return this.$refs.TsCodemirror.codemirror.getValue();
+      }
+      return this.versionVo.codeValue || '';
+    },
+    replaceCode(code) {
+      const value = code || '';
+      this.versionVo.codeValue = value;
+      this.$nextTick(() => {
+        if (this.$refs.TsCodemirror && this.$refs.TsCodemirror.codemirror) {
+          this.$refs.TsCodemirror.codemirror.setValue(value);
+        }
+      });
+    },
+    insertCode(code) {
+      const value = code || '';
+      this.$nextTick(() => {
+        if (this.$refs.TsCodemirror && this.$refs.TsCodemirror.codemirror) {
+          const cm = this.$refs.TsCodemirror.codemirror;
+          cm.replaceSelection(value);
+          this.versionVo.codeValue = cm.getValue();
+        } else {
+          this.versionVo.codeValue = `${this.versionVo.codeValue || ''}\n${value}`;
+        }
+      });
+    },
     validCheck() {
       if (this.versionVo.parser) {
         let data = {

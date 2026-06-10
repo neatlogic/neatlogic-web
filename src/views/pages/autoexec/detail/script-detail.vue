@@ -47,6 +47,14 @@
         </template>
         <template v-else>
           <div v-if="editBtnList && editBtnList.length" class="div-btn-contain action-group text-right no-line">
+            <component
+              :is="autoexecScriptAiAssistantComponent"
+              v-if="autoexecScriptAiAssistantComponent"
+              :scriptConfig="scriptConfig"
+              :getContext="getAiAssistantContext"
+              @replace-code="replaceAiAssistantCode"
+              @insert-code="insertAiAssistantCode"
+            ></component>
             <span
               v-for="operate in editBtnList"
               :key="operate.value"
@@ -124,6 +132,7 @@
 </template>
 <script>
 import download from '@/resources/mixins/download.js';
+import ImportComponent from '@/views/components/import-component.js';
 export default {
   name: 'ScriptDetail',
   components: {
@@ -381,6 +390,29 @@ export default {
           this.$set(data, 'versionId', this.versionId);
         }
         return data;
+      }
+    },
+    getAiAssistantContext() {
+      const versionContext = this.$refs.versionDetail && this.$refs.versionDetail.getAiAssistantContext ? this.$refs.versionDetail.getAiAssistantContext() : {};
+      return {
+        ...versionContext,
+        scriptId: this.scriptId,
+        versionId: this.versionId,
+        name: this.scriptConfig ? this.scriptConfig.name : '',
+        isLib: this.scriptConfig ? this.scriptConfig.isLib : 0,
+        execMode: this.scriptConfig ? this.scriptConfig.execMode : '',
+        typeId: this.scriptConfig ? this.scriptConfig.typeId : null,
+        catalogId: this.scriptConfig ? this.scriptConfig.catalogId : null
+      };
+    },
+    replaceAiAssistantCode(code) {
+      if (this.$refs.versionDetail && this.$refs.versionDetail.replaceCode) {
+        this.$refs.versionDetail.replaceCode(code);
+      }
+    },
+    insertAiAssistantCode(code) {
+      if (this.$refs.versionDetail && this.$refs.versionDetail.insertCode) {
+        this.$refs.versionDetail.insertCode(code);
       }
     },
     save() {
@@ -684,6 +716,9 @@ export default {
     }
   },
   computed: {
+    autoexecScriptAiAssistantComponent() {
+      return ImportComponent && ImportComponent.autoexecScriptAiAssistant ? ImportComponent.autoexecScriptAiAssistant : null;
+    },
     getIcon() {
       return function(type, item) {
         let className = this.actionIcons[type] || 'tsfont-tool';
