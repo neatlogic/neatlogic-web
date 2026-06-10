@@ -1136,5 +1136,7 @@
   "confirmsynchronization": "确认同步",
   "submittedinsync": "同步已提交",
   "batchsynchronizationhasbeensubmitted": "批量同步已提交",
-  "setapplicationcredentials": "设置应用凭证"
+  "setapplicationcredentials": "设置应用凭证",
+  "primaryclassification": "一级分类",
+  "knowledge": "知识"
 }

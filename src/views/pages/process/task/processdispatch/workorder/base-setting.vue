@@ -6,7 +6,7 @@
         {{ $t('term.process.relateknowledge') }}
       </div>
       <div v-show="showRelateKnowledge">
-        <NoData v-show="!knowledgeList.length" :text="$t('term.knowledge.norelateknowledge')"></NoData>
+        <NoData v-show="!knowledgeList.length" :text="$t('term.process.norelateknowledge')"></NoData>
         <template v-for="(knowledge, index) in knowledgeList">
           <a
             :key="index"

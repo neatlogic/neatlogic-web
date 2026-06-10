@@ -5,7 +5,7 @@
     <TsDialog
       v-if="params.operation === 'add'"
       :isShow="isShow"
-      :title="(params.path.length===0) ? $t('dialog.title.addtarget', {target: $t('term.knowledge.primaryclassification')}) : $t('dialog.title.addtarget',{'target': $t('page.classify')})"
+      :title="(params.path.length===0) ? $t('dialog.title.addtarget', {target: $t('page.primaryclassification')}) : $t('dialog.title.addtarget',{'target': $t('page.classify')})"
       :okText="$t('page.save')"
       className="dialog"
       @on-ok="confirmAdd(params)"

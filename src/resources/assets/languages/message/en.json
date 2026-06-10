@@ -125,10 +125,6 @@
     "notsetexecutertip": "In the combination tool, each execution stage has preset execution goals, so there is no need to set execution goals here",
     "norunnerphaserunnergrouptips": "The combination tool does not include a runner or SQL execution method, and there is no need to set an executor group"
   },
-  "knowledge": {
-    "notcatalog": "No text catalog",
-    "circleauth": "You do not belong to any knowledge circle, please contact the administrator for handling"
-  },
   "report": {
     "addreportwidget": "Please add a report widget",
     "definetemplate": "Please define the template content",

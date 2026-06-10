@@ -1135,5 +1135,7 @@
   "confirmsynchronization": "Confirm synchronization",
   "submittedinsync": "Submitted in sync",
   "batchsynchronizationhasbeensubmitted": "Batch synchronization has been submitted",
-  "setapplicationcredentials": "Set up application credentials"
+  "setapplicationcredentials": "Set up application credentials",
+  "primaryclassification": "Primary Classification",
+  "knowledge": "Knowledge"
 }
