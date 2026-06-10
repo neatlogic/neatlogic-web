@@ -462,12 +462,6 @@
     "codepoint": 59468
   },
   {
-    "name": "chart-groupedcolumn",
-    "css": "tsfont-chart-groupedcolumn",
-    "hexCodepoint": "0xe84d",
-    "codepoint": 59469
-  },
-  {
     "name": "chart-heatmap",
     "css": "tsfont-chart-heatmap",
     "hexCodepoint": "0xe84e",
@@ -3474,141 +3468,39 @@
     "codepoint": 59972
   },
   {
-    "name": "ai",
-    "css": "tsfont-ai",
+    "name": "chart-areas",
+    "css": "tsfont-chart-areas",
     "hexCodepoint": "0xea45",
     "codepoint": 59973
   },
   {
-    "name": "ais",
-    "css": "tsfont-ais",
-    "hexCodepoint": "0xea46",
-    "codepoint": 59974
-  },
-  {
-    "name": "callout",
-    "css": "tsfont-callout",
-    "hexCodepoint": "0xea47",
-    "codepoint": 59975
-  },
-  {
-    "name": "divider",
-    "css": "tsfont-divider",
-    "hexCodepoint": "0xea48",
-    "codepoint": 59976
-  },
-  {
-    "name": "quote",
-    "css": "tsfont-quote",
+    "name": "chart-columnline",
+    "css": "tsfont-chart-columnline",
     "hexCodepoint": "0xea49",
     "codepoint": 59977
   },
   {
-    "name": "cut",
-    "css": "tsfont-cut",
+    "name": "chart-groupcolumn",
+    "css": "tsfont-chart-groupcolumn",
     "hexCodepoint": "0xea4a",
     "codepoint": 59978
   },
   {
-    "name": "h1",
-    "css": "tsfont-h1",
+    "name": "chart-stackedbar",
+    "css": "tsfont-chart-stackedbar",
     "hexCodepoint": "0xea4b",
     "codepoint": 59979
   },
   {
-    "name": "h2",
-    "css": "tsfont-h2",
+    "name": "chart-treemap",
+    "css": "tsfont-chart-treemap",
     "hexCodepoint": "0xea4c",
     "codepoint": 59980
   },
   {
-    "name": "h3",
-    "css": "tsfont-h3",
+    "name": "chart-column",
+    "css": "tsfont-chart-column",
     "hexCodepoint": "0xea4d",
     "codepoint": 59981
-  },
-  {
-    "name": "h4",
-    "css": "tsfont-h4",
-    "hexCodepoint": "0xea4e",
-    "codepoint": 59982
-  },
-  {
-    "name": "h5",
-    "css": "tsfont-h5",
-    "hexCodepoint": "0xea4f",
-    "codepoint": 59983
-  },
-  {
-    "name": "h6",
-    "css": "tsfont-h6",
-    "hexCodepoint": "0xea50",
-    "codepoint": 59984
-  },
-  {
-    "name": "table-merge-cell",
-    "css": "tsfont-table-merge-cell",
-    "hexCodepoint": "0xea51",
-    "codepoint": 59985
-  },
-  {
-    "name": "table-split-cell",
-    "css": "tsfont-table-split-cell",
-    "hexCodepoint": "0xea52",
-    "codepoint": 59986
-  },
-  {
-    "name": "underline",
-    "css": "tsfont-underline",
-    "hexCodepoint": "0xea53",
-    "codepoint": 59987
-  },
-  {
-    "name": "barcode",
-    "css": "tsfont-barcode",
-    "hexCodepoint": "0xea54",
-    "codepoint": 59988
-  },
-  {
-    "name": "environment",
-    "css": "tsfont-environment",
-    "hexCodepoint": "0xea55",
-    "codepoint": 59989
-  },
-  {
-    "name": "sound",
-    "css": "tsfont-sound",
-    "hexCodepoint": "0xea56",
-    "codepoint": 59990
-  },
-  {
-    "name": "code-block",
-    "css": "tsfont-code-block",
-    "hexCodepoint": "0xea57",
-    "codepoint": 59991
-  },
-  {
-    "name": "data-transformation",
-    "css": "tsfont-data-transformation",
-    "hexCodepoint": "0xea58",
-    "codepoint": 59992
-  },
-  {
-    "name": "unlink",
-    "css": "tsfont-unlink",
-    "hexCodepoint": "0xea59",
-    "codepoint": 59993
-  },
-  {
-    "name": "video",
-    "css": "tsfont-video",
-    "hexCodepoint": "0xea5a",
-    "codepoint": 59994
-  },
-  {
-    "name": "microphone",
-    "css": "tsfont-microphone",
-    "hexCodepoint": "0xea5b",
-    "codepoint": 59995
   }
 ]

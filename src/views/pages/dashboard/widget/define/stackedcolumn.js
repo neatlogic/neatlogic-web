@@ -4,7 +4,7 @@ export default {
   name: 'stackedcolumn', 
   label: $t('term.report.chartsetting.stackedcolumnchart'), 
   type: 'stackedcolumn', 
-  icon: 'tsfont-chart-bar', 
+  icon: 'tsfont-chart-stackedcolumn', 
   widgetType: 'basic', 
   hasCustomConfig: true, 
   width: 5, 
