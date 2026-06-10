@@ -3502,5 +3502,143 @@
     "css": "tsfont-chart-column",
     "hexCodepoint": "0xea4d",
     "codepoint": 59981
+  },
+  {
+    "name": "ai",
+    "css": "tsfont-ai",
+    "hexCodepoint": "0xea4e",
+    "codepoint": 59982
+  },
+  {
+    "name": "ais",
+    "css": "tsfont-ais",
+    "hexCodepoint": "0xea4f",
+    "codepoint": 59983
+  },
+  {
+    "name": "barcode",
+    "css": "tsfont-barcode",
+    "hexCodepoint": "0xea50",
+    "codepoint": 59984
+  },
+  {
+    "name": "callout",
+    "css": "tsfont-callout",
+    "hexCodepoint": "0xea51",
+    "codepoint": 59985
+  },
+  {
+    "name": "code-block",
+    "css": "tsfont-code-block",
+    "hexCodepoint": "0xea52",
+    "codepoint": 59986
+  },
+  {
+    "name": "cut",
+    "css": "tsfont-cut",
+    "hexCodepoint": "0xea53",
+    "codepoint": 59987
+  },
+  {
+    "name": "data-transformation",
+    "css": "tsfont-data-transformation",
+    "hexCodepoint": "0xea54",
+    "codepoint": 59988
+  },
+  {
+    "name": "divider",
+    "css": "tsfont-divider",
+    "hexCodepoint": "0xea55",
+    "codepoint": 59989
+  },
+  {
+    "name": "environment",
+    "css": "tsfont-environment",
+    "hexCodepoint": "0xea56",
+    "codepoint": 59990
+  },
+  {
+    "name": "h1",
+    "css": "tsfont-h1",
+    "hexCodepoint": "0xea57",
+    "codepoint": 59991
+  },
+  {
+    "name": "h2",
+    "css": "tsfont-h2",
+    "hexCodepoint": "0xea58",
+    "codepoint": 59992
+  },
+  {
+    "name": "h3",
+    "css": "tsfont-h3",
+    "hexCodepoint": "0xea59",
+    "codepoint": 59993
+  },
+  {
+    "name": "h4",
+    "css": "tsfont-h4",
+    "hexCodepoint": "0xea5a",
+    "codepoint": 59994
+  },
+  {
+    "name": "h5",
+    "css": "tsfont-h5",
+    "hexCodepoint": "0xea5b",
+    "codepoint": 59995
+  },
+  {
+    "name": "h6",
+    "css": "tsfont-h6",
+    "hexCodepoint": "0xea5c",
+    "codepoint": 59996
+  },
+  {
+    "name": "microphone",
+    "css": "tsfont-microphone",
+    "hexCodepoint": "0xea5d",
+    "codepoint": 59997
+  },
+  {
+    "name": "quote",
+    "css": "tsfont-quote",
+    "hexCodepoint": "0xea5e",
+    "codepoint": 59998
+  },
+  {
+    "name": "sound",
+    "css": "tsfont-sound",
+    "hexCodepoint": "0xea5f",
+    "codepoint": 59999
+  },
+  {
+    "name": "table-merge-cell",
+    "css": "tsfont-table-merge-cell",
+    "hexCodepoint": "0xea60",
+    "codepoint": 60000
+  },
+  {
+    "name": "table-split-cell",
+    "css": "tsfont-table-split-cell",
+    "hexCodepoint": "0xea61",
+    "codepoint": 60001
+  },
+  {
+    "name": "underline",
+    "css": "tsfont-underline",
+    "hexCodepoint": "0xea62",
+    "codepoint": 60002
+  },
+  {
+    "name": "unlink",
+    "css": "tsfont-unlink",
+    "hexCodepoint": "0xea63",
+    "codepoint": 60003
+  },
+  {
+    "name": "video",
+    "css": "tsfont-video",
+    "hexCodepoint": "0xea64",
+    "codepoint": 60004
   }
 ]
