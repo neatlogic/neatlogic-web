@@ -4,7 +4,7 @@ export default {
   name: 'groupedcolumn', 
   label: $t('term.report.chartsetting.groupcolumnchart'), 
   type: 'groupedcolumn', 
-  icon: 'tsfont-chart-bar', 
+  icon: 'tsfont-chart-groupcolumn', 
   widgetType: 'basic', 
   hasCustomConfig: true, 
   width: 5, 

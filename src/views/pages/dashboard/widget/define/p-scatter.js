@@ -4,7 +4,7 @@ export default {
   name: 'pscatter', 
   label: $t('term.report.chartsetting.pscatter'), 
   type: 'pscatter', 
-  icon: 'tsfont-chart-scatter', 
+  icon: 'tsfont-chart-scatterbubble', 
   widgetType: 'basic', 
   hasCustomConfig: true, 
   width: 5, 

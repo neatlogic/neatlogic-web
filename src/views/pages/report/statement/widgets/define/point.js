@@ -4,7 +4,7 @@ export default {
   name: 'point', 
   label: $t('term.report.chartsetting.pointchart'), 
   type: 'point', 
-  icon: 'tsfont-chart-scatterbubble', 
+  icon: 'tsfont-chart-scatter', 
   widgetType: 'effect',
   width: 200, 
   height: 200, 

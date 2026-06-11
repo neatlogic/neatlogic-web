@@ -4,7 +4,7 @@ export default {
   name: 'stackedbar', 
   label: $t('term.report.chartsetting.stackedbarchart'), 
   type: 'stackedbar', 
-  icon: 'tsfont-storage', 
+  icon: 'tsfont-chart-stackedbar', 
   widgetType: 'basic', 
   hasCustomConfig: true, 
   width: 5, 
