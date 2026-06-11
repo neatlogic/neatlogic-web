@@ -429,6 +429,37 @@ export default {
       }
       return data;
     },
+    getAiAssistantContext() {
+      let inputParamList = this.$refs.inputParamList ? this.$refs.inputParamList.saveParamList() : this.versionVo.inputParamList;
+      let outputParamList = this.$refs.outputParamList ? this.$refs.outputParamList.saveParamList() : this.versionVo.outputParamList;
+      let argument = this.$refs.argument ? this.$refs.argument.save() : this.versionVo.argument;
+      inputParamList = inputParamList || [];
+      outputParamList = outputParamList || [];
+      return {
+        parser: this.versionVo.parser,
+        language: this.versionVo.parser,
+        useLib: this.versionVo.useLib || [],
+        inputParamList: inputParamList,
+        outputParamList: outputParamList,
+        paramList: [...inputParamList, ...outputParamList],
+        argument: argument || {},
+        isLib: this.versionVo.isLib,
+        code: this.versionVo.parser === 'package' ? '' : this.getCurrentCode()
+      };
+    },
+    getCurrentCode() {
+      if (this.$refs.TsCodemirror && this.$refs.TsCodemirror.codemirror) {
+        return this.$refs.TsCodemirror.codemirror.getValue();
+      }
+      return this.versionVo.codeValue || '';
+    },
+    replaceCode(code) {
+      this.versionVo.codeValue = code || '';
+      if (this.$refs.TsCodemirror && this.$refs.TsCodemirror.codemirror) {
+        this.$refs.TsCodemirror.codemirror.setValue(this.versionVo.codeValue);
+      }
+      this.isInfoCode = false;
+    },
     validCheck() {
       if (this.versionVo.parser) {
         let data = {

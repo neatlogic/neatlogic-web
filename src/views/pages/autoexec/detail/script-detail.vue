@@ -48,6 +48,11 @@
         <template v-else>
           <div v-if="editBtnList && editBtnList.length" class="div-btn-contain action-group text-right no-line">
             <span
+              v-if="autoexecScriptAiAssistantComponent"
+              class="action-item btn-icon tsfont-ai"
+              @click.stop="openAiAssistant"
+            >编写脚本</span>
+            <span
               v-for="operate in editBtnList"
               :key="operate.value"
               class="action-item btn-icon"
@@ -120,10 +125,19 @@
         </div>
       </template>
     </TsDialog>
+    <component
+      :is="autoexecScriptAiAssistantComponent"
+      v-if="autoexecScriptAiAssistantComponent"
+      ref="aiAssistant"
+      :scriptConfig="scriptConfig"
+      :getContext="getAiAssistantContext"
+      @replace-code="replaceAiAssistantCode"
+    ></component>
   </div>
 </template>
 <script>
 import download from '@/resources/mixins/download.js';
+import ImportComponent from '@/views/components/import-component.js';
 export default {
   name: 'ScriptDetail',
   components: {
@@ -604,6 +618,29 @@ export default {
         }
       }
     },
+    openAiAssistant() {
+      if (this.$refs.aiAssistant && this.$refs.aiAssistant.openDialog) {
+        this.$refs.aiAssistant.openDialog();
+      }
+    },
+    getAiAssistantContext() {
+      const detailContext = this.$refs.versionDetail && this.$refs.versionDetail.getAiAssistantContext ? this.$refs.versionDetail.getAiAssistantContext() : {};
+      return {
+        ...detailContext,
+        scriptId: this.scriptId,
+        versionId: this.versionId,
+        name: this.scriptConfig ? this.scriptConfig.name : '',
+        isLib: this.scriptConfig ? this.scriptConfig.isLib : null,
+        execMode: this.scriptConfig ? this.scriptConfig.execMode : '',
+        typeId: this.scriptConfig ? this.scriptConfig.typeId : null,
+        catalogId: this.scriptConfig ? this.scriptConfig.catalogId : null
+      };
+    },
+    replaceAiAssistantCode(code) {
+      if (this.$refs.versionDetail && this.$refs.versionDetail.replaceCode) {
+        this.$refs.versionDetail.replaceCode(code);
+      }
+    },
     updateData(status) {
       //提交审核刷新页面
       this.initData = this.saveData();
@@ -684,6 +721,9 @@ export default {
     }
   },
   computed: {
+    autoexecScriptAiAssistantComponent() {
+      return ImportComponent && ImportComponent.autoexecScriptAiAssistant ? ImportComponent.autoexecScriptAiAssistant : null;
+    },
     getIcon() {
       return function(type, item) {
         let className = this.actionIcons[type] || 'tsfont-tool';
