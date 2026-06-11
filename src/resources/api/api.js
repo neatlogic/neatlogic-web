@@ -6,7 +6,6 @@ import deploy from './deploy';
 import framework from './framework';
 import globalsearch from './globalsearch';
 import inspect from './inspect';
-import knowledge from './knowledge';
 import process from './process';
 import report from './report';
 import rdm from './rdm';
@@ -21,29 +20,11 @@ let moduleApiConfig = {
   framework: framework,
   globalsearch: globalsearch,
   inspect: inspect,
-  knowledge: knowledge,
   process: process,
   report: report,
   rdm: rdm,
   documentonline: documentonline
 };
-/*let moduleList = ['autoexec', 'cmdb', 'common', 'dashboard', 'deploy', 'framework', 'globalsearch', 'inspect', 'knowledge', 'pbc', 'process', 'report', 'rdm', 'documentonline']; // 用于自定义页面接口导入做浅拷贝
-let moduleConfig = {
-  autoexec: autoexec,
-  cmdb: cmdb,
-  common: common,
-  dashboard: dashboard,
-  deploy: deploy,
-  framework: framework,
-  globalsearch: globalsearch,
-  inspect: inspect,
-  knowledge: knowledge,
-  pbc: pbc,
-  process: process,
-  report: report,
-  rdm: rdm,
-  documentonline: documentonline
-};*/
 try {
   // 导入自定义模块，获取导出接口地址
   let apiConfig = require.context('@/community-module', true, /api.js$/);
@@ -77,19 +58,5 @@ try {
 }
 
 export default {
-  // autoexec,
-  // common,
-  // cmdb,
-  // pbc,
-  // dashboard,
-  // framework,
-  // deploy,
-  // globalsearch,
-  // inspect,
-  // knowledge,
-  // process,
-  // report,
-  // rdm,
-  // documentonline,
   ...moduleApiConfig
 };

@@ -187,18 +187,6 @@
     "threadpool": "Thread Pool Monitoring",
     "ai": "Artificial Intelligence"
   },
-  "knowledge": {
-    "knowledgedetail": "entry details",
-    "knowledgeedit": "Edit entry",
-    "circlemanage": "Groups",
-    "circleedit": "Edit Circle of Knowledge",
-    "templatemanage": "Templates",
-    "templateedit": "Edit template",
-    "reviewdetail": "Review Details",
-    "knowledgetypemanage": "Knowledge Type",
-    "knowledgesearch": "Knowledge Search",
-    "knowledgemanagement": "Knowledge Management"
-  },
   "report": {
     "reportmanage": "Report Management",
     "reportdetail": "Report Details",
