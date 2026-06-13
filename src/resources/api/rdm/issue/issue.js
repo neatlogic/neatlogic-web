@@ -16,6 +16,9 @@ const issue = {
   searchIssue(params) {
     return axios.post('/api/rest/rdm/issue/search', params);
   },
+  getIssueOverview(params) {
+    return axios.post('/api/rest/rdm/issue/overview/get', params);
+  },
   searchIssueCopy(sourceIssueId) {
     return axios.post('/api/rest/rdm/issue/copy/search', { sourceIssueId: sourceIssueId });
   },
