@@ -4,7 +4,7 @@ export default {
   name: 'bar', 
   label: $t('term.dashboard.barchart'), 
   type: 'bar', 
-  icon: 'tsfont-storage', 
+  icon: 'tsfont-chart-bar', 
   widgetType: 'basic', 
   hasCustomConfig: true, 
   width: 5, 

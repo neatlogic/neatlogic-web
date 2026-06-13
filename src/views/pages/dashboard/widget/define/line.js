@@ -4,7 +4,7 @@ export default {
   name: 'line', 
   label: $t('term.report.chartsetting.linechart'), 
   type: 'line', 
-  icon: 'tsfont-chart-line', 
+  icon: 'tsfont-chart-lines', 
   widgetType: 'basic', 
   hasCustomConfig: true, 
   width: 5, 
