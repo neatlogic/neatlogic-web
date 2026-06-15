@@ -8,6 +8,7 @@
             <AuditConfig auditName="API-AUDIT" :title="$t('term.framework.apiaccesstime')"></AuditConfig>
           </span>
           <span class="action-item tsfont-download" @click="exportHelp()">{{ $t('page.export') }}</span>
+          <span class="action-item tsfont-agent" @click="showMcpToolList()">MCP工具列表</span>
         </div>
       </template>
       <template v-slot:topRight>
@@ -100,6 +101,11 @@
       @on-hide="isFormDialogShow = false"
     />
     <ApiTest v-if="isTestShow" :rowData="rowData" @close="isTestShow = false"></ApiTest>
+    <McpToolList
+      v-if="isMcpToolListShow"
+      :isShow="isMcpToolListShow"
+      @close="isMcpToolListShow = false"
+    ></McpToolList>
   </div>
 </template>
 
@@ -114,6 +120,7 @@ export default {
     FormDialog: () => import('./api-manage-form'),
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     ApiTest: () => import('./api-manage-test.vue'),
+    McpToolList: () => import('./api-manage-mcp-tool-list.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
   filters: {
@@ -127,6 +134,7 @@ export default {
       isTestShow: false, //是否显示测试
       isCallRecordShow: false, //是否显示接口调用记录
       isFormDialogShow: false, //是否显示对话框
+      isMcpToolListShow: false, //是否显示MCP工具列表测试
       treeList: [
         {
           title: this.$t('page.all'),
@@ -343,6 +351,9 @@ export default {
     showApiForm(row) {
       this.currentToken = row && row.token ? row.token : '';
       this.isFormDialogShow = true;
+    },
+    showMcpToolList() {
+      this.isMcpToolListShow = true;
     },
     t(arg) {
       //国际化翻译时，过滤器filter中拿不到this, 需要转化

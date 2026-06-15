@@ -4,7 +4,7 @@ export default {
   name: 'columnline',
   label: '柱线混合图',
   type: 'columnline',
-  icon: 'tsfont-chart-polyline',
+  icon: 'tsfont-chart-columnline',
   widgetType: 'basic',
   hasCustomConfig: true,
   width: 5,

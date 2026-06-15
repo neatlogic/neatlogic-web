@@ -125,10 +125,6 @@
     "notsetexecutertip": "组合工具中，每个执行阶段均已预设执行目标，此处无需设置执行目标",
     "norunnerphaserunnergrouptips": "组合工具不包含runner或者sql执行方式的阶段，无需设置执行器组"
   },
-  "knowledge": {
-    "notcatalog": "无文本目录",
-    "circleauth": "您不属于任何知识圈，请联系管理员处理"
-  },
   "report": {
     "addreportwidget": "请添加报表组件",
     "definetemplate": "请定义模板内容",

@@ -1127,5 +1127,15 @@
   "versionprefix": "Version prefix",
   "planstarttime": "Plan start time",
   "planendtime": "plan end time",
-  "inspectbaseline": "Baseline inspection"
+  "inspectbaseline": "Baseline inspection",
+  "batchsynchronization": "batch synchronization",
+  "viewsynchronizationresults": "View synchronization results",
+  "lastmodifiedtime": "Last modification time",
+  "lastsynchronizationtime": "Last synchronization time",
+  "confirmsynchronization": "Confirm synchronization",
+  "submittedinsync": "Submitted in sync",
+  "batchsynchronizationhasbeensubmitted": "Batch synchronization has been submitted",
+  "setapplicationcredentials": "Set up application credentials",
+  "primaryclassification": "Primary Classification",
+  "knowledge": "Knowledge"
 }

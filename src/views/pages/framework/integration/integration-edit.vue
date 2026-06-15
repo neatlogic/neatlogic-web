@@ -48,6 +48,7 @@
                 ></ParamEdit>
               </TabPane>
               <TabPane
+                v-if="!isMcp"
                 :key="3"
                 :label="$t('term.framework.head')"
                 name="head"
@@ -56,6 +57,7 @@
                 <HeaderEdit :integration="integrationData" @setHead="setHead"></HeaderEdit>
               </TabPane>
               <TabPane
+                v-if="!isMcp"
                 :key="4"
                 :label="$t('term.framework.inputtrans')"
                 name="input"
@@ -69,6 +71,7 @@
                 ></InputTransform>
               </TabPane>
               <TabPane
+                v-if="!isMcp"
                 :key="5"
                 :label="$t('term.framework.outputtrans')"
                 name="output"
@@ -236,12 +239,26 @@ export default {
               _this.handlerInputPattern = res.Return['inputPattern'] || [];
               _this.handlerOutputPattern = res.Return['outputPattern'] || [];
               _this.allowEditParam = res.Return['hasPattern'] == 0 ? 1 : 0;
+              _this.setMethodList(res.Return['methodList']);
             }
           });
       } else {
         _this.handlerInputPattern = [];
         _this.handlerOutputPattern = [];
         _this.allowEditParam = 1;
+        _this.setMethodList();
+      }
+    },
+    setMethodList: function(methodList) {
+      let list = methodList && methodList.length ? methodList : ['get', 'post'];
+      this.methodList = list.map(method => {
+        return {
+          value: method,
+          text: String(method).toUpperCase()
+        };
+      });
+      if (!this.methodList.find(item => item.value == this.integrationData.method)) {
+        this.$set(this.integrationData, 'method', this.methodList[0] ? this.methodList[0].value : null);
       }
     },
     setInput: function(input) {
@@ -375,9 +392,18 @@ export default {
   computed: {
     handlerPattern: function() {
       return this.handlerInputPattern.concat(this.handlerOutputPattern);
+    },
+    isMcp: function() {
+      return this.integrationData && this.integrationData.method === 'mcp';
     }
   },
-  watch: {}
+  watch: {
+    isMcp: function(val) {
+      if (val && ['head', 'input', 'output'].includes(this.activedTab)) {
+        this.activedTab = 'authentication';
+      }
+    }
+  }
 };
 </script>
 <style lang="less"></style>

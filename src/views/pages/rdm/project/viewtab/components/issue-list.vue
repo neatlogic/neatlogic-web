@@ -460,6 +460,15 @@ export default {
     refresh(currentPage) {
       this.searchIssue(currentPage);
     },
+    //供概览图表调用，保持状态筛选和值选择器一致。
+    setStatusFilter(statusIdList) {
+      if (statusIdList && statusIdList.length > 0) {
+        this.$set(this.searchValue, 'status', statusIdList);
+      } else {
+        this.$delete(this.searchValue, 'status');
+      }
+      this.searchIssue(1);
+    },
     initTheadList() {
       if (this.displayAttrList && this.displayAttrList.length > 0) {
         this.displayAttrList.forEach(attr => {

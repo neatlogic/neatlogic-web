@@ -4,7 +4,7 @@ export default {
   name: 'marea', 
   label: $t('term.report.chartsetting.stackedareachart'), 
   type: 'marea', 
-  icon: 'tsfont-chart-area', 
+  icon: 'tsfont-chart-areas', 
   widgetType: 'basic', 
   hasCustomConfig: true, 
   width: 500, 
