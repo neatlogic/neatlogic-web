@@ -9,7 +9,7 @@ try {
   const moduleCommitInfo = { 'web': commitId };
   const commercialModulePath = path.join(__dirname, './src/commercial-module');
   const communityModulsPath = path.join(__dirname, './src/community-module');
-  
+
   // 遍历 commercial-module 文件夹中的所有子文件夹
   if (fs.existsSync(commercialModulePath)) {
     fs.readdirSync(commercialModulePath).forEach((folder) => {
@@ -18,7 +18,7 @@ try {
         try {
           // 进入每个模块文件夹并获取最新的 commitId
           const commitId = execSync('git rev-parse HEAD', { cwd: modulePath }).toString().trim().substring(0, 8);
-          moduleCommitInfo[folder] = commitId;
+          moduleCommitInfo[folder + '-c'] = commitId;
         } catch (err) {
           console.error(`Error fetching commitId for ${folder}:`, err);
         }
