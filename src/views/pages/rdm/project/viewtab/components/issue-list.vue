@@ -469,6 +469,20 @@ export default {
       }
       this.searchIssue(1);
     },
+    //供概览图表调用，按筛选字段统一联动列表查询。
+    setOverviewFilter(filterObj) {
+      if (filterObj) {
+        Object.keys(filterObj).forEach(key => {
+          const value = filterObj[key];
+          if (this.$utils.isEmpty(value)) {
+            this.$delete(this.searchValue, key);
+          } else {
+            this.$set(this.searchValue, key, value);
+          }
+        });
+      }
+      this.searchIssue(1);
+    },
     initTheadList() {
       if (this.displayAttrList && this.displayAttrList.length > 0) {
         this.displayAttrList.forEach(attr => {

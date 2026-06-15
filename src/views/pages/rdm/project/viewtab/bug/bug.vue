@@ -30,6 +30,13 @@
         </div>
       </template>
       <template v-slot:content>
+        <BugOverview
+          v-if="isReady && appData"
+          ref="bugOverview"
+          :projectId="projectId"
+          :app="appData"
+          @filter-change="changeOverviewFilter"
+        ></BugOverview>
         <IssueList
           v-if="isReady && appData"
           ref="issueList"
@@ -39,6 +46,7 @@
           :canSearch="true"
           :canAction="true"
           :isShowEmptyTable="true"
+          @refresh="refreshOverview"
         ></IssueList>
       </template>
     </TsContain>
@@ -60,6 +68,7 @@ export default {
     AppTab: () => import('@/views/pages/rdm/project/viewtab/components/app-tab.vue'),
     EditIssue: () => import('@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'),
     IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue'),
+    BugOverview: () => import('@/views/pages/rdm/project/viewtab/bug/bug-overview.vue'),
     AttrSettingDialog: () => import('@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue')
   },
   mixins: [mixins],
@@ -95,6 +104,7 @@ export default {
       this.isAttrSettingShow = false;
       if (needRefresh) {
         this.reloadIssueList();
+        this.refreshOverview();
       }
     },
     addIssue() {
@@ -105,11 +115,24 @@ export default {
       this.isEditIssueShow = false;
       if (needRefresh) {
         this.refreshIssueList();
+        this.refreshOverview();
       }
     },
     editIssue(issue) {
       this.isEditIssueShow = true;
       this.currentIssueId = issue.id;
+    },
+    changeOverviewFilter(filterObj) {
+      const issueList = this.$refs['issueList'];
+      if (issueList && issueList.setOverviewFilter) {
+        issueList.setOverviewFilter(filterObj);
+      }
+    },
+    refreshOverview() {
+      const bugOverview = this.$refs['bugOverview'];
+      if (bugOverview && bugOverview.refresh) {
+        bugOverview.refresh();
+      }
     }
   },
   filter: {},

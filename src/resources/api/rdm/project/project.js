@@ -16,6 +16,9 @@ const project = {
   listCustomAttrType() {
     return axios.post('/api/rest/rdm/project/app/customattrtype/list', {});
   },
+  listAppStatAttrType(params) {
+    return axios.post('/api/rest/rdm/project/app/statattrtype/list', params || {});
+  },
   getProjectIssueCount(params) {
     return axios.post('/api/rest/rdm/project/issuecount/get', params);
   },

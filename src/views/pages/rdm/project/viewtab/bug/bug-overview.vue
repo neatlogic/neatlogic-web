@@ -1,15 +1,15 @@
 <template>
-  <div class="story-overview border-color radius-lg bg-op mb-md">
+  <div class="bug-overview border-color radius-lg bg-op mb-md">
     <div class="overview-header border-color" @click="toggleCollapse">
       <div class="text-title">
         <span :class="isCollapsed ? 'tsfont-right' : 'tsfont-down'"></span>
-        <span class="ml-xs">需求概览</span>
+        <span class="ml-xs">缺陷概览</span>
       </div>
       <div class="action-group" @click.stop>
-        <span v-if="activeStatus" class="action-item">
-          <span class="text-grey">当前状态：</span>
-          <span :style="{ color: activeStatus.color }">{{ activeStatus.label || activeStatus.name }}</span>
-          <span class="tsfont-close ml-xs text-action" @click="clearStatus"></span>
+        <span v-if="activeFilter" class="action-item">
+          <span class="text-grey">当前筛选：</span>
+          <span :style="{ color: activeFilter.color }">{{ activeFilter.label }}</span>
+          <span class="tsfont-close ml-xs text-action" @click="clearFilter"></span>
         </span>
         <span class="action-item tsfont-refresh" @click="refresh">刷新</span>
       </div>
@@ -18,25 +18,22 @@
       <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
       <div v-if="errorMessage" class="text-grey text-center pt-md pb-md">{{ errorMessage }}</div>
       <template v-else>
-        <div class="metric-grid">
-          <div v-for="metric in metricList" :key="metric.key" class="metric-item border-color">
-            <div class="text-grey fz10">{{ metric.label }}</div>
+        <div class="overview-grid">
+          <div v-for="metric in metricList" :key="metric.key" class="overview-panel metric-panel border-color">
+            <div class="chart-title text-grey">{{ metric.label }}</div>
             <div class="metric-value" :class="metric.className">{{ metric.value }}</div>
           </div>
-        </div>
-        <div class="chart-grid">
-          <div v-if="statusChart.isConfigured" class="chart-panel border-color">
-            <div class="chart-title">需求状态比例</div>
+          <div v-if="statusChart.isConfigured && statusChart.hasData" class="overview-panel chart-panel border-color">
+            <div class="chart-title">缺陷状态比例</div>
             <div class="status-chart-layout">
-              <div v-if="statusChart.hasData" ref="statusChart" class="chart-container"></div>
-              <NoData v-else class="chart-empty"></NoData>
+              <div ref="statusChart" class="chart-container"></div>
               <div class="status-list">
                 <div
                   v-for="status in statusChart.list"
                   :key="status.id"
                   class="status-item"
-                  :class="{ 'active': activeStatusId === status.id }"
-                  @click="selectStatus(status)"
+                  :class="{ 'active': isActiveFilter(statusChart, status) }"
+                  @click="selectChartItem(statusChart, status)"
                 >
                   <span class="status-dot" :style="{ background: status.color || chartTheme.iconColor }"></span>
                   <span class="status-name overflow">{{ status.label || status.name }}</span>
@@ -45,15 +42,17 @@
               </div>
             </div>
           </div>
-          <div v-if="priorityChart.isConfigured" class="chart-panel border-color">
-            <div class="chart-title">优先级分布</div>
-            <div v-if="priorityChart.list.length > 0" ref="priorityChart" class="chart-container"></div>
-            <NoData v-else class="chart-empty"></NoData>
+          <div v-if="severityChart.isConfigured && severityChart.list.length > 0" class="overview-panel chart-panel border-color">
+            <div class="chart-title">严重程度分布</div>
+            <div ref="severityChart" class="chart-container"></div>
           </div>
-          <div v-if="trendChart.isConfigured" class="chart-panel border-color">
-            <div class="chart-title">近7个月需求/逾期趋势</div>
-            <div v-if="trendChart.list.length > 0" ref="trendChart" class="chart-container"></div>
-            <NoData v-else class="chart-empty"></NoData>
+          <div v-if="sourceChart.isConfigured && sourceChart.list.length > 0" class="overview-panel chart-panel border-color">
+            <div class="chart-title">缺陷来源分布</div>
+            <div ref="sourceChart" class="chart-container"></div>
+          </div>
+          <div v-if="trendChart.isConfigured && trendChart.hasData" class="overview-panel chart-panel border-color">
+            <div class="chart-title">近7个月新增/逾期趋势</div>
+            <div ref="trendChart" class="chart-container"></div>
           </div>
         </div>
       </template>
@@ -66,13 +65,14 @@ import themes from '@/views/pages/dashboard/widget/charts/theme';
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
 
 const STAT_KEY = {
-  TOTAL: 'story_total',
-  OVERDUE: 'story_overdue',
-  COMPLETE_RATE: 'story_complete_rate',
-  HIGH_RISK: 'story_high_risk',
-  STATUS_DISTRIBUTION: 'story_status_distribution',
-  PRIORITY_DISTRIBUTION: 'story_priority_distribution',
-  TREND: 'story_trend'
+  TOTAL: 'bug_total',
+  OPEN: 'bug_open',
+  OVERDUE: 'bug_overdue',
+  REOPEN_TOTAL: 'bug_reopen_total',
+  STATUS_DISTRIBUTION: 'bug_status_distribution',
+  SEVERITY_DISTRIBUTION: 'bug_severity_distribution',
+  SOURCE_DISTRIBUTION: 'bug_source_distribution',
+  TREND: 'bug_trend'
 };
 
 function getFieldValue(data, key) {
@@ -113,23 +113,25 @@ function getStatValue(stat, defaultValue) {
   return defaultValue;
 }
 
-function getStatDataList(stat, fallbackList) {
+function getStatDataList(stat) {
   if (stat) {
     const dataList = stat.dataList || stat.datalist || stat.list;
     if (Array.isArray(dataList) && dataList.length > 0) {
       return dataList;
     }
   }
-  return fallbackList || [];
+  return [];
 }
 
 function normalizeDistributionList(dataList) {
   return (dataList || []).map(item => {
+    const label = getFieldValue(item, 'label') || getFieldValue(item, 'name');
     return {
       ...item,
       id: getFieldValue(item, 'id'),
       name: getFieldValue(item, 'name'),
-      label: getFieldValue(item, 'label'),
+      label: label,
+      value: getFieldValue(item, 'value') || getFieldValue(item, 'id'),
       color: getFieldValue(item, 'color'),
       issueCount: getNumberValue(item, 'issueCount')
     };
@@ -149,11 +151,9 @@ function normalizeTrendList(dataList) {
 
 export default {
   name: '',
-  components: {},
   props: {
     projectId: { type: Number },
-    app: { type: Object },
-    catalog: { type: Number }
+    app: { type: Object }
   },
   data() {
     return {
@@ -161,20 +161,22 @@ export default {
       isLoading: false,
       errorMessage: '',
       overviewData: {},
-      activeStatusId: null,
+      activeFilter: null,
       statusPlot: null,
-      priorityPlot: null,
+      severityPlot: null,
+      sourcePlot: null,
       trendPlot: null,
       themeObserver: null,
       themeClass: this.getCurrentThemeClass(),
       overviewRequestId: 0,
       statKeyList: [
         STAT_KEY.TOTAL,
+        STAT_KEY.OPEN,
         STAT_KEY.OVERDUE,
-        STAT_KEY.COMPLETE_RATE,
-        STAT_KEY.HIGH_RISK,
+        STAT_KEY.REOPEN_TOTAL,
         STAT_KEY.STATUS_DISTRIBUTION,
-        STAT_KEY.PRIORITY_DISTRIBUTION,
+        STAT_KEY.SEVERITY_DISTRIBUTION,
+        STAT_KEY.SOURCE_DISTRIBUTION,
         STAT_KEY.TREND
       ]
     };
@@ -213,7 +215,6 @@ export default {
         .getIssueOverview({
           projectId: this.projectId,
           appId: this.app.id,
-          catalog: this.catalog,
           statKeyList: this.statKeyList
         })
         .then(res => {
@@ -226,7 +227,7 @@ export default {
           if (requestId !== this.overviewRequestId) {
             return;
           }
-          this.errorMessage = '需求概览加载失败';
+          this.errorMessage = '缺陷概览加载失败';
           this.overviewData = {};
           this.destroyPlot();
         })
@@ -240,23 +241,44 @@ export default {
           });
         });
     },
-    selectStatus(status) {
-      this.activeStatusId = this.activeStatusId === status.id ? null : status.id;
-      this.$emit('filter-change', { [this.statusChart.filterField]: this.activeStatusId ? [this.activeStatusId] : [] });
-    },
-    clearStatus() {
-      const hasActiveStatus = this.activeStatusId !== null;
-      this.activeStatusId = null;
-      if (hasActiveStatus) {
-        this.$emit('filter-change', { [this.statusChart.filterField]: [] });
+    selectChartItem(chart, item) {
+      const value = item.value === undefined || item.value === null ? item.id : item.value;
+      const isActive = this.activeFilter && this.activeFilter.field === chart.filterField && this.activeFilter.value === value;
+      const filterObj = {};
+      if (this.activeFilter) {
+        filterObj[this.activeFilter.field] = [];
       }
+      if (isActive) {
+        this.activeFilter = null;
+      } else {
+        this.activeFilter = {
+          field: chart.filterField,
+          value: value,
+          label: item.label || item.name,
+          color: item.color
+        };
+        filterObj[chart.filterField] = [value];
+      }
+      this.$emit('filter-change', filterObj);
+    },
+    clearFilter() {
+      if (this.activeFilter) {
+        const filterObj = { [this.activeFilter.field]: [] };
+        this.activeFilter = null;
+        this.$emit('filter-change', filterObj);
+      }
+    },
+    isActiveFilter(chart, item) {
+      const value = item.value === undefined || item.value === null ? item.id : item.value;
+      return !!this.activeFilter && this.activeFilter.field === chart.filterField && this.activeFilter.value === value;
     },
     renderCharts() {
       if (this.isCollapsed) {
         return;
       }
       this.renderStatusChart();
-      this.renderPriorityChart();
+      this.renderSeverityChart();
+      this.renderSourceChart();
       this.renderTrendChart();
     },
     renderStatusChart() {
@@ -279,22 +301,8 @@ export default {
         legend: false,
         label: false,
         statistic: {
-          title: {
-            content: '总数',
-            style: {
-              color: chartTheme.textColor,
-              fontSize: '18px',
-              fontWeight: 400
-            }
-          },
-          content: {
-            content: this.statusChart.total.toString(),
-            style: {
-              color: chartTheme.textColor,
-              fontSize: '24px',
-              fontWeight: 500
-            }
-          }
+          title: { content: '总数', style: { color: chartTheme.textColor, fontSize: '18px', fontWeight: 400 } },
+          content: { content: this.statusChart.total.toString(), style: { color: chartTheme.textColor, fontSize: '24px', fontWeight: 500 } }
         },
         pieStyle: {
           stroke: 'transparent',
@@ -303,78 +311,23 @@ export default {
         theme: this.getChartThemeConfig(),
         tooltip: {
           domStyles: this.getTooltipDomStyles(),
-          formatter: data => {
-            return { name: data.label, value: data.issueCount };
-          }
+          formatter: data => ({ name: data.label, value: data.issueCount })
         },
         color: ({ label }) => this.getStatusColor(label)
       });
       this.statusPlot.on('element:click', event => {
         const data = event && event.data && event.data.data;
         if (data) {
-          this.selectStatus(data);
+          this.selectChartItem(this.statusChart, data);
         }
       });
       this.statusPlot.render();
     },
-    renderPriorityChart() {
-      if (this.priorityPlot) {
-        this.priorityPlot.destroy();
-        this.priorityPlot = null;
-      }
-      if (!this.$refs.priorityChart || this.priorityChart.list.length === 0) {
-        return;
-      }
-      const chartTheme = this.chartTheme;
-      this.priorityPlot = new Column(this.$refs.priorityChart, {
-        height: 180,
-        appendPadding: 0,
-        data: this.priorityChart.list,
-        xField: 'name',
-        yField: 'issueCount',
-        legend: false,
-        theme: this.getChartThemeConfig(),
-        label: {
-          position: 'top',
-          style: {
-            fill: chartTheme.textColor,
-            stroke: 'transparent',
-            lineWidth: 0
-          }
-        },
-        columnStyle: {
-          stroke: 'transparent',
-          lineWidth: 0
-        },
-        xAxis: {
-          label: {
-            autoHide: true,
-            autoRotate: false,
-            style: this.getAxisLabelStyle()
-          },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
-          line: this.getAxisLineConfig(),
-          tickLine: this.getAxisTickConfig()
-        },
-        yAxis: {
-          min: 0,
-          nice: true,
-          label: {
-            style: this.getAxisLabelStyle()
-          },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
-          grid: this.getAxisGridConfig()
-        },
-        tooltip: {
-          domStyles: this.getTooltipDomStyles()
-        },
-        color: data => data.color || chartTheme.primaryColor
-      });
-      this.priorityPlot.render();
+    renderSeverityChart() {
+      this.renderColumnChart('severityPlot', 'severityChart', this.severityChart, ({ name }) => this.getDistributionColor(this.severityChart, name));
+    },
+    renderSourceChart() {
+      this.renderColumnChart('sourcePlot', 'sourceChart', this.sourceChart, ({ name }) => this.getDistributionColor(this.sourceChart, name));
     },
     renderTrendChart() {
       if (this.trendPlot) {
@@ -394,59 +347,63 @@ export default {
         seriesField: 'type',
         isGroup: true,
         theme: this.getChartThemeConfig(),
-        columnStyle: {
-          stroke: 'transparent',
-          lineWidth: 0
-        },
+        columnStyle: { stroke: 'transparent', lineWidth: 0 },
         legend: {
           position: 'top-right',
-          text: {
-            style: this.getChartTextStyle()
-          },
-          itemName: {
-            style: this.getChartTextStyle()
-          }
+          text: { style: this.getChartTextStyle() },
+          itemName: { style: this.getChartTextStyle() }
         },
-        xAxis: {
-          label: {
-            autoHide: true,
-            autoRotate: false,
-            style: this.getAxisLabelStyle()
-          },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
-          line: this.getAxisLineConfig(),
-          tickLine: this.getAxisTickConfig()
-        },
-        yAxis: {
-          min: 0,
-          nice: true,
-          label: {
-            style: this.getAxisLabelStyle()
-          },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
-          grid: this.getAxisGridConfig()
-        },
-        tooltip: {
-          domStyles: this.getTooltipDomStyles()
-        },
-        color: ({ type }) => {
-          return type === '逾期' ? chartTheme.warningColor : chartTheme.primaryColor;
-        }
+        xAxis: this.getXAxisConfig(),
+        yAxis: this.getYAxisConfig(),
+        tooltip: { domStyles: this.getTooltipDomStyles() },
+        color: ({ type }) => type === '逾期' ? chartTheme.warningColor : chartTheme.primaryColor
       });
       this.trendPlot.render();
     },
+    renderColumnChart(plotName, refName, chart, colorHandler) {
+      if (this[plotName]) {
+        this[plotName].destroy();
+        this[plotName] = null;
+      }
+      if (!this.$refs[refName] || chart.list.length === 0) {
+        return;
+      }
+      const chartTheme = this.chartTheme;
+      this[plotName] = new Column(this.$refs[refName], {
+        height: 180,
+        appendPadding: 0,
+        data: chart.list,
+        xField: 'name',
+        yField: 'issueCount',
+        legend: false,
+        theme: this.getChartThemeConfig(),
+        label: {
+          position: 'top',
+          style: { fill: chartTheme.textColor, stroke: 'transparent', lineWidth: 0 }
+        },
+        columnStyle: { stroke: 'transparent', lineWidth: 0 },
+        xAxis: this.getXAxisConfig(),
+        yAxis: this.getYAxisConfig(),
+        tooltip: { domStyles: this.getTooltipDomStyles() },
+        color: colorHandler || (data => data.color || chartTheme.primaryColor)
+      });
+      this[plotName].on('element:click', event => {
+        const data = event && event.data && event.data.data;
+        if (data) {
+          this.selectChartItem(chart, data);
+        }
+      });
+      this[plotName].render();
+    },
     destroyPlot() {
-      [this.statusPlot, this.priorityPlot, this.trendPlot].forEach(plot => {
+      [this.statusPlot, this.severityPlot, this.sourcePlot, this.trendPlot].forEach(plot => {
         if (plot) {
           plot.destroy();
         }
       });
       this.statusPlot = null;
-      this.priorityPlot = null;
+      this.severityPlot = null;
+      this.sourcePlot = null;
       this.trendPlot = null;
     },
     initThemeObserver() {
@@ -497,6 +454,10 @@ export default {
       const status = this.statusChart.data.find(item => item.label === label);
       return status ? status.color : this.chartTheme.primaryColor;
     },
+    getDistributionColor(chart, name) {
+      const data = chart.list.find(item => item.name === name);
+      return data && data.color ? data.color : this.chartTheme.primaryColor;
+    },
     getDashboardChartTheme(param) {
       const list = ThemeUtils.getValueListByType('dashboard');
       const chartTheme = list.find(item => item.param === param);
@@ -525,92 +486,58 @@ export default {
       return this.dashboardTheme?.components?.tooltip?.domStyles?.['g2-tooltip'] || {};
     },
     getAxisLineConfig() {
-      return {
-        style: {
-          stroke: this.chartTheme.dividingColor,
-          lineWidth: 1
-        }
-      };
+      return { style: { stroke: this.chartTheme.dividingColor, lineWidth: 1 } };
     },
     getAxisTickConfig() {
-      return {
-        style: {
-          stroke: this.chartTheme.dividingColor,
-          lineWidth: 1
-        }
-      };
+      return { style: { stroke: this.chartTheme.dividingColor, lineWidth: 1 } };
     },
     getAxisGridConfig() {
       return {
-        line: {
-          style: {
-            stroke: this.chartTheme.dividingColor,
-            lineWidth: 1,
-            lineDash: [4, 4],
-            opacity: 0.55
-          }
-        }
+        line: { style: { stroke: this.chartTheme.dividingColor, lineWidth: 1, lineDash: [4, 4], opacity: 0.55 } }
+      };
+    },
+    getXAxisConfig() {
+      return {
+        label: { autoHide: true, autoRotate: false, style: this.getAxisLabelStyle() },
+        title: { style: this.getAxisLabelStyle() },
+        line: this.getAxisLineConfig(),
+        tickLine: this.getAxisTickConfig()
+      };
+    },
+    getYAxisConfig() {
+      return {
+        min: 0,
+        nice: true,
+        label: { style: this.getAxisLabelStyle() },
+        title: { style: this.getAxisLabelStyle() },
+        grid: this.getAxisGridConfig()
       };
     },
     getTooltipDomStyles() {
       const chartTheme = this.chartTheme;
       const dashboardTooltipStyle = this.getThemeTooltipStyle();
       return {
-        'g2-tooltip': {
-          ...dashboardTooltipStyle,
-          color: chartTheme.textColor
-        },
-        'g2-tooltip-title': {
-          color: chartTheme.textColor
-        },
-        'g2-tooltip-list-item': {
-          color: chartTheme.textColor
-        },
-        'g2-tooltip-name': {
-          color: chartTheme.textColor
-        },
-        'g2-tooltip-value': {
-          color: chartTheme.textColor
-        }
+        'g2-tooltip': { ...dashboardTooltipStyle, color: chartTheme.textColor },
+        'g2-tooltip-title': { color: chartTheme.textColor },
+        'g2-tooltip-list-item': { color: chartTheme.textColor },
+        'g2-tooltip-name': { color: chartTheme.textColor },
+        'g2-tooltip-value': { color: chartTheme.textColor }
       };
     },
     getChartThemeConfig() {
       return {
         ...this.dashboardTheme,
-        backgroundStyle: {
-          fill: 'transparent'
-        },
+        backgroundStyle: { fill: 'transparent' },
         axis: {
-          x: {
-            label: {
-              style: this.getAxisLabelStyle()
-            },
-            title: {
-              style: this.getAxisLabelStyle()
-            }
-          },
-          y: {
-            label: {
-              style: this.getAxisLabelStyle()
-            },
-            title: {
-              style: this.getAxisLabelStyle()
-            },
-            grid: this.getAxisGridConfig()
-          }
+          x: { label: { style: this.getAxisLabelStyle() }, title: { style: this.getAxisLabelStyle() } },
+          y: { label: { style: this.getAxisLabelStyle() }, title: { style: this.getAxisLabelStyle() }, grid: this.getAxisGridConfig() }
         },
         legend: {
-          text: {
-            style: this.getChartTextStyle()
-          },
-          itemName: {
-            style: this.getChartTextStyle()
-          }
+          text: { style: this.getChartTextStyle() },
+          itemName: { style: this.getChartTextStyle() }
         },
         components: {
-          tooltip: {
-            domStyles: this.getTooltipDomStyles()
-          }
+          tooltip: { domStyles: this.getTooltipDomStyles() }
         }
       };
     },
@@ -621,14 +548,14 @@ export default {
     hasStatResultList() {
       return Array.isArray(this.overviewData.statResultList);
     },
-    isStatConfigured(statKey, legacyKey) {
-      return !this.hasStatResultList() || !!this.getStatResult(statKey) || this.overviewData[legacyKey] !== undefined;
+    isStatConfigured(statKey) {
+      return !this.hasStatResultList() || !!this.getStatResult(statKey);
     },
-    getStatValue(statKey, legacyKey, defaultValue) {
-      return getStatValue(this.getStatResult(statKey), this.overviewData[legacyKey] === undefined ? defaultValue : this.overviewData[legacyKey]);
+    getStatValue(statKey, defaultValue) {
+      return getStatValue(this.getStatResult(statKey), defaultValue);
     },
-    getStatDataList(statKey, legacyKey) {
-      return getStatDataList(this.getStatResult(statKey), this.overviewData[legacyKey]);
+    getStatDataList(statKey) {
+      return getStatDataList(this.getStatResult(statKey));
     }
   },
   computed: {
@@ -636,7 +563,6 @@ export default {
       return this.themeClass === 'theme-dark' ? themes.dark : themes.default;
     },
     dashboardChartColorList() {
-      // 让定制主题调色板随浅色/深色皮肤切换重新取值。
       this.themeClass;
       return this.getDashboardChartTheme('chart');
     },
@@ -655,46 +581,47 @@ export default {
       return [
         {
           key: 'total',
-          isConfigured: this.isStatConfigured(STAT_KEY.TOTAL, 'totalCount'),
-          label: '需求总数',
-          value: this.getStatValue(STAT_KEY.TOTAL, 'totalCount', 0)
+          isConfigured: this.isStatConfigured(STAT_KEY.TOTAL),
+          label: '缺陷总数',
+          value: this.getStatValue(STAT_KEY.TOTAL, 0)
+        },
+        {
+          key: 'open',
+          isConfigured: this.isStatConfigured(STAT_KEY.OPEN),
+          label: '未关闭缺陷数',
+          value: this.getStatValue(STAT_KEY.OPEN, 0),
+          className: 'text-primary'
         },
         {
           key: 'overdue',
-          isConfigured: this.isStatConfigured(STAT_KEY.OVERDUE, 'overdueCount'),
-          label: '逾期需求总数',
-          value: this.getStatValue(STAT_KEY.OVERDUE, 'overdueCount', 0),
+          isConfigured: this.isStatConfigured(STAT_KEY.OVERDUE),
+          label: '逾期缺陷数',
+          value: this.getStatValue(STAT_KEY.OVERDUE, 0),
           className: 'text-error'
         },
         {
-          key: 'complete',
-          isConfigured: this.isStatConfigured(STAT_KEY.COMPLETE_RATE, 'completeRate'),
-          label: '完成率',
-          value: (Number(this.getStatValue(STAT_KEY.COMPLETE_RATE, 'completeRate', 0)) * 100).toFixed(2) + '%',
-          className: 'text-success'
-        },
-        {
-          key: 'risk',
-          isConfigured: this.isStatConfigured(STAT_KEY.HIGH_RISK, 'highRiskCount'),
-          label: '高风险需求数',
-          value: this.getStatValue(STAT_KEY.HIGH_RISK, 'highRiskCount', 0),
+          key: 'reopen',
+          isConfigured: this.isStatConfigured(STAT_KEY.REOPEN_TOTAL),
+          label: '重开缺陷数',
+          value: this.getStatValue(STAT_KEY.REOPEN_TOTAL, 0),
           className: 'text-warning'
         }
       ].filter(metric => metric.isConfigured);
     },
     statusChart() {
       const stat = this.getStatResult(STAT_KEY.STATUS_DISTRIBUTION);
-      const list = normalizeDistributionList(this.getStatDataList(STAT_KEY.STATUS_DISTRIBUTION, 'statusList'));
+      const list = normalizeDistributionList(this.getStatDataList(STAT_KEY.STATUS_DISTRIBUTION));
       const data = list
         .filter(item => (item.issueCount || 0) > 0)
         .map(item => ({
           id: item.id,
           label: item.label || item.name,
+          value: item.id,
           color: item.color,
           issueCount: item.issueCount || 0
         }));
       return {
-        isConfigured: this.isStatConfigured(STAT_KEY.STATUS_DISTRIBUTION, 'statusList'),
+        isConfigured: this.isStatConfigured(STAT_KEY.STATUS_DISTRIBUTION),
         filterField: (stat && stat.filterField) || 'status',
         list: list,
         data: data,
@@ -702,50 +629,54 @@ export default {
         hasData: data.length > 0
       };
     },
-    priorityChart() {
+    severityChart() {
+      const stat = this.getStatResult(STAT_KEY.SEVERITY_DISTRIBUTION);
       return {
-        isConfigured: this.isStatConfigured(STAT_KEY.PRIORITY_DISTRIBUTION, 'priorityList'),
-        list: normalizeDistributionList(this.getStatDataList(STAT_KEY.PRIORITY_DISTRIBUTION, 'priorityList'))
+        isConfigured: this.isStatConfigured(STAT_KEY.SEVERITY_DISTRIBUTION),
+        filterField: (stat && (stat.filterField || (stat.filterAttrId ? 'attr_' + stat.filterAttrId : ''))) || '',
+        list: normalizeDistributionList(this.getStatDataList(STAT_KEY.SEVERITY_DISTRIBUTION))
+      };
+    },
+    sourceChart() {
+      const stat = this.getStatResult(STAT_KEY.SOURCE_DISTRIBUTION);
+      return {
+        isConfigured: this.isStatConfigured(STAT_KEY.SOURCE_DISTRIBUTION),
+        filterField: (stat && (stat.filterField || (stat.filterAttrId ? 'attr_' + stat.filterAttrId : ''))) || '',
+        list: normalizeDistributionList(this.getStatDataList(STAT_KEY.SOURCE_DISTRIBUTION))
       };
     },
     trendChart() {
-      const list = normalizeTrendList(this.getStatDataList(STAT_KEY.TREND, 'trendList'));
+      const list = normalizeTrendList(this.getStatDataList(STAT_KEY.TREND));
       const dataList = [];
       list.forEach(item => {
-        dataList.push({ month: item.month, type: '需求', count: item.totalCount || 0 });
+        dataList.push({ month: item.month, type: '新增', count: item.totalCount || 0 });
         dataList.push({ month: item.month, type: '逾期', count: item.overdueCount || 0 });
       });
       return {
-        isConfigured: this.isStatConfigured(STAT_KEY.TREND, 'trendList'),
+        isConfigured: this.isStatConfigured(STAT_KEY.TREND),
         list: list,
-        data: dataList
+        data: dataList,
+        hasData: dataList.some(item => (item.count || 0) > 0)
       };
-    },
-    activeStatus() {
-      return this.statusChart.list.find(status => status.id === this.activeStatusId);
     }
   },
   watch: {
     projectId() {
-      this.clearStatus();
+      this.clearFilter();
       this.refresh();
     },
     app: {
       handler() {
-        this.clearStatus();
+        this.clearFilter();
         this.refresh();
       },
       deep: false
-    },
-    catalog() {
-      this.clearStatus();
-      this.refresh();
     }
   }
 };
 </script>
 <style lang="less" scoped>
-.story-overview {
+.bug-overview {
   position: relative;
   border: 1px solid;
 }
@@ -760,47 +691,46 @@ export default {
 }
 .overview-body {
   position: relative;
-  padding: 12px;
+  padding: 8px 12px;
 }
-.metric-grid {
+.overview-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
-  gap: 10px;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(220px, 1fr);
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
-.metric-item {
-  min-height: 62px;
-  padding: 10px 12px;
+.overview-panel {
+  min-width: 0;
+  min-height: 176px;
   border: 1px solid;
   border-radius: 6px;
+}
+.metric-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
 }
 .metric-value {
-  margin-top: 6px;
-  font-size: 22px;
-  line-height: 26px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 44px;
+  line-height: 50px;
   font-weight: 600;
 }
-.chart-grid {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr 1.25fr;
-  gap: 10px;
-  margin-top: 10px;
-}
 .chart-panel {
-  min-width: 0;
-  min-height: 230px;
   padding: 10px;
-  border: 1px solid;
-  border-radius: 6px;
 }
 .chart-title {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-weight: 600;
 }
 .chart-container {
-  height: 180px;
-}
-.chart-empty {
-  height: 180px;
+  height: 138px;
 }
 .status-chart-layout {
   display: grid;
@@ -833,14 +763,13 @@ export default {
 .status-name {
   min-width: 0;
 }
-@media screen and (max-width: 1280px) {
-  .chart-grid {
-    grid-template-columns: 1fr;
-  }
-}
 @media screen and (max-width: 960px) {
-  .metric-grid {
-    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  .overview-grid {
+    grid-auto-columns: minmax(200px, 1fr);
+  }
+  .metric-value {
+    font-size: 38px;
+    line-height: 44px;
   }
 }
 </style>
