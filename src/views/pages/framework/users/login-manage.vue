@@ -74,6 +74,18 @@ export default {
             label: this.$t('page.date'),
             transfer: true,
             clearable: false
+          },
+          {
+            type: 'select',
+            name: 'teamUuidList',
+            label: this.$t('page.userteam'),
+            multiple: true,
+            search: true,
+            dynamicUrl: '/api/rest/team/search/forselect',
+            rootName: 'list',
+            textName: 'text',
+            valueName: 'value',
+            transfer: true
           }
         ]
       },
@@ -84,7 +96,8 @@ export default {
         timeRange: null,
         timeUnit: '',
         startTime: null,
-        endTime: null
+        endTime: null,
+        teamUuidList: []
       },
       theadList: [
         {
@@ -127,12 +140,13 @@ export default {
   destroyed() {},
   methods: {
     searchUserLoginList() {
-      const { keyword = '', dateRange = null } = this.searchValue || {};
+      const { keyword = '', dateRange = null, teamUuidList = [] } = this.searchValue || {};
       this.searchParam.keyword = keyword;
       this.searchParam.timeRange = dateRange ? dateRange.timeRange : null;
       this.searchParam.timeUnit = dateRange ? dateRange.timeUnit : null;
       this.searchParam.startTime = dateRange ? dateRange.startTime : null;
       this.searchParam.endTime = dateRange ? dateRange.endTime : null;
+      this.searchParam.teamUuidList = teamUuidList || [];
       this.$api.framework.loginaudit.searchLoginList(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
