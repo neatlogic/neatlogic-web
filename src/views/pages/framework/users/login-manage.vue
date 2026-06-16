@@ -3,6 +3,7 @@
     <TsContain>
       <template slot="topLeft">
         <div class="action-group">
+          <span class="action-item tsfont-download" @click="exportLoginAudit()">{{ $t('page.export') }}</span>
           <span v-auth="['ADMIN']" class="action-item">
             <AuditConfig auditName="LOGIN-AUDIT" :title="$t('term.framework.loginauditretentionperiod')"></AuditConfig>
           </span>
@@ -47,6 +48,7 @@
   </div>
 </template>
 <script>
+import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
@@ -55,6 +57,7 @@ export default {
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
+  mixins: [download],
   props: {},
   data() {
     return {
@@ -139,14 +142,22 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    searchUserLoginList() {
+    getSearchParam() {
       const { keyword = '', dateRange = null, teamUuidList = [] } = this.searchValue || {};
-      this.searchParam.keyword = keyword;
-      this.searchParam.timeRange = dateRange ? dateRange.timeRange : null;
-      this.searchParam.timeUnit = dateRange ? dateRange.timeUnit : null;
-      this.searchParam.startTime = dateRange ? dateRange.startTime : null;
-      this.searchParam.endTime = dateRange ? dateRange.endTime : null;
-      this.searchParam.teamUuidList = teamUuidList || [];
+      return {
+        keyword,
+        timeRange: dateRange ? dateRange.timeRange : null,
+        timeUnit: dateRange ? dateRange.timeUnit : null,
+        startTime: dateRange ? dateRange.startTime : null,
+        endTime: dateRange ? dateRange.endTime : null,
+        teamUuidList: teamUuidList || []
+      };
+    },
+    searchUserLoginList() {
+      this.searchParam = {
+        ...this.searchParam,
+        ...this.getSearchParam()
+      };
       this.$api.framework.loginaudit.searchLoginList(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -165,6 +176,12 @@ export default {
       this.searchParam.pageSize = pageSize;
       this.searchParam.currentPage = 1;
       this.searchUserLoginList();
+    },
+    exportLoginAudit() {
+      this.download({
+        url: 'api/binary/login/audit/export',
+        params: this.getSearchParam()
+      });
     },
     showTableList(val) {
       let list = [];
