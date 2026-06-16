@@ -3,10 +3,10 @@
     <TsContain>
       <template slot="topLeft">
         <div class="action-group">
-          <span class="action-item tsfont-download" @click="exportLoginAudit()">{{ $t('page.export') }}</span>
           <span v-auth="['ADMIN']" class="action-item">
             <AuditConfig auditName="LOGIN-AUDIT" :title="$t('term.framework.loginauditretentionperiod')"></AuditConfig>
           </span>
+          <span class="action-item tsfont-download" @click="exportLoginAudit()">{{ $t('page.export') }}</span>
         </div>
       </template>
       <template slot="topRight">
