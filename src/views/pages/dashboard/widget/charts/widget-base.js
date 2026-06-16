@@ -1,4 +1,12 @@
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
+
+const CHART_TEXT_THEME = {
+  field: { param: 'chart-field-text', light: '#8C8C8C', dark: '#ffffff' },
+  dataLabel: { param: 'chart-data-label-text', light: '#121212', dark: '#ffffff' }
+};
+const AXIS_TEXT_PATHS = ['label.style.fill', 'title.style.fill'];
+const LEGEND_TEXT_PATHS = ['legend.text.style.fill', 'legend.itemName.style.fill', 'legend.pageNavigator.text.style.fill'];
+
 export const WidgetBase = {
   props: {
     presetData: { type: Object }, //预设数据，用于替换内置变量
@@ -18,14 +26,123 @@ export const WidgetBase = {
   },
   methods: {
     getChartTheme(param) {
-      let list = ThemeUtils.getValueListByType('dashboard');
-      let temList = [];
-      list.forEach(v => {
-        if (v.param === param) {
-          temList = v.value;
+      const item = ThemeUtils.getValueListByType('dashboard').find(v => v.param === param);
+      return item ? item.value : [];
+    },
+    getThemeColor(config) {
+      const color = this.getChartTheme(config.param);
+      const fallback = this.systemThemeType === 'dark' || localStorage.themeClass === 'theme-dark' ? config.dark : config.light;
+      if (Array.isArray(color)) {
+        return color[0] || fallback;
+      }
+      return color || fallback;
+    },
+    getFieldTextColor() {
+      return this.getThemeColor(CHART_TEXT_THEME.field);
+    },
+    getDataLabelTextColor() {
+      return this.getThemeColor(CHART_TEXT_THEME.dataLabel);
+    },
+    getByPath(target, path) {
+      if (!target || !path) {
+        return undefined;
+      }
+      return path.split('.').reduce((obj, key) => {
+        return obj == null ? undefined : obj[key];
+      }, target);
+    },
+    setByPath(target, path, value) {
+      if (!target || !path || !value) {
+        return;
+      }
+      const keyList = path.split('.');
+      let current = target;
+      keyList.forEach((key, index) => {
+        if (index === keyList.length - 1) {
+          this.$set(current, key, value);
+        } else {
+          if (!current[key] || typeof current[key] !== 'object') {
+            this.$set(current, key, {});
+          }
+          current = current[key];
         }
       });
-      return temList;
+    },
+    isEmptyColor(color) {
+      if (color == null || color === '') {
+        return true;
+      }
+      if (Array.isArray(color)) {
+        return color.length === 0;
+      }
+      if (typeof color === 'object') {
+        const colorList = Object.values(color);
+        return colorList.length === 0 || colorList.every(item => this.isEmptyColor(item));
+      }
+      return false;
+    },
+    setDefaultChartColor() {
+      if (this.chartConfig && Object.prototype.hasOwnProperty.call(this.chartConfig, 'color') && this.isEmptyColor(this.widget?.config?.color)) {
+        this.$set(this.chartConfig, 'color', this.getChartTheme('chart'));
+      }
+    },
+    setThemeStyleIfEmpty(chartPath, value, configPath) {
+      if (this.isEmptyColor(this.getByPath(this.widget?.config, configPath || chartPath))) {
+        this.setByPath(this.chartConfig, chartPath, value);
+      }
+    },
+    setDefaultAxisStyle(axisName) {
+      const axisConfig = this.chartConfig?.[axisName];
+      if (axisConfig === false) {
+        return;
+      }
+      const textColor = this.getFieldTextColor();
+      const setAxisItemStyle = (chartPrefix, configPrefix) => {
+        AXIS_TEXT_PATHS.forEach(path => {
+          this.setThemeStyleIfEmpty(`${chartPrefix}.${path}`, textColor, `${configPrefix}.${path}`);
+        });
+      };
+      if (Array.isArray(axisConfig)) {
+        axisConfig.forEach((axis, index) => {
+          if (axis !== false) {
+            setAxisItemStyle(`${axisName}.${index}`, `${axisName}.${index}`);
+          }
+        });
+      } else {
+        setAxisItemStyle(axisName, axisName);
+      }
+    },
+    setDefaultDataLabelStyle() {
+      const textColor = this.getDataLabelTextColor();
+      if (this.chartConfig?.label && this.chartConfig.label !== false) {
+        this.setThemeStyleIfEmpty('label.style.fill', textColor);
+      }
+      if (Array.isArray(this.chartConfig?.geometryOptions)) {
+        this.chartConfig.geometryOptions.forEach((geometry, index) => {
+          if (geometry?.label && geometry.label !== false) {
+            this.setThemeStyleIfEmpty(`geometryOptions.${index}.label.style.fill`, textColor);
+          }
+        });
+      }
+    },
+    setDefaultLegendStyle() {
+      if (!this.chartConfig?.legend || this.chartConfig.legend === false) {
+        return;
+      }
+      const textColor = this.getFieldTextColor();
+      LEGEND_TEXT_PATHS.forEach(path => {
+        this.setThemeStyleIfEmpty(path, textColor);
+      });
+    },
+    setDefaultChartTextStyle() {
+      this.setDefaultDataLabelStyle();
+      this.setDefaultLegendStyle();
+      if (this.chartConfig?.xAxis !== undefined || this.chartConfig?.xField) {
+        this.setDefaultAxisStyle('xAxis');
+      }
+      if (this.chartConfig?.yAxis !== undefined || this.chartConfig?.yField) {
+        this.setDefaultAxisStyle('yAxis');
+      }
     },
     createPlot() {
       //创建组件，由子组件覆盖
@@ -118,13 +235,15 @@ export const WidgetBase = {
       this.timer = null;
     }
   },
+  computed: {
+    systemThemeType() {
+      return this.$store && this.$store.getters.themeType;
+    }
+  },
   watch: {
-    'canvas.config.theme': function(val) {
-      if (val) {
-        this.$set(this.chartConfig, 'theme', themes[this.canvas.config.theme]);
-      } else {
-        this.$delete(this.chartConfig, 'theme');
-      }
+    systemThemeType: function() {
+      this.setDefaultChartColor();
+      this.setDefaultChartTextStyle();
       this.createPlot();
     },
     widget: {
@@ -133,7 +252,9 @@ export const WidgetBase = {
         //console.log(JSON.stringify(widget, null, 2));
         if (widget) {
           //合并图形配置
-          Object.assign(this.chartConfig, widget.config);
+          Object.assign(this.chartConfig, this.$utils.deepClone(widget.config));
+          this.setDefaultChartColor();
+          this.setDefaultChartTextStyle();
           if (!this.oldChartConfig) {
             //旧配置为空代表是首次加载
             this.oldChartConfig = this.$utils.deepClone(this.chartConfig);

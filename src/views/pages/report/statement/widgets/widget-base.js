@@ -49,6 +49,23 @@ export const WidgetBase = {
     async createRandomData() {
       //生成随机数据，返回data，由子组件继承
     },
+    getChartThemeName() {
+      if (this.canvas && this.canvas.config && this.canvas.config.theme) {
+        return this.canvas.config.theme;
+      }
+      return this.$store && this.$store.getters.themeType === 'dark' ? 'THEME_DARK' : 'THEME_LIGHT';
+    },
+    getChartTheme() {
+      return themes[this.getChartThemeName()];
+    },
+    setChartTheme() {
+      const theme = this.getChartTheme();
+      if (theme) {
+        this.$set(this.chartConfig, 'theme', theme);
+      } else {
+        this.$delete(this.chartConfig, 'theme');
+      }
+    },
     async getData(isFirstGetData) {
       if (!this.widget.datasourceId) {
         if (this.timer) {
@@ -146,17 +163,27 @@ export const WidgetBase = {
       this.timer = null;
     }
   },
+  computed: {
+    systemThemeType() {
+      return this.$store && this.$store.getters.themeType;
+    }
+  },
   watch: {
-    'canvas.config.theme': function(val) {
-      if (val) {
-        this.$set(this.chartConfig, 'theme', themes[this.canvas.config.theme]);
-      } else {
-        this.$delete(this.chartConfig, 'theme');
-      }
+    'canvas.config.theme': function() {
+      this.setChartTheme();
       if (this.changeCusTheme) {
-        this.changeCusTheme(val);
+        this.changeCusTheme(this.getChartThemeName());
       }
       this.createPlot();
+    },
+    systemThemeType: function() {
+      if (!this.canvas || !this.canvas.config || !this.canvas.config.theme) {
+        this.setChartTheme();
+        if (this.changeCusTheme) {
+          this.changeCusTheme(this.getChartThemeName());
+        }
+        this.createPlot();
+      }
     },
     widget: {
       handler: async function(val, oldVal) {
@@ -165,6 +192,10 @@ export const WidgetBase = {
           //合并图形配置
           // 深度合并图形配置，避免旧报表的局部配置覆盖掉组件默认嵌套配置。
           this.chartConfig = mergeWidgetConfig(this.chartConfig, widget.config || {});
+          this.setChartTheme();
+          if (this.changeCusTheme) {
+            this.changeCusTheme(this.getChartThemeName());
+          }
           if (!this.oldChartConfig) {
             //旧配置为空代表是首次加载
             this.oldChartConfig = this.$utils.deepClone(this.chartConfig);

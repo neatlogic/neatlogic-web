@@ -6,6 +6,10 @@ import { Pie } from '@antv/g2plot';
 import { WidgetBase } from '../widget-base.js';
 import * as themes from '../../widgetthemes/index.js';
 
+const STATISTIC_TEXT_TYPES = ['title', 'content'];
+const STATISTIC_STYLE_NAMES = ['color', 'fill'];
+const DEFAULT_STATISTIC_TEXT_COLORS = ['#4b535e', 'rgba(44,53,66,0.85)', '#595959'];
+
 export default {
   name: '',
   components: {},
@@ -46,7 +50,7 @@ export default {
       }
       if (this.$refs.container) {
         this.plot = new Pie(this.$refs.container, {
-          ...this.chartConfig,
+          ...this.getThemedChartConfig(),
           data: this.finalData
         });
         this.plot.render();
@@ -56,6 +60,41 @@ export default {
       if (this.plot) {
         this.plot.changeData(this.finalData);
       }
+    },
+    getThemedChartConfig() {
+      const chartConfig = this.$utils.deepClone(this.chartConfig);
+      const theme = this.getChartTheme();
+      if (!theme) {
+        return chartConfig;
+      }
+      const statisticColor = this.getStatisticTextColor(theme);
+      if (statisticColor) {
+        this.setStatisticTextColor(chartConfig, statisticColor);
+      }
+      return chartConfig;
+    },
+    getStatisticTextColor(theme) {
+      return theme.StatisticText?.content?.style?.color || theme.StatisticText?.content?.style?.fill || theme.labels?.style?.fill || theme.components?.legend?.common?.itemName?.style?.fill;
+    },
+    setStatisticTextColor(chartConfig, color) {
+      chartConfig.statistic = { ...chartConfig.statistic };
+      STATISTIC_TEXT_TYPES.forEach(type => {
+        chartConfig.statistic[type] = {
+          ...chartConfig.statistic[type],
+          style: { ...chartConfig.statistic[type]?.style }
+        };
+        STATISTIC_STYLE_NAMES.forEach(styleName => {
+          if (this.isDefaultTextColor(chartConfig.statistic[type].style[styleName])) {
+            chartConfig.statistic[type].style[styleName] = color;
+          }
+        });
+      });
+    },
+    isDefaultTextColor(color) {
+      if (!color) {
+        return true;
+      }
+      return DEFAULT_STATISTIC_TEXT_COLORS.includes(String(color).toLowerCase());
     }
   },
   filter: {},
