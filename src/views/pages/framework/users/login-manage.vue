@@ -28,6 +28,19 @@
           <template v-slot:userUuid="{ row }">
             <UserCard :uuid="row.userUuid" :hideAvatar="false"></UserCard>
           </template>
+          <template v-slot:teamNameList="{ row }">
+            <div @click.stop>
+              <Tag v-for="(t, index) in showTableList(row.teamNameList)" :key="index">{{ t }}</Tag>
+              <span v-if="row.teamNameList && row.teamNameList.length > 3" @click.stop>
+                <Dropdown placement="bottom-start" transfer @click.native.stop>
+                  <span class="text-action tsfont-option-horizontal"></span>
+                  <DropdownMenu slot="list">
+                    <DropdownItem v-for="(item, index) in showRestText(row.teamNameList)" :key="index">{{ item }}</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </span>
+            </div>
+          </template>
         </TsTable>
       </div>
     </TsContain>
@@ -77,6 +90,11 @@ export default {
         {
           key: 'userUuid',
           title: this.$t('page.user')
+        },
+        {
+          key: 'teamNameList',
+          title: this.$t('page.userteam'),
+          width: 420
         },
         {
           key: 'ip',
@@ -133,6 +151,21 @@ export default {
       this.searchParam.pageSize = pageSize;
       this.searchParam.currentPage = 1;
       this.searchUserLoginList();
+    },
+    showTableList(val) {
+      let list = [];
+      if (val && val.length > 0) {
+        for (let i = 0; i < val.length; i++) {
+          list.push(val[i]);
+          if (i >= 2) {
+            break;
+          }
+        }
+      }
+      return list;
+    },
+    showRestText(list) {
+      return list.slice(3);
     }
   },
   filter: {},
