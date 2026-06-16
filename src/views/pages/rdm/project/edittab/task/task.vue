@@ -7,15 +7,6 @@
       <TabPane :label="$t('term.rdm.statussets')" name="objectstatus" class="pl-md">
         <AppStatus v-if="currentTab === 'objectstatus'" :appId="appData.id" :projectId="appData.projectId"></AppStatus>
       </TabPane>
-      <TabPane label="关联设置" name="relstrategy" class="pl-md">
-        <RelStrategyEdit
-          v-if="currentTab === 'relstrategy'"
-          :appData="appData"
-          toAppType="testcase"
-          relType="relative"
-          label="需求关联测试用例"
-        ></RelStrategyEdit>
-      </TabPane>
     </Tabs>
   </div>
 </template>
@@ -24,8 +15,7 @@ export default {
   name: '',
   components: {
     AttrEdit: () => import('@/views/pages/rdm/project/edittab/components/attr-edit.vue'),
-    AppStatus: () => import('@/views/pages/rdm/project/edittab/components/app-status-edit.vue'),
-    RelStrategyEdit: () => import('@/views/pages/rdm/project/edittab/components/rel-strategy-edit.vue')
+    AppStatus: () => import('@/views/pages/rdm/project/edittab/components/app-status-edit.vue')
   },
   props: {
     appData: { type: Object }
@@ -34,21 +24,7 @@ export default {
     return {
       currentTab: 'attr'
     };
-  },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
-  methods: {},
-  filter: {},
-  computed: {},
-  watch: {}
+  }
 };
 </script>
 <style lang="less"></style>

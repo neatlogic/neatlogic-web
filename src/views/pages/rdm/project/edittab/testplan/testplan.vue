@@ -12,8 +12,8 @@
           v-if="currentTab === 'relstrategy'"
           :appData="appData"
           toAppType="testcase"
-          relType="relative"
-          label="需求关联测试用例"
+          relType="extend"
+          label="测试计划关联测试用例"
         ></RelStrategyEdit>
       </TabPane>
     </Tabs>
@@ -34,21 +34,7 @@ export default {
     return {
       currentTab: 'attr'
     };
-  },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
-  methods: {},
-  filter: {},
-  computed: {},
-  watch: {}
+  }
 };
 </script>
 <style lang="less"></style>

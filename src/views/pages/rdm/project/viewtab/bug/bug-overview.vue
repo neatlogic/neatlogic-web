@@ -18,7 +18,7 @@
       <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
       <div v-if="errorMessage" class="text-grey text-center pt-md pb-md">{{ errorMessage }}</div>
       <template v-else>
-        <div class="overview-grid">
+        <div class="overview-grid" :style="{ '--overview-panel-count': overviewPanelCount }">
           <div v-for="metric in metricList" :key="metric.key" class="overview-panel metric-panel border-color">
             <div class="chart-title text-grey">{{ metric.label }}</div>
             <div class="metric-value" :class="metric.className">{{ metric.value }}</div>
@@ -291,7 +291,7 @@ export default {
       }
       const chartTheme = this.chartTheme;
       this.statusPlot = new Pie(this.$refs.statusChart, {
-        height: 180,
+        height: 138,
         appendPadding: 0,
         data: this.statusChart.data,
         angleField: 'issueCount',
@@ -339,7 +339,7 @@ export default {
       }
       const chartTheme = this.chartTheme;
       this.trendPlot = new Column(this.$refs.trendChart, {
-        height: 180,
+        height: 138,
         appendPadding: 0,
         data: this.trendChart.data,
         xField: 'month',
@@ -370,7 +370,7 @@ export default {
       }
       const chartTheme = this.chartTheme;
       this[plotName] = new Column(this.$refs[refName], {
-        height: 180,
+        height: 138,
         appendPadding: 0,
         data: chart.list,
         xField: 'name',
@@ -499,7 +499,7 @@ export default {
     getXAxisConfig() {
       return {
         label: { autoHide: true, autoRotate: false, style: this.getAxisLabelStyle() },
-        title: { style: this.getAxisLabelStyle() },
+        title: null,
         line: this.getAxisLineConfig(),
         tickLine: this.getAxisTickConfig()
       };
@@ -509,7 +509,7 @@ export default {
         min: 0,
         nice: true,
         label: { style: this.getAxisLabelStyle() },
-        title: { style: this.getAxisLabelStyle() },
+        title: null,
         grid: this.getAxisGridConfig()
       };
     },
@@ -529,8 +529,8 @@ export default {
         ...this.dashboardTheme,
         backgroundStyle: { fill: 'transparent' },
         axis: {
-          x: { label: { style: this.getAxisLabelStyle() }, title: { style: this.getAxisLabelStyle() } },
-          y: { label: { style: this.getAxisLabelStyle() }, title: { style: this.getAxisLabelStyle() }, grid: this.getAxisGridConfig() }
+          x: { label: { style: this.getAxisLabelStyle() }, title: null },
+          y: { label: { style: this.getAxisLabelStyle() }, title: null, grid: this.getAxisGridConfig() }
         },
         legend: {
           text: { style: this.getChartTextStyle() },
@@ -658,6 +658,22 @@ export default {
         data: dataList,
         hasData: dataList.some(item => (item.count || 0) > 0)
       };
+    },
+    overviewPanelCount() {
+      let count = this.metricList.length;
+      if (this.statusChart.isConfigured && this.statusChart.hasData) {
+        count++;
+      }
+      if (this.severityChart.isConfigured && this.severityChart.list.length > 0) {
+        count++;
+      }
+      if (this.sourceChart.isConfigured && this.sourceChart.list.length > 0) {
+        count++;
+      }
+      if (this.trendChart.isConfigured && this.trendChart.hasData) {
+        count++;
+      }
+      return count || 1;
     }
   },
   watch: {
@@ -695,15 +711,13 @@ export default {
 }
 .overview-grid {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(220px, 1fr);
+  grid-template-columns: repeat(var(--overview-panel-count), minmax(0, 1fr));
   gap: 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
 }
 .overview-panel {
   min-width: 0;
   min-height: 176px;
+  overflow: hidden;
   border: 1px solid;
   border-radius: 6px;
 }
@@ -734,7 +748,7 @@ export default {
 }
 .status-chart-layout {
   display: grid;
-  grid-template-columns: minmax(120px, 1fr) 150px;
+  grid-template-columns: minmax(0, 1fr) minmax(72px, 96px);
   gap: 8px;
   align-items: center;
 }
@@ -765,7 +779,11 @@ export default {
 }
 @media screen and (max-width: 960px) {
   .overview-grid {
-    grid-auto-columns: minmax(200px, 1fr);
+    grid-template-columns: repeat(var(--overview-panel-count), 200px);
+    overflow-x: auto;
+  }
+  .overview-panel {
+    min-width: 200px;
   }
   .metric-value {
     font-size: 38px;

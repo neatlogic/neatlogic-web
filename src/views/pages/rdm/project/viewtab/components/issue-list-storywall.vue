@@ -269,7 +269,11 @@ export default {
       this.isTransferReady = false;
       this.requiredAttrList = [];
       this.$api.rdm.status
-        .getStatusByAppId(this.draggingIssue.appId, { status: status.id })
+        .getStatusByAppId(this.draggingIssue.appId, {
+          id: this.draggingIssue.id,
+          sourceIssueId: this.draggingIssue.sourceIssueId,
+          status: status.id
+        })
         .then(res => {
           for (let s in this.allowPutStatus) {
             this.$set(this.allowPutStatus, s, false);

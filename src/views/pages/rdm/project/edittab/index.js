@@ -1,8 +1,7 @@
 export { default as storyEditor } from './story/story.vue';
-export { default as taskEditor } from './story/story.vue';
-export { default as bugEditor } from './story/story.vue';
+export { default as taskEditor } from './task/task.vue';
+export { default as bugEditor } from './bug/bug.vue';
 //export { default as iterationEditor } from './story/story.vue';
-export { default as testcaseEditor } from './story/story.vue';
-export { default as testplanEditor } from './story/story.vue';
+export { default as testcaseEditor } from './testcase/testcase.vue';
+export { default as testplanEditor } from './testplan/testplan.vue';
 export { default as gitlabEditor} from './gitlab/gitlab.vue';
-

@@ -103,8 +103,11 @@ export default {
   },
   beforeCreate() {},
   created() {
-    this.getIssueById();
-    this.getStatusByAppId();
+    if (this.id) {
+      this.getIssueById();
+    } else {
+      this.getStatusByAppId();
+    }
     this.searchAppAttr();
   },
   beforeMount() {},
@@ -126,11 +129,17 @@ export default {
       if (this.id) {
         this.$api.rdm.issue.getIssueById(this.id).then(res => {
           this.issueData = res.Return;
+          this.getStatusByAppId();
         });
       }
     },
     getStatusByAppId() {
-      this.$api.rdm.status.getStatusByAppId(this.app.id, { status: 0 }).then(res => {
+      this.$api.rdm.status.getStatusByAppId(this.app.id, {
+        id: this.issueData.id,
+        sourceIssueId: this.issueData.sourceIssueId,
+        statusScope: this.issueData.id ? null : 'original',
+        status: 0
+      }).then(res => {
         this.statusList = res.Return;
         if (this.startStatus && !this.id) {
           this.$set(this.issueData, 'status', this.startStatus.id);

@@ -99,7 +99,11 @@ export default {
       return isValid;
     },
     getStatusByAppId() {
-      this.$api.rdm.status.getStatusByAppId(this.appId, { status: this.issueData.status || 0 }).then(res => {
+      this.$api.rdm.status.getStatusByAppId(this.appId, {
+        id: this.issueData.id,
+        sourceIssueId: this.issueData.sourceIssueId,
+        status: this.issueData.status || 0
+      }).then(res => {
         this.statusList = res.Return;
       });
     },

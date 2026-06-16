@@ -18,18 +18,15 @@
       <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
       <div v-if="errorMessage" class="text-grey text-center pt-md pb-md">{{ errorMessage }}</div>
       <template v-else>
-        <div class="metric-grid">
-          <div v-for="metric in metricList" :key="metric.key" class="metric-item border-color">
-            <div class="text-grey fz10">{{ metric.label }}</div>
+        <div class="overview-grid" :style="{ '--overview-panel-count': overviewPanelCount }">
+          <div v-for="metric in metricList" :key="metric.key" class="overview-panel metric-panel border-color">
+            <div class="chart-title text-grey">{{ metric.label }}</div>
             <div class="metric-value" :class="metric.className">{{ metric.value }}</div>
           </div>
-        </div>
-        <div class="chart-grid">
-          <div v-if="statusChart.isConfigured" class="chart-panel border-color">
+          <div v-if="statusChart.isConfigured && statusChart.hasData" class="overview-panel chart-panel border-color">
             <div class="chart-title">需求状态比例</div>
             <div class="status-chart-layout">
-              <div v-if="statusChart.hasData" ref="statusChart" class="chart-container"></div>
-              <NoData v-else class="chart-empty"></NoData>
+              <div ref="statusChart" class="chart-container"></div>
               <div class="status-list">
                 <div
                   v-for="status in statusChart.list"
@@ -45,15 +42,13 @@
               </div>
             </div>
           </div>
-          <div v-if="priorityChart.isConfigured" class="chart-panel border-color">
+          <div v-if="priorityChart.isConfigured && priorityChart.list.length > 0" class="overview-panel chart-panel border-color">
             <div class="chart-title">优先级分布</div>
-            <div v-if="priorityChart.list.length > 0" ref="priorityChart" class="chart-container"></div>
-            <NoData v-else class="chart-empty"></NoData>
+            <div ref="priorityChart" class="chart-container"></div>
           </div>
-          <div v-if="trendChart.isConfigured" class="chart-panel border-color">
+          <div v-if="trendChart.isConfigured && trendChart.hasData" class="overview-panel chart-panel border-color">
             <div class="chart-title">近7个月需求/逾期趋势</div>
-            <div v-if="trendChart.list.length > 0" ref="trendChart" class="chart-container"></div>
-            <NoData v-else class="chart-empty"></NoData>
+            <div ref="trendChart" class="chart-container"></div>
           </div>
         </div>
       </template>
@@ -269,7 +264,7 @@ export default {
       }
       const chartTheme = this.chartTheme;
       this.statusPlot = new Pie(this.$refs.statusChart, {
-        height: 180,
+        height: 138,
         appendPadding: 0,
         data: this.statusChart.data,
         angleField: 'issueCount',
@@ -327,7 +322,7 @@ export default {
       }
       const chartTheme = this.chartTheme;
       this.priorityPlot = new Column(this.$refs.priorityChart, {
-        height: 180,
+        height: 138,
         appendPadding: 0,
         data: this.priorityChart.list,
         xField: 'name',
@@ -352,9 +347,7 @@ export default {
             autoRotate: false,
             style: this.getAxisLabelStyle()
           },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
+          title: null,
           line: this.getAxisLineConfig(),
           tickLine: this.getAxisTickConfig()
         },
@@ -364,9 +357,7 @@ export default {
           label: {
             style: this.getAxisLabelStyle()
           },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
+          title: null,
           grid: this.getAxisGridConfig()
         },
         tooltip: {
@@ -386,7 +377,7 @@ export default {
       }
       const chartTheme = this.chartTheme;
       this.trendPlot = new Column(this.$refs.trendChart, {
-        height: 180,
+        height: 138,
         appendPadding: 0,
         data: this.trendChart.data,
         xField: 'month',
@@ -413,9 +404,7 @@ export default {
             autoRotate: false,
             style: this.getAxisLabelStyle()
           },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
+          title: null,
           line: this.getAxisLineConfig(),
           tickLine: this.getAxisTickConfig()
         },
@@ -425,9 +414,7 @@ export default {
           label: {
             style: this.getAxisLabelStyle()
           },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
+          title: null,
           grid: this.getAxisGridConfig()
         },
         tooltip: {
@@ -654,12 +641,6 @@ export default {
     metricList() {
       return [
         {
-          key: 'total',
-          isConfigured: this.isStatConfigured(STAT_KEY.TOTAL, 'totalCount'),
-          label: '需求总数',
-          value: this.getStatValue(STAT_KEY.TOTAL, 'totalCount', 0)
-        },
-        {
           key: 'overdue',
           isConfigured: this.isStatConfigured(STAT_KEY.OVERDUE, 'overdueCount'),
           label: '逾期需求总数',
@@ -718,11 +699,25 @@ export default {
       return {
         isConfigured: this.isStatConfigured(STAT_KEY.TREND, 'trendList'),
         list: list,
-        data: dataList
+        data: dataList,
+        hasData: dataList.some(item => (item.count || 0) > 0)
       };
     },
     activeStatus() {
       return this.statusChart.list.find(status => status.id === this.activeStatusId);
+    },
+    overviewPanelCount() {
+      let count = this.metricList.length;
+      if (this.statusChart.isConfigured && this.statusChart.hasData) {
+        count++;
+      }
+      if (this.priorityChart.isConfigured && this.priorityChart.list.length > 0) {
+        count++;
+      }
+      if (this.trendChart.isConfigured && this.trendChart.hasData) {
+        count++;
+      }
+      return count || 1;
     }
   },
   watch: {
@@ -760,51 +755,48 @@ export default {
 }
 .overview-body {
   position: relative;
-  padding: 12px;
+  padding: 8px 12px;
 }
-.metric-grid {
+.overview-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(var(--overview-panel-count), minmax(0, 1fr));
+  gap: 8px;
 }
-.metric-item {
-  min-height: 62px;
-  padding: 10px 12px;
+.overview-panel {
+  min-width: 0;
+  min-height: 176px;
+  overflow: hidden;
   border: 1px solid;
   border-radius: 6px;
+}
+.metric-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
 }
 .metric-value {
-  margin-top: 6px;
-  font-size: 22px;
-  line-height: 26px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 44px;
+  line-height: 50px;
   font-weight: 600;
 }
-.chart-grid {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr 1.25fr;
-  gap: 10px;
-  margin-top: 10px;
-}
 .chart-panel {
-  min-width: 0;
-  min-height: 230px;
   padding: 10px;
-  border: 1px solid;
-  border-radius: 6px;
 }
 .chart-title {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-weight: 600;
 }
 .chart-container {
-  height: 180px;
-}
-.chart-empty {
-  height: 180px;
+  height: 138px;
 }
 .status-chart-layout {
   display: grid;
-  grid-template-columns: minmax(120px, 1fr) 150px;
+  grid-template-columns: minmax(0, 1fr) minmax(72px, 96px);
   gap: 8px;
   align-items: center;
 }
@@ -833,14 +825,17 @@ export default {
 .status-name {
   min-width: 0;
 }
-@media screen and (max-width: 1280px) {
-  .chart-grid {
-    grid-template-columns: 1fr;
-  }
-}
 @media screen and (max-width: 960px) {
-  .metric-grid {
-    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  .overview-grid {
+    grid-template-columns: repeat(var(--overview-panel-count), 200px);
+    overflow-x: auto;
+  }
+  .overview-panel {
+    min-width: 200px;
+  }
+  .metric-value {
+    font-size: 38px;
+    line-height: 44px;
   }
 }
 </style>
