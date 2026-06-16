@@ -10,9 +10,6 @@ const sendjobEdit = () => import('./sendjob/sendjob-edit.vue');
 const statementEdit = () => import('./statement/statement-edit.vue');
 const statementView = () => import('./statement/statement-view.vue');
 const statementManage = () => import('./statement/statement-manage.vue');
-const statementNextEdit = () => import('./statement-next/pages/statement-edit.vue');
-const statementNextView = () => import('./statement-next/pages/statement-view.vue');
-const statementNextManage = () => import('./statement-next/pages/statement-manage.vue');
 
 import { $t } from '@/resources/init.js';
 
@@ -154,38 +151,6 @@ export default [
       icon: 'tsfont-agent',
       ismenu: true,
       type: 'statementmanage',
-      authority: ['REPORT_STATEMENT_MODIFY']
-    }
-  },
-  {
-    path: '/statement-next-edit/:id?',
-    name: 'statement-next-edit',
-    component: statementNextEdit,
-    meta: {
-      title: $t('router.report.screendesign'),
-      icon: 'tsfont-db',
-      ismenu: false,
-      authority: ['REPORT_STATEMENT_MODIFY']
-    }
-  },
-  {
-    path: '/statement-next-view/:id?',
-    name: 'statement-next-view',
-    component: statementNextView,
-    meta: {
-      title: $t('router.report.screendetail'),
-      ismenu: false,
-      authority: ['REPORT_BASE']
-    }
-  },
-  {
-    path: '/statement-next-manage',
-    name: 'statement-next-manage',
-    component: statementNextManage,
-    meta: {
-      title: $t('router.report.screenmanage'),
-      icon: 'tsfont-agent',
-      ismenu: false,
       authority: ['REPORT_STATEMENT_MODIFY']
     }
   }
