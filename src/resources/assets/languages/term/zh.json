@@ -1080,6 +1080,8 @@
       "chartcolor": "图表颜色",
       "valuebg": "值图背景",
       "valuetextcolor": "值图文字",
+      "chartfieldtextcolor": "图表字段文字",
+      "chartdatalabeltextcolor": "图表数据标注文字",
       "logosetting": "LOGO图片配置",
       "customlogo": "自定义LOGO"
     },

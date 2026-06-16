@@ -1080,6 +1080,8 @@
       "chartcolor": "Chart Color",
       "valuebg": "Value Graph Background",
       "valuetextcolor": "Value Graph Text",
+      "chartfieldtextcolor": "Chart Field Text",
+      "chartdatalabeltextcolor": "Chart Data Label Text",
       "logosetting": "LOGO image configuration",
       "customlogo": "Custom logo"
     },

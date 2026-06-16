@@ -125,8 +125,8 @@ export default {
     changeCusTheme(val) {
       // 自定义主题颜色更新
       if (val) {
-        this.chartConfig.xAxis.label.style.fill = this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || this.labelColor;
-        this.chartConfig.yAxis[0].label.style.fill = this.canvas.config.theme && themes[this.canvas.config.theme]?.components?.axis?.common?.label?.style?.fill || this.labelColor;
+        this.chartConfig.xAxis.label.style.fill = this.getChartTheme()?.components?.axis?.common?.label?.style?.fill || this.labelColor;
+        this.chartConfig.yAxis[0].label.style.fill = this.getChartTheme()?.components?.axis?.common?.label?.style?.fill || this.labelColor;
       } else {
         this.chartConfig.xAxis.label.style.fill = this.labelColor;
         this.chartConfig.yAxis[0].label.style.fill = this.labelColor;

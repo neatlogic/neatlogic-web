@@ -499,7 +499,7 @@ export default {
         name: widget.label,
         padding: widget.padding,
         isOpacity: widget.isOpacity || 0,
-        config: widget.config
+        config: this.$utils.deepClone(widget.config)
       };
       if (widget.dataTypes) {
         if (widget.dataTypes.length == 1) {
