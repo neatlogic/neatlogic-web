@@ -30,10 +30,11 @@ function getFeatureMenuName(route) {
 
 // 创建一次功能访问的起始快照，结束时间和停留时长在 flush 时计算。
 function buildFeatureUsage(route, store) {
+  // console.log(route, 'route');
   const now = Date.now();
   return {
-    moduleId: MODULEID,
-    moduleName: getModuleName(store),
+    moduleGroup: MODULEID,
+    // moduleName: getModuleName(store),
     menuPath: route.path,
     menuName: getFeatureMenuName(route),
     url: route.fullPath || route.path,
