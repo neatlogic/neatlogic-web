@@ -10,26 +10,20 @@
       :mode="editMode"
       :autoSave="autoSave"
       :issueData="issueData"
+      :projectId="finalProjectId"
+      :ckeditorParams="finalCkeditorParams"
     ></component>
     <div v-else>
       <div v-if="editMode === 'edit'">
         <TsCkeditor
           v-if="autoSave"
           v-model="issueData.content"
-          :params="{
-            uploadVideoConfig: {
-              type: 'rdm',
-            }
-          }"
+          :params="finalCkeditorParams"
         ></TsCkeditor>
         <TsCkeditor
           v-else
           v-model="content"
-          :params="{
-            uploadVideoConfig: {
-              type: 'rdm',
-            }
-          }"
+          :params="finalCkeditorParams"
         ></TsCkeditor>
       </div>
       <TsCkeditor
@@ -55,6 +49,8 @@ export default {
   },
   props: {
     issueData: { type: Object },
+    projectId: { type: Number },
+    ckeditorParams: { type: Object },
     autoSave: { type: Boolean, default: true },
     mode: { type: String, default: 'read' },
     readonly: { type: Boolean, default: false },
@@ -123,7 +119,24 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalProjectId() {
+      return this.projectId || (this.issueData && this.issueData.projectId);
+    },
+    finalCkeditorParams() {
+      if (this.ckeditorParams) {
+        return this.ckeditorParams;
+      }
+      const mentionConfig = {};
+      if (this.finalProjectId) {
+        mentionConfig.extendCondition = { projectId: this.finalProjectId };
+      }
+      return {
+        uploadVideoConfig: { type: 'rdm' },
+        mentionConfig
+      };
+    }
+  },
   watch: {
     mode: {
       handler: function(val) {

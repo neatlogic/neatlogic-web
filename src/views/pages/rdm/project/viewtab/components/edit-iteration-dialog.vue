@@ -34,11 +34,7 @@
         <Divider />
         <TsCkeditor
           v-model="iterationData.description"
-          :params="{
-            uploadVideoConfig: {
-              type: 'rdm'
-            }
-          }"
+          :params="ckeditorParams"
         ></TsCkeditor>
       </div>
     </template>
@@ -66,12 +62,14 @@ export default {
         isShow: true,
         width: 'large'
       },
-      iterationData: {}
+      iterationData: {},
+      projectUserRangeList: []
     };
   },
   beforeCreate() {},
   created() {
     this.getIterationById();
+    this.getProjectUserRangeList();
   },
   beforeMount() {},
   mounted() {},
@@ -86,6 +84,14 @@ export default {
       if (this.id) {
         this.$api.rdm.iteration.getIterationById(this.id).then(res => {
           this.iterationData = res.Return;
+        });
+      }
+    },
+    getProjectUserRangeList() {
+      if (this.app && this.app.projectId) {
+        this.$api.rdm.project.getProjectById(this.app.projectId).then(res => {
+          const { userList = [] } = res.Return || {};
+          this.projectUserRangeList = userList.map(user => `user#${user.userId}`);
         });
       }
     },
@@ -112,6 +118,17 @@ export default {
   },
   filter: {},
   computed: {
+    ckeditorParams() {
+      return {
+        uploadVideoConfig: { type: 'rdm' },
+        mentionConfig: {
+          rangeList: this.projectUserRangeList,
+          extendCondition: {
+            projectId: this.app && this.app.projectId
+          }
+        }
+      };
+    }
   },
   watch: {}
 };
