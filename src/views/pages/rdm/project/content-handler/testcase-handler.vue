@@ -4,31 +4,19 @@
       <TsFormItem label="前置条件" labelPosition="top" :labelStrong="true">
         <TsCkeditor
           v-model="condition"
-          :params="{
-            uploadVideoConfig: {
-              type: 'rdm'
-            }
-          }"
+          :params="finalCkeditorParams"
         ></TsCkeditor>
       </TsFormItem>
       <TsFormItem label="用例步骤" labelPosition="top" :labelStrong="true">
         <TsCkeditor
           v-model="step"
-          :params="{
-            uploadVideoConfig: {
-              type: 'rdm'
-            }
-          }"
+          :params="finalCkeditorParams"
         ></TsCkeditor>
       </TsFormItem>
       <TsFormItem label="预期结果" labelPosition="top" :labelStrong="true">
         <TsCkeditor
           v-model="result"
-          :params="{
-            uploadVideoConfig: {
-              type: 'rdm'
-            }
-          }"
+          :params="finalCkeditorParams"
         ></TsCkeditor>
       </TsFormItem>
     </div>
@@ -51,6 +39,8 @@ export default {
   },
   props: {
     issueData: { type: Object },
+    projectId: { type: Number },
+    ckeditorParams: { type: Object },
     autoSave: { type: Boolean, default: true },
     mode: { type: String, default: 'read' }
   },
@@ -99,7 +89,24 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalProjectId() {
+      return this.projectId || (this.issueData && this.issueData.projectId);
+    },
+    finalCkeditorParams() {
+      if (this.ckeditorParams) {
+        return this.ckeditorParams;
+      }
+      const mentionConfig = {};
+      if (this.finalProjectId) {
+        mentionConfig.extendCondition = { projectId: this.finalProjectId };
+      }
+      return {
+        uploadVideoConfig: { type: 'rdm' },
+        mentionConfig
+      };
+    }
+  },
   watch: {
     content: {
       handler: function(val) {

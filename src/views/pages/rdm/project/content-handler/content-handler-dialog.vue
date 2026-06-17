@@ -9,11 +9,7 @@
         <div>
           <TsCkeditor
             v-model="content"
-            :params="{
-              uploadVideoConfig: {
-                type: 'rdm',
-              }
-            }"
+            :params="finalCkeditorParams"
           ></TsCkeditor>
         </div>
       </template>
@@ -28,6 +24,8 @@ export default {
   },
   props: {
     issueData: { type: Object },
+    projectId: { type: Number },
+    ckeditorParams: { type: Object },
     title: { type: String, default: '' }
   },
   data() {
@@ -70,7 +68,24 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalProjectId() {
+      return this.projectId || (this.issueData && this.issueData.projectId);
+    },
+    finalCkeditorParams() {
+      if (this.ckeditorParams) {
+        return this.ckeditorParams;
+      }
+      const mentionConfig = {};
+      if (this.finalProjectId) {
+        mentionConfig.extendCondition = { projectId: this.finalProjectId };
+      }
+      return {
+        uploadVideoConfig: { type: 'rdm' },
+        mentionConfig
+      };
+    }
+  },
   watch: {}
 };
 </script>

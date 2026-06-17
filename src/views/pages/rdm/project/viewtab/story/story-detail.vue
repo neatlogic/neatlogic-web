@@ -46,6 +46,8 @@
                   v-if="contentMode == 'edit'"
                   :title="$t('page.edit') + $t('page.detailinfo')"
                   :issueData="issueData"
+                  :projectId="projectId"
+                  :ckeditorParams="getCkeditorParams({ type: 'issue', issueId: id })"
                   @close="({needRefresh = false, content = ''} = {}) => {
                     if(needRefresh) {
                       $set(issueData, 'content', content)
@@ -57,6 +59,8 @@
                   mode="read"
                   :issueData="issueData"
                   :autoSave="false"
+                  :projectId="projectId"
+                  :ckeditorParams="getCkeditorParams({ type: 'issue', issueId: id })"
                   @cancel="contentMode = 'read'"
                 ></ContentHandler>
               </div>
@@ -162,7 +166,7 @@
                 :defaultList="issueData.fileList"
               ></TsUpLoad>
             </TsFormItem>
-            <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')"><CommentList :issueData="issueData" :issueId="id"></CommentList></TsFormItem>
+            <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')"><CommentList :issueData="issueData" :issueId="id" :ckeditorParams="getCkeditorParams({ type: 'issue', issueId: id })"></CommentList></TsFormItem>
             <TsFormItem v-bind="formItemConf" :label="$t('term.rdm.nextstatus')"><StatusRequiredAttrList
               v-if="!$utils.isEmpty(issueData)"
               ref="requiredAttrList"
@@ -173,12 +177,7 @@
             <TsFormItem v-bind="formItemConf" :label="$t('page.reply')">
               <TsCkeditor
                 v-model="issueData.comment"
-                :params="{
-                  uploadVideoConfig: {
-                    type: 'issue',
-                    issueId: id
-                  }
-                }"
+                :params="getCkeditorParams({ type: 'issue', issueId: id })"
                 :width="'100%'"
               ></TsCkeditor>
             </TsFormItem>

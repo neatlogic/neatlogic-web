@@ -27,6 +27,7 @@
                   :issueData="issueData"
                   :issueId="issueId"
                   :parentId="row.id"
+                  :ckeditorParams="finalCkeditorParams"
                   @reload="reloadComment"
                 ></CommentList>
               </div>
@@ -41,11 +42,7 @@
               <div v-if="replayTo['c_' + row.id]" class="mt-md">
                 <TsCkeditor
                   v-model="replayTo['c_' + row.id].content"
-                  :params="{
-                    uploadVideoConfig: {
-                      type: 'rdm'
-                    }
-                  }"
+                  :params="finalCkeditorParams"
                   :width="'99%'"
                 ></TsCkeditor>
                 <div class="mt-sm">
@@ -63,7 +60,12 @@
         </div>
       </template>
     </TsCard>
-    <EditCommentDialog v-if="isEditCommentShow" :comment="currentComment" @close="closeEditComment"></EditCommentDialog>
+    <EditCommentDialog
+      v-if="isEditCommentShow"
+      :comment="currentComment"
+      :ckeditorParams="finalCkeditorParams"
+      @close="closeEditComment"
+    ></EditCommentDialog>
   </div>
 </template>
 <script>
@@ -80,7 +82,8 @@ export default {
   props: {
     issueData: { type: Object },
     issueId: { type: Number },
-    parentId: { type: Number }
+    parentId: { type: Number },
+    ckeditorParams: { type: Object }
   },
   data() {
     return {
@@ -188,7 +191,24 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalProjectId() {
+      return this.issueData && this.issueData.projectId;
+    },
+    finalCkeditorParams() {
+      if (this.ckeditorParams) {
+        return this.ckeditorParams;
+      }
+      const mentionConfig = {};
+      if (this.finalProjectId) {
+        mentionConfig.extendCondition = { projectId: this.finalProjectId };
+      }
+      return {
+        uploadVideoConfig: { type: 'rdm' },
+        mentionConfig
+      };
+    }
+  },
   watch: {}
 };
 </script>

@@ -35,6 +35,8 @@
                     :issueData="issueData"
                     :autoSave="false"
                     :saveHandler="isSourceTestcase ? saveIssueWithCopy : null"
+                    :projectId="projectId"
+                    :ckeditorParams="getCkeditorParams()"
                     @cancel="contentMode = 'read'"
                   ></ContentHandler>
                 </div>
@@ -94,7 +96,7 @@
             <div class="padding">
               <Divider />
               <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')">
-                <CommentList :issueData="issueData" :issueId="id"></CommentList>
+                <CommentList :issueData="issueData" :issueId="id" :ckeditorParams="getCkeditorParams()"></CommentList>
               </TsFormItem>
 
               <TsFormItem v-bind="formItemConf" :label="$t('page.status')">
@@ -110,11 +112,7 @@
               <TsFormItem v-bind="formItemConf" :label="$t('page.reply')">
                 <TsCkeditor
                   v-model="issueData.comment"
-                  :params="{
-                    uploadVideoConfig: {
-                      type: 'rdm',
-                    }
-                  }"
+                  :params="getCkeditorParams()"
                   :width="'100%'"
                 ></TsCkeditor>
               </TsFormItem>

@@ -7,7 +7,13 @@
       <div v-html="issueData.content"></div>
     </div>
     <div v-else>
-      <ContentHandler :issueData="issueData" @cancel="cancelEdit" @save="saveContent"></ContentHandler>
+      <ContentHandler
+        :issueData="issueData"
+        :projectId="projectId"
+        :ckeditorParams="ckeditorParams"
+        @cancel="cancelEdit"
+        @save="saveContent"
+      ></ContentHandler>
     </div>
   </div>
 </template>
@@ -19,6 +25,8 @@ export default {
   },
   props: {
     issueData: { type: Object },
+    projectId: { type: Number },
+    ckeditorParams: { type: Object },
     mode: { type: String, default: 'read' },
     readonly: { type: Boolean, default: false }
   },
