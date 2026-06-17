@@ -695,16 +695,26 @@ html {
 
   //alert
   .@{iv-prev}alert {
-    border-radius: 6px;
-    line-height: 1.5;
+    border-radius: 8px;
+    line-height: 1.6;
+    border-width: 1px;
+    .@{iv-prev}alert-message {
+      font-weight: 600;
+    }
+    .@{iv-prev}alert-desc {
+      margin-top: 6px;
+      line-height: 22px;
+    }
     &.@{iv-prev}alert-with-icon {
-      padding: 8px 16px 8px 38px;
+      padding: 10px 16px 10px 44px;
     }
     &.@{iv-prev}alert-with-desc.@{iv-prev}alert-with-icon {
-      padding: 16px 16px 16px 69px;
+      padding: 18px 16px 18px 72px;
     }
   }
   .@{iv-prev}alert-icon {
+    font-size: 20px;
+    top: 18px;
     .@{iv-prev}icon-ios-information-circle:before {
       font-family: 'tsfont';
       content: '\e882'; // tsfont-addchange
