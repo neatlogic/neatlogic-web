@@ -42,9 +42,21 @@
               </span>
             </div>
           </template>
+          <template v-slot:action="{ row }">
+            <div class="tstable-action">
+              <ul class="tstable-action-ul">
+                <li class="tsfont-list" @click="openFeatureAuditDialog(row)">使用情况</li>
+              </ul>
+            </div>
+          </template>
         </TsTable>
       </div>
     </TsContain>
+    <LoginFeatureAuditDialog
+      v-if="isShowFeatureAuditDialog"
+      :loginAuditId="currentLoginAuditId"
+      @close="closeFeatureAuditDialog"
+    ></LoginFeatureAuditDialog>
   </div>
 </template>
 <script>
@@ -55,7 +67,8 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
-    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
+    LoginFeatureAuditDialog: () => import('./login-feature-audit-dialog.vue')
   },
   mixins: [download],
   props: {},
@@ -124,9 +137,17 @@ export default {
         {
           key: 'loginMethod',
           title: this.$t('term.framework.loginmethod')
+        },
+        {
+          key: 'action',
+          title: '',
+          align: 'right',
+          width: 10
         }
       ],
-      tableData: []
+      tableData: [],
+      isShowFeatureAuditDialog: false,
+      currentLoginAuditId: null
     };
   },
   beforeCreate() {},
@@ -182,6 +203,14 @@ export default {
         url: 'api/binary/login/audit/export',
         params: this.getSearchParam()
       });
+    },
+    openFeatureAuditDialog(row) {
+      this.currentLoginAuditId = row.id;
+      this.isShowFeatureAuditDialog = true;
+    },
+    closeFeatureAuditDialog() {
+      this.isShowFeatureAuditDialog = false;
+      this.currentLoginAuditId = null;
     },
     showTableList(val) {
       let list = [];
