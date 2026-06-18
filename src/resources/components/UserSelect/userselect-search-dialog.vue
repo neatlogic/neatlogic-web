@@ -66,7 +66,9 @@
               <span>{{ row.userName || '-' }}</span>
             </template>
             <template v-slot:roleDescriptionList="{ row }">
-              <Tag v-for="(role, index) in showTableList(row.roleList)" :key="index">{{ role.description }}</Tag>
+              <template v-if="row.roleList && row.roleList.length > 0">
+                <Tag v-for="(role, index) in showTableList(row.roleList)" :key="index">{{ role.description }}</Tag>
+              </template>
               <Dropdown v-if="row.roleList && row.roleList.length > 3" placement="bottom-start" transfer>
                 <span class="text-action tsfont-option-horizontal"></span>
                 <DropdownMenu slot="list">
@@ -75,7 +77,9 @@
               </Dropdown>
             </template>
             <template v-slot:teamNameList="{ row }">
-              <Tag v-for="(team, index) in showTableList(row.teamNameList)" :key="index">{{ team }}</Tag>
+              <template v-if="row.teamNameList && row.teamNameList.length > 0"> 
+                <Tag v-for="(team, index) in showTableList(row.teamNameList)" :key="index">{{ team }}</Tag>
+              </template>
               <Dropdown v-if="row.teamNameList && row.teamNameList.length > 3" placement="bottom-start" transfer>
                 <span class="text-action tsfont-option-horizontal"></span>
                 <DropdownMenu slot="list">
