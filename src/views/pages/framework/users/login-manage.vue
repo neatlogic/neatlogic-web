@@ -102,6 +102,40 @@ export default {
             textName: 'text',
             valueName: 'value',
             transfer: true
+          },
+          {
+            type: 'select',
+            name: 'moduleGroupList',
+            label: this.$t('page.module'),
+            multiple: true,
+            search: true,
+            url: '/api/rest/module/search',
+            textName: 'groupName',
+            valueName: 'group',
+            transfer: true,
+            onChange: moduleGroupList => {
+              const featureConfig = this.searchConfig.searchList.find(item => item.name == 'featureNameList');
+              if (featureConfig) {
+                featureConfig.params.moduleGroupList = moduleGroupList || [];
+              }
+              if (this.searchValue && this.searchValue.featureNameList) {
+                this.$delete(this.searchValue, 'featureNameList');
+              }
+            }
+          },
+          {
+            type: 'select',
+            name: 'featureNameList',
+            label: '功能',
+            multiple: true,
+            search: true,
+            dynamicUrl: '/api/rest/feature/search',
+            params: { moduleGroupList: [] },
+            rootName: 'tbodyList',
+            textName: 'featureName',
+            valueName: 'featureName',
+            transfer: true,
+            dealDataByUrl: nodeList => this.getFeatureSelectList(nodeList)
           }
         ]
       },
@@ -113,7 +147,9 @@ export default {
         timeUnit: '',
         startTime: null,
         endTime: null,
-        teamUuidList: []
+        teamUuidList: [],
+        moduleGroupList: [],
+        featureNameList: []
       },
       theadList: [
         {
@@ -164,14 +200,16 @@ export default {
   destroyed() {},
   methods: {
     getSearchParam() {
-      const { keyword = '', dateRange = null, teamUuidList = [] } = this.searchValue || {};
+      const { keyword = '', dateRange = null, teamUuidList = [], moduleGroupList = [], featureNameList = [] } = this.searchValue || {};
       return {
         keyword,
         timeRange: dateRange ? dateRange.timeRange : null,
         timeUnit: dateRange ? dateRange.timeUnit : null,
         startTime: dateRange ? dateRange.startTime : null,
         endTime: dateRange ? dateRange.endTime : null,
-        teamUuidList: teamUuidList || []
+        teamUuidList: teamUuidList || [],
+        moduleGroupList: moduleGroupList || [],
+        featureNameList: featureNameList || []
       };
     },
     searchUserLoginList() {
@@ -211,6 +249,17 @@ export default {
     closeFeatureAuditDialog() {
       this.isShowFeatureAuditDialog = false;
       this.currentLoginAuditId = null;
+    },
+    getFeatureSelectList(nodeList) {
+      const featureNameSet = new Set();
+      const featureList = [];
+      (nodeList || []).forEach(item => {
+        if (item && item.featureName && !featureNameSet.has(item.featureName)) {
+          featureNameSet.add(item.featureName);
+          featureList.push(item);
+        }
+      });
+      return featureList;
     },
     showTableList(val) {
       let list = [];
