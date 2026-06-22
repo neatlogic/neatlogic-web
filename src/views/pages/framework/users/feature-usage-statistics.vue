@@ -38,7 +38,9 @@ export default {
           timeUnit: 'day',
           startTime: null,
           endTime: null
-        }
+        },
+        moduleGroupList: [],
+        featureNameList: []
       },
       searchConfig: {
         search: true,
@@ -51,6 +53,41 @@ export default {
             groupList: ['user'],
             transfer: true,
             multiple: false
+          },
+          {
+            type: 'select',
+            name: 'moduleGroupList',
+            label: this.$t('page.module'),
+            multiple: true,
+            search: true,
+            url: '/api/rest/module/search',
+            textName: 'groupName',
+            valueName: 'group',
+            transfer: true,
+            onChange: moduleGroupList => {
+              // 模块变化后，刷新功能下拉框的查询参数，并清空已选功能，避免保留不属于当前模块的功能。
+              const featureConfig = this.searchConfig.searchList.find(item => item.name == 'featureNameList');
+              if (featureConfig) {
+                featureConfig.params.moduleGroupList = moduleGroupList || [];
+              }
+              if (this.searchValue && this.searchValue.featureNameList) {
+                this.$delete(this.searchValue, 'featureNameList');
+              }
+            }
+          },
+          {
+            type: 'select',
+            name: 'featureNameList',
+            label: '功能',
+            multiple: true,
+            search: true,
+            dynamicUrl: '/api/rest/feature/search',
+            params: { moduleGroupList: [], needPage: false },
+            rootName: 'tbodyList',
+            textName: 'featureName',
+            valueName: 'featureName',
+            transfer: true,
+            dealDataByUrl: nodeList => this.getFeatureSelectList(nodeList)
           },
           {
             type: 'timeselect',
@@ -69,7 +106,9 @@ export default {
         timeRange: null,
         timeUnit: '',
         startTime: null,
-        endTime: null
+        endTime: null,
+        moduleGroupList: [],
+        featureNameList: []
       },
       theadList: [
         {
@@ -93,7 +132,13 @@ export default {
   },
   methods: {
     getSearchParam() {
-      const { keyword = '', userUuid = null, dateRange = null } = this.searchValue || {};
+      const {
+        keyword = '',
+        userUuid = null,
+        dateRange = null,
+        moduleGroupList = [],
+        featureNameList = []
+      } = this.searchValue || {};
       // CombineSearcher 的日期控件会返回相对时间或绝对时间，这里统一展开给后端 feature/search 使用。
       return {
         keyword,
@@ -101,7 +146,9 @@ export default {
         timeRange: dateRange ? dateRange.timeRange : null,
         timeUnit: dateRange ? dateRange.timeUnit : null,
         startTime: dateRange ? dateRange.startTime : null,
-        endTime: dateRange ? dateRange.endTime : null
+        endTime: dateRange ? dateRange.endTime : null,
+        moduleGroupList: moduleGroupList || [],
+        featureNameList: featureNameList || []
       };
     },
     searchFeatureList() {
@@ -127,6 +174,18 @@ export default {
       this.searchParam.pageSize = pageSize;
       this.searchParam.currentPage = 1;
       this.searchFeatureList();
+    },
+    getFeatureSelectList(nodeList) {
+      // 功能统计按模块+功能聚合，同名功能可能来自多个模块；下拉框里按功能名去重展示。
+      const featureNameSet = new Set();
+      const featureList = [];
+      (nodeList || []).forEach(item => {
+        if (item && item.featureName && !featureNameSet.has(item.featureName)) {
+          featureNameSet.add(item.featureName);
+          featureList.push(item);
+        }
+      });
+      return featureList;
     }
   }
 };
