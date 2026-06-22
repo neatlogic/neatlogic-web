@@ -37,7 +37,7 @@ function buildFeatureUsage(route, store) {
     // moduleName: getModuleName(store),
     featurePath: route.path,
     featureName: getFeatureMenuName(route),
-    url: route.fullPath || route.path,
+    // url: route.fullPath || route.path,
     startTime: now
   };
 }
@@ -84,9 +84,15 @@ export function flushFeatureUsage(immediate = false) {
   }
   const usage = currentFeatureUsage;
   currentFeatureUsage = null;
+  if (usage.moduleGroup == 'index') {
+    return;
+  }
+  if (usage.featurePath == '/' || usage.featurePath == '/welcome') {
+    return;
+  }
   const endTime = Date.now();
   const duration = endTime - usage.startTime;
-  if (duration <= 0) {
+  if (duration <= 5000) {
     return;
   }
   submitFeatureUsage({

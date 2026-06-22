@@ -7,7 +7,14 @@
         :theadList="theadList"
         @changeCurrent="changePage"
         @changePageSize="changePageSize"
-      ></TsTable>
+      >
+<!--        <template v-slot:duration="{ row }">
+          <span v-if="row.duration != null">
+            {{ duration | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'millisecond' }) }}
+          </span>
+          <span v-else>-</span>
+        </template>-->
+      </TsTable>
     </template>
   </TsDialog>
 </template>
@@ -69,7 +76,7 @@ export default {
         },
         {
           key: 'duration',
-          title: '使用时长' + '(ms)'
+          title: '使用时长'
         }
       ]
     };
@@ -86,7 +93,7 @@ export default {
       if (!this.searchParam.loginAuditId) {
         return;
       }
-      axios.post('/api/rest/feature/usage/audit/search', this.searchParam).then(res => {
+      this.$api.framework.loginaudit.searchFeatureUsageAuditList(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
         }
