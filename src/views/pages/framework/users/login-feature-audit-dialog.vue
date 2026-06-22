@@ -42,7 +42,7 @@ export default {
       tableData: null,
       theadList: [
         {
-          key: 'moduleGroup',
+          key: 'moduleGroupName',
           title: '模块'
         },
         {
@@ -53,10 +53,10 @@ export default {
         //   key: 'featurePath',
         //   title: '功能路径'
         // },
-        {
-          key: 'url',
-          title: 'URL'
-        },
+        // {
+        //   key: 'url',
+        //   title: 'URL'
+        // },
         {
           key: 'startTime',
           title: this.$t('page.starttime'),

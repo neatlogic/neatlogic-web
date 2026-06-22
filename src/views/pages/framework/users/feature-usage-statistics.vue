@@ -73,7 +73,7 @@ export default {
       },
       theadList: [
         {
-          key: 'moduleGroup',
+          key: 'moduleGroupName',
           title: '模块'
         },
         {
