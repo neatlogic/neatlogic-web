@@ -1,6 +1,14 @@
 <template>
   <div>
     <TsContain>
+      <template slot="topLeft">
+        <div class="action-group">
+          <span v-auth="['ADMIN']" class="action-item">
+            <AuditConfig auditName="FEATURE-USAGE-AUDIT" :title="$t('term.framework.loginauditretentionperiod')"></AuditConfig>
+          </span>
+          <!-- <span class="action-item tsfont-download" @click="exportLoginAudit()">{{ $t('page.export') }}</span> -->
+        </div>
+      </template>
       <template slot="topRight">
         <div class="login-search">
           <CombineSearcher
@@ -27,6 +35,7 @@ export default {
   name: 'FeatureUsageStatistics',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
   },
   data() {
