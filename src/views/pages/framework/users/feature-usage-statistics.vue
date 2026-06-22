@@ -77,7 +77,7 @@ export default {
           title: '模块'
         },
         {
-          key: 'menuName',
+          key: 'featureName',
           title: '功能名称'
         },
         {

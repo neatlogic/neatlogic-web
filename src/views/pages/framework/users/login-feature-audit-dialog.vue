@@ -46,13 +46,13 @@ export default {
           title: '模块'
         },
         {
-          key: 'menuName',
+          key: 'featureName',
           title: '功能名称'
         },
-        {
-          key: 'menuPath',
-          title: '功能路径'
-        },
+        // {
+        //   key: 'featurePath',
+        //   title: '功能路径'
+        // },
         {
           key: 'url',
           title: 'URL'

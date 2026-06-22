@@ -35,8 +35,8 @@ function buildFeatureUsage(route, store) {
   return {
     moduleGroup: MODULEID,
     // moduleName: getModuleName(store),
-    menuPath: route.path,
-    menuName: getFeatureMenuName(route),
+    featurePath: route.path,
+    featureName: getFeatureMenuName(route),
     url: route.fullPath || route.path,
     startTime: now
   };
