@@ -4,7 +4,7 @@
     <AppInfo :appSystemId="appSystemId"></AppInfo>
     <div class="border-bottom border-color"></div>
     <DeployNoticeSetting
-      v-if="appSystemId && canShow"
+      v-if="appSystemId"
       :appSystemId="appSystemId"
       :hasEditConfigAuth="hasEditConfigAuth"
     ></DeployNoticeSetting>

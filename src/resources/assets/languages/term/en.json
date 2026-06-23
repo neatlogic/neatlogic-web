@@ -2794,7 +2794,7 @@
     "threaddump": "Thread snapshot",
     "pid": "Process ID",
     "servicetopo": "Service Relationship Diagram",
-    "healthstate": "health status",
+    "healthstate": "Health Status",
     "comm": "command",
     "hostname": "hostname",
     "udpport": "UDP port",
