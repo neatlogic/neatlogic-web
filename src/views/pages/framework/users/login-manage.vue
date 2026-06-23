@@ -84,6 +84,7 @@ export default {
         }
       },
       searchConfig: {
+        labelPosition: 'left',
         searchList: [
           {
             type: 'timeselect',

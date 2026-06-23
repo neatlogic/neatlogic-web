@@ -73,6 +73,7 @@ export default {
         featureNameList: []
       },
       searchConfig: {
+        labelPosition: 'left',
         search: true,
         placeholder: this.$t('form.placeholder.pleaseinput', { target: this.$t('page.keyword') }),
         searchList: [
