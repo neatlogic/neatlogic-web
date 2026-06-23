@@ -19,7 +19,7 @@
   </TsDialog>
 </template>
 <script>
-import axios from '@/resources/api/http.js';
+// import axios from '@/resources/api/http.js';
 export default {
   name: '',
   components: {
