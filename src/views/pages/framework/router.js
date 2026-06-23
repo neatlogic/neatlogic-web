@@ -5,7 +5,7 @@ const welcome = () => import('@/views/pages/common/welcome.vue');
 
 const userManage = () => import('./users/user-manage.vue');
 const LoginManage = () => import('./users/login-manage.vue');
-const featureUsageStatistics = () => import('./users/feature-usage-statistics.vue');
+const featureUsageManage = () => import('./users/feature-usage-manage.vue');
 const userExportFileManage = () => import('./users/user-export-file-manage.vue');
 const roleManage = () => import('./users/role-manage.vue');
 const teamManage = () => import('./users/team-manage.vue');
@@ -211,11 +211,11 @@ let routerList = [
     }
   },
   {
-    path: '/feature-usage-statistics',
-    name: 'feature-usage-statistics',
-    component: featureUsageStatistics,
+    path: '/feature-usage-manage',
+    name: 'feature-usage-manage',
+    component: featureUsageManage,
     meta: {
-      title: '功能使用统计',
+      title: '功能使用记录',
       ismenu: true,
       icon: 'tsfont-chart',
       authority: 'USER_MODIFY',
