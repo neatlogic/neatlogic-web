@@ -2,20 +2,20 @@
   <div>
     <TsFormItem label="显示标题" labelPosition="top">
       <TsFormSwitch
-        :value="getConfigValue('showTitle', true)"
+        :value="getConfigValue('showTitle', false)"
         :true-value="true"
         :false-value="false"
         @change="val => setConfigValue('showTitle', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem v-if="getConfigValue('showTitle', true)" label="标题" labelPosition="top">
+    <TsFormItem v-if="getConfigValue('showTitle', false)" label="标题" labelPosition="top">
       <TsFormInput
         :value="getConfigValue('title', '资源使用率')"
         border="border"
         @change="val => setConfigValue('title', val)"
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem v-if="getConfigValue('showTitle', true)" label="标题颜色" labelPosition="top">
+    <TsFormItem v-if="getConfigValue('showTitle', false)" label="标题颜色" labelPosition="top">
       <ColorPicker
         :value="getConfigValue('titleColor', '')"
         :transfer="true"
@@ -24,6 +24,17 @@
         class="colorPicker"
         transfer-class-name="color-picker-transfer-class"
         @on-change="val => setConfigValue('titleColor', val)"
+      />
+    </TsFormItem>
+    <TsFormItem :label="$t('page.fontcolor')" labelPosition="top">
+      <ColorPicker
+        :value="getConfigValue('nameColor', '')"
+        :transfer="true"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="val => setConfigValue('nameColor', val)"
       />
     </TsFormItem>
     <TsFormItem label="显示数值" labelPosition="top">
