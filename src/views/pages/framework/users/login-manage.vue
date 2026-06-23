@@ -23,6 +23,7 @@
           v-if="tableData"
           v-bind="tableData"
           :theadList="theadList"
+          :classKey="['rowClass']"
           @changeCurrent="changePage"
           @changePageSize="changePageSize"
         >
@@ -220,6 +221,7 @@ export default {
       this.$api.framework.loginaudit.searchLoginList(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
+          this.updateFeatureAuditActiveRow();
         }
       });
     },
@@ -244,11 +246,21 @@ export default {
     },
     openFeatureAuditDialog(row) {
       this.currentLoginAuditId = row.id;
+      this.updateFeatureAuditActiveRow();
       this.isShowFeatureAuditDialog = true;
     },
     closeFeatureAuditDialog() {
       this.isShowFeatureAuditDialog = false;
       this.currentLoginAuditId = null;
+      this.updateFeatureAuditActiveRow();
+    },
+    updateFeatureAuditActiveRow() {
+      // 使用情况弹框打开时，将来源行置灰，帮助用户识别当前查看的是哪一条登录记录。
+      if (this.tableData && this.tableData.tbodyList && this.tableData.tbodyList.length > 0) {
+        this.tableData.tbodyList.forEach(row => {
+          this.$set(row, 'rowClass', row.id === this.currentLoginAuditId ? 'login-feature-audit-active' : '');
+        });
+      }
     },
     getFeatureSelectList(nodeList) {
       const featureNameSet = new Set();
@@ -286,5 +298,8 @@ export default {
 .login-search {
   width: 100%;
   min-width: 280px;
+}
+::v-deep .login-feature-audit-active > td {
+  background-color: rgba(0, 0, 0, 0.06);
 }
 </style>
