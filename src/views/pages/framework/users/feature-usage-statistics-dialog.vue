@@ -119,7 +119,7 @@ export default {
       dialogConfig: {
         type: 'modal',
         isShow: true,
-        title: '统计',
+        title: this.$t('page.statistics'),
         width: 'large',
         hasFooter: true,
         maskClose: true
@@ -131,19 +131,19 @@ export default {
       theadList: [
         {
           key: 'moduleGroupName',
-          title: '模块'
+          title: this.$t('page.module')
         },
         {
           key: 'featureName',
-          title: '功能名称'
+          title: this.$t('page.feature')
         },
         {
           key: 'duration',
-          title: '使用时长'
+          title: this.$t('page.duration')
         },
         {
           key: 'usedCount',
-          title: '使用次数'
+          title: this.$t('page.usedcount')
         }
       ],
       tableData: null
