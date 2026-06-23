@@ -7,7 +7,14 @@
         :theadList="theadList"
         @changeCurrent="changePage"
         @changePageSize="changePageSize"
-      ></TsTable>
+      >
+        <template v-slot:duration="{ row }">
+          <span v-if="row.duration != null">
+            {{ row.duration | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'millisecond' }) }}
+          </span>
+          <span v-else>-</span>
+        </template>
+      </TsTable>
     </template>
   </TsDialog>
 </template>
@@ -125,6 +132,10 @@ export default {
         {
           key: 'featureName',
           title: '功能名称'
+        },
+        {
+          key: 'duration',
+          title: '使用时长'
         },
         {
           key: 'usedCount',
