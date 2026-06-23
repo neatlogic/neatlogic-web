@@ -43,13 +43,13 @@
               </span>
             </div>
           </template>
-          <template v-slot:action="{ row }">
+          <!-- <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
                 <li class="tsfont-list" @click="openFeatureAuditDialog(row)">使用情况</li>
               </ul>
             </div>
-          </template>
+          </template> -->
         </TsTable>
       </div>
     </TsContain>
