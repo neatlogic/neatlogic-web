@@ -16,6 +16,7 @@ export default {
       projectId: null,
       contentMode: 'read',
       appList: [],
+      projectUserRangeList: [],
       isReady: false,
       isLoading: false
     };
@@ -26,6 +27,7 @@ export default {
     this.appId = this.aId || Math.floor(this.$route.params['appId']);
     this.id = this.iId || Math.floor(this.$route.params['id']);
     await this.init();
+    await this.getProjectUserRangeList();
     await this.getAppByProjectId();
     this.isReady = true;
   },
@@ -182,6 +184,25 @@ export default {
           this.appList = res.Return;
         });
       }
+    },
+    async getProjectUserRangeList() {
+      if (this.projectId) {
+        await this.$api.rdm.project.getProjectById(this.projectId).then(res => {
+          const { userList = [] } = res.Return || {};
+          this.projectUserRangeList = userList.map(user => `user#${user.userId}`);
+        });
+      }
+    },
+    getCkeditorParams(uploadVideoConfig = { type: 'rdm' }) {
+      return {
+        uploadVideoConfig,
+        mentionConfig: {
+          rangeList: this.projectUserRangeList,
+          extendCondition: {
+            projectId: this.projectId
+          }
+        }
+      };
     },
     getSubmitIssueData() {
       const issueData = {

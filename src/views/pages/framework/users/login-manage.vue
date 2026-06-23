@@ -6,6 +6,7 @@
           <span v-auth="['ADMIN']" class="action-item">
             <AuditConfig auditName="LOGIN-AUDIT" :title="$t('term.framework.loginauditretentionperiod')"></AuditConfig>
           </span>
+          <span class="action-item tsfont-download" @click="exportLoginAudit()">{{ $t('page.export') }}</span>
         </div>
       </template>
       <template slot="topRight">
@@ -28,12 +29,26 @@
           <template v-slot:userUuid="{ row }">
             <UserCard :uuid="row.userUuid" :hideAvatar="false"></UserCard>
           </template>
+          <template v-slot:teamNameList="{ row }">
+            <div @click.stop>
+              <Tag v-for="(t, index) in showTableList(row.teamNameList)" :key="index">{{ t }}</Tag>
+              <span v-if="row.teamNameList && row.teamNameList.length > 3" @click.stop>
+                <Dropdown placement="bottom-start" transfer @click.native.stop>
+                  <span class="text-action tsfont-option-horizontal"></span>
+                  <DropdownMenu slot="list">
+                    <DropdownItem v-for="(item, index) in showRestText(row.teamNameList)" :key="index">{{ item }}</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </span>
+            </div>
+          </template>
         </TsTable>
       </div>
     </TsContain>
   </div>
 </template>
 <script>
+import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
@@ -42,6 +57,7 @@ export default {
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
+  mixins: [download],
   props: {},
   data() {
     return {
@@ -61,6 +77,18 @@ export default {
             label: this.$t('page.date'),
             transfer: true,
             clearable: false
+          },
+          {
+            type: 'select',
+            name: 'teamUuidList',
+            label: this.$t('page.userteam'),
+            multiple: true,
+            search: true,
+            dynamicUrl: '/api/rest/team/search/forselect',
+            rootName: 'list',
+            textName: 'text',
+            valueName: 'value',
+            transfer: true
           }
         ]
       },
@@ -71,12 +99,18 @@ export default {
         timeRange: null,
         timeUnit: '',
         startTime: null,
-        endTime: null
+        endTime: null,
+        teamUuidList: []
       },
       theadList: [
         {
           key: 'userUuid',
           title: this.$t('page.user')
+        },
+        {
+          key: 'teamNameList',
+          title: this.$t('page.userteam'),
+          width: 420
         },
         {
           key: 'ip',
@@ -108,13 +142,22 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getSearchParam() {
+      const { keyword = '', dateRange = null, teamUuidList = [] } = this.searchValue || {};
+      return {
+        keyword,
+        timeRange: dateRange ? dateRange.timeRange : null,
+        timeUnit: dateRange ? dateRange.timeUnit : null,
+        startTime: dateRange ? dateRange.startTime : null,
+        endTime: dateRange ? dateRange.endTime : null,
+        teamUuidList: teamUuidList || []
+      };
+    },
     searchUserLoginList() {
-      const { keyword = '', dateRange = null } = this.searchValue || {};
-      this.searchParam.keyword = keyword;
-      this.searchParam.timeRange = dateRange ? dateRange.timeRange : null;
-      this.searchParam.timeUnit = dateRange ? dateRange.timeUnit : null;
-      this.searchParam.startTime = dateRange ? dateRange.startTime : null;
-      this.searchParam.endTime = dateRange ? dateRange.endTime : null;
+      this.searchParam = {
+        ...this.searchParam,
+        ...this.getSearchParam()
+      };
       this.$api.framework.loginaudit.searchLoginList(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
@@ -133,6 +176,27 @@ export default {
       this.searchParam.pageSize = pageSize;
       this.searchParam.currentPage = 1;
       this.searchUserLoginList();
+    },
+    exportLoginAudit() {
+      this.download({
+        url: 'api/binary/login/audit/export',
+        params: this.getSearchParam()
+      });
+    },
+    showTableList(val) {
+      let list = [];
+      if (val && val.length > 0) {
+        for (let i = 0; i < val.length; i++) {
+          list.push(val[i]);
+          if (i >= 2) {
+            break;
+          }
+        }
+      }
+      return list;
+    },
+    showRestText(list) {
+      return list.slice(3);
     }
   },
   filter: {},

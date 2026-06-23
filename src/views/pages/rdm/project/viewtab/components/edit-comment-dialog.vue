@@ -9,11 +9,7 @@
         <TsCkeditor
           ref="editor"
           v-model="comment.content"
-          :params="{
-            uploadVideoConfig: {
-              type: 'rdm' 
-            }
-          }"
+          :params="finalCkeditorParams"
           :validateList="['required']"
         ></TsCkeditor>
       </div>
@@ -27,7 +23,8 @@ export default {
     TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue')
   },
   props: {
-    comment: {type: Object}
+    comment: {type: Object},
+    ckeditorParams: { type: Object }
   },
   data() {
     return {
@@ -65,7 +62,16 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalCkeditorParams() {
+      if (this.ckeditorParams) {
+        return this.ckeditorParams;
+      }
+      return {
+        uploadVideoConfig: { type: 'rdm' }
+      };
+    }
+  },
   watch: {}
 };
 </script>

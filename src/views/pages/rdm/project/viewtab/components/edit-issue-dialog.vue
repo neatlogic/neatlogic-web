@@ -51,7 +51,12 @@
           </div>
         </div>
         <Divider />
-        <ContentHandler :issueData="issueData" mode="edit"></ContentHandler>
+        <ContentHandler
+          :issueData="issueData"
+          :projectId="app.projectId"
+          :ckeditorParams="ckeditorParams"
+          mode="edit"
+        ></ContentHandler>
       </div>
     </template>
   </TsDialog>
@@ -98,7 +103,8 @@ export default {
       },
       catalogData: {},
       statusList: [],
-      attrList: []
+      attrList: [],
+      projectUserRangeList: []
     };
   },
   beforeCreate() {},
@@ -108,6 +114,7 @@ export default {
     } else {
       this.getStatusByAppId();
     }
+    this.getProjectUserRangeList();
     this.searchAppAttr();
   },
   beforeMount() {},
@@ -156,6 +163,14 @@ export default {
         });
       }
     },
+    getProjectUserRangeList() {
+      if (this.app && this.app.projectId) {
+        this.$api.rdm.project.getProjectById(this.app.projectId).then(res => {
+          const { userList = [] } = res.Return || {};
+          this.projectUserRangeList = userList.map(user => `user#${user.userId}`);
+        });
+      }
+    },
     saveIssue() {
       let isValid = true;
       if (!this.$refs['issueName'].valid()) {
@@ -192,6 +207,17 @@ export default {
   },
   filter: {},
   computed: {
+    ckeditorParams() {
+      return {
+        uploadVideoConfig: { type: 'rdm' },
+        mentionConfig: {
+          rangeList: this.projectUserRangeList,
+          extendCondition: {
+            projectId: this.app && this.app.projectId
+          }
+        }
+      };
+    },
     startStatus() {
       return this.statusList.find(d => d.isStart);
     }
