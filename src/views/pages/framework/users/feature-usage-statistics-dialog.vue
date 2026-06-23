@@ -105,6 +105,18 @@ export default {
       //   moduleGroupList: [],
       //   featureNameList: []
       // },
+      dialogConfig: {
+        type: 'modal',
+        isShow: true,
+        title: '统计',
+        width: 'large',
+        hasFooter: false,
+        maskClose: true
+      },
+      localSearchParam: {
+        currentPage: 1,
+        pageSize: 20
+      },
       theadList: [
         {
           key: 'moduleGroupName',
@@ -123,7 +135,11 @@ export default {
     };
   },
   mounted() {
-    // this.searchParam.loginAuditId = this.loginAuditId;
+    this.localSearchParam = {
+      currentPage: 1,
+      pageSize: 20,
+      ...(this.searchParam || {})
+    };
     this.searchFeatureList();
   },
   methods: {
@@ -147,12 +163,15 @@ export default {
     //     featureNameList: featureNameList || []
     //   };
     // },
+    closeDialog() {
+      this.$emit('close');
+    },
     searchFeatureList() {
       // this.searchParam = {
       //   ...this.searchParam,
       //   ...this.getSearchParam()
       // };
-      this.$api.framework.loginaudit.searchFeatureList(this.searchParam).then(res => {
+      this.$api.framework.loginaudit.searchFeatureList(this.localSearchParam).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
         }
@@ -160,22 +179,22 @@ export default {
     },
     changePage(currentPage) {
       if (currentPage) {
-        this.searchParam.currentPage = currentPage;
+        this.localSearchParam.currentPage = currentPage;
       } else {
-        this.searchParam.currentPage = 1;
+        this.localSearchParam.currentPage = 1;
       }
       this.searchFeatureList();
     },
     changePageSize(pageSize) {
-      this.searchParam.pageSize = pageSize;
-      this.searchParam.currentPage = 1;
+      this.localSearchParam.pageSize = pageSize;
+      this.localSearchParam.currentPage = 1;
       this.searchFeatureList();
     },
     exportFeatureUsageAudit() {
       // 导出复用当前页面搜索条件，保证导出结果与列表筛选一致。
       this.download({
         url: 'api/binary/feature/usage/audit/export',
-        params: this.searchParam
+        params: this.localSearchParam
       });
     },
     getFeatureSelectList(nodeList) {

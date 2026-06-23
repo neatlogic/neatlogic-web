@@ -7,6 +7,7 @@
             <AuditConfig auditName="FEATURE-USAGE-AUDIT" :title="$t('term.framework.loginauditretentionperiod')"></AuditConfig>
           </span>
           <span class="action-item tsfont-download" @click="exportFeatureUsageAudit()">{{ $t('page.export') }}</span>
+          <span class="action-item tsfont-chart" @click="openFeatureUsageStatisticsDialog()">统计</span>
         </div>
       </template>
       <template slot="topRight">
@@ -38,6 +39,11 @@
         </TsTable>
       </div>
     </TsContain>
+    <FeatureUsageStatisticsDialog
+      v-if="isShowFeatureUsageStatisticsDialog"
+      :searchParam="statisticsSearchParam"
+      @close="closeFeatureUsageStatisticsDialog"
+    ></FeatureUsageStatisticsDialog>
   </div>
 </template>
 <script>
@@ -49,7 +55,8 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
-    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue')
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    FeatureUsageStatisticsDialog: () => import('./feature-usage-statistics-dialog.vue')
   },
   mixins: [download],
   data() {
@@ -161,7 +168,9 @@ export default {
           title: '使用时长'
         }
       ],
-      tableData: null
+      tableData: null,
+      isShowFeatureUsageStatisticsDialog: false,
+      statisticsSearchParam: null
     };
   },
   mounted() {
@@ -218,6 +227,19 @@ export default {
         url: 'api/binary/feature/usage/audit/export',
         params: this.getSearchParam()
       });
+    },
+    openFeatureUsageStatisticsDialog() {
+      // 统计弹框复用当前页面搜索条件，确保统计口径与列表筛选一致。
+      this.statisticsSearchParam = {
+        ...this.getSearchParam(),
+        currentPage: 1,
+        pageSize: 20
+      };
+      this.isShowFeatureUsageStatisticsDialog = true;
+    },
+    closeFeatureUsageStatisticsDialog() {
+      this.isShowFeatureUsageStatisticsDialog = false;
+      this.statisticsSearchParam = null;
     },
     getFeatureSelectList(nodeList) {
       // 功能统计按模块+功能聚合，同名功能可能来自多个模块；下拉框里按功能名去重展示。
