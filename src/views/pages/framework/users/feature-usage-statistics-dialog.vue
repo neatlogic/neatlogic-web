@@ -17,7 +17,7 @@
       </TsTable>
     </template>
     <template v-slot:footer>
-      <Button type="primary" @click="exportFeatureUsageAudit">{{ $t('page.export') }}</Button>
+      <Button type="primary" @click="exportFeatureUsageStatistics">{{ $t('page.export') }}</Button>
     </template>
   </TsDialog>
 </template>
@@ -205,10 +205,10 @@ export default {
       this.localSearchParam.currentPage = 1;
       this.searchFeatureList();
     },
-    exportFeatureUsageAudit() {
+    exportFeatureUsageStatistics() {
       // 导出复用当前页面搜索条件，保证导出结果与列表筛选一致。
       this.download({
-        url: 'api/binary/feature/usage/audit/export',
+        url: 'api/binary/feature/usage/statistics/export',
         params: this.localSearchParam
       });
     },
