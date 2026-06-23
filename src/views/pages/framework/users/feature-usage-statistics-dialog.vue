@@ -16,15 +16,19 @@
         </template>
       </TsTable>
     </template>
+    <template v-slot:footer>
+      <Button type="primary" @click="exportFeatureUsageAudit">{{ $t('page.export') }}</Button>
+    </template>
   </TsDialog>
 </template>
 <script>
-// import axios from '@/resources/api/http.js';
+import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
+  mixins: [download],
   props: {
     searchParam: {
       type: Object,
@@ -117,7 +121,7 @@ export default {
         isShow: true,
         title: '统计',
         width: 'large',
-        hasFooter: false,
+        hasFooter: true,
         maskClose: true
       },
       localSearchParam: {
