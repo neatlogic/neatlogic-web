@@ -8,12 +8,12 @@
         @changeCurrent="changePage"
         @changePageSize="changePageSize"
       >
-<!--        <template v-slot:duration="{ row }">
+        <template v-slot:duration="{ row }">
           <span v-if="row.duration != null">
-            {{ duration | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'millisecond' }) }}
+            {{ row.duration | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'millisecond' }) }}
           </span>
           <span v-else>-</span>
-        </template>-->
+        </template>
       </TsTable>
     </template>
   </TsDialog>
