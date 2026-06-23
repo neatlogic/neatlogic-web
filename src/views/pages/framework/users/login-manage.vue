@@ -127,7 +127,7 @@ export default {
           {
             type: 'select',
             name: 'featureNameList',
-            label: '功能',
+            label: this.$t('page.feature'),
             multiple: true,
             search: true,
             dynamicUrl: '/api/rest/feature/search',

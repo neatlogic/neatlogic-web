@@ -10,7 +10,7 @@ function isFeatureUsageTrackable(route) {
   if (!route || !route.path || !MODULEID) {
     return false;
   }
-  return route.path !== '/no-authority' && !route.path.startsWith('/reset-password');
+  return route.path !== '/no-authority';// && !route.path.startsWith('/reset-password')
 }
 
 // 模块名称优先取当前用户有权限的模块配置，取不到时用全局 MODULEID 兜底。
@@ -30,14 +30,11 @@ function getFeatureMenuName(route) {
 
 // 创建一次功能访问的起始快照，结束时间和停留时长在 flush 时计算。
 function buildFeatureUsage(route, store) {
-  // console.log(route, 'route');
   const now = Date.now();
   return {
     moduleGroup: MODULEID,
-    // moduleName: getModuleName(store),
     featurePath: route.path,
     featureName: getFeatureMenuName(route),
-    // url: route.fullPath || route.path,
     startTime: now
   };
 }

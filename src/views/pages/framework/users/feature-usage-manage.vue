@@ -7,7 +7,7 @@
             <AuditConfig auditName="FEATURE-USAGE-AUDIT" :title="$t('term.framework.loginauditretentionperiod')"></AuditConfig>
           </span>
           <span class="action-item tsfont-download" @click="exportFeatureUsageAudit()">{{ $t('page.export') }}</span>
-          <span class="action-item tsfont-chart" @click="openFeatureUsageStatisticsDialog()">统计</span>
+          <span class="action-item tsfont-chart" @click="openFeatureUsageStatisticsDialog()">{{ $t('page.statistics') }}</span>
         </div>
       </template>
       <template slot="topRight">
@@ -108,7 +108,7 @@ export default {
           {
             type: 'select',
             name: 'featureNameList',
-            label: '功能',
+            label: this.$t('page.feature'),
             multiple: true,
             search: true,
             dynamicUrl: '/api/rest/feature/search',
@@ -147,11 +147,11 @@ export default {
         },
         {
           key: 'moduleGroupName',
-          title: '模块'
+          title: this.$t('page.module')
         },
         {
           key: 'featureName',
-          title: '功能名称'
+          title: this.$t('page.feature')
         },
         {
           key: 'startTime',
@@ -165,7 +165,7 @@ export default {
         },
         {
           key: 'duration',
-          title: '使用时长'
+          title: this.$t('page.duration')
         }
       ],
       tableData: null,

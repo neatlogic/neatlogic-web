@@ -215,7 +215,7 @@ let routerList = [
     name: 'feature-usage-manage',
     component: featureUsageManage,
     meta: {
-      title: '功能使用记录',
+      title: $t('router.framework.featureusagemanage'),
       ismenu: true,
       icon: 'tsfont-chart',
       authority: 'USER_MODIFY',

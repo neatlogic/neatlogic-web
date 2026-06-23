@@ -50,11 +50,11 @@ export default {
       theadList: [
         {
           key: 'moduleGroupName',
-          title: '模块'
+          title: this.$t('page.module')
         },
         {
           key: 'featureName',
-          title: '功能名称'
+          title: this.$t('page.feature')
         },
         // {
         //   key: 'featurePath',
@@ -76,7 +76,7 @@ export default {
         },
         {
           key: 'duration',
-          title: '使用时长'
+          title: this.$t('page.duration')
         }
       ]
     };
