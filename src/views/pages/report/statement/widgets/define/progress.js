@@ -22,9 +22,10 @@ export default {
     { name: 'status', label: '状态', type: ['text'], isRequired: false, description: '可选；normal、warning、critical、offline，非法或为空时按 normal 展示。' }
   ],
   config: {
-    showTitle: true,
+    showTitle: false,
     title: '资源使用率',
     titleColor: '',
+    nameColor: '',
     showValue: true,
     showTarget: false,
     textInside: false,
