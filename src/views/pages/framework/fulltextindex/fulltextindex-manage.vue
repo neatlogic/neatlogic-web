@@ -68,6 +68,7 @@
               <template v-slot:action="{ row }">
                 <div class="tstable-action">
                   <ul class="tstable-action-ul">
+                    <li class="tsfont-eye" @click="viewMetadata(row)">查看元数据</li>
                     <li :class="row.status === 'doing' ? 'text-disabled' : ''" class="tsfont-restart" @click="rebuildIndex(row)">{{ $t('page.rebuildindex') }}</li>
                   </ul>
                 </div>
@@ -110,6 +111,7 @@
           </TabPane>-->
         </Tabs>
         <FullIndexRebuildDialog v-if="isRebuildDialogShow" :audit="currentAudit" @close="closeRebuildDialog"></FullIndexRebuildDialog>
+        <FulltextIndexMetadataDialog v-if="isMetadataDialogShow" :audit="currentAudit" @close="closeMetadataDialog"></FulltextIndexMetadataDialog>
       </div>
     </TsContain>
     <FulltextIndexDictionaryEdit v-if="isWordEdit" @close="isWordEdit = false"></FulltextIndexDictionaryEdit>
@@ -121,6 +123,7 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     FullIndexRebuildDialog: () => import('./fulltextindex-rebuild-dialog.vue'),
+    FulltextIndexMetadataDialog: () => import('./fulltextindex-metadata-dialog.vue'),
     FulltextIndexDictionaryEdit: () => import('./fulltextindex-dictionay-edit.vue')
   },
   props: {},
@@ -128,6 +131,7 @@ export default {
     return {
       currentTab: 'database',
       isRebuildDialogShow: false,
+      isMetadataDialogShow: false,
       currentAudit: null,
       isWordEdit: false,
       isTest: false,
@@ -178,11 +182,19 @@ export default {
         this.checkAuditStatusInterval();
       }
     },
+    closeMetadataDialog() {
+      this.isMetadataDialogShow = false;
+      this.currentAudit = null;
+    },
     rebuildIndex(audit) {
       if (audit.status !== 'doing') {
         this.currentAudit = audit;
         this.isRebuildDialogShow = true;
       }
+    },
+    viewMetadata(audit) {
+      this.currentAudit = audit;
+      this.isMetadataDialogShow = true;
     },
     getFullTextIndexRebuildAuditList(handler) {
       this.$api.framework.fulltextindex.getFullTextIndexRebuildAuditList({ handler: handler }).then(res => {
