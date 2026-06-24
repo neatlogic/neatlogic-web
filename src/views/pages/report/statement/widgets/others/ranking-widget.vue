@@ -66,11 +66,15 @@ export default {
     titleColor() {
       return (this.widget.config && this.widget.config.titleColor) || this.widget.color || '#00e5ff';
     },
+    nameColor() {
+      return (this.widget.config && this.widget.config.nameColor) || this.getChartTheme()?.labels?.style?.fill || 'rgba(233, 251, 255, 0.88)';
+    },
     rankingStyle() {
       return {
         '--ranking-primary-color': this.widget.color || '#00e5ff',
         '--ranking-accent-color': this.widget.accentColor || '#00ffa8',
-        '--ranking-title-color': this.titleColor
+        '--ranking-title-color': this.titleColor,
+        '--ranking-name-color': this.nameColor
       };
     }
   }
@@ -80,6 +84,7 @@ export default {
 .screen-ranking {
   --ranking-primary-color: #00e5ff;
   --ranking-accent-color: #00ffa8;
+  --ranking-name-color: rgba(233, 251, 255, 0.88);
   box-sizing: border-box;
   width: 100%;
   height: 100%;
@@ -120,7 +125,7 @@ export default {
   font-weight: 700;
 }
 .ranking-name {
-  color: fade(#e9fbff, 88%);
+  color: var(--ranking-name-color);
 }
 .ranking-value {
   color: var(--ranking-accent-color);
