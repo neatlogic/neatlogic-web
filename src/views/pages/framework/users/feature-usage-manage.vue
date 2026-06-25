@@ -4,9 +4,10 @@
       <template slot="topLeft">
         <div class="action-group">
           <span v-auth="['ADMIN']" class="action-item">
-            <AuditConfig auditName="LOGIN-AUDIT" :title="$t('term.framework.loginauditretentionperiod')"></AuditConfig>
+            <AuditConfig auditName="FEATURE-USAGE-AUDIT" :title="$t('term.framework.loginauditretentionperiod')"></AuditConfig>
           </span>
-          <span class="action-item tsfont-download" @click="exportLoginAudit()">{{ $t('page.export') }}</span>
+          <span class="action-item tsfont-download" @click="exportFeatureUsageAudit()">{{ $t('page.export') }}</span>
+          <span class="action-item tsfont-chart" @click="openFeatureUsageStatisticsDialog()">{{ $t('page.statistics') }}</span>
         </div>
       </template>
       <template slot="topRight">
@@ -23,87 +24,66 @@
           v-if="tableData"
           v-bind="tableData"
           :theadList="theadList"
-          :classKey="['rowClass']"
           @changeCurrent="changePage"
           @changePageSize="changePageSize"
         >
           <template v-slot:userUuid="{ row }">
             <UserCard :uuid="row.userUuid" :hideAvatar="false"></UserCard>
           </template>
-          <template v-slot:teamNameList="{ row }">
-            <div @click.stop>
-              <Tag v-for="(t, index) in showTableList(row.teamNameList)" :key="index">{{ t }}</Tag>
-              <span v-if="row.teamNameList && row.teamNameList.length > 3" @click.stop>
-                <Dropdown placement="bottom-start" transfer @click.native.stop>
-                  <span class="text-action tsfont-option-horizontal"></span>
-                  <DropdownMenu slot="list">
-                    <DropdownItem v-for="(item, index) in showRestText(row.teamNameList)" :key="index">{{ item }}</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </span>
-            </div>
+          <template v-slot:duration="{ row }">
+            <span v-if="row.duration != null">
+              {{ row.duration | formatTimeCost({ unitNumber: 1, language: 'zh', unit: 'millisecond' }) }}
+            </span>
+            <span v-else>-</span>
           </template>
-          <!-- <template v-slot:action="{ row }">
-            <div class="tstable-action">
-              <ul class="tstable-action-ul">
-                <li class="tsfont-list" @click="openFeatureAuditDialog(row)">使用情况</li>
-              </ul>
-            </div>
-          </template> -->
         </TsTable>
       </div>
     </TsContain>
-    <LoginFeatureAuditDialog
-      v-if="isShowFeatureAuditDialog"
-      :loginAuditId="currentLoginAuditId"
-      @close="closeFeatureAuditDialog"
-    ></LoginFeatureAuditDialog>
+    <FeatureUsageStatisticsDialog
+      v-if="isShowFeatureUsageStatisticsDialog"
+      :searchParam="statisticsSearchParam"
+      @close="closeFeatureUsageStatisticsDialog"
+    ></FeatureUsageStatisticsDialog>
   </div>
 </template>
 <script>
 import download from '@/resources/mixins/download.js';
+
 export default {
-  name: '',
+  name: 'FeatureUsageManage',
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
-    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
-    LoginFeatureAuditDialog: () => import('./login-feature-audit-dialog.vue')
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
+    FeatureUsageStatisticsDialog: () => import('./feature-usage-statistics-dialog.vue')
   },
   mixins: [download],
-  props: {},
   data() {
     return {
       searchValue: {
+        // 默认查询近一天的功能使用统计，避免首次进入页面查询范围过大。
         dateRange: {
           timeRange: 1,
           timeUnit: 'day',
           startTime: null,
           endTime: null
-        }
+        },
+        moduleGroupList: [],
+        featureNameList: []
       },
       searchConfig: {
         labelPosition: 'left',
+        search: true,
+        placeholder: this.$t('form.placeholder.pleaseinput', { target: this.$t('page.keyword') }),
         searchList: [
           {
-            type: 'timeselect',
-            name: 'dateRange',
-            label: this.$t('page.date'),
+            type: 'userselect',
+            name: 'userUuid',
+            label: this.$t('page.user'),
+            groupList: ['user'],
             transfer: true,
-            clearable: false
-          },
-          {
-            type: 'select',
-            name: 'teamUuidList',
-            label: this.$t('page.userteam'),
-            multiple: true,
-            search: true,
-            dynamicUrl: '/api/rest/team/search/forselect',
-            rootName: 'list',
-            textName: 'text',
-            valueName: 'value',
-            transfer: true
+            multiple: false
           },
           {
             type: 'select',
@@ -116,6 +96,7 @@ export default {
             valueName: 'group',
             transfer: true,
             onChange: moduleGroupList => {
+              // 模块变化后刷新功能下拉的查询参数，并清空已选功能，避免条件不一致。
               const featureConfig = this.searchConfig.searchList.find(item => item.name == 'featureNameList');
               if (featureConfig) {
                 featureConfig.params.moduleGroupList = moduleGroupList || [];
@@ -132,24 +113,31 @@ export default {
             multiple: true,
             search: true,
             dynamicUrl: '/api/rest/feature/search',
-            params: { moduleGroupList: [] },
+            params: { moduleGroupList: [], needPage: false },
             rootName: 'tbodyList',
             textName: 'featureName',
             valueName: 'featureName',
             transfer: true,
             dealDataByUrl: nodeList => this.getFeatureSelectList(nodeList)
+          },
+          {
+            type: 'timeselect',
+            name: 'dateRange',
+            label: this.$t('page.date'),
+            transfer: true,
+            clearable: false
           }
         ]
       },
       searchParam: {
         keyword: '',
+        userUuid: null,
         currentPage: 1,
         pageSize: 20,
         timeRange: null,
         timeUnit: '',
         startTime: null,
         endTime: null,
-        teamUuidList: [],
         moduleGroupList: [],
         featureNameList: []
       },
@@ -159,70 +147,65 @@ export default {
           title: this.$t('page.user')
         },
         {
-          key: 'teamNameList',
-          title: this.$t('page.userteam'),
-          width: 420
+          key: 'moduleGroupName',
+          title: this.$t('page.module')
         },
         {
-          key: 'ip',
-          title: 'IP'
+          key: 'featureName',
+          title: this.$t('page.feature')
         },
         {
-          key: 'loginTime',
-          title: this.$t('term.framework.logintime'),
+          key: 'startTime',
+          title: this.$t('page.starttime'),
           type: 'time'
         },
         {
-          key: 'loginMethod',
-          title: this.$t('term.framework.loginmethod')
+          key: 'endTime',
+          title: this.$t('page.endtime'),
+          type: 'time'
         },
         {
-          key: 'action',
-          title: '',
-          align: 'right',
-          width: 10
+          key: 'duration',
+          title: this.$t('page.duration')
         }
       ],
-      tableData: [],
-      isShowFeatureAuditDialog: false,
-      currentLoginAuditId: null
+      tableData: null,
+      isShowFeatureUsageStatisticsDialog: false,
+      statisticsSearchParam: null
     };
   },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
   mounted() {
-    this.searchUserLoginList();
+    this.searchFeatureList();
   },
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
   methods: {
     getSearchParam() {
-      const { keyword = '', dateRange = null, teamUuidList = [], moduleGroupList = [], featureNameList = [] } = this.searchValue || {};
+      const {
+        keyword = '',
+        userUuid = null,
+        dateRange = null,
+        moduleGroupList = [],
+        featureNameList = []
+      } = this.searchValue || {};
+      // CombineSearcher 的日期控件会返回相对时间或绝对时间，这里统一展开给后端使用。
       return {
         keyword,
+        userUuid,
         timeRange: dateRange ? dateRange.timeRange : null,
         timeUnit: dateRange ? dateRange.timeUnit : null,
         startTime: dateRange ? dateRange.startTime : null,
         endTime: dateRange ? dateRange.endTime : null,
-        teamUuidList: teamUuidList || [],
         moduleGroupList: moduleGroupList || [],
         featureNameList: featureNameList || []
       };
     },
-    searchUserLoginList() {
+    searchFeatureList() {
       this.searchParam = {
         ...this.searchParam,
         ...this.getSearchParam()
       };
-      this.$api.framework.loginaudit.searchLoginList(this.searchParam).then(res => {
+      this.$api.framework.loginaudit.searchFeatureUsageAuditList(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
-          this.updateFeatureAuditActiveRow();
         }
       });
     },
@@ -232,38 +215,35 @@ export default {
       } else {
         this.searchParam.currentPage = 1;
       }
-      this.searchUserLoginList();
+      this.searchFeatureList();
     },
     changePageSize(pageSize) {
       this.searchParam.pageSize = pageSize;
       this.searchParam.currentPage = 1;
-      this.searchUserLoginList();
+      this.searchFeatureList();
     },
-    exportLoginAudit() {
+    exportFeatureUsageAudit() {
+      // 导出复用当前页面搜索条件，保证导出结果与列表筛选一致。
       this.download({
-        url: 'api/binary/login/audit/export',
+        url: 'api/binary/feature/usage/audit/export',
         params: this.getSearchParam()
       });
     },
-    openFeatureAuditDialog(row) {
-      this.currentLoginAuditId = row.id;
-      this.updateFeatureAuditActiveRow();
-      this.isShowFeatureAuditDialog = true;
+    openFeatureUsageStatisticsDialog() {
+      // 统计弹框复用当前页面搜索条件，确保统计口径与列表筛选一致。
+      this.statisticsSearchParam = {
+        ...this.getSearchParam(),
+        currentPage: 1,
+        pageSize: 20
+      };
+      this.isShowFeatureUsageStatisticsDialog = true;
     },
-    closeFeatureAuditDialog() {
-      this.isShowFeatureAuditDialog = false;
-      this.currentLoginAuditId = null;
-      this.updateFeatureAuditActiveRow();
-    },
-    updateFeatureAuditActiveRow() {
-      // 使用情况弹框打开时，将来源行置灰，帮助用户识别当前查看的是哪一条登录记录。
-      if (this.tableData && this.tableData.tbodyList && this.tableData.tbodyList.length > 0) {
-        this.tableData.tbodyList.forEach(row => {
-          this.$set(row, 'rowClass', row.id === this.currentLoginAuditId ? 'login-feature-audit-active' : '');
-        });
-      }
+    closeFeatureUsageStatisticsDialog() {
+      this.isShowFeatureUsageStatisticsDialog = false;
+      this.statisticsSearchParam = null;
     },
     getFeatureSelectList(nodeList) {
+      // 功能统计按模块+功能聚合，同名功能可能来自多个模块；下拉框里按功能名去重展示。
       const featureNameSet = new Set();
       const featureList = [];
       (nodeList || []).forEach(item => {
@@ -273,34 +253,13 @@ export default {
         }
       });
       return featureList;
-    },
-    showTableList(val) {
-      let list = [];
-      if (val && val.length > 0) {
-        for (let i = 0; i < val.length; i++) {
-          list.push(val[i]);
-          if (i >= 2) {
-            break;
-          }
-        }
-      }
-      return list;
-    },
-    showRestText(list) {
-      return list.slice(3);
     }
-  },
-  filter: {},
-  computed: {},
-  watch: {}
+  }
 };
 </script>
 <style lang="less" scoped>
 .login-search {
   width: 100%;
   min-width: 280px;
-}
-::v-deep .login-feature-audit-active > td {
-  background-color: rgba(0, 0, 0, 0.06);
 }
 </style>
