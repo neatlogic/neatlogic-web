@@ -45,13 +45,13 @@
     </TsFormItem>
     <TsFormItem v-if="getConfigValue('legend.visible', true)" label="图例文字颜色" labelPosition="top">
       <ColorPicker
-        :value="getConfigValue('legend.itemName.style.fill', 'rgba(233,251,255,0.86)')"
+        :value="getConfigValue('legend.itemName.style.fill', '')"
         :transfer="true"
         alpha
         recommend
         transfer-class-name="color-picker-transfer-class"
         @on-change="val => {
-          setConfigValue('legend.itemName.style.fill', val || 'rgba(233,251,255,0.86)');
+          setConfigValue('legend.itemName.style.fill', val);
         }"
       />
     </TsFormItem>
