@@ -25,7 +25,7 @@ export default {
       position: 'bottom',
       itemName: {
         style: {
-          fill: 'rgba(233,251,255,0.86)'
+          fill: ''
         }
       }
     },
