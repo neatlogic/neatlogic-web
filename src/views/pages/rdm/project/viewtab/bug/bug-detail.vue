@@ -60,6 +60,7 @@
                   :projectId="projectId"
                   relType="extend"
                   relAppType="story"
+                  :fixedHeader="false"
                   :toId="id"
                   :app="getApp('story')"
                   @refresh="init"

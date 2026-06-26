@@ -74,6 +74,7 @@
                   :canAppend="true"
                   :canSearch="false"
                   :canAction="true"
+                  :fixedHeader="false"
                   relType="extend"
                   relAppType="task"
                   :fromId="id"

@@ -45,6 +45,7 @@
           :viewmode="viewMode"
           :canSearch="true"
           :canAction="true"
+          :fixedHeader="false"
           :isShowEmptyTable="true"
           @refresh="refreshOverview"
         ></IssueList>

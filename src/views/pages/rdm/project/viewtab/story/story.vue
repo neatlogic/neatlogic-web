@@ -79,6 +79,7 @@
           :canSearch="true"
           :canAction="true"
           :viewmode="viewMode"
+          :fixedHeader="false"
           :catalog="currentCatalog"
           :isShowEmptyTable="true"
           @refresh="refreshOverview"
