@@ -181,7 +181,7 @@ export default {
         position: legendPosition,
         itemName: {
           style: {
-            fill: this.chartConfig.legend?.itemName?.style?.fill || 'rgba(233,251,255,0.86)'
+            fill: this.chartConfig.legend?.itemName?.style?.fill || this.getChartTheme()?.labels?.style?.fill || 'rgba(233,251,255,0.86)'
           }
         }
       };
