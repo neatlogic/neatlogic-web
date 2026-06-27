@@ -1,6 +1,6 @@
 <template>
   <div class="iteration-list">
-    <div ref="filter" class="iteration-filter">
+    <div class="iteration-filter">
       <span
         v-for="filter in isOpenFilterList"
         :key="filter.value === null ? 'all' : filter.value"
@@ -9,67 +9,72 @@
         @click="changeIsOpenFilter(filter.value)"
       >{{ filter.text }}</span>
     </div>
-    <Scroll :on-reach-bottom="handleReachBottom" :loading-text="loadingTip" :height="height">
-      <ul v-if="iterationList && iterationList.length > 0">
-        <li
-          v-for="(iteration, index) in iterationList"
-          :key="index"
-          style="position: relative"
-          class="cursor padding-md radius-md mb-md"
-          :class="{
-            'bg-op': currentIterationId !== iteration.id,
-            'bg-selected': currentIterationId === iteration.id
-          }"
-          @click="selectIteration(iteration)"
-        >
-          <div v-if="isProcessing(iteration)" class="pl-xs pr-xs fz10 bg-warning iteration-status-tag text-op">{{ $t('page.current') }}</div>
-          <div v-else-if="isClosed(iteration)" class="pl-xs pr-xs fz10 bg-grey iteration-status-tag text-grey">{{ $t('term.rdm.isclosed') }}</div>
-          <div>
-            <strong>{{ iteration.name }}</strong>
-          </div>
-          <div class="text-grey fz10" style="position: relative">
-            <span>{{ iteration.startDate | formatDate('yyyy-mm-dd') }}</span>
-            <span class="ml-xs mr-xs">~</span>
-            <span>{{ iteration.endDate | formatDate('yyyy-mm-dd') }}</span>
-            <span style="position: absolute; right: 0px" @click="toInterationDetail(iteration.id)">{{ $t('page.detail') }}</span>
-          </div>
-          <div v-if="iteration.description" class="mt-md fz10 text-grey" v-html="iteration.description"></div>
-          <Divider v-if="iteration.issueCount" style="margin: 10px 0px"></Divider>
-          <div v-if="iteration.issueCount">
-            <Progress
-              status="active"
-              :percent="parseFloat(((iteration.doneIssueCount / iteration.issueCount) * 100).toFixed(2))"
-              :stroke-width="18"
-              text-inside
-            />
-          </div>
-        </li>
-      </ul>
-    </Scroll>
+    <div :class="{ 'iteration-grid': pageCount > 1 }">
+      <div v-if="pageCount > 1" class="iteration-pager">
+        <VerticalPager :currentPage="searchParam.currentPage" :pageCount="pageCount" @change="changePage"></VerticalPager>
+      </div>
+      <div style="overflow: auto; height: calc(100vh - 145px)">
+        <ul v-if="iterationList && iterationList.length > 0">
+          <li
+            v-for="(iteration, index) in iterationList"
+            :key="index"
+            style="position: relative"
+            class="cursor padding-md radius-md mb-md"
+            :class="{
+              'bg-op': currentIterationId !== iteration.id,
+              'bg-selected': currentIterationId === iteration.id
+            }"
+            @click="selectIteration(iteration)"
+          >
+            <div v-if="isProcessing(iteration)" class="pl-xs pr-xs fz10 bg-warning iteration-status-tag text-op">{{ $t('page.current') }}</div>
+            <div v-else-if="isClosed(iteration)" class="pl-xs pr-xs fz10 bg-grey iteration-status-tag text-grey">{{ $t('term.rdm.isclosed') }}</div>
+            <div>
+              <strong>{{ iteration.name }}</strong>
+            </div>
+            <div class="text-grey fz10" style="position: relative">
+              <span>{{ iteration.startDate | formatDate('yyyy-mm-dd') }}</span>
+              <span class="ml-xs mr-xs">~</span>
+              <span>{{ iteration.endDate | formatDate('yyyy-mm-dd') }}</span>
+              <span style="position: absolute; right: 0px" @click="toInterationDetail(iteration.id)">{{ $t('page.detail') }}</span>
+            </div>
+            <div v-if="iteration.description" class="mt-md fz10 text-grey" v-html="iteration.description"></div>
+            <Divider v-if="iteration.issueCount" style="margin: 10px 0px"></Divider>
+            <div v-if="iteration.issueCount">
+              <Progress
+                status="active"
+                :percent="parseFloat(((iteration.doneIssueCount / iteration.issueCount) * 100).toFixed(2))"
+                :stroke-width="18"
+                text-inside
+              />
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 export default {
   name: '',
-  components: {},
+  components: {
+    VerticalPager: () => import('@/resources/plugins/VerticalPager/vertical-pager.vue')
+  },
   props: {
     appId: { type: Number },
     projectId: { type: Number }
   },
   data() {
     return {
-      loadingTip: this.$t('page.loadingtip'),
       searchParam: {
         projectId: this.projectId,
-        pageSize: 20,
+        pageSize: 10,
         currentPage: 1,
         isOpen: 1
       },
       iterationList: [],
       currentIterationId: null,
       isOpenFilter: 1,
-      hasMore: false,
-      height: 0
+      pageCount: 0
     };
   },
   beforeCreate() {},
@@ -77,17 +82,12 @@ export default {
     this.searchIteration();
   },
   beforeMount() {},
-  mounted() {
-    this.initHeight();
-    window.addEventListener('resize', this.initHeight);
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {
-    window.removeEventListener('resize', this.initHeight);
-  },
+  beforeDestroy() {},
   destroyed() {},
   methods: {
     restoreHistory(historyData) {
@@ -97,12 +97,6 @@ export default {
     },
     toInterationDetail(id) {
       this.$router.push({ path: '/iteration-detail/' + this.projectId + '/' + this.appId + '/' + id });
-    },
-    initHeight() {
-      if (this.$el) {
-        const filterHeight = this.$refs.filter ? this.$refs.filter.getBoundingClientRect().height : 0;
-        this.height = window.innerHeight - this.$el.getBoundingClientRect().top - filterHeight - 16;
-      }
     },
     selectIteration(iteration) {
       if (this.currentIterationId !== iteration.id) {
@@ -119,28 +113,15 @@ export default {
     },
     searchIteration() {
       this.$api.rdm.iteration.searchIteration(this.searchParam).then(res => {
-        const iterationList = (res.Return && res.Return.tbodyList) || [];
-        const pageSize = (res.Return && res.Return.pageSize) || this.searchParam.pageSize;
+        const result = res.Return || {};
+        const iterationList = result.tbodyList || [];
+        this.pageCount = result.pageCount || 0;
         if (iterationList && iterationList.length > 0) {
-          if (iterationList.length > pageSize) {
-            this.hasMore = true;
-          } else {
-            this.hasMore = false;
-          }
-          if (this.searchParam.currentPage == 1) {
-            this.iterationList = iterationList;
-            this.selectDefaultIteration(iterationList);
-          } else {
-            for (let i = 0; i < Math.min(iterationList.length, pageSize); i++) {
-              this.iterationList.push(iterationList[i]);
-            }
-          }
+          this.iterationList = iterationList;
+          this.selectDefaultIteration(iterationList);
         } else {
-          if (this.searchParam.currentPage == 1) {
-            this.iterationList = [];
-            this.clearIteration();
-          }
-          this.hasMore = false;
+          this.iterationList = [];
+          this.clearIteration();
         }
       });
     },
@@ -166,8 +147,6 @@ export default {
       this.isOpenFilter = isOpen;
       this.searchParam.currentPage = 1;
       this.iterationList = [];
-      this.hasMore = false;
-      this.loadingTip = this.$t('page.loadingtip');
       if (isOpen === null) {
         this.$delete(this.searchParam, 'isOpen');
       } else {
@@ -175,23 +154,12 @@ export default {
       }
       this.searchIteration();
     },
-    handleReachBottom: function() {
-      //引用滚动加载
-      if (this.searchParam.currentPage) {
-        this.searchParam.currentPage += 1;
+    changePage(page) {
+      if (page === this.searchParam.currentPage) {
+        return;
       }
-
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve();
-          if (!this.hasMore) {
-            this.loadingTip = this.$t('page.loadfinish');
-            return;
-          } else {
-            this.searchIteration();
-          }
-        }, 500);
-      });
+      this.searchParam.currentPage = page;
+      this.searchIteration();
     }
   },
   filter: {},
@@ -233,6 +201,17 @@ export default {
 }
 .iteration-filter-item {
   cursor: pointer;
+}
+.iteration-grid {
+  display: grid;
+  grid-template-columns: 23px minmax(0, 1fr);
+  column-gap: 4px;
+}
+.iteration-list-body {
+  min-width: 0;
+}
+.iteration-pager {
+  padding-top: 4px;
 }
 .iteration-status-tag {
   position: absolute;
