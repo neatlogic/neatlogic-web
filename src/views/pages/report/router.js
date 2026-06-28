@@ -2,6 +2,7 @@ const refresh = () => import('@/views/pages/common/refresh.vue');
 const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const reportManage = () => import('./report/report-manage.vue');
+const reportEdit = () => import('./report/report-edit.vue');
 const reportinstanceManage = () => import('./reportinstance/reportinstance-manage.vue');
 const reportShow = () => import('./report/report-show.vue');
 const reportinstanceShow = () => import('./report/reportinstance-show.vue');
@@ -84,6 +85,16 @@ export default [
       ismenu: true,
       type: 'reporttemplate',
       icon: 'tsfont-module',
+      authority: ['REPORT_TEMPLATE_MODIFY']
+    }
+  },
+  {
+    path: '/report-edit/:id?',
+    name: 'report-edit',
+    component: reportEdit,
+    meta: {
+      title: $t('term.report.edittemplate'),
+      ismenu: false,
       authority: ['REPORT_TEMPLATE_MODIFY']
     }
   },
