@@ -1142,5 +1142,6 @@
   "statistics": "统计",
   "feature": "功能",
   "duration": "使用时长",
-  "usedcount": "使用次数"
+  "usedcount": "使用次数",
+  "servergroup": "服务器组"
 }

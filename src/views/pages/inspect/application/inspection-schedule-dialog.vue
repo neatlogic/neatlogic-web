@@ -186,6 +186,10 @@ export default {
           key: 'execCount'
         },
         {
+          title: this.$t('page.servergroup'),
+          key: 'sourceServerGroup'
+        },
+        {
           title: this.$t('page.fcu'),
           key: 'lcuVo'
         },
