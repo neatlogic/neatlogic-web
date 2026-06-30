@@ -80,7 +80,7 @@ export default {
         },
         {
           key: 'serverGroup',
-          title: this.$t('page.group')
+          title: this.$t('page.servergroup')
         },
         {
           key: 'status',

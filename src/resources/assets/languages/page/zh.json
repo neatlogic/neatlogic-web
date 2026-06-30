@@ -1128,5 +1128,6 @@
   "versionprefix": "版本前缀",
   "planstarttime": "计划开始时间",
   "planendtime": "计划结束时间",
-  "inspectbaseline": "基线巡检"
+  "inspectbaseline": "基线巡检",
+  "servergroup": "服务器组"
 }
