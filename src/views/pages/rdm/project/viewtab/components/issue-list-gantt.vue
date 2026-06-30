@@ -69,6 +69,7 @@
                       <span v-if="!issueData.wordList || issueData.wordList === 0">{{ row.name }}</span>
                       <span v-else v-html="highlightKeywords(row.name, issueData.wordList)"></span>
                     </a>
+                    <IssueCopyTag v-if="row.sourceIssueId" class="ml-xs"></IssueCopyTag>
                   </span>
                 </div>
                 <IssueStatus v-else-if="getAttr(th.key).type === '_status'" :scale="0.8" :issueData="row"></IssueStatus>
@@ -123,6 +124,7 @@ export default {
   name: '',
   components: {
     AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    IssueCopyTag: () => import('@/views/pages/rdm/project/viewtab/components/issue-copy-tag.vue'),
     AttrViewer: () => import('@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue'),

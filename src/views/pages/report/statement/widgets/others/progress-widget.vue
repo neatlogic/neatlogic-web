@@ -114,7 +114,7 @@ export default {
       return (this.widget.config && this.widget.config.title) || '资源使用率';
     },
     showTitle() {
-      return !(this.widget.config && this.widget.config.showTitle === false);
+      return this.widget.config && this.widget.config.showTitle === true;
     },
     showValue() {
       return !(this.widget.config && this.widget.config.showValue === false);
@@ -128,6 +128,9 @@ export default {
     titleColor() {
       return (this.widget.config && this.widget.config.titleColor) || this.widget.color || '#00e5ff';
     },
+    nameColor() {
+      return (this.widget.config && this.widget.config.nameColor) || this.getChartTheme()?.labels?.style?.fill || 'rgba(233, 251, 255, 0.88)';
+    },
     barHeight() {
       return Math.max(Number(this.widget.config && this.widget.config.barHeight) || 8, 4);
     },
@@ -136,6 +139,7 @@ export default {
         '--progress-primary-color': this.widget.color || '#00e5ff',
         '--progress-accent-color': this.widget.accentColor || '#00ffa8',
         '--progress-title-color': this.titleColor,
+        '--progress-name-color': this.nameColor,
         '--progress-bar-height': `${this.barHeight}px`
       };
     }
@@ -147,6 +151,7 @@ export default {
   --progress-primary-color: #00e5ff;
   --progress-accent-color: #00ffa8;
   --progress-title-color: #00e5ff;
+  --progress-name-color: rgba(233, 251, 255, 0.88);
   --progress-bar-height: 8px;
   box-sizing: border-box;
   width: 100%;
@@ -183,7 +188,7 @@ export default {
 .progress-name {
   flex: 1;
   min-width: 0;
-  color: fade(#e9fbff, 88%);
+  color: var(--progress-name-color);
 }
 .progress-value {
   color: var(--progress-accent-color);

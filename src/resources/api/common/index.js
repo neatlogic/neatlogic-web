@@ -181,6 +181,9 @@ const common = {
   getLicenseInvalidMsg() {
     return axios.post('/api/rest/license/invalid/msg/get');
   },
+  saveFeatureUsageAudit(data) {
+    return axios.post('/api/rest/feature/usage/audit/save', data, { headers: { unConsole: 1 } });
+  },
   getCurrentUser() {
     // 仅用于刷新页面获取用户基本信息，以及权限信息
     return axios.get('/api/rest/user/current/get');

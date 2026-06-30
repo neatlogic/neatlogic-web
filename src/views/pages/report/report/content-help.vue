@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Alert show-icon>
+    <Alert>
       <div>
         <Poptip
           v-model="isHelpShow"

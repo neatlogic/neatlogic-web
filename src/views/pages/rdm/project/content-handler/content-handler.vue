@@ -10,26 +10,20 @@
       :mode="editMode"
       :autoSave="autoSave"
       :issueData="issueData"
+      :projectId="finalProjectId"
+      :ckeditorParams="finalCkeditorParams"
     ></component>
     <div v-else>
       <div v-if="editMode === 'edit'">
         <TsCkeditor
           v-if="autoSave"
           v-model="issueData.content"
-          :params="{
-            uploadVideoConfig: {
-              type: 'rdm',
-            }
-          }"
+          :params="finalCkeditorParams"
         ></TsCkeditor>
         <TsCkeditor
           v-else
           v-model="content"
-          :params="{
-            uploadVideoConfig: {
-              type: 'rdm',
-            }
-          }"
+          :params="finalCkeditorParams"
         ></TsCkeditor>
       </div>
       <TsCkeditor
@@ -55,9 +49,12 @@ export default {
   },
   props: {
     issueData: { type: Object },
+    projectId: { type: Number },
+    ckeditorParams: { type: Object },
     autoSave: { type: Boolean, default: true },
     mode: { type: String, default: 'read' },
-    readonly: { type: Boolean, default: false }
+    readonly: { type: Boolean, default: false },
+    saveHandler: { type: Function }
   },
   data() {
     return {
@@ -89,22 +86,57 @@ export default {
       });
       this.$emit('cancel');
     },
-    saveIssue() {
+    async saveIssue() {
+      const oldContent = this.issueData.content;
       const component = this.$refs['component'];
       if (component && component.save) {
         component.save();
       } else {
         this.$set(this.issueData, 'content', this.content);
       }
-      this.$api.rdm.issue.saveIssue(this.issueData).then(res => {
+      const saveData = this.getSaveData();
+      if (this.saveHandler) {
+        const isSaved = await this.saveHandler(saveData);
+        if (isSaved === false) {
+          this.$set(this.issueData, 'content', oldContent);
+          return;
+        }
+        this.cancelEdit();
+        return;
+      }
+      this.$api.rdm.issue.saveIssue(saveData).then(res => {
         if (res.Status === 'OK') {
           this.cancelEdit();
         }
       });
+    },
+    getSaveData() {
+      return {
+        id: this.issueData.id,
+        appId: this.issueData.appId,
+        content: this.issueData.content
+      };
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalProjectId() {
+      return this.projectId || (this.issueData && this.issueData.projectId);
+    },
+    finalCkeditorParams() {
+      if (this.ckeditorParams) {
+        return this.ckeditorParams;
+      }
+      const mentionConfig = {};
+      if (this.finalProjectId) {
+        mentionConfig.extendCondition = { projectId: this.finalProjectId };
+      }
+      return {
+        uploadVideoConfig: { type: 'rdm' },
+        mentionConfig
+      };
+    }
+  },
   watch: {
     mode: {
       handler: function(val) {

@@ -44,6 +44,8 @@
                   :mode="contentMode"
                   :issueData="issueData"
                   :autoSave="false"
+                  :projectId="projectId"
+                  :ckeditorParams="getCkeditorParams()"
                   @cancel="contentMode = 'read'"
                 ></ContentHandler>
               </div>
@@ -58,6 +60,7 @@
                   :projectId="projectId"
                   relType="extend"
                   relAppType="story"
+                  :fixedHeader="false"
                   :toId="id"
                   :app="getApp('story')"
                   @refresh="init"
@@ -101,7 +104,7 @@
             </TsFormItem>
 
             <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')">
-              <CommentList :issueData="issueData" :issueId="id"></CommentList>
+              <CommentList :issueData="issueData" :issueId="id" :ckeditorParams="getCkeditorParams()"></CommentList>
             </TsFormItem>
 
             <TsFormItem v-bind="formItemConf" :label="$t('term.rdm.nextstatus')">
@@ -117,11 +120,7 @@
             <TsFormItem v-bind="formItemConf" :label="$t('page.reply')">
               <TsCkeditor
                 v-model="issueData.comment"
-                :params="{
-                  uploadVideoConfig: {
-                    type: 'rdm'
-                  }
-                }"
+                :params="getCkeditorParams()"
                 :width="'100%'"
               ></TsCkeditor>
             </TsFormItem>
@@ -212,7 +211,7 @@ export default {
       }
     },
     saveIssue() {
-      this.$api.rdm.issue.saveIssue(this.issueData).then(async res => {
+      this.$api.rdm.issue.saveIssue(this.getSubmitIssueData()).then(async res => {
         this.init();
       });
     },

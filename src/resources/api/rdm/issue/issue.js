@@ -1,8 +1,8 @@
 import axios from '../../http';
 
 const issue = {
-  getRelIssueList(issueId, relType, direction) {
-    return axios.post('/api/rest/rdm/issue/rel/list', { issueId: issueId, relType: relType, direction: direction });
+  getRelIssueList(issueId, relType, direction, appId) {
+    return axios.post('/api/rest/rdm/issue/rel/list', { issueId: issueId, relType: relType, direction: direction, appId: appId });
   },
   checkIssueIsFavorite(id) {
     return axios.post('/api/rest/rdm/issue/favorite/check', { id: id });
@@ -16,6 +16,12 @@ const issue = {
   searchIssue(params) {
     return axios.post('/api/rest/rdm/issue/search', params);
   },
+  getIssueOverview(params) {
+    return axios.post('/api/rest/rdm/issue/overview/get', params);
+  },
+  searchIssueCopy(sourceIssueId) {
+    return axios.post('/api/rest/rdm/issue/copy/search', { sourceIssueId: sourceIssueId });
+  },
   getTagByIssueId(id) {
     return axios.post('/api/rest/rdm/issue/tag/list', { issueId: id });
   },
@@ -24,6 +30,28 @@ const issue = {
   },
   saveIssue(params) {
     return axios.post('/api/rest/rdm/issue/save', params);
+  },
+  exportIssue(params) {
+    return axios.post('/api/binary/rdm/issue/export', params, { responseType: 'blob' });
+  },
+  downloadIssueImportTemplate(params) {
+    return axios.post('/api/binary/rdm/issue/import/template', params, { responseType: 'blob' });
+  },
+  previewImportIssue(params) {
+    return axios.post('/api/binary/rdm/issue/import/preview', params, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      contentType: 'multipart/form-data'
+    });
+  },
+  importIssue(params) {
+    return axios.post('/api/binary/rdm/issue/import', params, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      contentType: 'multipart/form-data'
+    });
   },
   searchComment(params) {
     return axios.post('/api/rest/rdm/issue/comment/search', params);

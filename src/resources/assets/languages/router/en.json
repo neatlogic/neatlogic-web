@@ -129,6 +129,7 @@
     "useraddview": "Edit User",
     "worktimemanage": "Work Schedule Calendar",
     "loginmanage": "Login Relation",
+    "featureusagemanage": "Feature usage record",
     "userexportfilemanage": "Export Management",
     "usersetting": "Personal Settings",
     "roleaddview": "Edit Role",
@@ -186,18 +187,6 @@
     "regionmanage": "Region Management",
     "threadpool": "Thread Pool Monitoring",
     "ai": "Artificial Intelligence"
-  },
-  "knowledge": {
-    "knowledgedetail": "entry details",
-    "knowledgeedit": "Edit entry",
-    "circlemanage": "Groups",
-    "circleedit": "Edit Circle of Knowledge",
-    "templatemanage": "Templates",
-    "templateedit": "Edit template",
-    "reviewdetail": "Review Details",
-    "knowledgetypemanage": "Knowledge Type",
-    "knowledgesearch": "Knowledge Search",
-    "knowledgemanagement": "Knowledge Management"
   },
   "report": {
     "reportmanage": "Report Management",

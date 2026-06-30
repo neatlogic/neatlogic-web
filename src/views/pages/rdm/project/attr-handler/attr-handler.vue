@@ -109,25 +109,36 @@ export default {
           this.$set(this.issueData, 'attrList', []);
         }
         const index = this.issueData.attrList.findIndex(d => d.attrId === this.attrConfig.id);
+        const valueList = this.getValidValueList(val);
         if (index > -1) {
           const attrData = this.issueData.attrList[index];
-          if (val && val.length > 0) {
-            this.$set(attrData, 'valueList', val);
+          if (valueList.length > 0) {
+            this.$set(attrData, 'valueList', valueList);
           } else {
             this.$delete(this.issueData.attrList, index);
           }
         } else {
-          if (val && val.length > 0) {
-            this.issueData.attrList.push({ attrId: this.attrConfig.id, valueList: val });
+          if (valueList.length > 0) {
+            this.issueData.attrList.push({ attrId: this.attrConfig.id, valueList: valueList });
           }
         }
       } else {
-        if (val && val.length > 0) {
-          this.$emit('setValue', val, text);
+        const valueList = this.getValidValueList(val);
+        if (valueList.length > 0) {
+          this.$emit('setValue', valueList, text);
         } else {
           this.$emit('setValue', null, text);
         }
       }
+    },
+    getValidValueList(val) {
+      if (!(val instanceof Array)) {
+        return this.isValidValue(val) ? [val] : [];
+      }
+      return val.filter(item => this.isValidValue(item));
+    },
+    isValidValue(value) {
+      return value !== null && typeof value !== 'undefined' && value !== '';
     }
   },
   filter: {},

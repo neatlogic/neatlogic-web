@@ -7,6 +7,10 @@
     :sortOrder="sortData"
     :sortList="sortList"
     :fixedHeader="fixedHeader"
+    :selectedRemain="canSelect"
+    :value="selectedIdList"
+    :canSelectRow="!canSelect"
+    keyName="id"
     multiple
     @changeCurrent="searchIssue"
     @changePageSize="changePageSize"
@@ -48,6 +52,7 @@
               <span v-if="!issueData.wordList || issueData.wordList === 0">{{ row.name }}</span>
               <span v-else v-html="highlightKeywords(row.name, issueData.wordList)"></span>
             </a>
+            <IssueCopyTag v-if="row.sourceIssueId" class="ml-xs"></IssueCopyTag>
           </span>
         </div>
         <IssueStatus v-else-if="attr.type === '_status'" :scale="0.8" :issueData="row"></IssueStatus>
@@ -72,6 +77,7 @@ export default {
   components: {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     AppIcon: () => import('@/views/pages/rdm/project/viewtab/components/app-icon.vue'),
+    IssueCopyTag: () => import('@/views/pages/rdm/project/viewtab/components/issue-copy-tag.vue'),
     AttrViewer: () => import('@/views/pages/rdm/project/attr-viewer/attr-viewer.vue'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     IssueStatus: () => import('@/views/pages/rdm/project/viewtab/components/issue-status.vue')
@@ -84,6 +90,8 @@ export default {
     sortList: { type: Array },
     mode: { type: String },
     checkedIdList: { type: Array },
+    canSelect: { type: Boolean, default: false },
+    selectedIdList: { type: Array },
     canAction: { type: Boolean, default: false },
     parentId: { type: Number }, //父任务id，传入parentId代表这里显示的是子任务
     fromId: { type: Number }, //来源任务id
@@ -137,7 +145,9 @@ export default {
       return itemList;
     },
     getSelected(idList, itemList) {
-      this.$emit('selected', itemList);
+      if (this.canSelect) {
+        this.$emit('selected', idList, itemList);
+      }
     },
     toggleChildIssue(row) {
       this.$emit('toggleChildIssue', row);

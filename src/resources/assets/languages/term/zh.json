@@ -556,6 +556,7 @@
     "origintasktitle": "原工单标题",
     "targettasktitle": "目标工单标题",
     "relateknowledge": "相关知识",
+    "norelateknowledge": "无相关知识",
     "relknowlege": "关联知识库",
     "reportinghistory": "上报历史",
     "formcommonitem": "表单普通组件",
@@ -635,7 +636,8 @@
     "flowauthuserupdatetip": "处理人包含所有步骤处理人",
     "settime": "设置时间",
     "setdate": "设置日历",
-    "titletemplatetooltip": "示例:${regionName}机构用户${userName}于${yyyyMMdd}发起机房巡检\n可用变量:\n"
+    "titletemplatetooltip": "示例:${regionName}机构用户${userName}于${yyyyMMdd}发起机房巡检\n可用变量:\n",
+    "viewdocs": "查看文档"
   },
   "autoexec": {
     "addrootdirectory": "添加根目录",
@@ -1078,6 +1080,8 @@
       "chartcolor": "图表颜色",
       "valuebg": "值图背景",
       "valuetextcolor": "值图文字",
+      "chartfieldtextcolor": "图表字段文字",
+      "chartdatalabeltextcolor": "图表数据标注文字",
       "logosetting": "LOGO图片配置",
       "customlogo": "自定义LOGO"
     },
@@ -1378,57 +1382,6 @@
     "clicktocopyuuid": "点击复制uuid",
     "successcopyintegrationuuid": "成功复制集成uuid",
     "showalluserdata": "查看所有用户数据"
-  },
-  "knowledge": {
-    "document": "文档",
-    "knowledge": "知识",
-    "intellectualcircle": "知识圈",
-    "approver": "审批人",
-    "member": "成员数量",
-    "documentcount": "知识数量",
-    "knowtype": "知识分类",
-    "knowtypename": "知识分类名称",
-    "approve": "审批",
-    "rejected": "驳回了申请，原因",
-    "savedraft": "存草稿",
-    "primaryclassification": "一级分类",
-    "samedirectory": "同级目录",
-    "navigationdirectory": "导航目录",
-    "notresult": "无结果",
-    "searchresult": "共为您搜索到{target}条结果",
-    "outtopage": "连接到外部页面",
-    "searchdockeyword": "搜索文档关键字",
-    "selectinlink": "选择内部链接",
-    "jumptolink": "跳转到外部连接：{target}",
-    "viewdoc": "查看文档",
-    "backknowlist": "返回知识列表",
-    "confirmreleasenewvers": "确定发布新版本",
-    "docamount": "文档数量",
-    "tooltip": {
-      "approver": "审批人拥有知识圈内的所有知识文档的查看、编辑、审批和删除权限",
-      "member": "知识圈成员有权限查看、编辑该圈子里的所有知识文档",
-      "documentcount": "该统计数量包括审批通过与未审批通过的知识数量",
-      "sumbit": "文档待审核，您可以在文档的活动中查看审核进度",
-      "template": "注：选中模板后，新模板将覆盖当前文档所有内容",
-      "replace": "当前关键字包含链接，不允许替换",
-      "replace1": "已经替换了{n}处文案，含链接的关键字不允许替换，已自动跳过",
-      "replace2": "已经替换了{n}处文案",
-      "search": "关闭搜索替换",
-      "editdocumentapprove": "修改了共享文档【{target}】，待"
-    },
-    "imageloadding": "正在加载图片",
-    "imageloadfail": "图片加载失败",
-    "editor": "编辑器",
-    "leftalign": "居左",
-    "rightalign": "居右",
-    "imagedesc": "图片描述",
-    "toinsidelink": "跳转到内部链接：",
-    "sharefile": "共享文档",
-    "waitto": "待",
-    "norelateknowledge": "无相关知识",
-    "strikethrough": "中划线",
-    "uploadimages": "上传图片",
-    "enterlinkdescription": "输入链接说明"
   },
   "report": {
     "report": "报表",
@@ -2828,12 +2781,13 @@
     "p3day": "最近3天",
     "p7day": "最近7天",
     "workerteam": "处理组",
-    "taskaudit": "任务记录"
+    "taskaudit": "任务记录",
+    "membercount": "成员数量"
   },
   "informant": {
     "last5dump": "最近5次快照",
     "threaddump": "线程快照",
-    "pid": "进程id",
+    "pid": "进程pid",
     "servicetopo": "服务关系图",
     "healthstate": "健康状态",
     "comm": "命令",
@@ -2879,6 +2833,10 @@
     "listen": "监听",
     "javaprocess": "JAVA进程",
     "autotrigger": "自动触发",
+    "objectname": "对象名",
+    "dumpid": "#",
+    "downloadrawthreaddump": "下载原始线程快照",
+    "servicename": "服务名",
     "level": "等级",
     "plevel": "上次等级"
   },
@@ -2925,6 +2883,13 @@
     "recalltest": "召回测试",
     "schedulesync": "定时同步",
     "syncprogress": "同步进度",
-    "scope": "业务域"
+    "scope": "业务域",
+    "voiceinput": "语音输入",
+    "stopvoiceinput": "停止语音输入",
+    "insertvoiceinput": "插入识别文本",
+    "recognized": "已识别：",
+    "recognizing": "正在识别：",
+    "voiceinputnotsupported": "当前浏览器不支持语音输入",
+    "defaultmicrophone": "默认麦克风"
   }
 }

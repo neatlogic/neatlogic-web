@@ -125,10 +125,6 @@
     "notsetexecutertip": "组合工具中，每个执行阶段均已预设执行目标，此处无需设置执行目标",
     "norunnerphaserunnergrouptips": "组合工具不包含runner或者sql执行方式的阶段，无需设置执行器组"
   },
-  "knowledge": {
-    "notcatalog": "无文本目录",
-    "circleauth": "您不属于任何知识圈，请联系管理员处理"
-  },
   "report": {
     "addreportwidget": "请添加报表组件",
     "definetemplate": "请定义模板内容",
@@ -298,5 +294,13 @@
     "isactivenotfound": "当前架构图不存在已激活版本",
     "editingversionirregular": "当前版本处于非编辑状态，不能进行编辑"
   },
-  "runsuccess": "执行成功"
+  "runsuccess": "执行成功",
+  "ai": {
+    "voiceinputnotsupported": "当前浏览器不支持语音输入",
+    "voiceinputpermissiondenied": "麦克风权限被拒绝，请检查浏览器权限设置",
+    "voiceinputnospeech": "未识别到语音内容",
+    "voiceinputnospeechcheckdevice": "未识别到语音内容。当前浏览器麦克风：{target}，请检查浏览器或系统输入设备后重新开始",
+    "voiceinputdeviceunavailable": "无法获取麦克风输入。当前浏览器麦克风：{target}，请切换浏览器或系统输入设备后重新开始",
+    "voiceinputfailed": "语音输入失败"
+  }
 }

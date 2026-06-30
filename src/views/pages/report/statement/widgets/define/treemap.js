@@ -4,7 +4,7 @@ export default {
   name: 'treemap',
   label: '矩形树图',
   type: 'treemap',
-  icon: 'tsfont-chart-groupedcolumn',
+  icon: 'tsfont-chart-treemap',
   widgetType: 'basic',
   hasCustomConfig: true,
   width: 420,
@@ -25,7 +25,7 @@ export default {
       position: 'bottom',
       itemName: {
         style: {
-          fill: 'rgba(233,251,255,0.86)'
+          fill: ''
         }
       }
     },

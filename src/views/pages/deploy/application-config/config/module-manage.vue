@@ -1,7 +1,7 @@
 <template>
   <div>
     <ModuleInfo v-if="!isLoading" v-bind="params"></ModuleInfo>
-    <div class="pb-xs pt-xs">
+    <div class="pb-xs pt-xs pl-nm">
       <span class="pr-nm">{{ $t('term.deploy.actuatorgroupallocation') }}</span>
       <span v-show="hasEditConfigAuth" class="tsfont-edit text-action text-href" @click="openModuleInfoEdit">{{ $t('page.edit') }}</span>
     </div>

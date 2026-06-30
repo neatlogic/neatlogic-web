@@ -40,6 +40,10 @@
         <span v-if="row.isPrivate" class="text-success">{{ $t('page.yes') }}</span>
         <span v-if="!row.isPrivate" class="text-grey">{{ $t('page.no') }}</span>
       </template>
+      <template v-slot:statKey="{ row }">
+        <span v-if="row.statKey">{{ getStatKeyText(row.statKey) }}</span>
+        <span v-else class="text-grey">-</span>
+      </template>
       <template v-slot:action="{ row }">
         <div v-if="!row.isPrivate" class="tstable-action">
           <ul class="tstable-action-ul">
@@ -49,7 +53,13 @@
         </div>
       </template>
     </TsTable>
-    <CustomAttrEdit v-if="isAttrShow" :attrData="currentAttrData" @close="closeAttr"></CustomAttrEdit>
+    <CustomAttrEdit
+      v-if="isAttrShow"
+      :attrData="currentAttrData"
+      :appType="appType.appType"
+      :usedStatKeyList="usedStatKeyList"
+      @close="closeAttr"
+    ></CustomAttrEdit>
   </div>
 </template>
 <script>
@@ -67,6 +77,7 @@ export default {
     return {
       isAttrShow: false,
       currentAttrData: {},
+      statAttrTypeList: [],
       theadList: [
         {
           key: 'isActive',
@@ -76,6 +87,7 @@ export default {
         { key: 'label', title: this.$t('page.name') },
         { key: 'typeText', title: this.$t('page.type') },
         { key: 'isPrivate', title: this.$t('term.rdm.systemattribute') },
+        { key: 'statKey', title: '统计用途' },
         { key: 'isRequired', title: this.$t('page.require'), tooltip: this.$t('term.rdm.isrequiredwhencreate') },
         { key: 'description', title: this.$t('page.description') },
         { key: 'action' }
@@ -85,6 +97,7 @@ export default {
   beforeCreate() {},
   created() {
     this.getPrivateAttrList();
+    this.listAppStatAttrType();
   },
   beforeMount() {},
   mounted() {},
@@ -104,6 +117,15 @@ export default {
           }
         });
       });
+    },
+    listAppStatAttrType() {
+      this.$api.rdm.project.listAppStatAttrType({ appType: this.appType.appType }).then(res => {
+        this.statAttrTypeList = res.Return || [];
+      });
+    },
+    getStatKeyText(statKey) {
+      const statAttrType = this.statAttrTypeList.find(item => item.value === statKey);
+      return statAttrType ? statAttrType.text : statKey;
     },
     changeAttrActive(index, attr, isActive) {
       this.$set(attr, 'isActive', isActive);
@@ -165,7 +187,13 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    usedStatKeyList() {
+      return (this.appType.config.attrList || [])
+        .filter(attr => attr.statKey && attr.uuid !== this.currentAttrData.uuid)
+        .map(attr => attr.statKey);
+    }
+  },
   watch: {}
 };
 </script>

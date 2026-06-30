@@ -11,6 +11,12 @@
             transfer-class-name="color-picker-transfer-class"
           />
         </template>
+        <template v-slot:scope>
+          <TsFormRadio
+            v-model="statusData.scope"
+            :dataList="scopeList"
+          ></TsFormRadio>
+        </template>
       </TsForm>
     </template>
     <template v-slot:footer>
@@ -23,7 +29,8 @@
 export default {
   name: '',
   components: {
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm')
+    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {
     id: {
@@ -35,7 +42,12 @@ export default {
   },
   data() {
     return {
-      statusData: { appId: this.appId },
+      statusData: { appId: this.appId, scope: 'all' },
+      scopeList: [
+        { value: 'original', text: '原本' },
+        { value: 'copy', text: '副本' },
+        { value: 'all', text: '都可用' }
+      ],
       dialogConfig: {
         title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('page.status')}) : this.$t('dialog.title.addtarget', {'target': this.$t('page.status')}),
         isShow: true,
@@ -62,6 +74,10 @@ export default {
           type: 'slot',
           label: this.$t('page.color')
         },
+        scope: {
+          type: 'slot',
+          label: '作用范围'
+        },
         description: {
           type: 'textarea',
           label: this.$t('page.description')
@@ -86,6 +102,9 @@ export default {
       if (this.id) {
         this.$api.rdm.status.getStatusById(this.id).then(res => {
           this.statusData = res.Return;
+          if (!this.statusData.scope) {
+            this.$set(this.statusData, 'scope', 'all');
+          }
         });
       }
     },

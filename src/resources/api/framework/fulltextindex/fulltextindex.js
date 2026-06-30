@@ -7,6 +7,9 @@ const fulltextindex = {
   rebuildFullTextIndex(params) {
     return axios.post('/api/rest/fulltextindex/rebuild', params);
   },
+  getFullTextIndexMetadata(params) {
+    return axios.post('/api/rest/fulltextindex/metadata/get', params);
+  },
   searchWord(params) {
     return axios.post('/api/rest/fulltextindex/dictionary/word/search', params);
   },

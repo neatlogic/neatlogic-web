@@ -21,6 +21,14 @@
               ></component>
             </div>
           </template>
+          <template v-slot:statKey>
+            <TsFormSelect
+              v-model="attrData.statKey"
+              :dataList="finalStatAttrTypeList"
+              valueName="value"
+              textName="text"
+            ></TsFormSelect>
+          </template>
         </TsForm>
       </div>
     </template>
@@ -38,10 +46,16 @@ export default {
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     ...handlers
   },
   props: {
-    attrData: { type: Object }
+    attrData: { type: Object },
+    appType: { type: String },
+    usedStatKeyList: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
@@ -54,6 +68,7 @@ export default {
         isShow: true
       },
       customAttrTypeList: [],
+      statAttrTypeList: [],
       formConfig: {
         name: {
           type: 'text',
@@ -84,6 +99,11 @@ export default {
           label: this.$t('page.config'),
           hideLabel: true,
           isHidden: !handlers[this.attrData.type + 'attr']
+        },
+        statKey: {
+          type: 'slot',
+          label: '统计用途',
+          isHidden: true
         },
         isActive: {
           type: 'switch',
@@ -120,6 +140,7 @@ export default {
   beforeCreate() {},
   created() {
     this.listCustomAttrType();
+    this.listAppStatAttrType();
   },
   beforeMount() {},
   mounted() {},
@@ -148,6 +169,9 @@ export default {
       } else {
         this.formConfig.config.isHidden = true;
       }
+      if (this.attrData.statKey && !this.isStatAttrTypeMatched(this.attrData.statKey, type)) {
+        this.$delete(this.attrData, 'statKey');
+      }
       if (item) {
         this.attrData.typeText = item.text;
       }
@@ -159,10 +183,35 @@ export default {
       this.$api.rdm.project.listCustomAttrType().then(res => {
         this.customAttrTypeList = res.Return;
       });
+    },
+    listAppStatAttrType() {
+      this.$api.rdm.project.listAppStatAttrType({ appType: this.appType }).then(res => {
+        this.statAttrTypeList = res.Return || [];
+        this.formConfig.statKey.isHidden = this.statAttrTypeList.length === 0;
+      });
+    },
+    isStatAttrTypeMatched(statKey, attrType) {
+      const statAttrType = this.statAttrTypeList.find(item => item.value === statKey);
+      if (!statAttrType || !statAttrType.attrTypeList || !attrType) {
+        return true;
+      }
+      return statAttrType.attrTypeList.includes(attrType);
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    finalStatAttrTypeList() {
+      return this.statAttrTypeList.map(item => {
+        const data = this.$utils.deepClone(item);
+        if (this.usedStatKeyList.includes(item.value) && this.attrData.statKey !== item.value) {
+          this.$set(data, '_disabled', '已被其他属性绑定');
+        } else if (!this.isStatAttrTypeMatched(item.value, this.attrData.type)) {
+          this.$set(data, '_disabled', '当前属性类型不支持此统计用途');
+        }
+        return data;
+      });
+    }
+  },
   watch: {
   }
 };

@@ -63,7 +63,7 @@
         transfer-class-name="color-picker-transfer-class"
         @on-change="
           val => {
-            setConfigValue('label.style.fill', val || defaultSizeColor);
+            setConfigValue('label.style.fill', val);
             setConfigValue('statistic.title.style.color', val);
             setConfigValue('statistic.content.style.color', val);
           }

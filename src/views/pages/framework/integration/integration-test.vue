@@ -72,9 +72,9 @@ export default {
   destroyed() {},
   methods: {
     test: function(callback) {
-      if (this.content) {
+      if (this.content || this.isMcp) {
         try {
-          let param = JSON.parse(this.content);
+          let param = this.content ? JSON.parse(this.content) : {};
           this.integration.paramObj = param;
           this.$api.framework.integration
             .testIntegration(this.integration)
@@ -135,6 +135,9 @@ export default {
   },
   filter: {},
   computed: {
+    isMcp: function() {
+      return this.integration && this.integration.method === 'mcp';
+    },
     computedContent: function() {
       if (this.handlerPattern) {
         return JSON.stringify(this.buildJson(this.handlerPattern), null, 2);

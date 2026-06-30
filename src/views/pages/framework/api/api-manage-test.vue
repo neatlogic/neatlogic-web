@@ -5,91 +5,140 @@
   >
     <template v-slot>
       <div>
-        <TsFormItem :label="$t('page.interface')" :labelWidth="80">
-          <strong>{{ rowData.url }}</strong>
-        </TsFormItem>
-        <TsFormItem v-if="helpData.description" :labelWidth="80" :label="$t('page.description')">
-          {{ helpData.description }}
-        </TsFormItem>
-        <TsFormItem v-if="rowData.apiType == 'custom'" :labelWidth="80" :label="rowData.authtypeName">
-          <component
-            :is="rowData.authtype"
-            v-if="rowData.apiType == 'custom'"
-            ref="authHandler"
-            @setConfig="setAuthConfig"
-          ></component>
-        </TsFormItem>
-        <TsFormItem v-if="helpData.example" :labelWidth="80" :label="$t('term.report.example')">
-          <JsonViewer boxed copyable :value="helpData.example"></JsonViewer>
-        </TsFormItem>
-        <TsFormItem :label=" $t('page.request')" :labelWidth="80">
-          <div class="mb-md"><TsFormRadio v-model="tab" :dataList="requestType"></TsFormRadio></div>
-        </TsFormItem>
-        <TsFormItem v-if="helpData.input && tab === 'form'" :label="$t('page.inputparam')" :labelWidth="80">
-          <Table
-            v-if="helpData.input"
-            :columns="inputColumns"
-            :data="helpData.input"
-            border
-          >
-            <template v-slot:input="{ row }">
-              <div>
-                <TsFormInput
-                  v-if="!row.type.startsWith('file')"
-                  :value="testData.param[row.name]"
-                  width="100%"
-                  @on-change="
-                    name => {
-                      setValue(row, name);
-                    }
-                  "
-                ></TsFormInput>
-                <div v-else>
-                  <TsUpLoad
-                    styleType="button"
-                    className="smallUpload"
-                    :beforeUpload="
-                      (file) => {
-                        setValue(row, file);
-                        return false;
+        <Tabs
+          v-if="rowData.isMcp"
+          v-model="activeTab"
+          :animated="false"
+          class="mb-md"
+        >
+          <TabPane label="接口测试" name="api"></TabPane>
+          <TabPane label="MCP测试" name="mcp"></TabPane>
+        </Tabs>
+        <div v-if="!rowData.isMcp || activeTab === 'api'">
+          <TsFormItem :label="$t('page.interface')" :labelWidth="80">
+            <strong>{{ rowData.url }}</strong>
+          </TsFormItem>
+          <TsFormItem v-if="helpData.description" :labelWidth="80" :label="$t('page.description')">
+            {{ helpData.description }}
+          </TsFormItem>
+          <TsFormItem v-if="rowData.apiType == 'custom'" :labelWidth="80" :label="rowData.authtypeName">
+            <component
+              :is="rowData.authtype"
+              v-if="rowData.apiType == 'custom'"
+              ref="authHandler"
+              @setConfig="setAuthConfig"
+            ></component>
+          </TsFormItem>
+          <TsFormItem v-if="helpData.example" :labelWidth="80" :label="$t('term.report.example')">
+            <JsonViewer boxed copyable :value="helpData.example"></JsonViewer>
+          </TsFormItem>
+          <TsFormItem :label=" $t('page.request')" :labelWidth="80">
+            <div class="mb-md"><TsFormRadio v-model="tab" :dataList="requestType"></TsFormRadio></div>
+          </TsFormItem>
+          <TsFormItem v-if="helpData.input && tab === 'form'" :label="$t('page.inputparam')" :labelWidth="80">
+            <Table
+              v-if="helpData.input"
+              :columns="inputColumns"
+              :data="helpData.input"
+              border
+            >
+              <template v-slot:input="{ row }">
+                <div>
+                  <TsFormInput
+                    v-if="!row.type.startsWith('file')"
+                    :value="testData.param[row.name]"
+                    width="100%"
+                    @on-change="
+                      name => {
+                        setValue(row, name);
                       }
                     "
-                  ></TsUpLoad>
+                  ></TsFormInput>
+                  <div v-else>
+                    <TsUpLoad
+                      styleType="button"
+                      className="smallUpload"
+                      :beforeUpload="
+                        (file) => {
+                          setValue(row, file);
+                          return false;
+                        }
+                      "
+                    ></TsUpLoad>
+                  </div>
                 </div>
-              </div>
-            </template>
-          </Table>
-        </TsFormItem>
-        <TsFormItem v-else-if="tab === 'json'" :label="$t('page.inputparam')" :labelWidth="80">
-          <TsCodemirror
-            :value="JSON.stringify(testData.param, null, 2)"
-            codeMode="json"
-            @change="setJsonValue"
-          ></TsCodemirror>
-          <div v-if="error" class="pt-md text-error">{{ error }}</div>
-        </TsFormItem>
-        <TsFormItem :labelWidth="80">
-          <Button
-            v-if="apiType === 'rest'"
-            style="width:100%"
-            type="primary"
-            @click="executeTest"
-          >{{ $t('page.sendrequest') }}</Button>
-          <Button
-            v-if="apiType === 'binary'"
-            style="width:100%"
-            type="primary"
-            @click="executeDownload"
-          >{{ $t('page.sendrequest') }}</Button>
-        </TsFormItem>
-        <TsFormItem v-if="testData.result" :label="$t('page.outputresults')" :labelWidth="80">
-          <JsonViewer
-            v-if="testData.result"
-            boxed
-            copyable
-            :value="testData.result"
-          ></JsonViewer>
-        </TsFormItem>
+              </template>
+            </Table>
+          </TsFormItem>
+          <TsFormItem v-else-if="tab === 'json'" :label="$t('page.inputparam')" :labelWidth="80">
+            <TsCodemirror
+              :value="JSON.stringify(testData.param, null, 2)"
+              codeMode="json"
+              @change="setJsonValue"
+            ></TsCodemirror>
+            <div v-if="error" class="pt-md text-error">{{ error }}</div>
+          </TsFormItem>
+          <TsFormItem :labelWidth="80">
+            <Button
+              v-if="apiType === 'rest'"
+              style="width:100%"
+              type="primary"
+              @click="executeTest"
+            >{{ $t('page.sendrequest') }}</Button>
+            <Button
+              v-if="apiType === 'binary'"
+              style="width:100%"
+              type="primary"
+              @click="executeDownload"
+            >{{ $t('page.sendrequest') }}</Button>
+          </TsFormItem>
+          <TsFormItem v-if="testData.result" :label="$t('page.outputresults')" :labelWidth="80">
+            <JsonViewer
+              v-if="testData.result"
+              boxed
+              copyable
+              :value="testData.result"
+            ></JsonViewer>
+          </TsFormItem>
+        </div>
+        <div v-if="rowData.isMcp && activeTab === 'mcp'">
+          <TsFormItem label="工具名称" :labelWidth="100">
+            <span>{{ mcpHelpData.toolName || '-' }}</span>
+          </TsFormItem>
+          <TsFormItem label="调用地址" :labelWidth="100">
+            <span>{{ mcpHelpData.scopedEndpoint || mcpHelpData.endpoint || '-' }}</span>
+          </TsFormItem>
+          <TsFormItem label="可用状态" :labelWidth="100">
+            <span v-if="mcpHelpData.available" class="text-success">可用</span>
+            <span v-else class="text-error">{{ mcpHelpData.unavailableReason || mcpHelpMessage || '不可用' }}</span>
+          </TsFormItem>
+          <TsFormItem v-if="isDangerousTool" label="风险提示" :labelWidth="100">
+            <div class="text-warning">点击发送请求会通过 MCP tools/call 真实调用接口。</div>
+          </TsFormItem>
+          <TsFormItem label="调用参数" :labelWidth="100">
+            <TsCodemirror
+              :value="argumentText"
+              codeMode="json"
+              @change="setArgumentText"
+            ></TsCodemirror>
+            <div v-if="argumentError" class="pt-md text-error">{{ argumentError }}</div>
+          </TsFormItem>
+          <TsFormItem label="请求体" :labelWidth="100">
+            <JsonViewer boxed copyable :value="mcpCallRequest"></JsonViewer>
+          </TsFormItem>
+          <TsFormItem :labelWidth="100">
+            <Button
+              style="width:100%"
+              type="primary"
+              :loading="isMcpDebugLoading"
+              :disabled="!mcpHelpData.available || !!argumentError"
+              @click="executeMcpCall"
+            >发送请求</Button>
+          </TsFormItem>
+          <TsFormItem v-if="mcpDebugResult" label="调试结果" :labelWidth="100">
+            <JsonViewer boxed copyable :value="mcpDebugResult"></JsonViewer>
+          </TsFormItem>
+        </div>
       </div>
     </template>
   </TsDialog>
@@ -127,6 +176,7 @@ export default {
         width: 'large',
         hasFooter: false
       },
+      activeTab: 'api',
       requestType: [
         { value: 'form', text: this.$t('term.framework.formrequesttype') },
         { value: 'json', text: this.$t('term.framework.jsonrequesttype') }
@@ -136,6 +186,12 @@ export default {
       testData: {},
       helpMessage: '',
       error: '',
+      mcpHelpData: {},
+      mcpHelpMessage: '',
+      argumentText: '{}',
+      argumentError: '',
+      mcpDebugResult: null,
+      isMcpDebugLoading: false,
       inputColumns: Object.freeze([
         { title: this.$t('page.name'), key: 'name' },
         { title: this.$t('page.description'), key: 'description' },
@@ -167,6 +223,9 @@ export default {
     this.getHelpData(this.rowData);
     this.testData.token = this.rowData.url;
     this.testData.param = {};
+    if (this.rowData.isMcp) {
+      this.getMcpHelp();
+    }
   },
   mounted() {},
   methods: {
@@ -224,11 +283,6 @@ export default {
           header.type = 'get';
         }
       }
-      const p = {
-        url: this.rowData.url,
-        params: this.testData.param,
-        header: header
-      };
       const formData = new FormData();
       for (let k in this.testData.param) {
         let paramValue = this.testData.param[k];
@@ -298,9 +352,8 @@ export default {
           this.$set(this.testData, 'result', error.data);
         });
     },
-    getHelpData({ type, token, helpUrl }) {
+    getHelpData({ helpUrl }) {
       this.helpMessage = this.$t('page.loading');
-      const param = `${type === 'object' ? 'rest' : type}/${token}`;
       //help接口返回无return层和status层
       return this.$api.framework.apiManage
         .help(helpUrl)
@@ -313,6 +366,46 @@ export default {
         .catch(error => {
           this.$Notice.error({ title: this.$t('message.framework.apihelperror'), desc: error });
           this.helpMessage = this.$t('message.framework.apihelperror');
+        });
+    },
+    getMcpHelp() {
+      this.mcpHelpMessage = this.$t('page.loadingtip');
+      return this.$api.framework.apiManage
+        .getMcpHelp({ token: this.rowData.token })
+        .then(res => {
+          if (res.Status === 'OK') {
+            this.mcpHelpData = res.Return || {};
+          }
+          if (!Object.keys(this.mcpHelpData).length) {
+            this.mcpHelpMessage = 'MCP说明获取失败';
+          }
+        })
+        .catch(error => {
+          this.mcpHelpMessage = error && error.data ? error.data.Message : 'MCP说明获取失败';
+        });
+    },
+    setArgumentText(value) {
+      this.argumentText = value;
+      this.argumentError = '';
+      try {
+        JSON.parse(value || '{}');
+      } catch (e) {
+        this.argumentError = e.message;
+      }
+    },
+    executeMcpCall() {
+      this.isMcpDebugLoading = true;
+      this.mcpDebugResult = null;
+      this.$api.framework.apiManage
+        .mcpCall(this.mcpHelpData.scopedEndpoint || this.mcpHelpData.endpoint, this.mcpCallRequest)
+        .then(res => {
+          this.mcpDebugResult = res;
+        })
+        .catch(error => {
+          this.mcpDebugResult = error && error.data ? error.data : error;
+        })
+        .finally(() => {
+          this.isMcpDebugLoading = false;
         });
     },
     addId(res) {
@@ -339,6 +432,27 @@ export default {
       } else {
         return 'rest';
       }
+    },
+    parsedArguments() {
+      try {
+        return JSON.parse(this.argumentText || '{}');
+      } catch (e) {
+        return {};
+      }
+    },
+    mcpCallRequest() {
+      return {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/call',
+        params: {
+          name: this.mcpHelpData.toolName,
+          arguments: this.parsedArguments
+        }
+      };
+    },
+    isDangerousTool() {
+      return this.mcpHelpData.annotations && this.mcpHelpData.annotations.readOnlyHint !== true;
     }
   }
 };

@@ -3,7 +3,7 @@
     <TsFormItem label="Webhook Url" :required="true" labelPosition="top">
       <div v-if="appType.config.webhookUrl" class="bg-op padding-md radius-md mt-md mb-md">
         <Code class="bg-block">
-          <span id="webhookUrl">{ip}:{port}/neatlogic/any/api/t/{{ tenant }}/rest/rdm/webhook/push?_t={{ appType.config.webhookUrl }}</span>
+          <span id="webhookUrl">{{ webhookUrlFull }}</span>
           <span class="ml-sm tsfont-copy cursor" @click="$utils.copyText('#webhookUrl')"></span>
         </Code>
       </div>
@@ -36,8 +36,7 @@ export default {
   },
   data() {
     return {
-      home: HOME,
-      tenant: TENANT,
+      webhookUrlPrefix: '',
       formConfig: [
         {
           type: 'slot',
@@ -55,6 +54,7 @@ export default {
   },
   beforeCreate() {},
   created() {
+    this.getWebhookUrlConfig();
   },
   beforeMount() {},
   mounted() {},
@@ -74,11 +74,23 @@ export default {
     clearSecretToken() {
       this.$set(this.appType.config, 'secretToken', null);
     },
+    getWebhookUrlConfig() {
+      this.$api.rdm.webhook.getWebhookUrlConfig().then(res => {
+        this.webhookUrlPrefix = res.Return.webhookUrlPrefix || '';
+      });
+    },
     save() {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    webhookUrlFull() {
+      if (!this.appType.config.webhookUrl) {
+        return '';
+      }
+      return this.webhookUrlPrefix + this.appType.config.webhookUrl;
+    }
+  },
   watch: {}
 };
 </script>

@@ -1,126 +1,112 @@
 <template>
   <div>
-    <TsDialog
-      v-if="reportData"
-      v-bind="reportDialogConfig"
-      @on-close="close"
-    >
-      <template v-slot:header>
-        <div v-if="reportData.id">{{ isCopy ? $t('term.report.copytemplate') : $t('term.report.edittemplate') }}</div>
-        <div v-if="!reportData.id">{{ $t('term.report.addtemplate') }}</div>
+    <TsContain v-if="reportData" :hasContentPadding="false">
+      <template v-slot:navigation>
+        <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back('/report-manage')">{{ $getFromPage() }}</span>
       </template>
-      <template v-slot>
-        <TsForm ref="reportForm" :item-list="reportFormConfig">
-          <template v-slot:isActive>
-            <TsFormSwitch
-              v-model="reportData.isActive"
-              :true-value="1"
-              :false-value="0"
-              showStatus
-            ></TsFormSwitch>
-          </template>
-          <template v-slot:config>
-            <Tabs>
-              <TabPane :label="$t('term.report.conditionconfig')">
-                <ReportParam :paramList="reportData.paramList" @setParam="setParam"></ReportParam></TabPane>
-              <TabPane :label="$t('term.report.datasourceconfig')">
-                <ReportContent :reportData="reportData" @setSql="setSql"></ReportContent>
-              </TabPane>
-              <TabPane :label="$t('term.report.contentconfig')">
-                <ContentHelp></ContentHelp>
-                <TsCodemirror codeMode="xml" :value.sync="reportData.content" height="500px"></TsCodemirror>
-              </TabPane>
-              <!-- <TabPane label="帮助"><ReportHelp></ReportHelp></TabPane> -->
-            </Tabs>
-          </template>
-        </TsForm>
+      <template v-slot:topLeft>
+        <div class="action-group">
+          <div class="action-item">
+            {{ $t('page.name') }}
+          </div>
+          <div class="action-item">
+            <TsFormInput
+              ref="nameInput"
+              v-model="reportData.name"
+              border="border"
+              :maxlength="50"
+              :width="200"
+              :validateList="nameValidateList"
+              :errorMessage="nameErrorMessage"
+              @on-change="clearNameError"
+            ></TsFormInput>
+          </div>
+          <div class="action-item">
+            {{ $t('page.type') }}
+          </div>
+          <div class="action-item">
+            <TsFormInput
+              v-model="reportData.type"
+              :width="200"
+              border="border"
+              :maxlength="50"
+            ></TsFormInput>
+          </div>
+          <div class="action-item">{{ $t('page.auth') }}</div>
+          <div class="action-item">
+            <UserSelect
+              v-model="reportData.authList"
+              :groupList="['common', 'user', 'team', 'role']"
+              transfer
+              :width="200"
+              border="border"
+            ></UserSelect>
+          </div>
+          <div class="action-item"> <TsFormSwitch
+            v-model="reportData.isActive"
+            :true-value="1"
+            :false-value="0"
+            showStatus
+          ></TsFormSwitch></div>
+        </div>
       </template>
-      <template v-slot:footer>
-        <Button @click="close()">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" :loading="isSaving" @click="saveReport()">{{ $t('page.confirm') }}</Button>
+      <template v-slot:topRight>
+        <div class="action-group">
+          <div class="action-item">
+            <Button type="primary" :loading="isSaving" @click="saveReport()">{{ $t('page.save') }}</Button>
+          </div>
+        </div>
       </template>
-    </TsDialog>
+      <template v-slot:content>
+        <div class="padding">
+          <Tabs v-model="activeTab" :animated="false">
+            <TabPane :label="$t('term.report.datasourceconfig')" name="datasource"></TabPane>
+            <TabPane :label="$t('term.report.conditionconfig')" name="condition"></TabPane>
+            <TabPane :label="$t('term.report.contentconfig')" name="content"></TabPane>
+          </Tabs>
+          <div class="pt-sm">
+            <ReportParam v-if="activeTab === 'condition'" :paramList="reportData.paramList" @setParam="setParam"></ReportParam>
+            <ReportContent
+              v-if="activeTab === 'datasource'"
+              :reportData="reportData"
+              @setSql="setSql"
+              @setSqlEditMode="setSqlEditMode"
+              @setSqlGraphConfig="setSqlGraphConfig"
+              @setContent="setContent"
+            ></ReportContent>
+            <ReportContentEditor v-if="activeTab === 'content'" v-model="reportData.content" :reportData="reportData"></ReportContentEditor>
+          </div>
+        </div>
+      </template>
+    </TsContain>
   </div>
 </template>
 <script>
 export default {
-  name: '',
+  name: 'ReportEdit',
   components: {
-    TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
-    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     ReportParam: () => import('./report-param.vue'),
     ReportContent: () => import('./report-content.vue'),
-    ContentHelp: () => import('./content-help.vue'),
-    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
+    ReportContentEditor: () => import('./contenteditor/content-editor.vue'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   props: {
-    id: {type: Number},
+    id: { type: Number },
     isCopy: {
       type: Boolean,
       default: false
     }
   },
   data() {
-    var _this = this;
     return {
+      activeTab: 'datasource',
       isSaving: false,
-      reportDialogConfig: {
-        type: 'slider',
-        maskClose: false,
-        isShow: true,
-        width: '1200px'
-      },
+      nameErrorMessage: '',
       reportData: {},
-      reportFormConfig: [
-        {
-          type: 'text',
-          name: 'id',
-          isHidden: true
-        },
-        {
-          type: 'text',
-          name: 'name',
-          label: this.$t('page.name'),
-          maxlength: 50,
-          validateList: ['required', {
-            name: 'searchUrl',
-            url: '/api/rest/report/save',
-            key: 'name',
-            message: this.$t('message.nameexists'),
-            params: { id: ''}
-          }],
-          width: 400,
-          onChange: function(name) {
-            _this.reportData.name = name;
-          }
-        },
-        {
-          type: 'text',
-          name: 'type',
-          label: this.$t('page.type'),
-          maxlength: 50,
-          width: 400,
-          onChange: function(name) {
-            _this.reportData.type = name;
-          }
-        },
-        {
-          type: 'userselect',
-          name: 'authList',
-          label: this.$t('page.useauth'),
-          width: 400,
-          groupList: ['common', 'user', 'team', 'role'],
-          onChange: function(name) {
-            _this.reportData.authList = name;
-          }
-        },
-        {
-          type: 'slot',
-          name: 'isActive',
-          label: this.$t('term.report.isactive')
-        },
-        { type: 'slot', name: 'config', label: '' }
-      ]};
+      nameValidateList: ['required']
+    };
   },
   beforeCreate() {},
   created() {
@@ -136,54 +122,76 @@ export default {
   destroyed() {},
   methods: {
     getReportById: function() {
-      if (this.id) {
-        if (!this.isCopy) {
-          this.isValidSelf(this.id);
-        }
-        this.$api.report.report.getReportById(this.id).then(res => {
+      const id = this.currentId;
+      const isCopy = this.currentIsCopy;
+      if (id) {
+        this.$api.report.report.getReportById(id).then(res => {
           this.reportData = res.Return;
-          this.reportFormConfig.forEach(element => {
-            if (element.name == 'name' && this.isCopy) {
-              element.value = this.reportData[element.name] + '_copy';
-              this.reportData[element.name] = this.reportData[element.name] + '_copy';
-            } else {
-              element.value = this.reportData[element.name];
-            }
-          });
+          if (!this.reportData.sqlEditMode) {
+            this.reportData.sqlEditMode = this.reportData.sql ? 'xml' : 'graph';
+          }
+          if (isCopy) {
+            this.reportData.name = this.reportData.name + '_copy';
+          }
         });
       } else {
-        this.reportData = {id: null, name: null, type: null, isActive: 0, sql: null, condition: null, content: null};
-        this.reportFormConfig.forEach(element => {
-          element.value = this.reportData[element.name];
-        });
+        this.reportData = { id: null, name: null, type: null, isActive: 0, sql: null, sqlEditMode: 'graph', sqlGraphConfig: null, condition: null, content: null };
       }
     },
-    close: function(needRefresh) {
-      this.$emit('close', needRefresh);
-    },
-    saveReport: function() {
-      let reportForm = this.$refs['reportForm'];
-      if (reportForm.valid()) {
+    saveReport: async function() {
+      if (this.isSaving) {
+        return;
+      }
+      const isValid = await this.validBasicInfo();
+      if (isValid) {
         this.isSaving = true;
         let params = this.$utils.deepClone(this.reportData);
-        if (this.isCopy) {
+        if (this.currentIsCopy) {
           delete params.id;
         }
-        this.$api.report.report.saveReport(params).then(res => {
+        try {
+          const res = await this.$api.report.report.saveReport(params);
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));
-            this.close(true);
           }
-        }).catch(error => {
+        } catch (error) {
           if (error.Message) {
             this.$Message.error(error.Message);
           } else {
             this.$Message.error(this.$t('message.savefailed'));
           }
-        }).finally(() => {
+        } finally {
           this.isSaving = false;
-        });
+        }
       }
+    },
+    validBasicInfo: async function() {
+      this.nameErrorMessage = '';
+      const nameInput = this.$refs.nameInput;
+      if (nameInput && !nameInput.valid()) {
+        return false;
+      }
+      return await this.validReportName();
+    },
+    validReportName: async function() {
+      const params = {
+        id: this.currentIsCopy ? '' : this.currentId || '',
+        name: this.reportData.name
+      };
+      try {
+        await this.$api.report.report.validReportName(params);
+        this.nameErrorMessage = '';
+        return true;
+      } catch (error) {
+        this.nameErrorMessage = error && error.Message ? error.Message : this.$t('message.nameexists');
+        this.$nextTick(() => {
+          this.$refs.nameInput && this.$refs.nameInput.valid();
+        });
+        return false;
+      }
+    },
+    clearNameError: function() {
+      this.nameErrorMessage = '';
     },
     setParam: function(paramList) {
       this.reportData.paramList = paramList;
@@ -191,25 +199,36 @@ export default {
     setSql: function(sql) {
       this.reportData.sql = sql;
     },
-    isValidSelf(id) {
-      if (!this.$utils.isEmpty(this.reportFormConfig)) {
-        this.reportFormConfig.forEach((item) => {
-          if (item.name == 'name') {
-            item.validateList.forEach((innerItem) => {
-              if (innerItem && innerItem.hasOwnProperty('params')) {
-                innerItem.params.id = id || '';
-              }
-            });
-          }
-        });
-      }
+    setSqlEditMode: function(sqlEditMode) {
+      this.reportData.sqlEditMode = sqlEditMode;
+    },
+    setSqlGraphConfig: function(sqlGraphConfig) {
+      this.reportData.sqlGraphConfig = sqlGraphConfig;
+    },
+    setContent: function(content) {
+      this.reportData.content = content;
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    currentId() {
+      const routeId = this.$route && this.$route.params ? this.$route.params.id : null;
+      const id = this.id || routeId;
+      return id ? Number(id) : null;
+    },
+    currentIsCopy() {
+      const query = this.$route && this.$route.query ? this.$route.query : {};
+      return this.isCopy || query.isCopy === '1' || query.isCopy === 'true';
+    }
+  },
   watch: {
     id: {
       handler: function(val) {
+        this.getReportById();
+      }
+    },
+    $route: {
+      handler: function() {
         this.getReportById();
       }
     },
@@ -222,5 +241,3 @@ export default {
   }
 };
 </script>
-<style lang="less">
-</style>

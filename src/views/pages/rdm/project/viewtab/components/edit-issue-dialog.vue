@@ -51,7 +51,12 @@
           </div>
         </div>
         <Divider />
-        <ContentHandler :issueData="issueData" mode="edit"></ContentHandler>
+        <ContentHandler
+          :issueData="issueData"
+          :projectId="app.projectId"
+          :ckeditorParams="ckeditorParams"
+          mode="edit"
+        ></ContentHandler>
       </div>
     </template>
   </TsDialog>
@@ -98,13 +103,18 @@ export default {
       },
       catalogData: {},
       statusList: [],
-      attrList: []
+      attrList: [],
+      projectUserRangeList: []
     };
   },
   beforeCreate() {},
   created() {
-    this.getIssueById();
-    this.getStatusByAppId();
+    if (this.id) {
+      this.getIssueById();
+    } else {
+      this.getStatusByAppId();
+    }
+    this.getProjectUserRangeList();
     this.searchAppAttr();
   },
   beforeMount() {},
@@ -126,11 +136,17 @@ export default {
       if (this.id) {
         this.$api.rdm.issue.getIssueById(this.id).then(res => {
           this.issueData = res.Return;
+          this.getStatusByAppId();
         });
       }
     },
     getStatusByAppId() {
-      this.$api.rdm.status.getStatusByAppId(this.app.id, { status: 0 }).then(res => {
+      this.$api.rdm.status.getStatusByAppId(this.app.id, {
+        id: this.issueData.id,
+        sourceIssueId: this.issueData.sourceIssueId,
+        statusScope: this.issueData.id ? null : 'original',
+        status: 0
+      }).then(res => {
         this.statusList = res.Return;
         if (this.startStatus && !this.id) {
           this.$set(this.issueData, 'status', this.startStatus.id);
@@ -144,6 +160,14 @@ export default {
       if (this.app.id) {
         this.$api.rdm.app.searchAppAttr({ appId: this.app.id, isActive: 1 }).then(res => {
           this.attrList = res.Return;
+        });
+      }
+    },
+    getProjectUserRangeList() {
+      if (this.app && this.app.projectId) {
+        this.$api.rdm.project.getProjectById(this.app.projectId).then(res => {
+          const { userList = [] } = res.Return || {};
+          this.projectUserRangeList = userList.map(user => `user#${user.userId}`);
         });
       }
     },
@@ -183,6 +207,17 @@ export default {
   },
   filter: {},
   computed: {
+    ckeditorParams() {
+      return {
+        uploadVideoConfig: { type: 'rdm' },
+        mentionConfig: {
+          rangeList: this.projectUserRangeList,
+          extendCondition: {
+            projectId: this.app && this.app.projectId
+          }
+        }
+      };
+    },
     startStatus() {
       return this.statusList.find(d => d.isStart);
     }

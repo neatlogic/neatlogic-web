@@ -4,7 +4,7 @@ export default {
   name: 'column', 
   label: $t('term.report.chartsetting.columnchart'), 
   type: 'column', 
-  icon: 'tsfont-chart-bar', 
+  icon: 'tsfont-chart-column', 
   widgetType: 'basic', 
   hasCustomConfig: true, 
   width: 500, 

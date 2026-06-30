@@ -142,7 +142,7 @@ export default {
       basicFormConfig: {
         username: {
           type: 'text',
-          name: 'basicUsername',
+          name: 'username',
           value: '',
           maxlength: 20,
           width: 400,
@@ -151,13 +151,12 @@ export default {
         },
         password: {
           type: 'password',
-          name: 'basicPassword',
+          name: 'password',
           value: '',
           maxlength: 20,
           width: 400,
           label: this.$t('page.password'),
           validateList: [
-            'required',
             {
               name: 'passcode',
               message: this.$t('message.passcode')
@@ -243,11 +242,10 @@ export default {
           });
           if (res.Return.basicSupport) {
             this.$set(this.formConfig.basic, 'isHidden', false);
-            if (res.Return.username || res.Return.password) {
+            if (res.Return.username) {
               this.$set(this.formConfig['basic'], 'value', 'true');
               this.$set(this.formConfig.basicInfo, 'isHidden', false);
               this.basicFormConfig['username']['value'] = res.Return.username;
-              this.basicFormConfig['password']['value'] = res.Return.password;
             } else {
               this.$set(this.formConfig['basic'], 'value', 'false');
               this.$set(this.formConfig.basicInfo, 'isHidden', true);

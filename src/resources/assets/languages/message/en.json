@@ -125,10 +125,6 @@
     "notsetexecutertip": "In the combination tool, each execution stage has preset execution goals, so there is no need to set execution goals here",
     "norunnerphaserunnergrouptips": "The combination tool does not include a runner or SQL execution method, and there is no need to set an executor group"
   },
-  "knowledge": {
-    "notcatalog": "No text catalog",
-    "circleauth": "You do not belong to any knowledge circle, please contact the administrator for handling"
-  },
   "report": {
     "addreportwidget": "Please add a report widget",
     "definetemplate": "Please define the template content",
@@ -298,5 +294,13 @@
     "isactivenotfound": "The current architecture diagram does not have an activated version",
     "editingversionirregular": "The current version is in a non editing state and cannot be edited"
   },
-  "runsuccess": "Execution successful"
+  "runsuccess": "Execution successful",
+  "ai": {
+    "voiceinputnotsupported": "Voice input is not supported by this browser",
+    "voiceinputpermissiondenied": "Microphone permission was denied. Please check browser permission settings.",
+    "voiceinputnospeech": "No speech was recognized",
+    "voiceinputnospeechcheckdevice": "No speech was recognized. Current browser microphone: {target}. Check the browser or system input device and start again.",
+    "voiceinputdeviceunavailable": "Unable to access microphone input. Current browser microphone: {target}. Switch the browser or system input device and start again.",
+    "voiceinputfailed": "Voice input failed"
+  }
 }

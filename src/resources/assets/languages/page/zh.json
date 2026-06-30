@@ -1129,5 +1129,20 @@
   "planstarttime": "计划开始时间",
   "planendtime": "计划结束时间",
   "inspectbaseline": "基线巡检",
+  "batchsynchronization": "批量同步",
+  "viewsynchronizationresults": "查看同步结果",
+  "lastmodifiedtime": "最后一次修改时间",
+  "lastsynchronizationtime": "上次同步时间",
+  "confirmsynchronization": "确认同步",
+  "submittedinsync": "同步已提交",
+  "batchsynchronizationhasbeensubmitted": "批量同步已提交",
+  "setapplicationcredentials": "设置应用凭证",
+  "primaryclassification": "一级分类",
+  "knowledge": "知识",
+  "statistics": "统计",
+  "feature": "功能",
+  "duration": "使用时长",
+  "usedcount": "使用次数"
+  "inspectbaseline": "基线巡检",
   "servergroup": "服务器组"
 }

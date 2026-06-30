@@ -608,6 +608,7 @@ export default {
   },
   data() {
     return {
+      isCenterDetailReady: false,
       fixedPageTab: {
         report: true,
         step: true,
@@ -632,6 +633,7 @@ export default {
       isTaskSave: true, //是否回复（上报内容无修改不能回复）
       draftFile: [], //工单上报附件
       timerForm: null,
+      detailReadyTimer: null,
       isDisableCommet: false,
       commentObj: {
         content: null,
@@ -762,13 +764,15 @@ export default {
     this.$nextTick(() => {
       this.timerForm = setInterval(() => {
         if (this.$refs.FormPreview) {
-          this.$refs.FormPreview.updateFormval(this.processTaskConfig.formAttributeDataMap);
+          let formPreview = this.getDetailRef('FormPreview');
+          formPreview && typeof formPreview.updateFormval === 'function' && formPreview.updateFormval(this.processTaskConfig.formAttributeDataMap);
           this.$nextTick(() => {
             this.$emit('update', this.getData());
           });
         }
         this.taskLoading = false;
         this.clear();
+        this.waitCenterDetailReady();
       }, 1000);
 
       if (this.processTaskStepConfig && this.processTaskStepConfig.commentTemplate && !this.commentObj.content) {
@@ -777,7 +781,76 @@ export default {
       }
     });
   },
+  beforeDestroy() {
+    this.setCenterDetailReady(false);
+    this.clear();
+    this.detailReadyTimer && clearTimeout(this.detailReadyTimer);
+    this.detailReadyTimer = null;
+    this.setTimeUpdata && clearTimeout(this.setTimeUpdata);
+  },
   methods: {
+    setCenterDetailReady(val) {
+      if (!val) {
+        this.detailReadyTimer && clearTimeout(this.detailReadyTimer);
+        this.detailReadyTimer = null;
+      }
+      this.isCenterDetailReady = !!val;
+      mutations.setDetailReady(this.isCenterDetailReady);
+      this.$emit('ready-change', this.isCenterDetailReady);
+    },
+    getDetailRef(refName) {
+      // 固定页、tab、v-for 场景下 ref 可能是数组，统一取首个实例再判断方法。
+      let ref = this.$refs[refName];
+      return ref instanceof Array ? ref[0] : ref;
+    },
+    isTsSheetReady() {
+      let formSheet = this.getDetailRef('formSheet');
+      return !!(
+        formSheet &&
+        formSheet.isReady !== false &&
+        typeof formSheet.getFormData === 'function' &&
+        typeof formSheet.getHiddenComponents === 'function' &&
+        typeof formSheet.getReadComponents === 'function' &&
+        typeof formSheet.getFormExtendData === 'function'
+      );
+    },
+    isFormPreviewReady() {
+      //兼容老版本表单实例是否准备好，用于旧表单场景
+      let formPreview = this.getDetailRef('FormPreview');
+      return !!(
+        formPreview &&
+        typeof formPreview.getFormvalNovalid === 'function' &&
+        typeof formPreview.getHidecomponent === 'function' &&
+        typeof formPreview.getReadcomponent === 'function'
+      );
+    },
+    isSaveContentReady() {
+      // 无保存权限或无表单时不阻塞；有保存权限时，新表单等待 TsSheet 可读，旧表单等待 FormPreview 可读。
+      if (!this.actionConfig.save) {
+        return true;
+      }
+      if (this.$utils.isEmpty(this.formConfig)) {
+        return true;
+      }
+      if (this.formConfig._type == 'new') {
+        return this.isTsSheetReady();
+      }
+      return this.isFormPreviewReady();
+    },
+    waitCenterDetailReady(retry = 0) {
+      this.detailReadyTimer && clearTimeout(this.detailReadyTimer);
+      this.$nextTick(() => {
+        // loading、初始数据同步和表单实例都准备好后，才开放保存/流转类按钮。
+        if (this.loadingShow || this.taskLoading || this.setTimeUpdata || !this.isSaveContentReady()) {
+          this.detailReadyTimer = setTimeout(() => {
+            this.waitCenterDetailReady(retry + 1);
+          }, 100);
+          return;
+        }
+        this.detailReadyTimer = null;
+        this.setCenterDetailReady(true);
+      });
+    },
     initTabList() {
       // 初始化 tabList 和 fixedPageList
       this.tabList = [];
@@ -973,21 +1046,32 @@ export default {
         }
       });
     },
-    update() {
+    update(retry = 0) {
       //更新初始化数据,主要是 用来对比，因为使用require加载的vue 模块，需要特殊的处理
       this.setTimeUpdata && clearTimeout(this.setTimeUpdata);
       this.setTimeUpdata = setTimeout(() => {
         this.$nextTick(() => {
           // 确保子组件渲染完成，否则第一次拿不到formdata的值，导致返回上一层页面，路由数据对比有问题
           if (this.actionConfig.save) {
+            if (!this.isSaveContentReady()) {
+              this.setTimeUpdata = null;
+              if (retry < 30) {
+                this.update(retry + 1);
+              } else {
+                this.waitCenterDetailReady();
+              }
+              return;
+            }
             let allData = this.getData();
             this.$emit('update', allData);
           }
+          this.setTimeUpdata = null;
+          this.waitCenterDetailReady();
         });
-        this.setTimeUpdata = null;
       }, 300);
     },
     initData() {
+      this.setCenterDetailReady(false);
       this.getStepStatusList();
       this.wipeCenterDetail();
       this.getActivityList();
@@ -1125,6 +1209,9 @@ export default {
     },
     saveTaskD() {
       //暂存
+      if (!this.isCenterDetailReady) {
+        return;
+      }
       if (this.actionConfig.save) {
         this.knowledgeId = null;
         let data = this.getData();
@@ -1144,16 +1231,19 @@ export default {
       let readcomponentList = [];
       let handlerStepInfo = {};
       let formExtendAttributeDataList = []; //自定义组件对外消费数据
-      if (this.$refs.FormPreview) {
-        formData = this.$refs.FormPreview.getFormvalNovalid();
-        hidecomponentList = this.$refs.FormPreview.getHidecomponent();
-        readcomponentList = this.$refs.FormPreview.getReadcomponent();
-      } else if (this.$refs.formSheet) {
-        formData = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getFormData() : this.$refs.formSheet.getFormData(); // 解决固定tab页面时，v-for 和 ref 一起使用时，ref返回的是数组
-        hidecomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getHiddenComponents() : this.$refs.formSheet.getHiddenComponents();
-        readcomponentList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getReadComponents() : this.$refs.formSheet.getReadComponents();
-        formExtendAttributeDataList = this.$refs.formSheet instanceof Array ? this.$refs.formSheet[0].getFormExtendData() : this.$refs.formSheet.getFormExtendData();
-      } else if (this.formConfig && !this.$utils.isEmpty(this.processTaskConfig.formAttributeDataMap)) {
+      let formPreview = this.getDetailRef('FormPreview');
+      let formSheet = this.getDetailRef('formSheet');
+      if (formPreview && typeof formPreview.getFormvalNovalid === 'function') {
+        formData = formPreview.getFormvalNovalid();
+        hidecomponentList = formPreview.getHidecomponent();
+        readcomponentList = formPreview.getReadcomponent();
+      } else if (formSheet) {
+        formData = formSheet.getFormData(); // 解决固定tab页面时，v-for 和 ref 一起使用时，ref返回的是数组
+        hidecomponentList = formSheet.getHiddenComponents();
+        readcomponentList = formSheet.getReadComponents();
+        formExtendAttributeDataList = formSheet.getFormExtendData();
+      } else if (!this.$utils.isEmpty(this.formConfig) && this.formConfig.tableList && !this.$utils.isEmpty(this.processTaskConfig.formAttributeDataMap)) {
+        // 仅有表单配置和旧值时兜底组装，避免无表单或历史表单展示误读为可保存表单。
         //表单组件未渲染且表单值不为空的情况
         Object.keys(this.processTaskConfig.formAttributeDataMap).forEach(key => {
           let find = this.formConfig.tableList.find(i => i.component && i.component.uuid === key);
@@ -1221,6 +1311,9 @@ export default {
       return val;
     },
     async comment() {
+      if (!this.isCenterDetailReady) {
+        return false;
+      }
       let replyContent = this.$refs.replyContent;
       if (replyContent && !replyContent.valid()) {
         // 回复校验必填
@@ -1268,9 +1361,11 @@ export default {
       //流转验证表单
       let validList = [];
       let isValidForm = true;
-      if (this.$refs.FormPreview) {
-        isValidForm = await this.$refs.FormPreview.getFormval({ processTaskId: this.processTaskId });
-      } else if (this.$refs.formSheet) {
+      let formPreview = this.getDetailRef('FormPreview');
+      let formSheet = this.getDetailRef('formSheet');
+      if (formPreview && typeof formPreview.getFormval === 'function') {
+        isValidForm = await formPreview.getFormval({ processTaskId: this.processTaskId });
+      } else if (formSheet) {
         isValidForm = await this.formValid(this.processTaskConfig);
       }
       if (!isValidForm) {
@@ -1892,8 +1987,9 @@ export default {
       handler(val, oldval) {
         if (val && ((oldval && val.id != oldval.id) || !oldval) && val.formAttributeDataMap) {
           this.$nextTick(() => {
-            if (this.$refs.FormPreview) {
-              this.$refs.FormPreview.updateFormval(this.processTaskConfig.formAttributeDataMap);
+            let formPreview = this.getDetailRef('FormPreview');
+            if (formPreview && typeof formPreview.updateFormval === 'function') {
+              formPreview.updateFormval(this.processTaskConfig.formAttributeDataMap);
               this.update();
             }
           });

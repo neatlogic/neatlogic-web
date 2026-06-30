@@ -62,6 +62,14 @@
         <CatalogList :appId="appId" :projectId="projectId" @changeCatalog="changeCatalog"></CatalogList>
       </template>
       <template v-slot:content>
+        <StoryOverview
+          v-if="isReady && appData"
+          ref="storyOverview"
+          :projectId="projectId"
+          :app="appData"
+          :catalog="currentCatalog"
+          @filter-change="changeOverviewFilter"
+        ></StoryOverview>
         <IssueList
           v-if="isReady && appData"
           ref="issueList"
@@ -71,8 +79,10 @@
           :canSearch="true"
           :canAction="true"
           :viewmode="viewMode"
+          :fixedHeader="false"
           :catalog="currentCatalog"
           :isShowEmptyTable="true"
+          @refresh="refreshOverview"
         ></IssueList>
       </template>
     </TsContain>
@@ -95,6 +105,7 @@ export default {
     AppTab: () => import('@/views/pages/rdm/project/viewtab/components/app-tab.vue'),
     EditIssue: () => import('@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'),
     IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue'),
+    StoryOverview: () => import('@/views/pages/rdm/project/viewtab/story/story-overview.vue'),
     CatalogList: () => import('@/views/pages/rdm/project/viewtab/components/catalog-list.vue'),
     AttrSettingDialog: () => import('@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'),
     EditViewDialog: () => import('@/views/pages/rdm/project/viewtab/components/edit-view-dialog.vue')
@@ -157,6 +168,7 @@ export default {
       this.isAttrSettingShow = false;
       if (needRefresh) {
         this.reloadIssueList();
+        this.refreshOverview();
       }
     },
     toRequestDetail(id) {
@@ -170,6 +182,7 @@ export default {
       this.isEditIssueShow = false;
       if (needRefresh) {
         this.refreshIssueList();
+        this.refreshOverview();
       }
     },
     changeCatalog(catalog) {
@@ -182,6 +195,18 @@ export default {
     editIssue(issue) {
       this.isEditIssueShow = true;
       this.currentIssueId = issue.id;
+    },
+    changeOverviewFilter(filterObj) {
+      const issueList = this.$refs['issueList'];
+      if (issueList && issueList.setOverviewFilter) {
+        issueList.setOverviewFilter(filterObj);
+      }
+    },
+    refreshOverview() {
+      const storyOverview = this.$refs['storyOverview'];
+      if (storyOverview && storyOverview.refresh) {
+        storyOverview.refresh();
+      }
     }
   },
   filter: {},
