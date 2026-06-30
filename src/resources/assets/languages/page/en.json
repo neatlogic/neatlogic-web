@@ -1141,7 +1141,6 @@
   "statistics": "statistics",
   "feature": "function",
   "duration": "Usage duration",
-  "usedcount": "usage count"
-  "inspectbaseline": "Baseline inspection",
+  "usedcount": "usage count",
   "servergroup": "Server group"
 }
