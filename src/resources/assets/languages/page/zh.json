@@ -1143,5 +1143,6 @@
   "feature": "功能",
   "duration": "使用时长",
   "usedcount": "使用次数",
-  "servergroup": "服务器组"
+  "servergroup": "服务器组",
+  "alluser": "所有人"
 }
