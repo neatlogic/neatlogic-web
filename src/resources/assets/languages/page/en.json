@@ -1142,5 +1142,6 @@
   "feature": "function",
   "duration": "Usage duration",
   "usedcount": "usage count",
-  "servergroup": "Server group"
+  "servergroup": "Server group",
+  "alluser": "Everyone"
 }
