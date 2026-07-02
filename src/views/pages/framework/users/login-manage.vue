@@ -23,6 +23,7 @@
           v-if="tableData"
           v-bind="tableData"
           :theadList="theadList"
+          :classKey="['rowClass']"
           @changeCurrent="changePage"
           @changePageSize="changePageSize"
         >
@@ -42,9 +43,21 @@
               </span>
             </div>
           </template>
+          <!-- <template v-slot:action="{ row }">
+            <div class="tstable-action">
+              <ul class="tstable-action-ul">
+                <li class="tsfont-list" @click="openFeatureAuditDialog(row)">使用情况</li>
+              </ul>
+            </div>
+          </template> -->
         </TsTable>
       </div>
     </TsContain>
+    <LoginFeatureAuditDialog
+      v-if="isShowFeatureAuditDialog"
+      :loginAuditId="currentLoginAuditId"
+      @close="closeFeatureAuditDialog"
+    ></LoginFeatureAuditDialog>
   </div>
 </template>
 <script>
@@ -55,7 +68,8 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
-    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
+    AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
+    LoginFeatureAuditDialog: () => import('./login-feature-audit-dialog.vue')
   },
   mixins: [download],
   props: {},
@@ -70,6 +84,7 @@ export default {
         }
       },
       searchConfig: {
+        labelPosition: 'left',
         searchList: [
           {
             type: 'timeselect',
@@ -89,6 +104,40 @@ export default {
             textName: 'text',
             valueName: 'value',
             transfer: true
+          },
+          {
+            type: 'select',
+            name: 'moduleGroupList',
+            label: this.$t('page.module'),
+            multiple: true,
+            search: true,
+            url: '/api/rest/module/search',
+            textName: 'groupName',
+            valueName: 'group',
+            transfer: true,
+            onChange: moduleGroupList => {
+              const featureConfig = this.searchConfig.searchList.find(item => item.name == 'featureNameList');
+              if (featureConfig) {
+                featureConfig.params.moduleGroupList = moduleGroupList || [];
+              }
+              if (this.searchValue && this.searchValue.featureNameList) {
+                this.$delete(this.searchValue, 'featureNameList');
+              }
+            }
+          },
+          {
+            type: 'select',
+            name: 'featureNameList',
+            label: this.$t('page.feature'),
+            multiple: true,
+            search: true,
+            dynamicUrl: '/api/rest/feature/search',
+            params: { moduleGroupList: [] },
+            rootName: 'tbodyList',
+            textName: 'featureName',
+            valueName: 'featureName',
+            transfer: true,
+            dealDataByUrl: nodeList => this.getFeatureSelectList(nodeList)
           }
         ]
       },
@@ -100,7 +149,9 @@ export default {
         timeUnit: '',
         startTime: null,
         endTime: null,
-        teamUuidList: []
+        teamUuidList: [],
+        moduleGroupList: [],
+        featureNameList: []
       },
       theadList: [
         {
@@ -124,9 +175,17 @@ export default {
         {
           key: 'loginMethod',
           title: this.$t('term.framework.loginmethod')
+        },
+        {
+          key: 'action',
+          title: '',
+          align: 'right',
+          width: 10
         }
       ],
-      tableData: []
+      tableData: [],
+      isShowFeatureAuditDialog: false,
+      currentLoginAuditId: null
     };
   },
   beforeCreate() {},
@@ -143,14 +202,16 @@ export default {
   destroyed() {},
   methods: {
     getSearchParam() {
-      const { keyword = '', dateRange = null, teamUuidList = [] } = this.searchValue || {};
+      const { keyword = '', dateRange = null, teamUuidList = [], moduleGroupList = [], featureNameList = [] } = this.searchValue || {};
       return {
         keyword,
         timeRange: dateRange ? dateRange.timeRange : null,
         timeUnit: dateRange ? dateRange.timeUnit : null,
         startTime: dateRange ? dateRange.startTime : null,
         endTime: dateRange ? dateRange.endTime : null,
-        teamUuidList: teamUuidList || []
+        teamUuidList: teamUuidList || [],
+        moduleGroupList: moduleGroupList || [],
+        featureNameList: featureNameList || []
       };
     },
     searchUserLoginList() {
@@ -161,6 +222,7 @@ export default {
       this.$api.framework.loginaudit.searchLoginList(this.searchParam).then(res => {
         if (res.Status == 'OK') {
           this.tableData = res.Return;
+          this.updateFeatureAuditActiveRow();
         }
       });
     },
@@ -182,6 +244,35 @@ export default {
         url: 'api/binary/login/audit/export',
         params: this.getSearchParam()
       });
+    },
+    openFeatureAuditDialog(row) {
+      this.currentLoginAuditId = row.id;
+      this.updateFeatureAuditActiveRow();
+      this.isShowFeatureAuditDialog = true;
+    },
+    closeFeatureAuditDialog() {
+      this.isShowFeatureAuditDialog = false;
+      this.currentLoginAuditId = null;
+      this.updateFeatureAuditActiveRow();
+    },
+    updateFeatureAuditActiveRow() {
+      // 使用情况弹框打开时，将来源行置灰，帮助用户识别当前查看的是哪一条登录记录。
+      if (this.tableData && this.tableData.tbodyList && this.tableData.tbodyList.length > 0) {
+        this.tableData.tbodyList.forEach(row => {
+          this.$set(row, 'rowClass', row.id === this.currentLoginAuditId ? 'login-feature-audit-active' : '');
+        });
+      }
+    },
+    getFeatureSelectList(nodeList) {
+      const featureNameSet = new Set();
+      const featureList = [];
+      (nodeList || []).forEach(item => {
+        if (item && item.featureName && !featureNameSet.has(item.featureName)) {
+          featureNameSet.add(item.featureName);
+          featureList.push(item);
+        }
+      });
+      return featureList;
     },
     showTableList(val) {
       let list = [];
@@ -208,5 +299,8 @@ export default {
 .login-search {
   width: 100%;
   min-width: 280px;
+}
+::v-deep .login-feature-audit-active > td {
+  background-color: rgba(0, 0, 0, 0.06);
 }
 </style>

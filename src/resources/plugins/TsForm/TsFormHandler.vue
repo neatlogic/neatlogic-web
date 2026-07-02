@@ -29,7 +29,8 @@ const ITEMTYPELIST = {
   ckeditor: 'TsCkeditor', //富文本编辑框
   codemirror: 'TsCodemirror',
   timeselect: 'TimeSelect',
-  cascader: 'TsFormCascader' //级联选择
+  cascader: 'TsFormCascader', //级联选择
+  cascade: 'TsFormCascade' //多选级联选择
 };
 
 export default {

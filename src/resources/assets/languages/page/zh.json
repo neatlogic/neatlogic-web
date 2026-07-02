@@ -1138,5 +1138,11 @@
   "batchsynchronizationhasbeensubmitted": "批量同步已提交",
   "setapplicationcredentials": "设置应用凭证",
   "primaryclassification": "一级分类",
-  "knowledge": "知识"
+  "knowledge": "知识",
+  "statistics": "统计",
+  "feature": "功能",
+  "duration": "使用时长",
+  "usedcount": "使用次数",
+  "servergroup": "服务器组",
+  "alluser": "所有人"
 }

@@ -30,7 +30,8 @@ const ITEMTYPELIST = {
   ckeditor: 'TsCkeditor', //富文本编辑框
   codemirror: 'TsCodemirror',
   timeselect: 'TimeSelect',
-  cascader: 'TsFormCascader' //级联选择
+  cascader: 'TsFormCascader', //级联选择
+  cascade: 'TsFormCascade' //多选级联选择
 };
 
 export default {
@@ -163,7 +164,7 @@ export default {
       var _this = this;
       for (let key in _this.itemList) {
         let item = _this.itemList[key];
-        if ((item.type == 'select' && item.multiple == true) || item.type == 'checkbox' || item.type == 'datetimerange' || item.type == 'timerange' || (item.multiple == true && item.type == 'userselect')) {
+        if ((item.type == 'select' && item.multiple == true) || (item.type == 'cascade' && item.multiple == true) || item.type == 'checkbox' || item.type == 'datetimerange' || item.type == 'timerange' || (item.multiple == true && item.type == 'userselect')) {
           item.value = [];
         } else {
           item.value = '';
@@ -230,7 +231,7 @@ export default {
               if (val[item.name] || typeof val[item.name] == 'number' || typeof val[item.name] == 'boolean') {
                 _this.$set(item, 'value', val[item.name]);
               } else {
-                if ((item.type == 'select' && item.multiple == true) || item.type == 'checkbox' || item.type == 'datetimerange' || item.type == 'timerange' || (item.multiple == true && item.type == 'userselect')) {
+                if ((item.type == 'select' && item.multiple == true) || (item.type == 'cascade' && item.multiple == true) || item.type == 'checkbox' || item.type == 'datetimerange' || item.type == 'timerange' || (item.multiple == true && item.type == 'userselect')) {
                   _this.$set(item, 'value', []);
                 } else {
                   _this.$set(item, 'value', null);
@@ -241,7 +242,7 @@ export default {
             for (let key in _this.itemList) {
               let item = _this.itemList[key];
               !isArray && (item.name = key);
-              if ((item.type == 'select' && item.multiple == true) || item.type == 'checkbox' || item.type == 'datetimerange' || item.type == 'timerange' || (item.multiple == true && item.type == 'userselect')) {
+              if ((item.type == 'select' && item.multiple == true) || (item.type == 'cascade' && item.multiple == true) || item.type == 'checkbox' || item.type == 'datetimerange' || item.type == 'timerange' || (item.multiple == true && item.type == 'userselect')) {
                 _this.$set(item, 'value', []);
               } else {
                 _this.$set(item, 'value', null);
@@ -275,7 +276,7 @@ export default {
       !isArray && (item.name = i);
       //当不含有value值时,需要动态的设置值
       if (!item.hasOwnProperty('value')) {
-        if ((item.type == 'select' && item.multiple == true) || item.type == 'checkbox' || item.type == 'datetimerange' || item.type == 'timerange' || (item.multiple == true && item.type == 'userselect')) {
+        if ((item.type == 'select' && item.multiple == true) || (item.type == 'cascade' && item.multiple == true) || item.type == 'checkbox' || item.type == 'datetimerange' || item.type == 'timerange' || (item.multiple == true && item.type == 'userselect')) {
           _this.$set(item, 'value', []);
         } else {
           _this.$set(item, 'value', null);

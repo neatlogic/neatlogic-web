@@ -5,6 +5,8 @@ import En from '@/resources/assets/languages/en.js';
 import VueI18n from 'vue-i18n';
 import authHeartbeat from '@/resources/assets/js/authHeartbeat';
 import ComponentManager from '@/resources/import/component-manager.js';
+// 功能使用审计：记录用户在各菜单/路由中的停留时长。
+import { flushFeatureUsage, initFeatureUsageAudit, startFeatureUsage } from '@/resources/assets/js/featureUsageAudit.js';
 let config = {
   locale: BASELANGUAGES, // 定义默认语言为中文
   messages: {
@@ -97,6 +99,8 @@ export function initRouter(VueRouter, store) {
     base: '/' + TENANT + '/' + MODULEID + '.html',
     routes: [...existingRoutes, ...extraRoutes]
   });
+  // 注册页面隐藏、关闭等全局生命周期监听，用于补报当前功能停留时长。
+  initFeatureUsageAudit(router, store, $t);
   const gettingModuleList = store.dispatch('getModuleList');
   // 返回的路由(包含所有模块)
   let routerFromPageConfig = sessionStorage.getItem('moduleFromPage') ? JSON.parse(sessionStorage.getItem('moduleFromPage')) : {};
@@ -151,6 +155,9 @@ export function initRouter(VueRouter, store) {
       let auth = to.meta ? to.meta.authority : [];
       auth = typeof auth == 'string' ? (auth.trim() ? [auth.trim()] : []) : auth; //字符串转数组，主要是兼容string array两种情况的数据
       if (!auth || !auth.length || utils.checkHasSomeitem(store.getters.userAuthList, auth)) {
+        // 权限校验通过后，先结算上一个功能，再从当前路由重新开始计时。
+        flushFeatureUsage();
+        startFeatureUsage(to, store);
         const isBack = !!to.query.isBack;
         //console.log('b', isBack, fromPageList);
         //处理回退请求，从最后匹配的路径开始截断

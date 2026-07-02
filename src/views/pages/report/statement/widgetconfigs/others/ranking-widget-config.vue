@@ -26,6 +26,17 @@
         @on-change="val => setConfigValue('titleColor', val)"
       />
     </TsFormItem>
+    <TsFormItem :label="$t('page.fontcolor')" labelPosition="top">
+      <ColorPicker
+        :value="getConfigValue('nameColor', '')"
+        :transfer="true"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="val => setConfigValue('nameColor', val)"
+      />
+    </TsFormItem>
     <TsFormItem label="显示条数" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider

@@ -62,12 +62,6 @@
         </TsTable>
       </template>
     </TsContain>
-    <ReportEdit
-      v-if="reportDislogShow"
-      :id="reportId"
-      :isCopy="isCopy"
-      @close="close"
-    ></ReportEdit>
     <UploadDialog
       ref="uploadDialog"
       :actionUrl="actionUrl"
@@ -83,7 +77,6 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    ReportEdit: () => import('./report-edit.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
@@ -98,9 +91,7 @@ export default {
       selectList: [],
       singleDownLoading: false,
       batchDownLoading: false,
-      isCopy: false,
-      reportDislogShow: false,
-      reportId: null,
+      isFirstActivated: true,
       searchParam: {},
       searchVal: {},
       reportData: {},
@@ -169,7 +160,13 @@ export default {
   },
   beforeUpdate() {},
   updated() {},
-  activated() {},
+  activated() {
+    if (this.isFirstActivated) {
+      this.isFirstActivated = false;
+      return;
+    }
+    this.searchReport();
+  },
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
@@ -211,8 +208,7 @@ export default {
       });
     },
     addReport: function() {
-      this.reportId = null;
-      this.reportDislogShow = true;
+      this.$router.push({ path: '/report-edit' });
     },
     updatePagesize(pageSize) {
       this.searchParam.currentPage = 1;
@@ -231,9 +227,10 @@ export default {
       });
     },
     editReport: function(id, isCopy = false) {
-      this.reportId = id;
-      this.isCopy = isCopy;
-      this.reportDislogShow = true;
+      this.$router.push({
+        path: '/report-edit/' + id,
+        query: isCopy ? { isCopy: '1' } : {}
+      });
     },
     deleteReport: function(row) {
       const { id, name } = row;
@@ -250,12 +247,6 @@ export default {
           }
         }
       });
-    },
-    close: function(needFresh) {
-      this.reportDislogShow = false;
-      if (needFresh) {
-        this.searchReport();
-      }
     },
     showReport: function(id) {
       this.$router.push({ path: '/report-show/' + id });

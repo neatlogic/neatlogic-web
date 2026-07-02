@@ -57,6 +57,7 @@ import 'codemirror/mode/vue/vue.js';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/htmlmixed/htmlmixed';
 import 'codemirror/mode/xml/xml';
+import 'codemirror/mode/sql/sql';
 import formMixins from '@/resources/mixins/formMixins.js';
 import clipboard from '@/resources/directives/clipboard.js';
 
@@ -176,6 +177,7 @@ export default {
         ksh: 'shell',
         vue: 'vue',
         xml: 'xml',
+        sql: 'text/x-sql',
         java: 'text/x-java'
       },
       isValidPass: true

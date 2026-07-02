@@ -23,6 +23,7 @@ export default {
     showTitle: true,
     title: 'TOP 排名',
     titleColor: '#00e5ff',
+    nameColor: '',
     topN: 6
   }
 };

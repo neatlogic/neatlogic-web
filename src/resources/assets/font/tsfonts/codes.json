@@ -3640,5 +3640,17 @@
     "css": "tsfont-video",
     "hexCodepoint": "0xea64",
     "codepoint": 60004
+  },
+  {
+    "name": "branch",
+    "css": "tsfont-branch",
+    "hexCodepoint": "0xea65",
+    "codepoint": 60005
+  },
+  {
+    "name": "state-machine",
+    "css": "tsfont-state-machine",
+    "hexCodepoint": "0xea66",
+    "codepoint": 60006
   }
 ]

@@ -18,7 +18,7 @@
       <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
       <div v-if="errorMessage" class="text-grey text-center pt-md pb-md">{{ errorMessage }}</div>
       <template v-else>
-        <div class="overview-grid" :style="{ '--overview-panel-count': overviewPanelCount }">
+        <div class="overview-row overview-top-row" :style="{ '--overview-panel-count': topPanelCount }">
           <div v-for="metric in metricList" :key="metric.key" class="overview-panel metric-panel border-color">
             <div class="chart-title text-grey">{{ metric.label }}</div>
             <div class="metric-value" :class="metric.className">{{ metric.value }}</div>
@@ -42,11 +42,13 @@
               </div>
             </div>
           </div>
-          <div v-if="priorityChart.isConfigured && priorityChart.list.length > 0" class="overview-panel chart-panel border-color">
+        </div>
+        <div v-if="hasBottomChart" class="overview-row overview-chart-row" :style="{ '--overview-panel-count': bottomPanelCount }">
+          <div v-if="hasPriorityChart" class="overview-panel chart-panel border-color">
             <div class="chart-title">优先级分布</div>
             <div ref="priorityChart" class="chart-container"></div>
           </div>
-          <div v-if="trendChart.isConfigured && trendChart.hasData" class="overview-panel chart-panel border-color">
+          <div v-if="hasTrendChart" class="overview-panel chart-panel border-color">
             <div class="chart-title">近7个月需求/逾期趋势</div>
             <div ref="trendChart" class="chart-container"></div>
           </div>
@@ -706,15 +708,28 @@ export default {
     activeStatus() {
       return this.statusChart.list.find(status => status.id === this.activeStatusId);
     },
-    overviewPanelCount() {
+    hasPriorityChart() {
+      return this.priorityChart.isConfigured && this.priorityChart.list.length > 0;
+    },
+    hasTrendChart() {
+      return this.trendChart.isConfigured && this.trendChart.hasData;
+    },
+    hasBottomChart() {
+      return this.hasPriorityChart || this.hasTrendChart;
+    },
+    topPanelCount() {
       let count = this.metricList.length;
       if (this.statusChart.isConfigured && this.statusChart.hasData) {
         count++;
       }
-      if (this.priorityChart.isConfigured && this.priorityChart.list.length > 0) {
+      return count || 1;
+    },
+    bottomPanelCount() {
+      let count = 0;
+      if (this.hasPriorityChart) {
         count++;
       }
-      if (this.trendChart.isConfigured && this.trendChart.hasData) {
+      if (this.hasTrendChart) {
         count++;
       }
       return count || 1;
@@ -757,10 +772,13 @@ export default {
   position: relative;
   padding: 8px 12px;
 }
-.overview-grid {
+.overview-row {
   display: grid;
   grid-template-columns: repeat(var(--overview-panel-count), minmax(0, 1fr));
   gap: 8px;
+}
+.overview-row + .overview-row {
+  margin-top: 8px;
 }
 .overview-panel {
   min-width: 0;
@@ -794,14 +812,21 @@ export default {
 .chart-container {
   height: 138px;
 }
+.overview-chart-row .chart-container {
+  height: 160px;
+}
 .status-chart-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(72px, 96px);
   gap: 8px;
   align-items: center;
+  min-height: 138px;
 }
 .status-list {
   min-width: 0;
+  max-height: 120px;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 .status-item {
   display: grid;
@@ -826,7 +851,7 @@ export default {
   min-width: 0;
 }
 @media screen and (max-width: 960px) {
-  .overview-grid {
+  .overview-row {
     grid-template-columns: repeat(var(--overview-panel-count), 200px);
     overflow-x: auto;
   }

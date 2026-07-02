@@ -1137,5 +1137,11 @@
   "batchsynchronizationhasbeensubmitted": "Batch synchronization has been submitted",
   "setapplicationcredentials": "Set up application credentials",
   "primaryclassification": "Primary Classification",
-  "knowledge": "Knowledge"
+  "knowledge": "Knowledge",
+  "statistics": "statistics",
+  "feature": "function",
+  "duration": "Usage duration",
+  "usedcount": "usage count",
+  "servergroup": "Server group",
+  "alluser": "Everyone"
 }
