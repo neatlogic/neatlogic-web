@@ -7,6 +7,15 @@ const file = {
   getFileTypeList() {
     return axios.post('api/rest/file/type/list', {});
   },
+  searchFileTypeConfig() {
+    return axios.post('api/rest/file/type/config/list', {});
+  },
+  saveFileTypeConfig(params) {
+    return axios.post('api/rest/file/type/config/save', params);
+  },
+  deleteFileTypeConfig(params) {
+    return axios.post('api/rest/file/type/config/delete', params);
+  },
   getFileByIdList(fileIdList) {
     return axios.post('/api/rest/file/list', {idList: fileIdList});
   },
