@@ -39,8 +39,8 @@
     >
       <template v-slot>
         <div class="filetype-rule-dialog">
-          <div class="text-right mb-sm">
-            <Button type="primary" @click="openAddFileTypeRuleDialog">{{ $t('dialog.title.addtarget', { target: $t('term.framework.filetyperule') }) }}</Button>
+          <div class="action-group text-right mb-sm">
+            <span class="action-item tsfont-plus" @click="openAddFileTypeRuleDialog">{{ $t('dialog.title.addtarget', { target: $t('term.framework.filetyperule') }) }}</span>
           </div>
           <TsTable
             v-if="fileTypeRuleData"
@@ -164,9 +164,11 @@ export default {
           name: 'name',
           label: this.$t('page.type'),
           transfer: true,
-          dynamicUrl: 'api/rest/file/type/list',
+          url: 'api/rest/file/type/list',
           valueName: 'name',
           textName: 'displayName',
+          search: true,
+          filterName: ['name', 'displayName'],
           disabled: false,
           validateList: ['required']
         },
