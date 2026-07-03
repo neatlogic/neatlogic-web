@@ -25,9 +25,10 @@
         </Dropdown>
       </span>
     </div>
-    <div>
+    <div ref="sqlContentContainer" @mouseup="handleLogSelection">
       <TsCodemirror :value="content" :is-read-only="true"></TsCodemirror>
     </div>
+    <LogAiSelection ref="logAiSelection" :logContext="buildLogAiContext()"></LogAiSelection>
   </div>
 </template>
 <script>
@@ -36,6 +37,7 @@ import NodeLog from '../logcomponents/node-log.vue';
 export default {
   name: '',
   components: {
+    LogAiSelection: () => import('./log-ai-selection.vue'),
     TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue')
   },
   directives: { download },
@@ -94,6 +96,35 @@ export default {
       this.encoding = item;
       this.content = '';
       this.getContent();
+    },
+    handleLogSelection() {
+      if (this.$refs.logAiSelection) {
+        this.$refs.logAiSelection.handleSelection(this.$refs.sqlContentContainer, this.buildLogAiContext());
+      }
+    },
+    buildLogAiContext() {
+      const jobData = this.jobData || {};
+      const phaseData = this.phaseData || {};
+      const nodeData = this.nodeData || {};
+      return {
+        type: 'sqlContent',
+        mode: this.mode,
+        jobId: jobData.id,
+        jobName: jobData.name,
+        jobStatus: jobData.status,
+        phaseId: phaseData.id,
+        phaseName: phaseData.name,
+        phaseStatus: phaseData.status,
+        nodeId: nodeData.id,
+        nodeName: nodeData.name || nodeData.nodeName,
+        nodeStatus: nodeData.status,
+        status: nodeData.status || phaseData.status || jobData.status,
+        resourceId: nodeData.resourceId,
+        resourceName: nodeData.resourceName,
+        ip: nodeData.ip || nodeData.host,
+        sqlName: nodeData.sqlFile,
+        execMode: phaseData.execMode
+      };
     }
   },
   computed: {
