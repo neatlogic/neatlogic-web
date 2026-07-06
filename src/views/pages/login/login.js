@@ -57,6 +57,10 @@ axios({
       }
       authtype = data.authType;
       encrypt = data.encrypt;
+      if (!USERLANGUAGE) {
+        BASELANGUAGES = data.defaultLanguage || BASELANGUAGES || 'zh';
+        document.cookie = 'neatlogic_language=' + BASELANGUAGES + '; path=' + HOME + ';';
+      }
       // 存储密码过期跳转路径
       sessionStorage.setItem('PWD_EXPIRED_DIRECT_URL', data.pwdExpiredDirectUrl || '');
     }

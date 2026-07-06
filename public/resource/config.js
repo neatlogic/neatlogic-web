@@ -9,7 +9,8 @@ if (TENANT.indexOf('.') <= -1) {
   TENANT = '';
   HOME = '/';
 }
-var BASELANGUAGES = getCookie('neatlogic_language') || 'zh';
+var USERLANGUAGE = getCookie('neatlogic_language');
+var BASELANGUAGES = USERLANGUAGE || 'zh';
 var MODULEID = '';
 var MENULIST = [];
 var MENUTYPE = {};
@@ -25,12 +26,11 @@ var GLOBAL_LOGINTITLE = '';
 var ISAUTODIRECT = false; // 是否需要自动跳转
 var REDIRECTURL = ''; // 重定向url
 var PWD_EXPIRED_DIRECT_URL = ''; // 密码过期后直接跳转的url
-setCookie('neatlogic_language', BASELANGUAGES, 7); // 设置cookie，解决部署首次，没有默认多语言问题
 
 function setCookie(name, value, time) {
   // 设置cookie为name的值为value，期限是time(如果是数字，单位为天；如果是字符串，直接赋值结束时间)
   if (time) {
-    if (typeof time == Number) {
+    if (typeof time === 'number') {
       let d = new Date();
       d.setTime(d.getTime() + time * 24 * 60 * 60 * 1000);
       let expires = 'expires=' + d.toGMTString();
@@ -155,6 +155,10 @@ async function getSsoTokenKey() {
     try {
       const responseText = JSON.parse(xhr.responseText);
       if (responseText && responseText.Status === 'OK') {
+        if (!USERLANGUAGE) {
+          BASELANGUAGES = responseText.defaultLanguage || BASELANGUAGES || 'zh';
+          setCookie('neatlogic_language', BASELANGUAGES, 7);
+        }
         getFaviconUrl(responseText.themeConfig);
         SSOTICKETKEY = responseText.ssoTicketKey || '';
         AUTHTYPE = responseText.authType || '';
