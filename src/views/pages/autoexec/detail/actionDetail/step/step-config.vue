@@ -32,6 +32,8 @@
       v-if="isAdd"
       :type="execMode"
       :isShow="isAdd"
+      :phaseConfig="config"
+      :prevOutputParamList="getPrev(prevStepList)"
       :selectedOption="getSelected(phaseOperationList)"
       @close="close"
     ></AddOperation>
