@@ -3652,5 +3652,17 @@
     "css": "tsfont-state-machine",
     "hexCodepoint": "0xea66",
     "codepoint": 60006
+  },
+  {
+    "name": "column",
+    "css": "tsfont-column",
+    "hexCodepoint": "0xea67",
+    "codepoint": 60007
+  },
+  {
+    "name": "link",
+    "css": "tsfont-link",
+    "hexCodepoint": "0xea68",
+    "codepoint": 60008
   }
 ]
