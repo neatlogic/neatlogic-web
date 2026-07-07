@@ -120,12 +120,12 @@ export default {
           .then(data => {
             moduleGroupList.push({
               group: 'web',
-              groupName: '前端',
-              groupDescription: '前端页面',
+              groupName: this.$t('term.framework.frontend'),
+              groupDescription: this.$t('term.framework.frontendpage'),
               groupSort: 0,
               moduleList: [
                 {id: 'web',
-                  name: '前端',
+                  name: this.$t('term.framework.frontend'),
                   lastModified: data.fcd,
                   version: data.version
                 }

@@ -1,3 +1,4 @@
+import { $t } from '@/resources/init.js';
 
 /**topo节点的基础类，所有节点class都要extends此类**/
 export default class LeftNode {
@@ -10,12 +11,12 @@ export default class LeftNode {
   }
   constructor(config) {
     if (!config) {
-      console.error('请提供节点定义');
+      console.error($t('term.process.providenodedefinition'));
       return;
     }
      
     if (!config.type) {
-      console.error('请定义节点类型');
+      console.error($t('term.process.definenodetype'));
       return; 
     }
 

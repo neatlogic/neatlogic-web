@@ -77,7 +77,7 @@ export default {
       infoLabel: null,
       teamLabel: null,
       isSiderHide: false,
-      regionName: this.$t('dialog.title.edittarget', { target: '地域' }), //表单标题
+      regionName: this.$t('dialog.title.edittarget', { target: this.$t('term.framework.region') }), //表单标题
       treeloading: true,
       childrenCount: null,
       regionFormItemList: {
@@ -88,7 +88,7 @@ export default {
         },
         parentId: {
           type: 'select',
-          label: '上级地域',
+          label: this.$t('term.framework.parentregion'),
           multiple: false,
           dynamicUrl: '/api/rest/region/search',
           rootName: 'tbodyList',
@@ -101,13 +101,13 @@ export default {
         },
         name: {
           type: 'text',
-          label: '地域名称',
+          label: this.$t('term.framework.regionname'),
           width: '75%',
-          validateList: [{ name: 'required', message: '地域名称必填' }]
+          validateList: [{ name: 'required', message: this.$t('term.framework.regionnamerequired') }]
         },
         workTimeUuid: {
           type: 'select',
-          label: '服务窗口',
+          label: this.$t('term.framework.servicewindow'),
           multiple: false,
           dynamicUrl: '/api/rest/worktime/search',
           rootName: 'tbodyList',
@@ -243,7 +243,7 @@ export default {
       let {id = '', name = '', parentId = null, childrenCount = null, isActive = 1, workTimeUuid = null} = node || {};
       this.childrenCount = childrenCount;
       // 编辑目录
-      this.regionName = this.$t('dialog.title.edittarget', { target: '地域' });
+      this.regionName = this.$t('dialog.title.edittarget', { target: this.$t('term.framework.region') });
       this.$set(this.regionData, 'id', id);
       this.$set(this.regionData, 'name', name);
       this.$set(this.regionData, 'isActive', isActive);
@@ -270,7 +270,7 @@ export default {
     },
     //树上方搜索地域
     selectRegion(id) {
-      this.regionName = this.$t('dialog.title.edittarget', { target: '地域' });
+      this.regionName = this.$t('dialog.title.edittarget', { target: this.$t('term.framework.region') });
       this.$set(this.regionData, 'id', id);
     },
     saveRegion() {

@@ -18,7 +18,7 @@
               <div>{{ item.value }}</div>
             </Col>
           </TsRow>
-          <NoData v-if="!metadata.indexExists" text="不存在当前 Elasticsearch 索引"></NoData>
+          <NoData v-if="!metadata.indexExists" :text="$t('term.framework.elasticsearchindexnotexists')"></NoData>
           <TsTable
             v-else
             :tbodyList="metadata.fieldList"
@@ -33,7 +33,7 @@
                 placement="left"
                 :transfer="true"
               >
-                <span class="tsfont-info-o text-action metadata-info-icon" title="更多配置"></span>
+                <span class="tsfont-info-o text-action metadata-info-icon" :title="$t('term.framework.moreconfig')"></span>
                 <div slot="content">
                   <div
                     v-for="item in getMoreConfigList(row)"
@@ -70,18 +70,18 @@ export default {
       metadata: null,
       error: '',
       dialogConfig: {
-        title: '索引元数据',
+        title: this.$t('term.framework.indexmetadata'),
         type: 'slider',
         maskClose: true,
         isShow: true,
         width: 'large'
       },
       theadList: [
-        { key: 'path', title: '字段' },
-        { key: 'type', title: '类型' },
-        { key: 'analyzer', title: '分词器' },
-        { key: 'searchAnalyzer', title: '搜索分词器' },
-        { key: 'normalizer', title: '标准化器' }
+        { key: 'path', title: this.$t('page.field') },
+        { key: 'type', title: this.$t('page.type') },
+        { key: 'analyzer', title: this.$t('term.framework.analyzer') },
+        { key: 'searchAnalyzer', title: this.$t('term.framework.searchanalyzer') },
+        { key: 'normalizer', title: this.$t('term.framework.normalizer') }
       ]
     };
   },
@@ -102,7 +102,7 @@ export default {
         this.metadata = res.Return || {};
       }).catch(error => {
         this.metadata = null;
-        this.error = error && error.Message ? error.Message : '获取索引元数据失败';
+        this.error = error && error.Message ? error.Message : this.$t('term.framework.getindexmetadatafailed');
       }).finally(() => {
         this.loadingShow = false;
       });
@@ -113,7 +113,7 @@ export default {
     getMoreConfigList(row) {
       const configList = [];
       if (row && row.format) {
-        configList.push({ key: 'format', name: '日期格式', value: row.format });
+        configList.push({ key: 'format', name: this.$t('term.framework.dateformat'), value: row.format });
       }
       return configList;
     },
@@ -127,16 +127,16 @@ export default {
         return [];
       }
       return [
-        { key: 'typeName', label: '索引类型', value: this.metadata.typeName },
-        { key: 'type', label: '索引标识', value: this.metadata.type },
-        { key: 'indexName', label: 'ES索引名', value: this.metadata.indexName },
+        { key: 'typeName', label: this.$t('term.framework.indextype'), value: this.metadata.typeName },
+        { key: 'type', label: this.$t('term.framework.indexkey'), value: this.metadata.type },
+        { key: 'indexName', label: this.$t('term.framework.esindexname'), value: this.metadata.indexName },
         {
           key: 'indexExists',
-          label: '是否存在',
-          value: this.metadata.indexExists ? '是' : '否',
+          label: this.$t('term.framework.indexexists'),
+          value: this.metadata.indexExists ? this.$t('page.yes') : this.$t('page.no'),
           className: this.metadata.indexExists ? 'text-success' : 'text-error'
         },
-        { key: 'indexCount', label: '索引数量', value: this.metadata.indexCount || 0 }
+        { key: 'indexCount', label: this.$t('term.framework.indexcount'), value: this.metadata.indexCount || 0 }
       ];
     }
   }

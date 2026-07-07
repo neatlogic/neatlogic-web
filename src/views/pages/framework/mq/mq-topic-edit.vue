@@ -29,7 +29,7 @@
               }
             "
           ></TsFormRadio>
-          <span v-else class="text-grey">没有可用的消息队列</span>
+          <span v-else class="text-grey">{{ $t('term.framework.noavailablemq') }}</span>
         </TsFormItem>
         <TsFormItem :label="$t('term.report.isactive')">
           <TsFormSwitch

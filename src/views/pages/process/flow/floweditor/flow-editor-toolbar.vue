@@ -20,7 +20,7 @@
     <div v-if="needMinimap" class="action-item ">
       <Poptip
         v-model="showMinimap" 
-        title="小地图"
+        :title="$t('term.process.minimap')"
         placement="bottom"
         width="350"
         :transfer="true"
@@ -61,7 +61,7 @@
     <div
       v-if="needExportFlow"
       class="action-item tsfont-download"
-      title="导出流程图"
+      :title="$t('term.process.exportflowchart')"
       @click.stop="exportPng()"
     ></div>
   </div>
@@ -69,6 +69,7 @@
 <script>
 import { Graph, Node, Edge } from '@antv/x6';
 import { MiniMap } from '@antv/x6-plugin-minimap';
+import { $t } from '@/resources/init.js';
 
 export default {
   name: '',
@@ -92,7 +93,7 @@ export default {
       default: ''
     },
     processTaskId: { type: [Number, String] }, // 流程任务id
-    processName: { type: String, default: '流程图' }, // 流程名称
+    processName: { type: String, default: () => $t('term.process.flowchart') }, // 流程名称
     needExportFlow: { type: Boolean, default: false } // 是否需要导出流程图
   },
   data() {

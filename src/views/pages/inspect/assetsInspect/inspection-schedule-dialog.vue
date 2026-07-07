@@ -65,7 +65,7 @@
               <div v-if="!$utils.isEmpty(row.jobStatus)">
                 <div>
                   <span class="text-grey">{{ $t('term.inspect.exeount') }}：</span>
-                  <span>{{ row.jobStatus.execCount || '0' }}次</span>
+                  <span>{{ row.jobStatus.execCount || '0' }}{{ $t('term.autoexec.times') }}</span>
                 </div>
                 <div v-if="row.jobStatus.beginTime != null">
                   <span class="text-grey">{{ $t('page.planstarttime') }}：</span>

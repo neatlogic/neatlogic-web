@@ -185,7 +185,7 @@
                             v-model="conItem.expression"
                             codeMode="javascript"
                             height="auto"
-                            placeholder="请填写ES5脚本，最后返回true或false，范例：return data['attr'] == 1"
+                            :placeholder="$t('term.process.es5scriptplaceholder')"
                           ></TsCodemirror>
                         </div>
                         <div>
@@ -193,7 +193,7 @@
                             trigger="hover"
                             word-wrap
                             width="550"
-                            title="属性列表"
+                            :title="$t('term.process.attributelist')"
                             :transfer="true"
                           >
                             <span class="tsfont-question-o">{{ $t('page.help') }}</span>

@@ -85,7 +85,7 @@ export default {
           const existsData = dataList.find(dd => dd.appType === d.appType);
           
           if (!existsData) {
-            dataList.push({...d, yField: '任务'});
+            dataList.push({...d, yField: this.$t('term.rdm.task')});
           } else {
             existsData.count += d.count;
           }

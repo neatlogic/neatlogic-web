@@ -58,7 +58,7 @@
                       <span class="pl-sm">{{ $t(menu.name) }}</span>
                     </Option>
                   </OptionGroup>
-                  <OptionGroup v-if="extraMenuList && extraMenuList.length > 0" key="_extramenu" label="扩展菜单">
+                  <OptionGroup v-if="extraMenuList && extraMenuList.length > 0" key="_extramenu" :label="$t('term.framework.extramenu')">
                     <Option
                       v-for="(menu, mindex) in extraMenuList"
                       :key="menu.id + '_' + mindex"
@@ -96,19 +96,19 @@ export default {
       formConfig: {
         isActive: {
           type: 'switch',
-          label: '是否激活',
+          label: this.$t('page.enable'),
           trueValue: 1,
           falseValue: 0
         },
         name: {
           type: 'text',
-          label: '名称',
+          label: this.$t('page.name'),
           maxlength: 50,
           validateList: ['required', 'name-special', { name: 'searchUrl', url: '/api/rest/homepage/save', params: () => ({ id: this.formData.id }) }]
         },
         authorityList: {
           type: 'userselect',
-          label: '用户',
+          label: this.$t('page.user'),
           validateList: ['required'],
           groupList: ['common', 'user', 'role', 'team'],
           isMultiple: true,

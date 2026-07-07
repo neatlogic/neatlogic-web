@@ -9,7 +9,7 @@
               <Col :span="10">
                 <TsFormInput v-model="searchParam.keyword"></TsFormInput>
               </Col>
-              <Col :span="2"><Button type="primary" @click="search()">搜索</Button></Col>
+              <Col :span="2"><Button type="primary" @click="search()">{{ $t('page.search') }}</Button></Col>
               <Col :span="6"></Col>
             </TsRow>
           </div>

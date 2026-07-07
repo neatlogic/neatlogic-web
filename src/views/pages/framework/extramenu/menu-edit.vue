@@ -69,11 +69,11 @@ export default {
           validateList: ['required', 'url']
         },
         openType: {
-          label: '打开方式',
+          label: this.$t('term.framework.opentype'),
           type: 'radio',
           dataList: [
-            { value: 'window', text: '新窗口' },
-            { value: 'iframe', text: '嵌套页面' }
+            { value: 'window', text: this.$t('term.framework.newwindow') },
+            { value: 'iframe', text: this.$t('term.framework.embeddedpage') }
           ]
         },
         authorityList: {

@@ -8,7 +8,7 @@ import { nameValid } from '@/views/pages/process/flow/floweditor/element/compone
 import { notifyValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
 
 export default {
-  name: '自动化',
+  name: $t('term.process.autoexec'),
   handler: 'autoexec',
   type: 'process',
   isVue: true, //需要声明是vue组件

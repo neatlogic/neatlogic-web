@@ -11,7 +11,7 @@
             v-if="!row.isEnable"
             placement="top"
             :transfer="true"
-            content="消息队列组件不可用"
+            :content="$t('term.framework.mqhandlerunavailable')"
           ><span v-if="!row.isEnable" class="text-error tsfont-warning-o"></span></Tooltip>
         </span>
       </template>
@@ -23,8 +23,8 @@
         <span v-else class="text-grey">{{ $t('page.no') }}</span>
       </template>
       <template v-slot:type="{ row }">
-        <span v-if="row.isEmbed">系统订阅</span>
-        <span v-else>自定义订阅</span>
+        <span v-if="row.isEmbed">{{ $t('term.framework.systemsubscribe') }}</span>
+        <span v-else>{{ $t('term.framework.customsubscribe') }}</span>
       </template>
       <template slot="error" slot-scope="{ row }">
         <Poptip
@@ -50,7 +50,7 @@
                 @on-change="toggleSubscribeActive(row)"
               ></TsFormSwitch>
             </li>
-            <li class="tsfont-heart-s" @click.stop="healthCheck(row)">状态检查</li>
+            <li class="tsfont-heart-s" @click.stop="healthCheck(row)">{{ $t('term.framework.statuscheck') }}</li>
             <li v-if="!row.isEmbed" class="tsfont-edit" @click.stop="editSubscribe(row)">{{ $t('page.edit') }}</li>
             <li v-if="!row.isEmbed" class="tsfont-trash-o" @click="deleteSubscribe(row)">{{ $t('page.delete') }}</li>
           </ul>

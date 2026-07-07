@@ -61,8 +61,8 @@
           </Tabs>
           <NoData v-else>
             <div>
-              <span v-if="$utils.isUserHasAuth('NOTIFY_POLICY_MODIFY')" class="text-href" @click="gotoAddNotify()">请设置默认通知策略</span>
-              <span v-else>没有默认通知策略，请联系管理员</span>
+              <span v-if="$utils.isUserHasAuth('NOTIFY_POLICY_MODIFY')" class="text-href" @click="gotoAddNotify()">{{ $t('term.process.setdefaultnotifypolicy') }}</span>
+              <span v-else>{{ $t('term.process.nodefaultnotifypolicy') }}</span>
             </div>
           </NoData>
         </div>

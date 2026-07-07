@@ -1023,7 +1023,7 @@ export default {
   filter: {},
   computed: {
     thirdPartyUrl() {
-      return '协议://地址:端口' + HOME + '/api/rest/processtask/automatic/complete';
+      return this.$t('term.process.protocoladdressport') + HOME + '/api/rest/processtask/automatic/complete';
     },
     showConfigInput() {
       let expression = this.requestSuccessConfig.expression;

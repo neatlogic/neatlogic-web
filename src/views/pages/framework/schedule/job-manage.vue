@@ -19,8 +19,8 @@
       </template>
       <div slot="content">
         <Tabs v-model="currentTab" :animated="false" @on-click="changeTab">
-          <TabPane label="配置作业" name="config"></TabPane>
-          <TabPane label="已加载作业" name="memory"></TabPane>
+          <TabPane :label="$t('term.framework.configjob')" name="config"></TabPane>
+          <TabPane :label="$t('term.framework.loadedjob')" name="memory"></TabPane>
         </Tabs>
         <TsTable
           v-if="currentTableData"
@@ -64,8 +64,8 @@
           </template>
           <template slot="cron" slot-scope="{ row }">
             <div v-if="row.intervalInSeconds">
-              <span class="text-grey">间隔</span><span class="text-bold">{{ row.intervalInSeconds }}s</span>
-              <span v-if="row.repeatCount" class="ml-xs text-grey">重复</span><span v-if="row.repeatCount" class="text-bold">{{ row.repeatCount }}</span><span v-if="row.repeatCount" class="text-grey">次</span>
+              <span class="text-grey">{{ $t('page.interval') }}</span><span class="text-bold">{{ row.intervalInSeconds }}s</span>
+              <span v-if="row.repeatCount" class="ml-xs text-grey">{{ $t('term.framework.repeat') }}</span><span v-if="row.repeatCount" class="text-bold">{{ row.repeatCount }}</span><span v-if="row.repeatCount" class="text-grey">{{ $t('term.framework.times') }}</span>
             </div>
             <div v-else>
               <TsQuartz :value="row.cron" showType="read" :transfer="true"></TsQuartz>
@@ -109,7 +109,7 @@
                   class="tsfont-test icon"
                   :title="
                     row.isActive === 1
-                      ? '禁用才能测试'
+                      ? $t('term.framework.disabletotest')
                       : ''
                   "
                   :class="{ disable: row.isActive == 1 }"
@@ -217,12 +217,12 @@ export default {
         pageSize: this.pageSize
       },
       jobStateMap: {
-        NORMAL: '正常',
-        PAUSED: '暂停',
-        COMPLETE: '完成',
-        ERROR: '错误',
-        BLOCKED: '阻塞',
-        NONE: '不存在'
+        NORMAL: this.$t('page.normal'),
+        PAUSED: this.$t('page.pause'),
+        COMPLETE: this.$t('page.complete'),
+        ERROR: this.$t('page.error'),
+        BLOCKED: this.$t('term.framework.blocked'),
+        NONE: this.$t('term.framework.notexists')
       },
       searchConfig: {
         search: true,
