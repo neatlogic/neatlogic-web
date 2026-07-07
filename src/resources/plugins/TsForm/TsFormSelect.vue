@@ -1006,7 +1006,16 @@ export default {
       this.getDataByAjax(params, this.dynamicUrl, 'cancelAxios1').then(res => {
         let nodeList = res.nodeList || [];
         if (((this.multiple && !this.$utils.isEmpty(this.currentValue)) || (!this.multiple && (this.currentValue || ['boolean', 'number'].includes(typeof this.currentValue)))) && nodeList.length) {
-          let selectedList = nodeList.filter(r => {
+          let selectNodeList = nodeList;
+          if (this.mode == 'group') {
+            selectNodeList = [];
+            nodeList.forEach(item => {
+              if (item && item[this.childrenName] && item[this.childrenName].length > 0) {
+                selectNodeList.push(...item[this.childrenName]);
+              }
+            });
+          }
+          let selectedList = selectNodeList.filter(r => {
             return this.multiple ? this.ArrIndexOf(this.currentValue, r[this.valueName]) > -1 : this.handleObjectValue(r[this.valueName]);
           });
           //进行排序，主要是为了显示的text的顺序和value值顺序一样 ,因为接口的数据顺序可能不会根据value来
