@@ -7,10 +7,10 @@
         :disabled="!targetApp"
       ></TsFormRadio>
       <div class="text-grey mt-xs">
-        <div>使用原件：关联后直接引用目标记录，目标记录内容变化时，关联处看到的内容也会同步变化。</div>
-        <div>创建副本：关联时生成一份快照副本，后续原件内容变化不会自动影响已关联记录，断联副本时会删除该副本。</div>
+        <div>{{ $t('term.rdm.useoriginaldesc') }}</div>
+        <div>{{ $t('term.rdm.createcopydesc') }}</div>
       </div>
-      <div v-if="!targetApp" class="text-grey mt-xs">当前项目未启用目标应用，暂不能配置。</div>
+      <div v-if="!targetApp" class="text-grey mt-xs">{{ $t('term.rdm.targetappdisabled') }}</div>
     </TsFormItem>
     <div class="mt-md">
       <Button type="primary" :disabled="!targetApp" @click="save">{{ $t('page.save') }}</Button>
@@ -35,8 +35,8 @@ export default {
       action: 'original',
       appList: [],
       actionList: [
-        { value: 'original', text: '使用原件' },
-        { value: 'copy', text: '创建副本' }
+        { value: 'original', text: this.$t('term.rdm.useoriginal') },
+        { value: 'copy', text: this.$t('term.rdm.createcopy') }
       ]
     };
   },

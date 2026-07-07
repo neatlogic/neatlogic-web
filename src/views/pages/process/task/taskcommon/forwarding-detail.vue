@@ -2,7 +2,7 @@
   <div class="ForwardingDetail">
     <div class="default-detail bg-op radius-lg padding">
       <div class="top-title" :class="{'pb-nm':isShowDetail}" @click="isShowDetail = !isShowDetail">
-        转报提醒
+        {{ $t('term.process.forwardingreminder') }}
         <span class="detail-icon text-action" :class="isShowDetail?'tsfont-down':'tsfont-up'"></span>
       </div>
       <div v-show="isShowDetail">

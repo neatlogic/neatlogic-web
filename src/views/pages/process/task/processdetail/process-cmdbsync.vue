@@ -62,7 +62,7 @@
               >
                 <CenterDetail
                   ref="TaskCenterDetail"
-                  :slotList="[{ name: 'cmdbsync', label: '配置项同步' }]"
+                  :slotList="[{ name: 'cmdbsync', label: $t('term.process.cientitysync') }]"
                   :actionConfig="actionConfig"
                   :formConfig="formConfig"
                   :processTaskConfig="processTaskConfig"

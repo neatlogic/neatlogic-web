@@ -7,7 +7,7 @@ import { isolationValid } from '@/views/pages/process/flow/floweditor/element/co
 import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
 import { notifyValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
 export default {
-  name: '变更处理',
+  name: $t('term.process.changehandle'),
   handler: 'changehandle',
   type: 'process',
   isVue: true, //需要声明是vue组件

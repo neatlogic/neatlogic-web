@@ -8,7 +8,7 @@ import { nameValid } from '@/views/pages/process/flow/floweditor/element/compone
 import { notifyValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
 
 export default {
-  name: '创建作业',
+  name: $t('term.process.createjob'),
   handler: 'createjob',
   type: 'process',
   isVue: true, //需要声明是vue组件

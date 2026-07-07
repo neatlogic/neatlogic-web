@@ -41,7 +41,7 @@ export default {
       theadSettingForm: {
         isNewLine: {
           type: 'radio',
-          label: '是否换行',
+          label: this.$t('term.process.isnewline'),
           dataList: [
             {
               text: this.$t('page.yes'),

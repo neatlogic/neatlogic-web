@@ -39,7 +39,7 @@ export default {
         start: new Date(2023, 0, 1 + i),
         end: new Date(2023, 0, 1 + i + Math.floor(Math.random() * 90))
       })),
-      theadList: [{key: 'name', title: '名称'}, {key: 'start', title: '开始'}, {key: 'end', title: '结束'}],
+      theadList: [{key: 'name', title: this.$t('page.name')}, {key: 'start', title: this.$t('page.begin')}, {key: 'end', title: this.$t('page.end')}],
       tbodyList: Array.from({ length: 50 }, (_, i) => ({
         id: i + 1,
         name: `Task ${i + 1}`,

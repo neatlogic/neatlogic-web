@@ -66,7 +66,7 @@
       <template v-slot:action="{ row }">
         <div class="tstable-action">
           <ul class="tstable-action-ul">
-            <li class="tsfont-formtextarea" @click="toCiEntity(row.ciEntityId, row.ciId)">配置项详情</li>
+            <li class="tsfont-formtextarea" @click="toCiEntity(row.ciEntityId, row.ciId)">{{ $t('term.cmdb.cientitydetail') }}</li>
           </ul>
         </div>
       </template>

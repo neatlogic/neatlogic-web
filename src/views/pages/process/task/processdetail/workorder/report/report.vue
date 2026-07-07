@@ -45,7 +45,7 @@
         </div>
       </template>
       <template v-else-if="startHandler === 'changecreate'">
-        <TsFormItem v-if="handlerStepInfo" label="变更" labelPosition="top">
+        <TsFormItem v-if="handlerStepInfo" :label="$t('term.process.change')" labelPosition="top">
           <div class="padding bg-op radius-md">
             <div class="change-infor dividing-color">
               <TsRow>

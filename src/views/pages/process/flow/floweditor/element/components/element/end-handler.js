@@ -4,7 +4,7 @@ import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
 
 export default {
-  name: '结束',
+  name: $t('term.process.end'),
   type: 'end',
   isVue: true, //需要声明是vue组件
   config: {
