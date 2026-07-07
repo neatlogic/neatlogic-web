@@ -54,7 +54,7 @@
                 class="tsfont-edittext"
                 @click="editCiEntity(row.uuid)"
               >编辑</li>-->
-              <li class="tsfont-trash-o" :class="disabled ? 'text-disabled' : ''" @click="deleteCiEntity(row)">删除</li>
+              <li class="tsfont-trash-o" :class="disabled ? 'text-disabled' : ''" @click="deleteCiEntity(row)">{{ $t('page.delete') }}</li>
             </ul>
           </div>
         </template>

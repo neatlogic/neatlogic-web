@@ -58,8 +58,8 @@
           @getCheckedCiEntity="updateImport"
         ></CiEntityList>
         <div style="text-align:right" class="mt-md">
-          <Button class="mr-md" @click="close">取消</Button>
-          <Button type="primary" @click="saveSelectedCiEntity">确定</Button>
+          <Button class="mr-md" @click="close">{{ $t('page.cancel') }}</Button>
+          <Button type="primary" @click="saveSelectedCiEntity">{{ $t('page.confirm') }}</Button>
         </div>
       </div>
     </div>
@@ -105,19 +105,19 @@ export default {
       currentCiId: null,
       ciList: [], //配置项列表
       setting: {
-        title: '编辑模型',
+        title: this.$t('term.cmdb.editci'),
         maskClose: false,
         width: 'large',
         hasFooter: false
       },
       typeList: [
         {
-          name: '新增配置项',
+          name: this.$t('term.cmdb.addcientity'),
           value: 'add',
           disabled: false
         },
         {
-          name: '编辑/删除配置项',
+          name: this.$t('term.cmdb.editdeletecientity'),
           value: 'import',
           disabled: false
         }
@@ -149,12 +149,12 @@ export default {
       let title = '';
       if (row.disabled) {
         if (row.value == 'import') {
-          title = '此模型不支持编辑/删除操作，如需编辑/删除配置项，请联系管理员修改表单设置';
+          title = this.$t('term.cmdb.unsupporteditdeletecientity');
           return title;
         }
 
         if (row.value == 'add') {
-          title = '此模型不支持新增操作，如需新增配置项，请联系管理员修改表单设置';
+          title = this.$t('term.cmdb.unsupportaddcientity');
           return title;
         }
       }

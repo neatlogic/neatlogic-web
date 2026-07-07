@@ -4,13 +4,13 @@
     <TsContain>
       <template v-slot:topRight>
         <div class="action-group">
-          <span v-if="isShow == 'one'" class="tsfont-file-single action-item" @click="openDialog">初始化详情</span>
-          <span v-if="isShow == 'one'" class="tsfont-edit action-item" @click="handleShow('two')">编辑</span>
-          <span v-if="isShow =='two'" class="tsfont-close-o action-item" @click="handleShow('one')">取消</span>
-          <span v-if="isShow =='two'" class="tsfont-restart action-item" @click="saveConfig">保存并重载</span>
+          <span v-if="isShow == 'one'" class="tsfont-file-single action-item" @click="openDialog">{{ $t('term.cmdb.datainitdetail') }}</span>
+          <span v-if="isShow == 'one'" class="tsfont-edit action-item" @click="handleShow('two')">{{ $t('page.edit') }}</span>
+          <span v-if="isShow =='two'" class="tsfont-close-o action-item" @click="handleShow('one')">{{ $t('page.cancel') }}</span>
+          <span v-if="isShow =='two'" class="tsfont-restart action-item" @click="saveConfig">{{ $t('term.cmdb.saveandreload') }}</span>
           <span v-if="isShow != 'one' && isShow !='two'" class="action-item">
             <Icon type="ios-loading" size="16" class="loading"></Icon>
-            正在重载
+            {{ $t('term.cmdb.reloading') }}
           </span>
         </div>
       </template>
@@ -63,18 +63,18 @@ export default {
       showLoading: false, // 初始化加载中的动画
       dialogConfig: {
         isShow: false,
-        title: '初始化详情',
+        title: this.$t('term.cmdb.datainitdetail'),
         width: '60%',
         hasFooter: false
       },
       formSetting: {
         id: {
-          label: '主键',
+          label: this.$t('term.cmdb.primarykey'),
           type: 'text',
           isHidden: true
         },
         config: {
-          label: 'xml配置',
+          label: this.$t('term.cmdb.xmlconfig'),
           type: 'textarea',
           isHidden: true,
           value: ''
@@ -84,24 +84,24 @@ export default {
         height: '500px',
         theadList: [
           {
-            title: '视图名',
+            title: this.$t('term.cmdb.viewname'),
             key: 'name'
           },
           {
-            title: '显示名',
+            title: this.$t('term.cmdb.displayname'),
             key: 'label'
           },
           {
-            title: '状态',
+            title: this.$t('page.status'),
             key: 'statusText'
           },
           {
-            title: '初始化时间',
+            title: this.$t('term.cmdb.inittime'),
             key: 'initTime',
             type: 'time'
           },
           {
-            title: '报错信息',
+            title: this.$t('term.cmdb.errorinfo'),
             key: 'error',
             width: '200px',
             maxLength: 200 // 超出隐藏出现省略号

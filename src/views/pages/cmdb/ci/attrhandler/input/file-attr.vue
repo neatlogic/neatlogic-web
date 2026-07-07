@@ -55,7 +55,7 @@ export default {
     valid() {
       //验证数据合法性
       if (this.isRequired && (!this.fileList || this.fileList.length <= 0)) {
-        this.$Message.warning('请上传附件：' + this.attrData.label);
+        this.$Message.warning(this.$t('term.cmdb.uploadattachmenttarget', { target: this.attrData.label }));
         return false;
       } else {
         return true;

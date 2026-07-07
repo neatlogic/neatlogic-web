@@ -37,10 +37,10 @@ export default {
   data() {
     return {
       dataList: [
-        { equipmentPosition: '2-4', cabinetName: '机柜一号', equipmentName: '交换机1', id: 771661273145344, equipmentId: 573868590555136, capacity: '20' },
-        { equipmentPosition: '12-14', cabinetName: '机柜一号', equipmentName: '对象存储1', id: 771661273145344, equipmentId: 573863976820737, capacity: '20' },
-        { equipmentPosition: '26', cabinetName: '测试机柜', equipmentName: 'DC-PD-DIS-SW-02', id: 573865763594241, equipmentSn: '12345567', equipmentId: 767892154130436, capacity: '30' },
-        { equipmentPosition: '24', cabinetName: '测试机柜', equipmentName: 'DC-OM-ACC-SW-27', id: 573865763594241, equipmentSn: 'FOC1613V0NF', equipmentId: 767892154130437, capacity: '30' }
+        { equipmentPosition: '2-4', cabinetName: this.$t('term.cmdb.cabinetone'), equipmentName: this.$t('term.cmdb.switch1'), id: 771661273145344, equipmentId: 573868590555136, capacity: '20' },
+        { equipmentPosition: '12-14', cabinetName: this.$t('term.cmdb.cabinetone'), equipmentName: this.$t('term.cmdb.objectstorage1'), id: 771661273145344, equipmentId: 573863976820737, capacity: '20' },
+        { equipmentPosition: '26', cabinetName: this.$t('term.cmdb.testcabinet'), equipmentName: 'DC-PD-DIS-SW-02', id: 573865763594241, equipmentSn: '12345567', equipmentId: 767892154130436, capacity: '30' },
+        { equipmentPosition: '24', cabinetName: this.$t('term.cmdb.testcabinet'), equipmentName: 'DC-OM-ACC-SW-27', id: 573865763594241, equipmentSn: 'FOC1613V0NF', equipmentId: 767892154130437, capacity: '30' }
       ]
     };
   },

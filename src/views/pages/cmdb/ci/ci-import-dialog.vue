@@ -89,7 +89,7 @@
                   </TsTable>
                 </Card>
               </div>
-              <div v-else><span>没有任何变化</span></div>
+              <div v-else><span>{{ $t('page.nochange') }}</span></div>
             </template>
           </TsForm>
         </div>

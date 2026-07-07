@@ -26,7 +26,7 @@
             @changeActionType="changeActionType"
           ></CiEntityList>
           <div v-else class="text-tip">
-            没有任何要修改的配置项
+            {{ $t('term.cmdb.nomodifycientity') }}
           </div>
         </div>
       </div>

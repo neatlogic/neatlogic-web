@@ -26,9 +26,9 @@ export default {
     return {
       myConfig: {},
       typeList: [
-        {value: 'daterange', text: '日期范围'},
-        {value: 'timerange', text: '时间范围'},
-        {value: 'datetimerange', text: '日期时间范围'}
+        {value: 'daterange', text: this.$t('term.cmdb.daterange')},
+        {value: 'timerange', text: this.$t('term.cmdb.timerange')},
+        {value: 'datetimerange', text: this.$t('term.cmdb.datetimerange')}
       ],
       formatList: [
         {value: 'yyyy-MM-dd HH:mm', text: 'yyyy-MM-dd HH:mm', type: ['datetimerange']},
@@ -39,7 +39,7 @@ export default {
       formConfig: {
         type: {
           type: 'select',
-          label: '输入类型',
+          label: this.$t('term.cmdb.inputtype'),
           validateList: ['required'],
           transfer: true,
           onChange: (val) => {
@@ -48,7 +48,7 @@ export default {
         },
         format: {
           type: 'slot',
-          label: '格式',
+          label: this.$t('term.cmdb.format'),
           validateList: ['required'],
           transfer: true,
           onChange: (val) => {

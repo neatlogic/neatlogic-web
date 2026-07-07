@@ -25,7 +25,7 @@
         </div>
       </template>
     </TsTable>
-    <div><a href="javascript:void(0)" @click="addData()"><i class="tsfont-plus"></i>添加数据项</a></div>
+    <div><a href="javascript:void(0)" @click="addData()"><i class="tsfont-plus"></i>{{ $t('term.cmdb.adddataitem') }}</a></div>
   </div>
 </template>
 <script>

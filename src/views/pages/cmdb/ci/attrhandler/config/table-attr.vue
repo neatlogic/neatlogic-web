@@ -19,12 +19,12 @@
                 <i class="handler tsfont-drag"></i>{{ item.ciLabel }}·{{ item.label }}</Tag>
             </draggable>
           </div>
-          <Alert style="margin-top:10px">帮助：选择需要显示的字段，拖动改变排序。</Alert>
+          <Alert style="margin-top:10px">{{ $t('term.cmdb.tableattrhelp') }}</Alert>
         </div>
       </template>
       <template v-slot:isMultiple>
         <i-switch v-model="myConfig.isMultiple" :true-value="1" :false-value="0"></i-switch>
-        <span v-html="myConfig.isMultiple == 1 ? '是' : '否'"></span>
+        <span>{{ myConfig.isMultiple == 1 ? $t('page.yes') : $t('page.no') }}</span>
       </template>
     </TsForm>
   </div>
@@ -50,20 +50,20 @@ export default {
       formConfig: {
         mode: {
           type: 'radio',
-          label: '关联方式',
+          label: this.$t('term.cmdb.relationmode'),
           value: 'r',
           dataList: [
             {
               value: 'r',
-              text: '选择'
+              text: this.$t('term.cmdb.selectonly')
             },
             {
               value: 'w',
-              text: '新增'
+              text: this.$t('page.new')
             },
             {
               value: 'rw',
-              text: '选择或新增'
+              text: this.$t('term.cmdb.selectoradd')
             }
           ],
           onChange: val => {
@@ -72,11 +72,11 @@ export default {
         },
         isMultiple: {
           type: 'slot',
-          label: '多选'
+          label: this.$t('term.cmdb.multiple')
         },
         attrList: {
           type: 'slot',
-          label: '显示字段',
+          label: this.$t('term.cmdb.displayfield'),
           isHidden: true
         }
       }
@@ -131,7 +131,7 @@ export default {
               //虚拟模型只能读
               this.$set(this.formConfig.mode, 'disabled', true);
               this.$set(this.formConfig.mode, 'value', 'r');
-              this.$set(this.formConfig.mode, 'desc', '虚拟模型不支持新增');
+              this.$set(this.formConfig.mode, 'desc', this.$t('term.cmdb.virtualcinotallowadd'));
               this.$set(this.myConfig, 'mode', 'r');
             } else {
               this.$set(this.formConfig.mode, 'disabled', false);

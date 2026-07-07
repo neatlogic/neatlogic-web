@@ -2,7 +2,7 @@
   <div>
     <div class="formsetting-block">
       <label class="formsetting-label text-grey">
-        模型<span class="red">*</span>
+        {{ $t('page.model') }}<span class="red">*</span>
       </label>
       <div class="formsetting-text">
         <div class="input-border">
@@ -20,33 +20,33 @@
 
     <div v-if="isShow" class="formsetting-block">
       <label class="formsetting-label text-grey">
-        操作<span class="red">*</span>
+        {{ $t('page.actions') }}<span class="red">*</span>
       </label>
       <div class="formsetting-text bg-block">
         <div class=" tstable-container boxAction border-color">
-          <Checkbox v-model="setting.actionAdd" class="actionItem">新增</Checkbox>
-          <Checkbox v-model="setting.actionEdit" class="actionItem">编辑</Checkbox>
-          <Checkbox v-model="setting.actionDel" class="actionItem">删除</Checkbox>
+          <Checkbox v-model="setting.actionAdd" class="actionItem">{{ $t('page.new') }}</Checkbox>
+          <Checkbox v-model="setting.actionEdit" class="actionItem">{{ $t('page.edit') }}</Checkbox>
+          <Checkbox v-model="setting.actionDel" class="actionItem">{{ $t('page.delete') }}</Checkbox>
         </div>
         <div class="tstable-container">
           <table class="dynamic-table tstable-body">
             <thead>
               <tr>
-                <th class="first-td">属性/关系</th>
-                <th><span>显示</span>
+                <th class="first-td">{{ $t('term.cmdb.attrrelation') }}</th>
+                <th><span>{{ $t('term.cmdb.display') }}</span>
                   <span><Poptip
                     trigger="hover"
-                    content="如不勾选任何属性则按照模型显示设置中的配置显示相关属性"
+                    :content="$t('term.cmdb.displayattrtip')"
                     width="200"
                     transfer
                     word-wrap
                   >
                     <i class="tsfont-info-o text-href" style="padding-left:3px;"></i>
                   </Poptip></span></th>
-                <th><span>编辑</span>
+                <th><span>{{ $t('page.edit') }}</span>
                   <span><Poptip
                     trigger="hover"
-                    content="如不勾选任何属性则代表所有属性都可以编辑"
+                    :content="$t('term.cmdb.editattrtip')"
                     width="200"
                     transfer
                     word-wrap
@@ -73,7 +73,7 @@
                 <td>
                   <Checkbox v-model="data.isEdit"></Checkbox>
                 </td>
-                <td><i class="tsfont-bar" title="拖动排序"></i></td>
+                <td><i class="tsfont-bar" :title="$t('term.cmdb.dragtosort')"></i></td>
               </tr>
             </draggable>
           </table>
@@ -128,7 +128,7 @@ export default {
       let _this = this;
       let validList = [];
       if (!this.$refs.entity.valid()) {
-        validList.push('至少选择一个模型');
+        validList.push(this.$t('term.cmdb.selectatleastonemodel'));
       }
 
       // let newTem = [];
@@ -140,7 +140,7 @@ export default {
       // });
 
       if (!this.setting.actionAdd && !this.setting.actionEdit && !this.setting.actionDel) {
-        validList.push('至少要选择一个可操作的字段');
+        validList.push(this.$t('term.cmdb.selectatleastoneactionfield'));
       }
  
       // if (newTem.length == 0) {

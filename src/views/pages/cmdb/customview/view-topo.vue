@@ -17,7 +17,7 @@
         <TsFormInput
           v-model="keyword"
           :search="true"
-          placeholder="请输入关键字"
+          :placeholder="$t('form.placeholder.keyword')"
           @on-change="findNode"
         ></TsFormInput>
       </div>

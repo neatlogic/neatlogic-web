@@ -139,16 +139,16 @@ export default {
       constAttrExpressionList: [
         { value: 'equal', text: this.$t('term.expression.eq') },
         { value: 'notequal', text: this.$t('term.expression.ne') },
-        { value: 'like', text: '包含' },
-        { value: 'notlike', text: '不包含' }
+        { value: 'like', text: this.$t('term.cmdb.contains') },
+        { value: 'notlike', text: this.$t('term.cmdb.notcontains') }
       ],
       joinTypeList: [
         {
-          text: '并且',
+          text: this.$t('page.and'),
           value: 'and'
         },
         {
-          text: '或者',
+          text: this.$t('page.or'),
           value: 'or'
         }
       ]

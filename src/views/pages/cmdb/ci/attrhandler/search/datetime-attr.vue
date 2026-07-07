@@ -33,7 +33,7 @@
       border="border"
       @on-change="setDataBefore"
     ></TsFormInput></div>
-    <div class="item mr-xs">天前</div>
+    <div class="item mr-xs">{{ $t('term.cmdb.daysbefore') }}</div>
     <div class="item mr-xs">~</div>
     <div class="item mr-xs"><TsFormInput
       type="number"
@@ -43,8 +43,8 @@
       :value="valueANumber"
       @on-change="setDataAfter"
     ></TsFormInput></div>
-    <div class="item">天后</div>
-    <div class="item"><Tooltip max-width="200" :transfer="true" content="以合规检查执行的时间为基准，向前和向后生成时间区间，判断属性是否处于时间区间之内，偏差天数可以是负数，时间区间可以是开区间">
+    <div class="item">{{ $t('term.cmdb.daysafter') }}</div>
+    <div class="item"><Tooltip max-width="200" :transfer="true" :content="$t('term.cmdb.legalchecktimerangetip')">
       <span class="tsfont-question-o"></span>
     </Tooltip></div>
   </div>

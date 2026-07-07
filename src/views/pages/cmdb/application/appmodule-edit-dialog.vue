@@ -46,7 +46,7 @@ export default {
     return {
       isLoading: false,
       setting: {
-        title: this.ciEntityId ? '编辑应用模块' : '添加应用模块',
+        title: this.ciEntityId ? this.$t('term.cmdb.editappmodule') : this.$t('term.cmdb.addappmodule'),
         maskClose: false,
         width: 'large',
         hasFooter: false

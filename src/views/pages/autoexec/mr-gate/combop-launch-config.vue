@@ -3,7 +3,7 @@
     <TsForm ref="basicForm" v-model="formValue" :item-list="basicFormConfig"></TsForm>
     <div v-if="formValue.targetId && !loadingCombop" class="launch-section">
       <div v-if="runtimeParamList.length > 0" class="section-block">
-        <div class="section-title">作业参数</div>
+        <div class="section-title">{{ $t('term.autoexec.jobparam') }}</div>
         <SetParam
           :id="formValue.targetId"
           ref="param"
@@ -14,7 +14,7 @@
         ></SetParam>
       </div>
       <div v-if="needRunnerGroup && existRunnerOrSqlExecMode" class="section-block">
-        <div class="section-title">执行组</div>
+        <div class="section-title">{{ $t('term.autoexec.runnergroup') }}</div>
         <RunnerGroupSetting
           ref="runnerGroup"
           :config="runnerGroup"
@@ -24,7 +24,7 @@
         ></RunnerGroupSetting>
       </div>
       <div v-if="needExecuteNode" class="section-block">
-        <div class="section-title">执行节点</div>
+        <div class="section-title">{{ $t('term.autoexec.executenode') }}</div>
         <AddTarget
           :id="formValue.targetId"
           ref="addTarget"
@@ -39,10 +39,10 @@
         ></AddTarget>
       </div>
       <div v-if="needExecuteUser || needProtocol" class="section-block">
-        <div class="section-title">执行账号</div>
+        <div class="section-title">{{ $t('term.autoexec.executeaccount') }}</div>
         <TsFormItem
           v-if="needExecuteUser"
-          label="执行用户"
+          :label="$t('term.autoexec.executeuser')"
           :labelWidth="110"
           labelPosition="left"
           :required="true"
@@ -63,7 +63,7 @@
         </TsFormItem>
         <TsFormItem
           v-if="needProtocol"
-          label="协议"
+          :label="$t('term.autoexec.protocol')"
           :labelWidth="110"
           labelPosition="left"
           :required="true"
@@ -120,7 +120,7 @@ export default {
       basicFormConfig: {
         targetId: {
           type: 'select',
-          label: '组合工具',
+          label: this.$t('term.autoexec.combop'),
           validateList: ['required'],
           dynamicUrl: '/api/rest/autoexec/combop/executable/list',
           rootName: 'tbodyList',
@@ -128,25 +128,25 @@ export default {
           textName: 'name',
           search: true,
           transfer: true,
-          desc: '选择自动化组合工具，场景、作业参数、执行目标按组合工具配置带出后可调整',
+          desc: this.$t('term.autoexec.comboplaunchdesc'),
           onChange: this.changeCombop
         },
         scenarioId: {
           type: 'select',
-          label: '场景',
+          label: this.$t('term.autoexec.scenario'),
           dataList: [],
           valueName: 'scenarioId',
           textName: 'scenarioName',
           transfer: true,
           clearable: true,
-          desc: '默认使用组合工具默认场景'
+          desc: this.$t('term.autoexec.defaultcombopscenariodesc')
         }
       },
       protocolForm: {
         dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
         rootName: 'tbodyList',
         dealDataByUrl: this.$utils.getProtocolDataList,
-        placeholder: '请选择',
+        placeholder: this.$t('page.pleaseselect'),
         transfer: true,
         validateList: ['required']
       }

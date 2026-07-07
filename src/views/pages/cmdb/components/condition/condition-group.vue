@@ -163,11 +163,11 @@ export default {
       globalAttrMap: {},
       joinTypeList: [
         {
-          text: '并且',
+          text: this.$t('page.and'),
           value: 'and'
         },
         {
-          text: '或者',
+          text: this.$t('page.or'),
           value: 'or'
         }
       ],

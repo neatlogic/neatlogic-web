@@ -51,7 +51,7 @@ export default {
       treeConfig: {
         name: 'rootCiName',
         type: 'tree',
-        placeholder: '选择根模型',
+        placeholder: this.$t('term.cmdb.selectrootmodel'),
         width: '100%',
         validateList: ['required'],
         value: '',

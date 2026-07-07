@@ -39,7 +39,7 @@ export default {
     return {
       isForm: true,
       setting: {
-        title: '编辑配置项',
+        title: this.$t('term.cmdb.editcientity'),
         maskClose: false,
         width: 'large',
         hasFooter: false

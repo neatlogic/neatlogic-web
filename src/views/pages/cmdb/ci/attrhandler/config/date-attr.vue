@@ -20,7 +20,7 @@ export default {
       formConfig: {
         format: {
           type: 'select',
-          label: '格式',
+          label: this.$t('page.format'),
           dataList: [
             {value: 'yyyy-MM-dd', text: 'yyyy-MM-dd'},
             {value: 'yyyy-MM', text: 'yyyy-MM'},

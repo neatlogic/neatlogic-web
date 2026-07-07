@@ -63,7 +63,7 @@
     >
       <div slot="footer" class="flex-between" :style="{ margin: '0 8px' }">
         <div class="flex-start">
-          <Checkbox v-model="importParams.editMode" :true-value="'global'" :false-value="'partial'"><span>{{ $t('page.globalupdate') }}</span><span class="text-grey">全局更新模式下，不提供属性代表删除</span></Checkbox>
+          <Checkbox v-model="importParams.editMode" :true-value="'global'" :false-value="'partial'"><span>{{ $t('page.globalupdate') }}</span><span class="text-grey">{{ $t('term.cmdb.globalupdatetip') }}</span></Checkbox>
         </div>
         <div class="flex-end">
           <Button :disabled="fileList.length === 0" @click="confirmImport('append')">{{ $t('page.onlyadd') }}</Button>

@@ -1,9 +1,9 @@
 <template>
   <TsDialog v-bind="dialogConfig" @on-close="closeDialog">
     <template v-slot:header>
-      <div v-if="operateType == 'accountEdit'">账号管理</div>
-      <div v-else-if="operateType == 'addAccount'">批量添加账号</div>
-      <div v-else>批量删除账号</div>
+      <div v-if="operateType == 'accountEdit'">{{ $t('page.accountsmanage') }}</div>
+      <div v-else-if="operateType == 'addAccount'">{{ $t('term.cmdb.batchaddaccount') }}</div>
+      <div v-else>{{ $t('term.cmdb.batchdeleteaccount') }}</div>
     </template>
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <div class="action-icon text-right">
@@ -100,10 +100,10 @@ export default {
         account: {
           type: 'slot',
           name: 'account',
-          label: '账号',
+          label: this.$t('page.account'),
           transfer: true,
           multiple: true,
-          firstText: '添加账号',
+          firstText: this.$t('dialog.title.addtarget', { target: this.$t('page.account') }),
           firstLi: true,
           dynamicUrl: 'api/rest/resourcecenter/account/search',
           rootName: 'tbodyList',
@@ -207,12 +207,12 @@ export default {
       // 失败，错误提示
       if (this.failureCount != 0 || (this.failureReasonList && this.failureReasonList.length > 0)) {
         this.$Notice.error({
-          title: '错误提示',
+          title: this.$t('page.tip'),
           duration: 10,
           render: h => {
             return h('div', [
-              h('div', {class: 'text-success pb-md'}, [h('span', {class: 'text-success valid-icon tsfont-check-s'}, ''), (this.successCount || 0) + '条资产绑定账号成功']),
-              h('div', {class: 'text-danger pb-md'}, [h('span', {class: 'valid-icon tsfont-close-s'}, ''), (this.failureCount || 0) + '条资产绑定账号失败']),
+              h('div', {class: 'text-success pb-md'}, [h('span', {class: 'text-success valid-icon tsfont-check-s'}, ''), this.$t('term.cmdb.successfullyboundaccountforassetstarget', { target: this.successCount || 0 })]),
+              h('div', {class: 'text-danger pb-md'}, [h('span', {class: 'valid-icon tsfont-close-s'}, ''), this.$t('term.cmdb.failedtobindaccountforassetstarget', { target: this.failureCount || 0 })]),
               h('ul', {class: 'pb-md', style: {lineHeight: '20px', display: this.failureReasonList && this.failureReasonList.length > 0 ? 'block' : 'none'}}, this.failureReasonList.map((item) => {
                 return h('li', {}, item || '');
               }))
@@ -235,7 +235,7 @@ export default {
       this.$set(this.settingForm.account, 'needCallback', true);
     },
     refreshSuccess() {
-      this.$Message.success('刷新成功');
+      this.$Message.success(this.$t('message.refreshsuccess'));
     },
     editAccount() {
       window.open(HOME + '/cmdb.html#/account-manage', '_blank');
@@ -255,7 +255,7 @@ export default {
         this.$api.cmdb.asset.testConnectAccount({resourceId: this.resourceId, accountIdList: this.settingConfig.accountList}).then((res) => {
           if (res && res.Status == 'OK') {
             this.connectTestResultList = res.Return || [];
-            if (this.connectTestResultList.every((item) => item.exitValue == 0)) { this.$Message.success('连接成功'); }
+            if (this.connectTestResultList.every((item) => item.exitValue == 0)) { this.$Message.success(this.$t('message.executesuccess')); }
           }
         }).finally(() => {
           this.loadingShow = false;
@@ -283,7 +283,7 @@ export default {
     getItem() {
       return function(value) {
         if (value.length > 1) {
-          return value.join('、') + '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。 ';
+          return value.join('、') + this.$t('term.cmdb.repeataccount');
         } else {
           return;
         }
@@ -305,10 +305,10 @@ export default {
       // 测试连接，成功失败原因
       return function(value) {
         let reasonObj = {
-          0: '成功',
-          1: '失败，连接错误',
-          2: '失败，协议不支持',
-          3: '失败，节点信息错误，node的json缺少属性'
+          0: this.$t('page.success'),
+          1: this.$t('term.cmdb.connectfailed'),
+          2: this.$t('term.cmdb.protocolnotsupport'),
+          3: this.$t('term.cmdb.nodejsonmissingattr')
         };
         return reasonObj[value];
       };

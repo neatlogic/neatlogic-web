@@ -236,7 +236,7 @@ export default {
   filter: {},
   computed: {
     fromPageName() {
-      return this.$route.meta.fromPage && this.$route.meta.fromPage.title ? this.$route.meta.fromPage.title : '模型列表';
+      return this.$route.meta.fromPage && this.$route.meta.fromPage.title ? this.$route.meta.fromPage.title : this.$t('term.cmdb.cilist');
     },
     childrenList() {
       if (this.ciData && this.ciData.children && this.ciData.children.length > 0) {

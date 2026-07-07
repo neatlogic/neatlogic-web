@@ -10,9 +10,9 @@
       @change="setData"
     ></TsFormInput>
     <div class="text-grey">
-      <span v-if="attrData.config.type == 'outterlink'">外部链接：使用新窗口打开页面，必须是http或https开头</span>
-      <span v-else-if="attrData.config.type == 'innerlink'">内部链接：使用当前窗口打开页面，支持http、https或/开头，支持跳转到其他模块</span>
-      <span v-else-if="attrData.config.type == 'route'">内部路由：仅支持跳转到配置管理模块其他页面，使用/开头</span>
+      <span v-if="attrData.config.type == 'outterlink'">{{ $t('term.cmdb.outerlinkinputtip') }}</span>
+      <span v-else-if="attrData.config.type == 'innerlink'">{{ $t('term.cmdb.innerlinkinputtip') }}</span>
+      <span v-else-if="attrData.config.type == 'route'">{{ $t('term.cmdb.innerrouteinputtip') }}</span>
     </div>
     <div v-if="error" class="text-error">{{ error }}</div>
   </div>
@@ -71,17 +71,17 @@ export default {
         const value = this.value.toLowerCase();
         if (this.attrData.config.type == 'outterlink') {
           if (!value.startsWith('http') && !value.startsWith('https')) {
-            this.error = '外部链接需要是http或https开头';
+            this.error = this.$t('term.cmdb.outerlinkvalidtip');
             return false;
           }
         } else if (this.attrData.config.type == 'innerlink') {
           if (!value.startsWith('http') && !value.startsWith('https') && !value.startsWith('/')) {
-            this.error = '内部链接需要是http或https或/开头';
+            this.error = this.$t('term.cmdb.innerlinkvalidtip');
             return false;
           }
         } else if (this.attrData.config.type == 'route') {
           if (!value.startsWith('/')) {
-            this.error = '内部路由需要是/开头';
+            this.error = this.$t('term.cmdb.innerroutevalidtip');
             return false;
           }
         }

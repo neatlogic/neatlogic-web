@@ -30,7 +30,7 @@
             :transfer="true"
           ></TsQuartz>
         </div>
-        <Button @click="close()">取消</Button>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -49,7 +49,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '自动采集',
+        title: this.$t('page.autocollect'),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -59,10 +59,10 @@ export default {
         {
           key: 'selection'
         },
-        { key: 'ciName', title: '配置项模型' },
-        { key: 'collectionName', title: '集合' },
-        { key: 'execCount', title: '执行次数' },
-        { key: 'lastSyncDate', title: '上次同步时间', type: 'time' }
+        { key: 'ciName', title: this.$t('term.cmdb.ci') },
+        { key: 'collectionName', title: this.$t('term.cmdb.collection') },
+        { key: 'execCount', title: this.$t('term.cmdb.executecount') },
+        { key: 'lastSyncDate', title: this.$t('term.cmdb.lastsynctime'), type: 'time' }
       ],
       syncData: {
         keyName: 'id',

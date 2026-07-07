@@ -20,7 +20,7 @@ export default {
       formConfig: {
         format: {
           type: 'select',
-          label: '格式',
+          label: this.$t('page.format'),
           dataList: [
             {value: 'HH:mm:ss', text: 'HH:mm:ss'},
             {value: 'HH:mm', text: 'HH:mm'},

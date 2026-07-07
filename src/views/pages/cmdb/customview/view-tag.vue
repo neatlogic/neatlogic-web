@@ -49,7 +49,7 @@ export default {
       editTag: false,
       keyword: '',
       selectConfig: {
-        placeholder: '添加标签',
+        placeholder: this.$t('term.cmdb.addtag'),
         border: 'border',
         search: true,
         allowCreate: true,

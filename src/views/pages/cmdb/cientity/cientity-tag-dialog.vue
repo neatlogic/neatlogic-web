@@ -36,7 +36,7 @@ export default {
       },
       dialogConfig: {
         type: 'modal',
-        title: '添加标签',
+        title: this.$t('term.cmdb.addtag'),
         isShow: true,
         maskClose: false,
         width: 'small'
@@ -45,29 +45,29 @@ export default {
         mode: {
           type: 'radio',
           name: 'mode',
-          label: '编辑模式',
+          label: this.$t('term.cmdb.editmode'),
           dataList: [
             {
               value: 'append',
-              text: '追加'
+              text: this.$t('page.append')
             },
             {
               value: 'replace',
-              text: '覆盖'
+              text: this.$t('page.replace')
             }
           ]
         },
         tagIdList: {
           type: 'select',
           name: 'tagIdList',
-          label: '标签',
+          label: this.$t('page.tag'),
           multiple: true,
           transfer: true,
           search: true,
           dynamicUrl: '/api/rest/cmdb/tag/search',
           textName: 'name',
           valueName: 'id',
-          validateList: [{ name: 'required', message: '请选择标签' }]
+          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.tag') }) }]
         }
       }
     };

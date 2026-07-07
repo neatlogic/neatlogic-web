@@ -57,7 +57,7 @@ export default {
           min: 1,
           label: this.$t('page.level'),
           validateList: ['required'],
-          desc: '全局唯一'
+          desc: this.$t('term.cmdb.globallyunique')
         },
         {
           name: 'name',
@@ -70,14 +70,14 @@ export default {
         {
           name: 'type',
           type: 'radio',
-          label: '类型',
+          label: this.$t('page.type'),
           //readonly: !!this.id,
           dataList: [
-            { value: 'inspect', text: '巡检状态' },
-            { value: 'monitor', text: '监控状态' }
+            { value: 'inspect', text: this.$t('term.cmdb.inspectstatus') },
+            { value: 'monitor', text: this.$t('term.cmdb.monitorstatus') }
           ],
           validateList: ['required'],
-          desc: '同一类型下唯一标识不能重复'
+          desc: this.$t('term.cmdb.typeuniquekeytip')
         },
         {
           name: 'label',

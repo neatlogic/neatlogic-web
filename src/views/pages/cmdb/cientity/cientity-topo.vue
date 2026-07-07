@@ -98,7 +98,7 @@
           <span class="text-href" @click="isShowFilter = !isShowFilter">{{ $t('page.filters') }}</span>
         </Divider>
         <div v-if="isShowFilter">
-          <TsFormItem label="关键字">
+          <TsFormItem :label="$t('page.keyword')">
             <TsFormInput
               v-model="keyword"
               :search="true"

@@ -26,7 +26,7 @@ export default {
     return {
       dialogConfig: {
         type: 'modal',
-        title: '详细信息',
+        title: this.$t('page.detailinfo'),
         width: 'medium',
         isShow: true
       }

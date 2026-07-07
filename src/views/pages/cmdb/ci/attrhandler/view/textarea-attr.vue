@@ -62,7 +62,7 @@ export default {
       isShow: false,
       dialogConfig: {
         type: 'modal',
-        title: '详细信息',
+        title: this.$t('page.detailinfo'),
         maskClose: true,
         isShow: true,
         hasFooter: false,

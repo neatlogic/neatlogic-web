@@ -77,7 +77,7 @@ export default {
               return v;
             }
           } catch (e) {
-            console.error('日期区间值：' + this.valueList[0] + '转换异常');
+            console.error(this.$t('term.cmdb.daterangeconverterror', { target: this.valueList[0] }));
           }
         }
       }
