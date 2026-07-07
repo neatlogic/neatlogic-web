@@ -166,27 +166,27 @@ export default {
       attrMap: {},
       relMap: {},
       expressionMap: {
-        equal: '等于',
-        notequal: '不等于',
-        like: '包含',
-        notlike: '不包含',
-        range: '范围',
-        gt: '大于',
-        lt: '小于',
-        gte: '大于等于',
-        lte: '小于等于',
-        'is-null': '为空',
-        'is-not-null': '不为空',
-        inworktime: '在服务时间内',
-        outworktime: '在服务时间外'
+        equal: this.$t('term.expression.equal'),
+        notequal: this.$t('term.expression.notequal'),
+        like: this.$t('term.expression.like'),
+        notlike: this.$t('term.expression.notlike'),
+        range: this.$t('term.expression.range'),
+        gt: this.$t('term.expression.gt'),
+        lt: this.$t('term.expression.lt'),
+        gte: this.$t('term.expression.gte'),
+        lte: this.$t('term.expression.lte'),
+        'is-null': this.$t('term.expression.isnull'),
+        'is-not-null': this.$t('term.expression.isnotnull'),
+        inworktime: this.$t('term.expression.inworktime'),
+        outworktime: this.$t('term.expression.outworktime')
       },
       joinTypeList: [
         {
-          text: '并且',
+          text: this.$t('page.and'),
           value: 'and'
         },
         {
-          text: '或者',
+          text: this.$t('page.or'),
           value: 'or'
         }
       ]

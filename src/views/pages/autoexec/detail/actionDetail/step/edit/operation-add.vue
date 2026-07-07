@@ -10,13 +10,27 @@
     @on-ok="confirmAdd()"
   >
     <template v-slot>
-      <div>
-        <div class="clearfix">
-          <div class="float-right" style="width:50%">
-            <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="getScriptList(1)"></CombineSearcher>
+      <TsContain
+        mode="dialog"
+        topLeftWidth="50%"
+        topRightWidth="50%"
+      >
+        <template slot="topLeft">
+          <div style="padding:0 12px;">
+            <Button
+              v-if="autoexecToolRecommendAiAssistantComponent"
+              type="primary"
+              ghost
+              @click="openToolRecommendAiAssistant"
+            >
+              <span class="tsfont-ai">{{ $t('term.autoexec.toolrecommendaiassistant') }}</span>
+            </Button>
           </div>
-        </div>
-        <div>
+        </template>
+        <template slot="topRight">
+          <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="getScriptList(1)"></CombineSearcher>
+        </template>
+        <template slot="content">
           <TsCard
             v-model="selectOperation"
             v-bind="cardConfig"
@@ -40,13 +54,21 @@
               </div>
             </template>
           </TsCard>
-        </div>
-      </div>
+          <component
+            :is="autoexecToolRecommendAiAssistantComponent"
+            v-if="autoexecToolRecommendAiAssistantComponent"
+            ref="toolRecommendAiAssistant"
+            :selectedOperationIdList="recommendSelectedOperationIdList"
+            @select-candidate="selectRecommendCandidate"
+          ></component>
+        </template>
+      </TsContain>
     </template>
   </TsDialog>
 </template>
 <script>
 import CombineSearcher from '@/resources/components/CombineSearcher/CombineSearcher.vue';
+import ImportComponent from '@/views/components/import-component.js';
 export default {
   name: 'OperationAdd',
   components: {
@@ -65,6 +87,14 @@ export default {
     },
     selectedOption: {
       type: Array
+    },
+    phaseConfig: {
+      type: Object,
+      default: () => ({})
+    },
+    prevOutputParamList: {
+      type: Array,
+      default: () => []
     },
     excludeList: Array
   },
@@ -305,9 +335,50 @@ export default {
     },
     getSelected(val, items) {
       this.selectedItem = items;
+    },
+    openToolRecommendAiAssistant() {
+      const assistant = this.$refs.toolRecommendAiAssistant;
+      if (!assistant || !assistant.openDialog) {
+        return;
+      }
+      assistant.openDialog({
+        recommendContext: this.buildToolRecommendContext()
+      });
+    },
+    buildToolRecommendContext() {
+      return {
+        execMode: this.type,
+        phaseName: this.phaseConfig && this.phaseConfig.name,
+        phaseUuid: this.phaseConfig && this.phaseConfig.uuid,
+        prevOutputParamList: this.prevOutputParamList || [],
+        selectedOperationIdList: this.recommendSelectedOperationIdList,
+        filter: this.getToolRecommendFilter(),
+        excludeList: this.recommendSelectedOperationIdList
+      };
+    },
+    getToolRecommendFilter() {
+      const filter = this.$utils.deepClone(this.searchVal || {});
+      filter.type = 'tool';
+      delete filter.catalogId;
+      return filter;
+    },
+    selectRecommendCandidate(candidate) {
+      const id = candidate && candidate.id;
+      if (id == null || this.selectOperation.includes(id)) {
+        return;
+      }
+      this.selectOperation.push(id);
     }
   },
-  computed: {},
+  computed: {
+    autoexecToolRecommendAiAssistantComponent() {
+      return ImportComponent && ImportComponent.autoexecToolRecommendAiAssistant ? ImportComponent.autoexecToolRecommendAiAssistant : null;
+    },
+    recommendSelectedOperationIdList() {
+      const selectedList = Array.isArray(this.selectedOption) ? this.selectedOption : [];
+      return Array.from(new Set([...selectedList, ...this.selectOperation]));
+    }
+  },
   watch: {
   }
 };
@@ -415,4 +486,3 @@ html {
 }
 
 </style>
-
