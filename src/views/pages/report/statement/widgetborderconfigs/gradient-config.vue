@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsFormItem label="标题" labelPosition="top">
+    <TsFormItem :label="$t('page.title')" labelPosition="top">
       <TsFormInput
         :value="config.title"
         @on-change="
@@ -10,7 +10,7 @@
         "
       />
     </TsFormItem>
-    <TsFormItem label="标题颜色" labelPosition="top">
+    <TsFormItem :label="$t('term.report.titlecolor')" labelPosition="top">
       <div>
         <ColorPicker
           :transfer="true"

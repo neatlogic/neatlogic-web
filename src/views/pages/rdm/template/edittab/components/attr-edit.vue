@@ -87,7 +87,7 @@ export default {
         { key: 'label', title: this.$t('page.name') },
         { key: 'typeText', title: this.$t('page.type') },
         { key: 'isPrivate', title: this.$t('term.rdm.systemattribute') },
-        { key: 'statKey', title: '统计用途' },
+        { key: 'statKey', title: this.$t('term.rdm.statpurpose') },
         { key: 'isRequired', title: this.$t('page.require'), tooltip: this.$t('term.rdm.isrequiredwhencreate') },
         { key: 'description', title: this.$t('page.description') },
         { key: 'action' }

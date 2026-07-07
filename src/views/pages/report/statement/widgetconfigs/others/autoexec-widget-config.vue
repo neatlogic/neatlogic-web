@@ -15,7 +15,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="进度条的颜色" labelPosition="top">
+    <TsFormItem :label="$t('term.report.progressbarcolor')" labelPosition="top">
       <div class="bg-op radius-sm padding-sm">
         <Row
           v-for="(item, index) in progressStatusList"
@@ -44,7 +44,7 @@
         </Row>
       </div>
     </TsFormItem>
-    <TsFormItem label="箭头颜色" labelPosition="top">
+    <TsFormItem :label="$t('term.report.arrowcolor')" labelPosition="top">
       <ColorPicker
         :value="config.arrowcolor"
         :transfer="true"
@@ -58,12 +58,12 @@
         }"
       />
     </TsFormItem>
-    <TsFormItem label="阶段状态颜色设置" labelPosition="top">
+    <TsFormItem :label="$t('term.report.phasestatuscolorsetting')" labelPosition="top">
       <div class="bg-op radius-sm padding-sm">
         <TsRow v-if="!$utils.isEmpty(statusColorList)" :gutter="8">
-          <Col :span="8">状态</Col>
-          <Col :span="7">字体颜色</Col>
-          <Col :span="7">背景颜色</Col>
+          <Col :span="8">{{ $t('page.status') }}</Col>
+          <Col :span="7">{{ $t('page.fontcolor') }}</Col>
+          <Col :span="7">{{ $t('page.backgroundcolor') }}</Col>
         </TsRow>
         <TsRow
           v-for="(item, index) in statusColorList"
@@ -101,7 +101,7 @@
               :transfer="true"
               recommend
               class="colorPicker"
-              alpha 
+              alpha
               transfer-class-name="color-picker-transfer-class"
               @on-change="val => {
                 $set(item, 'bgColor', val);
@@ -113,7 +113,7 @@
             <span v-if="!item.disabled" class="text-href tsfont-trash-o" @click="removeStatusColor(index)"></span>
           </Col>
         </TsRow>
-        <Button @click="addStatusColor"><span class="tsfont-plus">状态</span></Button>
+        <Button @click="addStatusColor"><span class="tsfont-plus">{{ $t('page.status') }}</span></Button>
       </div>
     </TsFormItem>
   </div>
@@ -131,16 +131,16 @@ export default {
   data() {
     return {
       progressStatusList: [{
-        progressName: '未开始',
+        progressName: this.$t('term.report.notstarted'),
         progressValue: 'pending',
         progressColor: '#fff'
       }, {
-        progressName: '进行中',
+        progressName: this.$t('term.report.inprogress'),
         progressValue: 'running',
         progressColor: '#2d8cf0'
       },
       {
-        progressName: '已完成',
+        progressName: this.$t('term.report.completed'),
         progressValue: 'completed',
         progressColor: '#19be6b'
       }],

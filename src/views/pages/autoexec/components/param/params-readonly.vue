@@ -188,7 +188,7 @@ export default {
       if (this.config.config && !this.$utils.isEmpty(this.config.config.validateList)) {
         this.config.config.validateList.forEach(item => {
           if (this.validConfig.hasOwnProperty(item.name)) {
-            text = '校验规则为：' + this.validConfig[item.name];
+            text = this.$t('term.autoexec.validationruleis') + this.validConfig[item.name];
           }
         });
       }

@@ -15,14 +15,15 @@
 </template>
 <script>
 import { WidgetBase } from '../widget-base.js';
+import { $t } from '@/resources/init.js';
 
 const DEFAULT_RANKING_LIST = [
-  { name: '服务请求', value: 128 },
-  { name: '变更工单', value: 96 },
-  { name: '自动化执行', value: 78 },
-  { name: '巡检任务', value: 62 },
-  { name: '告警事件', value: 45 },
-  { name: '发布任务', value: 38 }
+  { name: $t('term.report.servicerequest'), value: 128 },
+  { name: $t('term.report.changeticket'), value: 96 },
+  { name: $t('term.report.autoexecexecution'), value: 78 },
+  { name: $t('term.report.inspectiontask'), value: 62 },
+  { name: $t('term.report.alertevent'), value: 45 },
+  { name: $t('term.report.releasetask'), value: 38 }
 ];
 
 export default {
@@ -58,7 +59,7 @@ export default {
       return DEFAULT_RANKING_LIST;
     },
     rankingTitle() {
-      return (this.widget.config && this.widget.config.title) || 'TOP排名';
+      return (this.widget.config && this.widget.config.title) || this.$t('term.report.topranking');
     },
     showTitle() {
       return !(this.widget.config && this.widget.config.showTitle === false);

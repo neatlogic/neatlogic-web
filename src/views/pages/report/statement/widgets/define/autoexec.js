@@ -13,10 +13,10 @@ export default {
   needData: true,
   dataTypes: [{ value: 'dynamic', text: $t('term.report.datatype.dynamicdata') }],
   fields: [
-    { name: 'jobPhaseName', label: '阶段名称', type: 'text', isRequired: true },
-    { name: 'jobPhaseStatus', label: '阶段状态', type: 'text', isRequired: true },
-    { name: 'progress', label: '阶段进度', type: ['text', 'number'], isRequired: true, description: '进度说明：1代表已完成，0代表未完成' },
-    { name: 'jobGroupSort', label: '阶段组', type: ['text', 'number'], isRequired: true }
+    { name: 'jobPhaseName', label: $t('term.report.phasename'), type: 'text', isRequired: true },
+    { name: 'jobPhaseStatus', label: $t('term.report.phasestatus'), type: 'text', isRequired: true },
+    { name: 'progress', label: $t('term.report.phaseprogress'), type: ['text', 'number'], isRequired: true, description: $t('term.report.progressdesc') },
+    { name: 'jobGroupSort', label: $t('term.report.phasegroup'), type: ['text', 'number'], isRequired: true }
   ],
   config: { 
     backgroundColor: '', 
@@ -27,14 +27,14 @@ export default {
     statusColorList: [
       {
         name: 'start',
-        label: '开始',
+        label: $t('term.report.start'),
         color: '#25b864',
         bgColor: 'rgba(37, 184, 100, .1)',
         disabled: true
       },
       {
         name: 'end',
-        label: '结束',
+        label: $t('page.end'),
         color: '#f33b3b',
         bgColor: 'rgba(243, 59, 59, .1)',
         disabled: true

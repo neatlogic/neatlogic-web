@@ -1,13 +1,13 @@
 <template>
   <div class="component-property-panel">
-    <div v-if="!token" class="empty-tip text-grey">请选择画布中的报表组件</div>
+    <div v-if="!token" class="empty-tip text-grey">{{ $t('term.report.selectreportcomponent') }}</div>
     <div v-else-if="!rule" class="empty-tip text-grey">
       <div class="text-title">{{ token.name }}</div>
-      <div class="mt-xs">未找到该组件的规则文件，请切换源码模式编辑。</div>
+      <div class="mt-xs">{{ $t('term.report.componentrulenotfound') }}</div>
     </div>
     <div v-else-if="!token.parsed" class="empty-tip text-grey">
       <div class="text-title">{{ rule.label }}</div>
-      <div class="mt-xs">组件参数不是标准 JSON，需切换源码模式编辑。</div>
+      <div class="mt-xs">{{ $t('term.report.componentparamnotjson') }}</div>
       <div class="code-preview mt-xs">{{ token.argsText }}</div>
     </div>
     <div v-else>

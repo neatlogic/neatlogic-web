@@ -1,13 +1,13 @@
 <template>
   <div>
-    <TsFormItem label="无数据标题" labelPosition="top">
+    <TsFormItem :label="$t('term.report.nodatatitle')" labelPosition="top">
       <TsFormInput
-        :value="getConfigValue('title', '核心指标')"
+        :value="getConfigValue('title', $t('term.report.coremetric'))"
         border="border"
         @change="val => setConfigValue('title', val)"
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem label="标题颜色" labelPosition="top">
+    <TsFormItem :label="$t('term.report.titlecolor')" labelPosition="top">
       <ColorPicker
         :value="getConfigValue('titleColor', '')"
         :transfer="true"
@@ -18,7 +18,7 @@
         @on-change="val => setConfigValue('titleColor', val)"
       />
     </TsFormItem>
-    <TsFormItem label="无数据数值" labelPosition="top">
+    <TsFormItem :label="$t('term.report.nodatavalue')" labelPosition="top">
       <TsFormInput
         :value="getConfigValue('defaultValue', 1286)"
         type="number"
@@ -26,21 +26,21 @@
         @change="val => setConfigValue('defaultValue', val)"
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem label="无数据单位" labelPosition="top">
+    <TsFormItem :label="$t('term.report.nodataunit')" labelPosition="top">
       <TsFormInput
         :value="getConfigValue('unit', '')"
         border="border"
         @change="val => setConfigValue('unit', val)"
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem label="数值前缀" labelPosition="top">
+    <TsFormItem :label="$t('term.report.valueprefix')" labelPosition="top">
       <TsFormInput
         :value="getConfigValue('prefix', '')"
         border="border"
         @change="val => setConfigValue('prefix', val)"
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem label="小数位" labelPosition="top">
+    <TsFormItem :label="$t('term.report.decimalplaces')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('decimals', 0)"
@@ -52,7 +52,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="数值字号" labelPosition="top">
+    <TsFormItem :label="$t('term.report.valuefontsize')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('fontSize', 46)"
@@ -64,7 +64,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="千分位" labelPosition="top">
+    <TsFormItem :label="$t('term.report.thousandseparator')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('useThousands', true)"
         :true-value="true"
@@ -72,7 +72,7 @@
         @change="val => setConfigValue('useThousands', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="启用滚动" labelPosition="top">
+    <TsFormItem :label="$t('term.report.enablescroll')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('animation', true)"
         :true-value="true"
@@ -80,7 +80,7 @@
         @change="val => setConfigValue('animation', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="滚动时长" labelPosition="top">
+    <TsFormItem :label="$t('term.report.scrollduration')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('duration', 1200)"
@@ -92,7 +92,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="显示趋势" labelPosition="top">
+    <TsFormItem :label="$t('term.report.showtrend')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('showTrend', false)"
         :true-value="true"
@@ -100,7 +100,7 @@
         @change="val => setConfigValue('showTrend', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem v-if="getConfigValue('showTrend', false)" label="趋势方向" labelPosition="top">
+    <TsFormItem v-if="getConfigValue('showTrend', false)" :label="$t('term.report.trenddirection')" labelPosition="top">
       <TsFormRadio
         :value="getConfigValue('trendType', 'up')"
         :dataList="trendTypeList"
@@ -125,8 +125,8 @@ export default {
   data() {
     return {
       trendTypeList: [
-        { value: 'up', text: '上升' },
-        { value: 'down', text: '下降' }
+        { value: 'up', text: this.$t('term.report.up') },
+        { value: 'down', text: this.$t('term.report.down') }
       ]
     };
   },

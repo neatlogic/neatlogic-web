@@ -3,11 +3,11 @@
     <Alert show-icon>
       <div>
         <ul>
-          <li>配置过滤属性时，<span class="text-error">当前矩阵过滤属性值，需要和过滤组件值的【值字段】保持一致。</span>否则过滤不生效。</li>
-          <li>示例：通过 “系统名称” 过滤其下属的所有 “模块名称”，需按以下信息配置：
+          <li>{{ $t('term.report.filterattrconfigtipstart') }}<span class="text-error">{{ $t('term.report.filterattrconfigtipemphasis') }}</span>{{ $t('term.report.filterattrconfigtipend') }}</li>
+          <li>{{ $t('term.report.reactionfilterexample') }}
             <ul>
-              <li>先配置 “系统名称”，将其【值字段】设为 “系统 id”；</li>
-              <li>配置 “模块名称” 的联动过滤时，【属性】必须选择 “系统 id”（与上述 “系统名称” 的【值字段】保持一致）</li>
+              <li>{{ $t('term.report.reactionfilterexamplefirst') }}</li>
+              <li>{{ $t('term.report.reactionfilterexamplesecond') }}</li>
             </ul>
           </li>
         </ul>
@@ -15,17 +15,17 @@
     </Alert>
     <TsRow>
       <Col span="8" class="text-grey">
-        属性
+        {{ $t('page.attribute') }}
       </Col>
       <Col span="2">
       </Col>
       <Col span="10" class="text-grey">
-        组件值
+        {{ $t('term.report.componentvalue') }}
       </Col>
       <Col span="4">
       </Col>
     </TsRow>
-    <span v-if="$utils.isEmpty(filterList)" class="tsfont-plus text-href mt-sm" @click.stop="addFilterCondition">过滤条件</span>
+    <span v-if="$utils.isEmpty(filterList)" class="tsfont-plus text-href mt-sm" @click.stop="addFilterCondition">{{ $t('term.report.filtercondition') }}</span>
     <TsRow v-for="(item, index) in filterList" :key="item.uuid" className="mb-nm">
       <Col span="8">
         <TsFormSelect
@@ -39,7 +39,7 @@
           border="border"
         ></TsFormSelect>
       </Col>
-      <Col span="2">等于</Col>
+      <Col span="2">{{ $t('term.expression.eq') }}</Col>
       <Col span="10">
         <TsFormSelect
           :ref="`formRef_${index}`"

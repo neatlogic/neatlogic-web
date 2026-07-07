@@ -3,15 +3,15 @@
     <div class="overview-header border-color" @click="toggleCollapse">
       <div class="text-title">
         <span :class="isCollapsed ? 'tsfont-right' : 'tsfont-down'"></span>
-        <span class="ml-xs">需求概览</span>
+        <span class="ml-xs">{{ $t('term.rdm.storyoverview') }}</span>
       </div>
       <div class="action-group" @click.stop>
         <span v-if="activeStatus" class="action-item">
-          <span class="text-grey">当前状态：</span>
+          <span class="text-grey">{{ $t('term.rdm.currentstatus') }}</span>
           <span :style="{ color: activeStatus.color }">{{ activeStatus.label || activeStatus.name }}</span>
           <span class="tsfont-close ml-xs text-action" @click="clearStatus"></span>
         </span>
-        <span class="action-item tsfont-refresh" @click="refresh">刷新</span>
+        <span class="action-item tsfont-refresh" @click="refresh">{{ $t('page.refresh') }}</span>
       </div>
     </div>
     <div v-show="!isCollapsed" class="overview-body">
@@ -24,7 +24,7 @@
             <div class="metric-value" :class="metric.className">{{ metric.value }}</div>
           </div>
           <div v-if="statusChart.isConfigured && statusChart.hasData" class="overview-panel chart-panel border-color">
-            <div class="chart-title">需求状态比例</div>
+            <div class="chart-title">{{ $t('term.rdm.storystatusratio') }}</div>
             <div class="status-chart-layout">
               <div ref="statusChart" class="chart-container"></div>
               <div class="status-list">
@@ -45,11 +45,11 @@
         </div>
         <div v-if="hasBottomChart" class="overview-row overview-chart-row" :style="{ '--overview-panel-count': bottomPanelCount }">
           <div v-if="hasPriorityChart" class="overview-panel chart-panel border-color">
-            <div class="chart-title">优先级分布</div>
+            <div class="chart-title">{{ $t('term.rdm.prioritydistribution') }}</div>
             <div ref="priorityChart" class="chart-container"></div>
           </div>
           <div v-if="hasTrendChart" class="overview-panel chart-panel border-color">
-            <div class="chart-title">近7个月需求/逾期趋势</div>
+            <div class="chart-title">{{ $t('term.rdm.storyoverduetrend7months') }}</div>
             <div ref="trendChart" class="chart-container"></div>
           </div>
         </div>
@@ -223,7 +223,7 @@ export default {
           if (requestId !== this.overviewRequestId) {
             return;
           }
-          this.errorMessage = '需求概览加载失败';
+          this.errorMessage = this.$t('term.rdm.storyoverviewloadfailed');
           this.overviewData = {};
           this.destroyPlot();
         })
@@ -277,7 +277,7 @@ export default {
         label: false,
         statistic: {
           title: {
-            content: '总数',
+            content: this.$t('term.rdm.total'),
             style: {
               color: chartTheme.textColor,
               fontSize: '18px',
@@ -423,7 +423,7 @@ export default {
           domStyles: this.getTooltipDomStyles()
         },
         color: ({ type }) => {
-          return type === '逾期' ? chartTheme.warningColor : chartTheme.primaryColor;
+          return type === this.$t('term.rdm.overdue') ? chartTheme.warningColor : chartTheme.primaryColor;
         }
       });
       this.trendPlot.render();
@@ -645,21 +645,21 @@ export default {
         {
           key: 'overdue',
           isConfigured: this.isStatConfigured(STAT_KEY.OVERDUE, 'overdueCount'),
-          label: '逾期需求总数',
+          label: this.$t('term.rdm.overduestorycount'),
           value: this.getStatValue(STAT_KEY.OVERDUE, 'overdueCount', 0),
           className: 'text-error'
         },
         {
           key: 'complete',
           isConfigured: this.isStatConfigured(STAT_KEY.COMPLETE_RATE, 'completeRate'),
-          label: '完成率',
+          label: this.$t('term.rdm.completionrate'),
           value: (Number(this.getStatValue(STAT_KEY.COMPLETE_RATE, 'completeRate', 0)) * 100).toFixed(2) + '%',
           className: 'text-success'
         },
         {
           key: 'risk',
           isConfigured: this.isStatConfigured(STAT_KEY.HIGH_RISK, 'highRiskCount'),
-          label: '高风险需求数',
+          label: this.$t('term.rdm.highriskstorycount'),
           value: this.getStatValue(STAT_KEY.HIGH_RISK, 'highRiskCount', 0),
           className: 'text-warning'
         }
@@ -695,8 +695,8 @@ export default {
       const list = normalizeTrendList(this.getStatDataList(STAT_KEY.TREND, 'trendList'));
       const dataList = [];
       list.forEach(item => {
-        dataList.push({ month: item.month, type: '需求', count: item.totalCount || 0 });
-        dataList.push({ month: item.month, type: '逾期', count: item.overdueCount || 0 });
+        dataList.push({ month: item.month, type: this.$t('term.rdm.request'), count: item.totalCount || 0 });
+        dataList.push({ month: item.month, type: this.$t('term.rdm.overdue'), count: item.overdueCount || 0 });
       });
       return {
         isConfigured: this.isStatConfigured(STAT_KEY.TREND, 'trendList'),

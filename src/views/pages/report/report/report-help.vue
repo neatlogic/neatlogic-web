@@ -21,22 +21,22 @@
         {{ $t('term.report.contentconfigexample') }}
         <div slot="content">
           <!-- <div v-highlight>{{ contentHelp }}</div>-->
-          内容配置支持<b>freemarker</b>语法，通过<b>report.xxx</b>获取指定结果集。<br>
-          例如：数据源配置中包含id="userList"的select节点和id="teamList"的rest节点，则可通过<b>${report.userList }</b>和 <b>${report.teamList }</b> 获取结果集。<br>
-          除自行填写freemarker模板外，系统提供了以下图表函数，帮助快速生成简单图表
-          <p>表格：<b>${drawTable(data[必须], config[可选，json格式])}，config范例：</b></p>
+          {{ $t('term.report.contenthelpsupport') }} <b>freemarker</b>{{ $t('term.report.syntaxvia') }}<b>report.xxx</b>{{ $t('term.report.getspecifiedresultset') }}<br>
+          {{ $t('term.report.contenthelpexampleprefix') }}<b>${report.userList }</b>{{ $t('term.report.and') }} <b>${report.teamList }</b> {{ $t('term.report.getresultset') }}<br>
+          {{ $t('term.report.chartfunctiondesc') }}
+          <p>{{ $t('term.report.table') }}:<b>${drawTable(data[{{ $t('term.report.required') }}], config[{{ $t('term.report.optionaljson') }}])}{{ $t('term.report.configexampleprefix') }}</b></p>
           <TsCodemirror codeMode="javascript" height="auto" :value="table.config"></TsCodemirror>
-          <p>柱状图：<b>${drawBar(data[必须], config[可选，json格式])}</b>，data范例：</p>
+          <p>{{ $t('term.report.chartsetting.barchart') }}:<b>${drawBar(data[{{ $t('term.report.required') }}], config[{{ $t('term.report.optionaljson') }}])}</b>{{ $t('term.report.dataexampleprefix') }}</p>
           <TsCodemirror codeMode="xml" height="auto" :value="barHelp.data"></TsCodemirror>
-          <p>横向柱状图：<b>${drawBarH(data[必须], config[可选，json格式])}</b>，data范例：</p>
+          <p>{{ $t('term.report.chartsetting.horizontalbarchart') }}:<b>${drawBarH(data[{{ $t('term.report.required') }}], config[{{ $t('term.report.optionaljson') }}])}</b>{{ $t('term.report.dataexampleprefix') }}</p>
           <TsCodemirror codeMode="xml" height="auto" :value="barhHelp.data"></TsCodemirror>
-          <p>堆积图：<b>${drawStackedBar(data[必须], config[可选，json格式])}</b>，data范例：</p>
+          <p>{{ $t('term.report.stackedchart') }}:<b>${drawStackedBar(data[{{ $t('term.report.required') }}], config[{{ $t('term.report.optionaljson') }}])}</b>{{ $t('term.report.dataexampleprefix') }}</p>
           <TsCodemirror codeMode="xml" height="auto" :value="stackedBar.data"></TsCodemirror>
-          <p>横向堆积图：<b>${drawStackedBarH(data[必须], config[可选，json格式])}</b>，data范例请参考<b>堆积图</b></p>
-          <p>曲线图：<b>${drawLine(data[必须], config[可选，json格式])}</b>，data范例请参考<b>柱状图</b></p>
-          <p>饼图：<b>${drawPie(data[必须], config[可选，json格式])}</b>，data范例：</p>
+          <p>{{ $t('term.report.horizontalstackedchart') }}:<b>${drawStackedBarH(data[{{ $t('term.report.required') }}], config[{{ $t('term.report.optionaljson') }}])}</b>{{ $t('term.report.dataexamplerefer') }}<b>{{ $t('term.report.stackedchart') }}</b></p>
+          <p>{{ $t('term.report.curvechart') }}:<b>${drawLine(data[{{ $t('term.report.required') }}], config[{{ $t('term.report.optionaljson') }}])}</b>{{ $t('term.report.dataexamplerefer') }}<b>{{ $t('term.report.chartsetting.barchart') }}</b></p>
+          <p>{{ $t('term.report.chartsetting.piechart') }}:<b>${drawPie(data[{{ $t('term.report.required') }}], config[{{ $t('term.report.optionaljson') }}])}</b>{{ $t('term.report.dataexampleprefix') }}</p>
           <TsCodemirror codeMode="xml" height="auto" :value="pie.data"></TsCodemirror>
-          <p>config范例，适用于以上所有图表：</p>
+          <p>{{ $t('term.report.configexampleforallcharts') }}</p>
           <TsCodemirror codeMode="javascript" height="auto" :value="barHelp.config"></TsCodemirror>
         </div>
       </Panel>
@@ -74,9 +74,9 @@ export default {
       },
       barHelp: {
         data: '<resultMap id="bar">\n' +
-          '   <result property="yField"/><!--Y坐标列，必须是数值，必须存在-->\n' +
-          '   <result property="xFiled"/><!--X坐标列，必须存在-->\n' +
-          '   <result property="groupField"/><!--分组列，柱状图选择存在，曲线图必须存在-->\n' +
+          '   <result property="yField"/><!--' + this.$t('term.report.yfieldrequirednumber') + '-->\n' +
+          '   <result property="xFiled"/><!--' + this.$t('term.report.xfieldrequired') + '-->\n' +
+          '   <result property="groupField"/><!--' + this.$t('term.report.groupfieldbaroptional') + '-->\n' +
           '</resultMap>',
         config: `{\n
            "title": ${this.$t('page.title')},\n
@@ -90,73 +90,73 @@ export default {
       },
       barhHelp: {
         data: '<resultMap id="barh">\n' +
-              '   <result property="xField"/><!--X坐标列，必须是数值，必须存在-->\n' +
-              '   <result property="yFiled"/><!--Y坐标列，必须存在-->\n' +
-              '   <result property="groupField"/><!--分组列，选择存在-->\n' +
+              '   <result property="xField"/><!--' + this.$t('term.report.xfieldrequirednumber') + '-->\n' +
+              '   <result property="yFiled"/><!--' + this.$t('term.report.yfieldrequired') + '-->\n' +
+              '   <result property="groupField"/><!--' + this.$t('term.report.groupfieldoptional') + '-->\n' +
               '</resultMap>'
       },
       stackedBar: {
         data: '<resultMap id="stacked">\n' +
-              '   <result property="groupField"/><!--一级分类，必须存在-->\n' +
-              '   <collection property="dataList"><!--数据集，必须存在-->\n' +
-              '       <result property="typeField"/><!--二级分类，必须存在-->\n' +
-              '       <result property="valueField"/><!--数组，选择存在-->\n' +
+              '   <result property="groupField"/><!--' + this.$t('term.report.primarycategoryrequired') + '-->\n' +
+              '   <collection property="dataList"><!--' + this.$t('term.report.datasetrequired') + '-->\n' +
+              '       <result property="typeField"/><!--' + this.$t('term.report.secondarycategoryrequired') + '-->\n' +
+              '       <result property="valueField"/><!--' + this.$t('term.report.arrayoptional') + '-->\n' +
               '   </collection>\n' +
               '</resultMap>'
       },
       pie: {
         data: '<resultMap id="pie">\n' +
-              '   <result property="typeField"/><!--分类字段，必须存在-->\n' +
-              '   <result property="valueField"/><!--值字段，必须存在-->\n' +
+              '   <result property="typeField"/><!--' + this.$t('term.report.categoryfieldrequired') + '-->\n' +
+              '   <result property="valueField"/><!--' + this.$t('term.report.valuefieldrequired') + '-->\n' +
               '</resultMap>'
       },
       datasourceHelp: '<mapper>\n' + 
-                  '   <!--resultMap需要关联sql语句，可以重复使用，用于定义最终返回的数据字段-->\n' +
-                  '   <!--resultType属性默认是List，Sql执行结果会以List的形式返回；设置成Map，Sql结果则会以Map的形式返回，Map的Key是第一层id值的组合-->\n' +
+                  '   <!--' + this.$t('term.report.resultmapdesc') + '-->\n' +
+                  '   <!--' + this.$t('term.report.resulttypedesc') + '-->\n' +
                   '   <resultMap id="userMap" resultType="List">\n' +
-                  '       <!--在返回的结果集中，以所有id的property中的字段为key进行去重操作，支持多个id字段-->\n' +
+                  '       <!--' + this.$t('term.report.iddedupdesc') + '-->\n' +
                   '       <id property="userId" />\n' +
-                  '       <!--绑定结果集中的字段，必须和结果集中的字段名对应，没绑定的字段会被丢弃-->\n' +
+                  '       <!--' + this.$t('term.report.resultfieldbinddesc') + '-->\n' +
                   '       <result property="userName" />\n' +
-                  '       <!--以property中的值为key绑定次级结果集，collection中可嵌套id、result和collection。-->\n' +
+                  '       <!--' + this.$t('term.report.collectionbinddesc') + '-->\n' +
                   '       <collection property="roleList">\n' +
                   '           <result property="roleName" />\n' +
                   '       </collection>\n' +
                   '   </resultMap>\n' +
                   '\n' + 
-                  '   <!--select语句块用于定义查询sql语句-->\n' +
-                  '   <!--resultMap 必填属性，关联一个resultMap id\n' +
-                  '   <!--lazyload 选填属性，默认值false，设为true时，该段select语句在页面第一次加载时不运行-->\n' +
-                  '   <!--timeout 选填属性，查询超时时间，默认值30秒-->\n' +
+                  '   <!--' + this.$t('term.report.selectblockdesc') + '-->\n' +
+                  '   <!--' + this.$t('term.report.resultmaprequiredattr') + '\n' +
+                  '   <!--' + this.$t('term.report.lazyloadselectdesc') + '-->\n' +
+                  '   <!--' + this.$t('term.report.timeoutselectdesc') + '-->\n' +
                   '   <select id="userList" resultMap="userMap" lazyload="false" timeout="30">\n' +
                   '       SELECT user_id AS userId, user_name AS userName, c.name AS roleName from user a LEFT JOIN user_role b ON a.uuid = b.user_uuid LEFT JOIN role c ON b.role_uuid = c.uuid\n' +
                   '       WHERE true\n' +
                   '       <if test="userId != null">\n' +
-                  '       <!--当test中的表达式为true，则输出if的主体内容，表达式使用javascript语法-->\n' +
+                  '       <!--' + this.$t('term.report.ifdesc') + '-->\n' +
                   '           AND user_id = #{userId}\n' +
                   '       </if>\n' +
                   '       <ifNotNull parameter="userName">\n' +
-                  '       <!--如果parameter不为空值，则输出ifNotNull的主体内容-->\n' +
+                  '       <!--' + this.$t('term.report.ifnotnulldesc') + '-->\n' +
                   '           AND user_name = #{userName}\n' +
                   '       </ifNotNull>\n' +
                   '       <ifNull parameter="email">\n' +
-                  '       <!--如果parameter为空值，则输出ifNull的主体内容-->\n' +
+                  '       <!--' + this.$t('term.report.ifnulldesc') + '-->\n' +
                   '           AND email = \'xx@xx.com\'\n' +
                   '       </ifNull>\n' +
                   '       <forEach parameter="userIds" separator=",">\n' +
-                  '       <!--如果parameter为数组，则使用separator分隔输出变量-->\n' +
+                  '       <!--' + this.$t('term.report.foreachdesc') + '-->\n' +
                   '           AND user_id IN (#{userIds})\n' +
                   '       </forEach>\n' +
                   '   </select>\n' +
                   '\n' +
-                  '   <!--rest语句块用于定义查询远程接口-->\n' +
-                  '   <!--url 必填属性，目标地址-->\n' +
-                  '   <!--lazyload 选填属性，默认值为false，设为true时，该段select语句在页面第一次加载时不运行-->\n' +
-                  '   <!--authtype 选填属性，为空代表匿名访问，支持basic或token，如果为basic，则需要提供username和password属性，如果为token，则需要提供token属性-->\n' +
-                  '   <!--timeout 选填属性，读取超时时间，默认值30秒-->\n' +
-                  '   <!--rest内容块用于定义请求参数，需要符合json格式，请求将以payload形式发送-->\n' +
+                  '   <!--' + this.$t('term.report.restblockdesc') + '-->\n' +
+                  '   <!--' + this.$t('term.report.urlrequiredattr') + '-->\n' +
+                  '   <!--' + this.$t('term.report.lazyloadrestdesc') + '-->\n' +
+                  '   <!--' + this.$t('term.report.authtypedesc') + '-->\n' +
+                  '   <!--' + this.$t('term.report.timeoutreaddesc') + '-->\n' +
+                  '   <!--' + this.$t('term.report.restcontentdesc') + '-->\n' +
                   '   <rest id="restUserList" url="http://xxx.yyy.zzz" lazyload="false" authtype="basic" username="user" password="pwd" timeout="30">\n' +
-                  '       <!--此处同样支持<if><ifNull><ifNotNull><forEach>标签，具体请参考上面说明-->\n' +
+                  '       <!--' + this.$t('term.report.restsupporttagsprefix') + '<if><ifNull><ifNotNull><forEach>' + this.$t('term.report.restsupporttagssuffix') + '-->\n' +
                   '       {"userId":"#{userId}"}\n' +
                   '   </rest>\n' +
                   '</mapper>'

@@ -1,5 +1,6 @@
 import { createChartRule } from './chart-rule-factory';
 import { getDataSourceColumnList, getDataSourceFormItem } from './rule-util';
+import { $t } from '@/resources/init.js';
 
 function getFieldFormItem(label, value, dataName, context) {
   const columnList = getDataSourceColumnList(dataName, context);
@@ -10,22 +11,22 @@ function getFieldFormItem(label, value, dataName, context) {
     dataList: columnList.map(column => ({ value: column, text: column })),
     allowCreate: true,
     search: true,
-    desc: columnList.length > 0 ? '从当前数据源字段中选择，也可手工输入' : '未识别到字段，可手工输入'
+    desc: columnList.length > 0 ? $t('term.report.selectfromdatasourcefield') : $t('term.report.nofieldmanualinput')
   };
 }
 
 export default createChartRule({
   name: 'drawPie',
-  label: '饼图',
+  label: $t('term.report.chartsetting.piechart'),
   icon: 'tsfont-chart-pie',
   extraFormConfig(config, context) {
     return {
       data: getDataSourceFormItem(config, context, { minColumnCount: 2 }),
-      typeField: getFieldFormItem('分类字段', config.typeField || 'typeField', config.data, context),
-      valueField: getFieldFormItem('数值字段', config.valueField || 'valueField', config.data, context),
-      xLabel: { type: 'text', label: '分类字段说明', value: config.xLabel, isHidden: true },
-      yLabel: { type: 'text', label: '数值字段说明', value: config.yLabel, isHidden: true },
-      tick: { type: 'number', label: '刻度数量', value: config.tick, isHidden: true }
+      typeField: getFieldFormItem($t('term.report.chartsetting.classifyfield'), config.typeField || 'typeField', config.data, context),
+      valueField: getFieldFormItem($t('term.report.numberfield'), config.valueField || 'valueField', config.data, context),
+      xLabel: { type: 'text', label: $t('term.report.categoryfielddesc'), value: config.xLabel, isHidden: true },
+      yLabel: { type: 'text', label: $t('term.report.valuefielddesc'), value: config.yLabel, isHidden: true },
+      tick: { type: 'number', label: $t('term.report.chartsetting.tickcount'), value: config.tick, isHidden: true }
     };
   }
 });

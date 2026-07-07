@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">文本模板</label>
+      <label class="ivu-form-item-label overflow">{{ $t('term.report.texttemplate') }}</label>
       <div class="ivu-form-item-content">
         <TsFormSelect
           :value="config.titleTemplate || 'plain'"
@@ -13,7 +13,7 @@
       </div>
     </div>
     <div v-if="isDecorateTitle" class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">副标题</label>
+      <label class="ivu-form-item-label overflow">{{ $t('term.report.subtitle') }}</label>
       <div class="ivu-form-item-content">
         <TsFormInput
           :value="config.subTitle"
@@ -23,7 +23,7 @@
       </div>
     </div>
     <div v-if="isDecorateTitle" class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">显示流光线</label>
+      <label class="ivu-form-item-label overflow">{{ $t('term.report.showflowline') }}</label>
       <div class="ivu-form-item-content">
         <TsFormSwitch
           :value="config.showLine"

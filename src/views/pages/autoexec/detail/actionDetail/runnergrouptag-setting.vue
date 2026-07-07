@@ -181,7 +181,7 @@ export default {
       await this.$api.framework.runner.getRunnerGroupTag(params)
         .then(res => {
           if (res.Status == 'OK') {
-            this.runnerGroupTag.text = res.Return.tagList.length > 0 ? res.Return.tagList[0].name : '执行器组标签已被删除';
+            this.runnerGroupTag.text = res.Return.tagList.length > 0 ? res.Return.tagList[0].name : this.$t('term.autoexec.deletedrunnergrouptag');
           }
         });
     },

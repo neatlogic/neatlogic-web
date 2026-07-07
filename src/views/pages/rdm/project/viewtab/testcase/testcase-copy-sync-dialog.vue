@@ -2,7 +2,7 @@
   <TsDialog v-bind="dialogConfig" @on-ok="confirm" @on-close="close">
     <template v-slot>
       <div>
-        <div class="text-grey mb-md">默认仅修改原用例，需要同步的副本请勾选。</div>
+        <div class="text-grey mb-md">{{ $t('term.rdm.copysynctip') }}</div>
         <TsTable
           v-if="tbodyList.length > 0"
           :theadList="theadList"
@@ -41,7 +41,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '选择同步副本',
+        title: this.$t('term.rdm.selectsynccopy'),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -50,9 +50,9 @@ export default {
       selectedList: [],
       theadList: [
         { key: 'selection', width: 60 },
-        { key: 'name', title: '副本' },
-        { key: 'relIssueName', title: '关联对象' },
-        { key: 'statusLabel', title: '状态', width: 120 }
+        { key: 'name', title: this.$t('term.rdm.copy') },
+        { key: 'relIssueName', title: this.$t('term.rdm.relatedobject') },
+        { key: 'statusLabel', title: this.$t('page.status'), width: 120 }
       ]
     };
   },

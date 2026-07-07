@@ -1,13 +1,13 @@
 <template>
   <div>
-    <TsFormItem label="左右对齐" labelPosition="top">
+    <TsFormItem :label="$t('term.report.horizontalalign')" labelPosition="top">
       <TsFormRadio
         :value="config.align || 'left'"
         :dataList="horizontalAlignList"
         @change="val => setConfigValue('align', val)"
       ></TsFormRadio>
     </TsFormItem>
-    <TsFormItem label="上下对齐" labelPosition="top">
+    <TsFormItem :label="$t('term.report.verticalalign')" labelPosition="top">
       <TsFormRadio
         :value="config.verticalAlign || 'top'"
         :dataList="verticalAlignList"
@@ -62,9 +62,9 @@ export default {
         { value: 'right', text: this.$t('page.rightalign') }
       ],
       verticalAlignList: [
-        { value: 'top', text: '顶部' },
-        { value: 'middle', text: '居中' },
-        { value: 'bottom', text: '底部' }
+        { value: 'top', text: this.$t('term.report.top') },
+        { value: 'middle', text: this.$t('term.report.middle') },
+        { value: 'bottom', text: this.$t('term.report.bottom') }
       ]
     };
   },

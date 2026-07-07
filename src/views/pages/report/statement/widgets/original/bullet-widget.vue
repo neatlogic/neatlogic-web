@@ -39,7 +39,7 @@ export default {
       this.data = [];
       for (var i = 1; i <= 1; i++) {
         this.data.push({
-          title: '完成度',
+          title: this.$t('term.report.chartsetting.completion'),
           ranges: [100],
           measures: [80],
           target: 85

@@ -1,6 +1,8 @@
+import { $t } from '@/resources/init.js';
+
 export default {
   name: 'scanlight',
-  label: '慢速扫描',
+  label: $t('term.report.slowscan'),
   type: 'scanlight',
   icon: 'tsfont-fullscreen',
   widgetType: 'effect',

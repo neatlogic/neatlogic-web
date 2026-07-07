@@ -33,7 +33,7 @@
         <div v-if="editMode === 'graph' && isSyncingSqlGraph" class="report-content-query action-group">
           <div v-if="isSyncingSqlGraph" class="action-item text-grey">
             <Icon type="ios-loading" size="14" class="loading"></Icon>
-            配置同步中
+            {{ $t('term.report.configsyncing') }}
           </div>
         </div>
         <RadioGroup v-model="editMode" type="button" @on-change="changeEditMode">
@@ -68,7 +68,7 @@
             v-model="tableKeyword"
             search
             clearable
-            placeholder="搜索表"
+            :placeholder="$t('term.report.searchtable')"
             @on-search="searchTable"
             @on-clear="searchTable"
           ></Input>
@@ -126,7 +126,7 @@
             filterable
             clearable
             transfer
-            placeholder="来源字段"
+            :placeholder="$t('term.report.sourcefield')"
             @on-change="updateSelectedJoin"
           >
             <Option
@@ -145,7 +145,7 @@
             filterable
             clearable
             transfer
-            placeholder="目标字段"
+            :placeholder="$t('term.report.targetfield')"
             @on-change="updateSelectedJoin"
           >
             <Option
@@ -187,7 +187,7 @@ import ReportOrderList from './sqlgraph/report-order-list.vue';
 import { replaceToken, tokenizeContent } from './contenteditor/content-tokenizer';
 
 const DEFAULT_QUERY_ID = 'queryData';
-const DEFAULT_QUERY_LABEL = '查询数据';
+const DEFAULT_QUERY_LABEL_KEY = 'term.report.querydata';
 
 export default {
   name: '',
@@ -217,7 +217,7 @@ export default {
       isSyncingSqlGraph: false,
       queryConfig: {
         id: DEFAULT_QUERY_ID,
-        label: DEFAULT_QUERY_LABEL,
+        label: this.$t(DEFAULT_QUERY_LABEL_KEY),
         fields: [],
         filters: [],
         orders: [],
@@ -413,7 +413,7 @@ export default {
     normalizeQueryConfig(config) {
       const queryConfig = Object.assign({}, config || {});
       queryConfig.id = DEFAULT_QUERY_ID;
-      queryConfig.label = DEFAULT_QUERY_LABEL;
+      queryConfig.label = this.$t(DEFAULT_QUERY_LABEL_KEY);
       queryConfig.fields = queryConfig.fields || [];
       queryConfig.filters = queryConfig.filters || [];
       queryConfig.orders = queryConfig.orders || [];
@@ -447,7 +447,7 @@ export default {
         queries: [
           {
             id: DEFAULT_QUERY_ID,
-            label: DEFAULT_QUERY_LABEL,
+            label: this.$t(DEFAULT_QUERY_LABEL_KEY),
             nodes: (this.graphData.nodes || []).map(node => Object.assign({}, node.data, { id: node.id })),
             joins: (this.graphData.joins || []).map(join => join.data || join),
             fields: queryConfig.fields,
@@ -497,7 +497,7 @@ export default {
         : [];
       const tableConfig = {
         data: DEFAULT_QUERY_ID,
-        title: DEFAULT_QUERY_LABEL,
+        title: this.$t(DEFAULT_QUERY_LABEL_KEY),
         needPage: !!page.needPage,
         pageSize: page.pageSize || 20,
         disableXss: 0
@@ -531,7 +531,7 @@ export default {
         if (sequence !== this.syncSequence) {
           return;
         }
-        this.sqlGraphSyncErrorList = [error && error.Message ? error.Message : this.$t('message.execfailed')];
+        this.sqlGraphSyncErrorList = [error && error.Message ? error.Message : this.$t('message.executefailed')];
       }).finally(() => {
         if (sequence === this.syncSequence) {
           this.isSyncingSqlGraph = false;
@@ -562,7 +562,7 @@ export default {
         if (sequence !== this.syncSequence) {
           return;
         }
-        this.sqlGraphSyncErrorList = [error && error.Message ? error.Message : this.$t('message.execfailed')];
+        this.sqlGraphSyncErrorList = [error && error.Message ? error.Message : this.$t('message.executefailed')];
       }).finally(() => {
         if (sequence === this.syncSequence) {
           this.isSyncingSqlGraph = false;
@@ -626,18 +626,18 @@ export default {
     },
     paramOptionList() {
       const typeTextMap = {
-        forminput: '输入',
-        formselect: '下拉',
-        formselects: '多选',
-        formcheckbox: '复选',
-        formradio: '单选',
-        formdaterange: '时间范围',
-        formdate: '日期'
+        forminput: this.$t('term.report.paraminput'),
+        formselect: this.$t('term.report.paramselect'),
+        formselects: this.$t('term.report.parammultiselect'),
+        formcheckbox: this.$t('term.report.paramcheckbox'),
+        formradio: this.$t('term.report.paramradio'),
+        formdaterange: this.$t('term.report.paramdaterange'),
+        formdate: this.$t('term.report.paramdate')
       };
       return (this.reportData && this.reportData.paramList ? this.reportData.paramList : [])
         .filter(param => param && param.name)
         .map(param => {
-          const typeText = typeTextMap[param.type] || param.type || '条件';
+          const typeText = typeTextMap[param.type] || param.type || this.$t('page.condition');
           return {
             value: param.name,
             text: `${param.label || param.name} · ${param.name} · ${typeText}`,

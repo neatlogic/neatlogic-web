@@ -2,7 +2,7 @@ import { $t } from '@/resources/init.js';
 
 export default {
   name: 'treemap',
-  label: '矩形树图',
+  label: $t('term.report.treemap'),
   type: 'treemap',
   icon: 'tsfont-chart-treemap',
   widgetType: 'basic',
@@ -13,9 +13,9 @@ export default {
   needData: true,
   dataTypes: [{ value: 'dynamic', text: $t('term.report.datatype.dynamicdata') }],
   fields: [
-    { name: 'nameField', label: '节点名称', type: ['text', 'date', 'datetime', 'time'], isRequired: true },
-    { name: 'valueField', label: '数值', type: 'number', isRequired: true },
-    { name: 'categoryField', label: '一级分类', type: ['text', 'date', 'datetime', 'time'], isRequired: false, description: '可选。绑定后按分类分组展示；不绑定时按单层结构展示。' }
+    { name: 'nameField', label: $t('term.report.nodename'), type: ['text', 'date', 'datetime', 'time'], isRequired: true },
+    { name: 'valueField', label: $t('term.report.chartsetting.value'), type: 'number', isRequired: true },
+    { name: 'categoryField', label: $t('term.report.primarycategory'), type: ['text', 'date', 'datetime', 'time'], isRequired: false, description: $t('term.report.treemapcategorydesc') }
   ],
   config: {
     appendPadding: [14, 14, 42, 14],

@@ -130,7 +130,7 @@ export default {
       ifFullScreen: false,
       fullScreenType: '',
       isReady: false,
-      configSample: '{\n\t' + 'methods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/name是数据中的属性\n\t\t}\n\t}\n' + '\n\tcomputed:{\n\t\tdataListSize(){\n\t\t\treturn this.dataList.length;\/\/dataList是默认数据\n\t\t}\n\t}\n' + '}'
+      configSample: '{\n\t' + 'methods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/' + this.$t('term.report.nameisdataattr') + '\n\t\t}\n\t}\n' + '\n\tcomputed:{\n\t\tdataListSize(){\n\t\t\treturn this.dataList.length;\/\/' + this.$t('term.report.datalistdefaultdata') + '\n\t\t}\n\t}\n' + '}'
     };
   },
   beforeCreate() {},

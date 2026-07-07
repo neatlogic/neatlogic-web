@@ -11,7 +11,7 @@
           :animated="false"
           type="card"
         >
-          <TabPane :label="'所有 ' + allIssueCount" name="#">
+          <TabPane :label="$t('page.all') + ' ' + allIssueCount" name="#">
             <div class="bg-op padding-md">
               <IssueList
                 v-if="isReady && currentApp === '#'"

@@ -51,7 +51,7 @@
               v-if="autoexecScriptAiAssistantComponent"
               class="action-item btn-icon tsfont-ai"
               @click.stop="openAiAssistant"
-            >编写脚本</span>
+            >{{ $t('term.autoexec.writescript') }}</span>
             <span
               v-for="operate in editBtnList"
               :key="operate.value"

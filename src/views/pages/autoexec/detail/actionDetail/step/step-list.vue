@@ -49,7 +49,7 @@
                     <span
                       v-if="canEdit && ary.length > 1"
                       class="tsfont-bar move"
-                      :title="canEdit ? '阶段组内拖拽排序' : ''"
+                      :title="canEdit ? $t('term.autoexec.dragphasegroupsort') : ''"
                       @click.stop
                     ></span>
                     <span>{{ step.name || '-' }}</span>

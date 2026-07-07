@@ -59,6 +59,7 @@
     "validatefailed": "Validation failed",
     "pleaseinputscriptcontent": "Please enter script content",
     "requiredname": "Cannot be empty, only Chinese characters, letters, numbers and underscores are supported",
+    "namespecialchars": "Only Chinese characters, letters, numbers and special characters (._-) are supported",
     "inputcorrectport": "Please enter the correct port",
     "inputtagdescription": "Please enter a tag description",
     "inputtagname": "Please enter a tag name",

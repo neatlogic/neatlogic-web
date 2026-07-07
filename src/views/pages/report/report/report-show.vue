@@ -17,7 +17,7 @@
           <div v-auth="'REPORT_TEMPLATE_MODIFY'" class="action-item tsfont-edit" @click="editReport">
             {{ $t('page.edit') }}
           </div>
-          <div v-if="hasExecuted" class="action-item tsfont-mm-sql" @click="openSqlExecutionDialog">查看SQL</div>
+          <div v-if="hasExecuted" class="action-item tsfont-mm-sql" @click="openSqlExecutionDialog">{{ $t('term.report.viewsql') }}</div>
         </div>
       </template>
       <template slot="content">
@@ -96,7 +96,7 @@
                 </Dropdown>
               </div>
               <div class="action-item">
-                <Button type="primary" @click="searchReport">查询</Button>
+                <Button type="primary" @click="searchReport">{{ $t('page.search') }}</Button>
               </div>
             </div>
           </div>

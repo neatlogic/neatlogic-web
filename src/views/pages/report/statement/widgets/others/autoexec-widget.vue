@@ -1,7 +1,7 @@
 <template>
   <div class="autoexec-widget" :style="getTimeStyle">
     <div class="progress flex-start align-center" :style="{'margin-top': widget.border === 'gradient' ? '24px' : '0px'}">
-      <div class="pr-xs">总进度</div>
+      <div class="pr-xs">{{ $t('term.report.totalprogress') }}</div>
       <div style="flex: 1; width: 80%;">
         <Progress
           v-if="isReady"
@@ -16,7 +16,7 @@
       <div class="item-list border-color">
         <div class="step-content">
           <div class="animate-spin step-node radius-sm" :style="getStatusStyle('start')">
-            <span>开始</span>
+            <span>{{ $t('term.report.start') }}</span>
           </div>
         </div>
         <span class="step_a tsfont-arrow-down" :style="{'color': widget?.config?.arrowcolor || '#25b864'}"></span>
@@ -41,7 +41,7 @@
       <div class="item-list">
         <div class="step-content">
           <div class="step-node radius-sm" :style="getStatusStyle('end')">
-            <span>结束</span>
+            <span>{{ $t('page.end') }}</span>
           </div>
         </div>
       </div>
@@ -70,13 +70,13 @@ export default {
       isReady: true,
       dataList: [],
       stepList: [
-        {jobPhaseName: '阶段1', jobGroupSort: '11111', jobPhaseStatus: 'completed', progress: 1},
-        {jobPhaseName: '阶段2', jobGroupSort: '11111', jobPhaseStatus: 'completed', progress: 1},
-        {jobPhaseName: '阶段3', jobGroupSort: '22222', jobPhaseStatus: 'completed', progress: 1},
-        {jobPhaseName: '阶段4', jobGroupSort: '22222', jobPhaseStatus: 'completed', progress: 1},     
-        {jobPhaseName: '阶段5', jobGroupSort: '22222', jobPhaseStatus: 'running', progress: 0},
-        {jobPhaseName: '阶段6', jobGroupSort: '33333', jobPhaseStatus: 'failed', progress: 0},
-        {jobPhaseName: '阶段7', jobGroupSort: '44444', jobPhaseStatus: 'running', progress: 0}
+        {jobPhaseName: this.$t('term.report.phase1'), jobGroupSort: '11111', jobPhaseStatus: 'completed', progress: 1},
+        {jobPhaseName: this.$t('term.report.phase2'), jobGroupSort: '11111', jobPhaseStatus: 'completed', progress: 1},
+        {jobPhaseName: this.$t('term.report.phase3'), jobGroupSort: '22222', jobPhaseStatus: 'completed', progress: 1},
+        {jobPhaseName: this.$t('term.report.phase4'), jobGroupSort: '22222', jobPhaseStatus: 'completed', progress: 1},
+        {jobPhaseName: this.$t('term.report.phase5'), jobGroupSort: '22222', jobPhaseStatus: 'running', progress: 0},
+        {jobPhaseName: this.$t('term.report.phase6'), jobGroupSort: '33333', jobPhaseStatus: 'failed', progress: 0},
+        {jobPhaseName: this.$t('term.report.phase7'), jobGroupSort: '44444', jobPhaseStatus: 'running', progress: 0}
       ],
       percentData: 0,
       statusColorList: []

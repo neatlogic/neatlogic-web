@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsFormItem label="启用动画" labelPosition="top">
+    <TsFormItem :label="$t('term.report.enableanimation')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('enabled', true)"
         :true-value="true"
@@ -8,14 +8,14 @@
         @change="val => setConfigValue('enabled', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="扫描方向" labelPosition="top">
+    <TsFormItem :label="$t('term.report.scandirection')" labelPosition="top">
       <TsFormRadio
         :value="getConfigValue('direction', 'vertical')"
         :dataList="directionList"
         @change="val => setConfigValue('direction', val)"
       ></TsFormRadio>
     </TsFormItem>
-    <TsFormItem label="速度" labelPosition="top">
+    <TsFormItem :label="$t('term.report.speed')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('speed', 8)"
@@ -27,7 +27,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="透明度" labelPosition="top">
+    <TsFormItem :label="$t('term.report.opacity')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('opacity', 0.28)"
@@ -39,7 +39,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="光束宽度" labelPosition="top">
+    <TsFormItem :label="$t('term.report.beamwidth')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('beamSize', 24)"
@@ -68,8 +68,8 @@ export default {
   data() {
     return {
       directionList: [
-        { value: 'vertical', text: '纵向' },
-        { value: 'horizontal', text: '横向' }
+        { value: 'vertical', text: this.$t('term.report.vertical') },
+        { value: 'horizontal', text: this.$t('term.report.horizontal') }
       ]
     };
   },
