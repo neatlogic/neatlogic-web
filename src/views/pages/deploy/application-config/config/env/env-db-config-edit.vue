@@ -18,7 +18,7 @@
             :item-list="formItemList"
           >
             <template v-slot:dbResourceId>
-              <TsFormItem :label="$t('page.database')" :required="true" tooltip="数据来自scence_database_ip_port_env_appmodule视图">
+              <TsFormItem :label="$t('page.database')" :required="true" :tooltip="$t('term.deploy.dbviewdatasource')">
                 <div class="flex-start">
                   <TsFormSelect
                     ref="formSelect"
@@ -35,7 +35,7 @@
               </TsFormItem>
             </template>
             <template v-slot:accountId>
-              <TsFormItem :label="$t('page.account')" :required="true" tooltip="账号协议是database">
+              <TsFormItem :label="$t('page.account')" :required="true" :tooltip="$t('term.deploy.accountprotocoldatabase')">
                 <div class="flex-start">
                   <TsFormSelect
                     ref="formSelect"

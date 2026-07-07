@@ -137,7 +137,7 @@
         "
       />
     </TsFormItem>
-    <TsFormItem label="辅助线" labelPosition="top">
+    <TsFormItem :label="$t('term.report.chartsetting.guideline')" labelPosition="top">
       <TsFormSwitch
         :value="!config.yAxis || !!config.yAxis?.hasOwnProperty('grid')?!!config.yAxis.grid.visible:true"
         :true-value="true"

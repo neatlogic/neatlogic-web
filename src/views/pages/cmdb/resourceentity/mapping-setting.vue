@@ -77,7 +77,7 @@ export default {
           value: 'globalAttr'
         },
         {
-          text: '引用关系',
+          text: this.$t('term.cmdb.referencerelation'),
           value: 'newRel'
         },
         {

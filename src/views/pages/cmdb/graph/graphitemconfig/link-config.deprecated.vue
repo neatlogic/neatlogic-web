@@ -143,8 +143,8 @@ export default {
   data() {
     return {
       typeList: [
-        { value: 'solid', text: '实线' },
-        { value: 'dotted', text: '虚线' }
+        { value: 'solid', text: this.$t('page.solid') },
+        { value: 'dotted', text: this.$t('page.dashed') }
       ],
       configLocal: this.config
     };

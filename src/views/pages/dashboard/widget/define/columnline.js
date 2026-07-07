@@ -2,7 +2,7 @@ import { $t } from '@/resources/init.js';
 
 export default {
   name: 'columnline',
-  label: '柱线混合图',
+  label: $t('term.report.chartsetting.columnlinechart'),
   type: 'columnline',
   icon: 'tsfont-chart-columnline',
   widgetType: 'basic',
@@ -13,7 +13,7 @@ export default {
   needData: true, 
   dataTypes: [{ value: 'dynamic', text: $t('term.report.datatype.dynamicdata') }],
   fields: [
-    { name: 'type', label: '图形分类字段', type: 'text', isRequired: true },
+    { name: 'type', label: $t('term.report.chartsetting.categoryfield'), type: 'text', isRequired: true },
     { name: 'xField', label: $t('term.report.axis.xfield'), type: 'date', isRequired: true },
     { name: 'yField', label: $t('term.report.axis.yfield'), type: 'number', isRequired: true },
     { name: 'seriesField', label: $t('term.report.chartsetting.groupfield'), type: 'text', isRequired: false }

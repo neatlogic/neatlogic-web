@@ -1,7 +1,7 @@
 <template>
   <div class="padding block-border radius-sm">
     <div v-if="stepData && stepData.ciEntityList && stepData.ciEntityList.length>0">
-      <h4>配置项同步结果</h4>
+      <h4>{{ $t('term.cmdb.cientitysyncresult') }}</h4>
       <TsRow>
         <Col v-for="(entity,eindex) in stepData.ciEntityList" :key="eindex" span="6">
           <div style="font-size:12px" class="text-grey">{{ entity.ciLabel }}({{ entity.ciName }})</div>
@@ -13,7 +13,7 @@
               width="300"
               :transfer="true"
               trigger="hover"
-              title="异常信息"
+              :title="$t('term.cmdb.errormessage')"
               :content="entity.error"
             >
               <i :class="entity.status=='success'?'tsfont-check-o text-success':'tsfont-close-o text-danger'"></i>
@@ -22,7 +22,7 @@
         </Col>
       </TsRow>
     </div>
-    <div v-else class="text-tip">暂无配置项同步结果</div>
+    <div v-else class="text-tip">{{ $t('term.cmdb.nocientitysyncresult') }}</div>
     <CiEntityDetailDialog
       v-if="isCiEntityDialogShow"
       :ciId="ciId"

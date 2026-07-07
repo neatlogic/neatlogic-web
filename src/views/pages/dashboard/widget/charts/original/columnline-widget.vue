@@ -66,7 +66,7 @@ export default {
         yField: ['yField', 'yField'],
         meta: {
           yField: {
-            alias: '数量'
+            alias: this.$t('term.report.chartsetting.quantity')
           }
         },
         lineSeriesField: 'seriesField'

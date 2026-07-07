@@ -2,19 +2,19 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        <div>执行确认</div>
+        <div>{{ $t('term.cmdb.executeconfirm') }}</div>
       </template>
       <template v-slot>
         <div>
-          <div class="padding">确认应用所有规则？</div>
+          <div class="padding">{{ $t('term.cmdb.applyallrulesconfirm') }}</div>
           <div class="padding fz10 text-grey">
-            <Checkbox v-model="isSync">删除不符合规则的配置项关联</Checkbox>
+            <Checkbox v-model="isSync">{{ $t('term.cmdb.deletemismatchedcientityrel') }}</Checkbox>
           </div>
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="confirm()">确定</Button>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" @click="confirm()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -52,7 +52,7 @@ export default {
     confirm() {
       this.$api.cmdb.group.execGroup(this.id, this.isSync ? 1 : 0).then(res => {
         if (res.Status == 'OK') {
-          this.$Message.success('执行成功');
+          this.$Message.success(this.$t('message.executesuccess'));
           this.close(true);
         }
       });

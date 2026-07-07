@@ -33,7 +33,7 @@
                 <li
                   class="tsfont-trash-o"
                   :class="row.assetsCount>0?'disable':''"
-                  :title="row.assetsCount>0?'当前标签已被引用，不可删除':''"
+                  :title="row.assetsCount>0 ? $t('term.cmdb.taginvokednotdelete') : ''"
                   @click="deleteTag(row)"
                 >{{ $t('page.delete') }}</li>
               </ul>

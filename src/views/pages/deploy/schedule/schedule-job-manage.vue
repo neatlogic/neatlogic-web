@@ -90,7 +90,7 @@
               <div v-if="!$utils.isEmpty(row.jobStatus)">
                 <div>
                   <span class="text-grey">{{ $t('term.autoexec.starttoexecute') }}</span>
-                  <span>{{ row.jobStatus.execCount || '0' }}次</span>
+                  <span>{{ row.jobStatus.execCount || '0' }}{{ $t('term.autoexec.times') }}</span>
                 </div>
                 <div v-if="row.jobStatus.beginTime != null">
                   <span class="text-grey">{{ $t('page.planstarttime') }}：</span>
@@ -133,7 +133,7 @@
                       !row.editable
                         ? $t('page.notauthrelationadmin')
                         : row.isActive === 1
-                          ? '禁用才能测试'
+                          ? $t('term.autoexec.disabletotest')
                           : ''
                     "
                     :class="{ disable: !row.editable || row.isActive == 1}"
@@ -161,7 +161,7 @@
                     @click="showAudit(row)"
                   >
                     <!-- 执行记录 -->
-                    {{ '执行记录' }}
+                    {{ $t('term.autoexec.executionrecord') }}
                   </li>
                 </ul>
               </div>

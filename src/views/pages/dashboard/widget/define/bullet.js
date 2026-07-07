@@ -13,10 +13,10 @@ export default {
   needData: true,
   dataTypes: [{ value: 'dynamic', text: $t('term.report.datatype.dynamicdata') }],
   fields: [
-    { name: 'title', label: '标题', type: 'text', isRequired: true },
-    { name: 'measure', label: '当前值', type: 'number', isRequired: true },
-    { name: 'range', label: '最大值', type: 'number', isRequired: true },
-    { name: 'target', label: '目标值', type: 'number', isRequired: true }
+    { name: 'title', label: $t('page.title'), type: 'text', isRequired: true },
+    { name: 'measure', label: $t('term.report.chartsetting.currentvalue'), type: 'number', isRequired: true },
+    { name: 'range', label: $t('term.report.chartsetting.maxvalue'), type: 'number', isRequired: true },
+    { name: 'target', label: $t('term.report.chartsetting.targetvalue'), type: 'number', isRequired: true }
   ],
   config: {
     legend: { visible: true, position: 'bottom' },

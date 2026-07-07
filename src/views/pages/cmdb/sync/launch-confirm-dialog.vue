@@ -3,9 +3,9 @@
     <TsDialog v-bind="dialogConfig" @on-ok="confirm()" @on-close="$emit('close')">
       <template v-slot>
         <div>
-          <div class="mb-md">确定执行采集映射：{{ collection.collectionName }}-&gt;{{ collection.ciLabel }}？</div>
+          <div class="mb-md">{{ $t('term.cmdb.executecollectmappingconfirm', { collection: collection.collectionName, ci: collection.ciLabel }) }}</div>
           <div class="text-href">
-            <span @click="toggleCondition()">设置过滤条件</span>
+            <span @click="toggleCondition()">{{ $t('term.cmdb.setfiltercondition') }}</span>
             <span :class="{ 'tsfont-drop-down': !isShowCondition, 'tsfont-drop-up': isShowCondition }"></span>
           </div>
           <div v-if="isShowCondition && conditionData" class="mt-md">
@@ -39,17 +39,13 @@
             </TsTable>
             <div>
               <span>
-                <a v-if="!isTesting" href="javascript:void(0)" @click="testCondition()">测试筛选条件</a>
+                <a v-if="!isTesting" href="javascript:void(0)" @click="testCondition()">{{ $t('term.cmdb.testfiltercondition') }}</a>
                 <span v-else class="text-grey">
-                  <span>测试中...</span><span class="text-loading bg-info ml-xs"></span>
+                  <span>{{ $t('term.cmdb.testing') }}</span><span class="text-loading bg-info ml-xs"></span>
                 </span>
               </span>
-              <span v-if="matchConditionCount > 0">
-                找到符合条件的记录
-                <b class="text-primary">{{ matchConditionCount }}{{ matchConditionCount > 99 ? '+' : '' }}</b>
-                条
-              </span>
-              <span v-else-if="matchConditionCount == 0">没有找到符合条件的记录</span>
+              <span v-if="matchConditionCount > 0">{{ $t('term.cmdb.matchconditionrecord', { count: matchConditionCount + (matchConditionCount > 99 ? '+' : '') }) }}</span>
+              <span v-else-if="matchConditionCount == 0">{{ $t('term.cmdb.nomatchconditionrecord') }}</span>
             </div>
           </div>
         </div>
@@ -82,10 +78,10 @@ export default {
       conditionData: {
         tbodyList: [],
         theadList: [
-          { key: 'field', title: '属性' },
-          { key: 'type', title: '类型' },
-          { key: 'expression', title: '表达式' },
-          { key: 'value', title: '值', tooltip: '多个值请用英文逗号分隔' }
+          { key: 'field', title: this.$t('page.attribute') },
+          { key: 'type', title: this.$t('page.type') },
+          { key: 'expression', title: this.$t('term.cmdb.expression') },
+          { key: 'value', title: this.$t('page.value'), tooltip: this.$t('term.cmdb.multiplevaluecommatip') }
         ]
       },
       conditionList: []

@@ -251,7 +251,7 @@ export default {
   methods: {
     handleCopy() {
       let errorList = this.connectTestResultList.filter(v => v.exitValue != 0);
-      let errorInfo = errorList.map(v => `${this.getConnectResultText(v)}通过执行器${this.connectTestRunner}测试${this.getReasonText(v)}${v.msgError}`).join('\n');
+      let errorInfo = errorList.map(v => `${this.getConnectResultText(v)}${this.$t('term.deploy.testbyrunner', { runner: this.connectTestRunner, reason: this.getReasonText(v), message: v.msgError })}`).join('\n');
       this.$utils.copyText('', errorInfo);
     },
     openInnerTable(row) {

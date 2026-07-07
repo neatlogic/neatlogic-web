@@ -160,7 +160,7 @@ export default {
             if (error.data.Message) {
               this.$Message.error(error.data.Message);
             } else {
-              this.$Message.error('保存失败');
+              this.$Message.error(this.$t('message.savefailed'));
             }
           });
       }

@@ -6,17 +6,17 @@
       </template>
       <template slot="topLeft">
         <div class="action-group">
-          <div class="action-item tsfont-plus" @click="addSyncCiCollection">配置</div>
-          <div class="action-item tsfont-time" @click="toSyncAudit">查看采集记录</div>
-          <div class="action-item tsfont-play-o" :class="{ disable: !hasInitiative }" @click="batchRun">批量执行</div>
+          <div class="action-item tsfont-plus" @click="addSyncCiCollection">{{ $t('page.config') }}</div>
+          <div class="action-item tsfont-time" @click="toSyncAudit">{{ $t('term.cmdb.viewcollectrecord') }}</div>
+          <div class="action-item tsfont-play-o" :class="{ disable: !hasInitiative }" @click="batchRun">{{ $t('term.cmdb.batchexecute') }}</div>
           <div class="action-item">
             <TsFormSwitch
               v-model="searchParam.isShowPhysicalType"
               :trueValue="1"
               :falseValue="0"
               :showStatus="true"
-              trueText="显示物理集合配置"
-              falseText="隐藏物理集合配置"
+              :trueText="$t('term.cmdb.showphysicalcollectionconfig')"
+              :falseText="$t('term.cmdb.hidephysicalcollectionconfig')"
               @on-change="searchSyncCiCollection(1)"
             ></TsFormSwitch>
           </div>
@@ -26,8 +26,8 @@
               trueValue="initiative"
               :falseValue="null"
               :showStatus="true"
-              trueText="只看主动采集"
-              falseText="只看主动采集"
+              :trueText="$t('term.cmdb.onlyinitiativecollect')"
+              :falseText="$t('term.cmdb.onlyinitiativecollect')"
               @on-change="searchSyncCiCollection(1)"
             ></TsFormSwitch>
           </div>
@@ -55,12 +55,12 @@
             <template v-slot:collectionName="{ row }">
               <a href="javascript:void(0)" @click="openCollectionData(row.collectionName)">
                 <span>{{ row.collectionName }}</span>
-                <span v-if="row.parentKey" class="text-grey fz10 ml-xs">父属性:{{ row.parentKey }}</span>
+                <span v-if="row.parentKey" class="text-grey fz10 ml-xs">{{ $t('term.cmdb.parentattr') }}:{{ row.parentKey }}</span>
               </a>
             </template>
             <template v-slot:isAutoCommit="{ row }">
-              <span v-if="row.isAutoCommit" class="text-success">是</span>
-              <span v-else class="text-error">否</span>
+              <span v-if="row.isAutoCommit" class="text-success">{{ $t('page.yes') }}</span>
+              <span v-else class="text-error">{{ $t('page.no') }}</span>
             </template>
             <template v-slot:fcu="{ row }">
               <UserCard v-if="row.fcu" :uuid="row.fcu"></UserCard>
@@ -221,19 +221,19 @@ export default {
       },
       theadList: [
         { key: 'selection' },
-        { key: 'ciLabel', title: '配置项模型' },
-        { key: 'collectionName', title: '集合' },
-        { key: 'collectModeText', title: '采集模式' },
-        { key: 'isAutoCommit', title: '自动提交' },
-        { key: 'syncPolicyList', title: '定时策略' },
-        { key: 'execCount', title: '执行次数' },
-        { key: 'status', title: '状态' },
+        { key: 'ciLabel', title: this.$t('term.cmdb.ci') },
+        { key: 'collectionName', title: this.$t('term.cmdb.collection') },
+        { key: 'collectModeText', title: this.$t('term.cmdb.collectmode') },
+        { key: 'isAutoCommit', title: this.$t('term.cmdb.autocommit') },
+        { key: 'syncPolicyList', title: this.$t('term.cmdb.schedulepolicy') },
+        { key: 'execCount', title: this.$t('term.cmdb.executecount') },
+        { key: 'status', title: this.$t('page.status') },
         /*{ key: 'fcu', title: '创建者' },
         { key: 'fcd', title: '创建时间', type: 'time' },
         { key: 'lcu', title: '修改者' },
         { key: 'lcd', title: '修改时间', type: 'time' },*/
-        { key: 'description', title: '说明' },
-        { key: 'lastSyncDate', title: '最后采集时间', type: 'time', tooltip: '系统通过最后采集时间来获取增量数据，修改配置可以重置最后采集时间' },
+        { key: 'description', title: this.$t('page.description') },
+        { key: 'lastSyncDate', title: this.$t('term.cmdb.lastcollecttime'), type: 'time', tooltip: this.$t('term.cmdb.lastcollecttimetip') },
         {
           key: 'action',
           type: 'action'
@@ -308,8 +308,8 @@ export default {
     batchRun() {
       if (this.selectedSync.length > 0) {
         this.$createDialog({
-          title: '执行确认',
-          content: '共选中' + this.selectedSync.length + '个采集，确认执行所有选中采集？',
+          title: this.$t('term.cmdb.executeconfirm'),
+          content: this.$t('term.cmdb.batchcollectconfirm', { count: this.selectedSync.length }),
           'on-ok': vnode => {
             const idList = this.selectedSync.map(element => {
               return element.id;
@@ -380,8 +380,8 @@ export default {
     },
     deleteCiCollection(row) {
       this.$createDialog({
-        title: '警告',
-        content: '确定删除采集映射：' + row.collectionName + ' -> ' + row.ciLabel + '？',
+        title: this.$t('page.warning'),
+        content: this.$t('term.cmdb.deletecollectmappingconfirm', { collection: row.collectionName, ci: row.ciLabel }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.cmdb.sync.deleteSyncCiCollection(row.id).then(res => {

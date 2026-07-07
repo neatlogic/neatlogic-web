@@ -46,7 +46,7 @@ export default {
         {
           type: 'text',
           name: 'name',
-          label: '名称',
+          label: this.$t('page.name'),
           width: '100%',
           maxlength: 30,
           validateList: ['required'],

@@ -256,7 +256,7 @@ export default {
         return resultList.length > 0;
       } catch (err) {
         if (err.name === 'CanceledError') {
-          console.log('POST 请求被取消');
+          console.log(this.$t('term.deploy.postrequestcancelled'));
         }
       } finally {
         this.isLoading = false;

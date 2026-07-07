@@ -52,18 +52,18 @@ export default {
       dialogConfig: {
         type: 'slider',
         isShow: true,
-        okText: this.$t('回退'),
+        okText: this.$t('page.rollback'),
         width: 'large',
-        title: this.$t('审计')
+        title: this.$t('term.deploy.audit')
       },
       outerTableConfig: null,
       outerTheadList: [
         {
-          title: '修改者',
+          title: this.$t('term.deploy.modifier'),
           key: 'fcuName'
         },
         {
-          title: '修改时间',
+          title: this.$t('term.deploy.modifytime'),
           key: 'fcd',
           type: 'time'
         }
@@ -73,23 +73,23 @@ export default {
           key: 'selection'
         },
         {
-          title: '变量名',
+          title: this.$t('page.variablename'),
           key: 'key'
         },
         {
-          title: '修改前类型',
+          title: this.$t('term.deploy.beforetype'),
           key: 'beforeTypeText'
         },
         {
-          title: '修改前值',
+          title: this.$t('term.deploy.beforevalue'),
           key: 'beforeValue'
         },
         {
-          title: '修改后类型',
+          title: this.$t('term.deploy.aftertype'),
           key: 'afterTypeText'
         },
         {
-          title: '修改后值',
+          title: this.$t('term.deploy.aftervalue'),
           key: 'afterValue'
         }
       ],
