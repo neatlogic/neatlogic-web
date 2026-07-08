@@ -120,7 +120,6 @@ export default {
     // top: 4px;
     // left: 10px;
   }
-  }
   .logo-change {
     left: 44px;
     width: 40px;
