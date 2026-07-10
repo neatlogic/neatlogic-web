@@ -2,6 +2,9 @@
 import Vue from 'vue';
 import 'neatlogic-ui/iview/styles/index.less';
 import ViewUI from 'neatlogic-ui/iview/index.js';
+import locale from 'neatlogic-ui/iview/locale';
+import enUS from 'neatlogic-ui/iview/locale/lang/en-US.js';
+import zhCN from 'neatlogic-ui/iview/locale/lang/zh-CN.js';
 import utils from '@/resources/assets/js/util.js';
 import NoData from '@/resources/components/nodata/NoData.js';
 import Loading from '@/resources/components/loading/Loading.js';
@@ -45,6 +48,9 @@ Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key]);
 });
 Vue.use(ViewUI);
+
+// 组件语言配置
+locale.use(BASELANGUAGES === 'zh' ? zhCN : enUS);
 
 //全局通用的提示高度和持续时间
 
