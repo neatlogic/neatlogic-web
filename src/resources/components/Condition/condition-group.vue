@@ -249,7 +249,7 @@ export default {
       }
     },
     setAttrValue(condition, value) {
-      if (value) {
+      if (value !== null && value !== undefined && value !== '') {
         if (typeof value == 'object') {
           this.$set(condition, 'valueList', value);
         } else {
