@@ -74,7 +74,7 @@
         <template slot="action" slot-scope="{ row }">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li class="tsfont-revover" :class="!row.authData || !row.authData.cientityrecover ? 'disable' : ''" @click="recoverCiEntity(row)">恢复</li>
+              <li class="tsfont-revover" :class="!row.authData || !row.authData.cientityrecover ? 'disable' : ''" @click="recoverCiEntity(row)">{{ $t('page.recover') }}</li>
             </ul>
           </div>
         </template>

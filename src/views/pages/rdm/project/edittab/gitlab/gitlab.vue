@@ -3,7 +3,7 @@
     <TsFormItem label="Webhook Url" :required="true" labelPosition="top">
       <div v-if="webhookData.webhookUrl" class="bg-op padding-md radius-md mt-md mb-md">
         <Code class="bg-block">
-          <span id="webhookUrl">{ip}:{port}/neatlogic/any/api/t/{{ tenant }}/rest/rdm/webhook/push?_t={{ webhookData.webhookUrl }}</span>
+          <span id="webhookUrl">{{ webhookUrlFull }}</span>
           <span class="ml-sm tsfont-copy cursor" @click="$utils.copyText('#webhookUrl')"></span>
         </Code>
       </div>
@@ -36,8 +36,6 @@ export default {
   },
   data() {
     return {
-      home: HOME,
-      tenant: TENANT,
       webhookData: { appId: this.appData.id },
       formConfig: [
         {
@@ -101,7 +99,14 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    webhookUrlFull() {
+      if (!this.webhookData.webhookUrl) {
+        return '';
+      }
+      return this.webhookData.webhookUrlFull || ((this.webhookData.webhookUrlPrefix || '') + this.webhookData.webhookUrl);
+    }
+  },
   watch: {}
 };
 </script>

@@ -52,11 +52,11 @@ export default {
         pageSize: 20
       },
       theadList: [
-        { title: '发起人', key: 'importUserName' },
-        { title: '导入模型', key: 'ciName' },
-        { title: '导入类型', key: 'actionText' },
-        { title: '发起时间', key: 'importDate' },
-        { title: '完成时间', key: 'finishDate' },
+        { title: this.$t('term.cmdb.initiator'), key: 'importUserName' },
+        { title: this.$t('term.cmdb.importci'), key: 'ciName' },
+        { title: this.$t('term.cmdb.importtype'), key: 'actionText' },
+        { title: this.$t('term.cmdb.initiatetime'), key: 'importDate' },
+        { title: this.$t('term.cmdb.finishtime'), key: 'finishDate' },
         { title: this.$t('page.success'), key: 'successCount' },
         { title: this.$t('page.fail'), key: 'failedCount' },
         { title: this.$t('page.status'), key: 'statusText' },

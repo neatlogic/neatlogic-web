@@ -48,7 +48,7 @@ export default {
       }
       if (this.$refs.container) {
         this.plot = new Pie(this.$refs.container, {
-          ...this.chartConfig,
+          ...this.getThemedChartConfig(),
           data: this.finalData
         });
         this.plot.render();
@@ -58,6 +58,26 @@ export default {
       if (this.plot) {
         this.plot.changeData(this.finalData);
       }
+    },
+    getThemedChartConfig() {
+      const chartConfig = this.$utils.deepClone(this.chartConfig);
+      const statisticColor = this.getFieldTextColor();
+      if (statisticColor) {
+        chartConfig.statistic = { ...chartConfig.statistic };
+        ['title', 'content'].forEach(type => {
+          chartConfig.statistic[type] = {
+            ...chartConfig.statistic[type],
+            style: { ...chartConfig.statistic[type]?.style }
+          };
+          ['color', 'fill'].forEach(styleName => {
+            const path = `statistic.${type}.style.${styleName}`;
+            if (this.isEmptyColor(this.getByPath(this.widget?.config, path))) {
+              chartConfig.statistic[type].style[styleName] = statisticColor;
+            }
+          });
+        });
+      }
+      return chartConfig;
     }
   },
   filter: {},

@@ -30,7 +30,7 @@
                 >
                   <template slot="first-ul">
                     <li class="tsfont-plus text-href first-slot" @click.stop="toIntegration()">
-                      外部调用
+                      {{ $t('term.process.externalcall') }}
                     </li>
                   </template>
                 </TsFormSelect>

@@ -90,7 +90,7 @@ export default {
         protocolId: {
           type: 'select',
           width: '100%',
-          label: '协议',
+          label: this.$t('term.autoexec.protocol'),
           placeholder: this.$t('form.validate.selectprotocol'),
           dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
           rootName: 'tbodyList',

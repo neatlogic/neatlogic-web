@@ -29,6 +29,7 @@
             :on-progress="handleProgress"
             :on-success="handleSuccess"
             :on-error="handleError"
+            :on-exceeded-size="handleMaxSize"
           >
             <div class="drag-area bg-block">
               <div class="upload-icon"><img src="./upload-icon.png" :alt="$t('page.icon')" /></div>
@@ -300,6 +301,12 @@ export default {
       if (findFileItem) {
         findFileItem.Status = event.percent;
       }
+    },
+    handleMaxSize(file) { //文件大小超出限制
+      this.$Notice.warning({
+        title: this.$t('form.validate.fileoverlimit'),
+        desc: file.name + '：' + this.$t('form.validate.fileoverlimit')
+      });
     },
     handleSuccess(response, file) {
       let desc = '';

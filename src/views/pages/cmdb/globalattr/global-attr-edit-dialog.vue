@@ -48,7 +48,7 @@ export default {
       theadList: [
         {
           key: 'value',
-          title: '值'
+          title: this.$t('page.value')
         },
         { key: 'edit' }
       ],

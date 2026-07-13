@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsFormItem label="拓扑模板" labelPosition="top">
+    <TsFormItem :label="$t('term.report.topologytemplate')" labelPosition="top">
       <TsFormSelect
         :value="getConfigValue('preset', 'coreAccess')"
         :dataList="presetList"
@@ -8,7 +8,7 @@
         @change="val => setConfigValue('preset', val)"
       ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem label="启用动画" labelPosition="top">
+    <TsFormItem :label="$t('term.report.enableanimation')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('enabled', true)"
         :true-value="true"
@@ -16,7 +16,7 @@
         @change="val => setConfigValue('enabled', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="链路流动" labelPosition="top">
+    <TsFormItem :label="$t('term.report.linkflow')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('showFlow', true)"
         :true-value="true"
@@ -24,7 +24,7 @@
         @change="val => setConfigValue('showFlow', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="告警脉冲" labelPosition="top">
+    <TsFormItem :label="$t('term.report.alertpulse')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('showAlarmPulse', true)"
         :true-value="true"
@@ -32,7 +32,7 @@
         @change="val => setConfigValue('showAlarmPulse', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="节点呼吸" labelPosition="top">
+    <TsFormItem :label="$t('term.report.nodebreathing')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('showNodeBreath', true)"
         :true-value="true"
@@ -40,7 +40,7 @@
         @change="val => setConfigValue('showNodeBreath', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="节点标签" labelPosition="top">
+    <TsFormItem :label="$t('term.report.nodelabel')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('showLabel', true)"
         :true-value="true"
@@ -48,7 +48,7 @@
         @change="val => setConfigValue('showLabel', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="链路标签" labelPosition="top">
+    <TsFormItem :label="$t('term.report.linklabel')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('showLinkLabel', false)"
         :true-value="true"
@@ -56,7 +56,7 @@
         @change="val => setConfigValue('showLinkLabel', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="线宽" labelPosition="top">
+    <TsFormItem :label="$t('term.report.linewidth')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('lineWidth', 2)"
@@ -68,7 +68,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="节点大小" labelPosition="top">
+    <TsFormItem :label="$t('term.report.nodesize')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('nodeSize', 28)"
@@ -80,7 +80,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="低性能模式" labelPosition="top">
+    <TsFormItem :label="$t('term.report.lowperformancemode')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('lowPerformance', false)"
         :true-value="true"

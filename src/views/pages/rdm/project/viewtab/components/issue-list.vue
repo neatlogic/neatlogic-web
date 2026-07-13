@@ -14,10 +14,10 @@
             @click="linkIssue()"
           >{{ $t('dialog.title.linktarget', { target: getAppByType(relAppType).name }) }}</a>
         </span>
-        <span v-if="canBatch" class="action-item tsfont-mark-all" @click="batchExecute()">批量处理</span>
-        <span v-if="app && app.id" v-download="exportDownloadConfig" class="action-item tsfont-download">导出</span>
-        <span v-if="app && app.id" v-download="templateDownloadConfig" class="action-item tsfont-download">下载导入模板</span>
-        <span v-if="app && app.id" class="action-item tsfont-upload" @click="importIssue">导入</span>
+        <span v-if="canBatch" class="action-item tsfont-mark-all" @click="batchExecute()">{{ $t('term.rdm.batchprocess') }}</span>
+        <span v-if="app && app.id" v-download="exportDownloadConfig" class="action-item tsfont-download">{{ $t('page.export') }}</span>
+        <span v-if="app && app.id" v-download="templateDownloadConfig" class="action-item tsfont-download">{{ $t('term.rdm.downloadimporttemplate') }}</span>
+        <span v-if="app && app.id" class="action-item tsfont-upload" @click="importIssue">{{ $t('page.import') }}</span>
       </div>
       <div>
         <!--由于每次搜索都会更新isSearchReady，导致AttrHandler处于不可用状态，为了让某些AttrHandler可以连续输入，例如文本框，搜索绑定在点击确认和删除条件的时候触发-->
@@ -469,6 +469,20 @@ export default {
       }
       this.searchIssue(1);
     },
+    //供概览图表调用，按筛选字段统一联动列表查询。
+    setOverviewFilter(filterObj) {
+      if (filterObj) {
+        Object.keys(filterObj).forEach(key => {
+          const value = filterObj[key];
+          if (this.$utils.isEmpty(value)) {
+            this.$delete(this.searchValue, key);
+          } else {
+            this.$set(this.searchValue, key, value);
+          }
+        });
+      }
+      this.searchIssue(1);
+    },
     initTheadList() {
       if (this.displayAttrList && this.displayAttrList.length > 0) {
         this.displayAttrList.forEach(attr => {
@@ -666,7 +680,7 @@ export default {
       const isDeleteCopyIssue = !!(param.fromId && param.toId && issue.sourceIssueId);
       this.$createDialog({
         title: this.$t('dialog.title.unlinkconfirm'),
-        content: isDeleteCopyIssue ? '断联后会删除这个副本，重新关联会生成新的副本。确定断联？' : this.$t('dialog.content.unlinkconfirm'),
+        content: isDeleteCopyIssue ? this.$t('term.rdm.unlinkcopyconfirm') : this.$t('dialog.content.unlinkconfirm'),
         btnType: 'error',
         'on-ok': vnode => {
           if (param.fromId && param.toId) {

@@ -60,7 +60,7 @@
                 <span class="menu-name">{{ $t(menu.name) }}</span>
               </Option>
             </OptionGroup>
-            <OptionGroup v-if="extraMenuList && extraMenuList.length > 0" key="_extramenu" label="扩展菜单">
+            <OptionGroup v-if="extraMenuList && extraMenuList.length > 0" key="_extramenu" :label="$t('term.framework.extramenu')">
               <Option
                 v-for="(menu, mindex) in extraMenuList"
                 :key="menu.id + '_' + mindex"

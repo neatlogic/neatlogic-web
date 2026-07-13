@@ -15,8 +15,8 @@
             </ul>
           </Tooltip>
         </template>
-        <li v-if="hasEditConfigAuth" class="action-item tsfont-formtextarea text-href" @click="editAutoConfigForTextarea">{{ '文本编辑' }}</li>
-        <li class="action-item tsfont-task text-href" @click="showEnvAutoConfigAudit">{{ '审计' }}</li>
+        <li v-if="hasEditConfigAuth" class="action-item tsfont-formtextarea text-href" @click="editAutoConfigForTextarea">{{ $t('term.deploy.textedit') }}</li>
+        <li class="action-item tsfont-task text-href" @click="showEnvAutoConfigAudit">{{ $t('page.audit') }}</li>
       </ul>
     </div>
     <div v-if="hasAutoConfig" :class="hasAutoConfig ? 'padding': ''">
@@ -58,8 +58,8 @@
           <span>{{ getIPPortName(item) }}</span>
           <div v-show="hasEditConfigAuth" class="action-group">
             <span class="action-item tsfont-edit text-action text-href" @click="openEnvDifferenceEdit(item)">{{ $t('page.edit') }}</span>
-            <span class="action-item tsfont-formtextarea text-action text-href" @click="openEnvDifferenceEditForTextarea(item)">{{ '文本编辑' }}</span>
-            <span class="action-item tsfont-task text-action text-href" @click="openEnvDifferenceAudit(item)">{{ '审计' }}</span>
+            <span class="action-item tsfont-formtextarea text-action text-href" @click="openEnvDifferenceEditForTextarea(item)">{{ $t('term.deploy.textedit') }}</span>
+            <span class="action-item tsfont-task text-action text-href" @click="openEnvDifferenceAudit(item)">{{ $t('page.audit') }}</span>
             <span class="tsfont-trash-o text-action text-href" @click="delEnvDifference(item, index)">{{ $t('page.delete') }}</span>
           </div>
         </div>

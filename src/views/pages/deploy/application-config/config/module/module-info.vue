@@ -1,7 +1,7 @@
 <template>
   <div class="config-info-box">
-    <div v-if="isShowTitle" class="pb-sm">{{ $t('term.deploy.moduleinformation') }}</div>
-    <ul class="bg-op padding-lg radius-lg mb-md ul-box">
+    <div v-if="isShowTitle" class="pt-nm pl-nm">{{ $t('term.deploy.moduleinformation') }}</div>
+    <ul class="bg-op padding radius-lg ul-box">
       <li v-for="(item, index) in moduleInfoList" :key="index" class="li-box pb-nm pr-nm">
         <span class="text-grey pb-xs">{{ item.text }}</span>
         <Tooltip

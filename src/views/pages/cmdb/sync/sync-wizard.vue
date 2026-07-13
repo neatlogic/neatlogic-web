@@ -4,7 +4,7 @@
       <div slot="topRight"><TsFormInput
         v-model="keyword"
         search
-        placeholder="关键字"
+        :placeholder="$t('form.placeholder.keyword')"
         border="border"
         clearable
       ></TsFormInput></div>

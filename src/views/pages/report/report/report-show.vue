@@ -13,51 +13,12 @@
         <span v-auth="'REPORT_MODIFY'">{{ reportData.name }}</span>
       </template>
       <template v-slot:topRight>
-        <Button type="primary" style="margin-right: 10px" @click="getReportDetail(true)">{{ $t('page.refresh') }}</Button>
-        <Dropdown v-if="reportData && reportData.id">
-          <Button :loading="isDowning.pdf || isDowning.word || isDowning.excel">
-            {{ $t('page.export') }}
-            <Icon type="ios-arrow-down"></Icon>
-          </Button>
-          <DropdownMenu slot="list">
-            <DropdownItem
-              v-download="{
-                url: '/api/binary/report/detail/export/' + reportData.id + '/pdf',
-                params: searchParam,
-                changeStatus: arr => {
-                  changeDownStatus(arr, 'pdf');
-                }
-              }"
-              :disabled="isDowning.pdf"
-            >
-              PDF
-            </DropdownItem>
-            <DropdownItem
-              v-download="{
-                url: '/api/binary/report/detail/export/' + reportData.id + '/word',
-                params: searchParam,
-                changeStatus: arr => {
-                  changeDownStatus(arr, 'word');
-                }
-              }"
-              :disabled="isDowning.word"
-            >
-              WORD
-            </DropdownItem>
-            <DropdownItem
-              v-download="{
-                url: '/api/binary/report/detail/export/' + reportData.id + '/excel',
-                params: searchParam,
-                changeStatus: arr => {
-                  changeDownStatus(arr, 'excel');
-                }
-              }"
-              :disabled="isDowning.excel"
-            >
-              EXCEL
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+        <div class="action-group">
+          <div v-auth="'REPORT_TEMPLATE_MODIFY'" class="action-item tsfont-edit" @click="editReport">
+            {{ $t('page.edit') }}
+          </div>
+          <div v-if="hasExecuted" class="action-item tsfont-mm-sql" @click="openSqlExecutionDialog">{{ $t('term.report.viewsql') }}</div>
+        </div>
       </template>
       <template slot="content">
         <Loading :loadingShow="loadingShow" type="fix"></Loading>
@@ -76,7 +37,7 @@
                   ref="form"
                   :validateList="param.validateList"
                   :config="param.config"
-                  :searchParam="searchParam"
+                  :searchParam="filterParam"
                   @setParam="
                     val => {
                       setParam(param.name, val);
@@ -86,6 +47,59 @@
               </TsFormItem>
             </Col>
           </TsRow>
+          <div class="text-right">
+            <div class="action-group">
+              <div class="action-item">
+                <Dropdown v-if="reportData && reportData.id">
+                  <Button :loading="isDowning.pdf || isDowning.word || isDowning.excel">
+                    {{ $t('page.export') }}
+                    <Icon type="ios-arrow-down"></Icon>
+                  </Button>
+                  <DropdownMenu slot="list">
+                    <DropdownItem
+                      v-download="{
+                        url: '/api/binary/report/detail/export/' + reportData.id + '/pdf',
+                        params: searchParam,
+                        changeStatus: arr => {
+                          changeDownStatus(arr, 'pdf');
+                        }
+                      }"
+                      :disabled="isDowning.pdf"
+                    >
+                      PDF
+                    </DropdownItem>
+                    <DropdownItem
+                      v-download="{
+                        url: '/api/binary/report/detail/export/' + reportData.id + '/word',
+                        params: searchParam,
+                        changeStatus: arr => {
+                          changeDownStatus(arr, 'word');
+                        }
+                      }"
+                      :disabled="isDowning.word"
+                    >
+                      WORD
+                    </DropdownItem>
+                    <DropdownItem
+                      v-download="{
+                        url: '/api/binary/report/detail/export/' + reportData.id + '/excel',
+                        params: searchParam,
+                        changeStatus: arr => {
+                          changeDownStatus(arr, 'excel');
+                        }
+                      }"
+                      :disabled="isDowning.excel"
+                    >
+                      EXCEL
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+              <div class="action-item">
+                <Button type="primary" @click="searchReport">{{ $t('page.search') }}</Button>
+              </div>
+            </div>
+          </div>
         </div>
         <Divider v-if="reportData.paramList && reportData.paramList.length > 0" />
         <ReportMain
@@ -96,6 +110,12 @@
         ></ReportMain>
       </template>
     </TsContain>
+    <ReportSqlExecutionDialog
+      v-if="isSqlExecutionDialogShow"
+      :reportId="id"
+      :params="searchParam"
+      @close="isSqlExecutionDialogShow = false"
+    ></ReportSqlExecutionDialog>
   </div>
 </template>
 <script>
@@ -103,10 +123,11 @@ import TsFormItem from '@/resources/plugins/TsForm/TsFormItem';
 import * as paramhandler from './paramhandler/index.js';
 import download from '@/resources/directives/download.js';
 export default {
-  name: '',
+  name: 'ReportShow',
   components: {
     TsFormItem,
     ReportMain: () => import('../component/report-main.vue'),
+    ReportSqlExecutionDialog: () => import('./report-sql-execution-dialog.vue'),
     ...paramhandler
   },
   directives: { download },
@@ -117,7 +138,10 @@ export default {
       id: this.$route.params['id'],
       reportContent: '',
       reportData: {},
+      filterParam: { reportInstanceId: this.$route.params['id'] },
       searchParam: { reportInstanceId: this.$route.params['id'] },
+      hasExecuted: false,
+      isSqlExecutionDialogShow: false,
       isDowning: {
         pdf: false,
         word: false,
@@ -164,9 +188,13 @@ export default {
     },
     changeReportContentPage(dataSource, currentPage) {
       this.$set(this.searchParam, dataSource + '.currentpage', currentPage);
+      this.$set(this.filterParam, dataSource + '.currentpage', currentPage);
+      this.getReportDetail();
     },
     changeReportContentPageSize(dataSource, pageSize) {
       this.$set(this.searchParam, dataSource + '.pagesize', pageSize);
+      this.$set(this.filterParam, dataSource + '.pagesize', pageSize);
+      this.getReportDetail();
     },
     valid() {
       let formValid = this.$refs.form;
@@ -193,6 +221,7 @@ export default {
         .then(res => {
           // _this.$refs['iframe'].src = 'data:text/html;charset=utf-8,' + res.data;
           this.reportContent = res.data || res;
+          this.hasExecuted = true;
           if (showStatus) {
             this.$Message.success(this.$t('message.refreshsuccess'));
           }
@@ -209,14 +238,15 @@ export default {
       let queryKeyList = Object.keys(query);
       this.$api.report.report.getReportById(this.id).then(res => {
         let d = res.Return;
+        let defaultParam = { reportInstanceId: this.$route.params['id'] };
         if (d && d.paramList && d.paramList.length > 0) {
           d.paramList.forEach(element => {
             if (element.config && element.config.defaultValue) {
-              this.searchParam[element.name] = element.config.defaultValue;
+              defaultParam[element.name] = element.config.defaultValue;
             } else {
               if (element.name && queryKeyList.includes(element.name)) {
-              // 处理从地址栏传递过来的参数，并设置默认值
-                this.searchParam[element.name] = query[element.name];
+                // 处理从地址栏传递过来的参数，并设置默认值
+                defaultParam[element.name] = query[element.name];
                 if (element.hasOwnProperty('config')) {
                   element.config.defaultValue = query[element.name];
                 } else {
@@ -226,13 +256,34 @@ export default {
             }
           });
         }
+        this.filterParam = Object.assign({}, defaultParam);
+        this.searchParam = Object.assign({}, defaultParam);
         this.reportData = d;
+        this.$nextTick(() => {
+          this.getReportDetail();
+        });
       });
     },
     setParam: function(paramName, paramValue) {
       let obj = {};
       obj[paramName] = paramValue;
-      this.searchParam = Object.assign({}, this.searchParam, obj);
+      this.filterParam = Object.assign({}, this.filterParam, obj);
+    },
+    searchReport() {
+      if (!this.valid()) {
+        return false;
+      }
+      this.searchParam = Object.assign({}, this.filterParam);
+      this.getReportDetail();
+    },
+    openSqlExecutionDialog() {
+      if (!this.hasExecuted) {
+        return;
+      }
+      this.isSqlExecutionDialogShow = true;
+    },
+    editReport() {
+      this.$router.push({ path: '/report-edit/' + this.id });
     },
     changeDownStatus(type, filetype) {
       if (type == 'start') {
@@ -247,25 +298,7 @@ export default {
     }
   },
   filter: {},
-  computed: {},
-  watch: {
-    reportData: {
-      handler: function() {
-        this.$nextTick(() => {
-          this.getReportDetail();
-        });
-      },
-      deep: true
-    },
-    searchParam: {
-      handler: function() {
-        this.$nextTick(() => {
-          this.getReportDetail();
-        });
-      },
-      deep: true
-    }
-  }
+  computed: {}
 };
 </script>
 <style lang="less">

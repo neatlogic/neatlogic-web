@@ -82,41 +82,41 @@
       <div class="slaContent">
         <div class="header flex">
           <div class="col1">#</div>
-          <div class="col2">流程名称</div>
-          <div class="col3">SLA标签</div>
-          <div class="col4">关联步骤</div>
-          <div class="col5">策略条件</div>
-          <div class="col6">优先级时效</div>
+          <div class="col2">{{ $t('term.process.processname') }}</div>
+          <div class="col3">{{ $t('term.process.slatags') }}</div>
+          <div class="col4">{{ $t('term.process.relatedstep') }}</div>
+          <div class="col5">{{ $t('term.process.policycondition') }}</div>
+          <div class="col6">{{ $t('term.process.priorityaging') }}</div>
           <div class="col7"></div>
         </div>
         <div class="conItem flex">
           <div class="col1">1</div>
-          <div class="col2">这是流程名称</div>
+          <div class="col2">{{ $t('term.process.sampleprocessname') }}</div>
           <div class="flexColumnAll">
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
                 <div class="itemSla">
-                  <span>策略二</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.policytwo') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon
@@ -129,23 +129,23 @@
               </div>
             </div>
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon
@@ -158,29 +158,29 @@
               </div>
             </div>
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
                 <div class="itemSla">
-                  <span>策略二</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.policytwo') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon
@@ -196,32 +196,32 @@
         </div>
         <div class="conItem flex">
           <div class="col1">1</div>
-          <div class="col2">这是流程名称</div>
+          <div class="col2">{{ $t('term.process.sampleprocessname') }}</div>
           <div class="flexColumnAll">
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
                 <div class="itemSla">
-                  <span>策略二</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.policytwo') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon
@@ -234,23 +234,23 @@
               </div>
             </div>
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon
@@ -263,29 +263,29 @@
               </div>
             </div>
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
                 <div class="itemSla">
-                  <span>策略二</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.policytwo') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon
@@ -301,32 +301,32 @@
         </div>
         <div class="conItem flex">
           <div class="col1">1</div>
-          <div class="col2">这是流程名称</div>
+          <div class="col2">{{ $t('term.process.sampleprocessname') }}</div>
           <div class="flexColumnAll">
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
                 <div class="itemSla">
-                  <span>策略二</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.policytwo') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon
@@ -339,23 +339,23 @@
               </div>
             </div>
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon
@@ -368,29 +368,29 @@
               </div>
             </div>
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
                 <div class="itemSla">
-                  <span>策略二</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.policytwo') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon
@@ -406,32 +406,32 @@
         </div>
         <div class="conItem flex">
           <div class="col1">1</div>
-          <div class="col2">这是流程名称</div>
+          <div class="col2">{{ $t('term.process.sampleprocessname') }}</div>
           <div class="flexColumnAll">
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
                 <div class="itemSla">
-                  <span>策略二</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.policytwo') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon
@@ -444,23 +444,23 @@
               </div>
             </div>
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon
@@ -473,29 +473,29 @@
               </div>
             </div>
             <div class="flexItem">
-              <div class="col3">服务时效</div>
-              <div class="col4">所有步骤</div>
+              <div class="col3">{{ $t('term.process.serviceaging') }}</div>
+              <div class="col4">{{ $t('term.process.allsteps') }}</div>
               <div class="col5">
                 <div class="itemSla">
-                  <span style="color: rgba(0,0,0,.3)">策略一</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span style="color: rgba(0,0,0,.3)">{{ $t('term.process.policyone') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
                 <div class="itemSla">
-                  <span>策略二</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.policytwo') }}</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                   <span>or</span>
-                  <span>表单组件“环境”值==“测试”表</span>
+                  <span>{{ $t('term.process.samplepolicycondition') }}</span>
                 </div>
               </div>
               <div class="priority col6">
-                <span>紧急</span>
-                <span>10分钟</span>
-                <span>严重</span>
-                <span>10分钟</span>
-                <span>一般</span>
-                <span>10分钟</span>
+                <span>{{ $t('term.process.urgent') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.serious') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
+                <span>{{ $t('term.process.general') }}</span>
+                <span>{{ $t('term.process.tenminutes') }}</span>
               </div>
               <div class="col7">
                 <Icon

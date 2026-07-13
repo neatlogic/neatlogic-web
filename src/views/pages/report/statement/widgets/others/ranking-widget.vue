@@ -15,14 +15,15 @@
 </template>
 <script>
 import { WidgetBase } from '../widget-base.js';
+import { $t } from '@/resources/init.js';
 
 const DEFAULT_RANKING_LIST = [
-  { name: '服务请求', value: 128 },
-  { name: '变更工单', value: 96 },
-  { name: '自动化执行', value: 78 },
-  { name: '巡检任务', value: 62 },
-  { name: '告警事件', value: 45 },
-  { name: '发布任务', value: 38 }
+  { name: $t('term.report.servicerequest'), value: 128 },
+  { name: $t('term.report.changeticket'), value: 96 },
+  { name: $t('term.report.autoexecexecution'), value: 78 },
+  { name: $t('term.report.inspectiontask'), value: 62 },
+  { name: $t('term.report.alertevent'), value: 45 },
+  { name: $t('term.report.releasetask'), value: 38 }
 ];
 
 export default {
@@ -58,7 +59,7 @@ export default {
       return DEFAULT_RANKING_LIST;
     },
     rankingTitle() {
-      return (this.widget.config && this.widget.config.title) || 'TOP排名';
+      return (this.widget.config && this.widget.config.title) || this.$t('term.report.topranking');
     },
     showTitle() {
       return !(this.widget.config && this.widget.config.showTitle === false);
@@ -66,11 +67,15 @@ export default {
     titleColor() {
       return (this.widget.config && this.widget.config.titleColor) || this.widget.color || '#00e5ff';
     },
+    nameColor() {
+      return (this.widget.config && this.widget.config.nameColor) || this.getChartTheme()?.labels?.style?.fill || 'rgba(233, 251, 255, 0.88)';
+    },
     rankingStyle() {
       return {
         '--ranking-primary-color': this.widget.color || '#00e5ff',
         '--ranking-accent-color': this.widget.accentColor || '#00ffa8',
-        '--ranking-title-color': this.titleColor
+        '--ranking-title-color': this.titleColor,
+        '--ranking-name-color': this.nameColor
       };
     }
   }
@@ -80,6 +85,7 @@ export default {
 .screen-ranking {
   --ranking-primary-color: #00e5ff;
   --ranking-accent-color: #00ffa8;
+  --ranking-name-color: rgba(233, 251, 255, 0.88);
   box-sizing: border-box;
   width: 100%;
   height: 100%;
@@ -120,7 +126,7 @@ export default {
   font-weight: 700;
 }
 .ranking-name {
-  color: fade(#e9fbff, 88%);
+  color: var(--ranking-name-color);
 }
 .ranking-value {
   color: var(--ranking-accent-color);

@@ -1,117 +1,104 @@
 <template>
   <div>
     <div style="white-space:normal">
-      数据根元素是
+      {{ $t('term.framework.freemarkerrootprefix') }}
       <strong>DATA</strong>
-      ，例如传入参数是{"keyword":"关键字"}，则需要通过
-      <strong>${DATA.keyword}</strong>来获取参数值。
+      {{ $t('term.framework.freemarkerrootsuffix') }}
+      <strong>${DATA.keyword}</strong>{{ $t('term.framework.freemarkergetparam') }}
     </div>
     <dl>
-      <dt>1.取值（插值）指令及适用类型：</dt>
+      <dt>{{ $t('term.framework.freemarkerinterpolationtitle') }}</dt>
       <dd>
-        (1)
-        <strong>${var}</strong>， 获取string:
-        <strong>${strVar}</strong>
-        获取int:
-        <strong>${intVar}</strong>
-        获取boolean:
-        <strong>${booVar?string("yes","no")}</strong>
+        (1) <strong>${var}</strong>: string <strong>${strVar}</strong>, int <strong>${intVar}</strong>, boolean <strong>${booVar?string("yes","no")}</strong>
       </dd>
       <dd>
-        (2)
-        <strong>${var!}</strong>，对null或者不存在的对象进行取值时设置默认值： <strong>${var!'我是默认值'}</strong>。
+        (2) <strong>${var!}</strong>: {{ $t('term.framework.freemarkerdefaultvalue') }} <strong>${var!'default value'}</strong>.
       </dd>
       <dd>
-        (3)
-        <strong>${封装对象.属性}</strong>
-        ，对封装对象进行取值：
-        <strong>${User.name}</strong>
+        (3) <strong>${object.property}</strong>: {{ $t('term.framework.freemarkerobjectvalue') }} <strong>${User.name}</strong>
       </dd>
       <dd>
-        (4)
-        <strong>&lt;#assign num = 100 /&gt;</strong>，定义变量，支持计算和赋值。
+        (4) <strong>&lt;#assign num = 100 /&gt;</strong>: {{ $t('term.framework.freemarkerassign') }}
       </dd>
       <dd>
-        (5)对List集合进行取值：
-        <strong>&lt;#list list集合 as item&gt;</strong>
-        <strong>${item}</strong> --取值
+        (5) {{ $t('term.framework.freemarkerlistvalue') }}:
+        <strong>&lt;#list list as item&gt;</strong>
+        <strong>${item}</strong>
         <strong>&lt;/#list&gt;</strong>
       </dd>
       <dd>
-        (8)对Map集合进行取值：
+        (6) {{ $t('term.framework.freemarkermapvalue') }}:
         <strong>&lt;#list map?keys as key&gt;</strong>
         <strong>${key}:${map[key]}</strong>
         <strong>&lt;/#list&gt;</strong>
       </dd>
-      <dt>2.条件判断指令：</dt>
+      <dt>{{ $t('term.framework.freemarkerconditiontitle') }}</dt>
       <dd>
-        (1)
-        <strong>if</strong>单条件：
-        <strong>&lt;#if 条件&gt;</strong>
-        输出
+        (1) <strong>if</strong>:
+        <strong>&lt;#if condition&gt;</strong>
+        {{ $t('term.framework.output') }}
         <strong>&lt;/#if&gt;</strong>
       </dd>
       <dd>
-        (2)
-        <strong>if - else</strong>匹配或不匹配：
-        <strong>&lt;#if 条件&gt;</strong>
-        输出
+        (2) <strong>if - else</strong>:
+        <strong>&lt;#if condition&gt;</strong>
+        {{ $t('term.framework.output') }}
         <strong>&lt;#else&gt;</strong>
-        输出
+        {{ $t('term.framework.output') }}
         <strong>&lt;/#if&gt;</strong>
       </dd>
       <dd>
-        (3)
-        <strong>if - elseif - else</strong>多条件：
+        (3) <strong>if - elseif - else</strong>:
         <strong>&lt;#if age &gt; 18&gt;</strong>
-        青年
+        {{ $t('term.framework.young') }}
         <strong>&lt;#elseif age == 18&gt;</strong>
-        成年
+        {{ $t('term.framework.adult') }}
         <strong>&lt;#else&gt;</strong>
-        少年
+        {{ $t('term.framework.teenager') }}
         <strong>&lt;/#if&gt;</strong>
       </dd>
       <dd>
-        (4)
-        <strong>switch</strong> --常与 <strong>case break default</strong>一起使用，参数可为字符串：
+        (4) <strong>switch</strong>:
         <strong>&lt;#switch var&gt;</strong>
-        <strong>&lt;#case 条件1&gt;</strong>
-        输出
+        <strong>&lt;#case condition1&gt;</strong>
+        {{ $t('term.framework.output') }}
         <strong>&lt;#break&gt;</strong>
-        <strong>&lt;#case 条件2&gt;</strong>
-        输出
+        <strong>&lt;#case condition2&gt;</strong>
+        {{ $t('term.framework.output') }}
         <strong>&lt;#break&gt;</strong>
         <strong>&lt;#default&gt;</strong>
-        输出
+        {{ $t('term.framework.output') }}
         <strong>&lt;/#switch&gt;</strong>
       </dd>
-      <dt>3.范例：</dt>
-      <dd><strong>数据</strong>：{"userList":[{"username":"张三","title":"组长"},{"username":"李四","title":"员工"},{"username":"王五","title":"员工"}]}</dd>
-      <dd><strong>模板</strong>：<#assign titlelist=[]/>
-        <#list DATA.userList as user>
-        <#if !titlelist?seq_contains(user['title'])>
-        <#assign titlelist=titlelist+[user['title']]/>
-        </#if>
-        </#list>
-        <#assign t=0/>
-        {
-        <#list titlelist as title>
-        <#assign i=0/>
-        <#if t gt 0>,</#if>
-        "${title}":[
-        <#list DATA.userList as user>
-        <#if user['title'] == title>
-        <#if i gt 0>,</#if>
-        "${user['username']}"
-        <#assign i=i+1/>
-        </#if>
-        </#list>
-        ]
-        <#assign t=t+1/>
-        </#list>
-        }
+      <dt>{{ $t('term.framework.freemarkerexampletitle') }}</dt>
+      <dd><strong>{{ $t('page.data') }}</strong>: {"userList":[{"username":"Alex","title":"Lead"},{"username":"Bob","title":"Staff"},{"username":"Cindy","title":"Staff"}]}</dd>
+      <dd>
+        <strong>{{ $t('term.framework.template') }}</strong>:
+        <pre>&lt;#assign titlelist=[]/&gt;
+&lt;#list DATA.userList as user&gt;
+&lt;#if !titlelist?seq_contains(user['title'])&gt;
+&lt;#assign titlelist=titlelist+[user['title']]/&gt;
+&lt;/#if&gt;
+&lt;/#list&gt;
+&lt;#assign t=0/&gt;
+{
+&lt;#list titlelist as title&gt;
+&lt;#assign i=0/&gt;
+&lt;#if t gt 0&gt;,&lt;/#if&gt;
+"${title}":[
+&lt;#list DATA.userList as user&gt;
+&lt;#if user['title'] == title&gt;
+&lt;#if i gt 0&gt;,&lt;/#if&gt;
+"${user['username']}"
+&lt;#assign i=i+1/&gt;
+&lt;/#if&gt;
+&lt;/#list&gt;
+]
+&lt;#assign t=t+1/&gt;
+&lt;/#list&gt;
+}</pre>
       </dd>
-      <dd><strong>结果</strong>：{ "组长":[ "张三" ] , "员工":[ "李四" , "王五" ] }</dd>
+      <dd><strong>{{ $t('page.result') }}</strong>: { "Lead":[ "Alex" ], "Staff":[ "Bob", "Cindy" ] }</dd>
       <!-- 
       <dt>3.处理字符串函数：</dt>
       <dd>
@@ -213,7 +200,7 @@
         </div>
       </dd>-->
     </dl>
-    <div>更多语法请访问<a href="https://freemarker.apache.org/docs/index.html" target="_blank">官方文档</a></div>
+    <div>{{ $t('term.framework.moregrammarvisit') }}<a href="https://freemarker.apache.org/docs/index.html" target="_blank">{{ $t('term.framework.officialdocs') }}</a></div>
   </div>
 </template>
 <script>

@@ -3,36 +3,33 @@
     <div class="overview-header border-color" @click="toggleCollapse">
       <div class="text-title">
         <span :class="isCollapsed ? 'tsfont-right' : 'tsfont-down'"></span>
-        <span class="ml-xs">需求概览</span>
+        <span class="ml-xs">{{ $t('term.rdm.storyoverview') }}</span>
       </div>
       <div class="action-group" @click.stop>
         <span v-if="activeStatus" class="action-item">
-          <span class="text-grey">当前状态：</span>
+          <span class="text-grey">{{ $t('term.rdm.currentstatus') }}</span>
           <span :style="{ color: activeStatus.color }">{{ activeStatus.label || activeStatus.name }}</span>
           <span class="tsfont-close ml-xs text-action" @click="clearStatus"></span>
         </span>
-        <span class="action-item tsfont-refresh" @click="refresh">刷新</span>
+        <span class="action-item tsfont-refresh" @click="refresh">{{ $t('page.refresh') }}</span>
       </div>
     </div>
     <div v-show="!isCollapsed" class="overview-body">
       <Loading v-if="isLoading" :loadingShow="isLoading" type="fix"></Loading>
       <div v-if="errorMessage" class="text-grey text-center pt-md pb-md">{{ errorMessage }}</div>
       <template v-else>
-        <div class="metric-grid">
-          <div v-for="metric in metricList" :key="metric.key" class="metric-item border-color">
-            <div class="text-grey fz10">{{ metric.label }}</div>
+        <div class="overview-row overview-top-row" :style="{ '--overview-panel-count': topPanelCount }">
+          <div v-for="metric in metricList" :key="metric.key" class="overview-panel metric-panel border-color">
+            <div class="chart-title text-grey">{{ metric.label }}</div>
             <div class="metric-value" :class="metric.className">{{ metric.value }}</div>
           </div>
-        </div>
-        <div class="chart-grid">
-          <div class="chart-panel border-color">
-            <div class="chart-title">需求状态比例</div>
+          <div v-if="statusChart.isConfigured && statusChart.hasData" class="overview-panel chart-panel border-color">
+            <div class="chart-title">{{ $t('term.rdm.storystatusratio') }}</div>
             <div class="status-chart-layout">
-              <div v-if="hasStatusData" ref="statusChart" class="chart-container"></div>
-              <NoData v-else class="chart-empty"></NoData>
+              <div ref="statusChart" class="chart-container"></div>
               <div class="status-list">
                 <div
-                  v-for="status in statusList"
+                  v-for="status in statusChart.list"
                   :key="status.id"
                   class="status-item"
                   :class="{ 'active': activeStatusId === status.id }"
@@ -45,15 +42,15 @@
               </div>
             </div>
           </div>
-          <div class="chart-panel border-color">
-            <div class="chart-title">优先级分布</div>
-            <div v-if="priorityList.length > 0" ref="priorityChart" class="chart-container"></div>
-            <NoData v-else class="chart-empty"></NoData>
+        </div>
+        <div v-if="hasBottomChart" class="overview-row overview-chart-row" :style="{ '--overview-panel-count': bottomPanelCount }">
+          <div v-if="hasPriorityChart" class="overview-panel chart-panel border-color">
+            <div class="chart-title">{{ $t('term.rdm.prioritydistribution') }}</div>
+            <div ref="priorityChart" class="chart-container"></div>
           </div>
-          <div class="chart-panel border-color">
-            <div class="chart-title">近7个月需求/逾期趋势</div>
-            <div v-if="trendList.length > 0" ref="trendChart" class="chart-container"></div>
-            <NoData v-else class="chart-empty"></NoData>
+          <div v-if="hasTrendChart" class="overview-panel chart-panel border-color">
+            <div class="chart-title">{{ $t('term.rdm.storyoverduetrend7months') }}</div>
+            <div ref="trendChart" class="chart-container"></div>
           </div>
         </div>
       </template>
@@ -64,6 +61,88 @@
 import { Pie, Column } from '@antv/g2plot';
 import themes from '@/views/pages/dashboard/widget/charts/theme';
 import ThemeUtils from '@/views/pages/framework/theme/themeUtils.js';
+
+const STAT_KEY = {
+  TOTAL: 'story_total',
+  OVERDUE: 'story_overdue',
+  COMPLETE_RATE: 'story_complete_rate',
+  HIGH_RISK: 'story_high_risk',
+  STATUS_DISTRIBUTION: 'story_status_distribution',
+  PRIORITY_DISTRIBUTION: 'story_priority_distribution',
+  TREND: 'story_trend'
+};
+
+function getFieldValue(data, key) {
+  if (!data || !key) {
+    return null;
+  }
+  const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+  const keyList = [key, key.toLowerCase(), key.toUpperCase(), snakeKey, snakeKey.toUpperCase()];
+  for (let i = 0; i < keyList.length; i++) {
+    const currentKey = keyList[i];
+    if (data[currentKey] !== undefined) {
+      return data[currentKey];
+    }
+  }
+  return null;
+}
+
+function getFirstCountValue(data) {
+  if (!data) {
+    return null;
+  }
+  const countKey = Object.keys(data).find(key => key && key.toLowerCase().includes('count'));
+  return countKey ? data[countKey] : null;
+}
+
+function getNumberValue(data, key) {
+  let value = getFieldValue(data, key);
+  if (value === null && key === 'issueCount') {
+    value = getFirstCountValue(data);
+  }
+  return Number(value || 0);
+}
+
+function getStatValue(stat, defaultValue) {
+  if (stat && stat.value !== undefined && stat.value !== null) {
+    return stat.value;
+  }
+  return defaultValue;
+}
+
+function getStatDataList(stat, fallbackList) {
+  if (stat) {
+    const dataList = stat.dataList || stat.datalist || stat.list;
+    if (Array.isArray(dataList) && dataList.length > 0) {
+      return dataList;
+    }
+  }
+  return fallbackList || [];
+}
+
+function normalizeDistributionList(dataList) {
+  return (dataList || []).map(item => {
+    return {
+      ...item,
+      id: getFieldValue(item, 'id'),
+      name: getFieldValue(item, 'name'),
+      label: getFieldValue(item, 'label'),
+      color: getFieldValue(item, 'color'),
+      issueCount: getNumberValue(item, 'issueCount')
+    };
+  });
+}
+
+function normalizeTrendList(dataList) {
+  return (dataList || []).map(item => {
+    return {
+      ...item,
+      month: getFieldValue(item, 'month'),
+      totalCount: getNumberValue(item, 'totalCount'),
+      overdueCount: getNumberValue(item, 'overdueCount')
+    };
+  });
+}
 
 export default {
   name: '',
@@ -84,7 +163,17 @@ export default {
       priorityPlot: null,
       trendPlot: null,
       themeObserver: null,
-      themeClass: this.getCurrentThemeClass()
+      themeClass: this.getCurrentThemeClass(),
+      overviewRequestId: 0,
+      statKeyList: [
+        STAT_KEY.TOTAL,
+        STAT_KEY.OVERDUE,
+        STAT_KEY.COMPLETE_RATE,
+        STAT_KEY.HIGH_RISK,
+        STAT_KEY.STATUS_DISTRIBUTION,
+        STAT_KEY.PRIORITY_DISTRIBUTION,
+        STAT_KEY.TREND
+      ]
     };
   },
   mounted() {
@@ -114,37 +203,49 @@ export default {
       if (!this.projectId || !this.app || !this.app.id) {
         return;
       }
+      const requestId = ++this.overviewRequestId;
       this.isLoading = true;
       this.errorMessage = '';
       this.$api.rdm.issue
         .getIssueOverview({
           projectId: this.projectId,
           appId: this.app.id,
-          catalog: this.catalog
+          catalog: this.catalog,
+          statKeyList: this.statKeyList
         })
         .then(res => {
+          if (requestId !== this.overviewRequestId) {
+            return;
+          }
           this.overviewData = res.Return || {};
-          this.$nextTick(() => {
-            this.renderCharts();
-          });
         })
         .catch(() => {
-          this.errorMessage = '需求概览加载失败';
+          if (requestId !== this.overviewRequestId) {
+            return;
+          }
+          this.errorMessage = this.$t('term.rdm.storyoverviewloadfailed');
+          this.overviewData = {};
           this.destroyPlot();
         })
         .finally(() => {
+          if (requestId !== this.overviewRequestId) {
+            return;
+          }
           this.isLoading = false;
+          this.$nextTick(() => {
+            this.renderCharts();
+          });
         });
     },
     selectStatus(status) {
       this.activeStatusId = this.activeStatusId === status.id ? null : status.id;
-      this.$emit('status-change', this.activeStatusId ? [this.activeStatusId] : []);
+      this.$emit('filter-change', { [this.statusChart.filterField]: this.activeStatusId ? [this.activeStatusId] : [] });
     },
     clearStatus() {
       const hasActiveStatus = this.activeStatusId !== null;
       this.activeStatusId = null;
       if (hasActiveStatus) {
-        this.$emit('status-change', []);
+        this.$emit('filter-change', { [this.statusChart.filterField]: [] });
       }
     },
     renderCharts() {
@@ -160,14 +261,14 @@ export default {
         this.statusPlot.destroy();
         this.statusPlot = null;
       }
-      if (!this.$refs.statusChart || !this.hasStatusData) {
+      if (!this.$refs.statusChart || !this.statusChart.hasData) {
         return;
       }
       const chartTheme = this.chartTheme;
       this.statusPlot = new Pie(this.$refs.statusChart, {
-        height: 180,
+        height: 138,
         appendPadding: 0,
-        data: this.statusChartData,
+        data: this.statusChart.data,
         angleField: 'issueCount',
         colorField: 'label',
         radius: 0.9,
@@ -176,7 +277,7 @@ export default {
         label: false,
         statistic: {
           title: {
-            content: '总数',
+            content: this.$t('term.rdm.total'),
             style: {
               color: chartTheme.textColor,
               fontSize: '18px',
@@ -184,7 +285,7 @@ export default {
             }
           },
           content: {
-            content: this.statusChartTotal.toString(),
+            content: this.statusChart.total.toString(),
             style: {
               color: chartTheme.textColor,
               fontSize: '24px',
@@ -218,14 +319,14 @@ export default {
         this.priorityPlot.destroy();
         this.priorityPlot = null;
       }
-      if (!this.$refs.priorityChart || this.priorityList.length === 0) {
+      if (!this.$refs.priorityChart || this.priorityChart.list.length === 0) {
         return;
       }
       const chartTheme = this.chartTheme;
       this.priorityPlot = new Column(this.$refs.priorityChart, {
-        height: 180,
+        height: 138,
         appendPadding: 0,
-        data: this.priorityList,
+        data: this.priorityChart.list,
         xField: 'name',
         yField: 'issueCount',
         legend: false,
@@ -248,9 +349,7 @@ export default {
             autoRotate: false,
             style: this.getAxisLabelStyle()
           },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
+          title: null,
           line: this.getAxisLineConfig(),
           tickLine: this.getAxisTickConfig()
         },
@@ -260,9 +359,7 @@ export default {
           label: {
             style: this.getAxisLabelStyle()
           },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
+          title: null,
           grid: this.getAxisGridConfig()
         },
         tooltip: {
@@ -277,14 +374,14 @@ export default {
         this.trendPlot.destroy();
         this.trendPlot = null;
       }
-      if (!this.$refs.trendChart || this.trendChartData.length === 0) {
+      if (!this.$refs.trendChart || this.trendChart.data.length === 0) {
         return;
       }
       const chartTheme = this.chartTheme;
       this.trendPlot = new Column(this.$refs.trendChart, {
-        height: 180,
+        height: 138,
         appendPadding: 0,
-        data: this.trendChartData,
+        data: this.trendChart.data,
         xField: 'month',
         yField: 'count',
         seriesField: 'type',
@@ -309,9 +406,7 @@ export default {
             autoRotate: false,
             style: this.getAxisLabelStyle()
           },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
+          title: null,
           line: this.getAxisLineConfig(),
           tickLine: this.getAxisTickConfig()
         },
@@ -321,16 +416,14 @@ export default {
           label: {
             style: this.getAxisLabelStyle()
           },
-          title: {
-            style: this.getAxisLabelStyle()
-          },
+          title: null,
           grid: this.getAxisGridConfig()
         },
         tooltip: {
           domStyles: this.getTooltipDomStyles()
         },
         color: ({ type }) => {
-          return type === '逾期' ? chartTheme.warningColor : chartTheme.primaryColor;
+          return type === this.$t('term.rdm.overdue') ? chartTheme.warningColor : chartTheme.primaryColor;
         }
       });
       this.trendPlot.render();
@@ -390,7 +483,7 @@ export default {
       return this.getChartTextStyle();
     },
     getStatusColor(label) {
-      const status = this.statusChartData.find(item => item.label === label);
+      const status = this.statusChart.data.find(item => item.label === label);
       return status ? status.color : this.chartTheme.primaryColor;
     },
     getDashboardChartTheme(param) {
@@ -509,6 +602,22 @@ export default {
           }
         }
       };
+    },
+    getStatResult(statKey) {
+      const statResultList = this.overviewData.statResultList || [];
+      return statResultList.find(item => item.statKey === statKey && item.configured !== false);
+    },
+    hasStatResultList() {
+      return Array.isArray(this.overviewData.statResultList);
+    },
+    isStatConfigured(statKey, legacyKey) {
+      return !this.hasStatResultList() || !!this.getStatResult(statKey) || this.overviewData[legacyKey] !== undefined;
+    },
+    getStatValue(statKey, legacyKey, defaultValue) {
+      return getStatValue(this.getStatResult(statKey), this.overviewData[legacyKey] === undefined ? defaultValue : this.overviewData[legacyKey]);
+    },
+    getStatDataList(statKey, legacyKey) {
+      return getStatDataList(this.getStatResult(statKey), this.overviewData[legacyKey]);
     }
   },
   computed: {
@@ -532,29 +641,34 @@ export default {
       };
     },
     metricList() {
-      const totalCount = this.overviewData.totalCount || 0;
       return [
-        { key: 'total', label: '需求总数', value: totalCount },
-        { key: 'overdue', label: '逾期需求总数', value: this.overviewData.overdueCount || 0, className: 'text-error' },
-        { key: 'complete', label: '完成率', value: this.completeRateText, className: 'text-success' },
-        { key: 'risk', label: '高风险需求数', value: this.overviewData.highRiskCount || 0, className: 'text-warning' }
-      ];
+        {
+          key: 'overdue',
+          isConfigured: this.isStatConfigured(STAT_KEY.OVERDUE, 'overdueCount'),
+          label: this.$t('term.rdm.overduestorycount'),
+          value: this.getStatValue(STAT_KEY.OVERDUE, 'overdueCount', 0),
+          className: 'text-error'
+        },
+        {
+          key: 'complete',
+          isConfigured: this.isStatConfigured(STAT_KEY.COMPLETE_RATE, 'completeRate'),
+          label: this.$t('term.rdm.completionrate'),
+          value: (Number(this.getStatValue(STAT_KEY.COMPLETE_RATE, 'completeRate', 0)) * 100).toFixed(2) + '%',
+          className: 'text-success'
+        },
+        {
+          key: 'risk',
+          isConfigured: this.isStatConfigured(STAT_KEY.HIGH_RISK, 'highRiskCount'),
+          label: this.$t('term.rdm.highriskstorycount'),
+          value: this.getStatValue(STAT_KEY.HIGH_RISK, 'highRiskCount', 0),
+          className: 'text-warning'
+        }
+      ].filter(metric => metric.isConfigured);
     },
-    completeRateText() {
-      const completeRate = this.overviewData.completeRate || 0;
-      return (completeRate * 100).toFixed(2) + '%';
-    },
-    statusList() {
-      return this.overviewData.statusList || [];
-    },
-    priorityList() {
-      return this.overviewData.priorityList || [];
-    },
-    trendList() {
-      return this.overviewData.trendList || [];
-    },
-    statusChartData() {
-      return this.statusList
+    statusChart() {
+      const stat = this.getStatResult(STAT_KEY.STATUS_DISTRIBUTION);
+      const list = normalizeDistributionList(this.getStatDataList(STAT_KEY.STATUS_DISTRIBUTION, 'statusList'));
+      const data = list
         .filter(item => (item.issueCount || 0) > 0)
         .map(item => ({
           id: item.id,
@@ -562,23 +676,63 @@ export default {
           color: item.color,
           issueCount: item.issueCount || 0
         }));
+      return {
+        isConfigured: this.isStatConfigured(STAT_KEY.STATUS_DISTRIBUTION, 'statusList'),
+        filterField: (stat && stat.filterField) || 'status',
+        list: list,
+        data: data,
+        total: data.reduce((sum, item) => sum + (item.issueCount || 0), 0),
+        hasData: data.length > 0
+      };
     },
-    statusChartTotal() {
-      return this.statusChartData.reduce((sum, item) => sum + (item.issueCount || 0), 0);
+    priorityChart() {
+      return {
+        isConfigured: this.isStatConfigured(STAT_KEY.PRIORITY_DISTRIBUTION, 'priorityList'),
+        list: normalizeDistributionList(this.getStatDataList(STAT_KEY.PRIORITY_DISTRIBUTION, 'priorityList'))
+      };
     },
-    trendChartData() {
+    trendChart() {
+      const list = normalizeTrendList(this.getStatDataList(STAT_KEY.TREND, 'trendList'));
       const dataList = [];
-      this.trendList.forEach(item => {
-        dataList.push({ month: item.month, type: '需求', count: item.totalCount || 0 });
-        dataList.push({ month: item.month, type: '逾期', count: item.overdueCount || 0 });
+      list.forEach(item => {
+        dataList.push({ month: item.month, type: this.$t('term.rdm.request'), count: item.totalCount || 0 });
+        dataList.push({ month: item.month, type: this.$t('term.rdm.overdue'), count: item.overdueCount || 0 });
       });
-      return dataList;
-    },
-    hasStatusData() {
-      return this.statusChartData.length > 0;
+      return {
+        isConfigured: this.isStatConfigured(STAT_KEY.TREND, 'trendList'),
+        list: list,
+        data: dataList,
+        hasData: dataList.some(item => (item.count || 0) > 0)
+      };
     },
     activeStatus() {
-      return this.statusList.find(status => status.id === this.activeStatusId);
+      return this.statusChart.list.find(status => status.id === this.activeStatusId);
+    },
+    hasPriorityChart() {
+      return this.priorityChart.isConfigured && this.priorityChart.list.length > 0;
+    },
+    hasTrendChart() {
+      return this.trendChart.isConfigured && this.trendChart.hasData;
+    },
+    hasBottomChart() {
+      return this.hasPriorityChart || this.hasTrendChart;
+    },
+    topPanelCount() {
+      let count = this.metricList.length;
+      if (this.statusChart.isConfigured && this.statusChart.hasData) {
+        count++;
+      }
+      return count || 1;
+    },
+    bottomPanelCount() {
+      let count = 0;
+      if (this.hasPriorityChart) {
+        count++;
+      }
+      if (this.hasTrendChart) {
+        count++;
+      }
+      return count || 1;
     }
   },
   watch: {
@@ -616,56 +770,63 @@ export default {
 }
 .overview-body {
   position: relative;
-  padding: 12px;
+  padding: 8px 12px;
 }
-.metric-grid {
+.overview-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(var(--overview-panel-count), minmax(0, 1fr));
+  gap: 8px;
 }
-.metric-item {
-  min-height: 62px;
-  padding: 10px 12px;
+.overview-row + .overview-row {
+  margin-top: 8px;
+}
+.overview-panel {
+  min-width: 0;
+  min-height: 176px;
+  overflow: hidden;
   border: 1px solid;
   border-radius: 6px;
+}
+.metric-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
 }
 .metric-value {
-  margin-top: 6px;
-  font-size: 22px;
-  line-height: 26px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 44px;
+  line-height: 50px;
   font-weight: 600;
 }
-.chart-grid {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr 1.25fr;
-  gap: 10px;
-  margin-top: 10px;
-}
 .chart-panel {
-  min-width: 0;
-  min-height: 230px;
   padding: 10px;
-  border: 1px solid;
-  border-radius: 6px;
 }
 .chart-title {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
   font-weight: 600;
 }
 .chart-container {
-  height: 180px;
+  height: 138px;
 }
-.chart-empty {
-  height: 180px;
+.overview-chart-row .chart-container {
+  height: 160px;
 }
 .status-chart-layout {
   display: grid;
-  grid-template-columns: minmax(120px, 1fr) 150px;
+  grid-template-columns: minmax(0, 1fr) minmax(72px, 96px);
   gap: 8px;
   align-items: center;
+  min-height: 138px;
 }
 .status-list {
   min-width: 0;
+  max-height: 120px;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 .status-item {
   display: grid;
@@ -689,14 +850,17 @@ export default {
 .status-name {
   min-width: 0;
 }
-@media screen and (max-width: 1280px) {
-  .chart-grid {
-    grid-template-columns: 1fr;
-  }
-}
 @media screen and (max-width: 960px) {
-  .metric-grid {
-    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  .overview-row {
+    grid-template-columns: repeat(var(--overview-panel-count), 200px);
+    overflow-x: auto;
+  }
+  .overview-panel {
+    min-width: 200px;
+  }
+  .metric-value {
+    font-size: 38px;
+    line-height: 44px;
   }
 }
 </style>

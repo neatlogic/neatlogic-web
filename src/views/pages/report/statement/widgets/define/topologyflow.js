@@ -1,6 +1,8 @@
+import { $t } from '@/resources/init.js';
+
 export default {
   name: 'topologyflow',
-  label: '拓扑流动',
+  label: $t('term.report.topologyflow'),
   type: 'topologyflow',
   icon: 'tsfont-topo',
   widgetType: 'effect',

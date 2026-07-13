@@ -25,16 +25,16 @@ export default {
       formConfig: {
         mode: {
           type: 'radio',
-          label: '关联方式',
+          label: this.$t('term.cmdb.relationmode'),
           value: 'r',
           dataList: [
             {
               value: 'r',
-              text: '选择'
+              text: this.$t('term.cmdb.selectonly')
             },
             {
               value: 'rw',
-              text: '选择或新增'
+              text: this.$t('term.cmdb.selectoradd')
             }
           ],
           onChange: val => {
@@ -43,7 +43,7 @@ export default {
         },
         isMultiple: {
           type: 'slot',
-          label: '多选'
+          label: this.$t('term.cmdb.multiple')
         }
       }
     };
@@ -79,7 +79,7 @@ export default {
               //虚拟模型只能读
               this.$set(this.formConfig.mode, 'disabled', true);
               this.$set(this.formConfig.mode, 'value', 'r');
-              this.$set(this.formConfig.mode, 'desc', '虚拟模型不支持新增');
+              this.$set(this.formConfig.mode, 'desc', this.$t('term.cmdb.virtualcinotallowadd'));
               this.$set(this.myConfig, 'mode', 'r');
             } else {
               this.$set(this.formConfig.mode, 'disabled', false);

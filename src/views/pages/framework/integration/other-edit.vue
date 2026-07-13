@@ -25,25 +25,25 @@ export default {
           value: ''
         },
         rateLimitIntervalSeconds: {
-          label: '调用时间间隔(秒)',
+          label: this.$t('term.framework.callintervalseconds'),
           type: 'number',
           min: 0,
           width: '100%',
           value: '',
           validateList: ['integer_natural'],
-          desc: '和调用次数同时配置后生效，0或为空表示不启用'
+          desc: this.$t('term.framework.callintervalsecondsdesc')
         },
         rateLimitCount: {
-          label: '调用次数',
+          label: this.$t('term.framework.callcount'),
           type: 'number',
           min: 0,
           width: '100%',
           value: '',
           validateList: ['integer_natural'],
-          desc: '在调用时间间隔内允许调用的最大次数'
+          desc: this.$t('term.framework.callcountdesc')
         },
         charset: {
-          label: '字符编码',
+          label: this.$t('term.framework.charset'),
           type: 'select',
           dataList: [
             { value: 'UTF-8', text: 'UTF-8' },

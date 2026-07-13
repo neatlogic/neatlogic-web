@@ -35,6 +35,8 @@
  * alertEventHandlerConfig 告警中心事件处理配置（配置组件）
  * alChatView AI聊天工具结果查看
  * knowledgeDocumentView 知识库文档查看
+ * aiToolConfig AI工具扩展配置
+ * ragConfig RAG数据集扩展配置
  * router 跨模块路由
  *   使用方法：getRouterComponent(moduleName)，moduleName为模块名称
  *   注册方法：registerRouterComponent({
@@ -42,7 +44,7 @@
  *   })
  */
 class ComponentManager {
-  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'mqTopicConfig', 'mqSubscribeConfig', 'loginPage', 'formVersionList', 'router', 'deployAppConfigModule', 'diagramWidget', 'diagramWidgetConfig', 'diagramWidgetCustomConfig', 'alertEventHandlerEdit', 'alertEventHandlerView', 'alertEventHandlerConfig', 'knowledgeDocumentView', 'aiChatView'];
+  static categoryList = ['timeLine', 'taskDetail', 'stepLog', 'flowNode', 'flowElement', 'dispatcher', 'dispatcherValid', 'workCenterColumn', 'formDefine', 'formConfig', 'formComponent', 'deployAppConfigEnvTab', 'mqTopicConfig', 'mqSubscribeConfig', 'loginPage', 'formVersionList', 'router', 'deployAppConfigModule', 'diagramWidget', 'diagramWidgetConfig', 'diagramWidgetCustomConfig', 'alertEventHandlerEdit', 'alertEventHandlerView', 'alertEventHandlerConfig', 'knowledgeDocumentView', 'aiChatView', 'aiToolConfig', 'ragConfig'];
   static categoryConfig = {_template: {}, _menuTypeConfig: {}};
   static generateMethods() {
     this.categoryList.forEach(category => {

@@ -152,7 +152,7 @@ export default {
       'indent',
       '|'
     ];
-    const { uploadVideoConfig = {} } = this.params || {};
+    const { uploadVideoConfig = {}, mentionConfig = {} } = this.params || {};
     const { 
       type = '', 
       fileKey = 'file',
@@ -214,6 +214,9 @@ export default {
             params: ['knowledgeDocumentId']
           }
         },
+        mention: {
+          ...this.getEditorMentionConfig(mentionConfig)
+        },
         toolbar: {
           items: [...baseToolBar, ...this.toolbar]
         }
@@ -231,6 +234,100 @@ export default {
     this.dom = null;
   },
   methods: {
+    getEditorMentionConfig(mentionConfig = {}) {
+      const restConfig = { ...(mentionConfig || {}) };
+      ['url', 'params', 'groupList', 'excludeList', 'includeList', 'rangeList', 'extendCondition', 'rootName', 'textName', 'valueName'].forEach(key => {
+        delete restConfig[key];
+      });
+      return {
+        feeds: [
+          {
+            marker: '@',
+            feed: this.getMentionFeed,
+            minimumCharacters: 0
+          }
+        ],
+        ...restConfig
+      };
+    },
+    getMentionFeed(queryText) {
+      const keyword = queryText || '';
+      const mentionConfig = (this.params && this.params.mentionConfig) || {};
+      const url = mentionConfig.url || '/api/rest/user/role/team/search';
+      const requestParams = this.getMentionSearchParams(keyword, mentionConfig, url);
+      return this.$https.post(url, requestParams).then(res => {
+        const dataList = this.getMentionDataList(res, mentionConfig, url);
+        return dataList.map(user => this.getMentionItem(user, mentionConfig)).filter(item => !!item);
+      });
+    },
+    getMentionSearchParams(keyword, mentionConfig = {}, url) {
+      const extraParams = typeof mentionConfig.params === 'function' ? mentionConfig.params(keyword) : mentionConfig.params;
+      const isUserRoleTeamSearch = url.indexOf('/api/rest/user/role/team/search') > -1;
+      const params = isUserRoleTeamSearch
+        ? {
+          keyword,
+          currentPage: 1,
+          pageSize: 10,
+          groupList: ['user']
+        }
+        : {
+          keyword,
+          currentPage: 1,
+          pageSize: 10,
+          isActive: 1,
+          isDelete: 0
+        };
+      Object.assign(params, extraParams || {});
+      if (mentionConfig.groupList) {
+        params.groupList = mentionConfig.groupList;
+      }
+      if (mentionConfig.excludeList) {
+        params.excludeList = mentionConfig.excludeList;
+      }
+      if (mentionConfig.includeList) {
+        params.includeList = mentionConfig.includeList;
+      }
+      if (Array.isArray(mentionConfig.rangeList)) {
+        params.rangeList = mentionConfig.rangeList;
+      }
+      if (mentionConfig.extendCondition && typeof mentionConfig.extendCondition == 'object') {
+        Object.assign(params, mentionConfig.extendCondition);
+      }
+      return params;
+    },
+    getMentionDataList(res, mentionConfig = {}, url) {
+      const returnData = (res && res.Return) || {};
+      if (Array.isArray(returnData)) {
+        if (url.indexOf('/api/rest/user/role/team/search') > -1) {
+          return returnData.reduce((list, group) => {
+            return list.concat((group && group.dataList) || []);
+          }, []);
+        }
+        return returnData;
+      }
+      const rootName = mentionConfig.rootName || 'dataList';
+      const dataList = returnData[rootName] || [];
+      return Array.isArray(dataList) ? dataList : [];
+    },
+    getMentionItem(user, mentionConfig = {}) {
+      if (!user) {
+        return null;
+      }
+      const textName = mentionConfig.textName;
+      const valueName = mentionConfig.valueName;
+      const name = user[textName || 'text'];
+      const value = user[valueName || 'value'];
+      const userId = typeof value == 'string' && value.indexOf('#') > -1 ? value.substring(value.indexOf('#') + 1) : value;
+      if (!name) {
+        return null;
+      }
+      return {
+        id: `@${name}`,
+        userId,
+        name,
+        user
+      };
+    },
     toggleIcon() {
       this.toggle = !this.toggle;
     },

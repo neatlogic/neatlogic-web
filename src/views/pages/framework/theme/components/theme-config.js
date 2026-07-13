@@ -197,6 +197,22 @@ export default {
       'input': 'colorpickerlist'
     },
     {
+      'titleType': 'dashboard',
+      'label': $t('term.framework.theme.chartfieldtextcolor'),
+      'param': 'chart-field-text',
+      'value': '#8C8C8C',
+      'type': 'dashboard',
+      'input': 'colorpicker'
+    },
+    {
+      'titleType': 'dashboard',
+      'label': $t('term.framework.theme.chartdatalabeltextcolor'),
+      'param': 'chart-data-label-text',
+      'value': '#121212',
+      'type': 'dashboard',
+      'input': 'colorpicker'
+    },
+    {
       'titleType': 'logo',
       'label': $t('term.framework.theme.logosetting'),
       'param': 'logo',
@@ -398,6 +414,22 @@ export default {
       'value': ['#76B39A', '#7EA438', '#559BFE', '#9DA788', '#FEBC60', '#EF87A8'],
       'type': 'dashboard',
       'input': 'colorpickerlist'
+    },
+    {
+      'titleType': 'dashboard',
+      'label': $t('term.framework.theme.chartfieldtextcolor'),
+      'param': 'chart-field-text',
+      'value': '#ffffff',
+      'type': 'dashboard',
+      'input': 'colorpicker'
+    },
+    {
+      'titleType': 'dashboard',
+      'label': $t('term.framework.theme.chartdatalabeltextcolor'),
+      'param': 'chart-data-label-text',
+      'value': '#ffffff',
+      'type': 'dashboard',
+      'input': 'colorpicker'
     },
     {
       'titleType': 'logo',

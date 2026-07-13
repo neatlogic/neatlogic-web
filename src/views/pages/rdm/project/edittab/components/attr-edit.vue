@@ -36,6 +36,10 @@
         <span v-if="row.isPrivate" class="text-success">{{ $t('page.yes') }}</span>
         <span v-if="!row.isPrivate" class="text-grey">{{ $t('page.no') }}</span>
       </template>
+      <template v-slot:statKey="{ row }">
+        <span v-if="row.statKey">{{ getStatKeyText(row.statKey) }}</span>
+        <span v-else class="text-grey">-</span>
+      </template>
       <template v-slot:action="{ row }">
         <div v-if="!row.isPrivate" class="tstable-action">
           <ul class="tstable-action-ul">
@@ -52,6 +56,7 @@
       v-if="isAttrShow"
       :appId="appId"
       :attrId="currentAttrId"
+      :usedStatKeyList="usedStatKeyList"
       @close="closeAttr"
     ></CustomAttrEdit>
   </div>
@@ -73,6 +78,7 @@ export default {
       isAttrShow: false,
       currentAttrId: null,
       attrList: [], //对象属性列表，此处会返回所有属性，包括未激活属性
+      statAttrTypeList: [],
       theadList: [
         {
           key: 'isActive',
@@ -82,6 +88,7 @@ export default {
         { key: 'label', title: this.$t('page.name') },
         { key: 'typeText', title: this.$t('page.type') },
         { key: 'isPrivate', title: this.$t('term.rdm.systemattribute') },
+        { key: 'statKey', title: this.$t('term.rdm.statpurpose') },
         { key: 'isRequired', title: this.$t('page.require'), tooltip: this.$t('term.rdm.isrequiredwhencreate') },
         { key: 'description', title: this.$t('page.description') },
         { key: 'action' }
@@ -91,6 +98,7 @@ export default {
   beforeCreate() {},
   created() {
     this.searchAppAttr();
+    this.listAppStatAttrType();
   },
   beforeMount() {},
   mounted() {},
@@ -171,10 +179,22 @@ export default {
       this.$api.rdm.app.searchAppAttr({ appId: this.appId }).then(res => {
         this.attrList = res.Return;
       });
+    },
+    listAppStatAttrType() {
+      this.$api.rdm.project.listAppStatAttrType({ appId: this.appId }).then(res => {
+        this.statAttrTypeList = res.Return || [];
+      });
+    },
+    getStatKeyText(statKey) {
+      const statAttrType = this.statAttrTypeList.find(item => item.value === statKey);
+      return statAttrType ? statAttrType.text : statKey;
     }
   },
   filter: {},
   computed: {
+    usedStatKeyList() {
+      return this.attrList.filter(attr => attr.statKey && attr.id !== this.currentAttrId).map(attr => attr.statKey);
+    }
   },
   watch: {
   }

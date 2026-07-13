@@ -98,14 +98,14 @@ export default {
       constAttrList: null,
       attrData: {
         theadList: [
-          { key: 'ciLabel', title: '模型' },
-          { key: 'attrLabel', title: '属性' },
-          { key: 'name', title: '唯一标识', tooltip: '自定义模板只能获取配置了唯一标识的属性数据' },
-          { key: 'alias', title: '显示名' },
-          { key: 'condition', title: '筛选条件' },
+          { key: 'ciLabel', title: this.$t('page.model') },
+          { key: 'attrLabel', title: this.$t('page.attribute') },
+          { key: 'name', title: this.$t('term.cmdb.uniqueidentifier'), tooltip: this.$t('term.cmdb.customtemplateuniqueattrtip') },
+          { key: 'alias', title: this.$t('term.cmdb.displayname') },
+          { key: 'condition', title: this.$t('term.cmdb.filtercondition') },
           { key: 'conditionValue', title: '' },
-          { key: 'isPrimary', title: '是否主键', tooltip: '可以选择多个属性作为主键' },
-          { key: 'isHidden', title: '是否隐藏' }
+          { key: 'isPrimary', title: this.$t('term.cmdb.isprimarykey'), tooltip: this.$t('term.cmdb.multipleprimarykeytip') },
+          { key: 'isHidden', title: this.$t('term.cmdb.ishidden') }
         ],
         tbodyList: []
       },

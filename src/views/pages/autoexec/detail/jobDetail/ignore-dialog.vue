@@ -15,7 +15,7 @@
       <div v-else class="mb-nm">{{ $t('term.autoexec.ignoreselectednodeconfirm') }}</div>
       <Alert show-icon>
         <div>{{ $t('term.autoexec.jobruntip') }}</div>
-        <div class="mt-xs text-warning">不可忽略状态：{{ unignoreableStatusText }}</div>
+        <div class="mt-xs text-warning">{{ $t('term.autoexec.unignoreablestatus') }}{{ unignoreableStatusText }}</div>
       </Alert>
     </template>
   </TsDialog>
@@ -42,15 +42,15 @@ export default {
         width: 'small'
       },
       statusTextMapping: {
-        running: '运行中',
-        succeed: '已成功',
-        ignored: '已忽略',
-        invalid: '非法节点',
-        pending: '待运行',
-        failed: '已失败',
-        aborted: '已中止',
-        aborting: '中止中',
-        paused: '已暂停'
+        running: this.$t('term.autoexec.statusrunning'),
+        succeed: this.$t('term.autoexec.statussucceed'),
+        ignored: this.$t('term.autoexec.statusignored'),
+        invalid: this.$t('term.autoexec.statusinvalid'),
+        pending: this.$t('term.autoexec.statuspending'),
+        failed: this.$t('term.autoexec.statusfailed'),
+        aborted: this.$t('term.autoexec.statusaborted'),
+        aborting: this.$t('term.autoexec.statusaborting'),
+        paused: this.$t('term.autoexec.statuspaused')
       }
     };
   },

@@ -7,6 +7,7 @@
             <template v-slot:icon>
               <div class="logo bg-block border-color text-primary" @click="isIconDialogShow = true">
                 <i class="logo-icon" :class="graphData.icon || 'tsfont-question-o'"></i>
+                <span class="logo-change">{{ $t('term.cmdb.changeicon') }}</span>
               </div>
             </template>
           </TsForm>
@@ -89,10 +90,9 @@ export default {
       if (this.$refs['form'].valid()) {
         this.$api.cmdb.graph.saveGraph(this.graphData).then(res => {
           if (res.Return) {
-            this.$Message.success(this.$t('message.addsuccess'));
             // 刷新左侧菜单
             this.$store.commit('leftMenu/setCmdbCustomViewCount', 'add');
-            this.close(res.Return);
+            this.$store.commit('leftMenu/setCmdbCustomViewCount', 'add');
             //this.$router.push({ path: '/graph-edit/' + type + '/' + res.Return.id });
           }
         });
@@ -116,13 +116,11 @@ export default {
   text-align: center;
   line-height: 40px;
   .logo-icon {
-    font-size: 20px;
     // position: absolute;
     // top: 4px;
     // left: 10px;
   }
-  &::after {
-    content: '更换';
+  .logo-change {
     left: 44px;
     width: 40px;
     position: absolute;

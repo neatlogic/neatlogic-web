@@ -33,7 +33,7 @@ export default {
     return {
       visible: false,
       dialogSetting: {
-        title: '查看更多网段IP/子网掩码',
+        title: this.$t('page.viewtarget', { target: this.$t('term.framework.ipnetwork') }),
         type: 'modal',
         width: 'medium',
         isShow: true,

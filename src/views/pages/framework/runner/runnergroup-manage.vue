@@ -36,7 +36,7 @@
                   {{ item.networkIp }} / {{ item.mask }}
                 </div>
                 <template v-if="row.groupNetworkList.length >= 3">
-                  <span class="tsfont-option-horizontal text-href" @click.stop="openNetworkIpMaskDialog(row.groupNetworkList)">查看更多</span>
+                  <span class="tsfont-option-horizontal text-href" @click.stop="openNetworkIpMaskDialog(row.groupNetworkList)">{{ $t('page.viewmore') }}</span>
                 </template>
               </div>
             </template>

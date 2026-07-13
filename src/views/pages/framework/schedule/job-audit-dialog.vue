@@ -149,7 +149,7 @@ export default {
       ],
       dialogConfig: {
         type: 'modal',
-        title: '执行记录',
+        title: this.$t('term.framework.executionrecord'),
         hasFooter: false,
         maskClose: true,
         isShow: true,

@@ -33,7 +33,7 @@
         </div>
         <div class="btn-list">
           <ul class="action-group">
-            <li class="action-item tsfont-plus" @click="addItem(cd)">下级</li>
+            <li class="action-item tsfont-plus" @click="addItem(cd)">{{ $t('term.cmdb.childlevel') }}</li>
             <li class="action-item tsfont-trash-o" @click="deleteItem(index)">{{ $t('page.delete') }}</li>
           </ul>
         </div>

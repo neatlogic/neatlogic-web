@@ -1,6 +1,6 @@
 
 <template>
-  <div class="batch-data-contianer" contenteditable="true"></div>
+  <div class="batch-data-contianer" contenteditable="true" :data-placeholder="$t('term.autoexec.valuedisplaytext')"></div>
 </template>
 <script>
 export default {
@@ -120,7 +120,7 @@ function getDefaultValue(list, value, index) {
   outline: none;
   min-height: 300px;
   &:empty:before {
-    content: '值,显示文案';
+    content: attr(data-placeholder);
   }
 }
 </style>

@@ -553,7 +553,7 @@ export default {
                 try {
                   errortips.forEach(err => {
                     errtop = err.getBoundingClientRect().top;
-                    throw Error('请完善填写信息');
+                    throw Error(this.$t('term.process.completeinfo'));
                   });
                 } catch (err) {
                   // console.log(err);
@@ -600,7 +600,7 @@ export default {
         // 取消正在进行的请求
         const CancelToken = this.$https.CancelToken;
         this.cancelTokenSource = CancelToken.source();
-        this.cancelTokenSource.cancel('定时器关闭，取消post请求');
+        this.cancelTokenSource.cancel(this.$t('term.process.timerclosedcancelpost'));
       }
     },
     toggleSiderHide(isSiderHide) {

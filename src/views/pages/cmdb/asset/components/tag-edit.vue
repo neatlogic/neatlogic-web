@@ -71,7 +71,7 @@ export default {
         tagList: {
           type: 'slot',
           name: 'tagList',
-          label: '标签',
+          label: this.$t('page.tag'),
           transfer: true,
           multiple: true,
           tagList: [],
@@ -136,12 +136,12 @@ export default {
             });
           } else {
             // 提示
-            this.$Message.warning('请重新选择');
+            this.$Message.warning(this.$t('term.cmdb.reselect'));
           }
         } else if (this.operateType == 'addTag') {
           this.$api.cmdb.asset.batchAddTag(batchData).then(res => {
             if (res.Status == 'OK') {
-              _this.$parent.success('标签添加成功');
+              _this.$parent.success(this.$t('term.cmdb.tagaddsuccess'));
             }
           });
         } else if (this.operateType == 'delTag') {

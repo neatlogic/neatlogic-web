@@ -47,8 +47,8 @@
           </template>
           <template v-slot:content>
             <Tabs v-model="currentTab">
-              <TabPane label="配置" name="content"></TabPane>
-              <TabPane label="范例" name="example"></TabPane>
+              <TabPane :label="$t('page.config')" name="content"></TabPane>
+              <TabPane :label="$t('page.example')" name="example"></TabPane>
             </Tabs>
             <div v-if="currentTab === 'content'">
               <TsCodemirror v-model="reportDataSourceData.xml" codeMode="xml" @change="changeXml"></TsCodemirror>
@@ -108,7 +108,7 @@
           type="primary"
           ghost
           @click="save(1)"
-        >清空数据并确认</Button>
+        >{{ $t('term.framework.cleardataandconfirm') }}</Button>
         <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>

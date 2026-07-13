@@ -48,7 +48,7 @@ export default {
           name: 'url',
           label: 'url',
           // URL用于按一次HTTP请求聚合SQL，*代表监控所有请求URL
-          desc: '按HTTP请求URL统计本次请求内执行的所有SQL，*代表全部URL'
+          desc: this.$t('term.framework.sqlurldesc')
         }
       ]
     };
@@ -71,7 +71,7 @@ export default {
         const formValue = form.getFormValue();
         // clear不需要额外参数，insert/remove至少需要填写sql id或url中的一个
         if (formValue.action !== 'clear' && !formValue.id && !formValue.url) {
-          this.$Message.warning('请输入sql id或url');
+          this.$Message.warning(this.$t('term.framework.sqlidorurlrequired'));
           return;
         }
         this.$api.framework.healthcheck.toggleSqlInterceptor(formValue).then(res => {

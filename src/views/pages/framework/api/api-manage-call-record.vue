@@ -64,12 +64,12 @@
     </TsDialog>
     <TsDialog :isShow.sync="isCallDetailShow" v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        <div>详细内容</div>
+        <div>{{ $t('page.detailcontent') }}</div>
       </template>
       <template v-slot><pre class="pre">{{ callDetail }}</pre></template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button v-if="hasMore" v-download="auditDetailDownloadParams" type="primary">下载</Button>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
+        <Button v-if="hasMore" v-download="auditDetailDownloadParams" type="primary">{{ $t('page.download') }}</Button>
       </template>
     </TsDialog>
   </div>

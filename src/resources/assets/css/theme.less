@@ -3738,29 +3738,49 @@
     color: @text-color;
   }
 
+  .@{iv-prev}alert-message {
+    color: @text-color;
+  }
+
   .@{iv-prev}alert-info {
-    border: 0px solid fade(@primary-color, 50%) !important;
+    border: 1px solid fade(@primary-color, 35%) !important;
     border-radius: @item-border-radius;
     background-color: fade(@primary-color, 10%);
 
+    .@{iv-prev}alert-message,
     .@{iv-prev}alert-icon {
       color: var(--primary-color, @primary-color);
     }
   }
 
   .@{iv-prev}alert-error {
-    background: @error-bg-color;
-    border: 1px solid @error-bg-color;
+    background: fade(@error-color, 12%);
+    border: 1px solid fade(@error-color, 35%);
+
+    .@{iv-prev}alert-message,
+    .@{iv-prev}alert-icon {
+      color: @error-color;
+    }
   }
 
   .@{iv-prev}alert-warning {
-    background: var(--warning-bg-color, @warning-bg-color);
-    border: 1px solid var(--warning-bg-color, @warning-bg-color);
+    background: fade(@warning-color, 12%);
+    border: 1px solid fade(@warning-color, 35%);
+
+    .@{iv-prev}alert-message,
+    .@{iv-prev}alert-icon {
+      color: @warning-color;
+    }
   }
 
   .@{iv-prev}alert-success {
-    background: @success-bg-color;
-    border: 1px solid @success-bg-color;
+    background: fade(@success-color, 12%);
+    border: 1px solid fade(@success-color, 35%);
+
+    .@{iv-prev}alert-message,
+    .@{iv-prev}alert-icon {
+      color: @success-color;
+    }
   }
 
   //divider

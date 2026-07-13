@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsFormItem label="展示模式" labelPosition="top">
+    <TsFormItem :label="$t('term.report.displaymode')" labelPosition="top">
       <TsFormSelect
         :value="getConfigValue('renderMode', 'normal')"
         :dataList="renderModeList"
@@ -8,7 +8,7 @@
         @change="changeRenderMode"
       ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem label="启用动画" labelPosition="top">
+    <TsFormItem :label="$t('term.report.enableanimation')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('enabled', true)"
         :true-value="true"
@@ -16,7 +16,7 @@
         @change="val => setConfigValue('enabled', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="拓扑模板" labelPosition="top">
+    <TsFormItem :label="$t('term.report.topologytemplate')" labelPosition="top">
       <TsFormSelect
         :value="getConfigValue('preset', 'ops')"
         :dataList="presetList"
@@ -24,14 +24,14 @@
         @change="val => setConfigValue('preset', val)"
       ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem label="流动方向" labelPosition="top">
+    <TsFormItem :label="$t('term.report.flowdirection')" labelPosition="top">
       <TsFormRadio
         :value="getConfigValue('direction', 'forward')"
         :dataList="directionList"
         @change="val => setConfigValue('direction', val)"
       ></TsFormRadio>
     </TsFormItem>
-    <TsFormItem label="流动速度" labelPosition="top">
+    <TsFormItem :label="$t('term.report.flowspeed')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('speed', 8)"
@@ -43,7 +43,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="流光长度" labelPosition="top">
+    <TsFormItem :label="$t('term.report.flowlightlength')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('flowLength', 10)"
@@ -55,7 +55,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem v-if="!isAmbientMode" label="流光密度" labelPosition="top">
+    <TsFormItem v-if="!isAmbientMode" :label="$t('term.report.flowlightdensity')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('flowDensity', 1)"
@@ -67,21 +67,21 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="线条样式" labelPosition="top">
+    <TsFormItem :label="$t('term.report.linestyle')" labelPosition="top">
       <TsFormRadio
         :value="getConfigValue('lineStyle', 'solid')"
         :dataList="lineStyleList"
         @change="val => setConfigValue('lineStyle', val)"
       ></TsFormRadio>
     </TsFormItem>
-    <TsFormItem label="线条端点" labelPosition="top">
+    <TsFormItem :label="$t('term.report.linecap')" labelPosition="top">
       <TsFormRadio
         :value="getConfigValue('lineCap', 'round')"
         :dataList="lineCapList"
         @change="val => setConfigValue('lineCap', val)"
       ></TsFormRadio>
     </TsFormItem>
-    <TsFormItem label="线宽" labelPosition="top">
+    <TsFormItem :label="$t('term.report.linewidth')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('lineWidth', 2)"
@@ -93,7 +93,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="基础线透明度" labelPosition="top">
+    <TsFormItem :label="$t('term.report.baselineopacity')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('baseOpacity', isAmbientMode ? 0.12 : 0.24)"
@@ -106,7 +106,7 @@
       </div>
     </TsFormItem>
     <template v-if="!isAmbientMode">
-      <TsFormItem label="显示节点" labelPosition="top">
+      <TsFormItem :label="$t('term.report.shownodes')" labelPosition="top">
         <TsFormSwitch
           :value="getConfigValue('showNodes', true)"
           :true-value="true"
@@ -114,14 +114,14 @@
           @change="val => setConfigValue('showNodes', val)"
         ></TsFormSwitch>
       </TsFormItem>
-      <TsFormItem v-if="getConfigValue('showNodes', true)" label="节点样式" labelPosition="top">
+      <TsFormItem v-if="getConfigValue('showNodes', true)" :label="$t('term.report.nodestyle')" labelPosition="top">
         <TsFormRadio
           :value="getConfigValue('nodeStyle', 'dot')"
           :dataList="nodeStyleList"
           @change="val => setConfigValue('nodeStyle', val)"
         ></TsFormRadio>
       </TsFormItem>
-      <TsFormItem v-if="getConfigValue('showNodes', true)" label="节点大小" labelPosition="top">
+      <TsFormItem v-if="getConfigValue('showNodes', true)" :label="$t('term.report.nodesize')" labelPosition="top">
         <div class="pl-sm pr-sm">
           <Slider
             :value="getConfigValue('nodeSize', 4)"
@@ -133,7 +133,7 @@
           ></Slider>
         </div>
       </TsFormItem>
-      <TsFormItem v-if="getConfigValue('showNodes', true)" label="节点透明度" labelPosition="top">
+      <TsFormItem v-if="getConfigValue('showNodes', true)" :label="$t('term.report.nodeopacity')" labelPosition="top">
         <div class="pl-sm pr-sm">
           <Slider
             :value="getConfigValue('nodeOpacity', 1)"
@@ -145,7 +145,7 @@
           ></Slider>
         </div>
       </TsFormItem>
-      <TsFormItem label="低性能模式" labelPosition="top">
+      <TsFormItem :label="$t('term.report.lowperformancemode')" labelPosition="top">
         <TsFormSwitch
           :value="getConfigValue('lowPerformance', false)"
           :true-value="true"
@@ -172,33 +172,33 @@ export default {
   data() {
     return {
       renderModeList: [
-        { value: 'normal', text: '普通' },
-        { value: 'ambient', text: '氛围' }
+        { value: 'normal', text: this.$t('term.report.normal') },
+        { value: 'ambient', text: this.$t('term.report.ambient') }
       ],
       presetList: [
-        { value: 'ops', text: '运维链路' },
-        { value: 'mesh', text: '网状链路' },
-        { value: 'hub', text: '中心辐射' },
-        { value: 'pipeline', text: '管道传输' },
-        { value: 'vertical', text: '上下链路' },
-        { value: 'ring', text: '环形流动' }
+        { value: 'ops', text: this.$t('term.report.opspath') },
+        { value: 'mesh', text: this.$t('term.report.meshpath') },
+        { value: 'hub', text: this.$t('term.report.hubspoke') },
+        { value: 'pipeline', text: this.$t('term.report.pipeline') },
+        { value: 'vertical', text: this.$t('term.report.verticalpath') },
+        { value: 'ring', text: this.$t('term.report.ringflow') }
       ],
       directionList: [
-        { value: 'forward', text: '正向' },
-        { value: 'reverse', text: '反向' }
+        { value: 'forward', text: this.$t('term.report.forward') },
+        { value: 'reverse', text: this.$t('term.report.reverse') }
       ],
       lineStyleList: [
-        { value: 'solid', text: '实线' },
-        { value: 'dashed', text: '虚线' }
+        { value: 'solid', text: this.$t('term.report.solidline') },
+        { value: 'dashed', text: this.$t('term.report.dashedline') }
       ],
       lineCapList: [
-        { value: 'round', text: '圆角' },
-        { value: 'butt', text: '直角' }
+        { value: 'round', text: this.$t('term.report.roundcap') },
+        { value: 'butt', text: this.$t('term.report.buttcap') }
       ],
       nodeStyleList: [
-        { value: 'dot', text: '圆点' },
-        { value: 'ring', text: '光环' },
-        { value: 'pulse', text: '脉冲' }
+        { value: 'dot', text: this.$t('term.report.dot') },
+        { value: 'ring', text: this.$t('term.report.halo') },
+        { value: 'pulse', text: this.$t('term.report.pulse') }
       ]
     };
   },

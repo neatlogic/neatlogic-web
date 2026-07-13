@@ -13,7 +13,7 @@ const nameValid = {
     }
     if (!utils.nameRegularValid(nodeConfig.name)) {
       validList.push({
-        msg: $t('节点名称仅支持汉字、字母、数字和特殊字符(._-)'),
+        msg: $t('form.validate.namespecialchars'),
         href: '#nodeName'
       });
     }

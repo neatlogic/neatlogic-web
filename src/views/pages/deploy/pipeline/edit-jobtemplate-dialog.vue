@@ -423,7 +423,7 @@ export default {
       let list = [
         {
           value: -1,
-          text: '蓝绿执行'
+          text: this.$t('term.autoexec.bluegreenexecute')
         }
       ];
       list.push(...this.$utils.getRoundCountList());

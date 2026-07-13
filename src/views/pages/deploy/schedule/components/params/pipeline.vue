@@ -225,7 +225,7 @@ export default {
     headerTitleOperation() {
       this.selectedAppSystemModuleVersionList = [];
       if (this.$utils.isEmpty(this.valueList)) {
-        this.$Message.warning('请选择应用系统模块版本');
+        this.$Message.warning(this.$t('term.deploy.selectappmoduleversion'));
         return;
       }
       this.appSystemModuleEnvList.forEach(item => {
@@ -234,7 +234,7 @@ export default {
         }
       });
       if (!this.selectedAppSystemModuleVersionList.length) {
-        this.$Message.info('应用系统模块中不需要设置版本');
+        this.$Message.info(this.$t('term.deploy.appmodulenoneedversion'));
         return;
       }
       this.isEditVersionDialogShow = true;

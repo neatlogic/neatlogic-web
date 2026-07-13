@@ -11,6 +11,7 @@ import TsCkeditor from '@/resources/plugins/TsCkeditor/TsCkeditor';
 import TsCodemirror from '@/resources/plugins/TsCodemirror/TsCodemirror.vue';
 import TimeSelect from '@/resources/components/TimeSelect/TimeSelect.vue';
 import TsFormCascader from '@/resources/plugins/TsForm/TsFormCascader';
+import TsFormCascade from '@/resources/plugins/TsForm/TsFormCascade';
 export default {
   TsFormInput,
   TsFormSelect,
@@ -24,5 +25,6 @@ export default {
   TsCkeditor,
   TsCodemirror,
   TimeSelect,
-  TsFormCascader
+  TsFormCascader,
+  TsFormCascade
 };

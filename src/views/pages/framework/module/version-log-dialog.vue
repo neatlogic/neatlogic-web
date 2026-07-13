@@ -66,7 +66,7 @@
                         <div v-if="isHasSql(valueName) && getSqlSentence(valueItem)" class="mb-xs">
                           <li class="text-uppercase mb-xs">
                             <span class="text-danger tsfont-mysql"></span>
-                            {{ valueName==='neatlogic'?'neatlogic库':'租户库' }}</li>
+                            {{ valueName === 'neatlogic' ? $t('term.framework.neatlogicdb') : $t('term.framework.tenantdb') }}</li>
                           <li class="ml-nm">
                             <TsCodemirror
                               :value="getSqlSentence(valueItem)"

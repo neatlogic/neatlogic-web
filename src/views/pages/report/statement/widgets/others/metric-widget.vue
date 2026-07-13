@@ -81,7 +81,7 @@ export default {
     },
     displayTitle() {
       const dataTitle = this.getDataValue('title');
-      return dataTitle !== undefined ? dataTitle : this.widget.config.title || this.getStaticValue('title') || '核心指标';
+      return dataTitle !== undefined ? dataTitle : this.widget.config.title || this.getStaticValue('title') || this.$t('term.report.coremetric');
     },
     targetValue() {
       const value = this.getValue('value');
@@ -112,11 +112,14 @@ export default {
     valueFontSize() {
       return `${this.widget.config.fontSize || 46}px`;
     },
+    titleColor() {
+      return (this.widget.config && this.widget.config.titleColor) || this.getChartTheme()?.labels?.style?.fill || 'rgba(233, 251, 255, 0.88)';
+    },
     metricStyle() {
       return {
         '--metric-primary-color': this.widget.color || '#00e5ff',
         '--metric-accent-color': this.widget.accentColor || '#00ffa8',
-        '--metric-title-color': this.widget.config.titleColor || 'rgba(233, 251, 255, 0.78)'
+        '--metric-title-color': this.titleColor
       };
     }
   },

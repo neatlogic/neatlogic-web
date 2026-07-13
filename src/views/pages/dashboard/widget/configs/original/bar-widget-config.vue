@@ -120,7 +120,7 @@
         "
       />
     </TsFormItem>
-    <TsFormItem label="辅助线" labelPosition="top">
+    <TsFormItem :label="$t('term.report.chartsetting.guideline')" labelPosition="top">
       <TsFormSwitch
         :value="!config.xAxis?true:typeof config.xAxis === 'boolean' ? true : config.xAxis.grid?config.xAxis.grid.visible:true"
         :true-value="true"

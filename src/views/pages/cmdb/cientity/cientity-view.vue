@@ -36,8 +36,8 @@
               :value="showContent === 'tree'"
               :trueValue="true"
               :falseValue="false"
-              trueText="隐藏拓扑(beta)"
-              falseText="显示拓扑(beta)"
+              :trueText="$t('term.cmdb.hidetopobeta')"
+              :falseText="$t('term.cmdb.showtopobeta')"
               :showStatus="true"
               @on-change="
                 val => {

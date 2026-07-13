@@ -35,6 +35,8 @@
                     :issueData="issueData"
                     :autoSave="false"
                     :saveHandler="isSourceTestcase ? saveIssueWithCopy : null"
+                    :projectId="projectId"
+                    :ckeditorParams="getCkeditorParams()"
                     @cancel="contentMode = 'read'"
                   ></ContentHandler>
                 </div>
@@ -59,8 +61,8 @@
               <TabPane v-if="isShowCopyTab" :label="renderCopyTabLabel" name="copy">
                 <div v-if="currentTab == 'copy'" class="pl-nm pr-nm">
                   <div class="copy-toolbar">
-                    <span class="text-grey">本次同步副本：{{ selectedCopyIdList.length }}</span>
-                    <Button v-if="copyList.length > 0" size="small" @click="openCopySyncScopeSetting">修改同步范围</Button>
+                    <span class="text-grey">{{ $t('term.rdm.currentsynccopycount', { count: selectedCopyIdList.length }) }}</span>
+                    <Button v-if="copyList.length > 0" size="small" @click="openCopySyncScopeSetting">{{ $t('term.rdm.modifysyncscope') }}</Button>
                   </div>
                   <IssueList
                     v-if="getApp('testcase')"
@@ -94,7 +96,7 @@
             <div class="padding">
               <Divider />
               <TsFormItem v-if="issueData.commentCount" v-bind="formItemConf" :label="$t('page.comment')">
-                <CommentList :issueData="issueData" :issueId="id"></CommentList>
+                <CommentList :issueData="issueData" :issueId="id" :ckeditorParams="getCkeditorParams()"></CommentList>
               </TsFormItem>
 
               <TsFormItem v-bind="formItemConf" :label="$t('page.status')">
@@ -110,11 +112,7 @@
               <TsFormItem v-bind="formItemConf" :label="$t('page.reply')">
                 <TsCkeditor
                   v-model="issueData.comment"
-                  :params="{
-                    uploadVideoConfig: {
-                      type: 'rdm',
-                    }
-                  }"
+                  :params="getCkeditorParams()"
                   :width="'100%'"
                 ></TsCkeditor>
               </TsFormItem>
@@ -285,7 +283,7 @@ export default {
       }
     },
     renderCopyTabLabel(h) {
-      const controllList = [h('span', '副本')];
+      const controllList = [h('span', this.$t('term.rdm.copy'))];
       if (this.copyList.length > 0) {
         controllList.push(h('span', { class: 'ml-xs text-grey' }, this.copyList.length));
       }
@@ -311,10 +309,10 @@ export default {
     },
     titleBadgeText() {
       if (this.issueData && this.issueData.sourceIssueId) {
-        return '副本';
+        return this.$t('term.rdm.copy');
       }
       if (this.copyList.length > 0) {
-        return '副本 ' + this.copyList.length;
+        return this.$t('term.rdm.copycount', { count: this.copyList.length });
       }
       return '';
     }

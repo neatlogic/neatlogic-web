@@ -60,7 +60,7 @@ export default {
         reactionFilter: {
           name: 'reactionFilter',
           type: 'slot',
-          label: '联动过滤'
+          label: this.$t('term.report.reactionfilter')
         }
       },
       currentMatrix: null,

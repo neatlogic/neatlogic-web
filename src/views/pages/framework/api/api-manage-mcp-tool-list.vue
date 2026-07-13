@@ -1,14 +1,14 @@
 <template>
   <TsDialog
     :isShow="isShow"
-    title="MCP工具列表测试"
+    :title="$t('term.framework.mcptoollisttest')"
     type="slider"
     width="large"
     :hasFooter="false"
     :maskClose="true"
     @on-close="close"
   >
-    <TsFormItem label="模块" :labelWidth="100">
+    <TsFormItem :label="$t('page.module')" :labelWidth="100">
       <TsFormSelect
         v-model="moduleScope"
         url="/api/rest/module/list"
@@ -16,13 +16,13 @@
         textName="text"
         :clearable="true"
         transfer
-        placeholder="不选择则查询全部模块"
+        :placeholder="$t('term.framework.queryallmodulesplaceholder')"
       ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem label="调用地址" :labelWidth="100">
+    <TsFormItem :label="$t('term.framework.calladdress')" :labelWidth="100">
       <span>{{ endpoint }}</span>
     </TsFormItem>
-    <TsFormItem label="请求体" :labelWidth="100">
+    <TsFormItem :label="$t('term.framework.requestbody')" :labelWidth="100">
       <JsonViewer boxed copyable :value="requestBody"></JsonViewer>
     </TsFormItem>
     <TsFormItem :labelWidth="100">
@@ -31,9 +31,9 @@
         type="primary"
         :loading="isLoading"
         @click="executeListTools"
-      >获取工具列表</Button>
+      >{{ $t('term.framework.gettoollist') }}</Button>
     </TsFormItem>
-    <TsFormItem v-if="result" label="工具列表结果" :labelWidth="100">
+    <TsFormItem v-if="result" :label="$t('term.framework.toollistresult')" :labelWidth="100">
       <JsonViewer boxed copyable :value="result"></JsonViewer>
     </TsFormItem>
   </TsDialog>

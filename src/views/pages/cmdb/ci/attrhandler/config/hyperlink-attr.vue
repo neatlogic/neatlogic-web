@@ -21,23 +21,23 @@ export default {
       formConfig: {
         type: {
           type: 'radio',
-          label: '类型',
+          label: this.$t('page.type'),
           validateList: ['required'],
           dataList: [
-            {value: 'outterlink', text: '外部链接'},
-            {value: 'innerlink', text: '内部链接'}
+            {value: 'outterlink', text: this.$t('term.cmdb.outerlink')},
+            {value: 'innerlink', text: this.$t('term.cmdb.innerlink')}
             //{value: 'route', text: '内部路由'}
           ],
-          desc: '外部链接：使用新窗口打开页面，必须是http或https开头；内部链接：使用当前窗口打开页面，支持http、https或/开头，支持跳转到其他模块',
+          desc: this.$t('term.cmdb.hyperlinktypedesc'),
           onChange: (val) => {
             this.$set(this.myConfig, 'type', val);
           }
         },
         text: {
           type: 'text',
-          label: '显示文本',
+          label: this.$t('term.cmdb.displaytext'),
           maxlength: 30,
-          desc: '如果不指定则使用超链接图标代替',
+          desc: this.$t('term.cmdb.hyperlinktextdesc'),
           onChange: (val) => {
             this.$set(this.myConfig, 'text', val);
           }

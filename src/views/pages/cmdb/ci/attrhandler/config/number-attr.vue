@@ -19,9 +19,9 @@ export default {
       formConfig: {
         format: {
           type: 'select',
-          label: '小数位',
+          label: this.$t('page.decimalnumber'),
           dataList: [
-            { value: 'auto', text: '自动' },
+            { value: 'auto', text: this.$t('page.auto') },
             { value: '1', text: '1' },
             { value: '2', text: '2' },
             { value: '3', text: '3' },
@@ -29,7 +29,16 @@ export default {
           ],
           transfer: true,
           onChange: val => {
-            this.$set(this.myConfig, 'format', val);
+            this.setConfig('format', val);
+          }
+        },
+        isMetric: {
+          type: 'switch',
+          label: this.$t('term.cmdb.saveasperformance'),
+          trueValue: 1,
+          falseValue: 0,
+          onChange: val => {
+            this.setConfig('isMetric', val);
           }
         }
       }
@@ -45,22 +54,23 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {},
+  methods: {
+    setConfig(key, value) {
+      this.$set(this.myConfig, key, value);
+      this.$emit('setConfig', this.myConfig);
+    }
+  },
   filter: {},
   computed: {},
   watch: {
-    myConfig: {
-      handler: function(val) {
-        this.$emit('setConfig', val);
-      },
-      deep: true
-    },
     config: {
       handler: function(val) {
-        this.myConfig = val || { format: 'auto' };
+        this.myConfig = Object.assign({ format: 'auto', isMetric: 0 }, val || {});
         if (this.myConfig) {
           for (const k in this.myConfig) {
-            this.formConfig[k].value = this.myConfig[k];
+            if (this.formConfig[k]) {
+              this.formConfig[k].value = this.myConfig[k];
+            }
           }
         }
       },

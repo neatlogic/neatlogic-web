@@ -34,7 +34,7 @@
             </span>
           </div>
           <div>{{ cd.openTypeText }}</div>
-          <div>{{ cd.type === 1 ? '链接' : '目录' }}</div>
+          <div>{{ cd.type === 1 ? $t('page.link') : $t('page.catalogue') }}</div>
           <div>
             <Badge :count="cd.childCount" type="primary"></Badge>
           </div>

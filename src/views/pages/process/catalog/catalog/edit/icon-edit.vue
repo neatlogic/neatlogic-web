@@ -39,19 +39,19 @@ export default {
       selectedIcon: '',
       menuicon: [
         {
-          keyword: 'setting 设置 配置',
+          keyword: this.$t('term.process.iconkeywordsetting'),
           icon: 'tsfont-setting'
         },
         {
-          keyword: 'search 搜索',
+          keyword: this.$t('term.process.iconkeywordsearch'),
           icon: 'tsfont-search'
         },
         {
-          keyword: 'upload 上传',
+          keyword: this.$t('term.process.iconkeywordupload'),
           icon: 'tsfont-batch-upload'
         },
         {
-          keyword: 'link 链接',
+          keyword: this.$t('term.process.iconkeywordlink'),
           icon: 'tsfont-attachment'
         },
         {

@@ -168,7 +168,7 @@
                 style="cursor: pointer"
                 :style="row._filterList ? 'padding-left:' + (row._filterList.length * 8 + (row._pagerMode == 'normal' ? 8 : 0)) + 'px' : ''"
                 @click="showMoreData(row)"
-              >再显示{{ searchParam.pageSize }}条</span>
+              >{{ $t('term.cmdb.showmorecount', { count: searchParam.pageSize }) }}</span>
             </div>
           </div>
         </template>

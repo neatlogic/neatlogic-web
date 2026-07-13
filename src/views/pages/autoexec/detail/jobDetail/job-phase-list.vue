@@ -169,11 +169,11 @@ export default {
       isLoading: false,
       theadList: [
         {
-          title: '排队号',
+          title: this.$t('term.autoexec.queuenumber'),
           key: 'sort'
         },
         {
-          title: '执行器',
+          title: this.$t('term.autoexec.runner'),
           key: 'runner'
         }
       ],

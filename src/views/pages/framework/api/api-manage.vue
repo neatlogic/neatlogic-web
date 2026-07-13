@@ -8,7 +8,7 @@
             <AuditConfig auditName="API-AUDIT" :title="$t('term.framework.apiaccesstime')"></AuditConfig>
           </span>
           <span class="action-item tsfont-download" @click="exportHelp()">{{ $t('page.export') }}</span>
-          <span class="action-item tsfont-agent" @click="showMcpToolList()">MCP工具列表</span>
+          <span class="action-item tsfont-agent" @click="showMcpToolList()">{{ $t('term.framework.mcptoollist') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
@@ -150,7 +150,7 @@ export default {
         { title: this.$t('page.address'), key: 'token', width: 300 },
         { title: this.$t('page.name'), key: 'name', width: 300 },
         { title: this.$t('page.needaudit'), key: 'needAudit', minWidth: 80 },
-        { title: 'MCP服务', key: 'isMcp', minWidth: 80 },
+        { title: this.$t('term.framework.mcpservice'), key: 'isMcp', minWidth: 80 },
         { title: this.$t('page.authtype'), key: 'authTypeNameList', minWidth: 80 },
         // { title: this.$t('page.status'), key: 'isActive', minWidth: 60 },
         { title: this.$t('page.module'), key: 'moduleGroupName', minWidth: 60 },
@@ -205,7 +205,7 @@ export default {
             type: 'radio',
             name: 'isMcp',
             value: null,
-            label: 'MCP服务',
+            label: this.$t('term.framework.mcpservice'),
             placeholder: this.$t('page.pleaseselect'),
             dataList: [
               { value: 1, text: this.$t('page.yes') },
@@ -217,7 +217,7 @@ export default {
           {
             type: 'select',
             name: 'authType',
-            label: '认证类型',
+            label: this.$t('page.authtype'),
             multiple: false,
             url: 'api/rest/universal/enum/get',
             params: { enumClass: 'neatlogic.framework.restful.constvalue.ApiAuthType' },

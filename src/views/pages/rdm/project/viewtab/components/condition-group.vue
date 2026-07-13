@@ -127,11 +127,11 @@ export default {
       attrMap: {},
       joinTypeList: [
         {
-          text: '并且',
+          text: this.$t('term.rdm.and'),
           value: 'and'
         },
         {
-          text: '或者',
+          text: this.$t('term.rdm.or'),
           value: 'or'
         }
       ]

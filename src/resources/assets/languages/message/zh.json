@@ -15,6 +15,7 @@
   "commitsuccess": "提交成功",
   "refreshsuccess": "刷新成功",
   "copysuccess": "复制成功",
+  "copyfailed": "复制失败",
   "pastesuccess": "粘贴成功",
   "uploadsuccess": "上传成功",
   "uploadfailed": "上传失败",

@@ -3,7 +3,7 @@
     <Alert show-icon>
       {{ $t('page.help') }}：
       <template slot="desc">
-        <div>编写javascript，将返回结果转换成新的数据格式，返回结果不符合json格式或不定义转换规则，则直接返回原结果。</div>
+        <div>{{ $t('term.framework.outputtransformhelp') }}</div>
         <JavascriptHelp></JavascriptHelp>
       </template>
     </Alert>

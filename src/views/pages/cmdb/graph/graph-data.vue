@@ -467,7 +467,7 @@ export default {
     // left: 10px;
   }
   &::after {
-    content: '更换';
+    content: '';
     left: 44px;
     width: 40px;
     position: absolute;

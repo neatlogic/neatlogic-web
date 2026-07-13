@@ -230,8 +230,8 @@ export default {
     },
     delClassification(item) {
       this.$createDialog({
-        title: '移除文档',
-        content: '确认从当前分类下移除文档？',
+        title: this.$t('term.documentonline.removedocument'),
+        content: this.$t('term.documentonline.removefromcurrentcategoryconfirm'),
         btnType: 'error',
         okText: this.$t('term.process.move'),
         'on-ok': vnode => {

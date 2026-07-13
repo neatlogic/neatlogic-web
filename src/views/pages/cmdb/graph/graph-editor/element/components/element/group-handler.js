@@ -1,6 +1,7 @@
 import template from '../shape/group.vue';
+import { $t } from '@/resources/init.js';
 export default {
-  name: '分组节点',
+  name: $t('term.cmdb.groupnode'),
   handler: 'group',
   isVue: true, //需要声明是vue组件
   config: {

@@ -62,7 +62,7 @@
               >
                 <CenterDetail
                   ref="TaskCenterDetail"
-                  :slotList="[{ name: 'automatic', label: '自动处理' }]"
+                  :slotList="[{ name: 'automatic', label: $t('term.process.automatic') }]"
                   :actionConfig="actionConfig"
                   :formConfig="formConfig"
                   :processTaskConfig="processTaskConfig"

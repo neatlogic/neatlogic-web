@@ -63,7 +63,7 @@
               >
                 <CenterDetail
                   ref="TaskCenterDetail"
-                  :slotList="[{ name: 'autoexec', label: '自动化' }]"
+                  :slotList="[{ name: 'autoexec', label: $t('term.process.autoexec') }]"
                   :actionConfig="actionConfig"
                   :formConfig="formConfig"
                   :processTaskConfig="processTaskConfig"

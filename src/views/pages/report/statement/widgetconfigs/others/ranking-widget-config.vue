@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsFormItem label="显示标题" labelPosition="top">
+    <TsFormItem :label="$t('term.report.showtitle')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('showTitle', true)"
         :true-value="true"
@@ -8,14 +8,14 @@
         @change="val => setConfigValue('showTitle', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem v-if="getConfigValue('showTitle', true)" label="标题" labelPosition="top">
+    <TsFormItem v-if="getConfigValue('showTitle', true)" :label="$t('page.title')" labelPosition="top">
       <TsFormInput
-        :value="getConfigValue('title', 'TOP排名')"
+        :value="getConfigValue('title', $t('term.report.topranking'))"
         border="border"
         @change="val => setConfigValue('title', val)"
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem v-if="getConfigValue('showTitle', true)" label="标题颜色" labelPosition="top">
+    <TsFormItem v-if="getConfigValue('showTitle', true)" :label="$t('term.report.titlecolor')" labelPosition="top">
       <ColorPicker
         :value="getConfigValue('titleColor', '')"
         :transfer="true"
@@ -26,7 +26,18 @@
         @on-change="val => setConfigValue('titleColor', val)"
       />
     </TsFormItem>
-    <TsFormItem label="显示条数" labelPosition="top">
+    <TsFormItem :label="$t('page.fontcolor')" labelPosition="top">
+      <ColorPicker
+        :value="getConfigValue('nameColor', '')"
+        :transfer="true"
+        alpha
+        recommend
+        class="colorPicker"
+        transfer-class-name="color-picker-transfer-class"
+        @on-change="val => setConfigValue('nameColor', val)"
+      />
+    </TsFormItem>
+    <TsFormItem :label="$t('term.report.displaycount')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('topN', 6)"

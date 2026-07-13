@@ -1,8 +1,8 @@
-import {$t} from '@/resources/init.js';
+import { $t } from '@/resources/init.js';
 
 export default {
   name: 'metric',
-  label: '指标卡',
+  label: $t('term.report.metriccard'),
   type: 'metric',
   icon: 'tsfont-chart-number',
   widgetType: 'basic',
@@ -16,14 +16,14 @@ export default {
   dataTypes: [{ value: 'dynamic', text: $t('term.report.datatype.dynamicdata') }],
   needData: true,
   fields: [
-    { name: 'title', label: '标题', type: ['text'], isRequired: false, isRecommended: true, description: '可选；不绑定时使用组件配置里的默认标题。' },
-    { name: 'value', label: '数值', type: ['number', 'text'], isRequired: true, description: '必填；指标卡动态展示的核心数值。' },
-    { name: 'unit', label: '单位', type: ['text'], isRequired: false, description: '可选；不绑定时使用组件配置里的默认单位。' },
-    { name: 'trendLabel', label: '趋势标签', type: ['text'], isRequired: false, description: '可选；仅开启趋势展示时使用。' },
-    { name: 'trendValue', label: '趋势值', type: ['number', 'text'], isRequired: false, description: '可选；仅开启趋势展示时使用。' }
+    { name: 'title', label: $t('page.title'), type: ['text'], isRequired: false, isRecommended: true, description: $t('term.report.optionaldefaulttitle') },
+    { name: 'value', label: $t('term.report.chartsetting.value'), type: ['number', 'text'], isRequired: true, description: $t('term.report.metricvaluedesc') },
+    { name: 'unit', label: $t('term.report.unit'), type: ['text'], isRequired: false, description: $t('term.report.optionaldefaultunit') },
+    { name: 'trendLabel', label: $t('term.report.trendlabel'), type: ['text'], isRequired: false, description: $t('term.report.optionaltrendonly') },
+    { name: 'trendValue', label: $t('term.report.trendvalue'), type: ['number', 'text'], isRequired: false, description: $t('term.report.optionaltrendonly') }
   ],
   config: {
-    title: '核心指标',
+    title: $t('term.report.coremetric'),
     titleColor: '',
     defaultValue: 1286,
     unit: '',

@@ -21,6 +21,26 @@ const report = {
   saveReport(params) {
     return axios.post('/api/rest/report/save', params);
   },
+  validReportName(params) {
+    return axios.post('/api/rest/report/save', params, {
+      headers: { unConsole: 1, 'neatlogic-validfield': 'name' }
+    });
+  },
+  searchSqlTable(params) {
+    return axios.post('/api/rest/report/sqldefine/table/search', params);
+  },
+  getSqlTable(params) {
+    return axios.post('/api/rest/report/sqldefine/table/get', params);
+  },
+  buildSqlGraphSql(params) {
+    return axios.post('/api/rest/report/sqlgraph/sql/build', params);
+  },
+  analyzeSqlGraphXml(params) {
+    return axios.post('/api/rest/report/sqlgraph/xml/analyze', params);
+  },
+  getReportSqlExecution(params) {
+    return axios.post('/api/rest/report/sql/execution/get', params);
+  },
   deleteReport(params) {
     return axios.post('/api/rest/report/delete', params);
   },

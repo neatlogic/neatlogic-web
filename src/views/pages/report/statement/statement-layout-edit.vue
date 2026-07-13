@@ -105,12 +105,12 @@ export default {
         // 统一外观配置放在布局里，便于大屏组件跟随主题换肤。
         color: {
           type: 'slot',
-          label: '主色',
+          label: this.$t('term.report.primarycolor'),
           isHidden: true
         },
         accentColor: {
           type: 'slot',
-          label: '强调色',
+          label: this.$t('term.report.accentcolor'),
           isHidden: true
         },
         border: {

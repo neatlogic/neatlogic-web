@@ -38,7 +38,7 @@
           <div v-if="sqlIdList && sqlIdList.length > 0" class="action-item">
             <Poptip
               trigger="hover"
-              title="SQL ID监控列表"
+              :title="$t('term.framework.sqlidmonitorlist')"
               word-wrap
               width="500"
               :transfer="true"
@@ -58,7 +58,7 @@
           <div v-if="urlList && urlList.length > 0" class="action-item">
             <Poptip
               trigger="hover"
-              title="URL监控列表"
+              :title="$t('term.framework.urlmonitorlist')"
               word-wrap
               width="500"
               :transfer="true"
@@ -93,7 +93,7 @@
         <div>
           <div class="dbinfo padding">
             <div>
-              <span>{{ '数据库' }}：{{ datasourceData.database + '(' + datasourceData.databaseVersion + ')' }}</span>
+              <span>{{ $t('page.database') }}：{{ datasourceData.database + '(' + datasourceData.databaseVersion + ')' }}</span>
             </div>
             <div>
               <span>{{ $t('term.framework.datapool') }}：{{ datasourceData.poolName }}</span>
@@ -140,7 +140,7 @@
             </div>
           </div>
           <Tabs v-model="activeTab" :animated="false" @on-click="changeTab">
-            <TabPane label="SQL ID监控" name="sql">
+            <TabPane :label="$t('term.framework.sqlidmonitor')" name="sql">
               <TsTable v-if="sqlAuditData" v-bind="sqlAuditData" @changeCurrent="searchSql">
                 <template v-slot:id="{ row }">
                   <Tooltip :content="row.id" max-width="200">
@@ -176,7 +176,7 @@
                       <div class="action-group" style="text-align:right">
                         <div class="action-item">
                           <!-- SQL ID监控SQL弹窗新增查看执行计划入口，点击后把当前SQL提交给sqlexplain接口 -->
-                          <Button size="small" @click="openSqlExplain(row.sql)">查看执行计划</Button>
+                          <Button size="small" @click="openSqlExplain(row.sql)">{{ $t('term.framework.viewexecutionplan') }}</Button>
                         </div>
                         <div class="action-item">
                           <Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_') + '_' + index)">{{ $t('page.copy') }}</Button>
@@ -187,7 +187,7 @@
                 </template>
               </TsTable>
             </TabPane>
-            <TabPane label="URL监控" name="url">
+            <TabPane :label="$t('term.framework.urlmonitor')" name="url">
               <TsTable
                 v-if="requestSqlAuditData"
                 v-bind="requestSqlAuditData"
@@ -251,7 +251,7 @@
                               <div class="action-group" style="text-align:right">
                                 <div class="action-item">
                                   <!-- URL监控SQL弹窗新增查看执行计划入口，点击后把当前SQL提交给sqlexplain接口 -->
-                                  <Button size="small" @click="openSqlExplain(sqlAudit.sql)">查看执行计划</Button>
+                                  <Button size="small" @click="openSqlExplain(sqlAudit.sql)">{{ $t('term.framework.viewexecutionplan') }}</Button>
                                 </div>
                                 <div class="action-item">
                                   <Button size="small" @click="copySql('#' + getRequestSqlDomId(row, sqlRow, itemIndex))">{{ $t('page.copy') }}</Button>
@@ -340,7 +340,7 @@ export default {
         maskClose: true,
         isShow: false,
         width: 'huge', // huge large
-        title: 'SQL执行计划'
+        title: this.$t('term.framework.sqlexecutionplan')
       },
       sqlExplainSql: '',
       sqlExplainData: {},
@@ -362,7 +362,7 @@ export default {
       theadList: [
         { key: 'timeCost', title: this.$t('page.timecost'), width: 200 },
         { key: 'id', title: 'id' },
-        { key: 'threadName', title: '线程' },
+        { key: 'threadName', title: this.$t('page.thread') },
         { key: 'tenant', title: this.$t('page.tenant') },
         { key: 'userId', title: this.$t('page.user') },
         { key: 'recordCount', title: this.$t('page.datacapacity') },
@@ -374,20 +374,20 @@ export default {
       requestTheadList: [
         { key: 'expander', width: 40 },
         { key: 'totalTimeCost', title: this.$t('page.timecost'), width: 200 },
-        { key: 'notUseCacheTotalTimeCost', title: '未用缓存耗时(ms)', width: 160 },
+        { key: 'notUseCacheTotalTimeCost', title: this.$t('term.framework.notusecachetimecostms'), width: 160 },
         { key: 'url', title: 'url' },
-        { key: 'threadName', title: '线程' },
+        { key: 'threadName', title: this.$t('page.thread') },
         { key: 'tenant', title: this.$t('page.tenant') },
         { key: 'userId', title: this.$t('page.user') },
-        { key: 'sqlCount', title: 'SQL数量' },
+        { key: 'sqlCount', title: this.$t('term.framework.sqlcount') },
         { key: 'runTime', title: this.$t('term.autoexec.executiontime'), type: 'time' }
       ],
       // URL监控嵌套表格表头，用于展示每个请求内按sqlId聚合后的SQL明细
       requestSqlDetailTheadList: [
         { key: 'totalTimeCost', title: this.$t('page.timecost'), width: 120 },
-        { key: 'notUseCacheTotalTimeCost', title: '未用缓存耗时(ms)', width: 160 },
+        { key: 'notUseCacheTotalTimeCost', title: this.$t('term.framework.notusecachetimecostms'), width: 160 },
         { key: 'id', title: 'id' },
-        { key: 'notUseCacheCount', title: '未用缓存次数', width: 140 },
+        { key: 'notUseCacheCount', title: this.$t('term.framework.notusecachecount'), width: 140 },
         { key: 'sqlList', title: this.$t('term.framework.sqlsstatement'), width: 120 }
       ],
       fromPath: '',
@@ -528,7 +528,7 @@ export default {
     },
     getSqlAuditCacheLevel(sqlAudit) {
       // 单条SQL未命中缓存时后端返回空字符串，前端统一显示为未使用缓存
-      return sqlAudit.useCacheLevel || '未使用缓存';
+      return sqlAudit.useCacheLevel || this.$t('term.framework.notusecache');
     },
     getDataSourceInfo() {
       if (this.timerDatasource) {

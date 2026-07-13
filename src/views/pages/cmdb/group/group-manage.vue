@@ -176,15 +176,15 @@ export default {
       theadList: [
         {
           key: 'name',
-          title: '名称'
+          title: this.$t('page.name')
         },
         //{ key: 'isActive', title: '是否激活' },
-        { key: 'typeName', title: '类型' },
-        { key: 'ciList', title: '关联模型' },
-        { key: 'auth', title: '授权' },
-        { key: 'ciEntityCount', title: '配置项数量' },
-        { key: 'status', title: '状态' },
-        { key: 'description', title: '说明' },
+        { key: 'typeName', title: this.$t('page.type') },
+        { key: 'ciList', title: this.$t('term.cmdb.relatedci') },
+        { key: 'auth', title: this.$t('page.auth') },
+        { key: 'ciEntityCount', title: this.$t('term.cmdb.ciconfignumber') },
+        { key: 'status', title: this.$t('page.status') },
+        { key: 'description', title: this.$t('page.description') },
         { key: 'action' }
       ],
       searchParam: {},

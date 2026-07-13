@@ -9,9 +9,9 @@
               <thead>
                 <tr>
                   <!-- <th>排序</th> -->
-                  <th>字段名称</th>
-                  <th>字段类型</th>
-                  <th>可编辑</th>
+                  <th>{{ $t('term.cmdb.fieldname') }}</th>
+                  <th>{{ $t('term.cmdb.fieldtype') }}</th>
+                  <th>{{ $t('term.cmdb.editable') }}</th>
                   <!-- <th>是否隐藏</th> -->
                 </tr>
               </thead>
@@ -32,8 +32,8 @@
     </div>
     <template v-slot:footer>
       <div class="footer-btn-contain">
-        <Button @click="close">取消</Button>
-        <Button type="primary" @click="saveEdit">确定</Button>
+        <Button @click="close">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" @click="saveEdit">{{ $t('page.confirm') }}</Button>
       </div>
     </template>
   </TsDialog>
@@ -64,7 +64,7 @@ export default {
   data() {
     return {
       setting: {
-        title: '编辑配置项属性',
+        title: this.$t('term.cmdb.editcientityattribute'),
         maskClose: false
       },
       allList: [], //获取的模型属性关系数据
@@ -234,8 +234,8 @@ export default {
     setTypetext() {
       return function(type) {
         let textObject = {
-          'attr': '属性',
-          'rel': '关系'
+          'attr': this.$t('page.attribute'),
+          'rel': this.$t('page.relation')
         };
         return textObject[type];
       };

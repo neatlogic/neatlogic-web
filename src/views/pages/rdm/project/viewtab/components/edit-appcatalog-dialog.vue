@@ -26,7 +26,9 @@ export default {
         title: this.id ? this.$t('dialog.title.edittarget', { target: this.$t('page.catalogue') }) : this.$t('dialog.title.addtarget', { target: this.$t('page.catalogue') }),
         maskClose: false,
         isShow: true,
-        width: 'small'
+        width: 'small',
+        loading: false,
+        okBtnDisable: false
       },
       catalogData: {
         id: this.id,
@@ -72,9 +74,17 @@ export default {
       }
     },
     okDialog() {
+      if (this.dialogConfig.loading) {
+        return;
+      }
       if (this.$refs['form'].valid()) {
+        this.dialogConfig.loading = true;
+        this.dialogConfig.okBtnDisable = true;
         this.$api.rdm.catalog.saveCatalog(this.catalogData).then(res => {
           this.closeDialog(true);
+        }).finally(() => {
+          this.dialogConfig.loading = false;
+          this.dialogConfig.okBtnDisable = false;
         });
       }
     },

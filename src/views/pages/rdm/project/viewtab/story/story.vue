@@ -68,7 +68,7 @@
           :projectId="projectId"
           :app="appData"
           :catalog="currentCatalog"
-          @status-change="changeOverviewStatus"
+          @filter-change="changeOverviewFilter"
         ></StoryOverview>
         <IssueList
           v-if="isReady && appData"
@@ -79,6 +79,7 @@
           :canSearch="true"
           :canAction="true"
           :viewmode="viewMode"
+          :fixedHeader="false"
           :catalog="currentCatalog"
           :isShowEmptyTable="true"
           @refresh="refreshOverview"
@@ -195,10 +196,10 @@ export default {
       this.isEditIssueShow = true;
       this.currentIssueId = issue.id;
     },
-    changeOverviewStatus(statusIdList) {
+    changeOverviewFilter(filterObj) {
       const issueList = this.$refs['issueList'];
-      if (issueList && issueList.setStatusFilter) {
-        issueList.setStatusFilter(statusIdList);
+      if (issueList && issueList.setOverviewFilter) {
+        issueList.setOverviewFilter(filterObj);
       }
     },
     refreshOverview() {

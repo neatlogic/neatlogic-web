@@ -8,8 +8,8 @@
           :animated="false"
           class="mb-md"
         >
-          <TabPane label="接口帮助" name="api"></TabPane>
-          <TabPane label="MCP说明" name="mcp"></TabPane>
+          <TabPane :label="$t('term.framework.apihelp')" name="api"></TabPane>
+          <TabPane :label="$t('term.framework.mcpdescription')" name="mcp"></TabPane>
         </Tabs>
         <div v-if="!rowData.isMcp || activeTab === 'api'">
           <div v-if="Object.keys(helpData).length">
@@ -54,53 +54,53 @@
         </div>
         <div v-if="rowData.isMcp && activeTab === 'mcp'">
           <div v-if="Object.keys(mcpHelpData).length">
-            <TsFormItem label="接口" :labelWidth="100">
+            <TsFormItem :label="$t('page.interface')" :labelWidth="100">
               <strong>{{ mcpHelpData.title || rowData.name || '-' }}</strong>
             </TsFormItem>
-            <TsFormItem label="可用状态" :labelWidth="100">
-              <span v-if="mcpHelpData.available" class="text-success">可用</span>
-              <span v-else class="text-error">{{ mcpHelpData.unavailableReason || '不可用' }}</span>
+            <TsFormItem :label="$t('term.framework.availablestatus')" :labelWidth="100">
+              <span v-if="mcpHelpData.available" class="text-success">{{ $t('term.framework.available') }}</span>
+              <span v-else class="text-error">{{ mcpHelpData.unavailableReason || $t('term.framework.unavailable') }}</span>
             </TsFormItem>
-            <TsFormItem label="调用地址" :labelWidth="100">
+            <TsFormItem :label="$t('term.framework.calladdress')" :labelWidth="100">
               <span>{{ mcpHelpData.endpoint || '-' }}</span>
-              <span v-if="mcpHelpData.endpoint" class="text-action tsfont-copy mcp-copy" @click="copyText(mcpHelpData.endpoint)">复制</span>
+              <span v-if="mcpHelpData.endpoint" class="text-action tsfont-copy mcp-copy" @click="copyText(mcpHelpData.endpoint)">{{ $t('page.copy') }}</span>
             </TsFormItem>
-            <TsFormItem label="模块地址" :labelWidth="100">
+            <TsFormItem :label="$t('term.framework.moduleaddress')" :labelWidth="100">
               <span>{{ mcpHelpData.scopedEndpoint || '-' }}</span>
-              <span v-if="mcpHelpData.scopedEndpoint" class="text-action tsfont-copy mcp-copy" @click="copyText(mcpHelpData.scopedEndpoint)">复制</span>
+              <span v-if="mcpHelpData.scopedEndpoint" class="text-action tsfont-copy mcp-copy" @click="copyText(mcpHelpData.scopedEndpoint)">{{ $t('page.copy') }}</span>
             </TsFormItem>
-            <TsFormItem label="工具名称" :labelWidth="100">
+            <TsFormItem :label="$t('term.framework.toolname')" :labelWidth="100">
               <span>{{ mcpHelpData.toolName || '-' }}</span>
-              <span v-if="mcpHelpData.toolName" class="text-action tsfont-copy mcp-copy" @click="copyText(mcpHelpData.toolName)">复制</span>
+              <span v-if="mcpHelpData.toolName" class="text-action tsfont-copy mcp-copy" @click="copyText(mcpHelpData.toolName)">{{ $t('page.copy') }}</span>
             </TsFormItem>
-            <TsFormItem label="接口标识" :labelWidth="100">
+            <TsFormItem :label="$t('term.framework.interfaceid')" :labelWidth="100">
               <span>{{ mcpHelpData.token || '-' }}</span>
             </TsFormItem>
-            <TsFormItem label="模块" :labelWidth="100">
+            <TsFormItem :label="$t('page.module')" :labelWidth="100">
               <span>{{ mcpHelpData.moduleGroupName || mcpHelpData.moduleGroup || '-' }}</span>
             </TsFormItem>
-            <TsFormItem v-if="mcpHelpData.description" label="描述" :labelWidth="100">
+            <TsFormItem v-if="mcpHelpData.description" :label="$t('page.description')" :labelWidth="100">
               {{ mcpHelpData.description }}
             </TsFormItem>
-            <TsFormItem v-if="isDangerousTool" label="风险提示" :labelWidth="100">
-              <div class="text-warning">该 MCP Tool 不是只读接口，调试会真实执行业务逻辑。</div>
+            <TsFormItem v-if="isDangerousTool" :label="$t('term.framework.risktip')" :labelWidth="100">
+              <div class="text-warning">{{ $t('term.framework.mcpdangeroustooltip') }}</div>
             </TsFormItem>
-            <TsFormItem label="入参结构" :labelWidth="100">
+            <TsFormItem :label="$t('term.framework.inputschema')" :labelWidth="100">
               <JsonViewer boxed copyable :value="mcpHelpData.inputSchema || {}"></JsonViewer>
             </TsFormItem>
-            <TsFormItem label="出参结构" :labelWidth="100">
+            <TsFormItem :label="$t('term.framework.outputschema')" :labelWidth="100">
               <JsonViewer boxed copyable :value="mcpHelpData.outputSchema || {}"></JsonViewer>
             </TsFormItem>
-            <TsFormItem label="工具注解" :labelWidth="100">
+            <TsFormItem :label="$t('term.framework.toolannotations')" :labelWidth="100">
               <JsonViewer boxed copyable :value="mcpHelpData.annotations || {}"></JsonViewer>
             </TsFormItem>
-            <TsFormItem label="元数据" :labelWidth="100">
+            <TsFormItem :label="$t('term.framework.metadata')" :labelWidth="100">
               <JsonViewer boxed copyable :value="mcpHelpData.meta || {}"></JsonViewer>
             </TsFormItem>
-            <TsFormItem label="工具调用示例" :labelWidth="100">
+            <TsFormItem :label="$t('term.framework.toolcallexample')" :labelWidth="100">
               <JsonViewer boxed copyable :value="mcpHelpData.callToolExample || {}"></JsonViewer>
             </TsFormItem>
-            <TsFormItem v-if="mcpHelpData.example" label="接口范例" :labelWidth="100">
+            <TsFormItem v-if="mcpHelpData.example" :label="$t('term.framework.apiexample')" :labelWidth="100">
               <JsonViewer boxed copyable :value="mcpHelpData.example"></JsonViewer>
             </TsFormItem>
           </div>
@@ -207,11 +207,11 @@ export default {
             this.mcpHelpData = res.Return || {};
           }
           if (!Object.keys(this.mcpHelpData).length) {
-            this.mcpHelpMessage = 'MCP说明获取失败';
+            this.mcpHelpMessage = this.$t('term.framework.mcphelploadfailed');
           }
         })
         .catch(error => {
-          this.mcpHelpMessage = error && error.data ? error.data.Message : 'MCP说明获取失败';
+          this.mcpHelpMessage = error && error.data ? error.data.Message : this.$t('term.framework.mcphelploadfailed');
         });
     },
     copyText(text) {

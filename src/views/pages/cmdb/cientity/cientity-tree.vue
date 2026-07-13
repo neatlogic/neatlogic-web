@@ -30,8 +30,8 @@
           :showStatus="true"
           :trueValue="1"
           :falseValue="0"
-          trueText="小地图"
-          falseText="小地图"
+          :trueText="$t('term.cmdb.minimap')"
+          :falseText="$t('term.cmdb.minimap')"
           @on-change="
             val => {
               toggleMinimap(val);
@@ -111,7 +111,7 @@ export default {
       layoutType: {
         'antv-dagre': {
           type: 'antv-dagre',
-          name: '分层布局',
+          name: this.$t('term.cmdb.layerlayout'),
           ranker: 'network-simplex',
           rankdir: 'TB', //从上到下布局
           nodeSize: [40, 40],
@@ -123,14 +123,14 @@ export default {
         },
         circular: {
           type: 'circular',
-          name: '环形布局',
+          name: this.$t('term.cmdb.circularlayout'),
           nodeSize: [40, 40],
           nodeSpacing: 20,
           ordering: 'topology-directed'
         },
         concentric: {
           type: 'concentric',
-          name: '同心圆布局',
+          name: this.$t('term.cmdb.concentriclayout'),
           nodeSize: 40,
           nodeSpacing: 20,
           preventOverlap: true
@@ -166,7 +166,7 @@ export default {
     },
     clickCiEntity(cientity) {
       if (this.isLayouting) {
-        this.$Message.info('图形布局中，请稍后...');
+        this.$Message.info(this.$t('term.cmdb.graphlayoutingtip'));
         return;
       }
       //点击配置项先获取关系
@@ -183,7 +183,7 @@ export default {
     },
     async clickRel(rel) {
       if (this.isLayouting) {
-        this.$Message.info('图形布局中，请稍后...');
+        this.$Message.info(this.$t('term.cmdb.graphlayoutingtip'));
         return;
       }
       //点击关系获取配置项
@@ -621,7 +621,7 @@ export default {
               }
             },
             getItems: () => {
-              return [{ name: '查看详情', value: 'detail' }];
+              return [{ name: this.$t('term.cmdb.viewdetail'), value: 'detail' }];
             },
             enable: e => {
               const id = e.target.id;

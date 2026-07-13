@@ -44,7 +44,7 @@ export default {
       dialogConfig: {
         type: 'modal',
         isShow: true,
-        title: this.accountId ? '编辑私有账号' : '新增私有账号'
+        title: this.accountId ? this.$t('term.cmdb.editprivateaccount') : this.$t('term.cmdb.addprivateaccount')
       },
       formConfig: {
         id: {
@@ -57,7 +57,7 @@ export default {
           type: 'text',
           name: 'name',
           width: '100%',
-          label: '名称',
+          label: this.$t('page.name'),
           maxlength: 50,
           isHidden: true
         },
@@ -65,12 +65,12 @@ export default {
           type: 'text',
           name: 'account',
           width: '100%',
-          label: '用户名',
+          label: this.$t('page.username'),
           maxlength: 50,
           validateList: ['required', {
             name: 'custom',
             trigger: 'change',
-            message: '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。',
+            message: this.$t('term.cmdb.repeataccount'),
             validator: (rule, val) => {
               return this.validAccountProtocalUnique(val);
             }
@@ -81,12 +81,12 @@ export default {
           type: 'password',
           name: 'passwordPlain',
           width: '100%',
-          label: '密码'
+          label: this.$t('page.password')
         },
         protocolId: {
           type: 'select',
           width: '100%',
-          label: '协议',
+          label: this.$t('page.protocol'),
           placeholder: this.$t('form.validate.selectprotocol'),
           dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
           rootName: 'tbodyList',
@@ -96,7 +96,7 @@ export default {
           validateList: ['required', {
             name: 'custom',
             trigger: 'change',
-            message: '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。',
+            message: this.$t('term.cmdb.repeataccount'),
             validator: (rule, protocolId) => {
               return this.validAccountProtocalUnique();
             }
@@ -108,7 +108,7 @@ export default {
           onChange: (val, objectValue) => {
             this.protocol = objectValue ? objectValue.text : '';
             if (!this.validAccountProtocalUnique()) {
-              this.$set(this.formConfig['protocolId'], 'errorMessage', '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。');
+              this.$set(this.formConfig['protocolId'], 'errorMessage', this.$t('term.cmdb.repeataccount'));
             } else {
               this.$set(this.formConfig['protocolId'], 'errorMessage', '');
             }
@@ -121,7 +121,7 @@ export default {
                 {
                   name: 'custom',
                   trigger: 'change',
-                  message: '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。',
+                  message: this.$t('term.cmdb.repeataccount'),
                   validator: (rule, val) => {
                     return this.validAccountProtocalUnique(val);
                   }
@@ -134,7 +134,7 @@ export default {
           type: 'select',
           name: 'tagIdList',
           width: '100%',
-          label: '标签',
+          label: this.$t('page.tag'),
           transfer: true,
           multiple: true,
           search: true,
@@ -203,7 +203,7 @@ export default {
       // 失败，错误提示
       if (res && res.failureReasonList && res.failureReasonList instanceof Array && res.failureReasonList.length > 0) {
         this.$Notice.error({
-          title: '错误提示',
+          title: this.$t('page.tip'),
           duration: 10,
           render: h => {
             return h('div', [
@@ -214,7 +214,7 @@ export default {
                   return h('li', {}, item || '');
                 })
               ),
-              h('div', {}, '协议相同且用户名相同，同一资产不可绑定多个协议相同且用户名相同的账号。')
+              h('div', {}, this.$t('term.cmdb.repeataccount'))
             ]);
           }
         });

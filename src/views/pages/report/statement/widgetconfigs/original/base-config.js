@@ -6,15 +6,15 @@ export const WidgetBaseConfig = {
     return {
       axisFontSizeList: [
         {
-          text: '小',
+          text: this.$t('term.report.small'),
           value: 12
         },
         {
-          text: '中',
+          text: this.$t('term.report.medium'),
           value: 16
         },
         {
-          text: '大',
+          text: this.$t('term.report.large'),
           value: 20
         }
       ],

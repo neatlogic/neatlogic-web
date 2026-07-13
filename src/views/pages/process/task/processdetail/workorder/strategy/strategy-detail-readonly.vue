@@ -36,7 +36,7 @@
                   :initType="row.userVo.initType"
                 ></UserCard>
                 <template v-if="row.originalUserUuid">
-                  （代<UserCard :uuid="row.originalUserUuid" hideAvatar></UserCard>）
+                  {{ $t('term.process.proxyuserprefix') }}<UserCard :uuid="row.originalUserUuid" hideAvatar></UserCard>{{ $t('term.process.proxyusersuffix') }}
                 </template>
               </div>
             </template>

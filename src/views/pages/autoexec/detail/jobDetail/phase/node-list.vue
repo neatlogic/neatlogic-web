@@ -686,11 +686,11 @@ export default {
     roundCount() {
       let roundCount = this.phaseData.roundCount;
       if (roundCount == 0) {
-        return '全部串行';
+        return this.$t('term.autoexec.allserial');
       } else if (roundCount == 1) {
-        return '全部并行';
+        return this.$t('term.autoexec.allparallel');
       } else if (roundCount == -1) {
-        return '蓝绿执行';
+        return this.$t('term.autoexec.bluegreenexecute');
       } else {
         return roundCount;
       }
@@ -698,11 +698,11 @@ export default {
     parallelCount() {
       let parallelCount = this.phaseData.parallelCount;
       if (parallelCount == 0) {
-        return '全部串行';
+        return this.$t('term.autoexec.allserial');
       } else if (parallelCount == 1) {
-        return '全部并行';
+        return this.$t('term.autoexec.allparallel');
       } else if (parallelCount == -1) {
-        return '蓝绿执行';
+        return this.$t('term.autoexec.bluegreenexecute');
       } else {
         return parallelCount;
       }

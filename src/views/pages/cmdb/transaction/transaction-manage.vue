@@ -39,7 +39,7 @@
             <Poptip
               v-if="row.error"
               trigger="hover"
-              title="异常"
+              :title="$t('page.exception')"
               word-wrap
               width="400"
               :transfer="true"
@@ -78,7 +78,7 @@
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li v-if="!(row.action === 'delete' && row.status === 'commited')" class="tsfont-formtextarea" @click="toCiEntity(row.ciEntityId, row.ciId)">配置项详情</li>
+                <li v-if="!(row.action === 'delete' && row.status === 'commited')" class="tsfont-formtextarea" @click="toCiEntity(row.ciEntityId, row.ciId)">{{ $t('term.cmdb.cientitydetail') }}</li>
                 <li
                   v-if="row.status === 'uncommit'"
                   class="tsfont-check-o"
@@ -139,8 +139,8 @@ export default {
         searchList: [
           { type: 'text', name: 'transactionId', label: this.$t('term.cmdb.transactionid') },
           { type: 'text', name: 'transactionGroupId', label: this.$t('term.cmdb.transactiongroupid') },
-          { type: 'userselect', multiple: false, name: 'createUser', label: '创建用户', groupList: ['user'] },
-          { type: 'userselect', multiple: false, name: 'commitUser', label: '提交用户', groupList: ['user'] },
+          { type: 'userselect', multiple: false, name: 'createUser', label: this.$t('term.cmdb.createuser'), groupList: ['user'] },
+          { type: 'userselect', multiple: false, name: 'commitUser', label: this.$t('term.cmdb.commituser'), groupList: ['user'] },
           { type: 'select', name: 'status', url: '/api/rest/universal/enum/get', params: { enumClass: 'neatlogic.framework.cmdb.enums.TransactionStatus' }, label: this.$t('page.status'), transfer: true },
           {
             type: 'select',
@@ -369,7 +369,7 @@ export default {
   filter: {},
   computed: {
     fromPageName() {
-      return this.$route.meta.fromPage && this.$route.meta.fromPage.title ? this.$route.meta.fromPage.title : '配置项列表';
+      return this.$route.meta.fromPage && this.$route.meta.fromPage.title ? this.$route.meta.fromPage.title : this.$t('term.cmdb.cientitylist');
     }
   },
   watch: {},

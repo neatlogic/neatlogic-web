@@ -63,14 +63,14 @@
         transfer-class-name="color-picker-transfer-class"
         @on-change="
           val => {
-            setConfigValue('label.style.fill', val || defaultSizeColor);
+            setConfigValue('label.style.fill', val);
             setConfigValue('statistic.title.style.color', val);
             setConfigValue('statistic.content.style.color', val);
           }
         "
       />
     </TsFormItem>
-    <TsFormItem label="统计数据字体大小" labelPosition="top">
+    <TsFormItem :label="$t('term.report.statisticfontsize')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('labelFontSize', 12)"

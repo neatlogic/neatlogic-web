@@ -30,6 +30,12 @@
             <i v-if="canEdit && operationType=='combop'" class="item-sort tsfont-bar"></i>
             <i class="item-index text-tip">#{{ sindex+1 }}</i>
             <span class="item-actionIcon" @click.stop>
+              <i
+                v-if="isToolUsageAiVisible(step)"
+                class="item-ai tsfont-ai text-tip"
+                :title="$t('term.autoexec.toolusageaiassistant')"
+                @click="openToolUsageAiAssistant(step)"
+              ></i>
               <i v-if="canEdit && operationType=='combop'" class="item-copy tsfont-copy text-tip" @click="copyScript(step)"></i>
               <i v-if="canEdit && operationType=='combop'" class="item-delete tsfont-close text-tip" @click="deleteScript(step,sindex)"></i>
               <i class="item-toggle tsfont text-tip" @click="toggleshow(step)"></i>
@@ -86,6 +92,11 @@
         </div>
       </template>
     </TsDialog>
+    <component
+      :is="autoexecToolUsageAiAssistantComponent"
+      v-if="autoexecToolUsageAiAssistantComponent"
+      ref="toolUsageAiAssistant"
+    ></component>
   </div>
 </template>
 <script>
@@ -93,6 +104,7 @@ import draggable from 'vuedraggable';
 import item from '@/views/pages/autoexec/components/script/item/index.js';
 import RiskItem from '@/views/pages/autoexec/components/risk-item.vue';
 import { storeScript, mutationsScript } from './script-state.js';
+import ImportComponent from '@/views/components/import-component.js';
 export default {
   name: '',
   inject: {
@@ -378,6 +390,53 @@ export default {
         });
       }
     },
+    isToolUsageAiVisible(step) {
+      return !!(
+        this.autoexecToolUsageAiAssistantComponent &&
+        this.canEdit &&
+        this.operationType == 'combop' &&
+        step &&
+        step.operation &&
+        step.operationType == 'tool' &&
+        step.operationName != 'native/IF-Block' &&
+        step.operationName != 'native/LOOP-Block'
+      );
+    },
+    openToolUsageAiAssistant(step) {
+      const assistant = this.$refs.toolUsageAiAssistant;
+      if (!assistant || !assistant.openDialog) {
+        return;
+      }
+      assistant.openDialog({
+        question: this.$t('term.autoexec.defaulttoolusageaiquestion'),
+        toolContext: this.buildToolUsageContext(step)
+      });
+    },
+    buildToolUsageContext(step) {
+      // 这里只收集当前工具卡片上下文，避免助手被误用成组合工具整体评估入口。
+      const operation = step.operation || {};
+      const config = step.config || {};
+      return {
+        phaseName: this.combopConfig && this.combopConfig.combopName,
+        combopId: this.combopConfig && this.combopConfig.combopId,
+        combopUuid: this.combopConfig && this.combopConfig.combopUuid,
+        operationId: step.operationId,
+        operationType: step.operationType,
+        operationName: step.operationName,
+        operationUuid: step.uuid,
+        operationLetter: step.letter || null,
+        description: step.description || operation.description || '',
+        riskVo: operation.riskVo || null,
+        failPolicy: step.failPolicy,
+        execMode: this.execMode,
+        profileId: config.profileId || null,
+        inputParamList: operation.inputParamList || [],
+        argument: operation.argument || null,
+        outputParamList: operation.outputParamList || [],
+        paramMappingList: config.paramMappingList || [],
+        argumentMappingList: config.argumentMappingList || []
+      };
+    },
     validStep(className) { //校验阶段(包括：输入参数，自由参数，预置参数集)
       let isValid = true;
       if (this.$el.querySelectorAll(className).length) {
@@ -452,6 +511,9 @@ export default {
     }
   },
   computed: {
+    autoexecToolUsageAiAssistantComponent() {
+      return ImportComponent && ImportComponent.autoexecToolUsageAiAssistant ? ImportComponent.autoexecToolUsageAiAssistant : null;
+    },
     phaseShowMap() {
       return storeScript.phaseShowMap || {};
     },
@@ -668,7 +730,7 @@ export default {
     margin-right: 4px;
     font-size: 120%;
   }
-  .item-delete,.item-copy{
+  .item-delete,.item-copy,.item-ai{
     cursor: pointer;
     width: 16px;
     text-align: center;

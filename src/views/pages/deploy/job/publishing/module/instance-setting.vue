@@ -18,7 +18,7 @@
       </div>
       <div v-if="instanceList.length > showNumber" class="pl-sm">
         <span class="text-tip-active tips pr-sm" @click="isShowMoreDialog = true">
-          查看所有实例
+          {{ $t('term.deploy.viewallinstances') }}
         </span>
         <span class="text-href" @click="clearAll">
           {{ $t('page.clear') }}
@@ -55,7 +55,7 @@
             trigger="hover"
           >
             <i class="tsfont-info-o text-tip-active tips"></i>
-            <div slot="content" class="tooltip-content">仅选中当前页实例</div>
+            <div slot="content" class="tooltip-content">{{ $t('term.deploy.onlyselectcurrentpageinstance') }}</div>
           </Poptip>
         </Checkbox>
       </div>

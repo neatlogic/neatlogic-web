@@ -7,6 +7,15 @@
       <TabPane :label="$t('term.rdm.statussets')" name="objectstatus" class="pl-md">
         <AppStatus v-if="currentTab === 'objectstatus'" :appId="appData.id" :projectId="appData.projectId"></AppStatus>
       </TabPane>
+      <TabPane :label="$t('term.rdm.relationsetting')" name="relstrategy" class="pl-md">
+        <RelStrategyEdit
+          v-if="currentTab === 'relstrategy'"
+          :appData="appData"
+          toAppType="testcase"
+          relType="relative"
+          :label="$t('term.rdm.storyreltestcase')"
+        ></RelStrategyEdit>
+      </TabPane>
     </Tabs>
   </div>
 </template>
@@ -15,7 +24,8 @@ export default {
   name: '',
   components: {
     AttrEdit: () => import('@/views/pages/rdm/project/edittab/components/attr-edit.vue'),
-    AppStatus: () => import('@/views/pages/rdm/project/edittab/components/app-status-edit.vue')
+    AppStatus: () => import('@/views/pages/rdm/project/edittab/components/app-status-edit.vue'),
+    RelStrategyEdit: () => import('@/views/pages/rdm/project/edittab/components/rel-strategy-edit.vue')
   },
   props: {
     appData: { type: Object }

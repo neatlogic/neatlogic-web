@@ -1,9 +1,9 @@
 <template>
   <div>
-    <TsFormItem label="边框" labelPosition="top">
+    <TsFormItem :label="$t('page.border')" labelPosition="top">
       <div class="pl-md"><Slider v-model="data.borderWidth" :min="0" :max="10"></Slider></div>
     </TsFormItem>
-    <TsFormItem label="边框颜色" labelPosition="top">
+    <TsFormItem :label="$t('term.cmdb.bordercolor')" labelPosition="top">
       <ColorPicker
         :transfer="true"
         :value="data.borderColor"
@@ -18,7 +18,7 @@
         "
       />
     </TsFormItem>
-    <TsFormItem label="图标颜色" labelPosition="top">
+    <TsFormItem :label="$t('term.cmdb.iconcolor')" labelPosition="top">
       <ColorPicker
         :transfer="true"
         :value="data.iconColor"
@@ -33,7 +33,7 @@
         "
       />
     </TsFormItem>
-    <TsFormItem label="背景颜色" labelPosition="top">
+    <TsFormItem :label="$t('term.cmdb.backgroundcolor')" labelPosition="top">
       <ColorPicker
         :transfer="true"
         :value="data.bgColor"
@@ -48,7 +48,7 @@
         "
       />
     </TsFormItem>
-    <TsFormItem label="文本颜色" labelPosition="top">
+    <TsFormItem :label="$t('term.cmdb.textcolor')" labelPosition="top">
       <ColorPicker
         :transfer="true"
         :value="data.fontColor"

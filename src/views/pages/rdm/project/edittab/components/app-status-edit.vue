@@ -32,6 +32,9 @@
               @on-change="changeIsEnd(row)"
             ></TsFormSwitch>
           </template>
+          <template v-slot:scope="{ row }">
+            <span v-if="row.id">{{ getScopeText(row.scope) }}</span>
+          </template>
           <template v-slot:transfer>
             <div>
               <span class="text-grey">{{ $t('term.rdm.goto') }}</span>
@@ -40,7 +43,7 @@
           </template>
           <template v-slot:canTransfer="{ row }">
             <div>
-              <span v-for="(tostatus, sindex) in statusList.filter(d => row.id != d.id)" :key="sindex" :style="{ color: tostatus.color }">
+              <span v-for="(tostatus, sindex) in statusList.filter(d => row.id != d.id && isScopeMatched(row, d))" :key="sindex" :style="{ color: tostatus.color }">
                 <Checkbox
                   v-if="statusMatrix[row.id + '_' + tostatus.id]"
                   :value="hasRelation(row, tostatus)"
@@ -137,7 +140,7 @@ export default {
   },
   data() {
     return {
-      theadList: [{ key: 'fromstatus', title: this.$t('term.rdm.initstatus') }, { key: 'isStart', title: this.$t('term.rdm.isstart') }, { key: 'isEnd', title: this.$t('term.rdm.isend') }, { key: 'transfer', title: '' }, { key: 'canTransfer', title: this.$t('term.rdm.targetstatus') }, { key: 'action' }],
+      theadList: [{ key: 'fromstatus', title: this.$t('term.rdm.initstatus') }, { key: 'isStart', title: this.$t('term.rdm.isstart') }, { key: 'isEnd', title: this.$t('term.rdm.isend') }, { key: 'scope', title: this.$t('term.rdm.scope') }, { key: 'transfer', title: '' }, { key: 'canTransfer', title: this.$t('term.rdm.targetstatus') }, { key: 'action' }],
       isStatusRelConfigEditShow: false,
       objectList: [],
       statusList: [],
@@ -232,6 +235,22 @@ export default {
     },
     toggleAction(statusname) {
       this.$set(this.actionHide, statusname, !this.actionHide[statusname]);
+    },
+    getScopeText(scope) {
+      const scopeMap = {
+        original: this.$t('term.rdm.original'),
+        copy: this.$t('term.rdm.copy'),
+        all: this.$t('term.rdm.allavailable')
+      };
+      return scopeMap[scope || 'all'] || scopeMap.all;
+    },
+    isScopeMatched(fromStatus, toStatus) {
+      if (!fromStatus || !fromStatus.id) {
+        return true;
+      }
+      const fromScope = fromStatus.scope || 'all';
+      const toScope = toStatus.scope || 'all';
+      return fromScope === 'all' || toScope === 'all' || fromScope === toScope;
     },
     addStatus() {
       this.isStatusEditShow = true;

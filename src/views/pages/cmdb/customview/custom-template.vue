@@ -151,7 +151,7 @@ export default {
           }
         }
       } else {
-        this.error = '自定义模板不存在';
+        this.error = this.$t('term.cmdb.customtemplatenotfound');
       }
     },
     async convertFilePath() {

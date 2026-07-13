@@ -52,7 +52,7 @@
                       <td v-for="column in columnAttrList" :key="`${row.uuid}_ ${column.uuid}`" @click.stop>
                         <div v-if="column?.config?.urlAttributeValue">
                           <span class="text-href" @click="openRowLInkByType(row, column?.config.urlAttributeValue)">
-                            {{ column.label }}
+                            {{ row[column.uuid] || column.label }}
                           </span>
                         </div>
                         <ColumnItem

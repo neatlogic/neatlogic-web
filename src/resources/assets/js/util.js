@@ -98,7 +98,7 @@ const methods = {
   },
   setCookie: function (name, value, time) {
     if (time) {
-      if (typeof time == Number) {
+      if (typeof time === 'number') {
         let d = new Date();
         d.setTime(d.getTime() + time * 24 * 60 * 60 * 1000);
         let expires = 'expires=' + d.toGMTString();

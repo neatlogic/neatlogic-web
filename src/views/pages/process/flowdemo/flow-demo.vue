@@ -65,10 +65,10 @@ export default {
             'y': 360,
             'icon': '#tsfont-circle-o',
             'class': '',
-            'name': '通用1',
+            'name': this.$t('term.process.common1'),
             'config': {
               'handler': 'omnipotent',
-              'name': '通用1',
+              'name': this.$t('term.process.common1'),
               'stepConfig': {
                 'workerPolicyConfig': {
                   'isNeedContent': 1,
@@ -92,10 +92,10 @@ export default {
             'y': 360,
             'icon': '#tsfont-circle-o',
             'class': '',
-            'name': '通用2',
+            'name': this.$t('term.process.common2'),
             'config': {
               'handler': 'omnipotent',
-              'name': '通用2',
+              'name': this.$t('term.process.common2'),
               'stepConfig': {
                 'workerPolicyConfig': {
                   'isRequired': 0,
@@ -103,7 +103,7 @@ export default {
                   'executeMode': 'batch',
                   'policyList': [
                     {
-                      'name': '由前置步骤处理人指定',
+                      'name': this.$t('term.process.assignbyprevioushandler'),
                       'type': 'prestepassign',
                       'isChecked': 0,
                       'config': {
@@ -112,7 +112,7 @@ export default {
                       }
                     },
                     {
-                      'name': '复制前置步骤处理人',
+                      'name': this.$t('term.process.copyprevioushandler'),
                       'type': 'copy',
                       'isChecked': 0,
                       'config': {
@@ -120,7 +120,7 @@ export default {
                       }
                     },
                     {
-                      'name': '表单值',
+                      'name': this.$t('term.process.formvalue'),
                       'type': 'form',
                       'isChecked': 0,
                       'config': {
@@ -128,7 +128,7 @@ export default {
                       }
                     },
                     {
-                      'name': '分派器',
+                      'name': this.$t('term.process.dispatcher'),
                       'type': 'automatic',
                       'isChecked': 0,
                       'config': {
@@ -137,7 +137,7 @@ export default {
                       }
                     },
                     {
-                      'name': '自定义',
+                      'name': this.$t('page.custom'),
                       'type': 'assign',
                       'isChecked': '1',
                       'config': {
@@ -166,10 +166,10 @@ export default {
             'y': 251,
             'icon': '#tsfont-circle-o',
             'class': '',
-            'name': '通用3',
+            'name': this.$t('term.process.common3'),
             'config': {
               'handler': 'omnipotent',
-              'name': '通用3',
+              'name': this.$t('term.process.common3'),
               'stepConfig': {
                 'workerPolicyConfig': {
                   'isRequired': 0,
@@ -177,7 +177,7 @@ export default {
                   'executeMode': 'batch',
                   'policyList': [
                     {
-                      'name': '由前置步骤处理人指定',
+                      'name': this.$t('term.process.assignbyprevioushandler'),
                       'type': 'prestepassign',
                       'isChecked': 0,
                       'config': {
@@ -186,7 +186,7 @@ export default {
                       }
                     },
                     {
-                      'name': '复制前置步骤处理人',
+                      'name': this.$t('term.process.copyprevioushandler'),
                       'type': 'copy',
                       'isChecked': 0,
                       'config': {
@@ -194,7 +194,7 @@ export default {
                       }
                     },
                     {
-                      'name': '表单值',
+                      'name': this.$t('term.process.formvalue'),
                       'type': 'form',
                       'isChecked': 0,
                       'config': {
@@ -202,7 +202,7 @@ export default {
                       }
                     },
                     {
-                      'name': '分派器',
+                      'name': this.$t('term.process.dispatcher'),
                       'type': 'automatic',
                       'isChecked': 0,
                       'config': {
@@ -211,7 +211,7 @@ export default {
                       }
                     },
                     {
-                      'name': '自定义',
+                      'name': this.$t('page.custom'),
                       'type': 'assign',
                       'isChecked': '1',
                       'config': {
@@ -238,7 +238,7 @@ export default {
                       'team',
                       'role'
                     ],
-                    'text': '查看节点信息',
+                    'text': this.$t('term.process.viewnodeinfo'),
                     'acceptList': [
                       'common#alluser'
                     ]
@@ -252,7 +252,7 @@ export default {
                       'team',
                       'role'
                     ],
-                    'text': '转交',
+                    'text': this.$t('term.process.transfer'),
                     'acceptList': [
                       'user#20f2fbfe97cf11ea94ff005056c00001'
                     ]
@@ -266,7 +266,7 @@ export default {
                       'team',
                       'role'
                     ],
-                    'text': '撤回',
+                    'text': this.$t('page.retreat'),
                     'acceptList': [
                       'processUserType#major'
                     ]
@@ -283,10 +283,10 @@ export default {
             'y': 360,
             'icon': '#tsfont-shunt',
             'class': '',
-            'name': '分流',
+            'name': this.$t('term.process.split'),
             'config': {
               'handler': 'distributary',
-              'name': '分流',
+              'name': this.$t('term.process.split'),
               'stepConfig': {},
               'uuid': '981d7bb36b384e908157a41340c19426'
             },
@@ -298,10 +298,10 @@ export default {
             'y': 360,
             'icon': '#tsfont-circle-o',
             'class': '',
-            'name': '通用4',
+            'name': this.$t('term.process.common4'),
             'config': {
               'handler': 'omnipotent',
-              'name': '通用4',
+              'name': this.$t('term.process.common4'),
               'stepConfig': {
                 'workerPolicyConfig': {
                   'isRequired': 0,
@@ -309,7 +309,7 @@ export default {
                   'executeMode': 'batch',
                   'policyList': [
                     {
-                      'name': '由前置步骤处理人指定',
+                      'name': this.$t('term.process.assignbyprevioushandler'),
                       'type': 'prestepassign',
                       'isChecked': 0,
                       'config': {
@@ -318,7 +318,7 @@ export default {
                       }
                     },
                     {
-                      'name': '复制前置步骤处理人',
+                      'name': this.$t('term.process.copyprevioushandler'),
                       'type': 'copy',
                       'isChecked': 0,
                       'config': {
@@ -326,7 +326,7 @@ export default {
                       }
                     },
                     {
-                      'name': '表单值',
+                      'name': this.$t('term.process.formvalue'),
                       'type': 'form',
                       'isChecked': 0,
                       'config': {
@@ -334,7 +334,7 @@ export default {
                       }
                     },
                     {
-                      'name': '分派器',
+                      'name': this.$t('term.process.dispatcher'),
                       'type': 'automatic',
                       'isChecked': 0,
                       'config': {
@@ -343,7 +343,7 @@ export default {
                       }
                     },
                     {
-                      'name': '自定义',
+                      'name': this.$t('page.custom'),
                       'type': 'assign',
                       'isChecked': '1',
                       'config': {
@@ -370,7 +370,7 @@ export default {
                       'team',
                       'role'
                     ],
-                    'text': '查看节点信息',
+                    'text': this.$t('term.process.viewnodeinfo'),
                     'acceptList': [
                       'common#alluser'
                     ]
@@ -384,7 +384,7 @@ export default {
                       'team',
                       'role'
                     ],
-                    'text': '转交',
+                    'text': this.$t('term.process.transfer'),
                     'acceptList': [
                       'user#02cd8afbd4814b80bb6e527da82c07fc'
                     ]
@@ -398,7 +398,7 @@ export default {
                       'team',
                       'role'
                     ],
-                    'text': '撤回',
+                    'text': this.$t('page.retreat'),
                     'acceptList': [
                       'processUserType#major'
                     ]
@@ -415,10 +415,10 @@ export default {
             'y': 478.0000305175781,
             'icon': '#tsfont-circle-o',
             'class': '',
-            'name': '通用5',
+            'name': this.$t('term.process.common5'),
             'config': {
               'handler': 'omnipotent',
-              'name': '通用5',
+              'name': this.$t('term.process.common5'),
               'stepConfig': {
                 'workerPolicyConfig': {
                   'isRequired': 0,
@@ -426,7 +426,7 @@ export default {
                   'executeMode': 'batch',
                   'policyList': [
                     {
-                      'name': '由前置步骤处理人指定',
+                      'name': this.$t('term.process.assignbyprevioushandler'),
                       'type': 'prestepassign',
                       'isChecked': 0,
                       'config': {
@@ -435,7 +435,7 @@ export default {
                       }
                     },
                     {
-                      'name': '复制前置步骤处理人',
+                      'name': this.$t('term.process.copyprevioushandler'),
                       'type': 'copy',
                       'isChecked': 0,
                       'config': {
@@ -443,7 +443,7 @@ export default {
                       }
                     },
                     {
-                      'name': '表单值',
+                      'name': this.$t('term.process.formvalue'),
                       'type': 'form',
                       'isChecked': 0,
                       'config': {
@@ -451,7 +451,7 @@ export default {
                       }
                     },
                     {
-                      'name': '分派器',
+                      'name': this.$t('term.process.dispatcher'),
                       'type': 'automatic',
                       'isChecked': 0,
                       'config': {
@@ -460,7 +460,7 @@ export default {
                       }
                     },
                     {
-                      'name': '自定义',
+                      'name': this.$t('page.custom'),
                       'type': 'assign',
                       'isChecked': '1',
                       'config': {
@@ -487,7 +487,7 @@ export default {
                       'team',
                       'role'
                     ],
-                    'text': '查看节点信息',
+                    'text': this.$t('term.process.viewnodeinfo'),
                     'acceptList': [
                       'common#alluser'
                     ]
@@ -501,7 +501,7 @@ export default {
                       'team',
                       'role'
                     ],
-                    'text': '转交',
+                    'text': this.$t('term.process.transfer'),
                     'acceptList': [
                       'user#20f2fbfe97cf11ea94ff005056c00001'
                     ]
@@ -515,7 +515,7 @@ export default {
                       'team',
                       'role'
                     ],
-                    'text': '撤回',
+                    'text': this.$t('page.retreat'),
                     'acceptList': [
                       'processUserType#major'
                     ]
@@ -532,10 +532,10 @@ export default {
             'y': 360,
             'icon': '#tsfont-circle-o',
             'class': '',
-            'name': '通用6',
+            'name': this.$t('term.process.common6'),
             'config': {
               'handler': 'omnipotent',
-              'name': '通用6',
+              'name': this.$t('term.process.common6'),
               'stepConfig': {
                 'workerPolicyConfig': {
                   'isRequired': 0,
@@ -543,7 +543,7 @@ export default {
                   'executeMode': 'batch',
                   'policyList': [
                     {
-                      'name': '由前置步骤处理人指定',
+                      'name': this.$t('term.process.assignbyprevioushandler'),
                       'type': 'prestepassign',
                       'isChecked': 0,
                       'config': {
@@ -552,7 +552,7 @@ export default {
                       }
                     },
                     {
-                      'name': '复制前置步骤处理人',
+                      'name': this.$t('term.process.copyprevioushandler'),
                       'type': 'copy',
                       'isChecked': 0,
                       'config': {
@@ -560,7 +560,7 @@ export default {
                       }
                     },
                     {
-                      'name': '表单值',
+                      'name': this.$t('term.process.formvalue'),
                       'type': 'form',
                       'isChecked': 0,
                       'config': {
@@ -568,7 +568,7 @@ export default {
                       }
                     },
                     {
-                      'name': '分派器',
+                      'name': this.$t('term.process.dispatcher'),
                       'type': 'automatic',
                       'isChecked': 0,
                       'config': {
@@ -577,7 +577,7 @@ export default {
                       }
                     },
                     {
-                      'name': '自定义',
+                      'name': this.$t('page.custom'),
                       'type': 'assign',
                       'isChecked': '1',
                       'config': {
@@ -795,16 +795,16 @@ export default {
       // 'node.deleteable': false,
       // 'node.connectable': false,
       'node.selectedFn': (d) => {
-        alert(d.getName() + '选中事件');
+        alert(d.getName() + this.$t('term.process.selectedevent'));
       },
       'node.unselectFn': (d) => {
-        alert(d.getName() + '反选事件');
+        alert(d.getName() + this.$t('term.process.unselectedevent'));
       },
       'node.removeFn': (d) => {
-        alert(d.getName() + '删除事件');
+        alert(d.getName() + this.$t('term.process.deleteevent'));
       },
       'link.removeFn': (d) => {
-        alert(d.getUuid() + '删除事件');
+        alert(d.getUuid() + this.$t('term.process.deleteevent'));
       }
     });
     this.topo.draw();

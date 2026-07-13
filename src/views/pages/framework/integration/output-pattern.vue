@@ -6,16 +6,16 @@
           <Dropdown v-if="item == '[]'" trigger="custom" :visible="visibleMap[index]">
             <a href="javascript:void(0)" @click="openMenu(index)">
               <Tag color="orange">
-                请选择
+                {{ $t('page.pleaseselect') }}
                 <Icon type="ios-arrow-down"></Icon>
               </Tag>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem>驴打滚</DropdownItem>
-              <DropdownItem>炸酱面</DropdownItem>
-              <DropdownItem>豆汁儿</DropdownItem>
-              <DropdownItem>冰糖葫芦</DropdownItem>
-              <DropdownItem>北京烤鸭</DropdownItem>
+              <DropdownItem>{{ $t('term.framework.rollingdonkey') }}</DropdownItem>
+              <DropdownItem>{{ $t('term.framework.zhajiangnoodles') }}</DropdownItem>
+              <DropdownItem>{{ $t('term.framework.mungbeanmilk') }}</DropdownItem>
+              <DropdownItem>{{ $t('term.framework.tanghulu') }}</DropdownItem>
+              <DropdownItem>{{ $t('term.framework.pekingduck') }}</DropdownItem>
             </DropdownMenu>
           </Dropdown>
           <Tag v-if="item != '[]'">{{ item }}</Tag>

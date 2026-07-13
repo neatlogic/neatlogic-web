@@ -1,6 +1,8 @@
+import { $t } from '@/resources/init.js';
+
 export default {
   name: 'flowline',
-  label: '流光线',
+  label: $t('term.report.flowline'),
   type: 'flowline',
   icon: 'tsfont-chart-line',
   widgetType: 'effect',

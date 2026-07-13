@@ -6,7 +6,7 @@
         <div>{{ $t('term.autoexec.resetnodescene') }}</div>
         <div>1.{{ $t('term.autoexec.waitrunnodetip') }}</div>
         <div>2.{{ $t('term.autoexec.malfunctionrerunjob') }}</div>
-        <div v-if="unresettableStatusText" class="mt-xs  text-warning">不可重置状态：{{ unresettableStatusText }}</div>
+        <div v-if="unresettableStatusText" class="mt-xs  text-warning">{{ $t('term.autoexec.unresettablestatus') }}{{ unresettableStatusText }}</div>
       </Alert>
     </template>
   </TsDialog>
@@ -33,15 +33,15 @@ export default {
         width: 'small'
       },
       statusTextMapping: {
-        pending: '待运行',
-        running: '运行中',
-        succeed: '已成功',
-        failed: '已失败',
-        aborted: '已中止',
-        aborting: '中止中',
-        paused: '已暂停',
-        ignored: '已忽略',
-        invalid: '非法节点'
+        pending: this.$t('term.autoexec.statuspending'),
+        running: this.$t('term.autoexec.statusrunning'),
+        succeed: this.$t('term.autoexec.statussucceed'),
+        failed: this.$t('term.autoexec.statusfailed'),
+        aborted: this.$t('term.autoexec.statusaborted'),
+        aborting: this.$t('term.autoexec.statusaborting'),
+        paused: this.$t('term.autoexec.statuspaused'),
+        ignored: this.$t('term.autoexec.statusignored'),
+        invalid: this.$t('term.autoexec.statusinvalid')
       }
     };
   },

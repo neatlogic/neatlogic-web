@@ -14,8 +14,8 @@
         <span v-else class="text-grey">{{ $t('page.no') }}</span>
       </template>
       <template v-slot:type="{ row }">
-        <span v-if="row.isEmbed">系统主题</span>
-        <span v-else>自定义主题</span>
+        <span v-if="row.isEmbed">{{ $t('term.framework.systemtopic') }}</span>
+        <span v-else>{{ $t('term.framework.customtopic') }}</span>
       </template>
       <template v-slot:handlerName="{ row }">
         <span>{{ row.handlerName }}</span>
@@ -23,7 +23,7 @@
           v-if="row.isEmbed && !row.isEnable"
           placement="top"
           :transfer="true"
-          content="消息队列组件不可用"
+          :content="$t('term.framework.mqhandlerunavailable')"
         >
           <span v-if="!row.isEnable" class="text-error tsfont-warning-o"></span>
         </Tooltip>

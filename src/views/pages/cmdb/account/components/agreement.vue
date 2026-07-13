@@ -132,7 +132,7 @@ export default {
       });
       // 如果有在编辑的时候，不允许添加
       if (dataArr.length > 0) {
-        this.$Message.error('请先保存之后再编辑');
+        this.$Message.error(this.$t('term.cmdb.savebeforeedit'));
         this.$refs.inputs.focus();
       } else {
         this.tableData.tbodyList.unshift({name: '', int: '', disabled: false});
@@ -160,7 +160,7 @@ export default {
       }
 
       if (item.port && !this.validator(item.port)) {
-        this.$Message.error('请输入正确的端口号');
+        this.$Message.error(this.$t('form.validate.inputcorrectport'));
         this.$refs.port.focus();
         return;
       }
@@ -176,7 +176,7 @@ export default {
             item.id = '000';//del为临时赋值，避免删除新增同名协议报错
           }
           this.$Notice.info({//右滑弹窗，引自view ui
-            title: '提示',
+            title: this.$t('page.tip'),
             desc: (JSON.parse(error.request.response)).Message
           });
         });

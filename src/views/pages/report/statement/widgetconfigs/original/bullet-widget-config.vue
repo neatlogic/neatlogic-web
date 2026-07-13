@@ -147,7 +147,7 @@ export default {
         { value: 'inner', text: this.$t('term.report.positions.inner') },
         { value: 'outer', text: this.$t('term.report.positions.outer') }
       ],
-      layoutList: [{value: 'horizontal', text: '水平'}, {value: 'vertical', text: '垂直'}]
+      layoutList: [{value: 'horizontal', text: this.$t('term.report.horizontal')}, {value: 'vertical', text: this.$t('term.report.vertical')}]
     };
   },
   beforeCreate() {},

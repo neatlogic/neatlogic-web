@@ -58,25 +58,21 @@
             <div>
               <span class="pl-md mr-md">
 
-                <a v-if="!isTesting" href="javascript:void(0)" @click="testCondition()">测试筛选条件</a>
+                <a v-if="!isTesting" href="javascript:void(0)" @click="testCondition()">{{ $t('term.cmdb.testfiltercondition') }}</a>
                 <span v-else class="text-grey">
-                  <span>测试中...</span><span class="text-loading bg-info ml-xs"></span>
+                  <span>{{ $t('term.cmdb.testing') }}</span><span class="text-loading bg-info ml-xs"></span>
                 </span>
               </span>
-              <span v-if="matchConditionCount > 0">
-                找到符合条件的记录
-                <b class="text-primary">{{ matchConditionCount }}{{ matchConditionCount > 99 ? '+' : '' }}</b>
-                条
-              </span>
-              <span v-else-if="matchConditionCount == 0">没有找到符合条件的记录</span>
+              <span v-if="matchConditionCount > 0">{{ $t('term.cmdb.matchconditionrecord', { count: matchConditionCount + (matchConditionCount > 99 ? '+' : '') }) }}</span>
+              <span v-else-if="matchConditionCount == 0">{{ $t('term.cmdb.nomatchconditionrecord') }}</span>
             </div>
           </template>
         </TsForm>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button v-if="id" type="error" @click="deletePolicy()">删除</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
+        <Button v-if="id" type="error" @click="deletePolicy()">{{ $t('page.delete') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -109,7 +105,7 @@ export default {
       syncPolicyData: { ciCollectionId: _this.ciCollectionId },
       policyList: [],
       dialogConfig: {
-        title: '定时策略设置',
+        title: this.$t('term.cmdb.schedulepolicysetting'),
         type: 'modal',
         maskClose: false,
         isShow: true,
@@ -121,7 +117,7 @@ export default {
           isHidden: true
         },
         name: {
-          label: '名称',
+          label: this.$t('page.name'),
           type: 'text',
           maxlength: 10,
           validateList: ['required'],
@@ -130,23 +126,23 @@ export default {
           }
         },
         isActive: {
-          label: '激活',
+          label: this.$t('term.cmdb.activate'),
           type: 'radio',
           validateList: ['required'],
           dataList: [
-            { value: 1, text: '是' },
-            { value: 0, text: '否' }
+            { value: 1, text: this.$t('page.yes') },
+            { value: 0, text: this.$t('page.no') }
           ],
           onChange: value => {
             this.syncPolicyData.isActive = value;
           }
         },
         cronList: {
-          label: '定时设置',
+          label: this.$t('term.cmdb.timersetting'),
           type: 'slot'
         },
         conditionList: {
-          label: '筛选条件',
+          label: this.$t('term.cmdb.filtercondition'),
           type: 'slot',
           isHidden: true
         }
@@ -154,10 +150,10 @@ export default {
       conditionData: {
         tbodyList: [],
         theadList: [
-          { key: 'field', title: '属性' },
-          { key: 'type', title: '类型' },
-          { key: 'expression', title: '表达式' },
-          { key: 'value', title: '值', tooltip: '多个值请用英文逗号分隔' }
+          { key: 'field', title: this.$t('page.attribute') },
+          { key: 'type', title: this.$t('page.type') },
+          { key: 'expression', title: this.$t('term.cmdb.expression') },
+          { key: 'value', title: this.$t('page.value'), tooltip: this.$t('term.cmdb.multiplevaluecommatip') }
         ]
       },
       conditionList: []
@@ -180,7 +176,7 @@ export default {
     deletePolicy() {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: '确认删除当前策略？',
+        content: this.$t('term.cmdb.deletepolicyconfirm'),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.cmdb.sync.deletePolicy(this.id).then(res => {
@@ -288,8 +284,8 @@ export default {
       if (form.valid()) {
         if (!this.syncPolicyData.cronList || this.syncPolicyData.cronList.length == 0) {
           this.$Notice.info({
-            title: '输入提示',
-            desc: '请添加定时策略'
+            title: this.$t('term.cmdb.inputtip'),
+            desc: this.$t('term.cmdb.addschedulepolicy')
           });
           return;
         }
@@ -321,7 +317,7 @@ export default {
             this.isTesting = false;
           });
       } else {
-        this.$Message.info('请选择映射集合');
+        this.$Message.info(this.$t('term.cmdb.selectmappingcollection'));
       }
     }
   },

@@ -3,8 +3,9 @@
     <div
       ref="codemirror"
       class="codeContain"
-      @scroll="onScroll"
+      @scroll="handleLogScroll"
       @mousewheel="onMousewheel"
+      @mouseup="handleLogSelection"
     >
       <div v-if="isLoading" class="isLoading text-op tips">
         <Icon type="ios-loading" size="18" class="loading"></Icon>
@@ -35,6 +36,7 @@
         ></Waitinput>
       </div>
     </div>
+    <LogAiSelection ref="logAiSelection" :logContext="buildLogAiContext()"></LogAiSelection>
     <div class="btn-div action-group bg-dark-grey">
       <span
         :class="isAutoScroll ? 'tsfont-unlock' : 'tsfont-lock'"
@@ -74,7 +76,10 @@ import download from '@/resources/directives/download.js';
 
 export default {
   name: '',
-  components: { Waitinput: () => import('./waitinput.vue') },
+  components: {
+    LogAiSelection: () => import('./log-ai-selection.vue'),
+    Waitinput: () => import('./waitinput.vue')
+  },
   directives: { download },
   filters: {},
   props: {
@@ -130,6 +135,10 @@ export default {
     },
     onMousewheel(event) {
       this.isAutoScroll = false;
+    },
+    handleLogScroll(event) {
+      this.hideLogSelectionToolbar();
+      this.onScroll(event);
     },
     onScroll(event) {
       //向上加载更多
@@ -270,6 +279,45 @@ export default {
       this.encoding = item;
       this.logContentList = [];
       this.getContent();
+    },
+    handleLogSelection() {
+      if (this.$refs.logAiSelection) {
+        this.$refs.logAiSelection.handleSelection(this.$refs.codeContent, this.buildLogAiContext());
+      }
+    },
+    hideLogSelectionToolbar() {
+      if (this.$refs.logAiSelection) {
+        this.$refs.logAiSelection.hideToolbar();
+      }
+    },
+    buildLogAiContext() {
+      const jobData = this.jobData || {};
+      const phaseData = this.phaseData || {};
+      const nodeData = this.nodeData || {};
+      const runnerData = this.runnerData || {};
+      const sourceType = nodeData.id ? 'node' : (phaseData.id ? 'phase' : 'job');
+      return {
+        type: sourceType,
+        mode: this.mode,
+        jobId: jobData.id,
+        jobName: jobData.name,
+        jobStatus: jobData.status,
+        phaseId: phaseData.id,
+        phaseName: phaseData.name,
+        phaseStatus: phaseData.status,
+        nodeId: nodeData.id,
+        nodeName: nodeData.name || nodeData.nodeName,
+        nodeStatus: nodeData.status,
+        status: nodeData.status || phaseData.status || jobData.status,
+        resourceId: nodeData.resourceId,
+        resourceName: nodeData.resourceName,
+        ip: nodeData.ip || nodeData.host,
+        runnerId: runnerData.id,
+        runnerName: runnerData.name,
+        runnerHost: runnerData.host || runnerData.ip,
+        runnerPort: runnerData.port,
+        execMode: phaseData.execMode
+      };
     }
   },
   computed: {

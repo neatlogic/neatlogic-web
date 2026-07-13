@@ -49,12 +49,12 @@ export default {
   methods: {
     createRandomData() {
       this.data = [
-        { categoryField: '计算资源', nameField: '虚拟机', valueField: 48 },
-        { categoryField: '计算资源', nameField: '容器节点', valueField: 32 },
-        { categoryField: '存储资源', nameField: '对象存储', valueField: 36 },
-        { categoryField: '存储资源', nameField: '块存储', valueField: 28 },
-        { categoryField: '网络资源', nameField: '交换机', valueField: 18 },
-        { categoryField: '网络资源', nameField: '防火墙', valueField: 12 }
+        { categoryField: this.$t('term.report.computingresource'), nameField: this.$t('term.report.virtualmachine'), valueField: 48 },
+        { categoryField: this.$t('term.report.computingresource'), nameField: this.$t('term.report.containernode'), valueField: 32 },
+        { categoryField: this.$t('term.report.storageresource'), nameField: this.$t('term.report.objectstorage'), valueField: 36 },
+        { categoryField: this.$t('term.report.storageresource'), nameField: this.$t('term.report.blockstorage'), valueField: 28 },
+        { categoryField: this.$t('term.report.networkresource'), nameField: this.$t('term.report.switch'), valueField: 18 },
+        { categoryField: this.$t('term.report.networkresource'), nameField: this.$t('term.report.firewall'), valueField: 12 }
       ];
     },
     createPlot() {
@@ -83,7 +83,7 @@ export default {
       return numberValue;
     },
     buildLeaf(row) {
-      const name = row.nameField === undefined || row.nameField === null || row.nameField === '' ? '未命名' : String(row.nameField);
+      const name = row.nameField === undefined || row.nameField === null || row.nameField === '' ? this.$t('term.report.unnamed') : String(row.nameField);
       const category = row.categoryField === undefined || row.categoryField === null || row.categoryField === '' ? '' : String(row.categoryField);
       return {
         name,
@@ -99,12 +99,12 @@ export default {
         return this.data;
       }
       return [
-        { categoryField: '计算资源', nameField: '虚拟机', valueField: 48 },
-        { categoryField: '计算资源', nameField: '容器节点', valueField: 32 },
-        { categoryField: '存储资源', nameField: '对象存储', valueField: 36 },
-        { categoryField: '存储资源', nameField: '块存储', valueField: 28 },
-        { categoryField: '网络资源', nameField: '交换机', valueField: 18 },
-        { categoryField: '网络资源', nameField: '防火墙', valueField: 12 }
+        { categoryField: this.$t('term.report.computingresource'), nameField: this.$t('term.report.virtualmachine'), valueField: 48 },
+        { categoryField: this.$t('term.report.computingresource'), nameField: this.$t('term.report.containernode'), valueField: 32 },
+        { categoryField: this.$t('term.report.storageresource'), nameField: this.$t('term.report.objectstorage'), valueField: 36 },
+        { categoryField: this.$t('term.report.storageresource'), nameField: this.$t('term.report.blockstorage'), valueField: 28 },
+        { categoryField: this.$t('term.report.networkresource'), nameField: this.$t('term.report.switch'), valueField: 18 },
+        { categoryField: this.$t('term.report.networkresource'), nameField: this.$t('term.report.firewall'), valueField: 12 }
       ];
     },
     hasCategoryField() {
@@ -115,7 +115,7 @@ export default {
         const categoryMap = {};
         this.sourceData.forEach(row => {
           const leaf = this.buildLeaf(row);
-          const category = leaf.categoryField || '未分类';
+          const category = leaf.categoryField || this.$t('term.report.uncategorized');
           if (!categoryMap[category]) {
             categoryMap[category] = {
               name: category,
@@ -181,7 +181,7 @@ export default {
         position: legendPosition,
         itemName: {
           style: {
-            fill: this.chartConfig.legend?.itemName?.style?.fill || 'rgba(233,251,255,0.86)'
+            fill: this.chartConfig.legend?.itemName?.style?.fill || this.getChartTheme()?.labels?.style?.fill || 'rgba(233,251,255,0.86)'
           }
         }
       };
@@ -189,7 +189,7 @@ export default {
         enabled: !!this.chartConfig.drilldown?.enabled,
         breadCrumb: {
           position: 'bottom-left',
-          rootText: '全部',
+          rootText: this.$t('page.all'),
           dividerText: '/',
           textStyle: {
             fontSize: 12,

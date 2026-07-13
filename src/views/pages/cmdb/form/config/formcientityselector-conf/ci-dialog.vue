@@ -4,7 +4,7 @@
     @on-close="close"
   >
     <template v-slot:header>
-      <div>选择配置项</div>
+      <div>{{ $t('term.cmdb.selectcientity') }}</div>
     </template>
     <template v-slot>
       <div>
@@ -21,8 +21,8 @@
       </div>
     </template>
     <template v-slot:footer>
-      <Button @click="close()">取消</Button>
-      <Button type="primary" @click="save()">确定</Button>
+      <Button @click="close()">{{ $t('page.cancel') }}</Button>
+      <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>

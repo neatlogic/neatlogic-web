@@ -76,7 +76,7 @@
       </template>
       <template v-slot:footer>
         <Button v-if="allowRecover" type="primary" @click="recoverCiEntity()">{{ $t('page.recover') }}</Button>
-        <span v-else class="text-grey">模型已发生变化，无法恢复</span>
+        <span v-else class="text-grey">{{ $t('term.cmdb.modelchangednotrecover') }}</span>
       </template>
     </TsDialog>
   </div>
@@ -107,7 +107,7 @@ export default {
       authData: {},
       allowRecover: false, //是否允许恢复事务
       dialogConfig: {
-        title: '修改详情',
+        title: this.$t('term.cmdb.modifydetail'),
         type: 'modal',
         maskClose: true,
         isShow: true,
@@ -134,7 +134,7 @@ export default {
           title: this.$t('page.afteredit'),
           width: 320
         },
-        { key: 'desc', title: '说明' }
+        { key: 'desc', title: this.$t('page.description') }
       ])
     };
   },

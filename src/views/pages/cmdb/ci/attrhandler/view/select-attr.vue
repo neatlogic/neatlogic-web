@@ -19,7 +19,7 @@
       @on-close="close"
     >
       <template v-slot:header>
-        <div>数据明细</div>
+        <div>{{ $t('term.cmdb.datadetail') }}</div>
       </template>
       <template v-slot>
         <div>

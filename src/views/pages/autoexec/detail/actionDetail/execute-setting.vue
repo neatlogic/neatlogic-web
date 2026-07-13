@@ -159,7 +159,7 @@ export default {
         },
         runnerGroupTag: {
           type: 'slot',
-          label: '执行器组标签',
+          label: this.$t('term.autoexec.runnergrouptag'),
           labelWidth: '113',
           desc: ''
         },

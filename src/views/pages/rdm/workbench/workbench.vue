@@ -1,11 +1,11 @@
 <template>
   <div>
-    <TsContain><template v-slot:navigation><span>导航</span></template>
-      <template v-slot:topLeft>上左</template>
-      <template v-slot:topCenter>上中</template>
-      <template v-slot:topRight>上右</template>
-      <template v-slot:sider>侧边栏</template>
-      <template v-slot:content>内容</template></TsContain>
+    <TsContain><template v-slot:navigation><span>{{ $t('term.rdm.navigation') }}</span></template>
+      <template v-slot:topLeft>{{ $t('term.rdm.topleft') }}</template>
+      <template v-slot:topCenter>{{ $t('term.rdm.topcenter') }}</template>
+      <template v-slot:topRight>{{ $t('term.rdm.topright') }}</template>
+      <template v-slot:sider>{{ $t('term.rdm.sidebar') }}</template>
+      <template v-slot:content>{{ $t('page.content') }}</template></TsContain>
   </div>
 </template>
 <script>

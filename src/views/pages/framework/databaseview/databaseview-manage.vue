@@ -79,7 +79,7 @@ export default {
         .then(res => {
           this.isShowLoading = false;
           if (res.Status === 'OK') {
-            this.$Message.success('重建完毕');
+            this.$Message.success(this.$t('term.framework.rebuilddone'));
             this.tbodyList = res.Return.tbodyList;
           }
         });

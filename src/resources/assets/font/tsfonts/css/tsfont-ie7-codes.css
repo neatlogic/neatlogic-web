@@ -608,3 +608,7 @@
 .tsfont-underline { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea62;&nbsp;'); }
 .tsfont-unlink { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea63;&nbsp;'); }
 .tsfont-video { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea64;&nbsp;'); }
+.tsfont-branch { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea65;&nbsp;'); }
+.tsfont-state-machine { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea66;&nbsp;'); }
+.tsfont-column { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea67;&nbsp;'); }
+.tsfont-link { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea68;&nbsp;'); }

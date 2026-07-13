@@ -2,10 +2,10 @@
   <TsDialog v-bind="dialogConfig" @on-ok="confirm()" @on-close="close()">
     <template v-slot>
       <div>
-        <TsFormItem label="主题" :labelWidth="50">
+        <TsFormItem :label="$t('page.theme')" :labelWidth="50">
           <span>{{ name }}</span>
         </TsFormItem>
-        <TsFormItem label="内容" :labelWidth="50">
+        <TsFormItem :label="$t('page.content')" :labelWidth="50">
           <TsCodemirror
             ref="content"
             v-model="content"
@@ -32,7 +32,7 @@ export default {
     return {
       content: null,
       dialogConfig: {
-        title: '测试主题',
+        title: this.$t('term.framework.testtopic'),
         isShow: true,
         width: 'small'
       }
@@ -56,7 +56,7 @@ export default {
       if (this.$refs.content && this.$refs.content.valid()) {
         this.$api.framework.mq.testTopic({ name: this.name, content: this.content }).then(res => {
           if (res.Status === 'OK') {
-            this.$Message.success('发送成功');
+            this.$Message.success(this.$t('term.framework.sendsuccess'));
             this.close();
           }
         });

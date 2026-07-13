@@ -608,3 +608,7 @@
 .tsfont-underline:before { content: '\ea62'; } /* '' */
 .tsfont-unlink:before { content: '\ea63'; } /* '' */
 .tsfont-video:before { content: '\ea64'; } /* '' */
+.tsfont-branch:before { content: '\ea65'; } /* '' */
+.tsfont-state-machine:before { content: '\ea66'; } /* '' */
+.tsfont-column:before { content: '\ea67'; } /* '' */
+.tsfont-link:before { content: '\ea68'; } /* '' */

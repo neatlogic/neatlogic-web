@@ -1,6 +1,6 @@
 <template>
   <div class="pb-nm">
-    <TsFormItem label="显示图例" labelPosition="top">
+    <TsFormItem :label="$t('term.report.axis.showlegend')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('legend.visible', true)"
         :true-value="true"
@@ -10,7 +10,7 @@
         }"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem v-if="getConfigValue('legend.visible', true)" label="图例位置" labelPosition="top">
+    <TsFormItem v-if="getConfigValue('legend.visible', true)" :label="$t('term.report.axis.legendposition')" labelPosition="top">
       <TsFormSelect
         :value="getConfigValue('legend.position', 'bottom')"
         :transfer="true"
@@ -21,7 +21,7 @@
         }"
       ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem label="显示标签" labelPosition="top">
+    <TsFormItem :label="$t('term.report.showlabel')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('label.visible', true)"
         :true-value="true"
@@ -31,7 +31,7 @@
         }"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem v-if="getConfigValue('label.visible', true)" label="标签颜色" labelPosition="top">
+    <TsFormItem v-if="getConfigValue('label.visible', true)" :label="$t('term.report.labelcolor')" labelPosition="top">
       <ColorPicker
         :value="getConfigValue('label.style.fill', '#ffffff')"
         :transfer="true"
@@ -43,19 +43,19 @@
         }"
       />
     </TsFormItem>
-    <TsFormItem v-if="getConfigValue('legend.visible', true)" label="图例文字颜色" labelPosition="top">
+    <TsFormItem v-if="getConfigValue('legend.visible', true)" :label="$t('term.report.legendtextcolor')" labelPosition="top">
       <ColorPicker
-        :value="getConfigValue('legend.itemName.style.fill', 'rgba(233,251,255,0.86)')"
+        :value="getConfigValue('legend.itemName.style.fill', '')"
         :transfer="true"
         alpha
         recommend
         transfer-class-name="color-picker-transfer-class"
         @on-change="val => {
-          setConfigValue('legend.itemName.style.fill', val || 'rgba(233,251,255,0.86)');
+          setConfigValue('legend.itemName.style.fill', val);
         }"
       />
     </TsFormItem>
-    <TsFormItem label="启用下钻" labelPosition="top">
+    <TsFormItem :label="$t('term.report.enabledrilldown')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('drilldown.enabled', false)"
         :true-value="true"

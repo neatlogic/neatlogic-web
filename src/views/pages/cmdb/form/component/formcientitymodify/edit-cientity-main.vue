@@ -148,12 +148,12 @@ export default {
       let title = '';
       if (row.disabled) {
         if (row.value == 'import') {
-          title = '此模型不支持编辑/删除操作，如需编辑/删除配置项，请联系管理员修改表单设置';
+          title = this.$t('term.cmdb.unsupporteditdeletecientity');
           return title;
         }
 
         if (row.value == 'add') {
-          title = '此模型不支持新增操作，如需新增配置项，请联系管理员修改表单设置';
+          title = this.$t('term.cmdb.unsupportaddcientity');
           return title;
         }
       }

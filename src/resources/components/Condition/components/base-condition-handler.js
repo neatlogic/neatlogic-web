@@ -1,6 +1,6 @@
 export const ConditionHandlerBase = {
   props: {
-    value: { type: [String, Number, Object, Array] }
+    value: { type: [String, Number, Boolean, Object, Array] }
   },
   data() {
     return {};

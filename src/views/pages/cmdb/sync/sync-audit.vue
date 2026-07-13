@@ -2,7 +2,7 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        <div>执行日志</div>
+        <div>{{ $t('term.cmdb.execlog') }}</div>
       </template>
       <template v-slot>
         <TsTable
@@ -13,7 +13,7 @@
         ></TsTable>
       </template>
       <template v-slot:footer>
-        <Button @click="close">关闭</Button>
+        <Button @click="close">{{ $t('page.close') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -37,11 +37,11 @@ export default {
         width: 'large'
       },
       searchParam: {},
-      theadList: [{key: 'startTime', title: '开始时间', type: 'time'},
-        {key: 'endTime', title: '结束时间', type: 'time'},
-        {key: 'inputFromText', title: '发起方式'},
-        {key: 'statusText', title: '状态'},
-        {key: 'transactionCount', title: '更新配置项'}]
+      theadList: [{key: 'startTime', title: this.$t('page.starttime'), type: 'time'},
+        {key: 'endTime', title: this.$t('page.endtime'), type: 'time'},
+        {key: 'inputFromText', title: this.$t('term.cmdb.inputfrom')},
+        {key: 'statusText', title: this.$t('page.status')},
+        {key: 'transactionCount', title: this.$t('term.cmdb.updatedcientity')}]
     };
   },
   beforeCreate() {},

@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">帧率上限</label>
+      <label class="ivu-form-item-label overflow">{{ $t('term.report.frameratelimit') }}</label>
       <div class="ivu-form-item-content">
         <div class="pl-md pr-md">
           <Slider

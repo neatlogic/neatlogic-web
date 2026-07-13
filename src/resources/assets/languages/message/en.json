@@ -15,6 +15,7 @@
   "commitsuccess": "Successful commit",
   "refreshsuccess": "Refresh successfully",
   "copysuccess": "Copy successful",
+  "copyfailed": "Copy failed",
   "pastesuccess": "Paste successfully",
   "uploadsuccess": "Upload successful",
   "uploadfailed": "Upload failed",

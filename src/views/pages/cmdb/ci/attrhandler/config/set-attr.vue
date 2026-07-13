@@ -3,7 +3,7 @@
     <TsForm :item-list="formConfig">
       <template v-slot:members>
         <div>
-          <div><a class="tsfont-plus" href="javascript:void(0)" @click="addMember()">添加成员</a></div>
+          <div><a class="tsfont-plus" href="javascript:void(0)" @click="addMember()">{{ $t('term.cmdb.addmember') }}</a></div>
           <div v-for="(item,index) in myConfig.members" :key="index" class="grid">
             <div>
               <a class="tsfont-minus" href="javascript:void(0)" @click="removeMember(index)"></a>
@@ -42,7 +42,7 @@ export default {
       formConfig: {
         members: {
           type: 'slot',
-          label: '成员'
+          label: this.$t('page.member')
         }
       }
     };
@@ -61,22 +61,22 @@ export default {
     valid() {
       this.error = '';
       if (!this.myConfig.members || this.myConfig.members.length == 0) {
-        this.error = '请添加成员';
+        this.error = this.$t('term.cmdb.addmemberrequired');
         return false;
       } else {
         if (this.myConfig.members.filter(v => !v || !v.trim()).length > 0) {
-          this.error = '成员不能为空';
+          this.error = this.$t('term.cmdb.membernotempty');
           return false;
         } else if (new Set(this.myConfig.members).size != this.myConfig.members.length) {
-          this.error = '成员不能重复';
+          this.error = this.$t('term.cmdb.membernotrepeat');
           return false;
         } else if (this.myConfig.members.length > 50) {
-          this.error = '成员不能超过50个';
+          this.error = this.$t('term.cmdb.membermaxcount', { count: 50 });
           return false;
         } else {
           for (let i = 0; i < this.myConfig.members.length; i++) {
             if (this.myConfig.members[i].includes(',')) {
-              this.error = '成员不能包含逗号';
+              this.error = this.$t('term.cmdb.membernotcontaincomma');
               return false;
             }
           }
