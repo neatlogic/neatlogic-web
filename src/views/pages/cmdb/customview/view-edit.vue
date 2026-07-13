@@ -359,7 +359,7 @@ export default {
       if (d && d.nodes && d.nodes.find(d => (d.type === 'Attr' && !d.config.targetCiId) || d.type === 'ConstAttr')) {
         this.isDisplaySettingShow = true;
       } else {
-        this.$Message.info('请添加模型并选择需要显示的属性');
+        this.$Message.info(this.$t('term.cmdb.addmodelandselectdisplayattr'));
       }
     },
     searchCi(val) {
@@ -691,7 +691,7 @@ export default {
             // 刷新左侧菜单
             this.$store.commit('leftMenu/setCmdbCustomViewCount', 'add');
           } else {
-            this.$Message.error('保存失败');
+            this.$Message.error(this.$t('message.savefailed'));
           }
         });
       } else {

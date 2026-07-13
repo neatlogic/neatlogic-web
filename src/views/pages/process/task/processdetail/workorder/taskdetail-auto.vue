@@ -72,8 +72,8 @@
     </div>
     <div v-if="initAudit.result">
       <div>
-        <span v-if="initAudit.result.json" class="text-href look-btn" @click="lookTemlate(initAudit.result)">查看原始结果</span>
-        <span v-if="isShowFailed" class="text-href look-btn" @click="lookFailed(initAudit.failedReason)">查看失败原因</span>
+        <span v-if="initAudit.result.json" class="text-href look-btn" @click="lookTemlate(initAudit.result)">{{ $t('term.process.viewrawresult') }}</span>
+        <span v-if="isShowFailed" class="text-href look-btn" @click="lookFailed(initAudit.failedReason)">{{ $t('term.process.viewfailreason') }}</span>
       </div>
       <div v-if="initAudit.result.template" class="pt-xs">
         <div v-html="initAudit.result.template"></div>

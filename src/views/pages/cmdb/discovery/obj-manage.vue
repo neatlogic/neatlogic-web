@@ -127,7 +127,7 @@ export default {
     deleteObject(obj) {
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deleteconfirm', { target: '对象' }),
+        content: this.$t('dialog.content.deleteconfirm', { target: this.$t('page.object') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.cmdb.sync.deleteObject(obj.id).then(res => {

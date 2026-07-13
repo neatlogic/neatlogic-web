@@ -94,7 +94,7 @@
               </div>
             </div>
           </div>
-          <div v-else class="text-grey padding">不识别的提交信息，请联系厂商处理，id:{{ row.id }}</div>
+          <div v-else class="text-grey padding">{{ $t('term.rdm.unrecognizedcommit', { id: row.id }) }}</div>
           <div v-if="moreFlag[row.id.toString()] == 1" class="bg-op more">
             <span class="fz10 text-grey cursor tsfont-down" @click="more(row.id.toString())">{{ $t('page.viewmore') }}</span>
           </div>

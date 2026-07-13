@@ -7,11 +7,11 @@
         size="small"
         :disabled="!fieldList.length || !paramList.length"
         @click="addFilter"
-      >添加条件</Button>
+      >{{ $t('term.report.addcondition') }}</Button>
     </div>
-    <div v-if="!fieldList.length" class="text-grey">请先拖入数据表</div>
-    <div v-else-if="!paramList.length" class="text-grey">请先在条件配置中添加参数</div>
-    <div v-else-if="!filterList.length" class="text-grey">暂无过滤条件</div>
+    <div v-if="!fieldList.length" class="text-grey">{{ $t('term.report.dragdatatablefirst') }}</div>
+    <div v-else-if="!paramList.length" class="text-grey">{{ $t('term.report.addparamfirst') }}</div>
+    <div v-else-if="!filterList.length" class="text-grey">{{ $t('term.report.nofiltercondition') }}</div>
     <div
       v-for="(filter, index) in filterList"
       :key="index"
@@ -21,7 +21,7 @@
         v-model="filter.fieldKey"
         filterable
         transfer
-        placeholder="选择字段"
+        :placeholder="$t('term.report.selectfield')"
         @on-change="changeField(filter)"
       >
         <Option
@@ -52,10 +52,10 @@
           :dataList="paramList"
           :transfer="true"
           :search="true"
-          placeholder="选择参数"
+          :placeholder="$t('term.report.selectparam')"
           @on-change="emitChange"
         ></TsFormSelect>
-        <Button type="text" size="small" @click="removeFilter(index)">删除</Button>
+        <Button type="text" size="small" @click="removeFilter(index)">{{ $t('page.delete') }}</Button>
       </div>
     </div>
   </div>

@@ -42,9 +42,9 @@
         </div>
       </div>
       <div v-else class="text-tip">
-        当前流程未关联任何表单，请前往
-        <a href="javascript:void(0);" @click="toSetting">流程设置</a>
-        关联表单
+        {{ $t('term.cmdb.noformassociatedgoto') }}
+        <a href="javascript:void(0);" @click="toSetting">{{ $t('term.cmdb.processsetting') }}</a>
+        {{ $t('term.cmdb.associateform') }}
       </div>
     </div>
     <AssignSetting

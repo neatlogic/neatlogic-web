@@ -7,7 +7,7 @@ import { isolationValid } from '@/views/pages/process/flow/floweditor/element/co
 import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
 import { notifyValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
 export default {
-  name: '配置项同步',
+  name: $t('term.process.cientitysync'),
   handler: 'cientitysync',
   type: 'process',
   oldSetting: {//转换成旧数据时使用

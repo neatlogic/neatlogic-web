@@ -301,13 +301,13 @@ export default {
       let interval = otherConfig.rateLimitIntervalSeconds;
       let count = otherConfig.rateLimitCount;
       if (!this.isNaturalNumber(interval) || !this.isNaturalNumber(count)) {
-        this.$Message.warning('调用时间间隔和调用次数必须为非负整数');
+        this.$Message.warning(this.$t('term.framework.calllimitnaturalnumbervalid'));
         return false;
       }
       let hasInterval = this.isPositiveNumber(interval);
       let hasCount = this.isPositiveNumber(count);
       if (hasInterval !== hasCount) {
-        this.$Message.warning('启用调用时间控制时，调用时间间隔和调用次数必须同时填写正整数');
+        this.$Message.warning(this.$t('term.framework.calllimitpositivevalid'));
         return false;
       }
       return true;

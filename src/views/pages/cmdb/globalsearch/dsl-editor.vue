@@ -374,19 +374,19 @@ export default {
       } else if (content == 'null') {
         wordData.type = 'null_value';
         if (this.lastWord == null || this.lastWord.type != 'calculate_expression') {
-          wordData.error = '值前面需要是计算符号';
+          wordData.error = this.$t('term.cmdb.dslvalueneedcalculate');
         }
       } else if (content.startsWith('"')) {
         wordData.type = 'string_value';
         if (!content.endsWith('"')) {
-          wordData.error = '请补充结束双引号';
+          wordData.error = this.$t('term.cmdb.dslneedendquote');
         } else if (this.lastWord == null || this.lastWord.type != 'compare_expression') {
-          wordData.error = '值前面需要是比较符号';
+          wordData.error = this.$t('term.cmdb.dslvalueneedcompare');
         }
       } else if (!isNaN(parseFloat(content))) {
         wordData.type = 'number_value';
         if (this.lastWord == null || this.lastWord.type != 'compare_expression') {
-          wordData.error = '值前面需要是比较运算符';
+          wordData.error = this.$t('term.cmdb.dslvalueneedcompareoperator');
         }
       } else if (this.brackeyWords.includes(content)) {
         wordData.type = 'brackey';

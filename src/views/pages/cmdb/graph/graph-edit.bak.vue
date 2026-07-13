@@ -54,9 +54,9 @@
       <template v-slot:sider>
         <div class="pr-md">
           <Tabs v-model="activeTab" type="card">
-            <TabPane label="配置项" name="cientity"></TabPane>
-            <TabPane label="视图" name="graph"></TabPane>
-            <TabPane label="其他" name="other"></TabPane>
+            <TabPane :label="$t('term.cmdb.cientity')" name="cientity"></TabPane>
+            <TabPane :label="$t('term.cmdb.view')" name="graph"></TabPane>
+            <TabPane :label="$t('page.others')" name="other"></TabPane>
           </Tabs>
           <!--type=card有问题，所以使用这种方式实现，后面修复了再调回来-->
           <div v-if="activeTab === 'cientity'" class="bg-op padding radius-sm" style="border-top-left-radius: 0px; height: calc(100vh - 148px); overflow-y: auto">

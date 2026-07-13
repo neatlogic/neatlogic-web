@@ -115,7 +115,7 @@
       @on-close="showDefaultPolicyDialog = false"
       @on-ok="saveDefaultPolicy"
     >
-      <TsFormItem label="策略">
+      <TsFormItem :label="$t('page.strategy')">
         <TsFormSelect ref="defaultPolicyFormSelect" v-model="defaultPolicyFormSelectValue" v-bind="defaultPolicyFormSelect"></TsFormSelect>
       </TsFormItem>
     </TsDialog>

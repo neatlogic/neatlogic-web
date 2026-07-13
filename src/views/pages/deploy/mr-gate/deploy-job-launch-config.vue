@@ -142,30 +142,30 @@ export default {
       return {
         envId: {
           type: 'select',
-          label: '环境',
+          label: this.$t('page.environment'),
           validateList: ['required'],
           dataList: this.envDataList,
           transfer: true,
           search: true,
-          desc: '从发布模块当前应用配置查询后选择'
+          desc: this.$t('term.deploy.selectfromcurrentappconfig')
         },
         scenarioId: {
           type: 'select',
-          label: '场景名称',
+          label: this.$t('term.deploy.scenarioname'),
           validateList: ['required'],
           dataList: this.scenarioDataList,
           transfer: true,
           search: true,
-          desc: '从发布模块当前应用配置查询后选择'
+          desc: this.$t('term.deploy.selectfromcurrentappconfig')
         },
         versionSource: {
           type: 'select',
-          label: '版本号',
+          label: this.$t('page.versionnumber'),
           validateList: ['required'],
           dataList: [
-            { value: 'sourceBranch', text: '源分支' },
-            { value: 'targetBranch', text: '目标分支' },
-            { value: 'mrVersion', text: 'MR版本号' }
+            { value: 'sourceBranch', text: this.$t('term.deploy.sourcebranch') },
+            { value: 'targetBranch', text: this.$t('term.deploy.targetbranch') },
+            { value: 'mrVersion', text: this.$t('term.deploy.mrversion') }
           ],
           transfer: true,
           onChange: value => {
@@ -174,7 +174,7 @@ export default {
             }
             this.$set(this.formValue, 'versionSource', this.getVersionSource(value));
           },
-          desc: '选择使用MR源分支、目标分支或MR版本号作为发布版本号'
+          desc: this.$t('term.deploy.versionselectdesc')
         }
       };
     },

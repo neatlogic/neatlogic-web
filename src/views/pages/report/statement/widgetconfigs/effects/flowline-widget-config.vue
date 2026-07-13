@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsFormItem label="启用动画" labelPosition="top">
+    <TsFormItem :label="$t('term.report.enableanimation')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('enabled', true)"
         :true-value="true"
@@ -8,14 +8,14 @@
         @change="val => setConfigValue('enabled', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="方向" labelPosition="top">
+    <TsFormItem :label="$t('term.report.direction')" labelPosition="top">
       <TsFormRadio
         :value="getConfigValue('direction', 'horizontal')"
         :dataList="directionList"
         @change="val => setConfigValue('direction', val)"
       ></TsFormRadio>
     </TsFormItem>
-    <TsFormItem label="速度" labelPosition="top">
+    <TsFormItem :label="$t('term.report.speed')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('speed', 6)"
@@ -27,7 +27,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="线宽" labelPosition="top">
+    <TsFormItem :label="$t('term.report.linewidth')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('lineWidth', 3)"
@@ -39,7 +39,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="虚线" labelPosition="top">
+    <TsFormItem :label="$t('term.report.dashedline')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('isDashed', false)"
         :true-value="true"
@@ -47,7 +47,7 @@
         @change="val => setConfigValue('isDashed', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="发光" labelPosition="top">
+    <TsFormItem :label="$t('term.report.glow')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('glow', true)"
         :true-value="true"
@@ -72,9 +72,9 @@ export default {
   data() {
     return {
       directionList: [
-        { value: 'horizontal', text: '横向' },
-        { value: 'vertical', text: '纵向' },
-        { value: 'diagonal', text: '斜向' }
+        { value: 'horizontal', text: this.$t('term.report.horizontal') },
+        { value: 'vertical', text: this.$t('term.report.vertical') },
+        { value: 'diagonal', text: this.$t('term.report.diagonal') }
       ]
     };
   },

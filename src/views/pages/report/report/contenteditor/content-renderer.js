@@ -17,11 +17,11 @@ function renderWidget(token, ruleMap, selectedTokenId) {
   const rule = ruleMap[token.name];
   const preview = rule ? rule.getPreview(token.config || {}, { token }) : {};
   const title = preview.title || (rule && rule.label) || token.name;
-  const summary = !token.parsed || !token.hasRule ? '' : '点击后在右侧编辑属性';
+  const summary = !token.parsed || !token.hasRule ? '' : $t('term.report.clicktoeditproperty');
   const icon = preview.icon || (rule && rule.icon) || 'tsfont-module';
   const stateClass = selectedTokenId === token.id ? 'is-selected' : '';
   const invalidClass = !token.parsed || !token.hasRule ? 'is-invalid' : '';
-  const disabledTip = !token.hasRule ? '未注册组件规则' : (!token.parsed ? '参数不是标准JSON，请切换源码编辑' : '');
+  const disabledTip = !token.hasRule ? $t('term.report.unregisteredcomponentrule') : (!token.parsed ? $t('term.report.paramnotjsoneditsource') : '');
   return [
     `<span class="report-widget-placeholder ${stateClass} ${invalidClass}" data-token-id="${escapeHtml(token.id)}">`,
     '<span class="report-widget-main">',
@@ -33,8 +33,8 @@ function renderWidget(token, ruleMap, selectedTokenId) {
     '</span>',
     '</span>',
     '<span class="report-widget-actions">',
-    `<button type="button" data-token-action="up" data-token-id="${escapeHtml(token.id)}">上移</button>`,
-    `<button type="button" data-token-action="down" data-token-id="${escapeHtml(token.id)}">下移</button>`,
+    `<button type="button" data-token-action="up" data-token-id="${escapeHtml(token.id)}">${escapeHtml($t('page.moveup'))}</button>`,
+    `<button type="button" data-token-action="down" data-token-id="${escapeHtml(token.id)}">${escapeHtml($t('page.movedown'))}</button>`,
     '</span>',
     '</span>'
   ].join('');
@@ -55,3 +55,4 @@ export function renderVisualContent(content, tokenList, ruleMap, selectedTokenId
   html += protectFreemarkerDirective(source.slice(cursor));
   return html;
 }
+import { $t } from '@/resources/init.js';

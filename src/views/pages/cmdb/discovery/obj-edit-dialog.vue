@@ -77,7 +77,7 @@ export default {
       if (form && form.valid()) {
         this.$api.cmdb.sync.saveObject(this.objectData).then(res => {
           if (res.Status === 'OK') {
-            this.$Message.success('修改成功');
+            this.$Message.success(this.$t('message.updatesuccess'));
             this.close(true);
           }
         });

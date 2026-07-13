@@ -221,7 +221,7 @@
               >{{ tag.tagName }}</Tag>
             </div>
             <div class="action-item">
-              <a class="tsfont-plus" @click="openTagDialog">添加标签</a>
+              <a class="tsfont-plus" @click="openTagDialog">{{ $t('term.cmdb.addtag') }}</a>
             </div>
             <div v-if="saveMode === 'save' && ((ciEntityQueue && ciEntityQueue.length > 1) || mode === 'dialog')" class="action-item">
               <Button type="default" @click="cancel()">{{ $t('page.cancel') }}</Button>
@@ -628,7 +628,7 @@ export default {
               if (res.Return.hasChange) {
                 this.$emit('save', needCommit);
               } else {
-                this.$Message.info('没有任何修改');
+                this.$Message.info(this.$t('term.cmdb.nochange'));
               }
             }
           })

@@ -69,7 +69,7 @@ export default {
         maskClose: false,
         isShow: true,
         width: 'medium',
-        title: '批量修改版本号'
+        title: this.$t('term.deploy.batchmodifyversion')
       },
       versionValidateList: ['key-special', 'required'],
       version: '',
@@ -168,7 +168,7 @@ export default {
                 item.versionId = this.jobTemplateVersionMap[item.id];
               } else {
                 this.errList.push({
-                  text: item.appSystemAbbrName + '/' + item.appModuleAbbrName + '不存在该版本号'
+                  text: this.$t('term.deploy.versionnotexists', { target: item.appSystemAbbrName + '/' + item.appModuleAbbrName })
                 });
               }
             });

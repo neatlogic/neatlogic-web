@@ -233,13 +233,13 @@
    &lt;!--{{ $t('message.framework.viewmatrixsql') }}--&gt;
   &lt;attrs&gt;
     &lt;attr name="id" label="ID" /&gt;
-    &lt;attr name="xuqiu" label="需求" /&gt;
-    &lt;attr name="moduleName" label="名称" /&gt;
-    &lt;attr name="midver" label="版本" /&gt;
-    &lt;attr name="type" label="架构类型" /&gt;
-    &lt;attr name="serviceName" label="中间件服务名" /&gt;
-    &lt;attr name="port" label="端口" /&gt;
-    &lt;attr name="app" label="应用基架资源规格" /&gt;
+    &lt;attr name="xuqiu" label="{{ $t('term.framework.requirement') }}" /&gt;
+    &lt;attr name="moduleName" label="{{ $t('page.name') }}" /&gt;
+    &lt;attr name="midver" label="{{ $t('page.versions') }}" /&gt;
+    &lt;attr name="type" label="{{ $t('term.framework.archtype') }}" /&gt;
+    &lt;attr name="serviceName" label="{{ $t('term.framework.middlewareservicename') }}" /&gt;
+    &lt;attr name="port" label="{{ $t('page.port') }}" /&gt;
+    &lt;attr name="app" label="{{ $t('term.framework.appbaseresourcespec') }}" /&gt;
   &lt;/attrs&gt;
   &lt;sql&gt;
     SELECT
@@ -1295,4 +1295,3 @@ export default {
   }
 }
 </style>
-

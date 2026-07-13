@@ -44,6 +44,7 @@
     "validatefailed": "校验失败",
     "pleaseinputscriptcontent": "请输入脚本内容",
     "requiredname": "不能为空，仅支持汉字、字母、数字和下划线",
+    "namespecialchars": "仅支持汉字、字母、数字和特殊字符(._-)",
     "inputcorrectport": "请输入正确的端口",
     "inputtagdescription": "请输入标签描述",
     "inputtagname": "请输入标签名称",

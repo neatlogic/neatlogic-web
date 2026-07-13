@@ -15,21 +15,21 @@
                 <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;ci&gt;
-   &lt;!--模型属性定义，需要SQL语句返回对应列--&gt;
+   &lt;!--Model attribute definitions. SQL must return the corresponding columns.--&gt;
   &lt;attrs&gt;
-    &lt;attr name="user_id" label="用户id"/&gt;
-    &lt;attr name="user_name" label="用户名"/&gt;
-    &lt;attr name="teamName" label="分组"/&gt;
+    &lt;attr name="user_id" label="User ID"/&gt;
+    &lt;attr name="user_name" label="Username"/&gt;
+    &lt;attr name="teamName" label="Group"/&gt;
   &lt;/attrs&gt;
   &lt;sql&gt;
     SELECT
-    &lt;!--必须包含id字段，作为配置项主键--&gt;
+    &lt;!--Must include the id field as the configuration item primary key.--&gt;
     `u`.`id` AS id,
-    &lt;!--必须包含uuid字段，数据类型是char(32)，作为配置项全局主键--&gt;
+    &lt;!--Must include the uuid field. The data type is char(32), used as the global primary key.--&gt;
     md5(`u`.`id`) AS uuid,
-    &lt;!--必须包含name字段，作为配置项名称--&gt;
+    &lt;!--Must include the name field as the configuration item name.--&gt;
     `u`.`user_name` AS name,
-    &lt;!--属性列需要在上面attrs中定义才生效--&gt;
+    &lt;!--Attribute columns take effect only when defined in attrs above.--&gt;
     `u`.`user_id` as user_id,
     `u`.`user_name` as user_name,
     group_concat( `t`.`name`) AS teamName
@@ -73,21 +73,21 @@
                     <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;ci&gt;
-   &lt;!--模型属性定义，需要SQL语句返回对应列--&gt;
+   &lt;!--Model attribute definitions. SQL must return the corresponding columns.--&gt;
   &lt;attrs&gt;
-    &lt;attr name="user_id" label="用户id"/&gt;
-    &lt;attr name="user_name" label="用户名"/&gt;
-    &lt;attr name="teamName" label="分组"/&gt;
+    &lt;attr name="user_id" label="User ID"/&gt;
+    &lt;attr name="user_name" label="Username"/&gt;
+    &lt;attr name="teamName" label="Group"/&gt;
   &lt;/attrs&gt;
   &lt;sql&gt;
     SELECT
-    &lt;!--必须包含id字段，作为配置项主键--&gt;
+    &lt;!--Must include the id field as the configuration item primary key.--&gt;
     `u`.`id` AS id,
-    &lt;!--必须包含uuid字段，数据类型是char(32)，作为配置项全局主键--&gt;
+    &lt;!--Must include the uuid field. The data type is char(32), used as the global primary key.--&gt;
     md5(`u`.`id`) AS uuid,
-    &lt;!--必须包含name字段，作为配置项名称--&gt;
+    &lt;!--Must include the name field as the configuration item name.--&gt;
     `u`.`user_name` AS name,
-    &lt;!--属性列需要在上面attrs中定义才生效--&gt;
+    &lt;!--Attribute columns take effect only when defined in attrs above.--&gt;
     `u`.`user_id` as user_id,
     `u`.`user_name` as user_name,
     group_concat( `t`.`name`) AS teamName

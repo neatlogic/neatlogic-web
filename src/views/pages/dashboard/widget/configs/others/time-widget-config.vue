@@ -45,15 +45,15 @@ export default {
     return {
       dataList: [
         {
-          text: '小（12像素)',
+          text: this.$t('term.report.chartsetting.small12px'),
           value: 12
         },
         {
-          text: '中（16像素）',
+          text: this.$t('term.report.chartsetting.medium16px'),
           value: 16
         },
         {
-          text: '大（20像素）',
+          text: this.$t('term.report.chartsetting.large20px'),
           value: 20
         }
       ]

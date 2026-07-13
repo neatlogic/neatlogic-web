@@ -55,7 +55,7 @@
       </div>
     </div>
     <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">发光颜色</label>
+      <label class="ivu-form-item-label overflow">{{ $t('term.report.glowcolor') }}</label>
       <div class="ivu-form-item-content">
         <ColorPicker
           :transfer="true"

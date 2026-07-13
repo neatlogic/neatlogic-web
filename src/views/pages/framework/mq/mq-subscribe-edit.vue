@@ -21,7 +21,7 @@
                 }
               "
             ></TsFormRadio>
-            <span v-else class="text-grey">没有可用的消息队列</span>
+            <span v-else class="text-grey">{{ $t('term.framework.noavailablemq') }}</span>
           </template>
           <template v-slot:config>
             <div>
@@ -35,7 +35,7 @@
           </template>
           <template v-slot:topicName>
             <div>
-              <span v-if="!subscribeData.handler" class="text-grey">请先选择消息队列类型</span>
+              <span v-if="!subscribeData.handler" class="text-grey">{{ $t('term.framework.selectmqtypefirst') }}</span>
               <TsFormSelect
                 v-else
                 :value="subscribeData.topicName"

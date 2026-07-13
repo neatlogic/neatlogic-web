@@ -1,14 +1,14 @@
 <template>
   <div>
-    <TsFormItem label="输入提示" labelPosition="top">
+    <TsFormItem :label="$t('page.inputtip')" labelPosition="top">
       <TsFormInput
         v-model="config.placeholder"
         border="border"
         :disabled="disabled"
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem label="选择范围" labelPosition="top" tooltip="不选择代表不限制配置项选择范围">
-      <span v-if="!disabled" class="tsfont-filter text-href" @click="openCiDialog()">点击选择</span>
+    <TsFormItem :label="$t('term.cmdb.selectionrange')" labelPosition="top" :tooltip="$t('term.cmdb.selectionrangenolimit')">
+      <span v-if="!disabled" class="tsfont-filter text-href" @click="openCiDialog()">{{ $t('page.clicktoselect') }}</span>
       <div v-if="config.ciList && config.ciList.length > 0">
         <Tag
           v-for="(item, index) in config.ciList"

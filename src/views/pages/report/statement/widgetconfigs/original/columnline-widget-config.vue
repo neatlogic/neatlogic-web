@@ -44,7 +44,7 @@
         "
       />
     </TsFormItem>
-    <TsFormItem label="统计数据字体大小" labelPosition="top">
+    <TsFormItem :label="$t('term.report.statisticfontsize')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="config.labelFontSize || 12"

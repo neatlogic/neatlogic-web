@@ -140,7 +140,7 @@ export default {
   },
   data() {
     return {
-      theadList: [{ key: 'fromstatus', title: this.$t('term.rdm.initstatus') }, { key: 'isStart', title: this.$t('term.rdm.isstart') }, { key: 'isEnd', title: this.$t('term.rdm.isend') }, { key: 'scope', title: '作用范围' }, { key: 'transfer', title: '' }, { key: 'canTransfer', title: this.$t('term.rdm.targetstatus') }, { key: 'action' }],
+      theadList: [{ key: 'fromstatus', title: this.$t('term.rdm.initstatus') }, { key: 'isStart', title: this.$t('term.rdm.isstart') }, { key: 'isEnd', title: this.$t('term.rdm.isend') }, { key: 'scope', title: this.$t('term.rdm.scope') }, { key: 'transfer', title: '' }, { key: 'canTransfer', title: this.$t('term.rdm.targetstatus') }, { key: 'action' }],
       isStatusRelConfigEditShow: false,
       objectList: [],
       statusList: [],
@@ -238,9 +238,9 @@ export default {
     },
     getScopeText(scope) {
       const scopeMap = {
-        original: '原本',
-        copy: '副本',
-        all: '都可用'
+        original: this.$t('term.rdm.original'),
+        copy: this.$t('term.rdm.copy'),
+        all: this.$t('term.rdm.allavailable')
       };
       return scopeMap[scope || 'all'] || scopeMap.all;
     },

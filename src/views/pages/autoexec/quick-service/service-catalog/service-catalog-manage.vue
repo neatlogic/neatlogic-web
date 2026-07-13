@@ -82,7 +82,7 @@
           </div>
           <NoData v-show="!loadingShow && catalogPath.length == 0" class="mt-nm"></NoData>
           <div class="load-more-text">
-            <span v-show="pageCount > 1 && catalogPath.length !== 0" :style="loadMoreText == '到底了' ? 'cursor: default;' : ''" @click="clickgetMore()">{{ loadMoreText }}</span>
+            <span v-show="pageCount > 1 && catalogPath.length !== 0" :style="loadMoreText == $t('page.loadfinish') ? 'cursor: default;' : ''" @click="clickgetMore()">{{ loadMoreText }}</span>
           </div>
         </div>
       </div>

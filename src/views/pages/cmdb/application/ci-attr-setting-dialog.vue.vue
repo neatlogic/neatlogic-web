@@ -8,7 +8,7 @@
   >
     <div>
       <Tabs v-model="activeTab" :animated="false">
-        <TabPane label="资产清单" name="tableSetting">
+        <TabPane :label="$t('term.cmdb.assetlist')" name="tableSetting">
           <div>
             <Button class="mb-sm" @click="addData()">{{ $t('term.pbc.adddata') }}</Button>
           </div>
@@ -23,7 +23,7 @@
               <div class="flex-between border-base-bottom padding-sm">
                 <span
                   class="move tsfont-bar pr-xs"
-                  :title="$t('term.deploy.dragtochangetheorder')"
+                  :title="$t('term.cmdb.dragtosort')"
                   @click.stop
                 ></span>
                 <div>
@@ -33,7 +33,7 @@
                 </div>
               </div>
               <div class="padding-sm">
-                <TsFormItem label="资产清单" labelPosition="left">
+                <TsFormItem :label="$t('term.cmdb.assetlist')" labelPosition="left">
                   <TsFormSelect
                     ref="formItem"
                     v-model="item.viewName"
@@ -43,7 +43,7 @@
                   ></TsFormSelect>
                 </TsFormItem>
                 <div v-show="item._isShow">
-                  <TsFormItem label="表头属性" labelPosition="left">
+                  <TsFormItem :label="$t('term.cmdb.tableheadattr')" labelPosition="left">
                     <div>
                       <Tag
                         v-for="(a,aindex) in assetTheadlist"
@@ -81,13 +81,13 @@
             </div>
           </draggable>
         </TabPane>
-        <TabPane v-if="moduleName" label="纳管应用" name="visibleApp">
+        <TabPane v-if="moduleName" :label="$t('term.cmdb.managedapp')" name="visibleApp">
           <TsFormItem :labelWidth="0" label="" labelPosition="left">
             <TsFormSelect
               v-model="visibleAppSystemIdList"
               v-bind="visibleAppConfig"
             ></TsFormSelect>
-            <div class="text-tip mt-xs">仅已纳管的应用会在应用清单中显示</div>
+            <div class="text-tip mt-xs">{{ $t('term.cmdb.managedappdisplaytip') }}</div>
           </TsFormItem>
         </TabPane>
       </Tabs>
@@ -126,7 +126,7 @@ export default {
       viewConfig: {
         dynamicUrl: '/api/rest/resourcecenter/application/assetlist/view/list',
         rootName: 'tbodyList',
-        placeholder: '选择模型',
+        placeholder: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.model') }),
         transfer: true,
         showPath: true,
         search: true,
@@ -144,7 +144,7 @@ export default {
         multiple: true,
         border: 'border',
         clearable: true,
-        placeholder: '请选择应用'
+        placeholder: this.$t('form.placeholder.pleaseselect', { target: this.$t('term.cmdb.app') })
       },
       isSaveLoading: false,
       assetTheadlist: [],
@@ -233,7 +233,7 @@ export default {
       });
     },
     dealVisibleAppList(nodeList) {
-      return [{ id: ALL_APP_SYSTEM_ID, abbrName: '所有应用' }, ...(nodeList || [])];
+      return [{ id: ALL_APP_SYSTEM_ID, abbrName: this.$t('term.cmdb.allapps') }, ...(nodeList || [])];
     },
     dealDataByViewList(nodeList, viewName) {
       nodeList.forEach(item => {

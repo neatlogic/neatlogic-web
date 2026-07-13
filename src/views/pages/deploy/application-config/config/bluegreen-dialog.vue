@@ -139,7 +139,7 @@ export default {
       });
       // 如果有在编辑的时候，不允许添加
       if (dataArr.length > 0) {
-        this.$Message.error('请先保存之后再编辑');
+        this.$Message.error(this.$t('term.deploy.savebeforeedit'));
         this.$refs.inputs.focus();
       } else {
         this.tableData.tbodyList.unshift({sort: this.tableData.tbodyList.length + 1, name: '', int: '', isActive: 1, disabled: false});
@@ -168,7 +168,7 @@ export default {
       })
         .catch(error => {
           this.$Notice.info({//右滑弹窗，引自view ui
-            title: '提示',
+            title: this.$t('page.tip'),
             desc: (JSON.parse(error.request.response)).Message
           });
         });

@@ -36,7 +36,7 @@ export default {
       dialogConfig: {
         type: 'modal',
         isShow: true,
-        title: '使用情况',
+        title: this.$t('term.framework.usage'),
         width: 'large',
         hasFooter: false,
         maskClose: true

@@ -8,7 +8,7 @@
             <span v-if="isShowThreaddump" class="tsfont-close"></span>
           </div>
           <div class="action-item">
-            <span class="mr-xs text-grey">只显示当前租户线程</span>
+            <span class="mr-xs text-grey">{{ $t('term.framework.onlycurrenttenantthread') }}</span>
             <span>
               <i-switch
                 v-model="isShowCurrentTenant"
@@ -23,31 +23,31 @@
       <template v-slot:topRight>
         <div v-if="threadPoolData" class="action-group">
           <div class="action-item">
-            <span class="mr-xs text-grey">服务器ID</span>
+            <span class="mr-xs text-grey">{{ $t('page.serverid') }}</span>
             <span>
               <b>{{ threadPoolData.serverId }}</b>
             </span>
           </div>
           <div class="action-item">
-            <span class="mr-xs text-grey">最大线程</span>
+            <span class="mr-xs text-grey">{{ $t('term.framework.maxthread') }}</span>
             <span>
               <b>{{ threadPoolData.maxThreadCount }}</b>
             </span>
           </div>
           <div v-if="threadPoolData.mainActiveCount" class="action-item">
-            <span class="mr-xs text-grey">当前任务</span>
+            <span class="mr-xs text-grey">{{ $t('term.framework.currenttask') }}</span>
             <span>
               <b class="text-success">{{ threadPoolData.mainActiveCount }}</b>
             </span>
           </div>
           <div v-if="threadPoolData.mainPoolSize" class="action-item">
-            <span class="mr-xs text-grey">当前线程</span>
+            <span class="mr-xs text-grey">{{ $t('term.framework.currentthread') }}</span>
             <span>
               <b class="text-primary">{{ threadPoolData.mainPoolSize }}</b>
             </span>
           </div>
           <div v-if="threadPoolData.mainQueueSize" class="action-item">
-            <span class="mr-xs text-grey">排队</span>
+            <span class="mr-xs text-grey">{{ $t('term.framework.queued') }}</span>
             <span>
               <b class="text-error">{{ threadPoolData.mainQueueSize }}</b>
             </span>
@@ -122,7 +122,7 @@
               </Tooltip>
             </div>
             <div v-for="index in Math.min(threadPoolData.mainQueueSize, maxsize)" :key="'queue' + index" class="item bg-error"></div>
-            <span v-if="threadPoolData.mainQueueSize > maxsize" class="text-grey">还有 {{ threadPoolData.mainQueueSize - maxsize }}</span>
+            <span v-if="threadPoolData.mainQueueSize > maxsize" class="text-grey">{{ $t('term.framework.remainingcount', { target: threadPoolData.mainQueueSize - maxsize }) }}</span>
           </div>
         </div>
       </template>
@@ -133,7 +133,7 @@
               <div class="action-item">
                 <InputSearcher v-model="keyword" :width="400" @change="searchKeyword()"></InputSearcher>
               </div>
-              <div v-if="matches.length > 0" class="action-item">{{ matches.length }}个匹配</div>
+              <div v-if="matches.length > 0" class="action-item">{{ $t('term.framework.matchcount', { target: matches.length }) }}</div>
               <div
                 v-if="matches.length > 0"
                 class="action-item"
@@ -234,10 +234,10 @@ export default {
     },
     formatTimeCost(ms) {
       const units = [
-        { label: '天', value: 24 * 60 * 60 * 1000 },
-        { label: '小时', value: 60 * 60 * 1000 },
-        { label: '分钟', value: 60 * 1000 },
-        { label: '秒', value: 1000 }
+        { label: this.$t('page.day'), value: 24 * 60 * 60 * 1000 },
+        { label: this.$t('page.hour'), value: 60 * 60 * 1000 },
+        { label: this.$t('page.minute'), value: 60 * 1000 },
+        { label: this.$t('page.second'), value: 1000 }
       ];
 
       let remainingMs = ms;
@@ -253,7 +253,7 @@ export default {
 
       // 如果剩余毫秒小于1秒，单独显示
       if (remainingMs > 0) {
-        result.push(`${remainingMs}毫秒`);
+        result.push(`${remainingMs}${this.$t('page.ms')}`);
       }
 
       return result.join(' ');
@@ -313,7 +313,7 @@ export default {
       if (this.matches.length > 0) {
         this.highlightMatch(0); // 高亮第一个匹配
       } else {
-        this.$Message.info('未找到匹配的关键字');
+        this.$Message.info(this.$t('term.framework.nomatchingkeyword'));
       }
     },
     highlightMatch(index) {

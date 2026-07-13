@@ -40,7 +40,7 @@ export default {
       formConfig: {
         format: {
           type: 'slot',
-          label: '格式'
+          label: this.$t('page.format')
         }
       }
     };

@@ -16,6 +16,12 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group no-line" style="text-align: right;">
+          <span
+            v-if="autoexecToolUsageAiAssistantComponent"
+            class="action-item btn-icon tsfont-ai"
+            :title="$t('term.autoexec.toolusageaiassistant')"
+            @click.stop="openToolUsageAiAssistant"
+          >{{ $t('term.autoexec.toolusageexplain') }}</span>
           <span v-if="!downloadLoading" v-download="exportWord" class="tsfont-download action-item">{{ $t('term.autoexec.libraryusageinstructions') }}</span>
           <span v-if="downloadLoading" class="action-item disable" :title="$t('page.downloadloadingtip')">
             <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
@@ -92,6 +98,11 @@
         </div>
       </template>
     </TsContain>
+    <component
+      :is="autoexecToolUsageAiAssistantComponent"
+      v-if="autoexecToolUsageAiAssistantComponent"
+      ref="toolUsageAiAssistant"
+    ></component>
     <TsDialog
       v-if="isShow"
       :isShow.sync="isShow"
@@ -112,6 +123,7 @@
 <script>
 import ParamsReadonly from '@/views/pages/autoexec/components/param/params-readonly.vue';
 import download from '@/resources/directives/download.js';
+import ImportComponent from '@/views/components/import-component.js';
 export default {
   name: '',
   components: {
@@ -274,6 +286,32 @@ export default {
         }
       });
     },
+    openToolUsageAiAssistant() {
+      const assistant = this.$refs.toolUsageAiAssistant;
+      if (!assistant || !assistant.openDialog) {
+        return;
+      }
+      assistant.openDialog({
+        question: this.$t('term.autoexec.defaulttoolusageaiquestion'),
+        toolContext: this.buildToolUsageContext()
+      });
+    },
+    buildToolUsageContext() {
+      // 详情页只提供当前工具自身信息，与组合工具中的单工具介绍入口保持一致。
+      const toolConfig = this.toolConfig || {};
+      return {
+        operationId: toolConfig.id || this.id,
+        operationType: 'tool',
+        operationName: toolConfig.name,
+        description: toolConfig.description || '',
+        riskVo: toolConfig.riskVo || null,
+        execMode: toolConfig.execMode,
+        profileId: toolConfig.defaultProfileId || null,
+        inputParamList: toolConfig.inputParamList || [],
+        argument: toolConfig.argument || null,
+        outputParamList: toolConfig.outputParamList || []
+      };
+    },
     toggleAction() {
       let param = {
         id: this.toolConfig.id,
@@ -300,6 +338,9 @@ export default {
     }
   },
   computed: {
+    autoexecToolUsageAiAssistantComponent() {
+      return ImportComponent && ImportComponent.autoexecToolUsageAiAssistant ? ImportComponent.autoexecToolUsageAiAssistant : null;
+    },
     getIcon() {
       return function(type, item) {
         let className = this.actionIcons[type] || 'tsfont-tool';

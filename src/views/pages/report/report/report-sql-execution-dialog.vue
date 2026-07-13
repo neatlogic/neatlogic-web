@@ -1,6 +1,6 @@
 <template>
   <TsDialog
-    title="执行SQL"
+    :title="$t('term.report.executesql')"
     type="slider"
     width="large"
     :isShow="true"
@@ -11,7 +11,7 @@
       <div class="padding">
         <Loading :loadingShow="loadingShow" type="fix"></Loading>
         <div class="mb-md">
-          <div class="text-title mb-xs">执行参数</div>
+          <div class="text-title mb-xs">{{ $t('term.report.executeparam') }}</div>
           <JsonViewer boxed copyable :value="executeParam"></JsonViewer>
         </div>
         <div v-if="sqlList.length > 0">
@@ -19,13 +19,13 @@
             <div class="sql-block-header bg-op border-color padding-sm">
               <div>
                 <span class="text-title">{{ sqlInfo.id }}</span>
-                <span v-if="sqlInfo.needPage" class="text-tip ml-xs">分页 {{ sqlInfo.currentPage || 1 }} / {{ sqlInfo.pageSize || 20 }}</span>
+                <span v-if="sqlInfo.needPage" class="text-tip ml-xs">{{ $t('term.report.pagination') }} {{ sqlInfo.currentPage || 1 }} / {{ sqlInfo.pageSize || 20 }}</span>
               </div>
               <span
                 v-clipboard="sqlInfo.executableSql || sqlInfo.sql"
                 v-clipboard:success="copySuccess"
                 class="tsfont-copy text-action"
-              >复制SQL</span>
+              >{{ $t('term.report.copysql') }}</span>
             </div>
             <div class="padding-sm">
               <TsCodemirror
@@ -35,7 +35,7 @@
                 height="220px"
               ></TsCodemirror>
               <div v-if="sqlInfo.parameterValueList && sqlInfo.parameterValueList.length > 0" class="mt-sm">
-                <div class="text-title mb-xs">参数</div>
+                <div class="text-title mb-xs">{{ $t('page.param') }}</div>
                 <JsonViewer boxed copyable :value="sqlInfo.parameterValueList"></JsonViewer>
               </div>
             </div>

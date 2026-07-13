@@ -27,8 +27,8 @@
               <span v-else>{{ row.actionText }}</span>
             </template>
             <template v-slot:status="{ row }">
-              <span v-if="row.status === 'success'" class="text-success">{{ resultType === 'preview' ? '校验通过' : '成功' }}</span>
-              <span v-else class="text-danger">失败</span>
+              <span v-if="row.status === 'success'" class="text-success">{{ resultType === 'preview' ? $t('term.rdm.validationpassed') : $t('page.success') }}</span>
+              <span v-else class="text-danger">{{ $t('page.fail') }}</span>
             </template>
             <template v-slot:error="{ row }">
               <ul v-if="row.errorList && row.errorList.length > 0" class="error-list">
@@ -42,20 +42,20 @@
     </template>
     <template v-slot:footer>
       <Button @click="close(hasSuccess)">{{ hasSuccess ? $t('page.close') : $t('page.cancel') }}</Button>
-      <Button v-if="importResult" @click="resetImport">重新选择文件</Button>
+      <Button v-if="importResult" @click="resetImport">{{ $t('term.rdm.reselectfile') }}</Button>
       <Button
         v-if="!importResult"
         type="primary"
         :loading="isPreviewing"
         :disabled="!file"
         @click="previewImport"
-      >校验</Button>
+      >{{ $t('page.validate') }}</Button>
       <Button
         v-if="canImport"
         type="primary"
         :loading="isImporting"
         @click="importIssue"
-      >导入</Button>
+      >{{ $t('page.import') }}</Button>
     </template>
   </TsDialog>
 </template>
@@ -71,7 +71,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '导入',
+        title: this.$t('page.import'),
         type: 'modal',
         maskClose: true,
         isShow: true,
@@ -85,10 +85,10 @@ export default {
       resultType: '',
       hasSuccess: false,
       theadList: [
-        { title: '行号', key: 'rowNum', width: 80 },
+        { title: this.$t('term.rdm.rownum'), key: 'rowNum', width: 80 },
         { title: 'id', key: 'id' },
-        { title: '标题', key: 'name' },
-        { title: '动作', key: 'actionText', width: 90 },
+        { title: this.$t('page.title'), key: 'name' },
+        { title: this.$t('page.action'), key: 'actionText', width: 90 },
         { title: this.$t('page.status'), key: 'status', width: 100 },
         { title: this.$t('page.error'), key: 'error', width: 90 }
       ]
@@ -101,7 +101,7 @@ export default {
     beforeUpload(file) {
       const fileName = file && file.name ? file.name.toLowerCase() : '';
       if (!fileName.endsWith('.xlsx')) {
-        this.$Message.warning('只支持xlsx格式');
+        this.$Message.warning(this.$t('term.rdm.xlsxonly'));
         return false;
       }
       this.file = file;
@@ -182,17 +182,17 @@ export default {
         return '';
       }
       const unchangedCount = this.importResult.unchangedCount || 0;
-      const unchangedText = unchangedCount > 0 ? `，已跳过${unchangedCount}条无变化数据` : '';
+      const unchangedText = unchangedCount > 0 ? this.$t('term.rdm.skippedunchangedcount', { count: unchangedCount }) : '';
       if (this.resultType === 'preview') {
         if (this.importResult.status === 'failed') {
-          return `校验失败，请修正异常后重新上传${unchangedText}。`;
+          return this.$t('term.rdm.validationfailedreupload', { unchangedText: unchangedText });
         }
         if ((this.importResult.totalCount || 0) === 0) {
-          return `校验通过，没有需要导入的变化数据${unchangedText}。`;
+          return this.$t('term.rdm.validationpassednochange', { unchangedText: unchangedText });
         }
-        return `校验通过，待新增${this.importResult.insertCount || 0}条，待更新${this.importResult.updateCount || 0}条${unchangedText}。`;
+        return this.$t('term.rdm.validationpassedimportsummary', { insertCount: this.importResult.insertCount || 0, updateCount: this.importResult.updateCount || 0, unchangedText: unchangedText });
       }
-      return `导入失败，本批未保存任何数据。请重新选择文件后再导入${unchangedText}。`;
+      return this.$t('term.rdm.importfailedreselect', { unchangedText: unchangedText });
     },
     uploadFilelimitTips() {
       return this.$t('message.supportuploadingsinglefileswithsuffixtarget', { target: this.formatList.join('、.') });

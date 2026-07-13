@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsFormItem label="显示标题" labelPosition="top">
+    <TsFormItem :label="$t('term.report.showtitle')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('showTitle', false)"
         :true-value="true"
@@ -8,14 +8,14 @@
         @change="val => setConfigValue('showTitle', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem v-if="getConfigValue('showTitle', false)" label="标题" labelPosition="top">
+    <TsFormItem v-if="getConfigValue('showTitle', false)" :label="$t('page.title')" labelPosition="top">
       <TsFormInput
-        :value="getConfigValue('title', '资源使用率')"
+        :value="getConfigValue('title', $t('term.report.resourceusage'))"
         border="border"
         @change="val => setConfigValue('title', val)"
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem v-if="getConfigValue('showTitle', false)" label="标题颜色" labelPosition="top">
+    <TsFormItem v-if="getConfigValue('showTitle', false)" :label="$t('term.report.titlecolor')" labelPosition="top">
       <ColorPicker
         :value="getConfigValue('titleColor', '')"
         :transfer="true"
@@ -37,7 +37,7 @@
         @on-change="val => setConfigValue('nameColor', val)"
       />
     </TsFormItem>
-    <TsFormItem label="显示数值" labelPosition="top">
+    <TsFormItem :label="$t('term.report.chartsetting.showvalue')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('showValue', true)"
         :true-value="true"
@@ -45,7 +45,7 @@
         @change="val => setConfigValue('showValue', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="显示目标值" labelPosition="top">
+    <TsFormItem :label="$t('term.report.showtargetvalue')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('showTarget', false)"
         :true-value="true"
@@ -53,7 +53,7 @@
         @change="val => setConfigValue('showTarget', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="数值置于进度条内" labelPosition="top">
+    <TsFormItem :label="$t('term.report.valueinprogressbar')" labelPosition="top">
       <TsFormSwitch
         :value="getConfigValue('textInside', false)"
         :true-value="true"
@@ -61,7 +61,7 @@
         @change="val => setConfigValue('textInside', val)"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="显示条数" labelPosition="top">
+    <TsFormItem :label="$t('term.report.displaycount')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('itemCount', 5)"
@@ -73,7 +73,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="进度条高度" labelPosition="top">
+    <TsFormItem :label="$t('term.report.progressbarheight')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="getConfigValue('barHeight', 8)"

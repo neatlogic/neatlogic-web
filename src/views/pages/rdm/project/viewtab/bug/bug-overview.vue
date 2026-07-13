@@ -3,15 +3,15 @@
     <div class="overview-header border-color" @click="toggleCollapse">
       <div class="text-title">
         <span :class="isCollapsed ? 'tsfont-right' : 'tsfont-down'"></span>
-        <span class="ml-xs">缺陷概览</span>
+        <span class="ml-xs">{{ $t('term.rdm.bugoverview') }}</span>
       </div>
       <div class="action-group" @click.stop>
         <span v-if="activeFilter" class="action-item">
-          <span class="text-grey">当前筛选：</span>
+          <span class="text-grey">{{ $t('term.rdm.currentfilter') }}</span>
           <span :style="{ color: activeFilter.color }">{{ activeFilter.label }}</span>
           <span class="tsfont-close ml-xs text-action" @click="clearFilter"></span>
         </span>
-        <span class="action-item tsfont-refresh" @click="refresh">刷新</span>
+        <span class="action-item tsfont-refresh" @click="refresh">{{ $t('page.refresh') }}</span>
       </div>
     </div>
     <div v-show="!isCollapsed" class="overview-body">
@@ -24,7 +24,7 @@
             <div class="metric-value" :class="metric.className">{{ metric.value }}</div>
           </div>
           <div v-if="statusChart.isConfigured && statusChart.hasData" class="overview-panel chart-panel border-color">
-            <div class="chart-title">缺陷状态比例</div>
+            <div class="chart-title">{{ $t('term.rdm.bugstatusratio') }}</div>
             <div class="status-chart-layout">
               <div ref="statusChart" class="chart-container"></div>
               <div class="status-list">
@@ -45,15 +45,15 @@
         </div>
         <div v-if="hasBottomChart" class="overview-row overview-chart-row" :style="{ '--overview-panel-count': bottomPanelCount }">
           <div v-if="hasSeverityChart" class="overview-panel chart-panel border-color">
-            <div class="chart-title">严重程度分布</div>
+            <div class="chart-title">{{ $t('term.rdm.severitydistribution') }}</div>
             <div ref="severityChart" class="chart-container"></div>
           </div>
           <div v-if="hasSourceChart" class="overview-panel chart-panel border-color">
-            <div class="chart-title">缺陷来源分布</div>
+            <div class="chart-title">{{ $t('term.rdm.bugsourcedistribution') }}</div>
             <div ref="sourceChart" class="chart-container"></div>
           </div>
           <div v-if="hasTrendChart" class="overview-panel chart-panel border-color">
-            <div class="chart-title">近7个月新增/逾期趋势</div>
+            <div class="chart-title">{{ $t('term.rdm.newoverduetrend7months') }}</div>
             <div ref="trendChart" class="chart-container"></div>
           </div>
         </div>
@@ -229,7 +229,7 @@ export default {
           if (requestId !== this.overviewRequestId) {
             return;
           }
-          this.errorMessage = '缺陷概览加载失败';
+          this.errorMessage = this.$t('term.rdm.bugoverviewloadfailed');
           this.overviewData = {};
           this.destroyPlot();
         })
@@ -303,7 +303,7 @@ export default {
         legend: false,
         label: false,
         statistic: {
-          title: { content: '总数', style: { color: chartTheme.textColor, fontSize: '18px', fontWeight: 400 } },
+          title: { content: this.$t('term.rdm.total'), style: { color: chartTheme.textColor, fontSize: '18px', fontWeight: 400 } },
           content: { content: this.statusChart.total.toString(), style: { color: chartTheme.textColor, fontSize: '24px', fontWeight: 500 } }
         },
         pieStyle: {
@@ -358,7 +358,7 @@ export default {
         xAxis: this.getXAxisConfig(),
         yAxis: this.getYAxisConfig(),
         tooltip: { domStyles: this.getTooltipDomStyles() },
-        color: ({ type }) => type === '逾期' ? chartTheme.warningColor : chartTheme.primaryColor
+        color: ({ type }) => type === this.$t('term.rdm.overdue') ? chartTheme.warningColor : chartTheme.primaryColor
       });
       this.trendPlot.render();
     },
@@ -584,27 +584,27 @@ export default {
         {
           key: 'total',
           isConfigured: this.isStatConfigured(STAT_KEY.TOTAL),
-          label: '缺陷总数',
+          label: this.$t('term.rdm.bugcount'),
           value: this.getStatValue(STAT_KEY.TOTAL, 0)
         },
         {
           key: 'open',
           isConfigured: this.isStatConfigured(STAT_KEY.OPEN),
-          label: '未关闭缺陷数',
+          label: this.$t('term.rdm.openbugcount'),
           value: this.getStatValue(STAT_KEY.OPEN, 0),
           className: 'text-primary'
         },
         {
           key: 'overdue',
           isConfigured: this.isStatConfigured(STAT_KEY.OVERDUE),
-          label: '逾期缺陷数',
+          label: this.$t('term.rdm.overduebugcount'),
           value: this.getStatValue(STAT_KEY.OVERDUE, 0),
           className: 'text-error'
         },
         {
           key: 'reopen',
           isConfigured: this.isStatConfigured(STAT_KEY.REOPEN_TOTAL),
-          label: '重开缺陷数',
+          label: this.$t('term.rdm.reopenbugcount'),
           value: this.getStatValue(STAT_KEY.REOPEN_TOTAL, 0),
           className: 'text-warning'
         }
@@ -651,8 +651,8 @@ export default {
       const list = normalizeTrendList(this.getStatDataList(STAT_KEY.TREND));
       const dataList = [];
       list.forEach(item => {
-        dataList.push({ month: item.month, type: '新增', count: item.totalCount || 0 });
-        dataList.push({ month: item.month, type: '逾期', count: item.overdueCount || 0 });
+        dataList.push({ month: item.month, type: this.$t('term.rdm.new'), count: item.totalCount || 0 });
+        dataList.push({ month: item.month, type: this.$t('term.rdm.overdue'), count: item.overdueCount || 0 });
       });
       return {
         isConfigured: this.isStatConfigured(STAT_KEY.TREND),

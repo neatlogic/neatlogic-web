@@ -11,8 +11,8 @@
           :animated="false"
           class="mb-md"
         >
-          <TabPane label="接口测试" name="api"></TabPane>
-          <TabPane label="MCP测试" name="mcp"></TabPane>
+          <TabPane :label="$t('term.framework.apitest')" name="api"></TabPane>
+          <TabPane :label="$t('term.framework.mcptest')" name="mcp"></TabPane>
         </Tabs>
         <div v-if="!rowData.isMcp || activeTab === 'api'">
           <TsFormItem :label="$t('page.interface')" :labelWidth="80">
@@ -102,20 +102,20 @@
           </TsFormItem>
         </div>
         <div v-if="rowData.isMcp && activeTab === 'mcp'">
-          <TsFormItem label="工具名称" :labelWidth="100">
+          <TsFormItem :label="$t('term.framework.toolname')" :labelWidth="100">
             <span>{{ mcpHelpData.toolName || '-' }}</span>
           </TsFormItem>
-          <TsFormItem label="调用地址" :labelWidth="100">
+          <TsFormItem :label="$t('term.framework.calladdress')" :labelWidth="100">
             <span>{{ mcpHelpData.scopedEndpoint || mcpHelpData.endpoint || '-' }}</span>
           </TsFormItem>
-          <TsFormItem label="可用状态" :labelWidth="100">
-            <span v-if="mcpHelpData.available" class="text-success">可用</span>
-            <span v-else class="text-error">{{ mcpHelpData.unavailableReason || mcpHelpMessage || '不可用' }}</span>
+          <TsFormItem :label="$t('term.framework.availablestatus')" :labelWidth="100">
+            <span v-if="mcpHelpData.available" class="text-success">{{ $t('term.framework.available') }}</span>
+            <span v-else class="text-error">{{ mcpHelpData.unavailableReason || mcpHelpMessage || $t('term.framework.unavailable') }}</span>
           </TsFormItem>
-          <TsFormItem v-if="isDangerousTool" label="风险提示" :labelWidth="100">
-            <div class="text-warning">点击发送请求会通过 MCP tools/call 真实调用接口。</div>
+          <TsFormItem v-if="isDangerousTool" :label="$t('term.framework.risktip')" :labelWidth="100">
+            <div class="text-warning">{{ $t('term.framework.mcpdebugdangeroustip') }}</div>
           </TsFormItem>
-          <TsFormItem label="调用参数" :labelWidth="100">
+          <TsFormItem :label="$t('term.framework.callarguments')" :labelWidth="100">
             <TsCodemirror
               :value="argumentText"
               codeMode="json"
@@ -123,7 +123,7 @@
             ></TsCodemirror>
             <div v-if="argumentError" class="pt-md text-error">{{ argumentError }}</div>
           </TsFormItem>
-          <TsFormItem label="请求体" :labelWidth="100">
+          <TsFormItem :label="$t('term.framework.requestbody')" :labelWidth="100">
             <JsonViewer boxed copyable :value="mcpCallRequest"></JsonViewer>
           </TsFormItem>
           <TsFormItem :labelWidth="100">
@@ -133,9 +133,9 @@
               :loading="isMcpDebugLoading"
               :disabled="!mcpHelpData.available || !!argumentError"
               @click="executeMcpCall"
-            >发送请求</Button>
+            >{{ $t('page.sendrequest') }}</Button>
           </TsFormItem>
-          <TsFormItem v-if="mcpDebugResult" label="调试结果" :labelWidth="100">
+          <TsFormItem v-if="mcpDebugResult" :label="$t('term.framework.debugresult')" :labelWidth="100">
             <JsonViewer boxed copyable :value="mcpDebugResult"></JsonViewer>
           </TsFormItem>
         </div>
@@ -310,7 +310,7 @@ export default {
             });
             aLink.href = URL.createObjectURL(blob);
             let contentDisposition = decodeURI(res.headers['content-disposition']);
-            let fileName = '接口测试下载数据';
+            let fileName = this.$t('term.framework.apitestdownloaddata');
             let filePath = '';
             filePath = contentDisposition.indexOf('filename=') > -1 ? contentDisposition.split('filename=')[1] : contentDisposition.split('fileName=')[1];
             if (!_this.$utils.isEmpty(filePath)) {
@@ -377,11 +377,11 @@ export default {
             this.mcpHelpData = res.Return || {};
           }
           if (!Object.keys(this.mcpHelpData).length) {
-            this.mcpHelpMessage = 'MCP说明获取失败';
+            this.mcpHelpMessage = this.$t('term.framework.mcphelploadfailed');
           }
         })
         .catch(error => {
-          this.mcpHelpMessage = error && error.data ? error.data.Message : 'MCP说明获取失败';
+          this.mcpHelpMessage = error && error.data ? error.data.Message : this.$t('term.framework.mcphelploadfailed');
         });
     },
     setArgumentText(value) {

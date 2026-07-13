@@ -89,7 +89,7 @@
         </div>
       </div>
     </div>
-    <TsFormItem label="辅助线" labelPosition="top">
+    <TsFormItem :label="$t('term.report.chartsetting.guideline')" labelPosition="top">
       <TsFormSwitch
         :value="!config.yAxis?true:typeof config.yAxis === 'boolean' ? true : config.yAxis.grid.visible?true:false"
         :true-value="true"

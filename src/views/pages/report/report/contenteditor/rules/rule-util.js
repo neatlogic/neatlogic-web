@@ -110,7 +110,7 @@ export function getDataSourceList(context = {}) {
   }
   addGraphDataSource(dataSourceMap, reportData);
   if (reportData.sqlEditMode === 'graph') {
-    addDataSource(dataSourceMap, 'queryData', '查询数据');
+    addDataSource(dataSourceMap, 'queryData', $t('term.report.querydata'));
   }
   addXmlDataSource(dataSourceMap, reportData);
   return Object.keys(dataSourceMap).map(key => dataSourceMap[key]);
@@ -150,14 +150,14 @@ export function getDataSourceFormItem(config, context = {}, option = {}) {
   }
   return {
     type: 'select',
-    label: '数据源',
+    label: $t('page.datasource'),
     value: config.data,
     dataList: finalDataList,
     allowCreate: minColumnCount === 0,
     search: true,
     desc: finalDataList.length > 0
-      ? (minColumnCount > 0 ? '只显示可识别字段的数据源' : '从当前报表数据源中选择，也可手工输入')
-      : '未识别到可用数据源'
+      ? (minColumnCount > 0 ? $t('term.report.onlyshowrecognizeddatasource') : $t('term.report.selectfromreportdatasource'))
+      : $t('term.report.norecognizeddatasource')
   };
 }
 
@@ -175,3 +175,4 @@ export function getBasePreview(config, fallbackTitle) {
     summary: summaryList.join(' · ')
   };
 }
+import { $t } from '@/resources/init.js';

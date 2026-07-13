@@ -93,7 +93,7 @@
         "
       />
     </TsFormItem>
-    <TsFormItem label="统计数据字体大小" labelPosition="top">
+    <TsFormItem :label="$t('term.report.statisticfontsize')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="config.labelFontSize || 12"
@@ -109,7 +109,7 @@
         ></Slider>
       </div>
     </TsFormItem>
-    <TsFormItem label="辅助线" labelPosition="top">
+    <TsFormItem :label="$t('term.report.chartsetting.guideline')" labelPosition="top">
       <TsFormSwitch
         :value="config?.xAxis?.hasOwnProperty('grid') ? !!config?.xAxis?.grid : true"
         :true-value="true"
@@ -121,7 +121,7 @@
         "
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem label="坐标轴字体大小" labelPosition="top">
+    <TsFormItem :label="$t('term.report.axisfontsize')" labelPosition="top">
       <div class="pl-sm pr-sm">
         <Slider
           :value="config.axisFontSize || 12"

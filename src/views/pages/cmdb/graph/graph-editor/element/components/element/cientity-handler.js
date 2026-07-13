@@ -1,6 +1,7 @@
 import template from '../shape/circle.vue';
+import { $t } from '@/resources/init.js';
 export default {
-  name: '普通节点',
+  name: $t('term.cmdb.normalnode'),
   handler: 'cientity',
   isVue: true, //需要声明是vue组件
   config: {

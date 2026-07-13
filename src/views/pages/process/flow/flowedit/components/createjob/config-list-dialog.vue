@@ -21,7 +21,7 @@
           </div>
           <div v-show="item.isShow" class="main-content border-color padding">
             <TsFormItem
-              label="作业类型"
+              :label="$t('term.process.jobtype')"
               labelPosition="left"
               :labelWidth="item.type == 'service' ? '140': '120'"
               required

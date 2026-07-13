@@ -1,7 +1,7 @@
 <template>
   <div class="visual-content-editor">
     <div v-if="!content" class="empty-tip text-grey">
-      内容为空，可切换到源码模式输入 HTML 或插入报表组件。
+      {{ $t('term.report.emptycontentvisualtip') }}
     </div>
     <div
       v-else

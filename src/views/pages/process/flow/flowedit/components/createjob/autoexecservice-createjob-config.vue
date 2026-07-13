@@ -2,7 +2,7 @@
   <div class="detail">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsFormItem
-      label="自动化服务表单组件"
+      :label="$t('term.process.autoexecserviceformcomponent')"
       labelPosition="left"
       labelWidth="140"
       required

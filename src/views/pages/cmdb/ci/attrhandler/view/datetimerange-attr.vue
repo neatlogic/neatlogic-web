@@ -40,7 +40,7 @@ export default {
               return v[0] + ' ~ ' + v[1];
             }
           } catch (e) {
-            console.error('日期区间值：' + this.attrEntity.valueList[0] + '转换异常');
+            console.error(this.$t('term.cmdb.daterangeconverterror', { target: this.attrEntity.valueList[0] }));
           }
         }
       }

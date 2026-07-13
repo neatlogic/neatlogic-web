@@ -153,20 +153,20 @@ export default {
       theadList: [
         {
           key: 'status',
-          title: '状态'
+          title: this.$t('page.status')
         },
         {
           key: 'ciCollectionName',
-          title: '集合'
+          title: this.$t('term.cmdb.collection')
         },
-        { key: 'error', title: '异常' },
-        { key: 'inputFromText', title: '发起方式' },
-        { key: 'startTime', title: '开始时间', type: 'time' },
-        { key: 'endTime', title: '结束时间', type: 'time' },
-        { key: 'timeCost', title: '耗时' },
-        { key: 'errorDataCount', title: '异常数据量' },
-        { key: 'dataCount', title: '处理数据量' },
-        { key: 'transactionCount', title: '更新配置项' },
+        { key: 'error', title: this.$t('page.exception') },
+        { key: 'inputFromText', title: this.$t('term.cmdb.inputfrom') },
+        { key: 'startTime', title: this.$t('page.starttime'), type: 'time' },
+        { key: 'endTime', title: this.$t('page.endtime'), type: 'time' },
+        { key: 'timeCost', title: this.$t('term.cmdb.timecost') },
+        { key: 'errorDataCount', title: this.$t('term.cmdb.errordatacount') },
+        { key: 'dataCount', title: this.$t('term.cmdb.datacount') },
+        { key: 'transactionCount', title: this.$t('term.cmdb.updatedcientity') },
         { key: 'action' }
       ],
       searchConfig: {
@@ -177,21 +177,21 @@ export default {
             type: 'select',
             name: 'status',
             dataList: [
-              { value: 'doing', text: '同步中' },
-              { value: 'paused', text: '已暂停' },
-              { value: 'done', text: '已完成' }
+              { value: 'doing', text: this.$t('term.cmdb.syncing') },
+              { value: 'paused', text: this.$t('term.cmdb.paused') },
+              { value: 'done', text: this.$t('term.cmdb.done') }
             ],
-            label: '状态',
+            label: this.$t('page.status'),
             transfer: true,
             labelPosition: 'top'
           },
           {
             type: 'radio',
             name: 'hasError',
-            label: '异常状态',
+            label: this.$t('term.cmdb.errorstatus'),
             dataList: [
-              { value: 'false', text: '无异常' },
-              { value: 'true', text: '有异常' }
+              { value: 'false', text: this.$t('term.cmdb.noerror') },
+              { value: 'true', text: this.$t('term.cmdb.haserror') }
             ],
             transfer: true,
             labelPosition: 'top'
@@ -199,7 +199,7 @@ export default {
           {
             type: 'daterange',
             name: 'startTimeRange',
-            label: '开始时间',
+            label: this.$t('page.starttime'),
             transfer: true,
             format: 'yyyy-MM-dd',
             labelPosition: 'top'
@@ -207,7 +207,7 @@ export default {
           {
             type: 'daterange',
             name: 'endTimeRange',
-            label: '结束时间',
+            label: this.$t('page.endtime'),
             transfer: true,
             format: 'yyyy-MM-dd',
             labelPosition: 'top'
@@ -267,8 +267,8 @@ export default {
     },
     deleteSyncAudit(row) {
       this.$createDialog({
-        title: '警告',
-        content: '确定删除选中执行记录？',
+        title: this.$t('page.warning'),
+        content: this.$t('term.cmdb.deleteauditconfirm'),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.cmdb.sync.deleteSyncAudit(row.id).then(res => {

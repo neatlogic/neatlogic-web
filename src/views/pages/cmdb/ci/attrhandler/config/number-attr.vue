@@ -19,9 +19,9 @@ export default {
       formConfig: {
         format: {
           type: 'select',
-          label: '小数位',
+          label: this.$t('page.decimalnumber'),
           dataList: [
-            { value: 'auto', text: '自动' },
+            { value: 'auto', text: this.$t('page.auto') },
             { value: '1', text: '1' },
             { value: '2', text: '2' },
             { value: '3', text: '3' },
@@ -34,7 +34,7 @@ export default {
         },
         isMetric: {
           type: 'switch',
-          label: '另存为性能数据',
+          label: this.$t('term.cmdb.saveasperformance'),
           trueValue: 1,
           falseValue: 0,
           onChange: val => {

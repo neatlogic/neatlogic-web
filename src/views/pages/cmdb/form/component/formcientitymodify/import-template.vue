@@ -44,7 +44,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '导出下载模板',
+        title: this.$t('term.cmdb.exportdownloadtemplate'),
         width: 'medium',
         type: 'modal',
         isShow: true

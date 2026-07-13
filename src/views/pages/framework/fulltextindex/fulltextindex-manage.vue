@@ -3,9 +3,9 @@
     <TsContain :hideHeader="true">
       <div slot="content">
         <Tabs v-model="currentTab" :animated="false">
-          <TabPane label="数据库" name="database">
+          <TabPane :label="$t('page.database')" name="database">
             <div class="mb-md action-group">
-              <div class="action-item tsfont-setting" @click="isWordEdit = true">字典管理</div>
+              <div class="action-item tsfont-setting" @click="isWordEdit = true">{{ $t('term.framework.dictionarymanage') }}</div>
             </div>
             <TsTable :tbodyList="fullTextIndexRebuildAuditData['database']" :theadList="theadList">
               <template v-slot:error="{ row }">
@@ -68,7 +68,7 @@
               <template v-slot:action="{ row }">
                 <div class="tstable-action">
                   <ul class="tstable-action-ul">
-                    <li class="tsfont-eye" @click="viewMetadata(row)">查看元数据</li>
+                    <li class="tsfont-eye" @click="viewMetadata(row)">{{ $t('term.framework.viewmetadata') }}</li>
                     <li :class="row.status === 'doing' ? 'text-disabled' : ''" class="tsfont-restart" @click="rebuildIndex(row)">{{ $t('page.rebuildindex') }}</li>
                   </ul>
                 </div>

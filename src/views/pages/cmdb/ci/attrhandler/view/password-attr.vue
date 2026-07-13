@@ -4,7 +4,7 @@
       <div class="text">{{ password }}</div>
       <Poptip
         v-if="authData && authData.passwordview"
-        title="密码明文"
+        :title="$t('term.cmdb.passwordplaintext')"
         :transfer="true"
         :content="passwordPlaintext"
         @on-popper-show="showPassword"

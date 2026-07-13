@@ -1,19 +1,19 @@
 <template>
   <div>
     <div v-if="mode === 'edit'">
-      <TsFormItem label="前置条件" labelPosition="top" :labelStrong="true">
+      <TsFormItem :label="$t('term.rdm.testcondition')" labelPosition="top" :labelStrong="true">
         <TsCkeditor
           v-model="condition"
           :params="finalCkeditorParams"
         ></TsCkeditor>
       </TsFormItem>
-      <TsFormItem label="用例步骤" labelPosition="top" :labelStrong="true">
+      <TsFormItem :label="$t('term.rdm.teststep')" labelPosition="top" :labelStrong="true">
         <TsCkeditor
           v-model="step"
           :params="finalCkeditorParams"
         ></TsCkeditor>
       </TsFormItem>
-      <TsFormItem label="预期结果" labelPosition="top" :labelStrong="true">
+      <TsFormItem :label="$t('term.rdm.testresult')" labelPosition="top" :labelStrong="true">
         <TsCkeditor
           v-model="result"
           :params="finalCkeditorParams"
@@ -21,11 +21,11 @@
       </TsFormItem>
     </div>
     <div v-else>
-      <h4 class="text-grey">前置条件</h4>
+      <h4 class="text-grey">{{ $t('term.rdm.testcondition') }}</h4>
       <div class="pt-sm pb-sm" v-html="condition"></div>
-      <h4 class="text-grey">用例步骤</h4>
+      <h4 class="text-grey">{{ $t('term.rdm.teststep') }}</h4>
       <div class="pt-sm pb-sm" v-html="step"></div>
-      <h4 class="text-grey">预期结果</h4>
+      <h4 class="text-grey">{{ $t('term.rdm.testresult') }}</h4>
       <div class="pt-sm pb-sm" v-html="result"></div>
     </div>
   </div>

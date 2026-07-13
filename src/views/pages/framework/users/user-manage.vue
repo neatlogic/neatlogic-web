@@ -204,7 +204,7 @@ export default {
             type: 'radio',
             dataList: [
               {
-                text: '是',
+                text: this.$t('page.yes'),
                 value: '1'
               }
             ],
@@ -219,16 +219,16 @@ export default {
             type: 'radio',
             dataList: [
               {
-                text: '是',
+                text: this.$t('page.yes'),
                 value: '1'
               },
               {
-                text: '否',
+                text: this.$t('page.no'),
                 value: '0'
               }
             ],
             name: 'isOnline',
-            label: '在线',
+            label: this.$t('term.framework.online'),
             transfer: true,
             filterable: true,
             allowToggle: true

@@ -3,7 +3,7 @@
     <TsForm :item-list="formConfig">
       <template v-slot:isMultiple>
         <i-switch v-model="myConfig.isMultiple" :true-value="1" :false-value="0"></i-switch>
-        <span v-html="myConfig.isMultiple == 1 ? '是' : '否'"></span>
+        <span>{{ myConfig.isMultiple == 1 ? $t('page.yes') : $t('page.no') }}</span>
       </template>
     </TsForm>
   </div>
@@ -25,7 +25,7 @@ export default {
       formConfig: {
         isMultiple: {
           type: 'slot',
-          label: '多选'
+          label: this.$t('term.cmdb.multiple')
         }
       }
     };

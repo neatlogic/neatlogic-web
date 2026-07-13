@@ -65,7 +65,11 @@ export default {
             {
               text: this.$t('term.deploy.selectexistexample'),
               value: 2,
-              description: '1. 应用环境和关联模块数据为空的实例\n2. 应用环境为当前环境且关联模块数据为空的实例\n3. 应用环境数据为空且关联模块为当前模块的实例'
+              description: [
+                this.$t('term.deploy.selectexistexamplefirst'),
+                this.$t('term.deploy.selectexistexamplesecond'),
+                this.$t('term.deploy.selectexistexamplethird')
+              ].join('\n')
             }
           ],
           validateList: ['required'],

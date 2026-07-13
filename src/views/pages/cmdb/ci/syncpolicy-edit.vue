@@ -2,7 +2,7 @@
   <div>
     <TsDialog v-bind="dialogConfig" @on-close="close">
       <template v-slot:header>
-        <div>自动采集设置</div>
+        <div>{{ $t('term.cmdb.autocollectsetting') }}</div>
       </template>
       <template v-slot>
         <TsContain
@@ -13,7 +13,7 @@
         >
           <div v-if="policyList && policyList.length > 0" slot="sider">
             <div class="policy">
-              <div :class="!id ? 'text-primary' : ''" @click="editPolicy()">新建策略</div>
+              <div :class="!id ? 'text-primary' : ''" @click="editPolicy()">{{ $t('term.cmdb.newpolicy') }}</div>
               <div
                 v-for="policy in policyList"
                 :key="policy.id"
@@ -47,7 +47,7 @@
                   <div>
                     <a href="javascript:void(0)" @click="addCron">
                       <i class="tsfont-plus"></i>
-                      增加定时策略
+                      {{ $t('term.cmdb.addschedulepolicyaction') }}
                     </a>
                   </div>
                 </div>
@@ -84,17 +84,13 @@
                 <div>
                   <span class="pl-md mr-md">
 
-                    <a v-if="!isTesting" href="javascript:void(0)" @click="testCondition()">测试筛选条件</a>
+                    <a v-if="!isTesting" href="javascript:void(0)" @click="testCondition()">{{ $t('term.cmdb.testfiltercondition') }}</a>
                     <span v-else class="text-grey">
-                      <span>测试中...</span><span class="text-loading bg-info ml-xs"></span>
+                      <span>{{ $t('term.cmdb.testing') }}</span><span class="text-loading bg-info ml-xs"></span>
                     </span>
                   </span>
-                  <span v-if="matchConditionCount > 0">
-                    找到符合条件的记录
-                    <b class="text-primary">{{ matchConditionCount }}{{ matchConditionCount > 99 ? '+' : '' }}</b>
-                    条
-                  </span>
-                  <span v-else-if="matchConditionCount == 0">没有找到符合条件的记录</span>
+                  <span v-if="matchConditionCount > 0">{{ $t('term.cmdb.matchconditionrecord', { count: matchConditionCount + (matchConditionCount > 99 ? '+' : '') }) }}</span>
+                  <span v-else-if="matchConditionCount == 0">{{ $t('term.cmdb.nomatchconditionrecord') }}</span>
                 </div>
               </template>
             </TsForm>
@@ -102,8 +98,8 @@
         </TsContain>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">取消</Button>
-        <Button type="primary" @click="save()">确定</Button>
+        <Button @click="close()">{{ $t('page.cancel') }}</Button>
+        <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -146,7 +142,7 @@ export default {
           isHidden: true
         },
         ciCollectionId: {
-          label: '映射集合',
+          label: this.$t('term.cmdb.mappingcollection'),
           type: 'select',
           maxlength: 50,
           url: '/api/rest/cmdb/sync/cicollection/search',
@@ -161,7 +157,7 @@ export default {
           }
         },
         name: {
-          label: '名称',
+          label: this.$t('page.name'),
           type: 'text',
           maxlength: 10,
           validateList: ['required'],
@@ -170,23 +166,23 @@ export default {
           }
         },
         isActive: {
-          label: '激活',
+          label: this.$t('term.cmdb.activate'),
           type: 'radio',
           validateList: ['required'],
           dataList: [
-            { value: 1, text: '是' },
-            { value: 0, text: '否' }
+            { value: 1, text: this.$t('page.yes') },
+            { value: 0, text: this.$t('page.no') }
           ],
           onChange: value => {
             this.syncPolicyData.isActive = value;
           }
         },
         cronList: {
-          label: '定时设置',
+          label: this.$t('term.cmdb.timersetting'),
           type: 'slot'
         },
         conditionList: {
-          label: '筛选条件',
+          label: this.$t('term.cmdb.filtercondition'),
           type: 'slot',
           isHidden: true
         }
@@ -194,10 +190,10 @@ export default {
       conditionData: {
         tbodyList: [],
         theadList: [
-          { key: 'field', title: '属性' },
-          { key: 'type', title: '类型' },
-          { key: 'expression', title: '表达式' },
-          { key: 'value', title: '值' }
+          { key: 'field', title: this.$t('page.attribute') },
+          { key: 'type', title: this.$t('page.type') },
+          { key: 'expression', title: this.$t('term.cmdb.expression') },
+          { key: 'value', title: this.$t('page.value') }
         ]
       },
       conditionList: []
@@ -218,8 +214,8 @@ export default {
   methods: {
     delPolicy(row) {
       this.$createDialog({
-        title: '警告',
-        content: '确定删除策略：' + row.name + '？',
+        title: this.$t('page.warning'),
+        content: this.$t('term.cmdb.deletepolicytargetconfirm', { target: row.name }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.cmdb.sync.deletePolicy(row.id).then(res => {
@@ -363,7 +359,7 @@ export default {
             this.isTesting = false;
           });
       } else {
-        this.$Message.info('请选择映射集合');
+        this.$Message.info(this.$t('term.cmdb.selectmappingcollection'));
       }
     }
   },

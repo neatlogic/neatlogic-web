@@ -309,13 +309,13 @@ export default {
           value: '',
           placeholder: '',
           maxlength: 200,
-          label: '标题模板',
+          label: this.$t('term.process.titletemplate'),
           tooltip: this.$t('term.process.titletemplatetooltip')
         },
         {
           type: 'slot',
           name: 'isActivePriority',
-          label: '优先级激活',
+          label: this.$t('term.process.priorityactive'),
           validateList: ['required'],
           onChange: (val) => {
             this.changePriorty(val);
@@ -398,15 +398,15 @@ export default {
         {
           type: 'ckeditor',
           name: 'desc',
-          label: '服务说明',
-          tooltip: '用于【服务目录】菜单下服务说明',
+          label: this.$t('term.process.servicedescription'),
+          tooltip: this.$t('term.process.servicedescriptiontooltip'),
           removePlugins: ['UploadVideo']
         },
         {
           type: 'ckeditor',
           name: 'contentHelp',
-          label: '描述帮助',
-          tooltip: '用于【服务上报】页中的描述说明提示',
+          label: this.$t('term.process.descriptionhelp'),
+          tooltip: this.$t('term.process.descriptionhelptooltip'),
           removePlugins: ['UploadVideo']
         }
       ],

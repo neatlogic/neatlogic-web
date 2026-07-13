@@ -1,20 +1,21 @@
 import { createChartRule } from './chart-rule-factory';
+import { $t } from '@/resources/init.js';
 
 export const drawBar = createChartRule({
   name: 'drawBar',
-  label: '柱状图',
+  label: $t('term.report.chartsetting.barchart'),
   icon: 'tsfont-chart-bar'
 });
 
 export const drawBarH = createChartRule({
   name: 'drawBarH',
-  label: '横向柱状图',
+  label: $t('term.report.chartsetting.horizontalbarchart'),
   icon: 'tsfont-chart-bar'
 });
 
 export const drawLine = createChartRule({
   name: 'drawLine',
-  label: '折线图',
+  label: $t('term.report.chartsetting.linechart'),
   icon: 'tsfont-chart-line'
 });
 

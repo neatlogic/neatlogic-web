@@ -67,7 +67,7 @@ export default {
         {
           type: 'text',
           name: 'toUser',
-          label: '用户',
+          label: this.$t('page.user'),
           desc: this.$t('message.framework.editwechattouser'),
           validateList: ['required']
         }

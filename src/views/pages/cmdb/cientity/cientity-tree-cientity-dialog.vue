@@ -31,7 +31,7 @@
       </Tabs>
     </template>
     <template v-slot:footer>
-      <Button type="default" @click="close()">关闭</Button>
+      <Button type="default" @click="close()">{{ $t('page.close') }}</Button>
     </template>
   </TsDialog>
 </template>
@@ -50,7 +50,7 @@ export default {
     return {
       currentTab: this.relList[0].relId.toString(),
       dialogConfig: {
-        title: '配置项列表',
+        title: this.$t('term.cmdb.cientitylist'),
         type: 'slide',
         isShow: true,
         width: 'medium',

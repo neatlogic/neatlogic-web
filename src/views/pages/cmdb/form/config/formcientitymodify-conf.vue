@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsFormItem label="模型" labelPosition="top" :required="true">
+    <TsFormItem :label="$t('page.model')" labelPosition="top" :required="true">
       <TsFormSelect
         ref="entity"
         v-model="config.ciId"
@@ -12,25 +12,25 @@
         @on-change="changeCiId"
       ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem label="操作" labelPosition="top" :required="true">
+    <TsFormItem :label="$t('page.actions')" labelPosition="top" :required="true">
       <div class="radius-sm padding-md" :class="validClass('dataConfig')">
         <div class="tstable-container boxAction border-color">
-          <Checkbox v-model="config.actionAdd" :disabled="disabled" class="actionItem">新增</Checkbox>
-          <Checkbox v-model="config.actionEdit" :disabled="disabled" class="actionItem">编辑</Checkbox>
-          <Checkbox v-model="config.actionDel" :disabled="disabled" class="actionItem">删除</Checkbox>
+          <Checkbox v-model="config.actionAdd" :disabled="disabled" class="actionItem">{{ $t('page.new') }}</Checkbox>
+          <Checkbox v-model="config.actionEdit" :disabled="disabled" class="actionItem">{{ $t('page.edit') }}</Checkbox>
+          <Checkbox v-model="config.actionDel" :disabled="disabled" class="actionItem">{{ $t('page.delete') }}</Checkbox>
         </div>
         <div class="tstable-container">
           <table class="dynamic-table tstable-body">
             <thead>
               <tr>
                 <th v-if="!disabled"></th>
-                <th class="first-td">属性/关系</th>
+                <th class="first-td">{{ $t('term.cmdb.attrrelation') }}</th>
                 <th>
-                  <span><Checkbox :value="isAllSelectionShow" :disabled="disabled || $utils.isEmpty(config.dataConfig)" @click.prevent.native="handleCheckAll('isShow')">显示</Checkbox></span>
+                  <span><Checkbox :value="isAllSelectionShow" :disabled="disabled || $utils.isEmpty(config.dataConfig)" @click.prevent.native="handleCheckAll('isShow')">{{ $t('term.cmdb.display') }}</Checkbox></span>
                   <span>
                     <Poptip
                       trigger="hover"
-                      content="如不勾选任何属性则按照模型显示设置中的配置显示相关属性"
+                      :content="$t('term.cmdb.displayattrtip')"
                       width="200"
                       transfer
                       word-wrap
@@ -40,11 +40,11 @@
                   </span>
                 </th>
                 <th>
-                  <span><Checkbox :value="isAllSelectionEdit" :disabled="disabled || $utils.isEmpty(config.dataConfig)" @click.prevent.native="handleCheckAll('isEdit')">编辑</Checkbox></span>
+                  <span><Checkbox :value="isAllSelectionEdit" :disabled="disabled || $utils.isEmpty(config.dataConfig)" @click.prevent.native="handleCheckAll('isEdit')">{{ $t('page.edit') }}</Checkbox></span>
                   <span>
                     <Poptip
                       trigger="hover"
-                      content="如不勾选任何属性则代表所有属性都可以编辑"
+                      :content="$t('term.cmdb.editattrtip')"
                       width="200"
                       transfer
                       word-wrap
@@ -63,7 +63,7 @@
               ghost-class="li-active"
             >
               <tr v-for="(data, index) in config.dataConfig" :key="index">
-                <td v-if="!disabled"><i class="tsfont-bar" style="cursor:move" title="拖动排序"></i></td>
+                <td v-if="!disabled"><i class="tsfont-bar" style="cursor:move" :title="$t('term.cmdb.dragtosort')"></i></td>
                 <td class="text-grey first-td">
                   <span class="attrName">{{ data.title }}</span>
                 </td>

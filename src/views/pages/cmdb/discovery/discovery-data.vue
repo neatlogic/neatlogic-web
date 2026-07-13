@@ -141,8 +141,8 @@ export default {
           {
             type: 'radio',
             name: 'hasError',
-            label: '只看异常数据',
-            dataList: [{ value: 1, text: '是' }]
+            label: this.$t('term.cmdb.onlyerrordata'),
+            dataList: [{ value: 1, text: this.$t('page.yes') }]
           }
         ]
       },

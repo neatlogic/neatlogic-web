@@ -187,7 +187,7 @@ export default {
       await this.$api.framework.runner.getRunnerGroup(params)
         .then(res => {
           if (res.Status == 'OK') {
-            this.runnerGroup.text = res.Return.tbodyList.length > 0 ? res.Return.tbodyList[0].name : '执行器组已被删除';
+            this.runnerGroup.text = res.Return.tbodyList.length > 0 ? res.Return.tbodyList[0].name : this.$t('term.autoexec.deletedrunnergroup');
           }
         });
     },

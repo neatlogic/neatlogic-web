@@ -232,7 +232,7 @@ export default {
         validList.push({
           focus: '#title',
           icon: 'tsfont-close-o',
-          msg: '【标题】不能为空',
+          msg: this.$t('form.validate.required', { target: this.$t('page.title') }),
           type: 'error',
           showDetail: 'title'
         });

@@ -44,9 +44,9 @@ export default {
     return {
       statusData: { appId: this.appId, scope: 'all' },
       scopeList: [
-        { value: 'original', text: '原本' },
-        { value: 'copy', text: '副本' },
-        { value: 'all', text: '都可用' }
+        { value: 'original', text: this.$t('term.rdm.original') },
+        { value: 'copy', text: this.$t('term.rdm.copy') },
+        { value: 'all', text: this.$t('term.rdm.allavailable') }
       ],
       dialogConfig: {
         title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('page.status')}) : this.$t('dialog.title.addtarget', {'target': this.$t('page.status')}),
@@ -76,7 +76,7 @@ export default {
         },
         scope: {
           type: 'slot',
-          label: '作用范围'
+          label: this.$t('term.rdm.scope')
         },
         description: {
           type: 'textarea',

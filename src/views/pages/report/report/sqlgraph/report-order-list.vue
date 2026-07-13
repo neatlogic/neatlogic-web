@@ -7,10 +7,10 @@
         size="small"
         :disabled="!fieldList.length"
         @click="addOrder"
-      >添加排序</Button>
+      >{{ $t('term.report.addsort') }}</Button>
     </div>
-    <div v-if="!fieldList.length" class="text-grey">请先拖入数据表</div>
-    <div v-else-if="!orderList.length" class="text-grey">暂无排序字段</div>
+    <div v-if="!fieldList.length" class="text-grey">{{ $t('term.report.dragdatatablefirst') }}</div>
+    <div v-else-if="!orderList.length" class="text-grey">{{ $t('term.report.noorderfield') }}</div>
     <div
       v-for="(order, index) in orderList"
       :key="index"
@@ -20,7 +20,7 @@
         v-model="order.fieldKey"
         filterable
         transfer
-        placeholder="选择字段"
+        :placeholder="$t('term.report.selectfield')"
         @on-change="changeField(order)"
       >
         <Option
@@ -42,7 +42,7 @@
           <Radio label="ASC">ASC</Radio>
           <Radio label="DESC">DESC</Radio>
         </RadioGroup>
-        <Button type="text" size="small" @click="removeOrder(index)">删除</Button>
+        <Button type="text" size="small" @click="removeOrder(index)">{{ $t('page.delete') }}</Button>
       </div>
     </div>
   </div>

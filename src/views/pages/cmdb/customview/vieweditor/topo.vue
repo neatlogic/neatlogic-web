@@ -1,5 +1,5 @@
 <template>
-  <div ref="topo" class="topo-container">这是topo插件:</div>
+  <div ref="topo" class="topo-container">{{ $t('term.cmdb.topoplugin') }}</div>
 </template>
 
 <script>

@@ -4,7 +4,7 @@
       <TsFormInput
         border="bottom"
         :search="true"
-        placeholder="请输入关键字"
+        :placeholder="$t('form.placeholder.keyword')"
         @on-change="searchCollection"
       ></TsFormInput>
     </div>

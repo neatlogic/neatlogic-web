@@ -542,22 +542,22 @@ export default {
                   validList.push({
                     type: 'error',
                     href: v.href,
-                    msg: '【' + (step.name || '无名节点') + '】' + v.msg,
+                    msg: '【' + (step.name || this.$t('term.process.nonamenode')) + '】' + v.msg,
                     focus: () => {
                       this.graph.select(node);
                     }
                   });
                 });
               } else {
-                validList.push({ type: 'success', msg: '【' + (step.name || '无名节点') + '】' + this.$t('term.process.nodevalidpassed') });
+                validList.push({ type: 'success', msg: '【' + (step.name || this.$t('term.process.nonamenode')) + '】' + this.$t('term.process.nodevalidpassed') });
               }
             }
           } else {
             if (!element) {
-              validList.push({ type: 'error', msg: '节点定义' + step.handler + '不存在' });
+              validList.push({ type: 'error', msg: this.$t('term.process.nodedefinitionnotexists', { target: step.handler }) });
             }
             if (!node) {
-              validList.push({ type: 'error', msg: '节点' + step.handler + '不存在' });
+              validList.push({ type: 'error', msg: this.$t('term.process.nodenotexists', { target: step.handler }) });
             }
           }
         });
@@ -646,7 +646,7 @@ export default {
             data: {
               uuid: startId,
               handler: 'start',
-              name: '开始',
+              name: this.$t('term.process.start'),
               stepConfig: {},
               type: 'start'
             }
@@ -663,7 +663,7 @@ export default {
             data: {
               uuid: endId,
               handler: 'end',
-              name: '结束',
+              name: this.$t('term.process.end'),
               stepConfig: {},
               type: 'end'
             }

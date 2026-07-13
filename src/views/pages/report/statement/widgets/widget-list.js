@@ -2,7 +2,7 @@ import {$t} from '@/resources/init.js';
 
 export const WIDGET_TYPES = [
   { name: 'basic', label: $t('term.report.basicwidget') },
-  { name: 'effect', label: '效果组件' },
+  { name: 'effect', label: $t('term.report.effectwidget') },
   //{ name: 'geography', label: '地理组件' },
   { name: 'other', label: $t('term.report.otherwidget') }
 ];

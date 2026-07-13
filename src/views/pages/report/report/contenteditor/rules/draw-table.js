@@ -7,6 +7,7 @@ import {
   parseJsonConfig,
   splitCommaValue
 } from './rule-util';
+import { $t } from '@/resources/init.js';
 
 function getColumnDataList(config, context) {
   const dataSourceMeta = getDataSourceMeta(config.data, context);
@@ -20,9 +21,9 @@ function getColumnFormItem(config, context) {
   if (dataList.length === 0) {
     return {
       type: 'textarea',
-      label: '字段',
+      label: $t('page.field'),
       value: selectedColumnList.join(','),
-      desc: '未识别到字段时可手工输入，多个值用英文逗号分隔'
+      desc: $t('term.report.fieldmanualinputdesc')
     };
   }
   selectedColumnList.forEach(column => {
@@ -32,7 +33,7 @@ function getColumnFormItem(config, context) {
   });
   return {
     type: 'select',
-    label: '字段',
+    label: $t('page.field'),
     value: selectedColumnList,
     dataList,
     multiple: true,
@@ -43,7 +44,7 @@ function getColumnFormItem(config, context) {
 
 export default {
   name: 'drawTable',
-  label: '表格',
+  label: $t('term.report.table'),
   icon: 'tsfont-table',
   parse(argsText) {
     return Object.assign({
@@ -66,17 +67,17 @@ export default {
   getFormConfig(config, context) {
     return {
       data: getDataSourceFormItem(config, context),
-      title: { type: 'text', label: '标题', value: config.title },
+      title: { type: 'text', label: $t('page.title'), value: config.title },
       column: getColumnFormItem(config, context),
-      needPage: { type: 'switch', label: '分页', value: !!config.needPage },
-      pageSize: { type: 'number', label: '每页条数', value: config.pageSize || 20 },
+      needPage: { type: 'switch', label: $t('term.report.pagination'), value: !!config.needPage },
+      pageSize: { type: 'number', label: $t('term.report.pagesize'), value: config.pageSize || 20 },
       disableXss: {
         type: 'radio',
-        label: '禁用XSS转义',
+        label: $t('term.report.disablexssescape'),
         value: config.disableXss || 0,
         dataList: [
-          { value: 0, text: '否' },
-          { value: 1, text: '是' }
+          { value: 0, text: $t('page.no') },
+          { value: 1, text: $t('page.yes') }
         ]
       }
     };
@@ -86,8 +87,8 @@ export default {
       icon: this.icon,
       summary: [
         config.data ? `data: ${config.data}` : '',
-        config.column ? `字段: ${config.column}` : '',
-        config.needPage ? `分页: ${config.pageSize || 20}` : ''
+        config.column ? `${$t('page.field')}: ${config.column}` : '',
+        config.needPage ? `${$t('term.report.pagination')}: ${config.pageSize || 20}` : ''
       ].filter(Boolean).join(' · ')
     });
   }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsDialog
-      title="录入配置"
+      :title="$t('term.cmdb.inputconfig')"
       type="slider"
       width="large"
       :isShow="true"

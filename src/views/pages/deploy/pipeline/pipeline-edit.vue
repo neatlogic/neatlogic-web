@@ -442,7 +442,7 @@ export default {
                       type: 'error',
                       editJob: job,
                       group: group,
-                      message: '第' + (laneIndex + 1) + '通道，第' + (groupIndex + 1) + '组，第' + (jobIndex + 1) + '个作业：作业参数请填写完整'
+                      message: this.$t('term.deploy.jobparamrequiredposition', { lane: laneIndex + 1, group: groupIndex + 1, job: jobIndex + 1 })
                     });
                     break;
                   }

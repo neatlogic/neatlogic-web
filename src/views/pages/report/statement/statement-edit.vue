@@ -92,10 +92,10 @@
                       <span class="layer-index">#{{ sortedLayerWidgetList.length - index }}</span>
                     </div>
                     <div class="layer-actions">
-                      <span class="text-action" title="置顶" @click.stop="moveTopWidget(widget)">顶</span>
-                      <span class="text-action" title="上移" @click.stop="moveUpWidget(widget)">上</span>
-                      <span class="text-action" title="下移" @click.stop="moveDownWidget(widget)">下</span>
-                      <span class="text-action" title="置底" @click.stop="moveFloorWidget(widget)">底</span>
+                      <span class="text-action" :title="$t('term.report.movetop')" @click.stop="moveTopWidget(widget)">{{ $t('term.report.topabbr') }}</span>
+                      <span class="text-action" :title="$t('term.report.moveup')" @click.stop="moveUpWidget(widget)">{{ $t('term.report.upabbr') }}</span>
+                      <span class="text-action" :title="$t('term.report.movedown')" @click.stop="moveDownWidget(widget)">{{ $t('term.report.downabbr') }}</span>
+                      <span class="text-action" :title="$t('term.report.movefloor')" @click.stop="moveFloorWidget(widget)">{{ $t('term.report.bottomabbr') }}</span>
                     </div>
                   </div>
                 </div>

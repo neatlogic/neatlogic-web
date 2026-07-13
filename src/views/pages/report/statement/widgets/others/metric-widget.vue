@@ -81,7 +81,7 @@ export default {
     },
     displayTitle() {
       const dataTitle = this.getDataValue('title');
-      return dataTitle !== undefined ? dataTitle : this.widget.config.title || this.getStaticValue('title') || '核心指标';
+      return dataTitle !== undefined ? dataTitle : this.widget.config.title || this.getStaticValue('title') || this.$t('term.report.coremetric');
     },
     targetValue() {
       const value = this.getValue('value');

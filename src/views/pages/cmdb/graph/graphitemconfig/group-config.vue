@@ -1,12 +1,12 @@
 <template>
   <div>
-    <TsFormItem label="边框" labelPosition="top">
+    <TsFormItem :label="$t('page.border')" labelPosition="top">
       <div class="pl-md"><Slider v-model="data.borderWidth" :min="0" :max="10"></Slider></div>
     </TsFormItem>
-    <TsFormItem label="圆角" labelPosition="top">
+    <TsFormItem :label="$t('term.cmdb.radius')" labelPosition="top">
       <div class="pl-md"><Slider v-model="data.borderRadius" :min="0" :max="20"></Slider></div>
     </TsFormItem>
-    <TsFormItem label="边框颜色" labelPosition="top">
+    <TsFormItem :label="$t('term.cmdb.bordercolor')" labelPosition="top">
       <ColorPicker
         :transfer="true"
         :value="data.borderColor"
@@ -21,7 +21,7 @@
         "
       />
     </TsFormItem>
-    <TsFormItem label="背景颜色" labelPosition="top">
+    <TsFormItem :label="$t('term.cmdb.backgroundcolor')" labelPosition="top">
       <ColorPicker
         :transfer="true"
         :value="data.bgColor"

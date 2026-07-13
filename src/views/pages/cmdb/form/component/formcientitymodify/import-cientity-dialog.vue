@@ -19,7 +19,7 @@
       </div>
     </template>
     <template v-slot:footer>
-      <Button type="primary" @click="confirm()">确定</Button>
+      <Button type="primary" @click="confirm()">{{ $t('page.confirm') }}</Button>
     </template>
   </TsDialog>
 </template>
@@ -36,7 +36,7 @@ export default {
     return {
       actionUrl: BASEURLPREFIX + '/api/binary/cmdb/import/file/upload',
       dialogConfig: {
-        title: '导入配置项',
+        title: this.$t('term.cmdb.importcientity'),
         width: 'medium',
         type: 'modal',
         isShow: true

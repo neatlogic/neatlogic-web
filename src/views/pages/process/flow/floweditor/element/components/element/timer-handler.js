@@ -7,7 +7,7 @@ import { isolationValid } from '@/views/pages/process/flow/floweditor/element/co
 import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
 
 export default {
-  name: '定时节点',
+  name: $t('term.process.timernode'),
   handler: 'timer',
   type: 'process',
   isVue: true, //需要声明是vue组件

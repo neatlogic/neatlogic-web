@@ -48,7 +48,7 @@
       <div v-if="isAdvancedSearch">
         <Tabs v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb')" v-model="advencedSearchMode">
           <TabPane :label="$t('term.cmdb.condition')" name="condition"></TabPane>
-          <TabPane label="表达式(beta)" name="dsl"></TabPane>
+          <TabPane :label="$t('term.cmdb.expressionbeta')" name="dsl"></TabPane>
         </Tabs>
         <Card
           v-if="advencedSearchMode === 'condition'"

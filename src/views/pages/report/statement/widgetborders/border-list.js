@@ -3,7 +3,7 @@ import {$t} from '@/resources/init.js';
 export const BORDER_LIST = [
   {
     name: 'techpanel',
-    label: '科技面板',
+    label: $t('term.report.techpanel'),
     config: {
       cornersize: 28,
       width: 1,
@@ -43,7 +43,7 @@ export const BORDER_LIST = [
   },
   {
     name: 'gradient',
-    label: '梯形边框',
+    label: $t('term.report.trapezoidborder'),
     config: {
       titlefontsize: 13,
       titlecolor: '#02a6b5',

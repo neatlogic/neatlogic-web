@@ -1,4 +1,5 @@
 import { buildFunctionSource, getBasePreview, getDataSourceFormItem, parseJsonConfig } from './rule-util';
+import { $t } from '@/resources/init.js';
 
 export function createChartRule({ name, label, icon, extraFormConfig = () => ({}) }) {
   return {
@@ -23,13 +24,13 @@ export function createChartRule({ name, label, icon, extraFormConfig = () => ({}
     getFormConfig(config, context) {
       return Object.assign({
         data: getDataSourceFormItem(config, context),
-        title: { type: 'text', label: '标题', value: config.title },
-        xLabel: { type: 'text', label: 'X轴标题', value: config.xLabel },
-        yLabel: { type: 'text', label: 'Y轴标题', value: config.yLabel },
-        width: { type: 'number', label: '宽度', value: config.width },
-        height: { type: 'number', label: '高度', value: config.height },
-        isShowValue: { type: 'switch', label: '显示数值', value: !!config.isShowValue },
-        tick: { type: 'number', label: '刻度数量', value: config.tick }
+        title: { type: 'text', label: $t('page.title'), value: config.title },
+        xLabel: { type: 'text', label: $t('term.report.axis.xaxistitle'), value: config.xLabel },
+        yLabel: { type: 'text', label: $t('term.report.axis.yaxistitle'), value: config.yLabel },
+        width: { type: 'number', label: $t('page.width'), value: config.width },
+        height: { type: 'number', label: $t('page.height'), value: config.height },
+        isShowValue: { type: 'switch', label: $t('term.report.chartsetting.showvalue'), value: !!config.isShowValue },
+        tick: { type: 'number', label: $t('term.report.chartsetting.tickcount'), value: config.tick }
       }, extraFormConfig(config, context));
     },
     getPreview(config) {

@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       isReady: false,
-      configSample: '{\n\tmethods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/name是数据中的属性\n\t\t}\n\t},\n\tcomputed:{\n\t\tfinalDataList(){\n\t\t\treturn this.dataList.splice(0);\n\t\t}\n\t}\n}',
+      configSample: '{\n\tmethods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/' + this.$t('term.cmdb.nameisdataattr') + '\n\t\t}\n\t},\n\tcomputed:{\n\t\tfinalDataList(){\n\t\t\treturn this.dataList.splice(0);\n\t\t}\n\t}\n}',
       dialogConfig: {
         type: 'modal',
         maskClose: false,

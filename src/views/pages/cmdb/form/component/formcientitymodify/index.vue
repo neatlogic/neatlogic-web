@@ -10,9 +10,9 @@
           </div>
           <div style="text-align: right">
             <div class="action-group">
-              <div v-if="!readonly && !disabled && canEditData" class="action-item tsfont-edit" @click="showCiDialog(ciId)">编辑数据</div>
-              <div v-if="!readonly && !disabled && (config.actionEdit || config.actionAdd)" class="action-item tsfont-download" @click="showTemplateDialog(ciId)">下载导入模板</div>
-              <div v-if="!readonly && !disabled && (config.actionEdit || config.actionAdd)" class="action-item tsfont-upload" @click="openFilePicker(ciId)">导入数据</div>
+              <div v-if="!readonly && !disabled && canEditData" class="action-item tsfont-edit" @click="showCiDialog(ciId)">{{ $t('term.cmdb.editdata') }}</div>
+              <div v-if="!readonly && !disabled && (config.actionEdit || config.actionAdd)" class="action-item tsfont-download" @click="showTemplateDialog(ciId)">{{ $t('term.cmdb.downloadimporttemplate') }}</div>
+              <div v-if="!readonly && !disabled && (config.actionEdit || config.actionAdd)" class="action-item tsfont-upload" @click="openFilePicker(ciId)">{{ $t('term.cmdb.importdata') }}</div>
             </div>
           </div>
         </div>
@@ -37,7 +37,7 @@
             @update="updateCiEntity"
             @changeActionType="changeActionType"
           ></CiEntityList>
-          <div v-else class="text-tip">没有任何要修改的配置项</div>
+          <div v-else class="text-tip">{{ $t('term.cmdb.nomodifycientity') }}</div>
           <div v-if="importError" v-html="importError"></div>
         </div>
       </div>
@@ -188,7 +188,7 @@ export default {
     validConfig() {
       const errorList = this.validDataForAllItem();
       if (!this.config.ciId) {
-        errorList.push({ field: 'ciId', error: '请选择模型' });
+        errorList.push({ field: 'ciId', error: this.$t('term.cmdb.selectmodel') });
       }
       /*if (!this.config.actionAdd && !this.config.actionEdit && !this.config.actionDel) {
         errorList.push({ field: 'dataConfig', error: '至少要选择一个可操作的字段' });
@@ -363,8 +363,8 @@ export default {
               for (let key in checkSet) {
                 if (checkSet[key].length > 1) {
                   checkSet[key].forEach(cientity => {
-                    this.$set(cientity, '_error', ['属性“' + attr.label + '”的值必须唯一']);
-                    errorSet.add('属性“' + attr.label + '”的值必须唯一');
+                    this.$set(cientity, '_error', [this.$t('term.cmdb.attrvaluemustunique', { target: attr.label })]);
+                    errorSet.add(this.$t('term.cmdb.attrvaluemustunique', { target: attr.label }));
                   });
                 }
               }
@@ -396,11 +396,11 @@ export default {
               if (checkSet[key].length > 1) {
                 checkSet[key].forEach(cientity => {
                   if (cientity['_error']) {
-                    cientity['_error'].push('唯一规则出现重复');
+                    cientity['_error'].push(this.$t('term.cmdb.uniquerulerepeat'));
                   } else {
-                    this.$set(cientity, '_error', ['唯一规则出现重复']);
+                    this.$set(cientity, '_error', [this.$t('term.cmdb.uniquerulerepeat')]);
                   }
-                  errorSet.add('唯一规则出现重复');
+                  errorSet.add(this.$t('term.cmdb.uniquerulerepeat'));
                 });
               }
             }

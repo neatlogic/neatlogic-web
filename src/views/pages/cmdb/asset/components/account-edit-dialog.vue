@@ -209,7 +209,7 @@ export default {
         testRunner: {
           type: 'slot',
           name: 'testRunner',
-          desc: '如果不指定则会通过ip根据网段匹配执行器组自动分配执行器',
+          desc: this.$t('term.cmdb.testrunnerdesc'),
           label: this.$t('page.test') + this.$t('term.deploy.actuator'),
           transfer: true,
           multiple: false,
@@ -223,7 +223,7 @@ export default {
         },
         testResult: {
           type: 'slot',
-          label: '测试结果',
+          label: this.$t('term.cmdb.accounttestresult'),
           isHidden: true // 默认隐藏，点击【测试连接】之后才显示
         }
       }
@@ -246,7 +246,7 @@ export default {
   methods: {
     handleCopy() {
       let errorList = this.connectTestResultList.filter(v => v.exitValue != 0);
-      let errorInfo = errorList.map(v => `${this.getConnectResultText(v)}通过执行器${this.connectTestRunner}测试${this.getReasonText(v)}${v.msgError}`).join('\n');
+      let errorInfo = errorList.map(v => this.$t('term.cmdb.accounttesterrorinfo', { account: this.getConnectResultText(v), runner: this.connectTestRunner, result: this.getReasonText(v), error: v.msgError })).join('\n');
       this.$utils.copyText('', errorInfo);
     },
     openInnerTable(row) {

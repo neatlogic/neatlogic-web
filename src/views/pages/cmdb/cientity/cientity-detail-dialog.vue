@@ -28,7 +28,7 @@ export default {
     return {
       setting: {
         type: 'slider',
-        title: '配置项详情',
+        title: this.$t('term.cmdb.cientitydetail'),
         maskClose: true,
         width: 'large',
         hasFooter: false

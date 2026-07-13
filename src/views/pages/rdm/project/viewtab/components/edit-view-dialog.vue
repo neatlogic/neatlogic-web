@@ -25,7 +25,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '编辑视图',
+        title: this.$t('term.rdm.editview'),
         width: 'medium',
         isShow: true,
         maskClose: false

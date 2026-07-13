@@ -4,9 +4,9 @@
       <template v-slot>
         <div>
           <Tabs v-model="currentTab">
-            <TabPane label="词库管理" name="dictionary"></TabPane>
-            <TabPane label="测试文本" name="content"></TabPane>
-            <TabPane v-if="wordList && wordList.length > 0" label="分词结果" name="result"></TabPane>
+            <TabPane :label="$t('term.framework.dictionarymanage')" name="dictionary"></TabPane>
+            <TabPane :label="$t('term.framework.testtext')" name="content"></TabPane>
+            <TabPane v-if="wordList && wordList.length > 0" :label="$t('term.framework.segmentationresult')" name="result"></TabPane>
           </Tabs>
           <div v-if="currentTab === 'dictionary'">
             <div style="width: 300px">
@@ -23,7 +23,7 @@
                 {{ dict.word }}
               </Tag>
             </div>
-            <div class="mt-md text-grey">提示：删除关键字需要重启服务才能生效。如词库发生变化，旧索引需要重建才能应用新的词库。</div>
+            <div class="mt-md text-grey">{{ $t('term.framework.dictionarychangetip') }}</div>
             <div v-if="dictionaryData.pageCount > 1" class="mt-md" style="text-align: right">
               <Page
                 class="page-container"
@@ -36,12 +36,12 @@
                 @on-change="searchWord"
               />
             </div>
-            <TsFormItem label="导入新词" labelPosition="top">
+            <TsFormItem :label="$t('term.framework.importnewword')" labelPosition="top">
               <TsFormInput
                 ref="word"
                 v-model="newWord"
                 type="textarea"
-                placeholder="多个词用换行分隔，单个词最多20个字符，超过长度将自动切断"
+                :placeholder="$t('term.framework.importnewwordplaceholder')"
                 border="border"
                 :validateList="[{ name: 'required', message: '' }]"
               ></TsFormInput>
@@ -94,7 +94,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '字典管理',
+        title: this.$t('term.framework.dictionarymanage'),
         type: 'modal',
         maskClose: false,
         isShow: true,

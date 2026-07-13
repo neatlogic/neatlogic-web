@@ -103,7 +103,7 @@ export default {
         },
         statKey: {
           type: 'slot',
-          label: '统计用途',
+          label: this.$t('term.rdm.statpurpose'),
           isHidden: true
         },
         isActive: {
@@ -201,9 +201,9 @@ export default {
       return this.statAttrTypeList.map(item => {
         const data = this.$utils.deepClone(item);
         if (this.usedStatKeyList.includes(item.value) && this.attrData.statKey !== item.value) {
-          this.$set(data, '_disabled', '已被其他属性绑定');
+          this.$set(data, '_disabled', this.$t('term.rdm.boundbyotherattr'));
         } else if (!this.isStatAttrTypeMatched(item.value, this.attrData.type)) {
-          this.$set(data, '_disabled', '当前属性类型不支持此统计用途');
+          this.$set(data, '_disabled', this.$t('term.rdm.statpurposenotsupported'));
         }
         return data;
       });

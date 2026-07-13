@@ -7,13 +7,13 @@
       <TabPane :label="$t('term.rdm.statussets')" name="objectstatus" class="pl-md">
         <AppStatus v-if="currentTab === 'objectstatus'" :appId="appData.id" :projectId="appData.projectId"></AppStatus>
       </TabPane>
-      <TabPane label="关联设置" name="relstrategy" class="pl-md">
+      <TabPane :label="$t('term.rdm.relationsetting')" name="relstrategy" class="pl-md">
         <RelStrategyEdit
           v-if="currentTab === 'relstrategy'"
           :appData="appData"
           toAppType="testcase"
           relType="extend"
-          label="测试计划关联测试用例"
+          :label="$t('term.rdm.testplanreltestcase')"
         ></RelStrategyEdit>
       </TabPane>
     </Tabs>

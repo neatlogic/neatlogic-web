@@ -2,13 +2,13 @@
   <div class="report-content-editor">
     <div class="editor-toolbar border-base-bottom">
       <RadioGroup v-model="editMode" type="button">
-        <Radio label="visual">可视化</Radio>
-        <Radio label="source">源码</Radio>
+        <Radio label="visual">{{ $t('term.report.visual') }}</Radio>
+        <Radio label="source">{{ $t('term.report.source') }}</Radio>
       </RadioGroup>
       <div class="toolbar-actions">
         <Dropdown trigger="click" @on-click="insertWidget">
           <Button>
-            插入组件
+            {{ $t('term.report.insertcomponent') }}
             <i class="tsfont-down"></i>
           </Button>
           <DropdownMenu slot="list">

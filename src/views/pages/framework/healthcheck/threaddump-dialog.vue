@@ -22,7 +22,7 @@ export default {
   data() {
     return {
       dialogConfig: {
-        title: '线程快照',
+        title: this.$t('term.framework.threaddump'),
         type: 'slider',
         width: 'large',
         isShow: true

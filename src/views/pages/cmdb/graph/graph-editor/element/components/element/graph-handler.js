@@ -1,6 +1,7 @@
 import template from '../shape/rect.vue';
+import { $t } from '@/resources/init.js';
 export default {
-  name: '视图节点',
+  name: $t('term.cmdb.viewnode'),
   handler: 'graph',
   isVue: true, //需要声明是vue组件
   config: {

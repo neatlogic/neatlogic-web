@@ -1,6 +1,6 @@
 <template>
   <div class="issue-copy-tag">
-    <span>{{ text }}</span>
+    <span>{{ finalText }}</span>
   </div>
 </template>
 <script>
@@ -8,7 +8,7 @@ export default {
   name: '',
   components: {},
   props: {
-    text: { type: String, default: '副本' }
+    text: { type: String, default: '' }
   },
   data() {
     return {};
@@ -25,7 +25,11 @@ export default {
   destroyed() {},
   methods: {},
   filter: {},
-  computed: {},
+  computed: {
+    finalText() {
+      return this.text || this.$t('term.rdm.copy');
+    }
+  },
   watch: {}
 };
 </script>

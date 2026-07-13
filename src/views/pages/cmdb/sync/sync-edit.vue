@@ -159,7 +159,7 @@ export default {
         },
         ciId: {
           type: 'select',
-          label: '目标模型',
+          label: this.$t('term.cmdb.targetci'),
           url: 'api/rest/cmdb/ci/citype/search',
           validateList: ['required'],
           valueName: 'id',
@@ -203,11 +203,11 @@ export default {
           onChange: value => {
             this.$set(this.syncCiCollectionData, 'parentKey', value);
           },
-          desc: '如A模型中的属性或关系引用了B模型，则B模型是A的被引用模型。只有被引用模型才需要配置父属性，父属性需要和引用模型中引用属性或关系所映射的属性一致，否则会匹配不上数据。如果被引用模型和同一个集合只有一个映射配置，父属性可以忽略，否则则需要配置系统才能匹配到正确的映射关系'
+          desc: this.$t('term.cmdb.parentattrdesc')
         },
         collectMode: {
           type: 'radio',
-          label: '采集模式',
+          label: this.$t('term.cmdb.collectmode'),
           dataList: [
             { value: 'initiative', text: this.$t('term.cmdb.initiativecollect') },
             { value: 'passive', text: this.$t('term.cmdb.passivitycollect') }
@@ -217,43 +217,43 @@ export default {
           onChange: value => {
             this.$set(this.syncCiCollectionData, 'collectMode', value);
           },
-          desc: '主动采集：一个集合只能关联一个主动采集模型；被动采集：一个集合可以关联多个被动采集模型，在主动采集模型采集过程中，如果当前模型被主动采集模型引用了，当前模型才会写入数据。'
+          desc: this.$t('term.cmdb.collectmodedesc')
         },
         isAutoCommit: {
           type: 'radio',
-          label: '自动提交',
+          label: this.$t('term.cmdb.autocommit'),
           dataList: [
-            { value: 1, text: '是' },
-            { value: 0, text: '否' }
+            { value: 1, text: this.$t('page.yes') },
+            { value: 0, text: this.$t('page.no') }
           ],
           //value: 1,
           validateList: ['required'],
           onChange: value => {
             this.$set(this.syncCiCollectionData, 'isAutoCommit', value);
           },
-          desc: '不自动提交则只会保存为事务，等待人工提交'
+          desc: this.$t('term.cmdb.autocommitdesc')
         },
         matchMode: {
           type: 'radio',
-          label: '匹配模式',
+          label: this.$t('term.cmdb.matchmode'),
           width: '100%',
           //value: 'key',
           dataList: [
-            { value: 'key', text: '节点' },
-            { value: 'level', text: '层级' }
+            { value: 'key', text: this.$t('page.node') },
+            { value: 'level', text: this.$t('term.cmdb.hierarchy') }
           ],
           validateList: ['required'],
           onChange: value => {
             this.$set(this.syncCiCollectionData, 'matchMode', value);
           },
-          desc: '匹配模式用于指定下层数据的匹配规则，“节点”：根据父节点名称进行数据匹配，一般用在关系匹配或目标模型有多个属性的引用属性匹配。"层级"：根据层级进行数据匹配，父节点可以是任意名称，一般用在目标模型只有一个属性的引用属性匹配。'
+          desc: this.$t('term.cmdb.matchmodedesc')
         },
         uniqueAttrIdList: {
           type: 'select',
           multiple: true,
-          label: '唯一规则',
+          label: this.$t('term.cmdb.uniquerule'),
           dataList: [],
-          desc: '选择多个属性作为配置项的唯一标识，用于采集数据时匹配正确的配置项，如果不选择，则使用模型的唯一规则作为唯一标识',
+          desc: this.$t('term.cmdb.syncuniqueruledesc'),
           onChange: value => {
             this.$set(this.syncCiCollectionData, 'uniqueAttrIdList', value);
             if (this.syncCiCollectionData.uniqueAttrIdList && this.syncCiCollectionData.uniqueAttrIdList.length > 0) {
@@ -282,7 +282,7 @@ export default {
         },
         isAllowMultiple: {
           type: 'radio',
-          label: '多数据兼容',
+          label: this.$t('term.cmdb.multidatacompatible'),
           value: 0,
           dataList: [
             { value: 1, text: this.$t('page.yes') },
@@ -292,7 +292,7 @@ export default {
           onChange: value => {
             this.$set(this.syncCiCollectionData, 'isAllowMultiple', value);
           },
-          desc: '在唯一规则查到多条数据的情况下，是：更新第一条；否：停止同步'
+          desc: this.$t('term.cmdb.multidatacompatibledesc')
         },
         description: {
           type: 'textarea',
@@ -329,7 +329,7 @@ export default {
         theadList: [
           { key: 'attrId', title: this.$t('page.attribute'), width: 200 },
           { key: 'field', title: this.$t('term.cmdb.matchfield') },
-          { key: 'actionType', title: this.$t('page.actions'), tooltip: '合并：新关系追加到旧属性中；替换：当新属性有值时，用新属性替换掉旧属性', width: 120 }
+          { key: 'actionType', title: this.$t('page.actions'), tooltip: this.$t('term.cmdb.attractiontooltip'), width: 120 }
           //{ key: 'actionType', title: '空值覆盖', tooltip: '激活后如果采集数据的对应属性是空值，则会清空对应属性原有的数据', width: 120 }
         ],
         tbodyList: []
@@ -338,7 +338,7 @@ export default {
         theadList: [
           { key: 'relId', title: this.$t('page.relation'), width: 200 },
           { key: 'field', title: this.$t('term.cmdb.matchfield') },
-          { key: 'actionType', title: this.$t('page.actions'), tooltip: '追加：新关系追加到旧关系中；替换：不管新关系是否为空，都会用新关系替换掉旧关系；更新：如果新关系不为空，则用新关系替换掉旧关系', width: 120 }
+          { key: 'actionType', title: this.$t('page.actions'), tooltip: this.$t('term.cmdb.relactiontooltip'), width: 120 }
         ],
         tbodyList: []
       },
