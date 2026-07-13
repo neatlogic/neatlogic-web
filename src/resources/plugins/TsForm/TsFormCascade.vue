@@ -489,6 +489,8 @@ export default {
 </style>
 
 <style lang="less">
+@import (reference) '~@/resources/assets/css/variable.less';
+
 .tsform-cascade-transfer {
   z-index: 1002;
   max-height: none !important;
@@ -570,6 +572,51 @@ export default {
   .cascade-empty {
     padding: 16px 8px;
     text-align: center;
+  }
+}
+
+html.theme-dark {
+  .tsform-cascade-transfer {
+    background: @dark-blockbg;
+
+    .ivu-dropdown-menu {
+      background: @dark-blockbg;
+    }
+
+    .cascade-panel {
+      background: @dark-blockbg;
+    }
+
+    .cascade-column {
+      & + .cascade-column {
+        border-left-color: @dark-border;
+      }
+    }
+
+    .cascade-title {
+      color: @dark-title;
+    }
+
+    .cascade-option {
+      color: @dark-text;
+
+      &:hover,
+      &.active {
+        background: @dark-table-hover-color;
+      }
+
+      &.selected {
+        color: @dark-primary-color;
+      }
+    }
+
+    .cascade-arrow {
+      color: @dark-icon;
+    }
+
+    .cascade-empty {
+      color: @dark-tip;
+    }
   }
 }
 </style>
