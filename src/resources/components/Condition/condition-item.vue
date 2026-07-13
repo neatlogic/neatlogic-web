@@ -31,7 +31,7 @@ export default {
     conditionItem: { type: Object },
     conditionItemData: { type: Object }, //条件数据
     expression: { type: String }, //表达式，某些表达式可能需要特殊的组件
-    value: { type: [String, Array] }
+    value: { type: [String, Number, Boolean, Array] }
   },
   data() {
     return {
@@ -56,8 +56,11 @@ export default {
   filter: {},
   computed: {
     finalValue() {
-      if (['text', 'number', 'html', 'json'].includes(this.conditionItem.type)) {
-        return this.value && this.value.length > 0 && this.value[0];
+      if (['text', 'number', 'boolean', 'html', 'json'].includes(this.conditionItem.type)) {
+        if (Array.isArray(this.value)) {
+          return this.value.length > 0 ? this.value[0] : null;
+        }
+        return this.value;
       } else {
         return this.value;
       }
