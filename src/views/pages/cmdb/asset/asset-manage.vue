@@ -190,13 +190,11 @@
     <TagEdit
       v-if="isMangeShow"
       :operateType="operateType"
-      :settingForm="settingForm"
       :title="showDialog.title"
       :resourceIdList="resourceIdList"
       :settingConfig="settingConfig"
-      @success="success"
+      @success="tagSuccess"
       @close="close"
-      @refreshTagList="refreshTagList"
     ></TagEdit>
     <AcountEdit
       v-if="isAddAccountShow"
@@ -204,8 +202,7 @@
       :resourceId="resourceId"
       :resourceIdList="resourceIdList"
       :accountList="accountList"
-      :accountslist="accountslist"
-      @success="success"
+      @success="accountSuccess"
       @closeDialog="closeAddAccount"
     ></AcountEdit>
     <AccountEditDialog v-if="isShowAccountEditDialog" :resourceId="resourceId" @close="closeAccountEditDialog"></AccountEditDialog>
@@ -271,7 +268,6 @@ export default {
       selectedCiEntityList: [], // 选中的配置项列表
       ciData: {}, //当前配置项模型数据
       isSiderHide: false,
-      accountslist: [],
       isAddAccountShow: false,
       selectType: {
         typeId: ''
@@ -471,25 +467,6 @@ export default {
       },
       settingConfig: {
         tagList: []
-      },
-      settingForm: {
-        id: {
-          type: 'text',
-          name: 'id',
-          isHidden: true
-        },
-        tagList: {
-          type: 'slot',
-          name: 'tagList',
-          label: this.$t('page.tag'),
-          transfer: true,
-          multiple: true,
-          tagList: [],
-          search: true,
-          allowCreate: true,
-          dynamicUrl: 'api/rest/resourcecenter/tag/name/list/forselect',
-          rootName: 'tbodyList'
-        }
       },
       implementName: '',
       isExportAssetDialog: false,
@@ -858,8 +835,6 @@ export default {
     },
     async initData() {
       await this.searchAssetData();
-      await this.listForselect();
-      await this.listAccount();
       if (this.$route.query && this.$route.query.isAddAccountShow) {
         let assetIpList = sessionStorage.getItem('assetIpList');
         assetIpList && (this.resourceIdList = JSON.parse(assetIpList));
@@ -903,19 +878,6 @@ export default {
       } else {
         return '';
       }
-    },
-    async listForselect() {
-      await this.$api.cmdb.asset.listTag({}).then(res => {
-        let resdata = res.Return || {};
-        this.settingForm.tagList.tagList = resdata;
-      });
-    },
-    async listAccount() {
-      await this.$api.cmdb.asset.searchAccount({}).then(res => {
-        let resdata = res.Return || {};
-        this.accountslist = resdata;
-        this.loadingShow = false;
-      });
     },
     closeDeleteDialog(needRefresh) {
       this.isDeleteDialogShow = false;
@@ -973,6 +935,7 @@ export default {
     searchAssetData(isEmptySelected) {
       //获取表格数据
       if (!this.selectType.typeId) {
+        this.loadingShow = false;
         return;
       }
       if (this.tableConfig.currentPage == 1) {
@@ -1011,6 +974,7 @@ export default {
         .finally(() => {
           this.loading = false;
           this.selectedCiEntityList = [];
+          this.loadingShow = false;
         });
     },
     renderContent(h, { root, node, data }) {
@@ -1098,12 +1062,22 @@ export default {
       this.ciEntityId = null;
       this.isDeleteDialogShow = true;
     },
-    async success(msg) {
+    async handleOperateSuccess(params) {
+      const { msg = '' } = params || {};
       await this.searchAssetData(true);
-      this.$Message.success(msg);
+      if (msg) {
+        this.$Message.success(msg);
+      }
       this.resourceIdList = [];
       this.selectList = [];
       this.selectedRemain = true;
+    },
+    async tagSuccess(params) {
+      await this.handleOperateSuccess(params);
+      this.isMangeShow = false;
+    },
+    async accountSuccess(params) {
+      await this.handleOperateSuccess(params);
       this.isAddAccountShow = false;
     },
     gotoDetails(row) {
@@ -1144,11 +1118,6 @@ export default {
     },
     delAccount() {
       this.accountAction(this.$t('dialog.title.batchdeletetarget', { target: this.$t('page.account') }), 'delAccount');
-    },
-    // 刷新标签列表
-    refreshTagList() {
-      this.listForselect();
-      this.$Message.success(this.$t('message.refreshsuccess'));
     },
     close() {
       this.isMangeShow = false;
