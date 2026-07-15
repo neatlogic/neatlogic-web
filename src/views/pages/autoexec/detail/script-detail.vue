@@ -352,6 +352,7 @@ export default {
           path: '/test-detail',
           query: {
             id: this.versionId,
+            scriptId: this.scriptId,
             type: 'script',
             execMode: this.scriptConfig.execMode
           }
@@ -554,6 +555,7 @@ export default {
           path: '/test-detail',
           query: {
             id: this.versionId,
+            scriptId: this.scriptId,
             execMode: this.scriptConfig.execMode,
             type: 'script'
           }
