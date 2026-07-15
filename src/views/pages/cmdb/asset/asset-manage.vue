@@ -92,14 +92,18 @@
         </div>
       </template>
       <template v-slot:sider>
-        <span v-if="$utils.isEmpty(rootCiName) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="text-href" @click="editTree()">{{ $t('term.cmdb.resourcetypetreesettingdesc') }}</span>
-        <Tree
-          v-if="!$utils.isEmpty(treeData)"
-          :data="treeData"
-          :render="renderContent"
-          class="ts-tree"
-          @on-select-change="selectTreeNode"
-        ></Tree>
+        <ResourceTypeTree
+          :key="resourceTypeTreeKey"
+          v-model="selectType.typeId"
+          class="resource-type-tree"
+          @load="handleResourceTypeLoad"
+          @change="handleResourceTypeChange"
+        >
+          <template v-slot:empty="{ rootCiName: slotRootCiName }">
+            <span v-if="$utils.isEmpty(slotRootCiName) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="text-href" @click="editTree()">{{ $t('term.cmdb.resourcetypetreesettingdesc') }}</span>
+            <span v-else>{{ $t('page.nodata') }}</span>
+          </template>
+        </ResourceTypeTree>
       </template>
       <template v-slot:content>
         <TsTable
@@ -250,6 +254,7 @@ export default {
     TreeEdit: () => import('./components/tree-edit'),
     ExportAsset: () => import('./export-asset-dialog.vue'),
     AccountEditDialog: () => import('./components/account-edit-dialog'),
+    ResourceTypeTree: () => import('@/resources/components/ResourceTypeTree'),
     AdvancedModeSearch: () => import('./advanced-mode-search') // 高级模式搜索
   },
   filters: {},
@@ -471,7 +476,11 @@ export default {
       implementName: '',
       isExportAssetDialog: false,
       defaultValue: [],
+      pendingResourceId: null,
+      assetTheadReady: false,
+      assetDataInitialized: false,
       isShowTreeEdit: false,
+      resourceTypeTreeKey: 0,
       treeTypeRootCiId: null,
       searchList: [
         {
@@ -608,14 +617,10 @@ export default {
   async mounted() {
     let { resourceId = '' } = this.$route.query || {};
     this.defaultValue = resourceId ? [parseInt(resourceId)] : [];
-    await this.getTreeType();
+    this.pendingResourceId = resourceId ? parseInt(resourceId) : null;
     await this.initAssetTheadSetting();
-    await this.initData();
-    if (resourceId) {
-      if (this.tableConfig.tbodyList && this.tableConfig.tbodyList.some(item => item.id == resourceId)) {
-        this.editAccount({ id: parseInt(resourceId) });
-      }
-    }
+    this.assetTheadReady = true;
+    await this.loadAssetDataByType({ initial: true });
   },
   beforeUpdate() {},
   updated() {},
@@ -850,9 +855,9 @@ export default {
     changeCurrent(currentPage = 1) {
       this.tableConfig.currentPage = currentPage;
       if (this.isSimpleMode) {
-        this.searchAssetData();
+        return this.searchAssetData();
       } else {
-        this.advancedModeSearch(this.searchVal);
+        return this.advancedModeSearch(this.searchVal);
       }
     },
     changePageSize(pageSize) {
@@ -911,6 +916,59 @@ export default {
         this.treeData = data;
       });
     },
+    handleResourceTypeLoad({ rootCiName = '', rootNode = null } = {}) {
+      this.rootCiName = rootCiName;
+      this.treeTypeRootCiId = rootNode && rootNode.id ? rootNode.id : null;
+      if (!rootNode) {
+        this.clearAssetTable();
+      }
+    },
+    async handleResourceTypeChange({ selectedId, node, selected } = {}) {
+      if (!selected || !selectedId) {
+        this.selectType = { typeId: null };
+        this.implementName = '';
+        this.ciData = {};
+        this.clearAssetTable();
+        return;
+      }
+      this.selectType = {
+        typeId: selectedId
+      };
+      this.implementName = node ? (node.label + '(' + node.name + ')' + this.$t('term.inspect.inspect')) : '';
+      this.getCiById(selectedId);
+      await this.loadAssetDataByType({ initial: true });
+    },
+    async loadAssetDataByType({ initial = false } = {}) {
+      if (!this.assetTheadReady || !this.selectType.typeId) {
+        return;
+      }
+      if (initial && !this.assetDataInitialized) {
+        this.assetDataInitialized = true;
+        await this.initData();
+      } else if (this.isSimpleMode) {
+        await this.changeCurrent();
+      } else {
+        await this.advancedModeSearch(this.searchVal);
+      }
+      if (this.pendingResourceId && this.tableConfig.tbodyList && this.tableConfig.tbodyList.some(item => item.id == this.pendingResourceId)) {
+        this.editAccount({ id: this.pendingResourceId });
+        this.pendingResourceId = null;
+      }
+    },
+    clearAssetTable() {
+      this.tableConfig = {
+        ...this.tableConfig,
+        tbodyList: [],
+        currentPage: 1,
+        rowNum: 0
+      };
+      this.resourceIdList = [];
+      this.selectedCiEntityList = [];
+      this.selectList = [];
+      this.selectedRemain = false;
+      this.loading = false;
+      this.loadingShow = false;
+    },
     setTreeDataSelect(typeId, data, parentData) {
       if (data && data.length > 0) {
         data.forEach(d => {
@@ -935,7 +993,7 @@ export default {
     searchAssetData(isEmptySelected) {
       //获取表格数据
       if (!this.selectType.typeId) {
-        this.loadingShow = false;
+        this.clearAssetTable();
         return;
       }
       if (this.tableConfig.currentPage == 1) {
@@ -1153,8 +1211,7 @@ export default {
       if (action == 'refresh') {
         this.treeTypeRootCiId = null;
         this.selectType.typeId = null;
-        await this.getTreeType();
-        await this.initData();
+        this.resourceTypeTreeKey += 1;
       }
     },
     switchMode() {
@@ -1180,7 +1237,7 @@ export default {
         ...searchVal
       };
       this.loadingShow = true;
-      this.$api.autoexec.action
+      return this.$api.autoexec.action
         .getNodeList(params)
         .then(res => {
           if (res.Status == 'OK') {
