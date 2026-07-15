@@ -85,14 +85,16 @@
       </template>
       <template v-slot:sider>
         <div>
-          <span v-if="$utils.isEmpty(treeData)" class="text-href" @click="gotoAssetManagePage()">{{ $t('term.cmdb.gotoresourcetypetreesetting') }}</span>
-          <Tree
-            v-else
-            :data="treeData"
-            :render="renderContent"
-            class="ts-tree"
-            @on-select-change="handleTreeSelectedChange"
-          ></Tree>
+          <ResourceTypeTree
+            v-model="selectType.typeId"
+            class="resource-type-tree"
+            @load="handleResourceTypeLoad"
+            @change="handleResourceTypeChange"
+          >
+            <template v-slot:empty>
+              <span class="text-href" @click="gotoAssetManagePage()">{{ $t('term.cmdb.gotoresourcetypetreesetting') }}</span>
+            </template>
+          </ResourceTypeTree>
         </div>
       </template>
       <template v-slot:content>
@@ -199,6 +201,7 @@ export default {
     ExpandTable: () => import('./component/expand-table.vue'),
     SendEmail: () => import('./component/send-email.vue'),
     RuleOfThresholdDialog: () => import('@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue'),
+    ResourceTypeTree: () => import('@/resources/components/ResourceTypeTree'),
     CategoryEditDialog: () => import('./category-edit-dialog')
   },
   directives: { download },
@@ -227,6 +230,7 @@ export default {
       contentHeight: '100',
       isExpandCollapse: true, // 处理展开收起，默认展开
       resourceIdList: [], // 资产id列表
+      initReady: false,
       recordExpandCollapseList: [], // 收起列表
       inspectStatusList: [], // 巡检状态
       tableConfig: {
@@ -478,7 +482,7 @@ export default {
       if (this.categoryId) {
         await this.getNewClassCondition();
       }
-      await this.getTreeType();
+      this.initReady = true;
       this.getTableData(null, null);
     },
     async getInspectStatusList() {
@@ -667,48 +671,10 @@ export default {
     verticals() {
       this.isSiderHide = !this.isSiderHide;
     },
-    async getTreeType() {
-      //获取树形类型
-      await this.$api.cmdb.asset.getResourceTreeType().then(res => {
-        let data = res.Return.tbodyList;
-        if (this.selectType && this.selectType.typeId) {
-          this.setTreeDataSelect(this.selectType.typeId, data);
-        } else if (data[0]) {
-          data[0].selected = true;
-          data[0].expand = true;
-          this.selectType = {
-            typeId: data[0].id
-          };
-        }
-        this.treeData = data;
-      });
-    },
-    setTreeDataSelect(typeId, data, parentData) {
-      // 设置树勾选
-      if (data && data.length > 0) {
-        data.forEach(d => {
-          d._parent = parentData;
-          if (d.id == typeId) {
-            d.selected = true;
-            this.setTreeDataExpand(d);
-          } else {
-            if (d.children) {
-              this.setTreeDataSelect(typeId, d.children, d);
-            }
-          }
-        });
-      }
-    },
-    setTreeDataExpand(data) {
-      data.expand = true;
-      if (data._parent) {
-        this.setTreeDataExpand(data._parent);
-      }
-    },
     getTableData(currentPage, pageSize, isFirst = true) {
       //获取表格数据
       if (!this.selectType.typeId) {
-        this.loadingShow = false;
+        this.clearTableData();
         return;
       }
       let params = { ...this.searchVal, ...this.selectType };
@@ -780,21 +746,35 @@ export default {
       this.isExpandCollapse = historyData['isExpandCollapse'];
       this.syncCombineSearcherLabel();
     },
-    renderContent(h, { root, node, data }) {
-      //渲染树的lable名称
-      return h('span', {
-        staticClass: '',
-        domProps: {
-          innerHTML: data.label
-        }
-      });
+    handleResourceTypeLoad({ treeData = [] } = {}) {
+      this.treeData = treeData || [];
+      if (!this.treeData.length) {
+        this.clearTableData();
+      }
     },
-    handleTreeSelectedChange(nodeList, node) {
-      //选中类型
+    handleResourceTypeChange({ selectedId, selected } = {}) {
+      if (!selected || !selectedId) {
+        this.selectType = { typeId: null };
+        this.clearTableData();
+        return;
+      }
       this.selectType = {
-        typeId: node.id
+        typeId: selectedId
       };
-      this.getTableData(1, null);
+      if (this.initReady) {
+        this.getTableData(1, null);
+      }
+    },
+    clearTableData() {
+      this.tableConfig = {
+        ...this.tableConfig,
+        tbodyList: [],
+        currentPage: 1,
+        rowNum: 0
+      };
+      this.resourceIdList = [];
+      this.showInnerTableList = [];
+      this.loadingShow = false;
     },
     toAssetsDetail(row) {
       // 跳转巡检报告页面
