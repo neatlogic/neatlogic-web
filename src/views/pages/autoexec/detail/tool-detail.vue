@@ -140,7 +140,6 @@
       :title="$t('term.autoexec.toolhelptitle', {target: toolConfig.name})"
       type="slider"
       width="large"
-      isScrollbar
       @on-close="closeHelpDialog"
     >
       <template v-slot>
@@ -411,8 +410,8 @@ export default {
         return;
       }
       assistant.openDialog({
-        question: this.$t('term.autoexec.defaulttoolusageaiquestion'),
-        toolContext: this.buildToolUsageContext()
+        toolContext: this.buildToolUsageContext(),
+        documentContent: this.onlineHelpContent
       });
     },
     handleExecrtoolVisibleChange(isVisible) {

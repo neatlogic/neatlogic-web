@@ -727,6 +727,7 @@
   "revert": "reduction",
   "order": "order",
   "fieldname": "Column Name",
+  "expand": "Expand",
   "appname": "apply name",
   "continue": "continue",
   "continueexecute": "Continue execution",

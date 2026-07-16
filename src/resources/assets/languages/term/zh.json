@@ -1131,7 +1131,6 @@
     "directexecuteauthoritytip": "不通过作业，直接执行当前工具时的调用授权。",
     "directexecuteaudittip": "查看不通过作业直接执行当前工具产生的调用记录。",
     "toolusageaititle": "{target} - AI解释",
-    "defaulttoolusageaiquestion": "请解释这个工具在当前阶段怎么用，重点说明参数映射、风险和配置建议。",
     "toolusageaiconfigtip": "请在 人工智能 > 智能助手管理 中配置并启用自动化工具使用解释助手。",
     "toolusageaiemptytip": "当前工具上下文已准备好，编辑问题后发送。",
     "toolusageaiplaceholder": "输入你想了解的工具使用问题",
