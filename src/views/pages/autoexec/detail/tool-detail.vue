@@ -16,17 +16,7 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group no-line" style="text-align: right;">
-          <span
-            v-if="autoexecToolUsageAiAssistantComponent"
-            class="action-item btn-icon tsfont-ai"
-            :title="$t('term.autoexec.toolusageaiassistant')"
-            @click.stop="openToolUsageAiAssistant"
-          >{{ $t('term.autoexec.toolusageexplain') }}</span>
-          <span v-if="!downloadLoading" v-download="exportWord" class="tsfont-download action-item">{{ $t('term.autoexec.libraryusageinstructions') }}</span>
-          <span v-if="downloadLoading" class="action-item disable" :title="$t('page.downloadloadingtip')">
-            <Icon type="ios-loading" size="18" class="loading icon-right"></Icon>
-            {{ $t('term.autoexec.libraryusageinstructions') }}
-          </span>
+          <span class="action-item tsfont-question-o" @click.stop="openHelpDialog">{{ $t('page.help') }}</span>
           <template v-for="(operate, index) in toolConfig.operateList">
             <span
               v-if="operate.value != 'active'"
@@ -55,10 +45,43 @@
               ></TsFormSwitch>
             </span>
           </template>
+          <span v-if="isExecrtoolActionVisible" class="action-item">
+            <Dropdown trigger="hover" placement="bottom-end" transfer>
+              <span class="tsfont-option-horizontal"></span>
+              <DropdownMenu slot="list">
+                <DropdownItem @click.native="openDirectExecuteAuthority">
+                  <Tooltip
+                    :content="$t('term.autoexec.directexecuteauthoritytip')"
+                    placement="left"
+                    theme="light"
+                    transfer
+                    max-width="320"
+                  >
+                    <div class="tsfont-edit">{{ $t('term.autoexec.directexecuteauthority') }}</div>
+                  </Tooltip>
+                </DropdownItem>
+                <DropdownItem @click.native="openDirectExecuteAudit">
+                  <Tooltip
+                    :content="$t('term.autoexec.directexecuteaudittip')"
+                    placement="left"
+                    theme="light"
+                    transfer
+                    max-width="320"
+                  >
+                    <div class="tsfont-time">{{ $t('term.autoexec.directexecuteaudit') }}</div>
+                  </Tooltip>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </span>
         </div>
       </template>
       <template v-slot:right>
-        <BasicDetail :config="toolConfig" operationType="tool"></BasicDetail>
+        <BasicDetail
+          :config="toolConfig"
+          operationType="tool"
+          :showExecrtoolAuthority="false"
+        ></BasicDetail>
       </template>
       <template v-slot:content>
         <div class="main pr-md">
@@ -103,6 +126,96 @@
       v-if="autoexecToolUsageAiAssistantComponent"
       ref="toolUsageAiAssistant"
     ></component>
+    <component
+      :is="autoexecScriptExecrtoolAuthorityComponent"
+      v-if="autoexecScriptExecrtoolAuthorityComponent"
+      ref="execrtoolAuthority"
+      :config="toolConfig"
+      :showCard="false"
+      @visible-change="handleExecrtoolVisibleChange"
+    ></component>
+    <TsDialog
+      v-if="isHelpShow"
+      :isShow.sync="isHelpShow"
+      :title="$t('term.autoexec.toolhelptitle', {target: toolConfig.name})"
+      type="slider"
+      width="large"
+      isScrollbar
+      @on-close="closeHelpDialog"
+    >
+      <template v-slot>
+        <div class="tool-help-content">
+          <Loading :loadingShow="helpLoading" type="fix"></Loading>
+          <DocumentonlineContent
+            v-if="onlineHelpContent"
+            :content="onlineHelpContent"
+          ></DocumentonlineContent>
+          <template v-else-if="!helpLoading">
+            <div class="tool-help-overview bg-op padding radius-lg mb-md">
+              <div class="tool-help-overview-item">
+                <div class="text-tip">{{ $t('page.description') }}</div>
+                <div>{{ toolConfig.description || '-' }}</div>
+              </div>
+              <div v-if="toolConfig.isLib != 1" class="tool-help-overview-item">
+                <div class="text-tip">{{ $t('page.executionmode') }}</div>
+                <div>{{ toolConfig.execModeText || '-' }}</div>
+              </div>
+              <div v-if="toolConfig.isLib != 1" class="tool-help-overview-item">
+                <div class="text-tip">{{ $t('term.autoexec.risklevel') }}</div>
+                <div>{{ toolConfig.riskName || '-' }}</div>
+              </div>
+            </div>
+            <div class="item-list">
+              <div class="h4 pb-md">{{ $t('page.inputparam') }}</div>
+              <div v-if="!toolConfig.inputParamList || toolConfig.inputParamList.length == 0" class="text-tip">{{ $t('page.notarget', {target: $t('page.inputparam')}) }}</div>
+              <template v-else>
+                <ParamsReadonly
+                  v-for="(iParam,iindex) in toolConfig.inputParamList"
+                  :key="iindex"
+                  :typeList="paramsTypeList"
+                  :config="iParam"
+                ></ParamsReadonly>
+              </template>
+            </div>
+            <div v-if="toolConfig.argument" class="item-list free-params-box">
+              <div class="h4 pb-md">{{ $t('term.autoexec.freeparameter') }}</div>
+              <ParamsReadonly :typeList="paramsTypeList" :config="toolConfig.argument"></ParamsReadonly>
+            </div>
+            <div class="item-list">
+              <div class="h4 pb-md">{{ $t('page.outputparam') }}</div>
+              <div v-if="!toolConfig.outputParamList || toolConfig.outputParamList.length == 0" class="text-tip">{{ $t('page.notarget', {target: $t('page.outputparam')}) }}</div>
+              <template v-else>
+                <ParamsReadonly
+                  v-for="(oParam,oindex) in toolConfig.outputParamList"
+                  :key="oindex"
+                  :typeList="outputParamTypeList"
+                  :config="oParam"
+                ></ParamsReadonly>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <Button @click="closeHelpDialog">{{ $t('page.close') }}</Button>
+        <Button
+          v-if="onlineHelpContent"
+          :disabled="helpLoading"
+          @click="downloadOnlineHelp"
+        >{{ $t('term.autoexec.downloadtoolhelp') }}</Button>
+        <Button
+          v-else
+          v-download="exportWord"
+          v-download:prevent="helpLoading || downloadLoading"
+          :loading="helpLoading || downloadLoading"
+        >{{ $t('term.autoexec.downloadtoolhelp') }}</Button>
+        <Button
+          v-if="autoexecToolUsageAiAssistantComponent"
+          type="primary"
+          @click="openToolUsageAiFromHelp"
+        >{{ $t('term.autoexec.toolusageaihelp') }}</Button>
+      </template>
+    </TsDialog>
     <TsDialog
       v-if="isShow"
       :isShow.sync="isShow"
@@ -124,11 +237,13 @@
 import ParamsReadonly from '@/views/pages/autoexec/components/param/params-readonly.vue';
 import download from '@/resources/directives/download.js';
 import ImportComponent from '@/views/components/import-component.js';
+import { downloadBlobFile } from '@/resources/assets/js/downloadUtil.js';
 export default {
   name: '',
   components: {
     ParamsReadonly,
     BasicDetail: () => import('./scriptDetail/edit/basic-detail'),
+    DocumentonlineContent: () => import('@/views/pages/documentonline/document/documentonline-content.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
@@ -142,6 +257,10 @@ export default {
       isLoading: true,
       toolConfig: null,
       downloadLoading: false,
+      isHelpShow: false,
+      helpLoading: false,
+      onlineHelpContent: '',
+      isExecrtoolActionVisible: false,
       paramMode: {
         input: {
           mode: 'input'
@@ -296,6 +415,74 @@ export default {
         toolContext: this.buildToolUsageContext()
       });
     },
+    handleExecrtoolVisibleChange(isVisible) {
+      this.isExecrtoolActionVisible = isVisible;
+    },
+    openDirectExecuteAuthority() {
+      const authority = this.$refs.execrtoolAuthority;
+      if (authority && authority.editExecrtoolAuthority) {
+        authority.editExecrtoolAuthority();
+      }
+    },
+    openDirectExecuteAudit() {
+      const authority = this.$refs.execrtoolAuthority;
+      if (authority && authority.showExecrtoolAuditDialog) {
+        authority.showExecrtoolAuditDialog();
+      }
+    },
+    openHelpDialog() {
+      this.isHelpShow = true;
+      this.loadOnlineToolHelp();
+    },
+    closeHelpDialog() {
+      this.isHelpShow = false;
+    },
+    async loadOnlineToolHelp() {
+      // 商业在线文档按完整工具路径精确匹配，任何异常或空结果都回退到本地结构化帮助。
+      const toolName = this.toolConfig && this.toolConfig.name;
+      this.onlineHelpContent = '';
+      if (!toolName) {
+        return;
+      }
+      const toolNameList = toolName.split('/');
+      const keyword = toolNameList[toolNameList.length - 1];
+      const silentRequestConfig = {headers: {unConsole: 1}};
+      this.helpLoading = true;
+      try {
+        const searchRes = await this.$api.documentonline.searchDocument({keyword: keyword, pageSize: 100}, silentRequestConfig);
+        const documentList = searchRes.Status === 'OK' && searchRes.Return ? searchRes.Return.tbodyList || [] : [];
+        const expectedPathSuffix = `/${toolName}.md`;
+        const document = documentList.find(item => item.filePath && item.filePath.endsWith(expectedPathSuffix));
+        if (!document) {
+          return;
+        }
+        const detailRes = await this.$api.documentonline.getDocumentDetail({filePath: document.filePath}, silentRequestConfig);
+        if (detailRes.Status === 'OK' && detailRes.Return && detailRes.Return.content) {
+          this.onlineHelpContent = detailRes.Return.content;
+        }
+      } catch (error) {
+        // 在线文档属于可选商业能力，失败时由页面已有工具数据提供帮助，不打断用户操作。
+      } finally {
+        this.helpLoading = false;
+      }
+    },
+    openToolUsageAiFromHelp() {
+      this.closeHelpDialog();
+      this.$nextTick(() => {
+        this.openToolUsageAiAssistant();
+      });
+    },
+    downloadOnlineHelp() {
+      if (!this.onlineHelpContent) {
+        return;
+      }
+      const toolNameList = (this.toolConfig.name || 'tool').split('/');
+      const fileName = toolNameList[toolNameList.length - 1];
+      downloadBlobFile(this.onlineHelpContent, {
+        defaultFileName: `[${fileName}]帮助.md`,
+        type: 'text/markdown;charset=utf-8'
+      });
+    },
     buildToolUsageContext() {
       // 详情页只提供当前工具自身信息，与组合工具中的单工具介绍入口保持一致。
       const toolConfig = this.toolConfig || {};
@@ -341,6 +528,9 @@ export default {
     autoexecToolUsageAiAssistantComponent() {
       return ImportComponent && ImportComponent.autoexecToolUsageAiAssistant ? ImportComponent.autoexecToolUsageAiAssistant : null;
     },
+    autoexecScriptExecrtoolAuthorityComponent() {
+      return ImportComponent && ImportComponent.autoexecScriptExecrtoolAuthority ? ImportComponent.autoexecScriptExecrtoolAuthority : null;
+    },
     getIcon() {
       return function(type, item) {
         let className = this.actionIcons[type] || 'tsfont-tool';
@@ -378,6 +568,24 @@ export default {
   }
   .item-list {
     padding-bottom: 16px;
+  }
+}
+.tool-help-content {
+  min-height: 300px;
+  position: relative;
+  .item-list {
+    padding-bottom: 16px;
+  }
+}
+.tool-help-overview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  .tool-help-overview-item {
+    > div:last-child {
+      padding-top: 6px;
+      word-break: break-word;
+    }
   }
 }
 .free-params-box{

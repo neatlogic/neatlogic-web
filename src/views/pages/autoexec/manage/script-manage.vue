@@ -87,6 +87,17 @@
                     {{ row.catalogName }}
                   </Tooltip>
                 </template>
+                <template
+                  v-for="extension in operationListExtensionList"
+                  :slot="extension.column.key"
+                  slot-scope="{ row }"
+                >
+                  <component
+                    :is="extension.component"
+                    :key="extension.column.key"
+                    :row="row"
+                  ></component>
+                </template>
                 <template slot="action" slot-scope="{ row }">
                   <div class="tstable-action">
                     <ul class="tstable-action-ul">
@@ -143,6 +154,7 @@
 import download from '@/resources/mixins/download.js';
 import ScriptEdit from './script/edit.vue';
 import CombineSearcher from '@/resources/components/CombineSearcher/CombineSearcher.vue';
+import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   name: 'ScriptManage',
   components: {
@@ -286,11 +298,13 @@ export default {
       statusList: [],
       versionStatus: 'passed', //版本转态
       treeList: [], // 树列表
-      catalogId: null // 树列表ID
+      catalogId: null, // 树列表ID
+      operationListExtensionList: []
     };
   },
   beforeCreate() {},
   created() {
+    this.initOperationListExtension('script', this.tableData.theadList);
     this.$route.query.status && (this.versionStatus = this.$route.query.status);
     if (this.$route.query.typeId) {
       let typeId = parseInt(this.$route.query.typeId);
@@ -308,6 +322,24 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initOperationListExtension(operationType, theadList) {
+      const extensionMap = ComponentManager.getComponent('autoexecOperationListExtension') || {};
+      const translate = key => this.$t(key);
+      this.operationListExtensionList = Object.keys(extensionMap)
+        .map(key => extensionMap[key])
+        .filter(extension => extension.operationTypeList && extension.operationTypeList.includes(operationType))
+        .map(extension => ({...extension, column: extension.getColumn(translate)}));
+      this.operationListExtensionList.forEach(extension => {
+        const columnIndex = theadList.findIndex(item => item.key === extension.beforeColumnKey);
+        columnIndex >= 0 ? theadList.splice(columnIndex, 0, extension.column) : theadList.push(extension.column);
+        this.searchConfig.searchList.push(...extension.getSearchList(translate));
+      });
+    },
+    normalizeOperationListSearchParam(searchParam) {
+      return this.operationListExtensionList.reduce((param, extension) => {
+        return extension.normalizeSearchParam ? extension.normalizeSearchParam(param) : param;
+      }, {...searchParam});
+    },
     async getTreeListSync() {
       const treeList = await this.$toolCatalogUtils.getTreeList(true);
       if (this.catalogId && treeList && treeList.length > 0) {
@@ -401,7 +433,8 @@ export default {
     getList() {
       let param = {versionStatus: this.versionStatus, catalogId: this.catalogId};
       if (this.searchVal && Object.keys(this.searchVal).length) {
-        Object.assign(param, this.searchVal);
+        const searchParam = this.normalizeOperationListSearchParam(this.searchVal);
+        Object.assign(param, searchParam);
       }
       if (this.tableData && this.tableData.currentPage) {
         Object.assign(param, {
