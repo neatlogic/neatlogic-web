@@ -208,6 +208,11 @@ export default {
         content: _this.$t('dialog.content.unbindconfirm'),
         btnType: 'error',
         'on-ok': function(vnode) {
+          if (vnode.okBtnDisable) {
+            return;
+          }
+          vnode.loading = true;
+          vnode.okBtnDisable = true;
           let data = {
             processTaskId: _this.processTaskId,
             repeatProcessTaskId: item.id
@@ -216,6 +221,9 @@ export default {
             _this.$Message.success(_this.$t('message.executesuccess'));
             vnode.isShow = false;
             _this.getRepeatList();
+          }).finally(() => {
+            vnode.loading = false;
+            vnode.okBtnDisable = false;
           });
         }
       });
