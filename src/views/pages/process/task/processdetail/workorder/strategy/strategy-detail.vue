@@ -133,6 +133,8 @@
       :isShow.sync="isShow"
       class="vertical-center-modal"
       :title="subTaskContentTitle"
+      :loading="isSavingTask"
+      :okBtnDisable="isSavingTask"
       @on-close="closeDialog"
       @on-ok="saveStrategy"
     >
@@ -231,6 +233,7 @@ export default {
       },
       isDisableCommet: false,
       completingTaskId: null,
+      isSavingTask: false,
       editType: 'add',
       customButtonList: [], //策略：自定义按钮列表
       isShowReplyDialog: false,
@@ -375,6 +378,9 @@ export default {
       this.isShow = false;
     },
     saveStrategy() {
+      if (this.isSavingTask) {
+        return;
+      }
       if (this.$refs.subTaskContent.valid()) {
         let data = {
           id: this.processTaskStepTaskId,
@@ -412,10 +418,13 @@ export default {
           }
         });
         this.$set(data, 'stepTaskUserVoList', stepTaskUserVoList);
+        this.isSavingTask = true;
         this.$api.process.process.saveTask(data).then(res => {
           this.isShow = false;
           this.$Message.success(this.$t('message.executesuccess'));
           this.getListTask();
+        }).finally(() => {
+          this.isSavingTask = false;
         });
       }
     },
