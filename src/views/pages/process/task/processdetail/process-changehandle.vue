@@ -52,10 +52,16 @@
                 ></Icon>{{ actionStepconfig.recoverchange }}</span>
               <span
                 v-if="actionStepconfig.restartchange"
-                :class="{disable: changeDisableConfig.restarting}"
-                class="tsfont-play-o action-item"
+                :class="{disable: changeDisableConfig.restarting, 'tsfont-play-o': !changeDisableConfig.restarting}"
+                class="action-item"
                 @click="restartchange"
-              >{{ actionStepconfig.restartchange }}</span>
+              >
+                <Icon
+                  v-if="changeDisableConfig.restarting"
+                  type="ios-loading"
+                  size="14"
+                  class="loading"
+                ></Icon>{{ actionStepconfig.restartchange }}</span>
               <!-- 处理_end -->
               <!-- 开始_start -->
               <span
@@ -867,7 +873,7 @@ export default {
           changeId: this.changeId
         };
         this.$api.process.processtask.changeRestart(data).then(res => {
-          this.changeDisableConfig.restarting = true;
+          this.changeDisableConfig.restarting = false;
           if (res.Status == 'OK') {
             this.toTask(this.processTaskId, this.processTaskStepId);
           }
