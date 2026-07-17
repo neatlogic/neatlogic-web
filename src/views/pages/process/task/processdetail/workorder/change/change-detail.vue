@@ -282,6 +282,7 @@
         :is="stepdialogType"
         :isShow="stepDialog"
         :config="stepConfig"
+        :isSaving="isUpdatingChangeStep"
         :defaultProcessTaskStepId="processTaskStepId"
         @close="closeDialog"
         @save="saveStepObj"
@@ -361,7 +362,8 @@ export default {
       deletingCommentIdMap: {},
       editingCommentIdMap: {},
       completingStepIdMap: {},
-      startingStepIdMap: {}
+      startingStepIdMap: {},
+      isUpdatingChangeStep: false
       //   editchangestep: null, //编辑
       //   startchangestep: null, //开始
       //   completechangestep: null, //完成
@@ -402,6 +404,9 @@ export default {
       });
     },
     saveStepObj(obj) {
+      if (this.isUpdatingChangeStep) {
+        return;
+      }
       if (obj) {
         let select = this.newChangeStepList.find(c => c.uuid === obj.uuid);
         if (select) {
@@ -417,12 +422,16 @@ export default {
             endTimeWindow: select.endTimeWindow,
             worker: select.worker
           };
+          this.isUpdatingChangeStep = true;
           this.$api.process.processtask.updateChangeStep(data).then(res => {
             if (res.Status == 'OK') {
               this.getChangeStart(obj.id);
               this.$Message.success(this.$t('message.executesuccess'));
               this.$emit('updateStepActive');
+              this.stepDialog = false;
             }
+          }).finally(() => {
+            this.isUpdatingChangeStep = false;
           });
         }
       }
