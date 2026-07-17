@@ -28,6 +28,12 @@ const app = {
   saveAppConfig(params) {
     return axios.post('/api/rest/rdm/app/config/save', params);
   },
+  getNotifyPolicyConfig(params) {
+    return axios.post('/api/rest/rdm/notify/policy/config/get', params);
+  },
+  saveNotifyPolicyConfig(params) {
+    return axios.post('/api/rest/rdm/notify/policy/config/save', params);
+  },
   updateAppSort(params) {
     return axios.post('/api/rest/rdm/app/updatesort', params);
   }

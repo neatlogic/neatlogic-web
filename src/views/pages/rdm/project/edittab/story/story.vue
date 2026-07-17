@@ -16,6 +16,9 @@
           :label="$t('term.rdm.storyreltestcase')"
         ></RelStrategyEdit>
       </TabPane>
+      <TabPane :label="$t('page.noticesetting')" name="notify" class="pl-md">
+        <NotifyPolicySetting v-if="currentTab === 'notify'" targetType="app" :targetId="appData.id"></NotifyPolicySetting>
+      </TabPane>
     </Tabs>
   </div>
 </template>
@@ -25,7 +28,8 @@ export default {
   components: {
     AttrEdit: () => import('@/views/pages/rdm/project/edittab/components/attr-edit.vue'),
     AppStatus: () => import('@/views/pages/rdm/project/edittab/components/app-status-edit.vue'),
-    RelStrategyEdit: () => import('@/views/pages/rdm/project/edittab/components/rel-strategy-edit.vue')
+    RelStrategyEdit: () => import('@/views/pages/rdm/project/edittab/components/rel-strategy-edit.vue'),
+    NotifyPolicySetting: () => import('@/views/pages/rdm/project/edittab/components/notify-policy-setting.vue')
   },
   props: {
     appData: { type: Object }
