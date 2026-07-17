@@ -200,7 +200,12 @@
                   :multiple="uploadMultiple"
                 ></TsUpLoad>
                 <div class="comment-click">
-                  <Button type="primary" @click="commentOk(cd, index)">{{ $t('page.reply') }}</Button>
+                  <Button
+                    type="primary"
+                    :loading="isCommenting(cd.id)"
+                    :disabled="isCommenting(cd.id)"
+                    @click="commentOk(cd, index)"
+                  >{{ $t('page.reply') }}</Button>
                 </div>
               </div>
               <div v-if="cd.commentList && cd.commentList.length > 0" class="order-list bg-block" stype="margin:0;">
@@ -345,7 +350,8 @@ export default {
         }
       ],
       cur: 0,
-      uploadMultiple: true
+      uploadMultiple: true,
+      commentingStepIdMap: {}
       //   editchangestep: null, //编辑
       //   startchangestep: null, //开始
       //   completechangestep: null, //完成
@@ -537,6 +543,9 @@ export default {
     },
     commentOk(cd, index) {
       //回复
+      if (this.isCommenting(cd.id)) {
+        return;
+      }
       let obj = cd;
       let _this = this;
       if (this.$refs[`commentChangeStep${index}`][0].currentValue || this.$refs[`uploadFile${index}`][0].uploadList.length > 0) {
@@ -554,6 +563,7 @@ export default {
           });
           this.$set(data, 'fileIdList', fileIdList);
         }
+        this.$set(this.commentingStepIdMap, cd.id, true);
         this.$api.process.processtask.commentChangeStep(data).then(res => {
           if (res.Status == 'OK') {
             _this.getCommentList(obj);
@@ -561,8 +571,13 @@ export default {
             _this.$refs[`uploadFile${index}`][0].handleClearFiles();
             this.$emit('updateStepActive');
           }
+        }).finally(() => {
+          this.$set(this.commentingStepIdMap, cd.id, false);
         });
       }
+    },
+    isCommenting(changeStepId) {
+      return this.commentingStepIdMap[changeStepId] === true;
     },
     getCommentList(cd) {
       let data = {
