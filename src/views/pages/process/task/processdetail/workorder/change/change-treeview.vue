@@ -53,10 +53,10 @@
               <li
                 v-for="(action,cindex) in cd.actionList"
                 :key="cindex"
-                :class="{ disable: action.value === 'abortchangestep' && isAborting(cd.id) }"
+                :class="{ disable: (action.value === 'abortchangestep' && isAborting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id)) }"
                 class="action-item"
                 @click.stop="stepFunction(action.value,cd)"
-              ><Icon v-if="action.value === 'abortchangestep' && isAborting(cd.id)" type="ios-loading" class="loading"></Icon>{{ action.text }}</li>
+              ><Icon v-if="(action.value === 'abortchangestep' && isAborting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id))" type="ios-loading" class="loading"></Icon>{{ action.text }}</li>
             </ul>
           </div>
         </div>
@@ -183,7 +183,8 @@ export default {
       ],
       cur: 0,
       uploadMultiple: true,
-      abortingStepIdMap: {}
+      abortingStepIdMap: {},
+      completingStepIdMap: {}
     };
   },
   beforeCreate() {},
@@ -220,15 +221,24 @@ export default {
       });
     },
     completechangestep(obj) {
+      if (this.isCompleting(obj.id)) {
+        return;
+      }
       //完成
       let data = {
         changeStepId: obj.id
       };
+      this.$set(this.completingStepIdMap, obj.id, true);
       this.$api.process.processtask.changeStepComplete(data).then(res => {
         if (res.Status == 'OK') {
           // alert(res);
         }
+      }).finally(() => {
+        this.$set(this.completingStepIdMap, obj.id, false);
       });
+    },
+    isCompleting(changeStepId) {
+      return this.completingStepIdMap[changeStepId] === true;
     },
     abortchangestep(obj) {
       //取消
